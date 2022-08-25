@@ -2,76 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B12ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:53:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E74ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231790AbiHYWxl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:53:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48006 "EHLO
+        id S244385AbiHYW6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243874AbiHYWxf (ORCPT
+        with ESMTP id S232323AbiHYW57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:53:35 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EF2BE38;
-        Thu, 25 Aug 2022 15:53:34 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b98f5329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98f5:329c:23ff:fea6:a903])
+        Thu, 25 Aug 2022 18:57:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E0DC2EAB;
+        Thu, 25 Aug 2022 15:57:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CC97D1EC0559;
-        Fri, 26 Aug 2022 00:53:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1661468008;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=jW+8OpoivxfthSyTUh2opIqlkm3EYhh8/L9WZPGddVo=;
-        b=AKOfeu2Lcan6dJoga4BrOeUCztkFyyoBPV3WpXePKesuaytAFI1vagg2EFKPgxzuYsD/di
-        0aFnDEOYbz2ZmSXW8g4g5H6q6drWlI7wW9jM3ciYzZJoREg+uAjQ8a7UnsVp19pshUkNEO
-        R8CGJu68c2Uuyb/d/cM73jepp7s0Bzc=
-Date:   Fri, 26 Aug 2022 00:53:24 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Jane Chu <jane.chu@oracle.com>
-Cc:     "tony.luck@intel.com" <tony.luck@intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "hch@lst.de" <hch@lst.de>,
-        "nvdimm@lists.linux.dev" <nvdimm@lists.linux.dev>
-Subject: Re: [PATCH v7] x86/mce: retrieve poison range from hardware
-Message-ID: <Ywf9ZL6zjzSf5pdF@zn.tnic>
-References: <20220802195053.3882368-1-jane.chu@oracle.com>
- <YwUFlo3+my6bJHWj@zn.tnic>
- <b3880db6-6731-1d1b-144f-1080a033ad01@oracle.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB83661CFA;
+        Thu, 25 Aug 2022 22:57:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F31C433D6;
+        Thu, 25 Aug 2022 22:57:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661468278;
+        bh=r6JZyqW6S9RG4eDZIgslFoKC3t2I0DV9CVvoSL3Tn3w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=t/SI79+oQN2XJMz1cFpQnN36XKRNGP1fWt/LqW5S4U+Hh8i9ZgmvcYdctJJoBjsqG
+         mQRXhP3rNMODbKqjGO0/8Lw0r85FYPGMTkgAzP6yD0XMXN2MSWJQkIrEEHDKACz8rc
+         Mzdqc4ffJ7JjPYZoZvznL8O14eWaM3YhsjGYdiPSXzRxwWjPpOzbJbBnjPuTP4Ej5s
+         cHblulGAlKHsgVp5u6+/njxX75vajIYGNSs0d4O+8w4oHvYeEmXxFS1eXFv7V8aD8z
+         12zdqhj4ynywTPqkI+fDYan5z+D9NqEVkjlXQX2GfK0b3Zn0a87nbQLQ8t5IOb5UzE
+         BbTtb7fY28CXw==
+Date:   Thu, 25 Aug 2022 15:57:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun Ramadoss <arun.ramadoss@microchip.com>
+Subject: Re: [PATCH net-next v3 00/17] net: dsa: microchip: add error
+ handling and register access validation
+Message-ID: <20220825155756.142c07a5@kernel.org>
+In-Reply-To: <20220825214424.u6oawi5n47zyn7rd@skbuf>
+References: <20220823080231.2466017-1-o.rempel@pengutronix.de>
+        <a359692096f20b2abc5e53cb796c892f97acec1b.camel@redhat.com>
+        <20220825214424.u6oawi5n47zyn7rd@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <b3880db6-6731-1d1b-144f-1080a033ad01@oracle.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 04:29:47PM +0000, Jane Chu wrote:
-> Tony has replied.
+On Fri, 26 Aug 2022 00:44:24 +0300 Vladimir Oltean wrote:
+> On Thu, Aug 25, 2022 at 11:00:44AM +0200, Paolo Abeni wrote:
+> > On Tue, 2022-08-23 at 10:02 +0200, Oleksij Rempel wrote:  
+> > > changes v3:
+> > > - fix build error in the middle of the patch stack.  
+> > 
+> > The series looks reasonable to me, let's see the comments from the DSA
+> > crew;)  
+> 
+> Patch set looks ok from my side, won't leave review tags for each of the
+> 17 patches, just here
+> 
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-Do you really think that I can't look up what field means?
+Thanks a lot!
 
-What I said was
+Oleksij there are quite a few checkpatch annoyances here, please fix up:
 
-"What I'm missing from this text here is... "
+-------------------------------------------------------------------------------------------
+Commit 0ef2f8617176 ("net: dsa: microchip: do per-port Gbit detection instead of per-chip")
+-------------------------------------------------------------------------------------------
+WARNING: Possible unwrapped commit description (prefer a maximum 75 chars per line)
+#12: 
+ksz9477_switch_init() function. Which is using undocumented REG_GLOBAL_OPTIONS
 
-IOW, what I'm trying to say is, you should formulate your commit message
-better, more human-friendly. Right now it reads like for insiders only.
-But that's not its purpose.
+total: 0 errors, 1 warnings, 0 checks, 144 lines checked
 
-Do you catch my drift?
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplace.
 
--- 
-Regards/Gruss,
-    Boris.
+Commit 0ef2f8617176 ("net: dsa: microchip: do per-port Gbit detection instead of per-chip") has style problems, please review.
+-------------------------------------------------------------------------------------------------------
+Commit 06c98e1faaa7 ("net: dsa: microchip: don't announce extended register support on non Gbit chips")
+-------------------------------------------------------------------------------------------------------
+CHECK: Please don't use multiple blank lines
+#29: FILE: drivers/net/dsa/microchip/ksz9477.c:267:
+ 
++
 
-https://people.kernel.org/tglx/notes-about-netiquette
+total: 0 errors, 0 warnings, 1 checks, 32 lines checked
+
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplace.
+
+Commit 06c98e1faaa7 ("net: dsa: microchip: don't announce extended register support on non Gbit chips") has style problems, please review.
+
+
+------------------------------------------------------------------------------------------------------
+Commit 872fff3049d3 ("net: dsa: microchip: forward error value on all ksz_pread/ksz_pwrite functions")
+------------------------------------------------------------------------------------------------------
+CHECK: Alignment should match open parenthesis
+#28: FILE: drivers/net/dsa/microchip/ksz_common.h:397:
++static inline int ksz_pread8(struct ksz_device *dev, int port, int offset,
+ 			      u8 *data)
+
+CHECK: Alignment should match open parenthesis
+#36: FILE: drivers/net/dsa/microchip/ksz_common.h:403:
++static inline int ksz_pread16(struct ksz_device *dev, int port, int offset,
+ 			       u16 *data)
+
+CHECK: Alignment should match open parenthesis
+#44: FILE: drivers/net/dsa/microchip/ksz_common.h:409:
++static inline int ksz_pread32(struct ksz_device *dev, int port, int offset,
+ 			       u32 *data)
+
+CHECK: Alignment should match open parenthesis
+#52: FILE: drivers/net/dsa/microchip/ksz_common.h:415:
++static inline int ksz_pwrite8(struct ksz_device *dev, int port, int offset,
+ 			       u8 data)
+
+CHECK: Alignment should match open parenthesis
+#60: FILE: drivers/net/dsa/microchip/ksz_common.h:421:
++static inline int ksz_pwrite16(struct ksz_device *dev, int port, int offset,
+ 				u16 data)
+
+CHECK: Alignment should match open parenthesis
+#69: FILE: drivers/net/dsa/microchip/ksz_common.h:428:
++static inline int ksz_pwrite32(struct ksz_device *dev, int port, int offset,
+ 				u32 data)
+
+total: 0 errors, 0 warnings, 6 checks, 58 lines checked
+
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplace.
+
+Commit 872fff3049d3 ("net: dsa: microchip: forward error value on all ksz_pread/ksz_pwrite functions") has style problems, please review.
+
+-----------------------------------------------------------------------------------------------------------------
+Commit a615f4ad0116 ("net: dsa: microchip: KSZ9893: do not write to not supported Output Clock Control Register")
+-----------------------------------------------------------------------------------------------------------------
+WARNING: Possible unwrapped commit description (prefer a maximum 75 chars per line)
+#8: 
+KSZ9893 compatible chips do not have "Output Clock Control Register 0x0103".
+
+total: 0 errors, 1 warnings, 0 checks, 15 lines checked
+
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplace.
+
+Commit a615f4ad0116 ("net: dsa: microchip: KSZ9893: do not write to not supported Output Clock Control Register") has style problems, please review.
+---------------------------------------------------------------------------------
+Commit d1abab8b5762 ("net: dsa: microchip: add support for regmap_access_tables")
+---------------------------------------------------------------------------------
+WARNING: unnecessary whitespace before a quoted newline
+#43: FILE: drivers/net/dsa/microchip/ksz_common.h:338:
++		dev_err(dev->dev, "can't read 8bit reg: 0x%x %pe \n", reg,
+
+WARNING: unnecessary whitespace before a quoted newline
+#56: FILE: drivers/net/dsa/microchip/ksz_common.h:351:
++		dev_err(dev->dev, "can't read 16bit reg: 0x%x %pe \n", reg,
+
+WARNING: unnecessary whitespace before a quoted newline
+#69: FILE: drivers/net/dsa/microchip/ksz_common.h:364:
++		dev_err(dev->dev, "can't read 32bit reg: 0x%x %pe \n", reg,
+
+WARNING: unnecessary whitespace before a quoted newline
+#84: FILE: drivers/net/dsa/microchip/ksz_common.h:378:
++		dev_err(dev->dev, "can't read 64bit reg: 0x%x %pe \n", reg,
+
+WARNING: unnecessary whitespace before a quoted newline
+#99: FILE: drivers/net/dsa/microchip/ksz_common.h:392:
++		dev_err(dev->dev, "can't write 8bit reg: 0x%x %pe \n", reg,
+
+WARNING: unnecessary whitespace before a quoted newline
+#112: FILE: drivers/net/dsa/microchip/ksz_common.h:404:
++		dev_err(dev->dev, "can't write 16bit reg: 0x%x %pe \n", reg,
+
+WARNING: unnecessary whitespace before a quoted newline
+#125: FILE: drivers/net/dsa/microchip/ksz_common.h:416:
++		dev_err(dev->dev, "can't write 32bit reg: 0x%x %pe \n", reg,
+
+total: 0 errors, 7 warnings, 0 checks, 123 lines checked
+
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplace.
+
+Commit d1abab8b5762 ("net: dsa: microchip: add support for regmap_access_tables") has style problems, please review.
+
+----------------------------------------------------------------------------------------------------
+Commit 39a148ccc56c ("net: dsa: microchip: ksz9477: remove MII_CTRL1000 check from ksz9477_w_phy()")
+----------------------------------------------------------------------------------------------------
+WARNING: Possible unwrapped commit description (prefer a maximum 75 chars per line)
+#11: 
+With proper regmap_ranges provided for all chips we will be able to catch this
+
+total: 0 errors, 1 warnings, 0 checks, 14 lines checked
