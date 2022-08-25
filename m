@@ -2,104 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D38CECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE473ECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:38:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242440AbiHYQiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:38:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
+        id S242310AbiHYQiv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:38:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231604AbiHYQiO (ORCPT
+        with ESMTP id S231604AbiHYQit (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:38:14 -0400
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86EA3B9F96;
-        Thu, 25 Aug 2022 09:38:13 -0700 (PDT)
-Received: by mail-il1-x133.google.com with SMTP id d6so9479180ilg.4;
-        Thu, 25 Aug 2022 09:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=cg4DKuqZRXI8XygUcYOSntZBB49Z7XOxAN4MDp/rKMw=;
-        b=KiqFMG0trws4p7kItu23a0fBvq++91aZ80QsPUnlOD9g6nUwgaF/RmfrTrK8fJJXr8
-         iUue/c52TU7d4ZglonAvDypXzOl/O4iNXjZdoNAk2gXZWUAjGOPG8nrP9gmNRR4nruKG
-         R+kRm/FV/Vkc6rX9Wvbdh4MMMvVT0wmeehPZA9i7jcsb5G2oTWCh5zMNoCsWGT6M/Ray
-         WmaJi3pi8D6f53Cg0K9jS/W7aEFnclWZ1SEi0YVJpHQSF2KeqG3SS08n83XjENeQVxPP
-         P3K5LgzpynqMybjfdLpuv5QwoRRGUXQVgN3sOiXoaNbgvHNQdKCFVu2PDiNalDU5i7YV
-         tgpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=cg4DKuqZRXI8XygUcYOSntZBB49Z7XOxAN4MDp/rKMw=;
-        b=chdHC7UAlhZjKXIN1jghc12CzCmhPpOm32DwYq+8xbU+NYhVtdmf+w/RgZDclvYSkL
-         H5ulP/n593I3yWmOAWQaRqVYva7gMJclrPnngn6DumYM+A4QQoQYZnU/EMxOsYdeebD5
-         85EzdmdVZ90fTUAkITAj+E+W3V9tL4p4UPcDDvfaZndQ+Onnoufopo9ycml2v9yhRhDu
-         Me4BNkgen93stp/58ch51GYoMmdUKAfr167r7vVCzkqtkcNwO2zwxLcGzvxjj+TdoYY9
-         XlbXYNsOm7bVWtR+W1LuSzIzTa0CzlNw1DfSlW6+PNrayO9ReG0cM/RMtx2pCxIwsVOP
-         lXZg==
-X-Gm-Message-State: ACgBeo1iKs2SGJYyLE+35XcEzA0/xgpwaZ8L5uZtKbUNcQs1DY6LKtHq
-        onQWKzTlJ/PiN3zUv4RokTY=
-X-Google-Smtp-Source: AA6agR6x34SkG5dp3T5Li7CZq6no4k62eMJxDTDbSDL7DC1g4ZhKftOOvN1IvNHx7ghLp1vK9PfxYA==
-X-Received: by 2002:a05:6e02:18cd:b0:2de:73e8:3f0 with SMTP id s13-20020a056e0218cd00b002de73e803f0mr2348747ilu.69.1661445492977;
-        Thu, 25 Aug 2022 09:38:12 -0700 (PDT)
-Received: from ?IPV6:2600:1700:2442:6db0:1906:ee71:4d12:9d74? ([2600:1700:2442:6db0:1906:ee71:4d12:9d74])
-        by smtp.gmail.com with ESMTPSA id y10-20020a056e02118a00b002e9818bc2dfsm2370346ili.8.2022.08.25.09.38.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 09:38:12 -0700 (PDT)
-Message-ID: <1ecf05ab-b1f7-d0be-fac4-7941a306aa42@gmail.com>
-Date:   Thu, 25 Aug 2022 11:38:11 -0500
+        Thu, 25 Aug 2022 12:38:49 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A35B9F84;
+        Thu, 25 Aug 2022 09:38:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661445529; x=1692981529;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=zAouvVhGGQU1mycPi0W4g/pSkl96QhPOemhs9ryS1uE=;
+  b=hr8oU0Rcs/LXqfs86EyIBdryqxqDT2AUTC7Z5yRNvBRZfkPZqgqiJ5Gs
+   i+7FL+QxY6LIJXb8mQhuZAODIlJ+FMI4Cu8tCoiGNqADyAw7wHnLGDEO3
+   yMvyN3H+nOsZXu1KCnr+qL8oN1EwGWtmKYZLglfJGblU7Te+dcAtEamWd
+   s3jHMPnaYUEDV0z9grWmj/qkC3IKdiCaWXvusge7x7T2UOuVCB+FH8ywC
+   B5OmBavJXlTNqvvJXpJzMU8C5RYyklhdiQZJILQDDHYNvZMFXLQAoVwq5
+   LyaNLczkeNQca1ACjBg3OjfRnx705Oi0lQ4TyVhnwkG2l6e2UkjjVc03i
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="293034889"
+X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
+   d="scan'208";a="293034889"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 09:38:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
+   d="scan'208";a="671070402"
+Received: from crojewsk-ctrl.igk.intel.com ([10.102.9.28])
+  by fmsmga008.fm.intel.com with ESMTP; 25 Aug 2022 09:38:45 -0700
+From:   Cezary Rojewski <cezary.rojewski@intel.com>
+To:     alsa-devel@alsa-project.org, broonie@kernel.org
+Cc:     tiwai@suse.com, perex@perex.cz,
+        amadeuszx.slawinski@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, hdegoede@redhat.com,
+        lgirdwood@gmail.com, kai.vehmanen@linux.intel.com,
+        peter.ujfalusi@linux.intel.com, ranjani.sridharan@linux.intel.com,
+        yung-chuan.liao@linux.intel.com, viro@zeniv.linux.org.uk,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        andy.shevchenko@gmail.com,
+        Cezary Rojewski <cezary.rojewski@intel.com>
+Subject: [PATCH v2 0/2] libfs: Introduce tokenize_user_input()
+Date:   Thu, 25 Aug 2022 18:48:31 +0200
+Message-Id: <20220825164833.3923454-1-cezary.rojewski@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] of/device: Fix up of_dma_configure_id() stub
-Content-Language: en-US
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220824153256.1437483-1-thierry.reding@gmail.com>
-From:   Frank Rowand <frowand.list@gmail.com>
-In-Reply-To: <20220824153256.1437483-1-thierry.reding@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/24/22 10:32, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
-> 
-> Since the stub version of of_dma_configure_id() was added in commit
-> a081bd4af4ce ("of/device: Add input id to of_dma_configure()"), it has
-> not matched the signature of the full function, leading to build failure
-> reports when code using this function is built on !OF configurations.
-> 
-> Fixes: a081bd4af4ce ("of/device: Add input id to of_dma_configure()")
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> ---
->  include/linux/of_device.h | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/of_device.h b/include/linux/of_device.h
-> index 1d7992a02e36..1a803e4335d3 100644
-> --- a/include/linux/of_device.h
-> +++ b/include/linux/of_device.h
-> @@ -101,8 +101,9 @@ static inline struct device_node *of_cpu_device_node_get(int cpu)
->  }
->  
->  static inline int of_dma_configure_id(struct device *dev,
-> -				   struct device_node *np,
-> -				   bool force_dma)
-> +				      struct device_node *np,
-> +				      bool force_dma,
-> +				      const u32 *id)
->  {
->  	return 0;
->  }
+Continuation of recent upstream discussion [1] regarding user string
+tokenization.
+
+First, tokenize_user_input() is introduced to allow for splitting
+specified user string into a sequence of integers. Makes use of
+get_options() internally so the parsing logic is not duplicated.
+
+With that done, redundant parts of the sound driver are removed.
+
+Originally similar functionality was added for the SOF sound driver. As
+more users are on the horizon, it is desirable to update existing fs
+code and provide a unified solution.
 
 
-Reviewed-by: Frank Rowand <frank.rowand@sony.com>
+Changes in v2:
+- reused get_options() so no parsing logic is duplicated
+- simplified __user variant with help of memdup_user_nul()
+  Both suggested by Andy, thanks for thourough review
+
+
+[1]: https://lore.kernel.org/alsa-devel/20220707091301.1282291-1-cezary.rojewski@intel.com/
+
+
+Cezary Rojewski (2):
+  libfs: Introduce tokenize_user_input()
+  ASoC: SOF: Remove strsplit_u32() and tokenize_input()
+
+ fs/libfs.c                        | 45 +++++++++++++++
+ include/linux/fs.h                |  1 +
+ sound/soc/sof/sof-client-probes.c | 92 ++++---------------------------
+ 3 files changed, 57 insertions(+), 81 deletions(-)
+
+-- 
+2.25.1
+
