@@ -2,163 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0112C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6E0C32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236102AbiHYHnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 03:43:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38174 "EHLO
+        id S235424AbiHYHoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 03:44:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238659AbiHYHnD (ORCPT
+        with ESMTP id S233545AbiHYHoe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 03:43:03 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F37EA2D97
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:42:57 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id 2so16955881edx.2
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:42:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=pTSOf4yZBT6vxC8cWVxq54me3auAZtvDfhz2BczVtgE=;
-        b=Ig6BLIDsaP7fwO4f2tblxSV8D0IEZ23t5746evH4pnH6oehSyZT/w7P79opUL+FnmK
-         po3y3tMhPtweDHchzB18ityI3jwyATZyGSAP0WrqhvTn5ohd5US0JPEFOAGmxSk5vacw
-         sKRqdCKWOUSMVwQEX9dCud+27HCTh3lUtbqk4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=pTSOf4yZBT6vxC8cWVxq54me3auAZtvDfhz2BczVtgE=;
-        b=espDITqiAhgNxfW/LYlsBJwYKPZ00XG5yBy7F/YtE2nZ4BKgRa8uY8DaH0U30jaKpY
-         PDWBthQoJOeLjFlPJYMYLxeZvAEqa3wDobMpdxeIA4V1+fW1k9t47XTV/Dd6byomSgdf
-         GERiY1nzeLJHgYBkbIOji7B+Q+paRaEcCRhtdVzRHaim+fEnVJ5COGBue8pHzfNOThFh
-         3oPNBg8zEF5IV8Md9nQq0pK2hp+sxWB/mEbqBWFKyB69HPnblmLmMK6jNrEUDD2DPRNw
-         m58SEID61FJ3Pt0bxrC3DJ83HEOFXreVNcR9+yAUc3zLfV6Im5OCGrDjCvKK+LRe/GOE
-         YsbQ==
-X-Gm-Message-State: ACgBeo16lHoC3XvMGRXXQHUck0KHy68q0t4Sk+cMtj17g3g4zUv5cPeN
-        goxzR9IX8MgM5yzcckAXDeXZsORrb8D6PGw/ikg=
-X-Google-Smtp-Source: AA6agR7zdxg0CUkJDfzSWKwqhWRbAI3dNsbYykAd+baE6DA3sHvahi/MrseReEBvXYORVh/3PEVsBw==
-X-Received: by 2002:aa7:cfcb:0:b0:447:b4e5:22fb with SMTP id r11-20020aa7cfcb000000b00447b4e522fbmr1296542edy.190.1661413375759;
-        Thu, 25 Aug 2022 00:42:55 -0700 (PDT)
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
-        by smtp.gmail.com with ESMTPSA id bm2-20020a0564020b0200b0044604ad8b41sm4331256edb.23.2022.08.25.00.42.52
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 00:42:54 -0700 (PDT)
-Received: by mail-wm1-f48.google.com with SMTP id h204-20020a1c21d5000000b003a5b467c3abso2180253wmh.5
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:42:52 -0700 (PDT)
-X-Received: by 2002:a7b:c399:0:b0:3a5:f3fb:85e0 with SMTP id
- s25-20020a7bc399000000b003a5f3fb85e0mr1402129wmj.38.1661413369950; Thu, 25
- Aug 2022 00:42:49 -0700 (PDT)
+        Thu, 25 Aug 2022 03:44:34 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFB99D8E4
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:44:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661413472; x=1692949472;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Z81HgPLciv/z8OgJGdvFnLN1o7Tse/Cm47+slFWNvSY=;
+  b=MZdVuUjVGSm0mhJ38rAwi4DQiK+TJ3t38Bl2hosW/+mpFMSdWYT1yl3e
+   I59bK8wLbT8R5h/kERRI53K/FF1atXAn7ucP5qEpx41DqKHNLVPmMkOcZ
+   R0TZo0M2XwgGzq+tv9r4UBg9GY5AN0j7N8DTdKvBEmryRKJn3pMW3rs1V
+   P2CJlntSwJWSmZFk3LSuXbdeNENXz4tzwyltGV/Mu+n0NjYVmq9QOCN0K
+   BZn//ZqMU5ARVFpPUAh+HOEKMuXJuTng2DSsxdBOkeSADbgeUtt3g1DKJ
+   4zUPBE71xvFOmlM4RdNJlTUQA2aO3IzAuf525kYatq4lpAiKAcehppf7f
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="295452246"
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="295452246"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 00:44:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="639480311"
+Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 25 Aug 2022 00:44:31 -0700
+Received: from kbuild by 34e741d32628 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oR7XS-0001t7-1o;
+        Thu, 25 Aug 2022 07:44:30 +0000
+Date:   Thu, 25 Aug 2022 15:43:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hans Verkuil <hverkuil@xs4all.nl>
+Cc:     Paul Gazzillo <paul@pgazz.com>,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [hverkuil-media-tree:deprecate 5/9] kismet: WARNING: unmet direct
+ dependencies detected for MEDIA_TUNER_XC5000 when selected by VIDEO_TM6000
+Message-ID: <202208251518.TurdyyAQ-lkp@intel.com>
 MIME-Version: 1.0
-References: <20210423230609.13519-1-alx.manpages@gmail.com>
- <20220824185505.56382-1-alx.manpages@gmail.com> <CAADnVQKiEVL9zRtN4WY2+cTD2b3b3buV8BQb83yQw13pWq4OGQ@mail.gmail.com>
- <c06008bc-0c13-12f1-df85-3814b74e47f9@gmail.com> <CAHk-=whfft=qpCiQ=mkaCz+X1MEfGK5hpUWYoM5zWK=2EQMwyw@mail.gmail.com>
- <20d93962-538c-d2c9-1696-a1bdbffa87f8@gmail.com>
-In-Reply-To: <20d93962-538c-d2c9-1696-a1bdbffa87f8@gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 25 Aug 2022 00:42:32 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgSx8O0=p18C1aQuH4Gw7xmKujBKMEiSitCA7oG2h6WLg@mail.gmail.com>
-Message-ID: <CAHk-=wgSx8O0=p18C1aQuH4Gw7xmKujBKMEiSitCA7oG2h6WLg@mail.gmail.com>
-Subject: Re: [PATCH v3] Many pages: Document fixed-width types with ISO C naming
-To:     Alejandro Colomar <alx.manpages@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alex Colomar <alx@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        linux-man <linux-man@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Zack Weinberg <zackw@panix.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        glibc <libc-alpha@sourceware.org>, GCC <gcc-patches@gcc.gnu.org>,
-        bpf <bpf@vger.kernel.org>, LTP List <ltp@lists.linux.it>,
-        Linux API <linux-api@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joseph Myers <joseph@codesourcery.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        Cyril Hrubis <chrubis@suse.cz>,
-        David Howells <dhowells@redhat.com>,
-        Arnd Bergmann <arnd@arndb.de>, Rich Felker <dalias@libc.org>,
-        Adhemerval Zanella <adhemerval.zanella@linaro.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 12:20 AM Alejandro Colomar
-<alx.manpages@gmail.com> wrote:
->
-> This patch is not about kernel, but about the section 2 and 3 manual
-> pages, which are directed towards user-space readers most of the time.
+tree:   git://linuxtv.org/hverkuil/media_tree.git deprecate
+head:   31c9d3d20a0e443e6b9b493096b6f06db534fff4
+commit: 3eaffcf890f8c070048019be67c787f91fc54817 [5/9] tm6000: deprecate this driver
+config: x86_64-kismet-CONFIG_MEDIA_TUNER_XC5000-CONFIG_VIDEO_TM6000-0-0 (https://download.01.org/0day-ci/archive/20220825/202208251518.TurdyyAQ-lkp@intel.com/config)
+reproduce:
+        git remote add hverkuil-media-tree git://linuxtv.org/hverkuil/media_tree.git
+        git fetch --no-tags hverkuil-media-tree deprecate
+        git checkout 3eaffcf890f8c070048019be67c787f91fc54817
+        # 1. reproduce by kismet
+           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
+           kismet --linux-ksrc=linux --selectees CONFIG_MEDIA_TUNER_XC5000 --selectors CONFIG_VIDEO_TM6000 -a=x86_64
+        # 2. reproduce by make
+           # save the config file to linux source tree
+           cd linux
+           make ARCH=x86_64 olddefconfig
 
-They are about the types to the kernel interfaces. Those types that
-the kernel defines and exposes.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-And the kernel type in question looks like this:
+kismet warnings: (new ones prefixed by >>)
+>> kismet: WARNING: unmet direct dependencies detected for MEDIA_TUNER_XC5000 when selected by VIDEO_TM6000
+   
+   WARNING: unmet direct dependencies detected for MEDIA_TUNER_XC5000
+     Depends on [n]: (MEDIA_ANALOG_TV_SUPPORT [=n] || MEDIA_DIGITAL_TV_SUPPORT [=n] || MEDIA_RADIO_SUPPORT [=n] || MEDIA_SDR_SUPPORT [=n]) && MEDIA_SUPPORT [=y] && I2C [=y]
+     Selected by [y]:
+     - VIDEO_TM6000 [=y] && STAGING [=y] && STAGING_MEDIA [=y] && MEDIA_SUPPORT [=y] && STAGING_MEDIA_DEPRECATED [=y] && VIDEO_DEV [=y] && I2C [=y] && INPUT [=y] && RC_CORE [=y] && USB [=y]
+   
+   WARNING: unmet direct dependencies detected for MEDIA_TUNER_XC2028
+     Depends on [n]: (MEDIA_ANALOG_TV_SUPPORT [=n] || MEDIA_DIGITAL_TV_SUPPORT [=n] || MEDIA_RADIO_SUPPORT [=n] || MEDIA_SDR_SUPPORT [=n]) && MEDIA_SUPPORT [=y] && I2C [=y]
+     Selected by [y]:
+     - VIDEO_TM6000 [=y] && STAGING [=y] && STAGING_MEDIA [=y] && MEDIA_SUPPORT [=y] && STAGING_MEDIA_DEPRECATED [=y] && VIDEO_DEV [=y] && I2C [=y] && INPUT [=y] && RC_CORE [=y] && USB [=y]
 
-        struct { /* anonymous struct used by BPF_PROG_LOAD command */
-                __u32           prog_type;      /* one of enum bpf_prog_type */
-                __u32           insn_cnt;
-                __aligned_u64   insns;
-                __aligned_u64   license;
-
-because the kernel UAPI header wants to
-
- (a) work whether or not <stdint.h> was included
-
- (b) doesn't want to include <stdint.h> so as to not pollute the namespace
-
- (c) actually wants to use our special types
-
-I quoted a few more fields for that (c) reason: we've had a long
-history of getting the user space API wrong due to strange alignment
-issues, where 32-bit and 64-bit targets had different alignment for
-types. So then we ended up with various compat structures to translate
-from one to the other because they had all the same fields, but
-different padding.
-
-This happened a few times with the DRM people, and they finally got
-tired of it, and started using that "__aligned_u64" type, which is
-just the same old __u64, but explicitly aligned to its natural
-alignment.
-
-So these are the members that the interface actually uses.
-
-If you document those members, wouldn't it be good to have that
-documentation be actually accurate?
-
-Honestly, I don't think it makes a *huge* amount of difference, but
-documentation that doesn't actually match the source of the
-documentation will just confuse somebody in the end. Somebody will go
-"that's not right", and maybe even change the structure definitions to
-match the documentation.
-
-Which would be wrong.
-
-Now, you don't have to take the kernel uapi headers. We *try* to make
-those usable as-is, but hey, there has been problems in the past, and
-it's not necessarily wrong to take the kernel header and then munge it
-to be "appropriate" for user space.
-
-So I guess you can just make your own structures with the names and
-syntax you want, and say "these are *my* header files, and *my*
-documentation for them".
-
-That's fine. But I'm not surprised if the kernel maintainer then goes
-"no, that's not the interface I agreed to" if only because it's a pain
-to verify that you got it all right. Maybe it was all trivial and
-automated and there can be no errors, but it's still a "why is there a
-different copy of this complicated interface".
-
-If you really want to describe things to people, wouldn't it be nicer
-to just say "there's a 32-bit unsigned 'prog_type' member" and leave
-it at that?
-
-Do you really want to enforce your opinion of what is prettier on the
-maintainer that wrote that thing, and then argue with him when he
-doesn't agree?
-
-                  Linus
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
