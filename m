@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7372C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB4B4C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:47:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236175AbiHYBrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54182 "EHLO
+        id S236369AbiHYBr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234758AbiHYBqx (ORCPT
+        with ESMTP id S236367AbiHYBrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:46:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E169F197;
-        Wed, 24 Aug 2022 18:41:23 -0700 (PDT)
+        Wed, 24 Aug 2022 21:47:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B199F750;
+        Wed, 24 Aug 2022 18:41:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE8AEB826E5;
-        Thu, 25 Aug 2022 01:40:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ED52C433D7;
-        Thu, 25 Aug 2022 01:40:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F10BA61B0F;
+        Thu, 25 Aug 2022 01:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93F15C4347C;
+        Thu, 25 Aug 2022 01:40:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391614;
-        bh=eP52GxL+WuF5FHMWo6Bp7xF1FPH0GmrMSCQ79HaGcpc=;
+        s=k20201202; t=1661391641;
+        bh=l6hR7QRGK/NURxCOkPXz1MPbjDQpmrtW2T/j0h3xbEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BFKOM2fN1bZNL5rcfBvmFXg8m43ruI5NvvS9rQypOsQTB7sfk0qSmf/UmmacNo+/R
-         J8oATf1N5Swp89HIqUC1a55E5s1rbdUreO6dGTyc3ZmCtWgeJjKm67wmF4Mlsw9azG
-         yRvZ5MSn6GWb9tnjURjjplLEM+BQwtm8rWI7kHtT5+9us2TIgpzzspiFKmuKdOJFgx
-         R78kFUuvrFygdipwfbqoxsS/R3iQg2bP3wYZ4W26T86PpU2necUi2rTEGaHchgMFnA
-         3LW/0xUA4Mee60A9Ypb6tIvgqoDERreM5wRyJqQ6TkZI0MKz6PB4EvXIiJIIfYaDKn
-         gl040PmVMHXPA==
+        b=laqMmMa8uQLWsz/MyTeP5lhBLsxsgFENcyp/ndAK/LQFO1xMSCHfRJaB8cvPJHLko
+         L7mR0Tp+jm9DccvtL0lWsmt83UrXDIb5htO05+DucNF1SVjSaK6sCw59VsI0jJ20EL
+         kgIr5fVcjQIL6xr9fmHRoGR6yHCvdr2hUF6gtNxGr8oyfE1fuY/D5U2iFd6EbC8aFb
+         w/Kt5PWN6VnVUqS1L9VTp/khuliNtpakyDMbfBashZ7Rs3fzATW2Ja7wqStPnWvykN
+         lj/ta762cMwxGxqyx6WZsczJ/m0kmmjJIc5mXbXq8eq+5DI0rnlVsf9Jg3wVffkm5v
+         gUdXs3enmyl/A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 3/5] s390/hypfs: avoid error message under KVM
-Date:   Wed, 24 Aug 2022 21:39:57 -0400
-Message-Id: <20220825014001.24008-3-sashal@kernel.org>
+Cc:     Yang Jihong <yangjihong1@huawei.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
+Subject: [PATCH AUTOSEL 4.9 3/3] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
+Date:   Wed, 24 Aug 2022 21:40:32 -0400
+Message-Id: <20220825014035.24239-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220825014001.24008-1-sashal@kernel.org>
-References: <20220825014001.24008-1-sashal@kernel.org>
+In-Reply-To: <20220825014035.24239-1-sashal@kernel.org>
+References: <20220825014035.24239-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,58 +51,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Yang Jihong <yangjihong1@huawei.com>
 
-[ Upstream commit 7b6670b03641ac308aaa6fa2e6f964ac993b5ea3 ]
+[ Upstream commit c3b0f72e805f0801f05fa2aa52011c4bfc694c44 ]
 
-When booting under KVM the following error messages are issued:
+ftrace_startup does not remove ops from ftrace_ops_list when
+ftrace_startup_enable fails:
 
-hypfs.7f5705: The hardware system does not support hypfs
-hypfs.7a79f0: Initialization of hypfs failed with rc=-61
+register_ftrace_function
+  ftrace_startup
+    __register_ftrace_function
+      ...
+      add_ftrace_ops(&ftrace_ops_list, ops)
+      ...
+    ...
+    ftrace_startup_enable // if ftrace failed to modify, ftrace_disabled is set to 1
+    ...
+  return 0 // ops is in the ftrace_ops_list.
 
-Demote the severity of first message from "error" to "info" and issue
-the second message only in other error cases.
+When ftrace_disabled = 1, unregister_ftrace_function simply returns without doing anything:
+unregister_ftrace_function
+  ftrace_shutdown
+    if (unlikely(ftrace_disabled))
+            return -ENODEV;  // return here, __unregister_ftrace_function is not executed,
+                             // as a result, ops is still in the ftrace_ops_list
+    __unregister_ftrace_function
+    ...
 
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220620094534.18967-1-jgross@suse.com
-[arch/s390/hypfs/hypfs_diag.c changed description]
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+If ops is dynamically allocated, it will be free later, in this case,
+is_ftrace_trampoline accesses NULL pointer:
+
+is_ftrace_trampoline
+  ftrace_ops_trampoline
+    do_for_each_ftrace_op(op, ftrace_ops_list) // OOPS! op may be NULL!
+
+Syzkaller reports as follows:
+[ 1203.506103] BUG: kernel NULL pointer dereference, address: 000000000000010b
+[ 1203.508039] #PF: supervisor read access in kernel mode
+[ 1203.508798] #PF: error_code(0x0000) - not-present page
+[ 1203.509558] PGD 800000011660b067 P4D 800000011660b067 PUD 130fb8067 PMD 0
+[ 1203.510560] Oops: 0000 [#1] SMP KASAN PTI
+[ 1203.511189] CPU: 6 PID: 29532 Comm: syz-executor.2 Tainted: G    B   W         5.10.0 #8
+[ 1203.512324] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[ 1203.513895] RIP: 0010:is_ftrace_trampoline+0x26/0xb0
+[ 1203.514644] Code: ff eb d3 90 41 55 41 54 49 89 fc 55 53 e8 f2 00 fd ff 48 8b 1d 3b 35 5d 03 e8 e6 00 fd ff 48 8d bb 90 00 00 00 e8 2a 81 26 00 <48> 8b ab 90 00 00 00 48 85 ed 74 1d e8 c9 00 fd ff 48 8d bb 98 00
+[ 1203.518838] RSP: 0018:ffffc900012cf960 EFLAGS: 00010246
+[ 1203.520092] RAX: 0000000000000000 RBX: 000000000000007b RCX: ffffffff8a331866
+[ 1203.521469] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 000000000000010b
+[ 1203.522583] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8df18b07
+[ 1203.523550] R10: fffffbfff1be3160 R11: 0000000000000001 R12: 0000000000478399
+[ 1203.524596] R13: 0000000000000000 R14: ffff888145088000 R15: 0000000000000008
+[ 1203.525634] FS:  00007f429f5f4700(0000) GS:ffff8881daf00000(0000) knlGS:0000000000000000
+[ 1203.526801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1203.527626] CR2: 000000000000010b CR3: 0000000170e1e001 CR4: 00000000003706e0
+[ 1203.528611] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 1203.529605] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+Therefore, when ftrace_startup_enable fails, we need to rollback registration
+process and remove ops from ftrace_ops_list.
+
+Link: https://lkml.kernel.org/r/20220818032659.56209-1-yangjihong1@huawei.com
+
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/hypfs/hypfs_diag.c | 2 +-
- arch/s390/hypfs/inode.c      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ kernel/trace/ftrace.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/s390/hypfs/hypfs_diag.c b/arch/s390/hypfs/hypfs_diag.c
-index 3452e18bb1ca..38105ba35c81 100644
---- a/arch/s390/hypfs/hypfs_diag.c
-+++ b/arch/s390/hypfs/hypfs_diag.c
-@@ -437,7 +437,7 @@ __init int hypfs_diag_init(void)
- 	int rc;
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 06841602025e..7ffb9f122555 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -2737,6 +2737,16 @@ static int ftrace_startup(struct ftrace_ops *ops, int command)
  
- 	if (diag204_probe()) {
--		pr_err("The hardware system does not support hypfs\n");
-+		pr_info("The hardware system does not support hypfs\n");
- 		return -ENODATA;
- 	}
- 	if (diag204_info_type == DIAG204_INFO_EXT) {
-diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
-index e4d17d9ea93d..4af5c0dd9fbe 100644
---- a/arch/s390/hypfs/inode.c
-+++ b/arch/s390/hypfs/inode.c
-@@ -494,9 +494,9 @@ static int __init hypfs_init(void)
- 	hypfs_vm_exit();
- fail_hypfs_diag_exit:
- 	hypfs_diag_exit();
-+	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- fail_dbfs_exit:
- 	hypfs_dbfs_exit();
--	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- 	return rc;
- }
- device_initcall(hypfs_init)
+ 	ftrace_startup_enable(command);
+ 
++	/*
++	 * If ftrace is in an undefined state, we just remove ops from list
++	 * to prevent the NULL pointer, instead of totally rolling it back and
++	 * free trampoline, because those actions could cause further damage.
++	 */
++	if (unlikely(ftrace_disabled)) {
++		__unregister_ftrace_function(ops);
++		return -ENODEV;
++	}
++
+ 	ops->flags &= ~FTRACE_OPS_FL_ADDING;
+ 
+ 	return 0;
 -- 
 2.35.1
 
