@@ -2,128 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 706F1C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CD4DC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239293AbiHYIGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
+        id S239390AbiHYIGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 04:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239213AbiHYIGQ (ORCPT
+        with ESMTP id S239335AbiHYIGo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:06:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CAD44552;
-        Thu, 25 Aug 2022 01:06:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661414771; x=1692950771;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=9uK5TnxQ+lrTrmdrZfvdGZkX8FHoJoY0NQJe55dWt8Y=;
-  b=mImjrDuuKrz0oHRMl/NuksvT5oaNkKNx7Z+Qf1IYTnbuhORvW6phbOFG
-   5mZENUGPoiaIBdhsz4joV9IfBMzR+qcEkAGTgvfT2wuamqf4Qx4rBPxlI
-   6T56G/zmzIfGbmoCk3tpL7OwspMdyuyq3jkRJeY2Is2WDn2LeakIavSCi
-   gqkFcvytk3ZqgEDVD5IGIY3BFC/NetutGa3WKtJ9lBI4INu67C5pICnP5
-   HdngbsLF2fVThLdLdvDQfodeA2w02Q/BTkl5Ah1GBfbBpMeHvhKnFl8aJ
-   8PcRiZE/IwC7Lc3UNVk/U6btYY7HgHls1phpVLGue8oGkKh4lk/SBJoj3
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="174075197"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Aug 2022 01:06:11 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 25 Aug 2022 01:06:11 -0700
-Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 25 Aug 2022 01:06:07 -0700
-From:   Divya Koppera <Divya.Koppera@microchip.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>
-Subject: [PATCH net-next] net: phy: micrel: Adding SQI support for lan8814 phy
-Date:   Thu, 25 Aug 2022 13:35:49 +0530
-Message-ID: <20220825080549.9444-1-Divya.Koppera@microchip.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 25 Aug 2022 04:06:44 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F795D105
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:06:36 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id bh13so17224170pgb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:06:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=eOMnW4XRMv9i7Jz+s+vzPHDgE9J0PdEgB49b5OhgITs=;
+        b=RWng7N5PTYTg8iG2OuCR4VQEdNEj3/8z3epffY25IzHVo9/8oyXM+D6pNM89JJtFCh
+         B1I1KZ+aeQPqg6uQv6koBzL1yrV/fYDw/3CKWsvI4Em4/mX1bMltBPqxsenl68u2jJKG
+         yuHG4BmVX4ds3dsDZhe2kIEymT9YXEeljlMtU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=eOMnW4XRMv9i7Jz+s+vzPHDgE9J0PdEgB49b5OhgITs=;
+        b=lAf3qoJ2PT/hRJ8DauCJh738F2g2kbBIbiOq59Oqug1bvmO5UGfiH8a/pIiFI8Ogpm
+         S8CClrimMKz30Ra6nMpL6afZ7dLBC4GuQWbnygA9BuJBN+9IWjJws/l3ImMKWJnpRTCh
+         355ayY+/i663HhPTF5DYXq2mDBABQB6KNE8jyVdjV1IvBgJDgvufB0Knij4DKJBGcruC
+         tYBAPDGqXweDQw4MekB6W5Ci4cXmKv6PEr9rHDoJpl9WGgzkPkOeyAOCT8pzQCutXu+n
+         HypLM6xJ4/JS1UFltc0sDKPRJldr2msno4yaUjYXB3QVSAdDZiO1QFPgm1ydl65rsgoF
+         lttA==
+X-Gm-Message-State: ACgBeo0zYZsvwYKOYhVR9wwFoSbUcMIiBbrvpWtUT1148WXs8kqVEXkf
+        i0P6+0/Y0/V02naINsBSgJinHg==
+X-Google-Smtp-Source: AA6agR6+mJ1Wc1D3WsfiNeQ/QQf/aq+KsYyd8aXpMNYK85PM6dK+q9VbcqdMfMEdiWPQbCe0Be46uw==
+X-Received: by 2002:a05:6a00:b8a:b0:537:f81:203a with SMTP id g10-20020a056a000b8a00b005370f81203amr2736459pfj.80.1661414795595;
+        Thu, 25 Aug 2022 01:06:35 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:fba3:9861:f694:5325])
+        by smtp.gmail.com with UTF8SMTPSA id h16-20020a170902f55000b00172ad292b6bsm5441073plf.116.2022.08.25.01.06.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 01:06:35 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 01:06:32 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     Krishna chaitanya chundru <quic_krichai@quicinc.com>,
+        helgaas@kernel.org, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_vbadigan@quicinc.com, quic_hemantk@quicinc.com,
+        quic_nitegupt@quicinc.com, quic_skananth@quicinc.com,
+        quic_ramkri@quicinc.com, swboyd@chromium.org,
+        dmitry.baryshkov@linaro.org,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Rajat Jain <rajatja@google.com>
+Subject: Re: [PATCH v6] PCI/ASPM: Update LTR threshold based upon reported
+ max latencies
+Message-ID: <YwctiEJpydiFdIds@google.com>
+References: <1657886421-779-1-git-send-email-quic_krichai@quicinc.com>
+ <20220726074954.GB5522@workstation>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220726074954.GB5522@workstation>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Supports SQI(Signal Quality Index) for lan8814 phy, where
-it has SQI index of 0-7 values and this indicator can be used
-for cable integrity diagnostic and investigating other noise
-sources.
+On Tue, Jul 26, 2022 at 01:19:54PM +0530, Manivannan Sadhasivam wrote:
+> On Fri, Jul 15, 2022 at 05:30:12PM +0530, Krishna chaitanya chundru wrote:
+> > In ASPM driver, LTR threshold scale and value are updated based on
+> > tcommon_mode and t_poweron values. In kioxia NVMe L1.2 is failing due to
+> > LTR threshold scale and value are greater values than max snoop/non-snoop
+> > value.
+> > 
+> > Based on PCIe r4.1, sec 5.5.1, L1.2 substate must be entered when
+> > reported snoop/no-snoop values is greather than or equal to
+> > LTR_L1.2_THRESHOLD value.
+> > 
+> > Signed-off-by: Prasad Malisetty  <quic_pmaliset@quicinc.com>
+> > Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
+> > Acked-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> 
+> Bjorn, any update on this patch?
 
-Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
----
- drivers/net/phy/micrel.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ping: can this be landed or are any further changes needed?
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index e78d0bf69bc3..3775da7afc64 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1975,6 +1975,13 @@ static int ksz886x_cable_test_get_status(struct phy_device *phydev,
- #define LAN8814_CLOCK_MANAGEMENT			0xd
- #define LAN8814_LINK_QUALITY				0x8e
- 
-+#define LAN8814_DCQ_CTRL				0xe6
-+#define LAN8814_DCQ_CTRL_READ_CAPTURE_			BIT(15)
-+#define LAN8814_DCQ_CTRL_CHANNEL_MASK			GENMASK(1, 0)
-+#define LAN8814_DCQ_SQI					0xe4
-+#define LAN8814_DCQ_SQI_MAX				7
-+#define LAN8814_DCQ_SQI_VAL_MASK			GENMASK(3, 1)
-+
- static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
- {
- 	int data;
-@@ -2927,6 +2934,32 @@ static int lan8814_probe(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int lan8814_get_sqi(struct phy_device *phydev)
-+{
-+	int rc, val;
-+
-+	val = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_CTRL);
-+	if (val < 0)
-+		return val;
-+
-+	val &= ~LAN8814_DCQ_CTRL_CHANNEL_MASK;
-+	val |= LAN8814_DCQ_CTRL_READ_CAPTURE_;
-+	rc = lanphy_write_page_reg(phydev, 1, LAN8814_DCQ_CTRL, val);
-+	if (rc < 0)
-+		return rc;
-+
-+	rc = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_SQI);
-+	if (rc < 0)
-+		return rc;
-+
-+	return FIELD_GET(LAN8814_DCQ_SQI_VAL_MASK, rc);
-+}
-+
-+static int lan8814_get_sqi_max(struct phy_device *phydev)
-+{
-+	return LAN8814_DCQ_SQI_MAX;
-+}
-+
- static struct phy_driver ksphy_driver[] = {
- {
- 	.phy_id		= PHY_ID_KS8737,
-@@ -3117,6 +3150,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.resume		= kszphy_resume,
- 	.config_intr	= lan8814_config_intr,
- 	.handle_interrupt = lan8814_handle_interrupt,
-+	.get_sqi	= lan8814_get_sqi,
-+	.get_sqi_max	= lan8814_get_sqi_max,
- }, {
- 	.phy_id		= PHY_ID_LAN8804,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
--- 
-2.17.1
-
+> Thanks,
+> Mani
+> 
+> > ---
+> > 
+> > I am taking this patch forward as prasad is no more working with our org.
+> > changes since v5:
+> > 	- no changes, just reposting as standalone patch instead of reply to
+> > 	  previous patch.
+> > Changes since v4:
+> > 	- Replaced conditional statements with min and max.
+> > changes since v3:
+> > 	- Changed the logic to include this condition "snoop/nosnoop
+> > 	  latencies are not equal to zero and lower than LTR_L1.2_THRESHOLD"
+> > Changes since v2:
+> > 	- Replaced LTRME logic with max snoop/no-snoop latencies check.
+> > Changes since v1:
+> > 	- Added missing variable declaration in v1 patch
+> > ---
+> >  drivers/pci/pcie/aspm.c | 30 ++++++++++++++++++++++++++++++
+> >  1 file changed, 30 insertions(+)
+> > 
+> > diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+> > index a96b742..676c03e 100644
+> > --- a/drivers/pci/pcie/aspm.c
+> > +++ b/drivers/pci/pcie/aspm.c
+> > @@ -461,14 +461,36 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+> >  {
+> >  	struct pci_dev *child = link->downstream, *parent = link->pdev;
+> >  	u32 val1, val2, scale1, scale2;
+> > +	u32 max_val, max_scale, max_snp_scale, max_snp_val, max_nsnp_scale, max_nsnp_val;
+> >  	u32 t_common_mode, t_power_on, l1_2_threshold, scale, value;
+> >  	u32 ctl1 = 0, ctl2 = 0;
+> >  	u32 pctl1, pctl2, cctl1, cctl2;
+> >  	u32 pl1_2_enables, cl1_2_enables;
+> > +	u16 ltr;
+> > +	u16 max_snoop_lat, max_nosnoop_lat;
+> >  
+> >  	if (!(link->aspm_support & ASPM_STATE_L1_2_MASK))
+> >  		return;
+> >  
+> > +	ltr = pci_find_ext_capability(child, PCI_EXT_CAP_ID_LTR);
+> > +	if (!ltr)
+> > +		return;
+> > +
+> > +	pci_read_config_word(child, ltr + PCI_LTR_MAX_SNOOP_LAT, &max_snoop_lat);
+> > +	pci_read_config_word(child, ltr + PCI_LTR_MAX_NOSNOOP_LAT, &max_nosnoop_lat);
+> > +
+> > +	max_snp_scale = (max_snoop_lat & PCI_LTR_SCALE_MASK) >> PCI_LTR_SCALE_SHIFT;
+> > +	max_snp_val = max_snoop_lat & PCI_LTR_VALUE_MASK;
+> > +
+> > +	max_nsnp_scale = (max_nosnoop_lat & PCI_LTR_SCALE_MASK) >> PCI_LTR_SCALE_SHIFT;
+> > +	max_nsnp_val = max_nosnoop_lat & PCI_LTR_VALUE_MASK;
+> > +
+> > +	/* choose the greater max scale value between snoop and no snoop value*/
+> > +	max_scale = max(max_snp_scale, max_nsnp_scale);
+> > +
+> > +	/* choose the greater max value between snoop and no snoop scales */
+> > +	max_val = max(max_snp_val, max_nsnp_val);
+> > +
+> >  	/* Choose the greater of the two Port Common_Mode_Restore_Times */
+> >  	val1 = (parent_l1ss_cap & PCI_L1SS_CAP_CM_RESTORE_TIME) >> 8;
+> >  	val2 = (child_l1ss_cap & PCI_L1SS_CAP_CM_RESTORE_TIME) >> 8;
+> > @@ -501,6 +523,14 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+> >  	 */
+> >  	l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
+> >  	encode_l12_threshold(l1_2_threshold, &scale, &value);
+> > +
+> > +	/*
+> > +	 * Based on PCIe r4.1, sec 5.5.1, L1.2 substate must be entered when reported
+> > +	 * snoop/no-snoop values are greather than or equal to LTR_L1.2_THRESHOLD value.
+> > +	 */
+> > +	scale = min(scale, max_scale);
+> > +	value = min(value, max_val);
+> > +
+> >  	ctl1 |= t_common_mode << 8 | scale << 29 | value << 16;
+> >  
+> >  	/* Some broken devices only support dword access to L1 SS */
+> > -- 
+> > 2.7.4
+> > 
