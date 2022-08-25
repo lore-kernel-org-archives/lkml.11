@@ -2,165 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1E1ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79BD5ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244457AbiHYW2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40092 "EHLO
+        id S244445AbiHYWbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244448AbiHYW2g (ORCPT
+        with ESMTP id S244430AbiHYWb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:28:36 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FF2C650C
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:28:35 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id u5so18475479wrt.11
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:28:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:to:references:cc
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=4fJHGv3iaXn4YrsOEQKhsYHb3/IZjZAWjZREh6NdvLM=;
-        b=AviMwmVyHueb2yt/m7DqKT8DZG4byAQE9sd+7THE7FRIrfFPbf2B1ZByaaUs4NVCIu
-         QHqTxA9jT8/Bdd28oqodpNA7HXzlcxKnKMm/h4JxM+oXQPabAjM0KRHLhENNHO819SjX
-         3u53j83uHtYU9eq0jcLACGXbkvJKswau8hvRK8Ksh2pkkE2cmyeW1HPnPRJeHLFP93S9
-         VTwW82FDyu4WuXZn9jIFpOZSqwJn35IE2FHmixZ2M6G5vAjDqs+V3d7P7H/HlOwYDK9W
-         BfAUKejlYmXSK4IwkG/kYLrBUuvcPhWjmZp05wfNH5PVBEjjd8ZwngGzzpj4/iMk8bJt
-         4BUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:to:references:cc
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=4fJHGv3iaXn4YrsOEQKhsYHb3/IZjZAWjZREh6NdvLM=;
-        b=lCsezyNnyxfRqityVqN+KHHgLStJV6G9H6Jcv34o2TA8u8/+3FSvlpUMmkA3PZHbow
-         oEddoe2cXNy2SMSbxnLVAqatUEyqO4TiQ/xMecwh8QP11qsd1Rsn68w1eZWQnV+LQpoZ
-         6eH+tJwsd68vyyQMXf3Xi2ZYbed/mYhv1VpZQFRf4P3g334uSe+LGNGNdSWFpcwL+Wsk
-         pjdDXpdbB+qcMUSSdhElYDln+dgSA9toGwHXgFeya3UduN4Tzp0l/NTtE8Wn5/XeyEyE
-         DA2UFIyDe4uvhqo4ZefvJpIH+2du18whF/Uiu/AFo4jJf2mGcsK5GFnmA9y4iCIpAc04
-         pgmw==
-X-Gm-Message-State: ACgBeo2kt42vAfc01foNLNpZbVcGIHsTIZjJ+LKcpcNTQB3tL/0FMeux
-        qztG53cXH9k1uV8vcEZPYClnXg==
-X-Google-Smtp-Source: AA6agR7IyaFg8Yjm2moL38WXZFoirIsIlMt7atLbpRul+dRGylh3lOoC/WxECD3W9ZrfaAaN3FNjvQ==
-X-Received: by 2002:a05:6000:1867:b0:21f:f2cf:74a8 with SMTP id d7-20020a056000186700b0021ff2cf74a8mr3424635wri.344.1661466513360;
-        Thu, 25 Aug 2022 15:28:33 -0700 (PDT)
-Received: from [192.168.10.46] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id y15-20020adfdf0f000000b0022589d133f0sm302537wrl.96.2022.08.25.15.28.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 15:28:32 -0700 (PDT)
-Message-ID: <17d09638-01e6-038f-c3db-cbe02ccb9327@linaro.org>
-Date:   Fri, 26 Aug 2022 00:28:31 +0200
+        Thu, 25 Aug 2022 18:31:27 -0400
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78333B99DA
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:31:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1661466686; x=1693002686;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=pXWRUr7yy74YSO6PolHsHDXM3uM60SKPSfU0sqhXVlw=;
+  b=BSoSTgfZOf329hitmHqdKD3BUpMZW59IYJgidmAJCuaLA3NzwScd70fU
+   enEeGHr3gL6cqN+CqnDSaPjtO4Jgl8HG6372L2mTV1gdm+rDhGnl2J2Fr
+   lcmr7l42vNUy2twFLmPWfw8JxozpX+xo+1ToKYgxPexOFZz3Qc/cPZZs8
+   G52uccADazReco+QW4ny1WCnYNbOR2P3bf+zhsQp8NtSECh/UKL6BMABW
+   VX663aLuvgByQ4iSXkWgV1oSSmEwLs/kMz8x8/csBP4+yk1ib2GjgSRPr
+   w7+KBJGIbtyIr9I9PTqCvR2E4K5iZja8nu4OY4r48JDwmGbN27sc2ZtQs
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,264,1654531200"; 
+   d="scan'208";a="208130143"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 26 Aug 2022 06:31:24 +0800
+IronPort-SDR: HxiT7WvWJFeckuDH+L58nVXIuaPKKwQrrNoDoHKxqC1SM7uDTXpGw8KcIzxZpm989LkfUi3wn/
+ I/RhM0faePuKPNltqe9WUbqM35CYlf7lP6hU/CJoMb7+oSnIVlMnEHkwYG0usUxva+QzrGGeIb
+ POGZL47v+ZCaWUte/dpe8Puf+lIEounYt5UbxBKleZ+qkyka7JCS3xAWeUnKzJKl0uiIWKtypg
+ t+22WV3Qv/8tpgTDrrW8pAcZdFcT7y74vb/wvrIKSCvdHLqZRex/GFtIluHgBOMEWSY9ZlevKx
+ 760lykQyEkKxwqdWoipQRMmq
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 Aug 2022 14:52:01 -0700
+IronPort-SDR: 9EJgaiWvLvylYDHosvxAqqavUn/4C4k1iXByhVTcDr8Gz2UbMEJ03JOV+Kuvh87sstd7ebEImi
+ jtILmjx2kr07XTU0gYluDOmbskaayMRx8nmNxei+Iv3ZjXBXd588qkUQzLXb06ttZU6SkcG6f4
+ lIIsUnBxpAanv0Pw0LtHiKgmmRVz9EVSxG3Xd1sdfhzTrgd2ptp7CIo4K/0XD9h6w9/IE2qeep
+ tRvSTYdOe4TaYeWiAg+VNrlEs6B7nVt8nmL3lpVduY1jrp02Gamn0kHIk8FfoD69xEidbNp61o
+ rf4=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 Aug 2022 15:31:24 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4MDHkM4xNkz1Rwnx
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:31:23 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1661466682; x=1664058683; bh=pXWRUr7yy74YSO6PolHsHDXM3uM60SKPSfU
+        0sqhXVlw=; b=DS5CoFc3iYU7cDPy9qH82TgEIsNMbhoT3C6WeVO1k1n8lfF5jOd
+        4QX9dz+jZ2zBT6lYcxg+KWIWNsTkP0T39GuuYt+Fb54L+Ay16HMoRx/umfqkrCTA
+        5g07OD/6ZWQNFpgrYTCY3b5VmwPIe8ZVeKZjxn3TcnZkMTLaDFOZPDoCaKqF7Yu0
+        M57XRvGIQ4ULgKrfH+zmolhYlxi9tLSaf3wHIfcYiq0AucN2J/i/m6EHR3ZASpwa
+        y4jnhHL1vOGRndZWTAVPX6+j9lVqy63Znj9K+/KI1ssi/+aLLozx85ixW9f3Xqhd
+        u67xga7LZad0mOnZ764Wv9X5dqdJcnCFLTw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id SfO31Yfh_Epu for <linux-kernel@vger.kernel.org>;
+        Thu, 25 Aug 2022 15:31:22 -0700 (PDT)
+Received: from [10.225.163.46] (unknown [10.225.163.46])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4MDHk850sGz1RtVk;
+        Thu, 25 Aug 2022 15:31:12 -0700 (PDT)
+Message-ID: <bb0728d1-20fd-8b6d-5d42-a0c76b6d3e4b@opensource.wdc.com>
+Date:   Fri, 26 Aug 2022 07:31:11 +0900
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/2] thermal/drivers/imx_sc: Rely on the platform data
- to get the resource id
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/5] dt-bindings: ata: drop minItems equal to maxItems
 Content-Language: en-US
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220818082316.2717095-1-daniel.lezcano@linaro.org>
-To:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220818082316.2717095-1-daniel.lezcano@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, Inki Dae <inki.dae@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Marek Vasut <marex@denx.de>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-crypto@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, linux-tegra@vger.kernel.org
+References: <20220825113334.196908-1-krzysztof.kozlowski@linaro.org>
+ <20220825113334.196908-2-krzysztof.kozlowski@linaro.org>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220825113334.196908-2-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/08/2022 10:23, Daniel Lezcano wrote:
-> Currently the imx_sc driver is reimplementing part of the thermal zone
-> parsing from the thermal OF tree code to get the sensor id associated
-> with a thermal zone sensor.
+On 8/25/22 20:33, Krzysztof Kozlowski wrote:
+> minItems, if missing, are implicitly equal to maxItems, so drop
+> redundant piece to reduce size of code.
 > 
-> The driver platform specific code should know what sensor is present
-> and not rely on the thermal zone description to do a discovery. Well
-> that is arguable but all the other drivers have a per platform data
-> telling what sensor id to use.
-> 
-> The imx_sc thermal driver is the only one using a different
-> approach. Not invalid but forcing to keep a specific function
-> 'thermal_zone_of_get_sensor_id()' to get the sensor id for a specific
-> thermal zone as the self-explanatory function tells and having device
-> tree code inside the driver.
-> 
-> The thermal OF code had a rework and remains now self-encapsulated
-> with a register/unregister functions and their 'devm' variants, except
-> for the function mentioned above.
-> 
-> After investigating, it appears the imx_sc sensor is defined in
-> arch/arm64/boot/dts/freescale/imx8qxp.dtsi:
-> 
-> which defines the cpu-thermal zone with the id: IMX_SC_R_SYSTEM
-> 
-> This dtsi is included by:
->   - imx8qxp-ai_ml.dts
->   - imx8qxp-colibri.dtsi
->   - imx8qxp-mek.dts
-> 
-> The two first ones do not define more thermal zones
-> The third one adds the pmic-thermal0 zone with id: IMX_SC_R_PMIC_0
-> 
-> The thermal OF code returns -ENODEV if the thermal zone registration
-> with a specific id fails because the description is not available in
-> the DT for such a sensor id. In this case we continue with the other
-> ids without bailing out with an error.
-> 
-> So we can build for the 'fsl,imx-sc-thermal' a compatible data, an
-> array of sensor ids containing IMX_SC_R_SYSTEM and IMX_SC_R_PMIC_0.
-> 
-> The latter won't be found but that will not result in an error but a
-> normal case where we continue the initialization with other ids.
-> 
-> Just to clarify, it is what the thermal framework does and what the
-> other drivers are expecting: when a registration fails with -ENODEV
-> this is not an error but a case where the description is not found in
-> the device tree, that be can the entire thermal zones description or a
-> specific thermal zone with an unknown id.
-> 
-> There is one small functional change but without impact. When there is
-> no 'thermal-zones' description the probe function was returning
-> '-ENODEV', now it returns zero. When a thermal zone fails to register
-> with an error different from '-ENODEV', the error is detected and
-> returned.
-> 
-> Change the code accordingly and remove the OF code from the driver.
-> 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+
 > ---
-> The changes apply on the linux-next branch:
+>  Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml       | 1 -
+>  .../devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml     | 2 --
+>  Documentation/devicetree/bindings/ata/sata_highbank.yaml        | 1 -
+>  3 files changed, 4 deletions(-)
 > 
->   https://git.kernel.org/pub/scm/linux/kernel/git/thermal/linux.git/log/?h=thermal/linux-next
-> 
-> I don't have the platform, so I was not able to test the changes.
-> 
-> Changelog:
->   v2:
->      - Clarified a bit more the changes description
-> 
->      - Fix use-after-free and add a couple of comments to reflect the
->       patch description
-> 
->      - Put back the error message in case there is an error with the
->        registration
-> 
-
-Is there any comment on this change ?
-
+> diff --git a/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml b/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
+> index 235a93ac86b0..3766cc80cb17 100644
+> --- a/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
+> +++ b/Documentation/devicetree/bindings/ata/brcm,sata-brcm.yaml
+> @@ -30,7 +30,6 @@ properties:
+>            - const: brcm,bcm-nsp-ahci
+>  
+>    reg:
+> -    minItems: 2
+>      maxItems: 2
+>  
+>    reg-names:
+> diff --git a/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml b/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml
+> index 21a90975593b..529093666508 100644
+> --- a/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml
+> +++ b/Documentation/devicetree/bindings/ata/cortina,gemini-sata-bridge.yaml
+> @@ -22,7 +22,6 @@ properties:
+>      maxItems: 1
+>  
+>    resets:
+> -    minItems: 2
+>      maxItems: 2
+>      description: phandles to the reset lines for both SATA bridges
+>  
+> @@ -32,7 +31,6 @@ properties:
+>        - const: sata1
+>  
+>    clocks:
+> -    minItems: 2
+>      maxItems: 2
+>      description: phandles to the compulsory peripheral clocks
+>  
+> diff --git a/Documentation/devicetree/bindings/ata/sata_highbank.yaml b/Documentation/devicetree/bindings/ata/sata_highbank.yaml
+> index 49679b58041c..f23f26a8f21c 100644
+> --- a/Documentation/devicetree/bindings/ata/sata_highbank.yaml
+> +++ b/Documentation/devicetree/bindings/ata/sata_highbank.yaml
+> @@ -52,7 +52,6 @@ properties:
+>      minItems: 1
+>      maxItems: 8
+>      items:
+> -      minItems: 2
+>        maxItems: 2
+>  
+>    calxeda,tx-atten:
 
 
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Damien Le Moal
+Western Digital Research
