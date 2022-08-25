@@ -2,92 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C20C65C0D
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5D0CC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:24:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239505AbiHYOY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:24:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38848 "EHLO
+        id S241930AbiHYOYb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241383AbiHYOXc (ORCPT
+        with ESMTP id S241656AbiHYOXd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:23:32 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443D9B69DB;
-        Thu, 25 Aug 2022 07:23:28 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id x19so17151469pfq.1;
-        Thu, 25 Aug 2022 07:23:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc;
-        bh=v+sMBqp6ooJWJMiKxkcuWRrYdEMc2s2mHBQ5ff60zrg=;
-        b=aqONtzq4v8lNkN7/AZtz/OM04ftwYclpxAZFb5bjDTAEHmIW3f10dOkk2Us0+N7dGH
-         LybjuR7q4oPU0n3svdIUtcPwaKSGjbG5jC/WGC9tQkSBjkOxePso7UZpLx1mvp7bIOzr
-         nTR+5BsgFlDqGxacaFV+YuE9E8YBcOUWVvR8VVp7lNX0j9bt0KWVXoPDoALEaXA5GrMk
-         zjpGbEq19POBkk0i7x8MQA4qBjcMmndgsfBLedT+pHPuPii0z21bM+afAfZz8ZYbc4en
-         CxaqWXvIAAuW3c6WrFYSJ+Xz4YdnyT8U0L44ASwBVPomFjxC1TpjLgVYrWn9RiscAxTY
-         tN9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=v+sMBqp6ooJWJMiKxkcuWRrYdEMc2s2mHBQ5ff60zrg=;
-        b=mfHroW1Sy8JMBYxsWm2wBYJz2JYVgYmTSik5GWCeiHimmhgQwTgmET9jlLeAJBB752
-         ySe8so4zo92E3eLnlz3DV9KSe9AOWPasqONhlUDpy9OTy2UbYqkRIvRNxcHQOCwzOdR9
-         /bncKAz0yV6rOPlYTbFHaEjidnxuyQFVkPBIPQfPmsHu/I5CZ1uuEczLqWuUx8L5qUe+
-         nOadxzbISbQXjRdQgEBvgH1EixRCMXqeEASFRVqVRzd4Zk/uVqJzwzIrbHSxNY3kb8AJ
-         zmtkFeDJSG1lLTSH/8tKVjH/2lloK+96KPOD6Wu0p9mCOHixP1gpx2AY9JgNhEPXsYbQ
-         lPwQ==
-X-Gm-Message-State: ACgBeo3Fni8zxhtjD08y+TVRcWQ5ujdVWmUOKrnci7YL2S+VhPDaEqUo
-        cVBYgz50w0gu7CT41lkb4yo=
-X-Google-Smtp-Source: AA6agR7LdCPU1ainH5U6NUSnAfqtl2SiO6dWge3vUf+JEiZAOhGdyvz6CJQducsSjAErbZF1uPeDmw==
-X-Received: by 2002:aa7:9692:0:b0:537:2562:85ff with SMTP id f18-20020aa79692000000b00537256285ffmr4362938pfk.35.1661437407922;
-        Thu, 25 Aug 2022 07:23:27 -0700 (PDT)
-Received: from linux-l9pv.suse (123-194-152-128.dynamic.kbronet.com.tw. [123.194.152.128])
-        by smtp.gmail.com with ESMTPSA id l15-20020a170903120f00b0016bb24f5d19sm14962803plh.209.2022.08.25.07.23.25
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 25 Aug 2022 07:23:27 -0700 (PDT)
-From:   "Lee, Chun-Yi" <joeyli.kernel@gmail.com>
-X-Google-Original-From: "Lee, Chun-Yi" <jlee@suse.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ben Boeckel <me@benboeckel.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Malte Gell <malte.gell@gmx.de>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Lee, Chun-Yi" <jlee@suse.com>
-Subject: [PATCH v9,3/4] modsign: Add codeSigning EKU to the default
-Date:   Thu, 25 Aug 2022 22:23:13 +0800
-Message-Id: <20220825142314.8406-4-jlee@suse.com>
-X-Mailer: git-send-email 2.12.3
-In-Reply-To: <20220825142314.8406-1-jlee@suse.com>
-References: <20220825142314.8406-1-jlee@suse.com>
+        Thu, 25 Aug 2022 10:23:33 -0400
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4347DB6028
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:23:28 -0700 (PDT)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220825142325euoutp026a9946bb02cc605ca10dc4ca3acc1c4c~OnIRomN2g1717017170euoutp02x
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:23:25 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220825142325euoutp026a9946bb02cc605ca10dc4ca3acc1c4c~OnIRomN2g1717017170euoutp02x
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1661437405;
+        bh=Huwdp/Iixibsm1+U+Ec1zSSlNuiVTB4RieBDCeUbh60=;
+        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+        b=aCTPEhxjI4Kn3h+UMdnKxEwTwvAGUhaGwLVFcSc+7NDlSS6++JN3cJTtwlcjf5b4D
+         CYDAwydULWyIA4Sfb8sTwbE7ioVtlS+y5ZDiK936luIjffWj1jRz2X88I0P9LyFjrG
+         hrlQeu2lqKCC2mwvdrzsK5DfZNJN3TvroolSRbuc=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20220825142324eucas1p28b9945a763d61eefa0a1926d478203ec~OnIRVXztV1050010500eucas1p2e;
+        Thu, 25 Aug 2022 14:23:24 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges1new.samsung.com (EUCPMTA) with SMTP id 89.32.29727.CD587036; Thu, 25
+        Aug 2022 15:23:24 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220825142324eucas1p1cd5c4bbba236542b758269a11a2fb9ab~OnIQz1uqE1219512195eucas1p13;
+        Thu, 25 Aug 2022 14:23:24 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220825142324eusmtrp14df396a5be6d1910922e318235988b4d~OnIQy45Ad1357613576eusmtrp1N;
+        Thu, 25 Aug 2022 14:23:24 +0000 (GMT)
+X-AuditID: cbfec7f2-205ff7000001741f-83-630785dc1bdc
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 9F.EB.07473.CD587036; Thu, 25
+        Aug 2022 15:23:24 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220825142323eusmtip2b3f4a238ad06be12ed4d0ea06e8bfa49~OnIQMl41E3051730517eusmtip2b;
+        Thu, 25 Aug 2022 14:23:23 +0000 (GMT)
+Message-ID: <a78822d5-f0a1-6c42-8269-e8168ea5cd5b@samsung.com>
+Date:   Thu, 25 Aug 2022 16:23:23 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
+        Gecko/20100101 Thunderbird/91.12.0
+Subject: Re: [PATCH v4] regulator: core: Resolve supply name earlier to
+ prevent double-init
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>
+Cc:     =?UTF-8?Q?Christian_Kohlschu=cc=88tter?= 
+        <christian@kohlschutter.com>, heiko@sntech.de, lgirdwood@gmail.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        m.reichl@fivetechno.de, robin.murphy@arm.com,
+        vincent.legoll@gmail.com, wens@kernel.org
+From:   Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <YwdpOX0xCzYwhjmx@sirena.org.uk>
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrPKsWRmVeSWpSXmKPExsWy7djP87p3WtmTDf7sU7OY+vAJm8X2Q8/Z
+        LP4/es1q8e1KB5PFpsfXWC0u75rDZnHkfz+jxacH/5ktXh75wWhx8MMTVovja5+xWcyae53N
+        gcdjzbw1jB637tR77Jx1l91j06pONo9Jk3cxeWxeUu+x/do8Zo/Pm+QCOKK4bFJSczLLUov0
+        7RK4MprepBZsFa5o2NfG0sB4nb+LkYNDQsBE4t/S2i5GLg4hgRWMEkcedDNCOF8YJWa9bmDp
+        YuQEcj4zSsyfGQdigzR0XOtggyhazigx79IaJgjnI6NE16EuZpAqXgE7ib0HZ4LZLAKqEqdP
+        9zJBxAUlTs58AjZVVCBZ4tn/xewgtrBArETX9O1gcWYBcYlbT+aD1YsIKEtc/b6XBWQBs8Bl
+        JolXi54xgiTYBAwlut52sYHYnAK6Ev8fLGOGaJaXaN46mxmkQUKgn1PiwM5+Roi7XSSeHT3C
+        AmELS7w6voUdwpaROD25hwUSGPkSf2cYQ4QrJK69XsMMYVtL3Dn3iw2khFlAU2L9Ln2IakeJ
+        nl2sECafxI23ghAH8ElM2jadGSLMK9HRJgQxQ01i1vF1cCsPXrjEPIFRaRZSmMxC8vssJK/M
+        Qli7gJFlFaN4amlxbnpqsWFearlecWJucWleul5yfu4mRmAaO/3v+KcdjHNffdQ7xMjEwXiI
+        UYKDWUmE1+oYS7IQb0piZVVqUX58UWlOavEhRmkOFiVx3uTMDYlCAumJJanZqakFqUUwWSYO
+        TqkGphYNtvhbV/7czFkWmsx5wYBp/ralRwQm2vb9OnT35o/K+EV7spZZfJ9/+7X4rwUH1aUW
+        GHqvcanYU3/p0JKnzgbaKpxik05vOp6VJM0fpfPHt8jjHYeEu+6eq3Pjw/rslq8vFJsrzMnz
+        +WPxWsUTzD6biz5ZdAZkrdxxybu9gu/xlocKz39V+ndV7DL/N1di7v3Lak/t3VWz/33v3sib
+        9CZh+z3pSZteHg8LPCKV8Gue78wyUV+lCcnfufQdvmm6hb8wyfw355w2o2XPjNOqs+bF+Au3
+        TRD7cluvch7X0qlrfd+/8FSPnZzO9yR7XcCKWOHHE/yO7G5dUcr9sME0yF+PUZMx7OTtUPs9
+        J5RqXymxFGckGmoxFxUnAgAFREnM0gMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrGIsWRmVeSWpSXmKPExsVy+t/xe7p3WtmTDXpPs1hMffiEzWL7oeds
+        Fv8fvWa1+Halg8li0+NrrBaXd81hszjyv5/R4tOD/8wWL4/8YLQ4+OEJq8Xxtc/YLGbNvc7m
+        wOOxZt4aRo9bd+o9ds66y+6xaVUnm8ekybuYPDYvqffYfm0es8fnTXIBHFF6NkX5pSWpChn5
+        xSW2StGGFkZ6hpYWekYmlnqGxuaxVkamSvp2NimpOZllqUX6dgl6GU1vUgu2Clc07GtjaWC8
+        zt/FyMkhIWAi0XGtg62LkYtDSGApo8SpVd/ZIRIyEienNbBC2MISf651QRW9Z5TovQPicHLw
+        CthJ7D04kxnEZhFQlTh9upcJIi4ocXLmExYQW1QgWWLBoaVgtrBArETX9O1gNrOAuMStJ/PB
+        6kUElCWuft8LFb/MJHHxigrEsl4miaYVj8CWsQkYSnS9hVjMKaAr8f/BMmaIBjOJrq1djBC2
+        vETz1tnMExiFZiG5YxaSfbOQtMxC0rKAkWUVo0hqaXFuem6xoV5xYm5xaV66XnJ+7iZGYARv
+        O/Zz8w7Gea8+6h1iZOJgPMQowcGsJMJrdYwlWYg3JbGyKrUoP76oNCe1+BCjKTAwJjJLiSbn
+        A1NIXkm8oZmBqaGJmaWBqaWZsZI4r2dBR6KQQHpiSWp2ampBahFMHxMHp1QDk0Pjyx5Oh922
+        rjueWPNdqqm2+2jgF3dd13TP19gvnmVhEsWBnmuN/1RuilOdqpnpMvXlvxUNgs2RB9+4nYh7
+        sqt0bWLNnQieg73zg6Ycs8261f3u/vxvE6aeeSJbVfbb9KrKjN+X187+L9DztznImZ3Z6Y3X
+        5rsvtBsFduiWaP8QODNrydoXGxeU1x/KOGmwd0/+3VST+dEc0nP2PD3rPdtcfMbmUiH2PZEb
+        NkQaWHu7zZj02OtrRpRHpNcvZSmOF2fP3z7c6R9+YjV39MM4902Kt+4GSnSnRriEZi28KsK4
+        Vr9SZIbksXX8mxZbT3v9tyBtrcTFk1+60vceKuN+vObkLed1jGf4b+8QvLZ2R4gSS3FGoqEW
+        c1FxIgDAntcbaQMAAA==
+X-CMS-MailID: 20220825142324eucas1p1cd5c4bbba236542b758269a11a2fb9ab
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20220825113251eucas1p247c3d57de823da148ca4790975a4aba8
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220825113251eucas1p247c3d57de823da148ca4790975a4aba8
+References: <YvorNPDQQr2SH/NF@sirena.org.uk>
+        <20220818124646.6005-1-christian@kohlschutter.com>
+        <CGME20220825113251eucas1p247c3d57de823da148ca4790975a4aba8@eucas1p2.samsung.com>
+        <58b92e75-f373-dae7-7031-8abd465bb874@samsung.com>
+        <YwdpOX0xCzYwhjmx@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add codeSigning EKU to the default X.509 key generation config for the
-build time autogenerated kernel key.
+Hi Mark,
 
-Signed-off-by: "Lee, Chun-Yi" <jlee@suse.com>
----
- certs/default_x509.genkey | 1 +
- 1 file changed, 1 insertion(+)
+On 25.08.2022 14:21, Mark Brown wrote:
+> On Thu, Aug 25, 2022 at 01:32:50PM +0200, Marek Szyprowski wrote:
+>
+>> This patch landed recently in linux next as commit 8a866d527ac0
+>> ("regulator: core: Resolve supply name earlier to prevent double-init").
+>> Unfortunately it breaks booting of Samsung Exynos 5800 based Peach-Pi
+>> (arch/arm/boot/dts/exynos5800-peach-pi.dts) and Peach-Pit
+>> (arch/arm/boot/dts/exynos5420-peach-pit.dts) Chromebooks. The last
+>> message in the kernel log is a message about disabling 'vdd_1v2'
+>> regulator. This regulator is not used directly, however it is a supply
+>> for other critical regulators.
+> This suggests that supplies are ending up not getting bound.  Could you
+> perhaps add logging to check that we're attempting to resolve the supply
+> (in the
+>
+>
+> +       if ((rdev->supply_name && !rdev->supply) &&
+> +                       (rdev->constraints->always_on ||
+> +                        rdev->constraints->boot_on)) {
+>
+> block)?
 
-diff --git a/certs/default_x509.genkey b/certs/default_x509.genkey
-index d4c6628cb8e5..53be501ce57a 100644
---- a/certs/default_x509.genkey
-+++ b/certs/default_x509.genkey
-@@ -15,3 +15,4 @@ basicConstraints=critical,CA:FALSE
- keyUsage=digitalSignature
- subjectKeyIdentifier=hash
- authorityKeyIdentifier=keyid
-+extendedKeyUsage=codeSigning
+
+I've spent a little time debugging this issue and here are my findings. 
+The problem is during the 'vdd_mif' regulator registration. It has one 
+supply called 'inb1' and provided by 'vdd_1v2' regulator. Both 'vdd_mif' 
+and 'vdd_1v2' regulators are provided by the same PMIC.
+
+The problem is that 'inb1' supply is being routed to dummy regulator 
+after this change. The regulator_resolve_supply(), which is just after 
+the above mentioned check, returns 0 and bounds 'vdd_mif' supply to 
+dummy-regulator. This happens because regulator_dev_lookup() called in 
+regulator_resolve_supply() returns -19, what in turn lets the code to 
+use dummy-regulator. I didn't check why it doesn't return -EPROBE_DEFER 
+in that case yet.
+
+> I'd also note that it's useful to paste the actual error
+> messages you're seeing rather than just a description of them.
+
+There is really nothing more that I can paste here:
+
+[   32.306264] systemd-logind[1375]: New seat seat0.
+[   32.331790] systemd-logind[1375]: Watching system buttons on 
+/dev/input/event1 (gpio-keys)
+[   32.550686] systemd-logind[1375]: Watching system buttons on 
+/dev/input/event0 (cros_ec)
+[   32.570493] systemd-logind[1375]: Failed to start user service, 
+ignoring: Unknown unit: user@0.service
+[   32.750913] systemd-logind[1375]: New session c1 of user root.
+[   35.070357] vdd_1v2:
+
+--- EOF ---
+
+
+Best regards
 -- 
-2.26.2
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
