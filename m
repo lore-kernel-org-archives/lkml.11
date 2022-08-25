@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D31ABC28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC21C32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:30:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242133AbiHYPaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:30:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36856 "EHLO
+        id S242736AbiHYPaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242143AbiHYP3f (ORCPT
+        with ESMTP id S242147AbiHYP3j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:29:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D47BA9F6;
-        Thu, 25 Aug 2022 08:28:24 -0700 (PDT)
+        Thu, 25 Aug 2022 11:29:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4432F29C8C;
+        Thu, 25 Aug 2022 08:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70EEFB82A20;
-        Thu, 25 Aug 2022 15:28:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1217C43470;
-        Thu, 25 Aug 2022 15:28:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D537A61A9D;
+        Thu, 25 Aug 2022 15:28:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71700C433C1;
+        Thu, 25 Aug 2022 15:28:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661441302;
-        bh=yKyrbvscUxBwrXmqG5oLczuAvPaScnAReCHkvRnGolI=;
+        s=k20201202; t=1661441313;
+        bh=yCSWcIUCKCOA6MMpiNJwvLfN/Tz2iXUZrtxQZzARvVM=;
         h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Cd1w5Anzs8A92wu9QLzQRLi2mmaTdtLxtA0SiMVUgcDjfqgy/OW1BTq629FuYNPWB
-         AHwLSRCL3JIsaqE1USVAwSlQVho6W1tvURq098/xRi0XRLtc5/JKmsBRsh5tU1yuwj
-         WoKDmxwOf3zes0JL14l1SVdA7XzM81jc2su/zEwzH3Nk1Iq+dYBiaRvNiLml0xM0+S
-         DtwvO1ags0IrXU4vyfQBUsWpqn+NhiExewo62RLqXCSgj3s5YZyEaoEC9Y4Jo4CB+T
-         +1U9VabK9CaRmOmZahgTfdBTv3GuDLehcLiv32HGP+QkWWPPX3tyjFsCszcv7gPYMB
-         qLhvsO63w40Hw==
+        b=OB8M8VdqBA5/gL3RkdgXULgOTU5OvOINujqH1KsNmJ1Pl/JCrJMFqQRNCrMlJ2aqG
+         VwQHlGB1iuApC00fo0LeKUS5/F+416tXtJhXqQyY6MG+tLLktsv7Exme2KFYyvDkMk
+         hEVVWWnbPq8uRoAVVN9gkL9rLC6JxLkDRKQGsNt53/27kUVCdqqzJ1ybqS/lGPNcUV
+         T5CQJGdpZ68DuxXCSuxrJvM7dp18/iRs3v+H6IbrCbyatTSAPnhH3CLDe6w8cIcWez
+         TttFxW35ay1HXVU4V3xTCojfh1WfffXQTynlhvRd+HetkKbah33m7mZQWBtSOP+YP1
+         uiCsCuGzFyooQ==
 From:   Mark Brown <broonie@kernel.org>
-To:     chunxu.li@mediatek.com, nfraprado@collabora.com,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        project_global_chrome_upstream_group@mediatek.com,
-        matthias.bgg@gmail.com, alsa-devel@alsa-project.org,
-        lgirdwood@gmail.com, jiaxin.yu@mediatek.com,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220824122319.23918-1-chunxu.li@mediatek.com>
-References: <20220824122319.23918-1-chunxu.li@mediatek.com>
-Subject: Re: [PATCH v2 0/2] ASoC: mediatek: dt-bindings: modify machine
-Message-Id: <166144129763.526663.3235477335040031977.b4-ty@kernel.org>
-Date:   Thu, 25 Aug 2022 16:28:17 +0100
+To:     cgel.zte@gmail.com
+Cc:     linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        haojian.zhuang@gmail.com, robert.jarzmik@free.fr,
+        daniel@zonque.org, zealci@zte.com.cn,
+        linux-arm-kernel@lists.infradead.org, ye.xingchen@zte.com.cn
+In-Reply-To: <20220825072828.229294-1-ye.xingchen@zte.com.cn>
+References: <20220825072828.229294-1-ye.xingchen@zte.com.cn>
+Subject: Re: [PATCH linux-next] spi: pxa2xx: Remove the unneeded result variable
+Message-Id: <166144131010.526920.17919210573110791735.b4-ty@kernel.org>
+Date:   Thu, 25 Aug 2022 16:28:30 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -52,30 +50,22 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 24 Aug 2022 20:23:17 +0800, Chunxu Li wrote:
-> From: "chunxu.li" <chunxu.li@mediatek.com>
+On Thu, 25 Aug 2022 07:28:28 +0000, cgel.zte@gmail.com wrote:
+> From: ye xingchen <ye.xingchen@zte.com.cn>
 > 
-> Changes since V1:
->   - remove unnecessary quotes
+> Return the value clk_prepare_enable() directly instead of storing it in
+> another redundant variable.
 > 
-> Add SOF related field.
-> 1. Add a property "mediatek,adsp", Only when adsp phandle could be retrieved,
->  from DTS, the SOF related part of machine driver is executed.
-> 2. Add a property "mediatek,dai-link" to support dai-links could be specified
->  from DTS
 > 
-> [...]
 
 Applied to
 
-   broonie/sound.git for-next
+   broonie/spi.git for-next
 
 Thanks!
 
-[1/2] ASoC: mediatek: dt-bindings: modify machine bindings for SOF
-      commit: 1173107d7c129ff87224814fd38fce5db023aaa0
-[2/2] ASoC: mediatek: dt-bindings: modify machine bindings for SOF
-      commit: 1173107d7c129ff87224814fd38fce5db023aaa0
+[1/1] spi: pxa2xx: Remove the unneeded result variable
+      commit: d294e99cdc823f368530b8169e33a599fa2a1afe
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
