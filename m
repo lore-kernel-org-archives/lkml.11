@@ -2,79 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F14DC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05446C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:57:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236107AbiHYB5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:57:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48142 "EHLO
+        id S234816AbiHYB5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235390AbiHYB5I (ORCPT
+        with ESMTP id S234419AbiHYB5W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:57:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672599DF8D;
-        Wed, 24 Aug 2022 18:51:12 -0700 (PDT)
+        Wed, 24 Aug 2022 21:57:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42E8A2232;
+        Wed, 24 Aug 2022 18:51:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C20EB826EB;
-        Thu, 25 Aug 2022 01:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id F35F4C433D6;
-        Thu, 25 Aug 2022 01:50:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDED3B826E9;
+        Thu, 25 Aug 2022 01:51:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1469C433D7;
+        Thu, 25 Aug 2022 01:50:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661392214;
-        bh=2OGaEduFCiPineSOVVLO6Gwm/s1lSRzTZxkHiQJryrE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Vwa2lyC7ArxTleJP30aahH6kOA9Yh7G7SIGYcY3YypAZBtVSjzJ7ZbYDEt4B2CWuK
-         z+pG2boqvVKUTVgJHSjIAIvZNJB1Q97Iw8+GVetLA+8OZT/F0JzIR3HSwQCIRjMWQZ
-         S47OIEqK0NUyxplRffs0R/ZooSVOLcn7WY5fv9DAbWT1KBEGgRctoACY8dmqYZH6zC
-         TAEzqVmy015vOvEepMFRKazv7WQ8cne46u4sUgMTAD0voshK0u/R+pI+BUM6rPh0Se
-         P0ykq1ZakPRf5CYiXTUw8qnK+sB3h2SsteJXZQc/lTpUkRDUuITwWuQA2htt9+FxpQ
-         huJmk5L6XXJ6w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D1685C0C3EC;
-        Thu, 25 Aug 2022 01:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1661392259;
+        bh=51wbqEOiFut6C1SPsrby7OvcY9fMy3mhVfaseztY30E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Uk3uZDzXxL8MYYs9m6YWUu6NLaQzbx22xiqJNhpxc/wtPt2cTKyKXzuA482tN1s5h
+         xUSdj7g92LccFu9wFH0Sz/Kne4BZ9o/nugcR/Cwa0DaMvhzIvwX1utUd1CWBf5dSIR
+         dEDyWwnIcaKv1FDx1s+ihDMoUpqXS4lF07Q75TaYTUer+zg+/yakaPoDGGXK8I6h6c
+         trwHxpKLqY1M8sSgZ+yXeBE6EmljhB3naQSjUjBRaFpIy8knoR/n9Ra3TMYyxFs8Td
+         2evY2V+5WB3ps6R97tBFuf+446sTduvu8DzB/cVLMAaabGezPyrEN83Y3kCTOprKUZ
+         PbKnuybL5v7pw==
+Date:   Wed, 24 Aug 2022 18:50:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: Add missing
+ (unevaluated|additional)Properties on child nodes
+Message-ID: <20220824185058.554b6d37@kernel.org>
+In-Reply-To: <20220823145649.3118479-5-robh@kernel.org>
+References: <20220823145649.3118479-5-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] MAINTAINERS: rectify file entry in BONDING DRIVER
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166139221385.11258.9501149170982049306.git-patchwork-notify@kernel.org>
-Date:   Thu, 25 Aug 2022 01:50:13 +0000
-References: <20220824072945.28606-1-lukas.bulwahn@gmail.com>
-In-Reply-To: <20220824072945.28606-1-lukas.bulwahn@gmail.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     jtoppins@redhat.com, jay.vosburgh@canonical.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org, kuba@kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Tue, 23 Aug 2022 09:56:36 -0500 Rob Herring wrote:
+> In order to ensure only documented properties are present, node schemas
+> must have unevaluatedProperties or additionalProperties set to false
+> (typically).
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 24 Aug 2022 09:29:45 +0200 you wrote:
-> Commit c078290a2b76 ("selftests: include bonding tests into the kselftest
-> infra") adds the bonding tests in the directory:
-> 
->   tools/testing/selftests/drivers/net/bonding/
-> 
-> The file entry in MAINTAINERS for the BONDING DRIVER however refers to:
-> 
-> [...]
-
-Here is the summary with links:
-  - MAINTAINERS: rectify file entry in BONDING DRIVER
-    https://git.kernel.org/netdev/net/c/b09da0126ce0
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Would you like this in 6.0 or 6.1? Applies to both, it seems.
