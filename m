@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A423C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:37:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0D8EC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbiHYBhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
+        id S232881AbiHYBhk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:37:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233004AbiHYBgB (ORCPT
+        with ESMTP id S232191AbiHYBhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:36:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC89097EDB;
-        Wed, 24 Aug 2022 18:35:52 -0700 (PDT)
+        Wed, 24 Aug 2022 21:37:17 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F4969A97A;
+        Wed, 24 Aug 2022 18:36:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F30261AD5;
-        Thu, 25 Aug 2022 01:35:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0B3DC433D7;
-        Thu, 25 Aug 2022 01:35:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 322A6CE1927;
+        Thu, 25 Aug 2022 01:36:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A256C43150;
+        Thu, 25 Aug 2022 01:36:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391351;
-        bh=XC0NY0L9hKEaSRA9m9ucx64KeCvrmjDC6f1GpPfHChc=;
+        s=k20201202; t=1661391370;
+        bh=RByfm/GMgOtnq7bK11xgHjpmVsDWy7v99buNjhiYVIU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CXPkDdX/kTa0qh1kKaRAB6Vp0JYjp9b2RRJ6Ej+7DTnWHB+J5++mOmk0ykHtyOskk
-         uxvsyLgpDBfCFa0dltheri1qW+gIrpaBjDI9px1yPF7ICNzea11keusvQ/X7MtGxwr
-         MECfZeVdDPINVCZSzqdhRbwpuopPwBn6pFx4MCDpZ2r88cqBghDzbpL/jjOKMVd3Yj
-         8fTZqZ3eFX67pJ4R5maowOhH3+og0pt8XisgG4pYlc+v/Y8BVYeN8ZseVEg2EbAn3m
-         ntpqxleuCOqrnbfsY4slmsX+lwIlNXBMkRMgUiYcOLwUXQaDXrJa4mEqjhL1xPPYIB
-         gUKTZNucFpH7A==
+        b=SRO5elntl/ZcRCH9abaHcYG2dB+KIRYzdJ7EVU9SNlT3mUUHUF6K9ySkiyScDe/Fx
+         sD4jAJUU9/N+zeTf+mMEnc/Xpqx/Fh5ClNJXbrAk3e4Qx9cgJpR5NCgTu1FXKcDVRt
+         qjtFTWFL/F8oKsH8N7G3+H0I6XpG32Q8heUTV+9dZnbvfkhdms+SWmge0JwtPiVGAn
+         5u3YZSO2KuQBN1HuoE0uW8uUsf4jyRHwFdmKqauu5aWgqzZWG/R2ZmQau3z8p6ESos
+         dtShWRpDiFCwJPl9qT5i8VAda+70zg6/pFrMzn4hP/e37ufOFI8DK3Y52If184FLPX
+         5dGU6yJRk3joA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Evan Quan <evan.quan@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
         Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Hawking.Zhang@amd.com, James.Zhu@amd.com, sonny.jiang@amd.com,
-        tim.huang@amd.com, Likun.Gao@amd.com, kenneth.feng@amd.com,
-        Stanley.Yang@amd.com, leo.liu@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 21/38] drm/amdgpu: disable 3DCGCG/CGLS temporarily due to stability issue
-Date:   Wed, 24 Aug 2022 21:33:44 -0400
-Message-Id: <20220825013401.22096-21-sashal@kernel.org>
+        Hawking.Zhang@amd.com, Likun.Gao@amd.com, lijo.lazar@amd.com,
+        KevinYang.Wang@amd.com, YiPeng.Chai@amd.com, kenneth.feng@amd.com,
+        Jack.Gui@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.19 23/38] drm/amd/pm: add missing ->fini_xxxx interfaces for some SMU13 asics
+Date:   Wed, 24 Aug 2022 21:33:46 -0400
+Message-Id: <20220825013401.22096-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220825013401.22096-1-sashal@kernel.org>
 References: <20220825013401.22096-1-sashal@kernel.org>
@@ -58,33 +58,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit 1b586595df6d04c27088ef348b8202204ce26d45 ]
+[ Upstream commit 4bac1c846eff8042dd59ddecd0a43f3b9de5fd23 ]
 
-Some stability issues were reported with these features.
+Without these, potential memory leak may be induced.
 
 Signed-off-by: Evan Quan <evan.quan@amd.com>
 Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/soc21.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c | 2 ++
+ drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c | 2 ++
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/soc21.c b/drivers/gpu/drm/amd/amdgpu/soc21.c
-index 9e18a2b22607..8d5c452a9100 100644
---- a/drivers/gpu/drm/amd/amdgpu/soc21.c
-+++ b/drivers/gpu/drm/amd/amdgpu/soc21.c
-@@ -530,8 +530,10 @@ static int soc21_common_early_init(void *handle)
- 	case IP_VERSION(11, 0, 0):
- 		adev->cg_flags = AMD_CG_SUPPORT_GFX_CGCG |
- 			AMD_CG_SUPPORT_GFX_CGLS |
-+#if 0
- 			AMD_CG_SUPPORT_GFX_3D_CGCG |
- 			AMD_CG_SUPPORT_GFX_3D_CGLS |
-+#endif
- 			AMD_CG_SUPPORT_GFX_MGCG |
- 			AMD_CG_SUPPORT_REPEATER_FGCG |
- 			AMD_CG_SUPPORT_GFX_FGCG |
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
+index 7432b3e76d3d..201546c36994 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
+@@ -1583,7 +1583,9 @@ static const struct pptable_funcs smu_v13_0_0_ppt_funcs = {
+ 	.dump_pptable = smu_v13_0_0_dump_pptable,
+ 	.init_microcode = smu_v13_0_init_microcode,
+ 	.load_microcode = smu_v13_0_load_microcode,
++	.fini_microcode = smu_v13_0_fini_microcode,
+ 	.init_smc_tables = smu_v13_0_0_init_smc_tables,
++	.fini_smc_tables = smu_v13_0_fini_smc_tables,
+ 	.init_power = smu_v13_0_init_power,
+ 	.fini_power = smu_v13_0_fini_power,
+ 	.check_fw_status = smu_v13_0_check_fw_status,
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
+index 4e1861fb2c6a..9cde13b07dd2 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_7_ppt.c
+@@ -1539,7 +1539,9 @@ static const struct pptable_funcs smu_v13_0_7_ppt_funcs = {
+ 	.dump_pptable = smu_v13_0_7_dump_pptable,
+ 	.init_microcode = smu_v13_0_init_microcode,
+ 	.load_microcode = smu_v13_0_load_microcode,
++	.fini_microcode = smu_v13_0_fini_microcode,
+ 	.init_smc_tables = smu_v13_0_7_init_smc_tables,
++	.fini_smc_tables = smu_v13_0_fini_smc_tables,
+ 	.init_power = smu_v13_0_init_power,
+ 	.check_fw_status = smu_v13_0_7_check_fw_status,
+ 	.setup_pptable = smu_v13_0_7_setup_pptable,
 -- 
 2.35.1
 
