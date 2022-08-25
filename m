@@ -2,84 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDF95C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A65D2C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242383AbiHYNM5 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55940 "EHLO
+        id S242344AbiHYNNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242343AbiHYNMx (ORCPT
+        with ESMTP id S242393AbiHYNNo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:12:53 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A63FAF4A2
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:12:47 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-55-HXv8MwvfNtijA9b15ilGWA-1; Thu, 25 Aug 2022 14:12:44 +0100
-X-MC-Unique: HXv8MwvfNtijA9b15ilGWA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.38; Thu, 25 Aug 2022 14:12:42 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.040; Thu, 25 Aug 2022 14:12:42 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Peter Zijlstra' <peterz@infradead.org>,
-        Segher Boessenkool <segher@kernel.crashing.org>
-CC:     Borislav Petkov <bp@alien8.de>, X86 ML <x86@kernel.org>,
-        Michael Matz <matz@suse.de>,
-        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Josh Poimboeuf" <jpoimboe@redhat.com>
-Subject: RE: [PATCH] x86/sev: Mark snp_abort() noreturn
-Thread-Topic: [PATCH] x86/sev: Mark snp_abort() noreturn
-Thread-Index: AQHYuE2/3wA7Q5vXrk6DdQVA60XyvK2/lqOw
-Date:   Thu, 25 Aug 2022 13:12:42 +0000
-Message-ID: <ce56926842dc49ecb08ddb9d828590af@AcuMS.aculab.com>
-References: <20220824152420.20547-1-bp@alien8.de>
- <20220824172929.GA25951@gate.crashing.org>
- <YwaN2HtMyM0YEdSB@worktop.programming.kicks-ass.net>
- <20220824224144.GC25951@gate.crashing.org>
- <YwcZjxVkO/lspvmv@worktop.programming.kicks-ass.net>
-In-Reply-To: <YwcZjxVkO/lspvmv@worktop.programming.kicks-ass.net>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Thu, 25 Aug 2022 09:13:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDC1B24B2;
+        Thu, 25 Aug 2022 06:13:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A141A61B0B;
+        Thu, 25 Aug 2022 13:13:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12B2BC433C1;
+        Thu, 25 Aug 2022 13:13:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661433217;
+        bh=IZW5T8bTR6zlpO6HLb6mRol+oyWLXS34Ih/Xhypaguk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kMCucpv40+yoTKei7Vb+5ENQbEIz+hcPGK5+mqkpGqnhBHKfMa3V8YY2uFQPHbuWA
+         UYm5vFaTmXEg5r2azsBJFoS2ZAo6UMzg2NLcwUQdDa2jxw092nxypn31yMlnfCNP3Q
+         Pw1nYRsAV8WsH8sKUMYu5zTf3EoenvbsAMcawH6vRF2RV+7XQaZnDr/PAj1uYvX/ZD
+         uFRxcL5YalTayWJpmSZGhfFBmwSgZEjhVLT+tTIGbXFmU4yA6r1yQqPtRQBrIa7vKb
+         RDl3I2thfA3TQSNF+TGkEMf6dEvtIU37m3GXu+YeCid5kTybU1/Tr8a3CAjdBb4/QR
+         cYj9FpbGADa1Q==
+Received: by mail-vs1-f41.google.com with SMTP id m66so20787188vsm.12;
+        Thu, 25 Aug 2022 06:13:37 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2KUZUkTIvJjxXw2ILZ6V1eeJPQdMdsi+89HwYsYjq48cpwpgOl
+        vfW9fM+lrzBIdaO6KiwTv1k2Ymu0vdQtAI36sw==
+X-Google-Smtp-Source: AA6agR5HHV9M9yXhQz5Wv4Fn3tOpZtPr51oSEmjee6h8mCyA1xklEwT58PruXe9mpGP3Rkw2EvGjEX5bSYAZLj5ddgM=
+X-Received: by 2002:a67:c09c:0:b0:390:9073:1122 with SMTP id
+ x28-20020a67c09c000000b0039090731122mr1350519vsi.85.1661433216073; Thu, 25
+ Aug 2022 06:13:36 -0700 (PDT)
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+References: <20220823145649.3118479-10-robh@kernel.org> <1491c83f-cd75-4de3-ec26-86db4adb2ade@linaro.org>
+In-Reply-To: <1491c83f-cd75-4de3-ec26-86db4adb2ade@linaro.org>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 25 Aug 2022 08:13:24 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqJx1s5ez-ojP8ZK_MPBWuuLRyekjK1qhHd6Ezaimna8JQ@mail.gmail.com>
+Message-ID: <CAL_JsqJx1s5ez-ojP8ZK_MPBWuuLRyekjK1qhHd6Ezaimna8JQ@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: remoteproc: Add missing (unevaluated|additional)Properties
+ on child nodes
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        "open list:REMOTE PROCESSOR (REMOTEPROC) SUBSYSTEM" 
+        <linux-remoteproc@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-...
-> Objtool follows control flow. As you said above, noreturn functions
-> behave differently and code-gen after a call to a noreturn function
-> stops.
+On Thu, Aug 25, 2022 at 3:23 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 23/08/2022 17:56, Rob Herring wrote:
+> > In order to ensure only documented properties are present, node schemas
+> > must have unevaluatedProperties or additionalProperties set to false
+> > (typically).
+> >
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  .../devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml      | 1 +
+> >  .../devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml      | 1 +
+> >  .../devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml     | 1 +
+> >  3 files changed, 3 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
+> > index e76c861165dd..e4a7da8020f4 100644
+> > --- a/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
+> > +++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
+> > @@ -140,6 +140,7 @@ properties:
+> >
+> >    glink-edge:
+> >      $ref: qcom,glink-edge.yaml#
+> > +    unevaluatedProperties: false
+>
+> Is it actually needed? The qcom,glink-edge.yaml has
+> additionalProperties:false, so I expect it to complain if anything
+> appears here.
 
-Thinks....
+Perhaps not, but I'm trying to come up with a meta-schema to check
+these though I'm not sure I can get to no warnings which is how I
+found all these cases. The main remaining warnings are bus child node
+pattern schemas which can perhaps be handled with
+'additionalProperties: true'. The rule I have says if properties or
+patternProperties is present then unevaluatedProperties or
+additionalProperties must be. To handle this case, I think we'd have
+to walk the $ref and check it.
 
-How near is objtool to outputting a list of functions and the
-stack offset at which they call something else?
+Anyways, we can hold off on this one until when and if there's a
+meta-schema in place.
 
-With the 'magic numbers' to track indirect jumps that is very
-nearly enough information to do full static stack depth checking.
-
-Recursive calls are a problem - but they ought to be banned
-in kernel anyway.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Rob
