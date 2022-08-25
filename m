@@ -2,241 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD94C6498F
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:16:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83996C32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbiHYPP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:15:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48236 "EHLO
+        id S241736AbiHYPQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:16:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241797AbiHYPPz (ORCPT
+        with ESMTP id S242758AbiHYPQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:15:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E5E6564F;
-        Thu, 25 Aug 2022 08:15:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60360B82A18;
-        Thu, 25 Aug 2022 15:15:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1078C433D7;
-        Thu, 25 Aug 2022 15:15:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661440544;
-        bh=UngkZdFzUgm4+n+1n85c2FXf5joe08toOBXh1ldxmWI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=u8N2eMGdOhh7ENZv9DdL7qFZogCam9mxgAxif9+llXeD5WORcI6rUXbNw7ikE8Ybh
-         0udwwNJI6tiILpSpzffzzPIdCMsGOsshCf9E4EfKiZXDG4abPHvZ/uEQmhG2vVKoUT
-         DHZxOKiT7lwb/xp8u7Pl41E34NhUixMtLr3wTht/kGf2k3pnNd7zKDDAbCXJCqJpUc
-         Ffg6kmuApdhFCvTZzOUqlr4ac4Hqb8bSaucX5XxO+MXzOXiKt03QlNxlOTvdSy/g8e
-         kVy4vVdBgz8I4yXAOjvicHBmGIGJ4wbkaX6D8M8aMTbveWP8SyatF6CAJD8OfzmlEw
-         Mtu6e+1qY/IBg==
-Date:   Thu, 25 Aug 2022 17:15:36 +0200
-From:   Lorenzo Pieralisi <lpieralisi@kernel.org>
-To:     Mauri Sandberg <maukka@ext.kapsi.fi>
-Cc:     linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        bhelgaas@google.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
-        sebastian.hesselbarth@gmail.com, gregory.clement@bootlin.com,
-        linux@armlinux.org.uk, kw@linux.com, thomas.petazzoni@bootlin.com,
-        pali@kernel.org
-Subject: Re: [PATCH v2 2/2] PCI: mvebu: add support for orion5x
-Message-ID: <YweSGDN7rei2Ugwp@lpieralisi>
-References: <20220718202843.6766-1-maukka@ext.kapsi.fi>
- <20220802173423.47230-1-maukka@ext.kapsi.fi>
- <20220802173423.47230-3-maukka@ext.kapsi.fi>
+        Thu, 25 Aug 2022 11:16:37 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DF97171F
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:16:34 -0700 (PDT)
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="291838140"
+X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
+   d="scan'208";a="291838140"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 08:11:35 -0700
+X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
+   d="scan'208";a="561058390"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 08:11:30 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1oRETs-003RWR-1p;
+        Thu, 25 Aug 2022 18:09:16 +0300
+Date:   Thu, 25 Aug 2022 18:09:16 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Cezary Rojewski <cezary.rojewski@intel.com>
+Cc:     =?iso-8859-1?Q?P=E9ter?= Ujfalusi 
+        <peter.ujfalusi@linux.intel.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        amadeuszx.slawinski@linux.intel.com,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>
+Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
+Message-ID: <YweQnDv6h1jlSW4I@smile.fi.intel.com>
+References: <CAHp75Vd4D0KF7ik+aMOwv-+bofWja_tDe4YUmihQBF+RiHZTmA@mail.gmail.com>
+ <e2fe6351-f9ee-48eb-ad7f-280249f7f3f7@intel.com>
+ <CAHp75VfvN-iJTpgg6JeKhOqJLhtYSieo7d7SOCBoUu-81FtSqg@mail.gmail.com>
+ <c19ed4a6-6a96-b4a4-0f5a-7ca1dba925d1@intel.com>
+ <YsnoH64cKCT7gndw@smile.fi.intel.com>
+ <2c6a4a61-e6c8-0487-8d29-dc3fbb90bbe2@intel.com>
+ <Ys2EFtNVL8ZALQ5Q@smile.fi.intel.com>
+ <acbaf339-2fd9-5b19-06e8-62e66c324dc6@intel.com>
+ <CAHp75VcVEEUYf2YZLVMby_v4fNpA0upAB+YkWwrPxqV9R+-YZQ@mail.gmail.com>
+ <3f9402d1-6dc8-5f64-dfce-3fb895b80bc1@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220802173423.47230-3-maukka@ext.kapsi.fi>
+In-Reply-To: <3f9402d1-6dc8-5f64-dfce-3fb895b80bc1@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 02, 2022 at 08:34:23PM +0300, Mauri Sandberg wrote:
-> Add support for orion5x PCIe controller.
-> 
-> There is Orion-specific errata that config space via CF8/CFC registers
-> is broken. Workaround documented in errata documented (linked from above
-> documentation) does not work when DMA is used and instead other
+On Tue, Aug 16, 2022 at 11:28:46AM +0200, Cezary Rojewski wrote:
+> On 2022-08-09 5:23 PM, Andy Shevchenko wrote:
 
-Linked to which documentation ?
+...
 
-> undocumented workaround is needed which maps config space to memory
-> (and therefore avoids usage of broken CF8/CFC memory mapped registers).
-> 
-> Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
-> Cc: Pali Rohár <pali@kernel.org>
-> ---
-> v1 -> v2:
->  - do pcie related mvebu windows and remaps in pcie_setup()
-> ---
->  arch/arm/mach-orion5x/common.c     | 13 -------
->  arch/arm/mach-orion5x/pci.c        | 14 +++++++
->  drivers/pci/controller/Kconfig     |  2 +-
->  drivers/pci/controller/pci-mvebu.c | 59 ++++++++++++++++++++++++++++++
->  4 files changed, 74 insertions(+), 14 deletions(-)
-> 
-> diff --git a/arch/arm/mach-orion5x/common.c b/arch/arm/mach-orion5x/common.c
-> index 7bcb41137bbf..9d8be5ce1266 100644
-> --- a/arch/arm/mach-orion5x/common.c
-> +++ b/arch/arm/mach-orion5x/common.c
-> @@ -231,19 +231,6 @@ void __init orion5x_init_early(void)
->  
->  void orion5x_setup_wins(void)
->  {
-> -	/*
-> -	 * The PCIe windows will no longer be statically allocated
-> -	 * here once Orion5x is migrated to the pci-mvebu driver.
-> -	 */
-> -	mvebu_mbus_add_window_remap_by_id(ORION_MBUS_PCIE_IO_TARGET,
-> -					  ORION_MBUS_PCIE_IO_ATTR,
-> -					  ORION5X_PCIE_IO_PHYS_BASE,
-> -					  ORION5X_PCIE_IO_SIZE,
-> -					  ORION5X_PCIE_IO_BUS_BASE);
-> -	mvebu_mbus_add_window_by_id(ORION_MBUS_PCIE_MEM_TARGET,
-> -				    ORION_MBUS_PCIE_MEM_ATTR,
-> -				    ORION5X_PCIE_MEM_PHYS_BASE,
-> -				    ORION5X_PCIE_MEM_SIZE);
->  	mvebu_mbus_add_window_remap_by_id(ORION_MBUS_PCI_IO_TARGET,
->  					  ORION_MBUS_PCI_IO_ATTR,
->  					  ORION5X_PCI_IO_PHYS_BASE,
-> diff --git a/arch/arm/mach-orion5x/pci.c b/arch/arm/mach-orion5x/pci.c
-> index 9574c73f3c03..7c4e2f355cc7 100644
-> --- a/arch/arm/mach-orion5x/pci.c
-> +++ b/arch/arm/mach-orion5x/pci.c
-> @@ -150,6 +150,20 @@ static int __init pcie_setup(struct pci_sys_data *sys)
->  	 */
->  	orion_pcie_setup(PCIE_BASE);
->  
-> +	/*
-> +	 * The PCIe windows will no longer be statically allocated
-> +	 * here once Orion5x is migrated to the pci-mvebu driver.
-> +	 */
+> Given the two major suggestions (memdup_user() and re-using get_options())
+> that had a major impact on the patch are both provided by you, would you
+> like me to add any tags to the commit message? I'm speaking of Suggested-by
+> or Co-developed-by and such. In you choose 'yes', please specify tags to be
+> added.
 
-Is this comment still relevant ? And more importantly, may I ask
-you why this code move in this hunk ? I think, whatever the reason
-is, that deserves a comment.
+Suggested-by would be enough.
 
-> +	mvebu_mbus_add_window_remap_by_id(ORION_MBUS_PCIE_IO_TARGET,
-> +					  ORION_MBUS_PCIE_IO_ATTR,
-> +					  ORION5X_PCIE_IO_PHYS_BASE,
-> +					  ORION5X_PCIE_IO_SIZE,
-> +					  ORION5X_PCIE_IO_BUS_BASE);
-> +	mvebu_mbus_add_window_by_id(ORION_MBUS_PCIE_MEM_TARGET,
-> +				    ORION_MBUS_PCIE_MEM_ATTR,
-> +				    ORION5X_PCIE_MEM_PHYS_BASE,
-> +				    ORION5X_PCIE_MEM_SIZE);
-> +
->  	/*
->  	 * Check whether to apply Orion-1/Orion-NAS PCIe config
->  	 * read transaction workaround.
-> diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
-> index b8d96d38064d..a249375837f0 100644
-> --- a/drivers/pci/controller/Kconfig
-> +++ b/drivers/pci/controller/Kconfig
-> @@ -5,7 +5,7 @@ menu "PCI controller drivers"
->  
->  config PCI_MVEBU
->  	tristate "Marvell EBU PCIe controller"
-> -	depends on ARCH_MVEBU || ARCH_DOVE || COMPILE_TEST
-> +	depends on ARCH_MVEBU || ARCH_DOVE || ARCH_ORION5X || COMPILE_TEST
->  	depends on MVEBU_MBUS
->  	depends on ARM
->  	depends on OF
-> diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-> index c1ffdb06c971..1d3052aa7e49 100644
-> --- a/drivers/pci/controller/pci-mvebu.c
-> +++ b/drivers/pci/controller/pci-mvebu.c
-> @@ -1487,6 +1487,54 @@ static int mvebu_pcie_parse_request_resources(struct mvebu_pcie *pcie)
->  	return 0;
->  }
->  
-> +static int orion_pcie_rd_conf_wa(void __iomem *wa_base, struct pci_bus *bus,
-> +			  u32 devfn, int where, int size, u32 *val)
-> +{
-> +	*val = readl(wa_base + (PCIE_CONF_BUS(bus->number) |
-> +				PCIE_CONF_DEV(PCI_SLOT(devfn)) |
-> +				PCIE_CONF_FUNC(PCI_FUNC(devfn)) |
-> +				PCIE_CONF_REG(where)));
-> +
-> +	if (size == 1)
-> +		*val = (*val >> (8 * (where & 3))) & 0xff;
-> +	else if (size == 2)
-> +		*val = (*val >> (8 * (where & 3))) & 0xffff;
-> +
-> +	return PCIBIOS_SUCCESSFUL;
-> +}
-> +
-> +/* Relevant only for Orion-1/Orion-NAS */
-> +#define ORION5X_PCIE_WA_PHYS_BASE	0xf0000000
-> +#define ORION5X_PCIE_WA_VIRT_BASE	IOMEM(0xfd000000)
-> +#define ORION5X_PCIE_WA_SIZE		SZ_16M
-> +#define ORION_MBUS_PCIE_WA_TARGET	0x04
-> +#define ORION_MBUS_PCIE_WA_ATTR		0x79
-> +
-> +static int mvebu_pcie_child_rd_conf_wa(struct pci_bus *bus, u32 devfn, int where, int size, u32 *val)
-> +{
-> +	struct mvebu_pcie *pcie = bus->sysdata;
-> +	struct mvebu_pcie_port *port;
-> +
-> +	port = mvebu_pcie_find_port(pcie, bus, devfn);
-> +	if (!port)
-> +		return PCIBIOS_DEVICE_NOT_FOUND;
-> +
-> +	if (!mvebu_pcie_link_up(port))
-> +		return PCIBIOS_DEVICE_NOT_FOUND;
-> +
-> +	/*
-> +	 * We only support access to the non-extended configuration
-> +	 * space when using the WA access method (or we would have to
-> +	 * sacrifice 256M of CPU virtual address space.)
+> By the way, I've provided 'the final form' on thesofproject/linux as PR [1]
+> to see if no regression is caused in basic scenarios.
 
-Please expand the comment - future reviewers and developers may need
-this information to understand this choice, me included.
+When you will be ready, send it for upstream review. It would be easier for
+the kernel community to look at and comment on.
 
-Lorenzo
+> [1]: https://github.com/thesofproject/linux/pull/3812
 
-> +	 */
-> +	if (where >= 0x100) {
-> +		*val = 0xffffffff;
-> +		return PCIBIOS_DEVICE_NOT_FOUND;
-> +	}
-> +
-> +	return orion_pcie_rd_conf_wa(ORION5X_PCIE_WA_VIRT_BASE, bus, devfn, where, size, val);
-> +}
-> +
->  static int mvebu_pcie_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
-> @@ -1663,6 +1711,16 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
->  	bridge->align_resource = mvebu_pcie_align_resource;
->  	bridge->map_irq = mvebu_pcie_map_irq;
->  
-> +	if (of_machine_is_compatible("marvell,orion5x-88f5181")) {
-> +		dev_info(dev, "Applying Orion-1/Orion-NAS PCIe config read transaction workaround\n");
-> +
-> +		mvebu_pcie_child_ops.read = mvebu_pcie_child_rd_conf_wa;
-> +		mvebu_mbus_add_window_by_id(ORION_MBUS_PCIE_WA_TARGET,
-> +					    ORION_MBUS_PCIE_WA_ATTR,
-> +					    ORION5X_PCIE_WA_PHYS_BASE,
-> +					    ORION5X_PCIE_WA_SIZE);
-> +	}
-> +
->  	return pci_host_probe(bridge);
->  }
->  
-> @@ -1733,6 +1791,7 @@ static const struct of_device_id mvebu_pcie_of_match_table[] = {
->  	{ .compatible = "marvell,armada-370-pcie", },
->  	{ .compatible = "marvell,dove-pcie", },
->  	{ .compatible = "marvell,kirkwood-pcie", },
-> +	{ .compatible = "marvell,orion5x-pcie", },
->  	{},
->  };
->  
-> -- 
-> 2.25.1
-> 
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
