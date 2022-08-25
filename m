@@ -2,161 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C9B8ECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1024FECAA24
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:53:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243534AbiHYSxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57046 "EHLO
+        id S243569AbiHYSxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243107AbiHYSw6 (ORCPT
+        with ESMTP id S243544AbiHYSxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:52:58 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC0D94D263
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:52:56 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id a4so15957473qto.10
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:52:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=iYkms9FOcVHRMQ8nnVym8avn1yHBqqPQKbrXBh8EpAg=;
-        b=ernArX/gsESCKDxGzFCn7QheTg6rO6ShblTP5Cc3wCPphLkfsifDo5R5ObXE3j6jZ4
-         ln6V0hLEnJTZPc8ImbAZswhYMmwAVOPk1VhxrwPwrpjsRZUzBoWEqKYiJmRDUONRvHv1
-         oUhM0dBrpZu53zByZiZy5ELiA4VPJiOaTveVlbCC2A4RzTkzwtZ6QiBQ0gmNlo/X+7Vr
-         M8Qk2OVc/daWcWg20LJQhUUV92x9lbQ7Qvm+sLlvEEnsl0LasLz+/E1lU7Fk6DhGIstt
-         9+n4V18u6y6H2Nu8/zRffL51gE2h6C5P6ukRD5JKMtmD4Ui1R3bfBRxoF/l821Pu46oc
-         7I3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=iYkms9FOcVHRMQ8nnVym8avn1yHBqqPQKbrXBh8EpAg=;
-        b=PEWKJd0qQAKQf8vEcS9lQ9gF/sIPd0BMZSLR3iaP3xoEvb/bTywidVfWmiEfN+/1Lm
-         IQmoqFiegJTk/K8H6G3QF6dwgMmPgb7JRgFXZrksqVq0o6WhTJ3bM9/Q7f644Ny1sskx
-         OuJmdNu2YuTGXXjymsEb2BNwGxxsMuqHKudUTL3/qyHO6pFh98aovuDKKwoTPVIiR+mY
-         VcTF885EKWGM/YrUl1PkiKOdiMuuN8nRmuG+yTzLugmpw8OJKwXfAjZlXAQg3xwTNm2c
-         dkzxuHp4F7oN8yznxu3SzC9U80zEkhnGmerkojQxloJHVPmwAbQrKsSpP08ynCt/YpkX
-         fH1A==
-X-Gm-Message-State: ACgBeo1DEBBAJKogYoJQXDjAiffhtZ+0jlp9SXSpK8nD2UMhQLD2Awtm
-        APAQc0OXnb39uPH7PM8f6ae4UGB94IGa7WM56jjKJQ==
-X-Google-Smtp-Source: AA6agR48ZvB5ActsSVjSq3vRtM4RfekkHdDEj6wknDLegitpHkTI1l0gJHvzsL78KJ1H+7AyvyZOIhoCN3zEWskpNYY=
-X-Received: by 2002:a05:622a:552:b0:342:f8c2:442 with SMTP id
- m18-20020a05622a055200b00342f8c20442mr4912166qtx.478.1661453575766; Thu, 25
- Aug 2022 11:52:55 -0700 (PDT)
+        Thu, 25 Aug 2022 14:53:16 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8D83B516C;
+        Thu, 25 Aug 2022 11:53:15 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dmitry.osipenko)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 21A4B6601EAE;
+        Thu, 25 Aug 2022 19:53:14 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661453594;
+        bh=35eR4SmNOnxsneefZSjC8myV+5WcAzcuLRSjIAQ0igs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=PmVU/LPHdSBzeOb0JFlglye4sv4VgCDZPPwdyiSWOXfs3Ty+Uh2TIoPGFO3ehQRYR
+         exiL8ZpCMigtP0M2HpdH60t5c+o2s0BqmaXjTZbtI07EoYDHgUmn8VnQ7IgS9ls50B
+         cYU7wrBCQ5bGh/yD6HFaVRo7Z2kcl7l4KJkMG6G3CI/s+1qMPa9+P1ilnQadS4Ck0N
+         kvvKjzVBahduvk+xlkXv3hlXmb+9O2fW/vAs85ejGufbruMaB0Od5ngpWegXmqh8s7
+         XoOCOIyVMqmpO30lTYNdspi48ssncO8pNfnPpFyCI/75rI6IbvgHaAhmBS8zgSzf63
+         R4etMaDIM9Muw==
+Message-ID: <793d9ca8-47af-2f3d-6079-e0bbb8e7d898@collabora.com>
+Date:   Thu, 25 Aug 2022 21:53:09 +0300
 MIME-Version: 1.0
-References: <20220824233117.1312810-1-haoluo@google.com> <20220824233117.1312810-6-haoluo@google.com>
- <CAADnVQKC_USyXe1RyWL+EY0q=x=c88opvPW-rWZ5znGJOq63CQ@mail.gmail.com>
- <CAJD7tkZGxkV8_3qNy_Q=k-DT2=aGknzT08WiVtESpzur1JxCwA@mail.gmail.com> <CAADnVQLD+PcyO1qmxaBxdK1_tLRfBEqth8kzxts_8f+nSqu+hA@mail.gmail.com>
-In-Reply-To: <CAADnVQLD+PcyO1qmxaBxdK1_tLRfBEqth8kzxts_8f+nSqu+hA@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Thu, 25 Aug 2022 11:52:45 -0700
-Message-ID: <CA+khW7hKRk-=s=eOJAGqJ9bap17kZu8p+YU+Bx-BUg+WaU2q_A@mail.gmail.com>
-Subject: Re: [RESEND PATCH bpf-next v9 5/5] selftests/bpf: add a selftest for
- cgroup hierarchical stats collection
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>, Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] iio: light: tsl2583: Fix module unloading
+Content-Language: en-US
+To:     Shreeya Patel <shreeya.patel@collabora.com>, jic23@kernel.org,
+        lars@metafoo.de
+Cc:     krisman@collabora.com, kernel@collabora.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220825092048.136973-1-shreeya.patel@collabora.com>
+From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
+In-Reply-To: <20220825092048.136973-1-shreeya.patel@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:43 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Aug 24, 2022 at 7:41 PM Yosry Ahmed <yosryahmed@google.com> wrote:
-> >
-> > On Wed, Aug 24, 2022 at 7:09 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Wed, Aug 24, 2022 at 4:31 PM Hao Luo <haoluo@google.com> wrote:
-> > > > +
-> > > > +       for (i = 0; i < N_CGROUPS; i++) {
-> > > > +               fd = create_and_get_cgroup(cgroups[i].path);
-> > > > +               if (!ASSERT_GE(fd, 0, "create_and_get_cgroup"))
-> > > > +                       return fd;
-> > > > +
-> > > > +               cgroups[i].fd = fd;
-> > > > +               cgroups[i].id = get_cgroup_id(cgroups[i].path);
-> > > > +
-> > > > +               /*
-> > > > +                * Enable memcg controller for the entire hierarchy.
-> > > > +                * Note that stats are collected for all cgroups in a hierarchy
-> > > > +                * with memcg enabled anyway, but are only exposed for cgroups
-> > > > +                * that have memcg enabled.
-> > > > +                */
-> > > > +               if (i < N_NON_LEAF_CGROUPS) {
-> > > > +                       err = enable_controllers(cgroups[i].path, "memory");
-> > > > +                       if (!ASSERT_OK(err, "enable_controllers"))
-> > > > +                               return err;
-> > > > +               }
-> > > > +       }
-> > >
-> > > It passes BPF CI, but fails in my setup with:
-> > >
-> > > # ./test_progs -t cgroup_hier -vv
-> > > bpf_testmod.ko is already unloaded.
-> > > Loading bpf_testmod.ko...
-> > > Successfully loaded bpf_testmod.ko.
-> > > setup_bpffs:PASS:mount 0 nsec
-> > > setup_cgroups:PASS:setup_cgroup_environment 0 nsec
-> > > setup_cgroups:PASS:get_root_cgroup 0 nsec
-> > > setup_cgroups:PASS:create_and_get_cgroup 0 nsec
-> > > (cgroup_helpers.c:92: errno: No such file or directory) Enabling
-> > > controller memory:
-> > > /mnt/cgroup-test-work-dir6526//test/cgroup.subtree_control
-> > > setup_cgroups:FAIL:enable_controllers unexpected error: 1 (errno 2)
-> > > cleanup_bpffs:FAIL:rmdir /sys/fs/bpf/vmscan/ unexpected error: -1 (errno 2)
-> > > #36      cgroup_hierarchical_stats:FAIL
-> > > Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
-> > >
-> > > How do I debug it?
-> >
-> > The failure with ENOENT happens when we try to write "+memory" to
-> > /mnt/cgroup-test-work-dir6526//test/cgroup.subtree_control, not when
-> > we try to open it. So the file is there. AFAICT, ENOENT can be
-> > returned from this write if the memory controller is not enabled on
-> > this cgroup.
-> >
-> > In setup_cgroup_environment(), we should be enabling all available
-> > controllers on /mnt and /mnt/cgroup-test-work-dir6526 by this line:
-> >
-> >         if (__enable_controllers(CGROUP_MOUNT_PATH, NULL) ||
-> >               __enable_controllers(cgroup_workdir, NULL))
-> >                   return 1;
-> >
-> > The first thing that comes to mind is that maybe the memory controller
-> > is not enabled on your setup at all? Can you check
-> > /sys/fs/cgroup/cgroup.controllers (or wherever your global cgroup
-> > mount is)?
->
-> Indeed. I didn't have a memory controller in cgroup2.
-> My system booted with cgroup v1 and it had cgroup1 memory
-> controller enabled which prevented cgroup2 to enable it.
-> Without Tejun's help I would have been able to figure this out.
->
-> Anyway, pushed the set to bpf-next. Thanks everyone.
+Hi,
 
-Really awesome! Thanks everyone for the code review and the helpful
-comments! Yosry and I can now start playing this new tool in our
-production kernel. We will monitor for bugs and continue making
-further improvements.
+On 8/25/22 12:20, Shreeya Patel wrote:
+> tsl2583 uses devm_iio_device_register() function and
+> calling iio_device_unregister() in remove breaks the
+> module unloading.
+> Fix this by removing call to iio_device_unregister()
+> from tsl2583_remove().
+> 
+> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+
+Stable and fixes tags are missing
+
+> ---
+>  drivers/iio/light/tsl2583.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
+> index 82662dab87c0..36c25f79e6a6 100644
+> --- a/drivers/iio/light/tsl2583.c
+> +++ b/drivers/iio/light/tsl2583.c
+> @@ -878,8 +878,6 @@ static int tsl2583_remove(struct i2c_client *client)
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>  	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>  
+> -	iio_device_unregister(indio_dev);
+> -
+>  	pm_runtime_disable(&client->dev);
+>  	pm_runtime_set_suspended(&client->dev);
+>  
+
+Driver removal sequence should be opposite to the registration order.
+Could be better not to use the devm in this case.
+
+-- 
+Best regards,
+Dmitry
