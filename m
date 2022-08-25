@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE70C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D898C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:41:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233271AbiHYBlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:41:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53552 "EHLO
+        id S233393AbiHYBlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231924AbiHYBjx (ORCPT
+        with ESMTP id S233811AbiHYBkX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:39:53 -0400
+        Wed, 24 Aug 2022 21:40:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899529D10D;
-        Wed, 24 Aug 2022 18:37:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77B09D129;
+        Wed, 24 Aug 2022 18:38:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5160D61AE1;
-        Thu, 25 Aug 2022 01:37:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E322C43140;
-        Thu, 25 Aug 2022 01:37:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7DC161A28;
+        Thu, 25 Aug 2022 01:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C990C433D6;
+        Thu, 25 Aug 2022 01:37:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391421;
-        bh=1OtqaYVasTiwWw9mOq4oZfsGyEleDKXh8pU2AKtIetw=;
+        s=k20201202; t=1661391432;
+        bh=bKh5KR2W0oz7ntxU1iHFuyHloCmf+nfwwAF8F2agcNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sZqQvIxqIk/UhjGzKK4eF58J6NG/8KaxA4rnxIo9fdFoeixOVJ0r4PMccFHi0qwi+
-         Elxc/fmlwIIAD2zEffKA1urcufjyJXpJxAA2x42RCth7/UFlqGd6j2LBMvIN9Wcs42
-         0P09IEfu69OPvFDjTyNFtnWn1PvqQ+mIq247kMs8GVfISEkOsuZ/bab3WYvs8VYWeX
-         gPqYLFxXAq7dOyj81fSUP5IICtDxnqBZkuJflfUVFLaUJOfNS+RXlKtu7jyf21l6Ch
-         674AyCccWlqWhYrN7NAVOn932aqLiRHapXTsKN39eqHroxkoUZfoxnAwdnWF1Mb2KI
-         bOf/mUB/pzLmQ==
+        b=PSvnDY/gB7om1myFfBeFmaMGBcCGjUFL1rRld9h/jctKqJfkaT5GAMPMXwgjEP8zA
+         f+iN/45PHjC5cVuN/L39/XDFbvyVS5zp0/8LjW/QiznK8cHIF/Wr+zeVfQwTpGQSkj
+         gYBTz9yg3q1NTo+nNSuy0fjTgO3JRf0qH+5LBiTybNPq4KJxVwOCaiFwPZLCiujHgk
+         YKa6VUGmtDLkA0Fd0cUdIo2WevM2Lysgqv3eNbZig2VFIk1YjvD1xbsNIit+eOBMEC
+         HxQ6/zF8/9C8ctvAtKqaE9V5afA1dI1qD65UeeGFrf3zRquACZI1SeHBXIiJyRMkY4
+         DR4yvG5IawA/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, Sasha Levin <sashal@kernel.org>,
-        shuah@kernel.org, pablo@netfilter.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 32/38] testing: selftests: nft_flowtable.sh: use random netns names
-Date:   Wed, 24 Aug 2022 21:33:55 -0400
-Message-Id: <20220825013401.22096-32-sashal@kernel.org>
+Cc:     Yang Jihong <yangjihong1@huawei.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
+Subject: [PATCH AUTOSEL 5.19 38/38] ftrace: Fix NULL pointer dereference in is_ftrace_trampoline when ftrace is dead
+Date:   Wed, 24 Aug 2022 21:34:01 -0400
+Message-Id: <20220825013401.22096-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220825013401.22096-1-sashal@kernel.org>
 References: <20220825013401.22096-1-sashal@kernel.org>
@@ -51,427 +51,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Yang Jihong <yangjihong1@huawei.com>
 
-[ Upstream commit b71b7bfeac38c7a21c423ddafb29aa6258949df8 ]
+[ Upstream commit c3b0f72e805f0801f05fa2aa52011c4bfc694c44 ]
 
-"ns1" is a too generic name, use a random suffix to avoid
-errors when such a netns exists.  Also allows to run multiple
-instances of the script in parallel.
+ftrace_startup does not remove ops from ftrace_ops_list when
+ftrace_startup_enable fails:
 
-Signed-off-by: Florian Westphal <fw@strlen.de>
+register_ftrace_function
+  ftrace_startup
+    __register_ftrace_function
+      ...
+      add_ftrace_ops(&ftrace_ops_list, ops)
+      ...
+    ...
+    ftrace_startup_enable // if ftrace failed to modify, ftrace_disabled is set to 1
+    ...
+  return 0 // ops is in the ftrace_ops_list.
+
+When ftrace_disabled = 1, unregister_ftrace_function simply returns without doing anything:
+unregister_ftrace_function
+  ftrace_shutdown
+    if (unlikely(ftrace_disabled))
+            return -ENODEV;  // return here, __unregister_ftrace_function is not executed,
+                             // as a result, ops is still in the ftrace_ops_list
+    __unregister_ftrace_function
+    ...
+
+If ops is dynamically allocated, it will be free later, in this case,
+is_ftrace_trampoline accesses NULL pointer:
+
+is_ftrace_trampoline
+  ftrace_ops_trampoline
+    do_for_each_ftrace_op(op, ftrace_ops_list) // OOPS! op may be NULL!
+
+Syzkaller reports as follows:
+[ 1203.506103] BUG: kernel NULL pointer dereference, address: 000000000000010b
+[ 1203.508039] #PF: supervisor read access in kernel mode
+[ 1203.508798] #PF: error_code(0x0000) - not-present page
+[ 1203.509558] PGD 800000011660b067 P4D 800000011660b067 PUD 130fb8067 PMD 0
+[ 1203.510560] Oops: 0000 [#1] SMP KASAN PTI
+[ 1203.511189] CPU: 6 PID: 29532 Comm: syz-executor.2 Tainted: G    B   W         5.10.0 #8
+[ 1203.512324] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
+[ 1203.513895] RIP: 0010:is_ftrace_trampoline+0x26/0xb0
+[ 1203.514644] Code: ff eb d3 90 41 55 41 54 49 89 fc 55 53 e8 f2 00 fd ff 48 8b 1d 3b 35 5d 03 e8 e6 00 fd ff 48 8d bb 90 00 00 00 e8 2a 81 26 00 <48> 8b ab 90 00 00 00 48 85 ed 74 1d e8 c9 00 fd ff 48 8d bb 98 00
+[ 1203.518838] RSP: 0018:ffffc900012cf960 EFLAGS: 00010246
+[ 1203.520092] RAX: 0000000000000000 RBX: 000000000000007b RCX: ffffffff8a331866
+[ 1203.521469] RDX: 0000000000000000 RSI: 0000000000000008 RDI: 000000000000010b
+[ 1203.522583] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffffff8df18b07
+[ 1203.523550] R10: fffffbfff1be3160 R11: 0000000000000001 R12: 0000000000478399
+[ 1203.524596] R13: 0000000000000000 R14: ffff888145088000 R15: 0000000000000008
+[ 1203.525634] FS:  00007f429f5f4700(0000) GS:ffff8881daf00000(0000) knlGS:0000000000000000
+[ 1203.526801] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1203.527626] CR2: 000000000000010b CR3: 0000000170e1e001 CR4: 00000000003706e0
+[ 1203.528611] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 1203.529605] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+Therefore, when ftrace_startup_enable fails, we need to rollback registration
+process and remove ops from ftrace_ops_list.
+
+Link: https://lkml.kernel.org/r/20220818032659.56209-1-yangjihong1@huawei.com
+
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/netfilter/nft_flowtable.sh      | 246 +++++++++---------
- 1 file changed, 128 insertions(+), 118 deletions(-)
+ kernel/trace/ftrace.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/tools/testing/selftests/netfilter/nft_flowtable.sh b/tools/testing/selftests/netfilter/nft_flowtable.sh
-index d4ffebb989f8..c336e6c148d1 100755
---- a/tools/testing/selftests/netfilter/nft_flowtable.sh
-+++ b/tools/testing/selftests/netfilter/nft_flowtable.sh
-@@ -14,6 +14,11 @@
- # nft_flowtable.sh -o8000 -l1500 -r2000
- #
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 601ccf1b2f09..4baa99363b16 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -2937,6 +2937,16 @@ int ftrace_startup(struct ftrace_ops *ops, int command)
  
-+sfx=$(mktemp -u "XXXXXXXX")
-+ns1="ns1-$sfx"
-+ns2="ns2-$sfx"
-+nsr1="nsr1-$sfx"
-+nsr2="nsr2-$sfx"
+ 	ftrace_startup_enable(command);
  
- # Kselftest framework requirement - SKIP code is 4.
- ksft_skip=4
-@@ -36,18 +41,17 @@ checktool (){
- checktool "nft --version" "run test without nft tool"
- checktool "ip -Version" "run test without ip tool"
- checktool "which nc" "run test without nc (netcat)"
--checktool "ip netns add nsr1" "create net namespace"
-+checktool "ip netns add $nsr1" "create net namespace $nsr1"
- 
--ip netns add ns1
--ip netns add ns2
--
--ip netns add nsr2
-+ip netns add $ns1
-+ip netns add $ns2
-+ip netns add $nsr2
- 
- cleanup() {
--	for i in 1 2; do
--		ip netns del ns$i
--		ip netns del nsr$i
--	done
-+	ip netns del $ns1
-+	ip netns del $ns2
-+	ip netns del $nsr1
-+	ip netns del $nsr2
- 
- 	rm -f "$ns1in" "$ns1out"
- 	rm -f "$ns2in" "$ns2out"
-@@ -59,22 +63,21 @@ trap cleanup EXIT
- 
- sysctl -q net.netfilter.nf_log_all_netns=1
- 
--ip link add veth0 netns nsr1 type veth peer name eth0 netns ns1
--ip link add veth1 netns nsr1 type veth peer name veth0 netns nsr2
-+ip link add veth0 netns $nsr1 type veth peer name eth0 netns $ns1
-+ip link add veth1 netns $nsr1 type veth peer name veth0 netns $nsr2
- 
--ip link add veth1 netns nsr2 type veth peer name eth0 netns ns2
-+ip link add veth1 netns $nsr2 type veth peer name eth0 netns $ns2
- 
- for dev in lo veth0 veth1; do
--  for i in 1 2; do
--    ip -net nsr$i link set $dev up
--  done
-+    ip -net $nsr1 link set $dev up
-+    ip -net $nsr2 link set $dev up
- done
- 
--ip -net nsr1 addr add 10.0.1.1/24 dev veth0
--ip -net nsr1 addr add dead:1::1/64 dev veth0
-+ip -net $nsr1 addr add 10.0.1.1/24 dev veth0
-+ip -net $nsr1 addr add dead:1::1/64 dev veth0
- 
--ip -net nsr2 addr add 10.0.2.1/24 dev veth1
--ip -net nsr2 addr add dead:2::1/64 dev veth1
-+ip -net $nsr2 addr add 10.0.2.1/24 dev veth1
-+ip -net $nsr2 addr add dead:2::1/64 dev veth1
- 
- # set different MTUs so we need to push packets coming from ns1 (large MTU)
- # to ns2 (smaller MTU) to stack either to perform fragmentation (ip_no_pmtu_disc=1),
-@@ -106,49 +109,56 @@ do
- 	esac
- done
- 
--if ! ip -net nsr1 link set veth0 mtu $omtu; then
-+if ! ip -net $nsr1 link set veth0 mtu $omtu; then
- 	exit 1
- fi
- 
--ip -net ns1 link set eth0 mtu $omtu
-+ip -net $ns1 link set eth0 mtu $omtu
- 
--if ! ip -net nsr2 link set veth1 mtu $rmtu; then
-+if ! ip -net $nsr2 link set veth1 mtu $rmtu; then
- 	exit 1
- fi
- 
--ip -net ns2 link set eth0 mtu $rmtu
-+ip -net $ns2 link set eth0 mtu $rmtu
- 
- # transfer-net between nsr1 and nsr2.
- # these addresses are not used for connections.
--ip -net nsr1 addr add 192.168.10.1/24 dev veth1
--ip -net nsr1 addr add fee1:2::1/64 dev veth1
--
--ip -net nsr2 addr add 192.168.10.2/24 dev veth0
--ip -net nsr2 addr add fee1:2::2/64 dev veth0
--
--for i in 1 2; do
--  ip netns exec nsr$i sysctl net.ipv4.conf.veth0.forwarding=1 > /dev/null
--  ip netns exec nsr$i sysctl net.ipv4.conf.veth1.forwarding=1 > /dev/null
--
--  ip -net ns$i link set lo up
--  ip -net ns$i link set eth0 up
--  ip -net ns$i addr add 10.0.$i.99/24 dev eth0
--  ip -net ns$i route add default via 10.0.$i.1
--  ip -net ns$i addr add dead:$i::99/64 dev eth0
--  ip -net ns$i route add default via dead:$i::1
--  if ! ip netns exec ns$i sysctl net.ipv4.tcp_no_metrics_save=1 > /dev/null; then
-+ip -net $nsr1 addr add 192.168.10.1/24 dev veth1
-+ip -net $nsr1 addr add fee1:2::1/64 dev veth1
++	/*
++	 * If ftrace is in an undefined state, we just remove ops from list
++	 * to prevent the NULL pointer, instead of totally rolling it back and
++	 * free trampoline, because those actions could cause further damage.
++	 */
++	if (unlikely(ftrace_disabled)) {
++		__unregister_ftrace_function(ops);
++		return -ENODEV;
++	}
 +
-+ip -net $nsr2 addr add 192.168.10.2/24 dev veth0
-+ip -net $nsr2 addr add fee1:2::2/64 dev veth0
-+
-+for i in 0 1; do
-+  ip netns exec $nsr1 sysctl net.ipv4.conf.veth$i.forwarding=1 > /dev/null
-+  ip netns exec $nsr2 sysctl net.ipv4.conf.veth$i.forwarding=1 > /dev/null
-+done
-+
-+for ns in $ns1 $ns2;do
-+  ip -net $ns link set lo up
-+  ip -net $ns link set eth0 up
-+
-+  if ! ip netns exec $ns sysctl net.ipv4.tcp_no_metrics_save=1 > /dev/null; then
- 	echo "ERROR: Check Originator/Responder values (problem during address addition)"
- 	exit 1
-   fi
--
-   # don't set ip DF bit for first two tests
--  ip netns exec ns$i sysctl net.ipv4.ip_no_pmtu_disc=1 > /dev/null
-+  ip netns exec $ns sysctl net.ipv4.ip_no_pmtu_disc=1 > /dev/null
- done
+ 	ops->flags &= ~FTRACE_OPS_FL_ADDING;
  
--ip -net nsr1 route add default via 192.168.10.2
--ip -net nsr2 route add default via 192.168.10.1
-+ip -net $ns1 addr add 10.0.1.99/24 dev eth0
-+ip -net $ns2 addr add 10.0.2.99/24 dev eth0
-+ip -net $ns1 route add default via 10.0.1.1
-+ip -net $ns2 route add default via 10.0.2.1
-+ip -net $ns1 addr add dead:1::99/64 dev eth0
-+ip -net $ns2 addr add dead:2::99/64 dev eth0
-+ip -net $ns1 route add default via dead:1::1
-+ip -net $ns2 route add default via dead:2::1
-+
-+ip -net $nsr1 route add default via 192.168.10.2
-+ip -net $nsr2 route add default via 192.168.10.1
- 
--ip netns exec nsr1 nft -f - <<EOF
-+ip netns exec $nsr1 nft -f - <<EOF
- table inet filter {
-   flowtable f1 {
-      hook ingress priority 0
-@@ -197,18 +207,18 @@ if [ $? -ne 0 ]; then
- fi
- 
- # test basic connectivity
--if ! ip netns exec ns1 ping -c 1 -q 10.0.2.99 > /dev/null; then
--  echo "ERROR: ns1 cannot reach ns2" 1>&2
-+if ! ip netns exec $ns1 ping -c 1 -q 10.0.2.99 > /dev/null; then
-+  echo "ERROR: $ns1 cannot reach ns2" 1>&2
-   exit 1
- fi
- 
--if ! ip netns exec ns2 ping -c 1 -q 10.0.1.99 > /dev/null; then
--  echo "ERROR: ns2 cannot reach ns1" 1>&2
-+if ! ip netns exec $ns2 ping -c 1 -q 10.0.1.99 > /dev/null; then
-+  echo "ERROR: $ns2 cannot reach $ns1" 1>&2
-   exit 1
- fi
- 
- if [ $ret -eq 0 ];then
--	echo "PASS: netns routing/connectivity: ns1 can reach ns2"
-+	echo "PASS: netns routing/connectivity: $ns1 can reach $ns2"
- fi
- 
- ns1in=$(mktemp)
-@@ -312,24 +322,24 @@ make_file "$ns2in"
- 
- # First test:
- # No PMTU discovery, nsr1 is expected to fragment packets from ns1 to ns2 as needed.
--if test_tcp_forwarding ns1 ns2; then
-+if test_tcp_forwarding $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2"
- else
- 	echo "FAIL: flow offload for ns1/ns2:" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- 	ret=1
- fi
- 
- # delete default route, i.e. ns2 won't be able to reach ns1 and
- # will depend on ns1 being masqueraded in nsr1.
- # expect ns1 has nsr1 address.
--ip -net ns2 route del default via 10.0.2.1
--ip -net ns2 route del default via dead:2::1
--ip -net ns2 route add 192.168.10.1 via 10.0.2.1
-+ip -net $ns2 route del default via 10.0.2.1
-+ip -net $ns2 route del default via dead:2::1
-+ip -net $ns2 route add 192.168.10.1 via 10.0.2.1
- 
- # Second test:
- # Same, but with NAT enabled.
--ip netns exec nsr1 nft -f - <<EOF
-+ip netns exec $nsr1 nft -f - <<EOF
- table ip nat {
-    chain prerouting {
-       type nat hook prerouting priority 0; policy accept;
-@@ -343,47 +353,47 @@ table ip nat {
- }
- EOF
- 
--if test_tcp_forwarding_nat ns1 ns2; then
-+if test_tcp_forwarding_nat $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2 with NAT"
- else
- 	echo "FAIL: flow offload for ns1/ns2 with NAT" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- 	ret=1
- fi
- 
- # Third test:
- # Same as second test, but with PMTU discovery enabled.
--handle=$(ip netns exec nsr1 nft -a list table inet filter | grep something-to-grep-for | cut -d \# -f 2)
-+handle=$(ip netns exec $nsr1 nft -a list table inet filter | grep something-to-grep-for | cut -d \# -f 2)
- 
--if ! ip netns exec nsr1 nft delete rule inet filter forward $handle; then
-+if ! ip netns exec $nsr1 nft delete rule inet filter forward $handle; then
- 	echo "FAIL: Could not delete large-packet accept rule"
- 	exit 1
- fi
- 
--ip netns exec ns1 sysctl net.ipv4.ip_no_pmtu_disc=0 > /dev/null
--ip netns exec ns2 sysctl net.ipv4.ip_no_pmtu_disc=0 > /dev/null
-+ip netns exec $ns1 sysctl net.ipv4.ip_no_pmtu_disc=0 > /dev/null
-+ip netns exec $ns2 sysctl net.ipv4.ip_no_pmtu_disc=0 > /dev/null
- 
--if test_tcp_forwarding_nat ns1 ns2; then
-+if test_tcp_forwarding_nat $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2 with NAT and pmtu discovery"
- else
- 	echo "FAIL: flow offload for ns1/ns2 with NAT and pmtu discovery" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- fi
- 
- # Another test:
- # Add bridge interface br0 to Router1, with NAT enabled.
--ip -net nsr1 link add name br0 type bridge
--ip -net nsr1 addr flush dev veth0
--ip -net nsr1 link set up dev veth0
--ip -net nsr1 link set veth0 master br0
--ip -net nsr1 addr add 10.0.1.1/24 dev br0
--ip -net nsr1 addr add dead:1::1/64 dev br0
--ip -net nsr1 link set up dev br0
-+ip -net $nsr1 link add name br0 type bridge
-+ip -net $nsr1 addr flush dev veth0
-+ip -net $nsr1 link set up dev veth0
-+ip -net $nsr1 link set veth0 master br0
-+ip -net $nsr1 addr add 10.0.1.1/24 dev br0
-+ip -net $nsr1 addr add dead:1::1/64 dev br0
-+ip -net $nsr1 link set up dev br0
- 
--ip netns exec nsr1 sysctl net.ipv4.conf.br0.forwarding=1 > /dev/null
-+ip netns exec $nsr1 sysctl net.ipv4.conf.br0.forwarding=1 > /dev/null
- 
- # br0 with NAT enabled.
--ip netns exec nsr1 nft -f - <<EOF
-+ip netns exec $nsr1 nft -f - <<EOF
- flush table ip nat
- table ip nat {
-    chain prerouting {
-@@ -398,59 +408,59 @@ table ip nat {
- }
- EOF
- 
--if test_tcp_forwarding_nat ns1 ns2; then
-+if test_tcp_forwarding_nat $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2 with bridge NAT"
- else
- 	echo "FAIL: flow offload for ns1/ns2 with bridge NAT" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- 	ret=1
- fi
- 
- # Another test:
- # Add bridge interface br0 to Router1, with NAT and VLAN.
--ip -net nsr1 link set veth0 nomaster
--ip -net nsr1 link set down dev veth0
--ip -net nsr1 link add link veth0 name veth0.10 type vlan id 10
--ip -net nsr1 link set up dev veth0
--ip -net nsr1 link set up dev veth0.10
--ip -net nsr1 link set veth0.10 master br0
--
--ip -net ns1 addr flush dev eth0
--ip -net ns1 link add link eth0 name eth0.10 type vlan id 10
--ip -net ns1 link set eth0 up
--ip -net ns1 link set eth0.10 up
--ip -net ns1 addr add 10.0.1.99/24 dev eth0.10
--ip -net ns1 route add default via 10.0.1.1
--ip -net ns1 addr add dead:1::99/64 dev eth0.10
--
--if test_tcp_forwarding_nat ns1 ns2; then
-+ip -net $nsr1 link set veth0 nomaster
-+ip -net $nsr1 link set down dev veth0
-+ip -net $nsr1 link add link veth0 name veth0.10 type vlan id 10
-+ip -net $nsr1 link set up dev veth0
-+ip -net $nsr1 link set up dev veth0.10
-+ip -net $nsr1 link set veth0.10 master br0
-+
-+ip -net $ns1 addr flush dev eth0
-+ip -net $ns1 link add link eth0 name eth0.10 type vlan id 10
-+ip -net $ns1 link set eth0 up
-+ip -net $ns1 link set eth0.10 up
-+ip -net $ns1 addr add 10.0.1.99/24 dev eth0.10
-+ip -net $ns1 route add default via 10.0.1.1
-+ip -net $ns1 addr add dead:1::99/64 dev eth0.10
-+
-+if test_tcp_forwarding_nat $ns1 $ns2; then
- 	echo "PASS: flow offloaded for ns1/ns2 with bridge NAT and VLAN"
- else
- 	echo "FAIL: flow offload for ns1/ns2 with bridge NAT and VLAN" 1>&2
--	ip netns exec nsr1 nft list ruleset
-+	ip netns exec $nsr1 nft list ruleset
- 	ret=1
- fi
- 
- # restore test topology (remove bridge and VLAN)
--ip -net nsr1 link set veth0 nomaster
--ip -net nsr1 link set veth0 down
--ip -net nsr1 link set veth0.10 down
--ip -net nsr1 link delete veth0.10 type vlan
--ip -net nsr1 link delete br0 type bridge
--ip -net ns1 addr flush dev eth0.10
--ip -net ns1 link set eth0.10 down
--ip -net ns1 link set eth0 down
--ip -net ns1 link delete eth0.10 type vlan
-+ip -net $nsr1 link set veth0 nomaster
-+ip -net $nsr1 link set veth0 down
-+ip -net $nsr1 link set veth0.10 down
-+ip -net $nsr1 link delete veth0.10 type vlan
-+ip -net $nsr1 link delete br0 type bridge
-+ip -net $ns1 addr flush dev eth0.10
-+ip -net $ns1 link set eth0.10 down
-+ip -net $ns1 link set eth0 down
-+ip -net $ns1 link delete eth0.10 type vlan
- 
- # restore address in ns1 and nsr1
--ip -net ns1 link set eth0 up
--ip -net ns1 addr add 10.0.1.99/24 dev eth0
--ip -net ns1 route add default via 10.0.1.1
--ip -net ns1 addr add dead:1::99/64 dev eth0
--ip -net ns1 route add default via dead:1::1
--ip -net nsr1 addr add 10.0.1.1/24 dev veth0
--ip -net nsr1 addr add dead:1::1/64 dev veth0
--ip -net nsr1 link set up dev veth0
-+ip -net $ns1 link set eth0 up
-+ip -net $ns1 addr add 10.0.1.99/24 dev eth0
-+ip -net $ns1 route add default via 10.0.1.1
-+ip -net $ns1 addr add dead:1::99/64 dev eth0
-+ip -net $ns1 route add default via dead:1::1
-+ip -net $nsr1 addr add 10.0.1.1/24 dev veth0
-+ip -net $nsr1 addr add dead:1::1/64 dev veth0
-+ip -net $nsr1 link set up dev veth0
- 
- KEY_SHA="0x"$(ps -xaf | sha1sum | cut -d " " -f 1)
- KEY_AES="0x"$(ps -xaf | md5sum | cut -d " " -f 1)
-@@ -480,23 +490,23 @@ do_esp() {
- 
- }
- 
--do_esp nsr1 192.168.10.1 192.168.10.2 10.0.1.0/24 10.0.2.0/24 $SPI1 $SPI2
-+do_esp $nsr1 192.168.10.1 192.168.10.2 10.0.1.0/24 10.0.2.0/24 $SPI1 $SPI2
- 
--do_esp nsr2 192.168.10.2 192.168.10.1 10.0.2.0/24 10.0.1.0/24 $SPI2 $SPI1
-+do_esp $nsr2 192.168.10.2 192.168.10.1 10.0.2.0/24 10.0.1.0/24 $SPI2 $SPI1
- 
--ip netns exec nsr1 nft delete table ip nat
-+ip netns exec $nsr1 nft delete table ip nat
- 
- # restore default routes
--ip -net ns2 route del 192.168.10.1 via 10.0.2.1
--ip -net ns2 route add default via 10.0.2.1
--ip -net ns2 route add default via dead:2::1
-+ip -net $ns2 route del 192.168.10.1 via 10.0.2.1
-+ip -net $ns2 route add default via 10.0.2.1
-+ip -net $ns2 route add default via dead:2::1
- 
--if test_tcp_forwarding ns1 ns2; then
-+if test_tcp_forwarding $ns1 $ns2; then
- 	echo "PASS: ipsec tunnel mode for ns1/ns2"
- else
- 	echo "FAIL: ipsec tunnel mode for ns1/ns2"
--	ip netns exec nsr1 nft list ruleset 1>&2
--	ip netns exec nsr1 cat /proc/net/xfrm_stat 1>&2
-+	ip netns exec $nsr1 nft list ruleset 1>&2
-+	ip netns exec $nsr1 cat /proc/net/xfrm_stat 1>&2
- fi
- 
- exit $ret
+ 	return 0;
 -- 
 2.35.1
 
