@@ -2,104 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C66C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:42:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB64C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:43:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240356AbiHYLme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 07:42:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
+        id S238106AbiHYLnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 07:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233537AbiHYLm3 (ORCPT
+        with ESMTP id S233537AbiHYLnH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 07:42:29 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253209E887
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 04:42:27 -0700 (PDT)
-Received: from zn.tnic (p200300ea971b98f5329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98f5:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 3CAC01EC050F;
-        Thu, 25 Aug 2022 13:42:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1661427741;
+        Thu, 25 Aug 2022 07:43:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CB2B9A9B6;
+        Thu, 25 Aug 2022 04:43:06 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 13:43:03 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661427784;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=vh+yXND8jbqs07msgUgEfuD6EdfdarrOdj9azKZ93v4=;
-        b=koVZ3WzX+coXmWuagCZ7A8QrddQqqwpUDOeKr40npBAQboceootNSjcsAzr0pEAXw4lDw9
-        5VpOzdHcnyYMY/80uuoArWZA/m195ycE8cDnn4jx/3lRI8xKhJdFycHBSetEeSG/lU+xm0
-        vEfnoVvR1SE0PfWH84erqcR76X4O0rQ=
-Date:   Thu, 25 Aug 2022 13:42:16 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Juergen Gross <jgross@suse.com>
-Cc:     xen-devel@lists.xenproject.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH v2 02/10] x86/mtrr: remove unused cyrix_set_all() function
-Message-ID: <YwdgGFJWTV1YF3n2@zn.tnic>
-References: <20220820092533.29420-1-jgross@suse.com>
- <20220820092533.29420-3-jgross@suse.com>
- <YwdPb4pWqppgzIpm@zn.tnic>
- <aff049cb-ebdd-68ad-5597-d22f87026297@suse.com>
+         in-reply-to:in-reply-to:references:references;
+        bh=m8RS0b6uyw+ZbGUJeFZ495BAO8+GBnEEn0vAVb6oeWI=;
+        b=t+Lnv6col5ktvcFKUdThUK9WpkN3x6Vp0eUmO5UMlScJYJoE8uFIjRA3KHmByzGNfhor0g
+        m3lflpRkL/2P/Gk7qyEm1C7mYBORim6c05rdEWnNY+a/I6Zv3MILr9ncEusKGSVdWG9TKW
+        yFP7/epDWHMqQ16ZOV50Cjdqldd+QwKZ679X1yzDcEp26zpyHPZ0UxER7BKmW98dYtyx3q
+        Bos/JmG94iHegmwRpeqH/sUlfBkLdjONKT2zYte8cV7j7Fg09RlhpXyY9lSGUjKTFV9tJJ
+        W/3CYTU/pIJiB2OnWh77N+RhxzlS+Q/FnNrF6ADjWgTpZ6yYXTEgQfoOpN5iqQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661427784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m8RS0b6uyw+ZbGUJeFZ495BAO8+GBnEEn0vAVb6oeWI=;
+        b=qnpNC8a0/S0yzChyZ2Ul7tZLcyI/uUtstDu1ehWbq2ypJ3450cPrBnH+1X59bhj2kC57Ep
+        1hgrhFa3nRsXnjCA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Salvatore Bonaccorso <carnil@debian.org>,
+        Borislav Petkov <bp@suse.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexandre Chartre <alexandre.chartre@oracle.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        x86@kernel.org
+Subject: Re: [RESEND PATCH] Documentation: ABI: Mention retbleed
+ vulnerability info file for sysfs
+Message-ID: <YwdgRyfoLDPCbemf@linutronix.de>
+References: <20220801091529.325327-1-carnil@debian.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aff049cb-ebdd-68ad-5597-d22f87026297@suse.com>
+In-Reply-To: <20220801091529.325327-1-carnil@debian.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 12:41:05PM +0200, Juergen Gross wrote:
-> Maybe the alternative reasoning is much faster to understand: if the
-> Cyrix set_all() could be called, the AMD and Centaur ones would be callable,
-> too.
+On 2022-08-01 11:15:30 [+0200], Salvatore Bonaccorso wrote:
+> While reporting for the AMD retbleed vulnerability was added in
+> 6b80b59b3555 ("x86/bugs: Report AMD retbleed vulnerability") the new
+> sysfs file was not mentioned so far in the ABI documentation for
+> sysfs-devices-system-cpu.
 
-Right.
+Borislav, could you please merge this one?
 
-> Those being called would result in a NULL deref, so why should we keep
-> the Cyrix one?
+> Fixes: 6b80b59b3555 ("x86/bugs: Report AMD retbleed vulnerability")
+> Signed-off-by: Salvatore Bonaccorso <carnil@debian.org>
+> ---
+>  Documentation/ABI/testing/sysfs-devices-system-cpu | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
+> index bcc974d276dc..3cda940108f6 100644
+> --- a/Documentation/ABI/testing/sysfs-devices-system-cpu
+> +++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+> @@ -527,6 +527,7 @@ What:		/sys/devices/system/cpu/vulnerabilities
+>  		/sys/devices/system/cpu/vulnerabilities/tsx_async_abort
+>  		/sys/devices/system/cpu/vulnerabilities/itlb_multihit
+>  		/sys/devices/system/cpu/vulnerabilities/mmio_stale_data
+> +		/sys/devices/system/cpu/vulnerabilities/retbleed
+>  Date:		January 2018
+>  Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
+>  Description:	Information about CPU vulnerabilities
 
-I know you're eager to remove dead code - I'd love that too. But before
-we do that, we need to find out whether some Cyrix hw out there would
-not need this.
-
-I know, I know, they should've complained by now ... maybe they have but
-we haven't heard about it.
-
-What it most likely looks like is that those machines - a commit from
-before git
-
-commit 8fbdcb188e31ac901e216b466b97e90e8b057daa
-Author: Dave Jones <davej@suse.de>
-Date:   Wed Aug 14 21:14:22 2002 -0700
-
-    [PATCH] Modular x86 MTRR driver.
-
-talks about
-
-+/*
-+ * On Cyrix 6x86(MX) and M II the ARR3 is special: it has connection
-+ * with the SMM (System Management Mode) mode. So we need the following:
-+ * Check whether SMI_LOCK (CCR3 bit 0) is set
-+ *   if it is set, write a warning message: ARR3 cannot be changed!
-+ *     (it cannot be changed until the next processor reset)
-
-which sounds like old rust. And which no one uses or such machines are
-long dead already.
-
-Wikipedia says:
-
-https://en.wikipedia.org/wiki/Cyrix_6x86
-
-"The Cyrix 6x86 is a line of sixth-generation, 32-bit x86
-microprocessors designed and released by Cyrix in 1995..."
-
-So I'm thinking removing it would be ok...
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Sebastian
