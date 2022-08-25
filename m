@@ -2,146 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 373C6C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CE98C6498F
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241584AbiHYPFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:05:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59240 "EHLO
+        id S240688AbiHYPHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241003AbiHYPFH (ORCPT
+        with ESMTP id S230072AbiHYPHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:05:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550FDB56F3
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:05:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661439905;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iygQAkAgz4JDbn3KVJAwromqSNqOkmZrJ35R+TSCGBw=;
-        b=WbSg80lyvUQyENVdiNOFKKUNKeYOjb0cQAJn7tdJYmuQwBr4HYb7HCokp59/SE1IBBP4eH
-        8cjpOEWd6amp0/cVC3DySSecEallveOSCz9A9dwz4XGBkui0ufuIKD562xAdywxDuTppQE
-        d1EXedFasT5ttOZrLykSAwZ8MhEc2aY=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-652-ginrPMoMMPqKdkPNv7D6SA-1; Thu, 25 Aug 2022 11:05:03 -0400
-X-MC-Unique: ginrPMoMMPqKdkPNv7D6SA-1
-Received: by mail-qk1-f198.google.com with SMTP id w17-20020a05620a425100b006b97978c693so17517237qko.19
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:05:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=iygQAkAgz4JDbn3KVJAwromqSNqOkmZrJ35R+TSCGBw=;
-        b=c1R/CwWVkd1YcTyLI6kYXdchzR/8h7axo5LlG5mTohhy6jv9oC42uSakfY9hOi/r62
-         gakYQkVejX/lQjhMtG7KrqSDw+7Ffq6us96ndyx3vyidQatOgJlW54L3HV2WYnmAZb25
-         yVk39Rpur5NeSsOi8XPf+vkWm2RfBAFQXCkCQiSUXyhEfgghMBQKxmnt5VqHdDiMvdjp
-         FU289hCvaWZxrVJRJRlohyVPjlvE/ATq+j0w/Vy+iWTiZmZ40HJtYTExFOggZDkb/2H7
-         Vk8E/hcb/SD6NSlyXcYjFp1X5fJ3cdN699KeZac0e+Pb8CEL7KOnCTjjUOTPFLOihpfI
-         /wxg==
-X-Gm-Message-State: ACgBeo3ivSbW5MsuY+OCjDwZ/cEHPM1ZivvxbKCnWIk1crsAHkn6zW+j
-        XvmveCqXSoJR7e+3Z1/xmB/D9ViQOyH4cjD69ev5XjEtLz7HOolPZYMfvUW4HtUSWSOFmvOivAE
-        EQl96petPqTNwPbTHsJ5L/4sT
-X-Received: by 2002:a05:622a:20e:b0:343:7345:36cc with SMTP id b14-20020a05622a020e00b00343734536ccmr3971322qtx.669.1661439903393;
-        Thu, 25 Aug 2022 08:05:03 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5H6vUeaILfaettSLPx9OGO+p9IBfx7a4trs9PcWFxW10+WU/QvLs3nwiKRw0dOgxGyx6Uy1A==
-X-Received: by 2002:a05:622a:20e:b0:343:7345:36cc with SMTP id b14-20020a05622a020e00b00343734536ccmr3971288qtx.669.1661439903064;
-        Thu, 25 Aug 2022 08:05:03 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id bm25-20020a05620a199900b006b949afa980sm17692978qkb.56.2022.08.25.08.04.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 08:05:01 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 11:04:59 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Alistair Popple <apopple@nvidia.com>
-Cc:     "Huang, Ying" <ying.huang@intel.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] mm/migrate_device.c: Copy pte dirty bit to page
-Message-ID: <YwePm5lMSU2tsW6f@xz-m1.local>
-References: <1D2FB37E-831B-445E-ADDC-C1D3FF0425C1@gmail.com>
- <Yv1BJKb5he3dOHdC@xz-m1.local>
- <87czcyawl6.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <Yv5QXkS4Bm9pTBeG@xz-m1.local>
- <874jy9aqts.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <87czcqiecd.fsf@nvdebian.thelocal>
- <YwaJSBnp2eyMlkjw@xz-m1.local>
- <YwaOpj54/qUb5fXa@xz-m1.local>
- <87o7w9f7dp.fsf@nvdebian.thelocal>
- <87k06xf70l.fsf@nvdebian.thelocal>
+        Thu, 25 Aug 2022 11:07:06 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 389275EDE5;
+        Thu, 25 Aug 2022 08:07:02 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MD5nc4XV3z684th;
+        Thu, 25 Aug 2022 23:03:32 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 17:07:00 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
+ 2022 16:06:59 +0100
+Date:   Thu, 25 Aug 2022 16:06:58 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V2 1/2] PCI: Allow drivers to request exclusive config
+ regions
+Message-ID: <20220825160658.000051a6@huawei.com>
+In-Reply-To: <20220824232450.723179-2-ira.weiny@intel.com>
+References: <20220824232450.723179-1-ira.weiny@intel.com>
+        <20220824232450.723179-2-ira.weiny@intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <87k06xf70l.fsf@nvdebian.thelocal>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:24:03AM +1000, Alistair Popple wrote:
-> By the way it's still an optimisation because in most cases we can avoid
-> calling try_to_migrate() and walking the rmap altogether if we install
-> the migration entries here. But I agree the comment is misleading.
+On Wed, 24 Aug 2022 16:24:49 -0700
+ira.weiny@intel.com wrote:
 
-There's one follow up question I forgot to ask on the trylock thing.  I
-figured maybe I should ask out loud since we're at it.
+> From: Ira Weiny <ira.weiny@intel.com>
+> 
+> PCI config space access from user space has traditionally been
+> unrestricted with writes being an understood risk for device operation.
+> 
+> Unfortunately, device breakage or odd behavior from config writes lacks
+> indicators that can leave driver writers confused when evaluating
+> failures.  This is especially true with the new PCIe Data Object
+> Exchange (DOE) mailbox protocol where backdoor shenanigans from user
+> space through things such as vendor defined protocols may affect device
+> operation without complete breakage.
+> 
+> A prior proposal restricted read and writes completely.[1]  Greg and
+> Bjorn pointed out that proposal is flawed for a couple of reasons.
+> First, lspci should always be allowed and should not interfere with any
+> device operation.  Second, setpci is a valuable tool that is sometimes
+> necessary and it should not be completely restricted.[2]  Finally
+> methods exist for full lock of device access if required.
+> 
+> Even though access should not be restricted it would be nice for driver
+> writers to be able to flag critical parts of the config space such that
+> interference from user space can be detected.
+> 
+> Introduce pci_request_config_region_exclusive() to mark exclusive config
+> regions.  Such regions trigger a warning and kernel taint if accessed
+> via user space.
+> 
+> Create pci_warn_once() to restrict the user from spamming the log.
+> 
+> [1] https://lore.kernel.org/all/161663543465.1867664.5674061943008380442.stgit@dwillia2-desk3.amr.corp.intel.com/
+> [2] https://lore.kernel.org/all/YF8NGeGv9vYcMfTV@kroah.com/
+> 
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Suggested-by: Dan Williams <dan.j.williams@intel.com>
+> Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+One comment inline.
 
-Since migrate_vma_setup() always only use trylock (even if before dropping
-the prepare() code), does it mean that it can randomly fail?
+I'm not totally convinced of the necessity of this, but done this way
+it has very little impact so I'm fine with it.
 
-I looked at some of the callers, it seems not all of them are ready to
-handle that (__kvmppc_svm_page_out() or svm_migrate_vma_to_vram()).  Is it
-safe?  Do the callers need to always properly handle that (unless the
-migration is only a best-effort, but it seems not always the case).
+Other than the comment about not realigning things...
 
-Besides, since I read the old code of prepare(), I saw this comment:
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
--		if (!(migrate->src[i] & MIGRATE_PFN_LOCKED)) {
--			/*
--			 * Because we are migrating several pages there can be
--			 * a deadlock between 2 concurrent migration where each
--			 * are waiting on each other page lock.
--			 *
--			 * Make migrate_vma() a best effort thing and backoff
--			 * for any page we can not lock right away.
--			 */
--			if (!trylock_page(page)) {
--				migrate->src[i] = 0;
--				migrate->cpages--;
--				put_page(page);
--				continue;
--			}
--			remap = false;
--			migrate->src[i] |= MIGRATE_PFN_LOCKED;
--		}
+> 
+> ---
+> Changes from V1:
+> 	Greg and Dan:
+> 		Create and use pci_warn_once() to keep the user from spamming
+> 	Dan:
+> 		Clarify the warn message
+> 
+> Changes from[1]:
+> 	Change name to pci_request_config_region_exclusive()
+> 	Don't flag reads at all.
+> 	Allow writes with a warn and taint of the kernel.
+> 	Update commit message
+> 	Forward port to latest tree.
+> ---
+>  drivers/pci/pci-sysfs.c |  7 +++++++
+>  drivers/pci/probe.c     |  6 ++++++
+>  include/linux/ioport.h  |  2 ++
+>  include/linux/pci.h     | 33 +++++++++++++++++++++++++--------
+>  kernel/resource.c       | 13 ++++++++-----
+>  5 files changed, 48 insertions(+), 13 deletions(-)
+> 
+>  /* drivers/pci/bus.c */
+>  void pci_add_resource(struct list_head *resources, struct resource *res);
+>  void pci_add_resource_offset(struct list_head *resources, struct resource *res,
+> @@ -2486,14 +2502,15 @@ void pci_uevent_ers(struct pci_dev *pdev, enum  pci_ers_result err_type);
+>  #define pci_printk(level, pdev, fmt, arg...) \
+>  	dev_printk(level, &(pdev)->dev, fmt, ##arg)
+>  
+> -#define pci_emerg(pdev, fmt, arg...)	dev_emerg(&(pdev)->dev, fmt, ##arg)
+> -#define pci_alert(pdev, fmt, arg...)	dev_alert(&(pdev)->dev, fmt, ##arg)
+> -#define pci_crit(pdev, fmt, arg...)	dev_crit(&(pdev)->dev, fmt, ##arg)
+> -#define pci_err(pdev, fmt, arg...)	dev_err(&(pdev)->dev, fmt, ##arg)
+> -#define pci_warn(pdev, fmt, arg...)	dev_warn(&(pdev)->dev, fmt, ##arg)
+> -#define pci_notice(pdev, fmt, arg...)	dev_notice(&(pdev)->dev, fmt, ##arg)
+> -#define pci_info(pdev, fmt, arg...)	dev_info(&(pdev)->dev, fmt, ##arg)
+> -#define pci_dbg(pdev, fmt, arg...)	dev_dbg(&(pdev)->dev, fmt, ##arg)
+> +#define pci_emerg(pdev, fmt, arg...)	 dev_emerg(&(pdev)->dev, fmt, ##arg)
+> +#define pci_alert(pdev, fmt, arg...)	 dev_alert(&(pdev)->dev, fmt, ##arg)
+> +#define pci_crit(pdev, fmt, arg...)	 dev_crit(&(pdev)->dev, fmt, ##arg)
+> +#define pci_err(pdev, fmt, arg...)	 dev_err(&(pdev)->dev, fmt, ##arg)
+> +#define pci_warn(pdev, fmt, arg...)	 dev_warn(&(pdev)->dev, fmt, ##arg)
+> +#define pci_warn_once(pdev, fmt, arg...) dev_warn_once(&(pdev)->dev, fmt, ##arg)
+> +#define pci_notice(pdev, fmt, arg...)	 dev_notice(&(pdev)->dev, fmt, ##arg)
+> +#define pci_info(pdev, fmt, arg...)	 dev_info(&(pdev)->dev, fmt, ##arg)
+> +#define pci_dbg(pdev, fmt, arg...)	 dev_dbg(&(pdev)->dev, fmt, ##arg)
 
-I'm a bit curious whether that deadlock mentioned in the comment is
-observed in reality?
+This realignment is a lot of noise.  Do we really care about one diffentlyu
+aligned entry? + if you are going to do it two tabs rather than a space
+following the tab (I think that's what you have here?)
 
-If the page was scanned in the same address space, logically the lock order
-should be guaranteed (if both page A&B, both threads should lock in order).
-I think the order can be changed if explicitly did so (e.g. fork() plus
-mremap() for anonymous here) but I just want to make sure I get the whole
-point of it.
-
-Thanks,
-
--- 
-Peter Xu
+>  
 
