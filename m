@@ -2,224 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A434FECAAA3
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1F4AECAAA2
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244413AbiHYWZI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
+        id S244436AbiHYW1e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244427AbiHYWY7 (ORCPT
+        with ESMTP id S244443AbiHYW11 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:24:59 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C5B1A066
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:24:51 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-33dc345ad78so65526697b3.3
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:24:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=PdFlW3aeyvpQT3MZkmueIMafwjble/QzgCjOqfMIR00=;
-        b=loSUAPsyjpGzJILk/Y7AJdvdMBUd4xEy94biFZSyQ4UCfufO//sLhB2pJQLBimyUti
-         W2ZREJoQdaJMy5g08s8m1tWoMgG0jZWeGnUBSwDp39J6WC1D47CdanbG8I0Z2Loh+ais
-         keJldIEYUibmNCwNq2yMC+1fwa/8p7TiRzTbc9U/67H3/GskCKW1HSeVoD3aAOZ93FWb
-         QhOq/M/PNZF3PEthQlyT5h0fehOgI34FgkPC8kVn74v1HFS0jNkSL1N/jZjT3wI632n5
-         WmHadH9bBkaV7WQjxtBqQouy09lVLAJ8zmKXXLBh9DI4uhLTxu+LDRIIU92M3Na776/h
-         Lluw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=PdFlW3aeyvpQT3MZkmueIMafwjble/QzgCjOqfMIR00=;
-        b=saH57ORzo8W0LYPQNVDwU+HBJV9eM2JedzyhSAW3MFJ/AsGTR/kjeijao4gvYeApU6
-         6JehlmWLERzmx+/tDaqV4s5yv2WU2D4b2w5DloZCbL5Hih+ukopL8TXaELTpAYL44suw
-         +Qvvn45qsod1oBsEKaIw6fGdDMvyykPmF6O42WTe4nhakJ1iXhpAzrOeaoE2/q5QDhAd
-         T2uNOrpdMWKa+ibU7sqAXXZFoiqNiEOmVBIuB+lAikJAafy3CyIJlTbtQI5RV7l25EZt
-         dEbi3CVos/ivChbiUqgntIA9LuGMudnxt9uFfHSMBs9UnJ7+2Q3jikG2C0XSrMHwhTFN
-         wvsA==
-X-Gm-Message-State: ACgBeo0uPCd62OXYOyWoPGzG7YHEyJj2O8E47fJ2XVcur+rCdQ0INult
-        M6OajOOFMKfzKLcky3+YKcmITY1fwb0XHWbH8Wxlmza/bXI=
-X-Google-Smtp-Source: AA6agR5G/z+VplpWMumU5bOeCKBrnxu6hxYb1oYHHcchn8jYqk1LKbxTZFGJR1NDrun/0JGIv7mMHDn6MkRbDPjguWY=
-X-Received: by 2002:a25:94b:0:b0:68f:4e05:e8f0 with SMTP id
- u11-20020a25094b000000b0068f4e05e8f0mr5112010ybm.115.1661466290657; Thu, 25
- Aug 2022 15:24:50 -0700 (PDT)
+        Thu, 25 Aug 2022 18:27:27 -0400
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 175AEC6505
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:27:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1661466445; x=1693002445;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=5hpw5clYxJvoQGyX7Gfm68NkZgW2078Mw0aCa+jMZ3E=;
+  b=YfvIR7Di6wFme1fvSJg5w/bNGFEROcpAbYz2lw0zni+GGEGPtG0n1ySZ
+   ujoRi2l5l2QFWEdOQ8a7DCoAAkSdGTcPZHiXzmTXrh18VntbtL2RZqliT
+   JJBi/zRnbibM/t8zZ1N3FRQ2EDK2DADqeJeCwVVewxzmMc3H/JZk9JwhJ
+   ghq0TxrtndsLMWc/lQdEGdoI4C6vrhfqWMvXTU5tOgCPEJv+f1mCgfBQE
+   zPkeaytEvoqCRaAdOi6rfGRLpzaS6B2yQBeH3BwmPUqmZhseJBQfBRlOd
+   h9VgZSdiBJmMmBoOyEpZeYdGvBdeQ8pWd+bLYVrQTh5NovHsCiU6OIxXh
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,264,1654531200"; 
+   d="scan'208";a="210184917"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 26 Aug 2022 06:27:24 +0800
+IronPort-SDR: pZ9VW8cNmFpwhYkyw7M5MggMUriiCB4tvm/wYe1v/dTuut+2ukBdKO5nYlC9nDYOhQAIVdpEVL
+ KcQhtaXzDlzRMt+I6pHS3qIpsYTQEGsIOm7UAIC9nEVGGWufG7LWRxqNk3+ptWzB8vSuNDsLNr
+ xGDUNdCilahLl/XplTZ7LRTqJTbPXrzd5XkbimDx46zKIGzgaEDSehD1AtUrOZluBeStf54juK
+ +CJ4wjiJhxJ6Nnjs+wy/JBRrxY8UiSIpHsWuGAOXGORHt5+mOeYO9PSNjw6odcNqjVv5Uh874f
+ tzNOE/ATBWzXOtFSHLH2gLKK
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 Aug 2022 14:48:00 -0700
+IronPort-SDR: OLi9nhojBQdAALcJup4bhWOHIbMiG/h4+D4RxDfw+oJ7rl6iDzooZJZ9GgV6HxBcWbnbDIvv8+
+ P5Ynt6ouR8VqL3gy+iw+Gq+5uk9+qqDHWhEko3eIzjhLnu+LNiNL+kMNtEZYUGu8TY+nbxltVy
+ /u4hXtpuJuQ1KtoTQGtZ089LRbCgpKQ4n3dM2y9nOfwF/fW2LOgX/4TaRiwj/KJThjidYfXx3Y
+ TrT2ym4ymm3RJVsK5g8t/dW6geW+QDbQWUzX2a9UJHm1/HvAbRZc1OX49LUlKipoD0ANQLDdxu
+ BJQ=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 Aug 2022 15:27:24 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4MDHdl5yGNz1Rwnm
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:27:23 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1661466443; x=1664058444; bh=5hpw5clYxJvoQGyX7Gfm68NkZgW2078Mw0a
+        Ca+jMZ3E=; b=of09kOgZYhdp5kExVXxEF8Z202tHrkWp6/6iM0qZQHUZu+6HRv3
+        WhYCBtXjGmdgzccoSFZir3UJfstLkYiSFRpimS9BNQZPNMuaknnNriSkib3n+I1b
+        U8TL6+X7qfOoiiB3HYAW/oKwN1mB4O1d54s+YufkK+FjfWmZwp0NiWAOMVJLplra
+        sDOfNDPCsl2Vn5to7Ksi3beyn5bhScEfuyVNtlTiy9o8qayFtp+1UVqjTYmaYwhv
+        L6rizhy9vxbASP/nYCdYGmKgAGzXnlDDPxR872w2jmT6GXA3XnO8+VLtAnzVFgX/
+        htwfRcv5WdMdgDoZBw9hpkGzHaSdzvBRRuw==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id xANsZRCIiLAS for <linux-kernel@vger.kernel.org>;
+        Thu, 25 Aug 2022 15:27:23 -0700 (PDT)
+Received: from [10.225.163.46] (unknown [10.225.163.46])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4MDHdj4z6Jz1RtVk;
+        Thu, 25 Aug 2022 15:27:21 -0700 (PDT)
+Message-ID: <a4948117-dcb1-a27e-941a-811832e9a7c9@opensource.wdc.com>
+Date:   Fri, 26 Aug 2022 07:27:20 +0900
 MIME-Version: 1.0
-References: <20220818172852.3548-1-isaacmanjarres@google.com>
-In-Reply-To: <20220818172852.3548-1-isaacmanjarres@google.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 25 Aug 2022 15:24:14 -0700
-Message-ID: <CAGETcx8RZ7H2T+6=PpofpQHgtiDPzkWxONW8vn2B=2s=iFsoLg@mail.gmail.com>
-Subject: Re: [PATCH v2] amba: Fix use-after-free in amba_read_periphid()
-To:     "Isaac J. Manjarres" <isaacmanjarres@google.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        patches@armlinux.org.uk, Guenter Roeck <linux@roeck-us.net>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] drivers/ata: fix repeated words in comments
+Content-Language: en-US
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>, s.shtylyov@omp.r
+Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220825123644.9082-1-yuanjilin@cdjrlc.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220825123644.9082-1-yuanjilin@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 10:29 AM Isaac J. Manjarres
-<isaacmanjarres@google.com> wrote:
->
-> After commit f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device
-> addition"), it became possible for amba_read_periphid() to be invoked
-> concurrently from two threads for a particular AMBA device.
->
-> Consider the case where a thread (T0) is registering an AMBA driver, and
-> searching for all of the devices it can match with on the AMBA bus.
-> Suppose that another thread (T1) is executing the deferred probe work,
-> and is searching through all of the AMBA drivers on the bus for a driver
-> that matches a particular AMBA device. Assume that both threads begin
-> operating on the same AMBA device and the device's peripheral ID is
-> still unknown.
->
-> In this scenario, the amba_match() function will be invoked for the
-> same AMBA device by both threads, which means amba_read_periphid()
-> can also be invoked by both threads, and both threads will be able
-> to manipulate the AMBA device's pclk pointer without any synchronization.
-> It's possible that one thread will initialize the pclk pointer, then the
-> other thread will re-initialize it, overwriting the previous value, and
-> both will race to free the same pclk, resulting in a use-after-free for
-> whichever thread frees the pclk last.
->
-> Add a lock per AMBA device to synchronize the handling with detecting the
-> peripheral ID to avoid the use-after-free scenario.
->
-> The following KFENCE bug report helped detect this problem:
-> ==================================================================
-> BUG: KFENCE: use-after-free read in clk_disable+0x14/0x34
->
-> Use-after-free read at 0x(ptrval) (in kfence-#19):
->  clk_disable+0x14/0x34
->  amba_read_periphid+0xdc/0x134
->  amba_match+0x3c/0x84
->  __driver_attach+0x20/0x158
->  bus_for_each_dev+0x74/0xc0
->  bus_add_driver+0x154/0x1e8
->  driver_register+0x88/0x11c
->  do_one_initcall+0x8c/0x2fc
->  kernel_init_freeable+0x190/0x220
->  kernel_init+0x10/0x108
->  ret_from_fork+0x14/0x3c
->  0x0
->
-> kfence-#19: 0x(ptrval)-0x(ptrval), size=36, cache=kmalloc-64
->
-> allocated by task 8 on cpu 0 at 11.629931s:
->  clk_hw_create_clk+0x38/0x134
->  amba_get_enable_pclk+0x10/0x68
->  amba_read_periphid+0x28/0x134
->  amba_match+0x3c/0x84
->  __device_attach_driver+0x2c/0xc4
->  bus_for_each_drv+0x80/0xd0
->  __device_attach+0xb0/0x1f0
->  bus_probe_device+0x88/0x90
->  deferred_probe_work_func+0x8c/0xc0
->  process_one_work+0x23c/0x690
->  worker_thread+0x34/0x488
->  kthread+0xd4/0xfc
->  ret_from_fork+0x14/0x3c
->  0x0
->
-> freed by task 8 on cpu 0 at 11.630095s:
->  amba_read_periphid+0xec/0x134
->  amba_match+0x3c/0x84
->  __device_attach_driver+0x2c/0xc4
->  bus_for_each_drv+0x80/0xd0
->  __device_attach+0xb0/0x1f0
->  bus_probe_device+0x88/0x90
->  deferred_probe_work_func+0x8c/0xc0
->  process_one_work+0x23c/0x690
->  worker_thread+0x34/0x488
->  kthread+0xd4/0xfc
->  ret_from_fork+0x14/0x3c
->  0x0
->
-> Cc: Saravana Kannan <saravanak@google.com>
-> Cc: patches@armlinux.org.uk
-> Fixes: f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
+On 8/25/22 21:36, Jilin Yuan wrote:
+>  Delete the redundant word 'in'.
+>  Delete the redundant word 'to'.
+
+
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 > ---
-> KernelVersion: rmk/for-next
+>  drivers/ata/libata-eh.c      | 2 +-
+>  drivers/ata/pata_macio.c     | 2 +-
+>  drivers/ata/sata_dwc_460ex.c | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/ata/libata-eh.c b/drivers/ata/libata-eh.c
+> index 7c128c89b454..ca865a95cf24 100644
+> --- a/drivers/ata/libata-eh.c
+> +++ b/drivers/ata/libata-eh.c
+> @@ -863,7 +863,7 @@ void ata_eh_fastdrain_timerfn(struct timer_list *t)
+>   *
+>   *	Set ATA_PFLAG_EH_PENDING and activate fast drain if @fastdrain
+>   *	is non-zero and EH wasn't pending before.  Fast drain ensures
+> - *	that EH kicks in in timely manner.
+> + *	that EH kicks in timely manner.
 
-Russell,
+As already commented, this fix is not correct. The sentence should read:
 
-Can you pull this in for 6.0-rcX please? It fixes crashes in a bunch
-of devices. Please let us know if you need this rebased on top of
-6.0-rc2
+	that EH kicks-in in a timely manner.
 
-Thanks,
-Saravana
+The patch title for this fix should be:
 
->
->  drivers/amba/bus.c       | 8 +++++++-
->  include/linux/amba/bus.h | 1 +
->  2 files changed, 8 insertions(+), 1 deletion(-)
->
-> v1 -> v2:
-> - Applied on rmk/for-next
->
-> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-> index 32b0e0b930c1..110a535648d2 100644
-> --- a/drivers/amba/bus.c
-> +++ b/drivers/amba/bus.c
-> @@ -209,6 +209,7 @@ static int amba_match(struct device *dev, struct device_driver *drv)
->         struct amba_device *pcdev = to_amba_device(dev);
->         struct amba_driver *pcdrv = to_amba_driver(drv);
->
-> +       mutex_lock(&pcdev->periphid_lock);
->         if (!pcdev->periphid) {
->                 int ret = amba_read_periphid(pcdev);
->
-> @@ -218,11 +219,14 @@ static int amba_match(struct device *dev, struct device_driver *drv)
->                  * permanent failure in reading pid and cid, simply map it to
->                  * -EPROBE_DEFER.
->                  */
-> -               if (ret)
-> +               if (ret) {
-> +                       mutex_unlock(&pcdev->periphid_lock);
->                         return -EPROBE_DEFER;
-> +               }
->                 dev_set_uevent_suppress(dev, false);
->                 kobject_uevent(&dev->kobj, KOBJ_ADD);
->         }
-> +       mutex_unlock(&pcdev->periphid_lock);
->
->         /* When driver_override is set, only bind to the matching driver */
->         if (pcdev->driver_override)
-> @@ -532,6 +536,7 @@ static void amba_device_release(struct device *dev)
->
->         if (d->res.parent)
->                 release_resource(&d->res);
-> +       mutex_destroy(&d->periphid_lock);
->         kfree(d);
->  }
->
-> @@ -584,6 +589,7 @@ static void amba_device_initialize(struct amba_device *dev, const char *name)
->         dev->dev.dma_mask = &dev->dev.coherent_dma_mask;
->         dev->dev.dma_parms = &dev->dma_parms;
->         dev->res.name = dev_name(&dev->dev);
-> +       mutex_init(&dev->periphid_lock);
->  }
->
->  /**
-> diff --git a/include/linux/amba/bus.h b/include/linux/amba/bus.h
-> index e94cdf235f1d..5001e14c5c06 100644
-> --- a/include/linux/amba/bus.h
-> +++ b/include/linux/amba/bus.h
-> @@ -67,6 +67,7 @@ struct amba_device {
->         struct clk              *pclk;
->         struct device_dma_parameters dma_parms;
->         unsigned int            periphid;
-> +       struct mutex            periphid_lock;
->         unsigned int            cid;
->         struct amba_cs_uci_id   uci;
->         unsigned int            irq[AMBA_NR_IRQS];
-> --
-> 2.37.1.595.g718a3a8f04-goog
->
+ata: libata-eh: fix repeated words in comment
+
+>   *
+>   *	LOCKING:
+>   *	spin_lock_irqsave(host lock)
+> diff --git a/drivers/ata/pata_macio.c b/drivers/ata/pata_macio.c
+> index bfea2be2959a..076212fdb9d9 100644
+> --- a/drivers/ata/pata_macio.c
+> +++ b/drivers/ata/pata_macio.c
+> @@ -666,7 +666,7 @@ static u8 pata_macio_bmdma_status(struct ata_port *ap)
+>  	 * a multi-block transfer.
+>  	 *
+>  	 * - The dbdma fifo hasn't yet finished flushing to
+> -	 * to system memory when the disk interrupt occurs.
+> +	 * system memory when the disk interrupt occurs.
+>  	 *
+
+While at it, please remove the above useless extra "*" line.
+
+>  	 */
+>  
+> diff --git a/drivers/ata/sata_dwc_460ex.c b/drivers/ata/sata_dwc_460ex.c
+> index e3263e961045..a4c83a6e5631 100644
+> --- a/drivers/ata/sata_dwc_460ex.c
+> +++ b/drivers/ata/sata_dwc_460ex.c
+> @@ -1087,7 +1087,7 @@ static struct scsi_host_template sata_dwc_sht = {
+>  	/*
+>  	 * test-only: Currently this driver doesn't handle NCQ
+>  	 * correctly. We enable NCQ but set the queue depth to a
+> -	 * max of 1. This will get fixed in in a future release.
+> +	 * max of 1. This will get fixed in a future release.
+>  	 */
+>  	.sg_tablesize		= LIBATA_MAX_PRD,
+>  	/* .can_queue		= ATA_MAX_QUEUE, */
+
+Please move this second hunk to a different patch with the title:
+
+ata: sata_dwc_460ex: fix repeated words in comment
+
+-- 
+Damien Le Moal
+Western Digital Research
