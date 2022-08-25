@@ -2,78 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF928ECAA27
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6971AECAA24
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242933AbiHYQNw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:13:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
+        id S242960AbiHYQPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:15:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbiHYQNs (ORCPT
+        with ESMTP id S242973AbiHYQPZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:13:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE64B442C;
-        Thu, 25 Aug 2022 09:13:47 -0700 (PDT)
+        Thu, 25 Aug 2022 12:15:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C2651573A;
+        Thu, 25 Aug 2022 09:15:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3452AB82A1D;
-        Thu, 25 Aug 2022 16:13:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D6A1C433D6;
-        Thu, 25 Aug 2022 16:13:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEA3261B7C;
+        Thu, 25 Aug 2022 16:15:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91680C433B5;
+        Thu, 25 Aug 2022 16:15:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661444024;
-        bh=vZbgVY2G/5OHN0gh3qchTpghD4a8tCzza/y15Oz5I0U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=P7A+WAnDdtwS91BYv3Rv+pX+9G0TX8G9reOfyDHKMgWrvjxXDNBk1hLpS7tdtM51a
-         Gfi05PdZWtNQPamG+NZ3OIlndVUYqjuF+0xv63qIKv5h/KcPnnqmRj4vVwXbL5EOwX
-         p7oRbum5ZMBMQvfwKVaqqsRbVe8wr6/qJ0MOUFs4tz7+nn58jFq6ear4LQ4xENQfeq
-         at28aIP0Dpr5xz9B7ohAY5O2IbCFjjLVBVSrd5T4mLoD2A5RqKnfB/Zw6IyyXdGlJB
-         5Lf5ZD6Qj3GpmTYrlM1wOvySQhYri3Kvy3rnUj4NAfCXwQ9SeIK7PCdnFhFH27dzBa
-         6i1XM2OMv+ViQ==
-Date:   Thu, 25 Aug 2022 09:13:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Hayes Wang <hayeswang@realtek.com>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-Subject: Re: Commit 'r8152: fix a WOL issue' makes Ethernet port on Lenovo
- Thunderbolt 3 dock go crazy
-Message-ID: <20220825091343.2e5f99dd@kernel.org>
-In-Reply-To: <8c214c0b-4b8f-5e62-5aef-76668987e8fd@leemhuis.info>
-References: <3745745afedb2eff890277041896356149a8f2bf.camel@redhat.com>
-        <339e2f94-213c-d707-b792-86d53329b3e5@leemhuis.info>
-        <8c214c0b-4b8f-5e62-5aef-76668987e8fd@leemhuis.info>
+        s=k20201202; t=1661444122;
+        bh=u9Ghl7TkYlx4h5gPcy/Fm5vU59cOedqmjOD4pBXghVs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A/SGhxfqDYpB5hPxz6UxiRs26o01eLebUwupK8kC+Wfe4eXrDPazt/PWA21wO9gtm
+         i99aqOcn854/pfR80H9iXYQd9TJlocti7VxnBsfc81u6Py04Dmh+lMaqGxsyehtr0x
+         GaqCcykcCTIukviFErXZOEgCZdt4W2eEyGpemvdajzA3mJ6SzOoTiXC34y9H+xJiWe
+         owqLy+vIw8Kw5hDA2FjYa98H8110kbsfwoTu2qAvzZ+xy4xgh4piRMrqq/PfNStXa7
+         BMSUKZTY9g4FezHMxcYcisXMN3XGWJZ2YxiNfuZ78qGaaqBL1YliAzueKZ6WgtBVpv
+         D1Qke13oXPM5w==
+From:   SeongJae Park <sj@kernel.org>
+To:     jgross@suse.com, roger.pau@citrix.com
+Cc:     marmarek@invisiblethingslab.com, mheyne@amazon.de,
+        xen-devel@lists.xenproject.org, axboe@kernel.dk,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        SeongJae Park <sj@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH 1/2] xen-blkback: Advertise feature-persistent as user requested
+Date:   Thu, 25 Aug 2022 16:15:10 +0000
+Message-Id: <20220825161511.94922-2-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220825161511.94922-1-sj@kernel.org>
+References: <20220825161511.94922-1-sj@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 25 Aug 2022 09:26:21 +0200 Thorsten Leemhuis wrote:
-> On 24.08.22 13:16, Thorsten Leemhuis wrote:
-> > Hi, this is your Linux kernel regression tracker.
-> > 
-> > Quick note before the boilerplate: there is another report about issues
-> > caused by cdf0b86b250fd3 also involving a dock, but apparently it's
-> > ignored so far:
-> > https://bugzilla.kernel.org/show_bug.cgi?id=216333  
-> 
-> TWIMC, apparently it's the same problem.
-> 
-> Fun fact: Hayes discussed this in privately with the bug reporter
-> according to this comment:
-> https://bugzilla.kernel.org/show_bug.cgi?id=216333#c3
-> 
-> Well, that's not how things normally should be handled, but whatever, he
-> in the end recently submitted a patch to fix it that is already merged
-> to net.git:
-> 
-> https://lore.kernel.org/lkml/20220818080620.14538-394-nic_swsd@realtek.com/
+Commit e94c6101e151 ("xen-blkback: Apply 'feature_persistent' parameter
+when connect") made blkback to advertise its support of the persistent
+grants feature only if the user sets the 'feature_persistent' parameter
+of the driver and the frontend advertised its support of the feature.
+However, following commit 402c43ea6b34 ("xen-blkfront: Apply
+'feature_persistent' parameter when connect") made the blkfront to work
+in the same way.  That is, blkfront also advertises its support of the
+persistent grants feature only if the user sets the 'feature_persistent'
+parameter of the driver and the backend advertised its support of the
+feature.
 
-Yup, it will be part of 6.0-rc3. 
+Hence blkback and blkfront will never advertise their support of the
+feature but wait until the other advertises the support, even though
+users set the 'feature_persistent' parameters of the drivers.  As a
+result, the persistent grants feature is disabled always regardless of
+the 'feature_persistent' values[1].
 
-Thanks!
+The problem comes from the misuse of the semantic of the advertisement
+of the feature.  The advertisement of the feature should means only
+availability of the feature not the decision for using the feature.
+However, current behavior is working in the wrong way.
+
+This commit fixes the issue by making the blkback advertises its support
+of the feature as user requested via 'feature_persistent' parameter
+regardless of the otherend's support of the feature.
+
+[1] https://lore.kernel.org/xen-devel/bd818aba-4857-bc07-dc8a-e9b2f8c5f7cd@suse.com/
+
+Fixes: e94c6101e151 ("xen-blkback: Apply 'feature_persistent' parameter when connect")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Suggested-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ drivers/block/xen-blkback/common.h | 3 +++
+ drivers/block/xen-blkback/xenbus.c | 6 ++++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/block/xen-blkback/common.h b/drivers/block/xen-blkback/common.h
+index bda5c815e441..a28473470e66 100644
+--- a/drivers/block/xen-blkback/common.h
++++ b/drivers/block/xen-blkback/common.h
+@@ -226,6 +226,9 @@ struct xen_vbd {
+ 	sector_t		size;
+ 	unsigned int		flush_support:1;
+ 	unsigned int		discard_secure:1;
++	/* Connect-time cached feature_persistent parameter value */
++	unsigned int		feature_gnt_persistent_parm:1;
++	/* Persistent grants feature negotiation result */
+ 	unsigned int		feature_gnt_persistent:1;
+ 	unsigned int		overflow_max_grants:1;
+ };
+diff --git a/drivers/block/xen-blkback/xenbus.c b/drivers/block/xen-blkback/xenbus.c
+index ee7ad2fb432d..c0227dfa4688 100644
+--- a/drivers/block/xen-blkback/xenbus.c
++++ b/drivers/block/xen-blkback/xenbus.c
+@@ -907,7 +907,7 @@ static void connect(struct backend_info *be)
+ 	xen_blkbk_barrier(xbt, be, be->blkif->vbd.flush_support);
+ 
+ 	err = xenbus_printf(xbt, dev->nodename, "feature-persistent", "%u",
+-			be->blkif->vbd.feature_gnt_persistent);
++			be->blkif->vbd.feature_gnt_persistent_parm);
+ 	if (err) {
+ 		xenbus_dev_fatal(dev, err, "writing %s/feature-persistent",
+ 				 dev->nodename);
+@@ -1085,7 +1085,9 @@ static int connect_ring(struct backend_info *be)
+ 		return -ENOSYS;
+ 	}
+ 
+-	blkif->vbd.feature_gnt_persistent = feature_persistent &&
++	blkif->vbd.feature_gnt_persistent_parm = feature_persistent;
++	blkif->vbd.feature_gnt_persistent =
++		blkif->vbd.feature_gnt_persistent_parm &&
+ 		xenbus_read_unsigned(dev->otherend, "feature-persistent", 0);
+ 
+ 	blkif->vbd.overflow_max_grants = 0;
+-- 
+2.25.1
+
