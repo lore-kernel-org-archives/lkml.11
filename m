@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA8FECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF5A7ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243992AbiHYVpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 17:45:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
+        id S244082AbiHYVpq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 17:45:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235363AbiHYVoy (ORCPT
+        with ESMTP id S244032AbiHYVoy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 25 Aug 2022 17:44:54 -0400
 Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3E7E10;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72AE5FBF;
         Thu, 25 Aug 2022 14:44:43 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id BB5DD7F32;
-        Thu, 25 Aug 2022 23:44:38 +0200 (CEST)
+        by mail.3ffe.de (Postfix) with ESMTPSA id CEF0D831E;
+        Thu, 25 Aug 2022 23:44:39 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661463879;
+        t=1661463880;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jY0emPBT4127OBFcH8ITuFxvYnQvmd4PIUnzlT5RAgU=;
-        b=dnt/7z9E1egCRFkcjvLveYq3F/v3s9AVVV2A4i8MWA4kJKWtWOP1G1C1qeQs5mwLopjEyN
-        RWXPYRhEb3gx1qz0zByKEtttXf5TMfRsQVoAqGGHjc0aSXsr+ZD3QtwskWWrrl80Sej2OP
-        O2s+M/zm/OPyHifOJwtuqrqW4ZxQb8Du0hEf+6WUYb5RaG2GvM+coYmk71dSb/c+DajxYS
-        CASbw2FCRraHbxzF7Ie3T+lEHesRQEjw70Tncwq9BdnFSrA8fZ8Htd/3E572Oi38BD8Dw3
-        zwUqz7QQcCfv7iWqE/uNeXvJXJpaPRLT20tvDu678oeeDAe5aDDQ8f0J9lwzMw==
+        bh=NulQog4Ua6qPEeieWoZCqTlKOCTKSY1NYdQPcq6/xPM=;
+        b=0drLSyK7eFBxYhqFpoLJiJmOaKwhJvE1lbTKkxLiiobGwpAY9SicTiJHD012GW5RUJzTtP
+        FIoBkqdU89gcF/by0qzLaQ/G8hHxAOpDc8qFXCuLVlsWwTX2eAPFPIwaE6Szcg4RTfcmhC
+        XAfBwP3hjSpFneF1lr3mUHyRPdEBJlAlOJgQPdRuI1Ly9a0awIo8/W6ZLqy3vhcx+HoHSz
+        yB4e6j9mu0j3nO6Qq9M382Gu5CZZxy2/Eo62boKpUcz4m/Ocjllyw+69KnEMWcf1rWLSio
+        d4ERhdGRxd4hZxGIqf1HAe9avFdEUPKnndE/1Qigsy0lQxU102dZ6jXi2jKbog==
 From:   Michael Walle <michael@walle.cc>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
@@ -51,9 +51,9 @@ Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 05/14] nvmem: core: add nvmem_add_one_cell()
-Date:   Thu, 25 Aug 2022 23:44:14 +0200
-Message-Id: <20220825214423.903672-6-michael@walle.cc>
+Subject: [PATCH v1 07/14] nvmem: core: add per-cell post processing
+Date:   Thu, 25 Aug 2022 23:44:16 +0200
+Message-Id: <20220825214423.903672-8-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220825214423.903672-1-michael@walle.cc>
 References: <20220825214423.903672-1-michael@walle.cc>
@@ -64,120 +64,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new function to add exactly one cell. This will be used by the
-nvmem layout drivers to add custom cells. In contrast to the
-nvmem_add_cells(), this has the advantage that we don't have to assemble
-a list of cells on runtime.
+Instead of relying on the name the consumer is using for the cell, like
+it is done for the nvmem .cell_post_process configuration parameter,
+provide a per-cell post processing hook. This can then be populated by
+the NVMEM provider (or the NVMEM layout) when adding the cell.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/nvmem/core.c           | 58 ++++++++++++++++++++--------------
- include/linux/nvmem-provider.h |  5 +++
- 2 files changed, 39 insertions(+), 24 deletions(-)
+ drivers/nvmem/core.c           | 16 ++++++++++++++++
+ include/linux/nvmem-consumer.h |  5 +++++
+ 2 files changed, 21 insertions(+)
 
 diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index be38e62fd190..3dfd149374a8 100644
+index 5357fc378700..cbfbe6264e6c 100644
 --- a/drivers/nvmem/core.c
 +++ b/drivers/nvmem/core.c
-@@ -501,6 +501,35 @@ static int nvmem_cell_info_to_nvmem_cell_entry(struct nvmem_device *nvmem,
- 	return 0;
- }
+@@ -52,6 +52,7 @@ struct nvmem_cell_entry {
+ 	int			bytes;
+ 	int			bit_offset;
+ 	int			nbits;
++	nvmem_cell_post_process_t post_process;
+ 	struct device_node	*np;
+ 	struct nvmem_device	*nvmem;
+ 	struct list_head	node;
+@@ -468,6 +469,7 @@ static int nvmem_cell_info_to_nvmem_cell_entry_nodup(struct nvmem_device *nvmem,
+ 	cell->offset = info->offset;
+ 	cell->bytes = info->bytes;
+ 	cell->name = info->name;
++	cell->post_process = info->post_process;
  
-+/**
-+ * nvmem_add_one_cell() - Add one cell information to an nvmem device
-+ *
-+ * @nvmem: nvmem device to add cells to.
-+ * @info: nvmem cell info to add to the device
-+ *
-+ * Return: 0 or negative error code on failure.
-+ */
-+int nvmem_add_one_cell(struct nvmem_device *nvmem,
-+		       const struct nvmem_cell_info *info)
-+{
-+	struct nvmem_cell_entry *cell;
-+	int rval;
-+
-+	cell = kzalloc(sizeof(*cell), GFP_KERNEL);
-+	if (!cell)
-+		return -ENOMEM;
-+
-+	rval = nvmem_cell_info_to_nvmem_cell_entry(nvmem, info, cell);
-+	if (rval) {
-+		kfree(cell);
-+		return rval;
+ 	cell->bit_offset = info->bit_offset;
+ 	cell->nbits = info->nbits;
+@@ -1500,6 +1502,13 @@ static int __nvmem_cell_read(struct nvmem_device *nvmem,
+ 	if (cell->bit_offset || cell->nbits)
+ 		nvmem_shift_read_buffer_in_place(cell, buf);
+ 
++	if (cell->post_process) {
++		rc = cell->post_process(nvmem->priv, id, index,
++					cell->offset, buf, cell->bytes);
++		if (rc)
++			return rc;
 +	}
 +
-+	nvmem_cell_entry_add(cell);
-+
-+	return 0;
-+}
-+
- /**
-  * nvmem_add_cells() - Add cell information to an nvmem device
-  *
-@@ -514,34 +543,15 @@ static int nvmem_add_cells(struct nvmem_device *nvmem,
- 		    const struct nvmem_cell_info *info,
- 		    int ncells)
- {
--	struct nvmem_cell_entry **cells;
--	int i, rval = 0;
--
--	cells = kcalloc(ncells, sizeof(*cells), GFP_KERNEL);
--	if (!cells)
--		return -ENOMEM;
-+	int i, rval;
+ 	if (nvmem->cell_post_process) {
+ 		rc = nvmem->cell_post_process(nvmem->priv, id, index,
+ 					      cell->offset, buf, cell->bytes);
+@@ -1608,6 +1617,13 @@ static int __nvmem_cell_entry_write(struct nvmem_cell_entry *cell, void *buf, si
+ 	    (cell->bit_offset == 0 && len != cell->bytes))
+ 		return -EINVAL;
  
- 	for (i = 0; i < ncells; i++) {
--		cells[i] = kzalloc(sizeof(**cells), GFP_KERNEL);
--		if (!cells[i]) {
--			rval = -ENOMEM;
--			goto out;
--		}
--
--		rval = nvmem_cell_info_to_nvmem_cell_entry(nvmem, &info[i], cells[i]);
--		if (rval) {
--			kfree(cells[i]);
--			goto out;
--		}
--
--		nvmem_cell_entry_add(cells[i]);
-+		rval = nvmem_add_one_cell(nvmem, &info[i]);
-+		if (rval)
-+			return rval;
- 	}
++	/*
++	 * Any cells which have a post_process hook are read-only because we
++	 * cannot reverse the operation and it might affect other cells, too.
++	 */
++	if (cell->post_process)
++		return -EINVAL;
++
+ 	if (cell->bit_offset || cell->nbits) {
+ 		buf = nvmem_cell_prepare_write_buffer(cell, buf, len);
+ 		if (IS_ERR(buf))
+diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
+index 980f9c9ac0bc..761b8ef78adc 100644
+--- a/include/linux/nvmem-consumer.h
++++ b/include/linux/nvmem-consumer.h
+@@ -19,6 +19,10 @@ struct device_node;
+ struct nvmem_cell;
+ struct nvmem_device;
  
--out:
--	/* remove tmp array */
--	kfree(cells);
--
--	return rval;
-+	return 0;
- }
++/* duplicated from nvmem-provider.h */
++typedef int (*nvmem_cell_post_process_t)(void *priv, const char *id, int index,
++					 unsigned int offset, void *buf, size_t bytes);
++
+ struct nvmem_cell_info {
+ 	const char		*name;
+ 	unsigned int		offset;
+@@ -26,6 +30,7 @@ struct nvmem_cell_info {
+ 	unsigned int		bit_offset;
+ 	unsigned int		nbits;
+ 	struct device_node	*np;
++	nvmem_cell_post_process_t post_process;
+ };
  
  /**
-diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
-index 8f964b394292..e710404959e7 100644
---- a/include/linux/nvmem-provider.h
-+++ b/include/linux/nvmem-provider.h
-@@ -138,6 +138,9 @@ struct nvmem_device *devm_nvmem_register(struct device *dev,
- void nvmem_add_cell_table(struct nvmem_cell_table *table);
- void nvmem_del_cell_table(struct nvmem_cell_table *table);
- 
-+int nvmem_add_one_cell(struct nvmem_device *nvmem,
-+		       const struct nvmem_cell_info *info);
-+
- #else
- 
- static inline struct nvmem_device *nvmem_register(const struct nvmem_config *c)
-@@ -155,6 +158,8 @@ devm_nvmem_register(struct device *dev, const struct nvmem_config *c)
- 
- static inline void nvmem_add_cell_table(struct nvmem_cell_table *table) {}
- static inline void nvmem_del_cell_table(struct nvmem_cell_table *table) {}
-+static inline int nvmem_add_one_cell(struct nvmem_device *nvmem,
-+				     const struct nvmem_cell_info *info) {}
- 
- #endif /* CONFIG_NVMEM */
- #endif  /* ifndef _LINUX_NVMEM_PROVIDER_H */
 -- 
 2.30.2
 
