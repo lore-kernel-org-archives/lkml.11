@@ -2,82 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2D3ECAA24
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAFCECAA24
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243278AbiHYSKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:10:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35210 "EHLO
+        id S242986AbiHYSMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243250AbiHYSK3 (ORCPT
+        with ESMTP id S229520AbiHYSM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:10:29 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16FA4A927A;
-        Thu, 25 Aug 2022 11:10:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CD716CE292B;
-        Thu, 25 Aug 2022 18:10:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D623C433C1;
-        Thu, 25 Aug 2022 18:10:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661451021;
-        bh=Er8V9jNbcvkm1yktE0q1q+gaOywFHNbKENwzjuzsnpk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=c3UkDop3oO43oJhqNyBuSPAFSouev7/BICPgYp4oeVQB4vqSSZ3dTBFcoHV3jR1eg
-         02FgisMPYnCaKBwXe2JuSpOLV/FrZsifmSq5LDmChTtAZUsp/BQOKdfdGgclTziAfn
-         skf6YPayTB9zEuhxk3tqYH0FpwKxra/psXWasHQUrk5QJ9TMt35wbw38k3jTUe0G/Z
-         LVaZKqorz5gAvzX7bm81C1ngf63fn4uGWm1EfZsptc1k5GAFONdPWkN7hoPfBDDRvt
-         mEAbxWTNsIfpJY8y1110qJwW1nuFR8rqMT9x/IUgNZjkgigBvkBhjsVWuxQSvksJKD
-         8q1z61szHCW5w==
-Date:   Thu, 25 Aug 2022 11:10:19 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        kernel test robot <lkp@intel.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v2 6/7] ethtool: add interface to interact with
- Ethernet Power Equipment
-Message-ID: <20220825111019.1dc3dae0@kernel.org>
-In-Reply-To: <20220825130211.3730461-7-o.rempel@pengutronix.de>
-References: <20220825130211.3730461-1-o.rempel@pengutronix.de>
-        <20220825130211.3730461-7-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 25 Aug 2022 14:12:29 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52CECCE10
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:12:28 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 27PI878E022924;
+        Thu, 25 Aug 2022 13:08:07 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 27PI86ZE022921;
+        Thu, 25 Aug 2022 13:08:06 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Thu, 25 Aug 2022 13:08:06 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, Uros Bizjak <ubizjak@gmail.com>,
+        x86@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev@lists.ozlabs.org, sv@linux.ibm.com
+Subject: Re: [PATCH] compiler-gcc.h: Remove ancient workaround for gcc PR 58670
+Message-ID: <20220825180806.GG25951@gate.crashing.org>
+References: <20220624141412.72274-1-ubizjak@gmail.com> <1661422971.cqtahfm22j.naveen@linux.ibm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1661422971.cqtahfm22j.naveen@linux.ibm.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 25 Aug 2022 15:02:10 +0200 Oleksij Rempel wrote:
-> +enum ethtool_podl_pse_admin_state {
-> +	ETHTOOL_PODL_PSE_ADMIN_STATE_UNKNOWN = 1,
+Hi!
 
-Why define UNKNOWN.. as 1? No real objection here, just in my head
-somehow UNKNOWN = 0 or just start from 1.
+On Thu, Aug 25, 2022 at 04:00:52PM +0530, Naveen N. Rao wrote:
+> This is causing a build issue on ppc64le with a new patch replacing use 
+> of unreachable() with __builtin_unreachable() in __WARN_FLAGS():
+> https://lore.kernel.org/linuxppc-dev/20220808114908.240813-2-sv@linux.ibm.com/
 
-> +	ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED,
-> +	ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED,
-> +
-> +	/* add new constants above here */
-> +	ETHTOOL_PODL_PSE_ADMIN_STATE_COUNT
+What is the compiler version?  If this is a GCC version that is still
+supported, could you please open a PR?  <https://gcc.gnu.org/bugs.html>
 
-Why define count for a value enum like this? For attrs we define it
-because it's used to size tables, don't think anyone will size tables
-based on states.
+> during RTL pass: combine
+> In file included from /linux/kernel/locking/rtmutex_api.c:9:
+> /linux/kernel/locking/rtmutex.c: In function 
+> '__rt_mutex_slowlock.constprop':
+> /linux/kernel/locking/rtmutex.c:1612:1: internal compiler error: in 
+> purge_dead_edges, at cfgrtl.c:3369
+> 1612 | }
+>      | ^
+> 0x142817c internal_error(char const*, ...)
+> 	???:0
+> 0x5c8a1b fancy_abort(char const*, int, char const*)
+> 	???:0
+> 0x72017f purge_all_dead_edges()
+> 	???:0
+> Please submit a full bug report,
+> with preprocessed source if appropriate.
+> Please include the complete backtrace with any bug report.
+> See <file:///usr/share/doc/gcc-11/README.Bugs> for instructions.
 
-There's a bunch of kdoc warnings in the patches as well.
+(For some reason your compiler does not show compiler source code file
+names or line numbers.)
+
+So it is GCC 11...  is it 11.3?  If not, please try with that.
+
+> So, it looks like gcc still has issues with certain uses of asm goto.
+
+Could be.  Please attach preprocessed code (or reduced code that shows
+the same problem if you have that / can make that).  Thanks!
+
+
+Segher
