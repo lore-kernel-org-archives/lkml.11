@@ -2,77 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C951ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8873ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244067AbiHYVx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 17:53:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
+        id S244042AbiHYVyS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 17:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244030AbiHYVx4 (ORCPT
+        with ESMTP id S244035AbiHYVyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 17:53:56 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302182D1E2;
-        Thu, 25 Aug 2022 14:53:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1cpnv7cRnMZ16t80+IgphUDcNNToBRnfujnI1hjI/5c=; b=483chnirogxayPXYL2kwLuxOa1
-        mma4b+CW/hU5CXhabflX2kDXsg61q7VuC5K3h7AxEYEiuBxhI1DOJ9bC+9MiPK4ZK+x7ALGJLinoS
-        e/mcSYS8DmuL9csHUhg1JI+GEZ3kEcp0sNHWnLxy58JeXaebuDsT7IFDCF0IEjxgG6y4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oRKnJ-00Ebxa-Ds; Thu, 25 Aug 2022 23:53:45 +0200
-Date:   Thu, 25 Aug 2022 23:53:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Divya Koppera <Divya.Koppera@microchip.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next] net: phy: micrel: Adding SQI support for
- lan8814 phy
-Message-ID: <YwfvaSFejdtPtZgK@lunn.ch>
-References: <20220825080549.9444-1-Divya.Koppera@microchip.com>
+        Thu, 25 Aug 2022 17:54:15 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD3E6171D
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:54:15 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id 142so1979442pfu.10
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:54:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=/OleIMSx66/JnsrCZ+jjXELawCc210iRROOPmY8je7c=;
+        b=ONLRvHC6F9s2T6D3i95ao0TYmeZs9wPZNQ3rGerJswWz4uJNCFcXBLY1WUq7nuXfXn
+         wFcVgzzTllbGoJSdLThvdnMbzaqGRrbeo7Whjbo8hOp5WA3kbRErgDAdctjtG0bMaMnM
+         WBJiagagl112SbXF59ZvlhQX6p7nBRWHipst+ygmIrEKEgiJmjkuCAbzxn69++GGoQRb
+         UZ4TwUqblcJiO9TB2Cx8GB54RQCp8bV7SMDnvixUREIF70dwBNJpZ1+k1NqmpBnQyF7l
+         PNVOYzbAW23QVgD2LpPp4sm7fSXHgILq0wyHIumLc36frz21AWG1xGvgKEVe0MNebVCV
+         y5JQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=/OleIMSx66/JnsrCZ+jjXELawCc210iRROOPmY8je7c=;
+        b=V9GfTe+MzcG41UAsIpTcFZiDJs5Kq88kTp6pTYMQZuk4+cQ0WaQmXV4moRe24qk7Lb
+         EvQG3CW1k2mCz18cyxxw7dR//CjtWYsTGTZTOxmOLnrZqfxLLSKqmNy0jfrpTJ3vUVgH
+         4CGR+LSruW2wGnofIonNUkDyIM+BXbKlwP01u5tRp8thofl9dEGhKgh5jgeI1LDsbK2a
+         W1uTGHGXibIIPob4UsUUTv4xa93etN8vsIzyZ3nk1jSMGxkZFWghpjyflwacsOxv8pG3
+         XNi/XzgzO9NpuelEO5ZJ0IOYR9awI46fosahEsCn+UZ0oyJMOaCtO/612sV1QQUBUYI+
+         kp2w==
+X-Gm-Message-State: ACgBeo0z39KCtdM7LxVxr9kwvcFYE11jbX8i8YmupaDZUYPRbawsZqx9
+        AopvQnpguX9GhJGCyW4QfTHNGw==
+X-Google-Smtp-Source: AA6agR5cAdfVNLb7YOFQrie40e2QNLOCPOAnbBnU/8yFbCKQTaCITCzmT9yfS3FBawNlOJ0rBrwIMw==
+X-Received: by 2002:a65:4c48:0:b0:42b:508f:f48 with SMTP id l8-20020a654c48000000b0042b508f0f48mr852060pgr.437.1661464454571;
+        Thu, 25 Aug 2022 14:54:14 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id t9-20020a17090a1c8900b001f8aee0d826sm196610pjt.53.2022.08.25.14.54.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 14:54:14 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 21:54:10 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Chang S. Bae" <chang.seok.bae@intel.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com,
+        linux-kernel@vger.kernel.org, yang.zhong@intel.com
+Subject: Re: [RFC PATCH 1/2] KVM: x86: Add a new system attribute for dynamic
+ XSTATE component
+Message-ID: <YwfvgsNTz33dlwKP@google.com>
+References: <20220823231402.7839-1-chang.seok.bae@intel.com>
+ <20220823231402.7839-2-chang.seok.bae@intel.com>
+ <YwabSPpC1G9J+aRA@google.com>
+ <08e59f2d-24cb-dca8-b1b8-9e80f8a85398@intel.com>
+ <YwehLNws0WBNRDgN@google.com>
+ <e52f26d4-c52a-e20d-7bc0-663bb4979827@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220825080549.9444-1-Divya.Koppera@microchip.com>
+In-Reply-To: <e52f26d4-c52a-e20d-7bc0-663bb4979827@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +#define LAN8814_DCQ_CTRL				0xe6
-> +#define LAN8814_DCQ_CTRL_READ_CAPTURE_			BIT(15)
-> +#define LAN8814_DCQ_CTRL_CHANNEL_MASK			GENMASK(1, 0)
-> +#define LAN8814_DCQ_SQI					0xe4
-> +#define LAN8814_DCQ_SQI_MAX				7
-> +#define LAN8814_DCQ_SQI_VAL_MASK			GENMASK(3, 1)
-> +
->  static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
->  {
->  	int data;
-> @@ -2927,6 +2934,32 @@ static int lan8814_probe(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static int lan8814_get_sqi(struct phy_device *phydev)
-> +{
-> +	int rc, val;
-> +
-> +	val = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_CTRL);
-> +	if (val < 0)
-> +		return val;
+On Thu, Aug 25, 2022, Chang S. Bae wrote:
+> On 8/25/2022 9:19 AM, Sean Christopherson wrote:
+> > 
+> > Adding new uAPI and new exports to eliminate one line of userspace code is not a
+> > good tradeoff.  Am I missing something?  This really seems like solution looking
+> > for a problem.
+> 
+> Well, then that's your call.
+> 
+> Yeah, that simplification is really minor. With this, I would rather think
+> KVM wants enforcement before relaying the request to the host. That
+> enforcement is unthinkable without supported_xcr0.
 
-I just took a quick look at the datasheet. It says:
+My point is that KVM needs supported_xcr0 (or similar behavior) regardless of
+whether or not the kernel further restricts feature usage.
 
-All registers references in this section are in MMD Device Address 1
-
-So you should be using phy_read_mmd(phydev, MDIO_MMD_PMAPMD, xxx) to
-read/write these registers. The datasheet i have however is missing
-the register map, so i've no idea if it is still 0xe6.
-
-    Andrew
+> But it looks like userspace is somehow trusted here for KVM.
