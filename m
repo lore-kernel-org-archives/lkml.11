@@ -2,209 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5745ECAA24
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 17:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC43ECAA24
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 17:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242711AbiHYRfa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 13:35:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45562 "EHLO
+        id S242577AbiHYRhA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 13:37:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242577AbiHYRfS (ORCPT
+        with ESMTP id S236250AbiHYRg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 13:35:18 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92634A803;
-        Thu, 25 Aug 2022 10:35:16 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id f4so16645471pgc.12;
-        Thu, 25 Aug 2022 10:35:16 -0700 (PDT)
+        Thu, 25 Aug 2022 13:36:59 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D41B7742
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 10:36:57 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id gb36so40900067ejc.10
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 10:36:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=G4/totSXnLF4OIexpkONKiVFqcUNM6MV/u0KynK+Ngw=;
-        b=KzJQ0G+219CI0rf2+YYLdSHRNlmcUIv8amjH7VFxdu55tS8n3CrqE6RQLvF61ytAiN
-         SBgfiLyqfO9mMjbxWmTcS/I61O5KlJYlLDTVYBySdnSWVvKBZvIrR1Ym3BjnHc7F1eVb
-         yL4IVn2l9sLadtLS6rWsF3aShUhyga/fZPGC4dSUi/0G2d9O3cb6X/P/bxvjUPYkcCQa
-         RWhXt3mztUOTKZkUf4MbLUZIOEhJF8SlVnIaUFseQynWqhoxe0aipU9f593yk8rSz6Lo
-         JuV2yQq5Zy6AH799+nSIN5b8Wp7yULiBVy97W3aHw1+ZPBikX4/TXI+DajAr3fyVTpKK
-         ey+w==
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=MgkxpuDYNfRRBnVjGGx0IvVP/Y84NvnK9NI2soXdS2k=;
+        b=XzKSN+zJd0x+L4aWMzauNurwUHFcSPiPCb1fGPFyN2vz+d/RoA+TjfrUTNw7mW7t/L
+         8GEtg9rj7rAYC0VKF08igpQIBo5p3lYtT51A050uz6ZJOgzADOgKSyZI4hTiNusPnrJq
+         klt0qWnCM70n39VrqtFAlGcV51De/6hBnxTdk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=G4/totSXnLF4OIexpkONKiVFqcUNM6MV/u0KynK+Ngw=;
-        b=elgHIzTBqjkjG28rQA2xpcuzN5Ng06jhHbWBkxoqCxQEB1Z2sej0LWJemluaPHJCsD
-         WYYgV3yS50SjS761/lfWtqIiX81kN5dTsSYK3YFpEW9U1vsm4ldSDZZrEdOUVNEd+5ue
-         BEfHiX/lWPaQmXoHvOABmqPbFVQajIWbRsTJ4qZ0aN/TQUhr0We5ddAl+ALJXesZ5FAW
-         +UDi8qRbHd0NZ5oRr4m7dH6bIhEAm19LEdd/rbVb95NZVBEqeUeFMc3XcCqlSWou8tCa
-         4IPj20jF1YkTj1aW138Bd19iShcu0jEyuJ/ZxdlflQqxmyD8TSSbsvkbGhmvk0DmiIcd
-         HTqQ==
-X-Gm-Message-State: ACgBeo092NlMAD4cT1QLRT6fVPHzn9is57K8xPB30DAiCUJuaVjw4k6D
-        zOftWjwb4MiYIFuTKij2SNs=
-X-Google-Smtp-Source: AA6agR6QqA2E2sYym2KZRyGTf9HFsQrvhZKE8JqQlg4PKzKbVlup5/Vgk+L9aIprKB6N2L7KFxg6FA==
-X-Received: by 2002:a05:6a00:850:b0:536:341b:99b7 with SMTP id q16-20020a056a00085000b00536341b99b7mr61373pfk.47.1661448916001;
-        Thu, 25 Aug 2022 10:35:16 -0700 (PDT)
-Received: from DESKTOP-KA7F9LU.localdomain ([223.186.22.215])
-        by smtp.googlemail.com with ESMTPSA id w7-20020a170902e88700b001725d542190sm15170110plg.181.2022.08.25.10.35.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 10:35:15 -0700 (PDT)
-From:   Vimal Kumar <vimal.kumar32@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     chinmoyghosh2001@gmail.com, Vimal Kumar <vimal.kumar32@gmail.com>,
-        Mintu Patel <mintupatel89@gmail.com>,
-        Vishal Badole <badolevishal1116@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: [PATCH v2] PM: runtime: Add support to disable wakeup sources
-Date:   Thu, 25 Aug 2022 23:04:41 +0530
-Message-Id: <20220825173457.23298-1-vimal.kumar32@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=MgkxpuDYNfRRBnVjGGx0IvVP/Y84NvnK9NI2soXdS2k=;
+        b=z0ZHi2OVLlWVUThAdUWcj449fMF5LGs+aP9O0HsHMRi+1nvclVVFtsJOWi8TCWR85M
+         AQl6ywfcijD4a4U9TPpg0DqQVKw8oFB6BZKrp2yNZmlOf/smzhbL7nCYZ+dsCAQ7o5mk
+         sIbBv14ApL26h6Y3wp5JDfcU9BEqn0WYVZ+Ir6IUI3x5gES5tfbn/NG7dtogs4HakZW1
+         PvYBYvBfIaU7JD9IsD/Stn3yxHfqim6o320iaTQGrjAZNZd1T63OuSoHR9VlC7ewb4jz
+         //nIfq5UfqBnNc+uQykT/yWofjPBh8RBf7bfSD9c13BWfimpAHaPZFY9K0qTNjskEFDO
+         bLfQ==
+X-Gm-Message-State: ACgBeo3FC6UfvWJMQI+XvwFOSI8e1umYxgHpKBg1mZcWT7RSntNyrguP
+        uV1B2MBpBW8SNpBVDescDU8Ta7fgR1AUniIW7y4=
+X-Google-Smtp-Source: AA6agR5uUVp/qYTnLbwOOKOE1I/+QDJT4Wg8q/tth3XMERxuiajEz8RCeWhbdlWf3tjS5WAPyiVusA==
+X-Received: by 2002:a17:906:cc55:b0:73d:c3c3:92c6 with SMTP id mm21-20020a170906cc5500b0073dc3c392c6mr3120993ejb.536.1661449016286;
+        Thu, 25 Aug 2022 10:36:56 -0700 (PDT)
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com. [209.85.221.49])
+        by smtp.gmail.com with ESMTPSA id fb17-20020a1709073a1100b0072b32de7794sm2700005ejc.70.2022.08.25.10.36.53
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 10:36:54 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id a4so25554583wrq.1
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 10:36:53 -0700 (PDT)
+X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id
+ b13-20020adff90d000000b0020cde324d35mr2914675wrr.583.1661449013445; Thu, 25
+ Aug 2022 10:36:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220822180729.1.I8ac5abe3a4c1c6fd5c061686c6e883c22f69022c@changeid>
+In-Reply-To: <20220822180729.1.I8ac5abe3a4c1c6fd5c061686c6e883c22f69022c@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 25 Aug 2022 10:36:41 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=W5X2XvvKT5tq+1ywJSmVB0TAHquGgn02uNmn4s-sqndg@mail.gmail.com>
+Message-ID: <CAD=FV=W5X2XvvKT5tq+1ywJSmVB0TAHquGgn02uNmn4s-sqndg@mail.gmail.com>
+Subject: Re: [PATCH] Revert "drm: bridge: analogix/dp: add panel
+ prepare/unprepare in suspend/resume time"
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>, xuqiang36@huawei.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Zhang Zekun <zhangzekun11@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-User could find many wakeup sources available in the bsp, which
-they won't be using. Currently users can only get the status and
-list of enabled wakeup sources, but users can't disable it runtime.
-It's very difficult to find the driver for each wakeup sources from
-where it's getting enabled and make the changes for disabling it.
+Hi,
 
-This will help users to disable any wakeup sources at runtime,
-avoiding any code change and re-compilation. A new class attribute
-"disable_ws" will be added in the wakeup calss. If user want to disable
-any wakeup sources, user need to find the wakeup dev node associated
-with the particular wakeup source and write the devnode name to the
-class attribute "disable_ws".
+On Mon, Aug 22, 2022 at 6:08 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> This reverts commit 211f276ed3d96e964d2d1106a198c7f4a4b3f4c0.
+>
+> For quite some time, core DRM helpers already ensure that any relevant
+> connectors/CRTCs/etc. are disabled, as well as their associated
+> components (e.g., bridges) when suspending the system. Thus,
+> analogix_dp_bridge_{enable,disable}() already get called, which in turn
+> call drm_panel_{prepare,unprepare}(). This makes these drm_panel_*()
+> calls redundant.
+>
+> Besides redundancy, there are a few problems with this handling:
+>
+> (1) drm_panel_{prepare,unprepare}() are *not* reference-counted APIs and
+> are not in general designed to be handled by multiple callers --
+> although some panel drivers have a coarse 'prepared' flag that mitigates
+> some damage, at least. So at a minimum this is redundant and confusing,
+> but in some cases, this could be actively harmful.
+>
+> (2) The error-handling is a bit non-standard. We ignored errors in
+> suspend(), but handled errors in resume(). And recently, people noticed
+> that the clk handling is unbalanced in error paths, and getting *that*
+> right is not actually trivial, given the current way errors are mostly
+> ignored.
+>
+> (3) In the particular way analogix_dp_{suspend,resume}() get used (e.g.,
+> in rockchip_dp_*(), as a late/early callback), we don't necessarily have
+> a proper PM relationship between the DP/bridge device and the panel
+> device. So while the DP bridge gets resumed, the panel's parent device
+> (e.g., platform_device) may still be suspended, and so any prepare()
+> calls may fail.
+>
+> So remove the superfluous, possibly-harmful suspend()/resume() handling
+> of panel state.
+>
+> Fixes: 211f276ed3d9 ("drm: bridge: analogix/dp: add panel prepare/unprepare in suspend/resume time")
+> Link: https://lore.kernel.org/all/Yv2CPBD3Picg%2FgVe@google.com/
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+>
+>  drivers/gpu/drm/bridge/analogix/analogix_dp_core.c | 13 -------------
+>  1 file changed, 13 deletions(-)
 
-Example:
-Need to disable the wakeup source '1c08000.qcom,pcie'. The dev node
-associated with this wakeup source is:
-cat /sys/class/wakeup3/name ==> "1c08000.qcom,pcie", then for disabling
-this wakeup source :
-	echo wakeup3 > /sys/class/wakeup/disable_ws
+I thought it was strange that the patch being reverted had my
+Tested-by, so I tracked that down at least. Looks like that's from:
 
-Co-developed-by: Mintu Patel <mintupatel89@gmail.com>
-Signed-off-by: Mintu Patel <mintupatel89@gmail.com>
-Co-developed-by: Vishal Badole <badolevishal1116@gmail.com>
-Signed-off-by: Vishal Badole <badolevishal1116@gmail.com>
-Signed-off-by: Vimal Kumar <vimal.kumar32@gmail.com>
----
- Documentation/ABI/testing/sysfs-class-wakeup | 16 +++++
- drivers/base/power/wakeup_stats.c            | 65 +++++++++++++++++++-
- 2 files changed, 80 insertions(+), 1 deletion(-)
+https://lore.kernel.org/lkml/CAD=FV=XXESzA6n6MNEGH1Kbh7CeL8xWX8CifFLVf91+0JyFcJQ@mail.gmail.com/
 
-diff --git a/Documentation/ABI/testing/sysfs-class-wakeup b/Documentation/ABI/testing/sysfs-class-wakeup
-index 754aab8b6dcd..75b9a6fe737a 100644
---- a/Documentation/ABI/testing/sysfs-class-wakeup
-+++ b/Documentation/ABI/testing/sysfs-class-wakeup
-@@ -74,3 +74,19 @@ Contact:	Tri Vo <trong@android.com>
- Description:
- 		The file contains the total amount of time this wakeup source
- 		has been preventing autosleep, in milliseconds.
-+
-+What:		/sys/class/wakeup/disable_ws
-+Date:		Aug 2022
-+Contact:	Vimal Kumar <vimal.kumar@gmail.com>
-+Description:
-+		This file can be used to disable a wakeup source at runtime.
-+		If user want to disable any wakeup sources, user need to find
-+		the wakeup dev node associated with the particular wakeup source
-+		and write the devnode name to this file "disable_ws".
-+
-+		Example:
-+		If user Need to disable the wakeup source '1c08000.qcom,pcie', and
-+		the wakeup dev node associated with this wakeup source is:
-+			cat /sys/class/wakeup3/name ==> "1c08000.qcom,pcie"
-+		Then for disabling this wakeup source :
-+			echo wakeup3 > /sys/class/wakeup/disable_ws
-diff --git a/drivers/base/power/wakeup_stats.c b/drivers/base/power/wakeup_stats.c
-index 924fac493c4f..497402a28028 100644
---- a/drivers/base/power/wakeup_stats.c
-+++ b/drivers/base/power/wakeup_stats.c
-@@ -15,6 +15,7 @@
- #include <linux/kobject.h>
- #include <linux/slab.h>
- #include <linux/timekeeping.h>
-+#include <linux/uaccess.h>
- 
- #include "power.h"
- 
-@@ -208,9 +209,71 @@ void wakeup_source_sysfs_remove(struct wakeup_source *ws)
- 	device_unregister(ws->dev);
- }
- 
-+static ssize_t disable_ws_store(struct class *class,
-+				struct class_attribute *attr,
-+				const char *buf, size_t len)
-+{
-+	struct device		*dev;
-+	struct wakeup_source	*ws;
-+	char                    *ws_name;
-+	int                     status;
-+
-+	ws_name = kzalloc(len+1, GFP_KERNEL);
-+	if (!ws_name)
-+		return -ENOMEM;
-+
-+	if (sscanf(buf, "%s", ws_name) != 1)
-+		return -EFAULT;
-+
-+	dev = class_find_device_by_name(wakeup_class, ws_name);
-+	if (!dev) {
-+		pr_err("%s : wakeup device not found\n", __func__);
-+		return -EINVAL;
-+	}
-+
-+	ws = dev_get_drvdata(dev);
-+	if (ws->dev->parent != NULL) {
-+
-+		status = device_wakeup_disable(ws->dev->parent);
-+		if (status < 0) {
-+			/* In case of virtual device, return code will be -EINVAL
-+			 * then unregister the wakeup source associated with it
-+			 */
-+			wakeup_source_unregister(ws);
-+		}
-+	} else
-+		/* If the parent device is NULL, just unregister the wakeup source */
-+		wakeup_source_unregister(ws);
-+
-+	return len;
-+}
-+
-+static CLASS_ATTR_WO(disable_ws);
-+
-+static struct attribute *wakeup_class_attrs[] = {
-+	&class_attr_disable_ws.attr,
-+	NULL,
-+};
-+ATTRIBUTE_GROUPS(wakeup_class);
-+
- static int __init wakeup_sources_sysfs_init(void)
- {
--	wakeup_class = class_create(THIS_MODULE, "wakeup");
-+	int status;
-+
-+	wakeup_class = kzalloc(sizeof(*wakeup_class), GFP_KERNEL);
-+	if (!wakeup_class)
-+		return -ENOMEM;
-+
-+	wakeup_class->name = "wakeup";
-+	wakeup_class->owner = THIS_MODULE;
-+	wakeup_class->class_groups = wakeup_class_groups;
-+
-+	status = class_register(wakeup_class);
-+
-+	if (status < 0) {
-+		pr_err("%s: class register failed %d\n", __func__, status);
-+		return status;
-+	}
- 
- 	return PTR_ERR_OR_ZERO(wakeup_class);
- }
--- 
-2.25.1
+...where I tested the whole stack of 17 patches together. That means
+that my Tested-by was legit but it wasn't as if I tested that one
+patch and confirmed that it was useful / needed.
 
+Your argument here sounds right to me. The panel should get prepared
+through the normal means (analogix_dp_bridge_pre_enable()) and
+unprepared through normal means (analogix_dp_bridge_disable()). ...and
+whenever the Analogix gets moved to "panel bridge" then that will move
+to just being part of the bridge chain. Having these calls directly in
+the suspend/resume seems weird/wrong.
+
+So while I'm not an expert enough in the quirks of the Analogix DP
+driver to say for certain that your revert won't cause any problems at
+all, if problems come up they should probably be fixed in a way that
+doesn't involve re-adding these direct calls to the suspend/resume
+callbacks. Thus:
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+
+Given that this is _not_ an area that I'm an expert in nor is it an
+area where the consequences are super easy to analyze, I'm a little
+hesitant to apply this to drm-misc-next myself. Ideally someone more
+familiar with the driver would do it. However, if nobody steps up
+after a few weeks and nobody has yelled about this patch, I'll apply
+it.
