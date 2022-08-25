@@ -2,194 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3253C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F336C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233847AbiHYI21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
+        id S235654AbiHYI24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 04:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236070AbiHYI2V (ORCPT
+        with ESMTP id S233215AbiHYI2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:28:21 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADEF51438
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:28:20 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id i7so14587641qka.13
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:28:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ke6WIRIWSNDEQe/wY0VHI5geaK0bwRFL8irWBp0pDpo=;
-        b=IiQ9DagLmvJrc2PH/b+b2bVepeX1fBVAFaNiG1SwksacAWJAh1+eCBSQbyb7l8QBXP
-         20PRaE/io0D4NCnN4Sdn09JEZ34u5Qzub6ztxa8UOiAHv0KX1ESeTtN6u67Pv9Ocms5T
-         GxlBMRFam91kV7W1tYRDFkH9yUKq2Un53ctVSILX91Im0e0Y9+aHI6uX9BAVAfKTYdcm
-         ndKxw1vU+deMVPSDDTaWVOCnLW+8l0m9Ix9eggSvE/OxWHm0wORpY7hTvVk/lKZJyGE6
-         MhKDflEZmO9/j1+yq4qMerYRPrvgGe54LfFtCIlRWE/tHcSK4uQzT+/wxZ80l1E+aKNY
-         khag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ke6WIRIWSNDEQe/wY0VHI5geaK0bwRFL8irWBp0pDpo=;
-        b=csTR1ZUEWV7ai2CkFbInSeLTFI2eSs5uolG9bEXSi6Q4Hclvnw95M2gha+CI9s08MH
-         hWIgitPIf2U495HWKMlJb+B2+LWZVvkbz0sf3ymsb15KLcPk2I29kM26M5rqUe7zlXCb
-         Q/1eXdUjTcKqzsSyyFQLyRLb03tTLTGcSeBJhs2/gV33mVvryCIS36kZ90cjBml38Su2
-         YDOgMCtxBj+eTsRc+bV/ps1WhhSAcc2jh0bk14Q02OjKkk796DIbVECdbYQXSR4Wv/Wo
-         4UsfE0ZJBlYiNyFVwW3Fm65XRx44aCW3xlQfrfkB0i03oiOGCOfFuPw1rPlT0KUUtI/+
-         nNZQ==
-X-Gm-Message-State: ACgBeo1qsNwo4x/wJMqmISCA8nQQ9dzhwrB8tQtCOc3V/d/moqxJjAP4
-        76FkSpfMgGlBA41IbssLglKhuo5lpXTUJslQpA4=
-X-Google-Smtp-Source: AA6agR4DJ53INtNlu0lOezpb9LaiBIkX/3rdV/bGy/sY6NFF90ttZFEFF3Jxb2Fj2tRYJqgMnJirjDIKJehog7WouIU=
-X-Received: by 2002:ae9:e311:0:b0:6ba:e711:fb27 with SMTP id
- v17-20020ae9e311000000b006bae711fb27mr2183968qkf.320.1661416099613; Thu, 25
- Aug 2022 01:28:19 -0700 (PDT)
+        Thu, 25 Aug 2022 04:28:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 989F951422;
+        Thu, 25 Aug 2022 01:28:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31CD7B82751;
+        Thu, 25 Aug 2022 08:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F11AEC433C1;
+        Thu, 25 Aug 2022 08:28:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661416129;
+        bh=hsT1N0GZBS8zN6pPF/LIhtsONDIzHgnCZgWOFTupmWw=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=muJUzUi725vGuHKBcJ2G3DNWkTRz7BXsPFk4VyXuG5XqP/q1W2Bs62ss8QJY6KsRa
+         uYoMp+u+tjx/IEt2sUm399XkWVfJwSZrrQPz18Tl3bb6SFcJJi5pZ5tUUOgilCSXmd
+         41gj4ox85hZKdtaPRFHVMANivRWJvDECE8/enx3ZXB9K++oirYXWlKZGYaXSt3hrKT
+         JtX5DCHbXcLCQ8PYmQvOyFHbsa10QkMOh5Z4gA/Z9QQ11mCtfEkG8thjOvK9I6V0++
+         WTKhqKjUqXUunOfXIeGytAd9C9w32zkBTg+G9tJ+L4jICEe03/R4U2gfCsOQX2Z/bg
+         ngF1GHX4qpRVg==
+Date:   Thu, 25 Aug 2022 10:28:45 +0200 (CEST)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     =?ISO-8859-15?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+cc:     benjamin.tissoires@redhat.com, spbnick@gmail.com,
+        j.witteveen@gmail.com, nathan@kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kunit-dev@googlegroups.com
+Subject: Re: [PATCH v4 0/8] XP-PEN Deco Pro S support
+In-Reply-To: <20220815142956.19180-1-jose.exposito89@gmail.com>
+Message-ID: <nycvar.YFH.7.76.2208251026400.19850@cbobk.fhfr.pm>
+References: <20220815142956.19180-1-jose.exposito89@gmail.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-References: <20220825060819.74303-1-liaochang1@huawei.com>
-In-Reply-To: <20220825060819.74303-1-liaochang1@huawei.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 25 Aug 2022 11:27:43 +0300
-Message-ID: <CAHp75VdyYY08uwJGi0m4-L9=9rLmFzkeJGTi2-NC=prbgKvo3A@mail.gmail.com>
-Subject: Re: [PATCH 1/2] genirq: Record dangling hwirq number into struct irq_data
-To:     Liao Chang <liaochang1@huawei.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Samuel Holland <samuel@sholland.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Jianmin Lv <lvjianmin@loongson.cn>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 9:11 AM Liao Chang <liaochang1@huawei.com> wrote:
+On Mon, 15 Aug 2022, José Expósito wrote:
 
-Use spell-checker, please. Or ask somebody for proof-reading of your
-commit messages and comments in the code.
+> Hello everyone,
+> 
+> This is v4 of [1]. Check the description in the link for more
+> information, please.
+> 
+> v1 -> v2:
+> 
+>  - First patch acked-by Daniel Latypov
+> 
+> v2 -> v3:
+> 
+>  - Fix bug in "HID: uclogic: Add support for UGEE v2 mouse frames".
+>    Reported-by: kernel test robot <lkp@intel.com>
+> 
+>    I copy-pasted the wrong template size.
+>    Thanks to Nathan Chancellor for looking into it. As he mentioned [2],
+>    CONFIG_FORTIFY_SOURCE doesn't catch this error without LTO enabled.
+> 
+> v3 -> v4:
+> 
+>  - Rebase on hid/master after the merge window.
+> 
+>  - Add and extra patch to add support for Parblo A610 PRO. The tablet
+>    is similar to the XP-PEN Deco Pro S and adding its ID is enough to
+>    support it.
+> 
+>  - Minimal cleanup in the return branch of uclogic_params_ugee_v2_init_frame_mouse
+>    and uclogic_params_ugee_v2_init_frame_buttons.
+> 
+> [1] https://lore.kernel.org/linux-input/20220717144333.251190-1-jose.exposito89@gmail.com/T/
+> [2] https://lore.kernel.org/linux-input/20220717144333.251190-1-jose.exposito89@gmail.com/T/#m796ac6c8f7484b0bafc1f1>
+> 
+> José Expósito (8):
+>   HID: uclogic: KUnit best practices and naming conventions
+>   HID: uclogic: Refactor UGEE v2 string descriptor parsing
+>   HID: uclogic: Refactor UGEE v2 frame initialization
+>   HID: uclogic: Parse the UGEE v2 frame type
+>   HID: uclogic: Add support for UGEE v2 dial frames
+>   HID: uclogic: Add support for UGEE v2 mouse frames
+>   HID: uclogic: Add support for XP-PEN Deco Pro S
+>   HID: uclogic: Add support for Parblo A610 PRO
 
-> Following interrupt allocation process lead to some interrupts are
-
-leads
-
-> mapped in the low-level domain(Arm ITS), but they are never been mapped
-
-never mapped
-  ...or...
-they have never
-
-> at the higher level.
->
-> irq_domain_alloc_irqs_hierarchy(.., nr_irqs, ...)
->   its_irq_domain_alloc(..., nr_irqs, ...)
->     its_alloc_device_irq(..., nr_irqs, ...)
->       bitmap_find_free_region(..., get_count_order(nr_irqs))
->
-> Since ITS domain find a region of zero bits, the length of which must
-
-finds
-
-> aligned to power of two. If nr_irqs is 30, the length of zero bits is
-
-the power
-
-> actually 32, but only first 30 bits are really mapped.
-
-the first
-
-> On teardown, low-level domain only free these interrupts that actually
-
-the low-level
-   ...or...
-domains
-
-> mapped, and leave last interrupts dangling in the ITS domain. Thus the
-> ITS device resources are never freed. On device driver reload, dangling
-> interrupts prevent ITS domain from allocating enough resource.
->
-> irq_domain_free_irqs_hierarchy(..., nr_irqs, ...)
->   its_irq_domain_free(..., irq_base + i, 1)
->     bitmap_release_region(..., irq_base + i, get_count_order(1))
->
-> John reported this problem to LKML and Marc provided a solution and fix
-> it in the generic code, see the discussion from Link tag. Marc's patch
-> fix John's problem, but does not take care of some corner case, look one
-> example below.
->
-> Step1: 32 interrupts allocated in LPI domain, but return the first 30 to
-> higher driver.
->
->    111111111111111111111111111111 11
->   |<------------0~29------------>|30,31|
->
-> Step2: interrupt #16~28 are released one by one, then #0~15 and #29~31
-> still be there.
->
->    1111111111111111 0000000000000 1  11
->   |<-----0~15----->|<---16~28--->|29|30,31|
->
-> Step#: on driver teardown, generic code will invoke ITS domain code
-> twice. The first time, #0~15 will be released, the second one, only #29
-> will be released(1 align to power of two).
->
->    0000000000000000 0000000000000 0  11
->   |<-----0~15----->|<---16~28--->|29|30,31|
->
-> In short summary, the dangling problem stems from the number of released
-> hwirq is less than the one of allocated hwirq in ITS domain. In order to
-
-the allocated
-
-> fix this problem, make irq_data record the number of allocated but
-> unmapped hwirq. If hwirq followed by some unmapped bits, ITS domain
-> record the number of unmapped bits to the last irq_data mapped to higher
-> level, when the last hwirq followed by unmapped hwirq is released, some
-> dangling bit will be clear eventualy, look back the trivial example
-
-eventually
-
-> above.
->
-> Step1: record '2' into the irq_data.dangling of #29 hwirq.
->
->            111111111111111111111111111111 11
->           |<------------0~29------------>|30,31|
-> dangling:  000000000000000000000000000002
->
-> Step2: no change
->
->           1111111111111111 0000000000000 1  11
->          |<-----0~15----->|<---16~28--->|29|30,31|
-> dangling: 0000000000000000 0000000000000 2
->
-> Step3: ITS domain will release #30~31 since the irq_data.dangling of #29
-> is '2'.
->
->            0000000000000000 0000000000000 0  00
->           |<-----0~15----->|<---16~28--->|29|30,31|
-> dangling:  0000000000000000 0000000000000 2
-
-> Fixes: 4615fbc3788dd ("genirq/irqdomain: Don't try to free an interrupt
-> that has no mapping")
-
-All tags must be one-liners. I.o.w. do not split a tag to multiple lines.
-
-...
-
-> + * @dangling:          amount of dangling hardware interrupt, Arm ITS allocate
-> + *                     hardware interrupt more than expected, aligned to power
-> + *                     of two, so that unsued interrupt number become dangling.
-
-unused
-becomes
-
-> + *                     Use this field to record dangling bits follwoing @hwirq.
-
-following
+Now in hid.git#for-6.1/uclogic. Thanks,
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Jiri Kosina
+SUSE Labs
+
