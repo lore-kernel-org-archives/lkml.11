@@ -2,56 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C61C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBDBC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:42:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235362AbiHYBmu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:42:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
+        id S233495AbiHYBm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbiHYBmH (ORCPT
+        with ESMTP id S229606AbiHYBmI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:42:07 -0400
+        Wed, 24 Aug 2022 21:42:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974707F241;
-        Wed, 24 Aug 2022 18:38:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F799C526;
+        Wed, 24 Aug 2022 18:38:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AC3F61B11;
-        Thu, 25 Aug 2022 01:38:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87EEDC433C1;
-        Thu, 25 Aug 2022 01:38:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CF1461A28;
+        Thu, 25 Aug 2022 01:38:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4639C433D7;
+        Thu, 25 Aug 2022 01:38:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391535;
-        bh=P8JntcmuD1wb6Yec7yWx6/PTxmMZ8bsiXYgU+dMx7+8=;
+        s=k20201202; t=1661391525;
+        bh=GAU6auQnSBbeCmtNXr4ktFzRC9D15yCJgrdq7WfNEMI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fFhpDq/wedgN+51cLCVmPYmJ8aU4O28SXLOGzBXK14k+4ZK9FC1DDmKT9p/dCaWDX
-         nL0yJp6f3tQ98Yb5Rmzso2uAFoFhX8nCMn6O8UECKD06QPNWDKmQJtHkWz3uaxjccv
-         6xDUWPW8Sm8d5LKX2eAwvFXd7LAvRAcKXpApNbI20XaP38ocgEAhqKR1pxeSNjV4Yk
-         P9ZthmS9Rs/h3WC61e6Y5Va5M/bySzgn8wowGgXI2CmXkfnUn72Jhxb3am59wTUcYz
-         6HEgEA9oWxgsAjpcpdSur+6pGEqI3hD8UfCpfoJxZDIiF+x4GXP5XDyDTNyzHMDBZ0
-         HLTJ2EuickssQ==
+        b=rzC+HhYbjhoNjLNDTGcln0to5Uqo7rskAdCUtVTDocc4f9NQjE5d+h6fTZJlAmp/h
+         Q7JIcn0Bj0jDgI8FTeV+nyg9yhJ7xuuL8vF3hyRvSCfDkOHFzX3ceGvNq9XwGoJSz6
+         RyfiwLNC8NW2YC+01lQIJxi0YkyBt+RxWoHVcU7k8IxsUi8IYHvzGMOPPIFhkZ/PNG
+         a8Mf56UlPYhSTPabTaqllQVsrxqPtTlFX4pH4aUVQxq3DbxBSsQNVyEwYmjPHY9cDK
+         7eGPTu/pzMtVvoL2HAYBsYFBu0Y9LpyjfmC+bhwYVnC44TnYe7Pi6M6QLPbJF2WGHr
+         iVGwahM3lsjug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Denis V. Lunev" <den@openvz.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Christian Brauner <brauner@kernel.org>, netdev@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        kernel@openvz.org, devel@openvz.org,
-        Sasha Levin <sashal@kernel.org>, wangyuweihx@gmail.com
-Subject: [PATCH AUTOSEL 5.10 04/11] neigh: fix possible DoS due to net iface start/stop loop
-Date:   Wed, 24 Aug 2022 21:38:25 -0400
-Message-Id: <20220825013836.23205-4-sashal@kernel.org>
+Cc:     Alvin Lee <alvin.lee2@amd.com>,
+        Martin Leung <Martin.Leung@amd.com>,
+        Tom Chung <chiahsuan.chung@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, Aric.Cyr@amd.com, bas@basnieuwenhuizen.nl,
+        joshua@froggi.es, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 02/11] drm/amd/display: For stereo keep "FLIP_ANY_FRAME"
+Date:   Wed, 24 Aug 2022 21:38:23 -0400
+Message-Id: <20220825013836.23205-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220825013836.23205-1-sashal@kernel.org>
 References: <20220825013836.23205-1-sashal@kernel.org>
@@ -63,127 +59,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Denis V. Lunev" <den@openvz.org>
+From: Alvin Lee <alvin.lee2@amd.com>
 
-[ Upstream commit 66ba215cb51323e4e55e38fd5f250e0fae0cbc94 ]
+[ Upstream commit 84ef99c728079dfd21d6bc70b4c3e4af20602b3c ]
 
-Normal processing of ARP request (usually this is Ethernet broadcast
-packet) coming to the host is looking like the following:
-* the packet comes to arp_process() call and is passed through routing
-  procedure
-* the request is put into the queue using pneigh_enqueue() if
-  corresponding ARP record is not local (common case for container
-  records on the host)
-* the request is processed by timer (within 80 jiffies by default) and
-  ARP reply is sent from the same arp_process() using
-  NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
-  pneigh_enqueue())
+[Description]
+Observed in stereomode that programming FLIP_LEFT_EYE
+can cause hangs. Keep FLIP_ANY_FRAME in stereo mode so
+the surface flip can take place before left or right eye
 
-And here the problem comes. Linux kernel calls pneigh_queue_purge()
-which destroys the whole queue of ARP requests on ANY network interface
-start/stop event through __neigh_ifdown().
-
-This is actually not a problem within the original world as network
-interface start/stop was accessible to the host 'root' only, which
-could do more destructive things. But the world is changed and there
-are Linux containers available. Here container 'root' has an access
-to this API and could be considered as untrusted user in the hosting
-(container's) world.
-
-Thus there is an attack vector to other containers on node when
-container's root will endlessly start/stop interfaces. We have observed
-similar situation on a real production node when docker container was
-doing such activity and thus other containers on the node become not
-accessible.
-
-The patch proposed doing very simple thing. It drops only packets from
-the same namespace in the pneigh_queue_purge() where network interface
-state change is detected. This is enough to prevent the problem for the
-whole node preserving original semantics of the code.
-
-v2:
-	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
-v3:
-	- rebase to net tree
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Yajun Deng <yajun.deng@linux.dev>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: kernel@openvz.org
-Cc: devel@openvz.org
-Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Signed-off-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reviewed-by: Martin Leung <Martin.Leung@amd.com>
+Acked-by: Tom Chung <chiahsuan.chung@amd.com>
+Signed-off-by: Alvin Lee <alvin.lee2@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/neighbour.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 52a1c8725337..e7dcdad5876b 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -280,14 +280,23 @@ static int neigh_del_timer(struct neighbour *n)
- 	return 0;
- }
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
+index af462fe4260d..b0fd8859bd2f 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_hubp.c
+@@ -86,7 +86,7 @@ bool hubp3_program_surface_flip_and_addr(
+ 			VMID, address->vmid);
  
--static void pneigh_queue_purge(struct sk_buff_head *list)
-+static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
- {
-+	unsigned long flags;
- 	struct sk_buff *skb;
+ 	if (address->type == PLN_ADDR_TYPE_GRPH_STEREO) {
+-		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0x1);
++		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0);
+ 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_IN_STEREOSYNC, 0x1);
  
--	while ((skb = skb_dequeue(list)) != NULL) {
--		dev_put(skb->dev);
--		kfree_skb(skb);
-+	spin_lock_irqsave(&list->lock, flags);
-+	skb = skb_peek(list);
-+	while (skb != NULL) {
-+		struct sk_buff *skb_next = skb_peek_next(skb, list);
-+		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
-+			__skb_unlink(skb, list);
-+			dev_put(skb->dev);
-+			kfree_skb(skb);
-+		}
-+		skb = skb_next;
- 	}
-+	spin_unlock_irqrestore(&list->lock, flags);
- }
- 
- static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
-@@ -358,9 +367,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
- 	write_lock_bh(&tbl->lock);
- 	neigh_flush_dev(tbl, dev, skip_perm);
- 	pneigh_ifdown_and_unlock(tbl, dev);
--
--	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue);
-+	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
-+	if (skb_queue_empty_lockless(&tbl->proxy_queue))
-+		del_timer_sync(&tbl->proxy_timer);
- 	return 0;
- }
- 
-@@ -1743,7 +1752,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
- 	/* It is not clean... Fix it to unload IPv6 module safely */
- 	cancel_delayed_work_sync(&tbl->gc_work);
- 	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue);
-+	pneigh_queue_purge(&tbl->proxy_queue, NULL);
- 	neigh_ifdown(tbl, NULL);
- 	if (atomic_read(&tbl->entries))
- 		pr_crit("neighbour leakage\n");
+ 	} else {
 -- 
 2.35.1
 
