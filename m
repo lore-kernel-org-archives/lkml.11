@@ -2,290 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69DDCECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A315ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243517AbiHYWjr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:39:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
+        id S243852AbiHYWlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234759AbiHYWjn (ORCPT
+        with ESMTP id S232049AbiHYWlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:39:43 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA99C6537
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:39:41 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-32a115757b6so367356917b3.13
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:39:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc;
-        bh=E1Am1KOOqd+kcYCTrbE5pakRnbluUytnJ7ZikmHUQEk=;
-        b=ls21BEDUWTx+LgGb5RZC0+PaSAYeoORZUDVJPCu7TsWkS5oZvNAU+PXiwfyf78TBqi
-         EA1lsRoQj9jm6l8rT1012SzxebJFLp9uWJL5qSaWQoOCu7HJKFoU4BuAlENJRPPdxt59
-         zz9/92TXwnbAvyPvtL5XlFs+8kbDmy6kPiN+KXMbCKqL0OzBkUchSmM1EOILSRTY+f61
-         s5YQMgxQk9ts9GB46m7v5cTVUYSXBJydCVV4wK5YqHsRuVCHqDgug5hI7vYyh6+1Wnin
-         hJXK6DsMi5qAwEKJvq5sWGBHE7QSS55uEAEZr+MePu5HtElQSS/NH/ZbB4l/h5UZqO86
-         ENDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc;
-        bh=E1Am1KOOqd+kcYCTrbE5pakRnbluUytnJ7ZikmHUQEk=;
-        b=J0RfT0SJdp4LLPochhtEtbpjtD7V7jjbsSCSsmbqUQ5okPgfXHAwjOXXY9n0q5peG7
-         QQ6QG2M0sfIPgBHb6Zu8rIpK326zEw8ksVBInxGyI8A7HXl7jDqJjwqyzwio23bG1AJk
-         X0/IED/JAdDGBg46lQ6XtFdb75ujZ0lnPObrUt3OGiU2xxsRMsdYOfzexeiKZnEpY8t5
-         X+ACF+UptskVq5UoqLOG5/BOtJFeE7UW2o/XRMbFQ6bUcVXxvLuOKzR5+ZimxlO40Gqx
-         GtYVfOkXSlrqyCvXufsu8eoBwJ4Zt6Bivja/7YCKurmzfKydjwrqLALuBHkGBE0pPMuj
-         SohA==
-X-Gm-Message-State: ACgBeo0yobxR8Jq3fQ/1o+Wh6ryaUAcUl44CFAbOojiIOjkmaAwO0Gcw
-        +3rm5mVQuGBV7y5Lg/0Q7H9vghyDdggAi02juxxTiP9f7pmdvBRftUuNjPQDSscUF7fzwMNd8N8
-        h7JU0PskfGOAaL5KXK69P6tuBEtx/qCd9woVhdiKgpfr8xUE6IpA83k3K/PDPmlvzPp8yyQ==
-X-Google-Smtp-Source: AA6agR6pzgkeD3CTaUIwnfCuZ3DNZ6LH4bPUI/fm7qI/X4/4Aal3IQbcbYSERly4tr0uMjl5jWiaTUbh3ks=
-X-Received: from haoluo.svl.corp.google.com ([2620:15c:2d4:203:2c4f:653f:78b3:2b5b])
- (user=haoluo job=sendgmr) by 2002:a81:4c0d:0:b0:335:ecff:edd5 with SMTP id
- z13-20020a814c0d000000b00335ecffedd5mr6374984ywa.133.1661467181140; Thu, 25
- Aug 2022 15:39:41 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 15:39:36 -0700
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220825223936.1865810-1-haoluo@google.com>
-Subject: [PATCH bpf-next v2] bpf: Add CGROUP prefix to cgroup_iter_order
-From:   Hao Luo <haoluo@google.com>
-To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 25 Aug 2022 18:41:20 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2050.outbound.protection.outlook.com [40.107.237.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A88BBA74;
+        Thu, 25 Aug 2022 15:41:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KcEYXVO5Vre9dIk+gq6Ih37L8zZLpY1Il5NHSkY6WwgTbdzfG53pxmvG3zzM1pLglnnt4NG51wuT7QMwZdoEbCkc/6Z8xE8Yr6GDeBdf/h3tcgGAqlRUVeTsdGBtbU6V+mwCyPPK8Jcq1jHZOhsEjrl3Q7q+3mOOPUk/+9BmVBeNs0VogMyHwlrEOYWgBp1vdRl7YuPbf/q/TxqA7LmplKRgFKI29dvqAmmtEZeIxT33WX20CQmN6gC7hGc7boUSjL2oMaYyvstm/bDntGJCawIwhC8TkGDXni825iMVZGvthHn+txljOhixLOKrK9415zTAZ/yDsg64hv+ggAfvEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2CIN6DAWYQ9C+JYmfYGAD/VPgDKboMHGBef1MQTeg3g=;
+ b=TLwhB19n8WKZC9pI9YcpPdA7umMpSofRQUd04NAqJdvymzZVwpFmnxRBpDHYuERWLRsFMEptKK5/5ZT1h1Ual+xDSqMicyoZi0iD4Cx7jrzGRb1x4Iy97aB/Itbmm4pGGINnHN+aTqxlHIWYTEuyfX3A51paxC2Oz5KEx/wRQtlBwJB518s1C+b4oUW4lTz0TVqfbeTSUdys3/En3MgWki7aUkTDFTzL3qRUsk2WrpCobrC3GvC7UPruuTU2p5K3XGiFlIvOnJjyQhebH9w+64v5c737jAo/RTSmAepOzq2sdyev0XUfwQnY34DzIBFCf4/MLPtbaBsCN9cEZHmp7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2CIN6DAWYQ9C+JYmfYGAD/VPgDKboMHGBef1MQTeg3g=;
+ b=ook0gwfruuFSCvRA5mF48POqpHEXNGsSNl1dFJiVRCuoaTO0QDmQcOZypplldFy8rBYZhxVPiNHFmW0F6IPQWThl3+N6o4YtdBSX6h6RyCjl0NBNt5mBE7uLdmVZo6aKS1dejJCYEv34IEKqxL1pu5uG/ynxTobaiF0vQbEYfFb5KRB8xzqSuE+dFmZ6BCdVk2BhEk9HaBC5ZjZ3C9Cz9wO/zboT4X8Wj3sAq6KojLoiMKW60U79lBNfJ14N/MKlE/3bvCQsZaAuWbfntC2sh4p/bINQNiAJQPw05H1SIObjngXWhSXKAiMF4a8JHZ1moU34b8wHqZ7j4qxkZzJwqg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
+ by IA1PR12MB6260.namprd12.prod.outlook.com (2603:10b6:208:3e4::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 25 Aug
+ 2022 22:41:16 +0000
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::7432:2749:aa27:722c]) by BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::7432:2749:aa27:722c%7]) with mapi id 15.20.5546.022; Thu, 25 Aug 2022
+ 22:41:15 +0000
+References: <3b01af093515ce2960ac39bb16ff77473150d179.1661309831.git-series.apopple@nvidia.com>
+ <87sfll2jfc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-agent: mu4e 1.6.9; emacs 27.1
+From:   Alistair Popple <apopple@nvidia.com>
+To:     "Huang, Ying" <ying.huang@intel.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Peter Xu <peterx@redhat.com>,
+        Nadav Amit <nadav.amit@gmail.com>,
+        huang ying <huang.ying.caritas@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        David Hildenbrand <david@redhat.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
+        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
+        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] mm/migrate_device.c: Flush TLB while holding PTL
+Date:   Fri, 26 Aug 2022 08:35:17 +1000
+In-reply-to: <87sfll2jfc.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Message-ID: <87y1vcdjzs.fsf@nvdebian.thelocal>
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR17CA0032.namprd17.prod.outlook.com
+ (2603:10b6:a03:1b8::45) To BYAPR12MB3176.namprd12.prod.outlook.com
+ (2603:10b6:a03:134::26)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3a622565-6fb0-4c48-2d9e-08da86eaeb10
+X-MS-TrafficTypeDiagnostic: IA1PR12MB6260:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: siqsX9Ci/wJ0E1aSrSFI/ZVBgN3qbW0+tB0GtpWpOckH+jxtnm/aiDD8SxKSY0h/yrqezQ1iPak9lvTVxMOKh4dFrveSKi/R7neVKOLYa4lxyAqSgwiuHlZssuxQkxb8eBaFdc9Ufaa2kwmZkZB8AL2E6fDk3qUCIaR4/r+FQ15Qd42KRKJ6cgvpkApCwTVoLrWIvHLsck4uMMYxSSoBt4pD8HHdqtIGTGHJ/4DOquH0kFLfR8PCwNjM1BeFCiy3ntPIeQHaoLy3C33i/UCbFQ9vOoWfHp62MR+K6FkSFQhDLabXoSr0mrO63oBYkizbxkOLIc24VkEs1PzHS72h8BE9bBzHOgazrD3mb4Ixez3SbncFOkEnQgacLNufG073QCPU6jqoYOokFBO8Dbq5u95OUMjIQrN3BoIUOf1sQBB77alIPR7EHQIrY2q3DjKDyj8ghtisLCDwENMDSiaNxNIHqPL9HUXQYrGtSA8UokNN4lrn+M+yutoTm3ioqMeKtpCHZRmE5wJatlBCQEo7Bg8oN1DDrq0RqXXNLZt5Xt+MF17ynYbM4w6P/nQ6LBrcQA0wXSPtTFl0rZ9P2la9XIlGz0hmzmgn/vjUc80xNy3ee8yrGRXJH3hHnoEEe6yQuoR05a75gHYNK6G5wBrf/+iRVnCDGDH2Ez+QRv9dTifFrSynA4GsSKwOvY4JA8KhVKDtl+UtrH7/eVIR18gXpw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(366004)(136003)(39860400002)(376002)(38100700002)(9686003)(6512007)(2906002)(26005)(316002)(54906003)(6916009)(478600001)(8936002)(66476007)(7416002)(6506007)(41300700001)(5660300002)(8676002)(4326008)(6486002)(66946007)(66556008)(83380400001)(186003)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?r893OG9ygKNzN2up24zbhYc8RInHvN2H7wU9DSFms5L3An8jdj7k2IyleZ5J?=
+ =?us-ascii?Q?gv+kh5alLwdqnmPoMyzxDskJi2ErVc60dehoc1ISMxvGOVLSLKaH5awXkJO3?=
+ =?us-ascii?Q?i0Yc0GYP8ljBjAR1Uj8NsTKUnzAZuuP4HmwCDNRX2nj7gXbhPGDHw6FMioTi?=
+ =?us-ascii?Q?AK4bQsteq9vv+bZFRCPiPBhIHcJEDpQfv60/GeUmHs7qv0hnKqqF3f2JtzqA?=
+ =?us-ascii?Q?kMWV2r+Nqu+oHTqjfKl8UgWKm4lkcXQnvbHt+9iGclelHLbbhTGDVaORoyqt?=
+ =?us-ascii?Q?Bs2425H4DFyKv3a+Cja4KEcB6OZKrWbQXgzdvnZ/Pz4+GHC/F+Z8kJk88Wy8?=
+ =?us-ascii?Q?AgxG+7e1WOgz1n/nJn5b+Z8DYnGN9iExi0iLGN59mSYod4jkiFS3a/mbjuvb?=
+ =?us-ascii?Q?Ku+LuNOjMDr5f1UjE0p6Giejfaf1K94I+3gvw9fBYK9LCeWnVlN55ZZTl2dU?=
+ =?us-ascii?Q?mj+zWThegAydK2SSlnPsYZDeY6qcS7BnDKfUO2C9yKLmCxLWd45KqkFkl3Av?=
+ =?us-ascii?Q?l2YyA+K/iDF+/uDyA8K6grqr1PShymCcJU05PyBWAzBBkutI11fcFtEwBRW0?=
+ =?us-ascii?Q?wml3a1cGYYFRNpinA4Q6HVOaouqu10JLezZmhcHKbvCzU/pwjBp63S8ixdO3?=
+ =?us-ascii?Q?kBl88I4AGvEnJ5iB7h3qzB/4F1KalMq4lKLKGN3fg4RvFmWgaAEL1qjVc9Mp?=
+ =?us-ascii?Q?3T0kfLpTduUC/r0CY4SliwdjjYLZgVdVzxGQ+agQhlVXgZrJhvGyIhw6DibF?=
+ =?us-ascii?Q?0FanOExcwuQKbaW1LBI4kvBGZDrCBqdoZwznhlB0b9Dm5xHH7e1KKSeWqYer?=
+ =?us-ascii?Q?oGP5AU5pD/0yWsdO79f+5jZas44+CIBZUuWuFuzwsNDbHwUsW7XbK1fKB4sh?=
+ =?us-ascii?Q?EiAomwPeUmwo+NAGznQWQZoOXF7gQrYkGbET5w15+V+u1Iha6FZPQ+CTXUlT?=
+ =?us-ascii?Q?SCgUdFJ1/q+u1y0jXXnP5h1t0RE9l5/SBpppGiL7OlhMaXVc8P1DYPqMXEvy?=
+ =?us-ascii?Q?as73wwpyahy35RuMfz93c0xkDDeYcmd/XqE9oOXAFVa/QInpZnnoKSzivLwA?=
+ =?us-ascii?Q?CAW8Wi9G1nMmoxHRlzWV/XQIawiPa8PHw6r31aboLvmjPvJiKphhO6+vF2X/?=
+ =?us-ascii?Q?acwtlaLFhq6nB/8dCK2TqY+aMjnN79BbWxwS3d4CIWAocxHiqsQuIOZO2iLv?=
+ =?us-ascii?Q?rrCUMAwDqN29fi83RVSPJ9YXyhybw5XWSQfrktlazCpcekJKOTOw0VlWwq2s?=
+ =?us-ascii?Q?wq5pTMUuYABZSRdxMG2sxlA0VakidILJyJvYOrYR+/A6u0In1ZhD2K1YOzWj?=
+ =?us-ascii?Q?y9x1YmLM/kGEuf5G5FvnqGGw9Df2PazNGnt7jGWet6gKdE51E6zmd7NoGELF?=
+ =?us-ascii?Q?Wb+rlYQ9JtZuJ7vZHTbdERxp4S7jvcJy86WURJ90668nDhP2vRoByG8zPPp5?=
+ =?us-ascii?Q?+Gyx4/p8hhrXp0Q0970e7C/D9NSGKWCpoWgTPvTsJUVwupaCMYTnd672vnEf?=
+ =?us-ascii?Q?hQO45MLwH+gO5Jk0K5uhB1G2IAPWa47t82CIN2OVkaIKG3NkI2dok/oFQs0n?=
+ =?us-ascii?Q?gDf3RqxLepKrPcLv3PlPSO2dnyW/VJRCpr122+Au?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a622565-6fb0-4c48-2d9e-08da86eaeb10
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 22:41:15.4896
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hmqGuo5IQY/6Kbecx+DeOq6YMKU7xro6BJgjwxiZnvOgaUGrnezMDjXcUtfSpxP0cWGFz13vh8lhtoiyymwV4Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6260
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bpf_cgroup_iter_order is globally visible but the entries do not have
-CGROUP prefix. As requested by Andrii, put a CGROUP in the names
-in bpf_cgroup_iter_order.
 
-This patch fixes two previous commits: one introduced the API and
-the other uses the API in bpf selftest (that is, the selftest
-cgroup_hierarchical_stats).
+"Huang, Ying" <ying.huang@intel.com> writes:
 
-I tested this patch via the following command:
+> Alistair Popple <apopple@nvidia.com> writes:
+>
+>> When clearing a PTE the TLB should be flushed whilst still holding the
+>> PTL to avoid a potential race with madvise/munmap/etc. For example
+>> consider the following sequence:
+>>
+>>   CPU0                          CPU1
+>>   ----                          ----
+>>
+>>   migrate_vma_collect_pmd()
+>>   pte_unmap_unlock()
+>>                                 madvise(MADV_DONTNEED)
+>>                                 -> zap_pte_range()
+>>                                 pte_offset_map_lock()
+>>                                 [ PTE not present, TLB not flushed ]
+>>                                 pte_unmap_unlock()
+>>                                 [ page is still accessible via stale TLB ]
+>>   flush_tlb_range()
+>>
+>> In this case the page may still be accessed via the stale TLB entry
+>> after madvise returns. Fix this by flushing the TLB while holding the
+>> PTL.
+>>
+>> Signed-off-by: Alistair Popple <apopple@nvidia.com>
+>> Reported-by: Nadav Amit <nadav.amit@gmail.com>
+>> Fixes: 8c3328f1f36a ("mm/migrate: migrate_vma() unmap page from vma while collecting pages")
+>> Cc: stable@vger.kernel.org
+>>
+>> ---
+>>
+>> Changes for v3:
+>>
+>>  - New for v3
+>> ---
+>>  mm/migrate_device.c | 5 +++--
+>>  1 file changed, 3 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
+>> index 27fb37d..6a5ef9f 100644
+>> --- a/mm/migrate_device.c
+>> +++ b/mm/migrate_device.c
+>> @@ -254,13 +254,14 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
+>>  		migrate->dst[migrate->npages] = 0;
+>>  		migrate->src[migrate->npages++] = mpfn;
+>>  	}
+>> -	arch_leave_lazy_mmu_mode();
+>> -	pte_unmap_unlock(ptep - 1, ptl);
+>>
+>>  	/* Only flush the TLB if we actually modified any entries */
+>>  	if (unmapped)
+>>  		flush_tlb_range(walk->vma, start, end);
+>
+> It appears that we can increase "unmapped" only if ptep_get_and_clear()
+> is used?
 
-  test_progs -t cgroup,iter,btf_dump
+In other words you mean we only need to increase unmapped if pte_present
+&& !anon_exclusive?
 
-Fixes: d4ccaf58a847 ("bpf: Introduce cgroup iter")
-Fixes: 88886309d2e8 ("selftests/bpf: add a selftest for cgroup hierarchical stats collection")
-Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Hao Luo <haoluo@google.com>
----
- include/uapi/linux/bpf.h                      | 10 +++---
- kernel/bpf/cgroup_iter.c                      | 32 +++++++++----------
- tools/include/uapi/linux/bpf.h                | 10 +++---
- .../selftests/bpf/prog_tests/btf_dump.c       |  2 +-
- .../prog_tests/cgroup_hierarchical_stats.c    |  2 +-
- .../selftests/bpf/prog_tests/cgroup_iter.c    | 10 +++---
- 6 files changed, 33 insertions(+), 33 deletions(-)
+Agree, that's a good optimisation to make. However I'm just trying to
+solve a data corruption issue (not dirtying the page) here, so will post
+that as a separate optimisation patch. Thanks.
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 0f61f09f467a..bdf4bc6d8d6b 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -88,11 +88,11 @@ struct bpf_cgroup_storage_key {
- };
- 
- enum bpf_cgroup_iter_order {
--	BPF_ITER_ORDER_UNSPEC = 0,
--	BPF_ITER_SELF_ONLY,		/* process only a single object. */
--	BPF_ITER_DESCENDANTS_PRE,	/* walk descendants in pre-order. */
--	BPF_ITER_DESCENDANTS_POST,	/* walk descendants in post-order. */
--	BPF_ITER_ANCESTORS_UP,		/* walk ancestors upward. */
-+	BPF_CGROUP_ITER_ORDER_UNSPEC = 0,
-+	BPF_CGROUP_ITER_SELF_ONLY,		/* process only a single object. */
-+	BPF_CGROUP_ITER_DESCENDANTS_PRE,	/* walk descendants in pre-order. */
-+	BPF_CGROUP_ITER_DESCENDANTS_POST,	/* walk descendants in post-order. */
-+	BPF_CGROUP_ITER_ANCESTORS_UP,		/* walk ancestors upward. */
- };
- 
- union bpf_iter_link_info {
-diff --git a/kernel/bpf/cgroup_iter.c b/kernel/bpf/cgroup_iter.c
-index cf6d763a57d5..c69bce2f4403 100644
---- a/kernel/bpf/cgroup_iter.c
-+++ b/kernel/bpf/cgroup_iter.c
-@@ -74,13 +74,13 @@ static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
- 	++*pos;
- 	p->terminate = false;
- 	p->visited_all = false;
--	if (p->order == BPF_ITER_DESCENDANTS_PRE)
-+	if (p->order == BPF_CGROUP_ITER_DESCENDANTS_PRE)
- 		return css_next_descendant_pre(NULL, p->start_css);
--	else if (p->order == BPF_ITER_DESCENDANTS_POST)
-+	else if (p->order == BPF_CGROUP_ITER_DESCENDANTS_POST)
- 		return css_next_descendant_post(NULL, p->start_css);
--	else if (p->order == BPF_ITER_ANCESTORS_UP)
-+	else if (p->order == BPF_CGROUP_ITER_ANCESTORS_UP)
- 		return p->start_css;
--	else /* BPF_ITER_SELF_ONLY */
-+	else /* BPF_CGROUP_ITER_SELF_ONLY */
- 		return p->start_css;
- }
- 
-@@ -109,13 +109,13 @@ static void *cgroup_iter_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- 	if (p->terminate)
- 		return NULL;
- 
--	if (p->order == BPF_ITER_DESCENDANTS_PRE)
-+	if (p->order == BPF_CGROUP_ITER_DESCENDANTS_PRE)
- 		return css_next_descendant_pre(curr, p->start_css);
--	else if (p->order == BPF_ITER_DESCENDANTS_POST)
-+	else if (p->order == BPF_CGROUP_ITER_DESCENDANTS_POST)
- 		return css_next_descendant_post(curr, p->start_css);
--	else if (p->order == BPF_ITER_ANCESTORS_UP)
-+	else if (p->order == BPF_CGROUP_ITER_ANCESTORS_UP)
- 		return curr->parent;
--	else  /* BPF_ITER_SELF_ONLY */
-+	else  /* BPF_CGROUP_ITER_SELF_ONLY */
- 		return NULL;
- }
- 
-@@ -188,10 +188,10 @@ static int bpf_iter_attach_cgroup(struct bpf_prog *prog,
- 	int order = linfo->cgroup.order;
- 	struct cgroup *cgrp;
- 
--	if (order != BPF_ITER_DESCENDANTS_PRE &&
--	    order != BPF_ITER_DESCENDANTS_POST &&
--	    order != BPF_ITER_ANCESTORS_UP &&
--	    order != BPF_ITER_SELF_ONLY)
-+	if (order != BPF_CGROUP_ITER_DESCENDANTS_PRE &&
-+	    order != BPF_CGROUP_ITER_DESCENDANTS_POST &&
-+	    order != BPF_CGROUP_ITER_ANCESTORS_UP &&
-+	    order != BPF_CGROUP_ITER_SELF_ONLY)
- 		return -EINVAL;
- 
- 	if (fd && id)
-@@ -239,13 +239,13 @@ static void bpf_iter_cgroup_show_fdinfo(const struct bpf_iter_aux_info *aux,
- 	kfree(buf);
- 
- show_order:
--	if (aux->cgroup.order == BPF_ITER_DESCENDANTS_PRE)
-+	if (aux->cgroup.order == BPF_CGROUP_ITER_DESCENDANTS_PRE)
- 		seq_puts(seq, "order: descendants_pre\n");
--	else if (aux->cgroup.order == BPF_ITER_DESCENDANTS_POST)
-+	else if (aux->cgroup.order == BPF_CGROUP_ITER_DESCENDANTS_POST)
- 		seq_puts(seq, "order: descendants_post\n");
--	else if (aux->cgroup.order == BPF_ITER_ANCESTORS_UP)
-+	else if (aux->cgroup.order == BPF_CGROUP_ITER_ANCESTORS_UP)
- 		seq_puts(seq, "order: ancestors_up\n");
--	else /* BPF_ITER_SELF_ONLY */
-+	else /* BPF_CGROUP_ITER_SELF_ONLY */
- 		seq_puts(seq, "order: self_only\n");
- }
- 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 5056cef2112f..92f7387e378a 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -88,11 +88,11 @@ struct bpf_cgroup_storage_key {
- };
- 
- enum bpf_cgroup_iter_order {
--	BPF_ITER_ORDER_UNSPEC = 0,
--	BPF_ITER_SELF_ONLY,		/* process only a single object. */
--	BPF_ITER_DESCENDANTS_PRE,	/* walk descendants in pre-order. */
--	BPF_ITER_DESCENDANTS_POST,	/* walk descendants in post-order. */
--	BPF_ITER_ANCESTORS_UP,		/* walk ancestors upward. */
-+	BPF_CGROUP_ITER_ORDER_UNSPEC = 0,
-+	BPF_CGROUP_ITER_SELF_ONLY,		/* process only a single object. */
-+	BPF_CGROUP_ITER_DESCENDANTS_PRE,	/* walk descendants in pre-order. */
-+	BPF_CGROUP_ITER_DESCENDANTS_POST,	/* walk descendants in post-order. */
-+	BPF_CGROUP_ITER_ANCESTORS_UP,		/* walk ancestors upward. */
- };
- 
- union bpf_iter_link_info {
-diff --git a/tools/testing/selftests/bpf/prog_tests/btf_dump.c b/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-index a1bae92be1fc..7b5bbe21b549 100644
---- a/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-+++ b/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-@@ -764,7 +764,7 @@ static void test_btf_dump_struct_data(struct btf *btf, struct btf_dump *d,
- 
- 	/* union with nested struct */
- 	TEST_BTF_DUMP_DATA(btf, d, "union", str, union bpf_iter_link_info, BTF_F_COMPACT,
--			   "(union bpf_iter_link_info){.map = (struct){.map_fd = (__u32)1,},.cgroup = (struct){.order = (enum bpf_cgroup_iter_order)BPF_ITER_SELF_ONLY,.cgroup_fd = (__u32)1,},}",
-+			   "(union bpf_iter_link_info){.map = (struct){.map_fd = (__u32)1,},.cgroup = (struct){.order = (enum bpf_cgroup_iter_order)BPF_CGROUP_ITER_SELF_ONLY,.cgroup_fd = (__u32)1,},}",
- 			   { .cgroup = { .order = 1, .cgroup_fd = 1, }});
- 
- 	/* struct skb with nested structs/unions; because type output is so
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c b/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-index 101a6d70b863..bed1661596f7 100644
---- a/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-@@ -275,7 +275,7 @@ static int setup_cgroup_iter(struct cgroup_hierarchical_stats *obj,
- 	 * traverse one cgroup, so set the traversal order to "self".
- 	 */
- 	linfo.cgroup.cgroup_fd = cgroup_fd;
--	linfo.cgroup.order = BPF_ITER_SELF_ONLY;
-+	linfo.cgroup.order = BPF_CGROUP_ITER_SELF_ONLY;
- 	opts.link_info = &linfo;
- 	opts.link_info_len = sizeof(linfo);
- 	link = bpf_program__attach_iter(obj->progs.dump_vmscan, &opts);
-diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_iter.c b/tools/testing/selftests/bpf/prog_tests/cgroup_iter.c
-index 38958c37b9ce..c4a2adb38da1 100644
---- a/tools/testing/selftests/bpf/prog_tests/cgroup_iter.c
-+++ b/tools/testing/selftests/bpf/prog_tests/cgroup_iter.c
-@@ -134,7 +134,7 @@ static void test_walk_preorder(struct cgroup_iter *skel)
- 		 cg_id[PARENT], cg_id[CHILD1], cg_id[CHILD2]);
- 
- 	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
--			      BPF_ITER_DESCENDANTS_PRE, "preorder");
-+			      BPF_CGROUP_ITER_DESCENDANTS_PRE, "preorder");
- }
- 
- /* Postorder walk prints child and parent in order. */
-@@ -145,7 +145,7 @@ static void test_walk_postorder(struct cgroup_iter *skel)
- 		 cg_id[CHILD1], cg_id[CHILD2], cg_id[PARENT]);
- 
- 	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
--			      BPF_ITER_DESCENDANTS_POST, "postorder");
-+			      BPF_CGROUP_ITER_DESCENDANTS_POST, "postorder");
- }
- 
- /* Walking parents prints parent and then root. */
-@@ -159,7 +159,7 @@ static void test_walk_ancestors_up(struct cgroup_iter *skel)
- 		 cg_id[PARENT], cg_id[ROOT]);
- 
- 	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
--			      BPF_ITER_ANCESTORS_UP, "ancestors_up");
-+			      BPF_CGROUP_ITER_ANCESTORS_UP, "ancestors_up");
- 
- 	skel->bss->terminal_cgroup = 0;
- }
-@@ -174,7 +174,7 @@ static void test_early_termination(struct cgroup_iter *skel)
- 		 PROLOGUE "%8llu\n" EPILOGUE, cg_id[PARENT]);
- 
- 	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
--			      BPF_ITER_DESCENDANTS_PRE, "early_termination");
-+			      BPF_CGROUP_ITER_DESCENDANTS_PRE, "early_termination");
- 
- 	skel->bss->terminate_early = 0;
- }
-@@ -186,7 +186,7 @@ static void test_walk_self_only(struct cgroup_iter *skel)
- 		 PROLOGUE "%8llu\n" EPILOGUE, cg_id[PARENT]);
- 
- 	read_from_cgroup_iter(skel->progs.cgroup_id_printer, cg_fd[PARENT],
--			      BPF_ITER_SELF_ONLY, "self_only");
-+			      BPF_CGROUP_ITER_SELF_ONLY, "self_only");
- }
- 
- void test_cgroup_iter(void)
--- 
-2.37.2.672.g94769d06f0-goog
+ - Alistair
 
+> Best Regards,
+> Huang, Ying
+>
+>> +	arch_leave_lazy_mmu_mode();
+>> +	pte_unmap_unlock(ptep - 1, ptl);
+>> +
+>>  	return 0;
+>>  }
+>>
+>>
+>> base-commit: ffcf9c5700e49c0aee42dcba9a12ba21338e8136
