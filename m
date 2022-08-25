@@ -2,101 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F5DC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 05:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375A8C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 05:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234704AbiHYF5Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 01:57:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59882 "EHLO
+        id S232645AbiHYF71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 01:59:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233248AbiHYF5R (ORCPT
+        with ESMTP id S229510AbiHYF7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 01:57:17 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A609A9F193;
-        Wed, 24 Aug 2022 22:57:06 -0700 (PDT)
-X-UUID: b7a6e533a8524dab97ee66b57a82c6d6-20220825
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=aUWpRgHtNV4o5Os9E2A3UPYhpEU1YCs0RcI9qd2YUws=;
-        b=sCM5Eht3nH7SqAM7eG/cCXGiL3NqlBpryBguiKPHxkffvUcPe1anDiIgDLSd36JrR9XlhpvLbsW2QMQjyUmGUIW1A4+0s/uppNHGqVSovGUi0SH7GqW2ohUiLhozU4UrN2dEPGJxMmrJHx6Hfwdl6NLF9vu0lhWqWL7sFH39J94=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:712b4e72-5017-4300-a0d1-fe6a75e40b34,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Release
-        _Ham,ACTION:release,TS:95
-X-CID-INFO: VERSION:1.1.10,REQID:712b4e72-5017-4300-a0d1-fe6a75e40b34,OB:0,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:95,FILE:0,BULK:0,RULE:Spam_GS98
-        1B3D,ACTION:quarantine,TS:95
-X-CID-META: VersionHash:84eae18,CLOUDID:01618ecf-20bd-4e5e-ace8-00692b7ab380,C
-        OID:b793547d364d,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: b7a6e533a8524dab97ee66b57a82c6d6-20220825
-Received: from mtkmbs09n1.mediatek.inc [(172.21.101.35)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1310616124; Thu, 25 Aug 2022 13:57:01 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 25 Aug 2022 13:57:00 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Thu, 25 Aug 2022 13:57:00 +0800
-From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <matthias.bgg@gmail.com>
-CC:     <jason-jh.lin@mediatek.com>, <nancy.lin@mediatek.com>,
-        <ck.hu@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <angelogioacchino.delregno@collabora.com>, <hsinyi@google.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH] dt-bindings: arm: mediatek: mmsys: change compatible for MT8195
-Date:   Thu, 25 Aug 2022 13:56:58 +0800
-Message-ID: <20220825055658.12429-1-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Thu, 25 Aug 2022 01:59:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D61BF9F198;
+        Wed, 24 Aug 2022 22:59:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 885DEB82752;
+        Thu, 25 Aug 2022 05:59:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88CD0C433D6;
+        Thu, 25 Aug 2022 05:59:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661407162;
+        bh=ThkTyKE8Sd6JCI3b/NADDD7sIGHfT924CUMVZRD7mZU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZE4ACLFwkr2h9zuwBDY5/f3BSOHoP1JDM/A+px6CtF9rJm/BEDAjrZgYszUQ6qJmI
+         30BnqCG6+H/LXWfzSZb0DOEMC4GtuRTVFvItCKy+lc04DoWdvxG6K3z9jjjK+Au69G
+         dhOK5gWmyxPbDH14qfB737S9Xi3Z7KCFZJS3X4mA=
+Date:   Thu, 25 Aug 2022 07:59:33 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     duoming@zju.edu.cn
+Cc:     Brian Norris <briannorris@chromium.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        amit karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi017@gmail.com>,
+        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>, kvalo@kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v8 0/2] Add new APIs of devcoredump and fix bugs
+Message-ID: <YwcPxT2JLQHXbdFI@kroah.com>
+References: <cover.1661252818.git.duoming@zju.edu.cn>
+ <CA+ASDXNf5JV9mj8mbm1OGZ_zd4d8srFc=E++Amg4MoQjqjS_TA@mail.gmail.com>
+ <27a2a8a7.99f01.182d2758bc9.Coremail.duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <27a2a8a7.99f01.182d2758bc9.Coremail.duoming@zju.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason-JH.Lin" <jason-jh.lin@mediatek.com>
+On Thu, Aug 25, 2022 at 08:44:55AM +0800, duoming@zju.edu.cn wrote:
+> Hello,
+> 
+> On Wed, 24 Aug 2022 13:42:09 -0700 Brian Norris wrote:
+> 
+> > On Tue, Aug 23, 2022 at 4:21 AM Duoming Zhou <duoming@zju.edu.cn> wrote:
+> > >
+> > > The first patch adds new APIs to support migration of users
+> > > from old device coredump related APIs.
+> > >
+> > > The second patch fix sleep in atomic context bugs of mwifiex
+> > > caused by dev_coredumpv().
+> > >
+> > > Duoming Zhou (2):
+> > >   devcoredump: add new APIs to support migration of users from old
+> > >     device coredump related APIs
+> > >   mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
+> > 
+> > I would have expected a third patch in here, that actually converts
+> > existing users. Then in the following release cycle, clean up any new
+> > users of the old API that pop up in the meantime and drop the old API.
+> > 
+> > But I'll defer to the people who would actually be merging your code.
+> > Technically it could also work to simply provide the API this cycle,
+> > and convert everyone in the next.
+> 
+> Thank your for your time and reply.
+> 
+> If this patch set is merged into the linux-next tree, I will send the 
+> third patch which targets at linux-next tree and converts existing users 
+> at later timer of this release cycle. Because there are new users that 
+> may use the old APIs comes into linux-next tree during the remaining time
+> of this release cycle.
 
-For previous MediaTek SoCs, such as MT8173, there are 2 display HW
-pipelines binding to 1 mmsys with the same power domain, the same
-clock driver and the same mediatek-drm driver.
+No, that's not how this works, we can't add patches with new functions
+that no one uses.  And it's not how I asked for this api to be migrated
+over time properly.  I'll try to respond to your patch with more details
+in a week or so when I catch up on patch review...
 
-For MT8195, VDOSYS0 and VDOSYS1 are 2 display HW pipelines binding to
-2 different power domains, different clock drivers and different
-mediatek-drm drivers.
-
-Therefore, we need to separate these two different mmsys hardwares to
-2 different compatibles for MT8195.
-
-Fixes: 81c5a41d10b9 ("dt-bindings: arm: mediatek: mmsys: add mt8195 SoC binding")
-Signed-off-by: Jason-JH.Lin <jason-jh.lin@mediatek.com>
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
----
- .../devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml       | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-index 6ad023eec193..bfbdd30d2092 100644
---- a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-+++ b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml
-@@ -31,7 +31,8 @@ properties:
-               - mediatek,mt8183-mmsys
-               - mediatek,mt8186-mmsys
-               - mediatek,mt8192-mmsys
--              - mediatek,mt8195-mmsys
-+              - mediatek,mt8195-vdosys0
-+              - mediatek,mt8195-vdosys1
-               - mediatek,mt8365-mmsys
-           - const: syscon
-       - items:
--- 
-2.18.0
-
+greg k-h
