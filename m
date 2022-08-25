@@ -2,529 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DC2ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02233ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 21:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243810AbiHYVbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 17:31:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
+        id S243643AbiHYVcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 17:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiHYVbX (ORCPT
+        with ESMTP id S233208AbiHYVcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 17:31:23 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0541EBFE97
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:31:20 -0700 (PDT)
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27PGT73d004101
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:31:20 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=rRqZXVKyPqK8MCW5onNpHLYmE1t04M5af7k+k9Y45lA=;
- b=QsqbZrYuNXpcgAM2Bgo474hB3fSrQ45L4ZVFM/0ARboHMJBWQAcNFPDdJg+OJKmpSv7N
- qOo3m4c7wHkABXzBgruTiZSuLuc8bRPYEKKKAzVDrznmHScD5El60YWK+/bSIfYwBiNZ
- rKCaKtzv5kWekCs/LjV/n4VlqoBKwOL6Xm8= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3j69jtkswc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 14:31:20 -0700
-Received: from twshared0646.06.ash9.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 25 Aug 2022 14:31:10 -0700
-Received: by devvm6390.atn0.facebook.com (Postfix, from userid 352741)
-        id 177242DC95FA; Thu, 25 Aug 2022 14:30:57 -0700 (PDT)
-From:   <alexlzhu@fb.com>
-To:     <linux-mm@kvack.org>
-CC:     <willy@infradead.org>, <hannes@cmpxchg.org>,
-        <akpm@linux-foundation.org>, <riel@surriel.com>,
-        <kernel-team@fb.com>, <linux-kernel@vger.kernel.org>,
-        Alexander Zhu <alexlzhu@fb.com>
-Subject: [RFC 2/3] mm: changes to split_huge_page() to free zero filled tail pages
-Date:   Thu, 25 Aug 2022 14:30:53 -0700
-Message-ID: <490fcdd204ae129a2e43614a569a1cf4bdde9196.1661461643.git.alexlzhu@fb.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1661461643.git.alexlzhu@fb.com>
-References: <cover.1661461643.git.alexlzhu@fb.com>
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-GUID: ItkWCshNlJR_TenQ4ZvVEubhSWgEbQg-
-X-Proofpoint-ORIG-GUID: ItkWCshNlJR_TenQ4ZvVEubhSWgEbQg-
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Thu, 25 Aug 2022 17:32:51 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88008BD741;
+        Thu, 25 Aug 2022 14:32:50 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id e20so25646921wri.13;
+        Thu, 25 Aug 2022 14:32:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=EqzBE2zZDGLUoXZ6/uzFpkdW0uwLXRH/ZxpTVcEz4RY=;
+        b=qRHXiAAEFxUcduAYJZefohZKXO+X74fsUPVcUnRRNf+vtvMwz8JzmfaFa/1seliOel
+         N5+yl3sLaJJlffdQq01u8PTRL9UQxM/PoiC7ftzfbX51Aq8ANtKnXVyaXgD923wBKQqx
+         rBg83MrdCs3pKmg8CGmdCWsr4aZh99glKYt7zXjnFcbfRHvzafycELQgPgmSYOf7BN47
+         3MaiDabh9OZ1Utit2EFvQvYo7b9K4nHYjvp9OZyLoiy4FQG3LnBO8IAQNX5J9l2cb7T5
+         rtgQnl9eXZzPWaaixqRuGQhKVWXU5V00NS72L6T+gCoNDqeMumddMdJCTb3+B406bi49
+         Wkgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=EqzBE2zZDGLUoXZ6/uzFpkdW0uwLXRH/ZxpTVcEz4RY=;
+        b=Yg87BBXQ477pUjuAauM9xKfhIdmjd7vFJqzw63OYNQJ7DlzjR7HyGyzASeckQ5lc6T
+         qzZsfbekazBDzOpNfQfDbNbWE1lwIV7+JdjfulQb+iiT1HjTsSYEYXLsJxRPaUGwNhsL
+         8RIXF1oEeL51bmeJmJOyK/AcZorjxDQYn7w4LLrDdhogDP+LtRu9Es74BY2LbrROVXfJ
+         KgLL7mGQl68DVIE+4FIeVXXSnfEJvODSN93eNrRqixLLNkTAn3j0oW/BsGrIDiZwzR9K
+         +JMHirE8wDh/II3ZrHqMlMfKLquiP340DPEGSZX8FoGniO1pgQ7FxtoZ9ONufgSvjUiV
+         tMYg==
+X-Gm-Message-State: ACgBeo37NzhVRHJF6O+9kf5vr9+xGM1ocxIZjv60Kh7Kp7PcdwUkDqi4
+        S0ZLlNjEcnCkV3EsgUzkbZA=
+X-Google-Smtp-Source: AA6agR4t8yoF99sRe2L0fBzRS1+im+UO4VTke2Bd+B09oSf0uCYPQMeZRw3swuBH9PBDTRwnH39EJA==
+X-Received: by 2002:a05:6000:701:b0:225:3f77:9793 with SMTP id bs1-20020a056000070100b002253f779793mr3124854wrb.202.1661463169088;
+        Thu, 25 Aug 2022 14:32:49 -0700 (PDT)
+Received: from kista.localnet (82-149-1-172.dynamic.telemach.net. [82.149.1.172])
+        by smtp.gmail.com with ESMTPSA id n3-20020a05600c3b8300b003a319b67f64sm14167595wms.0.2022.08.25.14.32.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 14:32:48 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     linux-arm-kernel@lists.infradead.org,
+        Arnd Bergmann <arnd@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Qin Jian <qinjian@cqplus1.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>, Bin Liu <b-liu@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Mark Brown <broonie@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shannon Nelson <snelson@pensando.io>,
+        Peter Chen <peter.chen@nxp.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Felipe Balbi <balbi@ti.com>, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH 01/11] ARM: defconfig: reorder defconfig files
+Date:   Thu, 25 Aug 2022 23:32:46 +0200
+Message-ID: <4207673.ejJDZkT8p0@kista>
+In-Reply-To: <20220818135522.3143514-2-arnd@kernel.org>
+References: <20220818135522.3143514-1-arnd@kernel.org> <20220818135522.3143514-2-arnd@kernel.org>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-25_10,2022-08-25_01,2022-06-22_01
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Zhu <alexlzhu@fb.com>
+Dne =C4=8Detrtek, 18. avgust 2022 ob 15:55:22 CEST je Arnd Bergmann napisal=
+(a):
+> From: Arnd Bergmann <arnd@arndb.de>
+>=20
+> The debug-info and can subystem options have moved around in the
+> 'savedefconfig' output, so fix these up to reduce the clutter
+> from the savedefconfig command.
+>=20
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/arm/configs/at91_dt_defconfig   |  2 +-
+>  arch/arm/configs/dove_defconfig      |  2 +-
+>  arch/arm/configs/exynos_defconfig    |  2 +-
+>  arch/arm/configs/imx_v6_v7_defconfig |  2 +-
+>  arch/arm/configs/keystone_defconfig  |  6 +++---
+>  arch/arm/configs/lpc18xx_defconfig   |  2 +-
+>  arch/arm/configs/mmp2_defconfig      |  2 +-
+>  arch/arm/configs/mps2_defconfig      |  2 +-
+>  arch/arm/configs/multi_v5_defconfig  |  2 +-
+>  arch/arm/configs/multi_v7_defconfig  | 12 ++++++------
+>  arch/arm/configs/mvebu_v5_defconfig  |  2 +-
+>  arch/arm/configs/mxs_defconfig       |  4 ++--
+>  arch/arm/configs/omap1_defconfig     |  2 +-
+>  arch/arm/configs/omap2plus_defconfig |  4 ++--
+>  arch/arm/configs/orion5x_defconfig   |  2 +-
+>  arch/arm/configs/pxa168_defconfig    |  2 +-
+>  arch/arm/configs/pxa910_defconfig    |  2 +-
+>  arch/arm/configs/pxa_defconfig       |  2 +-
+>  arch/arm/configs/s3c6400_defconfig   |  2 +-
+>  arch/arm/configs/s5pv210_defconfig   |  2 +-
+>  arch/arm/configs/sama5_defconfig     |  6 +++---
+>  arch/arm/configs/sama7_defconfig     |  4 ++--
+>  arch/arm/configs/shmobile_defconfig  |  2 +-
+>  arch/arm/configs/socfpga_defconfig   |  6 +++---
+>  arch/arm/configs/sp7021_defconfig    |  2 +-
+>  arch/arm/configs/spear13xx_defconfig |  2 +-
+>  arch/arm/configs/spear3xx_defconfig  |  2 +-
+>  arch/arm/configs/spear6xx_defconfig  |  2 +-
+>  arch/arm/configs/stm32_defconfig     |  2 +-
+>  arch/arm/configs/sunxi_defconfig     |  2 +-
 
-Currently, when /sys/kernel/mm/transparent_hugepage/enabled=3Dalways is set
-there are a large number of transparent hugepages that are almost entirely
-zero filled.  This is mentioned in a number of previous patchsets
-including:
-https://lore.kernel.org/all/20210731063938.1391602-1-yuzhao@google.com/
-https://lore.kernel.org/all/
-1635422215-99394-1-git-send-email-ningzhang@linux.alibaba.com/
+=46or sunxi:
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-Currently, split_huge_page() does not have a way to identify zero filled
-pages within the THP. Thus these zero pages get remapped and continue to
-create memory waste. In this patch, we identify and free tail pages that
-are zero filled in split_huge_page(). In this way, we avoid mapping these
-pages back into page table entries and can free up unused memory within
-THPs. This is based off the previously mentioned patchset by Yu Zhao.
-However, we chose to free zero tail pages whenever they are encountered
-instead of only on reclaim or migration. We also add a self test to verify
-the RssAnon value to make sure zero pages are not remapped.
+Best regards,
+Jernej
 
-Signed-off-by: Alexander Zhu <alexlzhu@fb.com>
----
- include/linux/rmap.h                          |  2 +-
- include/linux/vm_event_item.h                 |  2 +
- mm/huge_memory.c                              | 43 +++++++++++--
- mm/migrate.c                                  | 60 ++++++++++++++++---
- mm/migrate_device.c                           |  4 +-
- mm/vmstat.c                                   |  2 +
- .../selftests/vm/split_huge_page_test.c       | 58 +++++++++++++++++-
- tools/testing/selftests/vm/vm_util.c          | 23 +++++++
- tools/testing/selftests/vm/vm_util.h          |  1 +
- 9 files changed, 180 insertions(+), 15 deletions(-)
 
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index bf80adca980b..f45481ab60ba 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -369,7 +369,7 @@ int folio_mkclean(struct folio *);
- int pfn_mkclean_range(unsigned long pfn, unsigned long nr_pages, pgoff_t p=
-goff,
- 		      struct vm_area_struct *vma);
-=20
--void remove_migration_ptes(struct folio *src, struct folio *dst, bool lock=
-ed);
-+void remove_migration_ptes(struct folio *src, struct folio *dst, bool lock=
-ed, bool unmap_clean);
-=20
- int page_mapped_in_vma(struct page *page, struct vm_area_struct *vma);
-=20
-diff --git a/include/linux/vm_event_item.h b/include/linux/vm_event_item.h
-index 404024486fa5..1d81e60ee12e 100644
---- a/include/linux/vm_event_item.h
-+++ b/include/linux/vm_event_item.h
-@@ -104,6 +104,8 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
- #ifdef CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
- 		THP_SPLIT_PUD,
- #endif
-+		THP_SPLIT_FREE,
-+		THP_SPLIT_UNMAP,
- 		THP_ZERO_PAGE_ALLOC,
- 		THP_ZERO_PAGE_ALLOC_FAILED,
- 		THP_SWPOUT,
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 8be1e320e70c..0f774a7c0727 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -2414,7 +2414,7 @@ static void unmap_page(struct page *page)
- 		try_to_unmap(folio, ttu_flags | TTU_IGNORE_MLOCK);
- }
-=20
--static void remap_page(struct folio *folio, unsigned long nr)
-+static void remap_page(struct folio *folio, unsigned long nr, bool unmap_c=
-lean)
- {
- 	int i =3D 0;
-=20
-@@ -2422,7 +2422,7 @@ static void remap_page(struct folio *folio, unsigned =
-long nr)
- 	if (!folio_test_anon(folio))
- 		return;
- 	for (;;) {
--		remove_migration_ptes(folio, folio, true);
-+		remove_migration_ptes(folio, folio, true, unmap_clean);
- 		i +=3D folio_nr_pages(folio);
- 		if (i >=3D nr)
- 			break;
-@@ -2536,6 +2536,8 @@ static void __split_huge_page(struct page *page, stru=
-ct list_head *list,
- 	struct address_space *swap_cache =3D NULL;
- 	unsigned long offset =3D 0;
- 	unsigned int nr =3D thp_nr_pages(head);
-+	LIST_HEAD(pages_to_free);
-+	int nr_pages_to_free =3D 0;
- 	int i;
-=20
- 	/* complete memcg works before add pages to LRU */
-@@ -2598,7 +2600,7 @@ static void __split_huge_page(struct page *page, stru=
-ct list_head *list,
- 	}
- 	local_irq_enable();
-=20
--	remap_page(folio, nr);
-+	remap_page(folio, nr, true);
-=20
- 	if (PageSwapCache(head)) {
- 		swp_entry_t entry =3D { .val =3D page_private(head) };
-@@ -2612,6 +2614,32 @@ static void __split_huge_page(struct page *page, str=
-uct list_head *list,
- 			continue;
- 		unlock_page(subpage);
-=20
-+		/*
-+		 * If a tail page has only two references left, one inherited
-+		 * from the isolation of its head and the other from
-+		 * lru_add_page_tail() which we are about to drop, it means this
-+		 * tail page was concurrently zapped. Then we can safely free it
-+		 * and save page reclaim or migration the trouble of trying it.
-+		 */
-+		if (list && page_ref_freeze(subpage, 2)) {
-+			VM_BUG_ON_PAGE(PageLRU(subpage), subpage);
-+			VM_BUG_ON_PAGE(PageCompound(subpage), subpage);
-+			VM_BUG_ON_PAGE(page_mapped(subpage), subpage);
-+
-+			ClearPageActive(subpage);
-+			ClearPageUnevictable(subpage);
-+			list_move(&subpage->lru, &pages_to_free);
-+			nr_pages_to_free++;
-+			continue;
-+		}
-+		/*
-+		 * If a tail page has only one reference left, it will be freed
-+		 * by the call to free_page_and_swap_cache below. Since zero
-+		 * subpages are no longer remapped, there will only be one
-+		 * reference left in cases outside of reclaim or migration.
-+		 */
-+		if (page_ref_count(subpage) =3D=3D 1)
-+			nr_pages_to_free++;
- 		/*
- 		 * Subpages may be freed if there wasn't any mapping
- 		 * like if add_to_swap() is running on a lru page that
-@@ -2621,6 +2649,13 @@ static void __split_huge_page(struct page *page, str=
-uct list_head *list,
- 		 */
- 		free_page_and_swap_cache(subpage);
- 	}
-+
-+	if (!nr_pages_to_free)
-+		return;
-+
-+	mem_cgroup_uncharge_list(&pages_to_free);
-+	free_unref_page_list(&pages_to_free);
-+	count_vm_events(THP_SPLIT_FREE, nr_pages_to_free);
- }
-=20
- /* Racy check whether the huge page can be split */
-@@ -2783,7 +2818,7 @@ int split_huge_page_to_list(struct page *page, struct=
- list_head *list)
- 		if (mapping)
- 			xas_unlock(&xas);
- 		local_irq_enable();
--		remap_page(folio, folio_nr_pages(folio));
-+		remap_page(folio, folio_nr_pages(folio), false);
- 		ret =3D -EBUSY;
- 	}
-=20
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 6a1597c92261..c87e81e60a1b 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -167,13 +167,50 @@ void putback_movable_pages(struct list_head *l)
- 	}
- }
-=20
-+static bool try_to_unmap_clean(struct page_vma_mapped_walk *pvmw, struct p=
-age *page)
-+{
-+	void *addr;
-+	bool dirty;
-+
-+	VM_BUG_ON_PAGE(PageCompound(page), page);
-+	VM_BUG_ON_PAGE(!PageAnon(page), page);
-+	VM_BUG_ON_PAGE(!PageLocked(page), page);
-+	VM_BUG_ON_PAGE(pte_present(*pvmw->pte), page);
-+
-+	if (PageMlocked(page) || (pvmw->vma->vm_flags & VM_LOCKED))
-+		return false;
-+
-+	/*
-+	 * The pmd entry mapping the old thp was flushed and the pte mapping
-+	 * this subpage has been non present. Therefore, this subpage is
-+	 * inaccessible. We don't need to remap it if it contains only zeros.
-+	 */
-+	addr =3D kmap_local_page(page);
-+	dirty =3D memchr_inv(addr, 0, PAGE_SIZE);
-+	kunmap_local(addr);
-+
-+	if (dirty)
-+		return false;
-+
-+	pte_clear_not_present_full(pvmw->vma->vm_mm, pvmw->address, pvmw->pte, fa=
-lse);
-+	dec_mm_counter(pvmw->vma->vm_mm, mm_counter(page));
-+	count_vm_event(THP_SPLIT_UNMAP);
-+	return true;
-+}
-+
-+struct rmap_walk_arg {
-+	struct folio *folio;
-+	bool unmap_clean;
-+};
-+
- /*
-  * Restore a potential migration pte to a working pte entry
-  */
- static bool remove_migration_pte(struct folio *folio,
--		struct vm_area_struct *vma, unsigned long addr, void *old)
-+		struct vm_area_struct *vma, unsigned long addr, void *arg)
- {
--	DEFINE_FOLIO_VMA_WALK(pvmw, old, vma, addr, PVMW_SYNC | PVMW_MIGRATION);
-+	struct rmap_walk_arg *rmap_walk_arg =3D arg;
-+	DEFINE_FOLIO_VMA_WALK(pvmw, rmap_walk_arg->folio, vma, addr, PVMW_SYNC | =
-PVMW_MIGRATION);
-=20
- 	while (page_vma_mapped_walk(&pvmw)) {
- 		rmap_t rmap_flags =3D RMAP_NONE;
-@@ -196,6 +233,8 @@ static bool remove_migration_pte(struct folio *folio,
- 			continue;
- 		}
- #endif
-+		if (rmap_walk_arg->unmap_clean && try_to_unmap_clean(&pvmw, new))
-+			continue;
-=20
- 		folio_get(folio);
- 		pte =3D pte_mkold(mk_pte(new, READ_ONCE(vma->vm_page_prot)));
-@@ -267,13 +306,20 @@ static bool remove_migration_pte(struct folio *folio,
-  * Get rid of all migration entries and replace them by
-  * references to the indicated page.
-  */
--void remove_migration_ptes(struct folio *src, struct folio *dst, bool lock=
-ed)
-+void remove_migration_ptes(struct folio *src, struct folio *dst, bool lock=
-ed, bool unmap_clean)
- {
-+	struct rmap_walk_arg rmap_walk_arg =3D {
-+		.folio =3D src,
-+		.unmap_clean =3D unmap_clean,
-+	};
-+
- 	struct rmap_walk_control rwc =3D {
- 		.rmap_one =3D remove_migration_pte,
--		.arg =3D src,
-+		.arg =3D &rmap_walk_arg,
- 	};
-=20
-+	VM_BUG_ON_FOLIO(unmap_clean && src !=3D dst, src);
-+
- 	if (locked)
- 		rmap_walk_locked(dst, &rwc);
- 	else
-@@ -849,7 +895,7 @@ static int writeout(struct address_space *mapping, stru=
-ct folio *folio)
- 	 * At this point we know that the migration attempt cannot
- 	 * be successful.
- 	 */
--	remove_migration_ptes(folio, folio, false);
-+	remove_migration_ptes(folio, folio, false, false);
-=20
- 	rc =3D mapping->a_ops->writepage(&folio->page, &wbc);
-=20
-@@ -1108,7 +1154,7 @@ static int __unmap_and_move(struct page *page, struct=
- page *newpage,
-=20
- 	if (page_was_mapped)
- 		remove_migration_ptes(folio,
--			rc =3D=3D MIGRATEPAGE_SUCCESS ? dst : folio, false);
-+			rc =3D=3D MIGRATEPAGE_SUCCESS ? dst : folio, false, false);
-=20
- out_unlock_both:
- 	unlock_page(newpage);
-@@ -1318,7 +1364,7 @@ static int unmap_and_move_huge_page(new_page_t get_ne=
-w_page,
-=20
- 	if (page_was_mapped)
- 		remove_migration_ptes(src,
--			rc =3D=3D MIGRATEPAGE_SUCCESS ? dst : src, false);
-+			rc =3D=3D MIGRATEPAGE_SUCCESS ? dst : src, false, false);
-=20
- unlock_put_anon:
- 	unlock_page(new_hpage);
-diff --git a/mm/migrate_device.c b/mm/migrate_device.c
-index 27fb37d65476..cf5a54715a58 100644
---- a/mm/migrate_device.c
-+++ b/mm/migrate_device.c
-@@ -407,7 +407,7 @@ static void migrate_vma_unmap(struct migrate_vma *migra=
-te)
- 			continue;
-=20
- 		folio =3D page_folio(page);
--		remove_migration_ptes(folio, folio, false);
-+		remove_migration_ptes(folio, folio, false, false);
-=20
- 		migrate->src[i] =3D 0;
- 		folio_unlock(folio);
-@@ -783,7 +783,7 @@ void migrate_vma_finalize(struct migrate_vma *migrate)
-=20
- 		src =3D page_folio(page);
- 		dst =3D page_folio(newpage);
--		remove_migration_ptes(src, dst, false);
-+		remove_migration_ptes(src, dst, false, false);
- 		folio_unlock(src);
-=20
- 		if (is_zone_device_page(page))
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 373d2730fcf2..c8fae2fb1cdf 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -1363,6 +1363,8 @@ const char * const vmstat_text[] =3D {
- #ifdef CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
- 	"thp_split_pud",
- #endif
-+	"thp_split_free",
-+	"thp_split_unmap",
- 	"thp_zero_page_alloc",
- 	"thp_zero_page_alloc_failed",
- 	"thp_swpout",
-diff --git a/tools/testing/selftests/vm/split_huge_page_test.c b/tools/test=
-ing/selftests/vm/split_huge_page_test.c
-index 6aa2b8253aed..f47a6ba80773 100644
---- a/tools/testing/selftests/vm/split_huge_page_test.c
-+++ b/tools/testing/selftests/vm/split_huge_page_test.c
-@@ -88,6 +88,62 @@ static void write_debugfs(const char *fmt, ...)
- 	}
- }
-=20
-+void split_pmd_zero_pages(void)
-+{
-+	char *one_page;
-+	size_t len =3D 4 * pmd_pagesize;
-+	uint64_t thp_size, rss_anon_before, rss_anon_after;
-+	size_t i;
-+
-+	one_page =3D memalign(pmd_pagesize, len);
-+
-+	if (!one_page) {
-+		printf("Fail to allocate memory\n");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	madvise(one_page, len, MADV_HUGEPAGE);
-+	for (i =3D 0; i < len; i++)
-+		one_page[i] =3D (char)0;
-+
-+	thp_size =3D check_huge(one_page);
-+	if (!thp_size) {
-+		printf("No THP is allocated\n");
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	rss_anon_before =3D rss_anon();
-+	if (!rss_anon_before) {
-+		printf("No RssAnon is allocated before split\n");
-+		exit(EXIT_FAILURE);
-+	}
-+	/* split all THPs */
-+	write_debugfs(PID_FMT, getpid(), (uint64_t)one_page,
-+		      (uint64_t)one_page + len);
-+
-+	for (i =3D 0; i < len; i++)
-+		if (one_page[i] !=3D (char)0) {
-+			printf("%ld byte corrupted\n", i);
-+			exit(EXIT_FAILURE);
-+		}
-+
-+	thp_size =3D check_huge(one_page);
-+	if (thp_size) {
-+		printf("Still %ld kB AnonHugePages not split\n", thp_size);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	rss_anon_after =3D rss_anon();
-+	if (rss_anon_after >=3D rss_anon_before) {
-+		printf("Incorrect RssAnon value. Before: %ld After: %ld\n",
-+		       rss_anon_before, rss_anon_after);
-+		exit(EXIT_FAILURE);
-+	}
-+
-+	printf("Split zero filled huge pages successful\n");
-+	free(one_page);
-+}
-+
- void split_pmd_thp(void)
- {
- 	char *one_page;
-@@ -123,7 +179,6 @@ void split_pmd_thp(void)
- 			exit(EXIT_FAILURE);
- 		}
-=20
--
- 	thp_size =3D check_huge(one_page);
- 	if (thp_size) {
- 		printf("Still %ld kB AnonHugePages not split\n", thp_size);
-@@ -305,6 +360,7 @@ int main(int argc, char **argv)
- 	pageshift =3D ffs(pagesize) - 1;
- 	pmd_pagesize =3D read_pmd_pagesize();
-=20
-+	split_pmd_zero_pages();
- 	split_pmd_thp();
- 	split_pte_mapped_thp();
- 	split_file_backed_thp();
-diff --git a/tools/testing/selftests/vm/vm_util.c b/tools/testing/selftests=
-/vm/vm_util.c
-index b58ab11a7a30..c6a785a67fc9 100644
---- a/tools/testing/selftests/vm/vm_util.c
-+++ b/tools/testing/selftests/vm/vm_util.c
-@@ -6,6 +6,7 @@
-=20
- #define PMD_SIZE_FILE_PATH "/sys/kernel/mm/transparent_hugepage/hpage_pmd_=
-size"
- #define SMAP_FILE_PATH "/proc/self/smaps"
-+#define STATUS_FILE_PATH "/proc/self/status"
- #define MAX_LINE_LENGTH 500
-=20
- uint64_t pagemap_get_entry(int fd, char *start)
-@@ -72,6 +73,28 @@ uint64_t read_pmd_pagesize(void)
- 	return strtoul(buf, NULL, 10);
- }
-=20
-+uint64_t rss_anon(void)
-+{
-+	uint64_t rss_anon =3D 0;
-+	int ret;
-+	FILE *fp;
-+	char buffer[MAX_LINE_LENGTH];
-+
-+	fp =3D fopen(STATUS_FILE_PATH, "r");
-+	if (!fp)
-+		ksft_exit_fail_msg("%s: Failed to open file %s\n", __func__, STATUS_FILE=
-_PATH);
-+
-+	if (!check_for_pattern(fp, "RssAnon:", buffer))
-+		goto err_out;
-+
-+	if (sscanf(buffer, "RssAnon:%10ld kB", &rss_anon) !=3D 1)
-+		ksft_exit_fail_msg("Reading status error\n");
-+
-+err_out:
-+	fclose(fp);
-+	return rss_anon;
-+}
-+
- uint64_t check_huge(void *addr)
- {
- 	uint64_t thp =3D 0;
-diff --git a/tools/testing/selftests/vm/vm_util.h b/tools/testing/selftests=
-/vm/vm_util.h
-index 2e512bd57ae1..00b92ccef20d 100644
---- a/tools/testing/selftests/vm/vm_util.h
-+++ b/tools/testing/selftests/vm/vm_util.h
-@@ -6,4 +6,5 @@ uint64_t pagemap_get_entry(int fd, char *start);
- bool pagemap_is_softdirty(int fd, char *start);
- void clear_softdirty(void);
- uint64_t read_pmd_pagesize(void);
-+uint64_t rss_anon(void);
- uint64_t check_huge(void *addr);
---=20
-2.30.2
 
