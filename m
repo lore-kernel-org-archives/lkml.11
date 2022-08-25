@@ -2,69 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDADC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3088EC32774
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:35:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237796AbiHYHeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 03:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55678 "EHLO
+        id S238075AbiHYHfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 03:35:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235002AbiHYHeF (ORCPT
+        with ESMTP id S237749AbiHYHfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 03:34:05 -0400
-Received: from smtp.smtpout.orange.fr (smtp-18.smtpout.orange.fr [80.12.242.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133C0A285E
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:34:02 -0700 (PDT)
-Received: from pop-os.home ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id R7NGoP3xBXaJmR7NGoO40u; Thu, 25 Aug 2022 09:34:00 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 25 Aug 2022 09:34:00 +0200
-X-ME-IP: 90.11.190.129
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Manuel Lauss <manuel.lauss@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Ralf Baechle <ralf@linux-mips.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        linux-mmc@vger.kernel.org
-Subject: [PATCH] mmc: au1xmmc: Fix an error handling path in au1xmmc_probe()
-Date:   Thu, 25 Aug 2022 09:33:57 +0200
-Message-Id: <21d99886d07fa7fcbec74992657dabad98c935c4.1661412818.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Thu, 25 Aug 2022 03:35:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507214D170
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:35:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661412914;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=/KHHMrmA8HFk2ILFS/S3jVPvSPT7uexAlYEbMs4sA0E=;
+        b=Q3K/ktaL5djNo+d21CTG4/pXOhIM2T3IO+teGDrAo/LQKNI7uQr+8EaAofeoupR5mEq5Wi
+        NEifuG0AkNrBb8I7bOBZ5l8g9eBErhdsVFaxCTcpXAJZlHC9pe3ZYbnIEL7SCBUyqq5k41
+        vQ5RhxLWmOM12KwCHAKqb47mtMnw8c4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-376-ZtJcIqVGOgGj1CQMWQiYuw-1; Thu, 25 Aug 2022 03:35:11 -0400
+X-MC-Unique: ZtJcIqVGOgGj1CQMWQiYuw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6DCB53C10682;
+        Thu, 25 Aug 2022 07:35:10 +0000 (UTC)
+Received: from localhost (ovpn-13-108.pek2.redhat.com [10.72.13.108])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 905CB2166B26;
+        Thu, 25 Aug 2022 07:35:09 +0000 (UTC)
+Date:   Thu, 25 Aug 2022 15:35:04 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Ard Biesheuvel <ardb@kernel.org>, kexec@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Guanghui Feng <guanghuifeng@linux.alibaba.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Mike Rapoport <mike.rapoport@gmail.com>
+Subject: Re: [PATCH 0/5] arm64/mm: remap crash kernel with base pages even if
+ rodata_full disabled
+Message-ID: <YwcmKAink5XvoaTe@MiWiFi-R3L-srv>
+References: <20220819041156.873873-1-rppt@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819041156.873873-1-rppt@kernel.org>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If clk_prepare_enable() fails, there is no point in calling
-clk_disable_unprepare() in the error handling path.
+Add kexec list in CC
 
-Move the out_clk label at the right place.
+On 08/19/22 at 07:11am, Mike Rapoport wrote:
+> From: Mike Rapoport <mike.rapoport@gmail.com>
+> 
+> Hi,
+> 
+> There were several rounds of discussion how to remap with base pages only
+> the crash kernel area, the latest one here:
+> 
+> https://lore.kernel.org/all/1656777473-73887-1-git-send-email-guanghuifeng@linux.alibaba.com
+> 
+> and this is my attempt to allow having both large pages in the linear map
+> and protection for the crash kernel memory.
+> 
+> For server systems it is important to protect crash kernel memory for
+> post-mortem analysis, and for that protection to work the crash kernel
+> memory should be mapped with base pages in the linear map. 
+> 
+> On the systems with ZONE_DMA/DMA32 enabled, crash kernel reservation
+> happens after the linear map is created and the current code forces using
+> base pages for the entire linear map, which results in performance
+> degradation.
+> 
+> These patches enable remapping of the crash kernel area with base pages
+> while keeping large pages in the rest of the linear map.
+> 
+> The idea is to align crash kernel reservation to PUD boundaries, remap that
+> PUD and then free the extra memory.
 
-Fixes: b6507596dfd6 ("MIPS: Alchemy: au1xmmc: use clk framework")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/mmc/host/au1xmmc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Hi Mike,
 
-diff --git a/drivers/mmc/host/au1xmmc.c b/drivers/mmc/host/au1xmmc.c
-index a9a0837153d8..c88b039dc9fb 100644
---- a/drivers/mmc/host/au1xmmc.c
-+++ b/drivers/mmc/host/au1xmmc.c
-@@ -1097,8 +1097,9 @@ static int au1xmmc_probe(struct platform_device *pdev)
- 	if (host->platdata && host->platdata->cd_setup &&
- 	    !(mmc->caps & MMC_CAP_NEEDS_POLL))
- 		host->platdata->cd_setup(mmc, 0);
--out_clk:
-+
- 	clk_disable_unprepare(host->clk);
-+out_clk:
- 	clk_put(host->clk);
- out_irq:
- 	free_irq(host->irq, host);
--- 
-2.34.1
+Thanks for the effort to work on this issue. While I have to say this
+isnt's good because it can only be made relying on a prerequisite that
+there's big enough memory. If on a system, say 2G memory, it's not easy
+to succeed on getting one 1G memory. While we only require far smaller
+region than 1G, e.g about 200M which should be easy to get. So the way
+taken in this patchset is too quirky and will cause regression on
+systemswith small memory. This kind of sytems with small memory exists
+widely on virt guest instance.
+
+The crashkernel reservation happens after linear map because the
+reservation needs to know the dma zone boundary, arm64_dma_phys_limit.
+If we can deduce that before bootmem_init(), the reservation can be
+done before linear map. I will make an attempt on that. If still can't
+be accepted, we would like to take off the crashkernel region protection
+on arm64 for now.
+
+Thanks
+Baoquan
 
