@@ -2,88 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD37BC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 03:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 276D1C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 03:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232952AbiHYD1a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 23:27:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
+        id S232183AbiHYD22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 23:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232525AbiHYD1I (ORCPT
+        with ESMTP id S233301AbiHYD2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 23:27:08 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAD05F997;
-        Wed, 24 Aug 2022 20:27:06 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MCpGG0ZvwzlWCq;
-        Thu, 25 Aug 2022 11:23:50 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
- 2022 11:27:04 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 2/3] net: sched: sch_gred: add statistics when calling qdisc_drop() in sch_gred
-Date:   Thu, 25 Aug 2022 11:29:42 +0800
-Message-ID: <20220825032943.34778-3-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220825032943.34778-1-shaozhengchao@huawei.com>
-References: <20220825032943.34778-1-shaozhengchao@huawei.com>
+        Wed, 24 Aug 2022 23:28:01 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D7049E13D;
+        Wed, 24 Aug 2022 20:27:31 -0700 (PDT)
+X-UUID: 86b4d3c1e4d34172acd9a11ad75f4972-20220825
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=SpTyrzPfvhgrnUAG41diDhSK+1EnANAou6LsjSzD3h4=;
+        b=Fr6Zq2lhoMULxarma6m2kDVIhZVKg7POOtQ8P9DnBQkv9WwWMTw+K4e7RyO0ZvXNd/Eypz67u6HjAG4425a109bP9IToakmqvHRy2K6eOh2k1Cb6G5DdumsfxJZ1DL5i/0DaIYTY9IFr+nDzxJKubj8ngRWeQVZn3DZ7sDg40kw=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:a257d471-863a-429b-a003-b419c09cb2b9,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:614f0920-1c20-48a5-82a0-25f9c331906d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:
+        nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 86b4d3c1e4d34172acd9a11ad75f4972-20220825
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1638551480; Thu, 25 Aug 2022 11:27:25 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Thu, 25 Aug 2022 11:27:24 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Thu, 25 Aug 2022 11:27:24 +0800
+From:   <sean.wang@mediatek.com>
+To:     <stable@vger.kernel.org>
+CC:     <linux-wireless@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Deren Wu <deren.wu@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>
+Subject: [PATCH 5.19] mt76: mt7921: fix command timeout in AP stop period
+Date:   Thu, 25 Aug 2022 11:27:22 +0800
+Message-ID: <94065c608ee60d8a96a3d91913cb1e28d0a302e1.1661397440.git.objelf@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now, the "other" member in the gred_sched_data structure is not used.
-According to the description, "other" should be added when calling
-qdisc_drop() to discard packets.
+From: Deren Wu <deren.wu@mediatek.com>
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+commit 9d958b60ebc2434f2b7eae83d77849e22d1059eb upstream.
+
+Due to AP stop improperly, mt7921 driver would face random command timeout
+by chip fw problem. Migrate AP start/stop process to .start_ap/.stop_ap and
+congiure BSS network settings in both hooks.
+
+The new flow is shown below.
+* AP start
+    .start_ap()
+      configure BSS network resource
+      set BSS to connected state
+    .bss_info_changed()
+      enable fw beacon offload
+
+* AP stop
+    .bss_info_changed()
+      disable fw beacon offload (skip this command)
+    .stop_ap()
+      set BSS to disconnected state (beacon offload disabled automatically)
+      destroy BSS network resource
+
+Fixes: 116c69603b01 ("mt76: mt7921: Add AP mode support")
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- include/net/red.h    | 2 +-
- net/sched/sch_gred.c | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ .../wireless/mediatek/mt76/mt76_connac_mcu.c  |  2 +
+ .../net/wireless/mediatek/mt76/mt7921/main.c  | 47 +++++++++++++++----
+ .../net/wireless/mediatek/mt76/mt7921/mcu.c   |  5 +-
+ .../wireless/mediatek/mt76/mt7921/mt7921.h    |  2 +
+ 4 files changed, 43 insertions(+), 13 deletions(-)
 
-diff --git a/include/net/red.h b/include/net/red.h
-index 30c6a23ab8cc..dad41eff8c62 100644
---- a/include/net/red.h
-+++ b/include/net/red.h
-@@ -122,7 +122,7 @@ struct red_stats {
- 	u32		forced_drop;	/* Forced drops, qavg > max_thresh */
- 	u32		forced_mark;	/* Forced marks, qavg > max_thresh */
- 	u32		pdrop;          /* Drops due to queue limits */
--	u32		other;          /* Drops due to drop() calls */
-+	u32		other;          /* Drops due to qdisc_drop() calls */
- };
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+index faa279bbbcb2..7eb23805aa94 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+@@ -1403,6 +1403,8 @@ int mt76_connac_mcu_uni_add_bss(struct mt76_phy *phy,
+ 		else
+ 			conn_type = CONNECTION_INFRA_AP;
+ 		basic_req.basic.conn_type = cpu_to_le32(conn_type);
++		/* Fully active/deactivate BSS network in AP mode only */
++		basic_req.basic.active = enable;
+ 		break;
+ 	case NL80211_IFTYPE_STATION:
+ 		if (vif->p2p)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+index e86fe9ee4623..d3f310877248 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -653,15 +653,6 @@ static void mt7921_bss_info_changed(struct ieee80211_hw *hw,
+ 		}
+ 	}
  
- struct red_parms {
-diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
-index 1073c76d05c4..c50a0853dcb9 100644
---- a/net/sched/sch_gred.c
-+++ b/net/sched/sch_gred.c
-@@ -251,9 +251,11 @@ static int gred_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 
- 	q->stats.pdrop++;
- drop:
-+	q->stats.other++;
- 	return qdisc_drop(skb, sch, to_free);
- 
- congestion_drop:
-+	q->stats.other++;
- 	qdisc_drop(skb, sch, to_free);
- 	return NET_XMIT_CN;
+-	if (changed & BSS_CHANGED_BEACON_ENABLED && info->enable_beacon) {
+-		struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
+-
+-		mt76_connac_mcu_uni_add_bss(phy->mt76, vif, &mvif->sta.wcid,
+-					    true);
+-		mt7921_mcu_sta_update(dev, NULL, vif, true,
+-				      MT76_STA_INFO_STATE_NONE);
+-	}
+-
+ 	if (changed & (BSS_CHANGED_BEACON |
+ 		       BSS_CHANGED_BEACON_ENABLED))
+ 		mt7921_mcu_uni_add_beacon_offload(dev, hw, vif,
+@@ -1500,6 +1491,42 @@ mt7921_channel_switch_beacon(struct ieee80211_hw *hw,
+ 	mt7921_mutex_release(dev);
  }
+ 
++static int
++mt7921_start_ap(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
++{
++	struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
++	struct mt7921_phy *phy = mt7921_hw_phy(hw);
++	struct mt7921_dev *dev = mt7921_hw_dev(hw);
++	int err;
++
++	err = mt76_connac_mcu_uni_add_bss(phy->mt76, vif, &mvif->sta.wcid,
++					  true);
++	if (err)
++		return err;
++
++	err = mt7921_mcu_set_bss_pm(dev, vif, true);
++	if (err)
++		return err;
++
++	return mt7921_mcu_sta_update(dev, NULL, vif, true,
++				     MT76_STA_INFO_STATE_NONE);
++}
++
++static void
++mt7921_stop_ap(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
++{
++	struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
++	struct mt7921_phy *phy = mt7921_hw_phy(hw);
++	struct mt7921_dev *dev = mt7921_hw_dev(hw);
++	int err;
++
++	err = mt7921_mcu_set_bss_pm(dev, vif, false);
++	if (err)
++		return;
++
++	mt76_connac_mcu_uni_add_bss(phy->mt76, vif, &mvif->sta.wcid, false);
++}
++
+ const struct ieee80211_ops mt7921_ops = {
+ 	.tx = mt7921_tx,
+ 	.start = mt7921_start,
+@@ -1510,6 +1537,8 @@ const struct ieee80211_ops mt7921_ops = {
+ 	.conf_tx = mt7921_conf_tx,
+ 	.configure_filter = mt7921_configure_filter,
+ 	.bss_info_changed = mt7921_bss_info_changed,
++	.start_ap = mt7921_start_ap,
++	.stop_ap = mt7921_stop_ap,
+ 	.sta_state = mt7921_sta_state,
+ 	.sta_pre_rcu_remove = mt76_sta_pre_rcu_remove,
+ 	.set_key = mt7921_set_key,
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+index 613a94be8ea4..6d0aceb5226a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+@@ -1020,7 +1020,7 @@ mt7921_mcu_uni_bss_bcnft(struct mt7921_dev *dev, struct ieee80211_vif *vif,
+ 				 &bcnft_req, sizeof(bcnft_req), true);
+ }
+ 
+-static int
++int
+ mt7921_mcu_set_bss_pm(struct mt7921_dev *dev, struct ieee80211_vif *vif,
+ 		      bool enable)
+ {
+@@ -1049,9 +1049,6 @@ mt7921_mcu_set_bss_pm(struct mt7921_dev *dev, struct ieee80211_vif *vif,
+ 	};
+ 	int err;
+ 
+-	if (vif->type != NL80211_IFTYPE_STATION)
+-		return 0;
+-
+ 	err = mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_BSS_ABORT),
+ 				&req_hdr, sizeof(req_hdr), false);
+ 	if (err < 0 || !enable)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
+index 66054123bcc4..cebc3cfa01b8 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
+@@ -280,6 +280,8 @@ int mt7921_wpdma_reset(struct mt7921_dev *dev, bool force);
+ int mt7921_wpdma_reinit_cond(struct mt7921_dev *dev);
+ void mt7921_dma_cleanup(struct mt7921_dev *dev);
+ int mt7921_run_firmware(struct mt7921_dev *dev);
++int mt7921_mcu_set_bss_pm(struct mt7921_dev *dev, struct ieee80211_vif *vif,
++			  bool enable);
+ int mt7921_mcu_sta_update(struct mt7921_dev *dev, struct ieee80211_sta *sta,
+ 			  struct ieee80211_vif *vif, bool enable,
+ 			  enum mt76_sta_info_state state);
 -- 
-2.17.1
+2.25.1
 
