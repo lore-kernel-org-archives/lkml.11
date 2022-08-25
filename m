@@ -2,275 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C571C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B56CC28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233201AbiHYGrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 02:47:49 -0400
+        id S234475AbiHYGsI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 02:48:08 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234511AbiHYGrg (ORCPT
+        with ESMTP id S236203AbiHYGr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 02:47:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B3E76741;
-        Wed, 24 Aug 2022 23:47:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661410053; x=1692946053;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vD6uljUqlEWQf+eppEAvBEV9mc5Pchu0nk5o3fSUuRQ=;
-  b=uq+KkvCBm2HrHwIpryWMysgYmO0N0wlhvZCT8KBhVDRi15660Tu4jhFd
-   veK1PZl6OWaFk1y4e4qtxO4TiKtBZcFMECSyo2Y0N46TwsG/72lg78Pqa
-   +FbIdnp4D8B7VHlbisGT5ro1LP28UZA9O5DTRw3JZKTWTyIzV+cnprPrh
-   hyj1IhTNpaxHOSteqahrx7YUxcC1neIYdHsUgRNW2VnoZpSrPGLrfFoZj
-   V7zIno2vZm2W2d/1mgr2IZAT9dEOOxwFCHjRNcG2fBEoJ6EJiBCpSC3Gs
-   DD4Zm038XAI96nshFZFhr1A/ONXdhtIQi3EBs4AR4Oa+fP0roDVlyTkX8
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="187978450"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Aug 2022 23:47:31 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Wed, 24 Aug 2022 23:47:31 -0700
-Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Wed, 24 Aug 2022 23:47:28 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <arnd@arndb.de>, <olof@lixom.net>, <soc@kernel.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <claudiu.beznea@microchip.com>, <nicolas.ferre@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH v4] ARM: dts: lan966x: add support for pcb8290
-Date:   Thu, 25 Aug 2022 08:51:35 +0200
-Message-ID: <20220825065135.1075049-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.33.0
+        Thu, 25 Aug 2022 02:47:56 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D3BA0276
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 23:47:52 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id r4so24818937edi.8
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 23:47:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ionos.com; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=WJ7GBNHN6AoVv9ZeH0urLLa0hH2huW2RwMDCHhQJQUs=;
+        b=d6bUCj/UvDMnRfnKyskgkByJo1qmZAo616iARuRQkWWCLeIP4Z9rfvc3DCBpbZsHlP
+         KTxjAxUjNKC0ca6HElPoVtJtqBqYS8+W795nbrRnRSgRys8RpXduYkix1MZcnu6/HioI
+         ocG6YqnD1sOrtdVpTp+mhQXlLHNtQHjayJXjAde8V2kn2GdvtFjivTfNgjaG0kLdRUaH
+         wx0G+FeDpnQLnjj4/YOMxiUMRhzAEL3tpaPXcoRwd5ZoXwAZ9E9qCDfWaZlGBjwmit3B
+         gcCR9kyatFVXcMPA7VQQ61iyOWutwdAvxJgbVLSU6lJ0l9kmlAqQlc3SLcMBTlRMHLOX
+         PpqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=WJ7GBNHN6AoVv9ZeH0urLLa0hH2huW2RwMDCHhQJQUs=;
+        b=JPrVujAE6WbTrA8znLsGp3VcdAgO4siI7flXjPbHpvL0B98UTUpemwpJYnC6dWEOhj
+         wzyfpQE6Cyb98oq2XOXZGAPlCTlcFg7+MvfU9bxEVTJ/ALxjsWl/M8oNsmyp9rwEq7cY
+         SA4oFI2HzM8rpj1WYnzOtdPMuSfqNYerbHWh0MX6xpvUSGgCXGxY+nemq7B3ITojNLLz
+         kkSVo9nRsdQfQHgRrKEev7lpnXHWbgC2fjPS/PXckesrRVcH6Ton4vrR3J785Y8XnJ9G
+         G+M/lwIsh2mMnC/JFwwVCy+nI+W2T6LKMDkcWLMf+rRdok9CZw3E1OUvwmaItrhopgqg
+         D2Og==
+X-Gm-Message-State: ACgBeo1zrW+1GiBq2vuGJbPo9Aln6wrN5p1U2CuxEk/em81AXa4vT5kZ
+        /2wIMX3I6LrU5kFZ9lnv3+ca5Q==
+X-Google-Smtp-Source: AA6agR47CytgekKsTgSt+j2KQwkdMlmF15xtMtjBIFjJrYQS67CvpLZ+4Bs7+CZRQ9qANAJv7tB9KQ==
+X-Received: by 2002:a05:6402:26d6:b0:447:391:5d32 with SMTP id x22-20020a05640226d600b0044703915d32mr1913796edd.424.1661410070906;
+        Wed, 24 Aug 2022 23:47:50 -0700 (PDT)
+Received: from lb02065.fritz.box ([2001:9e8:142d:a900:eab:b5b1:a064:1d0d])
+        by smtp.gmail.com with ESMTPSA id l5-20020a170906a40500b0073100dfa7b0sm2063564ejz.8.2022.08.24.23.47.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Aug 2022 23:47:50 -0700 (PDT)
+From:   Jack Wang <jinpu.wang@ionos.com>
+To:     hch@infradead.org, axboe@kernel.dk, linux-nvme@lists.infradead.org
+Cc:     James Smart <james.smart@broadcom.com>,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sagi Grimberg <sagi@grimberg.me>, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] nvme-fc: Fix the error check for dma_map_sg
+Date:   Thu, 25 Aug 2022 08:47:47 +0200
+Message-Id: <20220825064747.22521-3-jinpu.wang@ionos.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220825064747.22521-1-jinpu.wang@ionos.com>
+References: <20220825064747.22521-1-jinpu.wang@ionos.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add basic support for pcb8290. It has 2 lan8814 phys(each phy is a
-quad-port) on the external MDIO bus and no SFP ports.
+dma_map_sg return 0 on error, add missing check.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc: James Smart <james.smart@broadcom.com>
+Cc: Keith Busch <kbusch@kernel.org>
+Cc: Jens Axboe <axboe@fb.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Sagi Grimberg <sagi@grimberg.me>
+Cc: linux-nvme@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+Fixes: e399441de911 ("nvme-fabrics: Add host support for FC transport")
+
+Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
 ---
-v3->v4:
-- add missing Copyright to dts file
+ drivers/nvme/host/fc.c   | 2 +-
+ drivers/nvme/target/fc.c | 5 +++++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-v2->v3:
-- update coma-mode-gpios, set them to OPEN_DRAIN
-
-v1->v2:
-- add comments for pps_out_pins and ptp_ext_pins pins
-- fix commit message.
----
- arch/arm/boot/dts/Makefile            |   1 +
- arch/arm/boot/dts/lan966x-pcb8290.dts | 175 ++++++++++++++++++++++++++
- 2 files changed, 176 insertions(+)
- create mode 100644 arch/arm/boot/dts/lan966x-pcb8290.dts
-
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 05d8aef6e5d2..595e870750cd 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -788,6 +788,7 @@ dtb-$(CONFIG_SOC_IMXRT) += \
- dtb-$(CONFIG_SOC_LAN966) += \
- 	lan966x-kontron-kswitch-d10-mmt-6g-2gs.dtb \
- 	lan966x-kontron-kswitch-d10-mmt-8g.dtb \
-+	lan966x-pcb8290.dtb \
- 	lan966x-pcb8291.dtb \
- 	lan966x-pcb8309.dtb
- dtb-$(CONFIG_SOC_LS1021A) += \
-diff --git a/arch/arm/boot/dts/lan966x-pcb8290.dts b/arch/arm/boot/dts/lan966x-pcb8290.dts
-new file mode 100644
-index 000000000000..2e091180a64c
---- /dev/null
-+++ b/arch/arm/boot/dts/lan966x-pcb8290.dts
-@@ -0,0 +1,175 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * lan966x-pcb8290.dts - Device Tree file for LAN966X-PCB8290 board
-+ *
-+ * Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries
-+ *
-+ * Author: Horatiu Vultur <horatiu.vultur@microchip.com>
-+ */
-+/dts-v1/;
-+#include "lan966x.dtsi"
-+#include "dt-bindings/phy/phy-lan966x-serdes.h"
-+
-+/ {
-+	model = "Microchip EVB LAN9668";
-+	compatible = "microchip,lan9668-pcb8290", "microchip,lan9668", "microchip,lan966";
-+
-+	gpio-restart {
-+		compatible = "gpio-restart";
-+		gpios = <&gpio 56 GPIO_ACTIVE_LOW>;
-+		priority = <200>;
-+	};
-+};
-+
-+&gpio {
-+	miim_a_pins: mdio-pins {
-+		/* MDC, MDIO */
-+		pins =  "GPIO_28", "GPIO_29";
-+		function = "miim_a";
-+	};
-+
-+	pps_out_pins: pps-out-pins {
-+		/* 1pps output */
-+		pins = "GPIO_38";
-+		function = "ptpsync_3";
-+	};
-+
-+	ptp_ext_pins: ptp-ext-pins {
-+		/* 1pps input */
-+		pins = "GPIO_35";
-+		function = "ptpsync_0";
-+	};
-+
-+	udc_pins: ucd-pins {
-+		/* VBUS_DET B */
-+		pins = "GPIO_8";
-+		function = "usb_slave_b";
-+	};
-+};
-+
-+&mdio0 {
-+	pinctrl-0 = <&miim_a_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+
-+	ext_phy0: ethernet-phy@7 {
-+		reg = <7>;
-+		coma-mode-gpios = <&gpio 60 GPIO_OPEN_DRAIN>;
-+	};
-+
-+	ext_phy1: ethernet-phy@8 {
-+		reg = <8>;
-+		coma-mode-gpios = <&gpio 60 GPIO_OPEN_DRAIN>;
-+	};
-+
-+	ext_phy2: ethernet-phy@9 {
-+		reg = <9>;
-+		coma-mode-gpios = <&gpio 60 GPIO_OPEN_DRAIN>;
-+	};
-+
-+	ext_phy3: ethernet-phy@10 {
-+		reg = <10>;
-+		coma-mode-gpios = <&gpio 60 GPIO_OPEN_DRAIN>;
-+	};
-+
-+	ext_phy4: ethernet-phy@15 {
-+		reg = <15>;
-+		coma-mode-gpios = <&gpio 60 GPIO_OPEN_DRAIN>;
-+	};
-+
-+	ext_phy5: ethernet-phy@16 {
-+		reg = <16>;
-+		coma-mode-gpios = <&gpio 60 GPIO_OPEN_DRAIN>;
-+	};
-+
-+	ext_phy6: ethernet-phy@17 {
-+		reg = <17>;
-+		coma-mode-gpios = <&gpio 60 GPIO_OPEN_DRAIN>;
-+	};
-+
-+	ext_phy7: ethernet-phy@18 {
-+		reg = <18>;
-+		coma-mode-gpios = <&gpio 60 GPIO_OPEN_DRAIN>;
-+	};
-+};
-+
-+&port0 {
-+	reg = <2>;
-+	phy-handle = <&ext_phy2>;
-+	phy-mode = "qsgmii";
-+	phys = <&serdes 0 SERDES6G(1)>;
-+	status = "okay";
-+};
-+
-+&port1 {
-+	reg = <3>;
-+	phy-handle = <&ext_phy3>;
-+	phy-mode = "qsgmii";
-+	phys = <&serdes 1 SERDES6G(1)>;
-+	status = "okay";
-+};
-+
-+&port2 {
-+	reg = <0>;
-+	phy-handle = <&ext_phy0>;
-+	phy-mode = "qsgmii";
-+	phys = <&serdes 2 SERDES6G(1)>;
-+	status = "okay";
-+};
-+
-+&port3 {
-+	reg = <1>;
-+	phy-handle = <&ext_phy1>;
-+	phy-mode = "qsgmii";
-+	phys = <&serdes 3 SERDES6G(1)>;
-+	status = "okay";
-+};
-+
-+&port4 {
-+	reg = <6>;
-+	phy-handle = <&ext_phy6>;
-+	phy-mode = "qsgmii";
-+	phys = <&serdes 4 SERDES6G(2)>;
-+	status = "okay";
-+};
-+
-+&port5 {
-+	reg = <7>;
-+	phy-handle = <&ext_phy7>;
-+	phy-mode = "qsgmii";
-+	phys = <&serdes 5 SERDES6G(2)>;
-+	status = "okay";
-+};
-+
-+&port6 {
-+	reg = <4>;
-+	phy-handle = <&ext_phy4>;
-+	phy-mode = "qsgmii";
-+	phys = <&serdes 6 SERDES6G(2)>;
-+	status = "okay";
-+};
-+
-+&port7 {
-+	reg = <5>;
-+	phy-handle = <&ext_phy5>;
-+	phy-mode = "qsgmii";
-+	phys = <&serdes 7 SERDES6G(2)>;
-+	status = "okay";
-+};
-+
-+&serdes {
-+	status = "okay";
-+};
-+
-+&switch {
-+	pinctrl-0 = <&pps_out_pins>, <&ptp_ext_pins>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+};
-+
-+&udc {
-+	pinctrl-0 = <&udc_pins>;
-+	pinctrl-names = "default";
-+	atmel,vbus-gpio = <&gpio 8 GPIO_ACTIVE_HIGH>;
-+	status = "okay";
-+};
+diff --git a/drivers/nvme/host/fc.c b/drivers/nvme/host/fc.c
+index 127abaf9ba5d..95050f2e0a06 100644
+--- a/drivers/nvme/host/fc.c
++++ b/drivers/nvme/host/fc.c
+@@ -2616,7 +2616,7 @@ nvme_fc_map_data(struct nvme_fc_ctrl *ctrl, struct request *rq,
+ 	WARN_ON(op->nents > blk_rq_nr_phys_segments(rq));
+ 	freq->sg_cnt = fc_dma_map_sg(ctrl->lport->dev, freq->sg_table.sgl,
+ 				op->nents, rq_dma_dir(rq));
+-	if (unlikely(freq->sg_cnt <= 0)) {
++	if (unlikely(!freq->sg_cnt)) {
+ 		sg_free_table_chained(&freq->sg_table, NVME_INLINE_SG_CNT);
+ 		freq->sg_cnt = 0;
+ 		return -EFAULT;
+diff --git a/drivers/nvme/target/fc.c b/drivers/nvme/target/fc.c
+index ab2627e17bb9..3749ca28860b 100644
+--- a/drivers/nvme/target/fc.c
++++ b/drivers/nvme/target/fc.c
+@@ -2089,6 +2089,11 @@ nvmet_fc_alloc_tgt_pgs(struct nvmet_fc_fcp_iod *fod)
+ 				((fod->io_dir == NVMET_FCP_WRITE) ?
+ 					DMA_FROM_DEVICE : DMA_TO_DEVICE));
+ 				/* note: write from initiator perspective */
++	if (!fod->data_sg_cnt) {
++		sgl_free(fod->data_sg);
++		fod->data_sg = NULL;
++		goto out;
++	}
+ 	fod->next_sg = fod->data_sg;
+ 
+ 	return 0;
 -- 
-2.33.0
+2.34.1
 
