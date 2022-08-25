@@ -2,81 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B066DECAA24
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B47EECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243533AbiHYSvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
+        id S243552AbiHYSvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243489AbiHYSvG (ORCPT
+        with ESMTP id S243511AbiHYSvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:51:06 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD3C4B2CF7
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:51:05 -0700 (PDT)
-Received: from notapiano (unknown [70.107.189.129])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: nfraprado)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 942E56601EAE;
-        Thu, 25 Aug 2022 19:51:03 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661453464;
-        bh=jqjW7nQ84W8spFHzeSk+rHHJ/4I5iCIJLk6w8rmb7rc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MH5HsrRkh3wk3XSsr+HODwUgKAGKEz2nM078683pQisORGSosmuU2vvz8w2xWrmYP
-         MxqrWoLWdzzLXFUC2UKgceMIt0yW4/j51rTGu7XUgbBtM0lrmBkCjsDYRyWiEG7uIa
-         NnQNlLGdxclJmEb25DlZ3/7Kb8xPG9xB7psiNMCm8l3EC69khxFKXdyHiz6eySopIk
-         gQF+v6zbIiX7Xk5FZICrdgNonPUB5MoosO1BfDdnMcSl60IDQjR/shcL63TB2sbxtI
-         qvrHz1kLWIk15ATI0mngDAOh/NLof2Ir6ctpYoYpw6DxVd6FgXKnEs9Jm08SMobyq5
-         RBQUG/Ofj8LpA==
-Date:   Thu, 25 Aug 2022 14:50:59 -0400
-From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
-        <nfraprado@collabora.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>, roger.lu@mediatek.com,
-        khilman@baylibre.com, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-Subject: Re: [PATCH 6/6] soc: mediatek: mtk-svs: Use bitfield access macros
- where possible
-Message-ID: <20220825185059.xbh3gigksveg4h4u@notapiano>
-References: <20220726141653.177948-1-angelogioacchino.delregno@collabora.com>
- <20220726141653.177948-7-angelogioacchino.delregno@collabora.com>
- <fa5f9bc8-f087-02c6-dd31-efa33244bf1b@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fa5f9bc8-f087-02c6-dd31-efa33244bf1b@gmail.com>
+        Thu, 25 Aug 2022 14:51:10 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3EBB4E83
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:51:09 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id m34-20020a634c62000000b0042aff6dff12so3795904pgl.14
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:51:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc;
+        bh=lGAqB/GNmrDPPkV5jr9OoJ3q9SKii5qWo4ibcFCW7eo=;
+        b=DeaANBLOlr0ppKzAtlWXDTLwAmUNq9XIpss/f40nbT0JHkuWGR7LsYXfdKztC0j5gG
+         HiOL2Xh6qQRXSJDdzCKZi86XRNjr6lrlmT4k65meiRrXvQq5u8rPZ3QJXOLKt7FeYyJa
+         5M/Z7/erNaZfGrGdUgBr3uSIceCSe5Ul3oByGVVKVt8shq0Uyl3ye9j5cfxJrHtAGBLi
+         n8Xc1I5FWqMB/sqcuTWOL44ocC8VC8HYMbmx2Ut8ILk4wYhQrwRDmBf/8XaIc0Xt+vg/
+         vt0P6bTefJ956in4EEkcFKuJfzj8EmfCd7DSYWZ8D+2hdwGwyr4t4fewwhKKY6ql0aes
+         YuxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=lGAqB/GNmrDPPkV5jr9OoJ3q9SKii5qWo4ibcFCW7eo=;
+        b=T0W0hcyPigxKEkCJjwoh04zF1MV3mb3bkKbXMnz2D5JM+LUhkcn7HLv6/B3a9TSZdw
+         e/RxBecxOjSB5SLwLowxu1CIJJcCX5OTkGN/MJZPd+GyukJ9HP9BglS23dqpXIUkTsHn
+         Ctw0klEWoTTQNt+yAQ+b2zPnJKc+5umSkHj74FZCFftuNvQ9Xkp0NQaXr/PwwM0f5KjZ
+         1kLR6XdkHSofil3ncGsoep/iYt+GM8rEqcOpgUL/M7r/WHUBSMpjB8M2X+734OtPZrot
+         5mqcRDe1+ReoJpCo0wfPGddlALNii8BZxjGQxjyJc9+CgHL0iT5Ckl0aGXEzOiVltlhw
+         1ung==
+X-Gm-Message-State: ACgBeo0GRw1PpAKLkSINRZaCNNfXN49OLHieqh1mUIQOnpyqFvlSmH2c
+        Dw8G/GnrH/18abEI6vhgwbFU/T0G/TPuZkkVJWI=
+X-Google-Smtp-Source: AA6agR6e/9WCXUqGwvrKzxvLN5CnU2/oDCiswJkCrhOMct7DE+11zW5i2jVa12mcZbU1eqo8VEXW5A18uJTrWpZYsoU=
+X-Received: from wmcvicker.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5ebe])
+ (user=willmcvicker job=sendgmr) by 2002:a17:90a:e558:b0:1fb:c4b7:1a24 with
+ SMTP id ei24-20020a17090ae55800b001fbc4b71a24mr19452pjb.1.1661453467971; Thu,
+ 25 Aug 2022 11:51:07 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 18:50:25 +0000
+In-Reply-To: <20220825185026.3816331-1-willmcvicker@google.com>
+Mime-Version: 1.0
+References: <20220825185026.3816331-1-willmcvicker@google.com>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220825185026.3816331-3-willmcvicker@google.com>
+Subject: [PATCH v5 2/2] PCI: dwc: Add support for 64-bit MSI target address
+From:   Will McVicker <willmcvicker@google.com>
+To:     Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        "=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?=" <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Will McVicker <willmcvicker@google.com>
+Cc:     kernel-team@android.com, Vidya Sagar <vidyas@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Robin Murphy <robin.murphy@arm.com>, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 03:29:33PM +0200, Matthias Brugger wrote:
-> 
-> 
-> On 26/07/2022 16:16, AngeloGioacchino Del Regno wrote:
-> > In order to enhance readability and safety during registers setup
-> > and value retrieval, redefine a few register related macros and
-> > convert all open-coded instances of bitfield setting/retrieval
-> > to use the FIELD_PREP() and FIELD_GET() macros.
-> > While at it, some macros were renamed to further enhance readability.
-> > 
-> > This commit brings no functional changes.
-> > 
-> > Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> 
-> Does not apply, would you mind to resend together with 1/6? Thanks!
+Since not all devices require a 32-bit MSI address, add support to the
+PCIe host driver to allow setting the DMA mask to 64-bits if the 32-bit
+allocation fails. This allows kernels to disable ZONE_DMA32 and bounce
+buffering (swiotlb) without risking not being able to get a 32-bit address
+during DMA allocation.
 
-Hi Matthias,
+Basically, in the slim chance that there are no 32-bit allocations
+available, the current PCIe host driver will fail to allocate the msi_msg
+page due to a DMA address overflow (seen in [1]). With this patch, the
+PCIe host can retry the allocation with a 64-bit DMA mask if the current
+PCIe device advertises 64-bit support via its MSI capabilities.
 
-Patches 1 and 6 rebased and sent [1].
+[1] https://lore.kernel.org/all/Yo0soniFborDl7+C@google.com/
 
-Thanks,
-Nícolas
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Will McVicker <willmcvicker@google.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Jingoo Han <jingoohan1@gmail.com>
+---
+ .../pci/controller/dwc/pcie-designware-host.c | 38 ++++++++++++++-----
+ drivers/pci/controller/dwc/pcie-designware.c  |  8 ++++
+ drivers/pci/controller/dwc/pcie-designware.h  |  1 +
+ 3 files changed, 38 insertions(+), 9 deletions(-)
 
-[1] https://lore.kernel.org/all/20220825184616.2118870-1-nfraprado@collabora.com
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index 39f3b37d4033..8928a9a29d58 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -330,6 +330,9 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
+ 	u64 *msi_vaddr;
+ 	int ret;
+ 	u32 ctrl, num_ctrls;
++	bool msi_64bit = false;
++	bool retry_64bit = false;
++	u16 msi_capabilities;
+ 
+ 	for (ctrl = 0; ctrl < MAX_MSI_CTRLS; ctrl++)
+ 		pp->irq_mask[ctrl] = ~0;
+@@ -367,16 +370,33 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
+ 						    dw_chained_msi_isr, pp);
+ 	}
+ 
+-	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
+-	if (ret)
+-		dev_warn(dev, "Failed to set DMA mask to 32-bit. Devices with only 32-bit MSI support may not work properly\n");
++	msi_capabilities = dw_pcie_msi_capabilities(pci);
++	if (msi_capabilities & PCI_MSI_FLAGS_ENABLE)
++		msi_64bit = msi_capabilities & PCI_MSI_FLAGS_64BIT;
+ 
+-	msi_vaddr = dmam_alloc_coherent(dev, sizeof(u64), &pp->msi_data,
+-					GFP_KERNEL);
+-	if (!msi_vaddr) {
+-		dev_err(dev, "Failed to alloc and map MSI data\n");
+-		dw_pcie_free_msi(pp);
+-		return -ENOMEM;
++	while (true) {
++		dev_dbg(dev, "Setting MSI DMA mask to %s-bit.\n",
++			retry_64bit ? "64" : "32");
++		ret = dma_set_mask_and_coherent(dev, retry_64bit ?
++						DMA_BIT_MASK(64) :
++						DMA_BIT_MASK(32));
++		if (ret)
++			dev_warn(dev, "Failed to set DMA mask to %s-bit.\n",
++				 retry_64bit ? "64" : "32");
++
++		msi_vaddr = dmam_alloc_coherent(dev, sizeof(u64), &pp->msi_data,
++						GFP_KERNEL);
++		if (!msi_vaddr) {
++			dev_err(dev, "Failed to alloc and map MSI data\n");
++			if (msi_64bit && !retry_64bit) {
++				retry_64bit = true;
++				continue;
++			}
++
++			dw_pcie_free_msi(pp);
++			return -ENOMEM;
++		}
++		break;
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index c6725c519a47..650a7f22f9d0 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -82,6 +82,14 @@ u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap)
+ }
+ EXPORT_SYMBOL_GPL(dw_pcie_find_capability);
+ 
++u16 dw_pcie_msi_capabilities(struct dw_pcie *pci)
++{
++	u8 offset;
++
++	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
++	return dw_pcie_readw_dbi(pci, offset + PCI_MSI_FLAGS);
++}
++
+ static u16 dw_pcie_find_next_ext_capability(struct dw_pcie *pci, u16 start,
+ 					    u8 cap)
+ {
+diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
+index a871ae7eb59e..45fcdfc8c035 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.h
++++ b/drivers/pci/controller/dwc/pcie-designware.h
+@@ -332,6 +332,7 @@ void dw_pcie_version_detect(struct dw_pcie *pci);
+ 
+ u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap);
+ u16 dw_pcie_find_ext_capability(struct dw_pcie *pci, u8 cap);
++u16 dw_pcie_msi_capabilities(struct dw_pcie *pci);
+ 
+ int dw_pcie_read(void __iomem *addr, int size, u32 *val);
+ int dw_pcie_write(void __iomem *addr, int size, u32 val);
+-- 
+2.37.2.672.g94769d06f0-goog
+
