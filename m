@@ -2,186 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A072C48BE4
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A360AC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236957AbiHYBsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:48:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        id S235830AbiHYBsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236400AbiHYBrW (ORCPT
+        with ESMTP id S236319AbiHYBrz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:47:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5743C9F190;
-        Wed, 24 Aug 2022 18:41:36 -0700 (PDT)
+        Wed, 24 Aug 2022 21:47:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD3D9F1B2
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 18:41:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EBA5B826EE;
-        Thu, 25 Aug 2022 01:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5BE2C4347C;
-        Thu, 25 Aug 2022 01:40:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 47A3C61ACA
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE479C433D6;
+        Thu, 25 Aug 2022 01:41:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391623;
-        bh=dDNMM0bxPSia/NokBHlZnwbteEDaNndzCGpRlqIe8Q0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=uL57VArKCWsZJieF1iPoAXPSus00SnebLP8mLvYKBN1b69zAUlhF2V/f8DXkqWGi2
-         d6wAJldxsVTZR/lm82MS3tpPpAWBfPar7UsX2eEay+qtA5u/o5mbAgKoE6BQywPpYC
-         LuNefOZ+47Irhb905p3tuJuP0j9vHguW3Lp+iyAUAA9VXKv9y2TgAsJzdRu+ZHBwGq
-         iy6Iz4hyVrGYgIdR8O7m4Ko6g3QNPAhSUqLbdIU10gGWthAnq0f0jggpV1tyQELq5t
-         W8j2tEcbeqEZBDJtTXMXGCp2293Pb/kwkUWnix1fo4wgXsD2yX1lo/HesDXfK2P+/R
-         oSuGzJuLn0Bxg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Denis V. Lunev" <den@openvz.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Christian Brauner <brauner@kernel.org>, netdev@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        kernel@openvz.org, devel@openvz.org,
-        Sasha Levin <sashal@kernel.org>, wangyuweihx@gmail.com
-Subject: [PATCH AUTOSEL 4.14 1/4] neigh: fix possible DoS due to net iface start/stop loop
-Date:   Wed, 24 Aug 2022 21:40:15 -0400
-Message-Id: <20220825014020.24088-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        s=k20201202; t=1661391666;
+        bh=ZyTP4Ukh+Rt1oSIgcRAyWWPbfucjwy/cRpC7l3f+cF4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=QVZSqqO9mfgICuDCulnsumuk9ZzEZT6MmPzfrFb4VksepHWNp/EhNUqltkrkpN4kJ
+         5piRHqXGDW3JBnxADDWGNz3VDcuYofAfBlNyKKd83xr8MQ/+fcUY0GESv5UoX/5nPP
+         /FQ65iwWdiO4W5Xa+Rh8SfFD+R7+uOSQpAoSeHn4q1IH31DjcxJJye4PEZkFP73So/
+         Oujs3JFvEDWxkE8T4N2G18kzVZTRlZEKW5KWfKg85KWxUi1sVMONJa8SHroFYPdIdq
+         qe1dT2GrNK4nRWEdBbTWiWpfYhKXXBRwSNeModOzY+FWxvL2jsDhGfXtrDfT379s+y
+         T0V03TZCbzliQ==
+Message-ID: <32dd704f-d393-e2bd-c09c-5e49dfea0c5f@kernel.org>
+Date:   Thu, 25 Aug 2022 09:41:03 +0800
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [f2fs-dev] [PATCH -next] f2fs: fix wrong dirty page count when
+ race between mmap and fallocate.
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Shuqi Zhang <zhangshuqi3@huawei.com>
+References: <20220815081555.2961943-1-zhangshuqi3@huawei.com>
+ <a364da58-f476-69fd-3f90-448f35c8e151@kernel.org>
+ <YwFaTprvOf8ckGsP@google.com> <YwFd/+YPfPz60uWg@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YwFd/+YPfPz60uWg@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Denis V. Lunev" <den@openvz.org>
+On 2022/8/21 6:19, Jaegeuk Kim wrote:
+> On 08/20, Jaegeuk Kim wrote:
+>> On 08/20, Chao Yu wrote:
+>>> On 2022/8/15 16:15, Shuqi Zhang wrote:
+>>>> This is a BUG_ON issue as follows when running xfstest-generic-503:
+>>>> WARNING: CPU: 21 PID: 1385 at fs/f2fs/inode.c:762 f2fs_evict_inode+0x847/0xaa0
+>>>> Modules linked in:
+>>>> CPU: 21 PID: 1385 Comm: umount Not tainted 5.19.0-rc5+ #73
+>>>> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
+>>>>
+>>>> Call Trace:
+>>>> evict+0x129/0x2d0
+>>>> dispose_list+0x4f/0xb0
+>>>> evict_inodes+0x204/0x230
+>>>> generic_shutdown_super+0x5b/0x1e0
+>>>> kill_block_super+0x29/0x80
+>>>> kill_f2fs_super+0xe6/0x140
+>>>> deactivate_locked_super+0x44/0xc0
+>>>> deactivate_super+0x79/0x90
+>>>> cleanup_mnt+0x114/0x1a0
+>>>> __cleanup_mnt+0x16/0x20
+>>>> task_work_run+0x98/0x100
+>>>> exit_to_user_mode_prepare+0x3d0/0x3e0
+>>>> syscall_exit_to_user_mode+0x12/0x30
+>>>> do_syscall_64+0x42/0x80
+>>>> entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>>>>
+>>>> Function flow analysis when BUG occurs:
+>>>> f2fs_fallocate                    mmap
+>>>>                                     do_page_fault
+>>>>                                       pte_spinlock  // ---lock_pte
+>>>>                                       do_wp_page
+>>>>                                         wp_page_shared
+>>>>                                           pte_unmap_unlock   // unlock_pte
+>>>>                                             do_page_mkwrite
+>>>>                                             f2fs_vm_page_mkwrite
+>>>>                                               down_read(i_mmap_sem)
+>>>>                                               lock_page
+>>>>                                               if (PageMappedToDisk(page))
+>>>>                                                 goto out;
+>>>>                                               // set_page_dirty  --NOT RUN
+>>>>                                               out: up_read(i_mmap_sem)
+>>>>                                             lock_page
+>>>>                                           finish_mkwrite_fault // unlock_pte
+>>>> f2fs_collapse_range
+>>>>     down_write(i_mmap_sem)
+>>>>     truncate_pagecache
+>>>>       unmap_mapping_pages
+>>>>         i_mmap_lock_write // down_write(i_mmap_rwsem)
+>>>>           ......
+>>>>           zap_pte_range
+>>>>             pte_offset_map_lock // ---lock_pte
+>>>>             f2fs_set_data_page_dirty
+>>>
+>>> I didn't get it, why zap_pte_range() can set page dirty w/o lock_page?
+>>>
+>>> I found it's very easy to reproduce this bug, but previously I never saw this...
+>>> is there any code udpate around truncate_pagecache()?
+>>
+>> Found this.
+>>
+>> 2637  * The caller must ensure this doesn't race with truncation.  Most will
+>> 2638  * simply hold the folio lock, but e.g. zap_pte_range() calls with the
+>> 2639  * folio mapped and the pte lock held, which also locks out truncation.
+>> 2640  */
+>> 2641 bool filemap_dirty_folio(struct address_space *mapping, struct folio *folio)
+>> 2642 {
+>>
+>>>
+>>> Thanks,
+>>>
+>>>>               if (!PageDirty(page)) {
+>>>>                                           fault_dirty_shared_page
+>>>>                                             f2fs_set_data_page_dirty
+>>>>                                               if (!PageDirty(page)) {
+>>>>                                                 __set_page_dirty_nobuffer
+>>>>                                                 f2fs_update_dirty_page // ++
+>>>>                                               }
+>>>>                                             unlock_page
+>>>>                 __set_page_dirty_nobuffers
+>>>>                 f2fs_update_dirty_page // page count++
+>>>>               }
+>>>>             pte_unmap_unlock  // --unlock_pte
+>>>>         i_mmap_unlock_write  // up_write(i_mmap_rwsem)
+>>>>     truncate_inode_pages
+>>>>     up_write(i_mmap_sem)
+>>>>
+>>>> When race happens between mmap-do_page_fault-wp_page_shared and
+>>>> fallocate-truncate_pagecache-zap_pte_range, the zap_pte_range calls
+>>>> function set_page_dirty without page lock. Besides, though
+>>>> truncate_pagecache has immap and pte lock, wp_page_shared calls
+>>>> fault_dirty_shared_page without any. In this case, two threads race
+>>>> in f2fs_set_data_page_dirty function. Page is set to dirty only ONCE,
+>>>> but the count is added TWICE by calling f2fs_update_dirty_page.
+>>>> Thus the count of dirty page cannot accord with the real dirty pages.
+>>>>
+>>>> Following is the solution to in case of race happens without any lock.
+>>>> If making sure f2fs_vm_page_mkwrite calls set_page_dirty within immap
+>>>> lock area, page will already be dirtied when running into
+>>>> fault_dirty_shared_page-f2fs_set_data_page_dirty.
+>>>> The count of dirty page will not be increased wrong times.
+>>>>
+>>>> Signed-off-by: Shuqi Zhang <zhangshuqi3@huawei.com>
+>>>> ---
+>>>>    fs/f2fs/file.c | 11 ++++++-----
+>>>>    1 file changed, 6 insertions(+), 5 deletions(-)
+>>>>
+>>>> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+>>>> index ce4905a073b3..d837359a9c00 100644
+>>>> --- a/fs/f2fs/file.c
+>>>> +++ b/fs/f2fs/file.c
+>>>> @@ -140,7 +140,7 @@ static vm_fault_t f2fs_vm_page_mkwrite(struct vm_fault *vmf)
+>>>>    	 * check to see if the page is mapped already (no holes)
+>>>>    	 */
+>>>>    	if (PageMappedToDisk(page))
+>>>> -		goto out_sem;
+>>>> +		goto set_dirty;
+>>>>    	/* page is wholly or partially inside EOF */
+>>>>    	if (((loff_t)(page->index + 1) << PAGE_SHIFT) >
+>>>> @@ -150,14 +150,15 @@ static vm_fault_t f2fs_vm_page_mkwrite(struct vm_fault *vmf)
+>>>>    		offset = i_size_read(inode) & ~PAGE_MASK;
+>>>>    		zero_user_segment(page, offset, PAGE_SIZE);
+>>>>    	}
+>>>> -	set_page_dirty(page);
+>>>> -	if (!PageUptodate(page))
+>>>> -		SetPageUptodate(page);
+>>>>    	f2fs_update_iostat(sbi, APP_MAPPED_IO, F2FS_BLKSIZE);
+>>>> -	f2fs_update_time(sbi, REQ_TIME);
+>>>> +set_dirty:
+>>>>    	trace_f2fs_vm_page_mkwrite(page, DATA);
+>>>> +	set_page_dirty(page);
+>>>> +	if (!PageUptodate(page))
+>>>> +		SetPageUptodate(page);
+> 
+> Actually we don't need to call SetPageUptodate() since set_page_dirty() should
+> do? And, it seems the call stack is out-dated as well.
+> 
+> By the way, do we just need to get the right count by this?
+> 
+> --- a/fs/f2fs/data.c
+> +++ b/fs/f2fs/data.c
+> @@ -3697,8 +3697,7 @@ static bool f2fs_dirty_data_folio(struct address_space *mapping,
+>                  folio_mark_uptodate(folio);
+>          BUG_ON(folio_test_swapcache(folio));
+> 
+> -       if (!folio_test_dirty(folio)) {
+> -               filemap_dirty_folio(mapping, folio);
+> +       if (filemap_dirty_folio(mapping, folio)) {
 
-[ Upstream commit 66ba215cb51323e4e55e38fd5f250e0fae0cbc94 ]
+Agreed, how about checking return value of filemap_dirty_folio() in
+f2fs_dirty_{meta,node}_folio as well for cleanup.
 
-Normal processing of ARP request (usually this is Ethernet broadcast
-packet) coming to the host is looking like the following:
-* the packet comes to arp_process() call and is passed through routing
-  procedure
-* the request is put into the queue using pneigh_enqueue() if
-  corresponding ARP record is not local (common case for container
-  records on the host)
-* the request is processed by timer (within 80 jiffies by default) and
-  ARP reply is sent from the same arp_process() using
-  NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
-  pneigh_enqueue())
+>                  f2fs_update_dirty_folio(inode, folio);
+>                  return true;
 
-And here the problem comes. Linux kernel calls pneigh_queue_purge()
-which destroys the whole queue of ARP requests on ANY network interface
-start/stop event through __neigh_ifdown().
+I suspect we may still suffer from below race condition? due to we will access/update
+page private stuff w/o page lock in zap_pte_range.
 
-This is actually not a problem within the original world as network
-interface start/stop was accessible to the host 'root' only, which
-could do more destructive things. But the world is changed and there
-are Linux containers available. Here container 'root' has an access
-to this API and could be considered as untrusted user in the hosting
-(container's) world.
+- zap_pte_range					- f2fs_defragment_range
+  - f2fs_dirty_data_folio
+   - f2fs_update_dirty_folio			 - lock_page
+    - set_page_private_reference			  - set_page_private_gcing
 
-Thus there is an attack vector to other containers on node when
-container's root will endlessly start/stop interfaces. We have observed
-similar situation on a real production node when docker container was
-doing such activity and thus other containers on the node become not
-accessible.
+Thanks,
 
-The patch proposed doing very simple thing. It drops only packets from
-the same namespace in the pneigh_queue_purge() where network interface
-state change is detected. This is enough to prevent the problem for the
-whole node preserving original semantics of the code.
-
-v2:
-	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
-v3:
-	- rebase to net tree
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Yajun Deng <yajun.deng@linux.dev>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-Cc: kernel@openvz.org
-Cc: devel@openvz.org
-Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Signed-off-by: Denis V. Lunev <den@openvz.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/core/neighbour.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 358e84af0210..8af9761768e0 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -222,14 +222,23 @@ static int neigh_del_timer(struct neighbour *n)
- 	return 0;
- }
- 
--static void pneigh_queue_purge(struct sk_buff_head *list)
-+static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
- {
-+	unsigned long flags;
- 	struct sk_buff *skb;
- 
--	while ((skb = skb_dequeue(list)) != NULL) {
--		dev_put(skb->dev);
--		kfree_skb(skb);
-+	spin_lock_irqsave(&list->lock, flags);
-+	skb = skb_peek(list);
-+	while (skb != NULL) {
-+		struct sk_buff *skb_next = skb_peek_next(skb, list);
-+		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
-+			__skb_unlink(skb, list);
-+			dev_put(skb->dev);
-+			kfree_skb(skb);
-+		}
-+		skb = skb_next;
- 	}
-+	spin_unlock_irqrestore(&list->lock, flags);
- }
- 
- static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev)
-@@ -295,9 +304,9 @@ int neigh_ifdown(struct neigh_table *tbl, struct net_device *dev)
- 	write_lock_bh(&tbl->lock);
- 	neigh_flush_dev(tbl, dev);
- 	pneigh_ifdown_and_unlock(tbl, dev);
--
--	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue);
-+	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
-+	if (skb_queue_empty_lockless(&tbl->proxy_queue))
-+		del_timer_sync(&tbl->proxy_timer);
- 	return 0;
- }
- EXPORT_SYMBOL(neigh_ifdown);
-@@ -1609,7 +1618,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
- 	/* It is not clean... Fix it to unload IPv6 module safely */
- 	cancel_delayed_work_sync(&tbl->gc_work);
- 	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue);
-+	pneigh_queue_purge(&tbl->proxy_queue, NULL);
- 	neigh_ifdown(tbl, NULL);
- 	if (atomic_read(&tbl->entries))
- 		pr_crit("neighbour leakage\n");
--- 
-2.35.1
-
+>          }
+> 
+>>>> +	f2fs_update_time(sbi, REQ_TIME);
+>>>>    out_sem:
+>>>>    	filemap_invalidate_unlock_shared(inode->i_mapping);
+>>
+>>
+>> _______________________________________________
+>> Linux-f2fs-devel mailing list
+>> Linux-f2fs-devel@lists.sourceforge.net
+>> https://lists.sourceforge.net/lists/listinfo/linux-f2fs-devel
