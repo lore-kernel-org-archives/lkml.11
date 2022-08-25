@@ -2,119 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE0FECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BF4ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239513AbiHYWns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        id S243205AbiHYWrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243785AbiHYWnn (ORCPT
+        with ESMTP id S230181AbiHYWrQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:43:43 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4B5C6B51
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:43:40 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id u6so60985eda.12
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=balfug.com; s=gm;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=qHBRNjLQO+fTuSN5fkgAMVOPdbNt+emprPz8tTnQjyY=;
-        b=O4UTbQ8SFax9TaiplcN7GgB5UzuOvNTwOTsK7SBU68+NkCZQcCQBnkLFfwckNexR4t
-         k/yjST8y0+midTKeabpDc/oHmyb1HM0DUOmaTc94msibXEL/difjzNhtjAWwz/1yV1yI
-         BzOCtG2+KnI3a7IM/WgZpAQw5ujqxZSG6aV9PrnussqXuj8kdU5ZaYI8nsJR3GBnKKrA
-         ump+D+e/DrLZfF3nIYZzdWd6SM4dbjHJ++sDCQnY0YWEzHVYWw0wW08phtq3a5X8IoYx
-         mon96Cs6e55YtsyIOS5qDIWPOxLukwfyl92Gvq3qwANMpjJNe/u0P1Q5OISPzEtRYtPu
-         4xQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=qHBRNjLQO+fTuSN5fkgAMVOPdbNt+emprPz8tTnQjyY=;
-        b=UNsgTJ0hzQm/wx8eN2ADTwcLMFTHMEEXwIKuHtlA8SGWmZSATu9H8l7ic/+rbBIYLA
-         iNNNZb23T+PW/FPWJKuGAHVluomWyEeYGWnL6VCIn6UYSth/rzxBA4Ig14quiSptiglA
-         zapTO7yGiajvkgLj5H59MDzhZ2RQCSGgLy3qAVevfDknOE7LiX+ra/5DK+o+HWTlTdvU
-         8pN9sBToU0p+HfxW2FGuTX5OZ4WgDJRxb2ClYCqDhw7eattvUGlJb1M8IuU/zXpuUIY/
-         G5vraPge16Lnurd8Jc3Rsof8ILX94Ri2M9EUOvL3Vx2p7eOAGAL1isRINXCPiIwLgGFF
-         98WQ==
-X-Gm-Message-State: ACgBeo1J9sPbs70rv+EQaos4RZguQ18st/q7jyVUoIAug2vB5j1/3/2V
-        hzpHEts0u38EJ0ELEJC/r2NHYA==
-X-Google-Smtp-Source: AA6agR6I828Vg1tmwrNDsZMZ182b3qTLPeA21GD7WMdDXjTIchau04EevrIBfuBnluvqLTScsjR60g==
-X-Received: by 2002:a05:6402:2499:b0:440:942a:40c2 with SMTP id q25-20020a056402249900b00440942a40c2mr4952533eda.37.1661467418799;
-        Thu, 25 Aug 2022 15:43:38 -0700 (PDT)
-Received: from localhost.localdomain (20014C4E198D65010944FE0C94C0B856.dsl.pool.telekom.hu. [2001:4c4e:198d:6501:944:fe0c:94c0:b856])
-        by smtp.gmail.com with ESMTPSA id i2-20020aa7c702000000b0043cb1a83c9fsm357529edq.71.2022.08.25.15.43.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 15:43:38 -0700 (PDT)
-From:   Szabolcs Sipos <labuwx@balfug.com>
-To:     linux-bluetooth@vger.kernel.org
-Cc:     Szabolcs Sipos <labuwx@balfug.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] Bluetooth: btusb: Add RTL8761BUV device (Edimax BT-8500)
-Date:   Fri, 26 Aug 2022 00:42:08 +0200
-Message-Id: <20220825224208.343700-2-labuwx@balfug.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220825224208.343700-1-labuwx@balfug.com>
-References: <20220825224208.343700-1-labuwx@balfug.com>
+        Thu, 25 Aug 2022 18:47:16 -0400
+Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DBBC6B4D
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1661467635; x=1693003635;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=7bnGiLNDdbzL+OpMhMFod9p6nfLWSX3ijhQ5UCG6Esg=;
+  b=HDNqBQimdCq1rgZ5KQ8PDloGAkBLbiTJCd7otnQA9mT0hIs4ruhcw8cs
+   dERR+ZFBqgxIZfKrDWhMxSK+Gv/N4DC73fv9dw/5Z58uSEOnsLrzKUwii
+   AqRungzLR4v/LnXwWdL1Ybey4Nk+1AJFPue/Zi5QUiji6FX/VJva6UaKQ
+   YTk5CB9dCOmw1hwMQY9IKd92b0i867mYel/qhF5eIUPK+0GTNw1kyPgtu
+   /nlWxVDMLtMiPOW0MFbffu+5V9Zmw1kCc1iUzFDK/kTd6tiUkdW6dP0jo
+   WP2JDiDSIWOVddNGS6WnSfBQleXkCtlJexU11KUxfhpue0ZO0Xn4i7zZm
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,264,1654531200"; 
+   d="scan'208";a="208130788"
+Received: from h199-255-45-15.hgst.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 26 Aug 2022 06:47:13 +0800
+IronPort-SDR: hyRXQzhA/UsU5f55AK0u0WaC9GwwGR8cIPZlc5eknImYVyMC5klsc32FvJXb792JQSqTIYJyXs
+ mWWo2RGidEbycW6ghLovdpGxgFIFUMGI7l9lv07J1hPcIQe7e/O4b26dfK66dKws47GOsIYbGm
+ cWMjgn8lVdii+JaZU6F63j9oemiS5PM+3yW4vcp6rBEw1qRKGdNsso3JX3fGHcYqWW6z/fyqeZ
+ fWizNhZi5bKpTsc8KkDbPhG6RPKYo4omGBMiaBAOOHbmlsIs/ybA48vLjpaNX/Lq3wNfpABx82
+ xPrWWOT8dX9rGAdDn9jiYSZM
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 Aug 2022 15:02:27 -0700
+IronPort-SDR: mYLVXj45u5XUs2fS6rrmiKsJIvznjTEAAg4dBN2gZlGiM/BYQZJ3XeXva0ykL3YxQXXt1JeuHc
+ Xta/ganbkRQfb+CJpJN+lYkf6PgyRmBrdISSgdVX+l3kIbY8gt27EiYf++hHDwCWQ1zAQDcQmh
+ Zm8t7+7Mbijg1dOMzyGtk85sKWa3NkNIeiXmYFvwRRdto+TG+QtURKfiWYHCGgKo2PWR63KNdo
+ T20xqzdCkOEDlnko4b7loMIM94LPOKTmxMscJw3W93wswE4CjsFFXYEVD9t5XXr3gPsUvE3HEH
+ rA4=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 25 Aug 2022 15:47:14 -0700
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4MDJ4d3JYxz1Rwnm
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:47:13 -0700 (PDT)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1661467632; x=1664059633; bh=7bnGiLNDdbzL+OpMhMFod9p6nfLWSX3ijhQ
+        5UCG6Esg=; b=ChLCjB459DayV0tnQC/b/cC8cpPYrEtomZvVzvcOv4jwS0z1XvQ
+        NEL6kQc0kY46ydvMNqDvmAqI8pzwO55TqexKxcb7gAd/3H6LaPWKuU2hbdigFFPD
+        VEZ+Wk8RiUxIz5cJwAxd8D2HzabWrrI8A1sImw8+sFnFPSY1F8BP2eLilWRxe2Dc
+        D2vWHxCNRM5WGZ5hQMWovv7B9E9UNLVGge1UUI0YXFRkNGGZYtDdQPVsxpqJbxVh
+        Prd1Ybya/O8C8h8AszsqjHuX95mhZaEcHsICUEZoRRPjDtNqA3JBSCgKy5NhFshI
+        It4m44/HRGnu5JOHsr321zS+596peYuJa0Q==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id CWGoQ5lU4udR for <linux-kernel@vger.kernel.org>;
+        Thu, 25 Aug 2022 15:47:12 -0700 (PDT)
+Received: from [10.225.163.46] (unknown [10.225.163.46])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4MDJ4c1FcJz1RtVk;
+        Thu, 25 Aug 2022 15:47:12 -0700 (PDT)
+Message-ID: <d8c72b2b-3962-786e-e87b-18be4b511637@opensource.wdc.com>
+Date:   Fri, 26 Aug 2022 07:47:11 +0900
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3] ata: ahci: Do not check ACPI_FADT_LOW_POWER_S0
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     linux-ide@vger.kernel.org, Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mario Limonciello <mario.limonciello@amd.com>
+References: <12054041.O9o76ZdvQC@kreacher>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <12054041.O9o76ZdvQC@kreacher>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T:  Bus=01 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
-D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=7392 ProdID=c611 Rev= 2.00
-S:  Manufacturer=Realtek
-S:  Product=Edimax Bluetooth Adapter
-S:  SerialNumber=XXXXXXXXXXXX
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+On 8/26/22 03:47, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> 
+> The ACPI_FADT_LOW_POWER_S0 flag merely means that it is better to
+> use low-power S0 idle on the given platform than S3 (provided that
+> the latter is supported) and it doesn't preclude using either of
+> them (which of them will be used depends on the choices made by user
+> space).
+> 
+> For this reason, there is no benefit from checking that flag in
+> ahci_update_initial_lpm_policy().
+> 
+> First off, it cannot be a bug to do S3 with policy set to either
+> ATA_LPM_MIN_POWER_WITH_PARTIAL or ATA_LPM_MIN_POWER, because S3 can be
+> used on systems with ACPI_FADT_LOW_POWER_S0 set and it must work if
+> really supported, so the ACPI_FADT_LOW_POWER_S0 check is not needed to
+> protect the S3-capable systems from failing.
+> 
+> Second, suspend-to-idle can be carried out on a system with
+> ACPI_FADT_LOW_POWER_S0 unset and it is expected to work, so if setting
+> policy to either ATA_LPM_MIN_POWER_WITH_PARTIAL or ATA_LPM_MIN_POWER is
+> needed to handle that case correctly, it should be done regardless of
+> the ACPI_FADT_LOW_POWER_S0 value.
+> 
+> Accordingly, replace the ACPI_FADT_LOW_POWER_S0 check in
+> ahci_update_initial_lpm_policy() with pm_suspend_default_s2idle()
+> which is more general and also takes the user's preference into
+> account and drop the CONFIG_ACPI #ifdef around it that is not necessary
+> any more.
+> 
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-Signed-off-by: Szabolcs Sipos <labuwx@balfug.com>
----
- drivers/bluetooth/btusb.c | 2 ++
- 1 file changed, 2 insertions(+)
+Applied to for-6.1. Thanks !
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index ecedaee1d965..87d377212214 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -528,6 +528,8 @@ static const struct usb_device_id blacklist_table[] = {
- 						     BTUSB_WIDEBAND_SPEECH },
- 	{ USB_DEVICE(0x0bda, 0x8771), .driver_info = BTUSB_REALTEK |
- 						     BTUSB_WIDEBAND_SPEECH },
-+	{ USB_DEVICE(0x7392, 0xc611), .driver_info = BTUSB_REALTEK |
-+						     BTUSB_WIDEBAND_SPEECH },
- 
- 	/* Additional Realtek 8821AE Bluetooth devices */
- 	{ USB_DEVICE(0x0b05, 0x17dc), .driver_info = BTUSB_REALTEK },
+> ---
+> 
+> v2 -> v3:
+>    * Use pm_suspend_default_s2idle() instead of the check being dropped.
+>    * Update the changelog.
+> 
+> v1 -> v2:
+>    * Adjust subject (Damien).
+>    * Drop #ifdef CONFIG_ACPI that is not necessary any more (Mario).
+>    * Update the changelog.
+> 
+> ---
+>  drivers/ata/ahci.c |    5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> Index: linux-pm/drivers/ata/ahci.c
+> ===================================================================
+> --- linux-pm.orig/drivers/ata/ahci.c
+> +++ linux-pm/drivers/ata/ahci.c
+> @@ -1609,15 +1609,12 @@ static void ahci_update_initial_lpm_poli
+>  		goto update_policy;
+>  	}
+>  
+> -#ifdef CONFIG_ACPI
+> -	if (policy > ATA_LPM_MED_POWER &&
+> -	    (acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0)) {
+> +	if (policy > ATA_LPM_MED_POWER && pm_suspend_default_s2idle()) {
+>  		if (hpriv->cap & HOST_CAP_PART)
+>  			policy = ATA_LPM_MIN_POWER_WITH_PARTIAL;
+>  		else if (hpriv->cap & HOST_CAP_SSC)
+>  			policy = ATA_LPM_MIN_POWER;
+>  	}
+> -#endif
+>  
+>  update_policy:
+>  	if (policy >= ATA_LPM_UNKNOWN && policy <= ATA_LPM_MIN_POWER)
+> 
+> 
+> 
+
+
 -- 
-2.37.2
-
+Damien Le Moal
+Western Digital Research
