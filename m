@@ -2,104 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87154C6498F
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79128C6498F
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240733AbiHYPIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:08:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35988 "EHLO
+        id S241725AbiHYPKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233738AbiHYPIA (ORCPT
+        with ESMTP id S233738AbiHYPKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:08:00 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE8190C52
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:07:58 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-11d2dcc31dbso17115404fac.7
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:07:58 -0700 (PDT)
+        Thu, 25 Aug 2022 11:10:01 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5544E0BB
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:09:59 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-33dc345ad78so37498597b3.3
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 08:09:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura.hr; s=sartura;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=T+Absj8wDJ7ls5xDxkdfAwuouIdYDX1GOTPe01NBZ0g=;
-        b=YPMYZE5LIzanTCYfvLgrXImNQuxwJN6yHc4JZLD8+TlBk5I4ZVrqA4U+EJlYWZXKU7
-         A+KV/bnVI8ExLt04X6y3OBMBrMk0H0FQ35REFRj6+Fi/DupjhmzP4wRb/Oxh398pO7cF
-         GDCDHfWymFxwqxselbAuLoP45JMzK0IvElU8tOKUkRUPWbEAv8Lmpghkbtjge73kvbPf
-         Ky9cwCjkW7YnrP54mzmJj14Yi2e092pre7ovFJMfv0z+Ccmp7OuTLInBu8R/5IuFLHyW
-         q/6wFmBlkUo40DgaME9Q3LksUuDeq2VzmLTNEkbVv3D627otkZJMXTEbVG63T0F7g//5
-         bHdA==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=fJEZLuBCwkzDnLaIajxxc2gH/wmgymHG18QKlb1r1XI=;
+        b=HdW1svQhcwcaevyopj06Ch9+NBWUAF1uu6SwBCTNhXA/d8Tln7K0YGk3WL2U3Oya4e
+         C7qC3BT1muDhfGCiY36yt8xsUJsiytCWBt7aVIswmcMXIKhOz3SBoV30liLQxgJZ+RH2
+         UJSYaWWa0l63nxw/n65onJnvAAM48rZk9UjLmXyBinLWDgcvpTvoO2bSo252eGmZOtgd
+         RMFghlzAQWqT6VMXdCZd5Y2ZH2xCSvoQQfr2oUzJ+fdTvBUeVUWvFRBA2wp4Ze7GSIav
+         03XwfjDX0Eh/wDIAD6fRuqNhkwS+g8v1i+g0adqYpZEXcbjxort7OGg1Bsep5ZFALKDs
+         TgAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=T+Absj8wDJ7ls5xDxkdfAwuouIdYDX1GOTPe01NBZ0g=;
-        b=V93gxrVsTLHSZbLmkvFhF94JyH8TET5IBOkK/KV6P1oloLf/qnCYGOce8lfhnE7B7z
-         ofNY+lzstMohL8O1ihJEuxOzv32TLufiP/C56DYpk3775MAqgZDAIkehV1ULZOBWnB4g
-         59U9KkKdTH1nWbEpObSg7ybgE9QGt9EP/X5uwR9Tpc/yhp6oaCWtHhjJPtx0hFY3ozSG
-         O+6CedVX4DiR8z/Bp/qAH4Uwu7KkRR6raPdbRPLe3nnvcR1R3rgLN8EZ2unAfwbzTFZ5
-         xbp6iD17vKzHq9hv5N9J599xXl+6v2+qa0+wLc0+wBwlcbfFr9sENMRuEFHpbMecIOeV
-         COuA==
-X-Gm-Message-State: ACgBeo0OlIJ+4NgvCLcp6kPc+G2I16Ut8ViRXOQRnN8ctZ7VTDY4L//q
-        xhBsBladnDaNXJuzlGKFoSa+3T01tS1WpfPJlLv3lIs7j14=
-X-Google-Smtp-Source: AA6agR6yZCXiFCpL69abgNHrru8XFObl2zxSCVXAqYoZsmmClhVrrkmXYSSbjwy2HqXz2fmW8AHWPpeHGQLRf+Q93A8=
-X-Received: by 2002:a05:6870:9a22:b0:11d:bb4:490e with SMTP id
- fo34-20020a0568709a2200b0011d0bb4490emr6381060oab.8.1661440076703; Thu, 25
- Aug 2022 08:07:56 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=fJEZLuBCwkzDnLaIajxxc2gH/wmgymHG18QKlb1r1XI=;
+        b=ebxaA6zMiq79lcw5J7oWwDn47z9+oIkxMHAG7bNOe+wOA/5GjGVp2g7j4fU1Jw+sUN
+         kmAP8aNfhuaGlBfaw3i5mP/90+wDxdJ6KjwdQ6r4jXCXOmHd98OAodHd9ksopHgfJ+I7
+         gZ9xq/2plLO+bwezMVf0Lwzk9m1utRJaXzqHM4V/wv7+Axb+AVF94H/EgCtjKur3MSmD
+         04O9YaPOKvGtb+28VJlFKzxqUGHLndZzcafxWl2FOwh5n673pELaRjneiOQlVKYcovCL
+         u2FRiqdetDMF0qXp07gLZ91kLNYs79j64K5gFKC3U5IOzFQu75bY6s7Mzl4I6wi+IYxZ
+         vaqQ==
+X-Gm-Message-State: ACgBeo1S3O6PSLmz0dbVux8ika3YUYY5G/vC1lF9OzSthzVSnJgHT0tn
+        u4eyC5cMdF9e29mkqoEWg9za6/aI5f4HyRfVjJPaTg==
+X-Google-Smtp-Source: AA6agR6ybP9THeURexKzBZ7UB91n4A4z6bmsgwmTJUw1mBpb4Ih+eeYIZR+cyL7W8pl01QIn8DOT2qKHjkYZE4WoG0M=
+X-Received: by 2002:a81:4b87:0:b0:336:9ecd:2768 with SMTP id
+ y129-20020a814b87000000b003369ecd2768mr4497418ywa.299.1661440198723; Thu, 25
+ Aug 2022 08:09:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220825143737.77732-1-dev@aboehler.at> <20220825150236.GB240395@roeck-us.net>
-In-Reply-To: <20220825150236.GB240395@roeck-us.net>
-From:   Robert Marko <robert.marko@sartura.hr>
-Date:   Thu, 25 Aug 2022 17:07:45 +0200
-Message-ID: <CA+HBbNEEvyn7a-CXzbFHywvHBky-Kwu8O3POrqo=huOJf-n2pQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] Documentation: devicetree: update bindings for tps23861
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     =?UTF-8?Q?Andreas_B=C3=B6hler?= <dev@aboehler.at>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Jean Delvare <jdelvare@suse.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <000000000000c98a7f05ac744f53@google.com> <000000000000734fe705acb9f3a2@google.com>
+ <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com> <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
+ <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
+In-Reply-To: <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Thu, 25 Aug 2022 17:09:22 +0200
+Message-ID: <CAG_fn=Wq51FMbty4c_RwjBSFWS1oceL1rOAUzCyRnGEzajQRAg@mail.gmail.com>
+Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     phil@philpotter.co.uk, ath9k-devel@qca.qualcomm.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 5:02 PM Guenter Roeck <linux@roeck-us.net> wrote:
+On Thu, Aug 25, 2022 at 4:34 PM Tetsuo Handa
+<penguin-kernel@i-love.sakura.ne.jp> wrote:
 >
-> On Thu, Aug 25, 2022 at 04:37:36PM +0200, Andreas B=C3=B6hler wrote:
-> > The tps23861 driver does not initialize the chip and relies on it being
-> > in auto-mode by default. On some devices, these controllers default to
-> > OFF-Mode and hence cannot be used at all.
-> >
-> > This brings minimal support for initializing the controller in a user-
-> > defined mode.
-> >
-> > Signed-off-by: Andreas B=C3=B6hler <dev@aboehler.at>
+> Hello.
+Hi Tetsuo,
+
+> I found that your patch was applied. But since the reproducer tested only 0 byte
+> case, I think that rejecting only less than sizeof(struct htc_frame_hdr) bytes
+> is not sufficient.
 >
-> nack for the series, sorry. The suggested properties are not hardware
-> monitoring but phy properties. There should be a separate phy driver
-> to manage those.
->
-> Also, as mentioned, the hwmon 'enable' attribute is abused to control
-> port functionality and should be removed.
+> More complete patch with Ack from Toke is waiting at
+> https://lkml.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.SAKURA.ne.jp .
 
-Hi Guenter,
-Are you referring to an ethernet PHY driver or the generic PHY framework?
+Thanks for letting me know! I just checked that your patch indeed
+fixes the issue I am facing.
+If it is more complete, I think we'd indeed better use yours.
 
-Regards,
-Robert
->
-> Guenter
-
-
-
---=20
-Robert Marko
-Staff Embedded Linux Engineer
-Sartura Ltd.
-Lendavska ulica 16a
-10000 Zagreb, Croatia
-Email: robert.marko@sartura.hr
-Web: www.sartura.hr
+> Please consider overriding with my version.
