@@ -2,276 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F46ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 280B1ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243403AbiHYWTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53064 "EHLO
+        id S244272AbiHYWUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244237AbiHYWTQ (ORCPT
+        with ESMTP id S238598AbiHYWUu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:19:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437C9BD0AD
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:19:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2976B82ACE
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 22:19:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD9ADC433D6;
-        Thu, 25 Aug 2022 22:19:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661465952;
-        bh=61yJdy1CU12tJc5JG4goNgQTDKMWhUH+DuAXzbk7b0s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ikaCPQwVaKhRGYMzCuonJSu2t62maZVPE5ZChqnq6+kEZmyuKGZIlgb0TOpfYaZcx
-         2J563OcEhkuuXETveYU31IOvTjxgbb6eaqi9RYKPyFfd3Y0n9mTU6uAMQiqaZbpIUe
-         4FdqcAu6YsHgXRWfpdkCCq62K6rjHfjKlRpjz3tORLYZJthAGF2keHvGo9fygAqXNl
-         7nbkNIA3+BhXxc1S1qhelG8MTt9jtNMJwR5Yg/DfPfuvqvyF4nONsRKviUYu9m5lRf
-         0dDQYFusMvtuiDS688NikaAzPhMFVZ/+jxi4/o31YQ20uSGRNwDiUuNYqWVfqh2+bB
-         csa/huvDyeBEA==
-From:   Tom Zanussi <zanussi@kernel.org>
-To:     rostedt@goodmis.org
-Cc:     mhiramat@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] tracing: Add .graph suffix option to histogram value
-Date:   Thu, 25 Aug 2022 17:19:03 -0500
-Message-Id: <886fe9b6098eddb9d298e8a3f07bbea61acdac16.1661464992.git.zanussi@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1661464992.git.zanussi@kernel.org>
-References: <cover.1661464992.git.zanussi@kernel.org>
+        Thu, 25 Aug 2022 18:20:50 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145B1C2751
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:20:49 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-11cab7d7e0fso25576627fac.6
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:20:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=hYB1ZQNpPY6X69YeIG/KjOq929HUz/m3ktl9NHX+xgw=;
+        b=Y7owmWiWdJd8sxFvDiLnCjuWi4kAUrlOstOZGLmRPxjaIXuOLBXCQPbix2hn+PK8AQ
+         +DoLzcP8br7tbcKvl0kOtoXYQOl9/p0Xj5ZEJDhJ/H9apJW5PlQy9ihDgR2j2D3HLu+z
+         +0BLvcBwiY7Ur0kK+FaHn3ttFaK5Br5gEbitJSo4LEHoyiIg+fQf1tQpKwOizi9RRNH8
+         X1cKx05p6oabdpBCCwJw7jJApw2v6fp4002MdGS4m751OWcr+1OV80/h4sr8KKrer7LJ
+         TYYQO8IxZ5RugXVuLr1i0eWo3uEiZn0AKe/wLnPjd96T9z6kuE3NcdvKObTzX1lITbQj
+         RRpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=hYB1ZQNpPY6X69YeIG/KjOq929HUz/m3ktl9NHX+xgw=;
+        b=o8W9yG1+lBEOIK22BaDK1xx4MJMRBdtZNawUhJlW0aNZvZp+3wSWmSP+8vlec29Z3B
+         sHfgH0/p41lcr0JB+mLl8As7SFROxolydqudub//pkQcIJvEyijzY6AdZk58RVPZBKPk
+         t4yvWVRbJmxti4JGMgzeSK+0Kb/czbi0vyz+vYOcP83qfHLhFEZOSsQjfMz/RPtZH3O5
+         y7gfmBFTafTeH/Lm70xoQQglnzDosIUhymoTVK/OyRRJNkW3oDSmpsW2W56hzdatuIhS
+         NLHPSLJURAESglhl67+6zUFHdrkKiFSF7HUoyWs05U/0wZhXm+cA/yeOVfIhJ4Jad/1D
+         kIOg==
+X-Gm-Message-State: ACgBeo2Zb9wZW53yN/gfu5Ovsdb6wgPLxWJ8yPtADNteLf16eEKu34Pn
+        H6mgLw/9ybOnUPVdR5AW/fI5v24dbEijz44GQrkNeA==
+X-Google-Smtp-Source: AA6agR7Q3WUHyHCZjdPdx2wnwfam+Ba3cljIdQO4m6up/yUG6pP0Tu6DtKUJNnkipd41UHSNVd091AXNNW01JUJz4Dc=
+X-Received: by 2002:a05:6870:b694:b0:11e:63e7:37f4 with SMTP id
+ cy20-20020a056870b69400b0011e63e737f4mr47956oab.217.1661466048368; Thu, 25
+ Aug 2022 15:20:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220825104505.79718-1-etienne.carriere@linaro.org> <CAL_JsqLWQC-drkWdgiM4TnsZCa6h6vcMmCvrUC_E7z5=gYtcJw@mail.gmail.com>
+In-Reply-To: <CAL_JsqLWQC-drkWdgiM4TnsZCa6h6vcMmCvrUC_E7z5=gYtcJw@mail.gmail.com>
+From:   Etienne Carriere <etienne.carriere@linaro.org>
+Date:   Fri, 26 Aug 2022 00:20:37 +0200
+Message-ID: <CAN5uoS9kLTjGinBOCsTHnV=1Jg-V_GwgZ4b1d5Gj3x_Npm6wRw@mail.gmail.com>
+Subject: Re: [PATCH] dt-binding: gpio: publish binding IDs under dual license
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Stephen Warren <swarren@nvidia.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Charles Keepax <ckeepax@opensource.wolfsonmicro.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
+Hello Rob,
 
-Add the .graph suffix which shows the bar graph of the histogram value.
+Many thanks for the feedback.
 
-For example, the below example shows that the bar graph
-of the histogram of the runtime for each tasks.
+Regards,
+Etienne
 
-------
-  # cd /sys/kernel/debug/tracing/
-  # echo hist:keys=pid:vals=runtime.graph:sort=pid > \
-   events/sched/sched_stat_runtime/trigger
-  # sleep 10
-  # cat events/sched/sched_stat_runtime/hist
- # event histogram
- #
- # trigger info: hist:keys=pid:vals=hitcount,runtime.graph:sort=pid:size=2048 [active]
- #
+On Thu, 25 Aug 2022 at 18:05, Rob Herring <robh+dt@kernel.org> wrote:
+>
+> On Thu, Aug 25, 2022 at 5:45 AM Etienne Carriere
+> <etienne.carriere@linaro.org> wrote:
+> >
+> > Changes gpio.h DT binding header file to be published under GPLv2 or
+> > BSD-3-Clause license terms. This change allows these GPIO generic
+> > bindings header file to be used in software components as bootloaders
+> > and OSes that are not published under GPLv2 terms.
+> >
+> > All contributors to gpio.h file in copy.
+> >
+> > Cc: Stephen Warren <swarren@nvidia.com>
+>
+> We have NVIDIA permission for anything in bindings and NVIDIA
+> relicensed the irq headers, so I think it shouldn't be a problem.
+>
+> > Cc: Linus Walleij <linus.walleij@linaro.org>
+>
+> FYI, There is blanket approval from Linaro to relicense DT files.
+>
+> > Cc: Laxman Dewangan <ldewangan@nvidia.com>
+> > Cc: Charles Keepax <ckeepax@opensource.wolfsonmicro.com>
+>
+> I don't think a. blank line is copyrightable.
 
- { pid:         14 } hitcount:          2  runtime:
- { pid:         16 } hitcount:          8  runtime:
- { pid:         26 } hitcount:          1  runtime:
- { pid:         57 } hitcount:          3  runtime:
- { pid:         61 } hitcount:         20  runtime: ###
- { pid:         66 } hitcount:          2  runtime:
- { pid:         70 } hitcount:          3  runtime:
- { pid:         72 } hitcount:          2  runtime:
- { pid:        145 } hitcount:         14  runtime: ####################
- { pid:        152 } hitcount:          5  runtime: #######
- { pid:        153 } hitcount:          2  runtime: ####
-
- Totals:
-     Hits: 62
-     Entries: 11
-     Dropped: 0
--------
-
-Signed-off-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-
- Conflicts:
-	kernel/trace/trace_events_hist.c
----
- kernel/trace/trace_events_hist.c | 80 ++++++++++++++++++++++++++------
- 1 file changed, 66 insertions(+), 14 deletions(-)
-
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index 8e8942e62900..f31f1adab9fa 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -507,6 +507,7 @@ enum hist_field_flags {
- 	HIST_FIELD_FL_BUCKET		= 1 << 17,
- 	HIST_FIELD_FL_CONST		= 1 << 18,
- 	HIST_FIELD_FL_PERCENT		= 1 << 19,
-+	HIST_FIELD_FL_GRAPH		= 1 << 20,
- };
- 
- struct var_defs {
-@@ -1710,6 +1711,8 @@ static const char *get_hist_field_flags(struct hist_field *hist_field)
- 		flags_str = "usecs";
- 	else if (hist_field->flags & HIST_FIELD_FL_PERCENT)
- 		flags_str = "percent";
-+	else if (hist_field->flags & HIST_FIELD_FL_GRAPH)
-+		flags_str = "graph";
- 
- 	return flags_str;
- }
-@@ -2322,6 +2325,10 @@ parse_field(struct hist_trigger_data *hist_data, struct trace_event_file *file,
- 			if (*flags & (HIST_FIELD_FL_VAR | HIST_FIELD_FL_KEY))
- 				goto error;
- 			*flags |= HIST_FIELD_FL_PERCENT;
-+		} else if (strncmp(modifier, "graph", 5) == 0) {
-+			if (*flags & (HIST_FIELD_FL_VAR | HIST_FIELD_FL_KEY))
-+				goto error;
-+			*flags |= HIST_FIELD_FL_GRAPH;
- 		} else {
-  error:
- 			hist_err(tr, HIST_ERR_BAD_FIELD_MODIFIER, errpos(modifier));
-@@ -4362,6 +4369,9 @@ static int create_val_fields(struct hist_trigger_data *hist_data,
- 				if (strncmp(field_str + 8, ".percent", 8) == 0)
- 					hist_data->fields[HITCOUNT_IDX]->flags |=
- 						HIST_FIELD_FL_PERCENT;
-+				if (strncmp(field_str + 8, ".graph", 8) == 0)
-+					hist_data->fields[HITCOUNT_IDX]->flags |=
-+						HIST_FIELD_FL_GRAPH;
- 			}
- 			continue;
- 		}
-@@ -5315,14 +5325,37 @@ static inline unsigned int __get_percentage(u64 val, u64 total)
- 	return (unsigned int)div64_ul(val, total);
- }
- 
-+#define BAR_CHAR '#'
-+
-+static inline const char *__fill_bar_str(char *buf, int size, u64 val, u64 max)
-+{
-+	unsigned int len = __get_percentage(val, max);
-+	int i;
-+
-+	if (len == UINT_MAX) {
-+		snprintf(buf, size, "[ERROR]");
-+		return buf;
-+	}
-+
-+	len = len * size / 10000;
-+	for (i = 0; i < len && i < size; i++)
-+		buf[i] = BAR_CHAR;
-+	while (i < size)
-+		buf[i++] = ' ';
-+	buf[size] = '\0';
-+
-+	return buf;
-+}
-+
- static void hist_trigger_entry_print(struct seq_file *m,
- 				     struct hist_trigger_data *hist_data,
--				     u64 *totals,
-+				     u64 *maxs,
- 				     void *key,
- 				     struct tracing_map_elt *elt)
- {
- 	const char *field_name;
- 	unsigned int i, pc;
-+	char bar[21];
- 	u64 val;
- 
- 	hist_trigger_print_key(m, hist_data, key, elt);
-@@ -5330,11 +5363,14 @@ static void hist_trigger_entry_print(struct seq_file *m,
- 	i = HITCOUNT_IDX;
- 	val = tracing_map_read_sum(elt, i);
- 	if (hist_data->fields[i]->flags & HIST_FIELD_FL_PERCENT) {
--		pc = __get_percentage(val, totals[i]);
-+		pc = __get_percentage(val, maxs[i]);
- 		if (pc == UINT_MAX)
- 			seq_puts(m, " hitcount:    [ERROR]");
- 		else
- 			seq_printf(m, " hitcount: %7u.%02u", pc / 100, pc % 100);
-+	} else if (hist_data->fields[i]->flags & HIST_FIELD_FL_GRAPH) {
-+		seq_printf(m, " hitcount: %20s",
-+			   __fill_bar_str(bar, 20, val, maxs[i]));
- 	} else
- 		seq_printf(m, " hitcount: %10llu", val);
- 
-@@ -5347,12 +5383,16 @@ static void hist_trigger_entry_print(struct seq_file *m,
- 
- 		if (hist_data->fields[i]->flags & HIST_FIELD_FL_PERCENT) {
- 			val = tracing_map_read_sum(elt, i);
--			pc = __get_percentage(val, totals[i]);
-+			pc = __get_percentage(val, maxs[i]);
- 			if (pc == UINT_MAX)
- 				seq_printf(m, "  %s:    [ERROR]", field_name);
- 			else
- 				seq_printf(m, "  %s: %7u.%02u", field_name,
- 				   pc / 100, pc % 100);
-+		} else if (hist_data->fields[i]->flags & HIST_FIELD_FL_GRAPH) {
-+			val = tracing_map_read_sum(elt, i);
-+			seq_printf(m, "  %s: %20s", field_name,
-+				   __fill_bar_str(bar, 20, val, maxs[i]));
- 		} else if (hist_data->fields[i]->flags & HIST_FIELD_FL_HEX) {
- 			seq_printf(m, "  %s: %10llx", field_name,
- 				   tracing_map_read_sum(elt, i));
-@@ -5373,7 +5413,8 @@ static int print_entries(struct seq_file *m,
- 	struct tracing_map_sort_entry **sort_entries = NULL;
- 	struct tracing_map *map = hist_data->map;
- 	int i, j, n_entries;
--	u64 *totals = NULL;
-+	u64 *maxs = NULL;
-+	u64 val;
- 
- 	n_entries = tracing_map_sort_entries(map, hist_data->sort_keys,
- 					     hist_data->n_sort_keys,
-@@ -5382,27 +5423,36 @@ static int print_entries(struct seq_file *m,
- 		return n_entries;
- 
- 	for (j = 0; j < hist_data->n_vals; j++) {
--		if (!(hist_data->fields[j]->flags & HIST_FIELD_FL_PERCENT))
-+		if (!(hist_data->fields[j]->flags &
-+			(HIST_FIELD_FL_PERCENT | HIST_FIELD_FL_GRAPH)))
- 			continue;
--		if (!totals) {
--			totals = kcalloc(hist_data->n_vals, sizeof(u64),
--					 GFP_KERNEL);
--			if (!totals) {
-+		if (!maxs) {
-+			maxs = kcalloc(hist_data->n_vals, sizeof(u64),
-+				       GFP_KERNEL);
-+			if (!maxs) {
- 				n_entries = -ENOMEM;
- 				goto out;
- 			}
- 		}
--		for (i = 0; i < n_entries; i++)
--			totals[j] += tracing_map_read_sum(
--					sort_entries[i]->elt, j);
-+		/*
-+		 * If the n-th field shows percentage, the maxs[n] has the
-+		 * total, or it has the maximum number.
-+		 */
-+		for (i = 0; i < n_entries; i++) {
-+			val = tracing_map_read_sum(sort_entries[i]->elt, j);
-+			if (hist_data->fields[j]->flags & HIST_FIELD_FL_PERCENT)
-+				maxs[j] += val;
-+			else if (maxs[j] < val)
-+				maxs[j] = val;
-+		}
- 	}
- 
- 	for (i = 0; i < n_entries; i++)
--		hist_trigger_entry_print(m, hist_data, totals,
-+		hist_trigger_entry_print(m, hist_data, maxs,
- 					 sort_entries[i]->key,
- 					 sort_entries[i]->elt);
- 
--	kfree(totals);
-+	kfree(maxs);
- out:
- 	tracing_map_destroy_sort_entries(sort_entries, n_entries);
- 
-@@ -5827,6 +5877,8 @@ static int event_hist_trigger_print(struct seq_file *m,
- 			seq_puts(m, "hitcount");
- 			if (field->flags & HIST_FIELD_FL_PERCENT)
- 				seq_puts(m, ".percent");
-+			if (field->flags & HIST_FIELD_FL_GRAPH)
-+				seq_puts(m, ".graph");
- 		} else {
- 			seq_puts(m, ",");
- 			hist_field_print(m, field);
--- 
-2.34.1
-
+>
+> > Cc: Andrew Jeffery <andrew@aj.id.au>
+> > Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+> > Cc: Nuno S=C3=A1 <nuno.sa@analog.com>
+> > Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+> > Cc: Rob Herring <robh+dt@kernel.org>
+> > Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+> >
+> > Signed-off-by: Etienne Carriere <etienne.carriere@linaro.org>
+> > ---
+> >  include/dt-bindings/gpio/gpio.h | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
