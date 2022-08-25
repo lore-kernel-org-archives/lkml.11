@@ -2,84 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42951C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C66C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 11:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239962AbiHYLmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 07:42:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
+        id S240356AbiHYLme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 07:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231529AbiHYLm3 (ORCPT
+        with ESMTP id S233537AbiHYLm3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 25 Aug 2022 07:42:29 -0400
-Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82BB1AB197
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 04:42:26 -0700 (PDT)
-Received: from SHSend.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
-        by SHSQR01.spreadtrum.com with ESMTPS id 27PBeRiT006924
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
-        Thu, 25 Aug 2022 19:40:27 +0800 (CST)
-        (envelope-from Xuewen.Yan@unisoc.com)
-Received: from BJ10918PCW.spreadtrum.com (10.0.74.50) by
- BJMBX01.spreadtrum.com (10.0.64.7) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Thu, 25 Aug 2022 19:40:28 +0800
-From:   Xuewen Yan <xuewen.yan@unisoc.com>
-To:     <viresh.kumar@linaro.org>, <lukasz.luba@arm.com>,
-        <amit.kachhap@gmail.com>, <daniel.lezcano@linaro.org>,
-        <rafael@kernel.org>
-CC:     <amitk@kernel.org>, <rui.zhang@intel.com>,
-        <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <xuewen.yan94@gmail.com>, <di.shen@unisoc.com>
-Subject: [PATCH] thermal: Check the policy first in cpufreq_cooling_register
-Date:   Thu, 25 Aug 2022 19:40:17 +0800
-Message-ID: <20220825114018.1715-1-xuewen.yan@unisoc.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253209E887
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 04:42:27 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98f5329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98f5:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 3CAC01EC050F;
+        Thu, 25 Aug 2022 13:42:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1661427741;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=vh+yXND8jbqs07msgUgEfuD6EdfdarrOdj9azKZ93v4=;
+        b=koVZ3WzX+coXmWuagCZ7A8QrddQqqwpUDOeKr40npBAQboceootNSjcsAzr0pEAXw4lDw9
+        5VpOzdHcnyYMY/80uuoArWZA/m195ycE8cDnn4jx/3lRI8xKhJdFycHBSetEeSG/lU+xm0
+        vEfnoVvR1SE0PfWH84erqcR76X4O0rQ=
+Date:   Thu, 25 Aug 2022 13:42:16 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Juergen Gross <jgross@suse.com>
+Cc:     xen-devel@lists.xenproject.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH v2 02/10] x86/mtrr: remove unused cyrix_set_all() function
+Message-ID: <YwdgGFJWTV1YF3n2@zn.tnic>
+References: <20220820092533.29420-1-jgross@suse.com>
+ <20220820092533.29420-3-jgross@suse.com>
+ <YwdPb4pWqppgzIpm@zn.tnic>
+ <aff049cb-ebdd-68ad-5597-d22f87026297@suse.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.0.74.50]
-X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
- BJMBX01.spreadtrum.com (10.0.64.7)
-X-MAIL: SHSQR01.spreadtrum.com 27PBeRiT006924
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <aff049cb-ebdd-68ad-5597-d22f87026297@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the policy needs to be accessed first when obtaining cpu devices,
-first check whether the policy is legal before this.
+On Thu, Aug 25, 2022 at 12:41:05PM +0200, Juergen Gross wrote:
+> Maybe the alternative reasoning is much faster to understand: if the
+> Cyrix set_all() could be called, the AMD and Centaur ones would be callable,
+> too.
 
-Signed-off-by: Xuewen Yan <xuewen.yan@unisoc.com>
----
- drivers/thermal/cpufreq_cooling.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Right.
 
-diff --git a/drivers/thermal/cpufreq_cooling.c b/drivers/thermal/cpufreq_cooling.c
-index b76293cc989c..7838b6e2dba5 100644
---- a/drivers/thermal/cpufreq_cooling.c
-+++ b/drivers/thermal/cpufreq_cooling.c
-@@ -501,17 +501,17 @@ __cpufreq_cooling_register(struct device_node *np,
- 	struct thermal_cooling_device_ops *cooling_ops;
- 	char *name;
- 
-+	if (IS_ERR_OR_NULL(policy)) {
-+		pr_err("%s: cpufreq policy isn't valid: %p\n", __func__, policy);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
- 	dev = get_cpu_device(policy->cpu);
- 	if (unlikely(!dev)) {
- 		pr_warn("No cpu device for cpu %d\n", policy->cpu);
- 		return ERR_PTR(-ENODEV);
- 	}
- 
--	if (IS_ERR_OR_NULL(policy)) {
--		pr_err("%s: cpufreq policy isn't valid: %p\n", __func__, policy);
--		return ERR_PTR(-EINVAL);
--	}
--
- 	i = cpufreq_table_count_valid_entries(policy);
- 	if (!i) {
- 		pr_debug("%s: CPUFreq table not found or has no valid entries\n",
+> Those being called would result in a NULL deref, so why should we keep
+> the Cyrix one?
+
+I know you're eager to remove dead code - I'd love that too. But before
+we do that, we need to find out whether some Cyrix hw out there would
+not need this.
+
+I know, I know, they should've complained by now ... maybe they have but
+we haven't heard about it.
+
+What it most likely looks like is that those machines - a commit from
+before git
+
+commit 8fbdcb188e31ac901e216b466b97e90e8b057daa
+Author: Dave Jones <davej@suse.de>
+Date:   Wed Aug 14 21:14:22 2002 -0700
+
+    [PATCH] Modular x86 MTRR driver.
+
+talks about
+
++/*
++ * On Cyrix 6x86(MX) and M II the ARR3 is special: it has connection
++ * with the SMM (System Management Mode) mode. So we need the following:
++ * Check whether SMI_LOCK (CCR3 bit 0) is set
++ *   if it is set, write a warning message: ARR3 cannot be changed!
++ *     (it cannot be changed until the next processor reset)
+
+which sounds like old rust. And which no one uses or such machines are
+long dead already.
+
+Wikipedia says:
+
+https://en.wikipedia.org/wiki/Cyrix_6x86
+
+"The Cyrix 6x86 is a line of sixth-generation, 32-bit x86
+microprocessors designed and released by Cyrix in 1995..."
+
+So I'm thinking removing it would be ok...
+
 -- 
-2.25.1
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
