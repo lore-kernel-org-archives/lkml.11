@@ -2,104 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72690C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:23:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE918C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 08:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234518AbiHYIXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 04:23:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
+        id S238527AbiHYIXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 04:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235036AbiHYIXV (ORCPT
+        with ESMTP id S233811AbiHYIXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 04:23:21 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A93A598B
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:23:19 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id k22so4011855ljg.2
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 01:23:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=QcYaN0JPky1EGXbRY64NqWC+vf4pbZdpI3za5tFR27Y=;
-        b=R6+bJKdroxxLZUeNX914wnlRmrBnu6dnYD5EjdF8U/Fu7DzRIGzlImTazksz7MMUE+
-         AtYJCGUm2qYs2ilZeWHBntZNyFAgv/64O/Q3WuNZ23BwxjUACbevkfowc+3UN52EvTk/
-         I2UxdF2QChDaiSduTt5APgjpVYLTTZ0WvNNnd3bxttbBn1TnZkgU/Syw4DI8wLeLaxXT
-         4RaxgB2NrE0LukyVvLOJzaMXXKUcLcTj4SqG8OORdb+VquhoJUuNYd3+U1ppcEe3ZJ4p
-         fKvSBT72f7NpcwIJlLNxO1tuBXskIFyFncojPfy3ahZbUoEpX316AcmPWVra2cbdWfYa
-         rECg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=QcYaN0JPky1EGXbRY64NqWC+vf4pbZdpI3za5tFR27Y=;
-        b=XD8EXDT0kmFtoBVnS6qx9va6Zwa6sgIchL5fMf4ilmaupVQyTm7IqN5/RA6BMMqY9r
-         x/AQOxB2tBBMa0uUkdA1gurffkeOOSAwjFxyZzHyDwnpPgBy6GtWyPbFtmgTm7rABfx+
-         o6B2CmMlEBGPPd/rV9xUquAWEhd1+/vxdYlvWV8EFY7+RvWbSAm3V9n7tDySKkejlGk+
-         SIDE8xmMg38DomGHZ452LKGibjsEJI/eomKbs66Vt7pHZUYauqntyhRN/LWJE+SCqVWn
-         WWZLMXRa0JxcfzAYiibPwDFfVTGNcNlUDVbf2wjg28HEXSpd8Os2snmPGztWIeq7V4Cv
-         km3A==
-X-Gm-Message-State: ACgBeo1z7yphBdGmXdTH0zphmIYPW8RZxdJmn1k0orGMdJuKG7vi4dfb
-        ephX7rvFDlSzCSDdsvs+3KrwHw==
-X-Google-Smtp-Source: AA6agR78g9/aWyse4FQH581ZrbhVy37gSTslIw8h/JN2EkuNfJP5xOpXkmesnAnV+MzF5s5aBmGV0A==
-X-Received: by 2002:a2e:bf11:0:b0:261:9343:fb2 with SMTP id c17-20020a2ebf11000000b0026193430fb2mr770866ljr.47.1661415797930;
-        Thu, 25 Aug 2022 01:23:17 -0700 (PDT)
-Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
-        by smtp.gmail.com with ESMTPSA id c11-20020a056512074b00b0048a7c162bbesm356757lfs.279.2022.08.25.01.23.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 01:23:17 -0700 (PDT)
-Message-ID: <1491c83f-cd75-4de3-ec26-86db4adb2ade@linaro.org>
-Date:   Thu, 25 Aug 2022 11:23:16 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH] dt-bindings: remoteproc: Add missing
- (unevaluated|additional)Properties on child nodes
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Thu, 25 Aug 2022 04:23:48 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E1FEA572E;
+        Thu, 25 Aug 2022 01:23:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661415792; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=bgCndV26sDNC03yHDLE03tr/4pKvYzMTEpJRw2wKa8KCXNFv1JA86XDtmC1BReXoHB61hD6844/EWweBhxXeN8Pon9G3Dbsz6X5mc5/zr9WB3tUSQcAu+I15gB87xsIYYiz+diHROX/kje5E4DbufNhYxsbK4LI/uo7S2XPIIdA=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1661415792; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=rFChsskTfCyaj+1KhdWNad8kIz3NamK66A1GrnavCxU=; 
+        b=NBM3y7wUvfqaJaYlz+upVEkbHsUJd8n+UCDNbE7uYT2ad/7/4Z65/8WKBB8Jt3j0LT7ftLa9Ubw4/wBituyzh90Cx4t14GagWw1DxZot/IPCWEOvevUrnO4QJ7w9xgYDac5rGnrIPm7rGedlnQcOSpmQOMTD6SQLQtpAnQQ/4/I=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661415792;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=rFChsskTfCyaj+1KhdWNad8kIz3NamK66A1GrnavCxU=;
+        b=QsxU6xJSJoBtTYU2XspwCXI628aJAtVBJfIMpyXmlpICEOiXFWOtZBqW+qHgJZ1q
+        n0OFZHl291nHwIf88CJUP1UUK/SeQALdbJh1k118LT2YKmh25anolvhILkAdLEuclWN
+        hGytrwD47vStDII0saQeUK24K/baI9vcG9UgD/yw=
+Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1661415790051978.3919888258579; Thu, 25 Aug 2022 01:23:10 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sibi Sankar <quic_sibis@quicinc.com>
-Cc:     linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220823145649.3118479-10-robh@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220823145649.3118479-10-robh@kernel.org>
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH v6 0/6] completely rework mediatek,mt7530 binding
+Date:   Thu, 25 Aug 2022 11:22:55 +0300
+Message-Id: <20220825082301.409450-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/08/2022 17:56, Rob Herring wrote:
-> In order to ensure only documented properties are present, node schemas
-> must have unevaluatedProperties or additionalProperties set to false
-> (typically).
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
->  .../devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml      | 1 +
->  .../devicetree/bindings/remoteproc/qcom,sc7280-mss-pil.yaml      | 1 +
->  .../devicetree/bindings/remoteproc/qcom,sc7280-wpss-pil.yaml     | 1 +
->  3 files changed, 3 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
-> index e76c861165dd..e4a7da8020f4 100644
-> --- a/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
-> +++ b/Documentation/devicetree/bindings/remoteproc/qcom,sc7180-mss-pil.yaml
-> @@ -140,6 +140,7 @@ properties:
->  
->    glink-edge:
->      $ref: qcom,glink-edge.yaml#
-> +    unevaluatedProperties: false
+Hello.
 
-Is it actually needed? The qcom,glink-edge.yaml has
-additionalProperties:false, so I expect it to complain if anything
-appears here.
+This patch series brings complete rework of the mediatek,mt7530 binding.
 
-Best regards,
-Krzysztof
+The binding is checked with "make dt_binding_check
+DT_SCHEMA_FILES=mediatek,mt7530.yaml".
+
+If anyone knows the GIC bit for interrupt for multi-chip module MT7530 in
+MT7623AI SoC, let me know. I'll add it to the examples.
+
+If anyone got a Unielec U7623 or another MT7623AI board, please reach out.
+
+v6:
+- Do not remove binding for DSA ports from top level.
+- On the first patch, remove requiring reg as it's already required by
+dsa-port.yaml and define acceptable reg values for the CPU ports.
+- Add Krzysztof's Reviewed-by: and Acked-by: to where they're given except
+the first patch because of the changes above.
+
+v5:
+- Remove lists for single items.
+- Split fix reset lines patch, add new patch to fix mediatek,mcm property.
+- Remove Rob's Reviewed-by: from first patch because of new changes.
+- Add Krzysztof's Reviewed-by: and Acked-by: to where they're given.
+
+v4:
+- Define reg property on $defs as it's the same for all switch models.
+
+v3:
+- Add Rob's Reviewed-by: to first patch.
+- Explain why to invalidating reset-gpios and mediatek,mcm.
+- Do not change ethernet-ports to ports on examples.
+- Remove platform and, when possible, ethernet nodes from examples.
+- Remove pinctrl binding from examples.
+- Combine removing unnecesary lines patch with relocating port binding.
+- Define $defs of mt7530 and mt7531 port binding and refer to them in each
+compatible device.
+- Remove allOf: for cases where there's only a single if:.
+- Use else: for cpu port 6 which simplifies the binding.
+- State clearly that the DSA driver does not support the MT7530 switch in
+MT7620 SoCs.
+
+v2:
+- Change the way of adding descriptions for each compatible string.
+- Split the patch for updating the json-schema.
+- Make slight changes on the patch for the binding description.
+
+Arınç ÜNAL (6):
+  dt-bindings: net: dsa: mediatek,mt7530: make trivial changes
+  dt-bindings: net: dsa: mediatek,mt7530: fix description of mediatek,mcm
+  dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
+  dt-bindings: net: dsa: mediatek,mt7530: update examples
+  dt-bindings: net: dsa: mediatek,mt7530: define phy-mode per switch
+  dt-bindings: net: dsa: mediatek,mt7530: update binding description
+
+ .../bindings/net/dsa/mediatek,mt7530.yaml       | 649 +++++++++++++++----
+ 1 file changed, 527 insertions(+), 122 deletions(-)
+
+
