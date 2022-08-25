@@ -2,96 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC85C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6C0C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238660AbiHYJQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 05:16:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44374 "EHLO
+        id S238894AbiHYJRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:17:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235750AbiHYJQK (ORCPT
+        with ESMTP id S230481AbiHYJRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 05:16:10 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DC848EAB
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 02:16:08 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id bj12so21249881ejb.13
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 02:16:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=niRs2YtuH5B5oh1E7598uKEG/vRd1+c2zDxWBz4UkwE=;
-        b=dlDNTnyiWbdKLsF4H0dN4LY83Z/ZJu5EphQ9OD+H5nha4HI+2ztnNtu3H4xzQCNcgh
-         mNOG4qp514QMKCj/2ZO7UAKiKzABdTw5jAnwvMaDzaqv7JJv92BbGkXzEVoh39HbmJE0
-         1yjCUQ7AnC9XKs1wroKmwh9iUqxnoyakyZlzFGhkzL17nRijZS9BUt1B7ZwoR/zcOFd5
-         4bc6llE7Ehv/dkHf3loIQpdly3vqPc4bsQ3GtRfOyrofV5gjVKG956ErpCUleATYmyWS
-         GCrSWcjKCTmSe8sDxO+Si6qz9rTxjI72lzU8/fUbVFZhyBwiiV0CGjQ5PUHXgQSSrIfF
-         UFQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=niRs2YtuH5B5oh1E7598uKEG/vRd1+c2zDxWBz4UkwE=;
-        b=u9yAZ3gTunUaAkbEeGKhGCUOM+TtTpRP8KmnFArm3K2Qe7xc86Gl40e6Y0ofFyTZBN
-         Eh4gdN/mqw0cFGMKTdCcoEvH+GNqHv5LiapOLwM5GiOvpjJuAcTT1tpX48e7q1WNQ/mu
-         OM8dLqt+qbTB51cad6bLP8jYLBqyPWjWJ2pWt9wr77qoH9tyLUUB7hXkEAjQSklugHaI
-         Nm3Ln/vydVk9sFXPnmDGt3Zm2P56FCCEj7mV6WUzC2o1MSXw1m2TaHX0P6S9AD9153S1
-         d6ZQMxXoTOQCrSmTe4p8cewshBsjUhGTLYEe5x6emgK1pJe65UcKVimKP6h8HIcig8s3
-         biUw==
-X-Gm-Message-State: ACgBeo0houItki0LW92NZ2ul2ZUhWH5FeK/w+dvOg4JLa8CsMDUhFMSN
-        RUufN0OjJNvwaxeBoZkxgBY=
-X-Google-Smtp-Source: AA6agR4Umk4Ifs5d6wA4D+kyy9D/qgTCDDz9Wyl+uxvXmVoIjer/V+FotX39VNEdpIVpZqLufgERMg==
-X-Received: by 2002:a17:906:5a50:b0:73d:ad57:e02e with SMTP id my16-20020a1709065a5000b0073dad57e02emr1789735ejc.431.1661418966961;
-        Thu, 25 Aug 2022 02:16:06 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:310::2eef? ([2620:10d:c092:600::2:bb7b])
-        by smtp.gmail.com with ESMTPSA id 10-20020a170906218a00b0072af4af2f46sm2180299eju.74.2022.08.25.02.16.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 02:16:06 -0700 (PDT)
-Message-ID: <ea498e38-d1b0-1011-834d-8574cd0d113b@gmail.com>
-Date:   Thu, 25 Aug 2022 10:14:59 +0100
+        Thu, 25 Aug 2022 05:17:18 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7B0E9F8C5;
+        Thu, 25 Aug 2022 02:17:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661419037; x=1692955037;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4exIY7gU9hzEUKw5Nvq0efoD/gksy5jNEO5nY/heknk=;
+  b=BLiscJOo3Uxd9qW+TYDRJJ1d7faPUfkrxySfp4MlN7ROEF1r+swbHau9
+   OY9osE0Q6A27mPYkEsJwSuro42rt/mAXYxyqjMmXRFrjDE6QjogP9GXFD
+   0WTKy6mUA+RomC9d+QttqbolWeHWNlmumSTa5aTqqIg6isQI0rEzP6j8u
+   2S5v2J1/SR14YQbVKSd+b/f1pVgu0NUH3Y6LJwzw7vexyYKPTXZIfriTB
+   aVJW7fEq60s7PfPj6qhCbhTIQ4mlgBNivZAwnr5WjM2HrIlClHcKtR3KR
+   3N2uG7OxW/O+DTMSB0cSpxxQxJoFdcl5li3AA36RiQXBYQbe+zP64eqBN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="355917152"
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="355917152"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 02:17:17 -0700
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="938254118"
+Received: from mblazque-mobl1.ger.corp.intel.com (HELO ijarvine-MOBL2.ger.corp.intel.com) ([10.249.44.101])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 02:17:15 -0700
+From:   =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-serial@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Subject: [PATCH 0/3] serial: Add uart_xmit_advance() + fixes part (of a larger patch series)
+Date:   Thu, 25 Aug 2022 12:17:04 +0300
+Message-Id: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [axboe-block:io_uring-6.0 14/14] io_uring/net.c:1053:36: warning:
- variable 'addr' is uninitialized when used here
-Content-Language: en-US
-To:     kernel test robot <lkp@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
-References: <202208250535.oP4RWEEL-lkp@intel.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <202208250535.oP4RWEEL-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/24/22 22:41, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git io_uring-6.0
-> head:   0596fa5ef9aff29219021fa6f0117b604ff83d09
-> commit: 0596fa5ef9aff29219021fa6f0117b604ff83d09 [14/14] io_uring/net: save address for sendzc async execution
-> config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220825/202208250535.oP4RWEEL-lkp@intel.com/config)
-> compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-> reproduce (this is a W=1 build):
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git/commit/?id=0596fa5ef9aff29219021fa6f0117b604ff83d09
->          git remote add axboe-block https://git.kernel.org/pub/scm/linux/kernel/git/axboe/linux-block.git
->          git fetch --no-tags axboe-block io_uring-6.0
->          git checkout 0596fa5ef9aff29219021fa6f0117b604ff83d09
->          # save the config file
->          mkdir build_dir && cp config build_dir/.config
->          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
+Add uart_xmit_advance() helper to handle circular xmit buffer
+advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
+that previously lacked to accounting for DMA Tx.
 
-Yeah, that part is trashy, I'll fix it up, thanks
+Greg,
+I've a another series on top this which is tty-next material making the
+rest of the drivers to use uart_xmit_advance(). That series obviously
+depends on the patch 1/3 of this series so if you end up putting these
+3 patches into tty-linus, I'll need it to be merged into tty-next at
+some point (I'm not in a big hurry with this so if you choose to delay
+the merge, it's not a big deal).
 
+Ilpo Järvinen (3):
+  serial: Create uart_xmit_advance()
+  serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
+  serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
+
+ drivers/tty/serial/serial-tegra.c |  5 ++---
+ drivers/tty/serial/tegra-tcu.c    |  2 +-
+ include/linux/serial_core.h       | 17 +++++++++++++++++
+ 3 files changed, 20 insertions(+), 4 deletions(-)
 
 -- 
-Pavel Begunkov
+2.30.2
+
