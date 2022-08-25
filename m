@@ -2,97 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE36ECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E23FECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243343AbiHYQoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
+        id S243358AbiHYQoM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:44:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243251AbiHYQnT (ORCPT
+        with ESMTP id S243233AbiHYQnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:43:19 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA2ABB038
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:47 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id 67so12136011pfv.2
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:47 -0700 (PDT)
+        Thu, 25 Aug 2022 12:43:22 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A32CBC10C
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:45 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id x19so17546365pfq.1
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        d=chromium.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=HEbBlNE74XAOeDaqxFIrSXJjdeTVN4APARuNyd0Kkrc=;
-        b=cIO/d1BGqL6fFstMorhflZg+vJ9obx8pMQqBtB2zXIPXvMogHPeMsu0jrMv3o/VTJZ
-         IBkJf62+3rnapmZ4QtajmqxNiCKCoJpFUWP5Aj+4N2faq+JVYEs0jc7ZNWjuyG1nRM4X
-         bG+zNO+sE24Jhpk3TgvTfkthoBCFGUujC2Zb58e5p7FLK/XotEpTJEWCcKgLCmbqgujF
-         2omehs8EXzqBUnztnRg0Tg4+J3IhJW7PuV1Uhz8xpCunXu90C2TIFPpCGuP+8zZtnPgn
-         eqzv/Ei/WX+oIjQ+VhIURYRrhU3nKqOCCdinlLLYeuDtRbLKy3hIv9MJ/xYh3I+q5Cwx
-         epJA==
+        bh=0TbBYS0Nqh3bgSdnakQbiIorETtqlVR3C7+nG6SfSzA=;
+        b=A1CPNa0ANiPIdOyEFNl/pcWWHZNCIdrC1EKRfKXZhZ3NFYRg1PtX1Htujhmy2fze4Z
+         /sL7i/WiChF1ZA4G4yrV3SHo/peV+S3COXHuyBg9SJMbLojnHVFCdT51DvjJWG2SbJWJ
+         VCq61CHAOGfIFj/j+Bbdp4F9a0Ndbywt3RpXI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=HEbBlNE74XAOeDaqxFIrSXJjdeTVN4APARuNyd0Kkrc=;
-        b=JaNIh5FuHifYRekfI7UJwepwLNI+Cv8qASCytLhJwjo34TTTDJCnIwq7BGR0NYTV1+
-         mtL96mYOXjkP2fs4TlI58YO81q6JGMrLjVeszl4ylb0+C3Cgr1b+dfSuxILGYbFEaof5
-         rlMA/98B0vXL1+APWRwc+Eb5xQCDLq42PDDcP3r/XX0EgVvkJAnR6pUXJUyLigiwJ6W9
-         otlxP/ArnuIFxMTzdQIonxzSyb7gxJ8JlWPLM7+EF1PX6WYtag37vX0Kv/eHVP2FlY2C
-         PjVo3praJ3oDPX1RRvT2LRXucu0K1zJb0Yt3UzNgERFbmKDEVcdTllQ9COgW1/V/iAVp
-         ddyA==
-X-Gm-Message-State: ACgBeo3AMt4xRnAu6SLV6usyVEJlmNzMkhlEbsAiLCTKGjgzsYs7crmt
-        dp0lRry+Z5S8RmjtpYinjKmMfA==
-X-Google-Smtp-Source: AA6agR7DaINFBPuM/7F9bdN/GnJGUkNZ1zOAW5PM+T8a3FN4i4YkOwbmC4mTqFPVZ4HbR+7ywDSOhg==
-X-Received: by 2002:a62:17c8:0:b0:537:b287:3ef8 with SMTP id 191-20020a6217c8000000b00537b2873ef8mr623736pfx.40.1661445765140;
-        Thu, 25 Aug 2022 09:42:45 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.236])
-        by smtp.gmail.com with ESMTPSA id b18-20020a62a112000000b005362314bf80sm12779408pff.67.2022.08.25.09.42.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        bh=0TbBYS0Nqh3bgSdnakQbiIorETtqlVR3C7+nG6SfSzA=;
+        b=ubfAT98mYqYn32nzJrsYmPKBXKUqQd4RfUjXdA9gY5HILu4HxCQi9Q0hAJKak2woi8
+         xNYmwA276fp/SxIZf1SMHfmecv5bocdox8CjcOgumpSE8bMhVazgln1nr1Eo7B4pbVvt
+         /YPqByAfNJgdZ3JeXmLFBYqmtmnT0f0UnJdmMOzGM6MYpsnp5Enia5m09rn383xDq8QG
+         RPXpaywdYdB9z17pTwn5uUnFA1yxbVjVr19WtiaSsUxz+cEXS0SaFmokcPlyzeWpMiSh
+         333st7pyx5BbYwMSjCQfKU61mI3BDZarwME+DaYpau/godpQWXvFmQ8JSle+xp+6VqZy
+         Fy+Q==
+X-Gm-Message-State: ACgBeo3Ut/X1F5TvQpmd4gfOBvKraLcC3uw7TVg8CF0Lr3GZFWI/o8lv
+        rwsXlR3taUH0jUqPBV62w34xjQ==
+X-Google-Smtp-Source: AA6agR5MmHBCUIcOi+TPd/VfpEsc9JppoQPMwYiyP0TdPFlQEA0rngeqizMGLf0HZoAfvsUcrLLL8Q==
+X-Received: by 2002:a63:e102:0:b0:41b:3901:990e with SMTP id z2-20020a63e102000000b0041b3901990emr3893320pgh.107.1661445764637;
         Thu, 25 Aug 2022 09:42:44 -0700 (PDT)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     hannes@cmpxchg.org, tj@kernel.org, mkoutny@suse.com,
-        surenb@google.com
-Cc:     mingo@redhat.com, peterz@infradead.org, gregkh@linuxfoundation.org,
-        corbet@lwn.net, cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v4 02/10] sched/psi: don't create cgroup PSI files when psi_disabled
-Date:   Fri, 26 Aug 2022 00:41:03 +0800
-Message-Id: <20220825164111.29534-3-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220825164111.29534-1-zhouchengming@bytedance.com>
-References: <20220825164111.29534-1-zhouchengming@bytedance.com>
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:b7f2:d739:e847:6e53])
+        by smtp.gmail.com with ESMTPSA id y13-20020a17090a154d00b001f2ef3c7956sm3775799pja.25.2022.08.25.09.42.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 09:42:43 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andrew Halaney <ahalaney@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 7/7] arm64: dts: qcom: sm8350-hdk: Specify which LDO modes are allowed
+Date:   Thu, 25 Aug 2022 09:42:05 -0700
+Message-Id: <20220825094155.7.I6799be85cf36d3b494f803cba767a569080624f5@changeid>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+In-Reply-To: <20220825164205.4060647-1-dianders@chromium.org>
+References: <20220825164205.4060647-1-dianders@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-commit 3958e2d0c34e ("cgroup: make per-cgroup pressure stall tracking configurable")
-make PSI can be configured to skip per-cgroup stall accounting. And
-doesn't expose PSI files in cgroup hierarchy.
+This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
+but doesn't specify any modes with "regulator-allowed-modes".
 
-This patch do the same thing when psi_disabled.
+Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
+get_optimum_mode(), not set_load()") the above meant that we were able
+to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
+be stuck at the initial mode. Discussion of this has resulted in the
+decision that the old dts files were wrong and should be fixed to
+fully restore old functionality.
 
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Let's re-enable the old functionality by fixing the dts.
+
+[1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
+
+Fixes: 9208c19f2124 ("arm64: dts: qcom: Introduce SM8350 HDK")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
- kernel/cgroup/cgroup.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 03dbbf8a8c28..2f79ddf9a85d 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -3748,6 +3748,9 @@ static void cgroup_pressure_release(struct kernfs_open_file *of)
+ arch/arm64/boot/dts/qcom/sm8350-hdk.dts | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sm8350-hdk.dts b/arch/arm64/boot/dts/qcom/sm8350-hdk.dts
+index 0fcf5bd88fc7..69ae6503c2f6 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350-hdk.dts
++++ b/arch/arm64/boot/dts/qcom/sm8350-hdk.dts
+@@ -107,6 +107,9 @@ vreg_l5b_0p88: ldo5 {
+ 			regulator-max-microvolt = <888000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
  
- bool cgroup_psi_enabled(void)
- {
-+	if (static_branch_likely(&psi_disabled))
-+		return false;
-+
- 	return (cgroup_feature_disable_mask & (1 << OPT_FEATURE_PRESSURE)) == 0;
- }
+ 		vreg_l6b_1p2: ldo6 {
+@@ -115,6 +118,9 @@ vreg_l6b_1p2: ldo6 {
+ 			regulator-max-microvolt = <1208000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 
+ 		vreg_l7b_2p96: ldo7 {
+@@ -123,6 +129,9 @@ vreg_l7b_2p96: ldo7 {
+ 			regulator-max-microvolt = <2504000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 
+ 		vreg_l9b_1p2: ldo9 {
+@@ -131,6 +140,9 @@ vreg_l9b_1p2: ldo9 {
+ 			regulator-max-microvolt = <1200000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 	};
  
 -- 
-2.37.2
+2.37.2.672.g94769d06f0-goog
 
