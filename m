@@ -2,79 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18BCCC32774
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2104C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 15:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241031AbiHYPPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 11:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
+        id S234820AbiHYPPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 11:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242660AbiHYPP1 (ORCPT
+        with ESMTP id S241453AbiHYPPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 11:15:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DE918B28;
-        Thu, 25 Aug 2022 08:15:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21D90B82A12;
-        Thu, 25 Aug 2022 15:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48B7C433C1;
-        Thu, 25 Aug 2022 15:15:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661440520;
-        bh=GLChFzUGs8GVVNUhC6wb73XfZUqR7G4/+nAYTdWObeA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=uhDSCpOcTZPed/N0Nd11OBZzL7nJGDwP4rsBH+Em+AWcKn1fwDpCnnTDY1ZLWhqPR
-         48cKOD83JMNKjchGTpkCUMk8KEvDzk4yNWiy7P5P9UOj1T8LKXtPPMJ1kuhN41v9Of
-         aWvuYeNBivAkCoav9rdj/GTOrVPksK6UrF9eiklMxMlWhrGnU1AX+faWTogyOVklq0
-         JTZGxHnMsTM7QxDeUoukHsyb47U0ZHjj9C/j6+rSwf72vKjrbdSjy79Fro9xrQADK9
-         /VyR7TM21LppCtJS5LPLQ23Emygt+HmB4Uk0hFe/+moJKKx8kdvoRJt3XBTvH2RyeN
-         yKhmc7caa6pcg==
-Received: by mail-vk1-f177.google.com with SMTP id q14so10338986vke.9;
-        Thu, 25 Aug 2022 08:15:20 -0700 (PDT)
-X-Gm-Message-State: ACgBeo31k8VDD8ix3nlDSH5Wt/FDkOEM5TZpqklwlp3gVGpsQ1OxpqNP
-        x+6yQ7oCwettLsix7/NaRMUczqco5+zhimv+IA==
-X-Google-Smtp-Source: AA6agR4iu6jSkKeVPC33nDOlssDIK1jrZSrmgKXA6T6zfcamhzM2PVxvbmTTF/xYsdglmwLIzzGgNE4soLyV7FkmpD4=
-X-Received: by 2002:a1f:23c6:0:b0:38c:88f3:f55c with SMTP id
- j189-20020a1f23c6000000b0038c88f3f55cmr1674826vkj.19.1661440519809; Thu, 25
- Aug 2022 08:15:19 -0700 (PDT)
+        Thu, 25 Aug 2022 11:15:37 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D4A13F6A;
+        Thu, 25 Aug 2022 08:15:34 -0700 (PDT)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 61991240009;
+        Thu, 25 Aug 2022 15:15:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661440530;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=84ZmLwDIKgsqnnt6/JKYNVV5p2wu7p/YXThFoSbG1zY=;
+        b=VU3rmFmycNvDDl419/SEf0QRNmaG9UlRucXib33CWOC19YV6EhHGf9uBfMvc/wIvwepCJx
+        uLJ5DabslAp8P+CZi5Yt9azkF0Zuidg90TwXriVB7hyZ9/MZ7XZnXGiQkCIhQa/jLeliur
+        jnvajkcEMVRIt8wr95tO/nTNl0otD570bkLNjol/AURDYEH18p0mHymvFX8NW8DaHYDVk2
+        qiScBKfQWCb8XS3ooFkBciBHraGmG7jfs66dajbmyIr7/DIhdjIa7jcCWpuXGN2qr6yT5f
+        4YkYd+vY04gMkpOhRf+jApAhGxCglZvN7sd8wqH28pZ1j4U6j55MJ+PSsSvPwA==
+Date:   Thu, 25 Aug 2022 17:15:29 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>
+Subject: Re: [RESEND] rtc: hym8563: try multiple times to init device
+Message-ID: <YweSEVYJtSY6G/98@mail.local>
+References: <20220821122613.245026-1-linux@fw-web.de>
+ <5fd3f684-1d20-c646-04a4-09f32d765f8d@arm.com>
 MIME-Version: 1.0
-References: <20220823145649.3118479-5-robh@kernel.org> <20220824185058.554b6d37@kernel.org>
-In-Reply-To: <20220824185058.554b6d37@kernel.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Thu, 25 Aug 2022 10:15:07 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKWb=jnACOs=PmMSUg=oTAWn9eLaSb7R6GVrJWeQXaFMQ@mail.gmail.com>
-Message-ID: <CAL_JsqKWb=jnACOs=PmMSUg=oTAWn9eLaSb7R6GVrJWeQXaFMQ@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: net: Add missing (unevaluated|additional)Properties
- on child nodes
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5fd3f684-1d20-c646-04a4-09f32d765f8d@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 8:51 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 23 Aug 2022 09:56:36 -0500 Rob Herring wrote:
-> > In order to ensure only documented properties are present, node schemas
-> > must have unevaluatedProperties or additionalProperties set to false
-> > (typically).
->
-> Would you like this in 6.0 or 6.1? Applies to both, it seems.
+Hello,
 
-6.1 is fine, but I found a few more cases, so let me send a v2.
+On 25/08/2022 15:19:02+0100, Robin Murphy wrote:
+> On 2022-08-21 13:26, Frank Wunderlich wrote:
+> > From: Peter Geis <pgwipeout@gmail.com>
+> > 
+> > RTC sometimes does not respond the first time in init.
+> > Try multiple times to get a response.
+> > 
+> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> > Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> > ---
+> > discussion from v1
+> > https://patchwork.kernel.org/project/linux-rockchip/patch/20220608161150.58919-2-linux@fw-web.de/
+> > 
+> > On Fri, Jul 8, 2022 at 12:18 PM Robin Murphy <robin.murphy@arm.com> wrote:
+> > > FWIW, given that HYM8563 is fairly common on RK3288 boards - I can't say
+> > > I've ever noticed an issue with mine, for instance - it seems dubious
+> > > that this would be a general issue of the chip itself. Are you sure it's
+> > > not a SoC or board-level issue with the I2C bus being in a funny initial
+> > > state, timings being marginal, or suchlike?
+> > 
+> > Peter Geis <pgwipeout@gmail.com>:
+> > I don't think this is an SoC issue since this is the first instance
+> > I've encountered it. Mind you we don't have the reset lines hooked up
+> > at all for the Rockchip i2c driver, so it's possible that's the case,
+> > but I'd imagine it would be observed more broadly if that was the
+> > case. I've tried pushing the timings out pretty far as well as bumping
+> > up the drive strength to no change. It seems to occur only with the
+> > hym rtc used on this board. I suspect it's a new variant of the hym
+> > that has slightly different behavior.
+> 
+> Sure, if it's documented somewhere that Hayou (or if the BPI-R2 Pro
+> schematic is to be believed, AnalogTek) decided to innovate a new "sometimes
+> doesn't work" feature for a chip that's been in production for a decade or
+> more, and that 2 retries at 20ms intervals is what's recommended, then I'm
+> open to believing that this isn't a complete hack. Or at least if someone
+> can say they've scoped the pins and confirmed that nothing looks suspect at
+> the protocol level when this happens that could explain it.
+> 
 
-Rob
+Just to be clear, this is also my opinion and I'm not going to apply
+that, especially since the IP of the RTC is not just a decade old, it is
+actually from 1999. It doesn't suddenly stop working.
+
+> Otherwise, I'll remain unconvinced that it isn't a coincidence that this has
+> shown up while bringing up a new board with a new SoC, and hacking a mature
+> common driver to bodge around an issue that isn't fully understood, and
+> could very conceivably lie elsewhere, is not the right answer. Especially
+> when it involves a board vendor... let's say, whose reputation proceeds
+> them.
+> 
+> Since I'm not above wasting 20 minutes of my time to prove a point, for
+> starters the schematic seems to imply that it's using a variant of RK809
+> where LDO4, used as the I/O supply for i2c3, is off by default, so on the
+> face of it it could be something as stupidly simple as the RTC probe racing
+> with the PMIC or I/O domain probe. Sure, the DT claims it's already on at
+> boot, but *is* it? Maybe that was true with some downstream bootloader, but
+> do we know that's what you're using to boot mainline? Maybe this something
+> so obvious that you've already confirmed and taken it for granted, but the
+> patch as presented doesn't give me the confidence to rule *anything* out.
+> 
+
+Thanks for your input!
+
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
