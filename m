@@ -2,323 +2,389 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34138C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:14:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09127C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237267AbiHYKOw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 06:14:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34518 "EHLO
+        id S237732AbiHYKRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 06:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233935AbiHYKOr (ORCPT
+        with ESMTP id S237108AbiHYKRE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 06:14:47 -0400
-Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9249A982;
-        Thu, 25 Aug 2022 03:14:41 -0700 (PDT)
-Received: from pps.filterd (m0250811.ppops.net [127.0.0.1])
-        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27PA7aSZ022127;
-        Thu, 25 Aug 2022 10:14:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=message-id : date
- : subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=PPS06212021;
- bh=ilf9FdxqeXu/eWDmZobRwDufIDekJH1qCgWxjBqOeOk=;
- b=Au8GWG4Rc6ZxaMFndN8m37C9zzus68LF5rSCIuOr89ygysDEmUgUluSv9UEDgk0iVoub
- OmiLOdYXN6ZQJy5U8Mb8jvFh8+pFG8XLt3hGEYxyx8UQyj6CkAI9h1q216mcIxJmltRb
- iO30j5EFwm9wfbsw0HoNT4iW6eLy/EQkjRFM2rpqLI4N2oyAx5OgD4K5AONtgF8joj09
- XhvEL8mPabPz5J3yhrW+2XdOnopfjbaqSBX1WxAYMHt1aHboR35+uWTzbDQn3J3Vyrpj
- idnWRz9AMj02Fu74fz4ljriVqBNE2RY4j4fwyFcniRrbO2tGmplYUUbKxF+uDQ+BRxNW xQ== 
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2100.outbound.protection.outlook.com [104.47.55.100])
-        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3j53ryhk58-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Aug 2022 10:14:18 +0000
+        Thu, 25 Aug 2022 06:17:04 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2053.outbound.protection.outlook.com [40.107.21.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6307A538
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:17:02 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KZeNZliyY95JH0tvSV7xZOoaiipFqrk4oqOcTQ/lv1k4O4H+PD87JHQ/Vdh4765EFmdWhubHHXy8AB4v6rwRVEPc6oAN/6ZAcQemLllyU4ApXPjlUsb3B8aD/5ngJ9c6XolTxVRHdzJwvT7hjHk6W4rT1zCz+qbYZIIVzDN0+5dugyHN8x1j+Mk8YGyHzlxMmYk/34qmMaw5EP8x0T7trNxdQ5K63Fln9RZRHl0WwkpSmoC6gJ2eIevAxijihuoWQOieeEpk/oAd3Rmw2NY+gkJyKAFaWPVsTajjPuNo0cY6RnuYjLEhSm3UNVSpv6Xnt1Tj1dyamBrRrhJ5knuqbg==
+ b=W1G0N8RWsNREiN/mMzPzpbMzahPaclruguyG2VWo6HoTlWAhEGTD+67aftYJ5a9H/ZpTQwqP6VAmNxkvBvtLu9g3YWpGFZnsRmchKecr3mf+hG3NpiRu4ZjXgZRygocnUt7SrfjQDQ4TQqLyB8rc7NkrEiOB3Av4vIOLKxR7z5sq5m+HsXmA8LLqOAsg9NLXl4hWdlZXEVIeSP6ng0/VwmTYfmDTR9q2n06nQjuY+30PyDBs+5IUyyC9knP4ApC+vky7ofGE4GALsNZPlrjE85xvggRusbrmcnLLmvtbPeHPe9SuJaWX1Pb1XmMkvDIV6SzaJDFFrquZbCbft9N7Pw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ilf9FdxqeXu/eWDmZobRwDufIDekJH1qCgWxjBqOeOk=;
- b=WAdMLvfhAk09ZQjzTT2U7oOtyqqwdIkwQAsD+4ydi72O/M+g+0WKFBRT2CMYL4W8aylQpnS/Ki1aFxCh9SrS9cgn8aTCYFPtMuyR8egn5zFYsG+gVzRDwSGSzPDAsNvAPeTTQx2HEuH0Rctub2Y38kGl8ZRemi9OLyylx/QRpqy6bm6zBss+72e8V5HSntx3Mou4/RA7RqE/6UmJcmAzRrM7J09wkVWNkf+RtCU0fhKZtLEzHkuKtdV2lJwEi0vwbCvGi40IWqaiH2g5OJ6KZaHVXFpAmK2DH0HDCU+VbO1ZAeKHv85B8inQwpPYJXeU2mwE3DhuzBMIunwzmlsDSQ==
+ bh=0Cd8cKHAs2EFNz0yE04M6uHRpL1kAkn8WK1FGZxceVA=;
+ b=XncwTV0ckbzK4ofqybXUlGQLUXabkzQo5v5k83Z2abJoCP/b7JE5khvtgzK8DV9Z64562ykR6OtFTjygda7UJ/eva9RT+H1ZIvNV2Ei6VeBd8hoc6AZVi0eQfc09HhSdcLgvyXywjNnxefYzsfoA2joLc8eukJNzPuZlijCCFBBu8nTY4V605JDJrYdx8Sy3TjpD4kcpukbwD03QSJh41ly4CSTsbtn0JVtyXhcRCp4ROOq6pJ8cUhpSS6qLDEh2pf4qfMsWnZT/AbENzRz0mFFYwYFOGiJfQ/J8i3+QvostRPRL2f6PJw4jMCub2Teo610JXV6Q5tLWutyl8HWstg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Received: from DM4PR11MB5327.namprd11.prod.outlook.com (2603:10b6:5:392::22)
- by SN6PR11MB3087.namprd11.prod.outlook.com (2603:10b6:805:d3::25) with
+ smtp.mailfrom=sap.com; dmarc=pass action=none header.from=sap.com; dkim=pass
+ header.d=sap.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sap.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0Cd8cKHAs2EFNz0yE04M6uHRpL1kAkn8WK1FGZxceVA=;
+ b=eEzvamBqPXrv5s5pBnpQl+vdY4kF2nBwQg3o8zao5W4B2AYwxNkTnhvfOyqRQI/zGJRVipv/cUwrDn0wNmbaTHCDT+io7p2IctV0mscs+yEUiLPIkCFHrCETTO1aDutRCagTqbXoTGhWXbWMnHyjP6SF1dC5x10Am2T7Qv/xpZQ+qhuZ430yTcqULrQDGsmJZfTVKxYRn5QsguFgMJXE4ufQ30ZQHFHskXHgl1UZvOpvHBY2oQ8n1HH0J6/RulM8Zkx+f8gDKukWfDt1GuFY6Gwi5BrXG+R3f6J8jW7X2oBS1dZRCTrA9poXEw+cXLI2LfaJGZlrHsrr+FyqGIaVtw==
+Received: from PAXPR02MB7310.eurprd02.prod.outlook.com (2603:10a6:102:1c5::10)
+ by DB9PR02MB6538.eurprd02.prod.outlook.com (2603:10a6:10:1fb::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Thu, 25 Aug
- 2022 10:14:14 +0000
-Received: from DM4PR11MB5327.namprd11.prod.outlook.com
- ([fe80::b4a9:c48a:51c2:d3fd]) by DM4PR11MB5327.namprd11.prod.outlook.com
- ([fe80::b4a9:c48a:51c2:d3fd%5]) with mapi id 15.20.5566.015; Thu, 25 Aug 2022
- 10:14:14 +0000
-Message-ID: <d99dcc9a-c50e-b482-0a09-7040a2031a08@windriver.com>
-Date:   Thu, 25 Aug 2022 13:11:42 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 4.19 025/287] selftests/bpf: Fix test_align verifier log
- patterns
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 25 Aug
+ 2022 10:16:59 +0000
+Received: from PAXPR02MB7310.eurprd02.prod.outlook.com
+ ([fe80::25a4:e5d5:aefc:fe46]) by PAXPR02MB7310.eurprd02.prod.outlook.com
+ ([fe80::25a4:e5d5:aefc:fe46%9]) with mapi id 15.20.5566.015; Thu, 25 Aug 2022
+ 10:16:59 +0000
+From:   "Czerwacki, Eial" <eial.czerwacki@sap.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Arsh, Leonid" <leonid.arsh@sap.com>,
+        "Twaig, Oren" <oren.twaig@sap.com>,
+        SAP vSMP Linux Maintainer <linux.vsmp@sap.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Borislav Petkov <bp@suse.de>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Eric Biggers <ebiggers@google.com>, Fei Li <fei1.li@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: Re: [PATCH v2] drivers/virt/vSMP: new driver
+Thread-Topic: [PATCH v2] drivers/virt/vSMP: new driver
+Thread-Index: AQHYuErwCwPojP5fak60UhGlJnJEo62/OPAAgAACsWWAAB5kAIAADNqv
+Date:   Thu, 25 Aug 2022 10:16:59 +0000
+Message-ID: <PAXPR02MB7310694F20F95CA446FFF22481729@PAXPR02MB7310.eurprd02.prod.outlook.com>
+References: <PAXPR02MB731058B69D178E026C578BB481729@PAXPR02MB7310.eurprd02.prod.outlook.com>
+ <YwclcEJDf/POuHw5@kroah.com>
+ <PAXPR02MB7310DFE86CAB92D0AE1A14BE81729@PAXPR02MB7310.eurprd02.prod.outlook.com>
+ <YwdBMIgSzEiFjc4D@kroah.com>
+In-Reply-To: <YwdBMIgSzEiFjc4D@kroah.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-References: <20220823080100.268827165@linuxfoundation.org>
- <20220823080101.125479106@linuxfoundation.org> <YwZOQv/dqReP8XfU@myrica>
-From:   Ovidiu Panait <ovidiu.panait@windriver.com>
-In-Reply-To: <YwZOQv/dqReP8XfU@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BE0P281CA0022.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:b10:14::9) To DM4PR11MB5327.namprd11.prod.outlook.com
- (2603:10b6:5:392::22)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=sap.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 32d806cd-0e7d-4a73-f1ed-08da8682f251
+x-ms-traffictypediagnostic: DB9PR02MB6538:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iMKniugXdTSRBvq9rej2gog4Oxwxsr9DaHzB4zY980iVxJ1JPDOPTzjQEiWBaIWWzPUthP80amM2fftGfA+VbHEclxE18KDMYoWJEZSFV78oQfXS589FoRHK2l3vLhIP3Cm9KfCz0BlVSDDE73nZpSxeRVhYly5p/XYWn34XfpX1xJrbnLURFy3OqUDWLmbR2XT81PudoJ4Twew3ebjsL67I90od67dTUuVbOhYXmgPMMIFt7nJeovlnXfvU0r29Io48qhyNLGwzucy5bwo2/IsjJXusaHHuCs9VXcKy9F6WDLthKFlC88AgqF1CzIgUR9G7YtDbnGMJVMNlzk9c8KaWpH41uSJzitlX73BegzM0nAfg6IFDLHsZsogvYaqnAYWzb0Yg3zDKDJh8p97J42QqIB0ciVhhcVmAHgVndyshn3THCZlrxRuC8nsKJPLQr+Hpa+mIHrIIHlLDBjzgr7hZdatSTXXaNhnYq7ViY1qjsJHvstCPWLT4cegOxJQq4Wm8AYHAsDUC8cwSC9VAzQUgKxSYliT/RbwT5AzTInWMzOv2uj4/FMKp/TBRngCuS5MgdDemJTAkNElhNmnv1FSM5Tw9D5bNZmbo9SOdOtMgl+2acvAp1+NP3UkDkA7W1nA4KZ+qL+We6xictsRTely8V31rBaD6LC9el1zvn+I+cVDZsj53+Iwl8Ex2icnI/rVV9NnYAJJlMvFK9Uy6beG+paEPrMslwc4CbAFWpZE8FYnG8QgjXqCVPPRCT2iMyN7D+F4IOBpnVlvPC2We9A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXPR02MB7310.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(39860400002)(396003)(136003)(346002)(66476007)(66446008)(8676002)(52536014)(5660300002)(33656002)(66556008)(55016003)(91956017)(2906002)(4326008)(66946007)(316002)(6916009)(9686003)(7696005)(6506007)(478600001)(76116006)(26005)(41300700001)(8936002)(7416002)(71200400001)(186003)(83380400001)(122000001)(54906003)(86362001)(38070700005)(64756008)(38100700002)(82960400001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?QLKnqTCRVnlbwpu7gz/RSs4ch56gza6938fEUhoqlH/J51GIz1lPTuhgND?=
+ =?iso-8859-1?Q?Ga9gM4+JjZPgpEvWuuQMsNsg+4lDJRElQfSMtdIsijQGgawtT2S9HF8B06?=
+ =?iso-8859-1?Q?FlyT+DiQIZe73A2VjlZkddngS1y5lAi2Ch2mjZEmP38yfkJAaYNVm/m3R+?=
+ =?iso-8859-1?Q?qPxePsgKeNT0vqcJ0lII62A4/3FwGO6AT4UJfTcGZ3xcQ+/soTWVhRnqa5?=
+ =?iso-8859-1?Q?cx3CNrjUVTwnNOgRvIVe44oyDO8SuMEbhwqvyjRQ4mo1MDx0AVJjOx3qdR?=
+ =?iso-8859-1?Q?ZpUqCDyC245SW/KcR3KqIctDrFBf6xsupcpYffw7gQQAQ1IAuR0UX+XdTD?=
+ =?iso-8859-1?Q?Zno3IPaGZXhVKzsEM05wBubFvH6zoqZgUSDdlzPsgbO8C4pVqPK2oUT6Yb?=
+ =?iso-8859-1?Q?ZAlYi3pwjV77h8It+j4ArrWe9mMXj/EgQs/hK4bnP1ASzlUV1yhBHDJbd+?=
+ =?iso-8859-1?Q?9wz75kWXFsJVjBa6LwbpmReyWIhJ3HIfhCAGpUYcl4o6tnyrimrchMnovl?=
+ =?iso-8859-1?Q?bVYjZuvNJcxHKoMSV5pkKvxKm2BjBcTu6jih04bwwKJ+UdB6S84sB+eOR5?=
+ =?iso-8859-1?Q?ATP5cRvPo5v0qs2HOIbptFetS4bTVTIe4J/N4slN9Ef+AsA6LxnDuxQKxm?=
+ =?iso-8859-1?Q?STuBfSCIKDRSZ0N24cYq0Az7wvyX5Dvz8WATVoG16K5NrWSt2ZlJL61ps8?=
+ =?iso-8859-1?Q?P71rwd4/AcbNn/r2dW1lxoXS+fKebQdyX8/yGZgnYzMgV1bMr1RnHnlFiQ?=
+ =?iso-8859-1?Q?KGiVABOJZh6s9CbCckIhkttZVcnb/shlLs2BXwQ2jvyfmqnMsZWS3Wsg2K?=
+ =?iso-8859-1?Q?wtIb3LSUGB3N6PxW79f8t6vC9DzfIurD3xxvvnfTR7bD/vrzJgpPV3wrY7?=
+ =?iso-8859-1?Q?vBfq1p2a3myHaZEwWq0swNXmOnejkD/v2ZYM8maSTK4DZanXqBZNZjnriw?=
+ =?iso-8859-1?Q?Nv2XCFQf4q/Az+Ep4UF/UhTfnqWhwGec/VaFYUOUVg2//HtJ3GBaHwUDun?=
+ =?iso-8859-1?Q?2X0EH2LAPM+tii9lgwDUvkRpi62K9CLmCzVw/kwhCOMEimJFSnAgdLzpUu?=
+ =?iso-8859-1?Q?wqgeGLs2oyKp7N8mnzpGWqetn0Te71Wsp9bSD/nFjn+IyrZmnU1wSFhMQa?=
+ =?iso-8859-1?Q?Mz8WkediowIu4DLKmtvGssMvFc/K5AjeMDuwH3EYVn97CGmLbeQlWeMdhL?=
+ =?iso-8859-1?Q?eOjssuJi8xDVCAoLUiwyJjPmn3no/rhFdUszItBnOggignEPP1VcmJfgSQ?=
+ =?iso-8859-1?Q?PxJdbGs2hCPg3Bm+RBrG2aDSqn2iIL8EALwPfw3q+fgsPRCOH0T1bwYvTP?=
+ =?iso-8859-1?Q?kh9jyZSNNG7r+nV1+opyht4Ft7kmXXG7O6dXdlinCL6FUiyILIv5qY543g?=
+ =?iso-8859-1?Q?8c2VDPasJQOz3wGo0I50IrKerZfG/SNN+y+diKscBVE+bKcGo0h5wv3vSQ?=
+ =?iso-8859-1?Q?riQ1GGPuhsVgVWUiYeeDvteFGHJ4fIhetCdNhUuTaPGWE2vm9Ugea7+pHv?=
+ =?iso-8859-1?Q?TdLAs23lAGzf+IfxJvcg7ZU4WupLbO7Uo6GEHqYuZ1uh9JfdfWv0u6t6Ke?=
+ =?iso-8859-1?Q?vRT+jwTv4TZcF+IcqjvfgUPuRQDSXKhNfmdUm9NozyoHxDGRKG1FJHbaIA?=
+ =?iso-8859-1?Q?+tUHOBLX1jHHWbGjyCz4STlQo81ObtR7vN?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dfb555d4-4450-4390-8cd1-08da86828fbc
-X-MS-TrafficTypeDiagnostic: SN6PR11MB3087:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7/XGpyt1ZLtmu3YeibwZwl/7yoBbkN/Mok6DET6w8sGB4CRRToEeDN9V1+UB0cjXWYVn9pLNGM/AYBxV18Cbfd7JCbwF7y0H4vmTq4gXQLK1M/YAaRrCPaBcYqS9/4Co+Gpmz4nZ8PvMSpI26vNbAv9vB0cmak5G/0U6bW8u9ZcBnje3hmQp/GDadWgxNW0XZS1VpJ1+BB6SApW62C+nVVNU+5dp2L4xfeKenxkvNXyItYyWMiSC7qzKO4srJlwS1/ZsX7qbseSrYBDGARt0xew6vpH2B9O5wk1RY74wWEtWmlju2AZB19T9g23mcz6qsxqGzZiiKCYuPiaWwAmYBIbBmtHpAvkRcVw7vsYsxtMr0GWf0082ScwK7WWk6jdRX2lq/7MXWhe0u3EpeMSMb7+XX5UM7AIUnj1Yli6IFAaFQPqc+ep/ybb6qBEysiy04DTn6ModHW7qmUz8XMu1m+LPJVgmc4n11pEYUu73nYczpfuyj/42sLEVRfb9Y10pF22lBsNF0c9WFDu6778/4op6W8QolutB8jOIGSYKGBlMFGBHH5FcBnXmF7j4sV/jGcIDf6Ltnshx1zyYgE4rxYxwoHVnzTq8imJ0o2UtbkUEg6TDVBeZ/t3srCba2qPqjjbMR9scj9T9V5KXaPEWau2627OZ67ngjBkbNC9u8Oi+Cr5eNyfXpgGVPd15kFpbI1sBeQcZSP9GdqfXgyZwsOAt3PLdbNOy+Z7QR3ARZf8utL/ab0EnpTs7CA6dR/Cx4/hKZb+KSX0d7IBON2NWQ8YdZJAVpVRNhTVz7Gx9VFvklHpqY17t2CstwU/RQOAC3ln3mwX9AlqujRC/iiK5hhmZeFMrHSiPVIwmkCEY1yQ=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5327.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(376002)(346002)(39850400004)(136003)(31696002)(86362001)(54906003)(316002)(2616005)(66946007)(186003)(110136005)(2906002)(8936002)(36756003)(31686004)(4326008)(44832011)(66476007)(38100700002)(5660300002)(8676002)(6666004)(6486002)(478600001)(41300700001)(26005)(966005)(53546011)(6506007)(83380400001)(66556008)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VXNXS3J1Q3Q0ZVUvZlgwMHcwSmZZeE9vbGFvb2lhejlNMHFzZFNSZ1BsdlVN?=
- =?utf-8?B?ek5GSUJkR0g5b2RmL2pGUzF0Ny9DcnlldDQ3KzhjUk4xTDR1REFjUmJtWkxp?=
- =?utf-8?B?SHBUY1FKcUxSUUt3VndDdzgxUnNubUJxamd1Z2o4Tmh2aXlVY25KV2UrcE1x?=
- =?utf-8?B?NDhhSzZZN1A2NWcxMEZiR3R0cVN4dVBKdEkydjgrMUtWNEtCS3ozYlVnK2M4?=
- =?utf-8?B?bWt3YjdER1VwS3dHUktlYzc0R0QrNTFhc2NPN1FrSVhtYitPZ2hzSXdHdzEv?=
- =?utf-8?B?eWNNVDFPQUhiT25UaGl5ajJvMG9OaWt0RlByWGtZdEh1N1ZTOFNmUEx6Yk1D?=
- =?utf-8?B?YmRxOGJVaHJIa3ZTV1czcGxKaWpsTW5hZjBwSTR0TWRJVnpMM1V2b0VLRTZm?=
- =?utf-8?B?MkpGTG1pTlFlRUNHbnZUR2o0WjJQK05tV1IzSHprRTNOenBNek4zS202Y1lh?=
- =?utf-8?B?TitXQmVRUS93VE4zOVFIM3dIZ1cwZnBBd0krQloyUjRiZ2tJaUd0ZktydW1j?=
- =?utf-8?B?TWRvWnA5STVNMkdhaTg3K2lDRHhsaFVYTHBnaFhvZkRRNGlYSk4xNjBKVlVH?=
- =?utf-8?B?RTFkQXlUVGFmWkVPd2tkNmJzdkt3ZHVIVkw2VGpXMmR3OWRQVEM3cW01Qlhk?=
- =?utf-8?B?QjB3akJ5TjRxSDlCSHRDVUFDL1VRbjlSQlRab2lieGVOOWtMVEMwWTExTlhB?=
- =?utf-8?B?OG56dmpBNmpJRmdnNkFKNENFM1A0UmQ5cXJabHFPWXhYWlVTVDVjeFViV0Vl?=
- =?utf-8?B?NVc1Q2xLa29zNVI4N1R3aDNRcFVuYVUyRlB2Y2pMRHk2VDNWZ25BSVQ2YWVq?=
- =?utf-8?B?cWVHdTVvamxjOGVuYkNmUkhsaFRJcnZPY2pHdmx2dGp6K0dvcC92Vk5JQkZJ?=
- =?utf-8?B?ZkZISUZHdXdOeitKRmVIVFVRbU5aSFVIVkhVK1FCUnJ6NTl4VnhwK3d0WEpO?=
- =?utf-8?B?T283RlNWb3FNS0hsVExBd2J0OUxqaFJVR3lheEJKdjI5b1BKSXlTQ2xkV05X?=
- =?utf-8?B?MEJST3lncE5UMjVtd3E2aXdRbXZGb0JOUHYwQ1lTVHBsNEt0ZTdScERyaU8y?=
- =?utf-8?B?a2p6NFlLQVhBMjhYMm1FUnB6NTRHTG5hN2hGVVF4VXRnTXBKZnk4ZUgwV0Y3?=
- =?utf-8?B?OVhETWxTN2pwanJ3aHViU3VUUTVGTXFLOXhHT2JSNzJzZ2FMSWxQSGw0RWd5?=
- =?utf-8?B?STJhelhRSndsUXV6cVRYRk5CMVBuNEtxcVl0YlZPb2YvZlNaempZd1hKWHdE?=
- =?utf-8?B?Q3hoemliOFF2aGdadGtHcjRDMVZBbkdUVEQwV3FmV3kzUmFXd1MwbGJpcHU1?=
- =?utf-8?B?ZEVnK2JHL2RjMUJlSUZQK0ZRcy9Mdmg1Y3g5ZXZVTkRJbkV1YnRHQmdyZWZn?=
- =?utf-8?B?U3VlNGdFWTVoMFRqcUhRelR3Qi9sdzlRY0s4RU1XMkR3L0puNmFQY1R4L3Y5?=
- =?utf-8?B?NmFyMUQwS28xcTBiSXFaNUVFbkQxV0s2NWJFWmI0YVJIaGpKMEZtdWF1bHV1?=
- =?utf-8?B?VjVRN1VIQ1JYN2Nia0djOGNNM3hrd1NQVUM0S3hyaVVtS2psV1doc216TTFJ?=
- =?utf-8?B?K2VLSlBibnJPTkc1STI0MlQrZElLbDg5Ri9GSWJJM1NTRFdxSUdycXVyRTRj?=
- =?utf-8?B?TmZVOWJJMGpzaUhkYUVRMnp4elpwQ3pXZW51ZXhFclZFUmVOVjJyaEpNVWFr?=
- =?utf-8?B?WW9MYjRROFRBV2JLS3BoSmZ1bjFlcGlzVTdCTzBsTUUxRmVQVjM2NlRrSzh0?=
- =?utf-8?B?Y0dOdmFBdEJEcHE1UWwyZkxseW9yTmgvNXRVbEFuWGVaTkFrejFlcWdTbzFy?=
- =?utf-8?B?UWVlcVlwdmRZN0FDSGdsMjhzMDNaNFhheHVwMzkwUUtuOVRadldqUXJGL0l4?=
- =?utf-8?B?bjdYL3ZRdjJ5V3dHR21TdEd2VldxeFlySTlDYUVxVno2eG13VHRPelc1T2s0?=
- =?utf-8?B?dFhHOXQ0UThQOXVQbnRodCtnZjkvV2Qya0NiWWt0aDExK0ZWV0pMRnptZEov?=
- =?utf-8?B?Tmk2b1Q0bzlJQVVyMlVQVTkvazFkQU5TRzc1bFl4TVc1ZHc0V2VyWjJrRWNP?=
- =?utf-8?B?Y3BHME1vYVFrMDFtbEtmZDBDbHc2Z3VUME5xRWZmQTlIdlNxYWdRSDNxL2Zs?=
- =?utf-8?B?Ulo1eVIvZDdUK213SkxWTjdXaGc1T2JTaEF3SjJYdHUwY3lKdENZNGZXSUFt?=
- =?utf-8?B?c0E9PQ==?=
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dfb555d4-4450-4390-8cd1-08da86828fbc
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5327.namprd11.prod.outlook.com
+X-OriginatorOrg: sap.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 10:14:14.4371
+X-MS-Exchange-CrossTenant-AuthSource: PAXPR02MB7310.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32d806cd-0e7d-4a73-f1ed-08da8682f251
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Aug 2022 10:16:59.5517
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iBQBnOQXvLvljKZNeXPsmuQBJB6ixSW9m2pHtCtLdJdgopnx9cFIUWRGuMT1vuOF3umUVUev+ShoWFDxMxLtUkvyivnU5lL1oxiJGtyUVh8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3087
-X-Proofpoint-GUID: I7rx1dv_aXy4FCQCahUiV4vV_8i9gZJy
-X-Proofpoint-ORIG-GUID: I7rx1dv_aXy4FCQCahUiV4vV_8i9gZJy
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-25_05,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- adultscore=0 mlxlogscore=999 mlxscore=0 bulkscore=0 phishscore=0
- lowpriorityscore=0 spamscore=0 suspectscore=0 impostorscore=0
- clxscore=1015 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208250040
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 42f7676c-f455-423c-82f6-dc2d99791af7
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: O8wb1ygi2No2OY+llCn79+u+2+SEhIvnoAcO3f9irn7kkK7GzSML1+ZnpV0g+KnmcovE7NYTSZVE1EZtw/+KFA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR02MB6538
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Philippe,
-
-On 24.08.2022 19:13, Jean-Philippe Brucker wrote:
-> [Please note: This e-mail is from an EXTERNAL e-mail address]
->
-> Hi,
->
-> On Tue, Aug 23, 2022 at 10:23:14AM +0200, Greg Kroah-Hartman wrote:
->> From: Ovidiu Panait <ovidiu.panait@windriver.com>
->>
->> From: Stanislav Fomichev <sdf@google.com>
->>
->> commit 5366d2269139ba8eb6a906d73a0819947e3e4e0a upstream.
->>
->> Commit 294f2fc6da27 ("bpf: Verifer, adjust_scalar_min_max_vals to always
->> call update_reg_bounds()") changed the way verifier logs some of its state,
->> adjust the test_align accordingly. Where possible, I tried to not copy-paste
->> the entire log line and resorted to dropping the last closing brace instead.
->>
->> Fixes: 294f2fc6da27 ("bpf: Verifer, adjust_scalar_min_max_vals to always call update_reg_bounds()")
->> Signed-off-by: Stanislav Fomichev <sdf@google.com>
->> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
->> Link: https://lore.kernel.org/bpf/20200515194904.229296-1-sdf@google.com
->> [OP: adjust for 4.19 selftests]
->> Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
->> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> I believe this one shouldn't be applied as-is either, only partially. See
-> https://lore.kernel.org/stable/20220824144327.277365-1-jean-philippe@linaro.org/
->
-> Ovidiu, do you want to resend this one with only the fixes for "bpf:
-> Verifer, adjust_scalar_min_max_vals to always call update_reg_bounds()"?
-
-Yes, I will resend the whole patchset with the selftests properly fixed.
-
-
-Thanks,
-Ovidiu
-> Thanks,
-> Jean
->
->
->> ---
->>   tools/testing/selftests/bpf/test_align.c |   41 +++++++++++++++----------------
->>   1 file changed, 21 insertions(+), 20 deletions(-)
->>
->> --- a/tools/testing/selftests/bpf/test_align.c
->> +++ b/tools/testing/selftests/bpf/test_align.c
->> @@ -359,15 +359,15 @@ static struct bpf_align_test tests[] = {
->>                         * is still (4n), fixed offset is not changed.
->>                         * Also, we create a new reg->id.
->>                         */
->> -                     {29, "R5_w=pkt(id=4,off=18,r=0,umax_value=2040,var_off=(0x0; 0x7fc))"},
->> +                     {29, "R5_w=pkt(id=4,off=18,r=0,umax_value=2040,var_off=(0x0; 0x7fc)"},
->>                        /* At the time the word size load is performed from R5,
->>                         * its total fixed offset is NET_IP_ALIGN + reg->off (18)
->>                         * which is 20.  Then the variable offset is (4n), so
->>                         * the total offset is 4-byte aligned and meets the
->>                         * load's requirements.
->>                         */
->> -                     {33, "R4=pkt(id=4,off=22,r=22,umax_value=2040,var_off=(0x0; 0x7fc))"},
->> -                     {33, "R5=pkt(id=4,off=18,r=22,umax_value=2040,var_off=(0x0; 0x7fc))"},
->> +                     {33, "R4=pkt(id=4,off=22,r=22,umax_value=2040,var_off=(0x0; 0x7fc)"},
->> +                     {33, "R5=pkt(id=4,off=18,r=22,umax_value=2040,var_off=(0x0; 0x7fc)"},
->>                },
->>        },
->>        {
->> @@ -410,15 +410,15 @@ static struct bpf_align_test tests[] = {
->>                        /* Adding 14 makes R6 be (4n+2) */
->>                        {9, "R6_w=inv(id=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
->>                        /* Packet pointer has (4n+2) offset */
->> -                     {11, "R5_w=pkt(id=1,off=0,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
->> -                     {13, "R4=pkt(id=1,off=4,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
->> +                     {11, "R5_w=pkt(id=1,off=0,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
->> +                     {13, "R4=pkt(id=1,off=4,r=0,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
->>                        /* At the time the word size load is performed from R5,
->>                         * its total fixed offset is NET_IP_ALIGN + reg->off (0)
->>                         * which is 2.  Then the variable offset is (4n+2), so
->>                         * the total offset is 4-byte aligned and meets the
->>                         * load's requirements.
->>                         */
->> -                     {15, "R5=pkt(id=1,off=0,r=4,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc))"},
->> +                     {15, "R5=pkt(id=1,off=0,r=4,umin_value=14,umax_value=1034,var_off=(0x2; 0x7fc)"},
->>                        /* Newly read value in R6 was shifted left by 2, so has
->>                         * known alignment of 4.
->>                         */
->> @@ -426,15 +426,15 @@ static struct bpf_align_test tests[] = {
->>                        /* Added (4n) to packet pointer's (4n+2) var_off, giving
->>                         * another (4n+2).
->>                         */
->> -                     {19, "R5_w=pkt(id=2,off=0,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
->> -                     {21, "R4=pkt(id=2,off=4,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
->> +                     {19, "R5_w=pkt(id=2,off=0,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
->> +                     {21, "R4=pkt(id=2,off=4,r=0,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
->>                        /* At the time the word size load is performed from R5,
->>                         * its total fixed offset is NET_IP_ALIGN + reg->off (0)
->>                         * which is 2.  Then the variable offset is (4n+2), so
->>                         * the total offset is 4-byte aligned and meets the
->>                         * load's requirements.
->>                         */
->> -                     {23, "R5=pkt(id=2,off=0,r=4,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc))"},
->> +                     {23, "R5=pkt(id=2,off=0,r=4,umin_value=14,umax_value=2054,var_off=(0x2; 0xffc)"},
->>                },
->>        },
->>        {
->> @@ -469,16 +469,16 @@ static struct bpf_align_test tests[] = {
->>                .matches = {
->>                        {4, "R5_w=pkt_end(id=0,off=0,imm=0)"},
->>                        /* (ptr - ptr) << 2 == unknown, (4n) */
->> -                     {6, "R5_w=inv(id=0,smax_value=9223372036854775804,umax_value=18446744073709551612,var_off=(0x0; 0xfffffffffffffffc))"},
->> +                     {6, "R5_w=inv(id=0,smax_value=9223372036854775804,umax_value=18446744073709551612,var_off=(0x0; 0xfffffffffffffffc)"},
->>                        /* (4n) + 14 == (4n+2).  We blow our bounds, because
->>                         * the add could overflow.
->>                         */
->> -                     {7, "R5=inv(id=0,var_off=(0x2; 0xfffffffffffffffc))"},
->> +                     {7, "R5=inv(id=0,smin_value=-9223372036854775806,smax_value=9223372036854775806,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
->>                        /* Checked s>=0 */
->> -                     {9, "R5=inv(id=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
->> +                     {9, "R5=inv(id=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
->>                        /* packet pointer + nonnegative (4n+2) */
->> -                     {11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
->> -                     {13, "R4=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
->> +                     {11, "R6_w=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
->> +                     {13, "R4=pkt(id=1,off=4,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
->>                        /* NET_IP_ALIGN + (4n+2) == (4n), alignment is fine.
->>                         * We checked the bounds, but it might have been able
->>                         * to overflow if the packet pointer started in the
->> @@ -486,7 +486,7 @@ static struct bpf_align_test tests[] = {
->>                         * So we did not get a 'range' on R6, and the access
->>                         * attempt will fail.
->>                         */
->> -                     {15, "R6=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372036854775806,var_off=(0x2; 0x7ffffffffffffffc))"},
->> +                     {15, "R6=pkt(id=1,off=0,r=0,umin_value=2,umax_value=9223372034707292158,var_off=(0x2; 0x7fffffff7ffffffc)"},
->>                }
->>        },
->>        {
->> @@ -528,7 +528,7 @@ static struct bpf_align_test tests[] = {
->>                        /* New unknown value in R7 is (4n) */
->>                        {11, "R7_w=inv(id=0,umax_value=1020,var_off=(0x0; 0x3fc))"},
->>                        /* Subtracting it from R6 blows our unsigned bounds */
->> -                     {12, "R6=inv(id=0,smin_value=-1006,smax_value=1034,var_off=(0x2; 0xfffffffffffffffc))"},
->> +                     {12, "R6=inv(id=0,smin_value=-1006,smax_value=1034,umin_value=2,umax_value=18446744073709551614,var_off=(0x2; 0xfffffffffffffffc)"},
->>                        /* Checked s>= 0 */
->>                        {14, "R6=inv(id=0,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc))"},
->>                        /* At the time the word size load is performed from R5,
->> @@ -537,7 +537,8 @@ static struct bpf_align_test tests[] = {
->>                         * the total offset is 4-byte aligned and meets the
->>                         * load's requirements.
->>                         */
->> -                     {20, "R5=pkt(id=1,off=0,r=4,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc))"},
->> +                     {20, "R5=pkt(id=1,off=0,r=4,umin_value=2,umax_value=1034,var_off=(0x2; 0x7fc)"},
->> +
->>                },
->>        },
->>        {
->> @@ -579,18 +580,18 @@ static struct bpf_align_test tests[] = {
->>                        /* Adding 14 makes R6 be (4n+2) */
->>                        {11, "R6_w=inv(id=0,umin_value=14,umax_value=74,var_off=(0x2; 0x7c))"},
->>                        /* Subtracting from packet pointer overflows ubounds */
->> -                     {13, "R5_w=pkt(id=1,off=0,r=8,umin_value=18446744073709551542,umax_value=18446744073709551602,var_off=(0xffffffffffffff82; 0x7c))"},
->> +                     {13, "R5_w=pkt(id=1,off=0,r=8,umin_value=18446744073709551542,umax_value=18446744073709551602,var_off=(0xffffffffffffff82; 0x7c)"},
->>                        /* New unknown value in R7 is (4n), >= 76 */
->>                        {15, "R7_w=inv(id=0,umin_value=76,umax_value=1096,var_off=(0x0; 0x7fc))"},
->>                        /* Adding it to packet pointer gives nice bounds again */
->> -                     {16, "R5_w=pkt(id=2,off=0,r=0,umin_value=2,umax_value=1082,var_off=(0x2; 0x7fc))"},
->> +                     {16, "R5_w=pkt(id=2,off=0,r=0,umin_value=2,umax_value=1082,var_off=(0x2; 0xfffffffc)"},
->>                        /* At the time the word size load is performed from R5,
->>                         * its total fixed offset is NET_IP_ALIGN + reg->off (0)
->>                         * which is 2.  Then the variable offset is (4n+2), so
->>                         * the total offset is 4-byte aligned and meets the
->>                         * load's requirements.
->>                         */
->> -                     {20, "R5=pkt(id=2,off=0,r=4,umin_value=2,umax_value=1082,var_off=(0x2; 0x7fc))"},
->> +                     {20, "R5=pkt(id=2,off=0,r=4,umin_value=2,umax_value=1082,var_off=(0x2; 0xfffffffc)"},
->>                },
->>        },
->>   };
->>
->>
->>
+>On Thu, Aug 25, 2022 at 09:17:57AM +0000, Czerwacki, Eial wrote:=0A=
+>> Greetings Greg,=0A=
+>> =0A=
+>> thank you for the comments, see my comment below.=0A=
+>> >On Thu, Aug 25, 2022 at 06:24:02AM +0000, Czerwacki, Eial wrote:=0A=
+>> >> Introducing the vSMP guest driver which allows interaction with the=
+=0A=
+>> >> vSMP control device when running a Linux OS atop of the vSMP hypervis=
+or.=0A=
+>> >> vSMP is a resource aggregation hypervisor from SAP.=0A=
+>> >> =0A=
+>> >> The driver comprises of api part which facilitates communication with=
+=0A=
+>> >> the hypervisor and version which displays the hypervisor's version.=
+=0A=
+>> >> =0A=
+>> >> This patch s based on previous patches sent to the staging tree maili=
+ng=0A=
+>> >> lists=0A=
+>> >> =0A=
+>> >> Signed-off-by: Eial Czerwacki <eial.czerwacki@sap.com>=0A=
+>> >> Acked-by: Leonid Arsh <leonid.arsh@sap.com>=0A=
+>> >> Acked-by: Oren Twaig <oren.twaig@sap.com>=0A=
+>> >> CC: SAP vSMP Linux Maintainer <linux.vsmp@sap.com>=0A=
+>> >> CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>=0A=
+>> >> CC: Arnd Bergmann <arnd@arndb.de>=0A=
+>> >> CC: Dan Carpenter <dan.carpenter@oracle.com>=0A=
+>> >> CC: Andra Paraschiv <andraprs@amazon.com>=0A=
+>> >> CC: Borislav Petkov <bp@suse.de>=0A=
+>> >> CC: Brijesh Singh <brijesh.singh@amd.com>=0A=
+>> >> CC: Eric Biggers <ebiggers@google.com>=0A=
+>> >> CC: Fei Li <fei1.li@intel.com>=0A=
+>> >> CC: Hans de Goede <hdegoede@redhat.com>=0A=
+>> >> CC: Jens Axboe <axboe@kernel.dk>=0A=
+>> >> CC: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>=0A=
+>> >> =0A=
+>> >> v1 -> v2:=0A=
+>> >>=A0=A0=A0=A0=A0=A0=A0 - fix -0 var init in add_sysfs_entries (pointed =
+out by Dan Carpenter)=0A=
+>> >> ---=0A=
+>> >>=A0 Documentation/ABI/stable/sysfs-driver-vsmp |=A0=A0 5 +=0A=
+>> >>=A0 MAINTAINERS=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 |=A0=A0 6 +=0A=
+>> >>=A0 drivers/virt/Kconfig=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0 |=A0=A0 2 +=0A=
+>> >>=A0 drivers/virt/Makefile=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0 |=A0=A0 2 +=0A=
+>> >>=A0 drivers/virt/vsmp/Kconfig=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0 |=A0 11 +=0A=
+>> >>=A0 drivers/virt/vsmp/Makefile=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0 |=A0=A0 7 +=0A=
+>> >>=A0 drivers/virt/vsmp/api/api.c=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0 | 249 +++++++++++++++++++++=0A=
+>> >>=A0 drivers/virt/vsmp/api/api.h=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0 |=A0 69 ++++++=0A=
+>> >>=A0 drivers/virt/vsmp/include/registers.h=A0=A0=A0=A0=A0 |=A0 12 +=0A=
+>> >>=A0 drivers/virt/vsmp/version/version.c=A0=A0=A0=A0=A0=A0=A0 | 118 +++=
++++++++=0A=
+>> >>=A0 drivers/virt/vsmp/version/version.h=A0=A0=A0=A0=A0=A0=A0 |=A0 14 +=
++=0A=
+>> >>=A0 drivers/virt/vsmp/vsmp_main.c=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0 | 110 +++++++++=0A=
+>> >>=A0 12 files changed, 605 insertions(+)=0A=
+>> >=0A=
+>> >Why do you have all of these different .c and .h files for only 600=0A=
+>> >lines of code?=A0 Shouldn't this all just be in a single .c file?=A0 Wh=
+y=0A=
+>> >have a subdir for just 300 lines?=0A=
+>> >=0A=
+>> >Please mush this all into a single .c file going forward, speading it=
+=0A=
+>> >out like this makes no sense.=0A=
+>> the current driver has two modules, version and api, in later versions o=
+f the=0A=
+>> driver support for additional features will be added.=0A=
+>> at that time, this might cause the single file to inflate, so we thought=
+ to split it=0A=
+>> to several files to make it more organized.=0A=
+>> is there any way to keep it in different code files?=0A=
+>=0A=
+>Keep it small and together now.=A0 If you need to change it in the future,=
+=0A=
+>wonderful, do it then.=A0 Don't do things that we never know will happen=
+=0A=
+>or not.=0A=
+>=0A=
+>One file, and one module, is great to start with.=A0 Please do that for=0A=
+>now.=0A=
+>=0A=
+I understand, I'll restrucure it into one file=0A=
+=0A=
+>=0A=
+>> =0A=
+>> >=0A=
+>> >>=A0 create mode 100644 Documentation/ABI/stable/sysfs-driver-vsmp=0A=
+>> >>=A0 create mode 100644 drivers/virt/vsmp/Kconfig=0A=
+>> >>=A0 create mode 100644 drivers/virt/vsmp/Makefile=0A=
+>> >>=A0 create mode 100644 drivers/virt/vsmp/api/api.c=0A=
+>> >>=A0 create mode 100644 drivers/virt/vsmp/api/api.h=0A=
+>> >>=A0 create mode 100644 drivers/virt/vsmp/include/registers.h=0A=
+>> >>=A0 create mode 100644 drivers/virt/vsmp/version/version.c=0A=
+>> >>=A0 create mode 100644 drivers/virt/vsmp/version/version.h=0A=
+>> >>=A0 create mode 100644 drivers/virt/vsmp/vsmp_main.c=0A=
+>> >> =0A=
+>> >> diff --git a/Documentation/ABI/stable/sysfs-driver-vsmp b/Documentati=
+on/ABI/stable/sysfs-driver-vsmp=0A=
+>> >> new file mode 100644=0A=
+>> >> index 000000000000..18a0a62f40ed=0A=
+>> >> --- /dev/null=0A=
+>> >> +++ b/Documentation/ABI/stable/sysfs-driver-vsmp=0A=
+>> >> @@ -0,0 +1,5 @@=0A=
+>> >> +What:=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 /sys/hypervisor/vsmp/version=0A=
+>> >> +Date:=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Aug 2022=0A=
+>> >=0A=
+>> >August is almost over :(=0A=
+>> will fix, thank!=0A=
+>> =0A=
+>> >=0A=
+>> >> +Contact:=A0=A0=A0=A0=A0=A0=A0 Eial Czerwacki <eial.czerwacki@sap.com=
+>=0A=
+>> >> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 linux-vsmp@sap.com=0A=
+>> >=0A=
+>> >No need for an alias here.=0A=
+>> it's not an alias, it is a shard mailbox for the team so others can=0A=
+>> view the mails history.=0A=
+>> I saw that the same methodology is done with mailing lists.=0A=
+>=0A=
+>That's a mailing list?=A0 Ah, didn't realize that, sorry, was not obvious.=
+=0A=
+>=0A=
+>> >> diff --git a/MAINTAINERS b/MAINTAINERS=0A=
+>> >> index f512b430c7cb..cf74089c4d19 100644=0A=
+>> >> --- a/MAINTAINERS=0A=
+>> >> +++ b/MAINTAINERS=0A=
+>> >> @@ -21783,6 +21783,12 @@ F:=A0=A0 lib/test_printf.c=0A=
+>> >>=A0 F:=A0=A0 lib/test_scanf.c=0A=
+>> >>=A0 F:=A0=A0 lib/vsprintf.c=0A=
+>> >> =0A=
+>> >> +VSMP GUEST DRIVER=0A=
+>> >> +M:=A0=A0 Eial Czerwacki <eial.czerwacki@sap.com>=0A=
+>> >> +M:=A0=A0 linux-vsmp@sap.com=0A=
+>> >=0A=
+>> >Again, no random aliases please, stick to a person as a contact.=0A=
+>> see above comment=0A=
+>=0A=
+>If this is a mailing list, mark it as such, you did not do so.=0A=
+I'll mark it accordingly.=0A=
+=0A=
+>=0A=
+>=0A=
+>> >> +/*=0A=
+>> >> + * Register the vSMP sysfs object for user space interaction=0A=
+>> >> + */=0A=
+>> >> +int vsmp_register_sysfs_group(const struct bin_attribute *bin_attr)=
+=0A=
+>> >> +{=0A=
+>> >> +=A0=A0=A0=A0 int error =3D -EINVAL;=0A=
+>> >> +=0A=
+>> >> +=A0=A0=A0=A0 if (vsmp_sysfs_kobj && bin_attr) {=0A=
+>> >> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 error =3D sysfs_create_bin_file=
+(vsmp_sysfs_kobj, bin_attr);=0A=
+>> >=0A=
+>> >You raced userspace and lost :(=0A=
+>> not sure I understand, can you elaborate more please?=0A=
+>=0A=
+>Fix up your sysfs usage first, and then we can revisit this.=0A=
+will do.=0A=
+=0A=
+>=0A=
+>=0A=
+>> >=0A=
+>> >And why is your version file a binary file?=A0 It should just be a smal=
+l=0A=
+>> >text string, right?=0A=
+>> not so small, it can reach up to 512kb.=0A=
+>=0A=
+>That was not obvious at all.=A0 Please document this.=0A=
+where should the document be?=0A=
+in the code as a comment or in another file?=0A=
+=0A=
+>=0A=
+>And how in the world is a "version" that big?=A0 What exactly does this=0A=
+>contain?=0A=
+it 's size depends on the number of resources it uses.=0A=
+here is an example:=0A=
+:~> cat /sys/hypervisor/vsmp/version  =0A=
+SAP vSMP Foundation: 10.6.2862.0 (Aug 22 2022 15:21:02)=0A=
+System configuration:=0A=
+   Boards:      2=0A=
+      1 x Proc. + I/O + Memory=0A=
+      1 x NVM devices (Amazon.com Amazon EC2 NVMe Instance Storage)=0A=
+   Processors:  1, Cores: 2, Threads: 4=0A=
+       Intel(R) Xeon(R) Platinum 8124M CPU @ 3.00GHz Stepping 04=0A=
+   Memory (MB): 30976 (of 103192), Cache: 7527, Private: 64689=0A=
+      1 x  6400MB    [ 7825/ 321/ 1104]      =0A=
+      1 x 24576MB    [95367/7206/63585]       00:1f.0#1=0A=
+   Boot device: [HDD] NVMe: Amazon Elastic Block Store        =0A=
+Supported until: Aug 22 2024=0A=
+=0A=
+>=0A=
+>> that is why I decided to go with binary, I understood that the text is r=
+ather limited.=0A=
+>=0A=
+>That is true, sysfs is "one value per file", this can not be a file that=
+=0A=
+>you parse.=0A=
+should I keep it as bin then?=0A=
+=0A=
+>=0A=
+>=0A=
+>> >> +int open_cfg_addr(struct pci_dev *pdev)=0A=
+>> >> +{=0A=
+>> >> +=A0=A0=A0=A0 u64 cfg_start;=0A=
+>> >> +=A0=A0=A0=A0 u32 cfg_len;=0A=
+>> >> +=0A=
+>> >> +=A0=A0=A0=A0 vsmp_dev_obj =3D pdev;=0A=
+>> >> +=A0=A0=A0=A0 cfg_start =3D pci_resource_start(vsmp_dev_obj, 0);=0A=
+>> >> +=A0=A0=A0=A0 cfg_len =3D pci_resource_len(vsmp_dev_obj, 0);=0A=
+>> >> +=0A=
+>> >> +=A0=A0=A0=A0 dev_dbg(get_dev(), "Mapping bar 0: [0x%llx,0x%llx]\n",=
+=0A=
+>> >> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 cfg_start, cfg_start + cfg_len)=
+;=0A=
+>> >=0A=
+>> >Again, you have a device, use that.=A0 Goes for the whole driver.=0A=
+>> I think I've missed something, please correct me if I'm wrong,=0A=
+>> I don't need to save the pdev because there is an existing framework=0A=
+>> that provides it?=0A=
+>=0A=
+>You have pdev, use that in your dev_dbg() call.=0A=
+I have pdev when the probe cb is called, however in other funcs I=0A=
+don't have it.=0A=
+I'll look into other drivers see what they are doing instead=0A=
+of wasting your time=0A=
+=0A=
+>=0A=
+>> >> +#define FILE_PREM 0444=0A=
+>> >=0A=
+>> >File permission of what?=A0 And shouldn't it be "PERM", not "PREM"?=A0 =
+And=0A=
+>> >why do you need it at all?=A0 Just use the proper sysfs macros and you=
+=0A=
+>> >never need it.=A0 See below.=0A=
+>> all the sysfs files (1 for now) should be read for all users.=0A=
+>=0A=
+>Then use the proper sysfs macros for that, do not set it yourself.=0A=
+(Y)=0A=
+=0A=
+>=0A=
+>> I'll submit a new version after a proper file structure will be decided=
+=0A=
+>> thanks again for you comments.=0A=
+>=0A=
+>Again, stick with one file to start with.=A0 You can always change that=0A=
+>later once it is merged if you really need it.=0A=
+>=0A=
+>thanks,=0A=
+>=0A=
+>greg k-h=0A=
+=0A=
+great, thanks.=0A=
+=0A=
+Eial=
