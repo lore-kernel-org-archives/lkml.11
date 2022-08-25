@@ -2,95 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 577D1C64990
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8715FC64990
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241735AbiHYOej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:34:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
+        id S241861AbiHYOgH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:36:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233985AbiHYOeh (ORCPT
+        with ESMTP id S230523AbiHYOgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:34:37 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B0879630
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:34:35 -0700 (PDT)
-Received: from fsav113.sakura.ne.jp (fsav113.sakura.ne.jp [27.133.134.240])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 27PEYXXY086332;
-        Thu, 25 Aug 2022 23:34:33 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav113.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav113.sakura.ne.jp);
- Thu, 25 Aug 2022 23:34:33 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav113.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 27PEYXvK086329
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 25 Aug 2022 23:34:33 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
-Date:   Thu, 25 Aug 2022 23:34:32 +0900
+        Thu, 25 Aug 2022 10:36:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D041E25CD
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 07:36:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661438161;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=nGhHfLMsrkm8/3CCUDfjEF5v+zQpWvuVEj4ynN2W//8=;
+        b=PBkYEj2d+JuKiZRtVVbycafIDymv7suXlSVK5DQJlgbcBjP5QmQuKWJUvw5DljArh8hXho
+        uqRX6Sda+nthesEJPc51I2hAD8LfkTm4jOcQ/5BtKfFAeZgCnBt+lgjre7TfVqPv56C/5n
+        r7NOjr3oUqiJQtXDoBeL3pWm5+vNYoo=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-32-z7pOtESTNnmsWur9b4zcCw-1; Thu, 25 Aug 2022 10:35:55 -0400
+X-MC-Unique: z7pOtESTNnmsWur9b4zcCw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DDCB93C0F38A;
+        Thu, 25 Aug 2022 14:35:30 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 351D1C15BB3;
+        Thu, 25 Aug 2022 14:35:30 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220816122155.770-1-yuanjilin@cdjrlc.com>
+References: <20220816122155.770-1-yuanjilin@cdjrlc.com>
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>
+Cc:     dhowells@redhat.com, marc.dionne@auristor.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] fs/afs: fix repeated words in comments
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
-Content-Language: en-US
-To:     Alexander Potapenko <glider@google.com>, phil@philpotter.co.uk
-Cc:     ath9k-devel@qca.qualcomm.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <000000000000c98a7f05ac744f53@google.com>
- <000000000000734fe705acb9f3a2@google.com>
- <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
- <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3793823.1661438129.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 25 Aug 2022 15:35:29 +0100
+Message-ID: <3793824.1661438129@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello.
+Jilin Yuan <yuanjilin@cdjrlc.com> wrote:
 
-I found that your patch was applied. But since the reproducer tested only 0 byte
-case, I think that rejecting only less than sizeof(struct htc_frame_hdr) bytes
-is not sufficient.
+> - * needed.  Note that that actual DNS query is punted off to the manage=
+r thread
+> + * needed.  Note that actual DNS query is punted off to the manager thr=
+ead
 
-More complete patch with Ack from Toke is waiting at
-https://lkml.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.SAKURA.ne.jp .
+That should probably real "Note that the actual ...".
 
-Please consider overriding with my version.
-
-On 2022/08/24 22:30, Alexander Potapenko wrote:
-> (adding back people originally CCed on the syzkaller bug.
-> Unfortunately it isn't possible to reply to all in Google Groups)
-> 
-> On Wed, Aug 24, 2022 at 3:26 PM Alexander Potapenko wrote:
->> This bug bites us quite often on syzbot: https://syzkaller.appspot.com/bug?id=659ddf411502a2fe220c8f9be696d5a8d8db726e (17k crashes)
->> The patch below by phil@philpotter.co.uk (https://syzkaller.appspot.com/text?tag=Patch&x=173dcb51d00000) seems to fix the problem, but I have no idea what's going on there.
->>
->> ==============================================================
->> diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
->> index 510e61e97dbc..9dbfff7a388e 100644
->> --- a/drivers/net/wireless/ath/ath9k/htc_hst.c
->> +++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
->> @@ -403,7 +403,7 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
->>      struct htc_endpoint *endpoint;
->>      __be16 *msg_id;
->>
->> -    if (!htc_handle || !skb)
->> +    if (!htc_handle || !skb || !pskb_may_pull(skb, sizeof(struct htc_frame_hdr)))
->>          return;
->>
->>      htc_hdr = (struct htc_frame_hdr *) skb->data;
->> ==============================================================
-> 
-
-> 
+David
 
