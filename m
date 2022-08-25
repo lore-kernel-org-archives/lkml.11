@@ -2,129 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC31EC28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:24:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEB5C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239724AbiHYJYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 05:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32906 "EHLO
+        id S238201AbiHYJZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:25:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239795AbiHYJYi (ORCPT
+        with ESMTP id S239875AbiHYJZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 05:24:38 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2CFAAA37B;
-        Thu, 25 Aug 2022 02:24:33 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MCyDV5XtCzGpjN;
-        Thu, 25 Aug 2022 17:22:50 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 25 Aug 2022 17:24:31 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 25 Aug 2022 17:24:31 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     "Paul E . McKenney" <paulmck@kernel.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        "Josh Triplett" <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>, <rcu@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH v5 1/1] rcu: Simplify the code logic of rcu_init_nohz()
-Date:   Thu, 25 Aug 2022 17:23:11 +0800
-Message-ID: <20220825092311.179-2-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
-In-Reply-To: <20220825092311.179-1-thunder.leizhen@huawei.com>
-References: <20220825092311.179-1-thunder.leizhen@huawei.com>
+        Thu, 25 Aug 2022 05:25:04 -0400
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484D72C135
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 02:24:57 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by xavier.telenet-ops.be with bizsmtp
+        id BlQu280064C55Sk01lQuug; Thu, 25 Aug 2022 11:24:54 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oR96b-002VXD-NG; Thu, 25 Aug 2022 11:24:53 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oR96b-005VhA-4g; Thu, 25 Aug 2022 11:24:53 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Magnus Damm <magnus.damm@gmail.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] arm64: dts: renesas: r8a779g0: Fix HSCIF0 interrupt number
+Date:   Thu, 25 Aug 2022 11:24:47 +0200
+Message-Id: <751dcef40d4534e856ed49b1d5b3a3e8d365ec42.1661419377.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y or CONFIG_NO_HZ_FULL=y, additional
-CPUs need to be added to 'rcu_nocb_mask'. But 'rcu_nocb_mask' may be not
-available now, due to 'rcu_nocbs' is not specified. Check and initialize
-'rcu_nocb_mask' before using it. This code simplification strictly follows
-this logic, compared with old implementations, unnecessary crossovers are
-avoided and easy to understand.
+The interrupt number for the HSCIF0 serial port, which serves as the
+serial console on the White Hawk board, is incorrect, causing userspace
+to hang immediately as soon as it tries to print something.
+Kernel output is unaffected, as it is printed using polling.
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Fixes: 987da486d84a5643 ("arm64: dts: renesas: Add Renesas R8A779G0 SoC support")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- kernel/rcu/tree_nocb.h | 32 +++++++++-----------------------
- 1 file changed, 9 insertions(+), 23 deletions(-)
+Oops, I must have been looking at the wrong datasheet while reviewing
+https://lore.kernel.org/r/CAMuHMdVffc4iqX6wAKwyq_eTX5c0H3-tqs_pvsec7v1_q6hS3g@mail.gmail.com
 
-diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-index 0a5f0ef41484518..c8167be2288fa2c 100644
---- a/kernel/rcu/tree_nocb.h
-+++ b/kernel/rcu/tree_nocb.h
-@@ -1210,45 +1210,31 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
- void __init rcu_init_nohz(void)
- {
- 	int cpu;
--	bool need_rcu_nocb_mask = false;
--	bool offload_all = false;
- 	struct rcu_data *rdp;
-+	const struct cpumask *cpumask = NULL;
- 
- #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
--	if (!rcu_state.nocb_is_setup) {
--		need_rcu_nocb_mask = true;
--		offload_all = true;
--	}
--#endif /* #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL) */
--
--#if defined(CONFIG_NO_HZ_FULL)
--	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
--		need_rcu_nocb_mask = true;
--		offload_all = false; /* NO_HZ_FULL has its own mask. */
--	}
--#endif /* #if defined(CONFIG_NO_HZ_FULL) */
-+	cpumask = cpu_possible_mask;
-+#elif defined(CONFIG_NO_HZ_FULL)
-+	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
-+		cpumask = tick_nohz_full_mask;
-+#endif
- 
--	if (need_rcu_nocb_mask) {
-+	if (cpumask) {
- 		if (!cpumask_available(rcu_nocb_mask)) {
- 			if (!zalloc_cpumask_var(&rcu_nocb_mask, GFP_KERNEL)) {
- 				pr_info("rcu_nocb_mask allocation failed, callback offloading disabled.\n");
- 				return;
- 			}
- 		}
-+
-+		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, cpumask);
- 		rcu_state.nocb_is_setup = true;
- 	}
- 
- 	if (!rcu_state.nocb_is_setup)
- 		return;
- 
--#if defined(CONFIG_NO_HZ_FULL)
--	if (tick_nohz_full_running)
--		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
--#endif /* #if defined(CONFIG_NO_HZ_FULL) */
--
--	if (offload_all)
--		cpumask_setall(rcu_nocb_mask);
--
- 	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
- 		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
- 		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
+To be queued in renesas-fixes.
+---
+ arch/arm64/boot/dts/renesas/r8a779g0.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/renesas/r8a779g0.dtsi b/arch/arm64/boot/dts/renesas/r8a779g0.dtsi
+index 7cbb0de060ddc03b..1c15726cff8bf10f 100644
+--- a/arch/arm64/boot/dts/renesas/r8a779g0.dtsi
++++ b/arch/arm64/boot/dts/renesas/r8a779g0.dtsi
+@@ -85,7 +85,7 @@ hscif0: serial@e6540000 {
+ 				     "renesas,rcar-gen4-hscif",
+ 				     "renesas,hscif";
+ 			reg = <0 0xe6540000 0 96>;
+-			interrupts = <GIC_SPI 245 IRQ_TYPE_LEVEL_HIGH>;
++			interrupts = <GIC_SPI 246 IRQ_TYPE_LEVEL_HIGH>;
+ 			clocks = <&cpg CPG_MOD 514>,
+ 				 <&cpg CPG_CORE R8A779G0_CLK_S0D3_PER>,
+ 				 <&scif_clk>;
 -- 
 2.25.1
 
