@@ -2,100 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C410C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9B0C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242484AbiHYNTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39330 "EHLO
+        id S242505AbiHYNUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241948AbiHYNTj (ORCPT
+        with ESMTP id S241610AbiHYNUB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:19:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E72EEAA37A;
-        Thu, 25 Aug 2022 06:19:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 829BC61CD3;
-        Thu, 25 Aug 2022 13:19:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E229AC433D6;
-        Thu, 25 Aug 2022 13:19:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661433572;
-        bh=FO3o/vDoP9XtmRQXXKxIgPtLa05j7400CrUZvjFU5GM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=X2hz5ehw79Z6abk+ajVRkSathM2xiXRPLCyieuOcBe/Ol7VgZgQrb70178DjIB8uU
-         9fx8WJMOmkx7tD6y+KMinJBCSz3U3v/a1t4elWmQ6eKJeu9w+VyHEYGqNcani7rMZ7
-         OmnXKZK1w6dscdqeUZytFOx2k/EeQiJIhjhMXp8Wl+dJL9hQI5TnEwIEc/kfuZch1O
-         0h+BqH49dhkXmb9WszaFxcd1E0E+UY8wGOiOBJLYMbjBmSMbkYydteViboo5+oy6FY
-         jE+/5o+d7Wa9JKG5UHRVkn71wkm02xVD0q7ItjhGzA4kLIS4bBdLLz5q+a0/TJbkTK
-         dhH7CviSbkYBA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oRClm-00059W-DK; Thu, 25 Aug 2022 15:19:39 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>
-Cc:     Matthias Kaehlcke <mka@chromium.org>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH] usb: dwc3: disable USB core PHY management
-Date:   Thu, 25 Aug 2022 15:18:36 +0200
-Message-Id: <20220825131836.19769-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Thu, 25 Aug 2022 09:20:01 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4951910BB;
+        Thu, 25 Aug 2022 06:19:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=6HMxahn1EDQiz4DxfnN3F/RqZWfOR3K+Oe1CabJOFl0=; b=CRAHICCWs6375tr74PQdoE65wv
+        OCs8t91QYVXeHAwzmlqzS2/z7Uz9KZQXcynCfjF4+18oIfbv3JjNZYD/C7qPQWYnaX20oxz2vcsrW
+        OtN1g35yWKd+LcuEQygN4llGZa9537XTKjnZk4vS+rWzs6cVFD8chEUYrjaUKh1VEemo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oRClu-00EZZP-B1; Thu, 25 Aug 2022 15:19:46 +0200
+Date:   Thu, 25 Aug 2022 15:19:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Divya Koppera <Divya.Koppera@microchip.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next] net: phy: micrel: Adding SQI support for
+ lan8814 phy
+Message-ID: <Ywd28j0TJjW/ZWUU@lunn.ch>
+References: <20220825080549.9444-1-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825080549.9444-1-Divya.Koppera@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dwc3 driver manages its PHYs itself so the USB core PHY management
-needs to be disabled.
+On Thu, Aug 25, 2022 at 01:35:49PM +0530, Divya Koppera wrote:
+> Supports SQI(Signal Quality Index) for lan8814 phy, where
+> it has SQI index of 0-7 values and this indicator can be used
+> for cable integrity diagnostic and investigating other noise
+> sources.
 
-Use the struct xhci_plat_priv hack added by commits 46034a999c07 ("usb:
-host: xhci-plat: add platform data support") and f768e718911e ("usb:
-host: xhci-plat: add priv quirk for skip PHY initialization") to
-propagate the setting for now.
+This driver supports 16 PHY devices. You only add this to one. Are you
+sure it does not work with others?
 
-Fixes: 4e88d4c08301 ("usb: add a flag to skip PHY initialization to struct usb_hcd")
-Fixes: 178a0bce05cb ("usb: core: hcd: integrate the PHY wrapper into the HCD core")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- drivers/usb/dwc3/host.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/usb/dwc3/host.c b/drivers/usb/dwc3/host.c
-index f6f13e7f1ba1..a7154fe8206d 100644
---- a/drivers/usb/dwc3/host.c
-+++ b/drivers/usb/dwc3/host.c
-@@ -11,8 +11,13 @@
- #include <linux/of.h>
- #include <linux/platform_device.h>
- 
-+#include "../host/xhci-plat.h"
- #include "core.h"
- 
-+static const struct xhci_plat_priv dwc3_xhci_plat_priv = {
-+	.quirks = XHCI_SKIP_PHY_INIT,
-+};
-+
- static void dwc3_host_fill_xhci_irq_res(struct dwc3 *dwc,
- 					int irq, char *name)
- {
-@@ -92,6 +97,11 @@ int dwc3_host_init(struct dwc3 *dwc)
- 		goto err;
- 	}
- 
-+	ret = platform_device_add_data(xhci, &dwc3_xhci_plat_priv,
-+					sizeof(dwc3_xhci_plat_priv));
-+	if (ret)
-+		goto err;
-+
- 	memset(props, 0, sizeof(struct property_entry) * ARRAY_SIZE(props));
- 
- 	if (dwc->usb3_lpm_capable)
--- 
-2.35.1
-
+     Andrew
