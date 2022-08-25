@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D653ECAA2C
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 19:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B333ECAA2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 19:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243698AbiHYTjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 15:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
+        id S243721AbiHYTjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 15:39:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243425AbiHYTjE (ORCPT
+        with ESMTP id S243615AbiHYTjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 15:39:04 -0400
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CFE2BD4C8;
-        Thu, 25 Aug 2022 12:38:59 -0700 (PDT)
+        Thu, 25 Aug 2022 15:39:05 -0400
+Received: from mxout1.routing.net (mxout1.routing.net [IPv6:2a03:2900:1:a::a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA833BFA9F;
+        Thu, 25 Aug 2022 12:39:02 -0700 (PDT)
 Received: from mxbox1.masterlogin.de (unknown [192.168.10.88])
-        by mxout4.routing.net (Postfix) with ESMTP id 437601006F8;
-        Thu, 25 Aug 2022 19:38:57 +0000 (UTC)
+        by mxout1.routing.net (Postfix) with ESMTP id ED46F4075D;
+        Thu, 25 Aug 2022 19:38:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1661456337;
+        s=20200217; t=1661456340;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bITi9lO2I76P8aD+0Omkl/P9r5wyPjywtsDJ5kt5xZA=;
-        b=C6enBtk2jTTUsrXZCG5nIncxahKMN4gNp9fpZSTjSrj0n7hQc6OoF2KmnkzZlP3lY9EUo5
-        kS7o612ev8E3/PeBogtD0mlxcVh3BEFjquu9eaZmzmPSAm0CBunxIUfiOYr/Z+L0SjsXLa
-        ITv1zH/FcBLIE4A4CI74ptgJ475CrM0=
+        bh=h6FvBDGJ4ENDKARTuI+hxFdo2LgCLW63BKWghaHNeAk=;
+        b=er+amFnVmjd0hO2EeMBCdjlpjRCDvdrJgmWED0HVitcNtxyWVE7ADsX/W5+HLjinYHVOR/
+        cL4g2cvuVZfGZ+269zI7Xk58Z64okwxNeMm8cjr4bncGpuLgS+ND6iefgfvN4vQcbnNjUF
+        GioUaPq2AkKACuMY3SjaYgCSjUPlPX4=
 Received: from frank-G5.. (fttx-pool-80.245.75.185.bambit.de [80.245.75.185])
-        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id 4DADA40353;
-        Thu, 25 Aug 2022 19:38:56 +0000 (UTC)
+        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id 0ED46403A9;
+        Thu, 25 Aug 2022 19:38:59 +0000 (UTC)
 From:   Frank Wunderlich <linux@fw-web.de>
 To:     linux-rockchip@lists.infradead.org
 Cc:     Frank Wunderlich <frank-w@public-files.de>,
@@ -46,148 +46,174 @@ Cc:     Frank Wunderlich <frank-w@public-files.de>,
         Simon Xue <xxm@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
         Shawn Lin <shawn.lin@rock-chips.com>,
         linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v5 1/5] dt-bindings: phy: rockchip: add PCIe v3 phy
-Date:   Thu, 25 Aug 2022 21:38:32 +0200
-Message-Id: <20220825193836.54262-2-linux@fw-web.de>
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 4/5] arm64: dts: rockchip: rk3568: Add PCIe v3 nodes
+Date:   Thu, 25 Aug 2022 21:38:35 +0200
+Message-Id: <20220825193836.54262-5-linux@fw-web.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220825193836.54262-1-linux@fw-web.de>
 References: <20220825193836.54262-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Mail-ID: 428698de-88f0-4e9f-9155-37f1cf7a80cf
+X-Mail-ID: 6f5cf5b8-cdf1-4e4c-989f-806817eb6869
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frank Wunderlich <frank-w@public-files.de>
 
-Add a new binding file for Rockchip PCIe v3 phy driver.
+Add nodes to rk356x devicetree to support PCIe v3.
 
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
 v4:
-- add reviewed-by
-- remove minitems for clock-names as i have static list to fix error
-- fix reg error by using 32-bit adressing in binding example
-- change lane-map to u32 data-lanes
-- tried to move data-lanes to phy-provider
-  https://github.com/frank-w/dt-schema/blob/main/dtschema/schemas/phy/phy-provider.yaml#L17
-  cloned and installed via pip install -e <local path>
-  verified with pip show, but phy-privider seems not to be applied
+- update pcie3 reg/ranges
 
 v3:
-- drop quotes
-- drop rk3588
-- make clockcount fixed to 3
-- full path for binding header file
-- drop phy-mode and its header and add lane-map
+- fix from Peter: change bus-range and msi-map, msi-map needs
+  to start from 0x0
 
 v2:
-dt-bindings: rename yaml for PCIe v3
-rockchip-pcie3-phy.yaml => rockchip,pcie3-phy.yaml
-
-changes in pcie3 phy yaml
-- change clock names to ordered const list
-- extend pcie30-phymode description
-- add phy-cells to required properties
-- drop unevaluatedProperties
-- example with 1 clock each line
-- use default property instead of text describing it
-- update license
+- change to compatible with soc-part
+- change rockchip,bifurcation to vendor unspecific bifurcation
 ---
- .../bindings/phy/rockchip,pcie3-phy.yaml      | 80 +++++++++++++++++++
- 1 file changed, 80 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/phy/rockchip,pcie3-phy.yaml
+ arch/arm64/boot/dts/rockchip/rk3568.dtsi | 122 +++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/phy/rockchip,pcie3-phy.yaml b/Documentation/devicetree/bindings/phy/rockchip,pcie3-phy.yaml
-new file mode 100644
-index 000000000000..9f2d8d2cc7a5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/phy/rockchip,pcie3-phy.yaml
-@@ -0,0 +1,80 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/phy/rockchip,pcie3-phy.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+index 2bdf8c7e9765..ba67b58f05b7 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+@@ -42,6 +42,128 @@ qos_sata0: qos@fe190200 {
+ 		reg = <0x0 0xfe190200 0x0 0x20>;
+ 	};
+ 
++	pcie30_phy_grf: syscon@fdcb8000 {
++		compatible = "rockchip,rk3568-pcie3-phy-grf", "syscon";
++		reg = <0x0 0xfdcb8000 0x0 0x10000>;
++	};
 +
-+title: Rockchip PCIe v3 phy
++	pcie30phy: phy@fe8c0000 {
++		compatible = "rockchip,rk3568-pcie3-phy";
++		reg = <0x0 0xfe8c0000 0x0 0x20000>;
++		#phy-cells = <0>;
++		clocks = <&pmucru CLK_PCIE30PHY_REF_M>, <&pmucru CLK_PCIE30PHY_REF_N>,
++			 <&cru PCLK_PCIE30PHY>;
++		clock-names = "refclk_m", "refclk_n", "pclk";
++		resets = <&cru SRST_PCIE30PHY>;
++		reset-names = "phy";
++		rockchip,phy-grf = <&pcie30_phy_grf>;
++		status = "disabled";
++	};
 +
-+maintainers:
-+  - Heiko Stuebner <heiko@sntech.de>
++	pcie3x1: pcie@fe270000 {
++		compatible = "rockchip,rk3568-pcie";
++		#address-cells = <3>;
++		#size-cells = <2>;
++		bus-range = <0x0 0xf>;
++		clocks = <&cru ACLK_PCIE30X1_MST>, <&cru ACLK_PCIE30X1_SLV>,
++			 <&cru ACLK_PCIE30X1_DBI>, <&cru PCLK_PCIE30X1>,
++			 <&cru CLK_PCIE30X1_AUX_NDFT>;
++		clock-names = "aclk_mst", "aclk_slv",
++			      "aclk_dbi", "pclk", "aux";
++		device_type = "pci";
++		interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "sys", "pmc", "msg", "legacy", "err";
++		#interrupt-cells = <1>;
++		interrupt-map-mask = <0 0 0 7>;
++		interrupt-map = <0 0 0 1 &pcie3x1_intc 0>,
++				<0 0 0 2 &pcie3x1_intc 1>,
++				<0 0 0 3 &pcie3x1_intc 2>,
++				<0 0 0 4 &pcie3x1_intc 3>;
++		linux,pci-domain = <1>;
++		num-ib-windows = <6>;
++		num-ob-windows = <2>;
++		max-link-speed = <3>;
++		msi-map = <0x0 &gic 0x1000 0x1000>;
++		num-lanes = <1>;
++		phys = <&pcie30phy>;
++		phy-names = "pcie-phy";
++		power-domains = <&power RK3568_PD_PIPE>;
++		reg = <0x3 0xc0400000 0x0 0x00400000>,
++		      <0x0 0xfe270000 0x0 0x00010000>,
++		      <0x3 0x7f000000 0x0 0x01000000>;
++		ranges = <0x01000000 0x0 0x3ef00000 0x3 0x7ef00000 0x0 0x00100000>,
++			 <0x02000000 0x0 0x00000000 0x3 0x40000000 0x0 0x3ef00000>;
++		reg-names = "dbi", "apb", "config";
++		resets = <&cru SRST_PCIE30X1_POWERUP>;
++		reset-names = "pipe";
++		/* bifurcation; lane1 when using 1+1 */
++		status = "disabled";
 +
-+properties:
-+  compatible:
-+    enum:
-+      - rockchip,rk3568-pcie3-phy
++		pcie3x1_intc: legacy-interrupt-controller {
++			interrupt-controller;
++			#address-cells = <0>;
++			#interrupt-cells = <1>;
++			interrupt-parent = <&gic>;
++			interrupts = <GIC_SPI 157 IRQ_TYPE_EDGE_RISING>;
++		};
++	};
 +
-+  reg:
-+    maxItems: 1
++	pcie3x2: pcie@fe280000 {
++		compatible = "rockchip,rk3568-pcie";
++		#address-cells = <3>;
++		#size-cells = <2>;
++		bus-range = <0x0 0xf>;
++		clocks = <&cru ACLK_PCIE30X2_MST>, <&cru ACLK_PCIE30X2_SLV>,
++			 <&cru ACLK_PCIE30X2_DBI>, <&cru PCLK_PCIE30X2>,
++			 <&cru CLK_PCIE30X2_AUX_NDFT>;
++		clock-names = "aclk_mst", "aclk_slv",
++			      "aclk_dbi", "pclk", "aux";
++		device_type = "pci";
++		interrupts = <GIC_SPI 165 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 163 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 162 IRQ_TYPE_LEVEL_HIGH>,
++			     <GIC_SPI 161 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "sys", "pmc", "msg", "legacy", "err";
++		#interrupt-cells = <1>;
++		interrupt-map-mask = <0 0 0 7>;
++		interrupt-map = <0 0 0 1 &pcie3x2_intc 0>,
++				<0 0 0 2 &pcie3x2_intc 1>,
++				<0 0 0 3 &pcie3x2_intc 2>,
++				<0 0 0 4 &pcie3x2_intc 3>;
++		linux,pci-domain = <2>;
++		num-ib-windows = <6>;
++		num-ob-windows = <2>;
++		max-link-speed = <3>;
++		msi-map = <0x0 &gic 0x2000 0x1000>;
++		num-lanes = <2>;
++		phys = <&pcie30phy>;
++		phy-names = "pcie-phy";
++		power-domains = <&power RK3568_PD_PIPE>;
++		reg = <0x3 0xc0800000 0x0 0x00400000>,
++		      <0x0 0xfe280000 0x0 0x00010000>,
++		      <0x3 0xbf000000 0x0 0x01000000>;
++		ranges = <0x01000000 0x0 0x3ef00000 0x3 0xbef00000 0x0 0x00100000>,
++			 <0x02000000 0x0 0x00000000 0x3 0x80000000 0x0 0x3ef00000>;
++		reg-names = "dbi", "apb", "config";
++		resets = <&cru SRST_PCIE30X2_POWERUP>;
++		reset-names = "pipe";
++		/* bifurcation; lane0 when using 1+1 */
++		status = "disabled";
 +
-+  clocks:
-+    minItems: 3
-+    maxItems: 3
++		pcie3x2_intc: legacy-interrupt-controller {
++			interrupt-controller;
++			#address-cells = <0>;
++			#interrupt-cells = <1>;
++			interrupt-parent = <&gic>;
++			interrupts = <GIC_SPI 162 IRQ_TYPE_EDGE_RISING>;
++		};
++	};
 +
-+  clock-names:
-+    items:
-+      - const: refclk_m
-+      - const: refclk_n
-+      - const: pclk
-+
-+  data-lanes:
-+    description: which lanes (by position) should be mapped to which
-+      controller (value). 0 means lane disabled, higher value means used.
-+      (controller-number +1 )
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 2
-+    maxItems: 16
-+    items:
-+      minimum: 0
-+      maximum: 16
-+
-+  "#phy-cells":
-+    const: 0
-+
-+  resets:
-+    maxItems: 1
-+
-+  reset-names:
-+    const: phy
-+
-+  rockchip,phy-grf:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: phandle to the syscon managing the phy "general register files"
-+
-+  rockchip,pipe-grf:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: phandle to the syscon managing the pipe "general register files"
-+
-+required:
-+  - compatible
-+  - reg
-+  - rockchip,phy-grf
-+  - "#phy-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/rk3568-cru.h>
-+    pcie30phy: phy@fe8c0000 {
-+      compatible = "rockchip,rk3568-pcie3-phy";
-+      reg = <0xfe8c0000 0x20000>;
-+      #phy-cells = <0>;
-+      clocks = <&pmucru CLK_PCIE30PHY_REF_M>,
-+               <&pmucru CLK_PCIE30PHY_REF_N>,
-+               <&cru PCLK_PCIE30PHY>;
-+      clock-names = "refclk_m", "refclk_n", "pclk";
-+      resets = <&cru SRST_PCIE30PHY>;
-+      reset-names = "phy";
-+      rockchip,phy-grf = <&pcie30_phy_grf>;
-+    };
+ 	gmac0: ethernet@fe2a0000 {
+ 		compatible = "rockchip,rk3568-gmac", "snps,dwmac-4.20a";
+ 		reg = <0x0 0xfe2a0000 0x0 0x10000>;
 -- 
 2.34.1
 
