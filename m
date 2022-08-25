@@ -2,231 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B26C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91892C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241687AbiHYMah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
+        id S241739AbiHYMaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 08:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241863AbiHYMab (ORCPT
+        with ESMTP id S241711AbiHYMaj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 08:30:31 -0400
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72031EADB
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:30:29 -0700 (PDT)
-Received: by mail-qv1-xf2c.google.com with SMTP id u6so10605881qvp.5
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:30:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=wiCykRjNG5aXymX/0UiYu4hmVbZXK79fb6nY5wytKIw=;
-        b=Ix208VK359V5KibBVb3GlrVUCJuQWgnCSe9SAfWGwqxNtueEmKLo5FG+lGUKZL0/90
-         QmRP1NYur+bb6t1+r9JlSFkxjqM3g6XtBLlerE9OAOl5Y8JtkUJmWNuuIVAAfKC0MIDG
-         QG9fGUXs3tHax5wR8S563PWefrwdIqZZZAd0IVgWflSKkf2Wn1CE225+BpHMCSMZlmwD
-         We3sg5Yy8iXvX8d3+FoH2WjLHZM84Fy+465hg9WJR9NHjGjlTCfJ9w1ve7TcHbTrS2J2
-         peSpXMKEup3GQwy2TJZg9zdAUqTbnDlLhysYIu7HNM4JK4x40ac0UrLidKSBsBBYlGP6
-         ppGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=wiCykRjNG5aXymX/0UiYu4hmVbZXK79fb6nY5wytKIw=;
-        b=TdXBgLpN0msEaHNjzYXF5Knqp6ch0ScueIkpcWzmD+UD62aIGNwh+XW2QogWVThbIy
-         /zoZRbA/50Lkj2qGdPIswy/DZGSktaWENGF4uizh/q69xmlhMSyuNF1uLMrOMUjWEuuT
-         JRZwb7vkZ22ATMCiol4XaQfMB+OJKT2GbHABOa3o95XfWcnhIi1zwNjP6vAxlfCdsHLI
-         qKrbaMooz6/CAMOR/ueCLAWkeGlm1z+NrdL2kkJ0+kEf6+OTmjRUY64ApcjZhlp6O4G+
-         u9O9P9fZ51yxVeToA5CPF37pF4krQgjer0Aag3u5axvrwzH1epGzTu5Zb9S2AMAxqjDE
-         SHVw==
-X-Gm-Message-State: ACgBeo1cabypAd45hEJkUBcN0028yvjAjrVybTnjW0TzB27d2c/XkQVc
-        3pd3GGPAUGFNIIBb+lJ56zx6H53DLo1+mcBAG/5huA==
-X-Google-Smtp-Source: AA6agR5VLN8p2OEFYOkpQE2TkVOFOAWbomdLLoXpljsepZTMnJfh3O/n3dODYOmdOjyqMf82X9zWVQ/cegEhTylSbOM=
-X-Received: by 2002:ad4:5caf:0:b0:496:b2ee:3706 with SMTP id
- q15-20020ad45caf000000b00496b2ee3706mr3300438qvh.58.1661430628682; Thu, 25
- Aug 2022 05:30:28 -0700 (PDT)
+        Thu, 25 Aug 2022 08:30:39 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F53501B3;
+        Thu, 25 Aug 2022 05:30:38 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id BD8C320532;
+        Thu, 25 Aug 2022 12:30:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1661430636; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fzn4fp0N5eWsHb65DqtqGlpmfzcl9UEV0GebO196Vs4=;
+        b=aDqaqu7dAgtJ5xAfyfRrAZDl1QGfsWSbTc3FHcUxzX9q8/IfdGiUiI3Aq1zOO163X7AioO
+        bLLuvvSFmU7D8wpLyx80/BhwudzK8FeuCG6Aui/F/apvrYzbSa+Ull3XCxql+rgvon58zN
+        c3tkXpWrLOzRRDq5vv5RZWL9lo4l3BQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1661430636;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fzn4fp0N5eWsHb65DqtqGlpmfzcl9UEV0GebO196Vs4=;
+        b=ys1Rt9r1Ba9DHh1ojiVRC/EZQFO7NQrSrH8cJDGTi6i5TUIm67YfuIaw4d91RBWu028G0r
+        BzThZTDQzRob5ECQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6881013A8E;
+        Thu, 25 Aug 2022 12:30:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id dHm0GGxrB2NoFgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 25 Aug 2022 12:30:36 +0000
+Message-ID: <98f583c0-8b63-a377-f37f-421952329707@suse.cz>
+Date:   Thu, 25 Aug 2022 14:30:36 +0200
 MIME-Version: 1.0
-References: <202208221331.71C50A6F@keescook> <a5df4929-24aa-79bf-c5d0-98efbf323132@intel.com>
- <CAEAAPHa3g0QwU=DZ2zVCqTCSh-+n2TtVKrQ07LvpwDjQ-F09gA@mail.gmail.com>
- <b4f0dca5-1d15-67f7-4600-9a0a91e9d0bd@intel.com> <26078f2a-67be-4aa1-bbb2-dcd1168c9d12@www.fastmail.com>
- <CAEAAPHae8Lr3KfqfLpK3w5F3MPFoG4HJLxX3cMgbKpmQ_jp6Og@mail.gmail.com> <c36eb441-e93e-4beb-bdf2-1e6285f7a187@www.fastmail.com>
-In-Reply-To: <c36eb441-e93e-4beb-bdf2-1e6285f7a187@www.fastmail.com>
-From:   =?UTF-8?Q?Stephen_R=C3=B6ttger?= <sroettger@google.com>
-Date:   Thu, 25 Aug 2022 14:30:17 +0200
-Message-ID: <CAEAAPHYTUYdtBLn4RsmNXMeaT8OvQ_k+Vy4uYdy_aSnaW79fcQ@mail.gmail.com>
-Subject: Re: PKU usage improvements for threads
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jann Horn <jannh@google.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000007639d605e70ff614"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH v4] page_ext: introduce boot parameter 'early_page_ext'
+Content-Language: en-US
+To:     lizhe.67@bytedance.com, akpm@linux-foundation.org, mhocko@suse.com,
+        mhiramat@kernel.org, keescook@chromium.org, Jason@zx2c4.com,
+        mark-pk.tsai@mediatek.com, rostedt@goodmis.org, corbet@lwn.net
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, lizefan.x@bytedance.com
+References: <20220825102714.669-1-lizhe.67@bytedance.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220825102714.669-1-lizhe.67@bytedance.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000007639d605e70ff614
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 8/25/22 12:27, lizhe.67@bytedance.com wrote:
+> From: Li Zhe <lizhe.67@bytedance.com>
+> 
+> In 'commit 2f1ee0913ce5 ("Revert "mm: use early_pfn_to_nid in page_ext_init"")',
+> we call page_ext_init() after page_alloc_init_late() to avoid some panic
+> problem. It seems that we cannot track early page allocations in current
+> kernel even if page structure has been initialized early.
+> 
+> This patch introduce a new boot parameter 'early_page_ext' to resolve this
+> problem. If we pass it to kernel, function page_ext_init() will be moved
+> up and feature 'deferred initialization of struct pages' will be disabled
+> to initialize the page allocator early and prevent from the panic problem
+> above. It can help us to catch early page allocations. This is useful
+> especially when we find that the free memory value is not the same right
+> after different kernel booting.
+> 
+> Suggested-by: Michal Hocko <mhocko@suse.com>
+> Signed-off-by: Li Zhe <lizhe.67@bytedance.com>
 
-On Wed, Aug 24, 2022 at 6:28 PM Dave Hansen <dave.hansen@intel.com> wrote:
->
-> On 8/24/22 01:51, Stephen R=C3=B6ttger wrote:
-> >>> Yeah, that's something for which our defenses are quite weak.  But, i=
-t
-> >>> also calls for a very generic mm/ solution and not something specific=
- at
-> >>> all to pkeys.
-> > We were also thinking about if this should be a more generic feature in=
-stead of
-> > being tied to pkeys. I.e. the doc above has an alternative proposal to =
-introduce
-> > something like a memory seal/unseal syscall.
-> > I was personally leaning towards using pkeys for this for a few reasons=
-:
-> > * intuitively it would make sense to me to extend PKEY_DISABLE_ACCESS
-> >   to also mean disable all changes to the memory, not just the data.
->
-> It would make some sense, but we can't do it with the existing
-> PKEY_DISABLE_ACCESS ABI.  It would surely break existing users if they
-> couldn't munmap() memory that was PKEY_DISABLE_ACCESS.
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-Our thought was that this could be opt-in with a prctl().
+> ---
+> Changelogs:
+> 
+> v1->v2:
+> - use a cmd line parameter to move up function page_ext_init() instead of
+>   using CONFIG_DEFERRED_STRUCT_PAGE_INIT
+> - fix oom problem[1]
+> 
+> v2->v3:
+> - move the judgment out of page_ext_init()
+> 
+> v3->v4:
+> - remove dependency on CONFIG_DEFERRED_STRUCT_PAGE_INIT
+> - modify descriptions in git log && kernel-parameters.txt
+> 
+> v1 patch: https://lore.kernel.org/lkml/Yv3r6Y1vh+6AbY4+@dhcp22.suse.cz/T/
+> v2 patch: https://lore.kernel.org/lkml/20220824065058.81051-1-lizhe.67@bytedance.com/T/
+> v3 patch: https://lore.kernel.org/linux-mm/20220825063102.92307-1-lizhe.67@bytedance.com/T/
+> 
+> [1]: https://lore.kernel.org/linux-mm/YwHmXLu5txij+p35@xsang-OptiPlex-9020/
+> 
+>  Documentation/admin-guide/kernel-parameters.txt |  8 ++++++++
+>  include/linux/page_ext.h                        | 11 +++++++++++
+>  init/main.c                                     |  6 +++++-
+>  mm/page_alloc.c                                 |  2 ++
+>  mm/page_ext.c                                   |  8 ++++++++
+>  5 files changed, 34 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index d7f30902fda0..4f43fd5b324d 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -1471,6 +1471,14 @@
+>  			Permit 'security.evm' to be updated regardless of
+>  			current integrity status.
+>  
+> +	early_page_ext [KNL] Enforces page_ext initialization to earlier
+> +			stages so cover more early boot allocations.
+> +			Please note that as side effect some optimizations
+> +			might be disabled to achieve that (e.g. parallelized
+> +			memory initialization is disabled) so the boot process
+> +			might take longer, especially on systems with a lot of
+> +			memory. Available with CONFIG_PAGE_EXTENSION=y.
+> +
+>  	failslab=
+>  	fail_usercopy=
+>  	fail_page_alloc=
+> diff --git a/include/linux/page_ext.h b/include/linux/page_ext.h
+> index fabb2e1e087f..884282a7f03a 100644
+> --- a/include/linux/page_ext.h
+> +++ b/include/linux/page_ext.h
+> @@ -36,9 +36,15 @@ struct page_ext {
+>  	unsigned long flags;
+>  };
+>  
+> +extern bool early_page_ext;
+>  extern unsigned long page_ext_size;
+>  extern void pgdat_page_ext_init(struct pglist_data *pgdat);
+>  
+> +static inline bool early_page_ext_enabled(void)
+> +{
+> +	return early_page_ext;
+> +}
+> +
+>  #ifdef CONFIG_SPARSEMEM
+>  static inline void page_ext_init_flatmem(void)
+>  {
+> @@ -67,6 +73,11 @@ static inline struct page_ext *page_ext_next(struct page_ext *curr)
+>  #else /* !CONFIG_PAGE_EXTENSION */
+>  struct page_ext;
+>  
+> +static inline bool early_page_ext_enabled(void)
+> +{
+> +	return false;
+> +}
+> +
+>  static inline void pgdat_page_ext_init(struct pglist_data *pgdat)
+>  {
+>  }
+> diff --git a/init/main.c b/init/main.c
+> index 91642a4e69be..b5e75f3288d7 100644
+> --- a/init/main.c
+> +++ b/init/main.c
+> @@ -849,6 +849,9 @@ static void __init mm_init(void)
+>  	pgtable_init();
+>  	debug_objects_mem_init();
+>  	vmalloc_init();
+> +	/* Should be run after vmap initialization */
+> +	if (early_page_ext_enabled())
+> +		page_ext_init();
+>  	/* Should be run before the first non-init thread is created */
+>  	init_espfix_bsp();
+>  	/* Should be run after espfix64 is set up. */
+> @@ -1606,7 +1609,8 @@ static noinline void __init kernel_init_freeable(void)
+>  	padata_init();
+>  	page_alloc_init_late();
+>  	/* Initialize page ext after all struct pages are initialized. */
+> -	page_ext_init();
+> +	if (!early_page_ext_enabled())
+> +		page_ext_init();
+>  
+>  	do_basic_setup();
+>  
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index e5486d47406e..e2faa52cd05d 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -482,6 +482,8 @@ defer_init(int nid, unsigned long pfn, unsigned long end_pfn)
+>  {
+>  	static unsigned long prev_end_pfn, nr_initialised;
+>  
+> +	if (early_page_ext_enabled())
+> +		return false;
+>  	/*
+>  	 * prev_end_pfn static that contains the end of previous zone
+>  	 * No need to protect because called very early in boot before smp_init.
+> diff --git a/mm/page_ext.c b/mm/page_ext.c
+> index 3dc715d7ac29..6c28d623d951 100644
+> --- a/mm/page_ext.c
+> +++ b/mm/page_ext.c
+> @@ -85,6 +85,14 @@ unsigned long page_ext_size = sizeof(struct page_ext);
+>  
+>  static unsigned long total_usage;
+>  
+> +bool early_page_ext __meminitdata;
+> +static int __init setup_early_page_ext(char *str)
+> +{
+> +	early_page_ext = true;
+> +	return 0;
+> +}
+> +early_param("early_page_ext", setup_early_page_ext);
+> +
+>  static bool __init invoke_need_callbacks(void)
+>  {
+>  	int i;
 
-> But, making it part of the mprotect() ABI wouldn't be the worst thing in
-> the world.  Since we have a pkey_mprotect(), any mprotect()-based
-> mechanism could even reuse the existing pkey syscalls.
->
-> I do agree with Andy, though, that I'm not quite sure what the attack
-> model is here.  If an attacker can make arbitrary system calls, surely
-> protecting one little altstack VMA isn't doing to help much.
-
-Note that we don't assume arbitrary syscalls. We only expect the
-attacker to be able to control a subset of arguments to a subset of
-syscalls.
-We run with a seccomp filter that greatly limits available syscalls.
-And for arguments, we will ensure in code that sensitive arguments
-won't touch attacker-writable memory (e.g. the prot argument in
-mprotect()).
-But this is hard to do for things like munmap(addr), that's why we're
-hoping that the kernel can help us out for that subset of syscalls.
-
-> >> This kind of thing seems questionable to me. If the attacker controls =
-syscall arguments, they can do almost anything. ISTM a CFI scheme should ai=
-m to prevent that bogus call in the first place, e.g. by preventing a probl=
-ematic call.
->
->
-> What I'm trying to say is: CFI, by itself, can protect syscalls by making=
- sure that callers are safe.  So, for example, if all munmap() callers do:
->
-> if (addr is dangerous)
->   abort();
-> else
->   munmap();
->
-> Then, with CFI, an attacker can't get to the actual munmap without first =
-doing the dangerous check.  And you can implement this entirely in user cod=
-e.
->
-> With syscall user dispatch (this thing: https://lwn.net/Articles/828510/ =
--- sorry, I meant that when I typed interception), you even have a way to i=
-ntercept *all* munmap() calls, for example.
-
-Ah I see. Yeah, you're right. It should be possible to do these checks
-in user code. Though, it would come with some challenges.
-For once, the `addr is dangerous` check is not as easy as in kernel
-space since AFAIK we can't check the pkey of a given address.
-So we'd probably switch our stack and pkey state to traverse some data
-structure to verify this. That, or keeping a dedicated range for these
-protected mappings.
-I'm also not sure if this would lead to noticeable perf regressions,
-hopefully these memory management operations should not be in any hot
-paths.
-I'll investigate more if this would be a feasible alternative for us.
-
-Side note: it seems like seccomp already allows us to do this instead
-of syscall user dispatch or is there a feature in the latter that
-would be useful?
-
---0000000000007639d605e70ff614
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIIPoQYJKoZIhvcNAQcCoIIPkjCCD44CAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz7MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-1Xnj+ucP771ZQkdCPPi3x0wwTAYDVR0gBEUwQzBBBgkrBgEEAaAyASgwNDAyBggrBgEFBQcCARYm
-aHR0cHM6Ly93d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wDAYDVR0TAQH/BAIwADCBmgYI
-KwYBBQUHAQEEgY0wgYowPgYIKwYBBQUHMAGGMmh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2Nh
-L2dzYXRsYXNyM3NtaW1lY2EyMDIwMEgGCCsGAQUFBzAChjxodHRwOi8vc2VjdXJlLmdsb2JhbHNp
-Z24uY29tL2NhY2VydC9nc2F0bGFzcjNzbWltZWNhMjAyMC5jcnQwHwYDVR0jBBgwFoAUfMwKaNei
-6x4schvRzV2Vb4378mMwRgYDVR0fBD8wPTA7oDmgN4Y1aHR0cDovL2NybC5nbG9iYWxzaWduLmNv
-bS9jYS9nc2F0bGFzcjNzbWltZWNhMjAyMC5jcmwwDQYJKoZIhvcNAQELBQADggEBADYMYgn8YeSC
-2azHCuUUELdSMX6zHgtp7pnHsAiW/DcbzNyWqavhuxKjDZGVqBEL8XslGKMHroyP9GLRYy3fOG6K
-lTeSsnfQOkON4y/SaN6ew/5jl46udymNieA3FhCFrpqt5VD+LvUmSxF/8WBTTp3vfiWfymRY+CaH
-4BqizkeEPW9WLDJVTu/65GqHNNG37YRMjRJI88mM3vQeNHiAXyxsGtK9AihqMu0hEx9eXLQudQNV
-XwfOaOvZENWKMhRgnYwvv2v1wFu92T8vxPqdCXMhGnhaUMtLSnOx8ootxQxQ47AXJmXkDvTfT/LL
-kpP0rI1cT2p1cY52eOyHtAHIZtQxggJqMIICZgIBATBoMFQxCzAJBgNVBAYTAkJFMRkwFwYDVQQK
-ExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFzIFIzIFNNSU1FIENB
-IDIwMjACEAEzs8uGCAkxDfyX6SyV9lkwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIE
-IGodrXzBCjAva3knVkhZ9p5TDodZgVZFXXJWP1zEeP3vMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0B
-BwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDgyNTEyMzAyOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgB
-ZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQow
-CwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBYT5urYvNHxCb8w6Q6
-2aS6wQ0Ai/JvTENj3FJQNwpK8zLKzS9nJUMImTh4r38CMA5tkX06sqQsG3E4Sorv12e5lLZ8NmoG
-5LkHEDozGolrd2FuZslw79A7fg2gGcPO6v3dklcE/lswVYFiIMANsE1nT7+sXjHyObyXK7TJ/5Hq
-V/pesLPCowPq2ts020ARIXPa8H+AaO4NA6cNAjZioDrHIUyhU6Os/qT0jWMAIo7sb5cirKTz03hM
-b28yuqKqPBkFEAm/AqHqs0lwuRD0p05BaOUabae6ikgi5tfl5lrRduXej4DOA3Injlx9OkqjH2pz
-MWz3iVSvligjNq0bALOJ
---0000000000007639d605e70ff614--
