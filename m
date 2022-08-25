@@ -2,145 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E80EAECAA24
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:43:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EA8ECAA28
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242947AbiHYQnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
+        id S243116AbiHYQne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243182AbiHYQnA (ORCPT
+        with ESMTP id S243117AbiHYQnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:43:00 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97212BB917
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:33 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id x23so19001347pll.7
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:33 -0700 (PDT)
+        Thu, 25 Aug 2022 12:43:04 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6440EBB928
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:35 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id r15-20020a17090a1bcf00b001fabf42a11cso5663629pjr.3
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=ijJ2pkBNHuBjJLx62XRRrMsVukQZ0pijiSuWRTmAOcg=;
-        b=FpUumiYM8PyUzChNl+dISlDVe7Ai2xqr2SdiKrR7DU58rUk32wTu1pmwoOOTmreBFa
-         T0ew/JfVd1fq4tsP+C1diInxwaM4HSRNiRoHIMWkVrQ3/2C4HwULW7jDpKbMJIuEclk9
-         Z9beSIC5CFYLM911N+vPTLGPsJD/K/tX79q1w=
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=OtUK9OLMWdL6AUc3ZfpyXK1kgh1agdbXcj5hc+979G8=;
+        b=xHJiXgBT7PEkZdMevyBPSnrJlZZCDwl6ozciskiNf9lpSMP/BhlEA/uOVlntwEOMoP
+         8AsYSYGjz+lts4hRawuyJ6l6j1hjlPAVOBqnpGUKXbtEw9ZdqEkFmWYzCoRhk5hEVMqd
+         LookuDXfD+8p7qtuCBQ2Us57jbxcmrBlqm9sBNsMnW+PY5fnbQg7FmU8Pv54Ao1pZ+jO
+         Qlv7oV81DA9EYTvqlGNwLjuuhXOAJPyHxTpLFABwb7wAi1ZGz+PtCwoQyKk7qJ6TBCwf
+         YrTIDzukpS+oc/W+qzGWsltS5E3XkCXyR6vIOWTqg9xpCYf+3ygIVs+5KfRLmrQe7Qwx
+         altQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=ijJ2pkBNHuBjJLx62XRRrMsVukQZ0pijiSuWRTmAOcg=;
-        b=D3bQ+rzOxdwYYTOptdB9Ya1+MtV/xBCUulqnRJl2h4FZcGr+6+FGI7r7bvmhKCbqAo
-         vPEgS4RmPZxx3Dnv8GOKJCOYD9m9I0tEAT89oV0VObSeSBFLeQbVc3UPyvTJIstSCFz+
-         WpLAjRPhxEbTACF+0pH0GFIceOYWT9FL1xJeUmU3gAWJjsIZGEi1qaVjv5DZQXMmw+6R
-         MlWkC1xZ5vOW0PSTNoRKOZGUYOFV5ZdCelmgjfLGxg/jU/yZGk35y/uRS9apaB1RpGtK
-         cvKQUgQ5lsNgc9uHWpS9IUAJML2s+QYyMdBFgTvk6xFjYJvPGfsClPfgFAZlmckLCafM
-         ogNg==
-X-Gm-Message-State: ACgBeo0XuBXZOhWAtKWf8cLZCRrN+ec29KDNlwRg4qM0yrA6IWT1uPCg
-        damyth55RixC+S7oHmDgJxZtOA==
-X-Google-Smtp-Source: AA6agR5qJDtbVVpWXZGCSxH+GzWXDOfrZz/xVX1OL4NkcvTQOPMSawsKsdQDaPTw7mTSVKdhn7tFZg==
-X-Received: by 2002:a17:902:ea0e:b0:16f:11bf:efe5 with SMTP id s14-20020a170902ea0e00b0016f11bfefe5mr4648992plg.57.1661445752765;
-        Thu, 25 Aug 2022 09:42:32 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:b7f2:d739:e847:6e53])
-        by smtp.gmail.com with ESMTPSA id y13-20020a17090a154d00b001f2ef3c7956sm3775799pja.25.2022.08.25.09.42.31
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=OtUK9OLMWdL6AUc3ZfpyXK1kgh1agdbXcj5hc+979G8=;
+        b=EF5g+YnWAMzWHn2rcDXyDe7+SDI/NCvAMLitPzsWRsC3nL71vgorFmZ1gotOrD7Q5D
+         kzIC6qzN9mjO/1WDdsVZpHrjNsWIllBCeZc8Ewo79eh0IjQSs/JpSTVvPox47EWmgDch
+         y6xCGH46j/t6D+8nmEv2dLLkWR7Ppm0MGqImQQQtH/fj+EBKw5XaGBk8nhVQbmVCrYEk
+         8cvnOGXjs9HLkOyKR1d6hOVz3pvihxExCDY8HLA2XFUBMoAZn+FNKpd9qpxEhY8J16Tf
+         cNMXiXC0uKfFkLXtBSw/uZePIdLuKsQCJohToJQY/6yBCgo3tonRaHJePH7NeBDdnmQ/
+         YHXA==
+X-Gm-Message-State: ACgBeo1Xtd7CGwld6RKMckvjIkwuzJ/hmEVvUVicHcUvwxZDodnA1Xor
+        7HYqLQd6UfrgGbcAoNGsEBL1Ig==
+X-Google-Smtp-Source: AA6agR4gxE/7slArmuUtR05sZfHFLCh81St/simPA+TXbSjCOklqEF54v1qmnT+n3VjgviN6ahhCMg==
+X-Received: by 2002:a17:902:f70f:b0:171:2572:4f5e with SMTP id h15-20020a170902f70f00b0017125724f5emr4422269plo.40.1661445754247;
+        Thu, 25 Aug 2022 09:42:34 -0700 (PDT)
+Received: from localhost.localdomain ([139.177.225.236])
+        by smtp.gmail.com with ESMTPSA id b18-20020a62a112000000b005362314bf80sm12779408pff.67.2022.08.25.09.42.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 09:42:32 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andrew Halaney <ahalaney@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/7] arm64: dts: qcom: sa8155p-adp: Specify which LDO modes are allowed
-Date:   Thu, 25 Aug 2022 09:41:59 -0700
-Message-Id: <20220825094155.1.Id59c32b560c4662d8b3697de2bd494d08d654806@changeid>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-In-Reply-To: <20220825164205.4060647-1-dianders@chromium.org>
-References: <20220825164205.4060647-1-dianders@chromium.org>
+        Thu, 25 Aug 2022 09:42:33 -0700 (PDT)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     hannes@cmpxchg.org, tj@kernel.org, mkoutny@suse.com,
+        surenb@google.com
+Cc:     mingo@redhat.com, peterz@infradead.org, gregkh@linuxfoundation.org,
+        corbet@lwn.net, cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH v4 00/10] sched/psi: some optimizations and extensions
+Date:   Fri, 26 Aug 2022 00:41:01 +0800
+Message-Id: <20220825164111.29534-1-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
-but doesn't specify any modes with "regulator-allowed-modes".
+Hi all,
 
-Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
-get_optimum_mode(), not set_load()") the above meant that we were able
-to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
-be stuck at the initial mode. Discussion of this has resulted in the
-decision that the old dts files were wrong and should be fixed to
-fully restore old functionality.
+This patch series are some optimizations and extensions for PSI.
 
-Let's re-enable the old functionality by fixing the dts.
+patch 1/10 fix periodic aggregation shut off problem introduced by earlier
+commit 4117cebf1a9f ("psi: Optimize task switch inside shared cgroups").
 
-[1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
+patch 2-4 are some misc optimizations, so put them in front of this series.
 
-Fixes: 5b85e8f2225c ("arm64: dts: qcom: sa8155p-adp: Add base dts file")
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+patch 5/10 optimize task switch inside shared cgroups when in_memstall status
+of prev task and next task are different.
 
- arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+patch 6/10 remove NR_ONCPU task accounting to save 4 bytes in the first
+cacheline to be used by the following patch 7/10, which introduce new
+PSI resource PSI_IRQ to track IRQ/SOFTIRQ pressure stall information.
 
-diff --git a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-index ba547ca9fc6b..ddb9cb182152 100644
---- a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-+++ b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-@@ -43,7 +43,6 @@ vreg_s4a_1p8: smps4 {
- 
- 		regulator-always-on;
- 		regulator-boot-on;
--		regulator-allow-set-load;
- 
- 		vin-supply = <&vreg_3p3>;
- 	};
-@@ -137,6 +136,9 @@ vreg_l5a_0p88: ldo5 {
- 			regulator-max-microvolt = <880000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 			regulator-allow-set-load;
-+			regulator-allowed-modes =
-+			    <RPMH_REGULATOR_MODE_LPM
-+			     RPMH_REGULATOR_MODE_HPM>;
- 		};
- 
- 		vreg_l7a_1p8: ldo7 {
-@@ -152,6 +154,9 @@ vreg_l10a_2p96: ldo10 {
- 			regulator-max-microvolt = <2960000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 			regulator-allow-set-load;
-+			regulator-allowed-modes =
-+			    <RPMH_REGULATOR_MODE_LPM
-+			     RPMH_REGULATOR_MODE_HPM>;
- 		};
- 
- 		vreg_l11a_0p8: ldo11 {
-@@ -258,6 +263,9 @@ vreg_l5c_1p2: ldo5 {
- 			regulator-max-microvolt = <1200000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 			regulator-allow-set-load;
-+			regulator-allowed-modes =
-+			    <RPMH_REGULATOR_MODE_LPM
-+			     RPMH_REGULATOR_MODE_HPM>;
- 		};
- 
- 		vreg_l7c_1p8: ldo7 {
-@@ -273,6 +281,9 @@ vreg_l8c_1p2: ldo8 {
- 			regulator-max-microvolt = <1200000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 			regulator-allow-set-load;
-+			regulator-allowed-modes =
-+			    <RPMH_REGULATOR_MODE_LPM
-+			     RPMH_REGULATOR_MODE_HPM>;
- 		};
- 
- 		vreg_l10c_3p3: ldo10 {
+patch 8-9 cache parent psi_group in struct psi_group to speed up the
+hot iteration path.
+
+patch 10/10 introduce a per-cgroup interface "cgroup.pressure" to disable
+or re-enable PSI in the cgroup level, and we implement hiding and unhiding
+the pressure files per Tejun's suggestion[1], which depends on his work[2].
+
+[1] https://lore.kernel.org/all/YvqjhqJQi2J8RG3X@slm.duckdns.org/
+[2] https://lore.kernel.org/all/20220820000550.367085-1-tj@kernel.org/
+
+Performance test using mmtests/config-scheduler-perfpipe in
+/user.slice/user-0.slice/session-4.scope:
+
+                                 next                patched       patched/only-leaf
+Min       Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
+1st-qrtle Time        8.90 (   0.00%)        8.58 (   3.63%)        8.05 (   9.58%)
+2nd-qrtle Time        8.94 (   0.00%)        8.61 (   3.65%)        8.09 (   9.50%)
+3rd-qrtle Time        8.99 (   0.00%)        8.65 (   3.75%)        8.15 (   9.35%)
+Max-1     Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
+Max-5     Time        8.82 (   0.00%)        8.49 (   3.74%)        8.00 (   9.32%)
+Max-10    Time        8.84 (   0.00%)        8.55 (   3.20%)        8.04 (   9.05%)
+Max-90    Time        9.04 (   0.00%)        8.67 (   4.10%)        8.18 (   9.51%)
+Max-95    Time        9.04 (   0.00%)        8.68 (   4.03%)        8.20 (   9.26%)
+Max-99    Time        9.07 (   0.00%)        8.73 (   3.82%)        8.25 (   9.11%)
+Max       Time        9.12 (   0.00%)        8.89 (   2.54%)        8.27 (   9.29%)
+Amean     Time        8.95 (   0.00%)        8.62 *   3.67%*        8.11 *   9.43%*
+
+Big thanks to Johannes Weiner, Tejun Heo and Michal Koutný for your
+suggestions and review!
+
+
+Changes in v4:
+ - Collect Acked-by tags from Johannes Weiner.
+ - Add many clear comments and changelogs per Johannes Weiner.
+ - Replace for_each_psi_group() with better open-code.
+ - Change to use better names cgroup_pressure_show() and
+   cgroup_pressure_write().
+ - Change to use better name psi_cgroup_restart() and only
+   call it on enabling.
+
+Changes in v3:
+ - Rebase on linux-next and reorder patches to put misc optimizations
+   patches in the front of this series.
+ - Drop patch "sched/psi: don't change task psi_flags when migrate CPU/group"
+   since it caused a little performance regression and it's just
+   code refactoring, so drop it.
+ - Don't define PSI_IRQ and PSI_IRQ_FULL when !CONFIG_IRQ_TIME_ACCOUNTING,
+   in which case they are not used.
+ - Add patch 8/10 "sched/psi: consolidate cgroup_psi()" make cgroup_psi()
+   can handle all cgroups including root cgroup, make patch 9/10 simpler.
+ - Rename interface to "cgroup.pressure" and add some explanation
+   per Michal's suggestion.
+ - Hide and unhide pressure files when disable/re-enable cgroup PSI,
+   depends on Tejun's work.
+
+Changes in v2:
+ - Add Acked-by tags from Johannes Weiner. Thanks for review!
+ - Fix periodic aggregation wakeup for common ancestors in
+   psi_task_switch().
+ - Add patch 7/10 from Johannes Weiner, which remove NR_ONCPU
+   task accounting to save 4 bytes in the first cacheline.
+ - Remove "psi_irq=" kernel cmdline parameter in last version.
+ - Add per-cgroup interface "cgroup.psi" to disable/re-enable
+   PSI stats accounting in the cgroup level.
+
+
+Chengming Zhou (9):
+  sched/psi: fix periodic aggregation shut off
+  sched/psi: don't create cgroup PSI files when psi_disabled
+  sched/psi: save percpu memory when !psi_cgroups_enabled
+  sched/psi: move private helpers to sched/stats.h
+  sched/psi: optimize task switch inside shared cgroups again
+  sched/psi: add PSI_IRQ to track IRQ/SOFTIRQ pressure
+  sched/psi: consolidate cgroup_psi()
+  sched/psi: cache parent psi_group to speed up groups iterate
+  sched/psi: per-cgroup PSI accounting disable/re-enable interface
+
+Johannes Weiner (1):
+  sched/psi: remove NR_ONCPU task accounting
+
+ Documentation/admin-guide/cgroup-v2.rst |  23 ++
+ include/linux/cgroup-defs.h             |   3 +
+ include/linux/cgroup.h                  |   5 -
+ include/linux/psi.h                     |  12 +-
+ include/linux/psi_types.h               |  29 ++-
+ kernel/cgroup/cgroup.c                  | 106 ++++++++-
+ kernel/sched/core.c                     |   1 +
+ kernel/sched/psi.c                      | 280 +++++++++++++++++-------
+ kernel/sched/stats.h                    |   6 +
+ 9 files changed, 362 insertions(+), 103 deletions(-)
+
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.2
 
