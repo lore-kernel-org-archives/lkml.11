@@ -2,126 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 701F8ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2862EECAAA2
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbiHYWBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:01:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56590 "EHLO
+        id S244251AbiHYWDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244152AbiHYWBs (ORCPT
+        with ESMTP id S244097AbiHYWDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:01:48 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6240F985AA
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:01:47 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id C42825C0056;
-        Thu, 25 Aug 2022 18:01:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 25 Aug 2022 18:01:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ljones.dev; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1661464906; x=1661551306; bh=vx
-        IQYb7384ikUOFL0YYanSZM4BK3Ykys553Rk0TizvY=; b=cM9dfZEj0l2R40gIJx
-        046+jU5S1BdBAc/m3p88ls88V1AI+CEgv6RjA0qTMsqRx2t88fQmm0MGE+wIRmkO
-        BuhkqEdw4vjj+4YNfaKpCBAL4/pC8pb7Ax9GMjqlrCyr5eibp/cyF1tgea/QlOqq
-        BU+qTMHTEZ/tpObSdlVtRGpXl3MzLW30/G4OnU+ug7EXC5/pum698QdIxcdkPwUy
-        HkntoOqsVl6NViNV6VPLY6rZIm7FjYeR1P0aEK1m3aXUQwUKG/+mf6bsfBapQM1S
-        XbSMEpPHVR/cM2Mw3DQYmyjIeM53fgwHMbP02KVheQdlK2W+/xSMYfTq38Or8x8E
-        0KMw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1661464906; x=1661551306; bh=vxIQYb7384ikU
-        OFL0YYanSZM4BK3Ykys553Rk0TizvY=; b=bhHbC78oXHH+PMzfOi+fCKxUuR1CR
-        KpSjFgc0k5EUfAsmmZX+PE7DWw02WumP//HhoJWGXFsaubARF0vP78khxHOXhn+Z
-        a10FVCdivual/4OjN+wqZx7YdaxzXyDhPTH/PHPgEZIvrO1u/KFa5vnmGTP8YwrK
-        Ale4mvrVCPUNXAJUCLjJfsp3yCwl4MJHqz9t/k6Kh+WZ8wTV5OMJ8WMuR5+6wXQZ
-        B6zlJUI8e0YY4EOXlzP+LGzx9rVVpDVBplsfzITuiFfPzg0fAjcxAYptIib4PVlc
-        gIbPOHibYJ2H/Aj0eXMMpMMFPN182k//VwAIFaAODy2yjaM4NRPtKA7Qg==
-X-ME-Sender: <xms:SvEHY1bcLwhXvldm_OG-pIXr3WHS2GukpDuE4G7qHEYtuGSpnSs64w>
-    <xme:SvEHY8YwlHeQ4Qoh04FAaIneySYXZUSfDN3NamDEGtQS3QEAujqPICPsNvz1qDdc8
-    AmkaVyZCVomGIjHJbs>
-X-ME-Received: <xmr:SvEHY38A068HozK_2Mg3LYMf-soVdD_0LI6gzbAjS7lLGb_9BnB2JJfqFZ7Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejgedgtdehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvfevufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpedfnfhukhgvucffrdculfhonhgvshdfuceolhhukhgvsehl
-    jhhonhgvshdruggvvheqnecuggftrfgrthhtvghrnhepgfetfedugfetudeuheetjefhue
-    fggfelleetvdevtefhueeujeefvdegleevhefgnecuvehluhhsthgvrhfuihiivgeptden
-    ucfrrghrrghmpehmrghilhhfrhhomheplhhukhgvsehljhhonhgvshdruggvvh
-X-ME-Proxy: <xmx:SvEHYzq8QEv89mbD1VSORBK1VxcK1YKTGIbBFu0xuAuzkKrWwdcJlQ>
-    <xmx:SvEHYwoFaEFcYYghYHCC3aFIu0TO1_mfNehRhlbNwxv0oTxu7ujGjg>
-    <xmx:SvEHY5S97x-Hy-4lYjdt2r5xflFrC6UvEdbYFOQip1MugZCmzEhApg>
-    <xmx:SvEHY7XBsjwOVqO-Hc_oF5xK7oSAlP1wbCRCMn5xQIDSMwzA0IpvXw>
-Feedback-ID: i5ec1447f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 25 Aug 2022 18:01:43 -0400 (EDT)
-From:   "Luke D. Jones" <luke@ljones.dev>
-To:     tiwai@suse.com
-Cc:     kai.heng.feng@canonical.com, andy.chi@canonical.com,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        "Luke D. Jones" <luke@ljones.dev>
-Subject: [PATCH 2/2] sound: realtek: Add pincfg for ASUS G513
-Date:   Fri, 26 Aug 2022 10:01:30 +1200
-Message-Id: <20220825220130.331371-2-luke@ljones.dev>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220825220130.331371-1-luke@ljones.dev>
-References: <20220825220130.331371-1-luke@ljones.dev>
+        Thu, 25 Aug 2022 18:03:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CC2792C3
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:03:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B512B82EB5
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 22:03:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 938A6C433C1;
+        Thu, 25 Aug 2022 22:03:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661465006;
+        bh=qqj1sPuIU2M5if+JbH3KWWswkdV/0dNUDeh0IvSKFtg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fsl6BuPVos27L0w8g+6EOItCVKILp9mDLjbYEWiXKpjPO+US7EgJrrgvD7M82zf+e
+         yzgwyTgBaJYJ8VyOu14Fs2/mchkB0bYgblVjP1jpwPd0bA82CWAKYl8okkcyNhv0hs
+         wdhtzlBMoNbJSTpd34G3zGz+1Oid0KIFlPAUNybcdekzx11Gxa9S4++7P7oUlTIxT5
+         oM2iio9FnF+NEJwPhANiOzEvNxBK5ZygJkM7Bvyx9rK4HldxCcTVhhHOVI0XXCdfI7
+         MrG85m38Lp/IfTj2/6/KDAc3lUow6xOcADZRTN/IInjPa3YG7TF84csTeIO1LZuqo7
+         zmtLmQL8iohzw==
+From:   SeongJae Park <sj@kernel.org>
+To:     damon@lists.linux.dev
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [Reminder] DAMON debugfs interface will be removed
+Date:   Thu, 25 Aug 2022 22:03:19 +0000
+Message-Id: <20220825220319.95226-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes up the pincfg for ASUS ROG Strix G513
+Hello,
 
-Signed-off-by: Luke D. Jones <luke@ljones.dev>
----
- sound/pci/hda/patch_realtek.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
 
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index e9cad49ee2a5..abf3fb50692a 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -7023,6 +7023,7 @@ enum {
- 	ALC294_FIXUP_ASUS_GX502_PINS,
- 	ALC294_FIXUP_ASUS_GX502_VERBS,
- 	ALC285_FIXUP_ASUS_G533Z_PINS,
-+	ALC294_FIXUP_ASUS_G513_PINS,
- 	ALC294_FIXUP_ASUS_GU502_HP,
- 	ALC294_FIXUP_ASUS_GU502_PINS,
- 	ALC294_FIXUP_ASUS_GU502_VERBS,
-@@ -8308,6 +8309,16 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.chained = true,
- 		.chain_id = ALC294_FIXUP_ASUS_HEADSET_MIC
- 	},
-+	[ALC294_FIXUP_ASUS_G513_PINS] = {
-+		.type = HDA_FIXUP_PINS,
-+		.v.pins = (const struct hda_pintbl[]) {
-+			{ 0x19, 0x03a11050 }, /* front HP mic */
-+			{ 0x1a, 0x03a11c30 }, /* rear external mic */
-+			{ 0x21, 0x03211420 }, /* front HP out */
-+			{ }
-+		},
-+		.chained = false
-+	},
- 	[ALC294_FIXUP_ASUS_GX502_PINS] = {
- 		.type = HDA_FIXUP_PINS,
- 		.v.pins = (const struct hda_pintbl[]) {
-@@ -9307,6 +9318,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x1043, 0x1662, "ASUS GV301QH", ALC294_FIXUP_ASUS_DUAL_SPK),
- 	SND_PCI_QUIRK(0x1043, 0x1881, "ASUS Zephyrus S/M", ALC294_FIXUP_ASUS_GX502_PINS),
- 	SND_PCI_QUIRK(0x1043, 0x1c92, "ASUS ROG Strix G15", ALC285_FIXUP_ASUS_G533Z_PINS),
-+	SND_PCI_QUIRK(0x1043, 0x1e5e, "ASUS ROG Strix G513", ALC294_FIXUP_ASUS_G513_PINS),
- 	SND_PCI_QUIRK(0x1043, 0x18b1, "Asus MJ401TA", ALC256_FIXUP_ASUS_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x18f1, "Asus FX505DT", ALC256_FIXUP_ASUS_HEADSET_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x194e, "ASUS UX563FD", ALC294_FIXUP_ASUS_HPE),
--- 
-2.37.2
+As announced before via the DAMON sysfs interface patchset[1] and also noted
+in the document[2], DAMON debugfs interface already in new-feature-frozen state
+and will be removed once next LTS kernel is released.  As there could be some
+users who still depends on the debugfs interface and forgot about the
+announcement, I just wanted to remind.
 
+DAMON user-space tool, damo[3], has supported both interfaces since the
+introduction of the sysfs interface and defaults to sysfs interface now, so the
+users of damo would have no problem.  If you are still using the debugfs
+interface, you could refer to that to know how you could use sysfs instead.
+
+That said, there is no problem at extending the timeline if there is any
+critical user issue, of course.  If you have such a critical issue, please let
+me know.
+
+[1] https://lore.kernel.org/all/20220228081314.5770-1-sj@kernel.org/
+[2] https://docs.kernel.org/admin-guide/mm/damon/usage.html
+[3] https://github.com/awslabs/damo
+
+
+Thanks,
+SJ
