@@ -2,116 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4F5ECAA24
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE36ECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:44:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243340AbiHYQoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:44:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43026 "EHLO
+        id S243343AbiHYQoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243244AbiHYQnS (ORCPT
+        with ESMTP id S243251AbiHYQnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:43:18 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69031BC101
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:43 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id hf17so2260643pjb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:43 -0700 (PDT)
+        Thu, 25 Aug 2022 12:43:19 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA2ABB038
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:47 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id 67so12136011pfv.2
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=0DBKrfU7DKgiI1KvvX+nAyw8m6/xO7rbgXWQBFaRlQ0=;
-        b=Szgb9TcjMgWUBloz/Bd70+z+Ca4DwaJwdHfO79Q4ccB7TeuASUY6ak87QH11edK4Ar
-         ZhDZbV9bFwyl+XMz2l9Thhddo/w3Bg6h/HLOPzZ8JGBeK1RmCoB7HbjSgexqN/rI1uVS
-         uBDsyK14RegRz4UTjO/Jd1zv1isEVpQUNOkd0=
+        bh=HEbBlNE74XAOeDaqxFIrSXJjdeTVN4APARuNyd0Kkrc=;
+        b=cIO/d1BGqL6fFstMorhflZg+vJ9obx8pMQqBtB2zXIPXvMogHPeMsu0jrMv3o/VTJZ
+         IBkJf62+3rnapmZ4QtajmqxNiCKCoJpFUWP5Aj+4N2faq+JVYEs0jc7ZNWjuyG1nRM4X
+         bG+zNO+sE24Jhpk3TgvTfkthoBCFGUujC2Zb58e5p7FLK/XotEpTJEWCcKgLCmbqgujF
+         2omehs8EXzqBUnztnRg0Tg4+J3IhJW7PuV1Uhz8xpCunXu90C2TIFPpCGuP+8zZtnPgn
+         eqzv/Ei/WX+oIjQ+VhIURYRrhU3nKqOCCdinlLLYeuDtRbLKy3hIv9MJ/xYh3I+q5Cwx
+         epJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=0DBKrfU7DKgiI1KvvX+nAyw8m6/xO7rbgXWQBFaRlQ0=;
-        b=7iVOhsHrAVxvI8Kc4NjvPjvEB9mr5x4AN0avOyEswoYvPSc2IZ0P+MehOGPyJSFyK5
-         peaAWwKvq41YxRmfHAkuS5oDMs1BMjltVA2XijBmLqwo9krLYQBXJ0ULXWUHhq1ybiDu
-         4QrbX59hQoIItVjYTbIafznbr2tGETabrKpptbt81KnpTDJR6t2tQFr4LnoRqYXsv5ZD
-         JUrg6dw+d5LF2XcDmaoxfL0MF57It96k6pIfdPdW/UeOx5hnH69UUmpZwLZ043HKgdY6
-         R12nce4qLFRT9hRZ1u8k7ogSPA9n+ftTJHRHA7u5xumMtjie1/6y2RMETQJwfLoRGxim
-         s+dw==
-X-Gm-Message-State: ACgBeo0tM7HuswbyNyWGCoqoSItfClOcxy36LDwjTXc84dHRwQ4+tiAY
-        pV+XaPn3ZvXOSuqgNb+UvfmDyQ==
-X-Google-Smtp-Source: AA6agR48VwQ1Xt0g/fUB0eDVNvZ2JmBrdgqoaBEuMTjDRP86CaSN8IWRrY57abEO3okNsLrgA9tilg==
-X-Received: by 2002:a17:90b:3c82:b0:1fb:8ef:5ddb with SMTP id pv2-20020a17090b3c8200b001fb08ef5ddbmr14404195pjb.11.1661445762064;
-        Thu, 25 Aug 2022 09:42:42 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:b7f2:d739:e847:6e53])
-        by smtp.gmail.com with ESMTPSA id y13-20020a17090a154d00b001f2ef3c7956sm3775799pja.25.2022.08.25.09.42.40
+        bh=HEbBlNE74XAOeDaqxFIrSXJjdeTVN4APARuNyd0Kkrc=;
+        b=JaNIh5FuHifYRekfI7UJwepwLNI+Cv8qASCytLhJwjo34TTTDJCnIwq7BGR0NYTV1+
+         mtL96mYOXjkP2fs4TlI58YO81q6JGMrLjVeszl4ylb0+C3Cgr1b+dfSuxILGYbFEaof5
+         rlMA/98B0vXL1+APWRwc+Eb5xQCDLq42PDDcP3r/XX0EgVvkJAnR6pUXJUyLigiwJ6W9
+         otlxP/ArnuIFxMTzdQIonxzSyb7gxJ8JlWPLM7+EF1PX6WYtag37vX0Kv/eHVP2FlY2C
+         PjVo3praJ3oDPX1RRvT2LRXucu0K1zJb0Yt3UzNgERFbmKDEVcdTllQ9COgW1/V/iAVp
+         ddyA==
+X-Gm-Message-State: ACgBeo3AMt4xRnAu6SLV6usyVEJlmNzMkhlEbsAiLCTKGjgzsYs7crmt
+        dp0lRry+Z5S8RmjtpYinjKmMfA==
+X-Google-Smtp-Source: AA6agR7DaINFBPuM/7F9bdN/GnJGUkNZ1zOAW5PM+T8a3FN4i4YkOwbmC4mTqFPVZ4HbR+7ywDSOhg==
+X-Received: by 2002:a62:17c8:0:b0:537:b287:3ef8 with SMTP id 191-20020a6217c8000000b00537b2873ef8mr623736pfx.40.1661445765140;
+        Thu, 25 Aug 2022 09:42:45 -0700 (PDT)
+Received: from localhost.localdomain ([139.177.225.236])
+        by smtp.gmail.com with ESMTPSA id b18-20020a62a112000000b005362314bf80sm12779408pff.67.2022.08.25.09.42.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 09:42:41 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andrew Halaney <ahalaney@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 6/7] arm64: dts: qcom: sm8250-xperia-edo: Specify which LDO modes are allowed
-Date:   Thu, 25 Aug 2022 09:42:04 -0700
-Message-Id: <20220825094155.6.Ie446d5183d8b1e9ec4e32228ca300e604e3315eb@changeid>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-In-Reply-To: <20220825164205.4060647-1-dianders@chromium.org>
-References: <20220825164205.4060647-1-dianders@chromium.org>
+        Thu, 25 Aug 2022 09:42:44 -0700 (PDT)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     hannes@cmpxchg.org, tj@kernel.org, mkoutny@suse.com,
+        surenb@google.com
+Cc:     mingo@redhat.com, peterz@infradead.org, gregkh@linuxfoundation.org,
+        corbet@lwn.net, cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH v4 02/10] sched/psi: don't create cgroup PSI files when psi_disabled
+Date:   Fri, 26 Aug 2022 00:41:03 +0800
+Message-Id: <20220825164111.29534-3-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220825164111.29534-1-zhouchengming@bytedance.com>
+References: <20220825164111.29534-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
-but doesn't specify any modes with "regulator-allowed-modes".
+commit 3958e2d0c34e ("cgroup: make per-cgroup pressure stall tracking configurable")
+make PSI can be configured to skip per-cgroup stall accounting. And
+doesn't expose PSI files in cgroup hierarchy.
 
-Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
-get_optimum_mode(), not set_load()") the above meant that we were able
-to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
-be stuck at the initial mode. Discussion of this has resulted in the
-decision that the old dts files were wrong and should be fixed to
-fully restore old functionality.
+This patch do the same thing when psi_disabled.
 
-Let's re-enable the old functionality by fixing the dts.
-
-[1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
-
-Fixes: 69cdb97ef652 ("arm64: dts: qcom: sm8250: Add support for SONY Xperia 1 II / 5 II (Edo platform)")
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
 ---
+ kernel/cgroup/cgroup.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
- arch/arm64/boot/dts/qcom/sm8250-sony-xperia-edo.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sm8250-sony-xperia-edo.dtsi b/arch/arm64/boot/dts/qcom/sm8250-sony-xperia-edo.dtsi
-index 549e0a2aa9fe..5428aab3058d 100644
---- a/arch/arm64/boot/dts/qcom/sm8250-sony-xperia-edo.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8250-sony-xperia-edo.dtsi
-@@ -317,6 +317,9 @@ vreg_l6c_2p9: ldo6 {
- 			regulator-max-microvolt = <2960000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 			regulator-allow-set-load;
-+			regulator-allowed-modes =
-+			    <RPMH_REGULATOR_MODE_LPM
-+			     RPMH_REGULATOR_MODE_HPM>;
- 		};
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 03dbbf8a8c28..2f79ddf9a85d 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -3748,6 +3748,9 @@ static void cgroup_pressure_release(struct kernfs_open_file *of)
  
- 		vreg_l7c_2p85: ldo7 {
-@@ -339,6 +342,9 @@ vreg_l9c_2p9: ldo9 {
- 			regulator-max-microvolt = <2960000>;
- 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
- 			regulator-allow-set-load;
-+			regulator-allowed-modes =
-+			    <RPMH_REGULATOR_MODE_LPM
-+			     RPMH_REGULATOR_MODE_HPM>;
- 		};
+ bool cgroup_psi_enabled(void)
+ {
++	if (static_branch_likely(&psi_disabled))
++		return false;
++
+ 	return (cgroup_feature_disable_mask & (1 << OPT_FEATURE_PRESSURE)) == 0;
+ }
  
- 		vreg_l10c_3p3: ldo10 {
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.2
 
