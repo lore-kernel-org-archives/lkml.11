@@ -2,103 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7E2C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:02:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D68BC6FD31
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242895AbiHYQCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41798 "EHLO
+        id S242365AbiHYQE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240803AbiHYQCK (ORCPT
+        with ESMTP id S233475AbiHYQEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:02:10 -0400
-Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BB285AA3
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:02:05 -0700 (PDT)
-Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-11cab7d7e0fso24286995fac.6
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:02:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=sNFG5s7LnC8XjcoTGJvLHOo5cpf+AMAvCpxCgUj2R30=;
-        b=fWZaRka9wUl4/qnh2iE8plD6aPudPrd3NC1h7pM8MDzeR2jm77ODxKAJxd3h0XnE9+
-         5xhZi4dp6VjyYk3diQttP5OtSuRn+1qdMGKasRvT1BefIxQ/xW3iI82PCRYV2aYJr822
-         l+6zFPnYaEgLoDMG2oWkfPCIb4focwG9dk56oSN2Za0eDsMw78jvZ9oTdoCXnBwUyG3o
-         MFLuty8zPbMZQT6fkJGz+DYSh/Pj6vy/6X6XxXNh58SaYe7CiZf7JkXvehq/uGSZjjLY
-         wHb0VmfbPjJ616zZYjc5NPYuFeD4bqzbO6T4+IwHdgqP+yajiSGuANzDbID+oTZyJypO
-         FfjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=sNFG5s7LnC8XjcoTGJvLHOo5cpf+AMAvCpxCgUj2R30=;
-        b=UyXQsrrznifZrBMGbEQnbr0emB5BRf7FE9LWvIdQdAik803ZLIt1n8g2zvVNoYimAB
-         aWVsABCqdFwFYcatNmgD+IJGFKiQvJoy83J/Dp7VFz71XYNmom/ZZ/cCQbIrydDHoNBB
-         40VGvtLaONPQ1bzRnWwlswGVfku6yWMcEDmVie4mOEdqzxHbgdvPCmZ/hAxME+wNTn6J
-         jXMcLabOl3X9FRCD8MxSbQd64kr5qmWB1Dw42X88yVZSDBMuMKiFGM1zgwXWGl38vCaH
-         fKqFUkpVxVa9fPAyf4Rb2TmlGbIVE8QfftZkUl+WtUmiRvLwln0w2aERzT18KAejt+6E
-         Fm8g==
-X-Gm-Message-State: ACgBeo2MGqMLCDEih9uObx8WjWz+5hCoUbzQi0EJ5L+szyWckwv/ABAB
-        FyZnJn+0V0bqB/1+5zzpnFWVXLSLyRgjhGmYiDs=
-X-Google-Smtp-Source: AA6agR7kiQ57XUkKXiAkkw2tu36haHCQjPWJKC0f16Gw0lXMggESritHc0IDxS7hh/vyn0Bw/EEhS9xLHMi8uy36klg=
-X-Received: by 2002:a05:6870:9a06:b0:11e:3d19:2614 with SMTP id
- fo6-20020a0568709a0600b0011e3d192614mr943043oab.96.1661443325104; Thu, 25 Aug
- 2022 09:02:05 -0700 (PDT)
+        Thu, 25 Aug 2022 12:04:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916D61F600;
+        Thu, 25 Aug 2022 09:04:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2025E61B95;
+        Thu, 25 Aug 2022 16:04:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A62F8C433D6;
+        Thu, 25 Aug 2022 16:04:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661443492;
+        bh=O0BnzaPjcOf8VQ7QriQaGUwPP2OlVk6+QnLO3EHZZlQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=cdtqKDzFlvkB6++IJWR2enAQZB3BUuhPQ8FEeJ+YSgCC/MJBqDjCZSIGqi08V++ox
+         MOlvQU0ylYBtQbvvbtF+lw90Zqz3924Qpw3jfnmrzZoeKPEqBvwRe316cQ39WIrEL2
+         LGNTwQaWdfgIAwL6+tVyRmOhoy6ZvDtjIS0cOy6ZVsfo/0Mo3IIn5d89mvcuDhLwPe
+         6uIVb3aqMIYmLhP8aYH18XwuRdVfvhdhM7qCjeUj5uv74+xheG8HoxFH3X06FWwpmG
+         dseDBO5LQ5q9JRXFtMTKKmqeQ6Wu9m7efKhtxu74DxEKI/HPtaTY061iLo9aFnS8Sz
+         BoHY6LkRWqdeA==
+Date:   Thu, 25 Aug 2022 11:04:43 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Serge Semin <fancer.lancer@gmail.com>
+Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v5 24/24] PCI: dwc: Add DW eDMA engine support
+Message-ID: <20220825160443.GA2854084@bhelgaas>
 MIME-Version: 1.0
-References: <20220823064137.13726-1-bernard@vivo.com>
-In-Reply-To: <20220823064137.13726-1-bernard@vivo.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Thu, 25 Aug 2022 12:01:53 -0400
-Message-ID: <CADnq5_Ojb8U3gPckX3Ox3mkhQGTjusMOdneExcWZp_Zz8PTawQ@mail.gmail.com>
-Subject: Re: [PATCH] drm/amd: remove possible condition with no effect (if == else)
-To:     Bernard Zhao <bernard@vivo.com>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Michael Strauss <michael.strauss@amd.com>,
-        Eric Yang <Eric.Yang2@amd.com>,
-        Fangzhi Zuo <Jerry.Zuo@amd.com>,
-        Nikola Cornij <nikola.cornij@amd.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, zhaojunkui2008@126.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825051614.kfify5fbqlhurvdn@mobilestation>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+On Thu, Aug 25, 2022 at 08:16:14AM +0300, Serge Semin wrote:
+> On Wed, Aug 24, 2022 at 01:17:54PM -0500, Bjorn Helgaas wrote:
+> > On Wed, Aug 24, 2022 at 09:13:19PM +0300, Serge Semin wrote:
+> > > On Wed, Aug 24, 2022 at 11:51:18AM -0500, Bjorn Helgaas wrote:
+> > > > On Mon, Aug 22, 2022 at 09:53:32PM +0300, Serge Semin wrote:
+> > 
+> > > > > +	val = dw_pcie_readl_dbi(pci, PCIE_DMA_VIEWPORT_BASE + PCIE_DMA_CTRL);
+> > > > > +	if (val == 0xFFFFFFFF && pci->edma.reg_base) {
+> > > > > +		pci->edma.mf = EDMA_MF_EDMA_UNROLL;
+> > > > > +
+> > > > > +		val = dw_pcie_readl_dma(pci, PCIE_DMA_CTRL);
+> > > > > +	} else if (val != 0xFFFFFFFF) {
+> > > > 
+> > > 
+> > > > Consider PCI_POSSIBLE_ERROR() as an annotation about the meaning of
+> > > > 0xFFFFFFFF and something to grep for.
+> > > 
+> > > In this case FFs don't mean an error but a special value, which
+> > > indicates that the eDMA is mapped via the unrolled CSRs space. The
+> > > similar approach has been implemented for the iATU legacy/unroll setup
+> > > auto-detection. So I don't see much reasons to have it grepped, so as
+> > > to have a macro-based parametrization since the special value will
+> > > unluckily change while having the explicit literal utilized gives a
+> > > better understanding of the way the algorithm works.
+> 
+> > If 0xFFFFFFFF is the result of a successful PCIe Memory Read,
+> 
+> Right. It is.
+> 
+> > and not
+> > something synthesized by the host bridge when it handles an
+> > Unsupported Request completion,
+> 
+> No it isn't. To be clear 0xFFs don't indicate some PCIe bus/controller
+> malfunction, but they are a result of reading the
+> DMA_CTRL_VIEWPORT_OFF register which doesn't exist. The manual
+> explicitly says: "Note - When register does not exist, value is fixed
+> to 32'hFFFF_FFFF". The register doesn't exist if either eDMA is
+> unavailable or the eDMA CSRs are mapped via the unrolled state.
 
-On Tue, Aug 23, 2022 at 3:30 AM Bernard Zhao <bernard@vivo.com> wrote:
->
-> This patch fix cocci warning:
-> drivers/gpu/drm/amd/display/dc/dcn314/dcn314_resource.c:1816:6-8:
-> WARNING: possible condition with no effect (if == else).
->
-> Signed-off-by: Bernard Zhao <bernard@vivo.com>
-> ---
->  drivers/gpu/drm/amd/display/dc/dcn314/dcn314_resource.c | 2 --
->  1 file changed, 2 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/display/dc/dcn314/dcn314_resource.c b/drivers/gpu/drm/amd/display/dc/dcn314/dcn314_resource.c
-> index 85f32206a766..dccc9794e6a2 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dcn314/dcn314_resource.c
-> +++ b/drivers/gpu/drm/amd/display/dc/dcn314/dcn314_resource.c
-> @@ -1813,8 +1813,6 @@ static bool dcn314_resource_construct(
->
->         if (dc->ctx->dce_environment == DCE_ENV_PRODUCTION_DRV)
->                 dc->debug = debug_defaults_drv;
-> -       else if (dc->ctx->dce_environment == DCE_ENV_FPGA_MAXIMUS)
-> -               dc->debug = debug_defaults_diags;
->         else
->                 dc->debug = debug_defaults_diags;
->         // Init the vm_helper
-> --
-> 2.33.1
->
+OK.  I don't think that's worded very well in the manual.  A register
+that does not exist does not have a value, and attempts to read it
+should fail.  If they want to say the register always exists and
+contains 0xFFFFFFFF for versions earlier than X, that would make
+sense.  Wouldn't be the first time a manual is ambiguous ;)
+
+If the device itself, i.e., not the Root Complex, is fabricating this
+0xFFFFFFFF value, reading it should not cause any AER or other error
+status bits to be set.
+
+If the Root Complex fabricates 0xFFFFFFFF upon receipt of a Completion
+with Unsupported Request status, I would expect bits like Received
+Master Abort to be set in the Root Port's Secondary Status register.
