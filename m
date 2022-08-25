@@ -2,158 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3087CECAA28
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:46:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23ABEECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:46:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232019AbiHYSqN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
+        id S242466AbiHYSq2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiHYSqK (ORCPT
+        with ESMTP id S242180AbiHYSqY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:46:10 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195475F221
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:46:09 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id k9so25736013wri.0
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:46:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nIUljFBkx0nexRnIBmlsCUVPOXret1NOSFaDab7BEyE=;
-        b=k6cregGwdCXEynRFHNQnjLAXb0RFMfFa3FMHdPuHUfi6T8dfpJl4HEIbDYqwcxOel3
-         ksJqS6FWaDJApbXU3uJcpWyQbkvpdQSW2R/rFtjn5aDhBWRsI99ESDf3XLfqeqwW+tVU
-         Dkv1FS2oCKmHJkt6wXRtQ4rv7corYV1o3nvyYOi0Gs9QqDDzvMk53+PNJ46oz+a9G95G
-         ZxvIoGSbblrukcDX0lGfen/S4JaEdakZONRpoX6cJ1lSdnDDIW33z3ifDMacL9p1qE16
-         M1JxwcDkSA6vcYd90XZDbW7UbSnga5SIddpxYn/3oewqT4QcarLSQIO36hnkUPHC7QqD
-         xiMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nIUljFBkx0nexRnIBmlsCUVPOXret1NOSFaDab7BEyE=;
-        b=0wRIH+PeWxXyaj5uOaRigBmunMphY5fLKxvZSoO3jVNElbjaOcTlmTwbVVjfnaNml/
-         f48ETGPScOUL0RNKdrZlj3bb5u4mIK+Wd9zKgN4XFtcaLVj2LNPVG9kNz65kJzgn0KuN
-         3BoxmWybGUF75RaMxMm5/e/DGPVQD67EEh0z7JS07JnIbYh+KJb5cgRfMZn4jGhS/LGx
-         GEr7IJzZyqtclu2RGgGxyG8X4oC7NtU5Gsh53z0EUMD3YcjwbDiCMZtkk4/XJPu+aKPU
-         QE1PYf0WIS+rivuEKs4d2vxTqpPJkqKiw/V+nVsXNeRFvBBanf0Yn1wXv/DVEag6D01A
-         JLcw==
-X-Gm-Message-State: ACgBeo0FAZvsCwNIfv5inROxMD2vOubNX4pwaZXIa+5ggU4JQiB8iJtq
-        eN8zDAS7SOAZbZxeXMSnv45A4vpZdBd8GaX8bgxiXw==
-X-Google-Smtp-Source: AA6agR5LFET4yCFkQ8vwQbxb3eFWAptn2L9E3gpXGgxbfnZMZebQzL/ASi9e2kdBGAZQCqlaOF+AFzYG3fCODNNPjXs=
-X-Received: by 2002:adf:9ccf:0:b0:225:4934:53e3 with SMTP id
- h15-20020adf9ccf000000b00225493453e3mr3158455wre.210.1661453167369; Thu, 25
- Aug 2022 11:46:07 -0700 (PDT)
+        Thu, 25 Aug 2022 14:46:24 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0CF6D561
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:46:23 -0700 (PDT)
+Received: from notapiano.myfiosgateway.com (unknown [70.107.189.129])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 25FA26601EAF;
+        Thu, 25 Aug 2022 19:46:21 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661453182;
+        bh=dhmaNfxwX2nOLfTfnDrbNJDJaVQkem8mQ34apy48xhg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=G1EJ3DJyzYhFMV/7rbjEqEN1w3Jb3fdf3PLkd1oqYO1v1j4rbvmDGlEOyMBpt+73N
+         3GoUze36CODFT67SbHOn2cdchH1h37VaaDFirVkurZgzttEnVpYr6AnpUc81+H164+
+         aCRRENkU1YoJLbdLyUUvW1jxMaPOLAdRgF6t8hJr1j9Msv8r9fMU9qpksD7UjCDqqE
+         aV/FS8E4dulWDz1LwJRaziL6fWRubtypdeJPa6F1VVtlfbIGjdqVMh/zoaO98RHdej
+         T6FkK37KIpiR72011U+aBQJ/+xPxDnaErLJaLubMoYwBJkTXJaklXhHltegfhj0sHU
+         f91JrgoG94ETQ==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     khilman@baylibre.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, roger.lu@mediatek.com,
+        =?UTF-8?q?N=C3=ADcolas=20F=20=2E=20R=20=2E=20A=20=2E=20Prado?= 
+        <nfraprado@collabora.com>, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: [PATCH v2 1/2] soc: mediatek: mtk-svs: Commonize t-calibration-data fuse array read
+Date:   Thu, 25 Aug 2022 14:46:15 -0400
+Message-Id: <20220825184616.2118870-2-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220825184616.2118870-1-nfraprado@collabora.com>
+References: <20220825184616.2118870-1-nfraprado@collabora.com>
 MIME-Version: 1.0
-References: <20220824233117.1312810-1-haoluo@google.com> <20220824233117.1312810-6-haoluo@google.com>
- <CAADnVQKC_USyXe1RyWL+EY0q=x=c88opvPW-rWZ5znGJOq63CQ@mail.gmail.com>
- <CAJD7tkZGxkV8_3qNy_Q=k-DT2=aGknzT08WiVtESpzur1JxCwA@mail.gmail.com> <CAADnVQLD+PcyO1qmxaBxdK1_tLRfBEqth8kzxts_8f+nSqu+hA@mail.gmail.com>
-In-Reply-To: <CAADnVQLD+PcyO1qmxaBxdK1_tLRfBEqth8kzxts_8f+nSqu+hA@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Thu, 25 Aug 2022 11:45:31 -0700
-Message-ID: <CAJD7tkZDw278kApDYKUhnuz5wVcrx9D_k0LLUktT8jgrA5uj-w@mail.gmail.com>
-Subject: Re: [RESEND PATCH bpf-next v9 5/5] selftests/bpf: add a selftest for
- cgroup hierarchical stats collection
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Hao Luo <haoluo@google.com>, LKML <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>, Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:43 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Aug 24, 2022 at 7:41 PM Yosry Ahmed <yosryahmed@google.com> wrote:
-> >
-> > On Wed, Aug 24, 2022 at 7:09 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Wed, Aug 24, 2022 at 4:31 PM Hao Luo <haoluo@google.com> wrote:
-> > > > +
-> > > > +       for (i = 0; i < N_CGROUPS; i++) {
-> > > > +               fd = create_and_get_cgroup(cgroups[i].path);
-> > > > +               if (!ASSERT_GE(fd, 0, "create_and_get_cgroup"))
-> > > > +                       return fd;
-> > > > +
-> > > > +               cgroups[i].fd = fd;
-> > > > +               cgroups[i].id = get_cgroup_id(cgroups[i].path);
-> > > > +
-> > > > +               /*
-> > > > +                * Enable memcg controller for the entire hierarchy.
-> > > > +                * Note that stats are collected for all cgroups in a hierarchy
-> > > > +                * with memcg enabled anyway, but are only exposed for cgroups
-> > > > +                * that have memcg enabled.
-> > > > +                */
-> > > > +               if (i < N_NON_LEAF_CGROUPS) {
-> > > > +                       err = enable_controllers(cgroups[i].path, "memory");
-> > > > +                       if (!ASSERT_OK(err, "enable_controllers"))
-> > > > +                               return err;
-> > > > +               }
-> > > > +       }
-> > >
-> > > It passes BPF CI, but fails in my setup with:
-> > >
-> > > # ./test_progs -t cgroup_hier -vv
-> > > bpf_testmod.ko is already unloaded.
-> > > Loading bpf_testmod.ko...
-> > > Successfully loaded bpf_testmod.ko.
-> > > setup_bpffs:PASS:mount 0 nsec
-> > > setup_cgroups:PASS:setup_cgroup_environment 0 nsec
-> > > setup_cgroups:PASS:get_root_cgroup 0 nsec
-> > > setup_cgroups:PASS:create_and_get_cgroup 0 nsec
-> > > (cgroup_helpers.c:92: errno: No such file or directory) Enabling
-> > > controller memory:
-> > > /mnt/cgroup-test-work-dir6526//test/cgroup.subtree_control
-> > > setup_cgroups:FAIL:enable_controllers unexpected error: 1 (errno 2)
-> > > cleanup_bpffs:FAIL:rmdir /sys/fs/bpf/vmscan/ unexpected error: -1 (errno 2)
-> > > #36      cgroup_hierarchical_stats:FAIL
-> > > Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
-> > >
-> > > How do I debug it?
-> >
-> > The failure with ENOENT happens when we try to write "+memory" to
-> > /mnt/cgroup-test-work-dir6526//test/cgroup.subtree_control, not when
-> > we try to open it. So the file is there. AFAICT, ENOENT can be
-> > returned from this write if the memory controller is not enabled on
-> > this cgroup.
-> >
-> > In setup_cgroup_environment(), we should be enabling all available
-> > controllers on /mnt and /mnt/cgroup-test-work-dir6526 by this line:
-> >
-> >         if (__enable_controllers(CGROUP_MOUNT_PATH, NULL) ||
-> >               __enable_controllers(cgroup_workdir, NULL))
-> >                   return 1;
-> >
-> > The first thing that comes to mind is that maybe the memory controller
-> > is not enabled on your setup at all? Can you check
-> > /sys/fs/cgroup/cgroup.controllers (or wherever your global cgroup
-> > mount is)?
->
-> Indeed. I didn't have a memory controller in cgroup2.
-> My system booted with cgroup v1 and it had cgroup1 memory
-> controller enabled which prevented cgroup2 to enable it.
-> Without Tejun's help I would have been able to figure this out.
->
-> Anyway, pushed the set to bpf-next. Thanks everyone.
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-Thanks Alexei!
+Commonize the repeating pattern for reading the "t-calibration-data"
+efuse data in a new function svs_thermal_efuse_get_data(), reducing
+the size of this driver.
+
+No functional changes.
+
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+
+---
+
+Changes in v2:
+- Rebased and dropped mt8195 and mt8186 hunks, as they're not merged yet
+
+ drivers/soc/mediatek/mtk-svs.c | 69 ++++++++++++++++------------------
+ 1 file changed, 32 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
+index d96b9d3f3a83..63253e22abdd 100644
+--- a/drivers/soc/mediatek/mtk-svs.c
++++ b/drivers/soc/mediatek/mtk-svs.c
+@@ -1641,11 +1641,36 @@ static int svs_bank_resource_setup(struct svs_platform *svsp)
+ 	return 0;
+ }
+ 
++static int svs_thermal_efuse_get_data(struct svs_platform *svsp)
++{
++	struct nvmem_cell *cell;
++
++	/* Thermal efuse parsing */
++	cell = nvmem_cell_get(svsp->dev, "t-calibration-data");
++	if (IS_ERR_OR_NULL(cell)) {
++		dev_err(svsp->dev, "no \"t-calibration-data\"? %ld\n", PTR_ERR(cell));
++		return PTR_ERR(cell);
++	}
++
++	svsp->tefuse = nvmem_cell_read(cell, &svsp->tefuse_max);
++	if (IS_ERR(svsp->tefuse)) {
++		dev_err(svsp->dev, "cannot read thermal efuse: %ld\n",
++			PTR_ERR(svsp->tefuse));
++		nvmem_cell_put(cell);
++		return PTR_ERR(svsp->tefuse);
++	}
++
++	svsp->tefuse_max /= sizeof(u32);
++	nvmem_cell_put(cell);
++
++	return 0;
++}
++
+ static bool svs_mt8192_efuse_parsing(struct svs_platform *svsp)
+ {
+ 	struct svs_bank *svsb;
+-	struct nvmem_cell *cell;
+ 	u32 idx, i, vmin, golden_temp;
++	int ret;
+ 
+ 	for (i = 0; i < svsp->efuse_max; i++)
+ 		if (svsp->efuse[i])
+@@ -1683,24 +1708,9 @@ static bool svs_mt8192_efuse_parsing(struct svs_platform *svsp)
+ 		svsb->vmax += svsb->dvt_fixed;
+ 	}
+ 
+-	/* Thermal efuse parsing */
+-	cell = nvmem_cell_get(svsp->dev, "t-calibration-data");
+-	if (IS_ERR_OR_NULL(cell)) {
+-		dev_err(svsp->dev, "no \"t-calibration-data\"? %ld\n",
+-			PTR_ERR(cell));
+-		return false;
+-	}
+-
+-	svsp->tefuse = nvmem_cell_read(cell, &svsp->tefuse_max);
+-	if (IS_ERR(svsp->tefuse)) {
+-		dev_err(svsp->dev, "cannot read thermal efuse: %ld\n",
+-			PTR_ERR(svsp->tefuse));
+-		nvmem_cell_put(cell);
++	ret = svs_thermal_efuse_get_data(svsp);
++	if (ret)
+ 		return false;
+-	}
+-
+-	svsp->tefuse_max /= sizeof(u32);
+-	nvmem_cell_put(cell);
+ 
+ 	for (i = 0; i < svsp->tefuse_max; i++)
+ 		if (svsp->tefuse[i] != 0)
+@@ -1723,11 +1733,11 @@ static bool svs_mt8192_efuse_parsing(struct svs_platform *svsp)
+ static bool svs_mt8183_efuse_parsing(struct svs_platform *svsp)
+ {
+ 	struct svs_bank *svsb;
+-	struct nvmem_cell *cell;
+ 	int format[6], x_roomt[6], o_vtsmcu[5], o_vtsabb, tb_roomt = 0;
+ 	int adc_ge_t, adc_oe_t, ge, oe, gain, degc_cali, adc_cali_en_t;
+ 	int o_slope, o_slope_sign, ts_id;
+ 	u32 idx, i, ft_pgm, mts, temp0, temp1, temp2;
++	int ret;
+ 
+ 	for (i = 0; i < svsp->efuse_max; i++)
+ 		if (svsp->efuse[i])
+@@ -1803,24 +1813,9 @@ static bool svs_mt8183_efuse_parsing(struct svs_platform *svsp)
+ 		}
+ 	}
+ 
+-	/* Get thermal efuse by nvmem */
+-	cell = nvmem_cell_get(svsp->dev, "t-calibration-data");
+-	if (IS_ERR(cell)) {
+-		dev_err(svsp->dev, "no \"t-calibration-data\"? %ld\n",
+-			PTR_ERR(cell));
+-		goto remove_mt8183_svsb_mon_mode;
+-	}
+-
+-	svsp->tefuse = nvmem_cell_read(cell, &svsp->tefuse_max);
+-	if (IS_ERR(svsp->tefuse)) {
+-		dev_err(svsp->dev, "cannot read thermal efuse: %ld\n",
+-			PTR_ERR(svsp->tefuse));
+-		nvmem_cell_put(cell);
+-		goto remove_mt8183_svsb_mon_mode;
+-	}
+-
+-	svsp->tefuse_max /= sizeof(u32);
+-	nvmem_cell_put(cell);
++	ret = svs_thermal_efuse_get_data(svsp);
++	if (ret)
++		return false;
+ 
+ 	/* Thermal efuse parsing */
+ 	adc_ge_t = (svsp->tefuse[1] >> 22) & GENMASK(9, 0);
+-- 
+2.37.2
+
