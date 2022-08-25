@@ -2,153 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 820C1C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 00:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 441E2C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 00:45:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230266AbiHYAo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 20:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
+        id S230053AbiHYApW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 20:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiHYAoX (ORCPT
+        with ESMTP id S229499AbiHYApT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 20:44:23 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475738FD4E;
-        Wed, 24 Aug 2022 17:44:22 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id s6so14958295lfo.11;
-        Wed, 24 Aug 2022 17:44:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=u5GpYKAPqiPXiVflxFFAVwYjhQ2xT4l31F3rdQnDD0o=;
-        b=A/Iio860rhP/v2AnpLJlwrYJYcXyV6DIv9JQx+170rEWmlIhMRzeZ9l+nUAUWh62JI
-         c7+HUkhuYDhePhYz0hBnDIf0kxXPYT4M/ZBV+H/mccKyYUoThe086rHM/Idvobh7usXz
-         aQ9wrACY0Z3JXJeCVGOVmQknpIZLf36WPkxiBD7fWy8VN+O7qbUFOBo3a44ClzdymCK8
-         cn9zOMWbhdyIyrwdxiUZa+HtMGxS+1GXqgQbAaeZcF6rDiKxojIsL57dVyKueIzEDW5i
-         YgPIUJJ32Dna6ii+VrXwF0fLGL78HBDUuiwmooSSuF5KJzA6EQ+rvmtMerH7qMgXror3
-         KaSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=u5GpYKAPqiPXiVflxFFAVwYjhQ2xT4l31F3rdQnDD0o=;
-        b=S0XtLs4W1HO+76qNE5dm70YENYqZiqH6JmerFzloE1d/Gpz+r9dbiQXZGywMpe9w/n
-         inbMqB2XCbB9tg7kSWznnCam1hEQFzORBOzECoE2UXsMc67W+BuU9TdgpTUVmTGwcj0F
-         irqtmBKiS+ZxeFU5ZJKxi/VJTpA/19QK2Y/nRwjJgq7lQD/gQ268mAbVCAdLQrGtRsKg
-         We2i5us6Ko15qhHq/kCzqNi0ftO67GxK078sf2fLhwBsDKJZrij/+mBBCqcJfrvwav2t
-         qpxg5RgJHTKbDQsb98VLSOAhGJwltHxmVrfhvx1DK4GhiD88x1cKXK/gaD3FZK9ulRfp
-         AGrA==
-X-Gm-Message-State: ACgBeo3xTwrFXXvq90BpSaeiaNFSDI8C5lEuG9QSr/GZ4FmlQvBbHhPo
-        GG5sy3ssYbmUxAo09onzuZvpw2lrIcvWJobj6KhNOgmD31+vSg==
-X-Google-Smtp-Source: AA6agR4sZ+jOQ3X+L+bTqjmbitY0TBSZsnZdxwNoCqHbQQL3VjTrTMF6ph0SwWt+X5NwBlfDz2Rm7C9UXN28W6P64Jc=
-X-Received: by 2002:a05:6512:1527:b0:48b:99:f3ff with SMTP id
- bq39-20020a056512152700b0048b0099f3ffmr386714lfb.81.1661388260398; Wed, 24
- Aug 2022 17:44:20 -0700 (PDT)
+        Wed, 24 Aug 2022 20:45:19 -0400
+Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8EB2162A93;
+        Wed, 24 Aug 2022 17:45:16 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 25 Aug 2022 08:44:55
+ +0800 (GMT+08:00)
+X-Originating-IP: [218.12.16.111]
+Date:   Thu, 25 Aug 2022 08:44:55 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Brian Norris" <briannorris@chromium.org>
+Cc:     "Linux Kernel" <linux-kernel@vger.kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Johannes Berg" <johannes@sipsolutions.net>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "amit karwar" <amitkarwar@gmail.com>,
+        "Ganapathi Bhat" <ganapathi017@gmail.com>,
+        "Sharvari Harisangam" <sharvari.harisangam@nxp.com>,
+        "Xinming Hu" <huxinming820@gmail.com>, kvalo@kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v8 0/2] Add new APIs of devcoredump and fix bugs
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <CA+ASDXNf5JV9mj8mbm1OGZ_zd4d8srFc=E++Amg4MoQjqjS_TA@mail.gmail.com>
+References: <cover.1661252818.git.duoming@zju.edu.cn>
+ <CA+ASDXNf5JV9mj8mbm1OGZ_zd4d8srFc=E++Amg4MoQjqjS_TA@mail.gmail.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-References: <YwNpI1ydy0yDnBH0@dhcp22.suse.cz> <CAGWkznEB+R0YBaBFBL7dPqs8R=qKC6+ixTWEGCYy2PaczXkaPA@mail.gmail.com>
- <YwRjyx6wFLk8WTDe@dhcp22.suse.cz> <CAGWkznGaYTv4u4kOo-rupfyWzDNJXNKTchwP6dbUK-=UXWm47w@mail.gmail.com>
- <YwSQ4APOu/H7lYGL@dhcp22.suse.cz> <CAGWkznGd6mgareABseMKY5p0f1=5dkfVkj=NS7_B6OkXBYSwyw@mail.gmail.com>
- <YwS/S9Sd1OWnT81Q@dhcp22.suse.cz> <CAGWkznGYLyF+njUB0gFF3JVdThnK9JaNsqxXYFhbdSwEQpCxvA@mail.gmail.com>
- <YwXYVjRpXQjQMsxr@dhcp22.suse.cz> <CAGWkznEqX3DwHW_owiK+HuuQ-HsUYK4vKmLhSxgzGn20Vzid2A@mail.gmail.com>
- <YwX89JCQCKMMYdG9@dhcp22.suse.cz>
-In-Reply-To: <YwX89JCQCKMMYdG9@dhcp22.suse.cz>
-From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
-Date:   Thu, 25 Aug 2022 08:43:52 +0800
-Message-ID: <CAGWkznF+dBjLzAxMMXWYSZ_5q3KA-ou0P7XM7jSYN7JSRp8N0w@mail.gmail.com>
-Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <27a2a8a7.99f01.182d2758bc9.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgA3OMwIxgZjn4DhAw--.25954W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwNAVZdtbKGFwAAsf
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 6:27 PM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Wed 24-08-22 17:34:42, Zhaoyang Huang wrote:
-> > On Wed, Aug 24, 2022 at 3:50 PM Michal Hocko <mhocko@suse.com> wrote:
-> > >
-> > > On Wed 24-08-22 10:23:14, Zhaoyang Huang wrote:
-> > > > On Tue, Aug 23, 2022 at 7:51 PM Michal Hocko <mhocko@suse.com> wrote:
-> > > [...]
-> > > > > One way to achieve that would be shaping the hierarchy the following way
-> > > > >             root
-> > > > >         /         \
-> > > > > no_memcg[1]      memcg[2]
-> > > > > ||||||||         |||||
-> > > > > app_cgroups     app_cgroups
-> > > > >
-> > > > > with
-> > > > > no_memcg.subtree_control = ""
-> > > > > memcg.subtree_control = memory
-> > > > >
-> > > > > no?
-> > > > According to my understanding, No as there will be no no_memcg. All
-> > > > children groups under root would have its cgroup.controllers = memory
-> > > > as long as root has memory enabled.
-> > >
-> > > Correct
-> > >
-> > > > Under this circumstance, all
-> > > > descendants group under 'no_memcg' will charge memory to its parent
-> > > > group.
-> > >
-> > > Correct. And why is that a problem? I thought you main concern was a per
-> > > application LRUs. With the above configuration all app_cgroups which do
-> > > not require an explicit memory control will share the same (no_memcg)
-> > > LRU and they will be aged together.
-> > I can't agree since this indicates the processes want memory free
-> > depending on a specific hierarchy which could have been determined by
-> > other subsys.
->
-> I really fail to understand your requirements.
->
-> > IMHO, charging the pages which out of explicitly memory
-> > enabled group to root could solve all of the above constraints with no
-> > harm.
->
-> This would break the hierarchical property of the controller. So a
-> strong no no. Consider the following example
->
->        root
->         |
->         A
-> controllers="memory"
-> memory.max = 1G
-> subtree_control=""
-> |      |      |
-> A1     A2     A3
->
-> althought A1,2,3 do not have their memory controller enabled explicitly
-> they are still constrained by the A memcg limit. If you just charge to
-> the root because it doesn't have memory controller enabled explicitly
-> then you just evade that constrain. I hope you understand why that is a
-> problem.
-IMO, A1-A3 should be explicitly enabled via echo "+memory" >
-A/subtree_control since memory.max has been set. How should AA3
-achieve the goal of compete with AA4,A1,A2 for cpu but keep memory out
-of control under current policy?
-        root
-         |
-         A
- controllers="memory,cpu"
- memory.max = 1G
- subtree_control="memory,cpu"
- |      |      |
- A1     A2     A3 subtree_control="cpu"
-                      |      |
-                    AA3   AA4 controllers="cpu"
-
-> --
-> Michal Hocko
-> SUSE Labs
+SGVsbG8sCgpPbiBXZWQsIDI0IEF1ZyAyMDIyIDEzOjQyOjA5IC0wNzAwIEJyaWFuIE5vcnJpcyB3
+cm90ZToKCj4gT24gVHVlLCBBdWcgMjMsIDIwMjIgYXQgNDoyMSBBTSBEdW9taW5nIFpob3UgPGR1
+b21pbmdAemp1LmVkdS5jbj4gd3JvdGU6Cj4gPgo+ID4gVGhlIGZpcnN0IHBhdGNoIGFkZHMgbmV3
+IEFQSXMgdG8gc3VwcG9ydCBtaWdyYXRpb24gb2YgdXNlcnMKPiA+IGZyb20gb2xkIGRldmljZSBj
+b3JlZHVtcCByZWxhdGVkIEFQSXMuCj4gPgo+ID4gVGhlIHNlY29uZCBwYXRjaCBmaXggc2xlZXAg
+aW4gYXRvbWljIGNvbnRleHQgYnVncyBvZiBtd2lmaWV4Cj4gPiBjYXVzZWQgYnkgZGV2X2NvcmVk
+dW1wdigpLgo+ID4KPiA+IER1b21pbmcgWmhvdSAoMik6Cj4gPiAgIGRldmNvcmVkdW1wOiBhZGQg
+bmV3IEFQSXMgdG8gc3VwcG9ydCBtaWdyYXRpb24gb2YgdXNlcnMgZnJvbSBvbGQKPiA+ICAgICBk
+ZXZpY2UgY29yZWR1bXAgcmVsYXRlZCBBUElzCj4gPiAgIG13aWZpZXg6IGZpeCBzbGVlcCBpbiBh
+dG9taWMgY29udGV4dCBidWdzIGNhdXNlZCBieSBkZXZfY29yZWR1bXB2Cj4gCj4gSSB3b3VsZCBo
+YXZlIGV4cGVjdGVkIGEgdGhpcmQgcGF0Y2ggaW4gaGVyZSwgdGhhdCBhY3R1YWxseSBjb252ZXJ0
+cwo+IGV4aXN0aW5nIHVzZXJzLiBUaGVuIGluIHRoZSBmb2xsb3dpbmcgcmVsZWFzZSBjeWNsZSwg
+Y2xlYW4gdXAgYW55IG5ldwo+IHVzZXJzIG9mIHRoZSBvbGQgQVBJIHRoYXQgcG9wIHVwIGluIHRo
+ZSBtZWFudGltZSBhbmQgZHJvcCB0aGUgb2xkIEFQSS4KPiAKPiBCdXQgSSdsbCBkZWZlciB0byB0
+aGUgcGVvcGxlIHdobyB3b3VsZCBhY3R1YWxseSBiZSBtZXJnaW5nIHlvdXIgY29kZS4KPiBUZWNo
+bmljYWxseSBpdCBjb3VsZCBhbHNvIHdvcmsgdG8gc2ltcGx5IHByb3ZpZGUgdGhlIEFQSSB0aGlz
+IGN5Y2xlLAo+IGFuZCBjb252ZXJ0IGV2ZXJ5b25lIGluIHRoZSBuZXh0LgoKVGhhbmsgeW91ciBm
+b3IgeW91ciB0aW1lIGFuZCByZXBseS4KCklmIHRoaXMgcGF0Y2ggc2V0IGlzIG1lcmdlZCBpbnRv
+IHRoZSBsaW51eC1uZXh0IHRyZWUsIEkgd2lsbCBzZW5kIHRoZSAKdGhpcmQgcGF0Y2ggd2hpY2gg
+dGFyZ2V0cyBhdCBsaW51eC1uZXh0IHRyZWUgYW5kIGNvbnZlcnRzIGV4aXN0aW5nIHVzZXJzIAph
+dCBsYXRlciB0aW1lciBvZiB0aGlzIHJlbGVhc2UgY3ljbGUuIEJlY2F1c2UgdGhlcmUgYXJlIG5l
+dyB1c2VycyB0aGF0IAptYXkgdXNlIHRoZSBvbGQgQVBJcyBjb21lcyBpbnRvIGxpbnV4LW5leHQg
+dHJlZSBkdXJpbmcgdGhlIHJlbWFpbmluZyB0aW1lCm9mIHRoaXMgcmVsZWFzZSBjeWNsZS4KCkJl
+c3QgcmVnYXJkcywKRHVvbWluZyBaaG91
