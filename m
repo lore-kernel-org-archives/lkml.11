@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8479C48BE4
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 678A7C48BE4
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233366AbiHYBgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53944 "EHLO
+        id S232521AbiHYBgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233201AbiHYBfd (ORCPT
+        with ESMTP id S232357AbiHYBfj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:35:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F1E96FC6;
-        Wed, 24 Aug 2022 18:35:29 -0700 (PDT)
+        Wed, 24 Aug 2022 21:35:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027747E027;
+        Wed, 24 Aug 2022 18:35:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F81EB826E2;
-        Thu, 25 Aug 2022 01:35:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E0DC433C1;
-        Thu, 25 Aug 2022 01:35:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7998A61AC0;
+        Thu, 25 Aug 2022 01:35:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33BA0C433D6;
+        Thu, 25 Aug 2022 01:35:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391327;
-        bh=5h/d4iI4GYTakGSKNwvrLAXYxyw/LIb4048SQXx+FTM=;
+        s=k20201202; t=1661391336;
+        bh=D2FNTvX8rWeD9cE8deKNwZXMCdW94viiZgjfmAN5TPA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T2Ko1tD8WGMk5VNd/C02NvpYZDsBnYYKEJsruzQtiPfQrFmT6Hg4+A/GEhp9WAg85
-         /mTVPKxv9mRXk/fG+cSc5sG0H+bTBqR1e4COdvKkcaABdALUb3+1x4NhDKSWf25Pb9
-         YatlJQ5tYeH0reU75X+qV4kzU1peTd+8J3jl7p0IhMSF+f+V0lU9TNsBSfM9kMJ9XJ
-         S7bcrfW2DnKZ4taNBZ9gkuVcWbBAZhAp6rmZmMMXVq4ewoi7zs64XX30WpzGY9sg+G
-         Xjgo8tXhcqKBQFkCJetoLD7Wuo+quQvmoqyTgFTPXTmDTdhR6O11QHV24B2Snw+8Wm
-         FqRNgclMmmtug==
+        b=OTfMEkcek45+b6hYt/s+MwVat/FIBVncqoQQ/KG8FPygf/mu08iABA/p8KTW7HvXp
+         6EEVsiztASjJ1eg00Nrke9AbXXxhH7eh3gxsgW+iDftR73X8WaQLboE4Dni7cxhhs1
+         AwgarnTPhNmJGRJBXN4iwMybyW+Fp6+KRkliMpyLckOq0szFbHqg6K3wRVYeUQ7re1
+         IOFsUSv59mwxhSKDWT0lwHDgXMBH1LdktQYRwMAMdEyhIP639bRLo6ZFetgibK6aln
+         Kkfn7yuHlOVw9aLXdlIq5IbU1zbUYjpxFb+F9rxlvEIJS5dhXad9UKl3+xo8hiDYeN
+         P7AobCd/WLqRw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Namjae Jeon <linkinjeon@kernel.org>,
-        Hyunchul Lee <hyc.lee@gmail.com>,
-        Steve French <stfrench@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>, sfrench@samba.org,
-        atteh.mailbox@gmail.com, linux-cifs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 15/38] ksmbd: return STATUS_BAD_NETWORK_NAME error status if share is not configured
-Date:   Wed, 24 Aug 2022 21:33:38 -0400
-Message-Id: <20220825013401.22096-15-sashal@kernel.org>
+Cc:     Stefan Binding <sbinding@opensource.cirrus.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>,
+        perex@perex.cz, tiwai@suse.com, tcrawford@system76.com,
+        wse@tuxedocomputers.com, kai.heng.feng@canonical.com,
+        tangmeng@uniontech.com, tanureal@opensource.cirrus.com,
+        cam@neo-zeon.de, p.jungkamp@gmx.net, yong.wu@mediatek.com,
+        andy.chi@canonical.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.19 18/38] ALSA: hda/realtek: Add quirks for ASUS Zenbooks using CS35L41
+Date:   Wed, 24 Aug 2022 21:33:41 -0400
+Message-Id: <20220825013401.22096-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220825013401.22096-1-sashal@kernel.org>
 References: <20220825013401.22096-1-sashal@kernel.org>
@@ -53,50 +55,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Stefan Binding <sbinding@opensource.cirrus.com>
 
-[ Upstream commit fe54833dc8d97ef387e86f7c80537d51c503ca75 ]
+[ Upstream commit 461122b999bda2ebef2086a35d8990f9ccac5ab8 ]
 
-If share is not configured in smb.conf, smb2 tree connect should return
-STATUS_BAD_NETWORK_NAME instead of STATUS_BAD_NETWORK_PATH.
+These Asus Zenbook laptop use Realtek HDA codec combined with
+2xCS35L41 Amplifiers using SPI.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Reviewed-by: Hyunchul Lee <hyc.lee@gmail.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220815141953.25197-1-sbinding@opensource.cirrus.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/mgmt/tree_connect.c | 2 +-
- fs/ksmbd/smb2pdu.c           | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ sound/pci/hda/patch_realtek.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/ksmbd/mgmt/tree_connect.c b/fs/ksmbd/mgmt/tree_connect.c
-index 0d28e723a28c..940385c6a913 100644
---- a/fs/ksmbd/mgmt/tree_connect.c
-+++ b/fs/ksmbd/mgmt/tree_connect.c
-@@ -18,7 +18,7 @@
- struct ksmbd_tree_conn_status
- ksmbd_tree_conn_connect(struct ksmbd_session *sess, char *share_name)
- {
--	struct ksmbd_tree_conn_status status = {-EINVAL, NULL};
-+	struct ksmbd_tree_conn_status status = {-ENOENT, NULL};
- 	struct ksmbd_tree_connect_response *resp = NULL;
- 	struct ksmbd_share_config *sc;
- 	struct ksmbd_tree_connect *tree_conn = NULL;
-diff --git a/fs/ksmbd/smb2pdu.c b/fs/ksmbd/smb2pdu.c
-index a9c33d15ca1f..bbb3958b6469 100644
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -1930,8 +1930,9 @@ int smb2_tree_connect(struct ksmbd_work *work)
- 		rsp->hdr.Status = STATUS_SUCCESS;
- 		rc = 0;
- 		break;
-+	case -ENOENT:
- 	case KSMBD_TREE_CONN_STATUS_NO_SHARE:
--		rsp->hdr.Status = STATUS_BAD_NETWORK_PATH;
-+		rsp->hdr.Status = STATUS_BAD_NETWORK_NAME;
- 		break;
- 	case -ENOMEM:
- 	case KSMBD_TREE_CONN_STATUS_NOMEM:
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 619e6025ba97..7aaa021f550d 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -9246,6 +9246,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1043, 0x1271, "ASUS X430UN", ALC256_FIXUP_ASUS_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x1290, "ASUS X441SA", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x12a0, "ASUS X441UV", ALC233_FIXUP_EAPD_COEF_AND_MIC_NO_PRESENCE),
++	SND_PCI_QUIRK(0x1043, 0x12af, "ASUS UX582ZS", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x12e0, "ASUS X541SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x12f0, "ASUS X541UV", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1313, "Asus K42JZ", ALC269VB_FIXUP_ASUS_MIC_NO_PRESENCE),
+@@ -9266,6 +9267,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x1043, 0x19e1, "ASUS UX581LV", ALC295_FIXUP_ASUS_MIC_NO_PRESENCE),
+ 	SND_PCI_QUIRK(0x1043, 0x1a13, "Asus G73Jw", ALC269_FIXUP_ASUS_G73JW),
+ 	SND_PCI_QUIRK(0x1043, 0x1a30, "ASUS X705UD", ALC256_FIXUP_ASUS_MIC),
++	SND_PCI_QUIRK(0x1043, 0x1a8f, "ASUS UX582ZS", ALC245_FIXUP_CS35L41_SPI_2),
+ 	SND_PCI_QUIRK(0x1043, 0x1b11, "ASUS UX431DA", ALC294_FIXUP_ASUS_COEF_1B),
+ 	SND_PCI_QUIRK(0x1043, 0x1b13, "Asus U41SV", ALC269_FIXUP_INV_DMIC),
+ 	SND_PCI_QUIRK(0x1043, 0x1bbd, "ASUS Z550MA", ALC255_FIXUP_ASUS_MIC_NO_PRESENCE),
 -- 
 2.35.1
 
