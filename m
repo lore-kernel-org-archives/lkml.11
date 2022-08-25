@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5626EC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3811C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 01:44:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236010AbiHYBoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 24 Aug 2022 21:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43356 "EHLO
+        id S229463AbiHYBos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 24 Aug 2022 21:44:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235714AbiHYBoC (ORCPT
+        with ESMTP id S235780AbiHYBoF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 24 Aug 2022 21:44:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E738B12AB6;
-        Wed, 24 Aug 2022 18:39:53 -0700 (PDT)
+        Wed, 24 Aug 2022 21:44:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F0A9AFBD;
+        Wed, 24 Aug 2022 18:39:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5422861B19;
-        Thu, 25 Aug 2022 01:39:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0AFBC433D6;
-        Thu, 25 Aug 2022 01:39:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A488B826C8;
+        Thu, 25 Aug 2022 01:39:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD41C433B5;
+        Thu, 25 Aug 2022 01:39:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661391589;
-        bh=ZYBgH2FIuzIL5lnTg9JpERmr3mQXVkh5N9FCybZmjAw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dhT1Xe8n8aHcRKJ9T/o3q8k5HZ6MrtIizQ6vbJ9Uzdq54zuVSucSSz8nzmS4Wvmwq
-         YtByeuyE3OgKgIhL/IZ2DDj5YIczSVHXW7ZJuvCbli3EkW2OwMVNi3quUcf+i2p4+J
-         JWaTXsz32ypmOGsuZtgkR/VxCbt7UlRJ3O/6f9Y32Sc95OXq/juVe+oszxjbAYR9ps
-         lMg2Gd6uEhFV+26MU7iJNlofgoH1ApqIrPZlQ8TozjiOFbdayRyKV7vsWYwox8av5+
-         RyqeFv6iUCbdhX16chYwa+e+G6OjcjygfTKzup1LHlIfJOMTZ07SBKgu+X6EC4m7n9
-         Jkgpm71YScbMQ==
+        s=k20201202; t=1661391576;
+        bh=Si1aPxgcvJy78GQs4fgXZOdxEB0Ayzx9ujfRXTCW+Qk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nGdrozcQEP/Rl4lVYWKw42J2h3ibYjGbkhTtOqGRPzysnxH4fS0mfxU63V6TF+42O
+         OcAePGU0JgFCc7k/nwZB6ZzxU3uD/OfK2NMUlmc4KaddlD5iBOayp2NYNvFKYB923h
+         yAYjvl85I6a/UN0EGnXHN9a/jDjWJyZUv1WDEgqtrPKj0gMadfcwZ/QcxvNRejP5Lp
+         nAOpQOd11Kba5Vo5R+TLJGpU2aSaUNWGp8/QA4f87qIy3IUwII4JPbYKAPREzDE6dA
+         eqgv6pas2vP954x0yQXlZDjey+Edz+jJOlYHHaj4Gny3npeyASwHs3fXZFdDfq1eP3
+         YViNawQzXN9wQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Sasha Levin <sashal@kernel.org>, gor@linux.ibm.com,
-        linux-s390@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 4/8] s390/hypfs: avoid error message under KVM
-Date:   Wed, 24 Aug 2022 21:39:23 -0400
-Message-Id: <20220825013932.23467-4-sashal@kernel.org>
+Cc:     Josip Pavic <Josip.Pavic@amd.com>, Jun Lei <Jun.Lei@amd.com>,
+        Alex Hung <alex.hung@amd.com>, Aric Cyr <aric.cyr@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, chiahsuan.chung@amd.com,
+        jiapeng.chong@linux.alibaba.com, isabbasso@riseup.net,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 1/8] drm/amd/display: Avoid MPC infinite loop
+Date:   Wed, 24 Aug 2022 21:39:20 -0400
+Message-Id: <20220825013932.23467-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220825013932.23467-1-sashal@kernel.org>
-References: <20220825013932.23467-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,58 +56,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Josip Pavic <Josip.Pavic@amd.com>
 
-[ Upstream commit 7b6670b03641ac308aaa6fa2e6f964ac993b5ea3 ]
+[ Upstream commit 8de297dc046c180651c0500f8611663ae1c3828a ]
 
-When booting under KVM the following error messages are issued:
+[why]
+In some cases MPC tree bottom pipe ends up point to itself.  This causes
+iterating from top to bottom to hang the system in an infinite loop.
 
-hypfs.7f5705: The hardware system does not support hypfs
-hypfs.7a79f0: Initialization of hypfs failed with rc=-61
+[how]
+When looping to next MPC bottom pipe, check that the pointer is not same
+as current to avoid infinite loop.
 
-Demote the severity of first message from "error" to "info" and issue
-the second message only in other error cases.
-
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220620094534.18967-1-jgross@suse.com
-[arch/s390/hypfs/hypfs_diag.c changed description]
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Reviewed-by: Josip Pavic <Josip.Pavic@amd.com>
+Reviewed-by: Jun Lei <Jun.Lei@amd.com>
+Acked-by: Alex Hung <alex.hung@amd.com>
+Signed-off-by: Aric Cyr <aric.cyr@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/hypfs/hypfs_diag.c | 2 +-
- arch/s390/hypfs/inode.c      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c | 6 ++++++
+ drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
-diff --git a/arch/s390/hypfs/hypfs_diag.c b/arch/s390/hypfs/hypfs_diag.c
-index f0bc4dc3e9bf..6511d15ace45 100644
---- a/arch/s390/hypfs/hypfs_diag.c
-+++ b/arch/s390/hypfs/hypfs_diag.c
-@@ -437,7 +437,7 @@ __init int hypfs_diag_init(void)
- 	int rc;
- 
- 	if (diag204_probe()) {
--		pr_err("The hardware system does not support hypfs\n");
-+		pr_info("The hardware system does not support hypfs\n");
- 		return -ENODATA;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
+index 8b2f29f6dabd..068e79fa3490 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_mpc.c
+@@ -118,6 +118,12 @@ struct mpcc *mpc1_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
+ 	while (tmp_mpcc != NULL) {
+ 		if (tmp_mpcc->dpp_id == dpp_id)
+ 			return tmp_mpcc;
++
++		/* avoid circular linked list */
++		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
++		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
++			break;
++
+ 		tmp_mpcc = tmp_mpcc->mpcc_bot;
  	}
- 
-diff --git a/arch/s390/hypfs/inode.c b/arch/s390/hypfs/inode.c
-index 70139d0791b6..ca4fc66a361f 100644
---- a/arch/s390/hypfs/inode.c
-+++ b/arch/s390/hypfs/inode.c
-@@ -501,9 +501,9 @@ static int __init hypfs_init(void)
- 	hypfs_vm_exit();
- fail_hypfs_diag_exit:
- 	hypfs_diag_exit();
-+	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- fail_dbfs_exit:
- 	hypfs_dbfs_exit();
--	pr_err("Initialization of hypfs failed with rc=%i\n", rc);
- 	return rc;
- }
- device_initcall(hypfs_init)
+ 	return NULL;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
+index 5a188b2bc033..0a00bd8e00ab 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_mpc.c
+@@ -488,6 +488,12 @@ struct mpcc *mpc2_get_mpcc_for_dpp(struct mpc_tree *tree, int dpp_id)
+ 	while (tmp_mpcc != NULL) {
+ 		if (tmp_mpcc->dpp_id == 0xf || tmp_mpcc->dpp_id == dpp_id)
+ 			return tmp_mpcc;
++
++		/* avoid circular linked list */
++		ASSERT(tmp_mpcc != tmp_mpcc->mpcc_bot);
++		if (tmp_mpcc == tmp_mpcc->mpcc_bot)
++			break;
++
+ 		tmp_mpcc = tmp_mpcc->mpcc_bot;
+ 	}
+ 	return NULL;
 -- 
 2.35.1
 
