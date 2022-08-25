@@ -2,71 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C925DC28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE58C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:47:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242019AbiHYMr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37944 "EHLO
+        id S241086AbiHYMrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 08:47:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242033AbiHYMpV (ORCPT
+        with ESMTP id S242029AbiHYMpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 25 Aug 2022 08:45:21 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FDD20F77
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:45:14 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 841371A1835;
-        Thu, 25 Aug 2022 14:45:13 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4D94C1A1833;
-        Thu, 25 Aug 2022 14:45:13 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id C44C21820F5D;
-        Thu, 25 Aug 2022 20:45:11 +0800 (+08)
-From:   Shengjiu Wang <shengjiu.wang@nxp.com>
-To:     nicoleotsuka@gmail.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
-        shengjiu.wang@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] ASoC: fsl_aud2htx: Add error handler for pm_runtime_enable
-Date:   Thu, 25 Aug 2022 20:27:40 +0800
-Message-Id: <1661430460-5234-2-git-send-email-shengjiu.wang@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1661430460-5234-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1661430460-5234-1-git-send-email-shengjiu.wang@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0C913F29
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:45:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C059661C43
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 12:45:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D60BC433D6;
+        Thu, 25 Aug 2022 12:45:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661431512;
+        bh=pOtQJt9kEx8p4pkA3MWq57CKBS+/4IwMA0AR5ke4v1I=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=lLxYM08fBDiqRFJl+zb/yqfIPSKEf49j9HQmj4Z9tJE3OGdfTXFYWLu7FXCPzxeDy
+         oK5AqfeNt0cm9eak1kACO5Koe0/tw4RgysM9ymQU1Qi1GyW3xTCth170Hb3n9P/p1/
+         dSJWO9Sshl0uaCsBvMdP2fJPjBsz28lCINbX1EZJ31pSYtUn8/Gjm/lKdebdHd9QsC
+         Va1KwNKEBRBl9IutX0nwRB/oYxzZX0voLVYmW089GdfU39B+dndwyhSuCLBXZJ5v7G
+         huP+/N2uTUj0g80haKehKDsRhENjpkmm7WPV7oempVCt2icrrKv76Afkx/GhyMOIot
+         OZH+Y1hwQ6sSg==
+From:   Mark Brown <broonie@kernel.org>
+To:     peter.ujfalusi@linux.intel.com, lgirdwood@gmail.com,
+        pierre-louis.bossart@linux.intel.com,
+        Chunxu Li <chunxu.li@mediatek.com>, daniel.baluta@nxp.com,
+        angelogioacchino.delregno@collabora.com
+Cc:     linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, matthias.bgg@gmail.com,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        project_global_chrome_upstream_group@mediatek.com,
+        yc.hung@mediatek.com, linux-kernel@vger.kernel.org
+In-Reply-To: <20220825065411.31279-1-chunxu.li@mediatek.com>
+References: <20220825065411.31279-1-chunxu.li@mediatek.com>
+Subject: Re: [PATCH 0/3] ASoC: SOF: mediatek: update SOF driver for mt8186
+Message-Id: <166143150803.98448.11310238712995264626.b4-ty@kernel.org>
+Date:   Thu, 25 Aug 2022 13:45:08 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-0c1df
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Call pm_runtime_disable() when error happens in probe()
+On Thu, 25 Aug 2022 14:54:08 +0800, Chunxu Li wrote:
+> In these patches, we update SOF driver for mt8186
+> 
+> Chunxu Li (3):
+>   ASoC: SOF: mediatek: Add dai driver for mt8186
+>   ASoC: SOF: mediatek: add snd_sof_dsp_ops callbacks for pcm and mail
+>     box
+>   ASoC: SOF: mediatek: Use generic implementation for .ipc_msg_data
+>     field
+> 
+> [...]
 
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
----
- sound/soc/fsl/fsl_aud2htx.c | 2 ++
- 1 file changed, 2 insertions(+)
+Applied to
 
-diff --git a/sound/soc/fsl/fsl_aud2htx.c b/sound/soc/fsl/fsl_aud2htx.c
-index bc1b9c6df95c..1e421d9a03fb 100644
---- a/sound/soc/fsl/fsl_aud2htx.c
-+++ b/sound/soc/fsl/fsl_aud2htx.c
-@@ -241,6 +241,7 @@ static int fsl_aud2htx_probe(struct platform_device *pdev)
- 	ret = devm_snd_dmaengine_pcm_register(&pdev->dev, NULL, 0);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to pcm register\n");
-+		pm_runtime_disable(&pdev->dev);
- 		return ret;
- 	}
- 
-@@ -249,6 +250,7 @@ static int fsl_aud2htx_probe(struct platform_device *pdev)
- 					      &fsl_aud2htx_dai, 1);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to register ASoC DAI\n");
-+		pm_runtime_disable(&pdev->dev);
- 		return ret;
- 	}
- 
--- 
-2.34.1
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
+Thanks!
+
+[1/3] ASoC: SOF: mediatek: Add dai driver for mt8186
+      commit: f3b75e9b56780e3bfaa910e560cb9ba4d8f38e53
+[2/3] ASoC: SOF: mediatek: add snd_sof_dsp_ops callbacks for pcm and mail box
+      commit: 82e93430e0ad13cc31e411cfa575e63118bb0ed4
+[3/3] ASoC: SOF: mediatek: Use generic implementation for .ipc_msg_data field
+      commit: 059846071f468da8389dcb8b8bbb38a781b02955
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
