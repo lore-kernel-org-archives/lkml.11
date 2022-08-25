@@ -2,148 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F9AECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:19:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A25EAECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242010AbiHYQTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38762 "EHLO
+        id S243006AbiHYQUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233321AbiHYQTr (ORCPT
+        with ESMTP id S242949AbiHYQT6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:19:47 -0400
-Received: from beige.elm.relay.mailchannels.net (beige.elm.relay.mailchannels.net [23.83.212.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDB34BD4
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:19:45 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 927E7122D4E;
-        Thu, 25 Aug 2022 16:19:44 +0000 (UTC)
-Received: from pdx1-sub0-mail-a253.dreamhost.com (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id D0DFE122E16;
-        Thu, 25 Aug 2022 16:19:43 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661444383; a=rsa-sha256;
-        cv=none;
-        b=EMMHL5zLrNMeNq4rKyCbwZEIEdDuiF8CXPyDRnkFWpwEYKJ71+/dW5xZEzPHePEXlDjT5L
-        uWWQToN+z/K8qVhPVhkjF6arKagg8ZqJcLtMhIElTnuv+14PkPiZNZHn48eJxpKonMbIBl
-        PP7/hXFYJRYhNVpU5q95bpDBzLsyRBM+oqOZ9Qy1eyX8iKTcZPiJumVsSpvBKCsg5Y1rve
-        ANee1SboxGkCocaQPUJ7lh3CNFb534AkJdbgwEwPLaqmczzYmLBAKyqfUxYZb2VtiEcn3t
-        8+5S28gclKVzI6Wx/5Nt67zXEck5OGbMBj8QIfBAX2ygCw+MCaAkya71zOnv4Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661444383;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=QVBJKz2ABICt2qvSlRu5GJPjgPykUXXBeTUH0wKn+Gs=;
-        b=5YBr43Ie5ZrHcnp+9Rwwck35+18pMKUg71yFONOl81O2FzJyiZeNGFh0225BFz0ZMJ6gw8
-        LPvKal93ahYmo1nMaFFsNIXAX2rOgya4HNzVZrGcZNfTzX4qfP1hB2z85oT3v5en1HY0me
-        ZR/nDqK5jhoenJ6cDb9JrqyrZcuyWB8sAJm3Q8N2V8ERV0GhFBROcc3ZlOuaGQQRMhmDV+
-        MQMVY8J+lnGhSpN217auBoFz/FOoIU8oRKm9bhZO/8/xyKnrXs2WejgTtv5dYO6ws7FXy8
-        n3LnQKFJvu7zJu12+3kEwfTwCd5x7nKZm2RyIiEyx1oGxM7E5l63D9yp628eJQ==
-ARC-Authentication-Results: i=1;
-        rspamd-64cc6f7466-rb2wq;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Dime-Exultant: 0ef5925667410d74_1661444384184_544200651
-X-MC-Loop-Signature: 1661444384184:576276869
-X-MC-Ingress-Time: 1661444384184
-Received: from pdx1-sub0-mail-a253.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.112.55.199 (trex/6.7.1);
-        Thu, 25 Aug 2022 16:19:44 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Thu, 25 Aug 2022 12:19:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A5960E4;
+        Thu, 25 Aug 2022 09:19:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a253.dreamhost.com (Postfix) with ESMTPSA id 4MD7TW0ddyz7j;
-        Thu, 25 Aug 2022 09:19:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661444383;
-        bh=QVBJKz2ABICt2qvSlRu5GJPjgPykUXXBeTUH0wKn+Gs=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=mFafEIXw/ZVgaU1iTDGhCWcy02R/yIBrh7EttL0XV4y3LePAG6JRxBQE2FzNq70/T
-         KRYc2i0ZZSCXi7AXVe0V5t6nJAcPsqEOO9uNvax4let9N9Y2a1cHVmekWW5uidoU7Y
-         Gf6xYvwEPBUBGKAKCtMQ1LZSygXiiQGeIynEiBqIKfdNMUapRfnHHuCPM/k06HMrLr
-         8lAiiM+Isu3DBBR9zID5zzSmDDiQootHyJj6F6zEjc/42hpVSgxBClWZhitYvlJs/t
-         bF2zwdhUDHHWwyMBLlRH+QBBt1i7WtA6DFiOmg9n2StnPyJ3zm0sOD5pHygfqffQny
-         aTdNdU9pUdHVA==
-Date:   Thu, 25 Aug 2022 09:01:32 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] fs/proc/base: use maple tree iterators in place of
- linked list
-Message-ID: <20220825160132.w4bphicoifyh2an5@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220824012121.aj2qkzrmdyywu45t@offworld>
- <20220824151129.2023451-1-Liam.Howlett@oracle.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3A7E61B1C;
+        Thu, 25 Aug 2022 16:19:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59430C433D6;
+        Thu, 25 Aug 2022 16:19:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661444396;
+        bh=wMIb7TlZdcwyLiaZmnquyJLiHA7ulJUUDLB8EVnte+A=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=C73d5/tsVaWSFF0g7PVuXHJ2acgs7TN3d86yGo/bsNxswEzP/vjwt6U1kieyEh6fF
+         0+Rn7SUocLLZi/yD0lMzoj3a2rvGDi03C8caNLUAq0hTAjqN85TPIC2tCRTbTOW1As
+         lMZcRwVKTW2HJQTI7PW+TzsdR+5gXrq6vWyYYtajRleHbYWj9kmEu8jkbbj6bocTEB
+         1XXqXun4IOdg375VpI38nkUZeWKOsxdIoH2WhKcoI1y1mIdSNyW5OHQi0U7iGiQxdW
+         BWVOb0M4ieSX3qvAq5KGhE2IZHACFsIyBpynvpN7QNz4FFkiSXuCueKJEBZIToatsp
+         qmZRamyigzAcQ==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id E957B5C055A; Thu, 25 Aug 2022 09:19:55 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 09:19:55 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] rcu: Simplify the code logic of rcu_init_nohz()
+Message-ID: <20220825161955.GO6159@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220817014253.1982-1-thunder.leizhen@huawei.com>
+ <20220817014253.1982-3-thunder.leizhen@huawei.com>
+ <20220822163512.GG6159@paulmck-ThinkPad-P17-Gen-1>
+ <ccfdb4f1-3384-254e-7dff-25645bd7f02d@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220824151129.2023451-1-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <ccfdb4f1-3384-254e-7dff-25645bd7f02d@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 24 Aug 2022, Liam Howlett wrote:
+On Tue, Aug 23, 2022 at 08:13:00PM +0800, Leizhen (ThunderTown) wrote:
+> 
+> 
+> On 2022/8/23 0:35, Paul E. McKenney wrote:
+> > On Wed, Aug 17, 2022 at 09:42:53AM +0800, Zhen Lei wrote:
+> >> When CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y or CONFIG_NO_HZ_FULL=y, additional
+> >> CPUs need to be added to 'rcu_nocb_mask'. But 'rcu_nocb_mask' may be not
+> >> available now, due to 'rcu_nocbs' is not specified. Check and initialize
+> >> 'rcu_nocb_mask' before using it. This code simplification strictly follows
+> >> this logic, compared with old implementations, unnecessary crossovers are
+> >> avoided and easy to understand.
+> >>
+> >> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> > 
+> > This looks like a nice simplification, but I will wait for your response
+> > on Patch 1/1 before trying it out.
+> 
+> How about I post v5 and just do this simplification? Patch 1/2 seems to require
+> further discussion and in-depth analysis, which may take a long time.
 
->From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
->
->Use mas_for_each to iterate the list of VMAs instead of a for loop
->across the linked list.
+Excellent choice, thank you!
 
-Hmm so why isn't this using the standard VMA_ITERATOR?
 
->
->Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
->---
-> fs/proc/base.c | 5 ++++-
-> 1 file changed, 4 insertions(+), 1 deletion(-)
->
->diff --git a/fs/proc/base.c b/fs/proc/base.c
->index 93f7e3d971e4..0b72a6d8aac3 100644
->--- a/fs/proc/base.c
->+++ b/fs/proc/base.c
->@@ -2350,6 +2350,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
-> 	GENRADIX(struct map_files_info) fa;
-> 	struct map_files_info *p;
-> 	int ret;
->+	MA_STATE(mas, NULL, 0, 0);
->
-> 	genradix_init(&fa);
->
->@@ -2377,6 +2378,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
-> 	}
->
-> 	nr_files = 0;
->+	mas.tree = &mm->mm_mt;
->
-> 	/*
-> 	 * We need two passes here:
->@@ -2388,7 +2390,8 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
-> 	 * routine might require mmap_lock taken in might_fault().
-> 	 */
->
->-	for (vma = mm->mmap, pos = 2; vma; vma = vma->vm_next) {
->+	pos = 2;
->+	mas_for_each(&mas, vma, ULONG_MAX) {
-> 		if (!vma->vm_file)
-> 			continue;
-> 		if (++pos <= ctx->pos)
->-- 
->2.35.1
+							Thanx, Paul
+
+> >> ---
+> >>  kernel/rcu/tree_nocb.h | 32 +++++++++-----------------------
+> >>  1 file changed, 9 insertions(+), 23 deletions(-)
+> >>
+> >> diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
+> >> index ff763e7dc53551f..3c59b12f4465af1 100644
+> >> --- a/kernel/rcu/tree_nocb.h
+> >> +++ b/kernel/rcu/tree_nocb.h
+> >> @@ -1209,44 +1209,30 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
+> >>  void __init rcu_init_nohz(void)
+> >>  {
+> >>  	int cpu;
+> >> -	bool need_rcu_nocb_mask = false;
+> >> -	bool offload_all = false;
+> >>  	struct rcu_data *rdp;
+> >> +	const struct cpumask *cpumask = NULL;
+> >>  
+> >>  #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
+> >> -	if (!cpumask_available(rcu_nocb_mask)) {
+> >> -		need_rcu_nocb_mask = true;
+> >> -		offload_all = true;
+> >> -	}
+> >> -#endif /* #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL) */
+> >> -
+> >> -#if defined(CONFIG_NO_HZ_FULL)
+> >> -	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
+> >> -		need_rcu_nocb_mask = true;
+> >> -		offload_all = false; /* NO_HZ_FULL has its own mask. */
+> >> -	}
+> >> -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
+> >> +	cpumask = cpu_possible_mask;
+> >> +#elif defined(CONFIG_NO_HZ_FULL)
+> >> +	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
+> >> +		cpumask = tick_nohz_full_mask;
+> >> +#endif
+> >>  
+> >> -	if (need_rcu_nocb_mask) {
+> >> +	if (cpumask) {
+> >>  		if (!cpumask_available(rcu_nocb_mask)) {
+> >>  			if (!zalloc_cpumask_var(&rcu_nocb_mask, GFP_KERNEL)) {
+> >>  				pr_info("rcu_nocb_mask allocation failed, callback offloading disabled.\n");
+> >>  				return;
+> >>  			}
+> >>  		}
+> >> +
+> >> +		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, cpumask);
+> >>  	}
+> >>  
+> >>  	if (!cpumask_available(rcu_nocb_mask))
+> >>  		return;
+> >>  
+> >> -#if defined(CONFIG_NO_HZ_FULL)
+> >> -	if (tick_nohz_full_running)
+> >> -		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
+> >> -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
+> >> -
+> >> -	if (offload_all)
+> >> -		cpumask_setall(rcu_nocb_mask);
+> >> -
+> >>  	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
+> >>  		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
+> >>  		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
+> >> -- 
+> >> 2.25.1
+> >>
+> > .
+> > 
+> 
+> -- 
+> Regards,
+>   Zhen Lei
