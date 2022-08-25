@@ -2,96 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E96FBC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE95C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235610AbiHYMUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:20:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42308 "EHLO
+        id S241120AbiHYMV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 08:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241529AbiHYMUN (ORCPT
+        with ESMTP id S239668AbiHYMVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 08:20:13 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B244D5FF69;
-        Thu, 25 Aug 2022 05:20:09 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MD26M2TsWzmV7n;
-        Thu, 25 Aug 2022 20:17:47 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 25 Aug 2022 20:20:07 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
- 2022 20:20:07 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>
-CC:     <bhelgaas@google.com>
-Subject: [PATCH -next 2/3] PCI: fix possible memory leak in error case in pci_register_host_bridge()
-Date:   Thu, 25 Aug 2022 20:27:52 +0800
-Message-ID: <20220825122753.1838930-2-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220825122753.1838930-1-yangyingliang@huawei.com>
-References: <20220825122753.1838930-1-yangyingliang@huawei.com>
+        Thu, 25 Aug 2022 08:21:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC289A9A4;
+        Thu, 25 Aug 2022 05:21:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12F1A61B5D;
+        Thu, 25 Aug 2022 12:21:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE42C433D6;
+        Thu, 25 Aug 2022 12:21:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661430079;
+        bh=/4tyMqLwSYhTo6yY0rsvHIOoMQsngmHs6o8X1S+4aTY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qtMOVQdXhwpz7nIrnm5Gba5UnYa9i5CHqSeU3lPDnf9eyZpg/5kKEtdM+iorAF5Jh
+         wZhDXbUlasf63yLILMis4Z11XsrekyklpzPwvwhwEcuTdVCLxMer8IAslnMxowOfvM
+         FLLfiZlkWv1QAv1AdRamBCGPP4Axxo0Zpulaw0R/ayEPzvjX7eBTNqKExzWizCdgGZ
+         3yci6tqVUFCFR4aWvXXNe4SlcRxa1NTQc28AE9bHJwemIsx1aywqdaKdxB8fNH6QGJ
+         VfdxhX6ecWi0aoQbxuBrq0SajgDSZ10fYEqS6IUPolkdyQ1AAtF6Fl1m12vfi6MxX9
+         XePoD94Sac6gg==
+Date:   Thu, 25 Aug 2022 13:21:13 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     Christian =?utf-8?Q?Kohlschu=CC=88tter?= 
+        <christian@kohlschutter.com>, heiko@sntech.de, lgirdwood@gmail.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        m.reichl@fivetechno.de, robin.murphy@arm.com,
+        vincent.legoll@gmail.com, wens@kernel.org
+Subject: Re: [PATCH v4] regulator: core: Resolve supply name earlier to
+ prevent double-init
+Message-ID: <YwdpOX0xCzYwhjmx@sirena.org.uk>
+References: <YvorNPDQQr2SH/NF@sirena.org.uk>
+ <20220818124646.6005-1-christian@kohlschutter.com>
+ <CGME20220825113251eucas1p247c3d57de823da148ca4790975a4aba8@eucas1p2.samsung.com>
+ <58b92e75-f373-dae7-7031-8abd465bb874@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="DbctYosMDif7tras"
+Content-Disposition: inline
+In-Reply-To: <58b92e75-f373-dae7-7031-8abd465bb874@samsung.com>
+X-Cookie: Boycott meat -- suck your thumb.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If device_register() fails in pci_register_host_bridge(), the refcount
-of bus device is leaked, so device name that set by dev_set_name() can
-not be freed. Fix this by calling put_device() when device_register()
-fails, so the device name will be freed in kobject_cleanup().
 
-Fixes: 37d6a0a6f470 ("PCI: Add pci_register_host_bridge() interface")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/pci/probe.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+--DbctYosMDif7tras
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index e500eb9d6468..292d9da146ce 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -948,8 +948,17 @@ static int pci_register_host_bridge(struct pci_host_bridge *bridge)
- 	name = dev_name(&bus->dev);
- 
- 	err = device_register(&bus->dev);
--	if (err)
--		goto unregister;
-+	if (err) {
-+		/*
-+		 * release_pcibus_dev() will decrease the refcount of bridge
-+		 * device and free the memory of bus.
-+		 * The memory of bus device name will be freed when the refcount
-+		 * get to zero.
-+		 */
-+		put_device(&bus->dev);
-+		device_unregister(&bridge->dev);
-+		return err;
-+	}
- 
- 	pcibios_add_bus(bus);
- 
-@@ -1025,10 +1034,6 @@ static int pci_register_host_bridge(struct pci_host_bridge *bridge)
- 
- 	return 0;
- 
--unregister:
--	put_device(&bridge->dev);
--	device_unregister(&bridge->dev);
--
- free:
- 	kfree(bus);
- 	return err;
--- 
-2.25.1
+On Thu, Aug 25, 2022 at 01:32:50PM +0200, Marek Szyprowski wrote:
 
+> This patch landed recently in linux next as commit 8a866d527ac0=20
+> ("regulator: core: Resolve supply name earlier to prevent double-init").=
+=20
+> Unfortunately it breaks booting of Samsung Exynos 5800 based Peach-Pi=20
+> (arch/arm/boot/dts/exynos5800-peach-pi.dts) and Peach-Pit=20
+> (arch/arm/boot/dts/exynos5420-peach-pit.dts) Chromebooks. The last=20
+> message in the kernel log is a message about disabling 'vdd_1v2'=20
+> regulator. This regulator is not used directly, however it is a supply=20
+> for other critical regulators.
+
+This suggests that supplies are ending up not getting bound.  Could you
+perhaps add logging to check that we're attempting to resolve the supply
+(in the
+
+
++       if ((rdev->supply_name && !rdev->supply) &&
++                       (rdev->constraints->always_on ||
++                        rdev->constraints->boot_on)) {
+
+block)?  I'd also note that it's useful to paste the actual error
+messages you're seeing rather than just a description of them.
+
+--DbctYosMDif7tras
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMHaTgACgkQJNaLcl1U
+h9DLYQf7B64bhLUc+XVLb50HyPYEuouG6CPrbSDpaP2LdPCV5ijkpdYx+xOImms8
+VBIpJzR27r14ovgqmLn839wTIJn+tHa5YPfe4OdvLeJRwq5Luwb8kwnJiVk9I7nk
+MTSkpYAV2naDRV9mqNxCvgNo3EtW5Gz627m7uNoWhV8qHkv/kk2eN2s8tJ7d+nEM
+/MQSdJtZEHk25mHtPVrWuX4Z6ejmYJTjI7ltGXb6jOvL5lKzDJSJyD2uLDlTJDKT
+B9lOMJEMxffHThMkAqZzSHT7YpIGnsiyIdlhMAAcTTiE/GhXk5ZOfKp0tq9IPORr
+bAX1v/mTHcPq/XgOiHRZ4V70Yac+jA==
+=bQca
+-----END PGP SIGNATURE-----
+
+--DbctYosMDif7tras--
