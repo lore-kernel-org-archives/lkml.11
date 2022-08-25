@@ -2,166 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F777ECAA27
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1ACFECAA25
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243168AbiHYQns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42746 "EHLO
+        id S243320AbiHYQny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243100AbiHYQnO (ORCPT
+        with ESMTP id S234722AbiHYQnP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:43:14 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BA7BBA68
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:40 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id x63-20020a17090a6c4500b001fabbf8debfso5666494pjj.4
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:40 -0700 (PDT)
+        Thu, 25 Aug 2022 12:43:15 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3499BBA42
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:37 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso5541489pjk.0
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:42:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        d=chromium.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=WejlGClWGOz4bz39sTGrt+zcC+1FgtAJxwc+yuBUn+0=;
-        b=SaF4V56o98RwyKm4Dd9nmZJgCPmnYVFL9biZ4nY7UVTw8PLe9hkPGSpcJ7JhVfqSpo
-         4Wo2DhNt0zt75QS2NiNriICjnCg1VwUFXEob4tUMn/HzRN25XnP5BQ3NdSdTuuTw+yqj
-         KkRjfGpl/qxuQFhWvAkxvrVYfcbhK81Tz5EbiAv2/S7TSUPhu6fOCtNq/S1TWZl1dH9j
-         +xgN+KslrcRgYvGpWPuev08WdqzlH5Ou2+VlEBeDAvirALpBkB1aoKLSDbV+X/cgJXyb
-         iKSkaBMNgF9qnMpkMopBugxFvSY80G2kqQd0XHsNV/yZi5cDYTNgzgo6lsVxvm/BlRvL
-         SBgw==
+        bh=GCPlgnHc/tqqZbHrYV7o6ujHvxSc8tKeAcrwUSDFs2U=;
+        b=IBrHCrtG8zBkQ1j7mrbEy2+vHfvyFZ5fAen674rqZS/pGYZc2Xinw5PfNwVY0HrtI0
+         YqpWcbmPRsSSCLSUzv1iv5hB3lWUPxxeaTLukfCe8S5Xt7ZQpMR0woxvlaq1ahJf0rkQ
+         gWfXdjHpWnh3jDc47vEoqQqev8DFqhHBGLbI8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=WejlGClWGOz4bz39sTGrt+zcC+1FgtAJxwc+yuBUn+0=;
-        b=A63szZdWwSW68ODmhuaPhJmW+vL92jsZIHrv7bmpIdL+y2MXcV7iNAiBcsTmzWUotB
-         tW7XXSS3CBWa1XoilVWjXh3bnDf2JQ3OWsHKVpG6eAkj+r30o9nZGjp7K5E0DXTp79CV
-         PbRIF/AV8i2yT/1C1D24wKNox2MCzO2B3x3ctkkoiRCTiwPo8wMBH3BTfp/3NiVAAbsP
-         8J0aEwehiZrobIlZ0vGybVmUfFlK1CB96lqqtmRE0TVeJu7mN1AU1eC7y1Qi8Mum/8pM
-         rhDoxT8Povx5Iz1vDH6InlvJZMufG+sktMXbr84ZBZNFDsw9g0vUIMtNmz/kOOB7vpmM
-         jwcQ==
-X-Gm-Message-State: ACgBeo1Ci8jokqZwHD8M1Pv708KwxNjOfFTC5mM7wyzW8Teo0suHmybP
-        C2TZC6AO0mTZc1+APyQuLsMAh7IviHgixw==
-X-Google-Smtp-Source: AA6agR6rDKNnv/vTW/guSIqvLU9/pQQzzWn8IkTmPgdhXECN9znL/NqCgRcJsa76TlZc9Q0A0XUk9Q==
-X-Received: by 2002:a17:902:a511:b0:172:97a7:6f5d with SMTP id s17-20020a170902a51100b0017297a76f5dmr4619678plq.159.1661445759842;
-        Thu, 25 Aug 2022 09:42:39 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.236])
-        by smtp.gmail.com with ESMTPSA id b18-20020a62a112000000b005362314bf80sm12779408pff.67.2022.08.25.09.42.34
+        bh=GCPlgnHc/tqqZbHrYV7o6ujHvxSc8tKeAcrwUSDFs2U=;
+        b=K7DeKFhF29HF7gev6AMDY9toHhwuZ6OX0Q10Uhu6e6PxyPS2KzTR9codGa7gXID49v
+         qHMN4Zvj4/+b/qMMJFnzogIHveofe6ro8zEz+nbED6QXqCR378IcohLo/4mCfupNvjlp
+         AQKmz494eTJmcNQUFY3ghdAcnwxt3AFy11LSdVl8wZgkTMWE7NxgHS60GfvawsfUAVcU
+         8xUvfAzKucp1G+Xqpw2rJrS3QSmvxZ4M50fO6M6NMc8stGqrs3/Er+0hFxGjxQhsTdxB
+         +da4eYZB2lRMHmoWruDU1LjLbp78O1DN1XXilyt5iSKflxj+MgEqe8Ks/DCDPKFVdxoq
+         GQqA==
+X-Gm-Message-State: ACgBeo1ilfIC9DboK/UFYSdP5o19mKSsr8wRTapzMiMYtiFNzJtJOkdJ
+        fGpfblBJTtShwNa6TjPxFZ+1zA==
+X-Google-Smtp-Source: AA6agR6Wt1iOXXhr0+A0GtcD6P4ZZH0CF6AGxjt4ez1FIHCEMrN2s3snf+8YYZAidTL+8CMDHzbP3A==
+X-Received: by 2002:a17:902:e80c:b0:172:fb87:d4c1 with SMTP id u12-20020a170902e80c00b00172fb87d4c1mr4624728plg.112.1661445756301;
+        Thu, 25 Aug 2022 09:42:36 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:b7f2:d739:e847:6e53])
+        by smtp.gmail.com with ESMTPSA id y13-20020a17090a154d00b001f2ef3c7956sm3775799pja.25.2022.08.25.09.42.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 09:42:39 -0700 (PDT)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     hannes@cmpxchg.org, tj@kernel.org, mkoutny@suse.com,
-        surenb@google.com
-Cc:     mingo@redhat.com, peterz@infradead.org, gregkh@linuxfoundation.org,
-        corbet@lwn.net, cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v4 01/10] sched/psi: fix periodic aggregation shut off
-Date:   Fri, 26 Aug 2022 00:41:02 +0800
-Message-Id: <20220825164111.29534-2-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220825164111.29534-1-zhouchengming@bytedance.com>
-References: <20220825164111.29534-1-zhouchengming@bytedance.com>
+        Thu, 25 Aug 2022 09:42:35 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andrew Halaney <ahalaney@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/7] arm64: dts: qcom: sc8280xp-crd: Specify which LDO modes are allowed
+Date:   Thu, 25 Aug 2022 09:42:01 -0700
+Message-Id: <20220825094155.3.Ie7d2c50d2b42ef2d364f3a0c8e300e5ce1875b79@changeid>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+In-Reply-To: <20220825164205.4060647-1-dianders@chromium.org>
+References: <20220825164205.4060647-1-dianders@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We don't want to wake periodic aggregation work back up if the
-task change is the aggregation worker itself going to sleep, or
-we'll ping-pong forever.
+This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
+but doesn't specify any modes with "regulator-allowed-modes".
 
-Previously, we would use psi_task_change() in psi_dequeue() when
-task going to sleep, so this check was put in psi_task_change().
+Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
+get_optimum_mode(), not set_load()") the above meant that we were able
+to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
+be stuck at the initial mode. Discussion of this has resulted in the
+decision that the old dts files were wrong and should be fixed to
+fully restore old functionality.
 
-But commit 4117cebf1a9f ("psi: Optimize task switch inside shared cgroups")
-defer task sleep handling to psi_task_switch(), won't go through
-psi_task_change() anymore.
+Let's re-enable the old functionality by fixing the dts.
 
-So this patch move this check to psi_task_switch().
+[1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
 
-Fixes: 4117cebf1a9f ("psi: Optimize task switch inside shared cgroups")
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Fixes: ccd3517faf18 ("arm64: dts: qcom: sc8280xp: Add reference device")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
- kernel/sched/psi.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index ecb4b4ff4ce0..39463dcc16bb 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -796,7 +796,6 @@ void psi_task_change(struct task_struct *task, int clear, int set)
- {
- 	int cpu = task_cpu(task);
- 	struct psi_group *group;
--	bool wake_clock = true;
- 	void *iter = NULL;
- 	u64 now;
+ arch/arm64/boot/dts/qcom/sc8280xp-crd.dts | 33 +++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+index d6f272c71a47..f64d58e371bd 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+@@ -88,6 +88,9 @@ vreg_l3b: ldo3 {
+ 			regulator-max-microvolt = <1200000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-boot-on;
+ 			regulator-always-on;
+ 		};
+@@ -98,6 +101,9 @@ vreg_l4b: ldo4 {
+ 			regulator-max-microvolt = <912000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
  
-@@ -806,19 +805,9 @@ void psi_task_change(struct task_struct *task, int clear, int set)
- 	psi_flags_change(task, clear, set);
+ 		vreg_l6b: ldo6 {
+@@ -106,6 +112,9 @@ vreg_l6b: ldo6 {
+ 			regulator-max-microvolt = <880000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-boot-on;
+ 		};
+ 	};
+@@ -120,6 +129,9 @@ vreg_l1c: ldo1 {
+ 			regulator-max-microvolt = <1800000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
  
- 	now = cpu_clock(cpu);
--	/*
--	 * Periodic aggregation shuts off if there is a period of no
--	 * task changes, so we wake it back up if necessary. However,
--	 * don't do this if the task change is the aggregation worker
--	 * itself going to sleep, or we'll ping-pong forever.
--	 */
--	if (unlikely((clear & TSK_RUNNING) &&
--		     (task->flags & PF_WQ_WORKER) &&
--		     wq_worker_last_func(task) == psi_avgs_work))
--		wake_clock = false;
+ 		vreg_l7c: ldo7 {
+@@ -128,6 +140,9 @@ vreg_l7c: ldo7 {
+ 			regulator-max-microvolt = <2504000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
  
- 	while ((group = iterate_groups(task, &iter)))
--		psi_group_change(group, cpu, clear, set, now, wake_clock);
-+		psi_group_change(group, cpu, clear, set, now, true);
- }
+ 		vreg_l13c: ldo13 {
+@@ -136,6 +151,9 @@ vreg_l13c: ldo13 {
+ 			regulator-max-microvolt = <3072000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 	};
  
- void psi_task_switch(struct task_struct *prev, struct task_struct *next,
-@@ -854,6 +843,7 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
+@@ -151,6 +169,9 @@ vreg_l3d: ldo3 {
+ 			regulator-max-microvolt = <1200000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
  
- 	if (prev->pid) {
- 		int clear = TSK_ONCPU, set = 0;
-+		bool wake_clock = true;
+ 		vreg_l4d: ldo4 {
+@@ -159,6 +180,9 @@ vreg_l4d: ldo4 {
+ 			regulator-max-microvolt = <1200000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
  
- 		/*
- 		 * When we're going to sleep, psi_dequeue() lets us
-@@ -867,13 +857,23 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
- 				clear |= TSK_MEMSTALL_RUNNING;
- 			if (prev->in_iowait)
- 				set |= TSK_IOWAIT;
-+
-+			/*
-+			 * Periodic aggregation shuts off if there is a period of no
-+			 * task changes, so we wake it back up if necessary. However,
-+			 * don't do this if the task change is the aggregation worker
-+			 * itself going to sleep, or we'll ping-pong forever.
-+			 */
-+			if (unlikely((prev->flags & PF_WQ_WORKER) &&
-+				     wq_worker_last_func(prev) == psi_avgs_work))
-+				wake_clock = false;
- 		}
+ 		vreg_l6d: ldo6 {
+@@ -167,6 +191,9 @@ vreg_l6d: ldo6 {
+ 			regulator-max-microvolt = <880000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
  
- 		psi_flags_change(prev, clear, set);
+ 		vreg_l7d: ldo7 {
+@@ -175,6 +202,9 @@ vreg_l7d: ldo7 {
+ 			regulator-max-microvolt = <3072000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
  
- 		iter = NULL;
- 		while ((group = iterate_groups(prev, &iter)) && group != common)
--			psi_group_change(group, cpu, clear, set, now, true);
-+			psi_group_change(group, cpu, clear, set, now, wake_clock);
- 
- 		/*
- 		 * TSK_ONCPU is handled up to the common ancestor. If we're tasked
-@@ -882,7 +882,7 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
- 		if (sleep) {
- 			clear &= ~TSK_ONCPU;
- 			for (; group; group = iterate_groups(prev, &iter))
--				psi_group_change(group, cpu, clear, set, now, true);
-+				psi_group_change(group, cpu, clear, set, now, wake_clock);
- 		}
- 	}
- }
+ 		vreg_l9d: ldo9 {
+@@ -183,6 +213,9 @@ vreg_l9d: ldo9 {
+ 			regulator-max-microvolt = <912000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 	};
+ };
 -- 
-2.37.2
+2.37.2.672.g94769d06f0-goog
 
