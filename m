@@ -2,156 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D7AECAAA3
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C055ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:22:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244355AbiHYWVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
+        id S244343AbiHYWV7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244357AbiHYWVC (ORCPT
+        with ESMTP id S243915AbiHYWV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:21:02 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701F5C578C
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:21:00 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-324ec5a9e97so576565337b3.7
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:21:00 -0700 (PDT)
+        Thu, 25 Aug 2022 18:21:57 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF92DC3F5D
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:21:55 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id x19so33441plc.5
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:21:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=YLpy2xCVK51CZcFB6zrbiai4Ndy7eOAyjwmsLFCvyjU=;
-        b=RuNF59UtgFixO6ATvPnw/me6kowb8cK+ihIPiN9YGvyGWowPWv82QGFElwUvI5+DKh
-         4bM5mWzcBhtKOSRx+2dmqP7D/25ANqTEvkNgxLoZ03wM+hqSBilKjjVQnTGCMzQRJvrf
-         7OmD4R3ZcaS+JouPbNz1nqMeUivjrGYpAJO8ghMB+GXoorGZxcOVY6c5N0xxdBtmHwFb
-         rHW5lKM/+QFvdViqOupzGWdox6T1quWhzvQDszZN+5ppKABtqYAVc6ogO2655g3uO5Un
-         hCeyKkvFIbcG4AOPpY0aWraEDTbF1LJtJDlAcDlsGMIQ8GNjJyqD7u1NEhxtgTZWs3Mh
-         zQWQ==
+        d=yocom-org.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=x5NirdzqMfoe8MCTNsWn+TbWWpEBzaHt38NWMgPFt0Y=;
+        b=pa3FQ750frcLh+M83FXbUBxqvg8TgPlioYvnZJk/g8/rICG6Sl7zzt9mwszxtYD+CC
+         49YGZmDznByJ0h5JmcXMukKMHJ5nCWgQJllJQo9+3bgXVHV0/75e2OT+x20cwrGoQsvh
+         dN3ze+LrdKGZvJz4sF99kmmC3S7B3ZfYfu5d1QpieHPsc5NvKID3/2zYsynALu0DO2e0
+         DM7JaqSLb08/Jc7CnwkELsFcVYhRZXlvtSvnSWTx+HowzVyKtfgBmaeij4oEFPB1qcQW
+         87+FBEhiYbh/V8eUcGtKuoNhV5GwDFzTk4mwINglG5XRAAhwQ5Sy2lY86avE21ePcqms
+         BbOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=YLpy2xCVK51CZcFB6zrbiai4Ndy7eOAyjwmsLFCvyjU=;
-        b=nTsz73hiJAdOyaf9rae2OnCujpgrIgab3p2McUzbglCMn5EgCscCCC7+97hB9mgTRH
-         VtWO2/CFYDE9d4jZao9+LpLmuOIT86ydDuPsv1cyCtR1TzQMgIyS02m/gWekW/FjZvbr
-         CG5a81qaDiPKNeRG1KGtMreBFLVgKOpCGFf1Uqmlu+OOWiLK70wVuFP4XueJ5l8443ja
-         /rMvNQlwSJckd2W2rZSKA1YxBAHtRiGDAVcXxfRfLg6YIM/ar5poBZumG8vcO9hzAm9E
-         YDeQzpRGfVVhZVflgMjDbv4D4M8rVqJxHLf7ARR9P0uojUd6MAVLAZjw1FaQBSvkoOkL
-         FDWA==
-X-Gm-Message-State: ACgBeo3AUG59DxEzR5enV2O5uRhtCZELMHSuapdX2F7xRHFkztIchDTH
-        4HaCJBpQgogAgnKSDVors0RNyU0Rm7l/GoD8wPf3Og==
-X-Google-Smtp-Source: AA6agR5WDTHEn0f5fI43Fn0xyIo60iYiherkxssOJTh4YNKt09fcyH+CjvifzWu3aG86BQ/39tXWDS0RiuFFuEIyC9g=
-X-Received: by 2002:a25:bd4d:0:b0:696:489a:3a86 with SMTP id
- p13-20020a25bd4d000000b00696489a3a86mr3142761ybm.447.1661466059351; Thu, 25
- Aug 2022 15:20:59 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=x5NirdzqMfoe8MCTNsWn+TbWWpEBzaHt38NWMgPFt0Y=;
+        b=t5whj7J0+T7f37bgGXDpwVRU9ffoHFAAFrvQBbnyJ9LNTBcOB0MnBWfgRy9cMI6EBb
+         qI06ugJLvoDQIfsQayeZh5Xk0CUu97DL51UGcV2G/azKK1ExeZTCHGTTTxc3cWQN0lVR
+         AbZmNGhR2caNrJQal42pVjGo9tuddOh4j36rElOVDa0hD5f8E7FJBl//VaIYOIiCZ6QK
+         VwAd6TwIhuqcB3Jr6o9sCCWG3BHW6aRR/kF9IDPUGRiANGnxbuVlVcmqDW7yfqGJJ5Ch
+         Yt8ZMO0vWm5whGVkNJBnBO0oyf1JZNO2Et9XgulpEpCYHL7ulI9+P2XfJN1vv/xLBnK3
+         JjfA==
+X-Gm-Message-State: ACgBeo1GHwccxcGam+pUKzQDnvDfrkJw+NBeFlncfRHSMPWtJnpNLmha
+        gwzMjMZPpyBHBoMaVfzhxtSE5A==
+X-Google-Smtp-Source: AA6agR70MEsIOmrS6RoETs/W38aqLW00pQAtTHj81b9n86XcuDQIAKsE0R/0zU8rTZw0iajBXJclDQ==
+X-Received: by 2002:a17:90a:640d:b0:1fa:ea96:3d10 with SMTP id g13-20020a17090a640d00b001faea963d10mr1336943pjj.74.1661466115146;
+        Thu, 25 Aug 2022 15:21:55 -0700 (PDT)
+Received: from ghaven-kernel ([2601:600:8f80:973::5f])
+        by smtp.gmail.com with ESMTPSA id j14-20020a170902da8e00b00172a1f6027asm49289plx.235.2022.08.25.15.21.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 15:21:54 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 15:21:52 -0700
+From:   Nate Yocom <nate@yocom.org>
+To:     Bastien Nocera <hadess@hadess.net>, dmitry.torokhov@gmail.com
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] Input: joystick: xpad: Add X-Box Adaptive
+ Controller Layer button
+Message-ID: <Ywf2ACXJZ5zm0QV+@ghaven-kernel>
+References: <20220813185343.2306-1-nate@yocom.org>
+ <20220813185343.2306-3-nate@yocom.org>
+ <b32cee349fdfa6ffdc60cd31f662dbd479b01e4d.camel@hadess.net>
+ <ba73ce3733ff76b081fb0916e4b9be82179a42dc.camel@hadess.net>
 MIME-Version: 1.0
-References: <20220817184026.3468620-1-isaacmanjarres@google.com>
-In-Reply-To: <20220817184026.3468620-1-isaacmanjarres@google.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Thu, 25 Aug 2022 15:20:23 -0700
-Message-ID: <CAGETcx9U_tKjnQnymNussM+Qm8vJ_vYpPp_QHY3NDkW7BBuVag@mail.gmail.com>
-Subject: Re: [PATCH v3] driver core: Don't probe devices after
- bus_type.match() probe deferral
-To:     "Isaac J. Manjarres" <isaacmanjarres@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        stable@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ba73ce3733ff76b081fb0916e4b9be82179a42dc.camel@hadess.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 11:40 AM Isaac J. Manjarres
-<isaacmanjarres@google.com> wrote:
->
-> Both __device_attach_driver() and __driver_attach() check the return
-> code of the bus_type.match() function to see if the device needs to be
-> added to the deferred probe list. After adding the device to the list,
-> the logic attempts to bind the device to the driver anyway, as if the
-> device had matched with the driver, which is not correct.
->
-> If __device_attach_driver() detects that the device in question is not
-> ready to match with a driver on the bus, then it doesn't make sense for
-> the device to attempt to bind with the current driver or continue
-> attempting to match with any of the other drivers on the bus. So, update
-> the logic in __device_attach_driver() to reflect this.
->
-> If __driver_attach() detects that a driver tried to match with a device
-> that is not ready to match yet, then the driver should not attempt to bind
-> with the device. However, the driver can still attempt to match and bind
-> with other devices on the bus, as drivers can be bound to multiple
-> devices. So, update the logic in __driver_attach() to reflect this.
->
-> Cc: stable@vger.kernel.org
-> Cc: Saravana Kannan <saravanak@google.com>
-> Fixes: 656b8035b0ee ("ARM: 8524/1: driver cohandle -EPROBE_DEFER from bus_type.match()")
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
-> Tested-by: Guenter Roeck <linux@roeck-us.net>
-> Reviewed-by: Saravana Kannan <saravanak@google.com>
-> ---
->  drivers/base/dd.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> v1 -> v2:
-> - Fixed the logic in __driver_attach() to allow a driver to continue
->   attempting to match and bind with devices in case of any error, not
->   just probe deferral.
->
-> v2 -> v3:
-> - Restored the patch back to v1.
-> - Added Guenter's Tested-by tag.
-> - Added Saravana's Reviewed-by tag.
-> - Cc'd stable@vger.kernel.org
->
-> Greg,
->
-> This is the final version of this patch. Can you please pick this up?
->
-> Thanks,
-> Isaac
->
-> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> index 70f79fc71539..90b31fb141a5 100644
-> --- a/drivers/base/dd.c
-> +++ b/drivers/base/dd.c
-> @@ -881,6 +881,11 @@ static int __device_attach_driver(struct device_driver *drv, void *_data)
->                 dev_dbg(dev, "Device match requests probe deferral\n");
->                 dev->can_match = true;
->                 driver_deferred_probe_add(dev);
-> +               /*
-> +                * Device can't match with a driver right now, so don't attempt
-> +                * to match or bind with other drivers on the bus.
-> +                */
-> +               return ret;
->         } else if (ret < 0) {
->                 dev_dbg(dev, "Bus failed to match device: %d\n", ret);
->                 return ret;
-> @@ -1120,6 +1125,11 @@ static int __driver_attach(struct device *dev, void *data)
->                 dev_dbg(dev, "Device match requests probe deferral\n");
->                 dev->can_match = true;
->                 driver_deferred_probe_add(dev);
-> +               /*
-> +                * Driver could not match with device, but may match with
-> +                * another device on the bus.
-> +                */
-> +               return 0;
->         } else if (ret < 0) {
->                 dev_dbg(dev, "Bus failed to match device: %d\n", ret);
->                 return ret;
-> --
-> 2.37.1.595.g718a3a8f04-goog
->
+On Wed, Aug 24, 2022 at 05:36:30PM +0200, Bastien Nocera wrote:
+> On Wed, 2022-08-17 at 12:37 +0200, Bastien Nocera wrote:
+> > On Sat, 2022-08-13 at 11:53 -0700, Nate Yocom wrote:
+> > > Adds a new quirk for controllers that have a Layer button which has
+> > > 4
+> > > states, reflected as an ABS_MISC axis with 4 values.
+> > 
+> > It's called the "Profile Button" in the official documentation:
+> > https://support.xbox.com/en-US/help/account-profile/accessibility/get-to-know-adaptive-controller
+> > so best to call it that.
+> > 
+> > I wonder we have any other examples of profile handling in input
+> > drivers. The xpadneo driver implements the profiles in the kernel
+> > driver directly.
+> > 
+> > Benjamin?
+> 
+> After speaking to Benjamin, it was clear that ABS_MISC wasn't the right
+> absolute axis to use.
+> 
+> I think that adding a new ABS_* axes in include/uapi/linux/input-event-
+> codes.h would be the best, for example ABS_PROFILE as 0x21.
 
-Greg,
+Makes sense to me. 
 
-Can you pull this in for 6.0-rcX please? This is fixing a long
-standing bug that was exposed by my amba code cleanup.
+> Dmitry, what do you think?
 
--Saravana
+I'll submit a v5 with ABS_PROFILE defined jic.
+
+> 
+> The idea here is to encode a hardware controlled switch that has 4
+> possible values. Its state will be sent with every input event in order
+> for user-space to (maybe) apply a specific profile to the events.
+> 
+> This would also be used by the XBox Elite 2 controller driver.
+> 
+> Cheers
