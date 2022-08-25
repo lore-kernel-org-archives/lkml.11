@@ -2,100 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D304C64990
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34658C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:35:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241708AbiHYNfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38010 "EHLO
+        id S241130AbiHYNfj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:35:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234550AbiHYNfE (ORCPT
+        with ESMTP id S242857AbiHYNfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:35:04 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA3B70E61
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:35:03 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id w19so39606938ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:35:03 -0700 (PDT)
+        Thu, 25 Aug 2022 09:35:30 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B30792E9;
+        Thu, 25 Aug 2022 06:35:28 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id h24so24660204wrb.8;
+        Thu, 25 Aug 2022 06:35:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=maHy+RdG1bfZFcMYc9WoBOBgcyZgJzrvT/br9of5/VU=;
-        b=ki59yMmI7FCk8x3aODpep64NKP8t1/4KYxMTUMMmwXZzS7FTFF7NyXtV3OQEzwBO8i
-         ixy2Ie3yBDN6MY9J6oh5ohKreOhyo4exnqAFtyDKyGIlmMEoYYKv5UvuVW3BpzpK3A8u
-         A+7XL429LMEIxpIIwyJTOz0NA8se0/inNDugUuas2ut7vqjWuB5zrL1DUwzw8tv87ahu
-         2nJ5bjWNidheTYWOAkK5DgmkK9F9z7cyBalUhH9epPhy73xf2ROJwaJA5xylPX1yvZrl
-         l+q1P0cdFMUVBHTnZXGgW0s8vq3N5rLVszPhTP+7mm1iaK128FV3V6UVbyj1gmG9ENDu
-         JRJg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=1YhFpbHOP2L3HxhjwTH61U3L7iFs9TCv/PZtz7Logkg=;
+        b=N0JYE3iWPQ1xCxuDZNIk2bxNlQS4LgJcKSjCHSp25/b53nk1PfwMM9IfyDud+/2Uhv
+         FCjjCUHfHpemnH2fLYu91Cq8ARwzcjQr0C54NF2J9Y0oTiJtqmTavOWiCTUsmibNvTLr
+         qWmtMZuGtXJErZJ0BLlCp+p/fN5OF0eWR4m0ojXaCIqapBJlm2Cw1f9XZX2Ik+SZVRO9
+         dHQglMsuAe/vrn4b6nI+R3FReQfvKD72ROlNdFLFOLDvm2VRhCQRREIDm0wjMc9iFntv
+         OIpAnSIro5NzxkiU0Kn9/orvjhrrAS8qhV6jkqt29OpYYsXDvrqBTXaCvEYnuJcX0lys
+         /7IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=maHy+RdG1bfZFcMYc9WoBOBgcyZgJzrvT/br9of5/VU=;
-        b=7NxmdSNY5cA5dV61g7sR3qToGcXfsSsvYGurrL9d47S/z9y7pSzTIjMrySZKG9wlha
-         vWC71Ef5fSAOA0iC9cvDJS9v1tSqT85nOz7Gsbk4YkSJLBpXqFBykuNLtJDi5sJ1J7Kt
-         sIsr386QOBFezUx7uPnV5i4AsR/+kWbTYTwSzyQcT99RT10iX9ZFvbrSIkTl2ViGnIFx
-         LWxoBUNSC6W5rkupjN60d2FQzKRmV1qTTg4Q3WfOg6kxOe1mUKLUGWhgPQtnAXx3K+H4
-         MHmsZ8LQZdqvmwn/+DuFNg+YxTXShXXi8NqNNdslZWURD2w9b6ZfVoM5aihlkgCk/oKc
-         9bSw==
-X-Gm-Message-State: ACgBeo0rMIv0vY5hfCa5AcrcvNi+DSB0bhYnc8mEer1BL3HqI6jKkoNN
-        t2d7ACpLAWXC1aAve9JCDwxTsA==
-X-Google-Smtp-Source: AA6agR68Mc5Uo00qzU7ZBlI2Td38wWc8YYe05Y9uKw9yUI6KGPOGWg8b0eKy6paLME3n78tCMGxBlQ==
-X-Received: by 2002:a17:907:75d9:b0:73d:dda8:b6c with SMTP id jl25-20020a17090775d900b0073ddda80b6cmr397885ejc.319.1661434502051;
-        Thu, 25 Aug 2022 06:35:02 -0700 (PDT)
-Received: from localhost (ip-109-192-149-028.um38.pools.vodafone-ip.de. [109.192.149.28])
-        by smtp.gmail.com with ESMTPSA id l10-20020a1709060cca00b0073bf84be798sm2501321ejh.142.2022.08.25.06.35.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 06:35:01 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 09:35:00 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Zhaoyang Huang <huangzhaoyang@gmail.com>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Tejun Heo <tj@kernel.org>, Shakeel Butt <shakeelb@google.com>,
-        "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [RFC PATCH] memcg: use root_mem_cgroup when css is inherited
-Message-ID: <Ywd6hN1Q9MtQWZCp@cmpxchg.org>
-References: <YwS/S9Sd1OWnT81Q@dhcp22.suse.cz>
- <CAGWkznGYLyF+njUB0gFF3JVdThnK9JaNsqxXYFhbdSwEQpCxvA@mail.gmail.com>
- <YwXYVjRpXQjQMsxr@dhcp22.suse.cz>
- <CAGWkznEqX3DwHW_owiK+HuuQ-HsUYK4vKmLhSxgzGn20Vzid2A@mail.gmail.com>
- <YwX89JCQCKMMYdG9@dhcp22.suse.cz>
- <CAGWkznF+dBjLzAxMMXWYSZ_5q3KA-ou0P7XM7jSYN7JSRp8N0w@mail.gmail.com>
- <YwcZctA2S3Sd0LBN@dhcp22.suse.cz>
- <CAGWkznH5gQXigdLx=fwdL0uqdGx4WE9QP8b8cbWFxr=Rdg-CZQ@mail.gmail.com>
- <Ywc34ci5XUMXOSYA@dhcp22.suse.cz>
- <CAGWkznHL_G3OoAc5gJ+iwxqxonr21-fU+F4T2gkpXH68keLpuQ@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=1YhFpbHOP2L3HxhjwTH61U3L7iFs9TCv/PZtz7Logkg=;
+        b=jVWzcIfw92tybEDn+UM0zpgqJjAFpj6MRnpQtILonSljcaBeRptFRlmFEXxsOrLiJw
+         KcpxZXnkVABdBMkj/HRCfyQHGcTwM9+5MARSlpfTbVtekTuih0hVRMnUewfU9EVz33xZ
+         Qmj6lfJ9lq3KOx8OnziBIlVET4AY1kGCAhVvaMcGyq1PmFdMXOG0op2AlCIosKuCvWF8
+         v+d10fjFb0xpWL5/SjsZYd14XeWhS03MyI6LeIpgNpkFXXD2a0J7mtubSlEqg8sqj90L
+         G4hLdZWQde4njyRMGBBDfF00qYnyXSKloB7OtOsfvXoOtLl3RqGENJmU43tUixV6GXFL
+         Fvfg==
+X-Gm-Message-State: ACgBeo0pxnoA3XW/KlqIIVuaVP2K8Kjh5NlpIO77BJL1u7mqm8XALxg9
+        7cM4voy0TKhLQeJCP7C5Fus=
+X-Google-Smtp-Source: AA6agR4PfR5XtModeZKlkxxKgqBGnJWBWtSf2rL7FYJx+m3m7L9lbMM1ne2k9EGyVvCJl7SZvK2x4w==
+X-Received: by 2002:a5d:64ed:0:b0:225:11d4:76d1 with SMTP id g13-20020a5d64ed000000b0022511d476d1mr2312391wri.579.1661434527464;
+        Thu, 25 Aug 2022 06:35:27 -0700 (PDT)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id c3-20020a7bc843000000b003a32297598csm5145454wml.43.2022.08.25.06.35.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 06:35:26 -0700 (PDT)
+Message-ID: <ac7afbb6-9c8f-4927-be0c-9f6089d1dc67@gmail.com>
+Date:   Thu, 25 Aug 2022 15:35:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGWkznHL_G3OoAc5gJ+iwxqxonr21-fU+F4T2gkpXH68keLpuQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH v4 04/20] dt-bindings: power: mediatek: Support naming
+ power controller node with unit address
+Content-Language: en-US
+To:     Tinghan Shen <tinghan.shen@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        MandyJH Liu <mandyjh.liu@mediatek.com>
+Cc:     iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220729063208.16799-1-tinghan.shen@mediatek.com>
+ <20220729063208.16799-5-tinghan.shen@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220729063208.16799-5-tinghan.shen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 06:11:09PM +0800, Zhaoyang Huang wrote:
-> Sorry for any misunderstanding among the discussion. My purpose is
-> real and simple as I have stated from the very beginning that I would
-> like to have per-app cgroup hierarchy to charge memory to root if it
-> is not enabled explicitly for memory. The reason has also been stated
-> like reclaim and workingset regression in suren's report. I don't
-> think my proposal will do any harm to current v2's mechanism besides
-> asking for the admin echo "+memory" to their desire group.
 
-It would permit children to escape parental control, completely
-breaking the hierarchy and delegation guarantees currently in
-place. That just isn't going to happen.
 
-Nacked-by: Johannes Weiner <hannes@cmpxchg.org>
+On 29/07/2022 08:31, Tinghan Shen wrote:
+> Support naming power controller node with unit address, also compatible
+> with node names without unit address.
+> 
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-I would suggest focusing on finding the root cause for the reclaim
-problem you are describing. It's possible all we need is a fix to
-reclaim or the workingset code.
+Applied, thanks
+
+> ---
+>   .../devicetree/bindings/power/mediatek,power-controller.yaml    | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> index 321802c95308f..2d6afc0909473 100644
+> --- a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> +++ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> @@ -19,7 +19,7 @@ description: |
+>   
+>   properties:
+>     $nodename:
+> -    const: power-controller
+> +    pattern: '^power-controller(@[0-9a-f]+)?$'
+>   
+>     compatible:
+>       enum:
