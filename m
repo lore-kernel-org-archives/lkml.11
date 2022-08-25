@@ -2,135 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCCB3ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F3C4ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244302AbiHYWM3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:12:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43530 "EHLO
+        id S244334AbiHYWMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244122AbiHYWMY (ORCPT
+        with ESMTP id S242855AbiHYWMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 25 Aug 2022 18:12:24 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A177AB2D80;
-        Thu, 25 Aug 2022 15:12:21 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 27PLvwJJ030264;
-        Thu, 25 Aug 2022 16:57:58 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 27PLvtxj030255;
-        Thu, 25 Aug 2022 16:57:55 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 25 Aug 2022 16:57:54 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Alexander Potapenko <glider@google.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 44/45] mm: fs: initialize fsdata passed to write_begin/write_end interface
-Message-ID: <20220825215754.GI25951@gate.crashing.org>
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-45-glider@google.com> <YsNIjwTw41y0Ij0n@casper.infradead.org> <CAG_fn=VbvbYVPfdKXrYRTq7HwmvXPQUeUDWZjwe8x8W=ttq6KA@mail.gmail.com> <CAHk-=wg-LXL4ZDMveCf9M7gWWwCMDG1dHCjD7g1u_vUXsU6Bzw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wg-LXL4ZDMveCf9M7gWWwCMDG1dHCjD7g1u_vUXsU6Bzw@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E99B4423
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 15:12:22 -0700 (PDT)
+Received: from [192.168.1.90] (unknown [188.27.54.142])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 419056601EB5;
+        Thu, 25 Aug 2022 23:12:20 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661465540;
+        bh=ZpkdgljukMvecL8dgUDfn4ptIdOfX7y4FE5jJ/1fyU8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=CEbKAGvNBIYzi/Ti1LMdKMpobOKF+6xnSWpPY8TtbYhJmhvkUPzXS7TCk15ELaiyG
+         RmDBvSGUrPPOP36LARHEo/YqzG0abwAvwOsart9PACe+QmB7OTAoOKXwmFWJeP6iv9
+         HVu6iQCvpK2lrY/K65Em5GbxT4qem/A/pT7nsO+OGs0yt6PjK5JtsV+GoZnlGXjHee
+         NuBCeHYFUFid+sW5x+baxZ4Q8WyfVflumIRXR7VeKnPtcXzfXCm1ZAom8uo80HB2kU
+         BkOO2p21RGzk7QYBIJtUP4nRtZoJ9UedFi0R5Vg8zcnHjTp4A4CBB5ad/CumusXZo3
+         Bh6D/yQ4w7z/A==
+Message-ID: <1d0bd2ec-ce27-02fa-b538-4636ca9ac289@collabora.com>
+Date:   Fri, 26 Aug 2022 01:12:17 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] ASoC: wm_adsp: Silent parsing error on loading speaker
+ protection fw
+Content-Language: en-US
+To:     Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Vlad Karpovich <Vlad.Karpovich@cirrus.com>,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com
+References: <20220823133347.919706-1-cristian.ciocaltea@collabora.com>
+ <20220825124715.GM92394@ediswmail.ad.cirrus.com>
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+In-Reply-To: <20220825124715.GM92394@ediswmail.ad.cirrus.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 09:33:18AM -0700, Linus Torvalds wrote:
-> On Thu, Aug 25, 2022 at 8:40 AM Alexander Potapenko <glider@google.com> wrote:
-> >
-> > On Mon, Jul 4, 2022 at 10:07 PM Matthew Wilcox <willy@infradead.org> wrote:
-> > >
-> > > ... wait, passing an uninitialised variable to a function *which doesn't
-> > > actually use it* is now UB?  What genius came up with that rule?  What
-> > > purpose does it serve?
-> > >
-> >
-> > There is a discussion at [1], with Segher pointing out a reason for
-> > this rule [2] and Linus requesting that we should be warning about the
-> > cases where uninitialized variables are passed by value.
+
+On 8/25/22 15:47, Charles Keepax wrote:
+> On Tue, Aug 23, 2022 at 04:33:47PM +0300, Cristian Ciocaltea wrote:
+>> The tracing capabilities for the speaker protection fw enabled via
+>> commit c55b3e46cb99 ("ASoC: wm_adsp: Add trace caps to speaker
+>> protection FW") are not be available on all platforms, such as the
+>> Valve's Steam Deck which is based on the Halo Core DSP.
+>>
+>> As a consequence, whenever the firmware is loaded, a rather misleading
+>> 'Failed to parse legacy: -19' error message is written to the kernel
+>> ring buffer:
+>>
+>> [  288.977412] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: Firmware version: 3
+>> [  288.978002] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: cs35l41-dsp1-spk-prot.wmfw: Fri 02 Apr 2021 21:03:50 W. Europe Daylight Time
+>> [  289.094065] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: Firmware: 400a4 vendor: 0x2 v0.33.0, 2 algorithms
+>> [  289.095073] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: 0: ID cd v29.53.0 XM@94 YM@e
+>> [  289.095665] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: 1: ID f20b v0.0.1 XM@170 YM@0
+>> [  289.096275] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: Protection: C:\Users\ocanavan\Desktop\cirrusTune_july2021.bin
+>> [  291.172383] steamdeck kernel: cs35l41 spi-VLV1776:01: DSP1: Failed to parse legacy: -19
+>>
+>> Update wm_adsp_buffer_init() to *not* report the ENODEV error when the
+>> firmware type is WM_ADSP_FW_SPK_PROT.
+>>
+>> Fixes: c55b3e46cb99 ("ASoC: wm_adsp: Add trace caps to speaker protection FW")
+>> Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+>> ---
+>>   sound/soc/codecs/wm_adsp.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/sound/soc/codecs/wm_adsp.c b/sound/soc/codecs/wm_adsp.c
+>> index cfaa45ede916..7514fc03b468 100644
+>> --- a/sound/soc/codecs/wm_adsp.c
+>> +++ b/sound/soc/codecs/wm_adsp.c
+>> @@ -1602,7 +1602,7 @@ static int wm_adsp_buffer_init(struct wm_adsp *dsp)
+>>   	if (list_empty(&dsp->buffer_list)) {
+>>   		/* Fall back to legacy support */
+>>   		ret = wm_adsp_buffer_parse_legacy(dsp);
+>> -		if (ret)
+>> +		if (ret && (dsp->fw != WM_ADSP_FW_SPK_PROT || ret != -ENODEV))
+>>   			adsp_warn(dsp, "Failed to parse legacy: %d\n", ret);
 > 
-> I think Matthew was actually more wondering how that UB rule came to be.
-> 
-> Personally, I pretty much despise *all* cases of "undefined behavior",
+> Fixing this for a single firmware probably doesn't really make
+> the most sense, if we are treating buffers as optional these days
+> I guess really the best solution would be to make this either an
+> info and slightly rephrase the message or make it a dbg message.
 
-Let me start by saying you're not alone.  But some UB *cannot* be worked
-around by compilers (we cannot solve the halting problem), and some is
-very expensive to work around (initialising huge structures is a
-typical example).
+Indeed, I have just submitted v2 for a more generic handling of the issue:
 
-Many (if not most) instances of undefined behaviour are unavoidable with
-a language like C.  A very big part of this is separate compilation,
-that is, compiling translation units separately from each other, so that
-the compiler does not see all the ways that something is used when it is
-compiling it.  There only is UB if something is *used*.
+https://lore.kernel.org/all/20220825220530.1205141-1-cristian.ciocaltea@collabora.com/
 
-> but "uninitialized argument" across a function call is one of the more
-> understandable ones.
+Thanks for reviewing,
+Cristian
 
-Allowing this essentially never allows generating better machine code,
-so there are no real arguments for ever allowing it, other than just
-inertia: uninitialised everything else is allowed just fine, and only
-actually *using* such data is UB.  Passing it around is not!  That is
-how everything used to work (with static data, automatic data, function
-parameters, the lot).
-
-But it now is clarified that passing data to a function as function
-argument is a use of that data by itself, even if the function will not
-even look at it ever.
-
-> I personally was actually surprised compilers didn't warn for "you are
-> using an uninitialized value" for a function call argument, because I
-> mentally consider function call arguments to *be* a use of a value.
-
-The function call is a use of all passed arguments.
-
-> Except when the function is inlined, and then it's all different - the
-> call itself goes away, and I *expect* the compiler to DTRT and not
-> "use" the argument except when it's used inside the inlined function.
-
-> Because hey, that's literally the whole point of inlining, and it
-> makes the "static checking" problem go away at least for a compiler.
-
-But UB is defined in terms of the abstract machine (like *all* of C),
-not in terms of the generated machine code.  Typically things will work
-fine if they "become invisible" by inlining, but this does not make the
-program a correct program ever.  Sorry :-(
-
-
-Segher
+> Thanks,
+> Charles
