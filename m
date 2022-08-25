@@ -2,111 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE7EC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E510C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:22:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239475AbiHYJVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 05:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56668 "EHLO
+        id S239484AbiHYJWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239353AbiHYJVd (ORCPT
+        with ESMTP id S239029AbiHYJWV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 05:21:33 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F446A8975;
-        Thu, 25 Aug 2022 02:21:29 -0700 (PDT)
-Received: from canpemm500004.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MCy6r4Cf4z1N7Gr;
-        Thu, 25 Aug 2022 17:17:56 +0800 (CST)
-Received: from localhost (10.175.101.6) by canpemm500004.china.huawei.com
- (7.192.104.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
- 2022 17:21:27 +0800
-From:   Weilong Chen <chenweilong@huawei.com>
-To:     <yangyicong@hisilicon.com>, <wsa@kernel.org>,
-        <chenweilong@huawei.com>
-CC:     <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH next v2 2/2] dt-bindings: i2c: add entry for hisilicon,hisi-i2c
-Date:   Thu, 25 Aug 2022 17:24:12 +0800
-Message-ID: <20220825092412.307052-2-chenweilong@huawei.com>
-X-Mailer: git-send-email 2.31.GIT
-In-Reply-To: <20220825092412.307052-1-chenweilong@huawei.com>
-References: <20220825092412.307052-1-chenweilong@huawei.com>
+        Thu, 25 Aug 2022 05:22:21 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC01140CB
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 02:22:19 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MCy991tT3znTVX;
+        Thu, 25 Aug 2022 17:19:57 +0800 (CST)
+Received: from localhost.localdomain (10.67.164.66) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 17:22:17 +0800
+From:   Yicong Yang <yangyicong@huawei.com>
+To:     <sudeep.holla@arm.com>, <vincent.guittot@linaro.org>,
+        <ionela.voinescu@arm.com>, <linux-kernel@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <rafael@kernel.org>,
+        <21cnbao@gmail.com>, <jonathan.cameron@huawei.com>,
+        <linuxarm@huawei.com>, <prime.zeng@huawei.com>,
+        <yangyicong@hisilicon.com>
+Subject: [PATCH v2] arch_topology: Make cluster topology span at least SMT CPUs
+Date:   Thu, 25 Aug 2022 17:20:07 +0800
+Message-ID: <20220825092007.8129-1-yangyicong@huawei.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500004.china.huawei.com (7.192.104.92)
+X-Originating-IP: [10.67.164.66]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the new compatible for hisi common i2c.
+From: Yicong Yang <yangyicong@hisilicon.com>
 
-Signed-off-by: Weilong Chen <chenweilong@huawei.com>
+Currently cpu_clustergroup_mask() will return CPU mask if cluster span more
+or the same CPUs as cpu_coregroup_mask(). This will result topology borken
+on non-Cluster SMT machines when building with CONFIG_SCHED_CLUSTER=y.
+
+Test with:
+qemu-system-aarch64 -enable-kvm -machine virt \
+ -net none \
+ -cpu host \
+ -bios ./QEMU_EFI.fd \
+ -m 2G \
+ -smp 48,sockets=2,cores=12,threads=2 \
+ -kernel $Image \
+ -initrd $Rootfs \
+ -nographic \
+ -append "rdinit=init console=ttyAMA0 sched_verbose loglevel=8"
+
+We'll get below error:
+[    3.084568] BUG: arch topology borken
+[    3.084570]      the SMT domain not a subset of the CLS domain
+
+Since cluster is a level higher than SMT, fix this by making cluster
+spans at least SMT CPUs.
+
+Cc: Sudeep Holla <sudeep.holla@arm.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Ionela Voinescu <ionela.voinescu@arm.com>
+Fixes: bfcc4397435d ("arch_topology: Limit span of cpu_clustergroup_mask()")
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+Reviewed-by: Sudeep Holla <sudeep.holla@arm.com>
+Reviewed-by: Ionela Voinescu <ionela.voinescu@arm.com>
 ---
- .../bindings/i2c/hisilicon,hisi-i2c.yaml      | 50 +++++++++++++++++++
- 1 file changed, 50 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/i2c/hisilicon,hisi-i2c.yaml
+Change since v1:
+- mention the kernel config CONFIG_SCHED_CLUSTER=y, per Ionela
+Link:https://lore.kernel.org/lkml/20220823073044.58697-1-yangyicong@huawei.com/
 
-diff --git a/Documentation/devicetree/bindings/i2c/hisilicon,hisi-i2c.yaml b/Documentation/devicetree/bindings/i2c/hisilicon,hisi-i2c.yaml
-new file mode 100644
-index 000000000000..ea967abfe144
---- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/hisilicon,hisi-i2c.yaml
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/i2c/hisilicon,hisi-i2c.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Hisilicon common IIC controller Device Tree Bindings
-+
-+maintainers:
-+  - yangyicong@huawei.com
-+
-+allOf:
-+  - $ref: /schemas/i2c/i2c-controller.yaml#
-+
-+properties:
-+  compatible:
-+    const: hisilicon,hisi-i2c
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clk_rate:
-+    maxItems: 1
-+
-+  clock-frequency:
-+    default: 100000
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clk_rate
-+  - clock-frequency
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    i2c1: i2c@5038B0000{
-+      compatible = "hisilicon,hisi-i2c";
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      reg = <0x5 0x038B0000 0 0x10000>;
-+      interrupts = <0x0 120 0x4>;
-+      clk_rate = <0x0 0xEE6B280>;
-+      clock-frequency = <400000>;
-+    };
+ drivers/base/arch_topology.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+index 0424b59b695e..0056a1273275 100644
+--- a/drivers/base/arch_topology.c
++++ b/drivers/base/arch_topology.c
+@@ -724,7 +724,7 @@ const struct cpumask *cpu_clustergroup_mask(int cpu)
+ 	 */
+ 	if (cpumask_subset(cpu_coregroup_mask(cpu),
+ 			   &cpu_topology[cpu].cluster_sibling))
+-		return get_cpu_mask(cpu);
++		return cpu_smt_mask(cpu);
+ 
+ 	return &cpu_topology[cpu].cluster_sibling;
+ }
 -- 
-2.31.GIT
+2.24.0
 
