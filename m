@@ -2,127 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59701ECAA24
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 17:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E4ACECAA27
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 17:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241093AbiHYRQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 13:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47136 "EHLO
+        id S240031AbiHYRRo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 13:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239959AbiHYRQl (ORCPT
+        with ESMTP id S237654AbiHYRRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 13:16:41 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 681B3A4B1F
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 10:16:39 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id hf17so2346019pjb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 10:16:39 -0700 (PDT)
+        Thu, 25 Aug 2022 13:17:41 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 228E7BC117
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 10:17:38 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id w10so14833643edc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 10:17:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=kXvA442rNX297fyG/Fyw0vfNRXroRxF/pdkw6Qxv8UE=;
-        b=ToZvmVtN0p6cjcXv9Y3Nir8/tTLpU8oAKTTXY8BnakyanfxEZ8x3PRjpKKZqm8fS0y
-         NXX5W+9ZWMqepi4v8sFZIiHT9mASAYrThJl/YCihJTrc9FUpoV9/zyiUdsxJYZXcrAfy
-         BKSDQ6WrDpfiWoUynYxmgSOp7dQjmRKQNjhawEk6bnFddnrwziL7gNIKWBuhFqojnKYu
-         +gOh3T9opmBkHTzdTxjwLaxAkhhGY7WdH61OmSe/Ku59drVzSysnTes4IuJS+gbLo9uy
-         lnYYvDBrQMmoFtb9PwWTE2MCvHaKWctNNlKrmlIBkl03TgohWXCiUy/fY3w3a4gWQEZE
-         gOig==
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=jwOz4iT2BQeb7Z52GoBXCVE165vQ/PaiB7E4MX3VOzg=;
+        b=2g15XhRTJVHl3pGrBt7KYB9tODJZNPuo0RKK7aO0xcfwNYoiDa5gNnl9QhBZgRTZH1
+         wzpGaPDTqYX9h4jpDuvgylUNoOT5Lch3EvX7BL7CkVbuyhm4hktsWJUFfLe8tib4v0Gq
+         7Mjh3VgV21lcVMlZx06acL/VUPi6ODi2kr4hsmTpzEfwuJdhGtRa+uoNv7nXEudFJyIa
+         iA890Pl9xzrBCOFHHrzOlOLMm3xlPiAqK2MFwaQKkmjwrpdkyiGN38v19lF6PONeoSXg
+         guMjW7r9YLJwuo6i6gLS8hBFDFsrS2G7IU8PFhcG5seKK+gz7LlbLeq6E7UcbagEEWsK
+         LpUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=kXvA442rNX297fyG/Fyw0vfNRXroRxF/pdkw6Qxv8UE=;
-        b=mfEIZpcVz9oaZyW7pvUl8DHHCiBescof3KZTfa6f3ijMlfbew7OtIiYQ1fiiMxdM23
-         eBsx9+pCmXGKQ1aa/QguUCNFR6tVMMNc6FXI91C9/W4C+Fr4hvSqegJgTxDzXgeridre
-         kZJtF295hEt2bDtFJXFLUZFUyHboPQhFy3B48aApNcmyirxCb4kcbaq9vRxWJ+KX+VEs
-         cMAFNnGlSqtunDVf7Ql0/vsoLlzhDuGg1VAURFtWGVjCoy0U7u2sP0RJRIEJ/stOq8yi
-         tiFEfbhsxC/Wtuc6CODI/7xBEaYEenEpDot3wCQi2nUGklz0iWaXQQXgZaHeEtGcMC85
-         1ntQ==
-X-Gm-Message-State: ACgBeo2w8RoOBnOZOw3BZUCRN31coiwfwY+0Wr5k+Ov3p6Q9b0//wydF
-        pPyWuptCjpUNRgZApBayQwJ55UCoNfEBJQJKm7L39Q==
-X-Google-Smtp-Source: AA6agR4hn6gmJhbjSFERXxwBvcmYC7EtXXgsXsbXOIEW4+3tSmkY0a52Bm/w8MGxU4KSXuqD1WeNS4O+76Pdhwpxxxs=
-X-Received: by 2002:a17:903:41d1:b0:172:ee09:e89e with SMTP id
- u17-20020a17090341d100b00172ee09e89emr3200ple.61.1661447798596; Thu, 25 Aug
- 2022 10:16:38 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=jwOz4iT2BQeb7Z52GoBXCVE165vQ/PaiB7E4MX3VOzg=;
+        b=jijSig2NfiCG1d28VjU0zz2eNPyUEcKIYhF+ALqezx8pKeVfyp85f69KDZPkW3Rbkg
+         jMnQzBSVh4qj1jf+aGIc5LLK9fKwBiBrDA3h9JP2rb8TLURl9Xcu1UTgY2fkvbQUbscv
+         5Y7IqT31OzkK5QRZYXxMF4zoDvhCDJX8kxM76HSyTMcwB1VFt+gUYd6lpRv4ELapLa0H
+         Tzzxv2s9SH8PXISsbzyfbo7E0OUert+YAIFjSa4ZItEKhhz8C7yvNkEUpnQ7BV0mDF/e
+         +MHb2bV1JgYKfqPE3uwZQ8yE8HGy4upYSL2LZrPBfioLVEUQFAxt2iMm2j6b1Trgk4pv
+         rTeQ==
+X-Gm-Message-State: ACgBeo0FVpeXelTrr99acUSNFOXs4jVJCWfdV6xQfrk5QYsoOPZQD5pA
+        MqwnCwjB4giiA5LuM+A3yTmpYw==
+X-Google-Smtp-Source: AA6agR5P/9xkfx1YPi51kqhMj3rOmY2Bq5S6/Ff26hkK5BgmClbpFYwX6S711CBeYPyYjb/pWEL+Jg==
+X-Received: by 2002:aa7:c316:0:b0:447:b517:919e with SMTP id l22-20020aa7c316000000b00447b517919emr3251864edq.175.1661447856379;
+        Thu, 25 Aug 2022 10:17:36 -0700 (PDT)
+Received: from localhost ([2a02:8070:6389:a4c0:2ca9:6d59:782b:fff3])
+        by smtp.gmail.com with ESMTPSA id h3-20020a056402094300b00445e037345csm22904edz.14.2022.08.25.10.17.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 10:17:36 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 13:17:35 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     tj@kernel.org, mkoutny@suse.com, surenb@google.com,
+        mingo@redhat.com, peterz@infradead.org, gregkh@linuxfoundation.org,
+        corbet@lwn.net, cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com
+Subject: Re: [PATCH v4 07/10] sched/psi: add PSI_IRQ to track IRQ/SOFTIRQ
+ pressure
+Message-ID: <Yweur4ugxvLbP2L2@cmpxchg.org>
+References: <20220825164111.29534-1-zhouchengming@bytedance.com>
+ <20220825164111.29534-8-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-References: <20220802230718.1891356-1-mizhang@google.com> <20220802230718.1891356-2-mizhang@google.com>
- <b03adf94-5af2-ff5e-1dbb-6dd212790083@redhat.com> <CAL715WLQa5yz7SWAfOBUzQigv2JG1Ao+rwbeSJ++rKccVoZeag@mail.gmail.com>
- <17505e309d02cf5a96e33f75ccdd6437a8c79222.camel@redhat.com>
- <Ywa+QL/kDp9ibkbC@google.com> <CALMp9eSZ-C4BSSm6c5HBayjEVBdEwTBFcOw37yrd014cRwKPug@mail.gmail.com>
- <YweJ+hX8Ayz11jZi@google.com>
-In-Reply-To: <YweJ+hX8Ayz11jZi@google.com>
-From:   Mingwei Zhang <mizhang@google.com>
-Date:   Thu, 25 Aug 2022 10:16:27 -0700
-Message-ID: <CAL715WK4eqxX9EUHzwqT4o-OX4S_1-WcTr5UuGnc-KEb7pk6EQ@mail.gmail.com>
-Subject: Re: [PATCH 1/5] KVM: x86: Get vmcs12 pages before checking pending interrupts
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Oliver Upton <oupton@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825164111.29534-8-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 7:41 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Wed, Aug 24, 2022, Jim Mattson wrote:
-> > On Wed, Aug 24, 2022 at 5:11 PM Sean Christopherson <seanjc@google.com> wrote:
-> >
-> > > @google folks, what would it take for us to mark KVM_REQ_GET_NESTED_STATE_PAGES
-> > > as deprecated in upstream and stop accepting patches/fixes?  IIUC, when we eventually
-> > > move to userfaultfd, all this goes away, i.e. we do want to ditch this at some point.
-> >
-> > Userfaultfd is a red herring. There were two reasons that we needed
-> > this when nested live migration was implemented:
-> > 1) our netlink socket mechanism for funneling remote page requests to
-> > a userspace listener was broken.
-> > 2) we were not necessarily prepared to deal with remote page requests
-> > during VM setup.
-> >
-> > (1) has long since been fixed. Though our preference is to exit from
-> > KVM_RUN and get the vCPU thread to request the remote page itself, we
-> > are now capable of queuing a remote page request with a separate
-> > listener thread and blocking in the kernel until the page is received.
-> > I believe that mechanism is functionally equivalent to userfaultfd,
-> > though not as elegant.
-> > I don't know about (2). I'm not sure when the listener thread is set
-> > up, relative to all of the other setup steps. Eliminating
-> > KVM_REQ_GET_NESTED_STATE_PAGES means that userspace must be prepared
-> > to fetch a remote page by the first call to KVM_SET_NESTED_STATE. The
-> > same is true when using userfaultfd.
-> >
-> > These new ordering constraints represent a UAPI breakage, but we don't
-> > seem to be as concerned about that as we once were. Maybe that's a
-> > good thing. Can we get rid of all of the superseded ioctls, like
-> > KVM_SET_CPUID, while we're at it?
->
-> I view KVM_REQ_GET_NESTED_STATE_PAGES as a special case.  We are likely the only
-> users, we can (eventually) wean ourselves off the feature, and we can carry
-> internal patches (which we are obviously already carrying) until we transition
-> away.  And unlike KVM_SET_CPUID and other ancient ioctls() that are largely
-> forgotten, this feature is likely to be a maintenance burden as long as it exists.
+On Fri, Aug 26, 2022 at 12:41:08AM +0800, Chengming Zhou wrote:
+> Now PSI already tracked workload pressure stall information for
+> CPU, memory and IO. Apart from these, IRQ/SOFTIRQ could have
+> obvious impact on some workload productivity, such as web service
+> workload.
+> 
+> When CONFIG_IRQ_TIME_ACCOUNTING, we can get IRQ/SOFTIRQ delta time
+> from update_rq_clock_task(), in which we can record that delta
+> to CPU curr task's cgroups as PSI_IRQ_FULL status.
+> 
+> Note we don't use PSI_IRQ_SOME since IRQ/SOFTIRQ always happen in
+> the current task on the CPU, make nothing productive could run
+> even if it were runnable, so we only use PSI_IRQ_FULL.
+> 
+> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 
-KVM_REQ_GET_NESTED_STATE_PAGES has been uniformly used in
-KVM_SET_NESTED_STATE ioctl in VMX (including eVMCS) and SVM, it is
-basically a two-step setting up of a nested state mechanism.
-
-We can change that, but this may have side effects and I think this
-usage case has nothing to do with demand paging.
-
-I noticed that nested_vmx_enter_non_root_mode() is called in
-KVM_SET_NESTED_STATE in VMX, while in SVM implementation, it is simply
-just a kvm_make_request(KVM_REQ_GET_NESTED_STATE_PAGES, vcpu);
-
-hmm... so is the nested_vmx_enter_non_root_mode() call in vmx
-KVM_SET_NESTED_STATE ioctl() still necessary? I am thinking that
-because the same function is called again in nested_vmx_run().
-
-Thanks.
--Mingwei
+Acked-by: Johannes Weiner <hannes@cmpxchg.org>
