@@ -2,97 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B66C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F35C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 09:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240020AbiHYJ2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 05:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        id S240087AbiHYJ2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 05:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237349AbiHYJ2C (ORCPT
+        with ESMTP id S240238AbiHYJ2k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 05:28:02 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4E3A4B0A;
-        Thu, 25 Aug 2022 02:28:01 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id q18so17833125ljg.12;
-        Thu, 25 Aug 2022 02:28:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=bHJbCxqGrMvRJ8HABrOLQY8kdlTtP1fT6llzjdoahEI=;
-        b=F6dgYpp2CWa9EjXLyNUb2hkEr++WEmvoD1Es9jHGjD3nl2s+cUcKf5qo2cYDMhDudh
-         IMnajyC+ijg09SfazUHsyiO0CJsRSfB0wPEfyb0993Y1r4EIbJi/1LdCi3HDAa2NJJ8x
-         +zC5tDOVxxCwf6bf8VbNmzwnczL/SPqiYvkU52CUK7TS4elW2cXs3FEUXudhl83S8u0e
-         SrcF8UkWbV35NopLBg8rBAeTUzSBCzzYntRNyOVr8P409yXN8j/WZFl0g97yIgcnKXs1
-         p38SZYMTy2HmGrbnncEsoQwuSsGvytdaxcgP4HxRFbYOOD0lP9V8LJKk3fFJvFeIQvoT
-         SqiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=bHJbCxqGrMvRJ8HABrOLQY8kdlTtP1fT6llzjdoahEI=;
-        b=R70juOU0TZ9gLbX2BipB38LuUSDYFWfiARCxU9idVW5wvqDp4piQ0V+Cc/RAz5MTod
-         rUxqbSLs53l9TkzUwAQ/ZGqJL/T+LrQrUgYvIT9xoV2vkIiKdcqMdVm4JW2JjMUuQKr6
-         sycDa5QQVuvgbpoqPtIIY3oP9k2Nh9mf0Fj15LE74zx0pkaCaGHNB1GAsvQVhR/Ws0mE
-         I+/SJbvM3zsbRPrkF/mE7ztNDQ72iIxh4oEoWwmKMsHovB44Tfd8MEAch6RsHfdzQ00x
-         21rzPuN7281bQffBfVX6AY28ce9Dtwf9hASyNCjrhhnpZDS2V/qHQ1cOQ2k0ykj+T6YP
-         QPPA==
-X-Gm-Message-State: ACgBeo2SEXae4RP46q+6S/Tj+qclO6MOprNmYSv5uIUYTyb5dD+Enpt+
-        VpWaM5LLZxHl7VF49ynvtBgcowwCC6RXXpt7AZ8=
-X-Google-Smtp-Source: AA6agR450TIsqiag2S5eMHMXUw3UgJhUL8vxaf3i2cYKpNtvBGspRhj5eXNHGG8OC2gIZZGSa5KIZ8mmRqy62CUTnLU=
-X-Received: by 2002:a2e:b0ca:0:b0:261:d46a:4672 with SMTP id
- g10-20020a2eb0ca000000b00261d46a4672mr775822ljl.460.1661419679767; Thu, 25
- Aug 2022 02:27:59 -0700 (PDT)
+        Thu, 25 Aug 2022 05:28:40 -0400
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 99CA7AA4C4;
+        Thu, 25 Aug 2022 02:28:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6kRKP
+        EDJzd7uCW3vEmzwA/9148JjbxPPxtaTCIkn/Jk=; b=UB1taWoipwDCWnApJL0+y
+        1Gtp8t3PTwNHHK2BhtQyHjO/zj/B+qiBHJW2aN9VVcfz7labkc8CBC6rWk2rntWm
+        ZWh2Cvvcoc372k1zOO9Idqg8a39I8YQR9q4VSRpeR6vEvhN2WW5Ag23XxyiNUtQx
+        NRrAnD4QGtJ/oL++LAlN1g=
+Received: from localhost.localdomain (unknown [116.128.244.169])
+        by smtp4 (Coremail) with SMTP id HNxpCgCXduOUQAdjbzILXg--.6127S2;
+        Thu, 25 Aug 2022 17:27:49 +0800 (CST)
+From:   huhai <15815827059@163.com>
+To:     jejb@linux.ibm.com, martin.petersen@oracle.com
+Cc:     sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
+        suganath-prabu.subramani@broadcom.com,
+        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huhai <huhai@kylinos.cn>,
+        stable@vger.kernel.org, Jackie Liu <liuyun01@kylinos.cn>
+Subject: [PATCH] scsi: mpt3sas: Fix NULL pointer crash due to missing check device hostdata
+Date:   Thu, 25 Aug 2022 17:26:45 +0800
+Message-Id: <20220825092645.326953-1-15815827059@163.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220719123525.3448926-1-gasmibal@gmail.com> <20220719123525.3448926-3-gasmibal@gmail.com>
- <a3361036446058fe386634a9016c6925146a078e.camel@sipsolutions.net>
-In-Reply-To: <a3361036446058fe386634a9016c6925146a078e.camel@sipsolutions.net>
-From:   Baligh GASMI <gasmibal@gmail.com>
-Date:   Thu, 25 Aug 2022 11:27:48 +0200
-Message-ID: <CALxDnQYpA+cpUufxkpyqT=JjZUap-i==bn=r2Z3K2Oayh9QhTQ@mail.gmail.com>
-Subject: Re: [RFC/RFT v5 2/4] mac80211: add periodic monitor for channel busy time
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "open list:MAC80211" <linux-wireless@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        Toke Hoiland-Jorgensen <toke@redhat.com>,
-        Linus Lussing <linus.luessing@c0d3.blue>,
-        Kalle Valo <kvalo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgCXduOUQAdjbzILXg--.6127S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxur1UtFWrCFy8GryDCFWDCFg_yoW5KrWUpr
+        98C34Fkr4kGr42g3W7Wa1UZr15Ja13AF10gF4Iv34kWF1Uu34qqry8tr4jyF18GrW5X3WU
+        tF4qqrn5KFWDJaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UEsj8UUUUU=
+X-Originating-IP: [116.128.244.169]
+X-CM-SenderInfo: rprvmiivyslimvzbiqqrwthudrp/1tbiRRVohWDuxhOu4QAAsp
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ok, noted !
-I will try to find a way or maybe remove this part, since the busy
-time is not trivial to be used in the estimation, as I thought.
-Thanks for your reply.
+From: huhai <huhai@kylinos.cn>
+
+If _scsih_io_done() is called with scmd->device->hostdata=NULL, it can lead
+to the following panic:
+
+  BUG: unable to handle kernel NULL pointer dereference at 0000000000000018
+  PGD 4547a4067 P4D 4547a4067 PUD 0
+  Oops: 0002 [#1] SMP NOPTI
+  CPU: 62 PID: 0 Comm: swapper/62 Kdump: loaded Not tainted 4.19.90-24.4.v2101.ky10.x86_64 #1
+  Hardware name: Storage Server/65N32-US, BIOS SQL1041217 05/30/2022
+  RIP: 0010:_scsih_set_satl_pending+0x2d/0x50 [mpt3sas]
+  Code: 00 00 48 8b 87 60 01 00 00 0f b6 10 80 fa a1 74 09 31 c0 80 fa 85 74 02 f3 c3 48 8b 47 38 40 84 f6 48 8b 80 98 00 00 00 75 08 <f0> 80 60 18 fe 31 c0 c3 f0 48 0f ba 68 18 00 0f 92 c0 0f b6 c0 c3
+  RSP: 0018:ffff8ec22fc03e00 EFLAGS: 00010046
+  RAX: 0000000000000000 RBX: ffff8eba1b072518 RCX: 0000000000000001
+  RDX: 0000000000000085 RSI: 0000000000000000 RDI: ffff8eba1b072518
+  RBP: 0000000000000dbd R08: 0000000000000000 R09: 0000000000029700
+  R10: ffff8ec22fc03f80 R11: 0000000000000000 R12: ffff8ebe2d3609e8
+  R13: ffff8ebe2a72b600 R14: ffff8eca472707e0 R15: 0000000000000020
+  FS:  0000000000000000(0000) GS:ffff8ec22fc00000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 0000000000000018 CR3: 000000046e5f6000 CR4: 00000000003406e0
+  Call Trace:
+   <IRQ>
+   _scsih_io_done+0x4a/0x9f0 [mpt3sas]
+   _base_interrupt+0x23f/0xe10 [mpt3sas]
+   __handle_irq_event_percpu+0x40/0x190
+   handle_irq_event_percpu+0x30/0x70
+   handle_irq_event+0x36/0x60
+   handle_edge_irq+0x7e/0x190
+   handle_irq+0xa8/0x110
+   do_IRQ+0x49/0xe0
+
+Fix it by move scmd->device->hostdata check before _scsih_set_satl_pending
+called.
+
+Other changes:
+- It looks clear to move get mpi_reply to near its check.
+
+Fixes: ffb584565894 ("scsi: mpt3sas: fix hang on ata passthrough commands")
+Cc: <stable@vger.kernel.org> # v4.9+
+Co-developed-by: Jackie Liu <liuyun01@kylinos.cn>
+Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
+Signed-off-by: huhai <huhai@kylinos.cn>
+---
+ drivers/scsi/mpt3sas/mpt3sas_scsih.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
+index def37a7e5980..85f5749a0421 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
+@@ -5704,27 +5704,26 @@ _scsih_io_done(struct MPT3SAS_ADAPTER *ioc, u16 smid, u8 msix_index, u32 reply)
+ 	struct MPT3SAS_DEVICE *sas_device_priv_data;
+ 	u32 response_code = 0;
+ 
+-	mpi_reply = mpt3sas_base_get_reply_virt_addr(ioc, reply);
+-
+ 	scmd = mpt3sas_scsih_scsi_lookup_get(ioc, smid);
+ 	if (scmd == NULL)
+ 		return 1;
+ 
++	sas_device_priv_data = scmd->device->hostdata;
++	if (!sas_device_priv_data || !sas_device_priv_data->sas_target ||
++	     sas_device_priv_data->sas_target->deleted) {
++		scmd->result = DID_NO_CONNECT << 16;
++		goto out;
++	}
+ 	_scsih_set_satl_pending(scmd, false);
+ 
+ 	mpi_request = mpt3sas_base_get_msg_frame(ioc, smid);
+ 
++	mpi_reply = mpt3sas_base_get_reply_virt_addr(ioc, reply);
+ 	if (mpi_reply == NULL) {
+ 		scmd->result = DID_OK << 16;
+ 		goto out;
+ 	}
+ 
+-	sas_device_priv_data = scmd->device->hostdata;
+-	if (!sas_device_priv_data || !sas_device_priv_data->sas_target ||
+-	     sas_device_priv_data->sas_target->deleted) {
+-		scmd->result = DID_NO_CONNECT << 16;
+-		goto out;
+-	}
+ 	ioc_status = le16_to_cpu(mpi_reply->IOCStatus);
+ 
+ 	/*
+-- 
+2.27.0
 
 
-Le jeu. 25 ao=C3=BBt 2022 =C3=A0 10:58, Johannes Berg
-<johannes@sipsolutions.net> a =C3=A9crit :
->
-> On Tue, 2022-07-19 at 14:35 +0200, Baligh Gasmi wrote:
-> > Add a worker scheduled periodicaly to calculate the busy time average o=
-f
-> > the current channel.
-> >
-> > This will be used in the estimation for expected throughput.
-> >
->
-> I really don't think you should/can do this - having a 1-second periodic
-> timer (for each interface even!) is going to be really bad for power
-> consumption.
->
-> Please find a way to inline the recalculation with statistics updates
-> and/or queries.
->
-> johannes
+No virus found
+		Checked by Hillstone Network AntiVirus
+
