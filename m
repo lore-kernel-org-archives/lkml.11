@@ -2,143 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12570C04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68014C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbiHYGum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 02:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
+        id S230127AbiHYGvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 02:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236446AbiHYGu0 (ORCPT
+        with ESMTP id S236379AbiHYGuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 02:50:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1977F2A246
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 23:50:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B11F9619CB
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:50:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0DD0C433C1;
-        Thu, 25 Aug 2022 06:50:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661410224;
-        bh=DrccC7ylO4/DdFvmZTVW+Z5UzGv6H0Hfddj9XoE84jQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=vMYz/2zaFP9uEgMNuOEPMkRu9PguAD1D1rxxyHprSe/VPrNk1xtZgGrAPzMNRdrda
-         l4ryTTwabGVYVi0Hr40Npc6nZsbAT9xdeiORi6fcX8CLRttQNni1uAtqN5aKZL9Cig
-         MLZl9h25w8489NEKe04mS2pEkScpm5w7a5fWrfG8eQyCiR235g/31KazkDf2mkiafG
-         Buxl3Auj2pwjd/gD6PK2WO8JjvCpVMGU2hf2hymT6IQRQfv/562BI0OXuYXpypSfqV
-         SDWhFRLpy2oxAQ97CdvgWUeyRI4m4qhfRW/HWw+19xTUFfdINsEovZP5ZWzOxhCp60
-         3OncKen3d5krA==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>
-Subject: [PATCH] f2fs: account swapfile inodes
-Date:   Thu, 25 Aug 2022 14:50:14 +0800
-Message-Id: <20220825065014.1842769-1-chao@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        Thu, 25 Aug 2022 02:50:24 -0400
+X-Greylist: delayed 304 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 24 Aug 2022 23:50:21 PDT
+Received: from out30-45.freemail.mail.aliyun.com (unknown [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BF7275F1
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 23:50:19 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=rocking@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VNC1Xus_1661409908;
+Received: from IT-C02ZG85SLVDL.local(mailfrom:rocking@linux.alibaba.com fp:SMTPD_---0VNC1Xus_1661409908)
+          by smtp.aliyun-inc.com;
+          Thu, 25 Aug 2022 14:45:09 +0800
+Subject: Re: [PATCH] sched/fair: select waker's cpu for wakee on sync wakeup
+To:     Mel Gorman <mgorman@suse.de>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+References: <1508aa17d1a169077c8d8d8c22d2bd529101af0e.1661313074.git.rocking@linux.alibaba.com>
+ <20220824084614.kykmtbhyawcei67z@suse.de>
+From:   Peng Wang <rocking@linux.alibaba.com>
+Message-ID: <093acf40-9e57-d011-d90b-ea216700edc3@linux.alibaba.com>
+Date:   Thu, 25 Aug 2022 14:45:05 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220824084614.kykmtbhyawcei67z@suse.de>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao.yu@oppo.com>
+On 24/08/2022 16:46, , Mel Gorman wrote:
+> On Wed, Aug 24, 2022 at 12:37:50PM +0800, Peng Wang wrote:
+>> On sync wakeup, waker is about to sleep, and if it is the only
+>> running task, wakee can get warm data on waker's cpu.
+>>
+>> Unixbench, schbench, and hackbench are tested on
+>> Intel(R) Xeon(R) Platinum 8163 CPU @ 2.50GHz (192 logic CPUs)
+>>
+>> Unixbench get +20.7% improvement with full threads mainly
+>> because of the pipe-based context switch and fork test.
+>>
+>> No obvious impact on schbench.
+>>
+>> This change harms hackbench with lower concurrency, while gets improvement
+>> when concurrency increases.
+>>
+> 
+> Note that historically patches in this direction have been hazardous because
+> it makes a key assumption "sync wakers always go to sleep in the near future"
+> when the sync hint is not that reliable. Networking from a brief glance
+> still uses sync wakeups where wakers could have a 1:N relationship between
+> work producers and work consumers that would then stack multiple tasks on
+> one CPU for multiple consumers. The workloads mentioned in the changelog
+> are mostly strictly-synchronous wakeups (i.e. the waker definitely goes
+> to sleep almost immediately) and benefit from this sort of patch but it's
+> not necessarily a universal benefit.
 
-In order to check count of opened swapfile inodes.
+Hi, Mel
 
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
----
- fs/f2fs/data.c  | 2 ++
- fs/f2fs/debug.c | 3 +++
- fs/f2fs/f2fs.h  | 9 ++++++++-
- 3 files changed, 13 insertions(+), 1 deletion(-)
+Thanks for your clarification.
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 0869fbbb5516..66f34cd559c6 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3970,6 +3970,7 @@ static int f2fs_swap_activate(struct swap_info_struct *sis, struct file *file,
- 	if (ret < 0)
- 		return ret;
- 
-+	stat_inc_swapfile_inode(inode);
- 	set_inode_flag(inode, FI_PIN_FILE);
- 	f2fs_update_time(F2FS_I_SB(inode), REQ_TIME);
- 	return ret;
-@@ -3979,6 +3980,7 @@ static void f2fs_swap_deactivate(struct file *file)
- {
- 	struct inode *inode = file_inode(file);
- 
-+	stat_dec_swapfile_inode(inode);
- 	clear_inode_flag(inode, FI_PIN_FILE);
- }
- #else
-diff --git a/fs/f2fs/debug.c b/fs/f2fs/debug.c
-index c01471573977..88231d393b7c 100644
---- a/fs/f2fs/debug.c
-+++ b/fs/f2fs/debug.c
-@@ -135,6 +135,7 @@ static void update_general_status(struct f2fs_sb_info *sbi)
- 	si->inline_inode = atomic_read(&sbi->inline_inode);
- 	si->inline_dir = atomic_read(&sbi->inline_dir);
- 	si->compr_inode = atomic_read(&sbi->compr_inode);
-+	si->swapfile_inode = atomic_read(&sbi->swapfile_inode);
- 	si->compr_blocks = atomic64_read(&sbi->compr_blocks);
- 	si->append = sbi->im[APPEND_INO].ino_num;
- 	si->update = sbi->im[UPDATE_INO].ino_num;
-@@ -385,6 +386,8 @@ static int stat_show(struct seq_file *s, void *v)
- 			   si->inline_dir);
- 		seq_printf(s, "  - Compressed Inode: %u, Blocks: %llu\n",
- 			   si->compr_inode, si->compr_blocks);
-+		seq_printf(s, "  - Swapfile Inode: %u\n",
-+			   si->swapfile_inode);
- 		seq_printf(s, "  - Orphan/Append/Update Inode: %u, %u, %u\n",
- 			   si->orphans, si->append, si->update);
- 		seq_printf(s, "\nMain area: %d segs, %d secs %d zones\n",
-diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
-index 088c3d1574b8..408d8034ed74 100644
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -1765,6 +1765,7 @@ struct f2fs_sb_info {
- 	atomic_t inline_dir;			/* # of inline_dentry inodes */
- 	atomic_t compr_inode;			/* # of compressed inodes */
- 	atomic64_t compr_blocks;		/* # of compressed blocks */
-+	atomic_t swapfile_inode;		/* # of swapfile inodes */
- 	atomic_t max_aw_cnt;			/* max # of atomic writes */
- 	unsigned int io_skip_bggc;		/* skip background gc for in-flight IO */
- 	unsigned int other_skip_bggc;		/* skip background gc for other reasons */
-@@ -3863,7 +3864,7 @@ struct f2fs_stat_info {
- 	int nr_issued_ckpt, nr_total_ckpt, nr_queued_ckpt;
- 	unsigned int cur_ckpt_time, peak_ckpt_time;
- 	int inline_xattr, inline_inode, inline_dir, append, update, orphans;
--	int compr_inode;
-+	int compr_inode, swapfile_inode;
- 	unsigned long long compr_blocks;
- 	int aw_cnt, max_aw_cnt;
- 	unsigned int valid_count, valid_node_count, valid_inode_count, discard_blks;
-@@ -3952,6 +3953,10 @@ static inline struct f2fs_stat_info *F2FS_STAT(struct f2fs_sb_info *sbi)
- 		(atomic64_add(blocks, &F2FS_I_SB(inode)->compr_blocks))
- #define stat_sub_compr_blocks(inode, blocks)				\
- 		(atomic64_sub(blocks, &F2FS_I_SB(inode)->compr_blocks))
-+#define stat_inc_swapfile_inode(inode)					\
-+		(atomic_inc(&F2FS_I_SB(inode)->swapfile_inode))
-+#define stat_dec_swapfile_inode(inode)					\
-+		(atomic_dec(&F2FS_I_SB(inode)->swapfile_inode))
- #define stat_inc_meta_count(sbi, blkaddr)				\
- 	do {								\
- 		if (blkaddr < SIT_I(sbi)->sit_base_addr)		\
-@@ -4036,6 +4041,8 @@ void f2fs_update_sit_info(struct f2fs_sb_info *sbi);
- #define stat_dec_compr_inode(inode)			do { } while (0)
- #define stat_add_compr_blocks(inode, blocks)		do { } while (0)
- #define stat_sub_compr_blocks(inode, blocks)		do { } while (0)
-+#define stat_inc_swapfile_inode(inode)			do { } while (0)
-+#define stat_dec_swapfile_inode(inode)			do { } while (0)
- #define stat_update_max_atomic_write(inode)		do { } while (0)
- #define stat_inc_meta_count(sbi, blkaddr)		do { } while (0)
- #define stat_inc_seg_type(sbi, curseg)			do { } while (0)
--- 
-2.25.1
+Besides these benchmarks, I also find a similar strictly-synchronous 
+wakeup case [1].
+
+[1]https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1478754.html
+
+> 
+> Note that most of these hazards occurred *LONG* before I was paying much
+> attention to how the scheduler behaved so I cannot state "sync is still
+> unreliable" with absolute certainty. However, long ago there was logic
+> that tried to track the accuracy of the sync hint that was ultimately
+> abandoned by commit e12f31d3e5d3 ("sched: Remove avg_overlap"). AFAIK,
+> the sync hint is still not 100% reliable and while stacking sync works
+> for some workloads, it's likely to be a regression magnet for network
+> intensive workloads or client/server workloads like databases where
+> "synchronous wakeups are not always synchronous".
+>
+Yes, you are right. Perhaps in such situation, a strong contract from 
+user is a better alternative than struggling with the weak hint in kernel.
+
+
+
 
