@@ -2,95 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68014C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84CC4C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 06:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230127AbiHYGvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 02:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37414 "EHLO
+        id S236299AbiHYGvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 02:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236379AbiHYGuY (ORCPT
+        with ESMTP id S231133AbiHYGvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 02:50:24 -0400
-X-Greylist: delayed 304 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 24 Aug 2022 23:50:21 PDT
-Received: from out30-45.freemail.mail.aliyun.com (unknown [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8BF7275F1
-        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 23:50:19 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=rocking@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VNC1Xus_1661409908;
-Received: from IT-C02ZG85SLVDL.local(mailfrom:rocking@linux.alibaba.com fp:SMTPD_---0VNC1Xus_1661409908)
-          by smtp.aliyun-inc.com;
-          Thu, 25 Aug 2022 14:45:09 +0800
-Subject: Re: [PATCH] sched/fair: select waker's cpu for wakee on sync wakeup
-To:     Mel Gorman <mgorman@suse.de>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-References: <1508aa17d1a169077c8d8d8c22d2bd529101af0e.1661313074.git.rocking@linux.alibaba.com>
- <20220824084614.kykmtbhyawcei67z@suse.de>
-From:   Peng Wang <rocking@linux.alibaba.com>
-Message-ID: <093acf40-9e57-d011-d90b-ea216700edc3@linux.alibaba.com>
-Date:   Thu, 25 Aug 2022 14:45:05 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        Thu, 25 Aug 2022 02:51:45 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C412AA0637
+        for <linux-kernel@vger.kernel.org>; Wed, 24 Aug 2022 23:51:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661410304; x=1692946304;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=oL/cDsyvaZ2AMAuLWe4mBX/p2crsIcQ5eiyX+HbuLvc=;
+  b=Ue0/YG6HRsQ2oB2wKBCoABJ2/issO67Bq0JVmmAr9uSE/d3K9iPwKPuo
+   i71OhokYJ/sVnMDDElXhL983ebmqGt32rIzfClYQdM+0ewuGqQaG7F5rg
+   T/ZBRbmN9Q1C/1ED1xqO+dsMAHrPXpzV8I1hyR6Ux57ed3J+RNiJHhq0M
+   2GMEulEt/owjMnHskrpffrRoKQOXWXBLam4VPHSrPshXSH6YT17V+v8X8
+   /otmxiV6jqepEfjrLIm9LNJ7uJYsQzdShx/yoKQXdLLRdY+MHusJy1mZ5
+   0BK+paEnh1hvLuB5sW9McHVcNyPLO99PtmbkBUsPWBnBqtVjQFXlpoiNS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="320236818"
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="320236818"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 23:51:44 -0700
+X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
+   d="scan'208";a="670847183"
+Received: from pranavir-mobl.gar.corp.intel.com (HELO localhost) ([10.252.50.196])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 23:51:41 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Lv qian <lvqian@nfschina.com>, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        airlied@linux.ie, daniel@ffwll.ch
+Cc:     intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Lv qian <lvqian@nfschina.com>
+Subject: Re: [PATCH] drm/i915:Move the code position to reduce the number of
+ judgments
+In-Reply-To: <20220825013752.120988-1-lvqian@nfschina.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220825013752.120988-1-lvqian@nfschina.com>
+Date:   Thu, 25 Aug 2022 09:51:39 +0300
+Message-ID: <87h720izno.fsf@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220824084614.kykmtbhyawcei67z@suse.de>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/08/2022 16:46, , Mel Gorman wrote:
-> On Wed, Aug 24, 2022 at 12:37:50PM +0800, Peng Wang wrote:
->> On sync wakeup, waker is about to sleep, and if it is the only
->> running task, wakee can get warm data on waker's cpu.
->>
->> Unixbench, schbench, and hackbench are tested on
->> Intel(R) Xeon(R) Platinum 8163 CPU @ 2.50GHz (192 logic CPUs)
->>
->> Unixbench get +20.7% improvement with full threads mainly
->> because of the pipe-based context switch and fork test.
->>
->> No obvious impact on schbench.
->>
->> This change harms hackbench with lower concurrency, while gets improvement
->> when concurrency increases.
->>
-> 
-> Note that historically patches in this direction have been hazardous because
-> it makes a key assumption "sync wakers always go to sleep in the near future"
-> when the sync hint is not that reliable. Networking from a brief glance
-> still uses sync wakeups where wakers could have a 1:N relationship between
-> work producers and work consumers that would then stack multiple tasks on
-> one CPU for multiple consumers. The workloads mentioned in the changelog
-> are mostly strictly-synchronous wakeups (i.e. the waker definitely goes
-> to sleep almost immediately) and benefit from this sort of patch but it's
-> not necessarily a universal benefit.
+On Thu, 25 Aug 2022, Lv qian <lvqian@nfschina.com> wrote:
+> 	If the kmalloc allocation is successful, the if is judged twice, 
+> 	so I move the second judgment in to the first judgment.
 
-Hi, Mel
+The code is fine as it is.
 
-Thanks for your clarification.
+BR,
+Jani.
 
-Besides these benchmarks, I also find a similar strictly-synchronous 
-wakeup case [1].
-
-[1]https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1478754.html
-
-> 
-> Note that most of these hazards occurred *LONG* before I was paying much
-> attention to how the scheduler behaved so I cannot state "sync is still
-> unreliable" with absolute certainty. However, long ago there was logic
-> that tried to track the accuracy of the sync hint that was ultimately
-> abandoned by commit e12f31d3e5d3 ("sched: Remove avg_overlap"). AFAIK,
-> the sync hint is still not 100% reliable and while stacking sync works
-> for some workloads, it's likely to be a regression magnet for network
-> intensive workloads or client/server workloads like databases where
-> "synchronous wakeups are not always synchronous".
 >
-Yes, you are right. Perhaps in such situation, a strong contract from 
-user is a better alternative than struggling with the weak hint in kernel.
+> Signed-off-by: Lv qian <lvqian@nfschina.com>
+> ---
+>  drivers/gpu/drm/i915/i915_gpu_error.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/i915/i915_gpu_error.c b/drivers/gpu/drm/i915/i915_gpu_error.c
+> index 32e92651ef7c..c8230a8beadb 100644
+> --- a/drivers/gpu/drm/i915/i915_gpu_error.c
+> +++ b/drivers/gpu/drm/i915/i915_gpu_error.c
+> @@ -112,10 +112,10 @@ static bool __i915_error_grow(struct drm_i915_error_state_buf *e, size_t len)
+>  	if (!e->buf) {
+>  		e->size = PAGE_ALIGN(len + 1);
+>  		e->buf = kmalloc(e->size, GFP_KERNEL);
+> -	}
+> -	if (!e->buf) {
+> -		e->err = -ENOMEM;
+> -		return false;
+> +		if (!e->buf) {
+> +			e->err = -ENOMEM;
+> +			return false;
+> +		}
+>  	}
+>  
+>  	return true;
 
-
-
-
+-- 
+Jani Nikula, Intel Open Source Graphics Center
