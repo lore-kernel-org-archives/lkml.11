@@ -2,180 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06328C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE8BC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241528AbiHYM26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60102 "EHLO
+        id S241632AbiHYM33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 08:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238468AbiHYM2t (ORCPT
+        with ESMTP id S236033AbiHYM31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 08:28:49 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623E5B2CD4
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:28:48 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id p18so18381341plr.8
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:28:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=o0E7YiHeVex1u0X6qaV95zV+IU6KmVTedW0VAfovtx8=;
-        b=TRE19aRmzYeY60KDN1wOIIp3s3WQh2s1UiPVHSyC4h+toJTUn/oTh2+z/rhBhbwT6W
-         NDeigQr3uEpitwebXfV935zr/yRXP0JDTsxyCSUw5JTINtlHZjKYcXG60i6fqttjH68I
-         t/JoB4QAa0mGRFYYhWlznz5OiKOMTjBRy4TqgPJjFO3js0EKBC00oSRYeJ9dt11uCmeQ
-         yhsE7wjOUDL3v6ZJEMykJvR8hjQvqCmRxoMTKurdisC/z/bcw3fE3F1j2ylZpsZaL9dH
-         BBdloD+tLoAovOt6PQUfWLddZQetzIFhFIh3cfkO+ADUTA1v0pEvgxbuWN2v4QJxcGNj
-         cjIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=o0E7YiHeVex1u0X6qaV95zV+IU6KmVTedW0VAfovtx8=;
-        b=jiTw286tNNI7AGyQ0A5RS0d/KnzCWkscVwe0BTGtMAf3Lke5AjmhNcvbbTDjg75HDk
-         TQFw1nlY63kBl7sJTQJ4kXZittwL7tFLbjllVHzSTpnWjn/zQeQWUqMM87mX0ZdQLMr9
-         dPvlaq8EBtHKNt094rlfzPefow647e0ceyKa4JoukqNTBUZG54S37+lQqeHCxo9J7wKg
-         1Y/6ThG1gKSwFtKS93YxfnrmH9QgpTRq4WVTta6gPxJ2DMsEZ+STjY3JD/Wj8nyo/E9s
-         BwRVhakOWS4yYtWoMB4wJjkQtRPQob1+XbXDTA212CKqqm/XdPGZScKGLzpM4xOPbIs5
-         NiDA==
-X-Gm-Message-State: ACgBeo0CwZ49Ie9tL3QLtvKWSHkdArbMfyGewBHB5y6seGfC+X9lGcUw
-        9Md97EM7wQiCBHoilmNMcpObBg==
-X-Google-Smtp-Source: AA6agR6sM22N0p77QoFew7d776bTlmOcjbDP3P0nFDZUEv4yLZSU4Xsgwzh4MlgCqwFivfw0t507fw==
-X-Received: by 2002:a17:90a:2b0f:b0:1fa:d73f:ce92 with SMTP id x15-20020a17090a2b0f00b001fad73fce92mr13508804pjc.60.1661430527863;
-        Thu, 25 Aug 2022 05:28:47 -0700 (PDT)
-Received: from [10.254.35.15] ([139.177.225.236])
-        by smtp.gmail.com with ESMTPSA id w16-20020a170902e89000b0016f196209c9sm10948960plg.123.2022.08.25.05.28.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 05:28:47 -0700 (PDT)
-Message-ID: <324b1d0f-42e5-8947-68cb-a3d20135f2c6@bytedance.com>
-Date:   Thu, 25 Aug 2022 20:28:39 +0800
+        Thu, 25 Aug 2022 08:29:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A49EB2CDC;
+        Thu, 25 Aug 2022 05:29:25 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MD2Hg4kgtz1N7WY;
+        Thu, 25 Aug 2022 20:25:51 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 20:29:22 +0800
+Received: from [10.174.176.245] (10.174.176.245) by
+ kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 20:29:21 +0800
+Message-ID: <fc76cc5d-e1ee-e84e-c47b-8daa4dea43a0@huawei.com>
+Date:   Thu, 25 Aug 2022 20:29:21 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.1.2
-Subject: Re: [PATCH v3 10/10] sched/psi: per-cgroup PSI accounting
- disable/re-enable interface
-Content-Language: en-US
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     tj@kernel.org, mkoutny@suse.com, surenb@google.com,
-        gregkh@linuxfoundation.org, corbet@lwn.net, mingo@redhat.com,
-        peterz@infradead.org, songmuchun@bytedance.com,
-        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220824081829.33748-1-zhouchengming@bytedance.com>
- <20220824081829.33748-11-zhouchengming@bytedance.com>
- <YwX2jC2UQ/zeY2E8@cmpxchg.org>
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-In-Reply-To: <YwX2jC2UQ/zeY2E8@cmpxchg.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] net/sched: fix netdevice reference leaks in
+ attach_one_default_qdisc()
+From:   "wanghai (M)" <wanghai38@huawei.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <brouer@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220817104646.22861-1-wanghai38@huawei.com>
+ <20220818105642.6d58e9d4@kernel.org>
+ <d1463bc2-6abd-7b01-5aac-8b7780b94cca@huawei.com>
+In-Reply-To: <d1463bc2-6abd-7b01-5aac-8b7780b94cca@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.245]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/24 17:59, Johannes Weiner wrote:
-> Hi Chengming,
-> 
-> Thanks for incorporating all the feedback. I have a few nitpicks
-> below, but with those considered, please add:
-> 
-> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-> 
-> On Wed, Aug 24, 2022 at 04:18:29PM +0800, Chengming Zhou wrote:
->> @@ -5171,12 +5220,19 @@ static struct cftype cgroup_base_files[] = {
->>  	{
->>  		.name = "irq.pressure",
->>  		.flags = CFTYPE_PRESSURE,
->> +		.file_offset = offsetof(struct cgroup, psi_files[PSI_IRQ]),
->>  		.seq_show = cgroup_irq_pressure_show,
->>  		.write = cgroup_irq_pressure_write,
->>  		.poll = cgroup_pressure_poll,
->>  		.release = cgroup_pressure_release,
->>  	},
->>  #endif
->> +	{
->> +		.name = "cgroup.pressure",
->> +		.flags = CFTYPE_PRESSURE,
->> +		.seq_show = cgroup_psi_show,
->> +		.write = cgroup_psi_write,
-> 
-> To match the naming convention, these should be called
-> cgroup_pressure_show() and cgroup_pressure_write().
 
-I just find cgroup_pressure_write() already exists, so I change the names
-to cgroup_pressure_enable_show() and cgroup_pressure_enable_write(),
-since this file name is simplified from "cgroup.pressure.enable".
+在 2022/8/19 23:58, wanghai (M) 写道:
+>
+> 在 2022/8/19 1:56, Jakub Kicinski 写道:
+>> On Wed, 17 Aug 2022 18:46:46 +0800 Wang Hai wrote:
+>>> In attach_default_qdiscs(), when attach default qdisc (fq_codel) fails
+>>> and fallback to noqueue, if the original attached qdisc is not released
+>>> and a new one is directly attached, this will cause netdevice reference
+>>> leaks.
+>> Could you provide more details on the failure path? My preference would
+>> be to try to clean up properly there, if possible.
+> Hi Jakub.
+>
+> Here are the details of the failure. Do I need to do cleanup under the 
+> failed path?
+>
+> If a dev has multiple queues and queue 0 fails to attach qdisc
+> because there is no memory in attach_one_default_qdisc(). Then
+> dev->qdisc will be noop_qdisc by default. But the other queues
+> may be able to successfully attach to default qdisc.
+>
+> In this case, the fallback to noqueue process will be triggered
+>
+> static void attach_default_qdiscs(struct net_device *dev)
+> {
+>     ...
+>     if (!netif_is_multiqueue(dev) ||
+>         dev->priv_flags & IFF_NO_QUEUE) {
+>             ...
+>             netdev_for_each_tx_queue(dev, attach_one_default_qdisc, 
+> NULL); // queue 0 attach failed because -ENOBUFS, but the other queues 
+> attach successfully
+>             qdisc = txq->qdisc_sleeping;
+>             rcu_assign_pointer(dev->qdisc, qdisc); // dev->qdisc = 
+> &noop_qdisc
+>             ...
+>     }
+>     ...
+>     if (qdisc == &noop_qdisc) {
+>         ...
+>         netdev_for_each_tx_queue(dev, attach_one_default_qdisc, NULL); 
+> // Re-attach, but not release the previously created qdisc
+>         ...
+>     }
+> }
+>
+Hi Jakub.
+Do you have any other suggestions for this patch? Any replies would be 
+appreciated.
 
-Thanks.
+>>> The following is the bug log:
+>>>
+>>> veth0: default qdisc (fq_codel) fail, fallback to noqueue
+>>> unregister_netdevice: waiting for veth0 to become free. Usage count 
+>>> = 32
+>>> leaked reference.
+>>>   qdisc_alloc+0x12e/0x210
+>>>   qdisc_create_dflt+0x62/0x140
+>>>   attach_one_default_qdisc.constprop.41+0x44/0x70
+>>>   dev_activate+0x128/0x290
+>>>   __dev_open+0x12a/0x190
+>>>   __dev_change_flags+0x1a2/0x1f0
+>>>   dev_change_flags+0x23/0x60
+>>>   do_setlink+0x332/0x1150
+>>>   __rtnl_newlink+0x52f/0x8e0
+>>>   rtnl_newlink+0x43/0x70
+>>>   rtnetlink_rcv_msg+0x140/0x3b0
+>>>   netlink_rcv_skb+0x50/0x100
+>>>   netlink_unicast+0x1bb/0x290
+>>>   netlink_sendmsg+0x37c/0x4e0
+>>>   sock_sendmsg+0x5f/0x70
+>>>   ____sys_sendmsg+0x208/0x280
+>>>
+>>> In attach_one_default_qdisc(), release the old one before attaching
+>>> a new qdisc to fix this bug.
+>>>
+>>> Fixes: bf6dba76d278 ("net: sched: fallback to qdisc noqueue if 
+>>> default qdisc setup fail")
+>>> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+>>> ---
+>>>   net/sched/sch_generic.c | 5 +++++
+>>>   1 file changed, 5 insertions(+)
+>>>
+>>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+>>> index d47b9689eba6..87b61ef14497 100644
+>>> --- a/net/sched/sch_generic.c
+>>> +++ b/net/sched/sch_generic.c
+>>> @@ -1140,6 +1140,11 @@ static void attach_one_default_qdisc(struct 
+>>> net_device *dev,
+>>>         if (!netif_is_multiqueue(dev))
+>>>           qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
+>>> +
+>>> +    if (dev_queue->qdisc_sleeping &&
+>>> +        dev_queue->qdisc_sleeping != &noop_qdisc)
+>>> +        qdisc_put(dev_queue->qdisc_sleeping);
+>>> +
+>>>       dev_queue->qdisc_sleeping = qdisc;
+>>>   }
+>> .
+>
+-- 
+Wang Hai
 
-> 
->> @@ -745,6 +745,14 @@ static void psi_group_change(struct psi_group *group, int cpu,
->>  		if (set & (1 << t))
->>  			groupc->tasks[t]++;
->>  
->> +	if (!group->enabled) {
->> +		if (groupc->state_mask & (1 << PSI_NONIDLE))
->> +			record_times(groupc, now);
-> 
-> Thanks for the explanation in the other thread, it made sense. But can
-> you please add a comment to document it? Something like:
-> 
-> 	/*
-> 	 * On the first group change after disabling PSI, conclude
-> 	 * the current state and flush its time. This is unlikely
-> 	 * to matter to the user, but aggregation (get_recent_times)
-> 	 * may have already incorporated the live state into times_prev;
-> 	 * avoid a delta sample underflow when PSI is later re-enabled.
-> 	 */
-> 
-> An unlikely() would also make sense on that branch.
-> 
->> @@ -1081,6 +1092,40 @@ void cgroup_move_task(struct task_struct *task, struct css_set *to)
->>  
->>  	task_rq_unlock(rq, task, &rf);
->>  }
->> +
->> +void psi_cgroup_enabled_sync(struct psi_group *group)
->> +{
->> +	int cpu;
->> +
->> +	/*
->> +	 * After we disable psi_group->enabled, we don't actually
->> +	 * stop percpu tasks accounting in each psi_group_cpu,
->> +	 * instead only stop test_state() loop, record_times()
->> +	 * and averaging worker, see psi_group_change() for details.
->> +	 *
->> +	 * When disable cgroup PSI, this function has nothing to sync
->> +	 * since cgroup pressure files are hidden and percpu psi_group_cpu
->> +	 * would see !psi_group->enabled and only do task accounting.
->> +	 *
->> +	 * When re-enable cgroup PSI, this function use psi_group_change()
->> +	 * to get correct state mask from test_state() loop on tasks[],
->> +	 * and restart groupc->state_start from now, use .clear = .set = 0
->> +	 * here since no task status really changed.
->> +	 */
->> +	if (!group->enabled)
->> +		return;
-> 
-> Thanks for adding the comment, that's helpful.
-> 
-> I think the function would be a tad clearer and self-documenting if
-> you called it psi_cgroup_restart(), and only call it on enabling.
-> 
->> +	for_each_possible_cpu(cpu) {
->> +		struct rq *rq = cpu_rq(cpu);
->> +		struct rq_flags rf;
->> +		u64 now;
->> +
->> +		rq_lock_irq(rq, &rf);
->> +		now = cpu_clock(cpu);
->> +		psi_group_change(group, cpu, 0, 0, now, true);
->> +		rq_unlock_irq(rq, &rf);
->> +	}
->> +}
->>  #endif /* CONFIG_CGROUPS */
-> 
-> Thanks,
-> Johannes
