@@ -2,143 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 376C2C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C45EC64990
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 14:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242284AbiHYOiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 10:38:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35838 "EHLO
+        id S242457AbiHYOi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:38:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242262AbiHYOhe (ORCPT
+        with ESMTP id S242372AbiHYOhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 10:37:34 -0400
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70051.outbound.protection.outlook.com [40.107.7.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21738AD9A1;
-        Thu, 25 Aug 2022 07:37:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QmBzdAv7W2gE+J1G4lCAN2AyZSBgWGplJW9VZRbHvLrfFNtovlnOeESeNuVj5GZl2NSNwDvZst2LvaOtsz6VVKIu6w/mxevDIgEEgRDDC0L3am7rw8B8/FdYVZOfce9sesjC4osUfPHfR68JA7yKunfjaORKYDsnJVdsbbQ2phbnMTcIFsBKeXA5HwAHVaRrBlEIBaWeKAOi3+khjiM1H4QCN5K2Y6GXKpGIjaXbMYmQuT5GFfxVQdtUnyIThO6Y3JweaZYyEO/8fWPPDiEnc7r52L4ySwtw8Q3ZoeHJbsUNNC//r2N2VgZTJFpCu9H3ESclCt0AZEePYmM+uQ691g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pIQleB1AFrnW7iHGEWMyVGryaLFdWb/L1obCm6gJ8cw=;
- b=YAlbwnSzSLgFeW5Nxswt1f8Q0glc5J4m8a+wTzDZefX7w2Ao64HmO2ZpItaNq3FHZj93DpR89cWv4q7WHwbf2PXED0K3XoDq15LzteLw/Hh5aHVYJDwQ8X+fX3TkRJP1zHtz84OD82LXDIAAt4H3y9grXvniB2G104p2lzVb5IiY+2akjAqWCeBDMEA5dS7rvG41iothI92sWyqnmxh6bkbntHfoiE+htxE46ZaYM+R/grH8g29eK3F/mJnmSnQgvMy5+DB/J+u/uGNwmz3cgzE9SIhUZENll3mX04pbJ91ZOK9iffjZzxUkS1JBIOUs5wZrmnamIixxiqiotsqZKg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pIQleB1AFrnW7iHGEWMyVGryaLFdWb/L1obCm6gJ8cw=;
- b=K50h+AbwGR+Yw/K6n7/nBFKfi4aq32U6LdsZMGv6Iv9TPqr4idbnK1tRJAXb89fCp2SGuQ4bXCNhkekD3OxJzGJQMnXEOYK4Ng2FQIT80SNVtvoi+hUvKvSpKs4db5ArW5L9oB3jX+lIO/uDgLLY86AuSFhhmQkDiqOdS4A/dORtt5p2EnQVD/Ofz4wooXYdlVUtSp/XZ+IBw81qtKlan0GT7sFgpig0RYn9OQyp6q7shEcI16oiHjzMCd3uLiqI+ucXhiBigrAjt8qJLGh/Yrwz/1n+jkqAwq1NjnUQ7da2CSiTXdNSLz8uGWl8XjRod/YqWk42do5rNVNsi5MkDg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=suse.com;
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
- by AM8PR04MB7330.eurprd04.prod.outlook.com (2603:10a6:20b:1c4::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 25 Aug
- 2022 14:37:29 +0000
-Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::2d5d:bae0:430f:70ad]) by VE1PR04MB6560.eurprd04.prod.outlook.com
- ([fe80::2d5d:bae0:430f:70ad%4]) with mapi id 15.20.5566.015; Thu, 25 Aug 2022
- 14:37:29 +0000
-Message-ID: <5a331923-e645-9265-75aa-dcca7e57a312@suse.com>
-Date:   Thu, 25 Aug 2022 16:37:27 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v4] xen/privcmd: fix error exit of privcmd_ioctl_dm_op()
-Content-Language: en-US
-To:     Juergen Gross <jgross@suse.com>
-Cc:     Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        stable@vger.kernel.org,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org
-References: <20220825141918.3581-1-jgross@suse.com>
-From:   Jan Beulich <jbeulich@suse.com>
-In-Reply-To: <20220825141918.3581-1-jgross@suse.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0116.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a3::20) To VE1PR04MB6560.eurprd04.prod.outlook.com
- (2603:10a6:803:122::25)
+        Thu, 25 Aug 2022 10:37:48 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B593B69D6;
+        Thu, 25 Aug 2022 07:37:40 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7C17F5C00A6;
+        Thu, 25 Aug 2022 10:37:39 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 25 Aug 2022 10:37:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1661438259; x=
+        1661524659; bh=uQZAkfIx3BtXGm6NsJ9y2axRk4c1HylK1+1Iy6cM5qM=; b=c
+        bRaru4GC2gO7/NsJgLNSC7kPw5lEOXfQhCBenCG+ykPTz9ye7y+CqCzJeq8AEqE0
+        GYLg0SLqCPcq17RFjk5QaFP0VPCTsADN7gpBatGAmwILkg4QDrZbnHTKc25eDmMY
+        jsUnjB1v2uKCWO3ppIr30qA0OKt7rqs0bCPSJ6QJQ2ujYz4o8Sun54+WoFh8xEsi
+        EBiQGvVjObDvfYaRGOWOnALcoOqMCkz1BIZ8z6sxITr46WG/nBNyw1DI166mCG3a
+        ucYdoLpAsHrAEhrLD8o7f7O6j+q10F1VjAffT7hrkG8lGgDsubFhOa8PlTL4jgG5
+        N3JuEtdTy3g4lZj4i1tGA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661438259; x=
+        1661524659; bh=uQZAkfIx3BtXGm6NsJ9y2axRk4c1HylK1+1Iy6cM5qM=; b=d
+        zCzKqjhUGuHGxMq8DZxIHFgJIN0+PZFEen85/okLW7fnVb9RtTB/XzO/S8XTSVH5
+        SDaV4pK3xNTdFVObfPjh/OMsOg+7za5EaZNcnc2GFgktGGR/R8xSc+5miOkLp7c+
+        7MjQn/M4WkhWUCWJdFM2SM2HyGikqt7vGiQaGKKh9800dlQeuZ7ej2rzFKITfVQS
+        VVM4ek89oEIDz6wlFhiR9Zd7QDH9abVd/Xnf6KKwnZWzYjIuwdjX4LXta+KWrosS
+        cujV9P1xiV8P+MVXcCo3n1+wCqt/ZaPv46gV4iBAH5s4duWayYiduDY2+ZYxxiCn
+        QrBY1Zcz9Hi6ZV7kx3nuw==
+X-ME-Sender: <xms:MokHY9ytPkTelAYkCj0iAzVWDqlrgLIGuw0E_hxgdx2iyzD0l8oFrA>
+    <xme:MokHY9TKqbXS0yMdtPT3tS84Lb1DwPQqoF7k8cZgsWUnLSCMRLnfCZEZLjKiKiE7s
+    8jhHZ6JJdcCWH3ikA>
+X-ME-Received: <xmr:MokHY3UsVrDjl35b9s1YJpNcsdIjn0VHXocn46bjZw51AuAt7y4dqAmZy99kkEWAH4NeC2d2MFdZPNToC6_Vnkt01oSEy9cndwzwnxlAME8Yn75E2j_0Q4yelQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejfedgjeekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepuffvvehfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghm
+    uhgvlhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenuc
+    ggtffrrghtthgvrhhnpeeitedvhfejhfdvjefggeeutdegteejfffgvedtjedukefgueek
+    tddtvdegfedtgfenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhl
+    rghnugdrohhrgh
+X-ME-Proxy: <xmx:MokHY_h3YTcDjZq0MRYPBf26oIlQvEjMzMId5yc-Ay03yFu7MNu2qQ>
+    <xmx:MokHY_CoLAv5UX4krtnT5UK1jnBH7SrUcBfwqNTlOYvd21H11pHC9Q>
+    <xmx:MokHY4Iq8j-Jkd-3UOB6BRLmn4qtxtYRxkv46gHUHCLyDlnJso79wA>
+    <xmx:M4kHY_wMZpDE9efVbs_vbH2-tFpL-K1rK9zFl-k-J0r4XT05Xy_C4w>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 25 Aug 2022 10:37:38 -0400 (EDT)
+Subject: Re: [PATCH 4/8] dt-bindings: sun6i-a31-mipi-dphy: Add the A100 DPHY
+ variant
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-sunxi@lists.linux.dev
+References: <20220812075603.59375-1-samuel@sholland.org>
+ <20220812075603.59375-5-samuel@sholland.org> <YwdRvBSGDNIUOMnH@aptenodytes>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <95464d37-6da5-1f63-8f21-93ede5666312@sholland.org>
+Date:   Thu, 25 Aug 2022 09:37:37 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 040b75bf-055c-45df-5d03-08da86a75670
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7330:EE_
-X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 806O5ZtevzZK+AM55UtLMstZmRVjrdWHksUiBUiz37d9Y1DJEfya0d04GgKrMoniV4xqSxQSlhiITrxi8ksJkxrmdd7p7b8Q/93yLeAHg89FQ5z4XaKcZltuDKi1zdauAMeZ/z45uSogHTaLe46BT/VVZNWjA+13T6VZ1ACp/6riFuAViCy1H3DTC5tIQPdAsBdBSOOjE3Pj6wivbw64Q5p3dY9k0cV0wTgPOSMTqFllIO22EuYZHLJ6mjRaOCXADnDvqoLJqH04xJhjW/MB2UA+Bw8xQkg3ODtF5aa9JFDi+8ojTvvlEv/qzSS6aXL/pb4yrgrVp2vvfN8JxJi0u8HOQ5ocb6YBHN0dbdEJAs90hbR0f7/cxn+QOWZTemsCsqf7GAm4OKBGIyse9kvR/xL/+93u3WazV7VxNNch/fMjsoBSsfm70BqaRst08XtjM1PDxwBvB28yrxke/eGKwJ4ZcY9YCSdlw/ycfXyMSTaTYU9drmV53i9/ATwG5d1LY1tBSmpCQnzB6hZrQwX54MUPIKDs0LMMq22FUEGX1UKj/X0W7iYa1isAujdOn6bHt8Du/FHr++iKYJPVaGGatRacIuuPQhxq9zIgnyDA4eGSjMz92MHx8e+wyNLo48VSjD31RBAPGRsv1ur/ZtlOP7ANIvWAcV24s+bNscgHN7xfy0SBQSGZ0vsukNbEQuawaU8+LRuJuzPFAgLRjVQJ3ochCSwAAn10F68epnGVpFNPaOUg0aK0VCbsKXs7KOyECHITkRPD1jf8ck4YgTgy58z3tX53uBjhnb7NVU1ut2E=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(366004)(39860400002)(376002)(346002)(136003)(38100700002)(54906003)(31696002)(2906002)(37006003)(6636002)(31686004)(6506007)(36756003)(186003)(316002)(6862004)(6512007)(8936002)(6486002)(41300700001)(66946007)(5660300002)(26005)(83380400001)(8676002)(4744005)(66556008)(4326008)(478600001)(53546011)(2616005)(66476007)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RmRtc0RqVW1HRDY3QytCbkdYdzBKNWtRRm9xbHZaSnV4Skk1WGNBdDloYmI0?=
- =?utf-8?B?RncycXZsSlNNOUE0NTdhejNLMzFPTlRtQ2lEYUN1ckFuVGxxaDVHbUIvc2My?=
- =?utf-8?B?dndiaVk4SVhSMUNwZFh5ZUtlRFI1R3lRR1k4clphU3gwamlwWW1BMm1GZ1o1?=
- =?utf-8?B?cE9zQUZPSEs2SHFIY0xZY3dMcXJhci81RkdURVdWeHFOYlY3NmRYb2RKTWJy?=
- =?utf-8?B?ejhyelpRTmZJQ1JlZDBRSGRSN29MNUtlZ3lvTThQTGNyTUdXd3NITnpwM3FT?=
- =?utf-8?B?OUJYajVoSzRBMkovMGV5U0drRnVjUG4yRUlYMEdWTFBEQWtVOVdydVBFWURD?=
- =?utf-8?B?aVAvN3F6czQybTQ5WDR5WnE5b1dPSUd5YlNGeVNPS3RBZTBZZGJ5ckJSRWM1?=
- =?utf-8?B?VkxvUmxGUkJLdVNXamtoZFRqdDRYdnhDU1V6NU5SUGhXR3FzSEVuTFJUZFl4?=
- =?utf-8?B?UmhpRUNCaVVPU0lMdHljeWlGb0lLVllROFBFdzA5QkRhWEp0MzBEaEJmYW83?=
- =?utf-8?B?SE54MWt3dUUzaWtUQVJaa245T3ZxUmRhTU5ic090SGlqaWFhWVFEZzFpVXdz?=
- =?utf-8?B?QnFiUnpUMkIrK2xJd0lUdEZXTnZFM3NUL1FjU1RTbjRIY1ZLWFJaM2JmZi9S?=
- =?utf-8?B?NVRhUEo3SWhwY1p3RU9WMHFjUFVMRTVCczJsdWZJSmd5eUV3NEFkRWNybFlF?=
- =?utf-8?B?MDRsNVlxRkF2WTRzbHZDMlFHZXYwSTBIUkduUnlIWUtBNUFpR216Vzg4U29T?=
- =?utf-8?B?cllxMHU0SWhqVmFqQzVPcXBzQ2krVmN5VTdwNHprSFBQaHhoRFZOb1JwaXdS?=
- =?utf-8?B?RkZXbXNMTElUNlhYVDJxTDMzMTVabTZtWU5FcERNYUJFNzVhZjFaaCsvK3Vu?=
- =?utf-8?B?dWNySG1HWkhQdlM3Rkl4dEoyOVdlVStsRDhoZ2hXM2ltWnM5QVd4Uisva3pP?=
- =?utf-8?B?dURBY3NQaFZTa1BvYWJieWVNOVc4Yy95VkJ2UDA3bUhId0psb3d0UVFNN21P?=
- =?utf-8?B?ZXNlUjE1SlcrL1phNVI2djdLbWJuMXlNdXZlR0E4aExEMWduRnJSditlRnJy?=
- =?utf-8?B?NWhuVWlQY2xjb0tuWit0R3NIWWg3a2tjKzRzWTFaL0MrdTh0dC9TZDRvSDN1?=
- =?utf-8?B?NnloZXRwNDgxcDRINzRVUW8wZDhzUmhKbDg3T2I4dWUwZUU0WEp4SVkvRVNX?=
- =?utf-8?B?SEdMb3llc2xFNFZEWGJRTGw4VUxkTmx6Z0xmZ1VGRXQyZWltUDZoSHRUR0VJ?=
- =?utf-8?B?UVVLd2NZNnRacURoS0NQK0dlc1NQMWhKREJ0ZGx6MmN5MFY0cHc0Nzc5VnRJ?=
- =?utf-8?B?bzc4OHpha0wzb0wwZ2xleDRWZHEyalBvY1NrT01pczc5VHJqMDcvcExCM3hX?=
- =?utf-8?B?Y1hxK2RZdXdLa2h2VWVtUDgySVZmWDNyc0JwNnQ3TWZEWHNHSDNuZWxKa3Nr?=
- =?utf-8?B?enNvTExnWmlGOE9QbmZPRC9xWml5b1dqQlN5eGRHcmNqcmJxVDZESStoMjVH?=
- =?utf-8?B?Mk9RS3VsVGZ2N3FrUzd6S1JjZW9ScjVFU0lFd2dmcC9McG5GdlphNytpR2hh?=
- =?utf-8?B?S1gzL2ZlTzU2dng3SkY0emZWWk5xK0RIN1lJV2NwRU5FOG1VZjNSTVU1cjZW?=
- =?utf-8?B?QlFXMkcwVldCSk1LZ2dSRE5vU0U2djdaNVhNaUI1YWp4VmkxSmlnMUR6UmZY?=
- =?utf-8?B?aXdmbWtYeWFTaFJ0a3I1NHRXMU1rVDE3NVVDQndxLzVMandaUjF4Yktpdm5v?=
- =?utf-8?B?Y05QUTNnNitOQi9tVEJmbVlQM1Jha0IxZnppY1RJcGw1VWRiMThqTmhtK29q?=
- =?utf-8?B?OTRhZHBqRzF0ZmJYK1FwRm1FWmNJN2RmWFdVcGUvWUtBTDl0TkFVcStVN1dG?=
- =?utf-8?B?ZHNsR0ozTkJGUHVnY3FSUFJxdVFrSnRld2RSTnF6MEhLRklLUk8rc3c0Ymd2?=
- =?utf-8?B?YldHT3JwZjI0NnRxK1pQci9hQkJhZHV3NEs0YUgrNUlsOTFYVHVsaFJnbnlq?=
- =?utf-8?B?OGZzZG0xTkhRWUkxbTl6UE85OGZmZ3pmbHFXMXNvMTB0SkRUMTUvVGNRZDFQ?=
- =?utf-8?B?Y1FWZW9OdU1LQmtYbEE0akxYRUxwMEp5OG9SNGlKN1lZeXBuOHBONUxOZlFH?=
- =?utf-8?Q?Hhf6I0hyuY2i5p/LQYI4Jeo17?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 040b75bf-055c-45df-5d03-08da86a75670
-X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 14:37:29.5305
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: H2Mdk89Q+rrRTNaFCI/Z97lF7E9cgDWXDtojCcs2EDN/r33kLSX2DCkAiRdUNUkKLpqwXw0Yo20iMCzyuhzJ9g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR04MB7330
+In-Reply-To: <YwdRvBSGDNIUOMnH@aptenodytes>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.08.2022 16:19, Juergen Gross wrote:
-> The error exit of privcmd_ioctl_dm_op() is calling unlock_pages()
-> potentially with pages being NULL, leading to a NULL dereference.
+On 8/25/22 5:41 AM, Paul Kocialkowski wrote:
+> Hi Samuel,
 > 
-> Additionally lock_pages() doesn't check for pin_user_pages_fast()
-> having been completely successful, resulting in potentially not
-> locking all pages into memory. This could result in sporadic failures
-> when using the related memory in user mode.
+> On Fri 12 Aug 22, 02:55, Samuel Holland wrote:
+>> A100 features an updated DPHY, which moves PLL control inside the DPHY
+>> register space. (Previously PLL-MIPI was controlled from the CCU. This
+>> does not affect the "clocks" property because the link between PLL-MIPI
+>> and the DPHY was never represented in the devicetree.) It also requires
+>> a modified analog power-on sequence. Finally, the new DPHY adds support
+>> for operating as an LVDS PHY. D1 uses this same variant.
 > 
-> Fix all of that by calling unlock_pages() always with the real number
-> of pinned pages, which will be zero in case pages being NULL, and by
-> checking the number of pages pinned by pin_user_pages_fast() matching
-> the expected number of pages.
-> 
-> Cc: <stable@vger.kernel.org>
-> Fixes: ab520be8cd5d ("xen/privcmd: Add IOCTL_PRIVCMD_DM_OP")
-> Reported-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-> Signed-off-by: Juergen Gross <jgross@suse.com>
+> Do you have some pointers about that? I'd be surprised that this PHY is now
+> used for "traditional" LVDS display output, which is usually done with a simpler
+> LVDS phy attached to the display controller.
 
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Yes, this is documented in the A133 User Manual. As for the BSP code, see:
+
+https://github.com/Tina-Linux/tina-d1x-linux-5.4/blob/master/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_dsi.c#L773
+https://github.com/Tina-Linux/tina-d1x-linux-5.4/blob/master/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd_sun50iw10.c#L390
+https://github.com/Tina-Linux/tina-d1x-linux-5.4/blob/master/drivers/video/fbdev/sunxi/disp2/disp/de/disp_lcd.c#L786
+
+Regards,
+Samuel
+
+> However I've seen that some new Allwinner SoCs come with sub-LVDS camera input,
+> which typically requires a more complex PHY due to the high number of lanes.
+> 
+> Anyway for now this is:
+> Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> 
+> Cheers,
+> 
+> Paul
+> 
+>> Signed-off-by: Samuel Holland <samuel@sholland.org>
+>> ---
+>>
+>>  .../bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml           | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml b/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
+>> index cf49bd99b3e2..b88c4b52af7d 100644
+>> --- a/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
+>> +++ b/Documentation/devicetree/bindings/phy/allwinner,sun6i-a31-mipi-dphy.yaml
+>> @@ -17,9 +17,13 @@ properties:
+>>    compatible:
+>>      oneOf:
+>>        - const: allwinner,sun6i-a31-mipi-dphy
+>> +      - const: allwinner,sun50i-a100-mipi-dphy
+>>        - items:
+>>            - const: allwinner,sun50i-a64-mipi-dphy
+>>            - const: allwinner,sun6i-a31-mipi-dphy
+>> +      - items:
+>> +          - const: allwinner,sun20i-d1-mipi-dphy
+>> +          - const: allwinner,sun50i-a100-mipi-dphy
+>>  
+>>    reg:
+>>      maxItems: 1
+>> -- 
+>> 2.35.1
+>>
+> 
+
