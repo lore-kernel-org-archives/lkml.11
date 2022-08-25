@@ -2,186 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B47EECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 467ACECAA27
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 18:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243552AbiHYSvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 14:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53806 "EHLO
+        id S243635AbiHYSvk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 14:51:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243511AbiHYSvK (ORCPT
+        with ESMTP id S243548AbiHYSv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 14:51:10 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3EBB4E83
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:51:09 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id m34-20020a634c62000000b0042aff6dff12so3795904pgl.14
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 11:51:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc;
-        bh=lGAqB/GNmrDPPkV5jr9OoJ3q9SKii5qWo4ibcFCW7eo=;
-        b=DeaANBLOlr0ppKzAtlWXDTLwAmUNq9XIpss/f40nbT0JHkuWGR7LsYXfdKztC0j5gG
-         HiOL2Xh6qQRXSJDdzCKZi86XRNjr6lrlmT4k65meiRrXvQq5u8rPZ3QJXOLKt7FeYyJa
-         5M/Z7/erNaZfGrGdUgBr3uSIceCSe5Ul3oByGVVKVt8shq0Uyl3ye9j5cfxJrHtAGBLi
-         n8Xc1I5FWqMB/sqcuTWOL44ocC8VC8HYMbmx2Ut8ILk4wYhQrwRDmBf/8XaIc0Xt+vg/
-         vt0P6bTefJ956in4EEkcFKuJfzj8EmfCd7DSYWZ8D+2hdwGwyr4t4fewwhKKY6ql0aes
-         YuxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=lGAqB/GNmrDPPkV5jr9OoJ3q9SKii5qWo4ibcFCW7eo=;
-        b=T0W0hcyPigxKEkCJjwoh04zF1MV3mb3bkKbXMnz2D5JM+LUhkcn7HLv6/B3a9TSZdw
-         e/RxBecxOjSB5SLwLowxu1CIJJcCX5OTkGN/MJZPd+GyukJ9HP9BglS23dqpXIUkTsHn
-         Ctw0klEWoTTQNt+yAQ+b2zPnJKc+5umSkHj74FZCFftuNvQ9Xkp0NQaXr/PwwM0f5KjZ
-         1kLR6XdkHSofil3ncGsoep/iYt+GM8rEqcOpgUL/M7r/WHUBSMpjB8M2X+734OtPZrot
-         5mqcRDe1+ReoJpCo0wfPGddlALNii8BZxjGQxjyJc9+CgHL0iT5Ckl0aGXEzOiVltlhw
-         1ung==
-X-Gm-Message-State: ACgBeo0GRw1PpAKLkSINRZaCNNfXN49OLHieqh1mUIQOnpyqFvlSmH2c
-        Dw8G/GnrH/18abEI6vhgwbFU/T0G/TPuZkkVJWI=
-X-Google-Smtp-Source: AA6agR6e/9WCXUqGwvrKzxvLN5CnU2/oDCiswJkCrhOMct7DE+11zW5i2jVa12mcZbU1eqo8VEXW5A18uJTrWpZYsoU=
-X-Received: from wmcvicker.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5ebe])
- (user=willmcvicker job=sendgmr) by 2002:a17:90a:e558:b0:1fb:c4b7:1a24 with
- SMTP id ei24-20020a17090ae55800b001fbc4b71a24mr19452pjb.1.1661453467971; Thu,
- 25 Aug 2022 11:51:07 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 18:50:25 +0000
-In-Reply-To: <20220825185026.3816331-1-willmcvicker@google.com>
-Mime-Version: 1.0
-References: <20220825185026.3816331-1-willmcvicker@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220825185026.3816331-3-willmcvicker@google.com>
-Subject: [PATCH v5 2/2] PCI: dwc: Add support for 64-bit MSI target address
-From:   Will McVicker <willmcvicker@google.com>
-To:     Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        "=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?=" <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Will McVicker <willmcvicker@google.com>
-Cc:     kernel-team@android.com, Vidya Sagar <vidyas@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Robin Murphy <robin.murphy@arm.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 25 Aug 2022 14:51:29 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBCFB72AA;
+        Thu, 25 Aug 2022 11:51:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661453480; x=1692989480;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=L3vWaTTASpx/1u0Gm5leyEzK09XuvW71io7DsaYHZTw=;
+  b=FPeyNxRr03wpHNSaO7Phkgm4inbffbEMa8m1tTZdfLjoCZl9UzXgTd5J
+   u5V2ICA/4CBQNPY4P+D4KZ/c6oxcPFnAVGAYuGfMOrpwBBjmGQNiQeW50
+   +eic6OtI6yYJUWQwJzpwDOb4WmoV1BOP6v39W2uJ66oO2DN8X393G7LR/
+   h5KPwt9wEQXtsPLAvI23ZytrbhPhONMh5TNleVNMeXJ1l4wODaLYLySmg
+   tchI3v25QjrvbOXbEJbU4ZyMq6dwzPdzNzqPMU91P0yLhXHTAzmrVBPRY
+   N6bEz3TzrQK+maoFxiqeOPGlrlY8Xm7STJ57RDMHSC++NNgBTGbCNMBmy
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="295607478"
+X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
+   d="scan'208";a="295607478"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 11:51:19 -0700
+X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
+   d="scan'208";a="752600007"
+Received: from manjeets-mobl.amr.corp.intel.com (HELO [10.212.220.1]) ([10.212.220.1])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 11:51:18 -0700
+Message-ID: <88d0f48a-d845-b0ca-b34d-5e22ae82b047@intel.com>
+Date:   Thu, 25 Aug 2022 11:51:18 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3] x86/sgx: Do not consider unsanitized pages an error
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>, linux-sgx@vger.kernel.org
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+References: <20220825080802.259528-1-jarkko@kernel.org>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <20220825080802.259528-1-jarkko@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since not all devices require a 32-bit MSI address, add support to the
-PCIe host driver to allow setting the DMA mask to 64-bits if the 32-bit
-allocation fails. This allows kernels to disable ZONE_DMA32 and bounce
-buffering (swiotlb) without risking not being able to get a 32-bit address
-during DMA allocation.
+On 8/25/22 01:08, Jarkko Sakkinen wrote:
+> +	/* Can happen, when the initialization is retracted: */
+> +	if (verbose && dirty_count > 0)
+> +		pr_info("%d unsanitized pages\n", dirty_count);
+>  }
+>  
+>  static bool sgx_reclaimer_age(struct sgx_epc_page *epc_page)
+> @@ -394,11 +403,8 @@ static int ksgxd(void *p)
+>  	 * Sanitize pages in order to recover from kexec(). The 2nd pass is
+>  	 * required for SECS pages, whose child pages blocked EREMOVE.
+>  	 */
+> -	__sgx_sanitize_pages(&sgx_dirty_page_list);
+> -	__sgx_sanitize_pages(&sgx_dirty_page_list);
+> -
+> -	/* sanity check: */
+> -	WARN_ON(!list_empty(&sgx_dirty_page_list));
+> +	__sgx_sanitize_pages(&sgx_dirty_page_list, false);
+> +	__sgx_sanitize_pages(&sgx_dirty_page_list, true);
 
-Basically, in the slim chance that there are no 32-bit allocations
-available, the current PCIe host driver will fail to allocate the msi_msg
-page due to a DMA address overflow (seen in [1]). With this patch, the
-PCIe host can retry the allocation with a 64-bit DMA mask if the current
-PCIe device advertises 64-bit support via its MSI capabilities.
+This is backwards, IMNHO.
 
-[1] https://lore.kernel.org/all/Yo0soniFborDl7+C@google.com/
+Make __sgx_sanitize_pages() return the number of pages that it leaves
+dirty.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Will McVicker <willmcvicker@google.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Jingoo Han <jingoohan1@gmail.com>
----
- .../pci/controller/dwc/pcie-designware-host.c | 38 ++++++++++++++-----
- drivers/pci/controller/dwc/pcie-designware.c  |  8 ++++
- drivers/pci/controller/dwc/pcie-designware.h  |  1 +
- 3 files changed, 38 insertions(+), 9 deletions(-)
+	__sgx_sanitize_pages(&sgx_dirty_page_list)
+	left_dirty = __sgx_sanitize_pages(&sgx_dirty_page_list);
+	if (left_dirty)
+		pr_warn(...);
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index 39f3b37d4033..8928a9a29d58 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -330,6 +330,9 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
- 	u64 *msi_vaddr;
- 	int ret;
- 	u32 ctrl, num_ctrls;
-+	bool msi_64bit = false;
-+	bool retry_64bit = false;
-+	u16 msi_capabilities;
- 
- 	for (ctrl = 0; ctrl < MAX_MSI_CTRLS; ctrl++)
- 		pp->irq_mask[ctrl] = ~0;
-@@ -367,16 +370,33 @@ static int dw_pcie_msi_host_init(struct dw_pcie_rp *pp)
- 						    dw_chained_msi_isr, pp);
- 	}
- 
--	ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(32));
--	if (ret)
--		dev_warn(dev, "Failed to set DMA mask to 32-bit. Devices with only 32-bit MSI support may not work properly\n");
-+	msi_capabilities = dw_pcie_msi_capabilities(pci);
-+	if (msi_capabilities & PCI_MSI_FLAGS_ENABLE)
-+		msi_64bit = msi_capabilities & PCI_MSI_FLAGS_64BIT;
- 
--	msi_vaddr = dmam_alloc_coherent(dev, sizeof(u64), &pp->msi_data,
--					GFP_KERNEL);
--	if (!msi_vaddr) {
--		dev_err(dev, "Failed to alloc and map MSI data\n");
--		dw_pcie_free_msi(pp);
--		return -ENOMEM;
-+	while (true) {
-+		dev_dbg(dev, "Setting MSI DMA mask to %s-bit.\n",
-+			retry_64bit ? "64" : "32");
-+		ret = dma_set_mask_and_coherent(dev, retry_64bit ?
-+						DMA_BIT_MASK(64) :
-+						DMA_BIT_MASK(32));
-+		if (ret)
-+			dev_warn(dev, "Failed to set DMA mask to %s-bit.\n",
-+				 retry_64bit ? "64" : "32");
-+
-+		msi_vaddr = dmam_alloc_coherent(dev, sizeof(u64), &pp->msi_data,
-+						GFP_KERNEL);
-+		if (!msi_vaddr) {
-+			dev_err(dev, "Failed to alloc and map MSI data\n");
-+			if (msi_64bit && !retry_64bit) {
-+				retry_64bit = true;
-+				continue;
-+			}
-+
-+			dw_pcie_free_msi(pp);
-+			return -ENOMEM;
-+		}
-+		break;
- 	}
- 
- 	return 0;
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index c6725c519a47..650a7f22f9d0 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -82,6 +82,14 @@ u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap)
- }
- EXPORT_SYMBOL_GPL(dw_pcie_find_capability);
- 
-+u16 dw_pcie_msi_capabilities(struct dw_pcie *pci)
-+{
-+	u8 offset;
-+
-+	offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
-+	return dw_pcie_readw_dbi(pci, offset + PCI_MSI_FLAGS);
-+}
-+
- static u16 dw_pcie_find_next_ext_capability(struct dw_pcie *pci, u16 start,
- 					    u8 cap)
- {
-diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
-index a871ae7eb59e..45fcdfc8c035 100644
---- a/drivers/pci/controller/dwc/pcie-designware.h
-+++ b/drivers/pci/controller/dwc/pcie-designware.h
-@@ -332,6 +332,7 @@ void dw_pcie_version_detect(struct dw_pcie *pci);
- 
- u8 dw_pcie_find_capability(struct dw_pcie *pci, u8 cap);
- u16 dw_pcie_find_ext_capability(struct dw_pcie *pci, u8 cap);
-+u16 dw_pcie_msi_capabilities(struct dw_pcie *pci);
- 
- int dw_pcie_read(void __iomem *addr, int size, u32 *val);
- int dw_pcie_write(void __iomem *addr, int size, u32 val);
--- 
-2.37.2.672.g94769d06f0-goog
+That rids us of the mystery true/false and puts the pr_warn() in a place
+that makes logical sense.  Then, let's either *not* do the
 
+	pr_err_ratelimited(EREMOVE_ERROR_MESSAGE, ret, ret);
+
+at all, or make it an unconditional pr_warn_ratelimited().  They're not
+going to be common and multiple messages are virtually worthless anyway.
+
+I actually think a common tracepoint, or out-of-line ENCLS/ENCLU
+functions that can be easily ftraced are a much better idea than a
+one-off pr_whatever().
