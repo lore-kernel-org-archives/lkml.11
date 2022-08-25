@@ -2,122 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2AE6C28D13
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 109E4C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237497AbiHYKYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 06:24:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
+        id S236970AbiHYKZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 06:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238284AbiHYKYr (ORCPT
+        with ESMTP id S234809AbiHYKZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 06:24:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E42332
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 03:24:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32544B82832
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 10:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59D95C433D6;
-        Thu, 25 Aug 2022 10:24:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661423082;
-        bh=RFfgdarMWGMA++FX+hYtwz3wXEzuMHPPtoLmXbI4ekQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Z7InVAKJszDVmQB48HHp1HEBbkyeAJxWHoaiDmINPRIKria+zFLSEccZhB7Jza7bh
-         Mv9099WdzYX/CYLVhpDbQd3HIpCWPGLGMccgSll+xsYqqiqj0pAr+N1GeH9D0fc27G
-         8S/bbHY7tE2vlYhd/yzFKCUgCvninBA2rBtk3oQc=
-Date:   Thu, 25 Aug 2022 12:24:30 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     "Czerwacki, Eial" <eial.czerwacki@sap.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Arsh, Leonid" <leonid.arsh@sap.com>,
-        "Twaig, Oren" <oren.twaig@sap.com>,
-        SAP vSMP Linux Maintainer <linux.vsmp@sap.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Borislav Petkov <bp@suse.de>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Eric Biggers <ebiggers@google.com>, Fei Li <fei1.li@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: Re: [PATCH v2] drivers/virt/vSMP: new driver
-Message-ID: <YwdN3vJ1Z+1yKfma@kroah.com>
-References: <PAXPR02MB731058B69D178E026C578BB481729@PAXPR02MB7310.eurprd02.prod.outlook.com>
- <YwclcEJDf/POuHw5@kroah.com>
- <PAXPR02MB7310DFE86CAB92D0AE1A14BE81729@PAXPR02MB7310.eurprd02.prod.outlook.com>
- <YwdBMIgSzEiFjc4D@kroah.com>
- <PAXPR02MB7310694F20F95CA446FFF22481729@PAXPR02MB7310.eurprd02.prod.outlook.com>
+        Thu, 25 Aug 2022 06:25:10 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F7310556;
+        Thu, 25 Aug 2022 03:25:07 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MCzZN123VzGphj;
+        Thu, 25 Aug 2022 18:23:24 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
+ 2022 18:25:04 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH -next] net: sched: sch_skbprio: add support for qlen statistics of each priority in sch_skbprio
+Date:   Thu, 25 Aug 2022 18:27:45 +0800
+Message-ID: <20220825102745.70728-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <PAXPR02MB7310694F20F95CA446FFF22481729@PAXPR02MB7310.eurprd02.prod.outlook.com>
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 10:16:59AM +0000, Czerwacki, Eial wrote:
-> >> >And why is your version file a binary file?  It should just be a small
-> >> >text string, right?
-> >> not so small, it can reach up to 512kb.
-> >
-> >That was not obvious at all.  Please document this.
-> where should the document be?
-> in the code as a comment or in another file?
+The skbprio_dump_class_stats() gets the qlen of queues with the cl - 1
+priority, but the qlen of each priority is not used in enqueue or dequeue
+process.
 
-In the Documentation/ABI/ file that describes this file.
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ net/sched/sch_skbprio.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> >And how in the world is a "version" that big?  What exactly does this
-> >contain?
-> it 's size depends on the number of resources it uses.
-> here is an example:
-> :~> cat /sys/hypervisor/vsmp/version  
-> SAP vSMP Foundation: 10.6.2862.0 (Aug 22 2022 15:21:02)
-> System configuration:
->    Boards:      2
->       1 x Proc. + I/O + Memory
->       1 x NVM devices (Amazon.com Amazon EC2 NVMe Instance Storage)
->    Processors:  1, Cores: 2, Threads: 4
->        Intel(R) Xeon(R) Platinum 8124M CPU @ 3.00GHz Stepping 04
->    Memory (MB): 30976 (of 103192), Cache: 7527, Private: 64689
->       1 x  6400MB    [ 7825/ 321/ 1104]      
->       1 x 24576MB    [95367/7206/63585]       00:1f.0#1
->    Boot device: [HDD] NVMe: Amazon Elastic Block Store        
-> Supported until: Aug 22 2024
+diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
+index 7a5e4c454715..fe2bb7bf9d2a 100644
+--- a/net/sched/sch_skbprio.c
++++ b/net/sched/sch_skbprio.c
+@@ -83,6 +83,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		__skb_queue_tail(qdisc, skb);
+ 		qdisc_qstats_backlog_inc(sch, skb);
+ 		q->qstats[prio].backlog += qdisc_pkt_len(skb);
++		q->qstats[prio].qlen++;
+ 
+ 		/* Check to update highest and lowest priorities. */
+ 		if (prio > q->highest_prio)
+@@ -106,6 +107,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	__skb_queue_tail(qdisc, skb);
+ 	qdisc_qstats_backlog_inc(sch, skb);
+ 	q->qstats[prio].backlog += qdisc_pkt_len(skb);
++	q->qstats[prio].qlen++;
+ 
+ 	/* Drop the packet at the tail of the lowest priority qdisc. */
+ 	lp_qdisc = &q->qdiscs[lp];
+@@ -115,6 +117,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 	qdisc_drop(to_drop, sch, to_free);
+ 
+ 	q->qstats[lp].backlog -= qdisc_pkt_len(to_drop);
++	q->qstats[lp].qlen--;
+ 	q->qstats[lp].drops++;
+ 	q->qstats[lp].overlimits++;
+ 
+@@ -150,6 +153,7 @@ static struct sk_buff *skbprio_dequeue(struct Qdisc *sch)
+ 	qdisc_bstats_update(sch, skb);
+ 
+ 	q->qstats[q->highest_prio].backlog -= qdisc_pkt_len(skb);
++	q->qstats[q->highest_prio].qlen--;
+ 
+ 	/* Update highest priority field. */
+ 	if (skb_queue_empty(hpq)) {
+-- 
+2.17.1
 
-That is crazy, and is not a version.  It's a "configuration".
-
-You have a version up there, just export that as a simple string
-"10.6.2862.0".  What is the rest of that stuff needed for?  Who will use
-it?  Should it just be in a debugfs file for debugging things?
-
-Oh, and I love the "Supported until" tag, that's funny :)
-
-> >> that is why I decided to go with binary, I understood that the text is rather limited.
-> >
-> >That is true, sysfs is "one value per file", this can not be a file that
-> >you parse.
-> should I keep it as bin then?
-
-See above, make it text only for the version.  If you want to export
-other things, be explicit and make them "one value per sysfs file" or
-use debugfs for debugging things that no one relies on.
-
-> >You have pdev, use that in your dev_dbg() call.
-> I have pdev when the probe cb is called, however in other funcs I
-> don't have it.
-
-That's for the other functions to fix up.  Pass in the device pointer to
-them.  You are a driver, there is no reason to NOT have a device pointer
-in your functions, otherwise you are operating on global state which a
-driver should never do.  You will notice that quickly when you remove
-the static variable at the top of the file like I asked you to :)
-
-thanks,
-
-greg k-h
