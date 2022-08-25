@@ -2,130 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 001ACC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DCDC04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 12:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241922AbiHYMk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        id S240899AbiHYMln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 08:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242011AbiHYMkv (ORCPT
+        with ESMTP id S236917AbiHYMll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 08:40:51 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1544B4B0
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:40:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=k1; bh=aZqNW6W08ih6JS2IUvIIZiIqCV3W
-        gHPNwpTFgHstyik=; b=m2WPERIsCK59vBzWco9kmFaJ/EdlAkSDaOmQX21n+pUB
-        hY77VM8gyKz77N60QfRJXv+nVVZTH7hJ2o86ZUFrXv0a3Rr1uHAgMa3by4QVdlVX
-        IyUWRuZwcj0lfbdsiCZB/p6+2IOScAleePiChPOJEQTOOwHUaYYjG8RzipR6m8s=
-Received: (qmail 2687725 invoked from network); 25 Aug 2022 14:40:29 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 25 Aug 2022 14:40:29 +0200
-X-UD-Smtp-Session: l3s3148p1@UcMaGhDnZNcgAwDtxwoDABxA2q3xYuRb
-Date:   Thu, 25 Aug 2022 14:40:26 +0200
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        John Stultz <jstultz@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>, bpf@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH] kernel: move from strlcpy with unused retval to strscpy
-Message-ID: <YwdtunymYd4VO83D@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>, Song Liu <song@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        John Stultz <jstultz@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>, bpf@vger.kernel.org,
-        cgroups@vger.kernel.org, linux-perf-users@vger.kernel.org
-References: <20220818210202.8227-1-wsa+renesas@sang-engineering.com>
- <YwdAknZFyKxCXZuL@alley>
+        Thu, 25 Aug 2022 08:41:41 -0400
+Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409B52315A
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 05:41:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
+        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xCMa+Y2jIKgZ56OuN/h0oLf2cyBRDehvHfcF2kieVHM=; b=gtp5fNPa37EZTLE4UGvnHplqbA
+        vyMYlZGWuG6x/vlNK5aG2I5bnpXR++EbUNXT5tssiuWTzKYGbg/uDWZJyWkScURq7WSC91GXEypRb
+        msmYY5Vtm/smg/6qT3kp3/NM+rpKf/Zoo6+pVoVy5NgLXszqvnDIzv7NCZPoHhaw3tEQMyx0T9QWj
+        wbSFrbvlHvg0lTIOcpEKPzF60IulT6FyItMHYnBJryjafFhRX/FNOBFHa2MjE0CZe4gxZiQMhS6Vv
+        2putyWLiHBGSPlKbLugUZIQCCxB6ySVfyRE0AY7mv9qlkRambhZQ3Bznh1FE0CjI/PFnHyR3kZHCT
+        bHMHsv1Q==;
+Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=62698)
+        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <noralf@tronnes.org>)
+        id 1oRCAx-0005T0-Nh; Thu, 25 Aug 2022 14:41:35 +0200
+Message-ID: <3cc08f9d-9f01-b771-c16f-ea95acd7e7cd@tronnes.org>
+Date:   Thu, 25 Aug 2022 14:41:27 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="QWwBO+hWQkYuUjLm"
-Content-Disposition: inline
-In-Reply-To: <YwdAknZFyKxCXZuL@alley>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v1 34/35] drm/modes: Introduce the tv_mode property as a
+ command-line option
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-34-3d53ae722097@cerno.tech>
+ <eedb1a86-c1fb-cc76-2a43-4ed349d7d826@tronnes.org>
+ <20220824154543.bdtpz2evwzsjrdrz@houat>
+From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
+In-Reply-To: <20220824154543.bdtpz2evwzsjrdrz@houat>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---QWwBO+hWQkYuUjLm
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
+Den 24.08.2022 17.45, skrev Maxime Ripard:
+> Hi Noralf,
+> 
+> On Sat, Aug 20, 2022 at 10:18:47PM +0200, Noralf Trønnes wrote:
+>> Den 29.07.2022 18.35, skrev Maxime Ripard:
+>>> Our new tv mode option allows to specify the TV mode from a property.
+>>> However, it can still be useful, for example to avoid any boot time
+>>> artifact, to set that property directly from the kernel command line.
+>>>
+>>> Let's add some code to allow it, and some unit tests to exercise that code.
+>>>
+>>> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+>>>
+>>
+>> In the subject it says "tv_mode property", but the property is called
+>> "tv norm", so the option should be tv_norm?
+> 
+> Yeah... I don't know. mode is taken but it's obviously the best name. So
+> I went with norm to avoid the (internal) conflict but I left mode for
+> the user facing property.
+> 
+> I'm not sure what's best here, or maybe we can pick another name entirely?
+> 
 
-> > Generated by a coccinelle script.
-^ ^ ^
+Why not just call it "tv mode" or even better "TV Mode". The state
+member can be called tv_mode, but the mode_config member will need a
+temporary name until the "mode" property is removed. tv_tv_mode or maybe
+connector_tv_mode?
 
-> You might want to use Coccinelle if a simple sed/awk gets too
-> complicated. See
+But IMO, if there are no users of this property, adding it should have a
+drm maintainers ack.
 
-:)
-
-So, I did a tree wide conversion and let Linus know that I have a branch
-available. He didn't respond, so I assumed that individual patches is
-the way to go.
-
-
---QWwBO+hWQkYuUjLm
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmMHbbYACgkQFA3kzBSg
-KbZAYw/+NDqOY8g0Yuz+VlyR09k33L8XgacCAPbI3iIT3HWMPSLM5PILZvw4/KmS
-fbEWjJpCFWjSOoZSM5M+vw6MicaUqwjn7UXrJNLIR25RklM/Re8rfgmmo2iqqyb+
-UPAdKt3tapAX5Yb4BQWBRSNxp8+TOl+CiNtdZjec35ESDaSdAd2vDtHE6C6yxP43
-pY3tgKgjIwpI5jqMU/KxOLMCdQHy7TTr63qbeHZcPPpqeBkMMO55rqucIBrx8h26
-WtCE2di3Uzt4ma7Lo+7NJUiYdzvX17U+98XDxm0MxeeQpEstI6qK/zz0NE9pR1pH
-1AmJjRt72JxP0o7ryWvxcnXHOer2j1vEMI05kS8kmMjwCBeQWiV5/KvbxcA6S4dU
-vsUiHJQfJlzpYjjudEV7De6l3zKbrjf/jJQvhv8Poz4AkrFR8kUIGfvV5sRM06wq
-ASybvskRI+M+7BiyJC/KwHjRePkqsHsp/0FqtjOt+Ztejinu9mFc8xPcfqjiPAXx
-bTzqhvtmyUDn+vxJpfmGh59mBzyp3toKatWCH7Xwr6RYBgwBZLTucH6K64XJp7Gz
-4rb2ubLz8PZhLDCmi01R5z9E3nZD1Jpn8XV0/qYyrA+8zFqdV4iZSFKxMjwL+Csd
-LvvbPt0YRE8mmR9zwZqNoSi6xSDIx6KBrtQpUbs2lCw9H5riV50=
-=lWpT
------END PGP SIGNATURE-----
-
---QWwBO+hWQkYuUjLm--
+Noralf.
