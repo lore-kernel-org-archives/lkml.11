@@ -2,99 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B159AC04AA5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB82C28D13
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 13:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240998AbiHYNX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 09:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47494 "EHLO
+        id S242560AbiHYNXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 09:23:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240846AbiHYNX0 (ORCPT
+        with ESMTP id S242543AbiHYNXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 09:23:26 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D01CAA4DB
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:23:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661433806; x=1692969806;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=LO3mEZSh95GcI+TJnv4VjREZQLaJ80zWeeGmVQtCKV8=;
-  b=mSfSWIwR1GY3AIu9Uyg/8alpMxPXLRcZxSzPFEWRLRTL7UR3v2wmWmrD
-   878PJEiWsvWaiY6JnRXc7eKApsznKHAR8MUpZMLCV4cWpdTIMLbXL4CmG
-   EVIUuECrUPIeE0cUiOsT/S3IKj8vTQ/jQg+sfCZS+610LkjUpsFM1sYVJ
-   n8PbwL4+sgjewDa/uOndk4j5h2TFuRn1iAK8a9w8mr3jHba4PvwGBRiz2
-   IyVYgFfpE4F6Wx1epGfl7d+ARgCqmrueo8RQdzqt312pIVFzi5qB5vBc1
-   7PNQT+0wy2GuGuj/Oz5M6bHLwAYyMtyCTaSp5ERIo2J5bcV06Q4R16Raq
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="380526934"
-X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
-   d="scan'208";a="380526934"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 06:23:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,263,1654585200"; 
-   d="scan'208";a="699454421"
-Received: from linux.intel.com ([10.54.29.200])
-  by FMSMGA003.fm.intel.com with ESMTP; 25 Aug 2022 06:23:25 -0700
-Received: from [10.252.208.112] (kliang2-mobl1.ccr.corp.intel.com [10.252.208.112])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by linux.intel.com (Postfix) with ESMTPS id DC738580AE3;
-        Thu, 25 Aug 2022 06:23:24 -0700 (PDT)
-Message-ID: <e5466ae3-98c9-1e9e-3ddb-bdb0245b6b5c@linux.intel.com>
-Date:   Thu, 25 Aug 2022 09:23:23 -0400
+        Thu, 25 Aug 2022 09:23:41 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5851266A44
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 06:23:36 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MD3VV6Y05zlW71;
+        Thu, 25 Aug 2022 21:20:18 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 21:23:34 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
+ 2022 21:23:34 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <ogabbay@kernel.org>
+Subject: [PATCH -next] habanalabs/gaudi2: fix free irq in error path in gaudi2_enable_msix()
+Date:   Thu, 25 Aug 2022 21:31:23 +0800
+Message-ID: <20220825133123.1874337-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH 2/2] perf docs: Update the documentation for the save_type
- filter
-Content-Language: en-US
-To:     acme@redhat.com, linux-kernel@vger.kernel.org
-Cc:     eranian@google.com, ak@linux.intel.com, namhyung@kernel.org,
-        irogers@google.com, Peter Zijlstra <peterz@infradead.org>
-References: <20220816125612.2042397-1-kan.liang@linux.intel.com>
- <20220816125612.2042397-2-kan.liang@linux.intel.com>
-From:   "Liang, Kan" <kan.liang@linux.intel.com>
-In-Reply-To: <20220816125612.2042397-2-kan.liang@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnaldo,
+Add two variables to store completion irq and event queue irq. And add
+a new lable to free event queue irq in error path in gaudi2_enable_msix().
 
-The kernel change has been merged into the tip perf/urgent branch.
+Fixes: d7bb1ac89b2f ("habanalabs: add gaudi2 asic-specific code")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/misc/habanalabs/gaudi2/gaudi2.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-Do you have any comments for the patch?
-If it's OK for you, could you please pull this patch?
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+index 98336a1a84b0..54eca19b270b 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+@@ -3518,6 +3518,7 @@ static int gaudi2_enable_msix(struct hl_device *hdev)
+ 	struct asic_fixed_properties *prop = &hdev->asic_prop;
+ 	struct gaudi2_device *gaudi2 = hdev->asic_specific;
+ 	int rc, irq, i, j, user_irq_init_cnt;
++	int completion_irq, event_queue_irq;
+ 	irq_handler_t irq_handler;
+ 	struct hl_cq *cq;
+ 
+@@ -3532,17 +3533,19 @@ static int gaudi2_enable_msix(struct hl_device *hdev)
+ 		return rc;
+ 	}
+ 
+-	irq = pci_irq_vector(hdev->pdev, GAUDI2_IRQ_NUM_COMPLETION);
++	completion_irq = pci_irq_vector(hdev->pdev, GAUDI2_IRQ_NUM_COMPLETION);
+ 	cq = &hdev->completion_queue[GAUDI2_RESERVED_CQ_CS_COMPLETION];
+-	rc = request_irq(irq, hl_irq_handler_cq, 0, gaudi2_irq_name(GAUDI2_IRQ_NUM_COMPLETION), cq);
++	rc = request_irq(completion_irq, hl_irq_handler_cq, 0,
++			 gaudi2_irq_name(GAUDI2_IRQ_NUM_COMPLETION), cq);
+ 	if (rc) {
+ 		dev_err(hdev->dev, "Failed to request IRQ %d", irq);
+ 		goto free_irq_vectors;
+ 	}
+ 
+-	irq = pci_irq_vector(hdev->pdev, GAUDI2_IRQ_NUM_EVENT_QUEUE);
+-	rc = request_irq(irq, hl_irq_handler_eq, 0, gaudi2_irq_name(GAUDI2_IRQ_NUM_EVENT_QUEUE),
+-			&hdev->event_queue);
++	event_queue_irq = pci_irq_vector(hdev->pdev, GAUDI2_IRQ_NUM_EVENT_QUEUE);
++	rc = request_irq(event_queue_irq, hl_irq_handler_eq, 0,
++			 gaudi2_irq_name(GAUDI2_IRQ_NUM_EVENT_QUEUE),
++			 &hdev->event_queue);
+ 	if (rc) {
+ 		dev_err(hdev->dev, "Failed to request IRQ %d", irq);
+ 		goto free_completion_irq;
+@@ -3551,7 +3554,7 @@ static int gaudi2_enable_msix(struct hl_device *hdev)
+ 	rc = gaudi2_dec_enable_msix(hdev);
+ 	if (rc) {
+ 		dev_err(hdev->dev, "Failed to enable decoder IRQ");
+-		goto free_completion_irq;
++		goto free_event_queue_irq;
+ 	}
+ 
+ 	for (i = GAUDI2_IRQ_NUM_USER_FIRST, j = prop->user_dec_intr_count, user_irq_init_cnt = 0;
+@@ -3582,9 +3585,11 @@ static int gaudi2_enable_msix(struct hl_device *hdev)
+ 
+ 	gaudi2_dec_disable_msix(hdev, GAUDI2_IRQ_NUM_SHARED_DEC1_ABNRM + 1);
+ 
++free_event_queue_irq:
++	free_irq(event_queue_irq, &hdev->event_queue);
++
+ free_completion_irq:
+-	irq = pci_irq_vector(hdev->pdev, GAUDI2_IRQ_NUM_COMPLETION);
+-	free_irq(irq, cq);
++	free_irq(completion_irq, cq);
+ 
+ free_irq_vectors:
+ 	pci_free_irq_vectors(hdev->pdev);
+-- 
+2.25.1
 
-Thanks,
-Kan
-
-On 2022-08-16 8:56 a.m., kan.liang@linux.intel.com wrote:
-> From: Kan Liang <kan.liang@linux.intel.com>
-> 
-> Update the documentation to reflect the kernel changes.
-> 
-> Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-> ---
->  tools/perf/Documentation/perf-record.txt | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
-> index 099817ef5150..d5c57ac1ee0a 100644
-> --- a/tools/perf/Documentation/perf-record.txt
-> +++ b/tools/perf/Documentation/perf-record.txt
-> @@ -397,6 +397,9 @@ following filters are defined:
->  	- abort_tx: only when the target is a hardware transaction abort
->  	- cond: conditional branches
->  	- save_type: save branch type during sampling in case binary is not available later
-> +		     For the platforms with Intel Arch LBR support (12th-Gen+ client or
-> +		     4th-Gen Xeon+ server), the save branch type is unconditionally enabled
-> +		     when the taken branch stack sampling is enabled.
->  
->  +
->  The option requires at least one branch type among any, any_call, any_ret, ind_call, cond.
