@@ -2,71 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A98ECAA25
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:48:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DAEECAA24
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 16:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243235AbiHYQsf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 12:48:35 -0400
+        id S243435AbiHYQtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 12:49:55 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242308AbiHYQsQ (ORCPT
+        with ESMTP id S242954AbiHYQtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 12:48:16 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0339BBD4FF;
-        Thu, 25 Aug 2022 09:45:53 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 18:45:25 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661445927;
+        Thu, 25 Aug 2022 12:49:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A62CBFAA7
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 09:47:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661446031;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2v6YbYZmiYDe7WfSso5jObvZ3rFRTHkQFCfrcNLUwYg=;
-        b=SqHK9XadkHVcaUFO/skdpKu1AeJZRcWsxZ518P2xTNy/hZSesc9hn4WBc0CUMEGnF+CZrc
-        7NRoTwl2otlb1BavnLeaGjemnh7MPIQBqOSSk2ThTjJxEnJX1YjIThZNI96atNdI62BtXz
-        xdkarWTxzdNvyrhLJmGJXEc5BNPFf9RmXeTqLR6j5tGdklq3DnQGa3IgD4rkyCoIFCLHf2
-        bY8oxdl6MPcvPCtxY8Co7AiNf5Tlq1W6hvq9xMBucd6XM8xQnAwdKmO4rV5XXwoad/IR9X
-        UYfzXTNVHVq8cVnwEGv1tmr7dsp3eGnsEjnbrU0iWBmg5TRjbtaHNVcMD0H0XQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661445927;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=2v6YbYZmiYDe7WfSso5jObvZ3rFRTHkQFCfrcNLUwYg=;
-        b=0/LT3924Wog2G8gBv6yQb4Fw3+ip1wJFf1t8CqSsydMp06dzGgaf0dtj6qk2JIKGTuYAVx
-        r2Gtct26RU8oirCw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH 9/9] u64_stat: Remove the obsolete fetch_irq() variants
-Message-ID: <YwenJaYmzEJGZGUW@linutronix.de>
-References: <20220817162703.728679-1-bigeasy@linutronix.de>
- <20220817162703.728679-10-bigeasy@linutronix.de>
- <20220817112745.4efd8217@kernel.org>
- <Yv5aSquR9S2KxUr2@linutronix.de>
- <20220818090200.4c6889f2@kernel.org>
- <Yv5v1E6mfpcxjnLV@linutronix.de>
- <20220818104505.010ff950@kernel.org>
- <YwOd7Ex7W21WzQ8N@linutronix.de>
- <20220822110543.4f1a8962@kernel.org>
+        bh=Q3NPvWyh2xRtoYXHMmyrsAAtGbzTeyv985JIMuXJIb4=;
+        b=IuyWJAWMTr8eL4p1Clm+lJ6P8aG8+34RIxuK7iEslEBbAPvkDQoTrA0lp/jcp2zU9I97d6
+        g4Cg1uMCU0SgO1v+bm72qfEHBpOBVZ9z2N3xTv0JSXZKOREHoGDWdoxif3Q+ciC3IS5l4L
+        PsYTTwXOVRAqwixZCDq7V4fjumRSzTA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-620-xXkhVmbBN16ANoNW0OvGkQ-1; Thu, 25 Aug 2022 12:47:09 -0400
+X-MC-Unique: xXkhVmbBN16ANoNW0OvGkQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 689E6101AA45;
+        Thu, 25 Aug 2022 16:47:09 +0000 (UTC)
+Received: from t480s.fritz.box (unknown [10.39.192.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CF705492CA2;
+        Thu, 25 Aug 2022 16:47:06 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-mm@kvack.org, David Hildenbrand <david@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mel Gorman <mgorman@suse.de>, Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>
+Subject: [PATCH v1 2/3] mm/gup: use gup_can_follow_protnone() also in GUP-fast
+Date:   Thu, 25 Aug 2022 18:46:58 +0200
+Message-Id: <20220825164659.89824-3-david@redhat.com>
+In-Reply-To: <20220825164659.89824-1-david@redhat.com>
+References: <20220825164659.89824-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220822110543.4f1a8962@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-22 11:05:43 [-0700], Jakub Kicinski wrote:
-> Guess so, but it shouldn't be extra work if we're delaying the driver
-> conversion till 6.1?
+There seems to be no reason why FOLL_FORCE during GUP-fast would have to
+fallback to the slow path when stumbling over a PROT_NONE mapped page. We
+only have to trigger hinting faults in case FOLL_FORCE is not set, and any
+kind of fault handling naturally happens from the slow path -- where
+NUMA hinting accounting/handling would be performed.
 
-I posted v2 of this series excluding 9/9 as you asked for. I will send
-it later, splitted (as in net only), once the prerequisite is in Linus'
-tree.
+Note that the comment regarding THP migration is outdated:
+commit 2b4847e73004 ("mm: numa: serialise parallel get_user_page against
+THP migration") described that this was required for THP due to lack of PMD
+migration entries. Nowadays, we do have proper PMD migration entries in
+place -- see set_pmd_migration_entry(), which does a proper
+pmdp_invalidate() when placing the migration entry.
 
-Sebastian
+So let's just reuse gup_can_follow_protnone() here to make it
+consistent and drop the somewhat outdated comments.
+
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ mm/gup.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/mm/gup.c b/mm/gup.c
+index a1355dbd848e..dfef23071dc8 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -2350,11 +2350,7 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
+ 		struct page *page;
+ 		struct folio *folio;
+ 
+-		/*
+-		 * Similar to the PMD case below, NUMA hinting must take slow
+-		 * path using the pte_protnone check.
+-		 */
+-		if (pte_protnone(pte))
++		if (pte_protnone(pte) && !gup_can_follow_protnone(flags))
+ 			goto pte_unmap;
+ 
+ 		if (!pte_access_permitted(pte, flags & FOLL_WRITE))
+@@ -2736,12 +2732,8 @@ static int gup_pmd_range(pud_t *pudp, pud_t pud, unsigned long addr, unsigned lo
+ 
+ 		if (unlikely(pmd_trans_huge(pmd) || pmd_huge(pmd) ||
+ 			     pmd_devmap(pmd))) {
+-			/*
+-			 * NUMA hinting faults need to be handled in the GUP
+-			 * slowpath for accounting purposes and so that they
+-			 * can be serialised against THP migration.
+-			 */
+-			if (pmd_protnone(pmd))
++			if (pmd_protnone(pmd) &&
++			    !gup_can_follow_protnone(flags))
+ 				return 0;
+ 
+ 			if (!gup_huge_pmd(pmd, pmdp, addr, next, flags,
+-- 
+2.37.1
+
