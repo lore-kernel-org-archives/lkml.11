@@ -2,120 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A6BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E544ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 22:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244440AbiHYW2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 18:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
+        id S244452AbiHYW2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 18:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241475AbiHYW2H (ORCPT
+        with ESMTP id S244443AbiHYW2c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 18:28:07 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15831C650A;
-        Thu, 25 Aug 2022 15:28:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=TzSF9Nx97qC9blU02IXnLbQBZ40ShDBnKmwNr3Z6Bk4=; b=fSTUbUh/o3ffVnDRNXg3t1783U
-        9E2qTDsmLQgIxPpL+1L8OPE98MuEEAz15OokSVS08/izSEfHJtHgEBYPSuEFRhXatkI8c6Zr0DN+S
-        Pc9er+3sNBzt8X6VPpz4XtuviOOuiEKKGWPAznhY3+qmDLiTbm+Bvu24wU4xyNY7LOb8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oRLKJ-00Ec76-Qv; Fri, 26 Aug 2022 00:27:51 +0200
-Date:   Fri, 26 Aug 2022 00:27:51 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Thu, 25 Aug 2022 18:28:32 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 71EF4C59FF;
+        Thu, 25 Aug 2022 15:28:31 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 27PMDYv8030657;
+        Thu, 25 Aug 2022 17:13:34 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 27PMDWHO030656;
+        Thu, 25 Aug 2022 17:13:32 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Thu, 25 Aug 2022 17:13:32 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Alexander Potapenko <glider@google.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v2 1/7] dt-bindings: net: pse-dt: add bindings
- for generic PSE controller
-Message-ID: <Ywf3Z+1VFy/2+P78@lunn.ch>
-References: <20220825130211.3730461-1-o.rempel@pengutronix.de>
- <20220825130211.3730461-2-o.rempel@pengutronix.de>
-MIME-Version: 1.0
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 44/45] mm: fs: initialize fsdata passed to write_begin/write_end interface
+Message-ID: <20220825221332.GJ25951@gate.crashing.org>
+References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-45-glider@google.com> <YsNIjwTw41y0Ij0n@casper.infradead.org> <CAG_fn=VbvbYVPfdKXrYRTq7HwmvXPQUeUDWZjwe8x8W=ttq6KA@mail.gmail.com> <CAHk-=wg-LXL4ZDMveCf9M7gWWwCMDG1dHCjD7g1u_vUXsU6Bzw@mail.gmail.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220825130211.3730461-2-o.rempel@pengutronix.de>
+In-Reply-To: <CAHk-=wg-LXL4ZDMveCf9M7gWWwCMDG1dHCjD7g1u_vUXsU6Bzw@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +  ieee802.3-pairs:
-> +    $ref: /schemas/types.yaml#/definitions/int8-array
-> +    description: Array of number of twisted-pairs capable to deliver power.
-> +      Since not all circuits are able to support all pair variants, the array of
-> +      supported variants should be specified.
-> +      Note - single twisted-pair PSE is formally know as PoDL PSE.
-> +    items:
-> +      enum: [1, 2, 4]
+On Thu, Aug 25, 2022 at 09:33:18AM -0700, Linus Torvalds wrote:
+> So you'd most certainly want to know that all incoming arguments are
+> actually valid, because otherwise you can't do even some really simple
+> and obvious optimziations.
 
-It is not clear to me what you are describing here. It looks like the
-number of pairs? That does not seem like a hardware property. The
-controller itself should be able to tell you how many pairs it can
-feed.
+The C11 change was via DR 338, see
+<https://www.open-std.org/jtc1/sc22/wg14/www/docs/dr_338.htm>
+for more info.
 
-A hardware property would be which pairs of the socket are connected
-to a PSE and so can be used to deliver power. But i'm not sure how
-that would be useful to know. I suppose a controller capable of
-powering 4 pair, but connected to a socket only wired to supply 2, can
-then disable 2 pairs?
 
-> +
-> +  ieee802.3-pse-type:
-> +    $ref: /schemas/types.yaml#/definitions/uint8
-> +    minimum: 1
-> +    maximum: 2
-> +    description: PSE Type. Describes classification- and class-capabilities.
-> +      Not compatible with PoDL PSE Type.
-> +      Type 1 - provides a Class 0, 1, 2, or 3 signature during Physical Layer
-> +      classification.
-> +      Type 2 - provides a Class 4 signature during Physical Layer
-> +      classification, understands 2-Event classification, and is capable of
-> +      Data Link Layer classification.
-
-Again, the controller should know what class it can support. Why do we
-need to specify it?  What could make sense is we want to limit the
-controller to a specific type? 
-
-> +  ieee802.3-podl-pse-class:
-> +    $ref: /schemas/types.yaml#/definitions/int8-array
-> +    items:
-> +      enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-> +    description: PoDL PSE Class. Array of supported classes by the
-> +      single twisted-pair PoDL PSE.
-
-Why? I could understand we might want to limit the higher classes,
-because the board is not designed for them, but the controller on the
-board can actually offer them. But if it tries to use them, the board
-will melt/blow a fuse.
-
-So i'm wondering if it should actually be something like:
-
-> +  ieee802.3-podl-limit-pse-classes:
-> +    $ref: /schemas/types.yaml#/definitions/int8-array
-> +    items:
-> +      enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-> +    description: PoDL PSE Class. Limit the PoDL PSE to only these classes,
-         due to hardware design limitations. If not specified, the PoDL PSE
-	 will offer all classes its supports.
-
-Remember, DT describes the hardware, not software configuration of the
-hardware.
-
-	Andrew
+Segher
