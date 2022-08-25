@@ -2,92 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 109E4C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:25:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 632B9C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 10:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236970AbiHYKZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 06:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        id S239171AbiHYK0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 06:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234809AbiHYKZK (ORCPT
+        with ESMTP id S235442AbiHYK0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 06:25:10 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F7310556;
-        Thu, 25 Aug 2022 03:25:07 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MCzZN123VzGphj;
-        Thu, 25 Aug 2022 18:23:24 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 25 Aug
- 2022 18:25:04 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH -next] net: sched: sch_skbprio: add support for qlen statistics of each priority in sch_skbprio
-Date:   Thu, 25 Aug 2022 18:27:45 +0800
-Message-ID: <20220825102745.70728-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 25 Aug 2022 06:26:22 -0400
+Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B01252DF8;
+        Thu, 25 Aug 2022 03:26:19 -0700 (PDT)
+Received: (Authenticated sender: paul.kocialkowski@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id C669D200006;
+        Thu, 25 Aug 2022 10:26:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661423178;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nZkhegChjWaWBJwEW1/N43DiTL0N1XMc1RWqnxCrZsk=;
+        b=YOt1JWVSh6Ki9doHJpzHkp8QI3qfB0CD0Yw8z3OZnBSeV9pHJH5bXqq12+5xPfisKbFKjx
+        xkqK4rV8cjhXwxS5ErtrHnmmyIJ7QO1P9MjuI807pqx7ST9YhvP/m7mzybTbVJ/NNXGd6F
+        bOmwy/kqH04s05mQFdUJTvfacBl6CDe6xMsbPK319NkiE7vTXTw8litr1xld7l8Yrhlmoh
+        F0q43cEYW18F7zIqO8qTRLUgbpy35YXscqwpqWuxxC5uvBPSIVaCW9lYCgFS3AfU2U1bJE
+        1JDOrYAuWLHL3TD784m5DleTImOLUksX2+uO66TBtWXdl09A/KYoPfVKRZdyhQ==
+Date:   Thu, 25 Aug 2022 12:26:15 +0200
+From:   Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 6/8] phy: allwinner: phy-sun6i-mipi-dphy: Set enable bit
+ last
+Message-ID: <YwdORxO4K8mV5Hc9@aptenodytes>
+References: <20220812075603.59375-1-samuel@sholland.org>
+ <20220812075603.59375-7-samuel@sholland.org>
+ <YvZBmZ+SfrJuAzAs@aptenodytes>
+ <b3a2dc61-7384-17f7-2f4f-4b6bb86bcced@sholland.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="fO1GowFtZadczY0o"
+Content-Disposition: inline
+In-Reply-To: <b3a2dc61-7384-17f7-2f4f-4b6bb86bcced@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The skbprio_dump_class_stats() gets the qlen of queues with the cl - 1
-priority, but the qlen of each priority is not used in enqueue or dequeue
-process.
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- net/sched/sch_skbprio.c | 4 ++++
- 1 file changed, 4 insertions(+)
+--fO1GowFtZadczY0o
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
-index 7a5e4c454715..fe2bb7bf9d2a 100644
---- a/net/sched/sch_skbprio.c
-+++ b/net/sched/sch_skbprio.c
-@@ -83,6 +83,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		__skb_queue_tail(qdisc, skb);
- 		qdisc_qstats_backlog_inc(sch, skb);
- 		q->qstats[prio].backlog += qdisc_pkt_len(skb);
-+		q->qstats[prio].qlen++;
- 
- 		/* Check to update highest and lowest priorities. */
- 		if (prio > q->highest_prio)
-@@ -106,6 +107,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 	__skb_queue_tail(qdisc, skb);
- 	qdisc_qstats_backlog_inc(sch, skb);
- 	q->qstats[prio].backlog += qdisc_pkt_len(skb);
-+	q->qstats[prio].qlen++;
- 
- 	/* Drop the packet at the tail of the lowest priority qdisc. */
- 	lp_qdisc = &q->qdiscs[lp];
-@@ -115,6 +117,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 	qdisc_drop(to_drop, sch, to_free);
- 
- 	q->qstats[lp].backlog -= qdisc_pkt_len(to_drop);
-+	q->qstats[lp].qlen--;
- 	q->qstats[lp].drops++;
- 	q->qstats[lp].overlimits++;
- 
-@@ -150,6 +153,7 @@ static struct sk_buff *skbprio_dequeue(struct Qdisc *sch)
- 	qdisc_bstats_update(sch, skb);
- 
- 	q->qstats[q->highest_prio].backlog -= qdisc_pkt_len(skb);
-+	q->qstats[q->highest_prio].qlen--;
- 
- 	/* Update highest priority field. */
- 	if (skb_queue_empty(hpq)) {
--- 
-2.17.1
+Hi Samuel,
 
+On Fri 12 Aug 22, 17:31, Samuel Holland wrote:
+> Hi Paul,
+>=20
+> On 8/12/22 7:03 AM, Paul Kocialkowski wrote:
+> > On Fri 12 Aug 22, 02:56, Samuel Holland wrote:
+> >> The A100 variant of the DPHY requires configuring the analog registers
+> >> before setting the global enable bit. Since this order also works on t=
+he
+> >> other variants, always use it, to minimize the differences between the=
+m.
+> >=20
+> > Did you get a chance to actually test this with either DSI/CSI-2 hardwa=
+re?
+>=20
+> I have tested DSI output with the Clockwork DevTerm (D1 SoC) and Pine64
+> PinePhone (A64 SoC). I do not have any MIPI CSI hardware to test with.
+
+Sounds good to me then!
+
+> > I vaguely remember that the order mattered. Do you have an idea of what=
+ the
+> > Allwinner BSP does too?
+>=20
+> The Allwinner BSP makes the same change as this commit in its "lowlevel_v=
+2x"
+> copy of the code, which is used for R40 and T7 (original DPHY) and A100 a=
+nd D1
+> (updated DPHY). It does not make the change in "lowlevel_sun50iw1" (A64 S=
+oC,
+> original DPHY), but I tested A64 with this change, and it works fine.
+
+Great, thanks for details.
+
+> > Otherwise I could give it a try, at least with my MIPI CSI-2 setup
+> > that uses the driver.
+>=20
+> This commit only changes sun6i_dphy_tx_power_on(). The code for RX is unc=
+hanged
+> -- in fact, it already sets SUN6I_DPHY_GCTL_REG last.
+
+Ah yes you're right, actually I remember being tempted to change this too w=
+hen
+adding the rx path, but didn't have hardware to easily test.
+
+Thanks for the details, this is:
+
+Reviewed-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+
+Cheers,
+
+Paul
+
+> Regards,
+> Samuel
+>=20
+> >> Signed-off-by: Samuel Holland <samuel@sholland.org>
+> >> ---
+> >>
+> >>  drivers/phy/allwinner/phy-sun6i-mipi-dphy.c | 8 ++++----
+> >>  1 file changed, 4 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/phy/allwinner/phy-sun6i-mipi-dphy.c b/drivers/phy=
+/allwinner/phy-sun6i-mipi-dphy.c
+> >> index 625c6e1e9990..9698d68d0db7 100644
+> >> --- a/drivers/phy/allwinner/phy-sun6i-mipi-dphy.c
+> >> +++ b/drivers/phy/allwinner/phy-sun6i-mipi-dphy.c
+> >> @@ -183,10 +183,6 @@ static int sun6i_dphy_tx_power_on(struct sun6i_dp=
+hy *dphy)
+> >>  		     SUN6I_DPHY_TX_TIME4_HS_TX_ANA0(3) |
+> >>  		     SUN6I_DPHY_TX_TIME4_HS_TX_ANA1(3));
+> >> =20
+> >> -	regmap_write(dphy->regs, SUN6I_DPHY_GCTL_REG,
+> >> -		     SUN6I_DPHY_GCTL_LANE_NUM(dphy->config.lanes) |
+> >> -		     SUN6I_DPHY_GCTL_EN);
+> >> -
+> >>  	regmap_write(dphy->regs, SUN6I_DPHY_ANA0_REG,
+> >>  		     SUN6I_DPHY_ANA0_REG_PWS |
+> >>  		     SUN6I_DPHY_ANA0_REG_DMPC |
+> >> @@ -244,6 +240,10 @@ static int sun6i_dphy_tx_power_on(struct sun6i_dp=
+hy *dphy)
+> >>  			   SUN6I_DPHY_ANA2_EN_P2S_CPU_MASK,
+> >>  			   SUN6I_DPHY_ANA2_EN_P2S_CPU(lanes_mask));
+> >> =20
+> >> +	regmap_write(dphy->regs, SUN6I_DPHY_GCTL_REG,
+> >> +		     SUN6I_DPHY_GCTL_LANE_NUM(dphy->config.lanes) |
+> >> +		     SUN6I_DPHY_GCTL_EN);
+> >> +
+> >>  	return 0;
+> >>  }
+> >> =20
+> >> --=20
+> >> 2.35.1
+> >>
+> >=20
+>=20
+
+--=20
+Paul Kocialkowski, Bootlin
+Embedded Linux and kernel engineering
+https://bootlin.com
+
+--fO1GowFtZadczY0o
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEJZpWjZeIetVBefti3cLmz3+fv9EFAmMHTkcACgkQ3cLmz3+f
+v9ET3gf+Ijb5TZR/JJTlXSoSHvPCNhJtFL0m999ze+30++wX0mEhS3H8StSKy/C1
+I2AsGVYGmUzuOru1lsIKl0Z5snU4tf0TxasrHk902JIWQ77vCuNWnKlXVYDwvDdz
+7P19vaDeMhTGePAPvoubS4g9pPsmCNwixL5Roe5mCrDK0ZLu/LWTYHydcSLqKu/Q
+x/LuE2wRx4RRFwNXuz0NXmwOZdIq41Gi2S0kx6fkbw/uHzKA30koHoy+M0Wb7vVK
+H9Ypu69YUgz8twTsvDRbid/ctfIb3wPQegbRO+S80Irf8owgD9qU6MKXIjK30qT7
++KZHOywGvjsZtMZepWV6+VqCGgugaw==
+=xe8Q
+-----END PGP SIGNATURE-----
+
+--fO1GowFtZadczY0o--
