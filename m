@@ -2,63 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3B5C32774
-	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222C4C04AA5
+	for <linux-kernel@archiver.kernel.org>; Thu, 25 Aug 2022 07:29:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238137AbiHYH2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 03:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
+        id S237747AbiHYH3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 03:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238143AbiHYH2f (ORCPT
+        with ESMTP id S232425AbiHYH3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 03:28:35 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0B2076440;
-        Thu, 25 Aug 2022 00:28:33 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id x14-20020a17090a8a8e00b001fb61a71d99so4045837pjn.2;
-        Thu, 25 Aug 2022 00:28:33 -0700 (PDT)
+        Thu, 25 Aug 2022 03:29:18 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B75DFA9
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:29:18 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id n65-20020a17090a5ac700b001fbb4fad865so485962pji.1
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 00:29:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc;
-        bh=o4ZPaiscy7+RYaipvTVXhM3gfUJGfdg1a2QcIEgV5dQ=;
-        b=Ygd4c7iUeHIcrXqOuUXT6yh8eKwHGxQg7mUCsomyr/2FfttbnZ2UZylWq1xNuU+I0S
-         yuoeXisb4bLFYL4p5/7uTKO+O72HFRDRpusIKvIv4wQM0uxkvuLxKg3pBDZeGmTqmtry
-         JPYs7cNfXp0/7xCFdL4q5PHULvolYepaxJVvLkM2TRteW0MZ0t9I2xFSuppSbDXhlYSL
-         mrJZ6UPhbgOIUzDPcInWKSGMsGVeKJGlQpBS3SMPe9x6752FgsEdZzBrd+Lk03ex9r7O
-         EvQiLQXMCYuoK/ojfZgaapl89NX8JqMrHFpYZ6naRGovYYfB1QWd5BFPy1bKk0FoGBCg
-         D63w==
+        bh=JbGIvcsfEVLV1RHydnmdeBi6HQ0+QJqGOf7I2WG/zUU=;
+        b=Gn19uEzPb7lUl0trxaRTO63z3RoJGahgxtzhBIpVj3lyr1LRBHrAq8oJ4fIhKo0UpP
+         to4/XSiJLyZp8ZrSe8iPg0bH8AGAwBKMhxdeYi5x5vMf3cnEngrtZptU8h5fVPvSKgF5
+         aDoq1Kv8rbqLGTV6rMFZ4e1PBb3hOdxscLNsHHeGKxRGvCQAbQXEcin0v5ck4nsvEaIk
+         4sWhjdOx7TtGh77Y28V0lmHH/yEhiOJgEfhfReaPAx63g8ad5etZSzv8F4sS9/8jIV0E
+         4UdcllTUSpQDeWqWp/EjGbC/eBz1yfWZZrPMtmL6yYWUWhI8iyiPA2sHu1AFbc2a23c3
+         UTig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=o4ZPaiscy7+RYaipvTVXhM3gfUJGfdg1a2QcIEgV5dQ=;
-        b=n2J5vsdD5fyoS7xWyDwiG51sSgHVMg3KAEA3H+i7OkQWfRyrDtzWHNacQPA3rwVNMm
-         ZCn26/vTEbm58N8w7Xyj0vxrOnY/M4ryPxPMVNl/CfNyQOmMuaAJmNdkDpOoy6NYSFl0
-         k1QGg9WG8DC2R/ARGOX3CB+9Pijt7PcOXWAm9MWhUNcoMxrcGuWcwZrgauZhxO/+IHtX
-         7+1YNlCKq/fYgZkL8PvO9aLJvxk6KHqxn2DZggtpevx6rJviadTMxwSMpdNVUiZ00zhI
-         esboMN448u9Lf96WLHlDhbwjDK+2zqpnGnaq5ALgaVuQaK3SgdjlF+dz8xkZUBkfTM57
-         E3vw==
-X-Gm-Message-State: ACgBeo2hbqnHWPXV9lqmS/8yvuduKi67IbFkztXyagBHZ3HbwRNhtvy7
-        +tbpgr5LAv0KyxVImTYfIQU=
-X-Google-Smtp-Source: AA6agR7Ev/Ch8MSTyvzH0nVCJleuwkC4U9TzWiA35FvJDp2BTholaHOWIKqofQ7f0d355BHvVuHWHQ==
-X-Received: by 2002:a17:90b:1c0d:b0:1fb:7c92:1373 with SMTP id oc13-20020a17090b1c0d00b001fb7c921373mr7967786pjb.24.1661412513039;
-        Thu, 25 Aug 2022 00:28:33 -0700 (PDT)
+        bh=JbGIvcsfEVLV1RHydnmdeBi6HQ0+QJqGOf7I2WG/zUU=;
+        b=kunONdEl4wZs68ZHPmwgai81jB3h2djV9b+g2dbu/1TmbVyk6cR66k/wCfb1qVmXU8
+         LPKSiZA0pnte99AqjYTZ9VeFzIBO4s0FgFFpgr81OqlOIySDi2/41Ari4bG58Izle/t7
+         1NSLiMMQYKmJ6uQ8u/K5TtWtnGcZ00L2l6lVqiPFtiCuxiGp5GRYsHYBP1xZNviBQekl
+         qhwXxM+qDpy+Fl2bJqmU3tw2YgKIQzvT2qKMBDj315SflTk/HLr+0TzER/c1TA5K/Q2I
+         TuEps5tCghhyUKg767SwjHOcGppd4VYz+DAw9zqPawe/NyUl6mlbplpBzhoWs5f3hybe
+         HkVw==
+X-Gm-Message-State: ACgBeo2zeXCxnGgAY1GhvSusYq2PBi2qxZC5xVd6FcFfu+r6uH5Y1ven
+        beG1Pqnt9bqEK5mKhDW2dLM=
+X-Google-Smtp-Source: AA6agR5eNdfyGjsShlxMUK2iVcd7RJHNVejWbYcPuno1FY9q/ArdYNJAmLGhc8KM1dSd3IJ5yeGo7w==
+X-Received: by 2002:a17:902:b581:b0:172:a34e:18fd with SMTP id a1-20020a170902b58100b00172a34e18fdmr2500538pls.163.1661412557593;
+        Thu, 25 Aug 2022 00:29:17 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id m14-20020a62a20e000000b0052d4afc4302sm14672131pff.175.2022.08.25.00.28.31
+        by smtp.gmail.com with ESMTPSA id u66-20020a626045000000b005363bc65bb1sm11213146pfb.91.2022.08.25.00.29.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 00:28:32 -0700 (PDT)
+        Thu, 25 Aug 2022 00:29:17 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: ye.xingchen@zte.com.cn
-To:     broonie@kernel.org
-Cc:     daniel@zonque.org, haojian.zhuang@gmail.com,
-        robert.jarzmik@free.fr, linux-arm-kernel@lists.infradead.org,
-        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+To:     jernej.skrabec@gmail.com
+Cc:     andrzej.hajda@intel.com, neil.armstrong@linaro.org,
+        robert.foss@linaro.org, Laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         ye xingchen <ye.xingchen@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] spi: pxa2xx: Remove the unneeded result variable
-Date:   Thu, 25 Aug 2022 07:28:28 +0000
-Message-Id: <20220825072828.229294-1-ye.xingchen@zte.com.cn>
+Subject: [PATCH linux-next] drm/bridge: parade-ps8622: Remove the unneeded result variable
+Date:   Thu, 25 Aug 2022 07:29:13 +0000
+Message-Id: <20220825072913.229357-1-ye.xingchen@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -68,30 +69,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: ye xingchen <ye.xingchen@zte.com.cn>
 
-Return the value clk_prepare_enable() directly instead of storing it in
-another redundant variable.
+Return the value ps8622_set() directly instead of storing it in another
+redundant variable.
 
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
 ---
- drivers/spi/spi-pxa2xx.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/gpu/drm/bridge/parade-ps8622.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/spi/spi-pxa2xx.c b/drivers/spi/spi-pxa2xx.c
-index 838d12e65144..986ffc4bf1ed 100644
---- a/drivers/spi/spi-pxa2xx.c
-+++ b/drivers/spi/spi-pxa2xx.c
-@@ -1873,10 +1873,8 @@ static int pxa2xx_spi_runtime_suspend(struct device *dev)
- static int pxa2xx_spi_runtime_resume(struct device *dev)
+diff --git a/drivers/gpu/drm/bridge/parade-ps8622.c b/drivers/gpu/drm/bridge/parade-ps8622.c
+index 309de802863d..c605cd725606 100644
+--- a/drivers/gpu/drm/bridge/parade-ps8622.c
++++ b/drivers/gpu/drm/bridge/parade-ps8622.c
+@@ -324,14 +324,12 @@ static int ps8622_send_config(struct ps8622_bridge *ps8622)
+ static int ps8622_backlight_update(struct backlight_device *bl)
  {
- 	struct driver_data *drv_data = dev_get_drvdata(dev);
--	int status;
+ 	struct ps8622_bridge *ps8622 = dev_get_drvdata(&bl->dev);
+-	int ret, brightness = backlight_get_brightness(bl);
++	int brightness = backlight_get_brightness(bl);
  
--	status = clk_prepare_enable(drv_data->ssp->clk);
--	return status;
-+	return clk_prepare_enable(drv_data->ssp->clk);
+ 	if (!ps8622->enabled)
+ 		return -EINVAL;
+ 
+-	ret = ps8622_set(ps8622->client, 0x01, 0xa7, brightness);
+-
+-	return ret;
++	return ps8622_set(ps8622->client, 0x01, 0xa7, brightness);
  }
- #endif
  
+ static const struct backlight_ops ps8622_backlight_ops = {
 -- 
 2.25.1
