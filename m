@@ -2,80 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5DBDECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97160ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:52:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344767AbiHZTvq (ORCPT
+        id S1344777AbiHZTwV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 15:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
+        Fri, 26 Aug 2022 15:52:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237423AbiHZTvn (ORCPT
+        with ESMTP id S237423AbiHZTwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 15:51:43 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0012E68D7;
-        Fri, 26 Aug 2022 12:51:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=WHWgyZwOYt0ERDM3VLaqXQ19lWQ7CWa684W/FQaw+UA=; b=r6IG98sZlE9Jq1u//TbhWfAGbV
-        aXin1hNGByAMXp6XahdFfDu+h6yyN66fEXYtMd/teltMY2dy908m+0bU6HMse/2XwBQZJEGD+mUjq
-        3InVH3NuQnhnK0xcUdJrVUbAWva1OfU+z8QX7o11OszBGII26gVk5X/w2rIMu26ijWUQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oRfMX-00Eidz-OJ; Fri, 26 Aug 2022 21:51:29 +0200
-Date:   Fri, 26 Aug 2022 21:51:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Michael Walle <michael@walle.cc>, Divya.Koppera@microchip.com,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net-next] net: phy: micrel: Adding SQI support for
- lan8814 phy
-Message-ID: <YwkkQc7NpJegEr+/@lunn.ch>
-References: <20220825080549.9444-1-Divya.Koppera@microchip.com>
- <20220826084249.1031557-1-michael@walle.cc>
- <CO1PR11MB477162C762EF35B0E115B952E2759@CO1PR11MB4771.namprd11.prod.outlook.com>
- <421712ea840fbe5edffcae4a6cb08150@walle.cc>
- <20220826095429.GE2116@pengutronix.de>
+        Fri, 26 Aug 2022 15:52:18 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44599E68ED
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:52:17 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id l1so3277969lfk.8
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:52:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=mvyJ+Tn0W7GOVforLC2vhB6VbcqK7WY1nq8zsz0n0LY=;
+        b=acyPP/v/CPMGXSHhKa6MmW/eKD8bHJzOuWacVrMhTJmj4IkKzCwNRO9R8tMvzL6J1o
+         pcUi0HEh2C0dSBDXnN3ZkbaoXawDbZsSpZeUmqDQj9TDjEFH51zrMiDSY743SUfMOnkC
+         EIEScB5exyDkMVx63RdbRWnZ1yRDk7+Q6NobjScH9upNrPCDNmUQMQobtxLsJmZ2fZAV
+         GHNfqsAPcUcoUC6mnjno57aB33NnlvPllmG8loT9D/ejrXI8hIUSoqfpaMd74Joz85x8
+         VRUKXpLFgX0Tki+RZm66Qwbd23TQH/+WWD+eCir4By3Puj/syOCumQmpJKcnPH3WkjVs
+         c0oA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=mvyJ+Tn0W7GOVforLC2vhB6VbcqK7WY1nq8zsz0n0LY=;
+        b=zFSeejmBpUIXKFltmSovY1zw2aD5KHtCN4WDbcJE/NkbFs3oQlFhUw6hbENqU21p0n
+         ypVgHToXimkXQQ8ZJ83lDtoeb/4JvGEiMHHI3R/HZ0RtoHKbSutmy3JdXZg8bZT32DRe
+         18PdZ4e0qG8KOtrbLNYkWdkFkoNkP8ufZZLfVqb8lDhRnvBakfoauef+GUwnL4VEnHs6
+         hr1/hN9TrGCkW33quMAvfZyM0eDlKQjp/mXM2wjYwlSi0x5AHwWzeezl7qZ89AoN7Al5
+         4r1N4QRDnEz3CzAPHLPfW7rRySxyz7/9uS6oy2ujXZKzeEnYGsgm9jKMxlTWRuJhB/bA
+         rhpQ==
+X-Gm-Message-State: ACgBeo3xcINGd0wome/e64nK6EiXPlfCbLceTdUYyRRvfJNkK6TOhuWF
+        GQS6YPZ474wm+UoDe2XNhR70415ewXV01jf0GQibyQ==
+X-Google-Smtp-Source: AA6agR7J5J9WO3vFUXX3Xvuw9h7ybz8Uve3m5bhR9VCxiCybF8zHic6IcjhVGvCazKPZQqOXidsCQ5VZ1DIygR3J95c=
+X-Received: by 2002:ac2:4f03:0:b0:48a:6061:bd8e with SMTP id
+ k3-20020ac24f03000000b0048a6061bd8emr3308421lfr.647.1661543535378; Fri, 26
+ Aug 2022 12:52:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220826095429.GE2116@pengutronix.de>
+References: <20220826181035.859042-1-ndesaulniers@google.com>
+ <20220826181035.859042-3-ndesaulniers@google.com> <CAGG=3QWSAUakO42kubrCap8fp-gm1ERJJAYXTnP1iHk_wrH=BQ@mail.gmail.com>
+In-Reply-To: <CAGG=3QWSAUakO42kubrCap8fp-gm1ERJJAYXTnP1iHk_wrH=BQ@mail.gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Fri, 26 Aug 2022 12:52:04 -0700
+Message-ID: <CAKwvOdnPjYNFy3r01TBohrZbRGFafGuWaPa8u6b2JdgH=0tKKg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] Makefile.debug: re-enable debug info for .S files
+To:     Bill Wendling <morbo@google.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Dmitrii Bundin <dmitrii.bundin.a@gmail.com>,
+        Fangrui Song <maskray@google.com>,
+        Alexey Alexandrov <aalexand@google.com>,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > > In lan8814 phy only channel 0 is used for 100base-tx. So returning SQI
-> > > value for channel 0.
-> > 
-> > What if the other pairs are bad? Maybe Oleksij has an opinion here.
-> > 
-> > Also 100baseTX (and 10baseT) has two pairs, one for transmitting and one
-> > for receiving. I guess you meassure the SQI on the receiving side. So is
-> > channel 0 correct here?
-> > 
-> > Again this is the first time I hear about SQI but it puzzles me that
-> > it only evaluate one pair in this case. So as a user who reads this
-> > SQI might be misleaded.
-> 
-> Wow! I was so possessed with one-pair networks, that forgot to image
-> that there is 1000Base-T with more then one pairs :D
-> 
-> Yes, your are right. We wont to have readings from all RX channels and
-> be able to export them to the user space. In fact, if i see it
-> correctly, the LAN8814_DCQ_CTRL_CHANNEL_MASK value should be synced with
-> the MDI-X state. Otherwise we will be reading TX channels.
+On Fri, Aug 26, 2022 at 11:41 AM Bill Wendling <morbo@google.com> wrote:
+>
+> On Fri, Aug 26, 2022 at 11:10 AM Nick Desaulniers
+> <ndesaulniers@google.com> wrote:
+> >
+> > Alexey reported that the fraction of unknown filename instances in
+> > kallsyms grew from ~0.3% to ~10% recently; Bill and Greg tracked it down
+> > to assembler defined symbols, which regressed as a result of:
+> >
+> > commit b8a9092330da ("Kbuild: do not emit debug info for assembly with LLVM_IAS=1")
+> >
+> > In that commit, I allude to restoring debug info for assembler defined
+> > symbols in a follow up patch, but it seems I forgot to do so in
+> >
+> > commit a66049e2cf0e ("Kbuild: make DWARF version a choice")
+> >
+> > This patch does a few things:
+> > 1. Add -g to KBUILD_AFLAGS. This will instruct the compiler to instruct
+> >    the assembler to emit debug info. But this can cause an issue for
+> >    folks using a newer compiler but older assembler, because the
+> >    implicit default DWARF version changed from v4 to v5 in gcc-11 and
+> >    clang-14.
+> > 2. If the user is using CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT, use a
+> >    version check to explicitly set -Wa,-gdwarf-<version> for the
+> >    assembler. There's another problem with this; GAS only gained support
+> >    for explicit DWARF versions 3-5 in the 2.36 GNU binutils release.
+> > 3. Wrap -Wa,-gdwarf-<version> in as-option call to test whether the
+> >    assembler supports that explicit DWARF version.
+> >
+> > Link: https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=31bf18645d98b4d3d7357353be840e320649a67d
+> > Fixes: b8a9092330da ("Kbuild: do not emit debug info for assembly with LLVM_IAS=1")
+> > Reported-by: Alexey Alexandrov <aalexand@google.com>
+> > Reported-by: Bill Wendling <morbo@google.com>
+> > Reported-by: Greg Thelen <gthelen@google.com>
+> > Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> > ---
+> >  scripts/Makefile.debug | 22 ++++++++++++++++++----
+> >  1 file changed, 18 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/scripts/Makefile.debug b/scripts/Makefile.debug
+> > index 9f39b0130551..a7a6da7f6e7d 100644
+> > --- a/scripts/Makefile.debug
+> > +++ b/scripts/Makefile.debug
+> > @@ -4,18 +4,32 @@ ifdef CONFIG_DEBUG_INFO_SPLIT
+> >  DEBUG_CFLAGS   += -gsplit-dwarf
+> >  else
+> >  DEBUG_CFLAGS   += -g
+> > +KBUILD_AFLAGS  += -g
+> >  endif
+> >
+> > -ifndef CONFIG_AS_IS_LLVM
+> > -KBUILD_AFLAGS  += -Wa,-gdwarf-2
+> > +ifdef CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+> > +# gcc-11+, clang-14+
+> > +ifeq ($(shell [ $(CONFIG_GCC_VERSION) -ge 110000 -o $(CONFIG_CLANG_VERSION) -ge 140000 ] && echo y),y)
+>
+> Do you think this would be better as a macro? Maybe something like:
+>
+> if $(call cc-min-version,110000,140000)
+>
+> where the first argument is GCC's min version and second Clang's min
+> version. It would be more readable and reusable.
 
-I don't know if i should trust the datasheet i found, but it suggests
-the register in MMD device 1 space has a field to indicate which cable
-pair should be measured. So for 1000Base-T all pairs are both Rx and
-Tx, so i would expect 4 values are returned. That then might need an
-uAPI extension, if you were focused on T1 :-)
+Yeah!
 
-    Andrew
+I was looking at cc-ifversion, which has a bug in that it specifically
+uses CONFIG_GCC_VERSION.  I think I sent a series maybe a year or two
+ago trying to remove all users of that macro; I think most landed but
+not all and I never pursued it to completion.  Also, I think there's
+one user remaining in the AMDGPU drivers; looks like they're been
+reducing their dependency on that SIMD hack I wrote for them years ago
+after propagating it to parts of their tree, but one user remains.
+Perhaps I can just open code it there, or replace it with something
+new like you suggest.
+
+Such a macro would need to consider whether CC_IS_GCC vs CC_IS_CLANG;
+I could imagine we might need a version check for both, or just one of
+the two compilers.
+
+Ugh, logical OR in GNU make is supported by use of the filter macro...yuck.
+
+ifneq ($(filter y, $(call gcc-min-version, 110000), $(call
+clang-min-version, 140000),)
+# add gcc-11+, clang-14+ flag
+endif
+
+or maybe as you suggest:
+
+ifneq ($(call cc-min-version,110000,140000),)
+# add gcc-11+, clang-14+ flag
+endif
+
+where the newly minted cc-min-version is implemented in terms of the
+newly minted gcc-min-version and clang-min-version.  Then I can use
+cc-min-version in this series, and replace cc-ifversion in AMDGPU with
+gcc-min-version.  That way, we create composable wrappers that are
+readable and reusable.
+
+>
+> -bw
+>
+> > +dwarf-version-y := 5
+> > +else
+> > +dwarf-version-y := 4
+> >  endif
+> > -
+> > -ifndef CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+> > +else # !CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+> >  dwarf-version-$(CONFIG_DEBUG_INFO_DWARF4) := 4
+> >  dwarf-version-$(CONFIG_DEBUG_INFO_DWARF5) := 5
+> >  DEBUG_CFLAGS   += -gdwarf-$(dwarf-version-y)
+> >  endif
+> >
+> > +# Binutils 2.35+ (or clang) required for -gdwarf-{4|5}.
+> > +# https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;h=31bf18645d98b4d3d7357353be840e320649a67d
+> > +ifneq ($(call as-option,-Wa$(comma)-gdwarf-$(dwarf-version-y)),)
+> > +KBUILD_AFLAGS  += -Wa,-gdwarf-$(dwarf-version-y)
+> > +else
+> > +ifndef CONFIG_AS_IS_LLVM
+> > +KBUILD_AFLAGS  += -Wa,-gdwarf-2
+> > +endif
+> > +endif
+> > +
+> >  ifdef CONFIG_DEBUG_INFO_REDUCED
+> >  DEBUG_CFLAGS   += -fno-var-tracking
+> >  ifdef CONFIG_CC_IS_GCC
+> > --
+> > 2.37.2.672.g94769d06f0-goog
+> >
+
+
+
+-- 
+Thanks,
+~Nick Desaulniers
