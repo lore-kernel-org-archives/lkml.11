@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC2EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0296BECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229535AbiHZLxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 07:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34442 "EHLO
+        id S1343760AbiHZLxy (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 07:53:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245290AbiHZLxg (ORCPT
+        with ESMTP id S245494AbiHZLxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 07:53:36 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B833DD7401;
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0141CD743E;
         Fri, 26 Aug 2022 04:53:34 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27Q7FCdZ022515;
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27QAFsd8026046;
         Fri, 26 Aug 2022 13:53:26 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=selector1;
- bh=u0TnRDKj2byTDCqnIe6aj2gOD/6dozZ3PmLGMDW4nGQ=;
- b=znbEojWAxyv+R8aDruIXndo4YJu9Uy/YXWh/KnN7llpU1oLVjBng1QGcIfT0R/dCenXd
- sKFREie714mDDS/rodXFzTECy24fA+U92wIZEbJJbB2riGEbCPj72qjAhKr1cidfjmJs
- E5XNaWlnMJImo2ETlwwbDoOdOchtcX3Ci720dNir8AZdGq//eP8KjTxveJ07PV8Lq8U3
- pdN5lWa7rv0CC2QE8y2w0O7UK4BZxExAluG/+BADfjyour6ZwdET9ayeOGROIY86uyXk
- UYrm4/wv6TuxEebM6XtY6EfoGdTO75P4I1G5eiWdlhVr+u2mFJoF5od07RVJ4f0WKfnl 2Q== 
+ bh=f1E5z4t9ZgWql8aV+LG0YjXvyprkoiFA1I/INZXVjH8=;
+ b=3W1hf96pYVLODeEsGvbfElxHIcBzwj4ng7538FzMR/N8uX6LsDga5f4Tw8mhQUhlT4oO
+ d2GuHB6fcw2X0qua/HDsC3egUh9EwIXrwYOGgfwCr0E5Rp0KFoe9IjTZrDtJQlL93A4K
+ DgHP31wbmrUWXmn3V71Xi6sBn7UQ1hgxXO7aeZViwrXR2hdZ1EGNT+qGnKJ61Y9u1jFt
+ sy6KowzeIoFOGEd+toX7yRR+XouEzyL9QSjU0pqQP2V3FxtG/6jKgBcH1vDqpOj8YXqU
+ uNbCWDfhhqA+b7k/IxYzntLzKqaPExU5E1dWxRymsxqGbH+rEoqKVRu8iheE4cTfnkQF cw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j58m5rv0b-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j52b1297g-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Fri, 26 Aug 2022 13:53:26 +0200
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EFA22100039;
-        Fri, 26 Aug 2022 13:53:25 +0200 (CEST)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 32102100034;
+        Fri, 26 Aug 2022 13:53:26 +0200 (CEST)
 Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E7C0F222CAA;
-        Fri, 26 Aug 2022 13:53:25 +0200 (CEST)
-Received: from localhost (10.75.127.116) by SHFDAG1NODE2.st.com (10.75.129.70)
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2C6EF222CA8;
+        Fri, 26 Aug 2022 13:53:26 +0200 (CEST)
+Received: from localhost (10.75.127.46) by SHFDAG1NODE2.st.com (10.75.129.70)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 26 Aug
- 2022 13:53:25 +0200
+ 2022 13:53:23 +0200
 From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         Mathieu Poirier <mathieu.poirier@linaro.org>
@@ -50,17 +51,17 @@ CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Stefano Stabellini <stefanos@xilinx.com>,
         Bruce Ashfield <bruce.ashfield@xilinx.com>,
         <arnaud.pouliquen@foss.st.com>
-Subject: [PATCH v8 3/4] remoteproc: Move rproc_vdev management to remoteproc_virtio.c
-Date:   Fri, 26 Aug 2022 13:52:31 +0200
-Message-ID: <20220826115232.2163130-4-arnaud.pouliquen@foss.st.com>
+Subject: [PATCH v8 1/4] remoteproc: core: Introduce rproc_rvdev_add_device function
+Date:   Fri, 26 Aug 2022 13:52:29 +0200
+Message-ID: <20220826115232.2163130-2-arnaud.pouliquen@foss.st.com>
 X-Mailer: git-send-email 2.24.3
 In-Reply-To: <20220826115232.2163130-1-arnaud.pouliquen@foss.st.com>
 References: <20220826115232.2163130-1-arnaud.pouliquen@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.116]
-X-ClientProxiedBy: GPXDAG2NODE4.st.com (10.75.127.68) To SHFDAG1NODE2.st.com
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
  (10.75.129.70)
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
@@ -69,449 +70,256 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move functions related to the management of the rproc_vdev
-structure in the remoteproc_virtio.c.
-The aim is to decorrelate as possible the virtio management from
-the core part.
+In preparation of the migration of the management of rvdev in
+remoteproc_virtio.c, this patch spins off a new function to manage the
+remoteproc virtio device creation.
 
-Due to the strong correlation between the vrings and the resource table
-the rproc_alloc/parse/free_vring functions are kept in the remoteproc core.
+The rproc_rvdev_add_device will be moved to remoteproc_virtio.c.
+
+The rproc_vdev_data structure is introduced to provide information for
+the rvdev creation. This structure allows to manage the rvdev and vrings
+allocation in the rproc_rvdev_add_device function.
 
 Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
 Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 ---
-Update vs previous revision:
- - Take into account rproc_rvdev_release update according to
-   1404acbb7f68 ("remoteproc: Fix dma_mem leak after rproc_shutdown")
-   integration.
----
- drivers/remoteproc/remoteproc_core.c     | 156 +----------------------
- drivers/remoteproc/remoteproc_core.c     | 157 +----------------------
- drivers/remoteproc/remoteproc_internal.h |  10 +-
- drivers/remoteproc/remoteproc_virtio.c   | 154 +++++++++++++++++++++-
- 3 files changed, 161 insertions(+), 160 deletions(-)
+ drivers/remoteproc/remoteproc_core.c     | 145 +++++++++++++----------
+ drivers/remoteproc/remoteproc_internal.h |  15 +++
+ 2 files changed, 97 insertions(+), 63 deletions(-)
 
 diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index 756b84811022..a556504a4851 100644
+index e5279ed9a8d7..c977e6c0bdb7 100644
 --- a/drivers/remoteproc/remoteproc_core.c
 +++ b/drivers/remoteproc/remoteproc_core.c
-@@ -23,9 +23,7 @@
- #include <linux/panic_notifier.h>
- #include <linux/slab.h>
- #include <linux/mutex.h>
--#include <linux/dma-map-ops.h>
- #include <linux/dma-mapping.h>
--#include <linux/dma-direct.h> /* XXX: pokes into bus_dma_range */
- #include <linux/firmware.h>
- #include <linux/string.h>
- #include <linux/debugfs.h>
-@@ -384,7 +382,7 @@ int rproc_alloc_vring(struct rproc_vdev *rvdev, int i)
+@@ -486,74 +486,23 @@ static int copy_dma_range_map(struct device *to, struct device *from)
  	return 0;
  }
  
--static int
-+int
- rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i)
- {
- 	struct rproc *rproc = rvdev->rproc;
-@@ -435,166 +433,17 @@ void rproc_free_vring(struct rproc_vring *rvring)
- 	}
- }
- 
--static int rproc_vdev_do_start(struct rproc_subdev *subdev)
--{
--	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
--
--	return rproc_add_virtio_dev(rvdev, rvdev->id);
--}
--
--static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
--{
--	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
--	int ret;
--
--	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
--	if (ret)
--		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
--}
--
 -/**
-- * rproc_rvdev_release() - release the existence of a rvdev
+- * rproc_handle_vdev() - handle a vdev fw resource
+- * @rproc: the remote processor
+- * @ptr: the vring resource descriptor
+- * @offset: offset of the resource entry
+- * @avail: size of available data (for sanity checking the image)
 - *
-- * @dev: the subdevice's dev
+- * This resource entry requests the host to statically register a virtio
+- * device (vdev), and setup everything needed to support it. It contains
+- * everything needed to make it possible: the virtio device id, virtio
+- * device features, vrings information, virtio config space, etc...
+- *
+- * Before registering the vdev, the vrings are allocated from non-cacheable
+- * physically contiguous memory. Currently we only support two vrings per
+- * remote processor (temporary limitation). We might also want to consider
+- * doing the vring allocation only later when ->find_vqs() is invoked, and
+- * then release them upon ->del_vqs().
+- *
+- * Note: @da is currently not really handled correctly: we dynamically
+- * allocate it using the DMA API, ignoring requested hard coded addresses,
+- * and we don't take care of any required IOMMU programming. This is all
+- * going to be taken care of when the generic iommu-based DMA API will be
+- * merged. Meanwhile, statically-addressed iommu-based firmware images should
+- * use RSC_DEVMEM resource entries to map their required @da to the physical
+- * address of their base CMA region (ouch, hacky!).
+- *
+- * Return: 0 on success, or an appropriate error code otherwise
 - */
--static void rproc_rvdev_release(struct device *dev)
--{
--	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
--
--	of_reserved_mem_device_release(dev);
--	dma_release_coherent_memory(dev);
--
--	kfree(rvdev);
--}
--
--static int copy_dma_range_map(struct device *to, struct device *from)
--{
--	const struct bus_dma_region *map = from->dma_range_map, *new_map, *r;
--	int num_ranges = 0;
--
--	if (!map)
--		return 0;
--
--	for (r = map; r->size; r++)
--		num_ranges++;
--
--	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
--			  GFP_KERNEL);
--	if (!new_map)
--		return -ENOMEM;
--	to->dma_range_map = new_map;
--	return 0;
--}
--
--static void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
-+void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
+-static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+-			     int offset, int avail)
++static struct rproc_vdev *
++rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
  {
- 	if (rvdev && rproc)
- 		list_add_tail(&rvdev->node, &rproc->rvdevs);
- }
- 
--static void rproc_remove_rvdev(struct rproc_vdev *rvdev)
-+void rproc_remove_rvdev(struct rproc_vdev *rvdev)
- {
- 	if (rvdev)
- 		list_del(&rvdev->node);
- }
--
--static struct rproc_vdev *
--rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
--{
--	struct rproc_vdev *rvdev;
--	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
--	char name[16];
+-	struct fw_rsc_vdev *rsc = ptr;
+-	struct device *dev = &rproc->dev;
+ 	struct rproc_vdev *rvdev;
 -	int i, ret;
++	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
+ 	char name[16];
 -
--	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
--	if (!rvdev)
--		return ERR_PTR(-ENOMEM);
--
--	kref_init(&rvdev->refcount);
--
--	rvdev->id = rvdev_data->id;
--	rvdev->rproc = rproc;
--	rvdev->index = rvdev_data->index;
--
--	/* Initialise vdev subdevice */
--	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
--	rvdev->dev.parent = &rproc->dev;
--	rvdev->dev.release = rproc_rvdev_release;
--	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
--	dev_set_drvdata(&rvdev->dev, rvdev);
--
--	ret = device_register(&rvdev->dev);
--	if (ret) {
--		put_device(&rvdev->dev);
--		return ERR_PTR(ret);
+-	/* make sure resource isn't truncated */
+-	if (struct_size(rsc, vring, rsc->num_of_vrings) + rsc->config_len >
+-			avail) {
+-		dev_err(dev, "vdev rsc is truncated\n");
+-		return -EINVAL;
 -	}
 -
--	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
--	if (ret)
--		goto free_rvdev;
--
--	/* Make device dma capable by inheriting from parent's capabilities */
--	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
--
--	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
--					   dma_get_mask(rproc->dev.parent));
--	if (ret) {
--		dev_warn(&rvdev->dev,
--			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
--			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
+-	/* make sure reserved bytes are zeroes */
+-	if (rsc->reserved[0] || rsc->reserved[1]) {
+-		dev_err(dev, "vdev rsc has non zero reserved bytes\n");
+-		return -EINVAL;
 -	}
 -
--	/* parse the vrings */
--	for (i = 0; i < rsc->num_of_vrings; i++) {
--		ret = rproc_parse_vring(rvdev, rsc, i);
--		if (ret)
--			goto free_rvdev;
+-	dev_dbg(dev, "vdev rsc: id %d, dfeatures 0x%x, cfg len %d, %d vrings\n",
+-		rsc->id, rsc->dfeatures, rsc->config_len, rsc->num_of_vrings);
+-
+-	/* we currently support only two vrings per rvdev */
+-	if (rsc->num_of_vrings > ARRAY_SIZE(rvdev->vring)) {
+-		dev_err(dev, "too many vrings: %d\n", rsc->num_of_vrings);
+-		return -EINVAL;
 -	}
--
--	/* remember the resource offset*/
--	rvdev->rsc_offset = rvdev_data->rsc_offset;
--
--	/* allocate the vring resources */
--	for (i = 0; i < rsc->num_of_vrings; i++) {
--		ret = rproc_alloc_vring(rvdev, i);
--		if (ret)
--			goto unwind_vring_allocations;
--	}
--
--	rproc_add_rvdev(rproc, rvdev);
--
--	rvdev->subdev.start = rproc_vdev_do_start;
--	rvdev->subdev.stop = rproc_vdev_do_stop;
--
--	rproc_add_subdev(rproc, &rvdev->subdev);
--
--	return rvdev;
--
--unwind_vring_allocations:
--	for (i--; i >= 0; i--)
--		rproc_free_vring(&rvdev->vring[i]);
--free_rvdev:
--	device_unregister(&rvdev->dev);
--	return ERR_PTR(ret);
--}
--
--void rproc_vdev_release(struct kref *ref)
--{
--	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
--	struct rproc_vring *rvring;
--	struct rproc *rproc = rvdev->rproc;
--	int id;
--
--	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
--		rvring = &rvdev->vring[id];
--		rproc_free_vring(rvring);
--	}
--
--	rproc_remove_subdev(rproc, &rvdev->subdev);
--	rproc_remove_rvdev(rvdev);
--	device_unregister(&rvdev->dev);
--}
--
- /**
-  * rproc_handle_vdev() - handle a vdev fw resource
-  * @rproc: the remote processor
-diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
-index 07c503de0f95..711b0e1f2118 100644
---- a/drivers/remoteproc/remoteproc_internal.h
-+++ b/drivers/remoteproc/remoteproc_internal.h
-@@ -41,14 +41,13 @@ struct rproc_vdev_data {
++	int i, ret;
  
- /* from remoteproc_core.c */
- void rproc_release(struct kref *kref);
--irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
--void rproc_vdev_release(struct kref *ref);
- int rproc_of_parse_firmware(struct device *dev, int index,
- 			    const char **fw_name);
+ 	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
+ 	if (!rvdev)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
  
- /* from remoteproc_virtio.c */
--int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id);
--int rproc_remove_virtio_dev(struct device *dev, void *data);
-+struct rproc_vdev *rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data);
-+irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
-+void rproc_vdev_release(struct kref *ref);
+ 	kref_init(&rvdev->refcount);
  
- /* from remoteproc_debugfs.c */
- void rproc_remove_trace_file(struct dentry *tfile);
-@@ -98,6 +97,7 @@ static inline void  rproc_char_device_remove(struct rproc *rproc)
+-	rvdev->id = rsc->id;
++	rvdev->id = rvdev_data->id;
+ 	rvdev->rproc = rproc;
+-	rvdev->index = rproc->nb_vdev++;
++	rvdev->index = rvdev_data->index;
  
- void rproc_free_vring(struct rproc_vring *rvring);
- int rproc_alloc_vring(struct rproc_vdev *rvdev, int i);
-+int rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i);
+ 	/* Initialise vdev subdevice */
+ 	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
+@@ -565,7 +514,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+ 	ret = device_register(&rvdev->dev);
+ 	if (ret) {
+ 		put_device(&rvdev->dev);
+-		return ret;
++		return ERR_PTR(ret);
+ 	}
  
- phys_addr_t rproc_va_to_pa(void *cpu_addr);
- int rproc_trigger_recovery(struct rproc *rproc);
-@@ -110,6 +110,8 @@ struct resource_table *rproc_elf_find_loaded_rsc_table(struct rproc *rproc,
- 						       const struct firmware *fw);
- struct rproc_mem_entry *
- rproc_find_carveout_by_name(struct rproc *rproc, const char *name, ...);
-+void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev);
-+void rproc_remove_rvdev(struct rproc_vdev *rvdev);
+ 	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
+@@ -578,7 +527,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+ 	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
+ 					   dma_get_mask(rproc->dev.parent));
+ 	if (ret) {
+-		dev_warn(dev,
++		dev_warn(&rvdev->dev,
+ 			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
+ 			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
+ 	}
+@@ -591,7 +540,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+ 	}
  
- static inline int rproc_prepare_device(struct rproc *rproc)
- {
-diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-index 0f7706e23eb9..0aaa70d91aa8 100644
---- a/drivers/remoteproc/remoteproc_virtio.c
-+++ b/drivers/remoteproc/remoteproc_virtio.c
-@@ -9,7 +9,9 @@
-  * Brian Swetland <swetland@google.com>
-  */
+ 	/* remember the resource offset*/
+-	rvdev->rsc_offset = offset;
++	rvdev->rsc_offset = rvdev_data->rsc_offset;
  
-+#include <linux/dma-direct.h>
- #include <linux/dma-map-ops.h>
-+#include <linux/dma-mapping.h>
- #include <linux/export.h>
- #include <linux/of_reserved_mem.h>
- #include <linux/remoteproc.h>
-@@ -23,6 +25,25 @@
+ 	/* allocate the vring resources */
+ 	for (i = 0; i < rsc->num_of_vrings; i++) {
+@@ -607,14 +556,14 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
  
- #include "remoteproc_internal.h"
+ 	rproc_add_subdev(rproc, &rvdev->subdev);
  
-+static int copy_dma_range_map(struct device *to, struct device *from)
+-	return 0;
++	return rvdev;
+ 
+ unwind_vring_allocations:
+ 	for (i--; i >= 0; i--)
+ 		rproc_free_vring(&rvdev->vring[i]);
+ free_rvdev:
+ 	device_unregister(&rvdev->dev);
+-	return ret;
++	return ERR_PTR(ret);
+ }
+ 
+ void rproc_vdev_release(struct kref *ref)
+@@ -634,6 +583,76 @@ void rproc_vdev_release(struct kref *ref)
+ 	device_unregister(&rvdev->dev);
+ }
+ 
++/**
++ * rproc_handle_vdev() - handle a vdev fw resource
++ * @rproc: the remote processor
++ * @ptr: the vring resource descriptor
++ * @offset: offset of the resource entry
++ * @avail: size of available data (for sanity checking the image)
++ *
++ * This resource entry requests the host to statically register a virtio
++ * device (vdev), and setup everything needed to support it. It contains
++ * everything needed to make it possible: the virtio device id, virtio
++ * device features, vrings information, virtio config space, etc...
++ *
++ * Before registering the vdev, the vrings are allocated from non-cacheable
++ * physically contiguous memory. Currently we only support two vrings per
++ * remote processor (temporary limitation). We might also want to consider
++ * doing the vring allocation only later when ->find_vqs() is invoked, and
++ * then release them upon ->del_vqs().
++ *
++ * Note: @da is currently not really handled correctly: we dynamically
++ * allocate it using the DMA API, ignoring requested hard coded addresses,
++ * and we don't take care of any required IOMMU programming. This is all
++ * going to be taken care of when the generic iommu-based DMA API will be
++ * merged. Meanwhile, statically-addressed iommu-based firmware images should
++ * use RSC_DEVMEM resource entries to map their required @da to the physical
++ * address of their base CMA region (ouch, hacky!).
++ *
++ * Return: 0 on success, or an appropriate error code otherwise
++ */
++static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
++			     int offset, int avail)
 +{
-+	const struct bus_dma_region *map = from->dma_range_map, *new_map, *r;
-+	int num_ranges = 0;
++	struct fw_rsc_vdev *rsc = ptr;
++	struct device *dev = &rproc->dev;
++	struct rproc_vdev *rvdev;
++	struct rproc_vdev_data rvdev_data;
 +
-+	if (!map)
-+		return 0;
++	/* make sure resource isn't truncated */
++	if (struct_size(rsc, vring, rsc->num_of_vrings) + rsc->config_len >
++			avail) {
++		dev_err(dev, "vdev rsc is truncated\n");
++		return -EINVAL;
++	}
 +
-+	for (r = map; r->size; r++)
-+		num_ranges++;
++	/* make sure reserved bytes are zeroes */
++	if (rsc->reserved[0] || rsc->reserved[1]) {
++		dev_err(dev, "vdev rsc has non zero reserved bytes\n");
++		return -EINVAL;
++	}
 +
-+	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
-+			  GFP_KERNEL);
-+	if (!new_map)
-+		return -ENOMEM;
-+	to->dma_range_map = new_map;
++	dev_dbg(dev, "vdev rsc: id %d, dfeatures 0x%x, cfg len %d, %d vrings\n",
++		rsc->id, rsc->dfeatures, rsc->config_len, rsc->num_of_vrings);
++
++	/* we currently support only two vrings per rvdev */
++	if (rsc->num_of_vrings > ARRAY_SIZE(rvdev->vring)) {
++		dev_err(dev, "too many vrings: %d\n", rsc->num_of_vrings);
++		return -EINVAL;
++	}
++
++	rvdev_data.id = rsc->id;
++	rvdev_data.index = rproc->nb_vdev++;
++	rvdev_data.rsc_offset = offset;
++	rvdev_data.rsc = rsc;
++
++	rvdev = rproc_rvdev_add_device(rproc, &rvdev_data);
++	if (IS_ERR(rvdev))
++		return PTR_ERR(rvdev);
++
 +	return 0;
 +}
 +
- static struct rproc_vdev *vdev_to_rvdev(struct virtio_device *vdev)
- {
- 	return container_of(vdev->dev.parent, struct rproc_vdev, dev);
-@@ -341,7 +362,7 @@ static void rproc_virtio_dev_release(struct device *dev)
-  *
-  * Return: 0 on success or an appropriate error value otherwise
-  */
--int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
-+static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
- {
- 	struct rproc *rproc = rvdev->rproc;
- 	struct device *dev = &rvdev->dev;
-@@ -449,10 +470,139 @@ int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
-  *
-  * Return: 0
-  */
--int rproc_remove_virtio_dev(struct device *dev, void *data)
-+static int rproc_remove_virtio_dev(struct device *dev, void *data)
- {
- 	struct virtio_device *vdev = dev_to_virtio(dev);
+ /**
+  * rproc_handle_trace() - handle a shared trace buffer resource
+  * @rproc: the remote processor
+diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
+index 72d4d3d7d94d..07c503de0f95 100644
+--- a/drivers/remoteproc/remoteproc_internal.h
++++ b/drivers/remoteproc/remoteproc_internal.h
+@@ -24,6 +24,21 @@ struct rproc_debug_trace {
+ 	struct rproc_mem_entry trace_mem;
+ };
  
- 	unregister_virtio_device(vdev);
- 	return 0;
- }
-+
-+static int rproc_vdev_do_start(struct rproc_subdev *subdev)
-+{
-+	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
-+
-+	return rproc_add_virtio_dev(rvdev, rvdev->id);
-+}
-+
-+static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
-+{
-+	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
-+	int ret;
-+
-+	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
-+	if (ret)
-+		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
-+}
-+
 +/**
-+ * rproc_rvdev_release() - release the existence of a rvdev
-+ *
-+ * @dev: the subdevice's dev
++ * struct rproc_vdev_data - remoteproc virtio device data
++ * @rsc_offset: offset of the vdev's resource entry
++ * @id: virtio device id (as in virtio_ids.h)
++ * @index: vdev position versus other vdev declared in resource table
++ * @rsc: pointer to the vdev resource entry. Valid only during vdev init as
++ *       the resource can be cached by rproc.
 + */
-+static void rproc_rvdev_release(struct device *dev)
-+{
-+	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
++struct rproc_vdev_data {
++	u32 rsc_offset;
++	unsigned int id;
++	u32 index;
++	struct fw_rsc_vdev *rsc;
++};
 +
-+	of_reserved_mem_device_release(dev);
-+	dma_release_coherent_memory(dev);
-+
-+	kfree(rvdev);
-+}
-+
-+struct rproc_vdev *
-+rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
-+{
-+	struct rproc_vdev *rvdev;
-+	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
-+	char name[16];
-+	int i, ret;
-+
-+	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
-+	if (!rvdev)
-+		return ERR_PTR(-ENOMEM);
-+
-+	kref_init(&rvdev->refcount);
-+
-+	rvdev->id = rvdev_data->id;
-+	rvdev->rproc = rproc;
-+	rvdev->index = rvdev_data->index;
-+
-+	/* Initialise vdev subdevice */
-+	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
-+	rvdev->dev.parent = &rproc->dev;
-+	rvdev->dev.release = rproc_rvdev_release;
-+	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
-+	dev_set_drvdata(&rvdev->dev, rvdev);
-+
-+	ret = device_register(&rvdev->dev);
-+	if (ret) {
-+		put_device(&rvdev->dev);
-+		return ERR_PTR(ret);
-+	}
-+
-+	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
-+	if (ret)
-+		goto free_rvdev;
-+
-+	/* Make device dma capable by inheriting from parent's capabilities */
-+	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
-+
-+	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
-+					   dma_get_mask(rproc->dev.parent));
-+	if (ret) {
-+		dev_warn(&rvdev->dev,
-+			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
-+			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
-+	}
-+
-+	/* parse the vrings */
-+	for (i = 0; i < rsc->num_of_vrings; i++) {
-+		ret = rproc_parse_vring(rvdev, rsc, i);
-+		if (ret)
-+			goto free_rvdev;
-+	}
-+
-+	/* remember the resource offset*/
-+	rvdev->rsc_offset = rvdev_data->rsc_offset;
-+
-+	/* allocate the vring resources */
-+	for (i = 0; i < rsc->num_of_vrings; i++) {
-+		ret = rproc_alloc_vring(rvdev, i);
-+		if (ret)
-+			goto unwind_vring_allocations;
-+	}
-+
-+	rproc_add_rvdev(rproc, rvdev);
-+
-+	rvdev->subdev.start = rproc_vdev_do_start;
-+	rvdev->subdev.stop = rproc_vdev_do_stop;
-+
-+	rproc_add_subdev(rproc, &rvdev->subdev);
-+
-+	return rvdev;
-+
-+unwind_vring_allocations:
-+	for (i--; i >= 0; i--)
-+		rproc_free_vring(&rvdev->vring[i]);
-+free_rvdev:
-+	device_unregister(&rvdev->dev);
-+	return ERR_PTR(ret);
-+}
-+
-+void rproc_vdev_release(struct kref *ref)
-+{
-+	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
-+	struct rproc_vring *rvring;
-+	struct rproc *rproc = rvdev->rproc;
-+	int id;
-+
-+	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
-+		rvring = &rvdev->vring[id];
-+		rproc_free_vring(rvring);
-+	}
-+
-+	rproc_remove_subdev(rproc, &rvdev->subdev);
-+	rproc_remove_rvdev(rvdev);
-+	device_unregister(&rvdev->dev);
-+}
+ /* from remoteproc_core.c */
+ void rproc_release(struct kref *kref);
+ irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
 -- 
 2.24.3
 
