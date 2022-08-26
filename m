@@ -2,193 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ECBEECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 22:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABBA8ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 22:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345256AbiHZW1Y (ORCPT
+        id S1345003AbiHZW3S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 18:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56890 "EHLO
+        Fri, 26 Aug 2022 18:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345225AbiHZW1V (ORCPT
+        with ESMTP id S243653AbiHZW3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 18:27:21 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE928786CD
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 15:27:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661552840; x=1693088840;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=32vbawqXYw7X6c10pnU4kHjy860Sr+Gt+/2LTOTFeuU=;
-  b=hVjgH4h+Qzn0T0YiHULbdZfndX34TABkqijrgOuIAS1vtRB4dV/K7Foq
-   pZCe8dNppATEtAeLdh81Odx/OGfMgxMclFQ2Hd6AUPqfnm/oiZTXKSuff
-   0mhwNMKujndzZMaWLXdUIJtx7mIn2ZhlTok5F8TWDsyJBXaxAJNqR/NM+
-   veqvwNrIOWO27IoKNtpYZVhmfPvtFoXuBFnkRabGRcx3eczXKUUfKudik
-   Hwk3Z60HfGMecRHPHOHQYPXwctWqFpAiA9bhJPMSdXV9XrEr1doboS5t4
-   n+sREEgy//7RoXzb4bffL0geZvLouJqmRi2Ya8QSsQEzR4ttzdm8Dc1q+
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="292184552"
-X-IronPort-AV: E=Sophos;i="5.93,266,1654585200"; 
-   d="scan'208";a="292184552"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 15:27:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,266,1654585200"; 
-   d="scan'208";a="587458005"
-Received: from lkp-server01.sh.intel.com (HELO 71b0d3b5b1bc) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 26 Aug 2022 15:27:19 -0700
-Received: from kbuild by 71b0d3b5b1bc with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oRhnK-0000X5-21;
-        Fri, 26 Aug 2022 22:27:18 +0000
-Date:   Sat, 27 Aug 2022 06:26:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/microcode] BUILD SUCCESS
- 8c61eafd22d7207039bff85c6e1d386f15abd17e
-Message-ID: <63094898.OGyNlWh+pxjDt8vR%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 26 Aug 2022 18:29:14 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72E9E42FA;
+        Fri, 26 Aug 2022 15:29:13 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9226930B;
+        Sat, 27 Aug 2022 00:29:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1661552950;
+        bh=WSO4BBqN3kAWRsPaZun6o5Wyzwiloi0fiRjTiQQBlps=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZJ/MZVSjHVesGFLeABJ156fSAsMDk2Gn7VYBrjHsJdNC1biGU22sCrNqX3H/EXQgU
+         83xshZaVXR+NhZBHx9vOdxNY4MD+VvtaI9puOcnP2JorV8Ue/IRvzXuZUsqRpsOfmD
+         vooI9CLbNB83gCAH3wclj8tqanWGKIz+mxyv11Jc=
+Date:   Sat, 27 Aug 2022 01:29:03 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v6 2/6] dt-bindings: media: sun6i-a31-csi: Add ISP output
+ port
+Message-ID: <YwlJL3umZrVC4FLc@pendragon.ideasonboard.com>
+References: <20220826184144.605605-1-paul.kocialkowski@bootlin.com>
+ <20220826184144.605605-3-paul.kocialkowski@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220826184144.605605-3-paul.kocialkowski@bootlin.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/microcode
-branch HEAD: 8c61eafd22d7207039bff85c6e1d386f15abd17e  x86/microcode: Remove ->request_microcode_user()
+Hi Paul,
 
-elapsed time: 723m
+Thank you for the patch.
 
-configs tested: 115
-configs skipped: 3
+On Fri, Aug 26, 2022 at 08:41:40PM +0200, Paul Kocialkowski wrote:
+> Some Allwinner devices come with an Image Signal Processor (ISP) that
+> allows processing camera data to produce good-looking images,
+> especially from raw bayer representations.
+> 
+> The ISP does not have a dedicated capture path: it is fed directly by
+> one of the CSI controllers, which can be selected at run-time.
+> 
+> Represent this possibility as a graph connection between the CSI
+> controller and the ISP in the device-tree bindings.
+> 
+> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml    | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+> index 8551c4a711dc..54eb80e517e3 100644
+> --- a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-csi.yaml
+> @@ -73,6 +73,10 @@ properties:
+>          $ref: /schemas/graph.yaml#/properties/port
+>          description: MIPI CSI-2 bridge input port
+>  
+> +      port@2:
+> +        $ref: /schemas/graph.yaml#/properties/port
+> +        description: ISP output port
+> +
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+I'd write "Output port to the ISP" to make it clearer.
 
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-i386                                defconfig
-loongarch                         allnoconfig
-loongarch                           defconfig
-x86_64                              defconfig
-arc                                 defconfig
-i386                          randconfig-a016
-x86_64                        randconfig-a013
-i386                          randconfig-a005
-x86_64                          rhel-8.3-func
-x86_64                        randconfig-a006
-sh                               allmodconfig
-x86_64                        randconfig-a015
-x86_64                         rhel-8.3-kunit
-s390                             allmodconfig
-i386                             allyesconfig
-powerpc                           allnoconfig
-i386                          randconfig-a001
-x86_64                        randconfig-a011
-x86_64                               rhel-8.3
-x86_64                        randconfig-a002
-alpha                               defconfig
-i386                          randconfig-a003
-x86_64                           rhel-8.3-kvm
-s390                             allyesconfig
-i386                          randconfig-a014
-x86_64                    rhel-8.3-kselftests
-x86_64                        randconfig-a004
-x86_64                           rhel-8.3-syz
-s390                                defconfig
-arm                                 defconfig
-arc                  randconfig-r043-20220824
-m68k                             allmodconfig
-i386                          randconfig-a012
-alpha                            allyesconfig
-riscv                randconfig-r042-20220824
-arc                  randconfig-r043-20220823
-s390                 randconfig-r044-20220824
-m68k                             allyesconfig
-riscv                randconfig-r042-20220826
-arc                              allyesconfig
-powerpc                          allmodconfig
-x86_64                           allyesconfig
-mips                             allyesconfig
-s390                 randconfig-r044-20220826
-arc                  randconfig-r043-20220826
-arc                  randconfig-r043-20220825
-arm                              allyesconfig
-arm64                            allyesconfig
-ia64                             allmodconfig
-parisc                              defconfig
-nios2                               defconfig
-parisc64                            defconfig
-i386                          debian-10.3-kvm
-i386                        debian-10.3-kunit
-i386                         debian-10.3-func
-nios2                            allyesconfig
-parisc                           allyesconfig
-powerpc                          allyesconfig
-riscv                               defconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-sparc                               defconfig
-xtensa                           allyesconfig
-csky                                defconfig
-sparc                            allyesconfig
-x86_64                                  kexec
-s390                       zfcpdump_defconfig
-sh                ecovec24-romimage_defconfig
-powerpc                 mpc8540_ads_defconfig
-arm                           sama5_defconfig
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-sh                        apsh4ad0a_defconfig
-openrisc                    or1ksim_defconfig
-i386                          randconfig-c001
-sh                          landisk_defconfig
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-clang tested configs:
-x86_64                        randconfig-a016
-i386                          randconfig-a013
-x86_64                        randconfig-a005
-i386                          randconfig-a006
-x86_64                        randconfig-a001
-x86_64                        randconfig-a012
-hexagon              randconfig-r041-20220825
-i386                          randconfig-a011
-x86_64                        randconfig-a003
-i386                          randconfig-a002
-hexagon              randconfig-r041-20220823
-hexagon              randconfig-r045-20220825
-i386                          randconfig-a015
-x86_64                        randconfig-a014
-i386                          randconfig-a004
-hexagon              randconfig-r041-20220824
-hexagon              randconfig-r045-20220824
-s390                 randconfig-r044-20220823
-hexagon              randconfig-r045-20220826
-hexagon              randconfig-r041-20220826
-s390                 randconfig-r044-20220825
-riscv                randconfig-r042-20220825
-riscv                randconfig-r042-20220823
-hexagon              randconfig-r045-20220823
-x86_64                        randconfig-k001
-hexagon              randconfig-r045-20220827
-riscv                randconfig-r042-20220827
-hexagon              randconfig-r041-20220827
-s390                 randconfig-r044-20220827
-arm                                 defconfig
-arm                         bcm2835_defconfig
+>      anyOf:
+>        - required:
+>            - port@0
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+
+Laurent Pinchart
