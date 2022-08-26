@@ -2,36 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B7FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:56:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F6BECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245288AbiHZL4V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 07:56:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
+        id S1343599AbiHZL4Z (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 07:56:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236536AbiHZL4T (ORCPT
+        with ESMTP id S240024AbiHZL4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 07:56:19 -0400
+        Fri, 26 Aug 2022 07:56:20 -0400
 Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6C26B658;
-        Fri, 26 Aug 2022 04:56:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C376D6F258;
+        Fri, 26 Aug 2022 04:56:15 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 2F28D1256;
-        Fri, 26 Aug 2022 13:56:12 +0200 (CEST)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 703F483E3;
+        Fri, 26 Aug 2022 13:56:13 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661514972;
+        t=1661514973;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=dZVABsOehYFJTO+b7L5shbbQcFUZ3x5Ca2bLU8ZP05M=;
-        b=P15TTMzec0t1FXE/YXMeK4Q3vtKIYcFAn7cI9U+iNNye15cusqys6V70YUY5xt8iTbqSUk
-        zf6U/R8IVTQZYWZ3zD6nAp3SV7x/eLp7RRKBkOqDN/WlZCg/tqtIf8sp3He6zx6iaBs3gb
-        ycZznaqIg0YYvG959vkk+YG7zre3otF7xD5wfyd2G22VXpsM0M0AkfihWDISh9UCZsbBfc
-        eGbFipYGFJA2iiPTUG+CkUlZpZlHQEs0mTLq6JYrvc2MCll26nd+L4WlXO8emNYQIc5St9
-        veO26YKXRmjPZ/q7aN8i7HH7I+BLVkmrEoExFxX9yiErsu5zqIx5B0T/j+ohqA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gWGyQWM8OXSvJySwbiAhGUCbHok4M4ZkpORs44F2o94=;
+        b=R9GgofqNh8ffJi2Q++3eaQW8kyZebCFvo6relTQwzWR6tRt6nSXNv9+Mi/sZXXnAnL5uuG
+        z/f7eXXsENymMEMqVdbUbhG5SQv1aWcLasxq5e61Go2eb2+b8/ok2kxY78u2vgpYGjAZRX
+        RCMCAMCDKX78znzg5aBZTusX0IlpFRsk03tktYLkDYjlGoqiDtHB4OM5jiRaEywVWYF8IJ
+        mn0FotCsN81g84tzOvaP21hskr0UyARWF0mbIT7ExqdFxAux5pdDifN0kqJ2F2OBj9FGph
+        aFWhQgH8VeeulDulnSo5zTvcFwMd+3hdxhN0nzHRPpyiVcRw+7ZX2n0WvRg1hQ==
 From:   Michael Walle <michael@walle.cc>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -46,10 +48,12 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH 0/3] reset: microchip-sparx5: fix the broken switch reset
-Date:   Fri, 26 Aug 2022 13:56:04 +0200
-Message-Id: <20220826115607.1148489-1-michael@walle.cc>
+Subject: [PATCH 3/3] net: lan966x: make reset optional
+Date:   Fri, 26 Aug 2022 13:56:07 +0200
+Message-Id: <20220826115607.1148489-4-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220826115607.1148489-1-michael@walle.cc>
+References: <20220826115607.1148489-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam: Yes
@@ -57,20 +61,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reset which is used by the switch to reset the switch core has many
-different side effects. It is not just a switch reset. Thus don't treat it
-as one, but just issue the reset early during boot.
+There is no dedicated reset for just the switch core. The reset which
+is used up until now, is more of a global reset, resetting almost the
+whole SoC and cause spurious errors by doing so. Make it possible to
+handle the reset elsewhere and mark the reset as optional.
 
-Michael Walle (3):
-  reset: microchip-sparx5: issue a reset on startup
-  dt-bindings: net: sparx5: don't require a reset line
-  net: lan966x: make reset optional
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- .../bindings/net/microchip,sparx5-switch.yaml |  2 --
- .../ethernet/microchip/lan966x/lan966x_main.c |  3 ++-
- drivers/reset/reset-microchip-sparx5.c        | 22 ++++++++++++++-----
- 3 files changed, 19 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+index 2ad078608c45..e2c77f954a3d 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
+@@ -971,7 +971,8 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
+ 	int val = 0;
+ 	int ret;
+ 
+-	switch_reset = devm_reset_control_get_shared(lan966x->dev, "switch");
++	switch_reset = devm_reset_control_get_optional_shared(lan966x->dev,
++							      "switch");
+ 	if (IS_ERR(switch_reset))
+ 		return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
+ 				     "Could not obtain switch reset");
 -- 
 2.30.2
 
