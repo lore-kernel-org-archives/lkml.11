@@ -2,82 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80068ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB72FECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245300AbiHZIiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:38:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58060 "EHLO
+        id S1343754AbiHZIiH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 04:38:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343684AbiHZIhk (ORCPT
+        with ESMTP id S241853AbiHZIhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:37:40 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5FED5729;
-        Fri, 26 Aug 2022 01:37:32 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MDY7m3NxDzGprc;
-        Fri, 26 Aug 2022 16:35:48 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+        Fri, 26 Aug 2022 04:37:41 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25AD7D2E8A;
+        Fri, 26 Aug 2022 01:37:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661503056; x=1693039056;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=v/GMC8+uXpbJ05sehOG56CNutF0wXIfUIa6mE5Vt65Y=;
+  b=Q6MxTT9EmDA6Bywn7OyxNvawqbqjVTh15P430xTCtHO2N1Ok3GhPaD84
+   zp2vK58zOkjB6lQtPiatcpfqc4VX8IsNwfyZ+TL1ULdsWNI+T9ZIplfob
+   IbYKUeo+lgdOa42EhCsdIApGOKeMuGKkp6OIrhT4vQ923DClnwvF019aK
+   GIUDr73okpnBRPKkF5tLqWyMnUrhBpyopzeTId4X4OOF3juKC0EPavrl5
+   wNhN0TCGRqX0QdHpzEtIumjUkDX6jUCxJ0Vm0tw5nB/mAg4H35Jv8BE1K
+   fuBrYVn/Q5jt52JRS2eBQK5wAb9F5J55Dro+ZmC+RFZ0V8kBrAPvqKIP5
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
+   d="scan'208";a="188164749"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2022 01:37:35 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 26 Aug 2022 16:37:30 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 16:37:29 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>
-CC:     <robdclark@gmail.com>, <quic_abhinavk@quicinc.com>
-Subject: [PATCH -next] drm/msm/adreno: Switch to memdup_user_nul() helper
-Date:   Fri, 26 Aug 2022 16:45:24 +0800
-Message-ID: <20220826084524.2217022-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+ 15.1.2507.12; Fri, 26 Aug 2022 01:37:33 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 26 Aug 2022 01:37:30 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
+        <arnd@arndb.de>
+CC:     <cristian.birsan@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 9/9] ARM: dts: at91: sam9x60ek: remove simple-bus for regulators
+Date:   Fri, 26 Aug 2022 11:39:27 +0300
+Message-ID: <20220826083927.3107272-10-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220826083927.3107272-1-claudiu.beznea@microchip.com>
+References: <20220826083927.3107272-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use memdup_user_nul() helper instead of open-coding to
-simplify the code.
+Keep regulators as individual devices. There is no need to have them
+under simple bus. This will throw compilation warnings like:
+- unnecessary #address-cells/#size-cells without "ranges" or child "reg"
+property.
+- node has a unit name, but no reg or ranges property.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+While at it move it down a bit in the file to keep entries sorted
+alphabetically.
+
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+ arch/arm/boot/dts/at91-sam9x60ek.dts | 78 +++++++++++++---------------
+ 1 file changed, 36 insertions(+), 42 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 382fb7f9e497..50b33e14237b 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -339,17 +339,9 @@ int adreno_set_param(struct msm_gpu *gpu, struct msm_file_private *ctx,
- 	case MSM_PARAM_CMDLINE: {
- 		char *str, **paramp;
+diff --git a/arch/arm/boot/dts/at91-sam9x60ek.dts b/arch/arm/boot/dts/at91-sam9x60ek.dts
+index 81c38e101f58..7ade9979e1c6 100644
+--- a/arch/arm/boot/dts/at91-sam9x60ek.dts
++++ b/arch/arm/boot/dts/at91-sam9x60ek.dts
+@@ -34,48 +34,6 @@ main_xtal {
+ 		};
+ 	};
  
--		str = kmalloc(len + 1, GFP_KERNEL);
--		if (!str)
--			return -ENOMEM;
+-	regulators: regulators {
+-		compatible = "simple-bus";
+-		#address-cells = <1>;
+-		#size-cells = <0>;
 -
--		if (copy_from_user(str, u64_to_user_ptr(value), len)) {
--			kfree(str);
--			return -EFAULT;
--		}
+-		vdd_1v8: fixed-regulator-vdd_1v8@0 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "VDD_1V8";
+-			regulator-min-microvolt = <1800000>;
+-			regulator-max-microvolt = <1800000>;
+-			regulator-always-on;
+-			status = "okay";
+-		};
 -
--		/* Ensure string is null terminated: */
--		str[len] = '\0';
-+		str = memdup_user_nul(u64_to_user_ptr(value), len);
-+		if (IS_ERR(str))
-+			return PTR_ERR(str);
+-		vdd_1v15: fixed-regulator-vdd_1v15@1 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "VDD_1V15";
+-			regulator-min-microvolt = <1150000>;
+-			regulator-max-microvolt = <1150000>;
+-			regulator-always-on;
+-			status = "okay";
+-		};
+-
+-		vdd1_3v3: fixed-regulator-vdd1_3v3@2 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "VDD1_3V3";
+-			regulator-min-microvolt = <3300000>;
+-			regulator-max-microvolt = <3300000>;
+-			regulator-always-on;
+-			status = "okay";
+-		};
+-
+-		vdd2_3v3: regulator-fixed-vdd2_3v3@3 {
+-			compatible = "regulator-fixed";
+-			regulator-name = "VDD2_3V3";
+-			regulator-min-microvolt = <3300000>;
+-			regulator-max-microvolt = <3300000>;
+-			regulator-always-on;
+-			status = "okay";
+-		};
+-	};
+-
+ 	gpio-keys {
+ 		compatible = "gpio-keys";
+ 		pinctrl-names = "default";
+@@ -111,6 +69,42 @@ blue {
+ 			linux,default-trigger = "heartbeat";
+ 		};
+ 	};
++
++	vdd_1v8: fixed-regulator-vdd_1v8 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDD_1V8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		regulator-always-on;
++		status = "okay";
++	};
++
++	vdd_1v15: fixed-regulator-vdd_1v15 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDD_1V15";
++		regulator-min-microvolt = <1150000>;
++		regulator-max-microvolt = <1150000>;
++		regulator-always-on;
++		status = "okay";
++	};
++
++	vdd1_3v3: fixed-regulator-vdd1_3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDD1_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++		status = "okay";
++	};
++
++	vdd2_3v3: regulator-fixed-vdd2_3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "VDD2_3V3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++		status = "okay";
++	};
+ };
  
- 		if (param == MSM_PARAM_COMM) {
- 			paramp = &ctx->comm;
+ &adc {
 -- 
-2.25.1
+2.34.1
 
