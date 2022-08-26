@@ -2,131 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74865ECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 04:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF5FECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 04:11:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243977AbiHZEJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 00:09:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46422 "EHLO
+        id S244268AbiHZELG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 00:11:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237153AbiHZEJE (ORCPT
+        with ESMTP id S229556AbiHZELE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 00:09:04 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 704B2C6EBC
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 21:09:02 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id y3so933963ejc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 21:09:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nfavuWqsga9k882E8+MW27Dc7w6nkSmp6dmrzCaSBa8=;
-        b=auaX9NL078V2jQ22g6geanRo4qZgCfxascPAwZLxdTpxPyzPYywc2dou1ZYhcRULDj
-         SPoXe+ojJ8cZ26IfVZM+1e593dZ30nsOzMbK8OQ3BD+4Ii44ZUIxjQxzbARwlnIbYBZ4
-         eFv5ITB4zd1gSGzc6fvPICF/Xe8xA2tDVwNX8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nfavuWqsga9k882E8+MW27Dc7w6nkSmp6dmrzCaSBa8=;
-        b=bcH25ZS5VObQoiVBErjAAIOIgqKcSK0eCp91Hl+nGUcpulWe5xUwI9pWW+9qkaBTI/
-         IF568oAoukIErgX98w9QG8TOzimhkIvRqekElQW0Ph1zdtMY/tICSnGBjYGhCMkwdZpl
-         wzOAK3MlgifwBZqJYNCCe0rcJaGlnCeKHVvgOUeIzP/Yw6xGXBBZGXfHoLUVCt2DInW0
-         czjIwvjikK5tN0PAo36Rc8BF4kWedd1GseIFp1TTaZZiyi7KPQrkjK7Zo0Kre1Cj7Pbg
-         85LAExWOF3/ODNu1jbFRsQZj98aG55gBEgBdkHEko/5lHtKDe7Yu4BeabDLqv+M9pw9e
-         f4Kw==
-X-Gm-Message-State: ACgBeo3pg16VOWztMmMo6Ypp7AwyrpeFSqFQezBcYOLjOGqc2XbewLlx
-        3wUQ0O8E6mY0V4YAdc0HCccaq922dlS9VkBijxPzMQ==
-X-Google-Smtp-Source: AA6agR4P9lJ2jCOXLxO3fu5pzVr8QQon3biII9pZufVQXE6IfPh3piLXnL5yinNDFW3MHI/dSrraW9UClF4wseNeZfY=
-X-Received: by 2002:a17:907:60c7:b0:739:52ba:cbd0 with SMTP id
- hv7-20020a17090760c700b0073952bacbd0mr4329186ejc.152.1661486940981; Thu, 25
- Aug 2022 21:09:00 -0700 (PDT)
+        Fri, 26 Aug 2022 00:11:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9E77C1E2;
+        Thu, 25 Aug 2022 21:11:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63FC1B80ABF;
+        Fri, 26 Aug 2022 04:11:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C571EC433D6;
+        Fri, 26 Aug 2022 04:10:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661487060;
+        bh=9FtfZRg8d5/PrQ/D6oaioOqEEZ7sw5lB8CDSQZYEtRY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lmtvuIAgTtWn8izH0XCMTykm91F7YBO6bLH7g2KaPvo4IE6IFomOX3gtkG9L1clNZ
+         /KZn6fo+DSJV+1/jLmD4OSFLtVuudCx0jMq6mTNIv8is/XTUwrcn/VcGG6TsU6Wbkh
+         +MCsrNFXAozRxZxfHHzF1+/aTxSsdQVCI6rhvlMRyPmW12lVVg02KaS9VTAUEGPkpe
+         ODf+xLEy/myfrNYXbbfR+irKgRN3dQNgUsPBPp/uFDV/FrqvMLMBKskdDcLwjUzPj4
+         k/CyawtXbzRNEH/VOW0Hr0M8zA4XuQQe73Pq59u+32FCCElwhSEUCTrbsD9yPZfnFF
+         c8bRBqpP/c/sQ==
+Date:   Fri, 26 Aug 2022 07:10:52 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander.Steffen@infineon.com, jgg@ziepe.ca, peterhuewe@gmx.de,
+        joel@jms.id.au
+Subject: Re: [PATCH] tpm: tis_i2c: Fix sanity check interrupt enable mask
+Message-ID: <YwhHzDL5agT3enUn@kernel.org>
+References: <20220817200333.305264-1-eajames@linux.ibm.com>
+ <YwhGLZX2+dggWHcI@kernel.org>
 MIME-Version: 1.0
-References: <20220720085731.11011-1-irui.wang@mediatek.com> <20220720085731.11011-5-irui.wang@mediatek.com>
-In-Reply-To: <20220720085731.11011-5-irui.wang@mediatek.com>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Fri, 26 Aug 2022 12:08:49 +0800
-Message-ID: <CAGXv+5Eqcv-K1O-5foTcHYXKh+0yipo-i+EjgYOMemS3_82fAQ@mail.gmail.com>
-Subject: Re: [PATCH v2, 4/6] media: mediatek: vcodec: Remove encoder driver
- get IRQ resource
-To:     Irui Wang <irui.wang@mediatek.com>
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        angelogioacchino.delregno@collabora.com,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwhGLZX2+dggWHcI@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, Aug 26, 2022 at 07:04:00AM +0300, Jarkko Sakkinen wrote:
+> On Wed, Aug 17, 2022 at 03:03:33PM -0500, Eddie James wrote:
+> > The sanity check mask for TPM_INT_ENABLE register was off by 8 bits,
+> > resulting in failure to probe if the TPM_INT_ENABLE register was a
+> > valid value.
+> > 
+> > Fixes: bbc23a07b072 ("tpm: Add tpm_tis_i2c backend for tpm_tis_core")
+> > Signed-off-by: Eddie James <eajames@linux.ibm.com>
+> > ---
+> >  drivers/char/tpm/tpm_tis_i2c.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/char/tpm/tpm_tis_i2c.c b/drivers/char/tpm/tpm_tis_i2c.c
+> > index 0692510dfcab..635a69dfcbbd 100644
+> > --- a/drivers/char/tpm/tpm_tis_i2c.c
+> > +++ b/drivers/char/tpm/tpm_tis_i2c.c
+> > @@ -49,7 +49,7 @@
+> >  
+> >  /* Masks with bits that must be read zero */
+> >  #define TPM_ACCESS_READ_ZERO 0x48
+> > -#define TPM_INT_ENABLE_ZERO 0x7FFFFF6
+> > +#define TPM_INT_ENABLE_ZERO 0x7FFFFF60
+> >  #define TPM_STS_READ_ZERO 0x23
+> >  #define TPM_INTF_CAPABILITY_ZERO 0x0FFFF000
+> >  #define TPM_I2C_INTERFACE_CAPABILITY_ZERO 0x80000000
+> > -- 
+> > 2.31.1
+> > 
+> 
+> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+> 
+> Thank you.
 
-On Wed, Jul 20, 2022 at 4:58 PM Irui Wang <irui.wang@mediatek.com> wrote:
->
-> The "platform_get_resource(pdev, IORESOURCE_IRQ, 0)" is no longer
-> used after commit a1a2b7125e107("of/platform: Drop static setup of
-> IRQ resource from DT core"), so just remove the function in
-> encoder driver to avoid driver probe failed.
->
-> Signed-off-by: Irui Wang <irui.wang@mediatek.com>
-> ---
->  .../media/platform/mediatek/vcodec/mtk_vcodec_enc_drv.c   | 8 --------
->  1 file changed, 8 deletions(-)
->
-> diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc_drv.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc_drv.c
-> index ea667b867b56..6d8964fb4fa2 100644
-> --- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc_drv.c
-> +++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc_drv.c
-> @@ -228,7 +228,6 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
->  {
->         struct mtk_vcodec_dev *dev;
->         struct video_device *vfd_enc;
-> -       struct resource *res;
->         phandle rproc_phandle;
->         enum mtk_vcodec_fw_type fw_type;
->         int ret;
-> @@ -272,13 +271,6 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
->                 goto err_res;
->         }
->
-> -       res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
-> -       if (res == NULL) {
-> -               dev_err(&pdev->dev, "failed to get irq resource");
-> -               ret = -ENOENT;
-> -               goto err_res;
-> -       }
-> -
->         dev->enc_irq = platform_get_irq(pdev, 0);
+I used "6.3 Handling of Multi-Byte Registers" I2C specification
+to check this. I do not posses I2C chip.
 
-platform_get_irq() returns a negative number on failure. You should
-check for errors here as the previous check was removed.
+https://trustedcomputinggroup.org/wp-content/uploads/TCG-TPM-I2C-Interface-Specification-v1.00.pdf
 
-The description of platform_get_irq() explicitly mentions:
-
-    Device drivers should check the return value for errors so as to
-    not pass a negative integer value to the request_irq() APIs.
-
-Hans has queued up this patch, so maybe you could provide a follow-up
-patch to fix this?
-
-
-Regards
-ChenYu
-
-
->         irq_set_status_flags(dev->enc_irq, IRQ_NOAUTOEN);
->         ret = devm_request_irq(&pdev->dev, dev->enc_irq,
-> --
-> 2.18.0
->
+BR, Jarkko
