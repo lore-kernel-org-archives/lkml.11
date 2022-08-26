@@ -2,329 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 081A0ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 229DBECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344264AbiHZMWx (ORCPT
+        id S1343874AbiHZMXF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
+        Fri, 26 Aug 2022 08:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343859AbiHZMWe (ORCPT
+        with ESMTP id S1344061AbiHZMWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:22:34 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BA8DF0BA;
-        Fri, 26 Aug 2022 05:20:52 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1C668188D8A4;
-        Fri, 26 Aug 2022 12:20:20 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 08D7E25032B7;
-        Fri, 26 Aug 2022 12:20:20 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id D34489EC005C; Fri, 26 Aug 2022 11:45:59 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from wse-c0127.beijerelectronics.com (unknown [208.127.141.28])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 93D6E9EC0008;
-        Fri, 26 Aug 2022 11:45:56 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v5 net-next 2/6] net: switchdev: add support for offloading of fdb locked flag
-Date:   Fri, 26 Aug 2022 13:45:34 +0200
-Message-Id: <20220826114538.705433-3-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220826114538.705433-1-netdev@kapio-technology.com>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
+        Fri, 26 Aug 2022 08:22:41 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC43DEA4B;
+        Fri, 26 Aug 2022 05:21:02 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1oRYKT-0005Wk-JK; Fri, 26 Aug 2022 14:20:53 +0200
+Message-ID: <d30192e4-9e12-f770-e944-e3c38b9514b8@maciej.szmigiero.name>
+Date:   Fri, 26 Aug 2022 14:20:45 +0200
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     "Shukla, Santosh" <santosh.shukla@amd.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mlevitsk@redhat.com
+References: <20220810061226.1286-1-santosh.shukla@amd.com>
+ <20220810061226.1286-6-santosh.shukla@amd.com>
+ <bf9e8a9c-5172-b61a-be6e-87a919442fbd@maciej.szmigiero.name>
+ <e10b3de6-2df0-1339-4574-8477a924b78e@amd.com>
+ <f96b867f-4c32-4950-8508-234fe2cda7b9@maciej.szmigiero.name>
+ <1062bf85-0d44-011b-2377-d6be1485ce65@amd.com>
+ <3752b74b-74e1-00fd-d80d-41104e07fe95@maciej.szmigiero.name>
+ <ce3c852e-4ee0-36df-383c-0957a6e02a6d@amd.com>
+ <ddbb19b8-417f-f839-591d-a0610ea9629b@maciej.szmigiero.name>
+ <ca464c8c-872f-f86b-6fca-7ef7b374a304@amd.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCHv3 5/8] KVM: SVM: Add VNMI support in inject_nmi
+In-Reply-To: <ca464c8c-872f-f86b-6fca-7ef7b374a304@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Used for MacAuth/MAB feature in the offloaded case.
-Send the fdb locked flag down through the switchdev and DSA layers.
+On 26.08.2022 11:35, Shukla, Santosh wrote:
+> On 8/25/2022 7:46 PM, Maciej S. Szmigiero wrote:
+>> On 25.08.2022 16:05, Shukla, Santosh wrote:
+>>> On 8/25/2022 6:15 PM, Maciej S. Szmigiero wrote:
+>>>> On 25.08.2022 12:56, Shukla, Santosh wrote:
+>>>>> On 8/24/2022 6:26 PM, Maciej S. Szmigiero wrote:
+>>>>>> On 24.08.2022 14:13, Shukla, Santosh wrote:
+>>>>>>> Hi Maciej,
+>>>>>>>
+>>>>>>> On 8/11/2022 2:54 AM, Maciej S. Szmigiero wrote:
+>>>>>>>> On 10.08.2022 08:12, Santosh Shukla wrote:
+>>>>>>>>> Inject the NMI by setting V_NMI in the VMCB interrupt control. processor
+>>>>>>>>> will clear V_NMI to acknowledge processing has started and will keep the
+>>>>>>>>> V_NMI_MASK set until the processor is done with processing the NMI event.
+>>>>>>>>>
+>>>>>>>>> Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
+>>>>>>>>> ---
+>>>>>>>>> v3:
+>>>>>>>>> - Removed WARN_ON check.
+>>>>>>>>>
+>>>>>>>>> v2:
+>>>>>>>>> - Added WARN_ON check for vnmi pending.
+>>>>>>>>> - use `get_vnmi_vmcb` to get correct vmcb so to inject vnmi.
+>>>>>>>>>
+>>>>>>>>>       arch/x86/kvm/svm/svm.c | 7 +++++++
+>>>>>>>>>       1 file changed, 7 insertions(+)
+>>>>>>>>>
+>>>>>>>>> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+>>>>>>>>> index e260e8cb0c81..8c4098b8a63e 100644
+>>>>>>>>> --- a/arch/x86/kvm/svm/svm.c
+>>>>>>>>> +++ b/arch/x86/kvm/svm/svm.c
+>>>>>>>>> @@ -3479,7 +3479,14 @@ static void pre_svm_run(struct kvm_vcpu *vcpu)
+>>>>>>>>>       static void svm_inject_nmi(struct kvm_vcpu *vcpu)
+>>>>>>>>>       {
+>>>>>>>>>           struct vcpu_svm *svm = to_svm(vcpu);
+>>>>>>>>> +    struct vmcb *vmcb = NULL;
+>>>>>>>>>       +    if (is_vnmi_enabled(svm)) {
+>>>>>>>>
+>>>>>>>> I guess this should be "is_vnmi_enabled(svm) && !svm->nmi_l1_to_l2"
+>>>>>>>> since if nmi_l1_to_l2 is true then the NMI to be injected originally
+>>>>>>>> comes from L1's VMCB12 EVENTINJ field.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Not sure if I understood the case fully.. so trying to sketch scenario here -
+>>>>>>> if nmi_l1_to_l2 is true then event is coming from EVTINJ. .which could
+>>>>>>> be one of following case -
+>>>>>>> 1) L0 (vnmi enabled) and L1 (vnmi disabled)
+>>>>>>
+>>>>>> As far as I can see in this case:
+>>>>>> is_vnmi_enabled() returns whether VMCB02's int_ctl has V_NMI_ENABLE bit set.
+>>>>>>
+>>>>>
+>>>>> For L1 with vnmi disabled case - is_vnmi_enabled()->get_vnmi_vmcb() will return false so the
+>>>>> execution path will opt EVTINJ model for re-injection.
+>>>>
+>>>> I guess by "get_vnmi_vmcb() will return false" you mean it will return NULL,
+>>>> since this function returns a pointer, not a bool.
+>>>>
+>>>
+>>> Yes, I meant is_vnmi_enabled() will return false if vnmi param is unset.
+>>>
+>>>> I can't see however, how this will happen:
+>>>>> static inline struct vmcb *get_vnmi_vmcb(struct vcpu_svm *svm)
+>>>>> {
+>>>>>       if (!vnmi)
+>>>>>           return NULL;
+>>>>           ^ "vnmi" variable controls whether L0 uses vNMI,
+>>>>          so this variable is true in our case
+>>>>
+>>>
+>>> No.
+>>>
+>>> In L1 case (vnmi disabled) - vnmi param will be false.
+>>
+>> Perhaps there was a misunderstanding here - the case here
+>> isn't the code under discussion running as L1, but as L0
+>> where L1 not using vNMI - L1 here can be an old version of KVM,
+>> or Hyper-V, or any other hypervisor.
+>>
+> 
+> Ok.
+> 
+>> In this case L0 is re-injecting an EVENTINJ NMI into L2 on
+>> the behalf of L1.
+>> That's when "nmi_l1_to_l2" is true.
+>   
+> hmm,. trying to understand the event re-injection flow -
+> First L1 (non-vnmi) injecting event to L2 guest, in-turn
+> intercepted by L0, 
 
-Also add support for drivers to set additional flags on bridge
-FDB entries including the new 'blackhole' flag.
+That's right, the L1's VMRUN of L2 gets intercepted by L0.
 
-And add support for offloading of the MAB/MacAuth feature flag.
+> L0 sees event injection through EVTINJ
 
-Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
----
- include/net/switchdev.h   |  3 +++
- net/bridge/br.c           |  5 ++++-
- net/bridge/br_fdb.c       | 14 ++++++++++++--
- net/bridge/br_private.h   |  3 ++-
- net/bridge/br_switchdev.c |  5 +++--
- net/dsa/dsa_priv.h        |  4 +++-
- net/dsa/port.c            |  7 ++++---
- net/dsa/slave.c           |  4 +++-
- net/dsa/switch.c          |  6 +++---
- 9 files changed, 37 insertions(+), 14 deletions(-)
+It sees that L1 wants to inject an NMI into L2 via VMCB12 EVTINJ.
 
-diff --git a/include/net/switchdev.h b/include/net/switchdev.h
-index 7dcdc97c0bc3..437945179373 100644
---- a/include/net/switchdev.h
-+++ b/include/net/switchdev.h
-@@ -247,7 +247,10 @@ struct switchdev_notifier_fdb_info {
- 	const unsigned char *addr;
- 	u16 vid;
- 	u8 added_by_user:1,
-+	   sticky:1,
- 	   is_local:1,
-+	   locked:1,
-+	   blackhole:1,
- 	   offloaded:1;
- };
- 
-diff --git a/net/bridge/br.c b/net/bridge/br.c
-index 96e91d69a9a8..3671c0a12b7d 100644
---- a/net/bridge/br.c
-+++ b/net/bridge/br.c
-@@ -166,7 +166,10 @@ static int br_switchdev_event(struct notifier_block *unused,
- 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
- 		fdb_info = ptr;
- 		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
--						fdb_info->vid, false);
-+						fdb_info->vid, false,
-+						fdb_info->locked,
-+						fdb_info->blackhole,
-+						fdb_info->sticky);
- 		if (err) {
- 			err = notifier_from_errno(err);
- 			break;
-diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
-index 1962d9594a48..30126af9c42f 100644
---- a/net/bridge/br_fdb.c
-+++ b/net/bridge/br_fdb.c
-@@ -1147,7 +1147,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
- 					   "FDB entry towards bridge must be permanent");
- 			return -EINVAL;
- 		}
--		err = br_fdb_external_learn_add(br, p, addr, vid, true);
-+		err = br_fdb_external_learn_add(br, p, addr, vid, true, false, false, false);
- 	} else {
- 		spin_lock_bh(&br->hash_lock);
- 		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
-@@ -1383,7 +1383,8 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
- 
- int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
- 			      const unsigned char *addr, u16 vid,
--			      bool swdev_notify)
-+			      bool swdev_notify, bool locked,
-+			      bool blackhole, bool sticky)
- {
- 	struct net_bridge_fdb_entry *fdb;
- 	bool modified = false;
-@@ -1403,6 +1404,15 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
- 		if (!p)
- 			flags |= BIT(BR_FDB_LOCAL);
- 
-+		if (locked)
-+			flags |= BIT(BR_FDB_ENTRY_LOCKED);
-+
-+		if (blackhole)
-+			flags |= BIT(BR_FDB_BLACKHOLE);
-+
-+		if (sticky)
-+			flags |= BIT(BR_FDB_STICKY);
-+
- 		fdb = fdb_create(br, p, addr, vid, flags);
- 		if (!fdb) {
- 			err = -ENOMEM;
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 048e4afbc5a0..2836fec2dafb 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -812,7 +812,8 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
- void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
- int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
- 			      const unsigned char *addr, u16 vid,
--			      bool swdev_notify);
-+			      bool swdev_notify, bool locked,
-+			      bool blackhole, bool sticky);
- int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
- 			      const unsigned char *addr, u16 vid,
- 			      bool swdev_notify);
-diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
-index 8f3d76c751dd..9aaefbc07e02 100644
---- a/net/bridge/br_switchdev.c
-+++ b/net/bridge/br_switchdev.c
-@@ -71,8 +71,8 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
- }
- 
- /* Flags that can be offloaded to hardware */
--#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
--				  BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PORT_LOCKED | \
-+#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD | \
-+				  BR_PORT_LOCKED | BR_PORT_MAB | \
- 				  BR_HAIRPIN_MODE | BR_ISOLATED | BR_MULTICAST_TO_UNICAST)
- 
- int br_switchdev_set_port_flag(struct net_bridge_port *p,
-@@ -136,6 +136,7 @@ static void br_switchdev_fdb_populate(struct net_bridge *br,
- 	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
- 	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
- 	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
-+	item->locked = test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
- 	item->info.dev = (!p || item->is_local) ? br->dev : p->dev;
- 	item->info.ctx = ctx;
- }
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 614fbba8fe39..b05685418b20 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -65,6 +65,7 @@ struct dsa_notifier_fdb_info {
- 	const struct dsa_port *dp;
- 	const unsigned char *addr;
- 	u16 vid;
-+	bool is_locked;
- 	struct dsa_db db;
- };
- 
-@@ -131,6 +132,7 @@ struct dsa_switchdev_event_work {
- 	unsigned char addr[ETH_ALEN];
- 	u16 vid;
- 	bool host_addr;
-+	bool is_locked;
- };
- 
- enum dsa_standalone_event {
-@@ -232,7 +234,7 @@ int dsa_port_vlan_msti(struct dsa_port *dp,
- 		       const struct switchdev_vlan_msti *msti);
- int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu);
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
--		     u16 vid);
-+		     u16 vid, bool is_locked);
- int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 		     u16 vid);
- int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 7afc35db0c29..3399cc1f7be0 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -303,7 +303,7 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
- 					 struct netlink_ext_ack *extack)
- {
- 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
-+				   BR_BCAST_FLOOD | BR_PORT_LOCKED | BR_PORT_MAB;
- 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
- 	int flag, err;
- 
-@@ -327,7 +327,7 @@ static void dsa_port_clear_brport_flags(struct dsa_port *dp)
- {
- 	const unsigned long val = BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
- 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
--				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
-+				   BR_BCAST_FLOOD | BR_PORT_LOCKED | BR_PORT_MAB;
- 	int flag, err;
- 
- 	for_each_set_bit(flag, &mask, 32) {
-@@ -954,12 +954,13 @@ int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu)
- }
- 
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
--		     u16 vid)
-+		     u16 vid, bool is_locked)
- {
- 	struct dsa_notifier_fdb_info info = {
- 		.dp = dp,
- 		.addr = addr,
- 		.vid = vid,
-+		.is_locked = is_locked,
- 		.db = {
- 			.type = DSA_DB_BRIDGE,
- 			.bridge = *dp->bridge,
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 345106b1ed78..a6486d7d9c7c 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2908,6 +2908,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
- 		container_of(work, struct dsa_switchdev_event_work, work);
- 	const unsigned char *addr = switchdev_work->addr;
- 	struct net_device *dev = switchdev_work->dev;
-+	bool is_locked = switchdev_work->is_locked;
- 	u16 vid = switchdev_work->vid;
- 	struct dsa_switch *ds;
- 	struct dsa_port *dp;
-@@ -2923,7 +2924,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
- 		else if (dp->lag)
- 			err = dsa_port_lag_fdb_add(dp, addr, vid);
- 		else
--			err = dsa_port_fdb_add(dp, addr, vid);
-+			err = dsa_port_fdb_add(dp, addr, vid, is_locked);
- 		if (err) {
- 			dev_err(ds->dev,
- 				"port %d failed to add %pM vid %d to fdb: %d\n",
-@@ -3031,6 +3032,7 @@ static int dsa_slave_fdb_event(struct net_device *dev,
- 	ether_addr_copy(switchdev_work->addr, fdb_info->addr);
- 	switchdev_work->vid = fdb_info->vid;
- 	switchdev_work->host_addr = host_addr;
-+	switchdev_work->is_locked = fdb_info->locked;
- 
- 	dsa_schedule_work(&switchdev_work->work);
- 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 4dfd68cf61c5..f29604f25c67 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -234,7 +234,7 @@ static int dsa_port_do_mdb_del(struct dsa_port *dp,
- }
- 
- static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
--			       u16 vid, struct dsa_db db)
-+			       u16 vid, bool is_locked, struct dsa_db db)
- {
- 	struct dsa_switch *ds = dp->ds;
- 	struct dsa_mac_addr *a;
-@@ -399,7 +399,7 @@ static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
- 	dsa_switch_for_each_port(dp, ds) {
- 		if (dsa_port_host_address_match(dp, info->dp)) {
- 			err = dsa_port_do_fdb_add(dp, info->addr, info->vid,
--						  info->db);
-+						  false, info->db);
- 			if (err)
- 				break;
- 		}
-@@ -438,7 +438,7 @@ static int dsa_switch_fdb_add(struct dsa_switch *ds,
- 	if (!ds->ops->port_fdb_add)
- 		return -EOPNOTSUPP;
- 
--	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->db);
-+	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->is_locked, info->db);
- }
- 
- static int dsa_switch_fdb_del(struct dsa_switch *ds,
--- 
-2.30.2
+> so sets the 'nmi_l1_to_l2' var 
 
+That's right, L0 needs to keep track of this fact.
+
+> and then L0 calls svm_inject_nmi()
+
+Not yet - at this point svm_inject_nmi() is NOT called
+(rather than, VMCB12 EVTINJ is directly copied into VMCB02 EVTINJ).
+
+Now L0 does the actual VMRUN of L2.
+
+Let's say that there is an intervening VMExit during delivery of
+that NMI to L2, of type which is handled by L0 (perhaps a NPF on
+L2 IDT or so).
+
+In this case the NMI will be returned in VMCB02 EXITINTINFO and
+needs to be re-injected into L2 on the next VMRUN,
+again via EVTINJ.
+
+That's when svm_inject_nmi() will get called to re-inject
+that NMI.
+
+> to re-inject event in L2 - is that correct (nmi_l1_to_l2) flow?
+Hope the flow is clear now.
+
+> 
+> Thanks,.
+> Santosh
+
+Thanks,
+Maciej
