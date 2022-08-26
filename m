@@ -2,136 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AEEAECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 06:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4085ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 06:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245200AbiHZGqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 02:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50208 "EHLO
+        id S245219AbiHZGrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 02:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236722AbiHZGqS (ORCPT
+        with ESMTP id S245145AbiHZGq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 02:46:18 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C634D21D2;
-        Thu, 25 Aug 2022 23:46:10 -0700 (PDT)
-Received: from lenovo.Home (unknown [39.53.61.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 28ACA6601EC7;
-        Fri, 26 Aug 2022 07:46:05 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661496369;
-        bh=qFwfAW+YdGQMEoUt1Jsqu4meeyL+SBRRa4jSpOBxxag=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MqLhLBD000uR8bos55kq6B0zd6KcI+zVA3+3+1lh9CHVeLA7Xtm5TlApu0RsP5K6Q
-         GaTS146h+PQSc60dfjK0trnYUuQOrRDaO9xp9SZwkO26Fwo6/AXsB68X7nL6ejn2xN
-         sbI/9tPhriK2OPjmRvSqjE99pvEhHSjGwslyTNLwsJ3HTxVrAQVWKYgarxEMYKm+0l
-         Sgty4ZQl62sAs2T9NeauCEYI6N5UOeifcCNSLx+EGyN5ZtKTej96u354C53osstFIm
-         3A8U9UByjTVrOhh56q9iP0+NkyA9dw5QqnJ9qx6XihHoVtVxicMbVyfE8C40X1Q7TP
-         ampV4YcnPyCtg==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>,
-        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-        linux-kernel@vger.kernel.org (open list),
-        linux-fsdevel@vger.kernel.org (open list:PROC FILESYSTEM),
-        linux-mm@kvack.org (open list:MEMORY MANAGEMENT),
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK)
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        David Hildenbrand <david@redhat.com>,
-        Peter Enderborg <peter.enderborg@sony.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: [PATCH v3 4/4] mm: add documentation of the new ioctl on pagemap
-Date:   Fri, 26 Aug 2022 11:45:35 +0500
-Message-Id: <20220826064535.1941190-5-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220826064535.1941190-1-usama.anjum@collabora.com>
-References: <20220826064535.1941190-1-usama.anjum@collabora.com>
+        Fri, 26 Aug 2022 02:46:56 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1C1D25C4;
+        Thu, 25 Aug 2022 23:46:31 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id s31-20020a17090a2f2200b001faaf9d92easo7190056pjd.3;
+        Thu, 25 Aug 2022 23:46:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=WmnvVRurxH2Zy86fWf6pyYN4Ha80RUgYK6P1tlQP2/g=;
+        b=Nwefa+9WuBFgFgAQdGg0tE6ijaCa2/hmsYfjKjBxOTHUcMWLYHNP8LQn7KrpCCeM1x
+         EmFBiYrvovfVSzwpldwWAmZnnJm+mrnRYW/bZvDyZ9Ny7OR6XnB6nLK+bhBHIhhumF44
+         ZHHJDnYJbJpa8wY212ebXF1UcO4zaXlEu2mB4pHWdXfqKNtbotLVY+SvMVdLmIkYv+Rx
+         WvDPTjGTVc1Cu6w6+ntMdNdxjcaWvCsfUgVMdHuOJaydE3xKUr0e3blaFXKccAvBx8wD
+         /9O3eka5Qa+adDogE2BDKFD8epXT2mDExe9d2GecR264lBRne+ZMZuvRNfCNv25jFNCZ
+         qNSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=WmnvVRurxH2Zy86fWf6pyYN4Ha80RUgYK6P1tlQP2/g=;
+        b=e6/io5xSagmZze+cXn2tml5ylvhqtqPq59RQamCdhmkllIBVjWiPOi93qAPBwPCZpz
+         8nxv+nHo0iCaxu59oC2a4IAlDxVk+B924FUy1sBGfgWFLqYLNoxzbsjIouZBrysoi4wE
+         pFdmApQyHNfs1zzcyoSOP2dOj2NZItFfGMnkBU9VQU0puTc7ck0HdkjU1ArNPoFxvZ1N
+         sNO+dSSR1a0PpEJmAj7MyS+X4ACWosd89BeMNwQW+8eDxCuapgynr/4eym0br9tmQwLH
+         Y1M8qerTItDaJ92QCQC+Q+NQRGBpnd22jfAmjc1rQZlXSJ3QhntUhkGafiNrOaPF8AEH
+         yzSw==
+X-Gm-Message-State: ACgBeo3wK/MmlZ5/jkqixPKYmCUZfpf8pcGiysg4NNkP7rmSN+21VZqL
+        sZuzP1qynR8qpWCQpVhkFuY=
+X-Google-Smtp-Source: AA6agR61OhIkcofx2MFfuNJ7+sdXf0VwtDAAD/RfJrASsh7FidaByoWOrUOri//GsJNftXUSsNpYYg==
+X-Received: by 2002:a17:902:7845:b0:16e:d647:a66c with SMTP id e5-20020a170902784500b0016ed647a66cmr2364885pln.64.1661496391012;
+        Thu, 25 Aug 2022 23:46:31 -0700 (PDT)
+Received: from localhost ([192.55.55.51])
+        by smtp.gmail.com with ESMTPSA id x13-20020a170902a38d00b0016ec8286733sm706933pla.243.2022.08.25.23.46.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 23:46:30 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 23:46:29 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Sagi Shahar <sagis@google.com>
+Cc:     "Yamahata, Isaku" <isaku.yamahata@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Isaku Yamahata <isaku.yamahata@gmail.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH v8 095/103] KVM: TDX: Handle TDX PV rdmsr/wrmsr hypercall
+Message-ID: <20220826064629.GG2538772@ls.amr.corp.intel.com>
+References: <cover.1659854790.git.isaku.yamahata@intel.com>
+ <ce183d47a93012c46472b32077e80dc8b56c88ed.1659854791.git.isaku.yamahata@intel.com>
+ <CAAhR5DH2y=MXMSiM0YDn0qj3s3D3SBg6L3_uBP+a8KeC2u2jyQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAAhR5DH2y=MXMSiM0YDn0qj3s3D3SBg6L3_uBP+a8KeC2u2jyQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the explanation of the added ioctl on pagemap file. It can be used
-to get, clear or both soft-dirty PTE bit of the specified range.
-or both at the same time.
+On Wed, Aug 17, 2022 at 03:40:24PM -0700,
+Sagi Shahar <sagis@google.com> wrote:
 
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
----
-Changes in v2:
-- Update documentation to mention ioctl instead of the syscall
----
- Documentation/admin-guide/mm/soft-dirty.rst | 42 ++++++++++++++++++++-
- 1 file changed, 41 insertions(+), 1 deletion(-)
+> On Sun, Aug 7, 2022 at 3:03 PM <isaku.yamahata@intel.com> wrote:
+> > +static int tdx_emulate_wrmsr(struct kvm_vcpu *vcpu)
+> > +{
+> > +       u32 index = tdvmcall_a0_read(vcpu);
+> > +       u64 data = tdvmcall_a1_read(vcpu);
+> > +
+> > +       if (!kvm_msr_allowed(vcpu, index, KVM_MSR_FILTER_READ) ||
+>                                                                    ^
+> This should be KVM_MSR_FILTER_WRITE
 
-diff --git a/Documentation/admin-guide/mm/soft-dirty.rst b/Documentation/admin-guide/mm/soft-dirty.rst
-index cb0cfd6672fa..d3d33e63a965 100644
---- a/Documentation/admin-guide/mm/soft-dirty.rst
-+++ b/Documentation/admin-guide/mm/soft-dirty.rst
-@@ -5,7 +5,12 @@ Soft-Dirty PTEs
- ===============
- 
- The soft-dirty is a bit on a PTE which helps to track which pages a task
--writes to. In order to do this tracking one should
-+writes to.
-+
-+Using Proc FS
-+-------------
-+
-+In order to do this tracking one should
- 
-   1. Clear soft-dirty bits from the task's PTEs.
- 
-@@ -20,6 +25,41 @@ writes to. In order to do this tracking one should
-      64-bit qword is the soft-dirty one. If set, the respective PTE was
-      written to since step 1.
- 
-+Using IOCTL
-+-----------
-+
-+The IOCTL on the ``/proc/PID/pagemap`` can be can be used to find the dirty pages
-+atomically. The following commands are supported::
-+
-+	MEMWATCH_SD_GET
-+		Get the page offsets which are soft dirty.
-+
-+	MEMWATCH_SD_CLEAR
-+		Clear the pages which are soft dirty.
-+
-+	MEMWATCH_SD_GET_AND_CLEAR
-+		Get and clear the pages which are soft dirty.
-+
-+The struct :c:type:`pagemap_sd_args` is used as the argument. In this struct:
-+
-+  1. The range is specified through start and len. The len argument need not be
-+     the multiple of the page size, but since the information is returned for the
-+     whole pages, len is effectively rounded up to the next multiple of the page
-+     size.
-+
-+  2. The output buffer and size is specified in vec and vec_len. The offsets of
-+     the dirty pages from start are returned in vec. The ioctl returns when the
-+     whole range has been searched or vec is completely filled. The whole range
-+     isn't cleared if vec fills up completely.
-+
-+  3. The flags can be specified in flags field. Currently only one flag,
-+     PAGEMAP_SD_NO_REUSED_REGIONS is supported which can be specified to ignore
-+     the VMA dirty flags for better performance. This flag shows only those pages
-+     dirty which have been written to by the user. All new allocations aren't returned
-+     to be dirty.
-+
-+Explanation
-+-----------
- 
- Internally, to do this tracking, the writable bit is cleared from PTEs
- when the soft-dirty bit is cleared. So, after this, when the task tries to
+Oops. Thanks. I'll fix it.
 -- 
-2.30.2
-
+Isaku Yamahata <isaku.yamahata@gmail.com>
