@@ -2,296 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CBB9ECAAA6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 17:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3775BECAAA6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 17:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344022AbiHZRBK (ORCPT
+        id S1344936AbiHZRBt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 13:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45346 "EHLO
+        Fri, 26 Aug 2022 13:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242917AbiHZRBA (ORCPT
+        with ESMTP id S1344904AbiHZRBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 13:01:00 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6ADC2768
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 10:00:58 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id b5so2499348wrr.5
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 10:00:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=JEhNvpfoNzfDeGW74u3xSSl/MYDbd+EVlekxBTwg3NA=;
-        b=oU00OE4iuFOFTtHrjYbOvALjBpqdpR10gma/0zQjg3/wyIzXAIm5MsztyND0vu+BOj
-         Ps66PxrryfQFWqmvBt87O/ObT403dz5UaUDjrVvtwGVtF9EdYXR8gX8LINqs99/4y7wN
-         A2FnseH1cfFdB8nnaYjBBBsKtwmIhc0vK2/1yY+sndAtB7YlNe0aCOUFBw8YfNqiNhKJ
-         +eeBQwrXAzvDn0ykbNRjeokUDeW1WJgjC3ZRDZk4ctiyUEYH72LNPB7Nr2QS5swcEBaG
-         EBvUn8yJH60WIYLMjU1Rc4fpwwLsE3jDbwIiOHtYpZPtBI//j0O6mMb8effGhTM1uKbY
-         UHPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=JEhNvpfoNzfDeGW74u3xSSl/MYDbd+EVlekxBTwg3NA=;
-        b=K0DhYAhFs+gKUfr9KfYcrOPg81D/Zd99TPm90+JWRt9iL3fVIiB3/UWNPmagHYqxO+
-         8BSftM0wdjVCGiuBahnYxO/xCGLbEv3U+/9bv0qI/+obuCsnkoTOY44XZ4K9peQX0yEb
-         yrxmlNqONW62Ezs2sM/+UJcoy7aOFOkDvXH+8v3o9WVn3xx/7GD+MFNQJ6UlvG5/S7jT
-         Izb8Dc7ZAbsMz3SWTpYubnGTh+jeEpAfV6q0UApIPauPPQ8ev6DEIn/b1OFnpYMnSPOK
-         oZpMTTKOuRYrFyQ6eQyR1Kdw2DVjPao0fDhZtPn57WMomUPg99JUglfamzLx4ci1vt0r
-         feXg==
-X-Gm-Message-State: ACgBeo2vIv0eOTzSQqjKwKdoxYYgeme8LtbSP4mg7OmkGdSU3ooB0dKj
-        TdvgYqzZdhNdc7ydoknjbl06+tr3+7GdappSpwc2YQ==
-X-Google-Smtp-Source: AA6agR5LU69lHRvtd54QfGEgYgVcAUVwOrGekk0JU/wP7Dkli07WC8aI6P7tk1Hn5wItAZKvTpstpMMcfheK//oiLhc=
-X-Received: by 2002:a05:6000:1008:b0:225:58e0:223f with SMTP id
- a8-20020a056000100800b0022558e0223fmr315173wrx.375.1661533256385; Fri, 26 Aug
- 2022 10:00:56 -0700 (PDT)
+        Fri, 26 Aug 2022 13:01:32 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2060.outbound.protection.outlook.com [40.107.244.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B6FC9E86;
+        Fri, 26 Aug 2022 10:01:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m0+EtaKcvVnb+cmffabNnP4Fp4CBd42zbil6oxyhTYwJxNj+fTgcbQV+0l8Q467pXDQL+Wc1+iPCJBV9sQe3Sglh/JaDHUqp8Ts418KThnE3ZDBvb5tPPqju3U6Cq7Ux9NuLKe+GjKn802uFkMBZ2+j96EdrhoQ9CiE5po2UFYlzPpg90BmtNieEgS1/HEUVY3BD2r+jN/AwLToIUPk5rZ7ueHDKmFbOk1OvSzPKU/ouneO9mbxu4gWleWjFHHy1Chaykt6ynw6H+BkMh2+4su3Wx0C1Ek4SfvwiNiQV0P11hehj+YNZVUEkymP79tmeys6pZ6ePZKt6F3s0NPZHDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DED61T5UkJy76XMNgi8aqJ78Tx1z+ZX3gqOWnGwEaTQ=;
+ b=oVBStZNrg5LqcUQgXM/Uw7rm+4OhzTkmaxhkR4F7MIq2L8f9cBuiiPjJUrQ8lTuwlnWSuZwQCUQz9X23KYtej2HSRC0URvtxF43bBf4/iJbryj5SJCWH+JqctpQ855xOKFKSz9v/f0KJSJARMVOTecoBnm17cQ/tdwrEdUHGt3dV7Qk/yQyTeHk3TYbRxB5rD42Q5QVIx413TOoDJxQjBv0sVPN6Lw/l5fUXXwVbX43p8ie9fDt/hE2dB9NPW7c2SAlP4HDRPYZ1JqkXgNoQVQE2CzPHaibdeTp3gI7KuRQGoeTBkJ4h+IGKuw8ehUJhHcmMjOl8niGPC9f+sV78Zg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DED61T5UkJy76XMNgi8aqJ78Tx1z+ZX3gqOWnGwEaTQ=;
+ b=3B1DymodkG0P9mgowBWhjL1TP2+RIuxPC9//4Cw+VVdyBFZJ/xYiacsoGy6R6SVyl1Vt4aZOffeFIZx9Xq57kqWHPru5eNEWkwuaQ1wy//JXOBamQsbyLX/tNIVIkru4zy04+WbWQndv1M1Hkgk+EiPFUPFzgWzl3b4ElCMLpEw=
+Received: from MW4PR03CA0125.namprd03.prod.outlook.com (2603:10b6:303:8c::10)
+ by DM6PR12MB3660.namprd12.prod.outlook.com (2603:10b6:5:1c3::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Fri, 26 Aug
+ 2022 17:01:10 +0000
+Received: from CO1NAM11FT093.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8c:cafe::cf) by MW4PR03CA0125.outlook.office365.com
+ (2603:10b6:303:8c::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14 via Frontend
+ Transport; Fri, 26 Aug 2022 17:01:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT093.mail.protection.outlook.com (10.13.175.59) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5566.15 via Frontend Transport; Fri, 26 Aug 2022 17:01:09 +0000
+Received: from AUS-LX-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 26 Aug
+ 2022 12:01:02 -0500
+From:   Mario Limonciello <mario.limonciello@amd.com>
+To:     <mario.limonciello@amd.com>, Hans de Goede <hdegoede@redhat.com>,
+        "Mark Gross" <markgross@kernel.org>
+CC:     <platform-driver-x86@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] platform/x86: wmi: Lower verbosity of some duplicate GUID messages
+Date:   Fri, 26 Aug 2022 12:00:53 -0500
+Message-ID: <20220826170053.2124-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220824153901.488576-1-irogers@google.com> <20220824153901.488576-16-irogers@google.com>
- <Ywj4vnYp6KGrrwl+@kernel.org>
-In-Reply-To: <Ywj4vnYp6KGrrwl+@kernel.org>
-From:   Ian Rogers <irogers@google.com>
-Date:   Fri, 26 Aug 2022 10:00:43 -0700
-Message-ID: <CAP-5=fU0Kc+ZhVBXWz1zup1wFGUf8EOyaRREmfXDfD+hGGoL6w@mail.gmail.com>
-Subject: Re: [PATCH v3 15/18] perf mutex: Add thread safety annotations
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Dario Petrillo <dario.pk1@gmail.com>,
-        Hewenliang <hewenliang4@huawei.com>,
-        yaowenbin <yaowenbin1@huawei.com>,
-        Wenyu Liu <liuwenyu7@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Pavithra Gurushankar <gpavithrasha@gmail.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        William Cohen <wcohen@redhat.com>,
-        Andres Freund <andres@anarazel.de>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        =?UTF-8?Q?Martin_Li=C5=A1ka?= <mliska@suse.cz>,
-        Colin Ian King <colin.king@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Fangrui Song <maskray@google.com>,
-        Stephane Eranian <eranian@google.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Zechuan Chen <chenzechuan1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Remi Bernon <rbernon@codeweavers.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1755bffa-e6be-4524-caab-08da87849324
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3660:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IzRLHIvZLRTnkbFSKzj2nbCob7xLzRqO+smiOs8pq1TmrV0ZATHmJo1s6M4pgROleupdhqw1WMmqLz9Au/uAC1EtHX96bsGJjbuS49r16/i3kBJRJPS3QMVfg+PWXAAp1CcOiI5yhHwhX/jTp3kzWO3pNiQ/aZig+kPmora2lo5uLecT2VU2tJNx1c8nv+aOwEfy7JXbwFz2MCSnC2vA5ZgR+B7v2lrxrA4ZOPk9RcFczOL1yL1oFcv3zyzKn0gyJOK/oGK6jywd2FzlmLZbtOoHU/d2ZgwFIu2wHZ3PIgvXhdn3kI4fbN11YN4jcByS7WBt4eURpvo4Qmvp0xCkurMjOrQSxLC6iIAEWy7P1NjyPrm92mxzQ0TsEZs9kbCgTHWPJuhiBCBym443AYuCUmkif+IAikVRkE6lK79MdtKP+lBEtGl3tSpfl5w74Y6lUmlbV2g3DiDF+as+TpwspN+ymgf+Tw0Hv0sNPe53L+HTTwUCfg4eSSDQJ0kSwGTAf2hv0gbJFllcBAfMr9WskGEIdOB1zBn2kgwGXKatAmbyMFGZyjG+2M7uHGEy8wsUaelIGEIohpdOROLyjsDdArTZLOv9ZsamAzqgaWMYYVEO+NydrNxXOY09pden5cPrSL2mQ+XbLOEwcjked4OGTyRrmuOYRMJ5yozzmmPsAqU+M0qNcwcssnN3l83PtgHX/to3subbbPRN9DINdGeRyy9CiR86MP8bul85Be8GRjsp7ZJCx74oNqbiSqWBfa0N0pVmeEbhHOZpld6iiTl5HJn/2ZILw/nbLh/LHiBJ0hdYR93rdIrwaNC7kgc94Pa+VvOkwwZmDoOdMKTpneWvoA==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(39860400002)(136003)(346002)(40470700004)(46966006)(36840700001)(41300700001)(5660300002)(8936002)(26005)(356005)(82740400003)(316002)(478600001)(40480700001)(40460700003)(15650500001)(966005)(44832011)(36756003)(7696005)(6666004)(86362001)(16526019)(81166007)(2906002)(1076003)(426003)(2616005)(336012)(70206006)(82310400005)(36860700001)(110136005)(54906003)(186003)(4326008)(8676002)(47076005)(70586007)(83380400001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 17:01:09.8566
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1755bffa-e6be-4524-caab-08da87849324
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT093.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3660
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 9:45 AM Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
->
-> Em Wed, Aug 24, 2022 at 08:38:58AM -0700, Ian Rogers escreveu:
-> > Add thread safety annotations to struct mutex so that when compiled with
-> > clang's -Wthread-safety warnings are generated for erroneous lock
-> > patterns. NO_THREAD_SAFETY_ANALYSIS is needed for
-> > mutex_lock/mutex_unlock as the analysis doesn't under pthread calls.
->
-> So even having the guards checking if the attribute is available it
-> seems at least clang 11.0 is needed, as the "lockable" arg was
-> introduced there:
->
->   37    42.61 fedora:32                     : FAIL clang version 10.0.1 (Fedora 10.0.1-3.fc32)
->     In file included from /git/perf-6.0.0-rc2/tools/perf/util/../ui/ui.h:5:
->     /git/perf-6.0.0-rc2/tools/perf/util/../ui/../util/mutex.h:74:8: error: invalid capability name 'lockable'; capability name must be 'mutex' or 'role' [-Werror,-Wthread-safety-attributes]
->     struct LOCKABLE mutex {
->            ^
->     /git/perf-6.0.0-rc2/tools/perf/util/../ui/../util/mutex.h:35:44: note: expanded from macro 'LOCKABLE'
->     #define LOCKABLE __attribute__((capability("lockable")))
+The WMI subsystem in the kernel currently tracks WMI devices by
+a GUID string not by ACPI device.  The GUID used by the `wmi-bmof`
+module however is available from many devices on nearly every machine.
 
+This originally was though to be a bug, but as it happens on most
+machines it is a design mistake.  As there isn't an active need to
+get the binary from each of the `wmi-bmof` device, special case it
+and lower the message to debugging.  This will help to identify if
+there are other duplicate GUIDs in the wild.
 
-capability("lockable") can just be lockable, the capability
-generalization came in a later clang release.
+If there are and the information contained in them is desirable it
+may be worth considering a design change to the WMI subsystem to
+access those.
 
-That is change:
-#define LOCKABLE __attribute__((capability("lockable")))
-to:
-#define LOCKABLE __attribute__((lockable))
+Link: https://lkml.org/lkml/2017/12/8/913
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/platform/x86/wmi-bmof.c |  2 --
+ drivers/platform/x86/wmi.c      | 10 ++++++++--
+ include/linux/wmi.h             |  2 ++
+ 3 files changed, 10 insertions(+), 4 deletions(-)
 
-and later clangs take the earlier name. Do you want a v5 for this 1 liner?
+diff --git a/drivers/platform/x86/wmi-bmof.c b/drivers/platform/x86/wmi-bmof.c
+index 80137afb9753..af46e9e03376 100644
+--- a/drivers/platform/x86/wmi-bmof.c
++++ b/drivers/platform/x86/wmi-bmof.c
+@@ -18,8 +18,6 @@
+ #include <linux/types.h>
+ #include <linux/wmi.h>
+ 
+-#define WMI_BMOF_GUID "05901221-D566-11D1-B2F0-00A0C9062910"
+-
+ struct bmof_priv {
+ 	union acpi_object *bmofdata;
+ 	struct bin_attribute bmof_bin_attr;
+diff --git a/drivers/platform/x86/wmi.c b/drivers/platform/x86/wmi.c
+index aed293b5af81..d7a1f4bf443b 100644
+--- a/drivers/platform/x86/wmi.c
++++ b/drivers/platform/x86/wmi.c
+@@ -1157,6 +1157,9 @@ static void wmi_free_devices(struct acpi_device *device)
+ static bool guid_already_parsed(struct acpi_device *device, const guid_t *guid)
+ {
+ 	struct wmi_block *wblock;
++	guid_t guid_wmi_bmof;
++
++	guid_parse(WMI_BMOF_GUID, &guid_wmi_bmof);
+ 
+ 	list_for_each_entry(wblock, &wmi_block_list, list) {
+ 		if (guid_equal(&wblock->gblock.guid, guid)) {
+@@ -1166,8 +1169,11 @@ static bool guid_already_parsed(struct acpi_device *device, const guid_t *guid)
+ 			 * we need to suppress GUIDs that are unique on a
+ 			 * given node but duplicated across nodes.
+ 			 */
+-			dev_warn(&device->dev, "duplicate WMI GUID %pUL (first instance was on %s)\n",
+-				 guid, dev_name(&wblock->acpi_device->dev));
++			if (guid_equal(guid, &guid_wmi_bmof))
++				dev_dbg(&device->dev, "duplicate WMI-BMOF GUID found\n");
++			else
++				dev_warn(&device->dev, "duplicate WMI GUID %pUL (first instance was on %s)\n",
++					 guid, dev_name(&wblock->acpi_device->dev));
+ 			return true;
+ 		}
+ 	}
+diff --git a/include/linux/wmi.h b/include/linux/wmi.h
+index b88d7b58e61e..59acdceb4411 100644
+--- a/include/linux/wmi.h
++++ b/include/linux/wmi.h
+@@ -13,6 +13,8 @@
+ #include <linux/mod_devicetable.h>
+ #include <uapi/linux/wmi.h>
+ 
++#define WMI_BMOF_GUID "05901221-D566-11D1-B2F0-00A0C9062910"
++
+ struct wmi_device {
+ 	struct device dev;
+ 
+-- 
+2.34.1
 
-Thanks,
-Ian
-
-> The next fedora releases are ok with it:
->
->   38   124.89 fedora:33                     : Ok   gcc (GCC) 10.3.1 20210422 (Red Hat 10.3.1-1) , clang version 11.0.0 (Fedora 11.0.0-3.fc33)
->   39   132.20 fedora:34                     : Ok   gcc (GCC) 11.3.1 20220421 (Red Hat 11.3.1-2) , clang version 12.0.1 (Fedora 12.0.1-1.fc34)
->   40    21.44 fedora:34-x-ARC-glibc         : Ok   arc-linux-gcc (ARC HS GNU/Linux glibc toolchain 2019.03-rc1) 8.3.1 20190225
->   41    19.43 fedora:34-x-ARC-uClibc        : Ok   arc-linux-gcc (ARCv2 ISA Linux uClibc toolchain 2019.03-rc1) 8.3.1 20190225
->   42   136.33 fedora:35                     : Ok   gcc (GCC) 11.3.1 20220421 (Red Hat 11.3.1-2) , clang version 13.0.0 (Fedora 13.0.0-3.fc35)
->   43   137.73 fedora:36                     : Ok   gcc (GCC) 12.1.1 20220507 (Red Hat 12.1.1-1) , clang version 14.0.0 (Fedora 14.0.0-1.fc36)
->   44   140.45 fedora:37                     : Ok   gcc (GCC) 12.1.1 20220628 (Red Hat 12.1.1-3) , clang version 14.0.5 (Fedora 14.0.5-6.fc37)
->   45   126.80 fedora:38                     : Ok   gcc (GCC) 12.1.1 20220810 (Red Hat 12.1.1-4) , clang version 14.0.5 (Fedora 14.0.5-6.fc38)
->   46   127.00 fedora:rawhide                : Ok   gcc (GCC) 12.1.1 20220810 (Red Hat 12.1.1-4) , clang version 14.0.5 (Fedora 14.0.5-6.fc38)
->
-> Is there a way to check if a "capability" is available for the
-> attribute? Otherwise we can additionally check the clang version?
->
-> For my tests I'll make clang 11.0 to be the oldest supported compiler
-> (i.e. just disable building with older versions), but wanted to let you
-> know since you try to check if the attribute is available and fallback
-> to doing nothing in that case.
->
-> - Arnaldo
->
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/util/mutex.c |  2 ++
-> >  tools/perf/util/mutex.h | 72 ++++++++++++++++++++++++++++++++++++++---
-> >  2 files changed, 69 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/tools/perf/util/mutex.c b/tools/perf/util/mutex.c
-> > index 892294ac1769..ec813093276d 100644
-> > --- a/tools/perf/util/mutex.c
-> > +++ b/tools/perf/util/mutex.c
-> > @@ -50,11 +50,13 @@ void mutex_destroy(struct mutex *mtx)
-> >  }
-> >
-> >  void mutex_lock(struct mutex *mtx)
-> > +     NO_THREAD_SAFETY_ANALYSIS
-> >  {
-> >       CHECK_ERR(pthread_mutex_lock(&mtx->lock));
-> >  }
-> >
-> >  void mutex_unlock(struct mutex *mtx)
-> > +     NO_THREAD_SAFETY_ANALYSIS
-> >  {
-> >       CHECK_ERR(pthread_mutex_unlock(&mtx->lock));
-> >  }
-> > diff --git a/tools/perf/util/mutex.h b/tools/perf/util/mutex.h
-> > index c9e110a2b55e..48a2d87598f0 100644
-> > --- a/tools/perf/util/mutex.h
-> > +++ b/tools/perf/util/mutex.h
-> > @@ -5,11 +5,73 @@
-> >  #include <pthread.h>
-> >  #include <stdbool.h>
-> >
-> > +/*
-> > + * A function-like feature checking macro that is a wrapper around
-> > + * `__has_attribute`, which is defined by GCC 5+ and Clang and evaluates to a
-> > + * nonzero constant integer if the attribute is supported or 0 if not.
-> > + */
-> > +#ifdef __has_attribute
-> > +#define HAVE_ATTRIBUTE(x) __has_attribute(x)
-> > +#else
-> > +#define HAVE_ATTRIBUTE(x) 0
-> > +#endif
-> > +
-> > +
-> > +#if HAVE_ATTRIBUTE(guarded_by) && HAVE_ATTRIBUTE(pt_guarded_by) && \
-> > +     HAVE_ATTRIBUTE(lockable) && HAVE_ATTRIBUTE(exclusive_lock_function) && \
-> > +     HAVE_ATTRIBUTE(exclusive_trylock_function) && HAVE_ATTRIBUTE(exclusive_locks_required) && \
-> > +     HAVE_ATTRIBUTE(no_thread_safety_analysis)
-> > +
-> > +/* Documents if a shared field or global variable needs to be protected by a mutex. */
-> > +#define GUARDED_BY(x) __attribute__((guarded_by(x)))
-> > +
-> > +/*
-> > + * Documents if the memory location pointed to by a pointer should be guarded by
-> > + * a mutex when dereferencing the pointer.
-> > + */
-> > +#define PT_GUARDED_BY(x) __attribute__((pt_guarded_by(x)))
-> > +
-> > +/* Documents if a type is a lockable type. */
-> > +#define LOCKABLE __attribute__((capability("lockable")))
-> > +
-> > +/* Documents functions that acquire a lock in the body of a function, and do not release it. */
-> > +#define EXCLUSIVE_LOCK_FUNCTION(...)  __attribute__((exclusive_lock_function(__VA_ARGS__)))
-> > +
-> > +/*
-> > + * Documents functions that expect a lock to be held on entry to the function,
-> > + * and release it in the body of the function.
-> > + */
-> > +#define UNLOCK_FUNCTION(...) __attribute__((unlock_function(__VA_ARGS__)))
-> > +
-> > +/* Documents functions that try to acquire a lock, and return success or failure. */
-> > +#define EXCLUSIVE_TRYLOCK_FUNCTION(...) \
-> > +     __attribute__((exclusive_trylock_function(__VA_ARGS__)))
-> > +
-> > +
-> > +/* Documents a function that expects a mutex to be held prior to entry. */
-> > +#define EXCLUSIVE_LOCKS_REQUIRED(...) __attribute__((exclusive_locks_required(__VA_ARGS__)))
-> > +
-> > +/* Turns off thread safety checking within the body of a particular function. */
-> > +#define NO_THREAD_SAFETY_ANALYSIS __attribute__((no_thread_safety_analysis))
-> > +
-> > +#else
-> > +
-> > +#define GUARDED_BY(x)
-> > +#define PT_GUARDED_BY(x)
-> > +#define LOCKABLE
-> > +#define EXCLUSIVE_LOCK_FUNCTION(...)
-> > +#define UNLOCK_FUNCTION(...)
-> > +#define EXCLUSIVE_TRYLOCK_FUNCTION(...)
-> > +#define EXCLUSIVE_LOCKS_REQUIRED(...)
-> > +#define NO_THREAD_SAFETY_ANALYSIS
-> > +
-> > +#endif
-> > +
-> >  /*
-> >   * A wrapper around the mutex implementation that allows perf to error check
-> >   * usage, etc.
-> >   */
-> > -struct mutex {
-> > +struct LOCKABLE mutex {
-> >       pthread_mutex_t lock;
-> >  };
-> >
-> > @@ -27,9 +89,9 @@ void mutex_init(struct mutex *mtx);
-> >  void mutex_init_pshared(struct mutex *mtx);
-> >  void mutex_destroy(struct mutex *mtx);
-> >
-> > -void mutex_lock(struct mutex *mtx);
-> > -void mutex_unlock(struct mutex *mtx);
-> > -bool mutex_trylock(struct mutex *mtx);
-> > +void mutex_lock(struct mutex *mtx) EXCLUSIVE_LOCK_FUNCTION(*mtx);
-> > +void mutex_unlock(struct mutex *mtx) UNLOCK_FUNCTION(*mtx);
-> > +bool mutex_trylock(struct mutex *mtx) EXCLUSIVE_TRYLOCK_FUNCTION(true, *mtx);
-> >
-> >  /* Default initialize the cond struct. */
-> >  void cond_init(struct cond *cnd);
-> > @@ -40,7 +102,7 @@ void cond_init(struct cond *cnd);
-> >  void cond_init_pshared(struct cond *cnd);
-> >  void cond_destroy(struct cond *cnd);
-> >
-> > -void cond_wait(struct cond *cnd, struct mutex *mtx);
-> > +void cond_wait(struct cond *cnd, struct mutex *mtx) EXCLUSIVE_LOCKS_REQUIRED(mtx);
-> >  void cond_signal(struct cond *cnd);
-> >  void cond_broadcast(struct cond *cnd);
-> >
-> > --
-> > 2.37.2.609.g9ff673ca1a-goog
->
-> --
->
-> - Arnaldo
