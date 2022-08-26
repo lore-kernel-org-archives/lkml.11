@@ -2,104 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4E7CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB5CECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343500AbiHZJRW (ORCPT
+        id S1343513AbiHZJRZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 05:17:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        Fri, 26 Aug 2022 05:17:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245675AbiHZJRT (ORCPT
+        with ESMTP id S245688AbiHZJRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 05:17:19 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644D1D598F
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:17:17 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id bt10so1236596lfb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:17:17 -0700 (PDT)
+        Fri, 26 Aug 2022 05:17:21 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4727ED6BA4
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:17:20 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id l23so1012454lji.1
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:17:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=kWwbtT/54FyUEO6wWPpRIwL8GLUA5z0zpRQ+oeLgI4Q=;
-        b=uJjezohYlWYNbj23GA51zYTVzXsn8I7264i22VBOIJep8GJraT5Hxo5M2oUcFlo9t8
-         miozsWwpM3suEEtBt/XymJNCw64FRkiKlXgLuk+td0iSoBnLuR3IjxKDuSMEg1oOIAx2
-         YaYjoRrDhOf1VkNfbMKgnBkwWrze5ZOktyz2+9aItoZaAoCq3E50LjaR4Vd7q3llBgek
-         uymRe4/ctK+sj5GKuRojGTMF93WUrWkgQ+kaPtPbme2aSJoAJvPusqJ8rkCY3JZDJVRD
-         mD23zRydF7fb5y61iBYTCxjfz2nhqt9YuXXWADe6g2P+GZhJGHmj6S8qeAZ9UvB/QttY
-         masg==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=gYsFMN+g+GxD6rUR2apTN69OkkHzWFQoxe7BTU96rQs=;
+        b=AKMQhvqPLk9fWOGayRMjeoSp/FWWIStRNk9RBugNq/YDB/80F8SUMqlSv1kBM/Z5Vw
+         o80cWHpHnSNvQXgpTujv0Ymga4WiYey1e75FSuyZMjzDjbvD592zd0BD+7UNyTU0eDjI
+         wF6ggU6GDy2hdDgI9oKox8ErkFRWppc0a2jvBdqIusPPjJMoiwJFf2UBUMOjXky3quGH
+         uSMszJXOJ1f/sBmQmVNS2wAfeXCC+swXcxdTEn9j0++NsqjUT2eyIRSjtTfeEcV4DDri
+         8uxqav722at4HDeFrkj0Bp7OWpifsL5OI9veT8XaCT22nKKLO2LJFYmnCw0QTPMYQ93Z
+         pRAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=kWwbtT/54FyUEO6wWPpRIwL8GLUA5z0zpRQ+oeLgI4Q=;
-        b=JpZd5jCnrfB6hra5A4AgLOH5YHU5lHh/WUcbsPkQ7jlbGZCIkSsK/da6Kf/uOz0XIy
-         OD6kKrgk1ztaTYOdhv490uytQUEcbo9SNoxcK+LX47aAexXRnZCnfZLAP7iUgDaSN734
-         7dv8smUtWQDtJZ0fcLBUC/hV/668hKZEt5gpRlJ9uRuk11mEjxwawJ6v/n8bsSS43G4b
-         dHjQQDrdiAEVcifWSWjvGukcwvUYpOTsuicgumw99bYo5BAILQ1G4Bg8z+5WMppVcLUn
-         owk+rWzv6yGTnMDefhDNOb0foLk8ftTwzp2+Qha0mSQjpQT6pEkXlHs7Hvpdlgra3QkG
-         Ndvg==
-X-Gm-Message-State: ACgBeo2Rwk+UUJyrqyLV7NscHCbn1DL9Z53IuC94RDMdsxDaUnw93y2e
-        F8t69HS024WKDmxJmSsbg2iL/VI0ZN9lhwXVpSeKaQ==
-X-Google-Smtp-Source: AA6agR6c3bAZ3/2TopOviym18sXnze1yRcZBfeJcwIh55DYHGT4eqQP86GgpcX4QIr2GKajCvRrr7MX6kWdrKaBnJ2o=
-X-Received: by 2002:a05:6512:6ca:b0:492:ef21:c085 with SMTP id
- u10-20020a05651206ca00b00492ef21c085mr2340299lff.71.1661505435752; Fri, 26
- Aug 2022 02:17:15 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=gYsFMN+g+GxD6rUR2apTN69OkkHzWFQoxe7BTU96rQs=;
+        b=Zz5PTNrWuUgfkNR77p3Jt3hIudfh4T1lBu6v1K0bk1iOwumkQST2tb5SrvqLB9VR1I
+         VzB++3l1bbN+NEMsB4GKoI/MIHyHjIuP1neqevl+dkvJ6+dzGxbQW0k6KJ4g4zJDmE2m
+         qpyB6QJD1Of3FHduh43LlTFMU0rZwTQvlp0/ACfK0j2zhlxb59v9oFZ9iL/WNu5C4ic8
+         7qdowvUCF8qPbtFIC60Gm7LS2gvLIr/Nt+iH+3wCxI1a/vkE77Uz4EwakM9BESAm8bKZ
+         2xIlTpwQOs0j9LdQV8AVbH8P9q8GtYoBq6iod0YLYepOph9k/wMFzJxl3xSLEoqjksal
+         sT8w==
+X-Gm-Message-State: ACgBeo1q3vWXjVt4fL9MIYSnQRJkRPBliOVfnHIE/CRJfkDKv5IIa4Rg
+        BWCjrFKYf4/MBjFUL/fWLqbTvw==
+X-Google-Smtp-Source: AA6agR7HfMg53H9SWry1dNNIM8pJBfY/YwO3/DSSgcw7FpOTWrAGwbJuYep+jTOr8CaFXKheTFyOqA==
+X-Received: by 2002:a2e:b711:0:b0:261:d3b3:706e with SMTP id j17-20020a2eb711000000b00261d3b3706emr1908025ljo.381.1661505438506;
+        Fri, 26 Aug 2022 02:17:18 -0700 (PDT)
+Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
+        by smtp.gmail.com with ESMTPSA id bi19-20020a05651c231300b00261e7e7b698sm386722ljb.123.2022.08.26.02.17.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 02:17:17 -0700 (PDT)
+Message-ID: <56360b65-a704-d754-53f8-e6b7cb89756f@linaro.org>
+Date:   Fri, 26 Aug 2022 12:17:16 +0300
 MIME-Version: 1.0
-References: <20220819190729.32358-1-a-nandan@ti.com> <20220819190729.32358-3-a-nandan@ti.com>
-In-Reply-To: <20220819190729.32358-3-a-nandan@ti.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 26 Aug 2022 11:16:38 +0200
-Message-ID: <CAPDyKFpn+3MUA-Vp9cnY8a=rpg0kLQk0_c5+4=FgF0FbW7mxLg@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: mmc: Fix 'dma-coherent' was unexpected
-To:     Apurva Nandan <a-nandan@ti.com>
-Cc:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v3 1/2] dt-bindings: edac: Add bindings for Xilinx ZynqMP
+ OCM
+Content-Language: en-US
+To:     Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Hari Nagalla <hnagalla@ti.com>
-Content-Type: text/plain; charset="UTF-8"
+        Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        saikrishna12468@gmail.com, git@amd.com,
+        Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+References: <20220826075332.30609-1-sai.krishna.potthuri@amd.com>
+ <20220826075332.30609-2-sai.krishna.potthuri@amd.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220826075332.30609-2-sai.krishna.potthuri@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 19 Aug 2022 at 21:07, Apurva Nandan <a-nandan@ti.com> wrote:
->
-> dma-coherent is mentioned in almost all TI K3 platform mmc
-> nodes. Fix warning generated due to its missing match in
-> yaml schema.
->
-> Signed-off-by: Apurva Nandan <a-nandan@ti.com>
-
-Applied for next, thanks!
-
-Kind regards
-Uffe
+On 26/08/2022 10:53, Sai Krishna Potthuri wrote:
+> From: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> 
+> Add bindings for Xilinx ZynqMP OCM controller.
+> 
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
 
 
-> ---
->  Documentation/devicetree/bindings/mmc/sdhci-am654.yaml | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml b/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml
-> index 0ab07759b472..ea9121fb188d 100644
-> --- a/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/sdhci-am654.yaml
-> @@ -51,6 +51,9 @@ properties:
->
->    sdhci-caps-mask: true
->
-> +  dma-coherent:
-> +    type: boolean
-> +
->    # PHY output tap delays:
->    # Used to delay the data valid window and align it to the sampling clock.
->    # Binding needs to be provided for each supported speed mode otherwise the
-> --
-> 2.17.1
->
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
