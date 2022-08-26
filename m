@@ -2,102 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 037FEECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 22:57:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD172ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 23:04:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345380AbiHZW5Z (ORCPT
+        id S1345424AbiHZXEb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 18:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
+        Fri, 26 Aug 2022 19:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231738AbiHZW5W (ORCPT
+        with ESMTP id S231738AbiHZXE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 18:57:22 -0400
-X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 26 Aug 2022 15:57:20 PDT
-Received: from smtp1.tecnico.ulisboa.pt (smtp1.tecnico.ulisboa.pt [IPv6:2001:690:2100:1::15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D410FE9906;
-        Fri, 26 Aug 2022 15:57:20 -0700 (PDT)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTP id 1F5D96007C1E;
-        Fri, 26 Aug 2022 23:02:20 +0100 (WEST)
-X-Virus-Scanned: by amavisd-new-2.11.0 (20160426) (Debian) at
-        tecnico.ulisboa.pt
-Received: from smtp1.tecnico.ulisboa.pt ([127.0.0.1])
-        by localhost (smtp1.tecnico.ulisboa.pt [127.0.0.1]) (amavisd-new, port 10025)
-        with LMTP id 6_Qd847GxDqz; Fri, 26 Aug 2022 23:02:17 +0100 (WEST)
-Received: from mail2.tecnico.ulisboa.pt (mail2.ist.utl.pt [IPv6:2001:690:2100:1::4750:b5b4])
-        by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTPS id AA140600087B;
-        Fri, 26 Aug 2022 23:02:17 +0100 (WEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tecnico.ulisboa.pt;
-        s=mail; t=1661551337;
-        bh=pBW9/6ZWzjlfBYVewQv7OgakWHFw5D0L/WyojUAzzW8=;
-        h=Date:From:To:Cc:Subject;
-        b=aAbu+86kadOAXTMTHYuRWjd+giU5LCOkKiwMgs3nOLA0kcimEkbuY1JZdpbqmXbwz
-         0tGzyOLMYZ8Hry0HmERNOljDb0PI4pBayspiCfH94v9nyTLXnK3NpUDA1sbztAbsrY
-         tjWULiT5kWcoZswmixuru0Nj7dKKQ3JCLbxXzAog=
-Received: from archlinux (unknown [IPv6:2001:818:dcb5:dc00:7a88:7f12:8ed8:518d])
-        (Authenticated sender: ist187313)
-        by mail2.tecnico.ulisboa.pt (Postfix) with ESMTPSA id 0B7385600BD;
-        Fri, 26 Aug 2022 23:02:17 +0100 (WEST)
-Date:   Fri, 26 Aug 2022 23:02:18 +0100
-From:   Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
-To:     diogo.ivo@tecnico.ulisboa.pt
-Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, arnd@arndb.de,
-        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: tegra: smaug: Add Bluetooth node
-Message-ID: <20220826220218.abgj6zplibwqvqc7@archlinux>
+        Fri, 26 Aug 2022 19:04:29 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FD9E831A
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 16:04:28 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id y141so2875802pfb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 16:04:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=YVzdgHOnLRCNMj/Dtne4+E3xVYm73UAJFVxl5UM+dlI=;
+        b=OR3CneSkHlCbKJtEcgpCri2+tewlhv5awjvREMp6AT1onwJcFk7obSWy94WM0oQrpv
+         yCATqf2ZpkIPoo+j6Ds7kJ5gnpYDSczm0KyMMyXxOOo6UaMALxVVtM1PNYNhFI+atjkS
+         +dHnatNk6iEnWkWjMzBIsLR24kZQ0jh2iwnFXHrmGWcWe/+lhPKX1duhOpUivlMPuUXZ
+         edOMppqD/Ur7AN6XS51CbAoQqorPrf1MLHB6ypbPsLAe4I7t+hx22seAzy1OfgFCo8EN
+         EcyLfxfloosq9fYL8FFTKEZnWST3q4frXOvZ3gNSC0P3Tmq/IZ1OmrJHvw9tCR9X3YIs
+         9SjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=YVzdgHOnLRCNMj/Dtne4+E3xVYm73UAJFVxl5UM+dlI=;
+        b=EgpjCmR90PACDghTySavUAauEIz7yxW8FgRWeSNehmV3gRJKsvEPtMoIKJISNDYfYM
+         WE1VQcCDYiTKa5G3SzoVXGfkU8AJ4sOMVGG+VYYRVqjazCIHacLbS3eqqfA3KwIlCsas
+         7/qFNa19Mh8F3xb4Vv/5eb6WdTUoZF/3XB9fMbBFYrqplWjyMdByt2kp0Q2rdjZ8nPrk
+         3FNKkYZj7eHIj07UcOL+vVeSG0R9BfZuMKZlMOnlsml32vzH/eEyUB7zP6ZdbBGpNifI
+         2t1HRpDRA1JT/cFWQzseg3Hf7M80QawCEjzBagG2xvpz6FSIdawV55ahJAjQlQLZR+6m
+         CSqQ==
+X-Gm-Message-State: ACgBeo2JxbabdoIASneKQhU/uKbquxDyh5GT/4zEH6nfE9SApzUHamAY
+        zynf1SQru3ZiRdvdyIysjWMx9Ojvkcf5tpaDXC/aBQ==
+X-Google-Smtp-Source: AA6agR5Btn0kkT/W3Cm9G0jt5/A14WqjaQI43EO2Vm1tLNohfq+llHJYBMuDof+O/M6OBJ6FLaaXr5STR5kpKb39RGo=
+X-Received: by 2002:a05:6a00:1d1a:b0:537:d750:65b5 with SMTP id
+ a26-20020a056a001d1a00b00537d75065b5mr3114362pfx.85.1661555067845; Fri, 26
+ Aug 2022 16:04:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220826224812.550793-1-shakeelb@google.com>
+In-Reply-To: <20220826224812.550793-1-shakeelb@google.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Fri, 26 Aug 2022 16:04:16 -0700
+Message-ID: <CALvZod6HwDR0w4fYPkoKJeyoM6_DbHvrrHooeY+SaDAcpjjXxA@mail.gmail.com>
+Subject: Re: [PATCH] mm: deduplicate cacheline padding code
+To:     Michal Hocko <mhocko@kernel.org>, Feng Tang <feng.tang@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Google Pixel C contains a BRCM4354 Bluetooth module.
-Add a DT node for it. Tested on Pixel C.
+On Fri, Aug 26, 2022 at 3:48 PM Shakeel Butt <shakeelb@google.com> wrote:
+>
+[...]
+>         /* Write-intensive fields used from the page allocator */
+> -       ZONE_PADDING(_pad1_)
+> +       CACHELINE_PADDING(_pad1_)
 
-Signed-off-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
----
- arch/arm64/boot/dts/nvidia/tegra210-smaug.dts | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+This needs a semicolon with the common definition. (I had it in the
+definition but checkpatch made me remove it just before sending).
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts b/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
-index 8a8ca9c48f42..afd05391e78a 100644
---- a/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
-+++ b/arch/arm64/boot/dts/nvidia/tegra210-smaug.dts
-@@ -17,6 +17,7 @@ / {
- 
- 	aliases {
- 		serial0 = &uarta;
-+		serial3 = &uartd;
- 	};
- 
- 	chosen {
-@@ -1340,6 +1341,22 @@ serial@70006000 {
- 		status = "okay";
- 	};
- 
-+	uartd: serial@70006300 {
-+		compatible = "nvidia,tegra30-hsuart";
-+		status = "okay";
-+
-+		bluetooth {
-+			compatible = "brcm,bcm43540-bt";
-+			max-speed = <4000000>;
-+			brcm,bt-pcm-int-params = [01 02 00 01 01];
-+			device-wakeup-gpios = <&gpio TEGRA_GPIO(H, 3) GPIO_ACTIVE_HIGH>;
-+			shutdown-gpios = <&gpio TEGRA_GPIO(H, 4) GPIO_ACTIVE_HIGH>;
-+			interrupt-parent = <&gpio>;
-+			interrupts = <TEGRA_GPIO(H, 5) IRQ_TYPE_EDGE_FALLING>;
-+			interrupt-names = "host-wakeup";
-+		};
-+	};
-+
- 	i2c@7000c400 {
- 		status = "okay";
- 		clock-frequency = <1000000>;
--- 
-2.37.2
-
+Sending a v2.
