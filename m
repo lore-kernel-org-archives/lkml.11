@@ -2,93 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52954ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7131BECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244246AbiHZCBu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44556 "EHLO
+        id S244655AbiHZCCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230259AbiHZCBs (ORCPT
+        with ESMTP id S244551AbiHZCCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:01:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE951C8751
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 19:01:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4043861DEE
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:01:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67758C433C1;
-        Fri, 26 Aug 2022 02:01:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1661479306;
-        bh=4G/cK7OUMoRHnhqGTeJLjX2Y5vRMe8slDX1/cmfVkeY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V8CpFKKNELxxzF8fIpK3IzIyAi1AsgXz3i924nRm4BCubiECS+CJ8BCRrNEIYPwAI
-         lUoL9swrT88hvd1jM5Z6BauMTpd9qAEc5YUSYpj2g3sYh2GY83mGUKYQicNUfKqF78
-         zfJTe/fQxANHNN7IgWOLuCM1mqQJXAMkrhNKzvVE=
-Date:   Thu, 25 Aug 2022 19:01:45 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Liu Shixin <liushixin2@huawei.com>
-Cc:     Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Vitaly Wool <vitaly.wool@konsulko.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next 2/3] mm/zswap: delay the initializaton of zswap
- until the first enablement
-Message-Id: <20220825190145.b0fc3267e16705866660f947@linux-foundation.org>
-In-Reply-To: <20220825142037.3214152-3-liushixin2@huawei.com>
-References: <20220825142037.3214152-1-liushixin2@huawei.com>
-        <20220825142037.3214152-3-liushixin2@huawei.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 25 Aug 2022 22:02:42 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60B9ACAC94;
+        Thu, 25 Aug 2022 19:02:41 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27Q21RKt8027399, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27Q21RKt8027399
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Fri, 26 Aug 2022 10:01:27 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 26 Aug 2022 10:01:42 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Fri, 26 Aug 2022 10:01:42 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97]) by
+ RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97%5]) with mapi id
+ 15.01.2375.007; Fri, 26 Aug 2022 10:01:42 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        Bernie Huang <phhuang@realtek.com>
+Subject: RE: [PATCH -next] wifi: rtw88: add missing destroy_workqueue() on error path in rtw_core_init()
+Thread-Topic: [PATCH -next] wifi: rtw88: add missing destroy_workqueue() on
+ error path in rtw_core_init()
+Thread-Index: AQHYuIbMIe6iUQ1BjUawKWBN0SU+yq3AWAlQ//+O9oCAAIaswA==
+Date:   Fri, 26 Aug 2022 02:01:42 +0000
+Message-ID: <11d0e70bdadf491fab1586a8b4ef199e@realtek.com>
+References: <20220825133731.1877569-1-yangyingliang@huawei.com>
+ <2f08c305927a43d78d6ab86468609288@realtek.com>
+ <39e21608-c7e2-422a-1e05-e7ebb250ecac@huawei.com>
+In-Reply-To: <39e21608-c7e2-422a-1e05-e7ebb250ecac@huawei.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzgvMjUg5LiL5Y2IIDExOjUwOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 25 Aug 2022 22:20:36 +0800 Liu Shixin <liushixin2@huawei.com> wrote:
-
-> In the initialization of zswap, about 18MB memory will be allocated for
-> zswap_pool in my machine. Since not all users use zswap, the memory may be
-> wasted. Save the memory for these users by delaying the initialization of
-> zswap to first enablement.
-> 
-> ...
->
-> +static int __init init_zswap(void)
-> +{
-> +	/* skip init if zswap is disabled when system startup */
-> +	if (!zswap_enabled)
-> +		return 0;
-> +	return zswap_setup();
-> +}
-> +
-
-I can't resist.
-
---- a/mm/zswap.c~mm-zswap-delay-the-initializaton-of-zswap-until-the-first-enablement-fix
-+++ a/mm/zswap.c
-@@ -1556,7 +1556,7 @@ cache_fail:
- 	return -ENOMEM;
- }
- 
--static int __init init_zswap(void)
-+static int __init zswap_init(void)
- {
- 	/* skip init if zswap is disabled when system startup */
- 	if (!zswap_enabled)
-@@ -1565,7 +1565,7 @@ static int __init init_zswap(void)
- }
- 
- /* must be late so crypto has time to come up */
--late_initcall(init_zswap);
-+late_initcall(zswap_init);
- 
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Seth Jennings <sjennings@variantweb.net>");
-
-It's the usual way and makes things more consistent.
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IFlhbmcgWWluZ2xpYW5nIDx5
+YW5neWluZ2xpYW5nQGh1YXdlaS5jb20+DQo+IFNlbnQ6IEZyaWRheSwgQXVndXN0IDI2LCAyMDIy
+IDk6NTcgQU0NCj4gVG86IFBpbmctS2UgU2hpaCA8cGtzaGloQHJlYWx0ZWsuY29tPjsgbGludXgt
+a2VybmVsQHZnZXIua2VybmVsLm9yZzsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4gbGludXgt
+d2lyZWxlc3NAdmdlci5rZXJuZWwub3JnDQo+IENjOiB0b255MDYyMGVtbWFAZ21haWwuY29tOyBr
+dmFsb0BrZXJuZWwub3JnOyBCZXJuaWUgSHVhbmcgPHBoaHVhbmdAcmVhbHRlay5jb20+DQo+IFN1
+YmplY3Q6IFJlOiBbUEFUQ0ggLW5leHRdIHdpZmk6IHJ0dzg4OiBhZGQgbWlzc2luZyBkZXN0cm95
+X3dvcmtxdWV1ZSgpIG9uIGVycm9yIHBhdGggaW4gcnR3X2NvcmVfaW5pdCgpDQo+IA0KPiBIaSwN
+Cj4gDQo+IE9uIDIwMjIvOC8yNiA4OjQ0LCBQaW5nLUtlIFNoaWggd3JvdGU6DQo+ID4+IC0tLS0t
+T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IFlhbmcgWWluZ2xpYW5nIDx5YW5neWlu
+Z2xpYW5nQGh1YXdlaS5jb20+DQo+ID4+IFNlbnQ6IFRodXJzZGF5LCBBdWd1c3QgMjUsIDIwMjIg
+OTozOCBQTQ0KPiA+PiBUbzogbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbmV0ZGV2QHZn
+ZXIua2VybmVsLm9yZzsgbGludXgtd2lyZWxlc3NAdmdlci5rZXJuZWwub3JnDQo+ID4+IENjOiB0
+b255MDYyMGVtbWFAZ21haWwuY29tOyBrdmFsb0BrZXJuZWwub3JnOyBCZXJuaWUgSHVhbmcgPHBo
+aHVhbmdAcmVhbHRlay5jb20+DQo+ID4+IFN1YmplY3Q6IFtQQVRDSCAtbmV4dF0gd2lmaTogcnR3
+ODg6IGFkZCBtaXNzaW5nIGRlc3Ryb3lfd29ya3F1ZXVlKCkgb24gZXJyb3IgcGF0aCBpbiBydHdf
+Y29yZV9pbml0KCkNCj4gPj4NCj4gPj4gQWRkIHRoZSBtaXNzaW5nIGRlc3Ryb3lfd29ya3F1ZXVl
+KCkgYmVmb3JlIHJldHVybiBmcm9tIHJ0d19jb3JlX2luaXQoKQ0KPiA+PiBpbiBlcnJvciBwYXRo
+Lg0KPiA+Pg0KPiA+PiBGaXhlczogZmUxMDE3MTZjN2M5ICgicnR3ODg6IHJlcGxhY2UgdHggdGFz
+a2xldCB3aXRoIHdvcmsgcXVldWUiKQ0KPiA+PiBTaWduZWQtb2ZmLWJ5OiBZYW5nIFlpbmdsaWFu
+ZyA8eWFuZ3lpbmdsaWFuZ0BodWF3ZWkuY29tPg0KPiA+PiAtLS0NCj4gPj4gICBkcml2ZXJzL25l
+dC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L21haW4uYyB8IDggKysrKysrLS0NCj4gPj4gICAxIGZp
+bGUgY2hhbmdlZCwgNiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQ0KPiA+Pg0KPiA+PiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9tYWluLmMgYi9k
+cml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L21haW4uYw0KPiA+PiBpbmRleCA3OTBk
+Y2ZlZDExMjUuLjU1NzIxM2U1Mjc2MSAxMDA2NDQNCj4gPj4gLS0tIGEvZHJpdmVycy9uZXQvd2ly
+ZWxlc3MvcmVhbHRlay9ydHc4OC9tYWluLmMNCj4gPj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxl
+c3MvcmVhbHRlay9ydHc4OC9tYWluLmMNCj4gPj4gQEAgLTIwOTQsNyArMjA5NCw3IEBAIGludCBy
+dHdfY29yZV9pbml0KHN0cnVjdCBydHdfZGV2ICpydHdkZXYpDQo+ID4+ICAgCXJldCA9IHJ0d19s
+b2FkX2Zpcm13YXJlKHJ0d2RldiwgUlRXX05PUk1BTF9GVyk7DQo+ID4+ICAgCWlmIChyZXQpIHsN
+Cj4gPj4gICAJCXJ0d193YXJuKHJ0d2RldiwgIm5vIGZpcm13YXJlIGxvYWRlZFxuIik7DQo+ID4+
+IC0JCXJldHVybiByZXQ7DQo+ID4+ICsJCWdvdG8gZGVzdHJveV93b3JrcXVldWU7DQo+ID4+ICAg
+CX0NCj4gPj4NCj4gPj4gICAJaWYgKGNoaXAtPndvd19md19uYW1lKSB7DQo+ID4+IEBAIC0yMTA0
+LDExICsyMTA0LDE1IEBAIGludCBydHdfY29yZV9pbml0KHN0cnVjdCBydHdfZGV2ICpydHdkZXYp
+DQo+ID4+ICAgCQkJd2FpdF9mb3JfY29tcGxldGlvbigmcnR3ZGV2LT5mdy5jb21wbGV0aW9uKTsN
+Cj4gPj4gICAJCQlpZiAocnR3ZGV2LT5mdy5maXJtd2FyZSkNCj4gPj4gICAJCQkJcmVsZWFzZV9m
+aXJtd2FyZShydHdkZXYtPmZ3LmZpcm13YXJlKTsNCj4gPj4gLQkJCXJldHVybiByZXQ7DQo+ID4+
+ICsJCQlnb3RvIGRlc3Ryb3lfd29ya3F1ZXVlOw0KPiA+PiAgIAkJfQ0KPiA+PiAgIAl9DQo+ID4+
+DQo+ID4+ICAgCXJldHVybiAwOw0KPiA+PiArDQo+ID4+ICtkZXN0cm95X3dvcmtxdWV1ZToNCj4g
+PiBJdCdzIG5vdCBzbyBnb29kIHRoYXQgdGhlIGxhYmVsICdkZXN0cm95X3dvcmtxdWV1ZScgaXMg
+dGhlIHNhbWUgYXMgZnVuY3Rpb24gbmFtZS4NCj4gPiBJIHN1Z2dlc3QgdG8ganVzdCB1c2UgJ291
+dCcgaW5zdGVhZC4NCj4gSG93IGFib3V0ICdvdXRfZGVzdG9yeV93b3JrcXVldWUnID8NCj4gDQoN
+ClNpbmNlIHRoZXJlIGlzIG9ubHkgc2luZ2xlIG9uZSBlcnJvciBjYXNlIHdlIG5lZWQgdG8gaGFu
+ZGxlLCB1c2luZyAnb3V0Jw0KaXNuJ3QgYW1iaWd1b3VzLg0KDQoNCg==
