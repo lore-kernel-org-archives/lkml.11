@@ -2,116 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC585ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C75ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230307AbiHZMAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:00:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49486 "EHLO
+        id S241159AbiHZMCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245496AbiHZMA0 (ORCPT
+        with ESMTP id S229752AbiHZMCh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:00:26 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DCB723BFE
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 05:00:25 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id cu2so2797815ejb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 05:00:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:from:to:cc;
-        bh=MxGGd+3msz7Zn8awEDtaAUBprmyOYrYaH1QuR+N4/7o=;
-        b=Gpo7N7AFg7ypzz4ziWV5/xqGFn6VPSfepZxdPxvYxjBT44+e2TYfUynhvuN4bgXRS/
-         Y1lMBDwSuSvsL4hGB4NVY0v3EWF3sT7n/bwVeuIOO0ODHJdT0/abtE6mRH2DymksTXXO
-         r1ObcZJ+e7Ndu8lJcEp/bXAX2zEQ1GVh4vtmyJ2otqk5MeOeGigP0uXSnvUviUdyKMUb
-         9msUNjrYLw+GCjpRbA06oyQANC2DsCXnYbXtaRvOYkeCMk/UHYKt4JhjPsqcwksrWypU
-         p8o94YuVPtobGYa1F4jwdkuKvP6bhOSsOcBBEtFTo7INwdfxMTydzpLeyUkWamzDAgnB
-         0w8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=MxGGd+3msz7Zn8awEDtaAUBprmyOYrYaH1QuR+N4/7o=;
-        b=AuNabCvj97WT2kjGHECGKBRV5DZix7aAac2zJVyGR1AGB4uKIdJScjeyy2R75/JZ6d
-         YI+a6G6IDNnyKqvjT78j4HhuDMT0prJ4Jj8wAq+GYoQiiKauUrwKmw/B9iS+9ipRW/am
-         bpL9GTCI/+idDbunPIys6eF5intco6x+S01/JJsp4rjsWh/SCefvLxwtvJwa24AsOF4y
-         jytEncr5VBfXG3QwG+KLDCegaJoZ8aRutXOZzGyQKp45/oPv+Tc4AEbg9HRTEG+e1iDy
-         TO40hhxEJ5UY0KtBfBIB8VVeWgAdJZnsjn/GAo/XTPLcBgFbYe8jfX5f66/5XtnSZUXv
-         NgBg==
-X-Gm-Message-State: ACgBeo1xcSFLtl5x7hJvoQxXssdpSsyUJMSkYbN4Bua0m0VQDCUMRGcD
-        46Oqcb9T+efk0WFHSA2iViLf9Q4XPG7Etg==
-X-Google-Smtp-Source: AA6agR6pWzpqNgeu5nYDI5mFIoqg2F0SdV1dhlacTRMXfwMX4RTLBi/UMn/Zte3pGXH6yssBl9NJZA==
-X-Received: by 2002:a17:907:6d2a:b0:73d:9ba5:633a with SMTP id sa42-20020a1709076d2a00b0073d9ba5633amr5386524ejc.201.1661515223724;
-        Fri, 26 Aug 2022 05:00:23 -0700 (PDT)
-Received: from mutt (c-e429e555.07-21-73746f28.bbcust.telenor.se. [85.229.41.228])
-        by smtp.gmail.com with ESMTPSA id w20-20020a05640234d400b00447c2c1b9a0sm1164957edc.91.2022.08.26.05.00.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 05:00:22 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 14:00:20 +0200
-From:   Anders Roxell <anders.roxell@linaro.org>
-To:     Anshuman Khandual <anshuman.khandual@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        James Morse <james.morse@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        kvmarm@lists.cs.columbia.edu, linux-efi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alex.bennee@linaro.org, arnd@arndb.de
-Subject: Re: [PATCH V2] arm64/mm: Fix __enable_mmu() for new TGRAN range
- values
-Message-ID: <20220826120020.GB520@mutt>
-References: <1615355590-21102-1-git-send-email-anshuman.khandual@arm.com>
+        Fri, 26 Aug 2022 08:02:37 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD35CD7418;
+        Fri, 26 Aug 2022 05:02:33 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 83A1F1888676;
+        Fri, 26 Aug 2022 12:02:30 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 7AA6425032BD;
+        Fri, 26 Aug 2022 12:02:30 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 21D369EC0004; Fri, 26 Aug 2022 11:46:14 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from wse-c0127.beijerelectronics.com (unknown [208.127.141.28])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id DB2899EC0009;
+        Fri, 26 Aug 2022 11:46:11 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH v5 net-next 6/6] selftests: forwarding: add test of MAC-Auth Bypass to locked port tests
+Date:   Fri, 26 Aug 2022 13:45:38 +0200
+Message-Id: <20220826114538.705433-7-netdev@kapio-technology.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220826114538.705433-1-netdev@kapio-technology.com>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1615355590-21102-1-git-send-email-anshuman.khandual@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Organization: Westermo Network Technologies AB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2021-03-10 11:23, Anshuman Khandual wrote:
-> From: James Morse <james.morse@arm.com>
-> 
-> As per ARM ARM DDI 0487G.a, when FEAT_LPA2 is implemented, ID_AA64MMFR0_EL1
-> might contain a range of values to describe supported translation granules
-> (4K and 16K pages sizes in particular) instead of just enabled or disabled
-> values. This changes __enable_mmu() function to handle complete acceptable
-> range of values (depending on whether the field is signed or unsigned) now
-> represented with ID_AA64MMFR0_TGRAN_SUPPORTED_[MIN..MAX] pair. While here,
-> also fix similar situations in EFI stub and KVM as well.
-> 
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: James Morse <james.morse@arm.com>
-> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: kvmarm@lists.cs.columbia.edu
-> Cc: linux-efi@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Acked-by: Marc Zyngier <maz@kernel.org>
-> Signed-off-by: James Morse <james.morse@arm.com>
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Verify that the MAC-Auth mechanism works by adding a FDB entry with the
+locked flag set, denying access until the FDB entry is replaced with a
+FDB entry without the locked flag set.
 
-Hi,
+Also add a test that verifies that sticky FDB entries cannot roam.
 
-When building an arm64 defconfig kernel from stable/linux-5.10.y and
-booting that in QEMU (version: 1:7.0+dfsg-2~bpo11+2) with '-cpu max' the
-kernel doesn't boot. I don't get any output.  The kernel boots fine if I
-change to '-cpu cortex-a72'.
+Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
+---
+ .../net/forwarding/bridge_locked_port.sh      | 107 +++++++++++++++++-
+ .../net/forwarding/bridge_sticky_fdb.sh       |  21 +++-
+ 2 files changed, 126 insertions(+), 2 deletions(-)
 
-If I cherry-pick this patch to stable/linux-5.10.y I'm able too boot the
-kernel with '-cpu max'.
+diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+index 5b02b6b60ce7..b763b3b9fdf0 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
+@@ -1,7 +1,15 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
++ALL_TESTS="
++	locked_port_ipv4
++	locked_port_ipv6
++	locked_port_vlan
++	locked_port_mab
++	locked_port_station_move
++	locked_port_mab_station_move
++"
++
+ NUM_NETIFS=4
+ CHECK_TC="no"
+ source lib.sh
+@@ -166,6 +174,103 @@ locked_port_ipv6()
+ 	log_test "Locked port ipv6"
+ }
+ 
++locked_port_mab()
++{
++	RET=0
++	check_locked_port_support || return 0
++
++	ping_do $h1 192.0.2.2
++	check_err $? "MAB: Ping did not work before locking port"
++
++	bridge link set dev $swp1 locked on
++	bridge link set dev $swp1 learning on
++	if ! bridge link set dev $swp1 mab on 2>/dev/null; then
++		echo "SKIP: iproute2 too old; MacAuth feature not supported."
++		return $ksft_skip
++	fi
++
++	ping_do $h1 192.0.2.2
++	check_fail $? "MAB: Ping worked on locked port without FDB entry"
++
++	bridge fdb show | grep `mac_get $h1` | grep -q "locked"
++	check_err $? "MAB: No locked fdb entry after ping on locked port"
++
++	bridge fdb replace `mac_get $h1` dev $swp1 master static
++
++	ping_do $h1 192.0.2.2
++	check_err $? "MAB: Ping did not work with fdb entry without locked flag"
++
++	bridge fdb del `mac_get $h1` dev $swp1 master
++	bridge link set dev $swp1 learning off
++	bridge link set dev $swp1 locked off
++
++	log_test "Locked port MAB"
++}
++
++# No roaming allowed to a simple locked port
++locked_port_station_move()
++{
++	local mac=a0:b0:c0:c0:b0:a0
++
++	RET=0
++	check_locked_port_support || return 0
++
++	bridge link set dev $swp1 locked on
++	bridge link set dev $swp1 learning on
++
++	$MZ $h1 -q -t udp -a $mac -b rand
++	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0"
++	check_fail $? "Locked port station move: FDB entry on first injection"
++
++	$MZ $h2 -q -t udp -a $mac -b rand
++	bridge fdb show dev $swp2 | grep -q "$mac vlan 1 master br0"
++	check_err $? "Locked port station move: Entry not found on unlocked port"
++
++	$MZ $h1 -q -t udp -a $mac -b rand
++	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0"
++	check_fail $? "Locked port station move: entry roamed to locked port"
++
++	log_test "Locked port station move"
++}
++
++# Roaming to and from a MAB enabled port should work if sticky flag is not set
++locked_port_mab_station_move()
++{
++	local mac=10:20:30:30:20:10
++
++	RET=0
++	check_locked_port_support || return 0
++
++	bridge link set dev $swp1 locked on
++	bridge link set dev $swp1 learning on
++	if ! bridge link set dev $swp1 mab on 2>/dev/null; then
++		echo "SKIP: iproute2 too old; MacAuth feature not supported."
++		return $ksft_skip
++	fi
++
++	$MZ $h1 -q -t udp -a $mac -b rand
++	if bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0" | grep -q sticky; then
++		echo "SKIP: Roaming not possible with sticky flag, run sticky flag roaming test"
++		return $ksft_skip
++	fi
++
++	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
++	check_err $? "MAB station move: no locked entry on first injection"
++
++	$MZ $h2 -q -t udp -a $mac -b rand
++	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
++	check_fail $? "MAB station move: locked entry did not move"
++
++	bridge fdb show dev $swp2 | grep -q "$mac vlan 1 master br0"
++	check_err $? "MAB station move: roamed entry not found"
++
++	$MZ $h1 -q -t udp -a $mac -b rand
++	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
++	check_err $? "MAB station move: entry did not roam back to locked port"
++
++	log_test "Locked port MAB station move"
++}
++
+ trap cleanup EXIT
+ 
+ setup_prepare
+diff --git a/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh b/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
+index 1f8ef0eff862..bca77bc3fe09 100755
+--- a/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
++++ b/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
+@@ -1,7 +1,7 @@
+ #!/bin/bash
+ # SPDX-License-Identifier: GPL-2.0
+ 
+-ALL_TESTS="sticky"
++ALL_TESTS="sticky sticky_no_roaming"
+ NUM_NETIFS=4
+ TEST_MAC=de:ad:be:ef:13:37
+ source lib.sh
+@@ -59,6 +59,25 @@ sticky()
+ 	log_test "Sticky fdb entry"
+ }
+ 
++# No roaming allowed with the sticky flag set
++sticky_no_roaming()
++{
++	local mac=a8:b4:c2:c2:b4:a8
++
++	RET=0
++
++	bridge link set dev $swp2 learning on
++	bridge fdb add $mac dev $swp1 master static sticky
++	bridge fdb show dev $swp1 | grep "$mac master br0" | grep -q sticky
++	check_err $? "Sticky no roaming: No sticky FDB entry found after adding"
++
++	$MZ $h2 -q -t udp -c 10 -d 100msec -a $mac -b rand
++	bridge fdb show dev $swp2 | grep "$mac master br0" | grep -q sticky
++	check_fail $? "Sticky no roaming: Sticky entry roamed"
++
++	log_test "Sticky no roaming"
++}
++
+ trap cleanup EXIT
+ 
+ setup_prepare
+-- 
+2.30.2
 
-However, I'm not comfortable to backport this patch to older kernels
-since there are a lot of conflicts.
-Can someone help out to do the packport?
-
-Cheers,
-Anders
