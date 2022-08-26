@@ -2,89 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E55AECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D29B8ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:17:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbiHZKPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44362 "EHLO
+        id S245581AbiHZKRW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245581AbiHZKPC (ORCPT
+        with ESMTP id S1343749AbiHZKP2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 06:15:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1109D46DBD;
-        Fri, 26 Aug 2022 03:14:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C26061408;
-        Fri, 26 Aug 2022 10:14:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0438C43140;
-        Fri, 26 Aug 2022 10:14:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661508898;
-        bh=NK190jfdx00jTrDCv7zIYGo0wJWl8l2X9W8c9twpJWM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=nIY/moorJ/m4y8AsNO48CqLsfSNmDBPVeSgxPLfk52PP7Y6aYXueV2aNABvSfDMUi
-         PDsp5ZmnBW+jFnyUjB+NFpeEaud2aDjGAhL/0GP4P7NeL/sMVy9bfp90MrRO4zY8m3
-         aab6J1R5XG4vEQ86+OsqWJAsQyDOSWHH0r7wlUYV87Z1shvS3i2IxpzQA9EK0vCAfP
-         mXRq/ZxVseBpULo8TA1iBO4iSt4FYmZg6Pt3c42fJBWPbpuChX7CTEq8XOz1wQJvH5
-         3T+i8q/2bsnuufE2Wetp7tEPW5GiTGzTQNKXS7ymuEskEsAhQC7Ky/ZfbW1GE3yc0I
-         f9SCR3FYOGWyQ==
-Received: by mail-wr1-f50.google.com with SMTP id e13so330836wrm.1;
-        Fri, 26 Aug 2022 03:14:58 -0700 (PDT)
-X-Gm-Message-State: ACgBeo33rVA+TcAduSoD2aTtHLvMe5Kzl9+XuoxaUrJPyJBM3/66UD2l
-        HqS/rUfslS9akDI1371pDPA43yP5HmBnRGAk0OY=
-X-Google-Smtp-Source: AA6agR543ZK5dQZzr1lpLH8yqs+KhBfAVVvO1WOBz7r4lxnkexozgQ2VhsVLtTvZFBFUFU85FdH18Lv17LDbYByPKjY=
-X-Received: by 2002:a05:6000:782:b0:225:3e46:3dd5 with SMTP id
- bu2-20020a056000078200b002253e463dd5mr4249270wrb.103.1661508897137; Fri, 26
- Aug 2022 03:14:57 -0700 (PDT)
+        Fri, 26 Aug 2022 06:15:28 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8441B14D5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:15:26 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id bu22so897319wrb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:15:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ionos.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=Rz7Ri8U5aOCKdVvdIijp7X/sK+Kj5rWcJ2yernN5/UU=;
+        b=gPM3TcVxoDHwYqK27/aPW5GKL7yoXrHcGW40ghqodySkT/N482ydnrzme+qFCnl73g
+         uM8ed9i+2UaCZbh4NTfu4SSIorIixGRhxNbUY7Yfe81VHpce18w542bEI7Kg+FcWsz+m
+         OiKdk+h7G/YjBfmgeds9f3qYjFgW1Ebjx9kL1HcDPyNrzxPfDyV+e8ixGSOaTKx9Tnt5
+         gy+i0OWEwzCYj7hXMxVqTCjiRA4ny+FS/7916/pa6C0ECzaCrpbJwWWJpt09TinZuyWY
+         FQ5ScuDMB6sMFrykEtuAna4pF1C/jTFunEszH4OLKPTcGOL5k+2XviTAMrxho7un3kDi
+         nN4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=Rz7Ri8U5aOCKdVvdIijp7X/sK+Kj5rWcJ2yernN5/UU=;
+        b=6CJSwVWPRpIudgLYyvJcAQN/fP7Y/DzwerH3efb5va0u6BADg5aPFWz94I2KMoeP8C
+         dc7ZhLpEwGH5eDNP50/vyNM4j0HxExri9AXs459dvv08G3GaxJXLOOlgjeaNtHdIcOD+
+         z1MDKoxFX9T8qu9BMG9gIG5/88puc5Pfehkg8gd5KKlLmPfEvIkiO9Sq86koGWIVNjQz
+         4AJhiM9FWpD+VZP6PRscLAIv8tepBCNrk4Qckj1nzWSP1/b7K0+bkVred/ym3TBXiaaV
+         SZBGMjgTlnrQH2Gw10ezxE76qOeCNqJkHXrKwOs8d0384xSGrJP7mNLgydAWK26DaVyr
+         Oghg==
+X-Gm-Message-State: ACgBeo30ldCr8hFmr5IF1XVzOvRYqJeG6RLZn3tEnzqKw6l+UK7yzQvS
+        1yFcfx8poqe/06aIslSS1Mjbta9TqoZFhg==
+X-Google-Smtp-Source: AA6agR57O1cwi+qphGSKGGSIT5z0TrEh1gdt6SbE8yynmslGWt2m198gFohyG8mk5TSEwcXU7IDXow==
+X-Received: by 2002:adf:f2ca:0:b0:225:4800:d201 with SMTP id d10-20020adff2ca000000b002254800d201mr4502643wrp.187.1661508925071;
+        Fri, 26 Aug 2022 03:15:25 -0700 (PDT)
+Received: from lb02065.fritz.box ([2001:9e8:140d:2300:3a17:fa67:2b0b:b905])
+        by smtp.gmail.com with ESMTPSA id e14-20020a5d500e000000b0021f0c0c62d1sm1505882wrt.13.2022.08.26.03.15.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 03:15:24 -0700 (PDT)
+From:   Jack Wang <jinpu.wang@ionos.com>
+To:     alexander.shishkin@linux.intel.com
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] intel_th: Fix dma_map_sg error check
+Date:   Fri, 26 Aug 2022 12:15:23 +0200
+Message-Id: <20220826101523.79502-1-jinpu.wang@ionos.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220825111715.3025694-1-sakari.ailus@linux.intel.com>
-In-Reply-To: <20220825111715.3025694-1-sakari.ailus@linux.intel.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Fri, 26 Aug 2022 12:14:45 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFVnZzmYN46d0YB8ieri4vEPz49ufw1FvQ19GT+cQ+wLw@mail.gmail.com>
-Message-ID: <CAMj1kXFVnZzmYN46d0YB8ieri4vEPz49ufw1FvQ19GT+cQ+wLw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] acpi: Remove default association from integer maximum values
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sbinding@opensource.cirrus.com, andriy.shevchenko@intel.com,
-        patches@opensource.cirrus.com, rafael@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 25 Aug 2022 at 13:17, Sakari Ailus <sakari.ailus@linux.intel.com> wrote:
->
-> Remove the default association from integer maximum value checks. It is
-> not necessary and has caused a bug in other associations being unnoticed.
->
-> Fixes: 923044133367 ("ACPI: property: Unify integer value reading functions")
-> Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+dma_map_sg return 0 on error.
 
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org
+Fixes: 4e0eaf239fb3 ("intel_th: msu: Fix single mode with IOMMU")
+Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
+---
+ drivers/hwtracing/intel_th/msu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> ---
->  drivers/acpi/property.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/acpi/property.c b/drivers/acpi/property.c
-> index 91d0e75859d37..d4c168ce428ca 100644
-> --- a/drivers/acpi/property.c
-> +++ b/drivers/acpi/property.c
-> @@ -1046,8 +1046,7 @@ static int acpi_data_prop_read_single(const struct acpi_device_data *data,
->                                                                 u8 *: U8_MAX, \
->                                                                 u16 *: U16_MAX, \
->                                                                 u32 *: U32_MAX, \
-> -                                                               u64 *: U64_MAX, \
-> -                                                               default: 0U)) { \
-> +                                                               u64 *: U64_MAX)) { \
->                                 ret = -EOVERFLOW;                       \
->                                 break;                                  \
->                         }                                               \
-> --
-> 2.30.2
->
+diff --git a/drivers/hwtracing/intel_th/msu.c b/drivers/hwtracing/intel_th/msu.c
+index 6c8215a47a60..b49237d56a60 100644
+--- a/drivers/hwtracing/intel_th/msu.c
++++ b/drivers/hwtracing/intel_th/msu.c
+@@ -931,7 +931,7 @@ static int msc_buffer_contig_alloc(struct msc *msc, unsigned long size)
+ 
+ 	ret = dma_map_sg(msc_dev(msc)->parent->parent, msc->single_sgt.sgl, 1,
+ 			 DMA_FROM_DEVICE);
+-	if (ret < 0)
++	if (!ret)
+ 		goto err_free_pages;
+ 
+ 	msc->nr_pages = nr_pages;
+-- 
+2.34.1
+
