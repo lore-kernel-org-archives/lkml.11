@@ -2,95 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02FE9ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EF6FECAAA2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244815AbiHZCf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37810 "EHLO
+        id S244713AbiHZCgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244751AbiHZCfx (ORCPT
+        with ESMTP id S231532AbiHZCgm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:35:53 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0932E68E
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 19:35:39 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id a65so317000pfa.1
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 19:35:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=YLgxiF89rhAaSiqrAqLeGjys84eskoyDUq88fMYi6UA=;
-        b=A08NMEbdQ2LVLqA2QG4Uylmc8AJCL8cjcSDZ4ToJVFabYXmHdQnjBm3N9UTpiyav+e
-         1Eult2hfeviCaQM65yj3icHdLUJylJlFoSUszK2UlHMf8oouPQaGxXAICVp2Bn4a9pwH
-         4xRyktRi+ruT9b+RcBk9uikJsfbxuN2g8ApnyBFh+5Ngn6MEiSX8rNIXwlVXWmPUX73N
-         oxNvoUz0oWoiXa60u/W3CwkFYQTG9RF22hJ4HsoXeeTEaGKuzjfRFyWCBoLwpdGVJPP2
-         M8LkKTlPkxdkhzBGnstnYPgCqlaIqiO3nuaAq1GYYHfP8rTXYuXluQQYBuAxo9VkE1AZ
-         QoHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=YLgxiF89rhAaSiqrAqLeGjys84eskoyDUq88fMYi6UA=;
-        b=nDcoHJj33lRQZzFsQHIG69stFQ1r4KLY/IH9HG8Ep3368rTy2I91uRPJyIcQP3urEh
-         k9xOFv2gJbvXIMJMWmpgVT7cDdgeHOk9EtrPC88ZJv7CFAy8VVZPsXNd6clDLomKosbB
-         B8IJCfT0Q4TwVoosZeAxe9fltktCG2DCD7LvfUJdbHhIZS69ma8SoP8tWy0C5QBVMDPG
-         wfDASK96+kOe+Jg1H5ulvTZSRgow3fj8LZK5ngNwPGckFQrMus3Tqbeoljovw7BFZ/i1
-         kWCPqxwYKtp9hCLRVyz1LQ7rzESguAcXlIvouesamnCaOGYC2z+2BHDiNCJ9fLeMSIpx
-         CB5g==
-X-Gm-Message-State: ACgBeo0z3Dc0DrbHBZcuN5XEJjqOnC+DXf5cYJDQskTzrOooRhFnVaBg
-        28j7lu/moo15MeVI3p04N+o=
-X-Google-Smtp-Source: AA6agR69TZnd2al9dGGB1ospcLnBSuFirgfInFDbZAM8DBaBB7U0jAg+RkbOzm4E7oPOXaZ5l7SSPQ==
-X-Received: by 2002:a63:2bc5:0:b0:41d:9b5f:acb0 with SMTP id r188-20020a632bc5000000b0041d9b5facb0mr1550631pgr.439.1661481338519;
-        Thu, 25 Aug 2022 19:35:38 -0700 (PDT)
-Received: from localhost.localdomain ([211.212.143.131])
-        by smtp.gmail.com with ESMTPSA id w17-20020a1709029a9100b00172ad292b6bsm269786plp.116.2022.08.25.19.35.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 19:35:38 -0700 (PDT)
-From:   Steve Lee <steve.lee.analog@gmail.com>
-To:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
-        tiwai@suse.com, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Cc:     krzk@kernel.org, ryans.lee@analog.com,
-        Steve Lee <steve.lee.analog@gmail.com>
-Subject: [PATCH] ASoC: max98390: Remove unnecessary amp on/off conrtol
-Date:   Fri, 26 Aug 2022 11:35:04 +0900
-Message-Id: <20220826023504.6183-1-steve.lee.analog@gmail.com>
+        Thu, 25 Aug 2022 22:36:42 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D09921E35
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 19:36:41 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MDP4N1zc6zYcpM;
+        Fri, 26 Aug 2022 10:32:20 +0800 (CST)
+Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 26 Aug 2022 10:36:39 +0800
+Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
+ (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
+ 2022 10:36:38 +0800
+From:   Shang XiaoJing <shangxiaojing@huawei.com>
+To:     <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
+        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>
+CC:     <shangxiaojing@huawei.com>
+Subject: [PATCH -next] sched/deadline: Add compare_task_rq helper
+Date:   Fri, 26 Aug 2022 11:11:43 +0800
+Message-ID: <20220826031143.9501-1-shangxiaojing@huawei.com>
 X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.100.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600008.china.huawei.com (7.193.23.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- The Amp is already control in userspace before trigger calibrate function.
-Remove unnecessary control in calibrate function.
+Wrap repeated code in helper function compare_task_rq, which return true
+if there is no deadline task on the rq at all, or task's deadline
+earlier than the rq.
 
-Signed-off-by: Steve Lee <steve.lee.analog@gmail.com>
+Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
 ---
- sound/soc/codecs/max98390.c | 6 ------
- 1 file changed, 6 deletions(-)
+ kernel/sched/deadline.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/sound/soc/codecs/max98390.c b/sound/soc/codecs/max98390.c
-index 91c0bf3d76fc..99e769190568 100644
---- a/sound/soc/codecs/max98390.c
-+++ b/sound/soc/codecs/max98390.c
-@@ -826,9 +826,6 @@ static int max98390_dsm_calibrate(struct snd_soc_component *component)
- 	struct max98390_priv *max98390 =
- 		snd_soc_component_get_drvdata(component);
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index d116d2b9d2f9..4a40a462717c 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -1810,6 +1810,13 @@ static void yield_task_dl(struct rq *rq)
  
--	regmap_write(max98390->regmap, MAX98390_R203A_AMP_EN, 0x81);
--	regmap_write(max98390->regmap, MAX98390_R23FF_GLOBAL_EN, 0x01);
--
- 	regmap_read(max98390->regmap,
- 		THERMAL_RDC_RD_BACK_BYTE1, &rdc);
- 	regmap_read(max98390->regmap,
-@@ -847,9 +844,6 @@ static int max98390_dsm_calibrate(struct snd_soc_component *component)
- 	dev_info(component->dev, "rdc resistance about %d.%02d ohm, reg=0x%X temp reg=0x%X\n",
- 		 rdc_integer, rdc_factor, rdc_cal_result, temp);
+ #ifdef CONFIG_SMP
  
--	regmap_write(max98390->regmap, MAX98390_R23FF_GLOBAL_EN, 0x00);
--	regmap_write(max98390->regmap, MAX98390_R203A_AMP_EN, 0x80);
--
- 	return 0;
- }
++static inline bool compare_task_rq(struct task_struct *p, struct rq *rq)
++{
++	return (!rq->dl.dl_nr_running ||
++		dl_time_before(p->dl.deadline,
++			       rq->dl.earliest_dl.curr));
++}
++
+ static int find_later_rq(struct task_struct *task);
+ 
+ static int
+@@ -1852,9 +1859,7 @@ select_task_rq_dl(struct task_struct *p, int cpu, int flags)
+ 		int target = find_later_rq(p);
+ 
+ 		if (target != -1 &&
+-				(dl_time_before(p->dl.deadline,
+-					cpu_rq(target)->dl.earliest_dl.curr) ||
+-				(cpu_rq(target)->dl.dl_nr_running == 0)))
++		    compare_task_rq(p, cpu_rq(target)))
+ 			cpu = target;
+ 	}
+ 	rcu_read_unlock();
+@@ -2221,9 +2226,7 @@ static struct rq *find_lock_later_rq(struct task_struct *task, struct rq *rq)
+ 
+ 		later_rq = cpu_rq(cpu);
+ 
+-		if (later_rq->dl.dl_nr_running &&
+-		    !dl_time_before(task->dl.deadline,
+-					later_rq->dl.earliest_dl.curr)) {
++		if (!compare_task_rq(task, later_rq)) {
+ 			/*
+ 			 * Target rq has tasks of equal or earlier deadline,
+ 			 * retrying does not release any lock and is unlikely
+@@ -2251,9 +2254,7 @@ static struct rq *find_lock_later_rq(struct task_struct *task, struct rq *rq)
+ 		 * its earliest one has a later deadline than our
+ 		 * task, the rq is a good one.
+ 		 */
+-		if (!later_rq->dl.dl_nr_running ||
+-		    dl_time_before(task->dl.deadline,
+-				   later_rq->dl.earliest_dl.curr))
++		if (compare_task_rq(task, later_rq))
+ 			break;
+ 
+ 		/* Otherwise we try again. */
+@@ -2424,9 +2425,7 @@ static void pull_dl_task(struct rq *this_rq)
+ 		 *  - it will preempt the last one we pulled (if any).
+ 		 */
+ 		if (p && dl_time_before(p->dl.deadline, dmin) &&
+-		    (!this_rq->dl.dl_nr_running ||
+-		     dl_time_before(p->dl.deadline,
+-				    this_rq->dl.earliest_dl.curr))) {
++		    compare_task_rq(p, this_rq)) {
+ 			WARN_ON(p == src_rq->curr);
+ 			WARN_ON(!task_on_rq_queued(p));
  
 -- 
 2.17.1
