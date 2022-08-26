@@ -2,114 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8654ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE79ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245664AbiHZJLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 05:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59098 "EHLO
+        id S1343490AbiHZJML (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 05:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245728AbiHZJLq (ORCPT
+        with ESMTP id S245551AbiHZJL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 05:11:46 -0400
-Received: from hi1smtp01.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DBAD6B8D
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:11:44 -0700 (PDT)
-Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by hi1smtp01.de.adit-jv.com (Postfix) with ESMTPS id C5A1A5208BD;
-        Fri, 26 Aug 2022 11:11:41 +0200 (CEST)
-Received: from vmlxhi-182.adit-jv.com (10.72.94.19) by hi2exch02.adit-jv.com
- (10.72.92.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Fri, 26 Aug
- 2022 11:11:41 +0200
-From:   Michael Rodin <mrodin@de.adit-jv.com>
-To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sean Paul <seanpaul@chromium.org>,
-        Vincent Abriou <vincent.abriou@st.com>,
-        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>
-CC:     Michael Rodin <mrodin@de.adit-jv.com>, <michael@rodin.online>,
-        <erosca@de.adit-jv.com>
-Subject: [PATCH] drm: do not call detect for connectors which are forced on
-Date:   Fri, 26 Aug 2022 11:11:21 +0200
-Message-ID: <20220826091121.389315-1-mrodin@de.adit-jv.com>
+        Fri, 26 Aug 2022 05:11:58 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC85D6BA7;
+        Fri, 26 Aug 2022 02:11:56 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27Q9Bil5015593;
+        Fri, 26 Aug 2022 04:11:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661505104;
+        bh=+46x+HLUlBkt4yUclJTZivGkoE1QCQMQ73VLUsdQx2A=;
+        h=From:To:CC:Subject:Date;
+        b=ZgWXmP4RyxPlK6xTtNVVOv+11sNpwNoPv84sQ4+qvDVvkA0NETeLKnpGW4JpUzxR4
+         zq64RoFD0mczNjSTqpArSeJTLLJv1+qXngiIwOiSQdTV8e09voXfAPZHGD+RcT7M4C
+         7k/3gHit2DwtCOmRT8DISPCgeeGGue/HNWflPDVk=
+Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27Q9BiEI045059
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 26 Aug 2022 04:11:44 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Fri, 26
+ Aug 2022 04:11:43 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Fri, 26 Aug 2022 04:11:43 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27Q9BhwG130182;
+        Fri, 26 Aug 2022 04:11:43 -0500
+From:   Jayesh Choudhary <j-choudhary@ti.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <davem@davemloft.net>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <j-keerthy@ti.com>,
+        <linux-crypto@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [RESEND PATCH] dt-bindings: crypto: ti,sa2ul: drop dma-coherent property
+Date:   Fri, 26 Aug 2022 14:41:42 +0530
+Message-ID: <20220826091142.262325-1-j-choudhary@ti.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.72.94.19]
-X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
- hi2exch02.adit-jv.com (10.72.92.28)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"detect" should not be called and its return value shall not be used when a
-connector is forced as hinted in the commit d50ba256b5f1 ("drm/kms: start
-adding command line interface using fb.") and the commit 6fe14acd496e
-("drm: Document drm_connector_funcs"). One negative side effect of doing
-this is observed on the RCar3 SoCs which use the dw-hdmi driver. It
-continues executing drm_helper_hpd_irq_event even if its connector is
-forced to ON. As consequence drm_helper_hpd_irq_event calls "detect" so the
-connector status is updated to "disconnected":
+crypto driver itself is not dma-coherent. It is the dmaengine
+that moves data and the buffers are to be mapped to the
+dmaengine provider. So this property should be dropped.
 
-[  420.201527] [drm:drm_helper_hpd_irq_event] [CONNECTOR:76:HDMI-A-1] status updated from connected to disconnected
-
-This status is corrected by drm_helper_probe_single_connector_modes shortly
-after this because this function checks if a connector is forced:
-
-[  420.218703] [drm:drm_helper_probe_single_connector_modes] [CONNECTOR:76:HDMI-A-1] status updated from disconnected to connected
-
-To avoid similar issues this commit adapts functions which call "detect"
-so they check if a connector is forced and return the correct status.
-
-Fixes: 949f08862d66 ("drm: Make the connector .detect() callback optional")
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
+Fixes: 2ce9a7299bf6 ('dt-bindings: crypto: Add TI SA2UL crypto accelerator documentation')
+Signed-off-by: Jayesh Choudhary <j-choudhary@ti.com>
 ---
- drivers/gpu/drm/drm_probe_helper.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_probe_helper.c b/drivers/gpu/drm/drm_probe_helper.c
-index bb427c5a4f1f..1691047d0472 100644
---- a/drivers/gpu/drm/drm_probe_helper.c
-+++ b/drivers/gpu/drm/drm_probe_helper.c
-@@ -289,7 +289,12 @@ drm_helper_probe_detect_ctx(struct drm_connector *connector, bool force)
- retry:
- 	ret = drm_modeset_lock(&connector->dev->mode_config.connection_mutex, &ctx);
- 	if (!ret) {
--		if (funcs->detect_ctx)
-+		if (connector->force == DRM_FORCE_ON ||
-+		    connector->force == DRM_FORCE_ON_DIGITAL)
-+			ret = connector_status_connected;
-+		else if (connector->force == DRM_FORCE_OFF)
-+			ret = connector_status_disconnected;
-+		else if (funcs->detect_ctx)
- 			ret = funcs->detect_ctx(connector, &ctx, force);
- 		else if (connector->funcs->detect)
- 			ret = connector->funcs->detect(connector, force);
-@@ -340,7 +345,14 @@ drm_helper_probe_detect(struct drm_connector *connector,
- 	if (ret)
- 		return ret;
+Resending the patch as it got ACK-ed but did not get MERGED.
+(https://lore.kernel.org/all/2935fd8e-ceda-fec9-db47-65d3ec142e32@linaro.org/)
+We get some warnings which are expected. I will post the dt-node
+fixes once this patch gets merged.
+
+ .../devicetree/bindings/crypto/ti,sa2ul.yaml        | 13 -------------
+ 1 file changed, 13 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml b/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
+index 02f47c2e7998..0c15fefb6671 100644
+--- a/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
++++ b/Documentation/devicetree/bindings/crypto/ti,sa2ul.yaml
+@@ -35,8 +35,6 @@ properties:
+       - const: rx1
+       - const: rx2
  
--	if (funcs->detect_ctx)
-+	if (connector->force == DRM_FORCE_ON ||
-+	    connector->force == DRM_FORCE_ON_DIGITAL)
-+		ret = connector_status_connected;
-+	else if (connector->force == DRM_FORCE_OFF)
-+		ret = connector_status_disconnected;
-+	else if (funcs->detect_ctx)
-+		ret = funcs->detect_ctx(connector, ctx, force);
-+	else if (funcs->detect_ctx)
- 		ret = funcs->detect_ctx(connector, ctx, force);
- 	else if (connector->funcs->detect)
- 		ret = connector->funcs->detect(connector, force);
+-  dma-coherent: true
+-
+   "#address-cells":
+     const: 2
+ 
+@@ -72,16 +70,6 @@ required:
+   - dmas
+   - dma-names
+ 
+-if:
+-  properties:
+-    compatible:
+-      enum:
+-        - ti,j721e-sa2ul
+-        - ti,am654-sa2ul
+-then:
+-  required:
+-    - dma-coherent
+-
+ additionalProperties: false
+ 
+ examples:
+@@ -95,5 +83,4 @@ examples:
+         dmas = <&main_udmap 0xc000>, <&main_udmap 0x4000>,
+                <&main_udmap 0x4001>;
+         dma-names = "tx", "rx1", "rx2";
+-        dma-coherent;
+     };
 -- 
 2.25.1
 
