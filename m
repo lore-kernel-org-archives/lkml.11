@@ -2,133 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50F40ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA449ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244548AbiHZBps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 21:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53220 "EHLO
+        id S244586AbiHZBrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 21:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244596AbiHZBpo (ORCPT
+        with ESMTP id S233064AbiHZBrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 21:45:44 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBE261DBF
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 18:45:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661478344; x=1693014344;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=XZJSY4cbgrebLKKDnAQdX4owkNLnig3mFMmrZiJU8ks=;
-  b=hSsmp3unMzPoY6F74U2YUROiqSopvIl95K96nFkhMWteBQRQU5phSSPv
-   iLowvLQPiV1WUXymx4S0I6H7cHyb58T1qyQFMeqOuV5US1NPQl84fk/++
-   x/KEguIIKoDkkPJ9eaOFztKO4nsKgRa/Y06zNtZmfMn5NN13YhVCpxeAA
-   qwaJbC1LuvoCbxfzSZv2U1i4q9JbE0Zs3piEN1M484ZeidG+xj8Bcdw8L
-   pI/ydQ8suhr8491V+LNJ8V/RgSHvtYtTI6HeVh2s+SqAURgDdodEQc9LB
-   50LzkQSQLXC2GrN9t24lMJ4Tpwz2tKpMKJX0RAQYSvm6PqpNrz6/1K2U4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="356116050"
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="356116050"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 18:45:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="587120615"
-Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 25 Aug 2022 18:45:42 -0700
-Received: from kbuild by 34e741d32628 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oROPl-0003EI-2q;
-        Fri, 26 Aug 2022 01:45:41 +0000
-Date:   Fri, 26 Aug 2022 09:44:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tom Zanussi <zanussi@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [zanussi-trace:ftrace/masami-hitcount-v0 1/3]
- kernel/trace/trace_events_hist.c:4354:9: warning: variable 'n_hitcount' is
- uninitialized when used here
-Message-ID: <202208260943.kWLI2lN6-lkp@intel.com>
+        Thu, 25 Aug 2022 21:47:05 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8454F00;
+        Thu, 25 Aug 2022 18:47:02 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MDN433Jwjz4wgv;
+        Fri, 26 Aug 2022 11:46:59 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1661478420;
+        bh=Errj4XKH89q1P52Y82X83Hu2p5IV9qbTXCibUzCgWbg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=I6Y+RyWIeumtWhPItavQxWxcpFwen9E6Nf/lYkiKx3X/+zF8cYln1nCmYyE5ohjWw
+         9jYeNZduQP0Xz/6H4SzjGw9ITErqJ4NQamjIAJD47tgwhZk6j2+f9C1GrHG+EqgEnm
+         zeDCPIPgXCAGkGoEGb3EXZXL5qY7J6dhnVQLgMye4ndJRrMD4ggJ51KZaaWcYnSSaQ
+         BC7UZXY44zHydzsN1dqOO1rNHdsDG9xmCeDIae2lD3UJG6hg0UthckDMGEzYxPVpBf
+         YZdWkKkMWxeqc0933ClrodYFF0XUK/B/FLnX5K/KJnVV3A6yx/t8ap24l9Bruwq7kV
+         0llkeUjLYMEtw==
+Date:   Fri, 26 Aug 2022 11:46:55 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Daniel =?UTF-8?B?TcO8bGxlcg==?= <deso@posteo.net>,
+        Hao Luo <haoluo@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Yosry Ahmed <yosryahmed@google.com>
+Subject: linux-next: manual merge of the bpf-next tree with the bpf tree
+Message-ID: <20220826114655.4535c1d0@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: multipart/signed; boundary="Sig_/MFR7LOoNg_VNOx55Oz52vhg";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/zanussi/linux-trace.git ftrace/masami-hitcount-v0
-head:   886fe9b6098eddb9d298e8a3f07bbea61acdac16
-commit: 2b0a73549f8fb4115c06639c75a4b7abd7825aaa [1/3] tracing: Allow multiple hitcount values in histograms
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220826/202208260943.kWLI2lN6-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/zanussi/linux-trace.git/commit/?id=2b0a73549f8fb4115c06639c75a4b7abd7825aaa
-        git remote add zanussi-trace https://git.kernel.org/pub/scm/linux/kernel/git/zanussi/linux-trace.git
-        git fetch --no-tags zanussi-trace ftrace/masami-hitcount-v0
-        git checkout 2b0a73549f8fb4115c06639c75a4b7abd7825aaa
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/trace/
+--Sig_/MFR7LOoNg_VNOx55Oz52vhg
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Hi all,
 
-All warnings (new ones prefixed by >>):
+Today's linux-next merge of the bpf-next tree got a conflict in:
 
->> kernel/trace/trace_events_hist.c:4354:9: warning: variable 'n_hitcount' is uninitialized when used here [-Wuninitialized]
-                           if (!n_hitcount++)
-                                ^~~~~~~~~~
-   kernel/trace/trace_events_hist.c:4335:35: note: initialize the variable 'n_hitcount' to silence this warning
-           unsigned int i, j = 1, n_hitcount;
-                                            ^
-                                             = 0
-   1 warning generated.
+  tools/testing/selftests/bpf/DENYLIST.s390x
 
+between commit:
 
-vim +/n_hitcount +4354 kernel/trace/trace_events_hist.c
+  27e23836ce22 ("selftests/bpf: Add lru_bug to s390x deny list")
 
-  4331	
-  4332	static int create_val_fields(struct hist_trigger_data *hist_data,
-  4333				     struct trace_event_file *file)
-  4334	{
-  4335		unsigned int i, j = 1, n_hitcount;
-  4336		char *fields_str, *field_str;
-  4337		int ret;
-  4338	
-  4339		ret = create_hitcount_val(hist_data);
-  4340		if (ret)
-  4341			goto out;
-  4342	
-  4343		fields_str = hist_data->attrs->vals_str;
-  4344		if (!fields_str)
-  4345			goto out;
-  4346	
-  4347		for (i = 0, j = 1; i < TRACING_MAP_VALS_MAX &&
-  4348			     j < TRACING_MAP_VALS_MAX; i++) {
-  4349			field_str = strsep(&fields_str, ",");
-  4350			if (!field_str)
-  4351				break;
-  4352	
-  4353			if (strcmp(field_str, "hitcount") == 0) {
-> 4354				if (!n_hitcount++)
-  4355					continue;
-  4356			}
-  4357	
-  4358			ret = create_val_field(hist_data, j++, file, field_str);
-  4359			if (ret)
-  4360				goto out;
-  4361		}
-  4362	
-  4363		if (fields_str && (strcmp(fields_str, "hitcount") != 0))
-  4364			ret = -EINVAL;
-  4365	 out:
-  4366		return ret;
-  4367	}
-  4368	
+from the bpf tree and commit:
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+  88886309d2e8 ("selftests/bpf: add a selftest for cgroup hierarchical stat=
+s collection")
+
+from the bpf-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc tools/testing/selftests/bpf/DENYLIST.s390x
+index 5cadfbdadf36,736b65f61022..000000000000
+--- a/tools/testing/selftests/bpf/DENYLIST.s390x
++++ b/tools/testing/selftests/bpf/DENYLIST.s390x
+@@@ -65,4 -65,6 +65,7 @@@ send_signa
+  select_reuseport                         # intermittently fails on new s3=
+90x setup
+  xdp_synproxy                             # JIT does not support calling k=
+ernel function                                (kfunc)
+  unpriv_bpf_disabled                      # fentry
+ +lru_bug                                  # prog 'printk': failed to auto-=
+attach: -524
++ setget_sockopt                           # attach unexpected error: -524 =
+                                              (trampoline)
++ cb_refs                                  # expected error message unexpec=
+ted error: -524                               (trampoline)
++ cgroup_hierarchical_stats                # JIT does not support calling k=
+ernel function                                (kfunc)
+
+--Sig_/MFR7LOoNg_VNOx55Oz52vhg
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMIJg8ACgkQAVBC80lX
+0Gw2nQf/Wek0iOFLZ7lv8cXDmZxXlT4Q1afkO81LXDo0g7/ya7FbCjyewnCcksaH
+Sgj35dwLh8HPCWQUebBi5gbjYH/OKomVBfoHWIlTs2JvgD8z7KZk16iRGUNsgZLB
+DVMWSSXxybmmJCPm7JhyOXZSSDM9cDKsj3YZvyi6j1aaCyUYskSczGnG3ZEdOFRY
+l2PVESmnLyBwhAeDdSKIb2P1jBzyITzHQi+aO5ro4AFibxWCHLResK/99ba9pGzn
+aJiYWpfQiZbBocv7fgFiqgnqWXyAjyOm8RUZSHg/kLuuivPb6IlzIVFCN4xcR/Oi
+7CZeO1GprSvdp5EOc1sXM7djsO9nng==
+=51f4
+-----END PGP SIGNATURE-----
+
+--Sig_/MFR7LOoNg_VNOx55Oz52vhg--
