@@ -2,226 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC12EECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B284ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344240AbiHZMUB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:20:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52816 "EHLO
+        id S243947AbiHZMWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344226AbiHZMTE (ORCPT
+        with ESMTP id S1344093AbiHZMVi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:19:04 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58F4DEA7A;
-        Fri, 26 Aug 2022 05:18:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661516322; x=1693052322;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cod6y9BV4MmE8AUriWIbGWZoeNxV9YeHCqFPn2OmOAQ=;
-  b=Vx/4ESCQP6NKbPSA0zXfLsaU3CAzqdBngr1KNE8xLUDYhG1GNLxbcHeF
-   pWnO+xX3SS0RjfnBzwv1hcFOwKHko0S2wx3v6BcPt2VFYgcLKsoMKnAGL
-   95+ivv+vIzMCALf7qS+qPsYmfFRsyCLoDNnloZTUAkRpW2jOl3jpRhmV0
-   PRxZh60yyq3VuO3lyVshR+ZPPuU6Hn+F4uJ4flAuTbMItemDsmgc24pP5
-   YMoQdJyTKdQq0/cYjEfu2xgHeheme7wbF7CjJcX1YxqeGQ9w6fRglK118
-   sPmeajZ15Sv33YCaeiJvMcrZ40oU1xDNpJbn/7kC4Q+9iPiiRtq4lyDoG
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="320587443"
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="320587443"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:18:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="606747880"
-Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:18:37 -0700
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v12 17/17] iommu: Rename iommu-sva-lib.{c,h}
-Date:   Fri, 26 Aug 2022 20:11:41 +0800
-Message-Id: <20220826121141.50743-18-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220826121141.50743-1-baolu.lu@linux.intel.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+        Fri, 26 Aug 2022 08:21:38 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6437674C;
+        Fri, 26 Aug 2022 05:20:07 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id t129so1386766pfb.6;
+        Fri, 26 Aug 2022 05:20:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :from:to:cc;
+        bh=59ExtF48Z2+vGviQ5JT32mWzE6IvJ75v7GYqKj4e16Y=;
+        b=WQOU5q+OoOzPr1bMskgUFeCAK4d9cXLh0yU/HA9rpkwVwKZb2OdqaFSn81kuQpFPJ7
+         Fg1dCA0trRi70qnxrD2CmVv2wQGeQtpyt7mf0FcXn9xsycAFtr4mz3i477yfiQOuxsEd
+         8ce0i6vdT3sELTNlUvqS3yecvu2poHH4WthCWVmmJi9lbdaGwp80AoaivLS3oHRMEu0c
+         D0C5dO5G0bEgbnLayrCLD9oL2BRH6unPk+I0WxJKA4VpmuRF1TVFY5soAst07v/iLd6G
+         9hbqvdfoTQ5BVciOltyX8Bhc3a9zSlWZao8sNFo9qm9NUFSODNjsJz5UjJ25pPkSJ8xS
+         u/AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :x-gm-message-state:from:to:cc;
+        bh=59ExtF48Z2+vGviQ5JT32mWzE6IvJ75v7GYqKj4e16Y=;
+        b=ZoyAcMI7Ohr98GpiZ73ee7Ky2Fn1xwOjFUywYOAOsgjTDNy4AE4tzhtNEmIjoQkC3D
+         6xTSpjyuVPe4ygSm8kfXe0Oa26bEfovf3LQxI7nKTG9G5n66B4fuYwiLMqFqxmjzvynG
+         77ScDxKy380SRw/D9h54HSHYRZQqS3pTOcy8U4wq9b0BajGE7H5F2khc+VIf8okxMhex
+         4TbNRQsg2tvxPwS13Zq35X5bH8eoKIzKTy3/xfUazQkh+SWoENwXKMxBcGVuHJcpKCQl
+         BUbF4rcyCs1ujou0yWQZl/TOsOO+oKawFtJQaoOr1I4tfmr18r41Sn7V3SDDmUmzqo7V
+         JoJw==
+X-Gm-Message-State: ACgBeo3QTOdSU/cOnGMMMXwtD5m0G6oyogUKOx4XmI+dlmy3g52kLL3M
+        5FBOfhpjb2h9ly6WZ5ihThU=
+X-Google-Smtp-Source: AA6agR4OpfpC6IwX4K56VI00fJs3GzZ/3hkLwq6ovd57/qBTvUsWIzHX98cZUrRLT/iO90pZh12IuA==
+X-Received: by 2002:a05:6a00:acc:b0:530:e79e:fc27 with SMTP id c12-20020a056a000acc00b00530e79efc27mr3640679pfl.61.1661516395878;
+        Fri, 26 Aug 2022 05:19:55 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id x19-20020a170902ea9300b0016f975be2e7sm1407426plb.139.2022.08.26.05.19.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 05:19:55 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 26 Aug 2022 05:19:54 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Robert Marko <robert.marko@sartura.hr>,
+        Andreas =?iso-8859-1?Q?B=F6hler?= <dev@aboehler.at>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] Documentation: devicetree: update bindings for
+ tps23861
+Message-ID: <20220826121954.GB2897306@roeck-us.net>
+References: <20220825143737.77732-1-dev@aboehler.at>
+ <20220825150236.GB240395@roeck-us.net>
+ <CA+HBbNEEvyn7a-CXzbFHywvHBky-Kwu8O3POrqo=huOJf-n2pQ@mail.gmail.com>
+ <20220825152934.GA1439919@roeck-us.net>
+ <CA+HBbNH5GGrqN4mUB2hByVuTjc02f_t88pdpKEKXNjxScYyrtw@mail.gmail.com>
+ <9d25d239-8d40-e639-c5e5-a308bc41d22f@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <9d25d239-8d40-e639-c5e5-a308bc41d22f@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename iommu-sva-lib.c[h] to iommu-sva.c[h] as it contains all code
-for SVA implementation in iommu core.
+On Fri, Aug 26, 2022 at 09:56:29AM +0300, Krzysztof Kozlowski wrote:
+> On 25/08/2022 18:31, Robert Marko wrote:
+> > On Thu, Aug 25, 2022 at 5:29 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >>
+> >> On Thu, Aug 25, 2022 at 05:07:45PM +0200, Robert Marko wrote:
+> >>> On Thu, Aug 25, 2022 at 5:02 PM Guenter Roeck <linux@roeck-us.net> wrote:
+> >>>>
+> >>>> On Thu, Aug 25, 2022 at 04:37:36PM +0200, Andreas Böhler wrote:
+> >>>>> The tps23861 driver does not initialize the chip and relies on it being
+> >>>>> in auto-mode by default. On some devices, these controllers default to
+> >>>>> OFF-Mode and hence cannot be used at all.
+> >>>>>
+> >>>>> This brings minimal support for initializing the controller in a user-
+> >>>>> defined mode.
+> >>>>>
+> >>>>> Signed-off-by: Andreas Böhler <dev@aboehler.at>
+> >>>>
+> >>>> nack for the series, sorry. The suggested properties are not hardware
+> >>>> monitoring but phy properties. There should be a separate phy driver
+> >>>> to manage those.
+> >>>>
+> >>>> Also, as mentioned, the hwmon 'enable' attribute is abused to control
+> >>>> port functionality and should be removed.
+> >>>
+> >>> Hi Guenter,
+> >>> Are you referring to an ethernet PHY driver or the generic PHY framework?
+> >>>
+> >>
+> >> Could be both, though ethernet phy sounds about right for me.
+> >> I don't know where/how similar chips are handled. hwmon is most definitey
+> >> the wrong place.
+> > 
+> > Hi,
+> > 
+> > Well, that is the thing, this is definitively not an ethernet PHY nor
+> > a PHY of any other kind.
+> > I dont see where it would fit if not hwmon, there is no more specific
+> > subsystem in the
+> > kernel.
+> 
+> It's not hwmon. The device has monitoring capabilities, but it's only
+> one piece and calling something hwmon just because can provide sensor
+> data is like calling a plane a car, because it has wheels.
+> 
+> Maybe this is similar to these series:
+> https://lore.kernel.org/linux-devicetree/20220825130211.3730461-1-o.rempel@pengutronix.de/
+> ?
+> 
+> The datasheet says it is a "PSE Controller" so looks similar to the
+> problem solved above...
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Tested-by: Tony Zhu <tony.zhu@intel.com>
----
- drivers/iommu/{iommu-sva-lib.h => iommu-sva.h}  | 6 +++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 2 +-
- drivers/iommu/intel/iommu.c                     | 2 +-
- drivers/iommu/intel/svm.c                       | 2 +-
- drivers/iommu/io-pgfault.c                      | 2 +-
- drivers/iommu/{iommu-sva-lib.c => iommu-sva.c}  | 2 +-
- drivers/iommu/iommu.c                           | 2 +-
- drivers/iommu/Makefile                          | 2 +-
- 9 files changed, 11 insertions(+), 11 deletions(-)
- rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (95%)
- rename drivers/iommu/{iommu-sva-lib.c => iommu-sva.c} (99%)
+Excellent find. That infrastructure is exactly what the driver for this chip
+needs to tie into. I would suggest to get in touch with the author of that
+series - it is quite likely that they are working on adding support for one
+or more real PSE chips.
 
-diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva.h
-similarity index 95%
-rename from drivers/iommu/iommu-sva-lib.h
-rename to drivers/iommu/iommu-sva.h
-index 1b3ace4b5863..7215a761b962 100644
---- a/drivers/iommu/iommu-sva-lib.h
-+++ b/drivers/iommu/iommu-sva.h
-@@ -2,8 +2,8 @@
- /*
-  * SVA library for IOMMU drivers
-  */
--#ifndef _IOMMU_SVA_LIB_H
--#define _IOMMU_SVA_LIB_H
-+#ifndef _IOMMU_SVA_H
-+#define _IOMMU_SVA_H
- 
- #include <linux/ioasid.h>
- #include <linux/mm_types.h>
-@@ -72,4 +72,4 @@ iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
- 	return IOMMU_PAGE_RESP_INVALID;
- }
- #endif /* CONFIG_IOMMU_SVA */
--#endif /* _IOMMU_SVA_LIB_H */
-+#endif /* _IOMMU_SVA_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index e7473e879b3c..c5471fa0299c 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -10,7 +10,7 @@
- #include <linux/slab.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- #include "../../io-pgtable-arm.h"
- 
- struct arm_smmu_mmu_notifier {
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index f6e145973bc9..a3c5b1a1203b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -31,7 +31,7 @@
- #include <linux/amba/bus.h>
- 
- #include "arm-smmu-v3.h"
--#include "../../iommu-sva-lib.h"
-+#include "../../iommu-sva.h"
- 
- static bool disable_bypass = true;
- module_param(disable_bypass, bool, 0444);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index b8c0afc7f0ac..f5ae4f7f916d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -27,7 +27,7 @@
- 
- #include "iommu.h"
- #include "../irq_remapping.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 3be41b0291e5..028ad54732c5 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -24,7 +24,7 @@
- #include "iommu.h"
- #include "pasid.h"
- #include "perf.h"
--#include "../iommu-sva-lib.h"
-+#include "../iommu-sva.h"
- #include "trace.h"
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index d046d89cec55..e5b8b9110c13 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -11,7 +11,7 @@
- #include <linux/slab.h>
- #include <linux/workqueue.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- /**
-  * struct iopf_queue - IO Page Fault queue
-diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva.c
-similarity index 99%
-rename from drivers/iommu/iommu-sva-lib.c
-rename to drivers/iommu/iommu-sva.c
-index 520ec0b4ed85..54b4a66583d4 100644
---- a/drivers/iommu/iommu-sva-lib.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -6,7 +6,7 @@
- #include <linux/sched/mm.h>
- #include <linux/iommu.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
- static DECLARE_IOASID_SET(iommu_sva_pasid);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4dbf9d5436de..9e84f58440dd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -29,7 +29,7 @@
- #include <trace/events/iommu.h>
- #include <linux/sched/mm.h>
- 
--#include "iommu-sva-lib.h"
-+#include "iommu-sva.h"
- 
- static struct kset *iommu_group_kset;
- static DEFINE_IDA(iommu_group_ida);
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 44475a9b3eea..c1763476162b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -27,6 +27,6 @@ obj-$(CONFIG_FSL_PAMU) += fsl_pamu.o fsl_pamu_domain.o
- obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
- obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
- obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
--obj-$(CONFIG_IOMMU_SVA) += iommu-sva-lib.o io-pgfault.o
-+obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o io-pgfault.o
- obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
- obj-$(CONFIG_APPLE_DART) += apple-dart.o
--- 
-2.25.1
+The only open question is if the hwmon driver should be retained as a
+separate driver or be implemented as part of the PSE networking driver.
+I am open to both.
 
+Thanks,
+Guenter
