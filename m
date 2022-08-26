@@ -2,185 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA24ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 05:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03865ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 05:07:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244711AbiHZFGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 01:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
+        id S244793AbiHZFHU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 01:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbiHZFGr (ORCPT
+        with ESMTP id S229662AbiHZFHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 01:06:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B81A5FF6D
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 22:06:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661490405;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=j5L7U70XfB7JJbqKJpFjRNU09Ztqe5oeNdPnEjrEBQE=;
-        b=PCESbTpeNxnqQbPiYsLEfp6xd3HnDXNoOrwdtGRGQ1V6ADX+j8c6bEegBv518/LJeoAF2A
-        ZPhlTXauFXEntYo4ZLpADCctmXC4p7dlMMkNi+TKVJBvOLT8O7GHmcyK0vXV0Jn4eNAIEP
-        f302TYB0/dFBFWDcJGQHHPS0ALuwVko=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-593-3qsgR1lXMfSE2gOlJWhz5g-1; Fri, 26 Aug 2022 01:06:43 -0400
-X-MC-Unique: 3qsgR1lXMfSE2gOlJWhz5g-1
-Received: by mail-lf1-f72.google.com with SMTP id w18-20020ac25d52000000b0048af13b6ef6so112369lfd.7
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 22:06:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=j5L7U70XfB7JJbqKJpFjRNU09Ztqe5oeNdPnEjrEBQE=;
-        b=ukM05Cwoj1DRrsVy/mqQ7sqEkHusQ+yHcBWqXLA2w7REoIY5l9Aof78jqo/hsyPQ3T
-         d+vVJLMxZr97W3f41xSLL/6FJ+nuA7v5vG2wqF3LQhcXKmLRZSSAr0j7gxWud24XH66Q
-         V/J9NO8EjKleGB2ypy95u9qvm1dSA6OawO/Y3QvJ3M7CGPREFCJ2+iTe4Fn56Mcy7vE3
-         /pADFVzioeIzxdwf6CBX1iY21O35U3+DaV5iUq472R7LGCwOV5nVdifcE1Tx+ElF7/wC
-         AFBjaMAbBFKT+KAtX2QBIdJVagVaEE+iZO8ExeapzcFejooUqaAhjVM7+lgvXIEgmTRw
-         3R6w==
-X-Gm-Message-State: ACgBeo2FqE52ISI/4ToNU1MLSGRLtmHLIwmGwJM6zVyFQii3WF3gXwK1
-        STHFFYQ9KuOKQYtfPID3gfIALauJB5ghCCutfB6A8GmEdExr46B2TIr6lbp+WMNl+yhpJ2kF6i4
-        fdJcQg/YRXONZH3NykHQwJpO3Mk6AhdO98Cho8RX0mFSCSbqnC80rn8IUyJoQLjvbJCqVeMeOrN
-        k=
-X-Received: by 2002:a05:651c:550:b0:261:c6c8:72ef with SMTP id q16-20020a05651c055000b00261c6c872efmr1959831ljp.313.1661490401927;
-        Thu, 25 Aug 2022 22:06:41 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7KhnNWZPdexwn2fqKJLP2Kf5/TOYnhw+PhVAFrvK1VpkotIkBy7Oo3f3JabcMtk7Fj4fUTag==
-X-Received: by 2002:a05:651c:550:b0:261:c6c8:72ef with SMTP id q16-20020a05651c055000b00261c6c872efmr1959820ljp.313.1661490401685;
-        Thu, 25 Aug 2022 22:06:41 -0700 (PDT)
-Received: from mjp-Z390-AORUS-MASTER.redhat.com (91-145-109-188.bb.dnainternet.fi. [91.145.109.188])
-        by smtp.gmail.com with ESMTPSA id o20-20020ac24e94000000b0048b193f677dsm219269lfr.178.2022.08.25.22.06.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 22:06:41 -0700 (PDT)
-From:   mpenttil@redhat.com
-To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc:     apopple@nvidia.com, jhubbard@nvidia.com, rcampbell@nvidia.com,
-        jgg@ziepe.ca, vbabka@suse.cz,
-        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mpenttil@redhat.com>
-Subject: [PATCH v8] mm/hmm/test: use char dev with struct device to get device node
-Date:   Fri, 26 Aug 2022 08:06:31 +0300
-Message-Id: <20220826050631.25771-1-mpenttil@redhat.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 26 Aug 2022 01:07:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C275A6C11;
+        Thu, 25 Aug 2022 22:07:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA399B80ABF;
+        Fri, 26 Aug 2022 05:07:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B4FDC433D7;
+        Fri, 26 Aug 2022 05:07:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661490433;
+        bh=EhUBCrNn3AH2IoZWBlmeQVBIcyb6d3XAKROe8g5mp34=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sQZmA42nG8dvoHBFwRSrpQCkeVcTbAEBxs4ImjTc0FNoy9LLpe86uKOtMmsTZWyL7
+         NtlkeDvViQsYaTZQHYsSF73jWeMRunRL7fyIHnvfXT+eLA6agFU6j54kYtV2xuOkLM
+         HxqmP3YdMYe1pt1zpgWZ2u4yLZiyf8qTuP1uKm0LBd8F4varwUFAQS2Ra6OmSF3e2G
+         Dap4eNNHbXu78oaIAJVMr7elaAHrP2prPchejJ+RDhLxVRnJL67z98zvXor9wAl2xl
+         LCA2o0aCM+4wH28NSzgTTxG7OljTWm5H7mR18MpX3SMV9/O9P42D34Xof/lSSETr9H
+         wWNrYQbh5QqJA==
+Date:   Thu, 25 Aug 2022 22:07:11 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     "Jason A . Donenfeld " <Jason@zx2c4.com>,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH v3 2/3] crypto: lib - move __crypto_xor into utils
+Message-ID: <YwhU/0XHDGIuiu5T@sol.localdomain>
+References: <20220725183636.97326-1-ebiggers@kernel.org>
+ <20220725183636.97326-3-ebiggers@kernel.org>
+ <YwhPtnL6yVG0K2Lo@sol.localdomain>
+ <YwhQIRVc60u4B9Bs@gondor.apana.org.au>
+ <YwhQmcgPpe2fpx86@sol.localdomain>
+ <YwhRpUcbqs1GGGU6@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwhRpUcbqs1GGGU6@gondor.apana.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mika Penttilä <mpenttil@redhat.com>
+On Fri, Aug 26, 2022 at 12:52:53PM +0800, Herbert Xu wrote:
+> On Thu, Aug 25, 2022 at 09:48:25PM -0700, Eric Biggers wrote:
+> >
+> > The one I'm commenting on (patch 2 of 3).  But patch 1 is needed as a
+> > prerequisite.
+> 
+> Oh so it's just dropping the select? Can you please send me a
+> separate patch for the crypto tree with a Fixes header? I'll
+> deal with the merge conflict.
+> 
 
-HMM selftests use an in-kernel pseudo device to emulate device
-memory. The pseudo device registers a major device range for two or
-four pseudo device instances. User space has a script that
-reads /proc/devices in order to find the assigned major number,
-and sends that to mknod(1), once for each node.
+Done: https://lore.kernel.org/r/20220826050456.101321-1-ebiggers@kernel.org
 
-Change this to properly use cdev and struct device APIs.
-
-Delete the /proc/devices parsing from the user-space test script, now
-that it is unnecessary.
-
-Also, deleted an unused field in struct dmirror_device: devmem.
-
-Signed-off-by: Mika Penttilä <mpenttil@redhat.com>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alistair Popple <apopple@nvidia.com>
-Cc: Ralph Campbell <rcampbell@nvidia.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
----
-v8:
-        - refresh for device coherent
-v7:
-        - collected more Review-by's
-v6:
-        - remove device names array
-        - check return value of dev_set_name()
-v5:
-        - fix whitespace
-        . delete unused structure field
-v4:
-        - fix commit log
-v3:
-        - use cdev_device_add() instead of miscdevice
-v2:
-        - Cleanups per review comments from John Hubbard
-        - Added Tested-by and Ccs
-
- lib/test_hmm.c                         | 13 ++++++++++---
- tools/testing/selftests/vm/test_hmm.sh | 10 ----------
- 2 files changed, 10 insertions(+), 13 deletions(-)
-
-diff --git a/lib/test_hmm.c b/lib/test_hmm.c
-index e3965cafd27c..6a33f6b1b465 100644
---- a/lib/test_hmm.c
-+++ b/lib/test_hmm.c
-@@ -107,8 +107,8 @@ struct dmirror_chunk {
-  */
- struct dmirror_device {
- 	struct cdev		cdevice;
--	struct hmm_devmem	*devmem;
- 	unsigned int            zone_device_type;
-+	struct device		device;
- 
- 	unsigned int		devmem_capacity;
- 	unsigned int		devmem_count;
-@@ -1390,7 +1390,14 @@ static int dmirror_device_init(struct dmirror_device *mdevice, int id)
- 
- 	cdev_init(&mdevice->cdevice, &dmirror_fops);
- 	mdevice->cdevice.owner = THIS_MODULE;
--	ret = cdev_add(&mdevice->cdevice, dev, 1);
-+	device_initialize(&mdevice->device);
-+	mdevice->device.devt = dev;
-+
-+	ret = dev_set_name(&mdevice->device, "hmm_dmirror%u", id);
-+	if (ret)
-+		return ret;
-+
-+	ret = cdev_device_add(&mdevice->cdevice, &mdevice->device);
- 	if (ret)
- 		return ret;
- 
-@@ -1416,7 +1423,7 @@ static void dmirror_device_remove(struct dmirror_device *mdevice)
- 		kfree(mdevice->devmem_chunks);
- 	}
- 
--	cdev_del(&mdevice->cdevice);
-+	cdev_device_del(&mdevice->cdevice, &mdevice->device);
- }
- 
- static int __init hmm_dmirror_init(void)
-diff --git a/tools/testing/selftests/vm/test_hmm.sh b/tools/testing/selftests/vm/test_hmm.sh
-index 539c9371e592..46e19b5d648d 100755
---- a/tools/testing/selftests/vm/test_hmm.sh
-+++ b/tools/testing/selftests/vm/test_hmm.sh
-@@ -52,21 +52,11 @@ load_driver()
- 			usage
- 		fi
- 	fi
--	if [ $? == 0 ]; then
--		major=$(awk "\$2==\"HMM_DMIRROR\" {print \$1}" /proc/devices)
--		mknod /dev/hmm_dmirror0 c $major 0
--		mknod /dev/hmm_dmirror1 c $major 1
--		if [ $# -eq 2 ]; then
--			mknod /dev/hmm_dmirror2 c $major 2
--			mknod /dev/hmm_dmirror3 c $major 3
--		fi
--	fi
- }
- 
- unload_driver()
- {
- 	modprobe -r $DRIVER > /dev/null 2>&1
--	rm -f /dev/hmm_dmirror?
- }
- 
- run_smoke()
--- 
-2.17.1
-
+- Eric
