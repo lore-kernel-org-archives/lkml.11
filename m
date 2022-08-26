@@ -2,87 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D59ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4658AECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343631AbiHZI3c (ORCPT
+        id S1343646AbiHZIaP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40868 "EHLO
+        Fri, 26 Aug 2022 04:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343621AbiHZI31 (ORCPT
+        with ESMTP id S245755AbiHZIaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:29:27 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D559ED4F6B;
-        Fri, 26 Aug 2022 01:29:23 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id c2so1013869plo.3;
-        Fri, 26 Aug 2022 01:29:23 -0700 (PDT)
+        Fri, 26 Aug 2022 04:30:08 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 530D4E0C5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:30:03 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id w19so1794727ejc.7
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:30:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=ZqQXUKYAXaNDETmnzeEy5G83vWE0Lw9aO8Wft3lc78A=;
-        b=lHm01CIa8Ixwmw1uJbquAM1f1zYuep3xl5yOXbVV8/h1mKz1UvIt20rKsBMiX05kez
-         jWWGO/PVdQHowBnz/kXPpWzEDX41esricYJZ9gYPVItMvjHRyO+X7UFKRnAnc/8kNU5c
-         O0sotFfxGvl7R6IVAHMY3+PuKbpe+arBx34jFUo+Q7LQH+LZ+5fsJUX21od4/hB62J2E
-         imDG60OHOvchC27FNt4EXDUbXrOQdXe9kuie+wz/VjSOX6E//av7SHIP4rmUa8UIn+u6
-         IrZNMxQTckyN3oq41/WK9Z8kL2P3EtPWdm54BrIPEocfesPlK/zTzVWVgWstNsndW8DT
-         ++gQ==
+        bh=2w7uDDGae7lPC9PBKoaaB26gLASkKWk1Ljox9Qb8l6Q=;
+        b=WzlJoUzfNCpYcC/wKzgOZa08JruxJVjED39QeHg1/uZzWWP49D65DM1aFYc3qaKtvn
+         Q6zinWKDzFkDnxkWbGAh3BdqVKj2p2Y8GJhTsY/Pxt17M0r3EvJJymiAQrA33yDj5s17
+         X9iqJjwU09qVwnXAfOZGVQrRe+vzz3SkUiI7GmHzLQav3BjthDp7VmNiWuFuuAFntQ8c
+         meb78ZzYilLV0zjJZ/sdxprNpg3psTxruUB6RB89PizXIEEFmMorRbzKW8fkamtp+eE/
+         UP/DeTKxY08moOLhnrFO8NtHOaRtGKMwmVAnVvG2+YiB6+su8G33EAWTxccYf6n5zxDH
+         Bt8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=ZqQXUKYAXaNDETmnzeEy5G83vWE0Lw9aO8Wft3lc78A=;
-        b=sE7Dm/nbNEKpVvXj0VW123iIHQ7T8FT/5U80WzLwUfy/46cwU26j1LaIDUe5k2ryMf
-         EeoXYGEMaehgO/MohLCOGIBdnLWQkXNPi2bFDcOQ6MajESCNxNdOjx3oEaEHM841MJCE
-         oxfcTIHryT+RpQQ9cbUXJHeSeE9bVM04+fuUruWyIowRsYxJ2G6rHhMwYxu0X3s5cgbR
-         VZ5BG7dAvV1tK200dLIZuQKX9iGhrpUb5nU3zz79VTJ9N9rkfHxrP/rV8ydWjuyWn6Io
-         C69aK0xszJsr+DFP93ukr7pCH4Ks5UOBqPTTALkWaS1BREC7TeOCWv+TShc7Vi0oFGVr
-         jT0Q==
-X-Gm-Message-State: ACgBeo2e5LbLo+bsLMuzmD3r8pyY7qGv5Ul5IwBfeDY6GjMdT6Mc8OdG
-        TRQPEKD82fvRrEVqGd1gTbqgPNNIsclu25ma8E0=
-X-Google-Smtp-Source: AA6agR5/8OQlotyHYlj9mA8z3fbCzfvGFlXA3R4L9leXIjUfPV5T/p5Z2C4FvaohkfRE+ehar9Wy4xF9a4a+R1k92OA=
-X-Received: by 2002:a17:902:e5cc:b0:16f:1e31:da6c with SMTP id
- u12-20020a170902e5cc00b0016f1e31da6cmr2745061plf.66.1661502563310; Fri, 26
- Aug 2022 01:29:23 -0700 (PDT)
+        bh=2w7uDDGae7lPC9PBKoaaB26gLASkKWk1Ljox9Qb8l6Q=;
+        b=IrpxBTaInb5FehlIUTpTzTmkNXmaqlE7didhZhiAO7FaQ69t0BQtt/y2yoPbFTZ/7Y
+         /+rDo8BD0vQjg2rp6K0mNu/1Ot/V4BUqqdOcWrfDjIMhmQiezRJp9u/1Bw56S7JsI2N3
+         u+MNLzj9VSG3JNzNHN1hiXf5LcUjw7e7krSV2HfcLroCEvtP2JJ4JU1Jzb4Zmd4s898Q
+         iFFRmBfl2hvIM49hVctRAbfci06VuNWupcuuJyOyo/Pu5bdkBitU6Uq+0XYJ1NeMQNLJ
+         KgT3MWICRw9nCOwf/QPh4PaaWqUati6BaGFsUhVAuyxnrRC3but+RYIDvbIEih9Ya46q
+         eaew==
+X-Gm-Message-State: ACgBeo0C9CGPE+ZsYuPWO7sD08r7Bau2sRma8piJ4kZBkX1RbVGDlbHX
+        9QEE5h2SJTNJo4+J4iN0s81N15m6zMWaLhvlCFh/ZQ==
+X-Google-Smtp-Source: AA6agR5Mur9vHmJyu+/jiMMkqB3v9LgJ6NwVlpsA0j4qLjcco/mAHvxbCi0JTgMvXiCAzfETgkWpYo/C46NbmmoWnWI=
+X-Received: by 2002:a17:907:6293:b0:73d:b27b:e594 with SMTP id
+ nd19-20020a170907629300b0073db27be594mr4929048ejc.526.1661502601587; Fri, 26
+ Aug 2022 01:30:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220823055739.1451419-1-floridsleeves@gmail.com> <YwRyC93rC/BAjR23@kroah.com>
-In-Reply-To: <YwRyC93rC/BAjR23@kroah.com>
-From:   Li Zhong <floridsleeves@gmail.com>
-Date:   Fri, 26 Aug 2022 01:29:12 -0700
-Message-ID: <CAMEuxRrLXov-brDL4ENyHS=1Yjd2YE0bGNHZ69p9wmuBQo9avQ@mail.gmail.com>
-Subject: Re: [PATCH v1] drivers/tty/serial: check the return value of uart_port_check()
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jirislaby@kernel.org
+References: <20220819190054.31348-1-a-nandan@ti.com> <20220819190054.31348-3-a-nandan@ti.com>
+In-Reply-To: <20220819190054.31348-3-a-nandan@ti.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 26 Aug 2022 10:29:50 +0200
+Message-ID: <CACRpkdaktinAJveF_nH9NYYk7mAvnResRzoyuVDVWpwKKq6JOQ@mail.gmail.com>
+Subject: Re: [PATCH 2/4] dt-bindings: pinctrl: k3: Introduce pinmux
+ definitions for J784s4
+To:     Apurva Nandan <a-nandan@ti.com>
+Cc:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        Hari Nagalla <hnagalla@ti.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 11:22 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Aug 22, 2022 at 10:57:39PM -0700, lily wrote:
-> > uart_port_check() can return NULL pointer. Check its return value
-> > before dereference it.
->
-> Also, how did you find this issue?
->
-> >
-> > Signed-off-by: Li Zhong <floridsleeves@gmail.com>
->
-> Also, your From: name does not match this one, so I can't take the patch
-> even if it is ok :(
->
-> Please do initial kernel work in drivers/staging/ to get issues like
-> this fixed up before moving to other portions of the kernel so that
-> basic email problems do not bother other subsystem maintainers.
->
-Thanks for the suggestions! I'll correct the From: in my v2 patch.
+On Fri, Aug 19, 2022 at 9:01 PM Apurva Nandan <a-nandan@ti.com> wrote:
 
-> thanks,
+> Add pinctrl macros for J784s4 SoC. These macro definitions are
+> similar to that of J721s2, but adding new definitions to avoid
+> any naming confusions in the soc dts files.
 >
-> greg k-h
+> checkpatch insists the following error exists:
+> ERROR: Macros with complex values should be enclosed in parentheses
 >
+> However, we do not need parentheses enclosing the values for this
+> macro as we do intend it to generate two separate values as has been
+> done for other similar platforms.
 >
+> Signed-off-by: Hari Nagalla <hnagalla@ti.com>
+> Signed-off-by: Apurva Nandan <a-nandan@ti.com>
+
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+I guess you will merge these patches together?
+Tell me if you rather want that I apply this one patch to the pinctrl tree.
+
+Yours,
+Linus Walleij
