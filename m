@@ -2,58 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E475DECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9268DECAAD8
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:43:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344372AbiHZQmc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 12:42:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60700 "EHLO
+        id S245425AbiHZQnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 12:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343587AbiHZQmU (ORCPT
+        with ESMTP id S1344065AbiHZQmz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 12:42:20 -0400
+        Fri, 26 Aug 2022 12:42:55 -0400
 Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833462D1C2
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:42:13 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-33f8988daecso24875897b3.12
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:42:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C672CC86
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:42:53 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-33d9f6f4656so33331647b3.21
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:42:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=byVpB80TV/x11qGZZj1V9Hbrrk6J+Ff/Bi0KHWzM1Uo=;
-        b=W/VJ5rg3aGuizEVj60WkWyRqB0n4EBZUrHEDpDfRWvuCCWoehnJyi3Rk4VJfX4ZUDJ
-         I2qBuJe2t5g52IWnleVkrQQz++kvZNpZPyFEgMwfRm+f7sF4VtcbNJOlWZTi6pCehRIr
-         WCC5X6P0Vq6ehNJhHIf9a5DEEgCpOc+aebP+RNnyveFmorCqIWQu2kFfiJlYzI6iz7OI
-         YYJXu/LyVg+QaqaArBg3BaR+aYN8AWMqgj9/MKglaxPcrCyRkJ9+U2ORELhlXx8IIb21
-         2wnW+TFj9uBCL4tTwo7HjI9gvXNizSNw/kSNLvGjfWNm/dqGnCaCebYOMNsO2V7xYT7p
-         3SGg==
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=x7OCRh/WujRFV4WEHTN0aVfGYVTj+gZ5+QGOawN0UMQ=;
+        b=dOmEkYWv5eacAeX+bYu/5ceyXdLgNpDQPzA9DZnGT6HLOQVMNYJg3R8q8K9vrarc0O
+         DtMvGoOJssxiHtmL5PkSz065DyB8gBC28ondjU4uYQ8PT3TpEuQ2mgepQN7+FJ7zv2cM
+         NClcBXtNBvgKPi9HVMdMjHZc1a+dwbPwIbOJRIy0AQ3T9WNMgyQE2W/eBi7Fw79SO+xu
+         c3e1Mn3pZyNNP5v3kZcwdHZ7WYXFJecUDOo0qYhkReiVmtPNX9LxemrqJzhu7gXjXjLi
+         1T3+dviNWOMZMMgd2bElRLtXoMDHOoZ4crMWrC7PAFv482VOrjdjexuA0wbDenO9NyH5
+         tYVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=byVpB80TV/x11qGZZj1V9Hbrrk6J+Ff/Bi0KHWzM1Uo=;
-        b=lqZ8ioV8Obn5XTxzrLizea7VG9iQZ00LejuTk5cubc+mAh6WB92WRsgSSUYxA4can5
-         oLA7jGFArZoHQy0VN3QllnEKk2cmpjeshmhh4lGtqF929Gt1zR/d5KZ4hK4fedpl6Jrc
-         RmUxoiwFjuU348+Dnlog+wr6yNjR/F1Sa9+Z3S3LVxvkf8lIvzPm2R6U4qTdlu9PfW6E
-         QUIDGmjx76fsD6BpgG8ESp9OQpGD/cZVTu5DR/HuKm39tZ2ePrxLBq2Xd7BVO2bmgOo6
-         Q0AVmbLGipSjog375SHkvrRV+gtSigUUNdSBJiZFxNSaS2Gx8ORxbk9uLIeqF9F1Agbo
-         E4AQ==
-X-Gm-Message-State: ACgBeo0+I+DuUgoSwzrgGsEjhsvOqNQoHp/cnz20eMXlBmJmGSUYVxfc
-        hMXAABTS12DV2MMrW4/vrhSnwR4ELrpW
-X-Google-Smtp-Source: AA6agR6t3Ar57WkibYNIjXdxikxJkwvqy8S0oMCIakUmWXO2vxiyAyZG49JLY3UVp2N9ZoitG2YIlxHWSu8N
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=x7OCRh/WujRFV4WEHTN0aVfGYVTj+gZ5+QGOawN0UMQ=;
+        b=4pXI3nCJh6TP8l7hM+a86jmxr4xnwq14MtJDz/GnLOr4hkCUuLoUj0HOtxq9/SXr88
+         lxe6mmWzfGXDvJ8ZyGUDRyAqs2S4sfuj0gey7qPm0FZMO3WYoo5oT4EnaSJ6VITYATih
+         goTrpWZSBksaSYAkWIcx33wmxDhUpRCMNChekim+1ninD4ue3S87Xje9508Kcq5F/tdv
+         r0qnNxa+/KINet0L2pjZNTXyjfw3EMX4HCO+TxIUHKc03Q4EX7nivFSLS8Gkm7Xgxk/3
+         fD25c3E9UTdRcuQwtmKUNmuDUVMDLn+b1J7rogyWdNYxvKgG73bOTDwdWX1+L9TKDJT7
+         Yp9Q==
+X-Gm-Message-State: ACgBeo2sY9U4O5x1FKp1lWAfwajRZsHqLfN8A4tR5m02CUeTd/2Lz4HS
+        2QtYixoy5vrHIu82GktAUemA3gK9rR7v
+X-Google-Smtp-Source: AA6agR60YCDarlCEotO39GXAdMY5aHeBRNEw6vaCOtc2CzOpsY/VBmH/cffxSqGPWU0anRXBd9lhbojQL9Bn
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:ccb1:c46b:7044:2508])
- (user=irogers job=sendgmr) by 2002:a25:ba90:0:b0:68e:de4c:b2e0 with SMTP id
- s16-20020a25ba90000000b0068ede4cb2e0mr484149ybg.528.1661532132627; Fri, 26
- Aug 2022 09:42:12 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 09:40:14 -0700
-In-Reply-To: <20220826164027.42929-1-irogers@google.com>
-Message-Id: <20220826164027.42929-6-irogers@google.com>
+ (user=irogers job=sendgmr) by 2002:a05:6902:124e:b0:668:222c:e8da with SMTP
+ id t14-20020a056902124e00b00668222ce8damr469773ybu.383.1661532172310; Fri, 26
+ Aug 2022 09:42:52 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 09:42:24 -0700
+Message-Id: <20220826164242.43412-1-irogers@google.com>
 Mime-Version: 1.0
-References: <20220826164027.42929-1-irogers@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Subject: [PATCH v4 05/18] perf bpf: Remove unused pthread.h include
+Subject: [PATCH v4 00/18] Mutex wrapper, locking and memory leak fixes
 From:   Ian Rogers <irogers@google.com>
 To:     Peter Zijlstra <peterz@infradead.org>,
         Ingo Molnar <mingo@redhat.com>,
@@ -109,25 +105,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No pthread usage in bpf-event.h.
+When fixing a locking race and memory leak in:
+https://lore.kernel.org/linux-perf-users/20211118193714.2293728-1-irogers@google.com/
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/util/bpf-event.h | 1 -
- 1 file changed, 1 deletion(-)
+It was requested that debug mutex code be separated out into its own
+files. This was, in part, done by Pavithra Gurushankar in:
+https://lore.kernel.org/lkml/20220727111954.105118-1-gpavithrasha@gmail.com/
 
-diff --git a/tools/perf/util/bpf-event.h b/tools/perf/util/bpf-event.h
-index 144a8a24cc69..1bcbd4fb6c66 100644
---- a/tools/perf/util/bpf-event.h
-+++ b/tools/perf/util/bpf-event.h
-@@ -4,7 +4,6 @@
- 
- #include <linux/compiler.h>
- #include <linux/rbtree.h>
--#include <pthread.h>
- #include <api/fd/array.h>
- #include <stdio.h>
- 
+These patches fix issues with the previous patches, add in the
+original dso->nsinfo fix and then build on our mutex wrapper with
+clang's -Wthread-safety analysis. The analysis found missing unlocks
+in builtin-sched.c which are fixed and -Wthread-safety is enabled by
+default when building with clang.
+
+v4. Adds a comment for the trylock result, fixes the new line (missed
+    in v3) and removes two blank lines as suggested by Adrian Hunter.
+v3. Adds a missing new line to the error messages and removes the
+    pshared argument to mutex_init by having two functions, mutex_init
+    and mutex_init_pshared. These changes were suggested by Adrian Hunter.
+v2. Breaks apart changes that s/pthread_mutex/mutex/g and the lock
+    annotations as requested by Arnaldo and Namhyung. A boolean is
+    added to builtin-sched.c to terminate thread funcs rather than
+    leaving them blocked on delted mutexes.
+
+Ian Rogers (17):
+  perf bench: Update use of pthread mutex/cond
+  perf tests: Avoid pthread.h inclusion
+  perf hist: Update use of pthread mutex
+  perf bpf: Remove unused pthread.h include
+  perf lock: Remove unused pthread.h include
+  perf record: Update use of pthread mutex
+  perf sched: Update use of pthread mutex
+  perf ui: Update use of pthread mutex
+  perf mmap: Remove unnecessary pthread.h include
+  perf dso: Update use of pthread mutex
+  perf annotate: Update use of pthread mutex
+  perf top: Update use of pthread mutex
+  perf dso: Hold lock when accessing nsinfo
+  perf mutex: Add thread safety annotations
+  perf sched: Fixes for thread safety analysis
+  perf top: Fixes for thread safety analysis
+  perf build: Enable -Wthread-safety with clang
+
+Pavithra Gurushankar (1):
+  perf mutex: Wrapped usage of mutex and cond
+
+ tools/perf/Makefile.config                 |   5 +
+ tools/perf/bench/epoll-ctl.c               |  33 +++---
+ tools/perf/bench/epoll-wait.c              |  33 +++---
+ tools/perf/bench/futex-hash.c              |  33 +++---
+ tools/perf/bench/futex-lock-pi.c           |  33 +++---
+ tools/perf/bench/futex-requeue.c           |  33 +++---
+ tools/perf/bench/futex-wake-parallel.c     |  33 +++---
+ tools/perf/bench/futex-wake.c              |  33 +++---
+ tools/perf/bench/numa.c                    |  93 ++++++----------
+ tools/perf/builtin-inject.c                |   4 +
+ tools/perf/builtin-lock.c                  |   1 -
+ tools/perf/builtin-record.c                |  13 ++-
+ tools/perf/builtin-sched.c                 | 105 +++++++++---------
+ tools/perf/builtin-top.c                   |  45 ++++----
+ tools/perf/tests/mmap-basic.c              |   2 -
+ tools/perf/tests/openat-syscall-all-cpus.c |   2 +-
+ tools/perf/tests/perf-record.c             |   2 -
+ tools/perf/ui/browser.c                    |  20 ++--
+ tools/perf/ui/browsers/annotate.c          |  12 +--
+ tools/perf/ui/setup.c                      |   5 +-
+ tools/perf/ui/tui/helpline.c               |   5 +-
+ tools/perf/ui/tui/progress.c               |   8 +-
+ tools/perf/ui/tui/setup.c                  |   8 +-
+ tools/perf/ui/tui/util.c                   |  18 ++--
+ tools/perf/ui/ui.h                         |   4 +-
+ tools/perf/util/Build                      |   1 +
+ tools/perf/util/annotate.c                 |  15 +--
+ tools/perf/util/annotate.h                 |   4 +-
+ tools/perf/util/bpf-event.h                |   1 -
+ tools/perf/util/build-id.c                 |  12 ++-
+ tools/perf/util/dso.c                      |  19 ++--
+ tools/perf/util/dso.h                      |   4 +-
+ tools/perf/util/hist.c                     |   6 +-
+ tools/perf/util/hist.h                     |   4 +-
+ tools/perf/util/map.c                      |   3 +
+ tools/perf/util/mmap.h                     |   1 -
+ tools/perf/util/mutex.c                    | 119 +++++++++++++++++++++
+ tools/perf/util/mutex.h                    | 108 +++++++++++++++++++
+ tools/perf/util/probe-event.c              |   3 +
+ tools/perf/util/symbol.c                   |   4 +-
+ tools/perf/util/top.h                      |   5 +-
+ 41 files changed, 569 insertions(+), 323 deletions(-)
+ create mode 100644 tools/perf/util/mutex.c
+ create mode 100644 tools/perf/util/mutex.h
+
 -- 
 2.37.2.672.g94769d06f0-goog
 
