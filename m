@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FABECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32A2ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:37:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245282AbiHZIha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:37:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57344 "EHLO
+        id S245330AbiHZIhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 04:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343679AbiHZIhR (ORCPT
+        with ESMTP id S245555AbiHZIhY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:37:17 -0400
+        Fri, 26 Aug 2022 04:37:24 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89F0D5700;
-        Fri, 26 Aug 2022 01:37:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710B6C2E88;
+        Fri, 26 Aug 2022 01:37:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661503035; x=1693039035;
+  t=1661503043; x=1693039043;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=R+ZXodYH0NjgQV+jNwarfE1Vs8mAKES25AbetN8LplY=;
-  b=2LkRQ/vcglasjXx+CsFkoM/wGiX2wbJci3BvNuvCVo3aQOr1eZqTq/MR
-   2bqt6UHjzMZnkBdQ4MKcTVXxVQCyAJ9xr04eTfJuol3gJuxyK8Ktb/awg
-   EGB9Llrlz5Gcz5qbECKbTpMIYfs6hVa06hDzI5vhddtbfLo8QwqFg1nDW
-   fB0jYY3a9Er70L9vwtgbYVk8abmmGceXHIjVjdQoqHUk/hHzLoqpF2gqr
-   MPPjWox4AxMmUzE7bT7aa8U3YiU0SsfFtfKYxnrTP7ULRg13k7fSIheth
-   AfyCVWb8lIdWlc7eqIyCEO/Oxk+SHKpNaGnA6kOkmm8mF7bZlyIOzxY7i
-   A==;
+  bh=K/P6g0z1JGf/ROJm+c80WS5FiI62rI1DdtOdiWRQSxs=;
+  b=YcFs0w9lx0Vjp+dlABW9n/JvMSaQoa9zJNFHeGnD8buXVxoEKvmpF7l1
+   J//cvmwLdKufvMb4M1ujppvmM2xoeZdCe8jtxYRRmdlaiHBAsW0bFOZKY
+   pe8u2nyilzH7cdxQxwlmF7nHry2BsSOGu1yXJbLReVoinforgvYBvTyOF
+   bd1zq4g1aUka6WsSG2QUF9wUtA2B8VQt+g4BaYEhUKfabrFUelLgndq8d
+   czQtVBi8eqQpsrnQivVZQyvzC/6Du2TOubWLTLyiLZNNzSCoWxQoEtY1Q
+   kItWhhtn5M1MqGa7Tz57+CXl24aZ4YaYqTL3FmIvDqgaj89GI+D82YnH2
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="174284217"
+   d="scan'208";a="171082251"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2022 01:37:15 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2022 01:37:22 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 26 Aug 2022 01:37:13 -0700
+ 15.1.2507.12; Fri, 26 Aug 2022 01:37:19 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 26 Aug 2022 01:37:11 -0700
+ 15.1.2507.12 via Frontend Transport; Fri, 26 Aug 2022 01:37:16 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
@@ -46,11 +46,10 @@ To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <arnd@arndb.de>
 CC:     <cristian.birsan@microchip.com>,
         <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Frederic Schumacher" <frederic.schumacher@microchip.com>
-Subject: [PATCH 2/9] ARM: at91: pm: fix self-refresh for sama7g5
-Date:   Fri, 26 Aug 2022 11:39:20 +0300
-Message-ID: <20220826083927.3107272-3-claudiu.beznea@microchip.com>
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 4/9] ARM: dts: at91: sama5d27_wlsom1: specify proper regulator output ranges
+Date:   Fri, 26 Aug 2022 11:39:22 +0300
+Message-ID: <20220826083927.3107272-5-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220826083927.3107272-1-claudiu.beznea@microchip.com>
 References: <20220826083927.3107272-1-claudiu.beznea@microchip.com>
@@ -61,81 +60,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It has been discovered that on some parts, from time to time, self-refresh
-procedure doesn't work as expected. Debugging and investigating it proved
-that disabling AC DLL introduce glitches in RAM controllers which
-leads to unexpected behavior. This is confirmed as a hardware bug. DLL
-bypass disables 3 DLLs: 2 DX DLLs and AC DLL. Thus, keep only DX DLLs
-disabled. This introduce 6mA extra current consumption on VDDCORE when
-switching ot any ULP mode or standby mode but the self-refresh procedure
-still works.
+Min and max output ranges of regulators need to satisfy board
+requirements not PMIC requirements. Thus adjust device tree to
+cope with this.
 
-Fixes: f0bbf17958e8 ("ARM: at91: pm: add self-refresh support for sama7g5")
-Suggested-by: Frederic Schumacher <frederic.schumacher@microchip.com>
+Fixes: 5d4c3cfb63fe ("ARM: dts: at91: sama5d27_wlsom1: add SAMA5D27 wlsom1 and wlsom1-ek")
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Tested-by: Cristian Birsan <cristian.birsan@microchip.com>
 ---
- arch/arm/mach-at91/pm_suspend.S | 24 +++++++++++++++++-------
- include/soc/at91/sama7-ddr.h    |  4 ++++
- 2 files changed, 21 insertions(+), 7 deletions(-)
+ arch/arm/boot/dts/at91-sama5d27_wlsom1.dtsi | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/arch/arm/mach-at91/pm_suspend.S b/arch/arm/mach-at91/pm_suspend.S
-index abe4ced33eda..ffed4d949042 100644
---- a/arch/arm/mach-at91/pm_suspend.S
-+++ b/arch/arm/mach-at91/pm_suspend.S
-@@ -172,9 +172,15 @@ sr_ena_2:
- 	/* Put DDR PHY's DLL in bypass mode for non-backup modes. */
- 	cmp	r7, #AT91_PM_BACKUP
- 	beq	sr_ena_3
--	ldr	tmp1, [r3, #DDR3PHY_PIR]
--	orr	tmp1, tmp1, #DDR3PHY_PIR_DLLBYP
--	str	tmp1, [r3, #DDR3PHY_PIR]
-+
-+	/* Disable DX DLLs. */
-+	ldr	tmp1, [r3, #DDR3PHY_DX0DLLCR]
-+	orr	tmp1, tmp1, #DDR3PHY_DXDLLCR_DLLDIS
-+	str	tmp1, [r3, #DDR3PHY_DX0DLLCR]
-+
-+	ldr	tmp1, [r3, #DDR3PHY_DX1DLLCR]
-+	orr	tmp1, tmp1, #DDR3PHY_DXDLLCR_DLLDIS
-+	str	tmp1, [r3, #DDR3PHY_DX1DLLCR]
+diff --git a/arch/arm/boot/dts/at91-sama5d27_wlsom1.dtsi b/arch/arm/boot/dts/at91-sama5d27_wlsom1.dtsi
+index 76b2025c67b4..342fcfd974d7 100644
+--- a/arch/arm/boot/dts/at91-sama5d27_wlsom1.dtsi
++++ b/arch/arm/boot/dts/at91-sama5d27_wlsom1.dtsi
+@@ -76,8 +76,8 @@ mcp16502@5b {
+ 		regulators {
+ 			vdd_3v3: VDD_IO {
+ 				regulator-name = "VDD_IO";
+-				regulator-min-microvolt = <1200000>;
+-				regulator-max-microvolt = <3700000>;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
+ 				regulator-initial-mode = <2>;
+ 				regulator-allowed-modes = <2>, <4>;
+ 				regulator-always-on;
+@@ -95,8 +95,8 @@ regulator-state-mem {
  
- sr_ena_3:
- 	/* Power down DDR PHY data receivers. */
-@@ -221,10 +227,14 @@ sr_ena_3:
- 	bic	tmp1, tmp1, #DDR3PHY_DSGCR_ODTPDD_ODT0
- 	str	tmp1, [r3, #DDR3PHY_DSGCR]
+ 			vddio_ddr: VDD_DDR {
+ 				regulator-name = "VDD_DDR";
+-				regulator-min-microvolt = <600000>;
+-				regulator-max-microvolt = <1850000>;
++				regulator-min-microvolt = <1200000>;
++				regulator-max-microvolt = <1200000>;
+ 				regulator-initial-mode = <2>;
+ 				regulator-allowed-modes = <2>, <4>;
+ 				regulator-always-on;
+@@ -118,8 +118,8 @@ regulator-state-mem {
  
--	/* Take DDR PHY's DLL out of bypass mode. */
--	ldr	tmp1, [r3, #DDR3PHY_PIR]
--	bic	tmp1, tmp1, #DDR3PHY_PIR_DLLBYP
--	str	tmp1, [r3, #DDR3PHY_PIR]
-+	/* Enable DX DLLs. */
-+	ldr	tmp1, [r3, #DDR3PHY_DX0DLLCR]
-+	bic	tmp1, tmp1, #DDR3PHY_DXDLLCR_DLLDIS
-+	str	tmp1, [r3, #DDR3PHY_DX0DLLCR]
-+
-+	ldr	tmp1, [r3, #DDR3PHY_DX1DLLCR]
-+	bic	tmp1, tmp1, #DDR3PHY_DXDLLCR_DLLDIS
-+	str	tmp1, [r3, #DDR3PHY_DX1DLLCR]
+ 			vdd_core: VDD_CORE {
+ 				regulator-name = "VDD_CORE";
+-				regulator-min-microvolt = <600000>;
+-				regulator-max-microvolt = <1850000>;
++				regulator-min-microvolt = <1250000>;
++				regulator-max-microvolt = <1250000>;
+ 				regulator-initial-mode = <2>;
+ 				regulator-allowed-modes = <2>, <4>;
+ 				regulator-always-on;
+@@ -160,8 +160,8 @@ regulator-state-mem {
  
- 	/* Enable quasi-dynamic programming. */
- 	mov	tmp1, #0
-diff --git a/include/soc/at91/sama7-ddr.h b/include/soc/at91/sama7-ddr.h
-index 9e17247474fa..2706bc48c076 100644
---- a/include/soc/at91/sama7-ddr.h
-+++ b/include/soc/at91/sama7-ddr.h
-@@ -39,6 +39,10 @@
+ 			LDO1 {
+ 				regulator-name = "LDO1";
+-				regulator-min-microvolt = <1200000>;
+-				regulator-max-microvolt = <3700000>;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
+ 				regulator-always-on;
  
- #define DDR3PHY_ZQ0SR0				(0x188)		/* ZQ status register 0 */
+ 				regulator-state-standby {
+@@ -175,8 +175,8 @@ regulator-state-mem {
  
-+#define	DDR3PHY_DX0DLLCR			(0x1CC)		/* DDR3PHY DATX8 DLL Control Register */
-+#define	DDR3PHY_DX1DLLCR			(0x20C)		/* DDR3PHY DATX8 DLL Control Register */
-+#define		DDR3PHY_DXDLLCR_DLLDIS		(1 << 31)	/* DLL Disable */
-+
- /* UDDRC */
- #define UDDRC_STAT				(0x04)		/* UDDRC Operating Mode Status Register */
- #define		UDDRC_STAT_SELFREF_TYPE_DIS	(0x0 << 4)	/* SDRAM is not in Self-refresh */
+ 			LDO2 {
+ 				regulator-name = "LDO2";
+-				regulator-min-microvolt = <1200000>;
+-				regulator-max-microvolt = <3700000>;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
+ 				regulator-always-on;
+ 
+ 				regulator-state-standby {
 -- 
 2.34.1
 
