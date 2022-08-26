@@ -2,183 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A26ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF28ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343505AbiHZKCq (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
+        id S244690AbiHZKCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:02:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343708AbiHZKBb (ORCPT
+        with ESMTP id S1343716AbiHZKBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 06:01:31 -0400
-Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE47B8A48
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:27 -0700 (PDT)
+Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D781ED5996
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:29 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by fx405.security-mail.net (Postfix) with ESMTP id 6860F32383E
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:01:26 +0200 (CEST)
+        by fx601.security-mail.net (Postfix) with ESMTP id 53A243ACEDD
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:01:28 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
-        s=sec-sig-email; t=1661508086;
-        bh=AQeR8ILdZrHYlixwXWZ9TJtLVXw6lpIE0xrXp5n66VM=;
+        s=sec-sig-email; t=1661508088;
+        bh=SCDpeIxVyYrv4kQNpVeu9eSc75msKnazn+ZKlH00Qhs=;
         h=From:To:Cc:Subject:Date;
-        b=Fd8eaBJF1V0wM/i9W5BSk6tWPXYX7/vBcFob1cQDxdPxDyeILGtnzDNfbYASu6S+F
-         XanIWqTksxI8k+6rBAQifLJCGMynC+lwi8GAb36oGTxRJQto5FPwZm/PK2DEimB8VX
-         lQSSZSixZcpwEozKprAQ3oI8Ve2RkoQv2b0objWw=
-Received: from fx405 (localhost [127.0.0.1])
-        by fx405.security-mail.net (Postfix) with ESMTP id 0E7E83237D3;
-        Fri, 26 Aug 2022 12:01:24 +0200 (CEST)
+        b=ntkYtSdvKd2e/vfTvdKnWB8GqJvlxkzB/PJvcZmEx+VzRD2TEMeMBMU76UUzCXP3n
+         VxklrdrXEz5RURA8yyZ3qPsMouMtF2BmoX9u1wxT9L8QoMDxZbYe5erQX3xtijmAPY
+         h/K7wMTSb2+53p4CT3UcGdBAjL0B/DHNCQkuOFjQ=
+Received: from fx601 (localhost [127.0.0.1])
+        by fx601.security-mail.net (Postfix) with ESMTP id 950463ACEB9;
+        Fri, 26 Aug 2022 12:01:27 +0200 (CEST)
 X-Virus-Scanned: E-securemail
-Secumail-id: <97fc.630899f2.51286.0>
+Secumail-id: <5f8a.630899f6.c2f5d.0>
 Received: from zimbra2.kalray.eu (unknown [217.181.231.53])
-        by fx405.security-mail.net (Postfix) with ESMTPS id D36AD3236A2;
-        Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
+        by fx601.security-mail.net (Postfix) with ESMTPS id C46AF3ACEA3;
+        Fri, 26 Aug 2022 12:01:26 +0200 (CEST)
 Received: from zimbra2.kalray.eu (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTPS id 2E25727E0396;
-        Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
+        by zimbra2.kalray.eu (Postfix) with ESMTPS id A718A27E02FA;
+        Fri, 26 Aug 2022 12:01:26 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTP id 167C127E0392;
-        Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 167C127E0392
+        by zimbra2.kalray.eu (Postfix) with ESMTP id 90AAD27E0392;
+        Fri, 26 Aug 2022 12:01:26 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 90AAD27E0392
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
-        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661508082;
-        bh=7YkIwgTRyznEJf4Uaeh9hIBcIzx+ZpeKjWZoSTHVrrM=;
+        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661508086;
+        bh=NaiqwpRbXRdjsNpz1W2XnsBstSv/EPGUYAQ6UVixNRI=;
         h=From:To:Date:Message-Id;
-        b=OZgCjUdiOJy7xwK9dfZcA66r9fryRJzHRYJWVZBLjF5lqpqnRMqcUl4mURQCn5/t+
-         docm1GxGNGyMTGZiNJiAgw4mKM79GGJw+1VK/cOkfLpzIjAmv5NWZp90+jnX/tyfEa
-         B3UH1XdjT2uISvf/REsXGUt8QJtUKNdFuXJg9o0Q=
+        b=CrvT1Yda4Cy03jf7mLVYm3A34sAUXbvdJdiZ6S9TKuhCxm8vouJ+kpZngmBuUkDOc
+         YhcTcfGlNvBV2p7UJnbwAG5O2JmRwJ2v5L8WUzjUNgGrq1a1Z+1ZyOk950oLICzNiw
+         kSstF6EKR8/gSIkUgMmoWXrQjdQyz1AudI15K4mc=
 Received: from zimbra2.kalray.eu ([127.0.0.1])
         by localhost (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id oyFfAiPO1JCj; Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
+        with ESMTP id 9n1S3QpK0Pxj; Fri, 26 Aug 2022 12:01:26 +0200 (CEST)
 Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206])
-        by zimbra2.kalray.eu (Postfix) with ESMTPSA id 023C327E02FA;
-        Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
+        by zimbra2.kalray.eu (Postfix) with ESMTPSA id 7766127E02FA;
+        Fri, 26 Aug 2022 12:01:26 +0200 (CEST)
 From:   Jules Maselbas <jmaselbas@kalray.eu>
 To:     linux-kernel@vger.kernel.org
 Cc:     Jules Maselbas <jmaselbas@kalray.eu>,
-        David Airlie <airlied@linux.ie>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH] drm: Fix repeated word in comments
-Date:   Fri, 26 Aug 2022 12:00:44 +0200
-Message-Id: <20220826100052.22945-16-jmaselbas@kalray.eu>
+        Jacopo Mondi <jacopo@jmondi.org>, linux-media@vger.kernel.org
+Subject: [PATCH] media: i2c: Fix repeated word in comments
+Date:   Fri, 26 Aug 2022 12:00:50 +0200
+Message-Id: <20220826100052.22945-22-jmaselbas@kalray.eu>
 X-Mailer: git-send-email 2.17.1
 X-Virus-Scanned: by Secumail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove redundant words `the` and `this`.
+Remove redundant word `the`.
 
-CC: David Airlie <airlied@linux.ie>
-CC: Maxime Ripard <mripard@kernel.org>
-CC: Thomas Zimmermann <tzimmermann@suse.de>
-CC: amd-gfx@lists.freedesktop.org
-CC: dri-devel@lists.freedesktop.org
+CC: Jacopo Mondi <jacopo@jmondi.org>
+CC: linux-media@vger.kernel.org
 Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
 ---
- .../gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_arcturus.h | 2 +-
- .../gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_navi10.h   | 2 +-
- drivers/gpu/drm/display/drm_dp_helper.c                         | 2 +-
- drivers/gpu/drm/drm_panel_orientation_quirks.c                  | 2 +-
- drivers/gpu/drm/i915/gvt/scheduler.c                            | 2 +-
- drivers/gpu/drm/i915/i915_irq.c                                 | 2 +-
- drivers/gpu/drm/panel/panel-novatek-nt35510.c                   | 2 +-
- 7 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/media/i2c/mt9v111.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_arcturus.h b/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_arcturus.h
-index 43d43d6addc0..4164da83380f 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_arcturus.h
-+++ b/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_arcturus.h
-@@ -486,7 +486,7 @@ typedef struct {
-   uint16_t Tvr_socLimit;            // Celcius
-   uint32_t FitLimit;                // Failures in time (failures per million parts over the defined lifetime)
+diff --git a/drivers/media/i2c/mt9v111.c b/drivers/media/i2c/mt9v111.c
+index 2dc4a0f24ce8..7beca0b70b72 100644
+--- a/drivers/media/i2c/mt9v111.c
++++ b/drivers/media/i2c/mt9v111.c
+@@ -633,7 +633,7 @@ static int mt9v111_hw_config(struct mt9v111_dev *mt9v111)
  
--  uint16_t PpmPowerLimit;           // Switch this this power limit when temperature is above PpmTempThreshold
-+  uint16_t PpmPowerLimit;           // Switch this power limit when temperature is above PpmTempThreshold
-   uint16_t PpmTemperatureThreshold;
- 
-   // SECTION: Throttler settings
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_navi10.h b/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_navi10.h
-index 04752ade1016..ba7c68a20425 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_navi10.h
-+++ b/drivers/gpu/drm/amd/pm/swsmu/inc/pmfw_if/smu11_driver_if_navi10.h
-@@ -544,7 +544,7 @@ typedef struct {
-   uint16_t TplxLimit;               // Celcius
-   uint32_t FitLimit;                // Failures in time (failures per million parts over the defined lifetime)
- 
--  uint16_t PpmPowerLimit;           // Switch this this power limit when temperature is above PpmTempThreshold
-+  uint16_t PpmPowerLimit;           // Switch this power limit when temperature is above PpmTempThreshold
-   uint16_t PpmTemperatureThreshold;
-   
-   // SECTION: Throttler settings
-diff --git a/drivers/gpu/drm/display/drm_dp_helper.c b/drivers/gpu/drm/display/drm_dp_helper.c
-index e5bab236b3ae..32b295003f49 100644
---- a/drivers/gpu/drm/display/drm_dp_helper.c
-+++ b/drivers/gpu/drm/display/drm_dp_helper.c
-@@ -1597,7 +1597,7 @@ static int drm_dp_aux_reply_duration(const struct drm_dp_aux_msg *msg)
- 
- /*
-  * Calculate the length of the i2c transfer in usec, assuming
-- * the i2c bus speed is as specified. Gives the the "worst"
-+ * the i2c bus speed is as specified. Gives the "worst"
-  * case estimate, ie. successful while as long as possible.
-  * Doesn't account the "MOT" bit, and instead assumes each
-  * message includes a START, ADDRESS and STOP. Neither does it
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index fc1728d46ac2..dde2f4c4c6cb 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -349,7 +349,7 @@ static const struct dmi_system_id orientation_data[] = {
-  * resolution expected by the quirk-table entry.
-  *
-  * Note this function is also used outside of the drm-subsys, by for example
-- * the efifb code. Because of this this function gets compiled into its own
-+ * the efifb code. Because of this function gets compiled into its own
-  * kernel-module when built as a module.
-  *
-  * Returns:
-diff --git a/drivers/gpu/drm/i915/gvt/scheduler.c b/drivers/gpu/drm/i915/gvt/scheduler.c
-index d6fe94cd0fdb..7670ae4dd8fa 100644
---- a/drivers/gpu/drm/i915/gvt/scheduler.c
-+++ b/drivers/gpu/drm/i915/gvt/scheduler.c
-@@ -193,7 +193,7 @@ static int populate_shadow_context(struct intel_vgpu_workload *workload)
- 			workload->ring_context_gpa);
- 
- 	/* only need to ensure this context is not pinned/unpinned during the
--	 * period from last submission to this this submission.
-+	 * period from last submission to this submission.
- 	 * Upon reaching this function, the currently submitted context is not
- 	 * supposed to get unpinned. If a misbehaving guest driver ever does
- 	 * this, it would corrupt itself.
-diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
-index 73cebc6aa650..783a6ca41a61 100644
---- a/drivers/gpu/drm/i915/i915_irq.c
-+++ b/drivers/gpu/drm/i915/i915_irq.c
-@@ -65,7 +65,7 @@
- 
- /*
-  * Interrupt statistic for PMU. Increments the counter only if the
-- * interrupt originated from the the GPU so interrupts from a device which
-+ * interrupt originated from the GPU so interrupts from a device which
-  * shares the interrupt line are not accounted.
-  */
- static inline void pmu_irq_stats(struct drm_i915_private *i915,
-diff --git a/drivers/gpu/drm/panel/panel-novatek-nt35510.c b/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-index 40ea41b0a5dd..4085822f619a 100644
---- a/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-+++ b/drivers/gpu/drm/panel/panel-novatek-nt35510.c
-@@ -231,7 +231,7 @@ struct nt35510_config {
- 	 * bits 0..2 in the lower nibble controls HCK, the booster clock
- 	 * frequency, the values are the same as for PCK in @bt1ctr.
- 	 * bits 4..5 in the upper nibble controls BTH, the boosting
--	 * amplification for the the step-up circuit.
-+	 * amplification for the step-up circuit.
- 	 * 0 = AVDD + VDDB
- 	 * 1 = AVDD - AVEE
- 	 * 2 = AVDD - AVEE + VDDB
+ 	/*
+ 	 * Set pixel integration time to the whole frame time.
+-	 * This value controls the the shutter delay when running with AE
++	 * This value controls the shutter delay when running with AE
+ 	 * disabled. If longer than frame time, it affects the output
+ 	 * frame rate.
+ 	 */
 -- 
 2.17.1
 
