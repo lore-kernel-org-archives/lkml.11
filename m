@@ -2,133 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC0BECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59031ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343927AbiHZPMr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:12:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34494 "EHLO
+        id S244388AbiHZPMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 11:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343507AbiHZPLZ (ORCPT
+        with ESMTP id S245684AbiHZPL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:11:25 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5D9DEB46
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:12 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id w20-20020a05640234d400b00447e6ffefccso1264860edc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc;
-        bh=7FFI4T9ldWmH+mtJkkuNX0Iy/L7lZFULsA12RNz3xXM=;
-        b=QeYGUAhX5R1EbSsJKxcsBcPRZBVW1PHkAvLdrlFwdXozptYGSnAUgNLSENVZNbs/pm
-         K7DsUzuQ3O+CgsIf/IsEjZ9LO6DDEbJ/9UkwQ3NFfO5E9GyCNzZ0bQPXg5zln9YU9onl
-         g042XVM8aCr5IqAR958NCkCsQWdTGI4OQtHiGm/rgicIY9qzg4V73Kb90uYceut/3UVw
-         nFA6k+3xgurgpKXQPV00WyHGYNj3CUHxYWE3tNF2YhTlAM4LRfiVradwPFKvsYBl8Bzt
-         CIjpkvmBr/QmH0E2CwFFacPDaEu6Y7HjWsctPdxYCvSgU8zQkP/JHmVv1mOQDs6l/MdM
-         WRRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=7FFI4T9ldWmH+mtJkkuNX0Iy/L7lZFULsA12RNz3xXM=;
-        b=29CuGRZO3ANG9JLCmSB2BfQKHtw8ry+kkz+bKr/OEUWXL1K9Iu1aNTeJ2s1P+BZ78b
-         zxbxIID+WBa9Y0CrNyv2eImr981461AqwGDMLTDibhxefPYlan7XjZmrrXPG7TpUIp/T
-         PryxB2X6LOfvvR8cPkCz11iUC5zQ9hB3Kv9FovgwoSsjkGwCADH7TVBBLtnCOlDWKDqV
-         UNZCKuK/huyakCiir43P2eKFPPjzd9hYS2J5MKDOWx73rY5PROUL48ymzVxuo30EYWyD
-         O6m1YDPtkkRJX4W1/tlmfavBVjk+PlRsKx1iZd7RNJs9XccnyK4Bk7gcVlUJVARy9h46
-         RWRg==
-X-Gm-Message-State: ACgBeo0EIiNND3ELs16UktsFKQgpz8Se5Td3xK3ED9oaJYweOse0jP6y
-        tJD0PI6lQJGg+uUw/wUW/aq2PaLE20Q=
-X-Google-Smtp-Source: AA6agR4fgqA+dojvdGvqhLNd5rEasz16MWjupX7avc3NFMUfZTqvlMHxZx6remvRJmIFi8mix2S1kZP+8vA=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:5207:ac36:fdd3:502d])
- (user=glider job=sendgmr) by 2002:a17:907:6d9b:b0:731:1135:dc2d with SMTP id
- sb27-20020a1709076d9b00b007311135dc2dmr5939518ejc.76.1661526551609; Fri, 26
- Aug 2022 08:09:11 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 17:07:44 +0200
-In-Reply-To: <20220826150807.723137-1-glider@google.com>
-Mime-Version: 1.0
-References: <20220826150807.723137-1-glider@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220826150807.723137-22-glider@google.com>
-Subject: [PATCH v5 21/44] Input: libps2: mark data received in __ps2_command()
- as initialized
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 26 Aug 2022 11:11:59 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8DEDEB5C
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661526557; x=1693062557;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UGiZkh5Bys/4pSAQhlUkrqm+lOAA5Ftlt8P24fAHZDE=;
+  b=mWwCfT5Y+jftmd9W5hI8IpfUaWOMi9OkUMzEydtkj9wngt9YcBB7N73C
+   WRBpo9wjoQe9MkYE+h1HxHnl2q4ZZG0HjgQ6l85/Ka172+5CIjlqtXUBm
+   slNKE8/pkMtSt+5WMpAZB240MYeWte9dlcD2FxPeUH9McHAQCBXlWcRkN
+   PwSRr6k9pVLLkMgJO2J5F88TQxnNpvJbVYBXsyIeob5hQB+tl/MEz6VxH
+   1v2Bo6XeoyBvk2px0TLJnnxuDj2pYvPftPRuV8dw2CvHWOCfg7fA/Ub5r
+   zCQdJ0c8yJqrfmvcQOpUPieuwwOqUQ67yeizJ/tUHpHjUWedr2WLeaHZG
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="293267458"
+X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
+   d="scan'208";a="293267458"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 08:08:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
+   d="scan'208";a="678890258"
+Received: from lkp-server01.sh.intel.com (HELO 71b0d3b5b1bc) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 26 Aug 2022 08:08:58 -0700
+Received: from kbuild by 71b0d3b5b1bc with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oRax7-000027-2x;
+        Fri, 26 Aug 2022 15:08:57 +0000
+Date:   Fri, 26 Aug 2022 23:08:52 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     Paul Gazzillo <paul@pgazz.com>,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Borislav Petkov <bp@suse.de>
+Subject: kismet: WARNING: unmet direct dependencies detected for CRYPTO_AEAD2
+ when selected by SEV_GUEST
+Message-ID: <202208262201.KpZ9BZoq-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN does not know that the device initializes certain bytes in
-ps2dev->cmdbuf. Call kmsan_unpoison_memory() to explicitly mark them as
-initialized.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   4c612826bec1441214816827979b62f84a097e91
+commit: fce96cf0443083e37455eff8f78fd240c621dae3 virt: Add SEV-SNP guest driver
+date:   5 months ago
+config: x86_64-kismet-CONFIG_CRYPTO_AEAD2-CONFIG_SEV_GUEST-0-0 (https://download.01.org/0day-ci/archive/20220826/202208262201.KpZ9BZoq-lkp@intel.com/config)
+reproduce:
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fce96cf0443083e37455eff8f78fd240c621dae3
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout fce96cf0443083e37455eff8f78fd240c621dae3
+        # 1. reproduce by kismet
+           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
+           kismet --linux-ksrc=linux --selectees CONFIG_CRYPTO_AEAD2 --selectors CONFIG_SEV_GUEST -a=x86_64
+        # 2. reproduce by make
+           # save the config file to linux source tree
+           cd linux
+           make ARCH=x86_64 olddefconfig
 
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
-Link: https://linux-review.googlesource.com/id/I2d26f6baa45271d37320d3f4a528c39cb7e545f0
----
- drivers/input/serio/libps2.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/drivers/input/serio/libps2.c b/drivers/input/serio/libps2.c
-index 250e213cc80c6..3e19344eda93c 100644
---- a/drivers/input/serio/libps2.c
-+++ b/drivers/input/serio/libps2.c
-@@ -12,6 +12,7 @@
- #include <linux/sched.h>
- #include <linux/interrupt.h>
- #include <linux/input.h>
-+#include <linux/kmsan-checks.h>
- #include <linux/serio.h>
- #include <linux/i8042.h>
- #include <linux/libps2.h>
-@@ -294,9 +295,11 @@ int __ps2_command(struct ps2dev *ps2dev, u8 *param, unsigned int command)
- 
- 	serio_pause_rx(ps2dev->serio);
- 
--	if (param)
-+	if (param) {
- 		for (i = 0; i < receive; i++)
- 			param[i] = ps2dev->cmdbuf[(receive - 1) - i];
-+		kmsan_unpoison_memory(param, receive);
-+	}
- 
- 	if (ps2dev->cmdcnt &&
- 	    (command != PS2_CMD_RESET_BAT || ps2dev->cmdcnt != 1)) {
+kismet warnings: (new ones prefixed by >>)
+>> kismet: WARNING: unmet direct dependencies detected for CRYPTO_AEAD2 when selected by SEV_GUEST
+   
+   WARNING: unmet direct dependencies detected for CRYPTO_GCM
+     Depends on [n]: CRYPTO [=n]
+     Selected by [y]:
+     - SEV_GUEST [=y] && VIRT_DRIVERS [=y] && AMD_MEM_ENCRYPT [=y]
+   
+   WARNING: unmet direct dependencies detected for CRYPTO_AEAD2
+     Depends on [n]: CRYPTO [=n]
+     Selected by [y]:
+     - SEV_GUEST [=y] && VIRT_DRIVERS [=y] && AMD_MEM_ENCRYPT [=y]
+
 -- 
-2.37.2.672.g94769d06f0-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
