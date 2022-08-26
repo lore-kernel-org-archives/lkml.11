@@ -2,177 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF5C3ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC85ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:02:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343511AbiHZIBP (ORCPT
+        id S1343498AbiHZICA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:01:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
+        Fri, 26 Aug 2022 04:02:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241772AbiHZIBK (ORCPT
+        with ESMTP id S244686AbiHZIB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:01:10 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8021CD3E71
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:01:09 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id i8-20020a17090a65c800b001fd602afda2so953146pjs.4
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:01:09 -0700 (PDT)
+        Fri, 26 Aug 2022 04:01:57 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5354CD4754
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:01:52 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id w20so1125417edd.10
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:01:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=ZXxV5H02sTf27cGjR4xFe9u/ajRHs1osMk1ZZ7VKeFA=;
-        b=GZ9AZ3KmTgLjSIPCC9LY9iLyjXG05/sw6lrzkIivXH45QE0379fs/LAe6C0lMHu0wo
-         cf0J0z/P1iD36Iq2KzxKO3pMAKh36CIW8t1q29VJVXWNEXZYkfZRnXoZADo9PSiuH0Cr
-         4qTdTNOSHOX5ejQSovpO6oP4GRp6d8v7+Dj6GKgYCysZ4GnI+WBZD/1T0g0MBVrpHCG6
-         sbx0NcdX0JMzRepJgi9zWFSJbtWvNXxuwE6ci5R4ttKYrcUhOjJ+LIxLItLdm2gk1nob
-         PaZTmEfZ+RbWMijQBTI6ELPlGBoGB3n4XOQ+Kqc3y77dUouCKgIDH0siLGpwFz7i6GLL
-         5vxQ==
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=tWIs8cEPcFM8qOdbk90dp96g6UtdbhFONDoS8mVkd8Y=;
+        b=kTBkZ/vJ5n2n97pr3kT81obP3hfsaezJ6KFMEJTL1lsNXFKhKzemQUQdgcdRNbzyTZ
+         s0HWMKsbc+lbyQDjhFij+Cp2TS2lUir7QmbYUJJbFIBEwTNB7adCi0QzywlXhPfYs8s2
+         SQdE03uMV25M1ok9gNeKENF0H6S/jqSw+Ndac2t6yXHqvPtYaTokRd+r/eDg6DIaXOTv
+         OaADBgD0JfADnq+jT76Cp3WZcNBPQ0aT5cHGaD4KjqzxPr24IRohzL371KJ72NXcLs+g
+         Nz0tqT8QLidJhxQgFiuIi4h4YJxshl+nNhA1mGcu0C4N+SmDNQKBxJrD8hH8wP5zSrv4
+         GyXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=ZXxV5H02sTf27cGjR4xFe9u/ajRHs1osMk1ZZ7VKeFA=;
-        b=fav3W6q2nkw7znn9DF5I2iVrGxakyZwBoZItkXjv7exyerS9k7ftiMa7T//T1yFlMq
-         3vTc/yhKMxKqzGK3WAXKTWrXgv1eNDIGTDsHUQ7lxDZVcnOO2CYwgOkYd7IrnEGaTeCr
-         zk/DKa3XYRLr8P3PGlhbvGfwHsxNlbvwRsy3MOx6QZurxCjb/iqpKGIkm0RNU5/ZEifW
-         AUQFHqP7erdgdsJqblyEToLeVEWYRV20UqygXjfFzt7ctqO9kvIHrM6U/rxXoXdhu9cG
-         xpe50zOBA2PCqgYgOOTKW+eoQJ/rXNHrYYk48Om2sX/wAimikGNYZt5kQ4FxhuWZp07c
-         8wjQ==
-X-Gm-Message-State: ACgBeo2c4b2PRIRM14A2jMP/ik55ckrx98ESkl0u9hDC7j+mTuoH0/UM
-        JvUB0Cn6ql1x63nVQ38rmPcSwav/qvOg09GRgrrgLQ==
-X-Google-Smtp-Source: AA6agR4Wl3OSQI8TTZZEDjCFzfdhMn02PO6KNg3osP2Wr6z+vXCI1pzBuek699RxCaUvkzjWdvEMDg27yJWC274avaI=
-X-Received: by 2002:a17:902:d643:b0:172:84c4:d513 with SMTP id
- y3-20020a170902d64300b0017284c4d513mr2653434plh.138.1661500868782; Fri, 26
- Aug 2022 01:01:08 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=tWIs8cEPcFM8qOdbk90dp96g6UtdbhFONDoS8mVkd8Y=;
+        b=LJlbwp1qK6Bxd+wrtxRwZ5USUFDhvrBlNCNx7q47Ac9XERWfVw4cRDxBCBMYoS4lGd
+         2CS9ORcja+ZSjksDLRn3t5cJj+/EzBCbC/3oYeOP6DNdqXoLHzN0vlrzQY9/jEB7tYcv
+         NMeUUCoTOS7b5ARAAxMaA9nj5/9H2GbNWls1YhqnbRjLyDBPcWDThVk3utzHFH34v/MN
+         mocQHY9b34BO5bFLq53hu40BpBbglgaWkIEV/bTNP3F8ZZ+YcfMTGiaMyCZonM/QlKnF
+         6srsPBvyOc06QRFunHDNw5CqhD/7UNN/iuBurM6jzOcPA34yFq1EuJF2nFJRz0yEvSP/
+         QR4g==
+X-Gm-Message-State: ACgBeo0D3qoXQ63TM7C8s8uQlTYkvM0E/Q8HRJ8QATOOk2InFTBCMLML
+        8IZs5+KxFiuaf+CAKh+9Vgu1q9DNKQOHPhw0Uknt4w==
+X-Google-Smtp-Source: AA6agR46aDo68kfNYLpzXurqLX2JUxoPuwhHyxbf0HWbQkstABaXM8HF7+f5S1ulK2ZyQnwOMdOgwGAxQUVpUedU7FI=
+X-Received: by 2002:a05:6402:4517:b0:443:7fe1:2d60 with SMTP id
+ ez23-20020a056402451700b004437fe12d60mr5913742edb.133.1661500911209; Fri, 26
+ Aug 2022 01:01:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220825092325.381517-1-aneesh.kumar@linux.ibm.com>
- <877d2v3h8s.fsf@yhuang6-desk2.ccr.corp.intel.com> <e2f20ae9-5761-c170-a4e7-121d6b69ebfb@linux.ibm.com>
-In-Reply-To: <e2f20ae9-5761-c170-a4e7-121d6b69ebfb@linux.ibm.com>
-From:   Wei Xu <weixugc@google.com>
-Date:   Fri, 26 Aug 2022 01:00:57 -0700
-Message-ID: <CAAPL-u9TKbHGztAF=r-io3gkX7gorUunS2UfstudCWuihrA=0g@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] mm/demotion: Expose memory type details via sysfs
-To:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>
-Cc:     "Huang, Ying" <ying.huang@intel.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
+References: <20220826152650.2c55e482@canb.auug.org.au>
+In-Reply-To: <20220826152650.2c55e482@canb.auug.org.au>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 26 Aug 2022 10:01:40 +0200
+Message-ID: <CACRpkdYZOK9NhEqqU4Wkg1XHCHEQk=AR6w9730qo_tHmgGrorA@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the pinctrl tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Wolfram Sang <wsa@the-dreams.de>
+Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Wolfram Sang <wsa@kernel.org>,
+        Naresh Solanki <naresh.solanki@9elements.com>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        Bharata B Rao <bharata@amd.com>
+        Linux Next Mailing List <linux-next@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 8:00 PM Aneesh Kumar K V
-<aneesh.kumar@linux.ibm.com> wrote:
->
-> On 8/26/22 7:20 AM, Huang, Ying wrote:
-> > "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
-> >
-> >> This patch adds /sys/devices/virtual/memtier/ where all memory tier re=
-lated
-> >> details can be found. All allocated memory types will be listed there =
-as
-> >> /sys/devices/virtual/memtier/memtypeN/
-> >
-> > Another choice is to make memory types and memory tiers system devices.
-> > That is,
-> >
-> > /sys/devices/system/memory_type/memory_typeN
-> > /sys/devices/system/memory_tier/memory_tierN
-> >
->
-> subsys_system_register() documentation says
->
->  * Do not use this interface for anything new, it exists for compatibilit=
-y
->  * with bad ideas only. New subsystems should use plain subsystems; and
->  * add the subsystem-wide attributes should be added to the subsystem
->  * directory itself and not some create fake root-device placed in
->  * /sys/devices/system/<name>.
->
-> memtier being a virtual device, I was under the impression that /sys/devi=
-ces/virtual
-> is the recommended place.
->
-> > That looks more natural to me.  Because we already have "node" and
-> > "memory" devices there.  Why don't you put memory types and memory tier=
-s
-> > there?
-> >
-> > And, I think we shouldn't put "memory_type" in the "memory_tier"
-> > directory.  "memory_type" isn't a part of "memory_tier".
-> >
->
-> I was looking consolidating both memory tier and memory type into the sam=
-e sysfs subsystem.
-> Your recommendation imply we create two subsystem memory_tier and memtype=
-. I was
-> trying to avoid that. May be a generic term like "memory_tiering" can hel=
-p to
-> consolidate all tiering related details there?
->
+On Fri, Aug 26, 2022 at 7:26 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 
-A generic term "memory_tiering" sounds good to me.
-
-Given that this will be a user-facing, stable kernel API, I think we'd
-better to only add what is most useful for userspace and don't have to
-mirror the kernel internal data structures in this interface.
-
-My understanding is that we haven't fully settled down on how to
-customize memory tiers from userspace.  So we don't have to show
-memory_type yet, which is a kernel data structure at this point.
-
-The userspace does need to know what are the memory tiers and which
-NUMA nodes are included in each memory tier.  How about we provide the
-"nodelist" interface for each memory tier as in the original proposal?
-
-The userspace would also like to know which memory tiers/nodes belong
-to the top tiers (the promotion targets).  We can provide a "toptiers"
-or "toptiers_nodelist" interface to report that.
-
-Both should still be useful even if we decide to add memory_type for
-memory tier customization.
-
-> >> The nodes which are part of a specific memory type can be listed via
-> >> /sys/devices/system/memtier/memtypeN/nodes.
-> >
-> > How about create links to /sys/devices/system/node/nodeN in
-> > "memory_type".  But I'm OK to have "nodes" file too.
-> >
-> >> The adistance value of a specific memory type can be listed via
-> >> /sys/devices/system/memtier/memtypeN/adistance.
-> >>
-> >> A directory listing looks like:
-> >> :/sys/devices/virtual/memtier# tree memtype1
-> >> memtype1
-> >> =E2=94=9C=E2=94=80=E2=94=80 adistance
-> >
-> > Why not just use "abstract_distance"?  This is user space interface,
-> > it's better to be intuitive.
-> >
-> >> =E2=94=9C=E2=94=80=E2=94=80 nodes
-> >> =E2=94=9C=E2=94=80=E2=94=80 subsystem -> ../../../../bus/memtier
-> >> =E2=94=94=E2=94=80=E2=94=80 uevent
-> >>
-> >> Since we will be using struct device to expose details via sysfs, drop=
- struct
-> >> kref and use struct device for refcounting the memtype.
-> >>
-> >
-> > Best Regards,
-> > Huang, Ying
+> After merging the pinctrl tree, today's linux-next build (x86_64
+> allmodconfig) failed like this:
+(...)
+> Caused by commit
 >
+>   e6cbbe42944d ("pinctrl: Add Cypress cy8c95x0 support")
+>
+> interacting with commit
+>
+>   ed5c2f5fd10d ("i2c: Make remove callback return void")
+>
+> from the i2c tree.
+
+How typical, the ideal way to resolve it is if there is an immutable
+branch with the
+basic changes I can pull in from the i2c tree and apply Stephen's fix on top,
+or we can just wait for the merge window and let Torvalds sort it out?
+
+Yours,
+Linus Walleij
