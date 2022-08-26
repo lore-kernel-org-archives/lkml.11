@@ -2,96 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59031ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57521ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244388AbiHZPMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34520 "EHLO
+        id S1344075AbiHZPM6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 11:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245684AbiHZPL7 (ORCPT
+        with ESMTP id S245742AbiHZPMA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:11:59 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8DEDEB5C
+        Fri, 26 Aug 2022 11:12:00 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7AFDEB60
         for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661526557; x=1693062557;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=UGiZkh5Bys/4pSAQhlUkrqm+lOAA5Ftlt8P24fAHZDE=;
-  b=mWwCfT5Y+jftmd9W5hI8IpfUaWOMi9OkUMzEydtkj9wngt9YcBB7N73C
-   WRBpo9wjoQe9MkYE+h1HxHnl2q4ZZG0HjgQ6l85/Ka172+5CIjlqtXUBm
-   slNKE8/pkMtSt+5WMpAZB240MYeWte9dlcD2FxPeUH9McHAQCBXlWcRkN
-   PwSRr6k9pVLLkMgJO2J5F88TQxnNpvJbVYBXsyIeob5hQB+tl/MEz6VxH
-   1v2Bo6XeoyBvk2px0TLJnnxuDj2pYvPftPRuV8dw2CvHWOCfg7fA/Ub5r
-   zCQdJ0c8yJqrfmvcQOpUPieuwwOqUQ67yeizJ/tUHpHjUWedr2WLeaHZG
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="293267458"
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="293267458"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 08:08:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="678890258"
-Received: from lkp-server01.sh.intel.com (HELO 71b0d3b5b1bc) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 26 Aug 2022 08:08:58 -0700
-Received: from kbuild by 71b0d3b5b1bc with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oRax7-000027-2x;
-        Fri, 26 Aug 2022 15:08:57 +0000
-Date:   Fri, 26 Aug 2022 23:08:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     Paul Gazzillo <paul@pgazz.com>,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Borislav Petkov <bp@suse.de>
-Subject: kismet: WARNING: unmet direct dependencies detected for CRYPTO_AEAD2
- when selected by SEV_GUEST
-Message-ID: <202208262201.KpZ9BZoq-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-33dbe61eed8so29866577b3.1
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc;
+        bh=XOIO6yMrJJaBLCVdiKJxecGrRstBRdkXKAU8JD1YObM=;
+        b=RBRSbeDrL8qGQexUijKhcV3H7NuqN9uz8ZM5rQWAltRN3zhZJP9TKmmIf+p+yKdl6T
+         3Am09npoAEtHEWxF/Bl4GBV+lvaWA+zyaViXoAoS6FK+zkjAU0V2E1ILS8x3lB5fXtKj
+         9IHWzkzR0lKD9H/hxXtLbHPszHgU+gNR/ouI3pNZH7yhF0/W+C1cpcyiViY1J1iEBFY8
+         /rQ0ukMFzwE2rHptS3PuB+v+/gBN3s2bGa1zvZC9PEceq+oso9Jptib23PUbkHkaJtUF
+         ybmLJcK3rBbne7ulW3JpsBkspXiEuaq15wUwrHaqYN3CJnLRo71eoIyBsvku5gZs6p/s
+         mp3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=XOIO6yMrJJaBLCVdiKJxecGrRstBRdkXKAU8JD1YObM=;
+        b=aiRscnRT/ZpEWJD2Y/5DsOImPdDH9iMWW2945UxmhWo5DzTMwaQ+2OWN4NjcLk4aba
+         HtyX7/7dCj4xyjRMvlDSIWM414HkJIevprZ2t7RrFC/wreLYba+xn0VE9hSWJSQqNCFL
+         VpByZZNTXzMabO2e1/ovR+pob6AvE2W3ArLhgoxtXeDiByqvSgvPtWcnddbyZHfCe527
+         1mtY9tFGZpYqskSz/20EiniRuppWgF1j0tPU2JLNHLgzdy8AqtOyXRI+n5FKWxWD01ku
+         dIs3wo6QsaVOWAxpc5gH0ur1ePzOlWNAbMsXqHRLaIl+/d1N13g+cDo/TaKC16nAHi4U
+         j8+g==
+X-Gm-Message-State: ACgBeo2WC97jRx69cBq2YSj646Bs668cU2c3gMgkF7NEKB+6vaMFep54
+        S0vSHCX02D65YlJ+/bFAmYVqDs3lC6s=
+X-Google-Smtp-Source: AA6agR70pOgUYoVn/e77Ld0R/nqA9LDlWtFjFwsnYYnj15N1nfRnKaSK4PvjO0uXZsTDiRTt9eMo2zal+mA=
+X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:5207:ac36:fdd3:502d])
+ (user=glider job=sendgmr) by 2002:a0d:e6cc:0:b0:338:c82b:9520 with SMTP id
+ p195-20020a0de6cc000000b00338c82b9520mr151356ywe.66.1661526556996; Fri, 26
+ Aug 2022 08:09:16 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 17:07:46 +0200
+In-Reply-To: <20220826150807.723137-1-glider@google.com>
+Mime-Version: 1.0
+References: <20220826150807.723137-1-glider@google.com>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220826150807.723137-24-glider@google.com>
+Subject: [PATCH v5 23/44] virtio: kmsan: check/unpoison scatterlist in vring_map_one_sg()
+From:   Alexander Potapenko <glider@google.com>
+To:     glider@google.com
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   4c612826bec1441214816827979b62f84a097e91
-commit: fce96cf0443083e37455eff8f78fd240c621dae3 virt: Add SEV-SNP guest driver
-date:   5 months ago
-config: x86_64-kismet-CONFIG_CRYPTO_AEAD2-CONFIG_SEV_GUEST-0-0 (https://download.01.org/0day-ci/archive/20220826/202208262201.KpZ9BZoq-lkp@intel.com/config)
-reproduce:
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=fce96cf0443083e37455eff8f78fd240c621dae3
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout fce96cf0443083e37455eff8f78fd240c621dae3
-        # 1. reproduce by kismet
-           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
-           kismet --linux-ksrc=linux --selectees CONFIG_CRYPTO_AEAD2 --selectors CONFIG_SEV_GUEST -a=x86_64
-        # 2. reproduce by make
-           # save the config file to linux source tree
-           cd linux
-           make ARCH=x86_64 olddefconfig
+If vring doesn't use the DMA API, KMSAN is unable to tell whether the
+memory is initialized by hardware. Explicitly call kmsan_handle_dma()
+from vring_map_one_sg() in this case to prevent false positives.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexander Potapenko <glider@google.com>
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-kismet warnings: (new ones prefixed by >>)
->> kismet: WARNING: unmet direct dependencies detected for CRYPTO_AEAD2 when selected by SEV_GUEST
-   
-   WARNING: unmet direct dependencies detected for CRYPTO_GCM
-     Depends on [n]: CRYPTO [=n]
-     Selected by [y]:
-     - SEV_GUEST [=y] && VIRT_DRIVERS [=y] && AMD_MEM_ENCRYPT [=y]
-   
-   WARNING: unmet direct dependencies detected for CRYPTO_AEAD2
-     Depends on [n]: CRYPTO [=n]
-     Selected by [y]:
-     - SEV_GUEST [=y] && VIRT_DRIVERS [=y] && AMD_MEM_ENCRYPT [=y]
+---
+v4:
+ -- swap virtio: and kmsan: in the subject
 
+Link: https://linux-review.googlesource.com/id/I211533ecb86a66624e151551f83ddd749536b3af
+---
+ drivers/virtio/virtio_ring.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index 4620e9d79dde8..a9f06ec5b3c27 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -11,6 +11,7 @@
+ #include <linux/module.h>
+ #include <linux/hrtimer.h>
+ #include <linux/dma-mapping.h>
++#include <linux/kmsan-checks.h>
+ #include <linux/spinlock.h>
+ #include <xen/xen.h>
+ 
+@@ -352,8 +353,15 @@ static dma_addr_t vring_map_one_sg(const struct vring_virtqueue *vq,
+ 				   struct scatterlist *sg,
+ 				   enum dma_data_direction direction)
+ {
+-	if (!vq->use_dma_api)
++	if (!vq->use_dma_api) {
++		/*
++		 * If DMA is not used, KMSAN doesn't know that the scatterlist
++		 * is initialized by the hardware. Explicitly check/unpoison it
++		 * depending on the direction.
++		 */
++		kmsan_handle_dma(sg_page(sg), sg->offset, sg->length, direction);
+ 		return (dma_addr_t)sg_phys(sg);
++	}
+ 
+ 	/*
+ 	 * We can't use dma_map_sg, because we don't use scatterlists in
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.2.672.g94769d06f0-goog
+
