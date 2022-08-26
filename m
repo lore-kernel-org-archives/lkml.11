@@ -2,90 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78804ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 587B3ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245547AbiHZLnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 07:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
+        id S245445AbiHZLqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 07:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiHZLnL (ORCPT
+        with ESMTP id S229618AbiHZLqU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 07:43:11 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066C5CE493
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 04:43:11 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id u9so2665100ejy.5
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 04:43:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=gsShjHRfk1oeXhbIzNvUGv41+jelOVn6LeepzghgVhc=;
-        b=y66fvpM6mrqJoSGMNOUuh8/jNAUR1UjVh1GbVfp532iGK3RhG5d3pM7Jj9bQ+lnefL
-         R6n2L3gNzDy5eDLXId+bbuwc1Cu97Y4MhATKlxERGzv6CkQeuJyoQJIsXZ8s5V1oEPtp
-         6aKR8AcFw3npwDqPvLKq3g5k9qR6jk3JJ6vTblb6kDPvTkk/KMhCqODdTxqX8EbQoir2
-         PO8/hJrH9T7PV9EiNvrH2q+otJn/QEHj+0LOrvEmy03mt7XdB97BWoREUkNLQ84jmfHK
-         +ACQuqwyhYoRzRH2W4JrBMGWknvz9WE11tfeZIopFrdvz/OUFwip0Ug/FSEJMvGi1XIa
-         chGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=gsShjHRfk1oeXhbIzNvUGv41+jelOVn6LeepzghgVhc=;
-        b=dauItX/2+BNiiERwp5R0joiINuSEXyiIfXPYCQuX/ttIT4X32XKCdU8FJBSpE907EL
-         3EdRwpYkzmBGJRQcj+ZVZ7im3Yb1pGtJja6TW0pi9Yfz94ftyiny1x2PWJA2LS4WgPvI
-         kGgPEQWMvOE8j530wmppRJ862ezzQ1sePxPafn+1VqIhCmiO2HzbuwvSv99ucyWFqcS3
-         hJ04M7/zQTmjd1fn4tk8BFhNlGiX87PTFGJjH9fyfpbbdRcQsD3eUIWofrz0w/Qt4TJv
-         xLjyrv/s3KSIPR8oLIZewRANCtaWyHa03BegUovZVEMYRBq18eqPT9lTxOy4Yisy5Ojw
-         k6jA==
-X-Gm-Message-State: ACgBeo3RIf2xt9qNy9jAyq17htfbGGhA+D1NBSQTNxLA28HoBAGHouTS
-        rB7xaotp98YjbllTEtMaw0USNBSImKh2E4cG3QwNyQ==
-X-Google-Smtp-Source: AA6agR56gg8w5KxfHvPutKzL3hZkhLx++8yqikN5B6LKjSxqFmWvyJTzeHuMm+6e32LFnU+nvVfFauABKPr5Zn6hFnU=
-X-Received: by 2002:a17:906:478f:b0:73d:7919:b23 with SMTP id
- cw15-20020a170906478f00b0073d79190b23mr4886670ejc.690.1661514189603; Fri, 26
- Aug 2022 04:43:09 -0700 (PDT)
+        Fri, 26 Aug 2022 07:46:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15F6B275F
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 04:46:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661514378;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mHGinpi7lqtAkMwygFoIPaEx54TEBffoywenxaeAscc=;
+        b=Rit1P5cnaIZNxSAM15tx41oPwrQkoX5usOlJI/IV+fuFJ/eDC2rizuxVvTurCkMUi+F9e4
+        vO5etDexIgXpyLoHlSZfbxAbODQCzi/fncwYr7Dje0LwLYded+XplUJpD+Wvnlm/JPWHZf
+        kJxNgN2ay6QcXSI13Nzducn10PWg0Gk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-68-twmuZMTTO26HbL7tcjyqYA-1; Fri, 26 Aug 2022 07:46:15 -0400
+X-MC-Unique: twmuZMTTO26HbL7tcjyqYA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D5BC6804191;
+        Fri, 26 Aug 2022 11:46:14 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (file01.intranet.prod.int.rdu2.redhat.com [10.11.5.7])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9AB6040B40C8;
+        Fri, 26 Aug 2022 11:46:14 +0000 (UTC)
+Received: from file01.intranet.prod.int.rdu2.redhat.com (localhost [127.0.0.1])
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4) with ESMTP id 27QBkE6h018375;
+        Fri, 26 Aug 2022 07:46:14 -0400
+Received: from localhost (mpatocka@localhost)
+        by file01.intranet.prod.int.rdu2.redhat.com (8.14.4/8.14.4/Submit) with ESMTP id 27QBkDlA018371;
+        Fri, 26 Aug 2022 07:46:13 -0400
+X-Authentication-Warning: file01.intranet.prod.int.rdu2.redhat.com: mpatocka owned process doing -bs
+Date:   Fri, 26 Aug 2022 07:46:13 -0400 (EDT)
+From:   Mikulas Patocka <mpatocka@redhat.com>
+X-X-Sender: mpatocka@file01.intranet.prod.int.rdu2.redhat.com
+To:     Will Deacon <will@kernel.org>
+cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Subject: Re: [PATCH] wait_on_bit: add an acquire memory barrier
+In-Reply-To: <20220826112327.GA19774@willie-the-truck>
+Message-ID: <alpine.LRH.2.02.2208260727020.17585@file01.intranet.prod.int.rdu2.redhat.com>
+References: <alpine.LRH.2.02.2208220530050.32093@file01.intranet.prod.int.rdu2.redhat.com> <CAHk-=wh-6RJQWxdVaZSsntyXJWJhivVX8JFH4MqkXv12AHm_=Q@mail.gmail.com> <CAHk-=whfZSEc40wtq5H51JcsBdB50ctZPtM3rS3E+xUNvadLog@mail.gmail.com>
+ <alpine.LRH.2.02.2208251501200.31977@file01.intranet.prod.int.rdu2.redhat.com> <20220826112327.GA19774@willie-the-truck>
+User-Agent: Alpine 2.02 (LRH 1266 2009-07-14)
 MIME-Version: 1.0
-References: <20220823004227.10820-1-rdunlap@infradead.org>
-In-Reply-To: <20220823004227.10820-1-rdunlap@infradead.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 26 Aug 2022 13:42:58 +0200
-Message-ID: <CACRpkdZGkKXFtdNQGn6CZvh0xArtoWaSGGQHdihifLmiHyzszg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] drm/panel: use 'select' for Ili9341 panel driver helpers
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 2:42 AM Randy Dunlap <rdunlap@infradead.org> wrote:
 
-> Use 'select' instead of 'depends on' for DRM helpers for the
-> Ilitek ILI9341 panel driver.
-> This is what is done in the vast majority of other cases and
-> this makes it possible to fix a build error with drm_mipi_dbi.
->
-> Fixes: 5a04227326b0 ("drm/panel: Add ilitek ili9341 panel driver")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Dillon Min <dillon.minfei@gmail.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Sam Ravnborg <sam@ravnborg.org>
-> Cc: Noralf Tr=C3=B8nnes <noralf@tronnes.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
 
-Patch applied to drm-misc-next
+On Fri, 26 Aug 2022, Will Deacon wrote:
 
-Yours,
-Linus Walleij
+> On Thu, Aug 25, 2022 at 05:03:40PM -0400, Mikulas Patocka wrote:
+> > Here I reworked your patch, so that test_bit_acquire is defined just like 
+> > test_bit. There's some code duplication (in 
+> > include/asm-generic/bitops/generic-non-atomic.h and in 
+> > arch/x86/include/asm/bitops.h), but that duplication exists in the 
+> > test_bit function too.
+> > 
+> > I tested it on x86-64 and arm64. On x86-64 it generates the "bt" 
+> > instruction for variable-bit test and "shr; and $1" for constant bit test. 
+> > On arm64 it generates the "ldar" instruction for both constant and 
+> > variable bit test.
+> > 
+> > For me, the kernel 6.0-rc2 doesn't boot in an arm64 virtual machine at all 
+> > (with or without this patch), so I only compile-tested it on arm64. I have 
+> > to bisect it.
+> 
+> It's working fine for me and I haven't had any other reports that it's not
+> booting. Please could you share some more details about your setup so we
+> can try to reproduce the problem?
+
+I'm bisecting it now. I'll post the offending commit when I'm done.
+
+It gets stuck without printing anything at this point:
+Loading Linux 6.0.0-rc2 ...
+Loading initial ramdisk ...
+EFI stub: Booting Linux Kernel...
+EFI stub: Using DTB from configuration table
+EFI stub: Exiting boot services...
+
+I uploaded my .config here: 
+https://people.redhat.com/~mpatocka/testcases/arm64-config/config-6.0.0-rc2 
+so you can try it on your own.
+
+The host system is MacchiatoBIN board with Debian 10.12.
+
+> This looks good to me, thanks for doing it! Just one thing that jumped out
+> at me:
+> 
+> > Index: linux-2.6/include/linux/buffer_head.h
+> > ===================================================================
+> > --- linux-2.6.orig/include/linux/buffer_head.h
+> > +++ linux-2.6/include/linux/buffer_head.h
+> > @@ -156,7 +156,7 @@ static __always_inline int buffer_uptoda
+> >  	 * make it consistent with folio_test_uptodate
+> >  	 * pairs with smp_mb__before_atomic in set_buffer_uptodate
+> >  	 */
+> > -	return (smp_load_acquire(&bh->b_state) & (1UL << BH_Uptodate)) != 0;
+> > +	return test_bit_acquire(BH_Uptodate, &bh->b_state);
+> 
+> Do you think it would be worth adding set_bit_release() and then relaxing
+> set_buffer_uptodate() to use that rather than the smp_mb__before_atomic()?
+> 
+> Will
+
+Yes, we could add this (but it would be better to add it in a separate 
+patch, so that backporting of the origianal patch to -stable is easier).
+
+Mikulas
+
