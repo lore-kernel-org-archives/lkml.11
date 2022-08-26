@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 819C3C0502C
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 22:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88089C0502C
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 22:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345395AbiHZWSG (ORCPT
+        id S1345414AbiHZWSM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 18:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37430 "EHLO
+        Fri, 26 Aug 2022 18:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345274AbiHZWRF (ORCPT
+        with ESMTP id S1345307AbiHZWR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 18:17:05 -0400
+        Fri, 26 Aug 2022 18:17:26 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF4AE7258;
-        Fri, 26 Aug 2022 15:16:12 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 22:16:08 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B29DD74A;
+        Fri, 26 Aug 2022 15:16:15 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 22:16:11 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661552170;
+        s=2020; t=1661552173;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fxs9gL6DusgacpQMEUHdAzEPgwiDETcwxTGkzwo0fNM=;
-        b=E1saB1X8WJ5zKY3IToL5xXEKS/3no4rPcABnnEaBLw6tu5d7c4Wj9kVIj0iwgbvkOlhyhm
-        Y5E0khzdXml6OtZnKjgL72tv3dSxtikwa+WroCYLCZEHeWNJws/z04y/jPSnjOzTeutpHs
-        0SvHJ6dxymiyAK5GHjPcm1X3qGZekAqWhSPKtkwkI1M55yF/VewW9MyKoSPwe/4Q8nGhsj
-        B4BbxBl0Nc+Hyvq4DPJyq7EPTgjJlFZYvXc6ShB9FoQeRUuQJeIp4rBJBg4/AU6VmfJrHR
-        E6xzHUBn0rzRZaLRmjwSsJ7epHpSckZR00e5AKjTnL5ZAeNrdnsqchCSWzvP4g==
+        bh=p/onY6OjdcfAY5UJJfzhSdFk5JT9cDLoqHG324W1o3U=;
+        b=xdT7ei+Rtihwi78VjHSbtkryA3G0Np3HT8XbT913U+Qnytes65Q3xcdku2mefO+QrcXvDu
+        0t0SCooFlqvdgNC0wcgp7m47PH0Na+mxaJhJ0DopnF8ljmp4bropr7jtZlDg/kKvYxoOJh
+        UEba5B23DavIsoQnjyTjjkrpELei+W6SWEaVB0lXaZ0xYv9smK5oFBAzwZK8Sjjh8r/HU8
+        bMe8VxjPLVZiL8mCCHhC3QxbZ0r1TYdfDksugMgBpfpVrdsld9judJ42f66LouICEvHDCR
+        Hb5dZeKyzxv3HJIgkzfxS2Ijcazz6E+480XvwLrYbjoN8rx7ds0foady/Fxatw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661552170;
+        s=2020e; t=1661552173;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fxs9gL6DusgacpQMEUHdAzEPgwiDETcwxTGkzwo0fNM=;
-        b=y0SKBFfmwGXyREirGxWRKTVlf9tX2C5Zz1A97KVJAjxSbZITOyTN5wyHZ7bdV9akHDEo8I
-        CCVMlGtDPphk2tDQ==
+        bh=p/onY6OjdcfAY5UJJfzhSdFk5JT9cDLoqHG324W1o3U=;
+        b=l8G5EnzH7ZJb9OjxIonDgfX+MS1HSs6NXFhfeVVUzj+aywhMr/o8WXKjbXO6ccdcI6+vKR
+        Mi3jqhplNQ3TfGAw==
 From:   "tip-bot2 for Sandipan Das" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf/x86/amd/core: Add generic branch record interfaces
+Subject: [tip: perf/core] perf/x86/amd/brs: Move feature-specific functions
 Cc:     Sandipan Das <sandipan.das@amd.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: =?utf-8?q?=3Cb75dbc32663cb395f0d701167e952c6a6b0445a3=2E16602?=
+In-Reply-To: =?utf-8?q?=3Cb60283b57179475d18ee242d117c335c16733693=2E16602?=
  =?utf-8?q?11399=2Egit=2Esandipan=2Edas=40amd=2Ecom=3E?=
-References: =?utf-8?q?=3Cb75dbc32663cb395f0d701167e952c6a6b0445a3=2E166021?=
+References: =?utf-8?q?=3Cb60283b57179475d18ee242d117c335c16733693=2E166021?=
  =?utf-8?q?1399=2Egit=2Esandipan=2Edas=40amd=2Ecom=3E?=
 MIME-Version: 1.0
-Message-ID: <166155216858.401.7812468505762276879.tip-bot2@tip-bot2>
+Message-ID: <166155217143.401.9259454199824421303.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -64,123 +64,235 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the perf/core branch of tip:
 
-Commit-ID:     706460a96fc654e80b6bed1f562b00d2ce9f2f4d
-Gitweb:        https://git.kernel.org/tip/706460a96fc654e80b6bed1f562b00d2ce9f2f4d
+Commit-ID:     b40d0156f560932d14e3957579b6508f8d065260
+Gitweb:        https://git.kernel.org/tip/b40d0156f560932d14e3957579b6508f8d065260
 Author:        Sandipan Das <sandipan.das@amd.com>
-AuthorDate:    Thu, 11 Aug 2022 17:59:51 +05:30
+AuthorDate:    Thu, 11 Aug 2022 17:59:49 +05:30
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Sat, 27 Aug 2022 00:05:42 +02:00
+CommitterDate: Sat, 27 Aug 2022 00:05:41 +02:00
 
-perf/x86/amd/core: Add generic branch record interfaces
+perf/x86/amd/brs: Move feature-specific functions
 
-AMD processors that are capable of recording branches support either Branch
-Sampling (BRS) or Last Branch Record (LBR). In preparation for adding Last
-Branch Record Extension Version 2 (LbrExtV2) support, introduce new static
-calls which act as gateways to call into the feature-dependent functions
-based on what is available on the processor.
+Move some of the Branch Sampling (BRS) specific functions out of the Core
+events sources and into the BRS sources in preparation for adding other
+mechanisms to record branches.
 
 Signed-off-by: Sandipan Das <sandipan.das@amd.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/b75dbc32663cb395f0d701167e952c6a6b0445a3.1660211399.git.sandipan.das@amd.com
+Link: https://lore.kernel.org/r/b60283b57179475d18ee242d117c335c16733693.1660211399.git.sandipan.das@amd.com
 ---
- arch/x86/events/amd/core.c | 34 ++++++++++++++++++++++------------
- 1 file changed, 22 insertions(+), 12 deletions(-)
+ arch/x86/events/amd/brs.c    | 69 ++++++++++++++++++++++++++++++++++-
+ arch/x86/events/amd/core.c   | 70 +----------------------------------
+ arch/x86/events/perf_event.h |  7 ++--
+ 3 files changed, 76 insertions(+), 70 deletions(-)
 
+diff --git a/arch/x86/events/amd/brs.c b/arch/x86/events/amd/brs.c
+index bee8765..f1bff15 100644
+--- a/arch/x86/events/amd/brs.c
++++ b/arch/x86/events/amd/brs.c
+@@ -81,7 +81,7 @@ static bool __init amd_brs_detect(void)
+  * a br_sel_map. Software filtering is not supported because it would not correlate well
+  * with a sampling period.
+  */
+-int amd_brs_setup_filter(struct perf_event *event)
++static int amd_brs_setup_filter(struct perf_event *event)
+ {
+ 	u64 type = event->attr.branch_sample_type;
+ 
+@@ -96,6 +96,73 @@ int amd_brs_setup_filter(struct perf_event *event)
+ 	return 0;
+ }
+ 
++static inline int amd_is_brs_event(struct perf_event *e)
++{
++	return (e->hw.config & AMD64_RAW_EVENT_MASK) == AMD_FAM19H_BRS_EVENT;
++}
++
++int amd_brs_hw_config(struct perf_event *event)
++{
++	int ret = 0;
++
++	/*
++	 * Due to interrupt holding, BRS is not recommended in
++	 * counting mode.
++	 */
++	if (!is_sampling_event(event))
++		return -EINVAL;
++
++	/*
++	 * Due to the way BRS operates by holding the interrupt until
++	 * lbr_nr entries have been captured, it does not make sense
++	 * to allow sampling on BRS with an event that does not match
++	 * what BRS is capturing, i.e., retired taken branches.
++	 * Otherwise the correlation with the event's period is even
++	 * more loose:
++	 *
++	 * With retired taken branch:
++	 *   Effective P = P + 16 + X
++	 * With any other event:
++	 *   Effective P = P + Y + X
++	 *
++	 * Where X is the number of taken branches due to interrupt
++	 * skid. Skid is large.
++	 *
++	 * Where Y is the occurences of the event while BRS is
++	 * capturing the lbr_nr entries.
++	 *
++	 * By using retired taken branches, we limit the impact on the
++	 * Y variable. We know it cannot be more than the depth of
++	 * BRS.
++	 */
++	if (!amd_is_brs_event(event))
++		return -EINVAL;
++
++	/*
++	 * BRS implementation does not work with frequency mode
++	 * reprogramming of the period.
++	 */
++	if (event->attr.freq)
++		return -EINVAL;
++	/*
++	 * The kernel subtracts BRS depth from period, so it must
++	 * be big enough.
++	 */
++	if (event->attr.sample_period <= x86_pmu.lbr_nr)
++		return -EINVAL;
++
++	/*
++	 * Check if we can allow PERF_SAMPLE_BRANCH_STACK
++	 */
++	ret = amd_brs_setup_filter(event);
++
++	/* only set in case of success */
++	if (!ret)
++		event->hw.flags |= PERF_X86_EVENT_AMD_BRS;
++
++	return ret;
++}
++
+ /* tos = top of stack, i.e., last valid entry written */
+ static inline int amd_brs_get_tos(union amd_debug_extn_cfg *cfg)
+ {
 diff --git a/arch/x86/events/amd/core.c b/arch/x86/events/amd/core.c
-index 2f524cf..ef35207 100644
+index 9ac3718..e32a278 100644
 --- a/arch/x86/events/amd/core.c
 +++ b/arch/x86/events/amd/core.c
-@@ -330,6 +330,8 @@ static inline bool amd_is_pair_event_code(struct hw_perf_event *hwc)
+@@ -330,16 +330,8 @@ static inline bool amd_is_pair_event_code(struct hw_perf_event *hwc)
  	}
  }
  
-+DEFINE_STATIC_CALL_RET0(amd_pmu_branch_hw_config, *x86_pmu.hw_config);
-+
- static int amd_core_hw_config(struct perf_event *event)
- {
- 	if (event->attr.exclude_host && event->attr.exclude_guest)
-@@ -349,7 +351,7 @@ static int amd_core_hw_config(struct perf_event *event)
- 		event->hw.flags |= PERF_X86_EVENT_PAIR;
- 
- 	if (has_branch_stack(event))
--		return amd_brs_hw_config(event);
-+		return static_call(amd_pmu_branch_hw_config)(event);
- 
- 	return 0;
- }
-@@ -518,8 +520,14 @@ static struct amd_nb *amd_alloc_nb(int cpu)
- 	return nb;
- }
- 
-+typedef void (amd_pmu_branch_reset_t)(void);
-+DEFINE_STATIC_CALL_NULL(amd_pmu_branch_reset, amd_pmu_branch_reset_t);
-+
- static void amd_pmu_cpu_reset(int cpu)
- {
-+	if (x86_pmu.lbr_nr)
-+		static_call(amd_pmu_branch_reset)();
-+
- 	if (x86_pmu.version < 2)
- 		return;
- 
-@@ -576,7 +584,6 @@ static void amd_pmu_cpu_starting(int cpu)
- 	cpuc->amd_nb->nb_id = nb_id;
- 	cpuc->amd_nb->refcnt++;
- 
--	amd_brs_reset();
- 	amd_pmu_cpu_reset(cpu);
- }
- 
-@@ -771,16 +778,20 @@ static void amd_pmu_v2_disable_all(void)
- 	amd_pmu_check_overflow();
- }
- 
-+DEFINE_STATIC_CALL_NULL(amd_pmu_branch_add, *x86_pmu.add);
-+
- static void amd_pmu_add_event(struct perf_event *event)
- {
- 	if (needs_branch_stack(event))
--		amd_pmu_brs_add(event);
-+		static_call(amd_pmu_branch_add)(event);
- }
- 
-+DEFINE_STATIC_CALL_NULL(amd_pmu_branch_del, *x86_pmu.del);
-+
- static void amd_pmu_del_event(struct perf_event *event)
- {
- 	if (needs_branch_stack(event))
--		amd_pmu_brs_del(event);
-+		static_call(amd_pmu_branch_del)(event);
- }
- 
- /*
-@@ -1184,13 +1195,6 @@ static ssize_t amd_event_sysfs_show(char *page, u64 config)
- 	return x86_event_sysfs_show(page, config, event);
- }
- 
--static void amd_pmu_sched_task(struct perf_event_context *ctx,
--				 bool sched_in)
+-#define AMD_FAM19H_BRS_EVENT 0xc4 /* RETIRED_TAKEN_BRANCH_INSTRUCTIONS */
+-static inline int amd_is_brs_event(struct perf_event *e)
 -{
--	if (sched_in && x86_pmu.lbr_nr)
--		amd_pmu_brs_sched_task(ctx, sched_in);
+-	return (e->hw.config & AMD64_RAW_EVENT_MASK) == AMD_FAM19H_BRS_EVENT;
 -}
 -
- static u64 amd_pmu_limit_period(struct perf_event *event, u64 left)
+ static int amd_core_hw_config(struct perf_event *event)
  {
- 	/*
-@@ -1375,8 +1379,14 @@ static int __init amd_core_pmu_init(void)
- 	 */
- 	if (boot_cpu_data.x86 >= 0x19 && !amd_brs_init()) {
- 		x86_pmu.get_event_constraints = amd_get_event_constraints_f19h;
--		x86_pmu.sched_task = amd_pmu_sched_task;
-+		x86_pmu.sched_task = amd_pmu_brs_sched_task;
- 		x86_pmu.limit_period = amd_pmu_limit_period;
-+
-+		static_call_update(amd_pmu_branch_hw_config, amd_brs_hw_config);
-+		static_call_update(amd_pmu_branch_reset, amd_brs_reset);
-+		static_call_update(amd_pmu_branch_add, amd_pmu_brs_add);
-+		static_call_update(amd_pmu_branch_del, amd_pmu_brs_del);
-+
+-	int ret = 0;
+-
+ 	if (event->attr.exclude_host && event->attr.exclude_guest)
  		/*
- 		 * put_event_constraints callback same as Fam17h, set above
- 		 */
+ 		 * When HO == GO == 1 the hardware treats that as GO == HO == 0
+@@ -356,66 +348,10 @@ static int amd_core_hw_config(struct perf_event *event)
+ 	if ((x86_pmu.flags & PMU_FL_PAIR) && amd_is_pair_event_code(&event->hw))
+ 		event->hw.flags |= PERF_X86_EVENT_PAIR;
+ 
+-	/*
+-	 * if branch stack is requested
+-	 */
+-	if (has_branch_stack(event)) {
+-		/*
+-		 * Due to interrupt holding, BRS is not recommended in
+-		 * counting mode.
+-		 */
+-		if (!is_sampling_event(event))
+-			return -EINVAL;
+-
+-		/*
+-		 * Due to the way BRS operates by holding the interrupt until
+-		 * lbr_nr entries have been captured, it does not make sense
+-		 * to allow sampling on BRS with an event that does not match
+-		 * what BRS is capturing, i.e., retired taken branches.
+-		 * Otherwise the correlation with the event's period is even
+-		 * more loose:
+-		 *
+-		 * With retired taken branch:
+-		 *   Effective P = P + 16 + X
+-		 * With any other event:
+-		 *   Effective P = P + Y + X
+-		 *
+-		 * Where X is the number of taken branches due to interrupt
+-		 * skid. Skid is large.
+-		 *
+-		 * Where Y is the occurences of the event while BRS is
+-		 * capturing the lbr_nr entries.
+-		 *
+-		 * By using retired taken branches, we limit the impact on the
+-		 * Y variable. We know it cannot be more than the depth of
+-		 * BRS.
+-		 */
+-		if (!amd_is_brs_event(event))
+-			return -EINVAL;
++	if (has_branch_stack(event))
++		return amd_brs_hw_config(event);
+ 
+-		/*
+-		 * BRS implementation does not work with frequency mode
+-		 * reprogramming of the period.
+-		 */
+-		if (event->attr.freq)
+-			return -EINVAL;
+-		/*
+-		 * The kernel subtracts BRS depth from period, so it must
+-		 * be big enough.
+-		 */
+-		if (event->attr.sample_period <= x86_pmu.lbr_nr)
+-			return -EINVAL;
+-
+-		/*
+-		 * Check if we can allow PERF_SAMPLE_BRANCH_STACK
+-		 */
+-		ret = amd_brs_setup_filter(event);
+-
+-		/* only set in case of success */
+-		if (!ret)
+-			event->hw.flags |= PERF_X86_EVENT_AMD_BRS;
+-	}
+-	return ret;
++	return 0;
+ }
+ 
+ static inline int amd_is_nb_event(struct hw_perf_event *hwc)
+diff --git a/arch/x86/events/perf_event.h b/arch/x86/events/perf_event.h
+index ba3d24a..5deb34e 100644
+--- a/arch/x86/events/perf_event.h
++++ b/arch/x86/events/perf_event.h
+@@ -1233,6 +1233,9 @@ static inline bool fixed_counter_disabled(int i, struct pmu *pmu)
+ int amd_pmu_init(void);
+ 
+ #ifdef CONFIG_PERF_EVENTS_AMD_BRS
++
++#define AMD_FAM19H_BRS_EVENT 0xc4 /* RETIRED_TAKEN_BRANCH_INSTRUCTIONS */
++
+ int amd_brs_init(void);
+ void amd_brs_disable(void);
+ void amd_brs_enable(void);
+@@ -1241,7 +1244,7 @@ void amd_brs_disable_all(void);
+ void amd_brs_drain(void);
+ void amd_brs_lopwr_init(void);
+ void amd_brs_disable_all(void);
+-int amd_brs_setup_filter(struct perf_event *event);
++int amd_brs_hw_config(struct perf_event *event);
+ void amd_brs_reset(void);
+ 
+ static inline void amd_pmu_brs_add(struct perf_event *event)
+@@ -1277,7 +1280,7 @@ static inline void amd_brs_enable(void) {}
+ static inline void amd_brs_drain(void) {}
+ static inline void amd_brs_lopwr_init(void) {}
+ static inline void amd_brs_disable_all(void) {}
+-static inline int amd_brs_setup_filter(struct perf_event *event)
++static inline int amd_brs_hw_config(struct perf_event *event)
+ {
+ 	return 0;
+ }
