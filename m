@@ -2,220 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D81ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 109E1ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344491AbiHZOjQ (ORCPT
+        id S1344534AbiHZOmX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 10:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45394 "EHLO
+        Fri, 26 Aug 2022 10:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiHZOjO (ORCPT
+        with ESMTP id S230255AbiHZOmT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 10:39:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EFFFD31C2
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:39:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661524752;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ft0lQYVoEV6jBNoLlY/vGG48ZPsyM0mxyqwdiyDO9u0=;
-        b=dcwGiRGbGSRAanFnVzgiQ4iesOcWmsWNGcLBixhLCFxtZUWtAzUJy02C54lyMP8MWLm7Fy
-        hMsQogDXyR+/EDfW6jNn0zk0l9pxfdZAQi1/ZybKy3hgDG246Ro4f2F4ixy5mfOE7euq8h
-        wWRxg8x+H87sF8uUEMy3bvs7NYgfDuo=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-220-t-SKtyHKNkWPMe08864wsA-1; Fri, 26 Aug 2022 10:39:11 -0400
-X-MC-Unique: t-SKtyHKNkWPMe08864wsA-1
-Received: by mail-wm1-f70.google.com with SMTP id ay21-20020a05600c1e1500b003a6271a9718so1088915wmb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:39:10 -0700 (PDT)
+        Fri, 26 Aug 2022 10:42:19 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F27D3996
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:42:18 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id m3-20020a05600c3b0300b003a5e0557150so4179389wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:42:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=lZLJoIWsXsqa+EaO47AoJNbezNHg+wFL+Ah5uTdYlwk=;
+        b=KLyLNrCoJwl+5GwKMfIX792NGKHxwN6CwoN19TkfC9cJysJIjrduUKHxb0+yWzgPD0
+         E1cvx9do1g7IrPPt+Pb7osZ9oZI02WQCKE4T8tBaK0SmdrzMqVx85I4eRc+XvcrVNTXG
+         veK3oQmN5PqjIuWiG7Wfc8/opAook1+EgHPj1wr8CMYu1OZbJijFDAvEUlu26MiT5tNi
+         fgKnVtCy9t4zDW5s8MkjjwWmalXolPLhHi2fJpdJ8l/lxTAq9aJ76hpYnOLly7cPNUcq
+         +MKkcsxtNyAhqRvSkYFMBAsZJcbLwhOPPZypSTBaBzzbN31iaZvSrhAarROudcEp38Nk
+         HQWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :references:cc:to:content-language:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=Ft0lQYVoEV6jBNoLlY/vGG48ZPsyM0mxyqwdiyDO9u0=;
-        b=kXxHyS8vNxL7TGrTwFK8v4eUQjkmX6M4JEKFvKXb4G0kyWVR48VtCL8m2Z38XBx2Y8
-         yIj9HN4D1l8oq/y1QPUoiQiyz6hDdgti+geaqG690Vz7SA3W06Q/45mPSXrfh+fcrgac
-         /FiNvc22f4c0Q6/ImHEZnSUYc2BaWs2G9Xq+kQdkFVQnIUoqEKxmVq+K6GmVBLlKICyQ
-         UeEqQGGUTfcrxZ0ctN+UwApVaRD5JtIP66KD5gLjzUSB2XU5slecShBkzAXyV7croS55
-         kpDUUHnx5REyqClR85s6ChG6LH4Dhno9qzhf9SxIDzG5M0BtCOzgWB02npqAUedAXOLW
-         /WaA==
-X-Gm-Message-State: ACgBeo0mdw2qMKSTbXPAiu8XK2GVtsuoD7l+9wsqVeNH5XZrpF/Thtpo
-        usPIk9PBHvsylH68/LRXMHlk8QAr3mRpow7mF0RoO3hhx+KCU2/lfPfjCel4UM1R4nJ+9yrjjbM
-        tGicrhax2oeHI97D1L8SQUoH5
-X-Received: by 2002:a05:600c:1f1a:b0:3a6:2569:496b with SMTP id bd26-20020a05600c1f1a00b003a62569496bmr5450955wmb.176.1661524749691;
-        Fri, 26 Aug 2022 07:39:09 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR78RH87xC4FNL/JmgMsnjs3esusw3W4DDiJGKyeEE33BMY6II+9QepZiEzqEmrMzkzxyftCIg==
-X-Received: by 2002:a05:600c:1f1a:b0:3a6:2569:496b with SMTP id bd26-20020a05600c1f1a00b003a62569496bmr5450936wmb.176.1661524749334;
-        Fri, 26 Aug 2022 07:39:09 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c708:f600:abad:360:c840:33fa? (p200300cbc708f600abad0360c84033fa.dip0.t-ipconnect.de. [2003:cb:c708:f600:abad:360:c840:33fa])
-        by smtp.gmail.com with ESMTPSA id q12-20020adfcd8c000000b00225206dd595sm2100027wrj.86.2022.08.26.07.39.08
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=lZLJoIWsXsqa+EaO47AoJNbezNHg+wFL+Ah5uTdYlwk=;
+        b=1R3+WVcsCMDz80bmHGHJdXwtnZz2QXhGBSR89DEy/AONfQzBEXIN3dcNojRwcLJXkp
+         rR4XGs/2vNqLU1t1f+LAzFutwuFvOoN13f1FfZezeHqcxBmODYtjrY1bxLf0GJg7hKpN
+         cVCvEYFBT1kZMHlM5R5vyYwHoimS3FeUHgIGgAcgSnHfcYOpeJdVrPYKr2APsfTc2MQG
+         9Nr+boZ9hIgCuHZ1OouMGNaCJ0nAFprJrFhoHaFF0VKOEhMFxpPpKigR8JIv83y7ndtJ
+         xnggo3/k0WDCRQ+x54YcNZPAuM2mJDjieqyGMhMHZIyLAhbl+5CIV9zgTMDMd9wyd8zT
+         eQQQ==
+X-Gm-Message-State: ACgBeo1iOdExOFSrV5Ja+woibJ/g5AKLi5OsQuiptLNmLcez/JMdz1C8
+        FOdYw22/XAH3gnmn6PyK8ZvKBS0wBLZ98ELv
+X-Google-Smtp-Source: AA6agR6DMgDGXJ3XhgJFIVcmP9tyyxiw62Mu4CdcheESQmuIWil8nfX+s4MTdQxlI0jsktqF1CsfAQ==
+X-Received: by 2002:a1c:3b04:0:b0:3a5:487c:6240 with SMTP id i4-20020a1c3b04000000b003a5487c6240mr11564634wma.152.1661524936715;
+        Fri, 26 Aug 2022 07:42:16 -0700 (PDT)
+Received: from [10.83.37.24] ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id t18-20020a5d49d2000000b00224f5bfa890sm2052764wrs.97.2022.08.26.07.42.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 07:39:08 -0700 (PDT)
-Message-ID: <ca62c992-6242-5e82-22de-a6e8ffa824b1@redhat.com>
-Date:   Fri, 26 Aug 2022 16:39:08 +0200
+        Fri, 26 Aug 2022 07:42:16 -0700 (PDT)
+Message-ID: <843fda3c-f1bd-61e0-e94d-38026ad98e5f@arista.com>
+Date:   Fri, 26 Aug 2022 15:42:09 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
+Subject: Re: [PATCH 02/31] crypto_pool: Add crypto_pool_reserve_scratch()
 Content-Language: en-US
-To:     Peter Xu <peterx@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Huang Ying <ying.huang@intel.com>, stable@vger.kernel.org,
-        Yu Zhao <yuzhao@google.com>
-References: <20220823221138.45602-1-peterx@redhat.com>
- <411d7b8c-f914-875e-b397-856e6a894366@redhat.com>
- <YwjXxC2BbJ5+3Isx@xz-m1.local>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH] mm/mprotect: Only reference swap pfn page if type match
-In-Reply-To: <YwjXxC2BbJ5+3Isx@xz-m1.local>
+To:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Cc:     lkp@intel.com, kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Ivan Delalande <colona@arista.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-crypto@vger.kernel.org
+References: <202208221817.t5uzfegL-lkp@intel.com>
+From:   Dmitry Safonov <dima@arista.com>
+In-Reply-To: <202208221817.t5uzfegL-lkp@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26.08.22 16:25, Peter Xu wrote:
-> On Fri, Aug 26, 2022 at 12:49:37PM +0200, David Hildenbrand wrote:
->> On 24.08.22 00:11, Peter Xu wrote:
->>> Yu Zhao reported a bug after the commit "mm/swap: Add swp_offset_pfn() to
->>> fetch PFN from swap entry" added a check in swp_offset_pfn() for swap type [1]:
->>>
->>>   kernel BUG at include/linux/swapops.h:117!
->>>   CPU: 46 PID: 5245 Comm: EventManager_De Tainted: G S         O L 6.0.0-dbg-DEV #2
->>>   RIP: 0010:pfn_swap_entry_to_page+0x72/0xf0
->>>   Code: c6 48 8b 36 48 83 fe ff 74 53 48 01 d1 48 83 c1 08 48 8b 09 f6
->>>   c1 01 75 7b 66 90 48 89 c1 48 8b 09 f6 c1 01 74 74 5d c3 eb 9e <0f> 0b
->>>   48 ba ff ff ff ff 03 00 00 00 eb ae a9 ff 0f 00 00 75 13 48
->>>   RSP: 0018:ffffa59e73fabb80 EFLAGS: 00010282
->>>   RAX: 00000000ffffffe8 RBX: 0c00000000000000 RCX: ffffcd5440000000
->>>   RDX: 1ffffffffff7a80a RSI: 0000000000000000 RDI: 0c0000000000042b
->>>   RBP: ffffa59e73fabb80 R08: ffff9965ca6e8bb8 R09: 0000000000000000
->>>   R10: ffffffffa5a2f62d R11: 0000030b372e9fff R12: ffff997b79db5738
->>>   R13: 000000000000042b R14: 0c0000000000042b R15: 1ffffffffff7a80a
->>>   FS:  00007f549d1bb700(0000) GS:ffff99d3cf680000(0000) knlGS:0000000000000000
->>>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>   CR2: 0000440d035b3180 CR3: 0000002243176004 CR4: 00000000003706e0
->>>   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>>   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->>>   Call Trace:
->>>    <TASK>
->>>    change_pte_range+0x36e/0x880
->>>    change_p4d_range+0x2e8/0x670
->>>    change_protection_range+0x14e/0x2c0
->>>    mprotect_fixup+0x1ee/0x330
->>>    do_mprotect_pkey+0x34c/0x440
->>>    __x64_sys_mprotect+0x1d/0x30
->>>
->>> It triggers because pfn_swap_entry_to_page() could be called upon e.g. a
->>> genuine swap entry.
->>>
->>> Fix it by only calling it when it's a write migration entry where the page*
->>> is used.
->>>
->>> [1] https://lore.kernel.org/lkml/CAOUHufaVC2Za-p8m0aiHw6YkheDcrO-C3wRGixwDS32VTS+k1w@mail.gmail.com/
->>>
->>> Fixes: 6c287605fd56 ("mm: remember exclusively mapped anonymous pages with PG_anon_exclusive")
->>> Cc: David Hildenbrand <david@redhat.com>
->>> Cc: <stable@vger.kernel.org>
->>> Reported-by: Yu Zhao <yuzhao@google.com>
->>> Signed-off-by: Peter Xu <peterx@redhat.com>
->>> ---
->>>  mm/mprotect.c | 3 ++-
->>>  1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/mm/mprotect.c b/mm/mprotect.c
->>> index f2b9b1da9083..4549f5945ebe 100644
->>> --- a/mm/mprotect.c
->>> +++ b/mm/mprotect.c
->>> @@ -203,10 +203,11 @@ static unsigned long change_pte_range(struct mmu_gather *tlb,
->>>  			pages++;
->>>  		} else if (is_swap_pte(oldpte)) {
->>>  			swp_entry_t entry = pte_to_swp_entry(oldpte);
->>> -			struct page *page = pfn_swap_entry_to_page(entry);
->>>  			pte_t newpte;
->>>  
->>>  			if (is_writable_migration_entry(entry)) {
->>> +				struct page *page = pfn_swap_entry_to_page(entry);
->>> +
->>>  				/*
->>>  				 * A protection check is difficult so
->>>  				 * just be safe and disable write
->>
->>
->> Stumbling over the THP code, I was wondering if we also want to adjust change_huge_pmd()
->> and hugetlb_change_protection. There are no actual swap entries, so I assume we're fine.
->>
->>
->> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
->> index 482c1826e723..466364e7fc5f 100644
->> --- a/mm/huge_memory.c
->> +++ b/mm/huge_memory.c
->> @@ -1798,10 +1798,10 @@ int change_huge_pmd(struct mmu_gather *tlb, struct vm_area_struct *vma,
->>  #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
->>         if (is_swap_pmd(*pmd)) {
->>                 swp_entry_t entry = pmd_to_swp_entry(*pmd);
->> -               struct page *page = pfn_swap_entry_to_page(entry);
->>  
->>                 VM_BUG_ON(!is_pmd_migration_entry(*pmd));
->>                 if (is_writable_migration_entry(entry)) {
->> +                       struct page *page = pfn_swap_entry_to_page(entry);
->>                         pmd_t newpmd;
->>                         /*
->>                          * A protection check is difficult so
->> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
->> index 2480ba627aa5..559465fae5cd 100644
->> --- a/mm/hugetlb.c
->> +++ b/mm/hugetlb.c
->> @@ -6370,9 +6370,9 @@ unsigned long hugetlb_change_protection(struct vm_area_struct *vma,
->>                 }
->>                 if (unlikely(is_hugetlb_entry_migration(pte))) {
->>                         swp_entry_t entry = pte_to_swp_entry(pte);
->> -                       struct page *page = pfn_swap_entry_to_page(entry);
->>  
->>                         if (!is_readable_migration_entry(entry)) {
->> +                               struct page *page = pfn_swap_entry_to_page(entry);
->>                                 pte_t newpte;
->>  
->>                                 if (PageAnon(page))
->>
->>
->> @Peter, what's your thought?
+Hi Dan,
+
+On 8/22/22 11:45, Dan Carpenter wrote:
+> Hi Dmitry,
+[..]
+> "err" not set.  It was supposed to be set to zero at the start.  But
+> better to say "ret = i;" here maybe?
 > 
-> IMHO they're not needed?
-> 
-> The rule is simple in my mind: we should only pass in a pfn-typed swap
-> entry into pfn_swap_entry_to_page() (or the new swp_offset_pfn()), or it's
-> a violation of the API.  In these two cases they do not violate the API and
-> they're always safe because they're guaranteed to be pfn swap entries when
-> calling.
+> Why is i unsigned?  It leads to unsightly casts.  Presumably some static
+> checker insists on this... :/
 
-I was wondering about extreme corner cases regarding the struct page.
+Thanks! Will be addressed/reworked in v2.
 
-Assume we have a hwpoison_entry that pointed at a valid struct page. We
-can succeed in offlining+removing the section it's located on (I was
-recently challenging if we want to keep that behavior as it's really
-shaky already), freeing the relevant memmap entry and the memory section.
-
-pfn_swap_entry_to_page() -> pfn_to_page() would be problematic if there
-is no memmap anymore.
-
-
-I assume it's ok to always call it for is_pfn_swap_entry(), but in the
-PMD case we only check for is_swap_pmd()? Isn't that problematic?
-
-
-I was confused by the hugetlb case, it's indeed fine as we check for
-is_hugetlb_entry_migration().
-
--- 
-Thanks,
-
-David / dhildenb
-
+Thank you,
+          Dmitry
