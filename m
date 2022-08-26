@@ -2,103 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5762ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC973ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245100AbiHZMzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52400 "EHLO
+        id S238605AbiHZM4e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235525AbiHZMzt (ORCPT
+        with ESMTP id S235525AbiHZM4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:55:49 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75F2831DC2;
-        Fri, 26 Aug 2022 05:55:47 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27Q7ItQq024246;
-        Fri, 26 Aug 2022 14:55:28 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=zmW6jpfh6wFOjXYDYiMUW7QuwI35Um2mqb+zCuWwwiY=;
- b=iShNq05XOry01B5kPMkqkYdWJZCWlfV6TwpRm9LNh9CuLn1D9o3TQ5mEj6aI8mIADeRX
- 3c7Eq/NHErVfBcck/xd2ND/xndWwENhYSWHp+MldO7aSDnqb8GRFLdVYGaJaQanENjlq
- QY4w/OAYPyz4Tcb7let7Od+2BeORkSRoagpATkFi4Dmusw495Um7qmG6bKDurDM3WKj1
- jwQJ4/IRW3kgzpzmvvLcDTZ6cNGDBrmt9BXJ3L/1wCcRGMgg1V+nrPH4YxPciWXUGCvT
- d2aC3smfXEB8xqwa5F9hFYowCTZ0Rwv13q5UQCKEUY0f6kfYCPd7hc2TxiEuxAYH27iI og== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j58m5s439-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 26 Aug 2022 14:55:28 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4EC0810002A;
-        Fri, 26 Aug 2022 14:55:26 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 18DF02278A4;
-        Fri, 26 Aug 2022 14:55:26 +0200 (CEST)
-Received: from localhost (10.75.127.117) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 26 Aug
- 2022 14:55:25 +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <arnaud.pouliquen@foss.st.com>, <linux-kernel@vger.kernel.org>,
-        <linux-remoteproc@vger.kernel.org>
-Subject: [PATCH v4] arm64: defconfig: Config that had RPMSG_CHAR now gets RPMSG_CTRL
-Date:   Fri, 26 Aug 2022 14:54:00 +0200
-Message-ID: <20220826125400.2199429-1-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 26 Aug 2022 08:56:32 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EBF511C03;
+        Fri, 26 Aug 2022 05:56:31 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id r15-20020a17090a1bcf00b001fabf42a11cso1579770pjr.3;
+        Fri, 26 Aug 2022 05:56:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=XkBLXQVJw8ZW86CrFrYiPCfjAUbiqv3sEvOCVb/EvSc=;
+        b=Cqn9u8oNXzI54I0s51Uc2JY/DSQzc1fLIEyKVQeU/0pVyItwl7jNGtoNmcTCuHe7sL
+         b5EapBWbZVp15gPdLMRwcPn3ec9y2ldJxEGH7SXUiCvIDu22+oIdBww4K9o7Zhh66+/B
+         XW7G/b5JASUKQ+83f98p0PR4JsvM/2JGBiYO54jp0pUMhkjBmoNTda0XCSRsEBfAjsac
+         W1wsk1kdNO/zwDIjLjuuuKTx4YsjshP2g7I0jUFcvtdWDcUTEgTQO11JigpgvdIWwZ5q
+         FWFyR5MGMcORMu4VR2nQH8u5uSQthmZ4rFoHkwekLPw3LnZe7wisrH/Ip7X8D6olGdkv
+         5Z1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=XkBLXQVJw8ZW86CrFrYiPCfjAUbiqv3sEvOCVb/EvSc=;
+        b=uzhASpnERKvZAookbXxJ4KqZV0t4nIU60rGZReIvd61QSEBVRWUOxb5ccNqhKKmLJv
+         QmR+2HFKDwCkUlQWMS+b7kz0eM9IgOe8pz/Ram15Hr3pQpsSDDSYTUEP6DcSkAR7sVpQ
+         1oelAHugU4nnyqm3cuL/t6LHWdvrsgD2RnIQIWHyy/f+zwpaq1ueUkbnFK/IUSHn87yS
+         ty+gBolLTxgWwhB9Ap3CoPYB7F9CQiSSJTHWFg9uPVfwdW9fgr0H6aNIL9SAFDxkqOOl
+         tCFcK2+lZKqhoKMQx1GEZ0doUHE5zgzXsl5temBtGbQEjGpejz8Uk+UDegU/Lxpmb+Cv
+         5ghA==
+X-Gm-Message-State: ACgBeo1xfJv21VZBKlgloEe+mKs+Vtx8gjXHjbPcXnjZpyApCcc3yfpq
+        6VRP9VF4Mf5rOhfzileRb6c=
+X-Google-Smtp-Source: AA6agR7rUwPxmJVCKQkFKlqzUrQ7J+bAITn1MCH7FHzK84yb7gdtXTu3pmYXx0ipjMuwP52WoAgI8w==
+X-Received: by 2002:a17:90a:7185:b0:1fd:768f:232d with SMTP id i5-20020a17090a718500b001fd768f232dmr641766pjk.149.1661518590971;
+        Fri, 26 Aug 2022 05:56:30 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-70.three.co.id. [180.214.233.70])
+        by smtp.gmail.com with ESMTPSA id s12-20020a17090302cc00b00172ea8ff334sm1527254plk.7.2022.08.26.05.56.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 05:56:30 -0700 (PDT)
+Message-ID: <cc13c32f-0f4f-bb10-c5fa-a04c139cf38d@gmail.com>
+Date:   Fri, 26 Aug 2022 19:56:25 +0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.117]
-X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-26_06,2022-08-25_01,2022-06-22_01
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH -next] Documentation/hw-vuln: Update spectre doc
+Content-Language: en-US
+To:     Lin Yujun <linyujun809@huawei.com>, corbet@lwn.net, bp@suse.de,
+        keescook@chromium.org, aarcange@redhat.com,
+        daniel.sneddon@linux.intel.com, longman@redhat.com,
+        lukas.bulwahn@gmail.com, peterz@infradead.org, kim.phillips@amd.com
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220826065132.112340-1-linyujun809@huawei.com>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220826065132.112340-1-linyujun809@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
-from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
-By default give everyone who had the old driver enabled the rpmsg_ctrl
-driver too.
+On 8/26/22 13:51, Lin Yujun wrote:
+> The following patch adds the specre_v2=ibrs option in
+> Documentation/admin-guide/kernel-parameters.txt
+> but omits it to
+> Documentation/admin-guide/hw-vuln/spectre.rst
+> 
+> commit 7c693f54c873691 ("x86/speculation: Add spectre_v2=ibrs option to support Kernel IBRS")
+> 
+> Supplement the specre_v2=ibrs option to
+> Documentation/admin-guide/hw-vuln/spectre.rst
+> 
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
----
-This patch is extracted from the series [1] that has been partially
-integrated in the Linux Kernel 5.18-rc1.
+Please massage the patch description so that it uses imperative mood.
 
-update from v3 [2]
-- resent after rebase on Linux kernel v6.0-rc2.
-
-[1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
-[2]https://lore.kernel.org/linux-arm-kernel/YpdutV3%2FjOsfPb5c@arm.com/t/
----
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index d5b2d2dd4904..b9e6b17305f6 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -1093,6 +1093,7 @@ CONFIG_QCOM_Q6V5_PAS=m
- CONFIG_QCOM_SYSMON=m
- CONFIG_QCOM_WCNSS_PIL=m
- CONFIG_RPMSG_CHAR=m
-+CONFIG_RPMSG_CTRL=m
- CONFIG_RPMSG_QCOM_GLINK_RPM=y
- CONFIG_RPMSG_QCOM_GLINK_SMEM=m
- CONFIG_RPMSG_QCOM_SMD=y
 -- 
-2.24.3
-
+An old man doll... just what I always wanted! - Clara
