@@ -2,95 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FAEC64991
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FE3ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:14:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbiHZVNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 17:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
+        id S233026AbiHZVOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 17:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344651AbiHZVNa (ORCPT
+        with ESMTP id S231247AbiHZVOE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 17:13:30 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F27E68CD
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:13:27 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id q7so3525618lfu.5
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:13:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=tbpadwyNsGF5OvB8OARNmocarvqfqchX8oAmiz2J6Do=;
-        b=im090+OfFLEr50nKUecm4rK2iVu3y9FkYyrT2CcXNSzAxsnMc5I5ad+hcrrRTg5R8q
-         xh/yj0a0v9xxVLj7XhzT13KW1ZE9m933i7G+igrYt8kT/UIPhQH+3vQB/qvT/X4fkAYP
-         L+1O2tRtRIk9UYDA47u6KAD04tP31oAwMXl313v3PYetnrspzL3jUKscNZ1H52sSFxQL
-         oEoayALbOaqMe27KsddtTeb7YryUHvGHm5mGP9r/9whVU1Mf6J6Mm6ZQgBDzgd0g69aB
-         25j7x1Xjx2sZRdh63+Y1VYpB9hvc0tVB89aDR8oCvsuV1hnSptpYNEBkNdp2RPhccu5z
-         SXNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=tbpadwyNsGF5OvB8OARNmocarvqfqchX8oAmiz2J6Do=;
-        b=CyOj63siogJj+k6m12/vP0X0cndGaVLiV49smjtBTqjjnItcHaybTTg7+4nEDy/CVq
-         TZLxrSHS9XGVrJdHNKtTtz2egpzEngS1mo2OGdwb0vJwe2aNFBoUyIt2WYt0OYZUSXDh
-         4+aoAIRG721RsjI/theyt4J30iYxM5ipDyUaP1+0cbjEZ7VQb9yt8FQ65R/GaWDd9ric
-         9GNkxlUQxz2hi4B/2KCNNcdAz290VFrAx6JkonaOm/nc75dHtL1F7RjpheZXaWSGE45X
-         BpzvvupQ1rUhskC2qMDqC1NTnaFKX9aPhgVf9MIoeAPhXjt4p5krsm3nv9saoHoN9cS0
-         1fpw==
-X-Gm-Message-State: ACgBeo1ZfT61eQCWDewzWxl5p1wxssIV6g/PseBBC63JLJdYXW9xT8K9
-        8hXyAQsZmsNfRp6clF98v4xto6X8uMXFnYbdopBm0lMgeAs=
-X-Google-Smtp-Source: AA6agR6gSYM8FeWg1aka9MqO6V98wH2USEWbt+ev7Qg7QXHkG1gzvGeKWkDNS0yQzQtoyqiD5NDZFJNmSHuS/utNNGk=
-X-Received: by 2002:a05:6512:3d06:b0:492:c211:b781 with SMTP id
- d6-20020a0565123d0600b00492c211b781mr3351561lfv.511.1661548405311; Fri, 26
- Aug 2022 14:13:25 -0700 (PDT)
+        Fri, 26 Aug 2022 17:14:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E562E58A9;
+        Fri, 26 Aug 2022 14:14:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 858B161F68;
+        Fri, 26 Aug 2022 21:14:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A498DC433C1;
+        Fri, 26 Aug 2022 21:14:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661548442;
+        bh=7azrnsiCu14tEupZXXCpNTjljV0a/zloctCANgEak44=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=kjbW75aBgkj/vd6Em/TorngQ+aIIuyl75Eb8oCububNQSjqk5bAkw8bPWCIqMYZfs
+         09mAnflYPx+wM4D/DxksBBmfbTwIeyE4d36g3JSRF1V7qF+piTggxa2qdyhxNjejgQ
+         gByqr/PuEZUWmYej2JmeJz9UfMk0m0L02ljQZSOGOWstnPXjI1KDBnhOjQ9zPiHkXT
+         MRd4QcujuEV9qqi6F1jaSJ3cHHV69KNLkQbEVt4vnXTJPHmmsHVRQz/lT9lrSEv+vo
+         VNiz8SlsYFBgKDOCeOUfLXR5ZtpBhsTMYCpaQ1rNy1nXxLeld/UCTZLKA9NyJ6w7p9
+         JsxBDYm6A8Nmw==
+Date:   Fri, 26 Aug 2022 16:14:01 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        bhelgaas@google.com, Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH -next 1/3] PCI: fix double put_device() in error case in
+ pci_create_root_bus()
+Message-ID: <20220826211401.GA2959769@bhelgaas>
 MIME-Version: 1.0
-References: <20220826184500.1940077-1-vipinsh@google.com> <20220826184500.1940077-2-vipinsh@google.com>
-In-Reply-To: <20220826184500.1940077-2-vipinsh@google.com>
-From:   Vipin Sharma <vipinsh@google.com>
-Date:   Fri, 26 Aug 2022 14:12:49 -0700
-Message-ID: <CAHVum0e0piX9zS6BuqzzeCu1M=2fdOjdov18aA-AEOm=+bd2mg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/4] KVM: selftests: Explicitly set variables based on
- options in dirty_log_perf_test
-To:     seanjc@google.com, dmatlack@google.com, pbonzini@redhat.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825122753.1838930-1-yangyingliang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 11:45 AM Vipin Sharma <vipinsh@google.com> wrote:
->
-> Variable set via -g are also indirectly set by -e option by omitting
-> break statement. Set them explicitly so that movement of switch-case
-> statements does not unintentionally break features.
->
-> No functional change intended.
->
-> Signed-off-by: Vipin Sharma <vipinsh@google.com>
+[+cc Rob]
+
+On Thu, Aug 25, 2022 at 08:27:51PM +0800, Yang Yingliang wrote:
+> If device_add() fails in pci_register_host_bridge(), the brigde device will
+> be put once, and it will be put again in error path of pci_create_root_bus().
+> Move the put_device() from pci_create_root_bus() to pci_register_host_bridge()
+> to fix this problem. And use device_unregister() instead of del_device() and
+> put_device().
+
+s/brigde/bridge/
+
+> Fixes: 9885440b16b8 ("PCI: Fix pci_host_bridge struct device release/free handling")
+
+If you're fixing a commit from somebody else, please always cc: the
+author because the author can help review the change.
+
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > ---
->  tools/testing/selftests/kvm/dirty_log_perf_test.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/tools/testing/selftests/kvm/dirty_log_perf_test.c b/tools/testing/selftests/kvm/dirty_log_perf_test.c
-> index f99e39a672d3..a03db7f9f4c0 100644
-> --- a/tools/testing/selftests/kvm/dirty_log_perf_test.c
-> +++ b/tools/testing/selftests/kvm/dirty_log_perf_test.c
-> @@ -411,6 +411,8 @@ int main(int argc, char *argv[])
->                 case 'e':
->                         /* 'e' is for evil. */
->                         run_vcpus_while_disabling_dirty_logging = true;
-> +                       dirty_log_manual_caps = 0;
-> +                       break;
+>  drivers/pci/probe.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index c5286b027f00..e500eb9d6468 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1027,7 +1027,7 @@ static int pci_register_host_bridge(struct pci_host_bridge *bridge)
+>  
+>  unregister:
+>  	put_device(&bridge->dev);
+> -	device_del(&bridge->dev);
+> +	device_unregister(&bridge->dev);
 
-@Sean, I hope you intentionally didn't write a break between -e and -g
-when you created the patch and it is not just a missed thing :)
+I don't understand this part.  device_unregister() looks like this:
 
+  void device_unregister(struct device *dev)
+  {
+    device_del(dev);
+    put_device(dev);
+  }
 
->                 case 'g':
->                         dirty_log_manual_caps = 0;
->                         break;
-> --
-> 2.37.2.672.g94769d06f0-goog
->
+So this calls put_device(&bridge->dev) twice, doesn't it?
+
+The "unregister" label looks poorly named.  We only get there if
+device_register() *failed*.  We shouldn't need to unregister anything
+in that case.
+
+>  free:
+>  	kfree(bus);
+> @@ -3037,13 +3037,9 @@ struct pci_bus *pci_create_root_bus(struct device *parent, int bus,
+>  
+>  	error = pci_register_host_bridge(bridge);
+>  	if (error < 0)
+> -		goto err_out;
+> +		return NULL;
+>  
+>  	return bridge->bus;
+> -
+> -err_out:
+> -	put_device(&bridge->dev);
+> -	return NULL;
+
+This part looks right to me.  The get_device() is in
+pci_register_host_bridge(), and if pci_register_host_bridge() returns
+failure, I think it should first do the corresponding put_device().
+
+>  }
+>  EXPORT_SYMBOL_GPL(pci_create_root_bus);
+>  
+> -- 
+> 2.25.1
+> 
