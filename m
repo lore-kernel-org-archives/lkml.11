@@ -2,127 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 421D8ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D5CECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343506AbiHZH76 (ORCPT
+        id S1343502AbiHZIBI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45812 "EHLO
+        Fri, 26 Aug 2022 04:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343499AbiHZH7y (ORCPT
+        with ESMTP id S241772AbiHZIBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:59:54 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543D9B7E8
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:59:52 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MDXJJ3g7WzGpj0;
-        Fri, 26 Aug 2022 15:58:08 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 26 Aug 2022 15:59:50 +0800
-Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
- (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 15:59:49 +0800
-From:   Shang XiaoJing <shangxiaojing@huawei.com>
-To:     <mingo@redhat.com>, <peterz@infradead.org>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
-        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>
-CC:     <shangxiaojing@huawei.com>
-Subject: [PATCH -next v2] sched/deadline: Add dl_task_is_earliest_deadline helper
-Date:   Fri, 26 Aug 2022 16:34:53 +0800
-Message-ID: <20220826083453.698-1-shangxiaojing@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 26 Aug 2022 04:01:05 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB01FD3ECE;
+        Fri, 26 Aug 2022 01:01:03 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id k9so886516wri.0;
+        Fri, 26 Aug 2022 01:01:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc;
+        bh=YKvx6Cj1xYUX2DCCsWQM+Zo2QVYcF66rAfcZQEp7iEQ=;
+        b=T42JkReyAMSo4VSqTWGrerpNlXhidixAmat1mZ0sQX1NCfY85uNUSkEv188VYmQoZv
+         tr94poynOv2itOtjfretoErIELTWi2u1CcgLTxj13h7TNV7+V1cpnCrl2/kM37TyL8w6
+         sAlgiW0FfnJUCwWa2xqAI+SeLsFzljhoO4ECrsxFTPNmrL3xO2F28KnuXhtH1/TIsbPF
+         pbhYYtri0YLLPUO75mC3QZ2k85W2/81CBLyHcBkQf8rdCJc+OBinKqOWYUaHneaZ8bzR
+         K1yNCLfCf2VC0c1sU6HihdvfKDACL1oyCXYjnnfolQUugZCy6SJxOC6HJPAdZOAszwsj
+         VcjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-message-state:from:to:cc;
+        bh=YKvx6Cj1xYUX2DCCsWQM+Zo2QVYcF66rAfcZQEp7iEQ=;
+        b=6d5vJp3s3PIizdsEM6IYY8/feqmFfNm7cxfPJQ1Wv+0SliHGuGCX0A4duNpmKHA5hx
+         9ZfDNE2q1A99jVZhYn0mSDJx3ui1V9r9GwyG9FT9U8jmliFguvQh7oIQijFDHhRp2W97
+         uPtbLcwvH0BR0b9VCz+soWqf02wYIFz/2yFl5Ku5QxDSrbRrgWQiD7rfdgLD5iIFuFje
+         CuB4POo0B/xUapQFCvfxuAvtnO0FUGUzOYScs95p1aY0NrMQRk/wuq9Oz1TslIIvvDVJ
+         pCIszl9NJGMc3k8qFNnWomVN6n8DqUIvURbtz1+lWv2bzQbSnOhnorgPR2yQBvnqK1lt
+         ihwQ==
+X-Gm-Message-State: ACgBeo1DPaduIlEgg6COHfsFSyCDJr8CVU3baofJJMwh6912hSagg6Ca
+        pl3M3LGLMQ/Uybb28JrjGBI=
+X-Google-Smtp-Source: AA6agR50DqvB0YCyRCtnNZIMYF3rLVQtp8wNj2e/H+sDHsFqdKxFun9l/A5Ec9xDjcwIAitKznYcZA==
+X-Received: by 2002:a5d:64e2:0:b0:225:79d3:d6d9 with SMTP id g2-20020a5d64e2000000b0022579d3d6d9mr3873080wri.240.1661500862157;
+        Fri, 26 Aug 2022 01:01:02 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id o1-20020a5d6701000000b0022571d43d32sm1239859wru.21.2022.08.26.01.01.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 01:01:01 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Fri, 26 Aug 2022 10:00:58 +0200
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [RFC] ftrace: Add support to keep some functions out of ftrace
+Message-ID: <Ywh9uo7fhRMQjrSl@krava>
+References: <Yvpf67eCerqaDmlE@worktop.programming.kicks-ass.net>
+ <CAADnVQKX5xJz5N_mVyf7wg4BT8Q2cNh8ze-SxTRfk6KtcFQ0=Q@mail.gmail.com>
+ <YvpmAnFldR0iwAFC@worktop.programming.kicks-ass.net>
+ <YvppJ7TjMXD3cSdZ@worktop.programming.kicks-ass.net>
+ <Yv6gm09CMdZ/HMr5@krava>
+ <20220818165024.433f56fd@gandalf.local.home>
+ <CAADnVQ+n=x=CuBk23UNnD9CHVXjrXLUofbockh-SWaLwH3H9fw@mail.gmail.com>
+ <Yv6wB4El4iueJtwX@krava>
+ <Yv933mq/DTIz5g7q@krava>
+ <CAADnVQK=kbCRuj9ZF9oV0YGf0pN-am3vFXYBMQ6m2ze5--nqtQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.100.227]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQK=kbCRuj9ZF9oV0YGf0pN-am3vFXYBMQ6m2ze5--nqtQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wrap repeated code in helper function dl_task_is_earliest_deadline, which
-return true if there is no deadline task on the rq at all, or task's
-deadline earlier than the whole rq.
+On Tue, Aug 23, 2022 at 10:23:24AM -0700, Alexei Starovoitov wrote:
+> On Fri, Aug 19, 2022 at 4:45 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+> >
+> > On Thu, Aug 18, 2022 at 11:32:55PM +0200, Jiri Olsa wrote:
+> > > On Thu, Aug 18, 2022 at 02:00:21PM -0700, Alexei Starovoitov wrote:
+> > > > On Thu, Aug 18, 2022 at 1:50 PM Steven Rostedt <rostedt@goodmis.org> wrote:
+> > > > >
+> > > > > On Thu, 18 Aug 2022 22:27:07 +0200
+> > > > > Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > > >
+> > > > > > ok, so the problem with __attribute__((patchable_function_entry(5))) is that
+> > > > > > it puts function address into __patchable_function_entries section, which is
+> > > > > > one of ftrace locations source:
+> > > > > >
+> > > > > >   #define MCOUNT_REC()    . = ALIGN(8);     \
+> > > > > >     __start_mcount_loc = .;                 \
+> > > > > >     KEEP(*(__mcount_loc))                   \
+> > > > > >     KEEP(*(__patchable_function_entries))   \
+> > > > > >     __stop_mcount_loc = .;                  \
+> > > > > >    ...
+> > > > > >
+> > > > > >
+> > > > > > it looks like __patchable_function_entries is used for other than x86 archs,
+> > > > > > so we perhaps we could have x86 specific MCOUNT_REC macro just with
+> > > > > > __mcount_loc section?
+> > > > >
+> > > > > So something like this:
+> > > > >
+> > > > > #ifdef CONFIG_X86
+> > > > > # define NON_MCOUNT_PATCHABLE KEEP(*(__patchable_function_entries))
+> > > > > # define MCOUNT_PATCHABLE
+> > > > > #else
+> > > > > # define NON_MCOUNT_PATCHABLE
+> > > > > # define MCOUNT_PATCHABLE  KEEP(*(__patchable_function_entries))
+> > > > > #endif
+> > > > >
+> > > > >   #define MCOUNT_REC()    . = ALIGN(8);     \
+> > > > >     __start_mcount_loc = .;                 \
+> > > > >     KEEP(*(__mcount_loc))                   \
+> > > > >     MCOUNT_PATCHABLE                        \
+> > > > >     __stop_mcount_loc = .;                  \
+> > > > >     NON_MCOUNT_PATCHABLE                    \
+> > > > >    ...
+> > > > >
+> > > > > ??
+> > > >
+> > > > That's what more or less Peter's patch is doing:
+> > > > Here it is again for reference:
+> > > > https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=8d075bdf11193f1d276bf19fa56b4b8dfe24df9e
+> > >
+> > > ah nice, and discards the __patchable_function_entries section, great
+> > >
+> >
+> > tested change below with Peter's change above and it seems to work,
+> > once it get merged I'll send full patch
+> 
+> Peter,
+> what is the ETA to land your changes?
+> That particular commit is detached in your git tree.
+> Did you move it to a different branch?
+> 
+> Just trying to figure out the logistics to land Jiri's fix below.
+> We can take it into bpf-next, since it's harmless as-is,
+> but it won't have an effect until your change lands.
+> Sounds like they both will get in during the next merge window?
 
-Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
----
-changes in v2:
-- pick a more descriptive function name rather than compare_task_rq.
----
- kernel/sched/deadline.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+I discussed with Peter and I'll send his change together with my fix
 
-diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index d116d2b9d2f9..34271aff4712 100644
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1810,6 +1810,14 @@ static void yield_task_dl(struct rq *rq)
- 
- #ifdef CONFIG_SMP
- 
-+static inline bool dl_task_is_earliest_deadline(struct task_struct *p,
-+						 struct rq *rq)
-+{
-+	return (!rq->dl.dl_nr_running ||
-+		dl_time_before(p->dl.deadline,
-+			       rq->dl.earliest_dl.curr));
-+}
-+
- static int find_later_rq(struct task_struct *task);
- 
- static int
-@@ -1852,9 +1860,7 @@ select_task_rq_dl(struct task_struct *p, int cpu, int flags)
- 		int target = find_later_rq(p);
- 
- 		if (target != -1 &&
--				(dl_time_before(p->dl.deadline,
--					cpu_rq(target)->dl.earliest_dl.curr) ||
--				(cpu_rq(target)->dl.dl_nr_running == 0)))
-+		    dl_task_is_earliest_deadline(p, cpu_rq(target)))
- 			cpu = target;
- 	}
- 	rcu_read_unlock();
-@@ -2221,9 +2227,7 @@ static struct rq *find_lock_later_rq(struct task_struct *task, struct rq *rq)
- 
- 		later_rq = cpu_rq(cpu);
- 
--		if (later_rq->dl.dl_nr_running &&
--		    !dl_time_before(task->dl.deadline,
--					later_rq->dl.earliest_dl.curr)) {
-+		if (!dl_task_is_earliest_deadline(task, later_rq)) {
- 			/*
- 			 * Target rq has tasks of equal or earlier deadline,
- 			 * retrying does not release any lock and is unlikely
-@@ -2251,9 +2255,7 @@ static struct rq *find_lock_later_rq(struct task_struct *task, struct rq *rq)
- 		 * its earliest one has a later deadline than our
- 		 * task, the rq is a good one.
- 		 */
--		if (!later_rq->dl.dl_nr_running ||
--		    dl_time_before(task->dl.deadline,
--				   later_rq->dl.earliest_dl.curr))
-+		if (dl_task_is_earliest_deadline(task, later_rq))
- 			break;
- 
- 		/* Otherwise we try again. */
-@@ -2424,9 +2426,7 @@ static void pull_dl_task(struct rq *this_rq)
- 		 *  - it will preempt the last one we pulled (if any).
- 		 */
- 		if (p && dl_time_before(p->dl.deadline, dmin) &&
--		    (!this_rq->dl.dl_nr_running ||
--		     dl_time_before(p->dl.deadline,
--				    this_rq->dl.earliest_dl.curr))) {
-+		    dl_task_is_earliest_deadline(p, this_rq)) {
- 			WARN_ON(p == src_rq->curr);
- 			WARN_ON(!task_on_rq_queued(p));
- 
--- 
-2.17.1
-
+jirka
