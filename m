@@ -2,146 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B754ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0320ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:55:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244122AbiHZByr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 21:54:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35388 "EHLO
+        id S244632AbiHZBz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 21:55:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243808AbiHZByp (ORCPT
+        with ESMTP id S244025AbiHZBzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 21:54:45 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EE1318F
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 18:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661478884; x=1693014884;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=9uw66TL3EmoWbnJMNC3BAYIJz1CzJLbMnk7HPgCNVLk=;
-  b=d/hhWBJhCN1Ul3hm6v0FBZd8Gdoab9RybbrVHKzSUQ/1+aIHuuKQgg+v
-   hEPmfaDqC0+JJVC0a/cT4yHZAmXVGcBgawa45wtHqHW7NaB1IvrgwcKCr
-   YD3pZboAZR5SJWhnWoqW+7NAUeRqVkkF61938k5PePq0A0YI3uXM+sUwy
-   WU+esoh7hBAVvCDVWZWdqzCrNOSttx6098wvxdnLmcfYOHXgN30Do79C0
-   A4gV4d7qSY2u0d3iNI5+KFniOrkcGJ2OxsDunTxqUtehq2X7etRu2DGd+
-   N8cwSvtOdKjRdUESANqLh0lwtxTszlGY9K6HiyQS7ZsoYKVYV7Bci49eH
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="358368196"
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="358368196"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 18:54:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="587123266"
-Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 25 Aug 2022 18:54:42 -0700
-Received: from kbuild by 34e741d32628 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oROYU-0003Eo-0G;
-        Fri, 26 Aug 2022 01:54:42 +0000
-Date:   Fri, 26 Aug 2022 09:54:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
- 942703b9450e92b05eec4efb1a32ebecff1d2852
-Message-ID: <630827cf.3BHuNwxL2ELFnyOz%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Thu, 25 Aug 2022 21:55:22 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50563AA4E1;
+        Thu, 25 Aug 2022 18:55:21 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id d15so156469ilf.0;
+        Thu, 25 Aug 2022 18:55:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=USnukc/188Y9AouXvyJSCZFszKTYIwRy8hfHnkd63Zg=;
+        b=jOBJjSn3uhe6R65ntwBq62rWm+g9yTDC+1ZL9gc/4gDeF18XrVNfQKqoHultqxnnQg
+         /1dKMm2Ig2nrGr7oOY1KqXjnqjyATY4gUnZw1unhVyHf2jcpKk00zlmhCVCdpLz5uSQA
+         tI4tZ2Bnx6stX4Wm7UoU7fMg862SH3b5SexcJvKl7vFtzhWiN8iL02zYyGwW+wI9Mdeu
+         JXPrRk89eVO6K9WL7+OQK2FKXJ6z9P+pITKYxYSUzos9RlCy/J7sdR7DHCFwZiNTbXpV
+         41lI3vOyWLmV+C+G6Y+cJtQNVubXlMUeBChPoDqIyrZKi4XoPY0MVIQ/NE9aakL7TaRZ
+         U3sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=USnukc/188Y9AouXvyJSCZFszKTYIwRy8hfHnkd63Zg=;
+        b=nnTpOskY+N5XRMK7A4VFEXQMjTP5fLSIUN1xT7bV5NVgJS0SeX+3e8qD1yjSVDML5c
+         P/aBBCbrIc2VWDGPntOLDCpn5jLf0FEqes1DhZsXz3Tu3CuYOv/t2mGrpa4ZyumRZiO2
+         /CjwHoiZlJqMEsZAQDA0Ml65JdE7NylaLlYpTCrVMYq3Ys1LqSkN/IKo7O+U55HXyV8d
+         1N9eBQfsMRxwrLSFBsHpMqLqaNfBGTdS0+SYvBfgqWhi/bzutgxdvhHEVSqDUmsSLy0v
+         LGGT+LlULeAXSLmjeL+YY1kch2dLFdGZvzBFjCsUYoT8sw2nWxzV0NwHJklZXEdcnjPv
+         Y7dw==
+X-Gm-Message-State: ACgBeo0N0KjA75kJkS2aUkpKr3L98oagsP3fWUGYV+xVKuD9WKbHuM89
+        D21CRX6eDhFrVF8GdHxcbA5bU7LYc8feZCBXwho=
+X-Google-Smtp-Source: AA6agR4O43QbdMCxUFs7+d+4YEhgKIelTI8EfSehAma0P2GR9BHOjomPJCD6G8iaf039fJ1mpL6DAvBvnBsOJGBjU6k=
+X-Received: by 2002:a05:6e02:661:b0:2e2:be22:67f0 with SMTP id
+ l1-20020a056e02066100b002e2be2267f0mr3130745ilt.91.1661478920738; Thu, 25 Aug
+ 2022 18:55:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com> <20220824134055.1328882-3-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220824134055.1328882-3-benjamin.tissoires@redhat.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Fri, 26 Aug 2022 03:54:45 +0200
+Message-ID: <CAP01T76tie9dpjacCLxCcAjtra12GxfmeO9f_mYnUU6pO4otzQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 02/23] bpf/verifier: do not clear meta in check_mem_size
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
-branch HEAD: 942703b9450e92b05eec4efb1a32ebecff1d2852  rcutorture: Limit read-side polling-API testing
+On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> The purpose of this clear is to prevent meta->raw_mode to be evaluated
+> at true, but this also prevents to forward any other data to the other
+> callees.
+>
+> Only switch back raw_mode to false so we don't entirely clear meta.
+>
+> Acked-by: Yonghong Song <yhs@fb.com>
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+>
+> ---
+>
+> no changes in v9
+>
+> no changes in v8
+>
+> no changes in v7
+>
+> new in v6
+> ---
+>  kernel/bpf/verifier.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index d694f43ab911..13190487fb12 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -5287,7 +5287,7 @@ static int check_mem_size_reg(struct bpf_verifier_env *env,
+>                  * initialize all the memory that the helper could
+>                  * just partially fill up.
+>                  */
+> -               meta = NULL;
+> +               meta->raw_mode = false;
 
-elapsed time: 1390m
+But this is adding a side effect, the caller's meta->raw_mode becomes
+false, which the caller may not expect...
 
-configs tested: 70
-configs skipped: 2
-
-The following configs have been built successfully.
-More configs may be tested in the coming days.
-
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-mips                             allyesconfig
-i386                                defconfig
-arc                  randconfig-r043-20220823
-sh                               allmodconfig
-i386                          randconfig-a001
-m68k                             allmodconfig
-i386                          randconfig-a003
-arc                              allyesconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a013
-alpha                            allyesconfig
-i386                             allyesconfig
-x86_64                        randconfig-a002
-x86_64                        randconfig-a011
-m68k                             allyesconfig
-x86_64                        randconfig-a015
-i386                          randconfig-a005
-x86_64                        randconfig-a006
-loongarch                         allnoconfig
-loongarch                           defconfig
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-i386                          randconfig-a014
-i386                          randconfig-a012
-i386                          randconfig-a016
-arc                                 defconfig
-s390                             allmodconfig
-arm                                 defconfig
-alpha                               defconfig
-s390                                defconfig
-s390                             allyesconfig
-arm                              allyesconfig
-arm64                            allyesconfig
-ia64                             allmodconfig
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-x86_64                           rhel-8.3-kvm
-x86_64                    rhel-8.3-kselftests
-arc                  randconfig-r043-20220825
-x86_64                           rhel-8.3-syz
-arc                  randconfig-r043-20220824
-riscv                randconfig-r042-20220824
-s390                 randconfig-r044-20220824
-
-clang tested configs:
-hexagon              randconfig-r041-20220823
-hexagon              randconfig-r045-20220823
-riscv                randconfig-r042-20220823
-s390                 randconfig-r044-20220823
-x86_64                        randconfig-a016
-x86_64                        randconfig-a012
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-x86_64                        randconfig-a014
-i386                          randconfig-a006
-x86_64                        randconfig-a003
-i386                          randconfig-a004
-x86_64                        randconfig-a005
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
-hexagon              randconfig-r041-20220825
-hexagon              randconfig-r045-20220825
-riscv                randconfig-r042-20220825
-s390                 randconfig-r044-20220825
-hexagon              randconfig-r041-20220824
-hexagon              randconfig-r045-20220824
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+>         if (reg->smin_value < 0) {
+>                 verbose(env, "R%d min value is negative, either use unsigned or 'var &= const'\n",
+> --
+> 2.36.1
+>
