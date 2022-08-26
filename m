@@ -2,102 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40888ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1EEECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:52:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245669AbiHZHu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
+        id S245645AbiHZHwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:52:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245644AbiHZHux (ORCPT
+        with ESMTP id S245610AbiHZHwB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:50:53 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B8FEC7B96;
-        Fri, 26 Aug 2022 00:50:50 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id v23so923286plo.9;
-        Fri, 26 Aug 2022 00:50:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=hrOvC4yxHykycH1IrQSO1OAlTlALBHw2gbda8sHjukQ=;
-        b=V+3b4HppDthK+E27D+Ob2MuVAzk8M25k8L3N7shYeVWOyGm/xr8NsO4fqjGS2Pv7xq
-         llw0cS6psMf+IDLozZJ7k0UTpTquBcsOvHvUgb3UQwlcXoTaJZ4YCjmcAUNa2b1jHFOX
-         fV5x7CK/ooq5in5cB7QDj/4w4WQLYpcTEiUbfnP10d7qtGzKMoxt74f/NssFwESOKHTl
-         rowKDMVlQQ+gPiu0uWUUWNmFxOlqtOciBUi0JrbXWert6cQfpN2a4dPUjHcEgtnIBAst
-         9atgkFtkcKmKaZUmA4fxIcmBHKDAEtwt898dXiQOyQ9neCzRLrXUMY2Pv4S1NzGeAoDX
-         svTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=hrOvC4yxHykycH1IrQSO1OAlTlALBHw2gbda8sHjukQ=;
-        b=x7RtrIYLkIOmWtgujtWmSRQIWiuibtbhv2YdYGk8u8RV8vaA5qegwIgbf5pWYdveBq
-         iRFViHLGJMVpb7CG1Fa29f/BTIUktrC/K5zSj9Flq3uMnRXbrtSdA9M2Psvjh1r1gKvE
-         RHX6mfMG51h7v/ZqbJldTsc7EKMowETUCDAV+Tm4/tswQgUC0KzL/53lxX77yMxLy70e
-         Z741R/oDvLftl67V+0r2r3zaxXH728EgWvVrD3vtEPLhZ7FmZEVUvSoZcxGqAl0ykHHs
-         3JzTnzTI7zggHvyoiDi7BrhJmhwHKa3wqTIUDBTOzlIl5f9BjwIdsqNmDWDbkbN9DnaL
-         I/4w==
-X-Gm-Message-State: ACgBeo1AUPaf9LliNZynMT1dWAs05Gl8LZd5WYKgOZOSrkfSzziJNmRl
-        GEwra+AB51EFXEYB68Ra0lDM70WbPEE=
-X-Google-Smtp-Source: AA6agR7aMEamn8+vtzCRfUAq2feU9PfS+OkUObU7cXAlJ5iFpSZryzVIZh8jATa928ftLMxWp8gf+g==
-X-Received: by 2002:a17:902:d34d:b0:174:429d:7789 with SMTP id l13-20020a170902d34d00b00174429d7789mr423764plk.144.1661500249548;
-        Fri, 26 Aug 2022 00:50:49 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id u1-20020a17090341c100b001726b585d4bsm870993ple.202.2022.08.26.00.50.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 00:50:49 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.panda@zte.com.cn
-To:     linux@roeck-us.net
-Cc:     heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xupanda <xu.panda@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] usb: typec: tcpm: tcpci: Remove the unneeded result variable
-Date:   Fri, 26 Aug 2022 07:48:57 +0000
-Message-Id: <20220826074856.253810-1-xu.panda@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 26 Aug 2022 03:52:01 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7BBD347E
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:52:00 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oRU8E-0001SH-B3; Fri, 26 Aug 2022 09:51:58 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oRU8E-0004tJ-0G; Fri, 26 Aug 2022 09:51:58 +0200
+Date:   Fri, 26 Aug 2022 09:51:57 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        Jakub Kicinski <kuba@kernel.org>, UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v3 15/17] net: dsa: microchip: ksz9477: remove
+ unused "on" variable
+Message-ID: <20220826075157.GD2116@pengutronix.de>
+References: <20220823080231.2466017-1-o.rempel@pengutronix.de>
+ <20220823080231.2466017-16-o.rempel@pengutronix.de>
+ <20220825205407.jayiksjrnccpknoj@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220825205407.jayiksjrnccpknoj@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xupanda <xu.panda@zte.com.cn>
+On Thu, Aug 25, 2022 at 11:54:07PM +0300, Vladimir Oltean wrote:
+> On Tue, Aug 23, 2022 at 10:02:29AM +0200, Oleksij Rempel wrote:
+> > This variable is not used on ksz9477 side. Remove it.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > ---
+> >  drivers/net/dsa/microchip/ksz9477.c | 2 --
+> >  1 file changed, 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+> > index bfefb60ec91bf..609bd63f4cdb1 100644
+> > --- a/drivers/net/dsa/microchip/ksz9477.c
+> > +++ b/drivers/net/dsa/microchip/ksz9477.c
+> > @@ -1070,7 +1070,6 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
+> >  
+> >  			/* enable cpu port */
+> >  			ksz9477_port_setup(dev, i, true);
+> > -			p->on = 1;
+> >  		}
+> >  	}
+> >  
+> > @@ -1080,7 +1079,6 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
+> >  		p = &dev->ports[i];
+> >  
+> >  		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
+> > -		p->on = 1;
+> >  		if (dev->chip_id == 0x00947700 && i == 6) {
+> >  			p->sgmii = 1;
+> >  		}
+> > -- 
+> > 2.30.2
+> > 
+> 
+> And it seems like it's not used on ksz8 either. The reason I'm saying
+> that is that ksz8_flush_dyn_mac_table() is the only apparent user of
+> p->on, and that only for the case where flushing the FDB of all ports is
+> requested (port > dev->info->port_cnt). But ksz8_flush_dyn_mac_table()
+> (through dev->dev_ops->flush_dyn_mac_table) is only called from DSA's
+> ds->ops->port_fast_age() method, and that will never be requested
+> "for all ports" (and to my knowledge never was in the past, either).
+> Badly ported SDK code would be my guess. So there are more
+> simplifications which could be done.
 
-Return the value regmap_update_bits() directly instead of
-storing it in another redundant variable.
+Ok, i'll take a look on it as soon as i get one of ksz8 board in my
+fingers.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: xupanda <xu.panda@zte.com.cn>
----
- drivers/usb/typec/tcpm/tcpci.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
-index b2bfcebe218f..4436e9e5e2f7 100644
---- a/drivers/usb/typec/tcpm/tcpci.c
-+++ b/drivers/usb/typec/tcpm/tcpci.c
-@@ -328,11 +328,9 @@ static int tcpci_set_vconn(struct tcpc_dev *tcpc, bool enable)
- static int tcpci_enable_auto_vbus_discharge(struct tcpc_dev *dev, bool enable)
- {
- 	struct tcpci *tcpci = tcpc_to_tcpci(dev);
--	int ret;
- 
--	ret = regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
-+	return regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
- 				 enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
--	return ret;
- }
- 
- static int tcpci_set_auto_vbus_discharge_threshold(struct tcpc_dev *dev, enum typec_pwr_opmode mode,
-@@ -884,5 +882,3 @@ static struct i2c_driver tcpci_i2c_driver = {
- };
- module_i2c_driver(tcpci_i2c_driver);
- 
--MODULE_DESCRIPTION("USB Type-C Port Controller Interface driver");
--MODULE_LICENSE("GPL");
 -- 
-2.25.1
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
