@@ -2,93 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D736ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492CDECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245132AbiHZKDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:03:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49104 "EHLO
+        id S1343817AbiHZKDE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343830AbiHZKBd (ORCPT
+        with ESMTP id S1343889AbiHZKBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 06:01:33 -0400
-Received: from mxout.security-mail.net (mxout.security-mail.net [85.31.212.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD93DD5DDA
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:32 -0700 (PDT)
+Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACFFE9C1EB
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:31 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by fx303.security-mail.net (Postfix) with ESMTP id EBC9F3237E5
+        by fx409.security-mail.net (Postfix) with ESMTP id 0C81E3238BC
         for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:01:30 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
-        s=sec-sig-email; t=1661508091;
-        bh=uqvZnxQBV/rcNEj03e7Bo6OwdF47XDjBXAdquMG3k+I=;
+        s=sec-sig-email; t=1661508090;
+        bh=4bC1M/PS4HWRMG+9tQOUbpWEXqqJeGvjy13WJUKSUJA=;
         h=From:To:Cc:Subject:Date;
-        b=iw8sJ7Tt23KHAA4RE4PHgUBB7FPytVAsxa6KtPrIJsMrXzaGaAIePMkXCe4pwk10/
-         x4IeLf7YJedfe6Z/vENpuc8WeZ2kLVdEci2ExO1wzgOW5Pghfw+3GYCjRMa1MxEeJ6
-         uK9q7qsnI0+24ojXcASQ6Ie/H6vA6oX0EkCy/ENU=
-Received: from fx303 (localhost [127.0.0.1])
-        by fx303.security-mail.net (Postfix) with ESMTP id 848E93237E2;
-        Fri, 26 Aug 2022 12:01:30 +0200 (CEST)
+        b=tkzgjD6MgeX792FB9Vv9hw3nYqJl6CeXEACrJkoHZtfWBnHeFSVrMkUtL0ervwb2i
+         +H3TfPWCqG+PZUndeEGob1B2eMi71IslQGKt4dy4ZM5bV37lHYwUt/FxagZ4ZIIi4v
+         BZQF0+nFYJerAhwuUPrLZOosCTHBzNV3tHA8f/DQ=
+Received: from fx409 (localhost [127.0.0.1])
+        by fx409.security-mail.net (Postfix) with ESMTP id A351D3238BF;
+        Fri, 26 Aug 2022 12:01:29 +0200 (CEST)
 X-Virus-Scanned: E-securemail
-Secumail-id: <1362c.630899f9.e66f9.0>
+Secumail-id: <5f96.630899f7.96ab6.0>
 Received: from zimbra2.kalray.eu (unknown [217.181.231.53])
-        by fx303.security-mail.net (Postfix) with ESMTPS id E894D323819;
-        Fri, 26 Aug 2022 12:01:29 +0200 (CEST)
+        by fx409.security-mail.net (Postfix) with ESMTPS id 98D5C3238DC;
+        Fri, 26 Aug 2022 12:01:27 +0200 (CEST)
 Received: from zimbra2.kalray.eu (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTPS id CBBDD27E02FA;
-        Fri, 26 Aug 2022 12:01:29 +0200 (CEST)
+        by zimbra2.kalray.eu (Postfix) with ESMTPS id 64A9227E0396;
+        Fri, 26 Aug 2022 12:01:27 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTP id B559327E0392;
-        Fri, 26 Aug 2022 12:01:29 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu B559327E0392
+        by zimbra2.kalray.eu (Postfix) with ESMTP id 4E6D627E0392;
+        Fri, 26 Aug 2022 12:01:27 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 4E6D627E0392
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
-        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661508089;
-        bh=4HEYLEVgKpymk4SBrx8DGY44NHvVKzCZiJtvzBXd/6k=;
+        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661508087;
+        bh=dJ9IP1YX/f4PTjh2ZawYjIO6VFebYMNL6zIzAO/NNFo=;
         h=From:To:Date:Message-Id;
-        b=mmG6vCL1wrlNy9YazrAR5V2Q9A3z0cC0x6Zt1w5F8npTM8NEmZQJRelUyF9OOA9gg
-         ibnwlBEt5rkjtueW5ImispqmR3+cM++mf3p+ebjagkVbD3iEFwgNN7WfX5CdFYbKPK
-         cRXrqFKHScskxav+oqdfQBKTIGlRQeatwbruwH8c=
+        b=MNDZdVBw7jB2yXvolhpZqeY82IuEuWy4FcQsjF3KSo+qdsN9ncfHLQtKgPlFusfkp
+         xWEIWaNDsW24g5Gh/PSXI1G2pwnlrJaQ/H19ZMBcJxRZhjVAuefPdMMO6ZL+KBL2y5
+         t1+wv7sdKVs15LqucDot9Y/hq3f2cKcyENi8BjuQ=
 Received: from zimbra2.kalray.eu ([127.0.0.1])
         by localhost (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id sQtvS_Hls00e; Fri, 26 Aug 2022 12:01:29 +0200 (CEST)
+        with ESMTP id RqJShZBeD5xR; Fri, 26 Aug 2022 12:01:27 +0200 (CEST)
 Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206])
-        by zimbra2.kalray.eu (Postfix) with ESMTPSA id A446E27E02FA;
-        Fri, 26 Aug 2022 12:01:29 +0200 (CEST)
+        by zimbra2.kalray.eu (Postfix) with ESMTPSA id 3EC4B27E02FA;
+        Fri, 26 Aug 2022 12:01:27 +0200 (CEST)
 From:   Jules Maselbas <jmaselbas@kalray.eu>
 To:     linux-kernel@vger.kernel.org
 Cc:     Jules Maselbas <jmaselbas@kalray.eu>,
-        Kent Overstreet <kent.overstreet@gmail.com>,
-        linux-bcache@vger.kernel.org
-Subject: [PATCH] bcache: bset: Fix comment typos
-Date:   Fri, 26 Aug 2022 12:00:52 +0200
-Message-Id: <20220826100052.22945-24-jmaselbas@kalray.eu>
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org
+Subject: [PATCH] media: v4l2: Fix repeated word in comments
+Date:   Fri, 26 Aug 2022 12:00:51 +0200
+Message-Id: <20220826100052.22945-23-jmaselbas@kalray.eu>
 X-Mailer: git-send-email 2.17.1
 X-Virus-Scanned: by Secumail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the redundant word `by`, correct the typo `creaated`.
+Remove redundant word `the`.
 
-CC: Kent Overstreet <kent.overstreet@gmail.com>
-CC: linux-bcache@vger.kernel.org
+CC: Mauro Carvalho Chehab <mchehab@kernel.org>
+CC: linux-media@vger.kernel.org
 Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
 ---
- drivers/md/bcache/bset.c | 2 +-
+ drivers/media/v4l2-core/v4l2-ioctl.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/md/bcache/bset.c b/drivers/md/bcache/bset.c
-index 94d38e8a59b3..2bba4d6aaaa2 100644
---- a/drivers/md/bcache/bset.c
-+++ b/drivers/md/bcache/bset.c
-@@ -1264,7 +1264,7 @@ static void __btree_sort(struct btree_keys *b, struct btree_iter *iter,
- 		 *
- 		 * Don't worry event 'out' is allocated from mempool, it can
- 		 * still be swapped here. Because state->pool is a page mempool
--		 * creaated by by mempool_init_page_pool(), which allocates
-+		 * created by mempool_init_page_pool(), which allocates
- 		 * pages by alloc_pages() indeed.
- 		 */
- 
+diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+index c314025d977e..96793dacb08f 100644
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -1045,7 +1045,7 @@ static void v4l_sanitize_format(struct v4l2_format *fmt)
+ 	/*
+ 	 * The v4l2_pix_format structure has been extended with fields that were
+ 	 * not previously required to be set to zero by applications. The priv
+-	 * field, when set to a magic value, indicates the the extended fields
++	 * field, when set to a magic value, indicates the extended fields
+ 	 * are valid. Otherwise they will contain undefined values. To simplify
+ 	 * the API towards drivers zero the extended fields and set the priv
+ 	 * field to the magic value when the extended pixel format structure
 -- 
 2.17.1
 
