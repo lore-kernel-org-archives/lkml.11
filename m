@@ -2,149 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47976ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 324A4ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344554AbiHZQTN (ORCPT
+        id S1344684AbiHZQUh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 12:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
+        Fri, 26 Aug 2022 12:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344241AbiHZQTL (ORCPT
+        with ESMTP id S1344654AbiHZQUf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 12:19:11 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F25AD9D5A
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:19:10 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-334dc616f86so48104637b3.8
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:19:10 -0700 (PDT)
+        Fri, 26 Aug 2022 12:20:35 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF92DB7CF
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:20:34 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id bs25so2391732wrb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:20:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=1in29G4BteIRakRuuoxRuXqGQ7UlsROlnjbxci51a0M=;
-        b=Ww6/9i888Lv4eGNktEUK6+TxKPacYVk3H/C7dNHJ56y1BH3v6MQCLDSPE04XHWr8sp
-         gfOx4tjbfxgTjEFyHXEvXEXvmrejVTr5plM2OxR7bg3cUblbu8/v9vgfu3tGGbqR/522
-         oGc0PKLc2p3B3SsdGldQyG3PeznGcPIppvgu0yz81NnCwtJfQNKdl/riHC8N414nBg7V
-         LRZQPmbFP2/8fgbZZb5c1lD9MhGZ1lchKh4KHbAiDrWFRVZwVT2JMS5npB6g5l88iTcb
-         IeYTBrqXY5dTlEpYbnhn/Iw7UmFJPKVnHojLZlTladmMPYXHzSiLmFZzgZg6TRF/vJR6
-         YFGQ==
+        bh=zzUl8oGEgJMTlOJPy7VJibE5hKJrOS3klLzu+K6mIGI=;
+        b=AUXpZ8o3OzsJFe3HFNnQVRYKL+5Z2LIyptjGTfOIPlrPcqx0kUV9ZrF3HDoPmmvjRK
+         U4hDGe4LP/tZwofzgFGa3f8D6BE2Nogk8L1rW1OqW3SQQV3K71U2YlnZbOUG1Ji99JKN
+         5sZQogZHUiUhbbWAoBQee4Az/ov84ugpEq52Sy2SfEp2b1Mq3J/humyf7lO4IOQtSkhT
+         BKRAfYtaW48wuzb8YgNJoL21kqihA+w4YdhQvWVjQ3NWvUVmHSf5zymQhVFz5wvHZnuG
+         4qeleKj2qJMIW+W88sGPnSbnkeRtdA98Q0Ne2J8ho3EEHhYe6Bxi5O3Rg4cFPv7HNt6g
+         2Rlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=1in29G4BteIRakRuuoxRuXqGQ7UlsROlnjbxci51a0M=;
-        b=hB5LqzHFysRG9/BNpEwothAT6jSd1DDWuFu9CuylXF9Z0kZExAIpLMSBo4XrhEvP4v
-         2nVNT/bXqXdGOhmVnIbikmSYBYIkqSlF05eJOxNAnNlbe1cswt0mDJwu3TgjX1Us+ff9
-         zobmksGWSjRLuFsk42t7hm5qFz2X/jG+Qgj3WLtDCDSB5DSpkOTplllUzfOvUJoLp1+6
-         sUe1pAPZCTL/Kym6l5flA8xC62W9Ni2//Ivj64LWNpqfk/fMQrZut1zniqvxiivi6vWO
-         Idb4DEHx9OYRUs9GuXLyvqCsmQM+Bxk/2JlqMxAnQe9PSqDl+I5gcK52vktHTAkOkxYv
-         8F2g==
-X-Gm-Message-State: ACgBeo1DZ0wuAVploeXQVts/fvfC1+nQ2n0brkJOlXsBIHA+MAWoOedb
-        7ZtRMX6CHwLaeJjeDfYxOBostJKQNH5qzbJNK4eHew==
-X-Google-Smtp-Source: AA6agR7JXQUVq2bDVZImv8O/NZfpAP3Xcm8rxZX7womrZYkhqV4Zhy3N7W7G0t4ASCauxPm8JFeNcxZqtrjCHzPHfro=
-X-Received: by 2002:a25:b083:0:b0:695:9a91:317d with SMTP id
- f3-20020a25b083000000b006959a91317dmr370577ybj.387.1661530749022; Fri, 26 Aug
- 2022 09:19:09 -0700 (PDT)
+        bh=zzUl8oGEgJMTlOJPy7VJibE5hKJrOS3klLzu+K6mIGI=;
+        b=C534H3ynrNem86Jm/VoN1XuqJys9+6/b09CZ5DMSxVRqTjK/InmrtwWyqOeZMSunho
+         DgJNfiftkoGzgManrRBNpehPwYTcyeX20owc2GWlzB4ZlQAqWRMEyoVacj9ignDEt8Wr
+         ZZmj7D6mf2fc8Rft+mNIiFPPW98T0oPiHCm8yzqBmckNi7eXuKl5tcnOKqZJcdcqu356
+         fsHjFZpiamZD4aXWY1xTVf9f2io3BI6RY1kcEphCLHubtQ245CdQLQI7oFi3LU2YAynN
+         tVBCL53Pi/u7a0lb9u+gl04A0tZkqpJXiaT+S2bS/vbdPYjSzeFmkYOL/fjCD/WpO8vA
+         ZiSw==
+X-Gm-Message-State: ACgBeo0rY2i40kHiHKFKvV/jDaid1N203SdpGhcpuWFdQ6WGQLn5lyKU
+        Wdg1Z84tjH6HaKwk1ijBfUdFAyEGkpL4KNWXyiYHWQ==
+X-Google-Smtp-Source: AA6agR4OxdnySTgDZkCtUgd+3IgyOo9ffBzPm5djKnBcX8tHzsP4orSo0vbogLgM8gN8HZo17s2VIyi8qY6Xiyfc7Aw=
+X-Received: by 2002:a05:6000:1008:b0:225:58e0:223f with SMTP id
+ a8-20020a056000100800b0022558e0223fmr226802wrx.375.1661530832589; Fri, 26 Aug
+ 2022 09:20:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220826002530.1153296-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220826002530.1153296-1-kai.heng.feng@canonical.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 26 Aug 2022 09:18:58 -0700
-Message-ID: <CANn89i+hm1MmbQQRtPg7CbCihfYfoNjDt6ZJKRyNpJHAENp8oQ@mail.gmail.com>
-Subject: Re: [PATCH v2] tg3: Disable tg3 device on system reboot to avoid
- triggering AER
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     siva.kallam@broadcom.com, prashant@broadcom.com,
-        mchan@broadcom.com, Josef Bacik <josef@toxicpanda.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220614143353.1559597-1-irogers@google.com> <20220614143353.1559597-5-irogers@google.com>
+ <YwjDLl8QXQzaCYaS@tuxmaker.boeblingen.de.ibm.com>
+In-Reply-To: <YwjDLl8QXQzaCYaS@tuxmaker.boeblingen.de.ibm.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Fri, 26 Aug 2022 09:20:20 -0700
+Message-ID: <CAP-5=fWTP+_6oLhTYowvpvGrn05784rHkzJgBZcoqZobE1M_Tg@mail.gmail.com>
+Subject: Re: [PATCH v2 4/6] perf cpumap: Fix alignment for masks in event encoding
+To:     Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        German Gomez <german.gomez@arm.com>,
+        Colin Ian King <colin.king@intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Leo Yan <leo.yan@linaro.org>, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephane Eranian <eranian@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 5:25 PM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
+On Fri, Aug 26, 2022 at 5:57 AM Alexander Gordeev
+<agordeev@linux.ibm.com> wrote:
 >
-> Commit d60cd06331a3 ("PM: ACPI: reboot: Use S5 for reboot") caused a
-> reboot hang on one Dell servers so the commit was reverted.
+> On Tue, Jun 14, 2022 at 07:33:51AM -0700, Ian Rogers wrote:
 >
-> Someone managed to collect the AER log and it's caused by MSI:
-> [ 148.762067] ACPI: Preparing to enter system sleep state S5
-> [ 148.794638] {1}[Hardware Error]: Hardware error from APEI Generic Hardware Error Source: 5
-> [ 148.803731] {1}[Hardware Error]: event severity: recoverable
-> [ 148.810191] {1}[Hardware Error]: Error 0, type: fatal
-> [ 148.816088] {1}[Hardware Error]: section_type: PCIe error
-> [ 148.822391] {1}[Hardware Error]: port_type: 0, PCIe end point
-> [ 148.829026] {1}[Hardware Error]: version: 3.0
-> [ 148.834266] {1}[Hardware Error]: command: 0x0006, status: 0x0010
-> [ 148.841140] {1}[Hardware Error]: device_id: 0000:04:00.0
-> [ 148.847309] {1}[Hardware Error]: slot: 0
-> [ 148.852077] {1}[Hardware Error]: secondary_bus: 0x00
-> [ 148.857876] {1}[Hardware Error]: vendor_id: 0x14e4, device_id: 0x165f
-> [ 148.865145] {1}[Hardware Error]: class_code: 020000
-> [ 148.870845] {1}[Hardware Error]: aer_uncor_status: 0x00100000, aer_uncor_mask: 0x00010000
-> [ 148.879842] {1}[Hardware Error]: aer_uncor_severity: 0x000ef030
-> [ 148.886575] {1}[Hardware Error]: TLP Header: 40000001 0000030f 90028090 00000000
-> [ 148.894823] tg3 0000:04:00.0: AER: aer_status: 0x00100000, aer_mask: 0x00010000
-> [ 148.902795] tg3 0000:04:00.0: AER: [20] UnsupReq (First)
-> [ 148.910234] tg3 0000:04:00.0: AER: aer_layer=Transaction Layer, aer_agent=Requester ID
-> [ 148.918806] tg3 0000:04:00.0: AER: aer_uncor_severity: 0x000ef030
-> [ 148.925558] tg3 0000:04:00.0: AER: TLP Header: 40000001 0000030f 90028090 00000000
+> Hi Ian,
 >
-> The MSI is probably raised by incoming packets, so power down the device
-> and disable bus mastering to stop the traffic, as user confirmed this
-> approach works.
+> Although it is committed, still have a question.
 >
-> In addition to that, be extra safe and cancel reset task if it's running.
+> > index e7758707cadd..d2d32589758a 100644
+> > --- a/tools/lib/perf/include/perf/event.h
+> > +++ b/tools/lib/perf/include/perf/event.h
+> > @@ -6,6 +6,7 @@
+> >  #include <linux/types.h>
+> >  #include <linux/limits.h>
+> >  #include <linux/bpf.h>
+> > +#include <linux/compiler.h>
 >
-> Cc: Josef Bacik <josef@toxicpanda.com>
-> Link: https://lore.kernel.org/all/b8db79e6857c41dab4ef08bdf826ea7c47e3bafc.1615947283.git.josef@toxicpanda.com/
-> BugLink: https://bugs.launchpad.net/bugs/1917471
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
-> v2:
->  - Move tg3_reset_task_cancel() outside of rtnl_lock() to prevent
->    deadlock.
+> Is it correct approach to include it into user-exposed headers?
+> AFAICT headers_install.sh strips #include <linux/compiler.h> and
+> compiler*.h itself do not get installed with make headers_install.
 >
+> [...]
+>
+> > +struct __packed perf_record_cpu_map_data {
+>
+> And it is only needed to pull __packed macro, right?
+>
+> Thanks!
 
-It seems tg3_reset_task_cancel() is already called while rtnl is held/owned.
-Should we worry about that ?
+Hi Alexander,
 
->  drivers/net/ethernet/broadcom/tg3.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-> index db1e9d810b416..89889d8150da1 100644
-> --- a/drivers/net/ethernet/broadcom/tg3.c
-> +++ b/drivers/net/ethernet/broadcom/tg3.c
-> @@ -18076,16 +18076,20 @@ static void tg3_shutdown(struct pci_dev *pdev)
->         struct net_device *dev = pci_get_drvdata(pdev);
->         struct tg3 *tp = netdev_priv(dev);
->
-> +       tg3_reset_task_cancel(tp);
-> +
->         rtnl_lock();
-> +
->         netif_device_detach(dev);
->
->         if (netif_running(dev))
->                 dev_close(dev);
->
-> -       if (system_state == SYSTEM_POWER_OFF)
-> -               tg3_power_down(tp);
-> +       tg3_power_down(tp);
->
->         rtnl_unlock();
-> +
-> +       pci_disable_device(pdev);
->  }
->
->  /**
-> --
-> 2.36.1
->
+I can see your point about compiler.h, it is true that it is just
+being used for the __packed definition. Why don't you write your
+proposed change as a patch and send it to LKML? libperf is more of an
+experimental library than a stable API. We don't currently have any
+build tests for things outside of the kernel tree.
+
+Thanks,
+Ian
