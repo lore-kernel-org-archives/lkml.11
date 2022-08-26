@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C4FECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB3CECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244260AbiHZCWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46724 "EHLO
+        id S244624AbiHZCX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:23:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230259AbiHZCWB (ORCPT
+        with ESMTP id S230259AbiHZCX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:22:01 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B20DC9244;
-        Thu, 25 Aug 2022 19:21:59 -0700 (PDT)
-Received: from canpemm500005.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MDNmJ6TPSzkWch;
-        Fri, 26 Aug 2022 10:18:24 +0800 (CST)
-Received: from huawei.com (10.67.174.96) by canpemm500005.china.huawei.com
- (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 25 Aug 2022 22:23:56 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C2FC924C;
+        Thu, 25 Aug 2022 19:23:55 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MDNpr6tX9zlWMm;
+        Fri, 26 Aug 2022 10:20:36 +0800 (CST)
+Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 26 Aug 2022 10:23:53 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600010.china.huawei.com
+ (7.193.23.86) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 10:21:57 +0800
-From:   Zhang Jianhua <chris.zjh@huawei.com>
-To:     <mmayer@broadcom.com>, <rafael@kernel.org>,
-        <viresh.kumar@linaro.org>
-CC:     <chris.zjh@huawei.com>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] cpufreq: bmips-cpufreq: Use module_init and add module_exit
-Date:   Fri, 26 Aug 2022 10:18:45 +0800
-Message-ID: <20220826021845.2283648-1-chris.zjh@huawei.com>
-X-Mailer: git-send-email 2.31.0
+ 2022 10:23:52 +0800
+From:   Sun Ke <sunke32@huawei.com>
+To:     <dhowells@redhat.com>
+CC:     <linux-cachefs@redhat.com>, <linux-kernel@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <jefflexu@linux.alibaba.com>, <dan.carpenter@oracle.com>,
+        <hsiangkao@linux.alibaba.com>, <sunke32@huawei.com>
+Subject: [PATCH v4] cachefiles: fix error return code in cachefiles_ondemand_copen()
+Date:   Fri, 26 Aug 2022 10:35:15 +0800
+Message-ID: <20220826023515.3437469-1-sunke32@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.96]
+X-Originating-IP: [10.175.127.227]
 X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500005.china.huawei.com (7.192.104.229)
+ kwepemm600010.china.huawei.com (7.193.23.86)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-- Use module_init instead of device_initcall.
-- Add a function for module_exit to unregister driver.
+The cache_size field of copen is specified by the user daemon.
+If cache_size < 0, then the OPEN request is expected to fail,
+while copen itself shall succeed. However, returning 0 is indeed
+unexpected when cache_size is an invalid error code.
 
-Signed-off-by: Zhang Jianhua <chris.zjh@huawei.com>
+Fix this by returning error when cache_size is an invalid error code.
+
+Fixes: c8383054506c ("cachefiles: notify the user daemon when looking up cookie")
+Signed-off-by: Sun Ke <sunke32@huawei.com>
+Suggested-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- drivers/cpufreq/bmips-cpufreq.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+v4: update the code suggested by Dan
+v3: update the commit log suggested by Jingbo.
+ fs/cachefiles/ondemand.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/cpufreq/bmips-cpufreq.c b/drivers/cpufreq/bmips-cpufreq.c
-index f7c23fa468f0..21c0417c95e1 100644
---- a/drivers/cpufreq/bmips-cpufreq.c
-+++ b/drivers/cpufreq/bmips-cpufreq.c
-@@ -156,7 +156,7 @@ static struct cpufreq_driver bmips_cpufreq_driver = {
- 	.name		= BMIPS_CPUFREQ_PREFIX,
- };
+diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
+index 1fee702d5529..7e1586bd5cf3 100644
+--- a/fs/cachefiles/ondemand.c
++++ b/fs/cachefiles/ondemand.c
+@@ -158,9 +158,13 @@ int cachefiles_ondemand_copen(struct cachefiles_cache *cache, char *args)
  
--static int __init bmips_cpufreq_probe(void)
-+static int __init bmips_cpufreq_driver_init(void)
- {
- 	struct cpufreq_compat *cc;
- 	struct device_node *np;
-@@ -176,7 +176,13 @@ static int __init bmips_cpufreq_probe(void)
+ 	/* fail OPEN request if daemon reports an error */
+ 	if (size < 0) {
+-		if (!IS_ERR_VALUE(size))
+-			size = -EINVAL;
+-		req->error = size;
++		if (!IS_ERR_VALUE(size)) {
++			req->error = -EINVAL;
++			ret = -EINVAL;
++		} else {
++			req->error = size;
++			ret = 0;
++		}
+ 		goto out;
+ 	}
  
- 	return cpufreq_register_driver(&bmips_cpufreq_driver);
- }
--device_initcall(bmips_cpufreq_probe);
-+module_init(bmips_cpufreq_driver_init);
-+
-+static void __exit bmips_cpufreq_driver_exit(void)
-+{
-+	cpufreq_unregister_driver(&bmips_cpufreq_driver);
-+}
-+module_exit(bmips_cpufreq_driver_exit)
- 
- MODULE_AUTHOR("Markus Mayer <mmayer@broadcom.com>");
- MODULE_DESCRIPTION("CPUfreq driver for Broadcom BMIPS SoCs");
 -- 
-2.31.0
+2.31.1
 
