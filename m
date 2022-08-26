@@ -2,130 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E966ECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4ACDECAAD7
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345308AbiHZSsd (ORCPT
+        id S1345316AbiHZStK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 14:48:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55388 "EHLO
+        Fri, 26 Aug 2022 14:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345100AbiHZSsF (ORCPT
+        with ESMTP id S1345281AbiHZSsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 14:48:05 -0400
-Received: from relay05.th.seeweb.it (relay05.th.seeweb.it [IPv6:2001:4b7a:2000:18::166])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93FFC0B5E;
-        Fri, 26 Aug 2022 11:45:06 -0700 (PDT)
-Received: from [192.168.1.101] (afbd60.neoplus.adsl.tpnet.pl [95.49.29.60])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 834263F6BE;
-        Fri, 26 Aug 2022 20:40:02 +0200 (CEST)
-Message-ID: <7d73722f-8a9a-f9a6-a203-f2bb8853f238@somainline.org>
-Date:   Fri, 26 Aug 2022 20:40:01 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 1/7] arm64: dts: qcom: sa8155p-adp: Specify which LDO
- modes are allowed
-Content-Language: en-US
-To:     Douglas Anderson <dianders@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andrew Halaney <ahalaney@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220825164205.4060647-1-dianders@chromium.org>
- <20220825094155.1.Id59c32b560c4662d8b3697de2bd494d08d654806@changeid>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20220825094155.1.Id59c32b560c4662d8b3697de2bd494d08d654806@changeid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Fri, 26 Aug 2022 14:48:23 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46658E68E3
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 11:45:30 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id e16-20020a17090301d000b00172fbf52e7dso1570231plh.11
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 11:45:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc;
+        bh=GiOMEUaR02qX5Gm07mLfZU1zm4cqDTei2RBST1bzNRA=;
+        b=eW5ZYnSw2FOj4BYqOIscZSQtmCy1Z9DUTbXt7t6DlXZNbbmggQqECy5jRGeakjYSEG
+         IA/hJ+NwGniKMtcJbqDxDsxbLCa+ENZdG7T6IOF+ih0iHy8Nxz65CdZ6LR4Fhu1R1ybY
+         xASdoztO1dAtm2byb0nbg32VdoNR9v6cuaJssFtbsS6mc8CDorVkNkd14/MLSX/Iz5z8
+         KSXf9mQZrzG1dXA1ubOvPSpTa8/vYHOd2Q1O4E1O06fv47y8C6Yjst8w5m1DBXxM9cxd
+         /rQlbDMwM9da0WxKRI59Qu3Ypzc5nKL01Ef77u6JGu77v9ucP3fbnPZ9F/hwlaubthdf
+         4jAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc;
+        bh=GiOMEUaR02qX5Gm07mLfZU1zm4cqDTei2RBST1bzNRA=;
+        b=St9pXiR7elZvLTKQjD20IlI2npA56Qa+Id8YQrHz0nSGpQawZo/IVnLd/Z5Yb9IZy3
+         LZ7tkhhxEK3qfVBtCe+nX3hWyyBk533B1JLXU6J+uBZ4GTEBfZWga/D05c/TsXHIByzh
+         KWMEDVO94xYEIeirDkTeZke2aC4InwoxS6SCvIurSj6Dskz0yH8I88Ge9jyCL2goOu0B
+         kwOSSB3kg1sLlH2fOKgANMOjaG9XqQ06b8CUSCdpWIF54tJBppNXR8Ogtrm2TuR7xU8M
+         6nY6CfMTwSXbWZNNFD6YToijDppEIWt/+t7KtK/gUgPc7BwWVmsJ7LfAivrChed2KFti
+         rjuw==
+X-Gm-Message-State: ACgBeo2k53pj3tMQmMU7QtoMh65T7jkKsHdKvSxc41ESPMF2BuV5aTxC
+        U9TUXYRbtuZip7xwS7oLIM7i9QdlqFp2
+X-Google-Smtp-Source: AA6agR7mFSwSnqWdxTD7kgZ4nilCuP+7FqhRjsqpyZTvySv5Vwa3ZJHVWYpKDp2AUsGE9NSWPLJYgD2JoxRa
+X-Received: from vipin.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:479f])
+ (user=vipinsh job=sendgmr) by 2002:a05:6a00:114c:b0:528:2c7a:630e with SMTP
+ id b12-20020a056a00114c00b005282c7a630emr5038459pfm.86.1661539529715; Fri, 26
+ Aug 2022 11:45:29 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 11:44:56 -0700
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220826184500.1940077-1-vipinsh@google.com>
+Subject: [PATCH v3 0/4] dirty_log_perf_test cpu pinning and some goodies
+From:   Vipin Sharma <vipinsh@google.com>
+To:     seanjc@google.com, dmatlack@google.com, pbonzini@redhat.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vipin Sharma <vipinsh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Pin vcpus to a host physical cpus in dirty_log_perf_test and optionally
+pin the main application thread to a physical cpu if provided. All tests
+based on perf_test_util framework can take advantage of it if needed.
 
+While at it, I changed atoi() to atoi_paranoid() in other tests, sorted
+command line options alphabetically, and made switch case logic of -e
+option less error prone to code changes by adding break and decoupling
+it from -g.
 
-On 25.08.2022 18:41, Douglas Anderson wrote:
-> This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
-> but doesn't specify any modes with "regulator-allowed-modes".
-> 
-> Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
-> get_optimum_mode(), not set_load()") the above meant that we were able
-> to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
-> be stuck at the initial mode. Discussion of this has resulted in the
-> decision that the old dts files were wrong and should be fixed to
-> fully restore old functionality.
-> 
-> Let's re-enable the old functionality by fixing the dts.
-> 
-> [1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
-> 
-> Fixes: 5b85e8f2225c ("arm64: dts: qcom: sa8155p-adp: Add base dts file")
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+v3:
+- Moved atoi_paranoid() to test_util.c and replaced all atoi() usage
+  with atoi_paranoid()
+- Sorted command line options alphabetically.
+- Instead of creating a vcpu thread on a specific pcpu the thread will
+  migrate to the provided pcpu after its creation.
+- Decoupled -e and -g option.
 
-Konrad
+v2: https://lore.kernel.org/lkml/20220819210737.763135-1-vipinsh@google.com/
+- Removed -d option.
+- One cpu list passed as option, cpus for vcpus, followed by
+  application thread cpu.
+- Added paranoid cousin of atoi().
 
-> 
->  arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-> index ba547ca9fc6b..ddb9cb182152 100644
-> --- a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-> +++ b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
-> @@ -43,7 +43,6 @@ vreg_s4a_1p8: smps4 {
->  
->  		regulator-always-on;
->  		regulator-boot-on;
-> -		regulator-allow-set-load;
->  
->  		vin-supply = <&vreg_3p3>;
->  	};
-> @@ -137,6 +136,9 @@ vreg_l5a_0p88: ldo5 {
->  			regulator-max-microvolt = <880000>;
->  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
->  			regulator-allow-set-load;
-> +			regulator-allowed-modes =
-> +			    <RPMH_REGULATOR_MODE_LPM
-> +			     RPMH_REGULATOR_MODE_HPM>;
->  		};
->  
->  		vreg_l7a_1p8: ldo7 {
-> @@ -152,6 +154,9 @@ vreg_l10a_2p96: ldo10 {
->  			regulator-max-microvolt = <2960000>;
->  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
->  			regulator-allow-set-load;
-> +			regulator-allowed-modes =
-> +			    <RPMH_REGULATOR_MODE_LPM
-> +			     RPMH_REGULATOR_MODE_HPM>;
->  		};
->  
->  		vreg_l11a_0p8: ldo11 {
-> @@ -258,6 +263,9 @@ vreg_l5c_1p2: ldo5 {
->  			regulator-max-microvolt = <1200000>;
->  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
->  			regulator-allow-set-load;
-> +			regulator-allowed-modes =
-> +			    <RPMH_REGULATOR_MODE_LPM
-> +			     RPMH_REGULATOR_MODE_HPM>;
->  		};
->  
->  		vreg_l7c_1p8: ldo7 {
-> @@ -273,6 +281,9 @@ vreg_l8c_1p2: ldo8 {
->  			regulator-max-microvolt = <1200000>;
->  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
->  			regulator-allow-set-load;
-> +			regulator-allowed-modes =
-> +			    <RPMH_REGULATOR_MODE_LPM
-> +			     RPMH_REGULATOR_MODE_HPM>;
->  		};
->  
->  		vreg_l10c_3p3: ldo10 {
+v1: https://lore.kernel.org/lkml/20220817152956.4056410-1-vipinsh@google.com
+
+Vipin Sharma (4):
+  KVM: selftests: Explicitly set variables based on options in
+    dirty_log_perf_test
+  KVM: selftests: Put command line options in alphabetical order in
+    dirty_log_perf_test
+  KVM: selftests: Add atoi_paranoid to catch errors missed by atoi
+  KVM: selftests: Run dirty_log_perf_test on specific cpus
+
+ .../selftests/kvm/aarch64/arch_timer.c        |  8 +--
+ .../testing/selftests/kvm/aarch64/vgic_irq.c  |  6 +-
+ .../selftests/kvm/access_tracking_perf_test.c |  2 +-
+ .../selftests/kvm/demand_paging_test.c        |  2 +-
+ .../selftests/kvm/dirty_log_perf_test.c       | 65 +++++++++++++------
+ .../selftests/kvm/include/perf_test_util.h    |  4 ++
+ .../testing/selftests/kvm/include/test_util.h |  2 +
+ .../selftests/kvm/kvm_page_table_test.c       |  2 +-
+ .../selftests/kvm/lib/perf_test_util.c        | 62 +++++++++++++++++-
+ tools/testing/selftests/kvm/lib/test_util.c   | 14 ++++
+ .../selftests/kvm/max_guest_memory_test.c     |  6 +-
+ .../kvm/memslot_modification_stress_test.c    |  4 +-
+ .../testing/selftests/kvm/memslot_perf_test.c | 10 +--
+ .../selftests/kvm/set_memory_region_test.c    |  2 +-
+ .../selftests/kvm/x86_64/nx_huge_pages_test.c |  4 +-
+ 15 files changed, 148 insertions(+), 45 deletions(-)
+
+-- 
+2.37.2.672.g94769d06f0-goog
+
