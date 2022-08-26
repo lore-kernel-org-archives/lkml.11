@@ -2,278 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E45CBECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:26:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA734ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:26:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343985AbiHZO0V (ORCPT
+        id S1344393AbiHZO0o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 10:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42706 "EHLO
+        Fri, 26 Aug 2022 10:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343978AbiHZOZ4 (ORCPT
+        with ESMTP id S1344451AbiHZO0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 10:25:56 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28E23340A;
-        Fri, 26 Aug 2022 07:25:53 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MDhqs5ykMzlWG1;
-        Fri, 26 Aug 2022 22:22:33 +0800 (CST)
-Received: from CHINA (10.175.102.38) by canpemm500009.china.huawei.com
- (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 22:25:50 +0800
-From:   Wei Yongjun <weiyongjun1@huawei.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-CC:     Wei Yongjun <weiyongjun1@huawei.com>,
-        <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>
-Subject: [PATCH -next 4/4] spi: mockup: Add documentation
-Date:   Fri, 26 Aug 2022 14:43:41 +0000
-Message-ID: <20220826144341.532265-5-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220826144341.532265-1-weiyongjun1@huawei.com>
-References: <20220826144341.532265-1-weiyongjun1@huawei.com>
+        Fri, 26 Aug 2022 10:26:35 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2068.outbound.protection.outlook.com [40.107.96.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26163ED59;
+        Fri, 26 Aug 2022 07:26:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ze14l6JEoaTVNHW1NvMOiEDJ+6hUtpybe0K3kiIjJhxFG0YHUZjpVRCDpHRslrJWZTqmi6FVglxd7QKE+h+86GCTP15ih1kYy2ibVx5rOIcxBxILdecqx7qGs1A8ft8TN2l22mYMs+iQzCo3QcX/RWjKwOSQzG7qqSLBQCpMv/eA/HhJCGGL0N3arObFU7GnqKtsR/0B71Pi6IrMpgA49qcSjqUld3W2sYPL0ricbD2/1UPINGRGEAl+QnmsICfiI6Axood2UrGiwP+w9GBuqRslpnLSbb5OmaTgmvLg5ImzX0ki/i16Zdhfdw2F7DTqnaqPAGTpK/XCGC970muH8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8obkH97+nBvB+rIPVuA+gbhpjvsA/p3prsQUJXDlEEA=;
+ b=btNwsjNJwFTevCrjHq3cA0YKUSlCUC1728erd15Ga6AcNcjVMMtrhv0g9VwqXvZMuP0gguxvg13rwtp0qkVjkooKY72bu+ssC/IiyE42veYpAG/Qy7qKWtcqdE5aYU0aNqFBolZ9NdSx8E7v8GgzvYVMYRHu/MP2MrbM4KKqocO28BVxlVy2fDKdMeUlqEN9/+NXprNXzQAQz4UbvWtNPL6LfyLBaSZnHDxOWVbLQqsFIL517KT96yVpBzvCD2oQy36mNtZdGRf6w8wgpfNXD9Tf0HkzPzuRLrLZhU65ig2Eu0hx3Kxm0PNJz79vVioPFzT53W/JTdh+yrfcjCxVvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8obkH97+nBvB+rIPVuA+gbhpjvsA/p3prsQUJXDlEEA=;
+ b=Ov5HFPGK+dzK+ISIDjyTft94xTRGFXHX9q1GmMm/lXPZy+QAMQuUd3AqwH4QjndwOeS7Lo4fjR6Gb8FGwOwfz8bJglWzm29XH8ptvw0w11WYF+RXEvCHC8CVbvl71shA3Jr01LL6r8RHSBKCVGGKw5iEonWDP+z9pWzAN1HU3dEijYM1iccJ6kQ8uCTsj5gH9IWuH38C0/JlotmGbs1Dxken1uGWbMBmQE++6ZAuM/1oDR9B9i+Q7nYIa7+gKt2GSQsoTinVRXXg6BTgNI4f3GWJw4xzOF/uHWw9RLx0UUc2PwyKDtXs9Nnx0k4nedY1uzFtgxdVPxvEa5L0SHut6A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by CY8PR12MB7363.namprd12.prod.outlook.com (2603:10b6:930:51::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Fri, 26 Aug
+ 2022 14:26:27 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%8]) with mapi id 15.20.5566.016; Fri, 26 Aug 2022
+ 14:26:27 +0000
+Date:   Fri, 26 Aug 2022 11:26:26 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 04/17] PCI: Enable PASID only when ACS RR & UF
+ enabled on upstream path
+Message-ID: <YwjYEpydbJ8z0Kmf@nvidia.com>
+References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+ <20220826121141.50743-5-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220826121141.50743-5-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: BL1PR13CA0016.namprd13.prod.outlook.com
+ (2603:10b6:208:256::21) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.102.38]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 51dcede4-33f4-4595-71e9-08da876ef663
+X-MS-TrafficTypeDiagnostic: CY8PR12MB7363:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bIB6sHlHWmWrDq+uHsvE7Y/BCmBcHhDu8elS3WK9Y92R+YMQmShgWmGrJ2OZUdZCqbICfFGvBpCFiIeOylhiLDIPG3hjYr+jNx9oFiQwH9E/SdxDcgUYUyKlkOFP7nGGp30lk6hRu1GfgoVozBbanlYjvKqJkIwOiN6f6xCatPSdpYxGuKXazY3FDzH8ZW6Gev1wnGccqitXY3jnYDu335etpP1H476TpU6WokvcsdmBCiklCt/bXjJJH0xGfQtvsOpUwtaXSchhsXOBtC8E3/Yc6mR6OtfoQrB8WjLJC1Bmh0eW6x53aKcQWC6MyPkBk4ACV95O4ZQN1KvdHjc16s2ArXYBUT0DVe5mTUiKmOuJsmJpW7UaFEINI3jKjbFaA5sjhGpRsWl2fELBrV5VRKBvqNnH/Q5xcmBSrEzESBfer0xO9Q5hi6+IlZGtJnJDFFjiG3DaUK7cOWnhc55FPs75srz302pUXgkqzIR9P0gGlhXCvcdhhvdZM8PkNPjIG9yXpmDAfEW9SnmSae4N5doCnTH+B8tlLl7FOE2S4OUEW8sxJmJaAhYa4fPITUiKz0J+o52nh7B18HtQb5EAwVrrFBFM0OduebT/S0iC4gsAc7z0PSpBGU3CplYpzNensROJHnWV7x0MGgnBCgtOW9UnmCuYinDojziU4P0jFg9C4jvW6xKN+Aa1lmqqi7NsyX/Te0vFQRBwDKDq4Yxb3A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(376002)(39860400002)(366004)(136003)(6486002)(5660300002)(478600001)(54906003)(41300700001)(6916009)(316002)(7416002)(86362001)(4326008)(66476007)(2906002)(8676002)(6512007)(26005)(6506007)(66946007)(2616005)(38100700002)(66556008)(8936002)(83380400001)(186003)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?bnkSHRha/rohSZH28hmANvWRrn4FHIRUGCyT62Juds/IsvxGD1dVNa6rpz3E?=
+ =?us-ascii?Q?tWJsX0jQgRnkNY3nkkPYge961CWqBwv48OGChrH6NnQms8ln4RYXNkDh6Qvk?=
+ =?us-ascii?Q?2wJhrokUTar+9H5SrDphZ12dBNKC//Jt9ku4+Vz5lfHLRGfA5fWA7YvWs5RF?=
+ =?us-ascii?Q?be0jS+jMlMfV2VN/Ere7H2Z137xHK/izWOthWLDRkn6DiHuPj2aVGbIObE9S?=
+ =?us-ascii?Q?GLv9blJhFdy+KEeaAC0QbPJRhNU9XnxLcTd+x3F0LrXhpt8M3dFLiikSPC9X?=
+ =?us-ascii?Q?Ca7SRd97PL0ppd/2zw1jEf0pTFxGNcQSl7SttU3z2H8kWrGd4z4rS3hAuynp?=
+ =?us-ascii?Q?eXGrx/jZX2VZEBiLqc9TuMX3iGmbSMAxcuvCoIKLUoD4KcS4dzgYFvB209qD?=
+ =?us-ascii?Q?9SsdIv/kgxmRXnCY/UpZOT61LEdhs3Sqg5RIBOgxMvlGjga9QFC2UW3T4qVW?=
+ =?us-ascii?Q?fnE4fJUkexNZEXX3WG2zXN/vmonP8u68M8vJSKEtONsDZtB8/DO1iO19TjTk?=
+ =?us-ascii?Q?EEJe7ziQ674t6ovex2c0msJb/65C7XnTmuk39wiQv29ITsAabZhSwIf0IahZ?=
+ =?us-ascii?Q?0Zt1SqNL95qFrj0cB+ylUZ9f2KLEHcjgNUDBY3GK5xwsueKob6xNtEj9Vnhu?=
+ =?us-ascii?Q?6frXUOzwgCrIB7jt+0eam1LaLVnpTl/LILsu+EpbdjK0ZessT5QfgyAjH+yL?=
+ =?us-ascii?Q?svrRTEM3Dg9XqKaXpJdj+PY2c1suJtd/J09noF1M6KHHwI4EVcWBBBTXj/v+?=
+ =?us-ascii?Q?6NVb4dSkNcSdm2laW8A59iyPyy0HNDpX0L1Afl/ZOMXqcjufMqqvqkF/rae7?=
+ =?us-ascii?Q?mfdtg7x+ASse08JLnoRxLktIWJfHdOEukudRpDTy4SH8kvzz35YWvk8wGFgT?=
+ =?us-ascii?Q?Os+7Zi0Ijj6TV4wV7CXb9GEPlDaCeMH0EVN2ExEXQpCay7FIIGdDGplHKsl/?=
+ =?us-ascii?Q?OP84/CgZft59m/Jhy6xCs8DLAA9FBExDinqNej+aaj2sG3YvgckJEg/xbZun?=
+ =?us-ascii?Q?Js9D4MFCj/yTjz0N46jS0/JfymhIRcUMRGchxrxmSLEboIujncpWMV1GBMJp?=
+ =?us-ascii?Q?vSMOTVzoUFHrXRM1rYeqBWZ507aJblFkY4WZgc+ozSSPtYlwOkgoiVr582F1?=
+ =?us-ascii?Q?DLm+CvZexrXQw/25Hte+tJzmE0Y0JYSnag2ZWfQC/iXgIWtogfLqaqc+g9lt?=
+ =?us-ascii?Q?Yl/7cVH/RhiU+xbtiAOyX7zxQv7QoRA2EKdZpA3WwK8BajQbOtyHTB8SSU3B?=
+ =?us-ascii?Q?Kw3ZRMKeHpqWn1yyVKHONU/ZrU0OjtQYWL3n67448j/bkDQD4sXz/03jdhhn?=
+ =?us-ascii?Q?riXd3kmfXA3h7B/MCe1qTaUiLUQHGkHsKB/T7ywsgPPryJWwuFotDAMctufC?=
+ =?us-ascii?Q?XXutUKoqNd30vP5oEHZcvjSzeZUWOBvhpxgSQioqZGb3wYGZ5O/SetdLGPhG?=
+ =?us-ascii?Q?p4fdFYr+pGq86f/2owo5DO7r9kvPlTyRkEVh//JDi69YOAcJFJuaH2J5a3Bo?=
+ =?us-ascii?Q?G0XdLHgGKMW+zGNu4G4iNXgmgwTzKYSGR31sfBfBHkcWalsbV7dDbJSsFooX?=
+ =?us-ascii?Q?sCWAH4DACJcKV6VP+Kz7CrhAQym+eiR7eG0CmiNB?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51dcede4-33f4-4595-71e9-08da876ef663
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 14:26:27.8412
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eJ3MAcm+eg6YpWluXztZqnevmYhahFjsO0seQPdxAeM19Nir5izz9iiUXijygS/h
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7363
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation for the SPI mockup controller driver.
-This include the tutorial for how to mockup a api device.
+On Fri, Aug 26, 2022 at 08:11:28PM +0800, Lu Baolu wrote:
+> The Requester ID/Process Address Space ID (PASID) combination
+> identifies an address space distinct from the PCI bus address space,
+> e.g., an address space defined by an IOMMU.
+> 
+> But the PCIe fabric routes Memory Requests based on the TLP address,
+> ignoring any PASID (PCIe r6.0, sec 2.2.10.4), so a TLP with PASID that
+> SHOULD go upstream to the IOMMU may instead be routed as a P2P
+> Request if its address falls in a bridge window.
+> 
+> To ensure that all Memory Requests with PASID are routed upstream,
+> only enable PASID if ACS P2P Request Redirect and Upstream Forwarding
+> are enabled for the path leading to the device.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> Tested-by: Tony Zhu <tony.zhu@intel.com>
+> ---
+>  drivers/pci/ats.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- Documentation/spi/index.rst      |   1 +
- Documentation/spi/spi-mockup.rst | 201 +++++++++++++++++++++++++++++++
- 2 files changed, 202 insertions(+)
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-diff --git a/Documentation/spi/index.rst b/Documentation/spi/index.rst
-index 06c34ea11bcf..a8f4f5cd0f09 100644
---- a/Documentation/spi/index.rst
-+++ b/Documentation/spi/index.rst
-@@ -13,6 +13,7 @@ Serial Peripheral Interface (SPI)
-    pxa2xx
-    spi-lm70llp
-    spi-sc18is602
-+   spi-mockup
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/spi/spi-mockup.rst b/Documentation/spi/spi-mockup.rst
-new file mode 100644
-index 000000000000..b38f44dca785
---- /dev/null
-+++ b/Documentation/spi/spi-mockup.rst
-@@ -0,0 +1,201 @@
-+==========
-+spi-mockup
-+==========
-+
-+Description
-+===========
-+
-+This module is a very simple fake SPI controller driver. It implements
-+a BPF based interface to mockup SPI device.
-+
-+No hardware is needed nor associated with this module. It will respond
-+spi message by BPF program attached to spi_transfer_writeable tracepoint
-+by reading from or writing BPF maps.
-+
-+The typical use-case is like this:
-+        1. load this module
-+        2. use bpftool to load BPF program
-+        3. load the target chip driver module
-+
-+Example
-+=======
-+
-+This example show how to mock a MTD device by using spi-mockup driver.
-+
-+Compile your copy of the kernel source. Make sure to configure the spi-mockup
-+and the target chip driver as a module. Prepare a dts described the spi-mockup
-+device.
-+
-+::
-+
-+  /dts-v1/;
-+
-+  / {
-+      spi: spi {
-+          compatible = "spi-mockup";
-+
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+      };
-+  }
-+
-+Write a BPF program as device's backup.
-+
-+::
-+
-+  #define MCHP23K256_CMD_WRITE_STATUS	0x01
-+  #define MCHP23K256_CMD_WRITE		0x02
-+  #define MCHP23K256_CMD_READ		0x03
-+
-+  #define CHIP_REGS_SIZE			0x20000
-+
-+  #define MAX_CMD_SIZE			4
-+
-+  struct {
-+  	__uint(type, BPF_MAP_TYPE_ARRAY);
-+  	__uint(max_entries, CHIP_REGS_SIZE);
-+  	__type(key, __u32);
-+  	__type(value, __u8);
-+  } regs_mtd_mchp23k256 SEC(".maps");
-+
-+  static unsigned int chip_reg = 0;
-+
-+  static int spi_transfer_read(struct spi_msg_ctx *msg, unsigned int len)
-+  {
-+  	int i, key;
-+  	u8 *reg;
-+
-+  	for (i = 0; i < len && i < sizeof(msg->data); i++) {
-+  		key = i + chip_reg;
-+
-+  		reg = bpf_map_lookup_elem(&regs_mtd_mchp23k256, &key);
-+  		if (!reg) {
-+  			bpf_printk("key %d not exists", key);
-+  			return -EINVAL;
-+  		}
-+
-+  		msg->data[i] = *reg;
-+  	}
-+
-+  	return 0;
-+  }
-+
-+  static int spi_transfer_write(struct spi_msg_ctx *msg, unsigned int len)
-+  {
-+  	u8 opcode = msg->data[0], value;
-+  	int i, key;
-+
-+  	switch (opcode) {
-+  	case MCHP23K256_CMD_READ:
-+  	case MCHP23K256_CMD_WRITE:
-+  		if (len < 2)
-+  			return -EINVAL;
-+
-+  		chip_reg = 0;
-+  		for (i = 0; i < MAX_CMD_SIZE && i < len - 1; i++)
-+  			chip_reg = (chip_reg << 8) + msg->data[1 + i];
-+
-+  		return 0;
-+  	case MCHP23K256_CMD_WRITE_STATUS:
-+  		// ignore write status
-+  		return 0;
-+  	default:
-+  		break;
-+  	}
-+
-+  	for (i = 0; i < len && i < sizeof(msg->data); i++) {
-+  		value = msg->data[i];
-+  		key = chip_reg + i;
-+
-+  		if (bpf_map_update_elem(&regs_mtd_mchp23k256, &key, &value,
-+  					BPF_EXIST)) {
-+  			bpf_printk("key %d not exists", key);
-+  			return -EINVAL;
-+  		}
-+  	}
-+
-+  	return 0;
-+  }
-+
-+  SEC("raw_tp.w/spi_transfer_writeable")
-+  int BPF_PROG(mtd_mchp23k256, struct spi_msg_ctx *msg, u8 chip,
-+  	     unsigned int len, u8 tx_nbits, u8 rx_nbits)
-+  {
-+  	int ret = 0;
-+
-+  	if (tx_nbits)
-+  		ret = spi_transfer_write(msg, len);
-+  	else if (rx_nbits)
-+  		ret = spi_transfer_read(msg, len);
-+
-+  	return ret;
-+  }
-+
-+  char LICENSE[] SEC("license") = "GPL";
-+
-+
-+Then boot a qemu instance by the following command:
-+
-+::
-+
-+  sudo qemu-system-x86_64 -m 4096 -smp 4 -display none -serial stdio -no-reboot \
-+  -enable-kvm -cpu host,migratable=off -dtb mocktest.dtb -snapshot -hda linux.img \
-+  -kernel arch/x86/boot/bzImage \
-+  -append "earlyprintk=serial root=/dev/sda console=ttyS0"
-+
-+
-+Use bpftool to load the BPF program.
-+
-+::
-+
-+  bpftool prog load mtd-mchp23k256.o /sys/fs/bpf/test_prog
-+  bpftool perf attach name mtd_mchp23k256 spi_transfer_writeable /sys/fs/bpf/test_perf
-+
-+
-+Load the target chip driver module. This is accomplished by executing the
-+following command:
-+
-+::
-+
-+  $ echo mchp23k256 0 > /sys/class/spi_master/spi0/new_device
-+
-+
-+The name of the target driver and its chip select were used to instantiate
-+the device.
-+
-+Now, the mchp23k256 MTD device named /dev/mtd0 has been created successfully.
-+
-+::
-+
-+  $ ls /sys/bus/spi/devices/spi0.0/mtd/
-+  mtd0  mtd0ro
-+
-+  $ cat /sys/class/mtd/mtd0/name
-+  spi0.0
-+
-+  $ hexdump /dev/mtd0
-+  0000000 0000 0000 0000 0000 0000 0000 0000 0000
-+  *
-+  0008000
-+
-+  $echo aaaa > /dev/mtd0
-+
-+  $ hexdump /dev/mtd0
-+  0000000 6161 6161 000a 0000 0000 0000 0000 0000
-+  0000010 0000 0000 0000 0000 0000 0000 0000 0000
-+  *
-+  0008000
-+
-+  $ bpftool map update name mtd_mchp23k256_ key 0 0 0 0 value 0
-+
-+  $ hexdump /dev/mtd0
-+  0000000 6100 6161 000a 0000 0000 0000 0000 0000
-+  0000010 0000 0000 0000 0000 0000 0000 0000 0000
-+  *
-+  0008000
-+
-+Remove the mockup device by executing the following command:
-+
-+::
-+
-+  $echo 0 > /sys/class/spi_master/spi0/delete_device
--- 
-2.34.1
-
+Jason
