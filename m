@@ -2,252 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F819ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5B93ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344726AbiHZTgt (ORCPT
+        id S1344640AbiHZTl6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 15:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42566 "EHLO
+        Fri, 26 Aug 2022 15:41:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344617AbiHZTgl (ORCPT
+        with ESMTP id S232244AbiHZTlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 15:36:41 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9E8D2E8A
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:36:37 -0700 (PDT)
-Received: from localhost.localdomain (unknown [95.31.169.23])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 7A66E40D403D;
-        Fri, 26 Aug 2022 19:36:33 +0000 (UTC)
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Starke <daniel.starke@siemens.com>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-Subject: [PATCH] tty: n_gsm: avoid call of sleeping functions from atomic context
-Date:   Fri, 26 Aug 2022 22:35:45 +0300
-Message-Id: <20220826193545.20363-1-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.25.1
+        Fri, 26 Aug 2022 15:41:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845C081685;
+        Fri, 26 Aug 2022 12:41:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46D35B8321C;
+        Fri, 26 Aug 2022 19:41:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF17C433C1;
+        Fri, 26 Aug 2022 19:41:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661542911;
+        bh=IArRZaFN1D+1gYL9idbVQ+jcfSdbsGcEgrIb0exuq4Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Q3O7YcoP2ZzwBhqdDhGxMFobtuLRCxcJTF+awe9rvyNOscwZrZhyc5c9BEQuiEug0
+         cxibM2cYZPVGXZsJQBw39uNAXH0s70uWLgyi3bbyw9hNSEmnw+j1DunnaPRE1lotOp
+         +M4aEz5WaoIFr0/4OpPERmE9Je8nlGTNej7q6uN7NGa/lDCtTNGuQmwQQdrJ0CIWlc
+         IvnvBiKOvns9XjJtiv3Xmcqh9gpReOgGr6xpdOdKEeX7HnLE689/gpZucXMucD3w1s
+         f1pwon86LfT0QkLs7QoCBu7H8qSXEco7vUsy0sM45IxQ/97q8D5xknLfcFlYdqN6yP
+         1XLEKuHs63Uxg==
+Date:   Fri, 26 Aug 2022 22:41:44 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-sgx@vger.kernel.org,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] x86/sgx: Do not consider unsanitized pages an error
+Message-ID: <Ywkh+ChYvUW3zwfD@kernel.org>
+References: <20220826014126.291156-1-jarkko@kernel.org>
+ <fd6f124d-1d7d-0e73-10bd-f7aaae45ee68@molgen.mpg.de>
+ <4645fdb3-2836-0028-dee9-7a9321f1ebf2@molgen.mpg.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <4645fdb3-2836-0028-dee9-7a9321f1ebf2@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reports the following problem:
+On Fri, Aug 26, 2022 at 07:21:44PM +0200, Paul Menzel wrote:
+> Dear Jarkko,
+> 
+> 
+> Am 26.08.22 um 14:51 schrieb Paul Menzel:
+> 
+> […]
+> 
+> > Am 26.08.22 um 03:41 schrieb Jarkko Sakkinen:
+> > > In sgx_init(), if misc_register() for the provision device fails, and
+> > > neither sgx_drv_init() nor sgx_vepc_init() succeeds, then ksgxd will be
+> > > prematurely stopped.
+> > > 
+> > > This triggers WARN_ON() because sgx_dirty_page_list ends up being
+> > > non-empty. Ultimately this can crash the kernel, depending on the kernel
+> > > command line, which is not correct behavior because SGX driver is not
+> > > working incorrectly.
+> > 
+> > Maybe paste the WARN_ON trace, so `git log` can be searched for the
+> > trace too.
+> > 
+> > > Print simple warning instead, and improve the output by printing the
+> > > number of unsanitized pages.
+> > 
+> > See below, but no warning seems to be logged in my case now. (I should
+> > test Linus’ current master too.)
+> 
+> Just for the record, the problem still exists in Linus’ master branch:
+> 
+> ```
+> [    0.000000] Linux version 6.0.0-rc2 (root@4beb429beb4a) (gcc (Debian
+> 11.3.0-3) 11.3.0, GNU ld (GNU Binutils for Debian) 2.38) #382 SMP
+> PREEMPT_DYNAMIC Fri Aug 26 12:52:15 UTC 2022
+> [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.0.0-rc2
+> root=UUID=56f398e0-1e25-4fda-aa9f-611dece4b333 ro quiet
+> module_blacklist=psmouse initcall_debug log_buf_len=4M cryptomgr.notests
+> […]
+> [    0.268089] calling  sgx_init+0x0/0x409 @ 1
+> [    0.268103] sgx: EPC section 0x40200000-0x45f7ffff
+> [    0.268591] ------------[ cut here ]------------
+> [    0.268592] WARNING: CPU: 6 PID: 83 at arch/x86/kernel/cpu/sgx/main.c:401
+> ksgxd+0x1b7/0x1d0
+> [    0.268598] Modules linked in:
+> [    0.268600] CPU: 6 PID: 83 Comm: ksgxd Not tainted 6.0.0-rc2 #382
+> [    0.268603] Hardware name: Dell Inc. XPS 13 9370/0RMYH9, BIOS 1.21.0
+> 07/06/2022
+> [    0.268604] RIP: 0010:ksgxd+0x1b7/0x1d0
+> [    0.268607] Code: ff e9 f2 fe ff ff 48 89 df e8 75 07 0e 00 84 c0 0f 84
+> c3 fe ff ff 31 ff e8 e6 07 0e 00 84 c0 0f 85 94 fe ff ff e9 af fe ff ff <0f>
+> 0b e9 7f fe ff ff e8 dd 9c 95 00 66 66 2e 0f 1f 84 00 00 00 00
+> [    0.268608] RSP: 0000:ffffb6c7404f3ed8 EFLAGS: 00010287
+> [    0.268610] RAX: ffffb6c740431a10 RBX: ffff8dcd8117b400 RCX:
+> 0000000000000000
+> [    0.268612] RDX: 0000000080000000 RSI: ffffb6c7404319d0 RDI:
+> 00000000ffffffff
+> [    0.268613] RBP: ffff8dcd820a4d80 R08: ffff8dcd820a4180 R09:
+> ffff8dcd820a4180
+> [    0.268614] R10: 0000000000000000 R11: 0000000000000006 R12:
+> ffffb6c74006bce0
+> [    0.268615] R13: ffff8dcd80e63880 R14: ffffffffa8a60f10 R15:
+> 0000000000000000
+> [    0.268616] FS:  0000000000000000(0000) GS:ffff8dcf25580000(0000)
+> knlGS:0000000000000000
+> [    0.268617] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    0.268619] CR2: 0000000000000000 CR3: 0000000213410001 CR4:
+> 00000000003706e0
+> [    0.268620] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+> 0000000000000000
+> [    0.268621] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+> 0000000000000400
+> [    0.268622] Call Trace:
+> [    0.268624]  <TASK>
+> [    0.268627]  ? _raw_spin_lock_irqsave+0x24/0x60
+> [    0.268632]  ? _raw_spin_unlock_irqrestore+0x23/0x40
+> [    0.268634]  ? __kthread_parkme+0x36/0x90
+> [    0.268637]  kthread+0xe5/0x110
+> [    0.268639]  ? kthread_complete_and_exit+0x20/0x20
+> [    0.268642]  ret_from_fork+0x1f/0x30
+> [    0.268647]  </TASK>
+> [    0.268648] ---[ end trace 0000000000000000 ]---
+> [    0.268694] initcall sgx_init+0x0/0x409 returned -19 after 603 usecs
+> ```
+> 
+> Tested-by: Paul Menzel <pmenzel@molgen.mpg.de>
 
-BUG: sleeping function called from invalid context at kernel/printk/printk.c:2347
-in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 1105, name: syz-executor423
-3 locks held by syz-executor423/1105:
- #0: ffff8881468b9098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x90 drivers/tty/tty_ldisc.c:266
- #1: ffff8881468b9130 (&tty->atomic_write_lock){+.+.}-{3:3}, at: tty_write_lock drivers/tty/tty_io.c:952 [inline]
- #1: ffff8881468b9130 (&tty->atomic_write_lock){+.+.}-{3:3}, at: do_tty_write drivers/tty/tty_io.c:975 [inline]
- #1: ffff8881468b9130 (&tty->atomic_write_lock){+.+.}-{3:3}, at: file_tty_write.constprop.0+0x2a8/0x8e0 drivers/tty/tty_io.c:1118
- #2: ffff88801b06c398 (&gsm->tx_lock){....}-{2:2}, at: gsmld_write+0x5e/0x150 drivers/tty/n_gsm.c:2717
-irq event stamp: 3482
-hardirqs last  enabled at (3481): [<ffffffff81d13343>] __get_reqs_available+0x143/0x2f0 fs/aio.c:946
-hardirqs last disabled at (3482): [<ffffffff87d39722>] __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:108 [inline]
-hardirqs last disabled at (3482): [<ffffffff87d39722>] _raw_spin_lock_irqsave+0x52/0x60 kernel/locking/spinlock.c:159
-softirqs last  enabled at (3408): [<ffffffff87e01002>] asm_call_irq_on_stack+0x12/0x20
-softirqs last disabled at (3401): [<ffffffff87e01002>] asm_call_irq_on_stack+0x12/0x20
-Preemption disabled at:
-[<0000000000000000>] 0x0
-CPU: 2 PID: 1105 Comm: syz-executor423 Not tainted 5.10.137-syzkaller #0
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.12.0-1 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x167 lib/dump_stack.c:118
- ___might_sleep.cold+0x1e8/0x22e kernel/sched/core.c:7304
- console_lock+0x19/0x80 kernel/printk/printk.c:2347
- do_con_write+0x113/0x1de0 drivers/tty/vt/vt.c:2909
- con_write+0x22/0xc0 drivers/tty/vt/vt.c:3296
- gsmld_write+0xd0/0x150 drivers/tty/n_gsm.c:2720
- do_tty_write drivers/tty/tty_io.c:1028 [inline]
- file_tty_write.constprop.0+0x502/0x8e0 drivers/tty/tty_io.c:1118
- call_write_iter include/linux/fs.h:1903 [inline]
- aio_write+0x355/0x7b0 fs/aio.c:1580
- __io_submit_one fs/aio.c:1952 [inline]
- io_submit_one+0xf45/0x1a90 fs/aio.c:1999
- __do_sys_io_submit fs/aio.c:2058 [inline]
- __se_sys_io_submit fs/aio.c:2028 [inline]
- __x64_sys_io_submit+0x18c/0x2f0 fs/aio.c:2028
- do_syscall_64+0x33/0x40 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x61/0xc6
+Thank you.
 
-The problem happens in the following control flow:
-
-gsmld_write(...)
-spin_lock_irqsave(&gsm->tx_lock, flags) // taken a spinlock on TX data
- con_write(...)
-  do_con_write(...)
-   console_lock()
-    might_sleep() // -> bug
-
-As far as console_lock() might sleep it should not be called with
-spinlock held.
-
-The patch replaces tx_lock spinlock with mutex in order to avoid the
-problem.
-
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-Fixes: 32dd59f96924 ("tty: n_gsm: fix race condition in gsmld_write()")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
----
- drivers/tty/n_gsm.c | 33 +++++++++++++++------------------
- 1 file changed, 15 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index cb5ed4155a8d..475bd756f52e 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -235,7 +235,7 @@ struct gsm_mux {
- 	int old_c_iflag;		/* termios c_iflag value before attach */
- 	bool constipated;		/* Asked by remote to shut up */
- 
--	spinlock_t tx_lock;
-+	struct mutex tx_mutex;
- 	unsigned int tx_bytes;		/* TX data outstanding */
- #define TX_THRESH_HI		8192
- #define TX_THRESH_LO		2048
-@@ -825,10 +825,9 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
- 
- static void gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
- {
--	unsigned long flags;
--	spin_lock_irqsave(&dlci->gsm->tx_lock, flags);
-+	mutex_lock(&dlci->gsm->tx_mutex);
- 	__gsm_data_queue(dlci, msg);
--	spin_unlock_irqrestore(&dlci->gsm->tx_lock, flags);
-+	mutex_unlock(&dlci->gsm->tx_mutex);
- }
- 
- /**
-@@ -1019,13 +1018,12 @@ static void gsm_dlci_data_sweep(struct gsm_mux *gsm)
- 
- static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
- {
--	unsigned long flags;
- 	int sweep;
- 
- 	if (dlci->constipated)
- 		return;
- 
--	spin_lock_irqsave(&dlci->gsm->tx_lock, flags);
-+	mutex_lock(&dlci->gsm->tx_mutex);
- 	/* If we have nothing running then we need to fire up */
- 	sweep = (dlci->gsm->tx_bytes < TX_THRESH_LO);
- 	if (dlci->gsm->tx_bytes == 0) {
-@@ -1036,7 +1034,7 @@ static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
- 	}
- 	if (sweep)
- 		gsm_dlci_data_sweep(dlci->gsm);
--	spin_unlock_irqrestore(&dlci->gsm->tx_lock, flags);
-+	mutex_unlock(&dlci->gsm->tx_mutex);
- }
- 
- /*
-@@ -1258,7 +1256,6 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
- 						const u8 *data, int clen)
- {
- 	u8 buf[1];
--	unsigned long flags;
- 
- 	switch (command) {
- 	case CMD_CLD: {
-@@ -1280,9 +1277,9 @@ static void gsm_control_message(struct gsm_mux *gsm, unsigned int command,
- 		gsm->constipated = false;
- 		gsm_control_reply(gsm, CMD_FCON, NULL, 0);
- 		/* Kick the link in case it is idling */
--		spin_lock_irqsave(&gsm->tx_lock, flags);
-+		mutex_lock(&gsm->tx_mutex);
- 		gsm_data_kick(gsm, NULL);
--		spin_unlock_irqrestore(&gsm->tx_lock, flags);
-+		mutex_unlock(&gsm->tx_mutex);
- 		break;
- 	case CMD_FCOFF:
- 		/* Modem wants us to STFU */
-@@ -2203,7 +2200,7 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	init_waitqueue_head(&gsm->event);
- 	spin_lock_init(&gsm->control_lock);
--	spin_lock_init(&gsm->tx_lock);
-+	mutex_init(&gsm->tx_mutex);
- 
- 	if (gsm->encoding == 0)
- 		gsm->receive = gsm0_receive;
-@@ -2234,6 +2231,7 @@ static void gsm_free_mux(struct gsm_mux *gsm)
- 		}
- 	}
- 	mutex_destroy(&gsm->mutex);
-+	mutex_destroy(&gsm->tx_mutex);
- 	kfree(gsm->txframe);
- 	kfree(gsm->buf);
- 	kfree(gsm);
-@@ -2304,6 +2302,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
- 	}
- 	spin_lock_init(&gsm->lock);
- 	mutex_init(&gsm->mutex);
-+	mutex_init(&gsm->tx_mutex);
- 	kref_init(&gsm->ref);
- 	INIT_LIST_HEAD(&gsm->tx_list);
- 
-@@ -2331,6 +2330,7 @@ static struct gsm_mux *gsm_alloc_mux(void)
- 	spin_unlock(&gsm_mux_lock);
- 	if (i == MAX_MUX) {
- 		mutex_destroy(&gsm->mutex);
-+		mutex_destroy(&gsm->tx_mutex);
- 		kfree(gsm->txframe);
- 		kfree(gsm->buf);
- 		kfree(gsm);
-@@ -2654,16 +2654,15 @@ static int gsmld_open(struct tty_struct *tty)
- static void gsmld_write_wakeup(struct tty_struct *tty)
- {
- 	struct gsm_mux *gsm = tty->disc_data;
--	unsigned long flags;
- 
- 	/* Queue poll */
- 	clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
--	spin_lock_irqsave(&gsm->tx_lock, flags);
-+	mutex_lock(&gsm->tx_mutex);
- 	gsm_data_kick(gsm, NULL);
- 	if (gsm->tx_bytes < TX_THRESH_LO) {
- 		gsm_dlci_data_sweep(gsm);
- 	}
--	spin_unlock_irqrestore(&gsm->tx_lock, flags);
-+	mutex_unlock(&gsm->tx_mutex);
- }
- 
- /**
-@@ -2706,7 +2705,6 @@ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
- 			   const unsigned char *buf, size_t nr)
- {
- 	struct gsm_mux *gsm = tty->disc_data;
--	unsigned long flags;
- 	int space;
- 	int ret;
- 
-@@ -2714,14 +2712,13 @@ static ssize_t gsmld_write(struct tty_struct *tty, struct file *file,
- 		return -ENODEV;
- 
- 	ret = -ENOBUFS;
--	spin_lock_irqsave(&gsm->tx_lock, flags);
-+	mutex_lock(&gsm->tx_mutex);
- 	space = tty_write_room(tty);
- 	if (space >= nr)
- 		ret = tty->ops->write(tty, buf, nr);
- 	else
- 		set_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
--	spin_unlock_irqrestore(&gsm->tx_lock, flags);
--
-+	mutex_unlock(&gsm->tx_mutex);
- 	return ret;
- }
- 
--- 
-2.25.1
-
+BR, Jarkko
