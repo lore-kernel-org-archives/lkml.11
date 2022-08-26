@@ -2,38 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F6BECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:56:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9247EECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343599AbiHZL4Z (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 07:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
+        id S245052AbiHZL4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 07:56:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240024AbiHZL4U (ORCPT
+        with ESMTP id S239937AbiHZL4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 07:56:20 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C376D6F258;
-        Fri, 26 Aug 2022 04:56:15 -0700 (PDT)
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C346D563;
+        Fri, 26 Aug 2022 04:56:14 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 703F483E3;
-        Fri, 26 Aug 2022 13:56:13 +0200 (CEST)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 7FE0783CA;
+        Fri, 26 Aug 2022 13:56:12 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661514973;
+        t=1661514972;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gWGyQWM8OXSvJySwbiAhGUCbHok4M4ZkpORs44F2o94=;
-        b=R9GgofqNh8ffJi2Q++3eaQW8kyZebCFvo6relTQwzWR6tRt6nSXNv9+Mi/sZXXnAnL5uuG
-        z/f7eXXsENymMEMqVdbUbhG5SQv1aWcLasxq5e61Go2eb2+b8/ok2kxY78u2vgpYGjAZRX
-        RCMCAMCDKX78znzg5aBZTusX0IlpFRsk03tktYLkDYjlGoqiDtHB4OM5jiRaEywVWYF8IJ
-        mn0FotCsN81g84tzOvaP21hskr0UyARWF0mbIT7ExqdFxAux5pdDifN0kqJ2F2OBj9FGph
-        aFWhQgH8VeeulDulnSo5zTvcFwMd+3hdxhN0nzHRPpyiVcRw+7ZX2n0WvRg1hQ==
+        bh=ZKrwgi7/hIQ+plSmPIijraxN7GjbIh/xtpYdqsbEkzg=;
+        b=Aa79R5lOpLRfnVBbTy686ct+KxEHr8CTdlrkr4NVdc/gIEBWrgPiQTRDut6wQ/ezeQ05tw
+        XcVWPt8CDZMIwB0iPQ1Mhg4CZe0BGsFmRB5/KzMO9WoBDtCbLXY1N6VpnHFakzWg1uzl1X
+        fCmnpSIc8OK0YfyWs6xVpXvi/06YQH9cfQiEV/+aKnykx9Ri5Ky7bVMfs0ifmseDv+DXSb
+        AfBsCjPosPX2rZeYNT0OCt6dEdXahZjkbCPTqHLvc9B8eAdiNKJL2orSKwOdH7wfjguKmS
+        vz4d1jKCsMuYfdi3BS8DfUClCuWmMHTZgqdYx6NunYQp7zibMAEHJ5o1rqREOA==
 From:   Michael Walle <michael@walle.cc>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -48,9 +47,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH 3/3] net: lan966x: make reset optional
-Date:   Fri, 26 Aug 2022 13:56:07 +0200
-Message-Id: <20220826115607.1148489-4-michael@walle.cc>
+Subject: [PATCH 1/3] reset: microchip-sparx5: issue a reset on startup
+Date:   Fri, 26 Aug 2022 13:56:05 +0200
+Message-Id: <20220826115607.1148489-2-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220826115607.1148489-1-michael@walle.cc>
 References: <20220826115607.1148489-1-michael@walle.cc>
@@ -61,30 +60,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no dedicated reset for just the switch core. The reset which
-is used up until now, is more of a global reset, resetting almost the
-whole SoC and cause spurious errors by doing so. Make it possible to
-handle the reset elsewhere and mark the reset as optional.
+Originally this was used in by the switch core driver to issue a reset.
+But it turns out, this isn't just a switch core reset but instead it
+will reset almost the complete SoC.
 
+Instead of adding almost all devices of the SoC a shared reset line,
+issue the reset once early on startup. Keep the reset controller for
+backwards compatibility, but make the actual reset a noop.
+
+Suggested-by: Philipp Zabel <p.zabel@pengutronix.de>
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/reset/reset-microchip-sparx5.c | 22 +++++++++++++++++-----
+ 1 file changed, 17 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-index 2ad078608c45..e2c77f954a3d 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-@@ -971,7 +971,8 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
- 	int val = 0;
- 	int ret;
+diff --git a/drivers/reset/reset-microchip-sparx5.c b/drivers/reset/reset-microchip-sparx5.c
+index 00b612a0effa..f3528dd1d084 100644
+--- a/drivers/reset/reset-microchip-sparx5.c
++++ b/drivers/reset/reset-microchip-sparx5.c
+@@ -33,11 +33,8 @@ static struct regmap_config sparx5_reset_regmap_config = {
+ 	.reg_stride	= 4,
+ };
  
--	switch_reset = devm_reset_control_get_shared(lan966x->dev, "switch");
-+	switch_reset = devm_reset_control_get_optional_shared(lan966x->dev,
-+							      "switch");
- 	if (IS_ERR(switch_reset))
- 		return dev_err_probe(lan966x->dev, PTR_ERR(switch_reset),
- 				     "Could not obtain switch reset");
+-static int sparx5_switch_reset(struct reset_controller_dev *rcdev,
+-			       unsigned long id)
++static int sparx5_switch_reset(struct mchp_reset_context *ctx)
+ {
+-	struct mchp_reset_context *ctx =
+-		container_of(rcdev, struct mchp_reset_context, rcdev);
+ 	u32 val;
+ 
+ 	/* Make sure the core is PROTECTED from reset */
+@@ -54,8 +51,14 @@ static int sparx5_switch_reset(struct reset_controller_dev *rcdev,
+ 					1, 100);
+ }
+ 
++static int sparx5_reset_noop(struct reset_controller_dev *rcdev,
++			     unsigned long id)
++{
++	return 0;
++}
++
+ static const struct reset_control_ops sparx5_reset_ops = {
+-	.reset = sparx5_switch_reset,
++	.reset = sparx5_reset_noop,
+ };
+ 
+ static int mchp_sparx5_map_syscon(struct platform_device *pdev, char *name,
+@@ -122,6 +125,11 @@ static int mchp_sparx5_reset_probe(struct platform_device *pdev)
+ 	ctx->rcdev.of_node = dn;
+ 	ctx->props = device_get_match_data(&pdev->dev);
+ 
++	/* Issue the reset very early, our actual reset callback is a noop. */
++	err = sparx5_switch_reset(ctx);
++	if (err)
++		return err;
++
+ 	return devm_reset_controller_register(&pdev->dev, &ctx->rcdev);
+ }
+ 
+@@ -163,6 +171,10 @@ static int __init mchp_sparx5_reset_init(void)
+ 	return platform_driver_register(&mchp_sparx5_reset_driver);
+ }
+ 
++/*
++ * Because this is a global reset, keep this postcore_initcall() to issue the
++ * reset as early as possible during the kernel startup.
++ */
+ postcore_initcall(mchp_sparx5_reset_init);
+ 
+ MODULE_DESCRIPTION("Microchip Sparx5 switch reset driver");
 -- 
 2.30.2
 
