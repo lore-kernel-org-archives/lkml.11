@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A6FECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A70ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243646AbiHZBCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 21:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43252 "EHLO
+        id S243461AbiHZBCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 21:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235832AbiHZBCC (ORCPT
+        with ESMTP id S235824AbiHZBCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 25 Aug 2022 21:02:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F30FC88A2
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EDB9C888B
         for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 18:02:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1661475720;
@@ -21,23 +21,23 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=d7F5jNXOig7p4gZdg2FFWDOqFX0Eoffdyr2osFUuJU4=;
-        b=S5L14t0KWWTZHwc81/8gKfDYHWOfCpJBbS8qwE7SJxSzIHTzKaM1/XtBGijwftONazCdu5
-        WkuT5yBz1pIcIk+0mi6FsCOU5aRzqp1jvo37GxFLpR3VplqDv9sw8XGtS3eHF7DbJM/kQW
-        vw5JYZPsAcSZPGkKCSB3GO5/ttmMCsw=
+        bh=rQpto5BB3Rfi8mStn57wHgfK50I9ZvtINntPdYze9zk=;
+        b=L+exv2vssKqOh/CL2LTLz9yUki6xjitNp26tRC2scBG5soNfyBanAyQflk9JWLMhAhDgdK
+        LjKEtAdD1VIqhq6FuWHuTi/Jf9PernTgGSviZvFZvITYaEnPesrUFJ6CrWUN91SRHn8D7B
+        H9SqDtTNJsQ5C9G85kIW+/A7vTYyHgY=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-329-Fm4dKUhXNjCFsNFLFYE6KQ-1; Thu, 25 Aug 2022 21:01:54 -0400
-X-MC-Unique: Fm4dKUhXNjCFsNFLFYE6KQ-1
+ us-mta-396-kZ_S-eI8MGe4yxwm5X1olQ-1; Thu, 25 Aug 2022 21:01:57 -0400
+X-MC-Unique: kZ_S-eI8MGe4yxwm5X1olQ-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0AAD8101E989;
-        Fri, 26 Aug 2022 01:01:54 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 25CAC811E76;
+        Fri, 26 Aug 2022 01:01:57 +0000 (UTC)
 Received: from llong.com (unknown [10.22.9.210])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 47D2C2026D4C;
-        Fri, 26 Aug 2022 01:01:53 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6700D2026D64;
+        Fri, 26 Aug 2022 01:01:56 +0000 (UTC)
 From:   Waiman Long <longman@redhat.com>
 To:     Ingo Molnar <mingo@redhat.com>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -55,9 +55,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Linus Torvalds <torvalds@linux-foundation.org>,
         Lai Jiangshan <jiangshanlai@gmail.com>,
         Waiman Long <longman@redhat.com>
-Subject: [PATCH v6 1/5] sched: Add __releases annotations to affine_move_task()
-Date:   Thu, 25 Aug 2022 21:01:15 -0400
-Message-Id: <20220826010119.1265764-2-longman@redhat.com>
+Subject: [PATCH v6 5/5] sched: Fix sched_setaffinity() and fork/clone() race
+Date:   Thu, 25 Aug 2022 21:01:19 -0400
+Message-Id: <20220826010119.1265764-6-longman@redhat.com>
 In-Reply-To: <20220826010119.1265764-1-longman@redhat.com>
 References: <20220826010119.1265764-1-longman@redhat.com>
 MIME-Version: 1.0
@@ -68,39 +68,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-affine_move_task() assumes task_rq_lock() has been called and it does
-an implicit task_rq_unlock() before returning. Add the appropriate
-__releases annotations to make this clear.
-
-A typo error in comment is also fixed.
+sched_setaffinity() can also race with a concurrent fork/clone() syscall
+calling dup_user_cpus_ptr(). That may lead to a use after free problem.
+Fix that by protecting the cpumask copying using pi_lock of the source
+task.
 
 Signed-off-by: Waiman Long <longman@redhat.com>
 ---
- kernel/sched/core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/sched/core.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index ee28253c9ac0..b351e6d173b7 100644
+index 6cd1177fbcea..71a3fdcb6b6b 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -2696,6 +2696,8 @@ void release_user_cpus_ptr(struct task_struct *p)
-  */
- static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flags *rf,
- 			    int dest_cpu, unsigned int flags)
-+	__releases(rq->lock)
-+	__releases(p->pi_lock)
+@@ -2593,6 +2593,8 @@ void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
+ int dup_user_cpus_ptr(struct task_struct *dst, struct task_struct *src,
+ 		      int node)
  {
- 	struct set_affinity_pending my_pending = { }, *pending = NULL;
- 	bool stop_pending, complete = false;
-@@ -3005,7 +3007,7 @@ static int restrict_cpus_allowed_ptr(struct task_struct *p,
++	unsigned long flags;
++
+ 	if (!src->user_cpus_ptr)
+ 		return 0;
  
- /*
-  * Restrict the CPU affinity of task @p so that it is a subset of
-- * task_cpu_possible_mask() and point @p->user_cpu_ptr to a copy of the
-+ * task_cpu_possible_mask() and point @p->user_cpus_ptr to a copy of the
-  * old affinity mask. If the resulting mask is empty, we warn and walk
-  * up the cpuset hierarchy until we find a suitable mask.
-  */
+@@ -2600,7 +2602,10 @@ int dup_user_cpus_ptr(struct task_struct *dst, struct task_struct *src,
+ 	if (!dst->user_cpus_ptr)
+ 		return -ENOMEM;
+ 
++	/* Use pi_lock to protect content of user_cpus_ptr */
++	raw_spin_lock_irqsave(&src->pi_lock, flags);
+ 	cpumask_copy(dst->user_cpus_ptr, src->user_cpus_ptr);
++	raw_spin_unlock_irqrestore(&src->pi_lock, flags);
+ 	return 0;
+ }
+ 
 -- 
 2.31.1
 
