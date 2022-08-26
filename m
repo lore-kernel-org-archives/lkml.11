@@ -2,215 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B2C2ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3F4ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:35:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244607AbiHZCff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35298 "EHLO
+        id S244824AbiHZCfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:35:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244818AbiHZCfX (ORCPT
+        with ESMTP id S244580AbiHZCfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:35:23 -0400
-Received: from mx0b-00230701.pphosted.com (mx0b-00230701.pphosted.com [148.163.158.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C4913FBF;
-        Thu, 25 Aug 2022 19:35:17 -0700 (PDT)
-Received: from pps.filterd (m0098572.ppops.net [127.0.0.1])
-        by mx0b-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27PNVF22031767;
-        Thu, 25 Aug 2022 19:34:34 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=pfptdkimsnps;
- bh=tDgjqN4zbjgP8B0TglOuFd2MtN6dPXLizG7tRIJgoBI=;
- b=XXTRu1a6QHQlLoOAJ/TZiuKXF1pg0skW01ghFhqrACcnijNwQNKfnyX1jZiRKCX8jsF/
- iWk6SLNpgji6bMlIltm8EaOuFaJ7xJ2A5pEyzVO34ArJ6ZG3D0RhaJnugAs7fiL2mBDC
- 0IoaFPs+iYxQ4nf4klNxS/Y8MxAVRfRAQtW8N4NdCYppHvc/tuI+6yVCQqGMHhDr4COa
- BWPABEBvjTub1lpB7oB8mxBAK8Klalz45YGMJISAT2zqI/CWWPFo1zyqlN1nY3+6Ji9l
- SLYm3D/4eIUn7lBsXbK6nvNUlDQKI4NpBQMlaIQVR5RXaO9FE1hnjoGIZnrZp52ev5am nQ== 
-Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.87.133])
-        by mx0b-00230701.pphosted.com (PPS) with ESMTPS id 3j5abrpyu6-1
+        Thu, 25 Aug 2022 22:35:36 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0FB229837;
+        Thu, 25 Aug 2022 19:35:34 -0700 (PDT)
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27PM49Fs025160;
+        Thu, 25 Aug 2022 19:35:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : mime-version; s=facebook;
+ bh=kbl3nFTFYD5w61SoTqnZFMDC4+sIJHpnK/758f8w4Vg=;
+ b=p87OYC1r3W9Lefmbz7uAkzk4pdxqlTJqYo3Q8E60Pae3RXlhRfdR5HMCrqkNMCmIhzUU
+ F5AcpOQFhVWILi56wCaT/55mrjvr3tsqk2t/m2vM9j3ePsS8PeesyABYVw1zjjZYiDxB
+ v89SJrMI8qWf+OnfGHDBIoCU+/ELPN3rqMY= 
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2048.outbound.protection.outlook.com [104.47.66.48])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3j6enwakkb-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Aug 2022 19:34:34 -0700
-Received: from mailhost.synopsys.com (sv1-mailhost2.synopsys.com [10.205.2.132])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 497F7C00F3;
-        Fri, 26 Aug 2022 02:34:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1661481273; bh=tDgjqN4zbjgP8B0TglOuFd2MtN6dPXLizG7tRIJgoBI=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=bUzzaTYIT4cVZKtkDRNYQPy50KoHO6fPMq+DxjX2lPHXso2VKI+Ezo53u3pVkByr7
-         ZbKCsFlwyw0WVA1s/WjLtv1/v8vN1QVMFhUMBzZH9nfTNNzeTdtR22i46AIEaT4+rX
-         3jm/W8R15OqkfubbJNyTRrvPEW/mxKUVlN2xhVTaZEVA6KUYqDIXJ0etIreJRsXiN3
-         jQQf5Bubh7iTtBJfUWXGVtTr8A2ZGS21DTupS9+qU+x7wgJHCnWSmjTDXrhZiMs2eE
-         6k1UAhMib815RkcxmjumWYgB3gDv91fKo0Mr1wTGkFynyPfwWCHVUT32HybX+O9wif
-         QnuUKspguhBvg==
-Received: from o365relay-in.synopsys.com (us03-o365relay3.synopsys.com [10.4.161.139])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client CN "o365relay-in.synopsys.com", Issuer "Entrust Certification Authority - L1K" (verified OK))
-        by mailhost.synopsys.com (Postfix) with ESMTPS id BD9F8A0076;
-        Fri, 26 Aug 2022 02:34:28 +0000 (UTC)
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2174.outbound.protection.outlook.com [104.47.73.174])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "mail.protection.outlook.com", Issuer "DigiCert Cloud Services CA-1" (verified OK))
-        by o365relay-in.synopsys.com (Postfix) with ESMTPS id 9CF9480199;
-        Fri, 26 Aug 2022 02:34:25 +0000 (UTC)
-Authentication-Results: o365relay-in.synopsys.com; dmarc=pass (p=reject dis=none) header.from=synopsys.com
-Authentication-Results: o365relay-in.synopsys.com; spf=pass smtp.mailfrom=thinhn@synopsys.com
-Authentication-Results: o365relay-in.synopsys.com;
-        dkim=pass (1024-bit key; unprotected) header.d=synopsys.com header.i=@synopsys.com header.b="YE1EY7+u";
-        dkim-atps=neutral
+        Thu, 25 Aug 2022 19:35:33 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oZ9IjhhHlZmBQYaphYW2g9ueSU/bIIy9UF0I9uaSEIVwCXnWh98keV45azBIDQFYOncvFjadRwbPW7Fj2keR0DBl1Ih1X6vdFWX6v0fwehGccbWcPECgewzJndOOHJtHRE8nd4/XQic/R0/0RdGOkJtrzYTXK3o09Tl93Qj04+6ZCckgSBkY5zWRtduRGr5GaoTgTzIYVzAD1i+WxFLIbZle/Uo57I4lFDK5zXH2M/rxl7TjVTLDSvDQvq46I+DPBJKEeXxG2KmeBHajGN4sqfCciR7wP76KULUOUCTKkoE2OA8SgSsKZ2KcL2BPyqs0ii1CgyKM2cTKXW84E+ZdXg==
+ b=Ds7IFsUT7MWq/HIFgQmYVv5QX8bl4pBHMAH47NzPJuPQplp6UBTzMuFrNqkRdWJc0SWF+ZOLRYW1ji13iryqCzhh8FVVTWrnT9fNxX/Lvlmmhp1DYHrGhS1siwOMg88a8OH+00XOllD6LAzo4vgjDVifMTA9x2UzKTVsMgUwDZ8+Mb5IEqRSPhD1w9cNZlW/h5bo4vixS0h97lCW+6Ncz1kQG1E+NIi9YInyOy4qr2QH8ZyP3TMCQFdJJat/ldXn9zCmh5ZDzEp4Jpj6nCil+lhpBfvVt83pF6ooIgJkEzcT++s4ZjRnktThmmO3ujXdej2rXlnBnWcFkn30cTzJ+A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tDgjqN4zbjgP8B0TglOuFd2MtN6dPXLizG7tRIJgoBI=;
- b=X8ccExV5MMUvnN1b+rx5uZYzb7zIqthrNSQRPq1CLphQ5vehn7P6TrP+fnGEYkszhOyYlw/lDoQJLWUBGCBTO7GhzKemwGRuZg91b3zEzbjLjluseZxoBoztgrPObErDgafi7qHZmi11n/bXuQYUmA/vfYlhjPfoO5ePRGcTG+lUQQ0DfEOzyBcFX2hy/l2SAnbj38hgmKrfQ1rk3fE9zscLunxC+DqcucDpkSU8zpZ+w38SKS0yLZY7YXaY2JoBWOQRPocq7+lWx2S+YA652yzbcvQG23JHMG8yjQ4ya5orymDgv9RbdEsQcfx9i+nHwlgZXvV0tRS/veje1LjZRg==
+ bh=kbl3nFTFYD5w61SoTqnZFMDC4+sIJHpnK/758f8w4Vg=;
+ b=CO7dzrXfTQJzNF9JyCaMa4g9nC07jxpBKJqLqQ6sjdhZ/DBCUTmVWnsg7+J4huB8PijHAzMsgJoobqRBM0gjtOJeC3ZK2wEXABehRt9ka5/sOl6TIUaTWPzUVodJpir07PzixDf5cf3BKaIo3r6vWaWKeT2jB9M9x86+DxrB+LjQqX9QsV2+kdtrlokTjFnO7jGFOV/lT9csBf2Z6+z2NwG5WBMIC34NReu3X0PXWZz7Ooic+y2AlmFFAM2oguBHn7/DRWfPCOMJr4Cv2B4xen8EPCMWKY7VIJ9H7ZEOZdzUqUP+tLda6kG3hAGkeoac+L50qxvzKmMfkZYN6UkF1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tDgjqN4zbjgP8B0TglOuFd2MtN6dPXLizG7tRIJgoBI=;
- b=YE1EY7+u2+z7cwMx1ZjY9016zPYRMGiYmLzsp3fJrdW3YfzPFeJPscmBaiBg3Q2/yGLOrp7UfrSMwTJDY7tOApVDCCzezZxmGRIfFg21Yia/AZ9rQFHZgFt6R2tgxleepFw/y3UjaqI/Q9L9FiIQotJ5iGrhVeUSlP668kdSxfQ=
-Received: from BN8PR12MB4787.namprd12.prod.outlook.com (2603:10b6:408:a1::11)
- by BN6PR12MB1348.namprd12.prod.outlook.com (2603:10b6:404:1f::12) with
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
+ by BN6PR15MB1842.namprd15.prod.outlook.com (2603:10b6:405:4e::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Fri, 26 Aug
- 2022 02:34:22 +0000
-Received: from BN8PR12MB4787.namprd12.prod.outlook.com
- ([fe80::34d0:5282:1e1e:98d5]) by BN8PR12MB4787.namprd12.prod.outlook.com
- ([fe80::34d0:5282:1e1e:98d5%7]) with mapi id 15.20.5566.015; Fri, 26 Aug 2022
- 02:34:22 +0000
-X-SNPS-Relay: synopsys.com
-From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Dmitry Bogdanov <d.bogdanov@yadro.com>,
-        "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>
-CC:     Felipe Balbi <balbi@kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        Nicholas Bellinger <nab@linux-iscsi.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        John Youn <John.Youn@synopsys.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrzej Pietrasiewicz <andrzej.p@samsung.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH v2 00/25] usb: gadget: f_tcm: Enhance UASP driver
-Thread-Topic: [PATCH v2 00/25] usb: gadget: f_tcm: Enhance UASP driver
-Thread-Index: AQHYmw6F3vPaFvUH1UezRNMH+EVsTq22FgOAgACTPICACglBAA==
-Date:   Fri, 26 Aug 2022 02:34:21 +0000
-Message-ID: <20220826023404.un6jmymwjfortotu@synopsys.com>
-References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
- <Yv9KWyevXLegwQcK@kroah.com> <20220819171821.estwvvfkkxo64bkq@synopsys.com>
-In-Reply-To: <20220819171821.estwvvfkkxo64bkq@synopsys.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Fri, 26 Aug
+ 2022 02:35:31 +0000
+Received: from SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::c488:891f:57b:d5da]) by SA1PR15MB5109.namprd15.prod.outlook.com
+ ([fe80::c488:891f:57b:d5da%9]) with mapi id 15.20.5566.015; Fri, 26 Aug 2022
+ 02:35:31 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] bpf: Add bpf_read_raw_record() helper
+Thread-Topic: [PATCH bpf-next] bpf: Add bpf_read_raw_record() helper
+Thread-Index: AQHYtzPeWFYcAGzsN0Wstq4jJDfNwK3AJloAgAAJpYCAAA9aAIAAO0MA
+Date:   Fri, 26 Aug 2022 02:35:31 +0000
+Message-ID: <E215461A-01E7-4677-A404-C4439D66A7AF@fb.com>
+References: <20220823210354.1407473-1-namhyung@kernel.org>
+ <CAEf4Bzbd0-jGFCSCJu3eDxxom42xnH9Tevq0n50-AajjHb5t3g@mail.gmail.com>
+ <A9E2E766-E8A2-4E2E-A661-922400D2674D@fb.com>
+ <CAEf4BzbGf6FuM7VcnA7HKb33HJeJjrDuydC4h1_tCUB8sPCW2g@mail.gmail.com>
+In-Reply-To: <CAEf4BzbGf6FuM7VcnA7HKb33HJeJjrDuydC4h1_tCUB8sPCW2g@mail.gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3696.120.41.1.1)
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 699505bc-25e8-4298-a64d-08da870b7bf8
-x-ms-traffictypediagnostic: BN6PR12MB1348:EE_
+x-ms-office365-filtering-correlation-id: 7a0b8910-87a2-4f35-d8d1-08da870ba527
+x-ms-traffictypediagnostic: BN6PR15MB1842:EE_
+x-fb-source: Internal
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5AOJduuAJG/esqeSTryx2/ln79fuQAgFPs8ODpFDetp5eIgSHONpKSQcsk0/uEH3h5/eJBiJUPh6FTuHJeMz15gWhtbRuzfNsesgVYI1eyYBAwplQTHmXKjqDgJQtsYVg8r9nJMAZXFP5wmfxZkHvadxDD+pfonCg2eI5Q8Kur3PkXE3R/FW9DXVkxP7P4ZjHMP/VRGIxRApjGdA3hzUHcSbRLNOa13hQOg+Y7QTUvVGZxiXu45sLRhbZi9mgHT9FeOfVJLCXp9MglKVyd7ZGkQu4UfiNSFvAs3qgnI2BpWFhHiI2ZLMn/XtmGzAjunDOh+9+xEsvF7v+nmYyrccG8/9aTXktyGvX5NmwfPhEnq0wjvdOGq323o55OB3qF0iNgnerEEcux/D3lnUerKTahB4TkMgUYwnxP2nRx1qZDspf+delZDmq2i4TSfJrZaGRsoPmlwpfb7tJ62tV/to+UwX+jn602y90TAsQU0m48syou6nq8BAC4MQwWrnIemmdHVhiIE1Z5yqTg9abkf3VHT79W1H/32SKYzQTnGq86I0zBDvMYXTwfEsO96pT0TP2JJnKscQcjlYwDEgIFiY8p1p5rPmnmvoxOYGzrGuM6xCgTNj74Gmo35j99xv/2zxfsyfxRqGSg+3AGZK8MkusU4HLH42SJIUwq0ltdq2FyhU819X0tlCSBxs716uA7E1N3BQ0wyvBJ+4Tf7PSEuOHX5sN0YIJ8JP/kRX4tKZORQDj2CkGEMMnmiO5ZsVk9yipPNh9ZxyE9K21s4NEMFcyQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB4787.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(366004)(396003)(39860400002)(136003)(376002)(86362001)(38070700005)(122000001)(38100700002)(91956017)(316002)(54906003)(110136005)(76116006)(2906002)(8936002)(5660300002)(7416002)(66946007)(66556008)(66476007)(66446008)(64756008)(8676002)(4326008)(2616005)(186003)(1076003)(83380400001)(478600001)(71200400001)(6486002)(6506007)(26005)(6512007)(41300700001)(36756003);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: Il4SflNgP40oOJIrRVoHAoaE2h0eZDWs9619oyi1yB7+01LKBLPbh/RZSM98dkX4j+Ywkk2+Hb4ixvckuSSSCM1dCSDsPS/eByIexg2+X0DcP5N70WtyyZHy+fhhTckOoiadEdudXzl8eKwNMlpB0KB5PNChPh0+CJnxM2nL+jmpqpBRBDLWkVdy/aoMVkiVFMczcUH03/x4aU4zuJFv3NYHshV3HpHkNq6XfQR6ROud1g15TF92XsjKMGgSQCX9pPX7hCLbM4p0EGvTbKKxEzmyzNEuZsf1bAyaq7qxSRjBh07pnD4iNK6mByvf+OAF0FESUYUh8rCE62gZzqXgUoiF39GnfmtKcFQ08Wsjd64M/kdAPqzriv/IUwCWzmZDuxYNYj39EGR2CDDf+EUUWSfkq5lHTcKDMurVJcq2oZFxvp0UdvwL9v+hONCSRT5ns4tUp2rfrA0hbNhnhSiVpi8NT+gK5GzwIIe1DB2aU60sHNYEb3Cxt36CKuixjL7AyyUDMn0W5V2LvP1i2H3axVFxZ3YCszW1iLTynnYlcFczcFlcKbPDC3difFVWdaz1WNhEAZjwJjpJOXN6kNMndOO7lZuYem9Vw+0x2vSibT+y9iBjQAPDusxfFcEcc91/VT0w5tiQXS1+l/R1fInhM8RycryvvCApVlBLUXdO00GtUU/bKQiAWxKu50BqqJsYtsC8J6ey4knxZtS8MDCV/RuZmhUzyvBDi4dLIPxYVbsl9kAi7WGCTknqQZp762iEt3BdvE++ApCe/VHg0GIOAf0gaH4IQY/RhQoJBQv7+o0=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(396003)(366004)(346002)(376002)(186003)(36756003)(33656002)(2616005)(83380400001)(6506007)(6512007)(122000001)(2906002)(53546011)(41300700001)(38070700005)(478600001)(91956017)(38100700002)(86362001)(7416002)(6486002)(8936002)(5660300002)(316002)(54906003)(66476007)(8676002)(76116006)(66556008)(6916009)(66446008)(71200400001)(66946007)(64756008)(4326008)(45980500001);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OXI5RGVTSkVZQnA3OTFkV0ZjZ0RWMStrTEU0YzJYVEZOLzdDU3lYbVF2OEEy?=
- =?utf-8?B?OUtobGR1UFI1Y3dzdlJzbmYwWTh4b0dzZmFjRVpicXd3ZmtYMnJUNnpPdG1U?=
- =?utf-8?B?d2Uxemh6SDZtNXYxbVBlbDYxK0FiM2lzeERIWU5MMURaSmJ5cTd6aWNOdkQy?=
- =?utf-8?B?NHhrVkFrS1NGRmcwRlA2WlRwZjZ1TDdsMzVTMkRVNjF6b2gyUFJSeGRZbHJz?=
- =?utf-8?B?dG5ld1ljbEdmd2xMc0R2a0dWNURWQ0lUWDVHQUZXZjJXekVKWVg5NXJqYVEz?=
- =?utf-8?B?YllyL3dWbWx6a0NHRml4SG1mRkZuSXB3cjZMYjBpWGlYMHdGSFV3WDRUclF6?=
- =?utf-8?B?VE9IM09RUFMxZnByaElWd2hCSGhWSzEySXlrVzJrT05NU3dHZ0xhd2FyeDFB?=
- =?utf-8?B?VlplUlJpNExETEdjUUhjdHcwcmxCdzNPV2lrZmdFb2o0dXBpWmdUbEZpallm?=
- =?utf-8?B?VFdBenNSeVd6OWlOaHA3d1l6ZWZKY1ZGc1ZuWlBNeVdRaEw2UkYzaDB4ejhP?=
- =?utf-8?B?NE9OUXRVaWF5MWRqeXVUUjJuUlB2Q0NaYU5UR05mRFh0MzFsNWVsSzJnV09C?=
- =?utf-8?B?cHI1TDIvb3dTLzBwMUk3bzBHYzJkN2VqUktNaGp3V2FKNktQcWdsdnBkRkd6?=
- =?utf-8?B?Zzh1OEVETGpOYXBKV1pzUlA1SzMwLzB2ZWhsQ1RKNXdJOEx4UEtoeUttRkxw?=
- =?utf-8?B?MFB3UVBRWkZGcWo0NHBzb2trYTF2L2cwZjBMRDEyb2tOd1NENSs3MVRDbkdS?=
- =?utf-8?B?L3NBdTNOTXpqMG1zeDBXVVV4ZHFwUTQ5dlA5RnFPcnlQUVlDbHRscnVmTkdY?=
- =?utf-8?B?a1Y3Vk5BSmFHaVdsN1dYaHk2OEtwcUhNNnFNNWV6L2dOOVptS1VDTGFXKzFP?=
- =?utf-8?B?Z0JwNlpWc3JzbHlHRllaNGhXQlF2eDlkaEpiVXg0bFB0SjA2T2ZBZGRLRFVz?=
- =?utf-8?B?TmI5L1lFTjlHRGwreUlmVStWOEREWG4wODhPVXVFajZoenZkc2VFaWtscm5q?=
- =?utf-8?B?N1NGT0c5dThlNUM0SU9iK1hxVjJLdUJGR2E5NE9pbmxnU2ZCWEZZTFVFODVL?=
- =?utf-8?B?UWFKUjRHNmNWZC9ncWMvNk1pcHdPenBYS3k1U1JYeCt4YnFVeUxZMGFLQjdl?=
- =?utf-8?B?TjRxVytVUnhRQS9aRnRqV1RPTDFCbEcxSGJySUxVd0FxbzBpUW9GUmZnNER6?=
- =?utf-8?B?bVc3ZmN1NUMxK2JXaVRHblQyUjhWbmdvS3E2enN5T1lGb3JDZGJOckNsQkxq?=
- =?utf-8?B?NzhVWFd2RVFpWEF3amVtU2xLTVUvMFRUaWdiSVdLUk5uWXh3SDgrdUlOaFQ2?=
- =?utf-8?B?SjhnSUFBcHlyZ1A2YXZ0MCthWU1xMmp0Sk5HaHMzeDFiUllNeFRLKzFEYThN?=
- =?utf-8?B?VFVBcFVuOXF0d0prSGJNY0YwbzRKZmdWSHZTTm5iY0w2UXZWTk9ESHZvcXNU?=
- =?utf-8?B?USt2U2d5em9OOFZ4VmtGaUh6bkFnQWVWRzBWREVSd2I4ODI5NjRTbmplbGdW?=
- =?utf-8?B?ZEU1enZxZ2hXeEtBbkl4UWpFZ0xKcUR0a3gxS3Z0eXFQREV1OWhjbGUvK0hy?=
- =?utf-8?B?U1hmT2ZrODdIVU5TU0hVb1VzWkVjVnRKODJWVVdQTkFKcXVNQ2M0TjdQKys2?=
- =?utf-8?B?Ukxma0p4ME0ydTlHMlRMY3lEbmNPNEZUYllYc3poOU5uSWpxQ3JuSllsN3dC?=
- =?utf-8?B?eFM1THZZMFhESE5SQmVGVFhRcCtFY2RRTUc3RnQzQjlLR1VyNTB3ZnNwOFh4?=
- =?utf-8?B?eWw1VVI0MWRYQmdYSWNWS1o4UG5TVkZVUXZsWTk4NUJCSnNvOVc5N0lXTjZN?=
- =?utf-8?B?UzMwOWF6bTJrNjFlVVlaR09iSXJXRDhnNS9HREtKYVYxZVVmdkJuQktpOFFC?=
- =?utf-8?B?M1ZJRVNLS2duQ1ErRS9hS1ZRTnVwWHNabmxuUXRHenhYN0RWT1padFJVaXlY?=
- =?utf-8?B?NldkM2xSMml6RFhVTEVpVHkyVE94WmhaeGRIRFpWd0hRQkZhZHlsNzQrbGZX?=
- =?utf-8?B?UUNJVDE5dTZ4cmRDVFg3M3RudEkzNHNtb1NxaEZPN1k5ZHcwL0tqcWtUdTRo?=
- =?utf-8?B?SyszY2FVTnMwK3drcVZndTdwWUswZVNUUzV6dmhPbWY2YkJZcXpDcFY5b1JV?=
- =?utf-8?Q?JhF4gGzQkNXE5O+d/kiwnX5NH?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <145DE1A491928B46A9A56B2A55336820@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?gK5Iq9O4skcjYbmOPqotjGBn+ePOYiNB0Eslsr+sM39pFyFqF+04d5QcDtio?=
+ =?us-ascii?Q?LZvVoQPHzaLxg+Wh2XjQatTPJ+0byu1K2U7CsJ6yyXIen3xqnEaWLl4Yzotz?=
+ =?us-ascii?Q?03dY18F/Jf39N3Y0AZxg0EP7l9LM8hGqV2hCQmGzRn4YtgwcW7KdnZgh5Tc3?=
+ =?us-ascii?Q?UKFvo/kSl2WAzt4SIncucWrCA8AzdqqKe0tVTg19fxI7pHXUjxQZgAhUp/Nb?=
+ =?us-ascii?Q?fWdCfxxu0Xy+DytvOh0AMiGF95K1qJNy2X3WL0cIYI6TBeAk+G/rh9V/QEyL?=
+ =?us-ascii?Q?N7ZkMf2BHHe5gO+gqvgikY70lDxBhZU3pLLNNJb3e2tEYKjSZ1kpeqoS8XsO?=
+ =?us-ascii?Q?OyA70EUygOoX97sGuADaiVzexO8yH5jAFNKColhn8Kv6050ihPYg0fFGfAd/?=
+ =?us-ascii?Q?O2M0ALpyz/3H0hTYg6GFAOGeFXEG70Jbnr0vNBrVdCbjmJxcME9f77QJgeLa?=
+ =?us-ascii?Q?ZDk4NKWsCDlDAaedp7E69BAVOa2/HmHocwMa59yG3pXbXoGiQmqwvAXz+3KF?=
+ =?us-ascii?Q?H9TSNRxvki93gYe36w7fzquyHD2nDp2pebF+Wr5GpJX3mqqMKj+R6FkiAmIN?=
+ =?us-ascii?Q?JEFYKegG3pei8QBgRhLiGWOdhKDbfmyTDJjDgyKdHRrAm+L7K2JcZ6xj1PzT?=
+ =?us-ascii?Q?zmOQoMwJiR23ajEdvUetxLIVtUpmuBs5ohdji/YGnBGV5VBG9LuYHhKIxJ2F?=
+ =?us-ascii?Q?y4rWup+lbEN6GNbBApbfjT+UyXysu2Nw1rBz7uc6nYpbhk7FzeGfjUswAiE4?=
+ =?us-ascii?Q?uTFQHDbJxaFpVL8T35ybPhT0J2tH8xxUPaswUuyeHdw+1c9UQ7KgeJy3lDVY?=
+ =?us-ascii?Q?gUV/f/MY863dRJ3K3VgQVOMa0GLiNPnrlM8EcFp1UebMJCEVv1KK9HG9G3fi?=
+ =?us-ascii?Q?V8xIQA1ftBu6EuAP3v0hfDZfMQKqd5oonZ6WepVojD/ZZWF/h4VhcWRAmuiY?=
+ =?us-ascii?Q?6K9sxgMpj4jYPwdEEe26bCbszM8K6vH4sW+51cJFtGm5KD/FwhFxZ1n/epcG?=
+ =?us-ascii?Q?yfb7MfRLZgtfEgy8XD0HKrgtLyvf0K5Uj+dqbfpZ53OKle9wmpp8trzgg+ZK?=
+ =?us-ascii?Q?umFt+5ifIHVV55P5alIe0O27NSad32A7ORDE4r6r84dT4BekJR8MB+Q4bOZu?=
+ =?us-ascii?Q?qDgsxvcRKuqKOybOldDwz7Iz+U5fV6Mlpzu5MsVeVtKvT6vEXVtDPtcIAngr?=
+ =?us-ascii?Q?hvP5kkyOxNMtXm5Z05FnNoaKjZLH2tZzUwk+UFxXfzU6v2gXf4iddfe+NTTp?=
+ =?us-ascii?Q?BQTbHeb2X31dF0wWVLyezxzT27dhLaBjlp3+1MNHObBaUL/dRwh+PebahHIU?=
+ =?us-ascii?Q?+sCpUsR+eu0L42FIRzC6pxsHRNjBQqaok9S4RP/Cx6eE6eRsZ7Us5S3dLCLA?=
+ =?us-ascii?Q?feOpysU/F3E0imJTf2GiKAyQOE6ltMVlXgG/KqYp9qRP8sgbBt+kYyo7FH3r?=
+ =?us-ascii?Q?AfsG4IH6HEKYAoh2D/FPKO0XCQVIunVLR9xoPQBW9E3+xj/9g2ZaNztT6LAW?=
+ =?us-ascii?Q?MSaUFgbReHnkik9qt3XprbQeCDxnBZpb2WLmo/Soazc9IfNy78UgFqxTngk0?=
+ =?us-ascii?Q?iCm5byiQpZXlIvMyehvYKUCMXy3VdzV133mF0o+qAcSwrsqAhFj5ywhTHsr9?=
+ =?us-ascii?Q?ePcsmP+pZQzyAXMlWAymtKw=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1D843FB2DE5613418907B9A2BC149EF5@namprd15.prod.outlook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: synopsys.com
+X-OriginatorOrg: fb.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB4787.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 699505bc-25e8-4298-a64d-08da870b7bf8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2022 02:34:22.0004
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a0b8910-87a2-4f35-d8d1-08da870ba527
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2022 02:35:31.0963
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bdMq4WqcNsMGPqdeK0LitFVmY9MRedd5w5HdAFREn9d9ZIsBq2sYj7PKxdsSBpoGOQCNzuDQI0QeCU5aLrZqlw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1348
-X-Proofpoint-GUID: _T5P2zqEA-edt0MWWCG_gf_jRcT0BjuM
-X-Proofpoint-ORIG-GUID: _T5P2zqEA-edt0MWWCG_gf_jRcT0BjuM
+X-MS-Exchange-CrossTenant-userprincipalname: ohy3rIK1gC74MYd8iZKOOrVsPI2RInN0YEKAWNmR2E4WqVZ04UjKuCft3qirkq/KSjs3RZWcJDTcBJHSGjeacw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR15MB1842
+X-Proofpoint-GUID: AtNbmp5-PnfNsNRI4b-JaWd7tE_kSlpm
+X-Proofpoint-ORIG-GUID: AtNbmp5-PnfNsNRI4b-JaWd7tE_kSlpm
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-25_11,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=16
- malwarescore=0 bulkscore=0 adultscore=0 phishscore=0 mlxscore=16
- spamscore=16 impostorscore=0 priorityscore=1501 suspectscore=0
- mlxlogscore=73 lowpriorityscore=0 clxscore=1015 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208260008
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gRnJpLCBBdWcgMTksIDIwMjIsIFRoaW5oIE5ndXllbiB3cm90ZToNCj4gSGkgTWFydGluLCBE
-bWl0cnksIGFuZCBvdGhlcnMsDQo+IA0KPiBPbiBGcmksIEF1ZyAxOSwgMjAyMiBhdCAxMDozMToy
-M0FNICswMjAwLCBHcmVnIEtyb2FoLUhhcnRtYW4gd3JvdGU6DQo+ID4gT24gTW9uLCBKdWwgMTgs
-IDIwMjIgYXQgMDY6MjY6MDFQTSAtMDcwMCwgVGhpbmggTmd1eWVuIHdyb3RlOg0KPiA+ID4gVGhl
-IExpbnV4IFVBU1AgZ2FkZ2V0IGRyaXZlciBpcyBpbmNvbXBsZXRlIGFuZCByZW1haW5lZCBicm9r
-ZW4gZm9yIGEgbG9uZyB0aW1lLg0KPiA+ID4gSXQgd2FzIG5vdCBpbXBsZW1lbnRlZCBmb3IgcGVy
-Zm9ybWFuY2UgZWl0aGVyLiBUaGlzIHNlcmllcyBhZGRzIHNvbWUgb2YgdGhlDQo+ID4gPiByZXF1
-aXJlZCBmZWF0dXJlcyBmb3IgdGhlIFVBU1AgZHJpdmVyIHRvIHdvcmsuIEl0IGFsc28gbWFrZXMg
-c29tZSBjaGFuZ2VzIHRvDQo+ID4gPiB0aGUgdGFyZ2V0IGNvcmUuDQo+ID4gPiANCj4gPiA+IFRo
-aXMgaXMgdGVzdGVkIGFnYWluc3QgVUFTUCBDViBhbmQgRFdDX3VzYjN4IGNvbnRyb2xsZXIuIEl0
-IHN0aWxsIG5lZWRzIHNvbWUNCj4gPiA+IGZpeGVzIGluIHRoZSB0YXJnZXQgY29yZSwgd2hpY2gg
-d2lsbCBiZSBzZXBhcmF0ZWQgZnJvbSB0aGlzIHNlcmllcy4NCj4gPiA+IA0KPiA+ID4gVGhlcmUg
-YXJlIHN0aWxsIG1vcmUgcm9vbSBmb3IgcGVyZm9ybWFuY2UgaW1wcm92ZW1lbnQgYW5kIGZpeGVz
-LiBIb3dldmVyLCB0aGlzDQo+ID4gPiBzZXJpZXMgc2hvdWxkIGJlIHN1ZmZpY2llbnQgdG8gYnJp
-bmcgdXAgYSB3b3JraW5nIFVBU1AgZGV2aWNlLg0KPiA+ID4gDQo+ID4gPiANCj4gPiA+IENoYW5n
-ZXMgaW4gdjI6DQo+ID4gPiAgLSBSZW1vdmUgbW9zdCB0YXJnZXQgY29yZSBjaGFuZ2VzIGZyb20g
-dGhpcyBzZXJpZXMgYW5kIG9ubHkga2VlcCB0aGUgbXVzdC1oYXZlDQo+ID4gPiAgICBvbmVzDQo+
-ID4gPiAgLSBTcGxpdCB0aGUgdGFzay1tYW5hZ2VtZW50IHBhdGNoIHRvIHNtYWxsZXIgcGF0Y2hl
-cw0KPiA+ID4gIC0gRG9uJ3Qgc2VuZCBmYWlsdXJlIFRhc2sgTWFuYWdlbWVudCByZXNwb25zZSB0
-byB0YXJnZXQgY29yZSwgcmVkdWNpbmcNCj4gPiA+ICAgIGRlcGVuZGVuY3kNCj4gPiA+ICAtIEFk
-ZCBVQVNQIGJyaW5ndXAgc2NyaXB0IGV4YW1wbGUgaW4gY292ZXIgcGFnZQ0KPiA+ID4gIC0gTWFr
-ZSB2YXJpb3VzIHNtYWxsIHVwZGF0ZXMgYWNjb3JkaW5nIHRvIGZlZWRiYWNrcw0KPiA+IA0KPiA+
-IEkgd291bGQgbmVlZCBhIHJldmlldyBieSB0aGUgdGFyZ2V0IG1haW50YWluZXJzIGJlZm9yZSBi
-ZWluZyBhYmxlIHRvDQo+ID4gdGFrZSBhbnkgb2YgdGhlIFVTQiBnYWRnZXQgY2hhbmdlcyBpbnRv
-IHRoZSBVU0IgdHJlZS4uLg0KPiA+IA0KPiANCj4gRG8geW91IGhhdmUgYW55IGNvbW1lbnQgb24g
-dGhpcyBzZXJpZXM/DQo+IA0KDQpIaSB0YXJnZXQgbWFpbnRhaW5lcnMsDQoNCkdlbnRsZSBwaW5n
-Li4uDQoNCkJSLA0KVGhpbmg=
+
+
+> On Aug 25, 2022, at 4:03 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+> 
+> On Thu, Aug 25, 2022 at 3:08 PM Song Liu <songliubraving@fb.com> wrote:
+>> 
+>> 
+>> 
+>>> On Aug 25, 2022, at 2:33 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+>>> 
+>>> On Tue, Aug 23, 2022 at 2:04 PM Namhyung Kim <namhyung@kernel.org> wrote:
+>>>> 
+>>>> The helper is for BPF programs attached to perf_event in order to read
+>>>> event-specific raw data.  I followed the convention of the
+>>>> bpf_read_branch_records() helper so that it can tell the size of
+>>>> record using BPF_F_GET_RAW_RECORD flag.
+>>>> 
+>>>> The use case is to filter perf event samples based on the HW provided
+>>>> data which have more detailed information about the sample.
+>>>> 
+>>>> Note that it only reads the first fragment of the raw record.  But it
+>>>> seems mostly ok since all the existing PMU raw data have only single
+>>>> fragment and the multi-fragment records are only for BPF output attached
+>>>> to sockets.  So unless it's used with such an extreme case, it'd work
+>>>> for most of tracing use cases.
+>>>> 
+>>>> Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+>>>> ---
+>>>> I don't know how to test this.  As the raw data is available on some
+>>>> hardware PMU only (e.g. AMD IBS).  I tried a tracepoint event but it was
+>>>> rejected by the verifier.  Actually it needs a bpf_perf_event_data
+>>>> context so that's not an option IIUC.
+>>>> 
+>>>> include/uapi/linux/bpf.h | 23 ++++++++++++++++++++++
+>>>> kernel/trace/bpf_trace.c | 41 ++++++++++++++++++++++++++++++++++++++++
+>>>> 2 files changed, 64 insertions(+)
+>>>> 
+>>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>>> index 934a2a8beb87..af7f70564819 100644
+>>>> --- a/include/uapi/linux/bpf.h
+>>>> +++ b/include/uapi/linux/bpf.h
+>>>> @@ -5355,6 +5355,23 @@ union bpf_attr {
+>>>> *     Return
+>>>> *             Current *ktime*.
+>>>> *
+>>>> + * long bpf_read_raw_record(struct bpf_perf_event_data *ctx, void *buf, u32 size, u64 flags)
+>>>> + *     Description
+>>>> + *             For an eBPF program attached to a perf event, retrieve the
+>>>> + *             raw record associated to *ctx* and store it in the buffer
+>>>> + *             pointed by *buf* up to size *size* bytes.
+>>>> + *     Return
+>>>> + *             On success, number of bytes written to *buf*. On error, a
+>>>> + *             negative value.
+>>>> + *
+>>>> + *             The *flags* can be set to **BPF_F_GET_RAW_RECORD_SIZE** to
+>>>> + *             instead return the number of bytes required to store the raw
+>>>> + *             record. If this flag is set, *buf* may be NULL.
+>>> 
+>>> It looks pretty ugly from a usability standpoint to have one helper
+>>> doing completely different things and returning two different values
+>>> based on BPF_F_GET_RAW_RECORD_SIZE.
+>> 
+>> Yeah, I had the same thought when I first looked at it. But that's the
+>> exact syntax with bpf_read_branch_records(). Well, we still have time
+>> to fix the new helper..
+>> 
+>>> 
+>>> I'm not sure what's best, but I have two alternative proposals:
+>>> 
+>>> 1. Add two helpers: one to get perf record information (and size will
+>>> be one of them). Something like bpf_perf_record_query(ctx, flags)
+>>> where you pass perf ctx and what kind of information you want to read
+>>> (through flags), and u64 return result returns that (see
+>>> bpf_ringbuf_query() for such approach). And then have separate helper
+>>> to read data.
+>>> 
+>>> 2. Keep one helper, but specify that it always returns record size,
+>>> even if user specified smaller size to read. And then allow passing
+>>> buf==NULL && size==0. So passing NULL, 0 -- you get record size.
+>>> Passing non-NULL buf -- you read data.
+>> 
+>> AFAICT, this is also confusing.
+>> 
+> 
+> this is analogous to snprintf() behavior, so not that new and
+> surprising when you think about it. But if query + read makes more
+> sense, then it's fine by me
+
+Given the name discussion (the other email), I now like one API better.
+
+Actually, since we are on this, can we make it more generic, and handle
+all possible PERF_SAMPLE_* (in enum perf_event_sample_format)? Something
+like:
+
+long bpf_perf_event_read_sample(void *ctx, void *buf, u64 size, u64 flags);
+
+WDYT Namhyung?
+
+Another idea is to add another parameter, so that we can pick which 
+PERF_SAMPLE_* to output via bpf_perf_event_read_sample().
+
+I think this will cover all cases with sample perf_event. Thoughts?
+
+Thanks,
+Song
+
+
+
+> 
+>> Maybe we should use two kfuncs for this?
+>> 
+>> Thanks,
+>> Song
+>> 
+>>> 
+>>> 
+>>> And also, "read_raw_record" is way too generic. We have
+>>> bpf_perf_prog_read_value(), let's use "bpf_perf_read_raw_record()" as
+>>> a name. We should have called bpf_read_branch_records() as
+>>> bpf_perf_read_branch_records(), probably, as well. But it's too late.
+>>> 
+>>>> + *
+>>>> + *             **-EINVAL** if arguments invalid or **size** not a multiple
+>>>> + *             of **sizeof**\ (u64\ ).
+>>>> + *
+>>>> + *             **-ENOENT** if the event does not have raw records.
+>>>> */
+>>>> #define __BPF_FUNC_MAPPER(FN)          \
+>>>>       FN(unspec),                     \
+>>>> @@ -5566,6 +5583,7 @@ union bpf_attr {
+>>>>       FN(tcp_raw_check_syncookie_ipv4),       \
+>>>>       FN(tcp_raw_check_syncookie_ipv6),       \
+>>>>       FN(ktime_get_tai_ns),           \
+>>>> +       FN(read_raw_record),            \
+>>>>       /* */
+>>>> 
+>>> 
+>>> [...]
+>> 
+
