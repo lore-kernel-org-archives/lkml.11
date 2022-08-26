@@ -2,100 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99538ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A33ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:40:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245386AbiHZHkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38360 "EHLO
+        id S245406AbiHZHko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241505AbiHZHkK (ORCPT
+        with ESMTP id S245391AbiHZHk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:40:10 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044FF47B80
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:40:09 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MDWqQ0cWmzkWcH;
-        Fri, 26 Aug 2022 15:36:34 +0800 (CST)
-Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 26 Aug 2022 15:40:06 +0800
-Received: from [10.174.176.230] (10.174.176.230) by
- kwepemm600008.china.huawei.com (7.193.23.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 26 Aug 2022 15:40:05 +0800
-Message-ID: <893836a5-0aaa-e5e6-81ba-cc9570b9a026@huawei.com>
-Date:   Fri, 26 Aug 2022 15:40:04 +0800
+        Fri, 26 Aug 2022 03:40:26 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF6D6E2C1
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:40:24 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id l1so936387lfk.8
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:40:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rasmusvillemoes.dk; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=SWG+AYYaD3CGqVmhJUkc0npDBvTLvT/qXBQNeQdRPPI=;
+        b=VavM614ow0Wq5WTGNBaTek9R2gSqCSK2LowLKioZCjH9fi0rLESL9gU51h6u1ICdVM
+         O54wO0xGy8NLlu+JxKeFrsTK5D6TMHGLwWPXbcToifiej4CvHspsXtqeC5ShKEruaDem
+         2VWI9zZ+ad+AeT/jOq3cAhJOGxL7TuGKXf1GA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=SWG+AYYaD3CGqVmhJUkc0npDBvTLvT/qXBQNeQdRPPI=;
+        b=GUeeorSulJImJiE3t3m1x/YddzNlOuX1Lshzuugcwylwbf4M+pzRD4610mmqkJjAow
+         M/zlFioXcBEHj1rs5LgAi96R9x39v35jkrioc7nVrYCbAEISwxW7SrVGgzHx8m2xs2KI
+         cY4RXL4y5RdBcNJ+r+1P3sIab86qXe/lVjI9BkYLJJ/X/yJBtrZzzot+2rxChQPw1/9h
+         kOwYLr5O1BNj6SCa79wLTvCU2Zejf9ns5UG9aiuVnX1jAEH6eTgpYqzle30x6cbG1ON6
+         bsB+YI1O2jLRMpmtQrwYE+PqTInl+PIh7APSdQl2Cuv0bqr9RJ268yWNQjeeqTelaQEX
+         ii0g==
+X-Gm-Message-State: ACgBeo1Nx7in7Dt/7RRaJfbB9xtKdiRUYDwf1Vkufow+IG/39lo5X8+p
+        /+9/UciWkbxBzBMh62U1Fw8lmJrCO/mvB2NB
+X-Google-Smtp-Source: AA6agR5Wm1zWSG4SC+mpBPzTyeIPT/0fZuyJYI07D9p9QGCLhhs/GEofhI1B8Us/Ffey/8A1d/hh1Q==
+X-Received: by 2002:a19:645c:0:b0:492:cf78:62de with SMTP id b28-20020a19645c000000b00492cf7862demr1925671lfj.263.1661499622588;
+        Fri, 26 Aug 2022 00:40:22 -0700 (PDT)
+Received: from [172.16.11.74] ([81.216.59.226])
+        by smtp.gmail.com with ESMTPSA id q15-20020ac24a6f000000b0048b3926351bsm293857lfp.56.2022.08.26.00.40.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 00:40:21 -0700 (PDT)
+Message-ID: <527eee19-532f-b2e7-a42f-a1e199094fbe@rasmusvillemoes.dk>
+Date:   Fri, 26 Aug 2022 09:40:20 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH -next] sched/deadline: Add start_new_instance helper
-To:     Daniel Bristot de Oliveira <bristot@redhat.com>
-CC:     <mingo@redhat.com>, <peterz@infradead.org>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <mgorman@suse.de>, <vschneid@redhat.com>,
-        <linux-kernel@vger.kernel.org>
-References: <20220826031521.13391-1-shangxiaojing@huawei.com>
- <651dbb96-8d6e-53e9-a99f-0bb12f5b2723@redhat.com>
-From:   shangxiaojing <shangxiaojing@huawei.com>
-In-Reply-To: <651dbb96-8d6e-53e9-a99f-0bb12f5b2723@redhat.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.230]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600008.china.huawei.com (7.193.23.88)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: strlcpy() notes (was Re: [GIT PULL] smb3 client fixes)
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Cc:     Steve French <smfrench@gmail.com>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>
+References: <CAH2r5mtDFpaAWeGCtrfm_WPM6j-Gkt_O80=nKfp6y39aXaBr6w@mail.gmail.com>
+ <CAHk-=wi+xbVq++uqW9YgWpHjyBHNB8a-xad+Xp23-B+eodLCEA@mail.gmail.com>
+ <YwSWLH4Wp6yDMeKf@arm.com>
+ <CAHk-=whU7QiwWeO81Rf+KGh0rGS9CEfKUXc5eik+Z0GaVJgu4A@mail.gmail.com>
+From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
+In-Reply-To: <CAHk-=whU7QiwWeO81Rf+KGh0rGS9CEfKUXc5eik+Z0GaVJgu4A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 2022/8/26 15:15, Daniel Bristot de Oliveira wrote:
-> On 8/26/22 05:15, Shang XiaoJing wrote:
->> Wrap repeated code in helper function start_new_instance, which set
->> the deadline and runtiem of input dl_se based on pi_of(dl_se). Note that
->                        ^ runtime
-oops
->> setup_new_dl_entity originally set the deadline and runtime base on
->> dl_se, which should equals to pi_of(dl_se) for non-boosted task.
+On 23/08/2022 19.37, Linus Torvalds wrote:
+> On Tue, Aug 23, 2022 at 1:56 AM Catalin Marinas <catalin.marinas@arm.com> wrote:
 >>
->> Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
->> ---
->>   kernel/sched/deadline.c | 22 ++++++++++++----------
->>   1 file changed, 12 insertions(+), 10 deletions(-)
->>
->> diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
->> index 4a40a462717c..5e9c28847610 100644
->> --- a/kernel/sched/deadline.c
->> +++ b/kernel/sched/deadline.c
->> @@ -770,6 +770,13 @@ static void enqueue_task_dl(struct rq *rq, struct task_struct *p, int flags);
->>   static void __dequeue_task_dl(struct rq *rq, struct task_struct *p, int flags);
->>   static void check_preempt_curr_dl(struct rq *rq, struct task_struct *p, int flags);
-> again, this is not a good function name. Maybe, dl_replenish_new_period() ?
+>> With load_unaligned_zeropad(), the arm64 implementation disables tag
+>> checking temporarily. We could do the same with read_word_at_a_time()
+>> (there is a kasan_check_read() in this function but it wrongly uses a
+>> size of 1).
+> 
+> The "size of 1" is not wrong, it's intentional, exactly because people
+> do things like
+> 
+>     strscpy(dst, "string", sizeof(dst));
+> 
+> which is a bit unfortunate, but very understandable and intended to
+> work. So that thing may over-read the string by up to a word. And
+> KASAN ends up being unhappy.
 
-right, i have thought like replenish_new_instance, but when i'm making 
-patch,  i was worried that "replenish" is only for ENQUEUE_REPLENISH.
+So, while we're doing all the churn of replacing strlcpy anyway, may I
+once again suggest we add (name can be bikeshedded) literal_strcpy():
 
-what about dl_start_new_period? which means a new deadline will be set, 
-rather than
+#define literal_strcpy(d, s) ({ \
+  static_assert(__same_type(d, char[]), "destination must be char array"); \
+  static_assert(__same_type(s, const char[]), "source must be a string
+literal"); \
+  static_assert(sizeof(d) >= sizeof("" s ""), "source does not fit in
+destination"); \
+  strcpy(d, s); \
+})
 
-     dl_se->deadline += pi_of(dl_se)->dl_period;
+That interface _cannot_ be misused, because all the checking happens at
+build time, including enforcement that the source really is a string
+literal (the "" s "" trick - but for nicer error message the
+static_assert on the previous line is there as well). So unlike all the
+uses of str[ls]cpy which don't check the return value, we cannot
+silently do a truncated copy. Also, if somebody down the line changes
+the size of the destination or the literal string, again it will be
+caught at build time.
 
-in replenish_dl_entity.
+And since gcc knows the semantics of strcpy(), it will also generate
+better code, because it will usually not emit a call at all (or even put
+the string in .rodata); it will simply emit a series of "mov immediate"
+instructions.
 
->> +static inline void start_new_instance(struct sched_dl_entity *dl_se, struct rq *rq)
->> +{
->> +	/* for non-boosted task, pi_of(dl_se) == dl_se */
->> +	dl_se->deadline = rq_clock(rq) + pi_of(dl_se)->dl_deadline;
->> +	dl_se->runtime = pi_of(dl_se)->dl_runtime;
->> +}
->> +
-> -- Daniel
+Sloppy grepping for places where that could be used shows around ~800
+places.
 
-Thanks,
+Btw, Steve, since you're incidentally on cc here anyway, perhaps you
+want to take a look at
 
-Shang XiaoJing
+  strscpy(extension, "___", strlen("___"));
 
+and see if this really just wants two underscores copied to extension.
+
+Rasmus
