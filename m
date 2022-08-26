@@ -2,65 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 699B3ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83789ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234908AbiHZKCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
+        id S245522AbiHZKCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:02:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343681AbiHZKBb (ORCPT
+        with ESMTP id S1343690AbiHZKBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 06:01:31 -0400
-Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F40BB02B
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:29 -0700 (PDT)
+Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48A13A7205
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:27 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by fx409.security-mail.net (Postfix) with ESMTP id D03A8323834
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:01:27 +0200 (CEST)
+        by fx405.security-mail.net (Postfix) with ESMTP id 98D87323820
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:01:26 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
-        s=sec-sig-email; t=1661508088;
-        bh=IWqwVsdazSfv41xKDS9xL+X3jJ1zkSqWxIzmy0IJtU0=;
+        s=sec-sig-email; t=1661508086;
+        bh=IXh1AnWpkuXoC7TbTvhFYHh6T+ctHCL9u2fV7eqXuqc=;
         h=From:To:Cc:Subject:Date;
-        b=FpIWwnQtmokiZ9JDbJvGH5XdgsI/4qXwmyndsHzkfiilkGzLYFxXZBD8Hw2dCGVob
-         Q8WrwlAf1k5qEBQKaW2c3Ad6Or9d0Rc+bjrwVsCUKCOdLc44+EsQ0AKR0t67HCGRcL
-         DOZIYtinPQ8aU9v5WWK80PkzC53BcbGbt/PkMCFo=
-Received: from fx409 (localhost [127.0.0.1])
-        by fx409.security-mail.net (Postfix) with ESMTP id 683A73238BF;
-        Fri, 26 Aug 2022 12:01:27 +0200 (CEST)
+        b=iJ/LI5Efx5USOVqllKKAEZx38RFVI9QhhZTXscdoE+WFHreNKqubDobk/J1zVK7nj
+         JtdyKRLFs8er4FQO1Wz4/2hzGgtP591n8pC+KgHnPiAh09lrhn630HguMCmHmzZ6L7
+         Y/SDt5iJqKRLbdwILS1yRQuWD/iyoCYgkMSsh10I=
+Received: from fx405 (localhost [127.0.0.1])
+        by fx405.security-mail.net (Postfix) with ESMTP id 2A9DB3237E2;
+        Fri, 26 Aug 2022 12:01:24 +0200 (CEST)
 X-Virus-Scanned: E-securemail
-Secumail-id: <62b1.630899f5.6646e.0>
+Secumail-id: <8c06.630899f3.17464.0>
 Received: from zimbra2.kalray.eu (unknown [217.181.231.53])
-        by fx409.security-mail.net (Postfix) with ESMTPS id 67E98323834;
-        Fri, 26 Aug 2022 12:01:25 +0200 (CEST)
+        by fx405.security-mail.net (Postfix) with ESMTPS id 1937C3236E3;
+        Fri, 26 Aug 2022 12:01:23 +0200 (CEST)
 Received: from zimbra2.kalray.eu (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTPS id 1F6F527E0396;
-        Fri, 26 Aug 2022 12:01:25 +0200 (CEST)
+        by zimbra2.kalray.eu (Postfix) with ESMTPS id EC49527E0397;
+        Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTP id 08E8927E0392;
-        Fri, 26 Aug 2022 12:01:25 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 08E8927E0392
+        by zimbra2.kalray.eu (Postfix) with ESMTP id D5B4227E0392;
+        Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu D5B4227E0392
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
-        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661508085;
-        bh=zs73o10H7uL434cqdBywD/xopWvN+dDf0lK4XbaWJlA=;
+        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661508082;
+        bh=AEdCki1kaU7qrTk791Ry5BYT1smvHLvfdWrisP7ew1Y=;
         h=From:To:Date:Message-Id;
-        b=MelV7xl6I+ru/XdI5FyAnGvO+LJei5N3ueyNNaWngRm+8JpYHdcrEkFLnyT/5ERTf
-         xzZVrgymf0UjQAtQEhV/am55p8of1oD3GPO+LzqVEWaOE6PrhyErijLAVgQiGjBMvT
-         Ge1rwRFS1Ef8zB2xZVb/PTuLTS/IaY0eGuUFk2vc=
+        b=ee/kuYMyGCET6s+ufDectbkcwFejqCsWLAdI1YHhk07T8JU++YLpzmr+p0Dn075u9
+         Gm7JqC0mZX2R0EXcwlg7CScqKXNNewSjGTDf0lUAV/0RvRvfECOrBdNS5Y8LfViIDw
+         7L1vqThUzkI/mVB1FJlspFwPSao1hSwycrvsPyP0=
 Received: from zimbra2.kalray.eu ([127.0.0.1])
         by localhost (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id Eq5uE6gaEYWi; Fri, 26 Aug 2022 12:01:24 +0200 (CEST)
+        with ESMTP id kvPAhY-jR2an; Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
 Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206])
-        by zimbra2.kalray.eu (Postfix) with ESMTPSA id EC92527E02FA;
-        Fri, 26 Aug 2022 12:01:24 +0200 (CEST)
+        by zimbra2.kalray.eu (Postfix) with ESMTPSA id C588627E02FA;
+        Fri, 26 Aug 2022 12:01:22 +0200 (CEST)
 From:   Jules Maselbas <jmaselbas@kalray.eu>
 To:     linux-kernel@vger.kernel.org
 Cc:     Jules Maselbas <jmaselbas@kalray.eu>,
-        Andy Walls <awalls@md.metrocast.net>,
-        linux-media@vger.kernel.org
-Subject: [PATCH] media: pci: Fix repeated word in comments
-Date:   Fri, 26 Aug 2022 12:00:48 +0200
-Message-Id: <20220826100052.22945-20-jmaselbas@kalray.eu>
+        Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org
+Subject: [PATCH] power: supply: Fix repeated word in comments
+Date:   Fri, 26 Aug 2022 12:00:45 +0200
+Message-Id: <20220826100052.22945-17-jmaselbas@kalray.eu>
 X-Mailer: git-send-email 2.17.1
 X-Virus-Scanned: by Secumail
 Precedence: bulk
@@ -69,54 +68,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Remove redundant word `the`.
 
-CC: Andy Walls <awalls@md.metrocast.net>
-CC: linux-media@vger.kernel.org
+CC: Sebastian Reichel <sre@kernel.org>
+CC: linux-pm@vger.kernel.org
 Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
 ---
- drivers/media/pci/cx88/cx88-dsp.c        | 2 +-
- drivers/media/pci/ivtv/ivtv-yuv.c        | 2 +-
- drivers/media/pci/saa7164/saa7164-core.c | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/power/supply/power_supply_sysfs.c | 2 +-
+ drivers/power/supply/tps65217_charger.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/pci/cx88/cx88-dsp.c b/drivers/media/pci/cx88/cx88-dsp.c
-index f1e1fc1cb4bd..e378f3b215c7 100644
---- a/drivers/media/pci/cx88/cx88-dsp.c
-+++ b/drivers/media/pci/cx88/cx88-dsp.c
-@@ -24,7 +24,7 @@
- 
- /*
-  * We calculate the baseband frequencies of the carrier and the pilot tones
-- * based on the the sampling rate of the audio rds fifo.
-+ * based on the sampling rate of the audio rds fifo.
-  */
- 
- #define FREQ_A2_CARRIER         baseband_freq(54687.5, 2689.36, 0.0)
-diff --git a/drivers/media/pci/ivtv/ivtv-yuv.c b/drivers/media/pci/ivtv/ivtv-yuv.c
-index e79e8a5a744a..4ba10c34a16a 100644
---- a/drivers/media/pci/ivtv/ivtv-yuv.c
-+++ b/drivers/media/pci/ivtv/ivtv-yuv.c
-@@ -538,7 +538,7 @@ static void ivtv_yuv_handle_vertical(struct ivtv *itv, struct yuv_frame_info *f)
- 	reg_2964 = (reg_2964 << 16) + reg_2964 + (reg_2964 * 46 / 94);
- 
- 	/* Okay, we've wasted time working out the correct value,
--	   but if we use it, it fouls the the window alignment.
-+	   but if we use it, it fouls the window alignment.
- 	   Fudge it to what we want... */
- 	reg_2964 = 0x00010001 + ((reg_2964 & 0x0000FFFF) - (reg_2964 >> 16));
- 	reg_2968 = 0x00010001 + ((reg_2968 & 0x0000FFFF) - (reg_2968 >> 16));
-diff --git a/drivers/media/pci/saa7164/saa7164-core.c b/drivers/media/pci/saa7164/saa7164-core.c
-index 7973ae42873a..d5f32e3ff544 100644
---- a/drivers/media/pci/saa7164/saa7164-core.c
-+++ b/drivers/media/pci/saa7164/saa7164-core.c
-@@ -626,7 +626,7 @@ static irqreturn_t saa7164_irq(int irq, void *dev_id)
- 	portf = &dev->ports[SAA7164_PORT_VBI2];
- 
- 	/* Check that the hardware is accessible. If the status bytes are
--	 * 0xFF then the device is not accessible, the the IRQ belongs
-+	 * 0xFF then the device is not accessible, the IRQ belongs
- 	 * to another driver.
- 	 * 4 x u32 interrupt registers.
- 	 */
+diff --git a/drivers/power/supply/power_supply_sysfs.c b/drivers/power/supply/power_supply_sysfs.c
+index 4239591e1522..5369abaceb5c 100644
+--- a/drivers/power/supply/power_supply_sysfs.c
++++ b/drivers/power/supply/power_supply_sysfs.c
+@@ -442,7 +442,7 @@ static int add_prop_uevent(struct device *dev, struct kobj_uevent_env *env,
+ 	if (ret == -ENODEV || ret == -ENODATA) {
+ 		/*
+ 		 * When a battery is absent, we expect -ENODEV. Don't abort;
+-		 * send the uevent with at least the the PRESENT=0 property
++		 * send the uevent with at least the PRESENT=0 property
+ 		 */
+ 		return 0;
+ 	}
+diff --git a/drivers/power/supply/tps65217_charger.c b/drivers/power/supply/tps65217_charger.c
+index ba33d1617e0b..a4bc9f2a10bc 100644
+--- a/drivers/power/supply/tps65217_charger.c
++++ b/drivers/power/supply/tps65217_charger.c
+@@ -50,7 +50,7 @@ static int tps65217_config_charger(struct tps65217_charger *charger)
+ 	 * tps65217 rev. G, p. 31 (see p. 32 for NTC schematic)
+ 	 *
+ 	 * The device can be configured to support a 100k NTC (B = 3960) by
+-	 * setting the the NTC_TYPE bit in register CHGCONFIG1 to 1. However it
++	 * setting the NTC_TYPE bit in register CHGCONFIG1 to 1. However it
+ 	 * is not recommended to do so. In sleep mode, the charger continues
+ 	 * charging the battery, but all register values are reset to default
+ 	 * values. Therefore, the charger would get the wrong temperature
 -- 
 2.17.1
 
