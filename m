@@ -2,185 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA41ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81CCFECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244973AbiHZKG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49686 "EHLO
+        id S1343493AbiHZKHH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229940AbiHZKGd (ORCPT
+        with ESMTP id S1343491AbiHZKGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 06:06:33 -0400
-Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.148])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70432C5795
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:05:11 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by fx408.security-mail.net (Postfix) with ESMTP id BEF6C1B7B253
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 11:59:08 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
-        s=sec-sig-email; t=1661507948;
-        bh=vr4cwxCfoWqejiHD6pQ9HxA413Tn6PkujH2uBT6h5Og=;
-        h=From:To:Cc:Subject:Date;
-        b=2t7R5pzCxt3rCZOsb0JtJB++PS9qt+DDhfsqBA2TaICtkpno+BofifFwQBYg775n/
-         p9Yfn200DfZXmGkP1OKx15tPCo/TqAaH3eFEhYiQS/OLQVgmvmH1Jt+MUUJzfWyPtd
-         FZrEUOlFjh3tCGy9CzeuXvH7EnpqSS86SxnK9Gs8=
-Received: from fx408 (localhost [127.0.0.1])
-        by fx408.security-mail.net (Postfix) with ESMTP id 6D8BC1B7B2CB;
-        Fri, 26 Aug 2022 11:59:08 +0200 (CEST)
-X-Virus-Scanned: E-securemail
-Secumail-id: <b9e4.6308996b.b4e15.0>
-Received: from zimbra2.kalray.eu (unknown [217.181.231.53])
-        by fx408.security-mail.net (Postfix) with ESMTPS id E69D91B7B20A;
-        Fri, 26 Aug 2022 11:59:07 +0200 (CEST)
-Received: from zimbra2.kalray.eu (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTPS id 9A86227E0396;
-        Fri, 26 Aug 2022 11:59:07 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by zimbra2.kalray.eu (Postfix) with ESMTP id 81FC327E0392;
-        Fri, 26 Aug 2022 11:59:07 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 81FC327E0392
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
-        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661507947;
-        bh=F197CH4uD1oBPgpHmr8mAOcTlfh38jb9bV8sTFUab+c=;
-        h=From:To:Date:Message-Id;
-        b=XHVp0saWOK1pCEV0Jm6iekB/2+WhWD32Kls4i3iGz0fqN95zlbbTNZvuv0nD/eQE9
-         m1tDmi/c2AH76xHuYVDFTrKDYdxtnKz1cT0p0qBPP1VahjSkUaSn5XgsZltJFBjOuV
-         gtf1cvxnwALosx9bELoSpmpooTusP7bB0KdSw6Qo=
-Received: from zimbra2.kalray.eu ([127.0.0.1])
-        by localhost (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id tcfx7MeVfYmr; Fri, 26 Aug 2022 11:59:07 +0200 (CEST)
-Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206])
-        by zimbra2.kalray.eu (Postfix) with ESMTPSA id 69C5927E02FA;
-        Fri, 26 Aug 2022 11:59:07 +0200 (CEST)
-From:   Jules Maselbas <jmaselbas@kalray.eu>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jules Maselbas <jmaselbas@kalray.eu>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: [PATCH] Documentation: Fix repeated words in documentation
-Date:   Fri, 26 Aug 2022 11:52:58 +0200
-Message-Id: <20220826095321.21548-1-jmaselbas@kalray.eu>
-X-Mailer: git-send-email 2.17.1
-X-Virus-Scanned: by Secumail
+        Fri, 26 Aug 2022 06:06:37 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BB4D5DCB;
+        Fri, 26 Aug 2022 03:05:19 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 10:05:16 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661508318;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8Vkeal0AztGkEtbXmbLzaghy0nAXJByD5CEpU8ihtJ4=;
+        b=qDToFtGfrV8hGKn+rPvW46yzDCBp/UIG4Sfn9CB3wTr04CDOPK/Cptb7OS12pVLbmse951
+        I7iVfHCsabc2Dpv4Q+LM+dSEi+NR9HL80HkB12e7cRf0qVP7wO3xevzLC5nSfjU5CMz934
+        LldgKD9Z/jC57BluDRRmtuRYVkTFtiTVSs4FuFh8JjhPlyeJzHla4vEY73aCEL+PMNQbTs
+        tm478/grsHV3bk7pBRaYba5ZKkK3vloT3GdQivD9k7eNPwvObTsYC64Ie+wqyDoF9qkqWk
+        9Ty3JnxULZZ7lZ0pyte9MNcqNIsYvNLJK4F/Fgg7Hx5Ci9QDB6hO8pQIgCEPYg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661508318;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8Vkeal0AztGkEtbXmbLzaghy0nAXJByD5CEpU8ihtJ4=;
+        b=GiZk9SLqbMVE7CYdUn6FDdfknqsba/kC6BqI89ixbgY6J2DWiJxCz2RL0WlBGzrbVAP6M8
+        GggUugkaQNGs/TBg==
+From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/microcode] x86/microcode: Remove ->request_microcode_user()
+Cc:     Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220825075445.28171-1-bp@alien8.de>
+References: <20220825075445.28171-1-bp@alien8.de>
+MIME-Version: 1.0
+Message-ID: <166150831648.401.9089001181596106367.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove redundant word `the`.
+The following commit has been merged into the x86/microcode branch of tip:
 
-CC: Jonathan Corbet <corbet@lwn.net>
-CC: linux-doc@vger.kernel.org
-Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
+Commit-ID:     8c61eafd22d7207039bff85c6e1d386f15abd17e
+Gitweb:        https://git.kernel.org/tip/8c61eafd22d7207039bff85c6e1d386f15abd17e
+Author:        Borislav Petkov <bp@suse.de>
+AuthorDate:    Thu, 25 Aug 2022 09:51:57 +02:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Fri, 26 Aug 2022 11:56:08 +02:00
+
+x86/microcode: Remove ->request_microcode_user()
+
+  181b6f40e9ea ("x86/microcode: Rip out the OLD_INTERFACE")
+
+removed the old microcode loading interface but forgot to remove the
+related ->request_microcode_user() functionality which it uses.
+
+Rip it out now too.
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220825075445.28171-1-bp@alien8.de
 ---
- Documentation/admin-guide/kdump/vmcoreinfo.rst    | 2 +-
- Documentation/bpf/map_cgroup_storage.rst          | 4 ++--
- Documentation/core-api/cpu_hotplug.rst            | 2 +-
- Documentation/driver-api/isa.rst                  | 2 +-
- Documentation/filesystems/caching/backend-api.rst | 2 +-
- Documentation/locking/seqlock.rst                 | 2 +-
- Documentation/sphinx/cdomain.py                   | 2 +-
- 7 files changed, 8 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/microcode.h      |  3 ---
+ arch/x86/kernel/cpu/microcode/amd.c   |  7 -------
+ arch/x86/kernel/cpu/microcode/intel.c | 17 -----------------
+ 3 files changed, 27 deletions(-)
 
-diff --git a/Documentation/admin-guide/kdump/vmcoreinfo.rst b/Documentation/admin-guide/kdump/vmcoreinfo.rst
-index 8419019b6a88..6726f439958c 100644
---- a/Documentation/admin-guide/kdump/vmcoreinfo.rst
-+++ b/Documentation/admin-guide/kdump/vmcoreinfo.rst
-@@ -200,7 +200,7 @@ prb
+diff --git a/arch/x86/include/asm/microcode.h b/arch/x86/include/asm/microcode.h
+index 0c3d344..7f7800e 100644
+--- a/arch/x86/include/asm/microcode.h
++++ b/arch/x86/include/asm/microcode.h
+@@ -32,9 +32,6 @@ enum ucode_state {
+ };
  
- A pointer to the printk ringbuffer (struct printk_ringbuffer). This
- may be pointing to the static boot ringbuffer or the dynamically
--allocated ringbuffer, depending on when the the core dump occurred.
-+allocated ringbuffer, depending on when the core dump occurred.
- Used by user-space tools to read the active kernel log buffer.
+ struct microcode_ops {
+-	enum ucode_state (*request_microcode_user) (int cpu,
+-				const void __user *buf, size_t size);
+-
+ 	enum ucode_state (*request_microcode_fw) (int cpu, struct device *,
+ 						  bool refresh_fw);
  
- printk_rb_static
-diff --git a/Documentation/bpf/map_cgroup_storage.rst b/Documentation/bpf/map_cgroup_storage.rst
-index cab9543017bf..8e5fe532c07e 100644
---- a/Documentation/bpf/map_cgroup_storage.rst
-+++ b/Documentation/bpf/map_cgroup_storage.rst
-@@ -31,7 +31,7 @@ The map uses key of type of either ``__u64 cgroup_inode_id`` or
-     };
+diff --git a/arch/x86/kernel/cpu/microcode/amd.c b/arch/x86/kernel/cpu/microcode/amd.c
+index 8b2fcdf..5f38dd7 100644
+--- a/arch/x86/kernel/cpu/microcode/amd.c
++++ b/arch/x86/kernel/cpu/microcode/amd.c
+@@ -924,12 +924,6 @@ static enum ucode_state request_microcode_amd(int cpu, struct device *device,
+ 	return ret;
+ }
  
- ``cgroup_inode_id`` is the inode id of the cgroup directory.
--``attach_type`` is the the program's attach type.
-+``attach_type`` is the program's attach type.
+-static enum ucode_state
+-request_microcode_user(int cpu, const void __user *buf, size_t size)
+-{
+-	return UCODE_ERROR;
+-}
+-
+ static void microcode_fini_cpu_amd(int cpu)
+ {
+ 	struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
+@@ -938,7 +932,6 @@ static void microcode_fini_cpu_amd(int cpu)
+ }
  
- Linux 5.9 added support for type ``__u64 cgroup_inode_id`` as the key type.
- When this key type is used, then all attach types of the particular cgroup and
-@@ -155,7 +155,7 @@ However, the BPF program can still only associate with one map of each type
- ``BPF_MAP_TYPE_CGROUP_STORAGE`` or more than one
- ``BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE``.
+ static struct microcode_ops microcode_amd_ops = {
+-	.request_microcode_user           = request_microcode_user,
+ 	.request_microcode_fw             = request_microcode_amd,
+ 	.collect_cpu_info                 = collect_cpu_info_amd,
+ 	.apply_microcode                  = apply_microcode_amd,
+diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
+index 025c8f0..1fcbd67 100644
+--- a/arch/x86/kernel/cpu/microcode/intel.c
++++ b/arch/x86/kernel/cpu/microcode/intel.c
+@@ -916,24 +916,7 @@ static enum ucode_state request_microcode_fw(int cpu, struct device *device,
+ 	return ret;
+ }
  
--In all versions, userspace may use the the attach parameters of cgroup and
-+In all versions, userspace may use the attach parameters of cgroup and
- attach type pair in ``struct bpf_cgroup_storage_key`` as the key to the BPF map
- APIs to read or update the storage for a given attachment. For Linux 5.9
- attach type shared storages, only the first value in the struct, cgroup inode
-diff --git a/Documentation/core-api/cpu_hotplug.rst b/Documentation/core-api/cpu_hotplug.rst
-index c6f4ba2fb32d..f75778d37488 100644
---- a/Documentation/core-api/cpu_hotplug.rst
-+++ b/Documentation/core-api/cpu_hotplug.rst
-@@ -560,7 +560,7 @@ available:
-   * cpuhp_state_remove_instance(state, node)
-   * cpuhp_state_remove_instance_nocalls(state, node)
- 
--The arguments are the same as for the the cpuhp_state_add_instance*()
-+The arguments are the same as for the cpuhp_state_add_instance*()
- variants above.
- 
- The functions differ in the way how the installed callbacks are treated:
-diff --git a/Documentation/driver-api/isa.rst b/Documentation/driver-api/isa.rst
-index def4a7b690b5..3df1b1696524 100644
---- a/Documentation/driver-api/isa.rst
-+++ b/Documentation/driver-api/isa.rst
-@@ -100,7 +100,7 @@ I believe platform_data is available for this, but if rather not, moving
- the isa_driver pointer to the private struct isa_dev is ofcourse fine as
- well.
- 
--Then, if the the driver did not provide a .match, it matches. If it did,
-+Then, if the driver did not provide a .match, it matches. If it did,
- the driver match() method is called to determine a match.
- 
- If it did **not** match, dev->platform_data is reset to indicate this to
-diff --git a/Documentation/filesystems/caching/backend-api.rst b/Documentation/filesystems/caching/backend-api.rst
-index d7507becf674..3a199fc50828 100644
---- a/Documentation/filesystems/caching/backend-api.rst
-+++ b/Documentation/filesystems/caching/backend-api.rst
-@@ -122,7 +122,7 @@ volumes, calling::
- to tell fscache that a volume has been withdrawn.  This waits for all
- outstanding accesses on the volume to complete before returning.
- 
--When the the cache is completely withdrawn, fscache should be notified by
-+When the cache is completely withdrawn, fscache should be notified by
- calling::
- 
- 	void fscache_relinquish_cache(struct fscache_cache *cache);
-diff --git a/Documentation/locking/seqlock.rst b/Documentation/locking/seqlock.rst
-index 64405e5da63e..bfda1a5fecad 100644
---- a/Documentation/locking/seqlock.rst
-+++ b/Documentation/locking/seqlock.rst
-@@ -39,7 +39,7 @@ as the writer can invalidate a pointer that the reader is following.
- Sequence counters (``seqcount_t``)
- ==================================
- 
--This is the the raw counting mechanism, which does not protect against
-+This is the raw counting mechanism, which does not protect against
- multiple writers.  Write side critical sections must thus be serialized
- by an external lock.
- 
-diff --git a/Documentation/sphinx/cdomain.py b/Documentation/sphinx/cdomain.py
-index ca8ac9e59ded..a7d1866e72ff 100644
---- a/Documentation/sphinx/cdomain.py
-+++ b/Documentation/sphinx/cdomain.py
-@@ -151,7 +151,7 @@ class CObject(Base_CObject):
-     def handle_func_like_macro(self, sig, signode):
-         u"""Handles signatures of function-like macros.
- 
--        If the objtype is 'function' and the the signature ``sig`` is a
-+        If the objtype is 'function' and the signature ``sig`` is a
-         function-like macro, the name of the macro is returned. Otherwise
-         ``False`` is returned.  """
- 
--- 
-2.17.1
-
+-static enum ucode_state
+-request_microcode_user(int cpu, const void __user *buf, size_t size)
+-{
+-	struct iov_iter iter;
+-	struct iovec iov;
+-
+-	if (is_blacklisted(cpu))
+-		return UCODE_NFOUND;
+-
+-	iov.iov_base = (void __user *)buf;
+-	iov.iov_len = size;
+-	iov_iter_init(&iter, WRITE, &iov, 1, size);
+-
+-	return generic_load_microcode(cpu, &iter);
+-}
+-
+ static struct microcode_ops microcode_intel_ops = {
+-	.request_microcode_user		  = request_microcode_user,
+ 	.request_microcode_fw             = request_microcode_fw,
+ 	.collect_cpu_info                 = collect_cpu_info,
+ 	.apply_microcode                  = apply_microcode_intel,
