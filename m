@@ -2,98 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3B3ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9FD3ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245275AbiHZH1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
+        id S245249AbiHZH1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245327AbiHZH0u (ORCPT
+        with ESMTP id S245343AbiHZH0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:26:50 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A521E5F120;
-        Fri, 26 Aug 2022 00:26:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661498809; x=1693034809;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bQ66rxBi1p20bacYHk7InPQ7hqfavItr+gjhZj1ZfJU=;
-  b=RNVuZPXOwxtg95z7OPGo4elBGb5uz4lguNoTsWAwbfTa6RU+kvR2DNJW
-   G1SkAiPHrjqXS8YlxQUyrPzKzCgppf9D7JOF3aerM+77V3DdTecQgibBP
-   HJWZ+P9t+DIPDSYjpvMFiCKOxh4rUNPriFUkmVY7I1z9zOxCGRS6IYnqa
-   mVpuhsAu2MfoRZW7Ox+thkyzM6DZHJB3qsYUfC5Xfsy6A6YKQBBIDI3+7
-   oBgfyiAPXo4BnYTcBF3DD4II/zLXTDOE66EIJGYs1Yp6ragigY//9xrA/
-   97xdNiEcn0CHQE7Uisuw5HT7ZB2cmmTG5ISyll4pQ+Ts6AUFng/rBFJj2
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="174276053"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2022 00:26:48 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 26 Aug 2022 00:26:48 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Fri, 26 Aug 2022 00:26:48 -0700
-Date:   Fri, 26 Aug 2022 09:31:03 +0200
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: lan9662-otpc: document Lan9662 OTPC
-Message-ID: <20220826073103.kkotbaxc3latculo@soft-dev3-1.localhost>
-References: <20220825204041.1485731-1-horatiu.vultur@microchip.com>
- <20220825204041.1485731-2-horatiu.vultur@microchip.com>
- <96da4897-7b55-84d5-8f1d-892e116153df@linaro.org>
+        Fri, 26 Aug 2022 03:26:53 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E3B647D0;
+        Fri, 26 Aug 2022 00:26:52 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id ds12-20020a17090b08cc00b001fae6343d9fso7274516pjb.0;
+        Fri, 26 Aug 2022 00:26:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=CVd4gipKEyJsCvgUp2zsVtIKTk/IiJZuB69XLQsZ+E4=;
+        b=B4WCc8PPDJZ8v1fAg4UuAOZVblhilW1F14VxOUw6kiDA9CQm8Q63oIBVttIe9UMYN6
+         mpzNMkl3ybGxhgZsUSF+0puLNe3XKsX/fwMHV7uwR/GVeCeOVORyTY6BaIApxngdvbAI
+         B/TcAZgICis+xeWCQiorvZxWCU//KLXWRnxBTKAkAfZxXhyiOHwdKgwULDIfgHMKLC9U
+         8bWWfrYaHeog+9zMcbovgRWqB5yBad+j6u4pzShGDcvgL2Tf1EfK7NRCoDRHwyi75Dxx
+         58yrGcnbCbJDjRz62KjaSLH2NvXicvWZt4iASAcrb3DP/SNKYYQ2NWxCvP7cWMXD4qeT
+         f6Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=CVd4gipKEyJsCvgUp2zsVtIKTk/IiJZuB69XLQsZ+E4=;
+        b=77KWyjv2cq9eBHV1t6AXUIXe2TuamSrX/157p/02VPu3kHh2Fk0YsbttcRrI7jI6ET
+         2KmaxhCUZw7LpEnpNYaI5fQCAfbfUckw5ENpud3TijUji5SUfexZkiZvTWJKjrdGiPmV
+         ARkL5Pm1ngo/LrQn4CRq96Vjvzu6yICammjq0VR+wDFlr44HE2QZWfkXiBfBQF8fxTQZ
+         fJnuyJP05X+SEtSkskCDsaO59EpIQU8RQrrslLcZxFEuAYJzZsGTnEJkXUpJv9CZVKlx
+         HNEzDsccDe2uiIhmNopCfNLERU+FnbRyQ301kmfgl9Ig4ZOSnabNc+Oua7hWPSbYjsIU
+         bWQg==
+X-Gm-Message-State: ACgBeo0RM/wX0TiB62f+ABLwyPluVku95TzRiKl5ksbkZOHHi8gaRTbZ
+        PIdbm/ogI/WHi6JM37eAeDU=
+X-Google-Smtp-Source: AA6agR4GAH1B37Rvc50hoOeSsUAcTY6UdQY23/xmD+dy/fwuOyPhXYytRjFtW/DDIzBUfVuhCODbDw==
+X-Received: by 2002:a17:90a:1d0e:b0:1fa:bf2e:a56e with SMTP id c14-20020a17090a1d0e00b001fabf2ea56emr2978765pjd.23.1661498811909;
+        Fri, 26 Aug 2022 00:26:51 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id z4-20020a1709027e8400b0016d5626af4fsm823576pla.21.2022.08.26.00.26.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 00:26:51 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     martin.petersen@oracle.com
+Cc:     kartilak@cisco.com, sebaddel@cisco.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] scsi: snic: Remove the unneeded result variable
+Date:   Fri, 26 Aug 2022 07:26:48 +0000
+Message-Id: <20220826072648.252972-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <96da4897-7b55-84d5-8f1d-892e116153df@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 08/26/2022 09:42, Krzysztof Kozlowski wrote:
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-Hi Krzysztof,
+Return the value 0 and -ENOMEM  directly instead of storing it in another
+redundant variable.
 
-> > +properties:
-> > +  compatible:
-> > +    items:
-> > +      - const: microchip,lan9662-otpc
-> > +      - const: microchip,lan9668-otpc
-> 
-> Does not look like you tested the bindings. Please run `make
-> dt_binding_check` (see
-> Documentation/devicetree/bindings/writing-schema.rst for instructions).
-> 
-> This won't work...
-
-You are right. That was a silly mistake on my side.
-
-It should be:
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
 ---
-properties:
-  compatible:
-    enum:
-      - microchip,lan9662-otpc
-      - microchip,lan9668-otpc
----
-Because what I want to achive is to be able to use any of
-string(microchip,lan9662-otpc or microchip,lan9668-otpc) as compatible
-string.
+ drivers/scsi/snic/snic_trc.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-Or this is not the correct change?
-At least with this change dt_binding_check is happy.
-
-> 
-> Best regards,
-> Krzysztof
-
+diff --git a/drivers/scsi/snic/snic_trc.c b/drivers/scsi/snic/snic_trc.c
+index c2e5ab7e976c..9796bf280775 100644
+--- a/drivers/scsi/snic/snic_trc.c
++++ b/drivers/scsi/snic/snic_trc.c
+@@ -109,16 +109,15 @@ snic_trc_init(void)
+ {
+ 	struct snic_trc *trc = &snic_glob->trc;
+ 	void *tbuf = NULL;
+-	int tbuf_sz = 0, ret;
++	int tbuf_sz = 0;
+ 
+ 	tbuf_sz = (snic_trace_max_pages * PAGE_SIZE);
+ 	tbuf = vzalloc(tbuf_sz);
+ 	if (!tbuf) {
+ 		SNIC_ERR("Failed to Allocate Trace Buffer Size. %d\n", tbuf_sz);
+ 		SNIC_ERR("Trace Facility not enabled.\n");
+-		ret = -ENOMEM;
+ 
+-		return ret;
++		return -ENOMEM;
+ 	}
+ 
+ 	trc->buf = (struct snic_trc_data *) tbuf;
+@@ -131,9 +130,8 @@ snic_trc_init(void)
+ 	trc->enable = true;
+ 	SNIC_INFO("Trace Facility Enabled.\n Trace Buffer SZ %lu Pages.\n",
+ 		  tbuf_sz / PAGE_SIZE);
+-	ret = 0;
+ 
+-	return ret;
++	return 0;
+ } /* end of snic_trc_init */
+ 
+ /*
 -- 
-/Horatiu
+2.25.1
