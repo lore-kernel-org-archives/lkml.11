@@ -2,144 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28313ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:51:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 762A6ECAAA6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344697AbiHZQvw (ORCPT
+        id S1344787AbiHZQvz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 12:51:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49166 "EHLO
+        Fri, 26 Aug 2022 12:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344742AbiHZQvR (ORCPT
+        with ESMTP id S1344780AbiHZQvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 12:51:17 -0400
-Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7923374B8C
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:50:41 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by fx409.security-mail.net (Postfix) with ESMTP id 6116C323748
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 18:50:40 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
-        s=sec-sig-email; t=1661532640;
-        bh=AseuychHjEOpookEUFULzBTeO6LdB9Wyub4FHlDpL7o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=HG9lhz6OPrBnObhaNPXU3M00uxefqAicDixXM40IoBnCjHjVMrbk0mtoLNFYlGjWN
-         vU2bysk/llmGC0G4kKStNuiZJjNOCTfLNF4BP0o/XovJwQF+3QF9ljOJeoZMuxnc5D
-         Fnlq4h7d53AdcWqvb202XbHjR0gM6pshAPmsggec=
-Received: from fx409 (localhost [127.0.0.1]) by fx409.security-mail.net
- (Postfix) with ESMTP id 093203236EB; Fri, 26 Aug 2022 18:50:39 +0200 (CEST)
-Received: from zimbra2.kalray.eu (unknown [217.181.231.53]) by
- fx409.security-mail.net (Postfix) with ESMTPS id 58F0D3236BA; Fri, 26 Aug
- 2022 18:50:38 +0200 (CEST)
-Received: from zimbra2.kalray.eu (localhost [127.0.0.1]) by
- zimbra2.kalray.eu (Postfix) with ESMTPS id 3822527E0392; Fri, 26 Aug 2022
- 18:50:38 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1]) by zimbra2.kalray.eu
- (Postfix) with ESMTP id 1D83F27E0396; Fri, 26 Aug 2022 18:50:38 +0200 (CEST)
-Received: from zimbra2.kalray.eu ([127.0.0.1]) by localhost
- (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026) with ESMTP id
- rrSgUlqqGfIt; Fri, 26 Aug 2022 18:50:38 +0200 (CEST)
-Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206]) by
- zimbra2.kalray.eu (Postfix) with ESMTPSA id 0667E27E0392; Fri, 26 Aug 2022
- 18:50:38 +0200 (CEST)
-X-Virus-Scanned: E-securemail, by Secumail
-Secumail-id: <12fd7.6308f9de.56d05.0>
-DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 1D83F27E0396
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
- s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661532638;
- bh=Y1zQ6BNU1UVYGbj+qjtbqtKsCevuA+8wVxqT62kC9G0=;
- h=Date:From:To:Message-ID:MIME-Version;
- b=A3COjUPswvuybrQTpDfCvgX08bvnwotI8Xq07SlG++M82n5PzCDs9pa+7clYFPTyd
- 083gj3YWMwbo2dcXcu8cqtBXaN/yHBfr4p0xCBXkh4M8eiebj5GaebjAaANoiMtK12
- g5ZWJQYpOzRQERvDNg0bnomocgjrBWUFAAJ2eMZs=
-Date:   Fri, 26 Aug 2022 18:50:36 +0200
-From:   Jules Maselbas <jmaselbas@kalray.eu>
-To:     Conor.Dooley@microchip.com
-Cc:     linux-kernel@vger.kernel.org, rdunlap@infradead.org,
-        bagasdotme@gmail.com, corbet@lwn.net, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v3] Remove duplicated words across the whole
- documentation
-Message-ID: <20220826165036.GE10294@tellis.lin.mbt.kalray.eu>
-References: <20220826143300.6794-1-jmaselbas@kalray.eu>
- <20220826163458.1142-1-jmaselbas@kalray.eu>
- <cccaf53c-9438-0927-b074-c74c47bfb1ec@microchip.com>
+        Fri, 26 Aug 2022 12:51:19 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA995D0CD
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:51:14 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id m3so2711949lfg.10
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:51:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=AzcQtJHhCq1M9HHqJyBU8jps37qkhWyg9JcbI9atrX0=;
+        b=clP+YjSRMv2aMSc6s6pfkGuBwb18hbcN4LMP8FIL90suqd9UEviO5jlvsEMFMhPKrc
+         SvpI9lj7ObC223xski6/wogooTIqPf19hTqQu36LKAy8yovElPte2v6C7NYnhvAG9OvP
+         Zljm4DmKwu9XwUkI6wpFhtr1vIBosEYEvZ//0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=AzcQtJHhCq1M9HHqJyBU8jps37qkhWyg9JcbI9atrX0=;
+        b=rbcpwtiGf+5a5jXpj6nnuW6uyeWC6HOcWmVCeD10LXgEPnxqO2fSpd+Hvzq7ynbetg
+         rAgGzFDGNhhGGWJUsVnYsruebHHB3Id1E+srcJI3sG2gFCURgBiPeisQjGBpw7kExrRl
+         NltNRS/6GFes2ADp+znE8DC8ou8PyrrxHGOaF9jFHGNOs/vzZmmF80eX0jYHCsF/MZIJ
+         yv+kT6aIAvOPVwFzLjIZfMof3bIn58y53GRC8pKfnpWcjdHay7BU7W3cjMGzU9k6MIeD
+         mMujigeXrFZsRGaMGBNrWt4ltGAri2RzfwlH2GzuC1oUfVZtwWTuSDwXp3vu0QLglc10
+         yY5g==
+X-Gm-Message-State: ACgBeo0G3oAJSWvgG3lVwLK9ADB7IIHoxJAaMf/LI5FMawKs5AMjAdAO
+        qcl3fjio+fSvuX6b35Dyxp9RqE/uZ3IoaJK4vDQ=
+X-Google-Smtp-Source: AA6agR55kD9lilHJUVGiRr1mPzPqucxZIsx+tNz4sWOZAoHbAQtkWwD0tkEAICXAE/69A+qGFNsnjQ==
+X-Received: by 2002:a05:6512:16a1:b0:48a:87a2:103c with SMTP id bu33-20020a05651216a100b0048a87a2103cmr3107542lfb.554.1661532672790;
+        Fri, 26 Aug 2022 09:51:12 -0700 (PDT)
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
+        by smtp.gmail.com with ESMTPSA id v23-20020a056512349700b00492e5219874sm417285lfr.258.2022.08.26.09.51.12
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 09:51:12 -0700 (PDT)
+Received: by mail-lj1-f180.google.com with SMTP id k22so2149109ljg.2
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:51:12 -0700 (PDT)
+X-Received: by 2002:a05:6000:136f:b0:225:2fad:dde7 with SMTP id
+ q15-20020a056000136f00b002252faddde7mr311126wrz.274.1661532364193; Fri, 26
+ Aug 2022 09:46:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <cccaf53c-9438-0927-b074-c74c47bfb1ec@microchip.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-X-ALTERMIMEV2_out: done
+References: <alpine.LRH.2.02.2208220530050.32093@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wh-6RJQWxdVaZSsntyXJWJhivVX8JFH4MqkXv12AHm_=Q@mail.gmail.com>
+ <CAHk-=whfZSEc40wtq5H51JcsBdB50ctZPtM3rS3E+xUNvadLog@mail.gmail.com>
+ <alpine.LRH.2.02.2208251501200.31977@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wh7ystLBs7r=KrgFhuYpNULoTY1FFPgq=a=Kr2mxc3jdg@mail.gmail.com> <alpine.LRH.2.02.2208260508360.26588@file01.intranet.prod.int.rdu2.redhat.com>
+In-Reply-To: <alpine.LRH.2.02.2208260508360.26588@file01.intranet.prod.int.rdu2.redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Fri, 26 Aug 2022 09:45:47 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjDeF2V7fiBEUUHHmUK8AZKq+b+=wwaMWbJ0WP+8GNvUw@mail.gmail.com>
+Message-ID: <CAHk-=wjDeF2V7fiBEUUHHmUK8AZKq+b+=wwaMWbJ0WP+8GNvUw@mail.gmail.com>
+Subject: Re: [PATCH v3] wait_on_bit: add an acquire memory barrier
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 04:40:50PM +0000, Conor.Dooley@microchip.com wrote:
-> Hey Jules,
-> On 26/08/2022 17:34, Jules Maselbas wrote:
-> > Remove duplicated words (the, at, be ...) across the whole documentation.
-> > In some cases the duplicated words are replaced by something that makes
-> > more sense, for instance: "be be" is replaced by "can be" when possible.
-> > 
-> > There are likely more duplicated words to be found.
-> > 
-> > CC: Randy Dunlap <rdunlap@infradead.org>
-> > CC: Bagas Sanjaya <bagasdotme@gmail.com>
-> > CC: Jonathan Corbet <corbet@lwn.net>
-> > CC: linux-doc@vger.kernel.org
-> > Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
-> > ---
-> 
-> 
-> >  
-> >  printk_rb_static
-> > diff --git a/Documentation/admin-guide/media/vivid.rst b/Documentation/admin-guide/media/vivid.rst
-> > index 4f680dc9661c..a5a9c062b23f 100644
-> > --- a/Documentation/admin-guide/media/vivid.rst
-> > +++ b/Documentation/admin-guide/media/vivid.rst
-> > @@ -392,7 +392,7 @@ Which one is returned depends on the chosen channel, each next valid channel
-> >  will cycle through the possible audio subchannel combinations. This allows
-> >  you to test the various combinations by just switching channels..
-> >  
-> > -Finally, for these inputs the v4l2_timecode struct is filled in in the
-> > +Finally, for these inputs the v4l2_timecode struct is filled in the
-> 
-> FYI, this does not look like a typo. It reads as if the filling in happens
-> in the dequeued struct.
-You're right, I tought the same when seeing this elsewere, this is a mistake.
+On Fri, Aug 26, 2022 at 6:17 AM Mikulas Patocka <mpatocka@redhat.com> wrote:
+>
+> I wouldn't do this for regular test_bit because if you read memory with
+> different size/alignment from what you wrote, various CPUs suffer from
+> store->load forwarding penalties.
 
-> 
-> >  dequeued v4l2_buffer struct.
-> >  
-> >  
-> 
-> > diff --git a/Documentation/virt/uml/user_mode_linux_howto_v2.rst b/Documentation/virt/uml/user_mode_linux_howto_v2.rst
-> > index af2a97429692..ce67a03a7c80 100644
-> > --- a/Documentation/virt/uml/user_mode_linux_howto_v2.rst
-> > +++ b/Documentation/virt/uml/user_mode_linux_howto_v2.rst
-> > @@ -1090,7 +1090,7 @@ be formatted as plain text.
-> >  
-> >  Developing always goes hand in hand with debugging. First of all,
-> >  you can always run UML under gdb and there will be a whole section
-> > -later on on how to do that. That, however, is not the only way to
-> 
-> And neither is this. It means that there will be a later section that
-> explains how to do it. Possibly there should be some punctuation in
-> between though.
-Yeah... I personally think that this reads badly but I don't mind dropping
-this change.
+All of the half-way modern CPU's do ok with store->load forwarding as
+long as the load is fully contained in the store, so I suspect the
+'testb' model is pretty much universally better than loading a word
+into a register and testing it there.
 
-> 
-> > +later on how to do that. That, however, is not the only way to
-> >  debug a Linux kernel. Quite often adding tracing statements and/or
-> >  using UML specific approaches such as ptracing the UML kernel process
-> >  are significantly more informative.
-> 
-> Thanks,
-> Conor.
-> 
-> 
+So narrowing the load is fine (but you generally never want to narrow
+a *store*, because that results in huge problems with subsequent wider
+loads).
 
+But it's not a huge deal, and this way if somebody actually runs the
+numbers and does any comparisons, we have both versions, and if the
+'testb' is better, we can just rename the x86
+constant_test_bit_acquire() to just constant_test_bit() and use it for
+both cases.
 
+> But for test_bit_acqure this optimization is likely harmless because the
+> bit will not be tested a few instructions after writing it.
 
+Note that if we really do that, then we've already lost because of the
+volatile access, ie if we cared about a "write bit, test bit" pattern,
+we should use other operations.
 
+Now, the new "const_test_bit()" logic (commits bb7379bfa680 "bitops:
+define const_*() versions of the non-atomics" and 0e862838f290
+"bitops: unify non-atomic bitops prototypes across architectures")
+means that as long as you are setting and testing a bit in a local
+variable, it gets elided entirely. But in general use you're going to
+see that load from memory, and then the wider load is likely worse
+(because bigger constants, and because it requries a register).
+
+So maybe there is room to tweak it further, but this version of the
+patch looks good to me, and I've applied it.
+
+Thanks,
+                Linus
