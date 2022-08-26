@@ -2,127 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A33ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68831ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245406AbiHZHko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
+        id S245391AbiHZHk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:40:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245391AbiHZHk0 (ORCPT
+        with ESMTP id S245403AbiHZHkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:40:26 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF6D6E2C1
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:40:24 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id l1so936387lfk.8
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:40:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=SWG+AYYaD3CGqVmhJUkc0npDBvTLvT/qXBQNeQdRPPI=;
-        b=VavM614ow0Wq5WTGNBaTek9R2gSqCSK2LowLKioZCjH9fi0rLESL9gU51h6u1ICdVM
-         O54wO0xGy8NLlu+JxKeFrsTK5D6TMHGLwWPXbcToifiej4CvHspsXtqeC5ShKEruaDem
-         2VWI9zZ+ad+AeT/jOq3cAhJOGxL7TuGKXf1GA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=SWG+AYYaD3CGqVmhJUkc0npDBvTLvT/qXBQNeQdRPPI=;
-        b=GUeeorSulJImJiE3t3m1x/YddzNlOuX1Lshzuugcwylwbf4M+pzRD4610mmqkJjAow
-         M/zlFioXcBEHj1rs5LgAi96R9x39v35jkrioc7nVrYCbAEISwxW7SrVGgzHx8m2xs2KI
-         cY4RXL4y5RdBcNJ+r+1P3sIab86qXe/lVjI9BkYLJJ/X/yJBtrZzzot+2rxChQPw1/9h
-         kOwYLr5O1BNj6SCa79wLTvCU2Zejf9ns5UG9aiuVnX1jAEH6eTgpYqzle30x6cbG1ON6
-         bsB+YI1O2jLRMpmtQrwYE+PqTInl+PIh7APSdQl2Cuv0bqr9RJ268yWNQjeeqTelaQEX
-         ii0g==
-X-Gm-Message-State: ACgBeo1Nx7in7Dt/7RRaJfbB9xtKdiRUYDwf1Vkufow+IG/39lo5X8+p
-        /+9/UciWkbxBzBMh62U1Fw8lmJrCO/mvB2NB
-X-Google-Smtp-Source: AA6agR5Wm1zWSG4SC+mpBPzTyeIPT/0fZuyJYI07D9p9QGCLhhs/GEofhI1B8Us/Ffey/8A1d/hh1Q==
-X-Received: by 2002:a19:645c:0:b0:492:cf78:62de with SMTP id b28-20020a19645c000000b00492cf7862demr1925671lfj.263.1661499622588;
-        Fri, 26 Aug 2022 00:40:22 -0700 (PDT)
-Received: from [172.16.11.74] ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id q15-20020ac24a6f000000b0048b3926351bsm293857lfp.56.2022.08.26.00.40.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 00:40:21 -0700 (PDT)
-Message-ID: <527eee19-532f-b2e7-a42f-a1e199094fbe@rasmusvillemoes.dk>
-Date:   Fri, 26 Aug 2022 09:40:20 +0200
+        Fri, 26 Aug 2022 03:40:55 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C05D96FF3
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:40:54 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id CB73F33687;
+        Fri, 26 Aug 2022 07:40:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661499652; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UHDVWf627GrJFHwQC3okbVaIrG2oRgmMy8dX9XM3OOM=;
+        b=ZmHi+NO43BUhjvggOCnhKFHErKsuWYJ+x+g1jKVaY9jmCwjT82lKzzRIaBhKtqCCDoic8j
+        Pl4s3unhkexk+8F1dJY6GQWngCSyfu4/CDrl+c88r4Z8Y4BQszgJ0+A+LoOYRYkb8zfcvh
+        wvzYrmtWKwEqTlvh8O7VFJGBW6BKP8I=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A8E4013A7E;
+        Fri, 26 Aug 2022 07:40:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id xvjWJgR5CGO+EgAAMHmgww
+        (envelope-from <mhocko@suse.com>); Fri, 26 Aug 2022 07:40:52 +0000
+Date:   Fri, 26 Aug 2022 09:40:52 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Charan Teja Kalla <quic_charante@quicinc.com>
+Cc:     akpm@linux-foundation.org, david@redhat.com, vbabka@suse.cz,
+        pasha.tatashin@soleen.com, shakeelb@google.com, sieberf@amazon.com,
+        sjpark@amazon.de, william.kucharski@oracle.com,
+        willy@infradead.org, quic_pkondeti@quicinc.com, minchan@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH V5] mm: fix use-after free of page_ext after race with
+ memory-offline
+Message-ID: <Ywh5BHIpMpTjy3B6@dhcp22.suse.cz>
+References: <1661496993-11473-1-git-send-email-quic_charante@quicinc.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: strlcpy() notes (was Re: [GIT PULL] smb3 client fixes)
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Steve French <smfrench@gmail.com>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>
-References: <CAH2r5mtDFpaAWeGCtrfm_WPM6j-Gkt_O80=nKfp6y39aXaBr6w@mail.gmail.com>
- <CAHk-=wi+xbVq++uqW9YgWpHjyBHNB8a-xad+Xp23-B+eodLCEA@mail.gmail.com>
- <YwSWLH4Wp6yDMeKf@arm.com>
- <CAHk-=whU7QiwWeO81Rf+KGh0rGS9CEfKUXc5eik+Z0GaVJgu4A@mail.gmail.com>
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-In-Reply-To: <CAHk-=whU7QiwWeO81Rf+KGh0rGS9CEfKUXc5eik+Z0GaVJgu4A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1661496993-11473-1-git-send-email-quic_charante@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/08/2022 19.37, Linus Torvalds wrote:
-> On Tue, Aug 23, 2022 at 1:56 AM Catalin Marinas <catalin.marinas@arm.com> wrote:
->>
->> With load_unaligned_zeropad(), the arm64 implementation disables tag
->> checking temporarily. We could do the same with read_word_at_a_time()
->> (there is a kasan_check_read() in this function but it wrongly uses a
->> size of 1).
+On Fri 26-08-22 12:26:33, Charan Teja Kalla wrote:
+> The below is one path where race between page_ext and  offline of the
+> respective memory blocks will cause use-after-free on the access of
+> page_ext structure.
 > 
-> The "size of 1" is not wrong, it's intentional, exactly because people
-> do things like
+> process1		              process2
+> ---------                             ---------
+> a)doing /proc/page_owner           doing memory offline
+> 			           through offline_pages.
 > 
->     strscpy(dst, "string", sizeof(dst));
+> b)PageBuddy check is failed
+> thus proceed to get the
+> page_owner information
+> through page_ext access.
+> page_ext = lookup_page_ext(page);
 > 
-> which is a bit unfortunate, but very understandable and intended to
-> work. So that thing may over-read the string by up to a word. And
-> KASAN ends up being unhappy.
+> 				    migrate_pages();
+> 				    .................
+> 				Since all pages are successfully
+> 				migrated as part of the offline
+> 				operation,send MEM_OFFLINE notification
+> 				where for page_ext it calls:
+> 				offline_page_ext()-->
+> 				__free_page_ext()-->
+> 				   free_page_ext()-->
+> 				     vfree(ms->page_ext)
+> 			           mem_section->page_ext = NULL
+> 
+> c) Check for the PAGE_EXT flags
+> in the page_ext->flags access
+> results into the use-after-free(leading
+> to the translation faults).
+> 
+> As mentioned above, there is really no synchronization between page_ext
+> access and its freeing in the memory_offline.
+> 
+> The memory offline steps(roughly) on a memory block is as below:
+> 1) Isolate all the pages
+> 2) while(1)
+>   try free the pages to buddy.(->free_list[MIGRATE_ISOLATE])
+> 3) delete the pages from this buddy list.
+> 4) Then free page_ext.(Note: The struct page is still alive as it is
+> freed only during hot remove of the memory which frees the memmap, which
+> steps the user might not perform).
+> 
+> This design leads to the state where struct page is alive but the struct
+> page_ext is freed, where the later is ideally part of the former which
+> just representing the page_flags (check [3] for why this design is
+> chosen).
+> 
+> The above mentioned race is just one example __but the problem persists
+> in the other paths too involving page_ext->flags access(eg:
+> page_is_idle())__.
+> 
+> Fix all the paths where offline races with page_ext access by
+> maintaining synchronization with rcu lock and is achieved in 3 steps:
+> 1) Invalidate all the page_ext's of the sections of a memory block by
+> storing a flag in the LSB of mem_section->page_ext.
+> 
+> 2) Wait till all the existing readers to finish working with the
+> ->page_ext's with synchronize_rcu(). Any parallel process that starts
+> after this call will not get page_ext, through lookup_page_ext(), for
+> the block parallel offline operation is being performed.
+> 
+> 3) Now safely free all sections ->page_ext's of the block on which
+> offline operation is being performed.
+> 
+> Note: If synchronize_rcu() takes time then optimizations can be done in
+> this path through call_rcu()[2].
+> 
+> Thanks to David Hildenbrand for his views/suggestions on the initial
+> discussion[1] and Pavan kondeti for various inputs on this patch.
+> 
+> [1] https://lore.kernel.org/linux-mm/59edde13-4167-8550-86f0-11fc67882107@quicinc.com/
+> [2] https://lore.kernel.org/all/a26ce299-aed1-b8ad-711e-a49e82bdd180@quicinc.com/T/#u
+> [3] https://lore.kernel.org/all/6fa6b7aa-731e-891c-3efb-a03d6a700efa@redhat.com/
+> 
+> Suggested-by: David Hildenbrand <david@redhat.com>
+> Suggested-by: Michal Hocko <mhocko@suse.com>
+> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+> ---
+> Changes in V5:
+>    o Used the loop variable name as ext_put_continue -- David
 
-So, while we're doing all the churn of replacing strlcpy anyway, may I
-once again suggest we add (name can be bikeshedded) literal_strcpy():
-
-#define literal_strcpy(d, s) ({ \
-  static_assert(__same_type(d, char[]), "destination must be char array"); \
-  static_assert(__same_type(s, const char[]), "source must be a string
-literal"); \
-  static_assert(sizeof(d) >= sizeof("" s ""), "source does not fit in
-destination"); \
-  strcpy(d, s); \
-})
-
-That interface _cannot_ be misused, because all the checking happens at
-build time, including enforcement that the source really is a string
-literal (the "" s "" trick - but for nicer error message the
-static_assert on the previous line is there as well). So unlike all the
-uses of str[ls]cpy which don't check the return value, we cannot
-silently do a truncated copy. Also, if somebody down the line changes
-the size of the destination or the literal string, again it will be
-caught at build time.
-
-And since gcc knows the semantics of strcpy(), it will also generate
-better code, because it will usually not emit a call at all (or even put
-the string in .rodata); it will simply emit a series of "mov immediate"
-instructions.
-
-Sloppy grepping for places where that could be used shows around ~800
-places.
-
-Btw, Steve, since you're incidentally on cc here anyway, perhaps you
-want to take a look at
-
-  strscpy(extension, "___", strlen("___"));
-
-and see if this really just wants two underscores copied to extension.
-
-Rasmus
+If this is the only change since the last version (I didn't have much
+time to read through the whole patch) then my ack still applies.
+-- 
+Michal Hocko
+SUSE Labs
