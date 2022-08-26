@@ -2,104 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9AAECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:45:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD77ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242826AbiHZMpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37598 "EHLO
+        id S237428AbiHZMqX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235525AbiHZMpM (ORCPT
+        with ESMTP id S240616AbiHZMqU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:45:12 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164E84AD55
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 05:45:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R471e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VNJGpjA_1661517885;
-Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VNJGpjA_1661517885)
-          by smtp.aliyun-inc.com;
-          Fri, 26 Aug 2022 20:45:06 +0800
-From:   Liu Song <liusong@linux.alibaba.com>
-To:     liusong@linux.alibaba.com
-Cc:     catalin.marinas@arm.com, james.morse@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        will@kernel.org
-Subject: [PATCH v2] arm64: spectre: increase parameters that can be used to turn off bhb mitigation individually
-Date:   Fri, 26 Aug 2022 20:44:45 +0800
-Message-Id: <1661517885-112909-1-git-send-email-liusong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <837426e9-0f24-2ce2-e631-b91276035397@linux.alibaba.com>
-References: <837426e9-0f24-2ce2-e631-b91276035397@linux.alibaba.com>
+        Fri, 26 Aug 2022 08:46:20 -0400
+Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.148])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C000C0B6A
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 05:46:17 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by fx408.security-mail.net (Postfix) with ESMTP id 64B9A1B7B355
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:46:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
+        s=sec-sig-email; t=1661517976;
+        bh=PCNCr4gLjAzuooND/bjvQI4nTIspFNLeY0C0jqAHZCo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=Byq7lhYNewtqG2I/Otk8UwNflh0QG0RPCSBNLX4N7Cht8DVLyBXqLaEM1ZAhw6Wjl
+         xoGdx+yqJpb2tmtR4utwof9sn9uzUwv/ImgcAW0jkpXS+2cJbAiy6FScXrHI4mLjYq
+         7cr2+dXL3y9EZWOqDQ9UcdRMvWqcMIFKbBgFl0uM=
+Received: from fx408 (localhost [127.0.0.1]) by fx408.security-mail.net
+ (Postfix) with ESMTP id 09D451B7B343; Fri, 26 Aug 2022 14:46:16 +0200 (CEST)
+Received: from zimbra2.kalray.eu (unknown [217.181.231.53]) by
+ fx408.security-mail.net (Postfix) with ESMTPS id 5C59B1B7B33F; Fri, 26 Aug
+ 2022 14:46:14 +0200 (CEST)
+Received: from zimbra2.kalray.eu (localhost [127.0.0.1]) by
+ zimbra2.kalray.eu (Postfix) with ESMTPS id 3FDAC27E02FA; Fri, 26 Aug 2022
+ 14:46:14 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1]) by zimbra2.kalray.eu
+ (Postfix) with ESMTP id 2888427E0392; Fri, 26 Aug 2022 14:46:14 +0200 (CEST)
+Received: from zimbra2.kalray.eu ([127.0.0.1]) by localhost
+ (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026) with ESMTP id
+ IugXXSCcSbbN; Fri, 26 Aug 2022 14:46:14 +0200 (CEST)
+Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206]) by
+ zimbra2.kalray.eu (Postfix) with ESMTPSA id 1782627E02FA; Fri, 26 Aug 2022
+ 14:46:14 +0200 (CEST)
+X-Virus-Scanned: E-securemail, by Secumail
+Secumail-id: <124ec.6308c096.5b61f.0>
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 2888427E0392
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
+ s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661517974;
+ bh=UYA33OxQNeupL628vgL2cqS03Bi2JR/rksKhM9GIj+4=;
+ h=Date:From:To:Message-ID:MIME-Version;
+ b=GL309KhJBsMGe5q62qOR9wXax82QRj2ep2rBAHM9rmFRXO2xvBc2fMIpfxWyR6hpV
+ cK4vRmwahv+hH6HFftmfCuXXVaY24zJE7w9LLJCbwh5w90HtOeOUvOiiA3Q9zgRYeT
+ iH2w/e4mvzPTNvc+PPWe0bWpnEBhCgaqLcbT2zYU=
+Date:   Fri, 26 Aug 2022 14:46:13 +0200
+From:   Jules Maselbas <jmaselbas@kalray.eu>
+To:     Jacopo Mondi <jacopo@jmondi.org>
+Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: Re: [PATCH] media: i2c: Fix repeated word in comments
+Message-ID: <20220826124612.GC10294@tellis.lin.mbt.kalray.eu>
+References: <20220826100052.22945-22-jmaselbas@kalray.eu>
+ <20220826102447.kpwpj2n5mta4k3xi@uno.localdomain>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20220826102447.kpwpj2n5mta4k3xi@uno.localdomain>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+X-ALTERMIMEV2_out: done
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Song <liusong@linux.alibaba.com>
+Hi Jacopo,
 
-In our environment, it was found that the mitigation BHB has a great
-impact on the benchmark performance. For example, in the lmbench test,
-the "process fork && exit" test performance drops by 20%.
-So it is necessary to have the ability to turn off the mitigation
-individually through cmdline, thus avoiding having to compile the
-kernel by adjusting the config.
+On Fri, Aug 26, 2022 at 12:24:47PM +0200, Jacopo Mondi wrote:
+> Hi Jules
+> 
+>   thanks, but as reported in patchwork and lore
+> https://patchwork.linuxtv.org/project/linux-media/list/?series=&submitter=&state=*&q=mt9v111&archive=both&delegate=
+> https://lore.kernel.org/all/20220824135433.h2udwtnub7mlmtam@uno.localdomain/
+> 
+> This is the 4th patch to fix the same repeated word in a comment.
+ 
+> As I asked to Jilin, are you submitting this as part of a new
+> contributor program ?
+No, I've search for more repeated word after I've found one (in dma-buf heaps).
+I then saw that there were already some fixed by Jilin Yuan (and
+probably others).
 
-Signed-off-by: Liu Song <liusong@linux.alibaba.com>
----
- Documentation/admin-guide/kernel-parameters.txt |  5 +++++
- arch/arm64/kernel/proton-pack.c                 | 10 +++++++++-
- 2 files changed, 14 insertions(+), 1 deletion(-)
+I was expecting that some patches were sent for this, sorry for the noise. 
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d7f3090..1edc9a6 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3207,6 +3207,7 @@
- 					       spectre_v2_user=off [X86]
- 					       spec_store_bypass_disable=off [X86,PPC]
- 					       ssbd=force-off [ARM64]
-+					       nospectre_bhb [ARM64]
- 					       l1tf=off [X86]
- 					       mds=off [X86]
- 					       tsx_async_abort=off [X86]
-@@ -3631,6 +3632,10 @@
- 			vulnerability. System may allow data leaks with this
- 			option.
+Cheers
  
-+	nospectre_bhb	[ARM64] Disable all mitigations for Spectre-BHB (branch
-+			history injection) vulnerability. System may allow data leaks
-+			with this option.
-+
- 	nospec_store_bypass_disable
- 			[HW] Disable all mitigations for the Speculative Store Bypass vulnerability
- 
-diff --git a/arch/arm64/kernel/proton-pack.c b/arch/arm64/kernel/proton-pack.c
-index 40be3a7..bd16903 100644
---- a/arch/arm64/kernel/proton-pack.c
-+++ b/arch/arm64/kernel/proton-pack.c
-@@ -988,6 +988,14 @@ static void this_cpu_set_vectors(enum arm64_bp_harden_el1_vectors slot)
- 	isb();
- }
- 
-+static bool __read_mostly __nospectre_bhb;
-+static int __init parse_spectre_bhb_param(char *str)
-+{
-+	__nospectre_bhb = true;
-+	return 0;
-+}
-+early_param("nospectre_bhb", parse_spectre_bhb_param);
-+
- void spectre_bhb_enable_mitigation(const struct arm64_cpu_capabilities *entry)
- {
- 	bp_hardening_cb_t cpu_cb;
-@@ -1001,7 +1009,7 @@ void spectre_bhb_enable_mitigation(const struct arm64_cpu_capabilities *entry)
- 		/* No point mitigating Spectre-BHB alone. */
- 	} else if (!IS_ENABLED(CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY)) {
- 		pr_info_once("spectre-bhb mitigation disabled by compile time option\n");
--	} else if (cpu_mitigations_off()) {
-+	} else if (cpu_mitigations_off() || __nospectre_bhb) {
- 		pr_info_once("spectre-bhb mitigation disabled by command line option\n");
- 	} else if (supports_ecbhb(SCOPE_LOCAL_CPU)) {
- 		state = SPECTRE_MITIGATED;
--- 
-1.8.3.1
+> Thanks
+>    j
+> 
+> On Fri, Aug 26, 2022 at 12:00:50PM +0200, Jules Maselbas wrote:
+> > Remove redundant word `the`.
+> >
+> > CC: Jacopo Mondi <jacopo@jmondi.org>
+> > CC: linux-media@vger.kernel.org
+> > Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
+> > ---
+> >  drivers/media/i2c/mt9v111.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/media/i2c/mt9v111.c b/drivers/media/i2c/mt9v111.c
+> > index 2dc4a0f24ce8..7beca0b70b72 100644
+> > --- a/drivers/media/i2c/mt9v111.c
+> > +++ b/drivers/media/i2c/mt9v111.c
+> > @@ -633,7 +633,7 @@ static int mt9v111_hw_config(struct mt9v111_dev *mt9v111)
+> >
+> >  	/*
+> >  	 * Set pixel integration time to the whole frame time.
+> > -	 * This value controls the the shutter delay when running with AE
+> > +	 * This value controls the shutter delay when running with AE
+> >  	 * disabled. If longer than frame time, it affects the output
+> >  	 * frame rate.
+> >  	 */
+> > --
+> > 2.17.1
+> >
+
+
+
 
