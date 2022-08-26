@@ -2,246 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EABECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67099ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245567AbiHZI6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
+        id S245575AbiHZJDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 05:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245273AbiHZI6x (ORCPT
+        with ESMTP id S229904AbiHZJDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:58:53 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C027CD5EA0
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:58:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661504332; x=1693040332;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=qd4FqNTu52qrVx/MtAe2JAV2sDMVlYfag3oD7tG2ki4=;
-  b=muOjGmFQcmTFEBYe9bMnEUW5AxmUVC9tAPaWd2FV22FMupXa88RoYtr6
-   bcj9LEbqkMBvsZdILrmE9OKj517xddltLmfpJcMt689LoFwYT7QC4DlXW
-   3GfsgOl73IlrqIjmlas55vnvn1HBwS9n5PeIrzONEAGzp2axFiFoJYIdI
-   dxp/W54v+L0xL03MrWnO4aewUJhBaMHJAiD4YokXl2l0gM0kkIrhPMbV/
-   O/k/eoajjF5RFDKfHgZ0CwxHKEDBMlYTzt6zkdFWu1r4njf7h5nCcQvVj
-   J0ZRtx/+5PJ6xmo5JL4O3VmtP7v0CRh/67ZHwzapgtHO1WU6kiO6b5RVy
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="293203228"
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="293203228"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 01:58:52 -0700
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="671383823"
-Received: from zhaohaif-mobl1.ccr.corp.intel.com (HELO [10.254.212.242]) ([10.254.212.242])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 01:58:50 -0700
-Message-ID: <a2479500-479a-22ef-3bd2-90606a26a35e@linux.intel.com>
-Date:   Fri, 26 Aug 2022 16:58:48 +0800
+        Fri, 26 Aug 2022 05:03:45 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F195CD39B9
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:03:43 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id q7so1180796lfu.5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:03:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=6wjKp5duJTgVfzr1UXrwjF1SALPZrTw3gPVi12ZjH/g=;
+        b=qzAMa2OWyy36WWaZwRfSzNNZqXwBIqn7RW1geIbwXoLZbxJ20jcuOQ43Pd0nkn9fOb
+         RCX57WrBDnQ1/MtpmUvixjAeiITsndFGd8381UD2uc3E6UxNP3vSDTBAYHb9EL9STfjL
+         bQM576O9O5ND/BnhZhbDaGupllZa2HTbhftLmuVrfydgxE2jGwtgn8usWEKJ0lYMa62L
+         p7/uf3nFQIr5eKPGwd7y30DFVGzuy+sscnKJj+SIw9j8vfs5ozq/P+aGco/UTxF+cZFr
+         mIw65hXoJ151Vp4g47rISWYFjKN3M0eJZgDW8k1Prs2N903GaB8QMDwiDlsZGR+XB4x8
+         32wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=6wjKp5duJTgVfzr1UXrwjF1SALPZrTw3gPVi12ZjH/g=;
+        b=jEnfTiFb9SZLyldDSAzpgJ0jfW/g9FAD7lExtUoelQHwbRi/GBKqaI3tQgQ7bWU4Ae
+         3e+/8a4qMDWvcr7jW4UryeI4VA5aWFXkufgXW8ao5ZNR0/pNK0yfwKWYOlsPRQYfaegk
+         xc1IvSV+Ev/nylaYKzRfxv6FHR9rHRReWWJuE8CGLo1bRs1OPN5ZsFbHVWAGFRIqhFhL
+         qD6c9KECsYP2tFTCXvB+QSyGpFdNsLTo+nfCtBt/wBudo7QkOkduAtRjd2QmI42lQLLa
+         TRql66xTpRtC+3bdJTwGJDx5ldFDdv4JOw6w+tOYY73aHTUJ9QGQrndodexq0NXHXIsW
+         SjNw==
+X-Gm-Message-State: ACgBeo3uWTOkQDPq+2IvmgWJOE5dxe/Qeqt6VLpkVMRCvcfVR95OY22j
+        FGKPhF2MeFGqO+ZtZeUrNZshWQ==
+X-Google-Smtp-Source: AA6agR4CyEq8JY4VnBVKnVhOwimuVLC9QM98RVtC/yFTvCc2rvMTc7BcK1xzXFH+y17DGL5I65x8Kw==
+X-Received: by 2002:a05:6512:1087:b0:492:e36c:d6c6 with SMTP id j7-20020a056512108700b00492e36cd6c6mr2094268lfg.502.1661504622340;
+        Fri, 26 Aug 2022 02:03:42 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id o4-20020ac24e84000000b00492de54940asm318699lfr.82.2022.08.26.02.03.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 02:03:41 -0700 (PDT)
+Message-ID: <c49749ed-5fce-6d91-b114-e4e0daf64042@linaro.org>
+Date:   Fri, 26 Aug 2022 12:03:34 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [External] Re: [PATCH v2] iommu/iova: Optimize alloc_iova with
- rbtree_augmented
-To:     Peng Zhang <zhangpeng.00@bytedance.com>, joro@8bytes.org,
-        will@kernel.org
-Cc:     iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        robin.murphy@arm.com
-References: <20220824095139.66477-1-zhangpeng.00@bytedance.com>
- <06c215c6-cbae-d6b9-312c-6535e51a3128@linux.intel.com>
- <486fcde8-e9f5-e40c-db5d-fd3ade59b267@bytedance.com>
-From:   Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <486fcde8-e9f5-e40c-db5d-fd3ade59b267@bytedance.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH v2 2/3] drm/msm/dp: Remove pixel_rate from struct dp_ctrl
+Content-Language: en-GB
+To:     Stephen Boyd <swboyd@chromium.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        Sean Paul <sean@poorly.run>, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>
+References: <20220623002540.871994-1-swboyd@chromium.org>
+ <20220623002540.871994-3-swboyd@chromium.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220623002540.871994-3-swboyd@chromium.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Peng,
+On 23/06/2022 03:25, Stephen Boyd wrote:
+> This struct member is stored to in the function that calls the function
+> which uses it. That's possible with a function argument instead of
+> storing to a struct member. Pass the pixel_rate as an argument instead
+> to simplify the code. Note that dp_ctrl_link_maintenance() was storing
+> the pixel_rate but never using it so we just remove the assignment from
+> there.
+> 
+> Cc: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 
-在 2022/8/25 16:10, Peng Zhang 写道:
->
-> Hi,
->
-> Here is a real example. The version of kernel is 5.4.56.
-> Occurs when a lot of iova are not released for a long time.
->
-> [Wed May 25 05:27:59 2022] watchdog: BUG: soft lockup - CPU#58 stuck 
-> for 23s! [ksoftirqd/58:302]
-> [Wed May 25 05:27:59 2022] Call Trace:
-> [Wed May 25 05:27:59 2022]  alloc_iova+0xf2/0x140
-> [Wed May 25 05:27:59 2022]  alloc_iova_fast+0x56/0x251
-The rcache doesn't work at all , the worst case.
-> [Wed May 25 05:27:59 2022]  dma_ops_alloc_iova.isra.27+0x4b/0x70
-> [Wed May 25 05:27:59 2022]  __map_single.isra.28+0x4a/0x1d0
-> [Wed May 25 05:27:59 2022]  mlx5e_sq_xmit+0x98d/0x12b0 [mlx5_core]
-> [Wed May 25 05:27:59 2022]  ? packet_rcv+0x43/0x460
-> [Wed May 25 05:27:59 2022]  ? dev_hard_start_xmit+0x90/0x1e0
-> [Wed May 25 05:27:59 2022]  ? sch_direct_xmit+0x111/0x320
-> [Wed May 25 05:27:59 2022]  ? __qdisc_run+0x143/0x540
-> [Wed May 25 05:27:59 2022]  ? __dev_queue_xmit+0x6c3/0x8e0
-> [Wed May 25 05:27:59 2022]  ? ip_finish_output2+0x2d5/0x580
-> [Wed May 25 05:27:59 2022]  ? __ip_finish_output+0xe9/0x1b0
-> [Wed May 25 05:27:59 2022]  ? ip_output+0x6c/0xe0
-> [Wed May 25 05:27:59 2022]  ? __ip_finish_output+0x1b0/0x1b0
-> [Wed May 25 05:27:59 2022]  ? __ip_queue_xmit+0x15d/0x420
-> [Wed May 25 05:27:59 2022]  ? __tcp_transmit_skb+0x405/0x600
-> [Wed May 25 05:27:59 2022]  ? tcp_delack_timer_handler+0xb7/0x1b0
-> [Wed May 25 05:27:59 2022]  ? tcp_delack_timer+0x8b/0xa0
-> [Wed May 25 05:27:59 2022]  ? tcp_delack_timer_handler+0x1b0/0x1b0
-> [Wed May 25 05:27:59 2022]  ? call_timer_fn+0x2b/0x120
-> [Wed May 25 05:27:59 2022]  ? run_timer_softirq+0x1a6/0x420
-> [Wed May 25 05:27:59 2022]  ? update_load_avg+0x7e/0x640
-> [Wed May 25 05:27:59 2022]  ? update_curr+0xe1/0x1d0
-> [Wed May 25 05:27:59 2022]  ? __switch_to+0x7a/0x3e0
-> [Wed May 25 05:27:59 2022]  ? __do_softirq+0xda/0x2da
-> [Wed May 25 05:27:59 2022]  ? sort_range+0x20/0x20
-> [Wed May 25 05:27:59 2022]  ? run_ksoftirqd+0x26/0x40
-> [Wed May 25 05:27:59 2022]  ? smpboot_thread_fn+0xb8/0x150
-> [Wed May 25 05:27:59 2022]  ? kthread+0x110/0x130
-> [Wed May 25 05:27:59 2022]  ? kthread_park+0x80/0x80
-> [Wed May 25 05:27:59 2022]  ? ret_from_fork+0x1f/0x30
->
-> I did some more tests.
->
-> The test is single threaded.
-> Granule is 4k, limit is 2^20.
->
-> When the 1/4 address space is occupied by iova,
-> Repeat the following two steps：
->
-> 1. Randomly releases an iova.
-> 2. Allocate an iova of size 1 within the allocation limit of 2^20.
->
-> Before improvement:
->> Tracing 1 functions for "alloc_iova"... Hit Ctrl-C to end.
->> ^C
->>      nsecs               : count     distribution
->>          0 -> 1          : 0 |                                        |
->>          2 -> 3          : 0 |                                        |
->>          4 -> 7          : 0 |                                        |
->>          8 -> 15         : 0 |                                        |
->>         16 -> 31         : 0 |                                        |
->>         32 -> 63         : 0 |                                        |
->>         64 -> 127        : 0 |                                        |
->>        128 -> 255        : 0 |                                        |
->>        256 -> 511        : 352 
->> |                                        |
->>        512 -> 1023       : 258078 
->> |****************************************|
->>       1024 -> 2047       : 3612 
->> |                                        |
->>       2048 -> 4095       : 426 
->> |                                        |
->>       4096 -> 8191       : 183 
->> |                                        |
->>       8192 -> 16383      : 6 |                                        |
->>      16384 -> 32767      : 5 |                                        |
->>      32768 -> 65535      : 9 |                                        |
->>      65536 -> 131071     : 18 |                                        |
->>     131072 -> 262143     : 28 |                                        |
->>     262144 -> 524287     : 74 |                                        |
->>     524288 -> 1048575    : 109 
->> |                                        |
->>    1048576 -> 2097151    : 170 
->> |                                        |
->>    2097152 -> 4194303    : 100 
->> |                                        |
->>    4194304 -> 8388607    : 1 |                                        |
->>
->> avg = 3110 nsecs, total: 818614399 nsecs, count: 263171
->>
->> Tracing 1 functions for "remove_iova"... Hit Ctrl-C to end.
->> ^C
->>      nsecs               : count     distribution
->>          0 -> 1          : 0 |                                        |
->>          2 -> 3          : 0 |                                        |
->>          4 -> 7          : 0 |                                        |
->>          8 -> 15         : 0 |                                        |
->>         16 -> 31         : 0 |                                        |
->>         32 -> 63         : 0 |                                        |
->>         64 -> 127        : 0 |                                        |
->>        128 -> 255        : 0 |                                        |
->>        256 -> 511        : 250651 
->> |****************************************|
->>        512 -> 1023       : 12405 
->> |*                                       |
->>       1024 -> 2047       : 111 
->> |                                        |
->>       2048 -> 4095       : 1 |                                        |
->>
->> avg = 433 nsecs, total: 114136319 nsecs, count: 263168
->
-> With improvement:
->> Tracing 1 functions for "alloc_iova"... Hit Ctrl-C to end.
->> ^C
->>      nsecs               : count     distribution
->>          0 -> 1          : 0 |                                        |
->>          2 -> 3          : 0 |                                        |
->>          4 -> 7          : 0 |                                        |
->>          8 -> 15         : 0 |                                        |
->>         16 -> 31         : 0 |                                        |
->>         32 -> 63         : 0 |                                        |
->>         64 -> 127        : 0 |                                        |
->>        128 -> 255        : 0 |                                        |
->>        256 -> 511        : 0 |                                        |
->>        512 -> 1023       : 258975 
->> |****************************************|
->>       1024 -> 2047       : 3618 
->> |                                        |
->>       2048 -> 4095       : 497 
->> |                                        |
->>       4096 -> 8191       : 74 |                                        |
->>       8192 -> 16383      : 4 |                                        |
->>      16384 -> 32767      : 1 |                                        |
->>
->> avg = 637 nsecs, total: 167854061 nsecs, count: 263169
->>
->> Tracing 1 functions for "remove_iova"... Hit Ctrl-C to end.
->> ^C
->>      nsecs               : count     distribution
->>          0 -> 1          : 0 |                                        |
->>          2 -> 3          : 0 |                                        |
->>          4 -> 7          : 0 |                                        |
->>          8 -> 15         : 0 |                                        |
->>         16 -> 31         : 0 |                                        |
->>         32 -> 63         : 0 |                                        |
->>         64 -> 127        : 0 |                                        |
->>        128 -> 255        : 0 |                                        |
->>        256 -> 511        : 221560 
->> |****************************************|
->>        512 -> 1023       : 41427 
->> |*******                                 |
->>       1024 -> 2047       : 179 
->> |                                        |
->>       2048 -> 4095       : 2 |                                        |
->>
->> avg = 477 nsecs, total: 125540399 nsecs, count: 263168
-
-Though only 3-4 drivers use alloc_iova() directly, in my understanding
-
-your test has simulated the worst case, rcache doesn't work at all,
-
-"alloc_iova" +“remove_iova” number looks great for worst case.
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
 
-Reviewed-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+> ---
+> 
+> dp_ctrl_on_link() almost doesn't even use the pixel_clk either. It just
+> prints the value. I kept it around because maybe it is useful? But if
+> not, then we can remove even more code.
 
-
-
->
->> s/distbution/distribution ?
-> Sorry, it's a typo.
->
-> I don't have a test program for "alloc_iova_fast + free_iova_fast"
-> right now.
->
-> Thanks,
->
-> Peng
+Feel free to submit a patch and check if anybody (Kuogee? Abhinav?) 
+complains.
 
 -- 
-"firm, enduring, strong, and long-lived"
+With best wishes
+Dmitry
 
