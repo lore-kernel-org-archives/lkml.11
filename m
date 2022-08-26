@@ -2,109 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F09ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E767CECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:36:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239937AbiHZPfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58474 "EHLO
+        id S244831AbiHZPgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 11:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230322AbiHZPfP (ORCPT
+        with ESMTP id S243036AbiHZPfw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:35:15 -0400
-Received: from mout.web.de (mout.web.de [212.227.17.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68B411834
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:35:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1661528104;
-        bh=Q24fXdYBNEceQhIyDpe9CNWOscXknyIfXHOgij1vNW0=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=MIqIYmsMgPRsnNpSAUzYANyHWT0SO7JBOni/f8FkRaqiJSWpCqQMU2gOXBgmW5JKP
-         NNBIgo55M0KcYtQ6Zg4Jd4Ih3QJe43sZKaD5krnH2DxDHNl/1DkU2mzrLDqXoloon3
-         2YZ/BdYDsxyyfe4RdY9DdvKj9bnnxB975xPloWJY=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from gecko ([46.223.150.91]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1Ma0Pm-1oxPKy2uZg-00W6MZ; Fri, 26
- Aug 2022 17:29:24 +0200
-Date:   Fri, 26 Aug 2022 15:29:13 +0000
-From:   Lukas Straub <lukasstraub2@web.de>
-To:     linux-um <linux-um@lists.infradead.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>, <x86@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/2] um: Fix compiler warnings on x86
-Message-ID: <20220826152913.017387dc@gecko>
+        Fri, 26 Aug 2022 11:35:52 -0400
+Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9263131ECD;
+        Fri, 26 Aug 2022 08:35:45 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.229])
+        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4MDkMv6kHZz9xFm3;
+        Fri, 26 Aug 2022 23:31:55 +0800 (CST)
+Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
+        by APP1 (Coremail) with SMTP id LxC2BwAHJREl6AhjIoFPAA--.24624S2;
+        Fri, 26 Aug 2022 16:35:16 +0100 (CET)
+Message-ID: <bb4bdd90017d5772bdc31dfac93f2e86c6c61b82.camel@huaweicloud.com>
+Subject: Re: [PATCH v12 02/10] btf: Handle dynamic pointer parameter in
+ kfuncs
+From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Howells <dhowells@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Daniel =?ISO-8859-1?Q?M=FCller?= <deso@posteo.net>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Joanne Koong <joannelkoong@gmail.com>
+Date:   Fri, 26 Aug 2022 17:34:57 +0200
+In-Reply-To: <YwjcItv0q8GdzPbb@kernel.org>
+References: <20220818152929.402605-1-roberto.sassu@huaweicloud.com>
+         <20220818152929.402605-3-roberto.sassu@huaweicloud.com>
+         <YwhSCE0H+JfUe4Ew@kernel.org>
+         <CAADnVQJbTzfe28ife1+vg+ByLfyLBTCoEZW_eg8TEw838JGaog@mail.gmail.com>
+         <YwheJqUDLOxL3iTi@kernel.org> <YwjcItv0q8GdzPbb@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/3rXaueXT.MEP0yFjLDtrM6n";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Provags-ID: V03:K1:Uh5t3S8wNVbUbUVq4E22mbSCpFPXWP4E7OzZI0DA+FIedZP8r4Q
- UDk/tbHplnODEmWKMCRM0D0ZGDU6xoG2tsJRTiKJaKRFjrb70ATf+fq29XYGhrtv1RC5nMP
- EcQoxOkQYPJnpdAuy+02eSN29jl17TNjU6e6Or/AlkVYTATX8LfP1oiR6A82W/xJMxJcn08
- SzF374fFkcIUUGtrs0QmQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:FYP46OiKKSQ=:FXRL6THooh5GI326CEMawC
- kldvw/dOKTYGdSQfVI783W0Qc+ilXD34ecmozfu0nPkLv7qP1AfMGSumhlP7aDaUOb/YDDR5L
- 1UIMGT1vbIWKwVwKVbPaRtR5TREMGKbBFU7aUQnj0pCKddL+ruFyh/j/8ZdHOvBtauuWCMJ1E
- RYcrM7T75WtJvyC3IBEiR02JBZe5F+O9X7fQ/u196ULNTSgbGBVBIr0X26vI3jrb/A7JfGDNm
- Q/f4PWDubVf137GMCiqyDEagLBfXOLAjHtZlHg8Xh9HM+kZkbHZSbCllUerUGAEJ03QZY5bBQ
- J8urOBsRyTMw4FpNIXQUIZJbMQHHjvqoANIE9PYSWcHHhFrPRR57KUK5vchoRjw0aQ4ndDRIe
- S9doKuCA8Oj1hv0RDTY277nTfI5sbV5XrUz2+IiUPlg5KyM6NO9/YjcrSAuI7bdGUKfS99Aug
- KdtfVMR3RsphvER4NDuP42NniirvhHtqU6NYEY8Ngr84eqy9g6mSEtolN9OUjDIsjGlsN/uyO
- 7nF2Jkeo7RfDtdDTVGu0hZA1+7BNcjuzf+1tn2RhiE5QX3GdijThDEz81AD43w4kNp9+IU3rV
- BvsOcnxE4Zx7mqxQkgXJ0XKyOusl84W29HNSWoLw7WYB1BXS9sIWEUEVqxceUyuZITz6DMACd
- 7UPBeJO0M3boQpO6bb09+iZVwyke4C3EBrNC8SIMN/6vq9/hrqZ4+py2npfkqm7EAo/TQLHiE
- 5uO2rjqN2C/EW9TuHYs9s9S2SjTfWU3mCOC7De0XR4XkACownoMoJxppGb5aWtZRHqSWuUdFw
- Q2CM6uDiFp+VKFL5++t7iICZOglk+PQKkUCgFRhBalFa6TNKOmBkw4SBKEtSiycEo7te/SbpE
- wMQtmpp9ucSouiNq+Jh2n7IocOBQ02baWrlnuWAVYrk03CvxQYbavdOrYe2APn5Ye6zKuC+dn
- VEzQ3KJxLYbZj6HoebcYMI2OGA3xnS8xKTiF3DPN+TPnQ1oO3/aM7a7coRTl7Hy2pLSO3SjmK
- ojNHUigiDqMIVyHrUx5NfVdgOOE+brACaTGhiznY95buc5u/HJRdQSo6V1OExb1ERWtU4ko/W
- I6i7of7oHlL3FteegagMp4rPX4qpQMYRgAQdte0MHV+EH8A3WUBVBXnQQ==
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: LxC2BwAHJREl6AhjIoFPAA--.24624S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7KrWUCrW8JF18Xw17JF45Awb_yoW8ZFyDpa
+        ykAa9Fkr4UJr45CwnFqF4FyFnavr1Fqr1kury5J34FvFyqgrnFgFs2qw1Yka45Gr4kCF18
+        Xa10qry7X3W5AaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkYb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
+        AFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28IcxkI
+        7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxV
+        Cjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY
+        6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6x
+        AIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv
+        6xkF7I0E14v26r4UJVWxJrUvcSsGvfC2KfnxnUUI43ZEXa7IU1c4S7UUUUU==
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAQAQBF1jj4JUwgAAsw
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/3rXaueXT.MEP0yFjLDtrM6n
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, 2022-08-26 at 17:43 +0300, Jarkko Sakkinen wrote:
+> On Fri, Aug 26, 2022 at 08:46:14AM +0300, Jarkko Sakkinen wrote:
+> > On Thu, Aug 25, 2022 at 10:16:14PM -0700, Alexei Starovoitov wrote:
+> > > On Thu, Aug 25, 2022 at 9:54 PM Jarkko Sakkinen <
+> > > jarkko@kernel.org> wrote:
+> > > > > -static bool is_dynptr_reg_valid_init(struct bpf_verifier_env
+> > > > > *env, struct bpf_reg_state *reg,
+> > > > > -                                  enum bpf_arg_type
+> > > > > arg_type)
+> > > > > +bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env,
+> > > > > struct bpf_reg_state *reg,
+> > > > > +                           enum bpf_arg_type arg_type)
+> > > > >  {
+> > > > >       struct bpf_func_state *state = func(env, reg);
+> > > > >       int spi = get_spi(reg->off);
+> > > > > --
+> > > > > 2.25.1
+> > > > > 
+> > > > 
+> > > > Might be niticking but generally I'd consider splitting
+> > > > exports as commits of their own.
+> > > 
+> > > -static bool
+> > > +bool
+> > > 
+> > > into a separate commit?
+> > > 
+> > > I guess it makes sense for people whose salary depends on
+> > > number of commits.
+> > > We don't play these games.
+> > 
+> > What kind of argument is that anyway.
+> 
+> "Separate each *logical change* into a separate patch." [*]
 
-Hello Everyone,
-These patches fix some compiler errors on x86. I tested quickly without any
-userspace and it booted fine.
+The logical change, as per the patch subject, is allowing the
+possibility of including eBPF dynamic pointers in a kfunc definition.
+It requires to call an existing function that was already defined
+elsewhere.
 
-Regards,
-Lukas Straub
+Maybe I'm wrong, but I don't see only exporting a function definition
+to an include file as a logical change. To me, the changes in this
+patch are clearly connected. Or even better, they tell why the function
+definition has been exported, that would not appear if moving the
+function definition is a standalone patch.
 
-Lukas Straub (2):
-  um: Cleanup syscall_handler_t cast in syscalls_32.h
-  um: Cleanup compiler warning in arch/x86/um/tls_32.c
+> 
+> To add, generally any user space visible space should be an
+> isolated patch.
 
- arch/x86/um/shared/sysdep/syscalls_32.h | 5 ++---
- arch/x86/um/tls_32.c                    | 6 ------
- 2 files changed, 2 insertions(+), 9 deletions(-)
+As far as I understood, definitions visible to user space should be in
+include/uapi.
 
---=20
-2.37.2
+> 
+> Please, stop posting nonsense.
 
---Sig_/3rXaueXT.MEP0yFjLDtrM6n
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+If I may, saying this does not encourage people to try to submit their
+code. I feel it is a bit strong, and I kindly ask you to express your
+opinion in a more gentle way.
 
------BEGIN PGP SIGNATURE-----
+Thanks
 
-iQIzBAEBCAAdFiEEg/qxWKDZuPtyYo+kNasLKJxdslgFAmMI5skACgkQNasLKJxd
-slgT9BAArDpe55Yrw6Mn1PIH9dHA7KTH/Aisf7A5bAeQqyD7RtUWMFu31o+pcyja
-iqnAOtX4nan1Y43/wbPnxdhODcMKVIQvLoC59y34Ey9IVeI0YgAvEhhwAWKAs9zq
-WksBjh/MI8vpiwlouvb7RlDdxw4cc9mC0C7yI1SW57Glb7+1n/dQ8STR2V2lq9Yy
-DXoCZmq/96+Lcr6mKRIfwg1HtfC1EptLWiMnkWfJDUc2xWumyOzhK7oat1ZZ7tq3
-e8h19DjHPYAdJHpLxDtYTMngYNFJ9WWDWqfPIt0grZ07R8jGjzIaIamsTHyGx4lB
-C1UQH9w7qf5qCcve3yTKqthNsngnQMcgvgJK5+KsQTtTXisHgjMjMe59LzdwBVwk
-TItcTuh471hUMMlfCY/YJvYQ+b9I7qe6NmuFnv+P3/1QtVczNYKNHX/5kLJEJGja
-FwV71YufTGdi1VPNlqFdo5hACNeN7FA5KmpZXaP+/fCaOODuDjHs1fdZoXdt830Q
-1Wvp76emYObal8bgTj7i7TmC0/xAiakcIRZIh4+j8JRJWXe14E4J+QtjES/XhaQ3
-Dauh5SGD2nbiBSUhVF1y8JhAwrkOOJrenPWIukIac0vOZwg5PNi36gRUYGUBVch6
-Bw1qdyj2O1QiE1Y2rmcpUIwFfNk/KvKOmDeLrUINOu9N7In6KtM=
-=tTlB
------END PGP SIGNATURE-----
+Roberto
 
---Sig_/3rXaueXT.MEP0yFjLDtrM6n--
