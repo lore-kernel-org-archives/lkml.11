@@ -2,135 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ECA6ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4DB8ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244826AbiHZCgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41226 "EHLO
+        id S244360AbiHZCkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244585AbiHZCgo (ORCPT
+        with ESMTP id S233284AbiHZCkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:36:44 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13231A070;
-        Thu, 25 Aug 2022 19:36:41 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 25 Aug 2022 22:40:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF742140FC;
+        Thu, 25 Aug 2022 19:40:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MDP9L1bD7z4wgv;
-        Fri, 26 Aug 2022 12:36:37 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1661481400;
-        bh=WGwi+ljsDERmTrvD7FgH6btCL+ApehLH36qFOcbf57k=;
-        h=Date:From:To:Cc:Subject:From;
-        b=WBEzthhTQQs+iXWxKaWDVGI0u9iYD2pChYgPY0IHYbppVAi7Tc6bluR2VIXd2FliO
-         WoPTotj0msqCf5JATkcAs1sCATV7iB3CXizarRYPnkOCPBkXSelU0ISpl7FLsLShyO
-         M0OAx8nEg8oIN8sIFN5WhUuV0tMXR7y1KCr+YyNZwU8yZylCMVXcsEV8Ib980vgwLk
-         rftE65GoVQHzA/e1awr0ZWxzEjynQeXstYna4bSAbyFAy59KbBizRKta3Hd+XNAimX
-         rjLOrqlkBcXjwKtwRrqINSlnVeNg0xIsUTwHza13Th9SrAX+I/ziVdYKvstfJ1AoYP
-         zb5OFy7jZTBGw==
-Date:   Fri, 26 Aug 2022 12:36:36 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Dave Airlie <airlied@linux.ie>
-Cc:     Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the drm-intel tree
-Message-ID: <20220826123636.72fbea19@canb.auug.org.au>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71DE8B82F67;
+        Fri, 26 Aug 2022 02:40:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFA6CC433C1;
+        Fri, 26 Aug 2022 02:40:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661481607;
+        bh=F/XrCpR9e6lLBg9nz08XniZFdkkOADRu12wJy7b0C1I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PqRDbFlPCk05E8YnGrrMdNZNjAjJI2WJ01UElGjl4bs9oNqKYy+IH4/hqBpwjCX7+
+         1PpPmr70tQkFgqodpDSelmlZTwC0zTYz/IBKzcdiv9awRI/dXeAafwlOuuTcKLibaI
+         iawv0wLvrlVzuL0Ktm5agTauZHVAGJR7U493kwVAIPevCJeNODIY/YlYx8ThMXjhZa
+         7gDy5M46y7rP4aVIYjfeQOvejxmYepkCHrA0KUvpBPAPLpH+zLFvEUmYKNfj2v7MDc
+         zg/rMin0QzFZPD5gsvkoj1CXb7rzDPtJ+fhPZgGUIxvJ1Z91R5cCTn4vdhKeb8E9Cy
+         IuDJ/m+MCiChw==
+Date:   Thu, 25 Aug 2022 21:40:03 -0500
+From:   Bjorn Andersson <andersson@kernel.org>
+To:     Matthias Kaehlcke <mka@chromium.org>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        linux-clk@vger.kernel.org,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH v2 1/2] clk: qcom: gcc-sc7180: Keep the USB GDSC always on
+Message-ID: <20220826024003.qpqtdmdohdmpcskt@baldur>
+References: <20220825182152.v2.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/1fGKZE5_lC.5L6zFZWj1jcL";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825182152.v2.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/1fGKZE5_lC.5L6zFZWj1jcL
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Thu, Aug 25, 2022 at 06:21:58PM -0700, Matthias Kaehlcke wrote:
+> When the GDSC is disabled during system suspend USB is broken on
+> sc7180 when the system resumes. Mark the GDSC as always on to
+> make sure USB still works after system suspend.
+> 
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 
-Hi all,
+Rajendra, where you able to find some time to look into take the GDSC
+into retention state? Do you suggest that I merge these two patches for
+now?
 
-After merging the drm-intel tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
+Thanks,
+Bjorn
 
-drivers/gpu/drm/i915/gt/uc/intel_guc.c: In function 'intel_guc_dump_time_in=
-fo':
-drivers/gpu/drm/i915/gt/uc/intel_guc.c:399:9: error: implicit declaration o=
-f function 'intel_device_info_print_runtime'; did you mean 'intel_device_in=
-fo_print'? [-Werror=3Dimplicit-function-declaration]
-  399 |         intel_device_info_print_runtime(RUNTIME_INFO(gt->i915), p);
-      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-      |         intel_device_info_print
-
-Caused by commit
-
-  c7d3c8447b26 ("drm/i915: combine device info printing into one")
-
-interacting with commit
-
-  368d179adbac ("drm/i915/guc: Add GuC <-> kernel time stamp translation in=
-formation")
-
-from the drm tree.
-
-I have applied the following merge fix patch for today:
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Fri, 26 Aug 2022 12:30:19 +1000
-Subject: [PATCH] fix up for "drm/i915/guc: Add GuC <-> kernel time stamp tr=
-anslation information"
-
-interacting with "drm/i915: combine device info printing into one".
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/gpu/drm/i915/gt/uc/intel_guc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc.c b/drivers/gpu/drm/i915/=
-gt/uc/intel_guc.c
-index ab4aacc516aa..977278d71182 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc.c
-@@ -396,7 +396,7 @@ void intel_guc_dump_time_info(struct intel_guc *guc, st=
-ruct drm_printer *p)
- 	u32 stamp =3D 0;
- 	u64 ktime;
-=20
--	intel_device_info_print_runtime(RUNTIME_INFO(gt->i915), p);
-+	intel_device_info_print(INTEL_INFO(gt->i915), RUNTIME_INFO(gt->i915), p);
-=20
- 	with_intel_runtime_pm(&gt->i915->runtime_pm, wakeref)
- 		stamp =3D intel_uncore_read(gt->uncore, GUCPMTIMESTAMP);
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/1fGKZE5_lC.5L6zFZWj1jcL
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMIMbQACgkQAVBC80lX
-0GxI3QgAon59yMGf5vKSdI+mDq+GhVj10XuhcnG2AhKKy0M2uPY/CBlzfXqowC8c
-AEg5DD0Ey3NnrQxBTIZwXOcjzFSwVjP0+MzcdPKMU0dYer/CXQwGWThxR0adk0NM
-d4yzTPxEd3BBWkVYd93OfN9YKZIYHyDjQ/lbrvsMyjrecdxYXiW3FeDbIWfIsTs2
-gXtqIZ2m4yUDMG8QaWPzez1zQLt56TplzpT3Dk1KigGLNzNm34wf90OeEI/bBV35
-W8UWCATVB98kwrfB/HsjJl+UNL8ALCq2qhqwfKHaBiyyjCahkWaJdCmSIFeulbKH
-W0cq4noF+LWw+9k84aztFCZvYSKlsw==
-=7x6E
------END PGP SIGNATURE-----
-
---Sig_/1fGKZE5_lC.5L6zFZWj1jcL--
+> ---
+> I'm not entirely sure that this is the correct solution. What makes
+> me doubt is that only msm8953 sets ALWAYS_ON for the USB GDSC. Is USB
+> broken after suspend on all the other QC platforms?
+> 
+> Changes in v2:
+> - set the flags of the GDSC not of the GDSC power domain
+> - updated commit message
+> 
+>  drivers/clk/qcom/gcc-sc7180.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/clk/qcom/gcc-sc7180.c b/drivers/clk/qcom/gcc-sc7180.c
+> index c2ea09945c47..c0d7509a782e 100644
+> --- a/drivers/clk/qcom/gcc-sc7180.c
+> +++ b/drivers/clk/qcom/gcc-sc7180.c
+> @@ -2225,6 +2225,7 @@ static struct gdsc usb30_prim_gdsc = {
+>  		.name = "usb30_prim_gdsc",
+>  	},
+>  	.pwrsts = PWRSTS_OFF_ON,
+> +	.flags = ALWAYS_ON,
+>  };
+>  
+>  static struct gdsc hlos1_vote_mmnoc_mmu_tbu_hf0_gdsc = {
+> -- 
+> 2.37.2.672.g94769d06f0-goog
+> 
