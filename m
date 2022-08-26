@@ -2,108 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB794ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0486FECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343589AbiHZIcH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
+        id S229992AbiHZIeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 04:34:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343630AbiHZIcC (ORCPT
+        with ESMTP id S1343534AbiHZIeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:32:02 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE3CDD4775
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:32:00 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id t129so921063pfb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:32:00 -0700 (PDT)
+        Fri, 26 Aug 2022 04:34:15 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A98D51CC
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:34:12 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id l33-20020a05600c1d2100b003a645240a95so433492wms.1
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:34:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc;
-        bh=HGwS3OwkfwDxERtuzQGvNMSPhF82bFpGx5C7eTjqwZo=;
-        b=EPsyWypD33QcVW4SCyLjAm9PAiP16Aj8PplboIwAG/F66l5bvFtyXub0S7WHdAx3EH
-         N9PCD+XOwb/KBcvxL1uy4doXAtRsIDC7ueYEzzMtjBcXDUuHksCdFVskFESSOvWsgpWt
-         vCs/zq0HAtll3C4ovMN8CXWmai49o6E6h+sZLygFGpeKpuWEVP2AMUjBiMMqeT4Yssoo
-         68zWlRK3v3lAg9jc5xGgIZQ7YA3sE4ctnU34tTk7TS5PDC3IbOo1Hw/R1nj8PthFLidU
-         RdLRci6dShTBBs+h3TWCGOr3Dwl2af/URPZbiP0bg7mewFQ557XGTouLcE27U/3NE7XH
-         jyjg==
+        d=amarulasolutions.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=qQYhF9Tm4lqCbd2L4pV2F+K+GFROrI4ntq7bX+5OTak=;
+        b=Ol1GmYh7Vrd7PozWRW05PvKd2zYLkHfHcZZI+LjPyHk66q4uTrqkGfLsU8mlYRPJ+b
+         SFG6yqUMTW8A0CYFqMZT4LIYU8SMxQxeifiq/Ko2r/DZ1h36PwzktVkWIMmX3C5R/Fa8
+         4i+Bg3dHWS9MAAqlJ6a+a0mX4Xb1oD0vY50IA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=HGwS3OwkfwDxERtuzQGvNMSPhF82bFpGx5C7eTjqwZo=;
-        b=I2sMV2KyKfR8bZFIE3Poti639lEUi0dqNeWFlP/q0l/9YWY3wIimXYCX+bn/Ju54Xe
-         YMZzqkSz6PJFOcuBc1XaAPy79SyDT5elAsbnnbz8dYEUWTUU/qRxOwFDFtLZ0QUiSQE9
-         v5S4ACjP7l7t4qfOGNPjgTGr3jyF07A+NGw0Xz4YYwCoFkvWaGGhhIq1bo7g5ccU0t7F
-         UcA8sRRhKJGuYv+zpeSlCaVlciDY0Z2TexBa8gJDWRT2wC3K1l+AXKeEleHpZbKCtgW5
-         nwSt1kGkEU0cNRmFYcnS0WrBRgmG1akER1qufxdM0zQGf9kISTQ0RF0k1yLJDq68QYaz
-         B8Pg==
-X-Gm-Message-State: ACgBeo3JWBXqF3++QFyNoTZsDoy6RqlzZAa1M5Dzu4086IVwVsRyFSow
-        ZxeCrE4e4ydijgeIXyk27A==
-X-Google-Smtp-Source: AA6agR5e26Dd4o1ct1Xh53Ya1Lc3TsdTH+bpgF9eqipht0V/Vb1I+zPgvR7uzY7+6zK5KFDxUqDtfQ==
-X-Received: by 2002:a63:1e1b:0:b0:42b:5561:529e with SMTP id e27-20020a631e1b000000b0042b5561529emr2435166pge.514.1661502720074;
-        Fri, 26 Aug 2022 01:32:00 -0700 (PDT)
-Received: from localhost.localdomain ([43.132.141.8])
-        by smtp.gmail.com with ESMTPSA id u2-20020a170902714200b0016f1ef2cd44sm934953plm.154.2022.08.26.01.31.57
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 26 Aug 2022 01:31:59 -0700 (PDT)
-From:   xiakaixu1987@gmail.com
-X-Google-Original-From: kaixuxia@tencent.com
-To:     sj@kernel.org, akpm@linux-foundation.org
-Cc:     damon@lists.linux.dev, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Kaixu Xia <kaixuxia@tencent.com>
-Subject: [PATCH 2/2] mm/damon/vaddr: remove comparison between mm and last_mm when checking region accesses
-Date:   Fri, 26 Aug 2022 16:31:18 +0800
-Message-Id: <1661502678-19336-3-git-send-email-kaixuxia@tencent.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1661502678-19336-1-git-send-email-kaixuxia@tencent.com>
-References: <1661502678-19336-1-git-send-email-kaixuxia@tencent.com>
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=qQYhF9Tm4lqCbd2L4pV2F+K+GFROrI4ntq7bX+5OTak=;
+        b=UdE8h23RL+w79mAtzaRiSkZJN2St4jlubBC3YJiL8JxrwmP9HghT/O73qpdckvBnKV
+         rtj8ogeLgsN5mhFSn9ux6/hMPxpsBfWTuB5mcRzaVtsVGE3dJQIJf5s7X2vVE1E3lwuS
+         ZjwOH3wXdmzuv9u9xZ1NFTVv2PgL50CwImBTO85dGfiOgn4iZ4ljU7Xf6kx0cJNtwJ4D
+         eaDy7k48KQnuHUCB3wRmoM3xVaLQM2UGAgq0ZA/Hm299VTQhe06E+LPzUBbQF8Bw4Rr2
+         WdMEOG2UTYSMbxhwho2faNJ01SABm9JbIKkx6S6qfKVG1QvZ0gtQWCYC9CKkVn3z062s
+         O7kw==
+X-Gm-Message-State: ACgBeo2/GyGU2GwOoT6KjsR+v6QU4g+XCCkOufPp36xJpBsLKCG/e5cO
+        uCWmHWj8fNL+mlkWkw2MGG1v3A==
+X-Google-Smtp-Source: AA6agR4dmpmWH/4wWhB3Ip/1u/6xX+Ad0VGHS09lrBQgi5HKAdDipFcpTBkO5crU4fj7ZBBiycr1MA==
+X-Received: by 2002:a05:600c:a0a:b0:3a6:71e5:fb70 with SMTP id z10-20020a05600c0a0a00b003a671e5fb70mr4460241wmp.141.1661502851310;
+        Fri, 26 Aug 2022 01:34:11 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-49-118.cust.vodafonedsl.it. [188.217.49.118])
+        by smtp.gmail.com with ESMTPSA id a17-20020adffb91000000b002252e5a6841sm1294323wrr.57.2022.08.26.01.34.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 01:34:11 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 10:34:08 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Ming Qian <ming.qian@nxp.com>
+Cc:     "mchehab@kernel.org" <mchehab@kernel.org>,
+        "hverkuil-cisco@xs4all.nl" <hverkuil-cisco@xs4all.nl>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "X.H. Bao" <xiahong.bao@nxp.com>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [EXT] Re: [PATCH v5 2/4] media: amphion: tell and handle
+ contiguous and non contiguous format
+Message-ID: <20220826083408.GC3151@tom-ThinkPad-T14s-Gen-2i>
+References: <cover.1661390673.git.ming.qian@nxp.com>
+ <7e6a945b898254679bd93e7e001e7c24b5aea0ef.1661390673.git.ming.qian@nxp.com>
+ <20220826072047.GA3151@tom-ThinkPad-T14s-Gen-2i>
+ <AM6PR04MB634128ED70894F35B629C69AE7759@AM6PR04MB6341.eurprd04.prod.outlook.com>
+ <20220826082717.GB3151@tom-ThinkPad-T14s-Gen-2i>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220826082717.GB3151@tom-ThinkPad-T14s-Gen-2i>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kaixu Xia <kaixuxia@tencent.com>
+On Fri, Aug 26, 2022 at 10:27:17AM +0200, Tommaso Merciai wrote:
+> Hi Ming,
+> 
+> On Fri, Aug 26, 2022 at 07:47:47AM +0000, Ming Qian wrote:
+> > [snip]
+> > 
+> > >> diff --git a/drivers/media/platform/amphion/vpu_helpers.c
+> > >> b/drivers/media/platform/amphion/vpu_helpers.c
+> > >> index e9aeb3453dfc..019c77e84514 100644
+> > >> --- a/drivers/media/platform/amphion/vpu_helpers.c
+> > >> +++ b/drivers/media/platform/amphion/vpu_helpers.c
+> > >> @@ -59,6 +59,36 @@ const struct vpu_format
+> > >*vpu_helper_find_format(struct vpu_inst *inst, u32 type,
+> > >>       return NULL;
+> > >>  }
+> > >>
+> > >> +const struct vpu_format *vpu_helper_find_sibling(struct vpu_inst
+> > >> +*inst, u32 type, u32 pixelfmt) {
+> > >> +     const struct vpu_format *fmt;
+> > >> +     const struct vpu_format *sibling;
+> > >> +
+> > >> +     fmt = vpu_helper_find_format(inst, type, pixelfmt);
+> > >> +     if (!fmt || !fmt->sibling)
+> > >> +             return NULL;
+> > >> +
+> > >> +     sibling = vpu_helper_find_format(inst, type, fmt->sibling);
+> > >> +     if (!sibling || sibling->sibling != fmt->pixfmt ||
+> > >> +         sibling->comp_planes != fmt->comp_planes)
+> > >> +             return NULL;
+> > >
+> > >I think to preserve code style you need the following solutions on this if
+> > >statement:
+> > >
+> > >if (!sibling || (sibling->sibling != fmt->pixfmt) ||
+> > >    (sibling->comp_planes != fmt->comp_planes))
+> > >         return NULL;
+> > >
+> > >I think I have suggested to you this solution on the v4. But never mind we
+> > >need this :)
+> > >
+> > >Thanks
+> > >
+> > 
+> > Hi Tommaso,
+> >     The parentheses are unnecessary, the checkpatch.pl will report the following style problems if I add the parentheses:
+> > 
+> > CHECK: Unnecessary parentheses around 'sibling->sibling != fmt->pixfmt'
+> > #11: FILE: drivers/media/platform/amphion/vpu_helpers.c:72:
+> > +       if (!sibling || (sibling->sibling != fmt->pixfmt) ||
+> > +           (sibling->comp_planes != fmt->comp_planes))
+> > 
+> > CHECK: Unnecessary parentheses around 'sibling->comp_planes != fmt->comp_planes'
+> > #11: FILE: drivers/media/platform/amphion/vpu_helpers.c:72:
+> > +       if (!sibling || (sibling->sibling != fmt->pixfmt) ||
+> > +           (sibling->comp_planes != fmt->comp_planes))
+> > 
+> > total: 0 errors, 0 warnings, 2 checks, 10 lines checked
+> > 
+> > NOTE: For some of the reported defects, checkpatch may be able to
+> >       mechanically convert to the typical style using --fix or --fix-inplace.
+> > 
+> > 1.patch has style problems, please review.
+> > 
+> > NOTE: If any of the errors are false positives, please report
+> >       them to the maintainer, see CHECKPATCH in MAINTAINERS.
+> 
+> Sorry, my bad. I don't check this using checkpatch.pl, but checking the
+> others driver code, you are right. Thanks for clarify this.
+> 
+> Then, Looks good to me.
+> 
+> Regards,
+> Tommaso
 
-The damon regions that belong to the same damon target have the same
-'struct mm_struct *mm', so it's unnecessary to compare the mm and last_mm
-objects among the damon regions in one damon target when checking accesses.
+Forgot the tag:
 
-Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
----
- mm/damon/vaddr.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+Reviewed-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
 
-diff --git a/mm/damon/vaddr.c b/mm/damon/vaddr.c
-index c8c2f306bb6d..db9d0ab37a52 100644
---- a/mm/damon/vaddr.c
-+++ b/mm/damon/vaddr.c
-@@ -534,14 +534,13 @@ static bool damon_va_young(struct mm_struct *mm, unsigned long addr,
-  */
- static void __damon_va_check_access(struct mm_struct *mm, struct damon_region *r)
- {
--	static struct mm_struct *last_mm;
- 	static unsigned long last_addr;
- 	static unsigned long last_page_sz = PAGE_SIZE;
- 	static bool last_accessed;
- 
- 	/* If the region is in the last checked page, reuse the result */
--	if (mm == last_mm && (ALIGN_DOWN(last_addr, last_page_sz) ==
--				ALIGN_DOWN(r->sampling_addr, last_page_sz))) {
-+	if (ALIGN_DOWN(last_addr, last_page_sz) ==
-+				ALIGN_DOWN(r->sampling_addr, last_page_sz)) {
- 		if (last_accessed)
- 			r->nr_accesses++;
- 		return;
-@@ -551,7 +550,6 @@ static void __damon_va_check_access(struct mm_struct *mm, struct damon_region *r
- 	if (last_accessed)
- 		r->nr_accesses++;
- 
--	last_mm = mm;
- 	last_addr = r->sampling_addr;
- }
- 
+> 
+> -- 
+> Tommaso Merciai
+> Embedded Linux Engineer
+> tommaso.merciai@amarulasolutions.com
+> __________________________________
+> 
+> Amarula Solutions SRL
+> Via Le Canevare 30, 31100 Treviso, Veneto, IT
+> T. +39 042 243 5310
+> info@amarulasolutions.com
+> www.amarulasolutions.com
+
 -- 
-2.27.0
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
 
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
