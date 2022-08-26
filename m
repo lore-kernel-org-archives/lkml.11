@@ -2,187 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C69CECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8ADBECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344471AbiHZPQ4 (ORCPT
+        id S1344545AbiHZPSw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50674 "EHLO
+        Fri, 26 Aug 2022 11:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344576AbiHZPPp (ORCPT
+        with ESMTP id S1344522AbiHZPSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:15:45 -0400
-Received: from mail-lj1-x24a.google.com (mail-lj1-x24a.google.com [IPv6:2a00:1450:4864:20::24a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E48DD4D6
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:10:20 -0700 (PDT)
-Received: by mail-lj1-x24a.google.com with SMTP id be32-20020a05651c172000b00261b5eae43eso661184ljb.10
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:10:20 -0700 (PDT)
+        Fri, 26 Aug 2022 11:18:34 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEBF8E1AA6
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:12:22 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id a65so1834564pfa.1
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:12:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc;
-        bh=fxlXGK8qL+YVfFcW6ClvjL4YS8Ri9qaHIYNR2qoUuzA=;
-        b=Q8VLjQ5xsWoRQwcBX26q4ZfJywgvwwYMqm7WRIZT/igOO0C+hQHvWJdj6bKE/htghx
-         DrY+lrNXNEbosReTbTCbvhlRqJK2QXAnzf9wyBVGEBrx0xxr82tqOecv4nBtt+ZxQ/yz
-         olXwbcf4S8A0zqAksvcEzulatqIcfYttRp+CQJcmIHJmyH6BPQSBoduAFmbbmZi1yVjp
-         Tg6Bb8K5bppJxRqKIw0j6if6T//cGZVzeA7QuH2nxxvPggC9uSXoPvQi5rO7W7h+JR7N
-         w+bOFVhYur+hDrR+w9sC1KCjIT/m0VnGKDSplsMs4+EUNYFwUHkEBbvxDpMspo6USKZQ
-         VmLw==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=H5aKhL0H5aovfWEQe3Yl5wVuG9Fmcah6YUsPGQ5/tTo=;
+        b=ObkFWLkU/W6NS0S5cvTChiL+vaXssKRwVhvY3/BYrQfY1cdJLyW0tnc0OQwYCn1F69
+         YiUJh5Q+5PGyeraq4IXMbPladtjkb4SaQHupeleX75BfSFJoPwgfvGs5Q05+MwmMrbZY
+         lmcsLF2kpusabWR1QDZcwTMGPazOwTFykhkns=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=fxlXGK8qL+YVfFcW6ClvjL4YS8Ri9qaHIYNR2qoUuzA=;
-        b=cFAokgwv1VbL0leQ4+pI7tjryyWal5Ozbl2uXlh9nbVUqlZzXr5Ik3WaoQnhdbSqgc
-         4j5B6P/H5nD/9QmchQQEnFrjF198IBuq1SWTjbWA1ln+VojPvJY0H+gpkGxJbA/dvABc
-         XsRpblUG5H7klaB4hJgZuJ5iJA1H2nd5/DJ3jrCgZaDZvC5sQ/4uVVXcgTF3L+NyKyW9
-         uGADMF/XUWUmWiSMXWrgt4Q9lgvudlk4M77/ZyvpLiqFsGWoE4a/L1zhb+DITo1HJyTH
-         Lh3KIgkx5fihDGTU51Tbb1rX0saSF9ecYUOSx2nHpFPPwRrtpOjohEcEclEGws5FhOld
-         goYA==
-X-Gm-Message-State: ACgBeo2FSzN4TkXRUHPuWbKL6ivGbqtgDAuclzL4Zu95wZJW8jcHLxex
-        +ofCOGFvEJht+RVcmrB9cXm9L+sZG8I=
-X-Google-Smtp-Source: AA6agR4ts2QVsl2UWCVwazOIhjWaaZlRudAXUf4/lJNteJtVBKT5mB6+2t9fiOdhKBlLEptewn0gZtbEsjs=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:5207:ac36:fdd3:502d])
- (user=glider job=sendgmr) by 2002:a19:e012:0:b0:492:bec1:7f9d with SMTP id
- x18-20020a19e012000000b00492bec17f9dmr2498937lfg.585.1661526615782; Fri, 26
- Aug 2022 08:10:15 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 17:08:07 +0200
-In-Reply-To: <20220826150807.723137-1-glider@google.com>
-Mime-Version: 1.0
-References: <20220826150807.723137-1-glider@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220826150807.723137-45-glider@google.com>
-Subject: [PATCH v5 44/44] x86: kmsan: enable KMSAN builds for x86
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=H5aKhL0H5aovfWEQe3Yl5wVuG9Fmcah6YUsPGQ5/tTo=;
+        b=0TroGZaUqnKHbpQB601I9Fss/dxOSWC5ALrzU38HFYdZgPdvVHYuqc6AlJr5T7Pl0U
+         YRfOuDlzLCJiZGAQQ23olsfZm2PhglXHYR1/qL86kPB4F5A3bMDrmcRmPlzYEXEtQAWg
+         gR5n11NGGWfc/ZngQCdYxjgMfrMR5fPuiSfPcTdkjlK2Qjs0dU9V/mgB+mm/3O08/0Qy
+         r1n+mkGwvGO0xvt1LrplBQqNHuGBMTEhCXJN3zVZWBcqGOLTp2+miROTMh+chR+tcpUn
+         PI6ebUjQtHevzm9Wi6SvHusRmjPfWNO38hhi2m68J69bexXEmYHTQh4fG+YW/ZIhJyeF
+         9OOg==
+X-Gm-Message-State: ACgBeo0MjJ1KK1I8IKTxWBZTVr/XoJkoDsl7px8j3W2RU+2HirUTewEr
+        aebYczaFQKJVvKdCr/91m4YQaw==
+X-Google-Smtp-Source: AA6agR7+xrt0m5384+Ccc3VHL1pRSo4cUOcjmLxWOcQNAaTWUYuHpPMJVTEy9kJsVx50j1aSAMZBjA==
+X-Received: by 2002:a05:6a00:1a89:b0:536:5dca:a673 with SMTP id e9-20020a056a001a8900b005365dcaa673mr4311507pfv.71.1661526732189;
+        Fri, 26 Aug 2022 08:12:12 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:87ff:bd4c:214b:f283])
+        by smtp.gmail.com with UTF8SMTPSA id z1-20020a17090a014100b001f1694dafb1sm1789508pje.44.2022.08.26.08.12.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 08:12:11 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 08:12:09 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        linux-clk@vger.kernel.org,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH v2 2/2] clk: qcom: gcc-sc7280: Keep the USB GDSCs always
+ on
+Message-ID: <YwjiyV3yeL7D1mQK@google.com>
+References: <20220825182152.v2.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
+ <20220825182152.v2.2.If09027f73daa6e1ed95f5eab02326b543c67132e@changeid>
+ <YwhzVlTZLMCAbZi7@hovoldconsulting.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YwhzVlTZLMCAbZi7@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make KMSAN usable by adding the necessary Kconfig bits.
+On Fri, Aug 26, 2022 at 09:16:38AM +0200, Johan Hovold wrote:
+> On Thu, Aug 25, 2022 at 06:21:59PM -0700, Matthias Kaehlcke wrote:
+> > When the GDSC is disabled during system suspend USB is broken on
+> > sc7280 when the system resumes. Mark the GDSC as always on to
+> > make sure USB still works after system suspend.
+> > 
+> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > ---
+> > 
+> > Changes in v2:
+> > - set the flags of the GDSC not of the GDSC power domain
+> > - updated commit message
+> > 
+> >  drivers/clk/qcom/gcc-sc7280.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/clk/qcom/gcc-sc7280.c b/drivers/clk/qcom/gcc-sc7280.c
+> > index 7ff64d4d5920..adef68d2cb0b 100644
+> > --- a/drivers/clk/qcom/gcc-sc7280.c
+> > +++ b/drivers/clk/qcom/gcc-sc7280.c
+> 
+> Perhaps you can add a comment here about why this is needed similar to
+> what I did for sc8280xp:
+> 
+> 	https://lore.kernel.org/all/20220805121250.10347-3-johan+linaro@kernel.org/
 
-Also declare x86-specific functions checking address validity
-in arch/x86/include/asm/kmsan.h.
+From Bjorn's comment on the sc7180 patch it seems it's not an dwc3
+implementation issue. IIUC the GDSCs should have a retention state
+that would be used during suspend.
 
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
-v4:
- -- per Marco Elver's request, create arch/x86/include/asm/kmsan.h
-    and move arch-specific inline functions there.
+> > @@ -3127,7 +3127,7 @@ static struct gdsc gcc_usb30_prim_gdsc = {
+> >  		.name = "gcc_usb30_prim_gdsc",
+> >  	},
+> >  	.pwrsts = PWRSTS_OFF_ON,
+> > -	.flags = VOTABLE,
+> > +	.flags = VOTABLE | ALWAYS_ON,
+> >  };
+> >  
+> >  static struct gdsc gcc_usb30_sec_gdsc = {
+> 
+> Look good otherwise. For both patches:
+> 
+> Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
 
-Link: https://linux-review.googlesource.com/id/I1d295ce8159ce15faa496d20089d953a919c125e
----
- arch/x86/Kconfig             |  1 +
- arch/x86/include/asm/kmsan.h | 55 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+)
- create mode 100644 arch/x86/include/asm/kmsan.h
-
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 697da8dae1418..bd9436cd0f29b 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -168,6 +168,7 @@ config X86
- 	select HAVE_ARCH_KASAN			if X86_64
- 	select HAVE_ARCH_KASAN_VMALLOC		if X86_64
- 	select HAVE_ARCH_KFENCE
-+	select HAVE_ARCH_KMSAN			if X86_64
- 	select HAVE_ARCH_KGDB
- 	select HAVE_ARCH_MMAP_RND_BITS		if MMU
- 	select HAVE_ARCH_MMAP_RND_COMPAT_BITS	if MMU && COMPAT
-diff --git a/arch/x86/include/asm/kmsan.h b/arch/x86/include/asm/kmsan.h
-new file mode 100644
-index 0000000000000..a790b865d0a68
---- /dev/null
-+++ b/arch/x86/include/asm/kmsan.h
-@@ -0,0 +1,55 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * x86 KMSAN support.
-+ *
-+ * Copyright (C) 2022, Google LLC
-+ * Author: Alexander Potapenko <glider@google.com>
-+ */
-+
-+#ifndef _ASM_X86_KMSAN_H
-+#define _ASM_X86_KMSAN_H
-+
-+#ifndef MODULE
-+
-+#include <asm/processor.h>
-+#include <linux/mmzone.h>
-+
-+/*
-+ * Taken from arch/x86/mm/physaddr.h to avoid using an instrumented version.
-+ */
-+static inline bool kmsan_phys_addr_valid(unsigned long addr)
-+{
-+	if (IS_ENABLED(CONFIG_PHYS_ADDR_T_64BIT))
-+		return !(addr >> boot_cpu_data.x86_phys_bits);
-+	else
-+		return true;
-+}
-+
-+/*
-+ * Taken from arch/x86/mm/physaddr.c to avoid using an instrumented version.
-+ */
-+static inline bool kmsan_virt_addr_valid(void *addr)
-+{
-+	unsigned long x = (unsigned long)addr;
-+	unsigned long y = x - __START_KERNEL_map;
-+
-+	/* use the carry flag to determine if x was < __START_KERNEL_map */
-+	if (unlikely(x > y)) {
-+		x = y + phys_base;
-+
-+		if (y >= KERNEL_IMAGE_SIZE)
-+			return false;
-+	} else {
-+		x = y + (__START_KERNEL_map - PAGE_OFFSET);
-+
-+		/* carry flag will be set if starting x was >= PAGE_OFFSET */
-+		if ((x > y) || !kmsan_phys_addr_valid(x))
-+			return false;
-+	}
-+
-+	return pfn_valid(x >> PAGE_SHIFT);
-+}
-+
-+#endif /* !MODULE */
-+
-+#endif /* _ASM_X86_KMSAN_H */
--- 
-2.37.2.672.g94769d06f0-goog
-
+Thanks!
