@@ -2,105 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0693ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 06:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC653ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 06:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbiHZGnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 02:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42288 "EHLO
+        id S245059AbiHZGnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 02:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244953AbiHZGnI (ORCPT
+        with ESMTP id S238943AbiHZGnX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 02:43:08 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8435BD1250
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 23:43:07 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id q18so670354ljg.12
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 23:43:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=BC6xgpuPVrsYHJWMCxjbD8/CEKHAHjyVQ6dzDES7reE=;
-        b=lk6N21IAZL6YGX+9AhHhJif0mxd8PuPEOdIgBWgumETu3a0ApfkcOIzzJ819JeUVvp
-         XKkj07BYNiJQJ4ScmW7gOO4Rp/jFGWBYI+kzbGukF4r9FcWP3vOq7ws3l4LpjiNzrbID
-         vAvMPoUgR3k5nZhC8keGGwOw4GsHaXt9WYrfqzjLNMIYHQrwGW08akRKDIMsYNSo/HdP
-         iiOAMFiPEWjwT5bIAGQG8CJE5/Q+zeGwlnuRo15r7+AlmbxHymeKgNrqJjzm5KmU0I6V
-         tuBoR4ke/tS26JCT+9cdfuV3oqddorubz834i4/6bdM8tGl4yl/OxVIQl/Lky7HF4N6s
-         2s1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=BC6xgpuPVrsYHJWMCxjbD8/CEKHAHjyVQ6dzDES7reE=;
-        b=YSHfBe/u/wTE+f9SubMfctlWaXXcfbWY/uK8kKRtEews9YHsqA41O/2D975a+jXv/k
-         M7tHQZ+mVr7bzBpk0f7SF/Qe7Zs9ZdQicT7jAD2o1oZ+TIidh09Jp9J6TMi3x5OlnQ8i
-         QAzpnOwlzUdF+hzy/pwsxJ+6AVTtsZd4khV1I+odmF+LToDOzb/lvHQOwcwgxjk6n5Bw
-         tJ9bulvbbt9IiYtkFlT2JUqaA6gWKzza3Oh5JLsZA6oFrL1ROuISL5VM6cFe4Iy6ayM2
-         U+AbIV5CfD1NaEg3JTSI2x71xP8vwNrT4zSiL0a2mtgj8/GNt+irkxXv6MqOyUsL1xsO
-         xGkw==
-X-Gm-Message-State: ACgBeo0dAMUt0AgX5hX6mG5guepeD6/UX3xradYXANWn+aRi/J0njH6V
-        BUTp4Ii5iCcOdV6dnYr49cQSiQ==
-X-Google-Smtp-Source: AA6agR5WFVb1ntXNTkav2V0MvRlR4UsAwX6g20NgInvBS7sNVmxVVZmWLCVO+QvSg+V52HgOtK3zwQ==
-X-Received: by 2002:a2e:9c8c:0:b0:261:d87c:8626 with SMTP id x12-20020a2e9c8c000000b00261d87c8626mr1884267lji.150.1661496185893;
-        Thu, 25 Aug 2022 23:43:05 -0700 (PDT)
-Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
-        by smtp.gmail.com with ESMTPSA id x27-20020a19e01b000000b00492c6ce35basm265784lfg.79.2022.08.25.23.43.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 23:43:05 -0700 (PDT)
-Message-ID: <571db5f6-1221-f8e0-1cc6-ff84dcf83cf9@linaro.org>
-Date:   Fri, 26 Aug 2022 09:43:03 +0300
+        Fri, 26 Aug 2022 02:43:23 -0400
+Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB499D1271
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 23:43:20 -0700 (PDT)
+Received: from SHSend.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
+        by SHSQR01.spreadtrum.com with ESMTPS id 27Q6f85Y006348
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
+        Fri, 26 Aug 2022 14:41:08 +0800 (CST)
+        (envelope-from zhaoyang.huang@unisoc.com)
+Received: from bj03382pcu.spreadtrum.com (10.0.74.65) by
+ BJMBX01.spreadtrum.com (10.0.64.7) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Fri, 26 Aug 2022 14:41:08 +0800
+From:   "zhaoyang.huang" <zhaoyang.huang@unisoc.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Zhaoyang Huang <huangzhaoyang@gmail.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <ke.wang@unisoc.com>
+Subject: [RFC PATCH] mm: introduce __GFP_TRACKLEAK to track in-kernel allocation
+Date:   Fri, 26 Aug 2022 14:40:48 +0800
+Message-ID: <1661496048-26410-1-git-send-email-zhaoyang.huang@unisoc.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 2/2] nvmem: lan9662-otp: add support.
-Content-Language: en-US
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     srinivas.kandagatla@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, UNGLinuxDriver@microchip.com
-References: <20220825204041.1485731-1-horatiu.vultur@microchip.com>
- <20220825204041.1485731-3-horatiu.vultur@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220825204041.1485731-3-horatiu.vultur@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.0.74.65]
+X-ClientProxiedBy: SHCAS03.spreadtrum.com (10.0.1.207) To
+ BJMBX01.spreadtrum.com (10.0.64.7)
+X-MAIL: SHSQR01.spreadtrum.com 27Q6f85Y006348
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/08/2022 23:40, Horatiu Vultur wrote:
-> +static int lan9662_otp_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct nvmem_device *nvmem;
-> +	struct lan9662_otp *otp;
-> +
-> +	otp = devm_kzalloc(&pdev->dev, sizeof(*otp), GFP_KERNEL);
-> +	if (!otp)
-> +		return -ENOMEM;
-> +
-> +	otp->dev = dev;
-> +	otp->base = devm_platform_ioremap_resource(pdev, 0);
-> +	if (IS_ERR(otp->base))
-> +		return PTR_ERR(otp->base);
-> +
-> +	otp_config.priv = otp;
-> +	otp_config.dev = dev;
-> +
-> +	nvmem = devm_nvmem_register(dev, &otp_config);
-> +
-> +	return PTR_ERR_OR_ZERO(nvmem);
-> +}
-> +
-> +static const struct of_device_id lan9662_otp_match[] = {
-> +	{ .compatible = "microchip,lan9662-otp", },
-> +	{ .compatible = "microchip,lan9668-otp", },
+From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 
-Why do you need two compatibles here? Your bindings are saying only one
-is needed...
+Kthread and drivers could fetch memory via alloc_pages directly which make them
+hard to debug when leaking. Solve this by introducing __GFP_TRACELEAK and reuse
+kmemleak mechanism which unified most of kernel cosuming pages into kmemleak.
 
-Best regards,
-Krzysztof
+Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+---
+ include/linux/gfp.h        | 4 +++-
+ include/linux/page-flags.h | 3 +++
+ mm/kmemleak.c              | 2 +-
+ mm/page_alloc.c            | 6 ++++++
+ 4 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index 2d2ccae..081ab54 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -68,6 +68,7 @@
+ #else
+ #define ___GFP_NOLOCKDEP	0
+ #endif
++#define ___GFP_TRACKLEAK	0x10000000u
+ /* If the above are modified, __GFP_BITS_SHIFT may need updating */
+ 
+ /*
+@@ -259,12 +260,13 @@
+ #define __GFP_SKIP_ZERO ((__force gfp_t)___GFP_SKIP_ZERO)
+ #define __GFP_SKIP_KASAN_UNPOISON ((__force gfp_t)___GFP_SKIP_KASAN_UNPOISON)
+ #define __GFP_SKIP_KASAN_POISON   ((__force gfp_t)___GFP_SKIP_KASAN_POISON)
++#define __GFP_TRACKLEAK   ((__force gfp_t)___GFP_TRACKLEAK)
+ 
+ /* Disable lockdep for GFP context tracking */
+ #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
+ 
+ /* Room for N __GFP_FOO bits */
+-#define __GFP_BITS_SHIFT (27 + IS_ENABLED(CONFIG_LOCKDEP))
++#define __GFP_BITS_SHIFT (28 + IS_ENABLED(CONFIG_LOCKDEP))
+ #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
+ 
+ /**
+diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+index e66f7aa..ef0f814 100644
+--- a/include/linux/page-flags.h
++++ b/include/linux/page-flags.h
+@@ -942,6 +942,7 @@ static inline bool is_page_hwpoison(struct page *page)
+ #define PG_offline	0x00000100
+ #define PG_table	0x00000200
+ #define PG_guard	0x00000400
++#define PG_trackleak	0x00000800
+ 
+ #define PageType(page, flag)						\
+ 	((page->page_type & (PAGE_TYPE_BASE | flag)) == PAGE_TYPE_BASE)
+@@ -1012,6 +1013,8 @@ static inline int page_has_type(struct page *page)
+  */
+ PAGE_TYPE_OPS(Guard, guard)
+ 
++PAGE_TYPE_OPS(Trackleak, trackleak)
++
+ extern bool is_free_buddy_page(struct page *page);
+ 
+ PAGEFLAG(Isolated, isolated, PF_ANY);
+diff --git a/mm/kmemleak.c b/mm/kmemleak.c
+index 422f28f..a182f5d 100644
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -1471,7 +1471,7 @@ static void kmemleak_scan(void)
+ 			if (page_zone(page) != zone)
+ 				continue;
+ 			/* only scan if page is in use */
+-			if (page_count(page) == 0 || PageReserved(page))
++			if (page_count(page) == 0)
+ 				continue;
+ 			scan_block(page, page + 1, NULL);
+ 			if (!(pfn & 63))
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e008a3d..d8995c6 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -1361,6 +1361,8 @@ static __always_inline bool free_pages_prepare(struct page *page,
+ 		page->mapping = NULL;
+ 	if (memcg_kmem_enabled() && PageMemcgKmem(page))
+ 		__memcg_kmem_uncharge_page(page, order);
++	if (PageTrackleak(page))
++		kmemleak_free(page);
+ 	if (check_free)
+ 		bad += check_free_page(page);
+ 	if (bad)
+@@ -5444,6 +5446,10 @@ struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
+ 		__free_pages(page, order);
+ 		page = NULL;
+ 	}
++	if (gfp & __GFP_TRACKLEAK) {
++		kmemleak_alloc(page_address(page), PAGE_SIZE << order, 1, gfp & ~__GFP_TRACKLEAK);
++		__SetPageTrackleak(page);
++	}
+ 
+ 	trace_mm_page_alloc(page, order, alloc_gfp, ac.migratetype);
+ 
+-- 
+1.9.1
+
