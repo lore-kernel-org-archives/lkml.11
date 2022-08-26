@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C392CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F94FECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343700AbiHZJZS (ORCPT
+        id S1343862AbiHZJZZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 05:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55654 "EHLO
+        Fri, 26 Aug 2022 05:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343668AbiHZJY5 (ORCPT
+        with ESMTP id S237130AbiHZJY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 05:24:57 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB34F67452
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:24:55 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MDZ8K1yqnzkWh6;
-        Fri, 26 Aug 2022 17:21:21 +0800 (CST)
+        Fri, 26 Aug 2022 05:24:58 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12937960F
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:24:56 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MDZ8d6qH4zlW3j;
+        Fri, 26 Aug 2022 17:21:37 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 17:24:53 +0800
+ 2022 17:24:54 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
         <songmuchun@bytedance.com>
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH 06/10] hugetlb: pass NULL to kobj_to_hstate() if nid is unused
-Date:   Fri, 26 Aug 2022 17:24:18 +0800
-Message-ID: <20220826092422.39591-7-linmiaohe@huawei.com>
+Subject: [PATCH 08/10] hugetlb: remove unneeded SetHPageVmemmapOptimized()
+Date:   Fri, 26 Aug 2022 17:24:20 +0800
+Message-ID: <20220826092422.39591-9-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220826092422.39591-1-linmiaohe@huawei.com>
 References: <20220826092422.39591-1-linmiaohe@huawei.com>
@@ -45,45 +45,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can pass NULL to kobj_to_hstate() directly when nid is unused to
-simplify the code. No functional change intended.
+If code reaches here, it's guaranteed that HPageVmemmapOptimized is set
+for the hugetlb page (or VM_BUG_ON_PAGE() will complain about it). It's
+unnecessary to set it again.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- mm/hugetlb.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ mm/hugetlb.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 6ea9f73aea84..58eeae934e09 100644
+index 7934188bbed0..b432a00061e3 100644
 --- a/mm/hugetlb.c
 +++ b/mm/hugetlb.c
-@@ -3779,8 +3779,7 @@ HSTATE_ATTR_WO(demote);
- static ssize_t demote_size_show(struct kobject *kobj,
- 					struct kobj_attribute *attr, char *buf)
- {
--	int nid;
--	struct hstate *h = kobj_to_hstate(kobj, &nid);
-+	struct hstate *h = kobj_to_hstate(kobj, NULL);
- 	unsigned long demote_size = (PAGE_SIZE << h->demote_order) / SZ_1K;
+@@ -1520,7 +1520,6 @@ static void add_hugetlb_page(struct hstate *h, struct page *page,
  
- 	return sysfs_emit(buf, "%lukB\n", demote_size);
-@@ -3793,7 +3792,6 @@ static ssize_t demote_size_store(struct kobject *kobj,
- 	struct hstate *h, *demote_hstate;
- 	unsigned long demote_size;
- 	unsigned int demote_order;
--	int nid;
+ 	set_compound_page_dtor(page, HUGETLB_PAGE_DTOR);
+ 	set_page_private(page, 0);
+-	SetHPageVmemmapOptimized(page);
  
- 	demote_size = (unsigned long)memparse(buf, NULL);
- 
-@@ -3805,7 +3803,7 @@ static ssize_t demote_size_store(struct kobject *kobj,
- 		return -EINVAL;
- 
- 	/* demote order must be smaller than hstate order */
--	h = kobj_to_hstate(kobj, &nid);
-+	h = kobj_to_hstate(kobj, NULL);
- 	if (demote_order >= h->order)
- 		return -EINVAL;
- 
+ 	/*
+ 	 * This page is about to be managed by the hugetlb allocator and
 -- 
 2.23.0
 
