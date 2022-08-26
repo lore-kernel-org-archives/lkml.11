@@ -2,170 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD10ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 20:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63112ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 20:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344911AbiHZUXO (ORCPT
+        id S1344064AbiHZUY1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 16:23:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48468 "EHLO
+        Fri, 26 Aug 2022 16:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231643AbiHZUXM (ORCPT
+        with ESMTP id S231643AbiHZUYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 16:23:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AEEC88A1;
-        Fri, 26 Aug 2022 13:23:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97635B83114;
-        Fri, 26 Aug 2022 20:23:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E74FDC433D6;
-        Fri, 26 Aug 2022 20:23:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661545388;
-        bh=7cCDjYToph++Z/ONuGisoLePKjQz5vPpNaRrGjuFxao=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EmkGQofJICdXtAwYKaBLKXrvOrsaFzzle1UCo1WanL/8NWbeQlEur23/S9KadZC3c
-         oeXJn3xoNIvUur9FFx5vPZgKMNUM+IVC3tYxG86ejlTNhQkpMIDHiq6qjrmFNSsWhT
-         HBRczUOefGKJxiY45U/tnYmZm116gjfeQ5cLiWvsucdA0Ya0PGCdSo/5szlcRDAXtY
-         ZVbP9xr/DM2i/Dlcn/oi6K20htE2igPDRDfasgUZ5cqXejPBJiEu9vVyYy3HkEeadJ
-         nMCjpoWdXQ5W68V/sKZm0MXOJjJSKF/sOkI2yJ/k7/UPL5p1NYfmE7F0thfZx7p7zt
-         4wVgd5bNjdWkQ==
-Date:   Fri, 26 Aug 2022 23:23:00 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     "Lee, Chun-Yi" <joeyli.kernel@gmail.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ben Boeckel <me@benboeckel.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Malte Gell <malte.gell@gmx.de>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Mimi Zohar <zohar@linux.ibm.com>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Lee, Chun-Yi" <jlee@suse.com>
-Subject: Re: [PATCH v9,1/4] X.509: Add CodeSigning extended key usage parsing
-Message-ID: <YwkrpLPyU0huPduE@kernel.org>
-References: <20220825142314.8406-1-jlee@suse.com>
- <20220825142314.8406-2-jlee@suse.com>
+        Fri, 26 Aug 2022 16:24:24 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD42AF4BA
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 13:24:23 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id j26so1411194wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 13:24:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=4DJawcmHJDXK/larmzbFcsxblDinNYvWhKtjvg3WYsE=;
+        b=C7B1XHqI0ZcRrjTFImvAPSWeCO8mbIfY/NZVpVEp6lzTyKYL2Yj7ZGrrlfBlPkOWNr
+         cyp8PMIKRM5QcNYagLSQjfv6T1hdE3Y1HSHn72kqlXuBGm5AuF2upRD+Ad4Uz3NhSAsX
+         WLr/yusg1P1Nsf6CdFldkc+iKGRN7B7mgjUIY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=4DJawcmHJDXK/larmzbFcsxblDinNYvWhKtjvg3WYsE=;
+        b=jRr8EI8vYkw4S900ZR6VLMDcCtoi2QH/BkKYJnb9ZPnFAxf7bohgye9EO+otHMeCrl
+         ShD51tqMPIhkvs5g8z4DAmf6NL2U5KsYQ7RSF7zdfTqSPuO3RwliypLjjXyfhb/NlG9h
+         nmRqbkS+bGTZtQ2TxmpRsEcoqcDwxgxvS44p33pe/W/Pi1i9XJtVQj9agVH7ZCfam/Jb
+         7aYNyUJLtqIVBP7vHQXGt1U1YBOAOGGSUxmultpz09iECfnBbPSwxg2vR3nw3ICXghnf
+         GhYRveAMgSSvYhiXz1t9nS8VESweUAn58bBL6DQtMbjwNCjHGQCLKR9Y56/RvRbRKEr7
+         fmYA==
+X-Gm-Message-State: ACgBeo1esRwuhXYy5W9mN5g+PrxIexu6K2aqawk7Vj5kVaUy6XtJlgvv
+        QLA0+Yfeho4nOYyZEAaB0bqxsBEM7iNv8Uir
+X-Google-Smtp-Source: AA6agR5lSHWPtslgy1PrFiq+dwYPQZfa4Tp3P/IFJZ2of8xR+KDJ1cZOwXfycvVbtaiWWg8JyvE75A==
+X-Received: by 2002:a05:600c:350:b0:3a5:3473:1c23 with SMTP id u16-20020a05600c035000b003a534731c23mr664134wmd.9.1661545462136;
+        Fri, 26 Aug 2022 13:24:22 -0700 (PDT)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id f14-20020adff98e000000b002252ec781f7sm613713wrr.8.2022.08.26.13.24.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 13:24:21 -0700 (PDT)
+From:   Daniel Vetter <daniel.vetter@ffwll.ch>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     DRI Development <dri-devel@lists.freedesktop.org>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        nick black <dankamongmen@gmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Yangxi Xiang <xyangxi5@gmail.com>,
+        Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+Subject: [PATCH] tty/vt: Remove printable variable
+Date:   Fri, 26 Aug 2022 22:24:19 +0200
+Message-Id: <20220826202419.198535-1-daniel.vetter@ffwll.ch>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825142314.8406-2-jlee@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 10:23:11PM +0800, Lee, Chun-Yi wrote:
-> This patch adds the logic for parsing the CodeSign extended key usage
+Every since the 0.99.7A release when console_register() was introduced
+it's become impossible to call vt_console_print (called
+console_print() back then still) directly. Which means the
+initialization issue this variable protected against is no more.
 
-It's *not* a patch once it is applied.
+Give it a send off with style and let it rest in peace.
 
-And isn't the identifier actually "codeSign", not "CodeSign"? Please,
-format identifier correctly in order not to cause confusion.
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jiri Slaby <jirislaby@kernel.org>
+Cc: "Ilpo Järvinen" <ilpo.jarvinen@linux.intel.com>
+Cc: nick black <dankamongmen@gmail.com>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: Yangxi Xiang <xyangxi5@gmail.com>
+Cc: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+---
+ drivers/tty/vt/vt.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-So, how I would rewrite the first sentence, would be:
+diff --git a/drivers/tty/vt/vt.c b/drivers/tty/vt/vt.c
+index ae9c926acd6f..4d29e4a17db7 100644
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -157,7 +157,6 @@ static void set_palette(struct vc_data *vc);
+ 
+ #define vt_get_kmsg_redirect() vt_kmsg_redirect(-1)
+ 
+-static int printable;		/* Is console ready for printing? */
+ int default_utf8 = true;
+ module_param(default_utf8, int, S_IRUGO | S_IWUSR);
+ int global_cursor_default = -1;
+@@ -3085,8 +3084,6 @@ static void vt_console_print(struct console *co, const char *b, unsigned count)
+ 	int kmsg_console;
+ 
+ 	/* console busy or not yet initialized */
+-	if (!printable)
+-		return;
+ 	if (!spin_trylock(&printing_lock))
+ 		return;
+ 
+@@ -3537,7 +3534,6 @@ static int __init con_init(void)
+ 	pr_info("Console: %s %s %dx%d\n",
+ 		vc->vc_can_do_color ? "colour" : "mono",
+ 		display_desc, vc->vc_cols, vc->vc_rows);
+-	printable = 1;
+ 
+ 	console_unlock();
+ 
+-- 
+2.37.2
 
-  Add the logic for parsing codeSign extended key usage field, as
-  described in RFC2459, section "4.2.1.13  Extended key usage
-  field.
-
-E.g. it took me 15 minutes to review the commit message alone
-because I could not remember the RFC number off top of my head.
-
-> extension in X.509. The parsing result will be set to the
-> ext_key_usage
-> flag which is carried by public key. It can be used in the PKCS#7
-> verification.
-> 
-> Signed-off-by: "Lee, Chun-Yi" <jlee@suse.com>
-> ---
->  crypto/asymmetric_keys/x509_cert_parser.c | 25 +++++++++++++++++++++++
->  include/crypto/public_key.h               |  1 +
->  include/linux/oid_registry.h              |  5 +++++
->  3 files changed, 31 insertions(+)
-> 
-> diff --git a/crypto/asymmetric_keys/x509_cert_parser.c b/crypto/asymmetric_keys/x509_cert_parser.c
-> index 2899ed80bb18..1f67e0adef65 100644
-> --- a/crypto/asymmetric_keys/x509_cert_parser.c
-> +++ b/crypto/asymmetric_keys/x509_cert_parser.c
-> @@ -554,6 +554,8 @@ int x509_process_extension(void *context, size_t hdrlen,
->  	struct x509_parse_context *ctx = context;
->  	struct asymmetric_key_id *kid;
->  	const unsigned char *v = value;
-> +	int i = 0;
-> +	enum OID oid;
-
-I'd reorder the declarations (suggestion).
-
->  
->  	pr_debug("Extension: %u\n", ctx->last_oid);
->  
-> @@ -583,6 +585,29 @@ int x509_process_extension(void *context, size_t hdrlen,
->  		return 0;
->  	}
->  
-> +	if (ctx->last_oid == OID_extKeyUsage) {
-> +		if (vlen < 2 ||
-> +		    v[0] != ((ASN1_UNIV << 6) | ASN1_CONS_BIT | ASN1_SEQ) ||
-> +		    v[1] != vlen - 2)
-> +			return -EBADMSG;
-> +		i += 2;
-> +
-> +		while (i < vlen) {
-> +			/* A 10 bytes EKU OID Octet blob =
-> +			 * ASN1_OID + size byte + 8 bytes OID */
-> +			if ((i + 10) > vlen || v[i] != ASN1_OID || v[i + 1] != 8)
-> +				return -EBADMSG;
-> +
-> +			oid = look_up_OID(v + i + 2, v[i + 1]);
-> +			if (oid == OID_codeSigning) {
-> +				ctx->cert->pub->ext_key_usage |= EKU_codeSigning;
-> +			}
-> +			i += 10;
-> +		}
-> +		pr_debug("extKeyUsage: %d\n", ctx->cert->pub->ext_key_usage);
-> +		return 0;
-> +	}
-> +
->  	return 0;
->  }
->  
-> diff --git a/include/crypto/public_key.h b/include/crypto/public_key.h
-> index 68f7aa2a7e55..72c0fcc39d0f 100644
-> --- a/include/crypto/public_key.h
-> +++ b/include/crypto/public_key.h
-> @@ -28,6 +28,7 @@ struct public_key {
->  	bool key_is_private;
->  	const char *id_type;
->  	const char *pkey_algo;
-> +	unsigned int ext_key_usage : 9;      /* Extended Key Usage (9-bit) */
->  };
->  
->  extern void public_key_free(struct public_key *key);
-> diff --git a/include/linux/oid_registry.h b/include/linux/oid_registry.h
-> index 0f4a8903922a..460135c2d918 100644
-> --- a/include/linux/oid_registry.h
-> +++ b/include/linux/oid_registry.h
-> @@ -140,9 +140,14 @@ enum OID {
->  	OID_TPMImportableKey,		/* 2.23.133.10.1.4 */
->  	OID_TPMSealedData,		/* 2.23.133.10.1.5 */
->  
-> +	/* Extended key purpose OIDs [RFC 5280] */
-> +	OID_codeSigning,		/* 1.3.6.1.5.5.7.3.3 */
-> +
->  	OID__NR
->  };
->  
-> +#define EKU_codeSigning	(1 << 2)
-> +
->  extern enum OID look_up_OID(const void *data, size_t datasize);
->  extern int parse_OID(const void *data, size_t datasize, enum OID *oid);
->  extern int sprint_oid(const void *, size_t, char *, size_t);
-> -- 
-> 2.26.2
-> 
-
-BR, Jarkko
