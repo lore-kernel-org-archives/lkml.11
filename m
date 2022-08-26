@@ -2,250 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0C75ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE6BECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241159AbiHZMCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:02:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
+        id S242504AbiHZMEA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:04:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiHZMCh (ORCPT
+        with ESMTP id S230305AbiHZMD4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:02:37 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD35CD7418;
-        Fri, 26 Aug 2022 05:02:33 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 83A1F1888676;
-        Fri, 26 Aug 2022 12:02:30 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 7AA6425032BD;
-        Fri, 26 Aug 2022 12:02:30 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 21D369EC0004; Fri, 26 Aug 2022 11:46:14 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from wse-c0127.beijerelectronics.com (unknown [208.127.141.28])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id DB2899EC0009;
-        Fri, 26 Aug 2022 11:46:11 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v5 net-next 6/6] selftests: forwarding: add test of MAC-Auth Bypass to locked port tests
-Date:   Fri, 26 Aug 2022 13:45:38 +0200
-Message-Id: <20220826114538.705433-7-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220826114538.705433-1-netdev@kapio-technology.com>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
+        Fri, 26 Aug 2022 08:03:56 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C66267E
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 05:03:55 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3321c2a8d4cso30481327b3.5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 05:03:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=friendlyarm-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=nMtNIpyaxV6n6y1j4kQGb3c6ARKMgnzuDhHNiwEVBA4=;
+        b=NDXiZwcPZjtmeIncwlMtPlhsL6rDiS/IDxaxVsoPMFZbAprw6sE4IhTH1pd7ZBiU8n
+         Lz+K/SwbUm2CzgbeGFBJ4zLa/SMhAKc70eTfAi9+XBUGZ3DIkJUrmn6yMll46vjB0C6v
+         vvp14qIMvKqsiLCGAfO4mGTHJqQOk8t9A+Sdg1RFmsPnJKfYd/L20bU5Q3mTb/sWqyeD
+         VnY2tjHPxu7AntPtHTerHp2KDD6id6NEpy6yuKLhuiY+GHebX1xP6F5ripEBeRvOPnf0
+         a5Zg2dgJPOPSdBlPgKXMZN60iV52WsjLYLX/F7C2pwCxIPfe75Ff2khcY/rmRoTeLgbM
+         +Q+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=nMtNIpyaxV6n6y1j4kQGb3c6ARKMgnzuDhHNiwEVBA4=;
+        b=RgkmHf27mRimT1I8xFJSIuM67N8jgtR+VXixPFrP5KlLf1cS3IEIOpvL/3wVjFKmV/
+         6feQpHdxmxRHxIMM5toY8YalbWfT+b4EDVej4ktwilizofRwe++QvHM+Z6lmsHRHZ60r
+         ry1GQnXvuJdqGEMj4M7WJR3TZAqZXBAVtHjDikEMx2phXUbi1pZLquaP7kQMETcWoEmH
+         BGWxAYKbG7tnAmQw4dlrCDk7Z7ksdhD9NBv+3kiylTGhB12vBk5d2wMXNWSXl3maSIp7
+         pDW4qU9AjnBPc9uN9oG2cSrn8pcWip3AeRlGInK8KXnRRMSVPzSdgXIV3Wkr3SWG7QLv
+         SwnA==
+X-Gm-Message-State: ACgBeo2FvT8VC2jzvrjk/r+9IHf4OPg7SYchfezemzB1hGiuHzbzYxMn
+        UphqpVJTqyr2fNf+Mec5c85lMs/rYGeqB52wwknizw==
+X-Google-Smtp-Source: AA6agR6GAz4sMztYMnrEfA1yl8CfSLqn+NtlwlcSGb20UhZtyE2nH6eK1+0G+qYfDcSJubGiroR8mCp+hNugAhCXgrI=
+X-Received: by 2002:a0d:ea90:0:b0:33d:faad:db54 with SMTP id
+ t138-20020a0dea90000000b0033dfaaddb54mr2214939ywe.116.1661515434826; Fri, 26
+ Aug 2022 05:03:54 -0700 (PDT)
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
+References: <20220822074139.3810-1-jensenhuang@friendlyarm.com>
+ <23552842.6Emhk5qWAg@diego> <CAD=FV=W-ajJDfYcP3P8Jyk_KgsUAbdTtmwiNXqJ=Ab2ojgrUGw@mail.gmail.com>
+ <CAMpZ1qEe7xFr+XaXsS_hWDLnGGA8PfzQiToOjY1N_1ctyQ+KxA@mail.gmail.com> <CAD=FV=U-=2GpQTb0N1p3Qe2TAb=JhyZJw2V8T-qbLs5TYhW7qA@mail.gmail.com>
+In-Reply-To: <CAD=FV=U-=2GpQTb0N1p3Qe2TAb=JhyZJw2V8T-qbLs5TYhW7qA@mail.gmail.com>
+From:   Jensen Huang <jensenhuang@friendlyarm.com>
+Date:   Fri, 26 Aug 2022 20:03:43 +0800
+Message-ID: <CAMpZ1qGya8zr-QJZHY4OqEg0NLo_db6ttnf6Ai2NHdUL1+6qBw@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: rockchip: add enable-strobe-pulldown to emmc
+ phy on rk3399
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Chris Ruehl <chris.ruehl@gtsys.com.hk>,
+        Brian Norris <briannorris@chromium.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Verify that the MAC-Auth mechanism works by adding a FDB entry with the
-locked flag set, denying access until the FDB entry is replaced with a
-FDB entry without the locked flag set.
+Hi,
 
-Also add a test that verifies that sticky FDB entries cannot roam.
+Thanks!
+I understand that this patch does potentially affect boards with
+external pull down.
+To avoid this, I will move `enable-strobe-pulldown` to
+rk3399-nanopi4.dtsi and send patch v2.
 
-Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
----
- .../net/forwarding/bridge_locked_port.sh      | 107 +++++++++++++++++-
- .../net/forwarding/bridge_sticky_fdb.sh       |  21 +++-
- 2 files changed, 126 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-index 5b02b6b60ce7..b763b3b9fdf0 100755
---- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-@@ -1,7 +1,15 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
--ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
-+ALL_TESTS="
-+	locked_port_ipv4
-+	locked_port_ipv6
-+	locked_port_vlan
-+	locked_port_mab
-+	locked_port_station_move
-+	locked_port_mab_station_move
-+"
-+
- NUM_NETIFS=4
- CHECK_TC="no"
- source lib.sh
-@@ -166,6 +174,103 @@ locked_port_ipv6()
- 	log_test "Locked port ipv6"
- }
- 
-+locked_port_mab()
-+{
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "MAB: Ping did not work before locking port"
-+
-+	bridge link set dev $swp1 locked on
-+	bridge link set dev $swp1 learning on
-+	if ! bridge link set dev $swp1 mab on 2>/dev/null; then
-+		echo "SKIP: iproute2 too old; MacAuth feature not supported."
-+		return $ksft_skip
-+	fi
-+
-+	ping_do $h1 192.0.2.2
-+	check_fail $? "MAB: Ping worked on locked port without FDB entry"
-+
-+	bridge fdb show | grep `mac_get $h1` | grep -q "locked"
-+	check_err $? "MAB: No locked fdb entry after ping on locked port"
-+
-+	bridge fdb replace `mac_get $h1` dev $swp1 master static
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "MAB: Ping did not work with fdb entry without locked flag"
-+
-+	bridge fdb del `mac_get $h1` dev $swp1 master
-+	bridge link set dev $swp1 learning off
-+	bridge link set dev $swp1 locked off
-+
-+	log_test "Locked port MAB"
-+}
-+
-+# No roaming allowed to a simple locked port
-+locked_port_station_move()
-+{
-+	local mac=a0:b0:c0:c0:b0:a0
-+
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	bridge link set dev $swp1 locked on
-+	bridge link set dev $swp1 learning on
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0"
-+	check_fail $? "Locked port station move: FDB entry on first injection"
-+
-+	$MZ $h2 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp2 | grep -q "$mac vlan 1 master br0"
-+	check_err $? "Locked port station move: Entry not found on unlocked port"
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0"
-+	check_fail $? "Locked port station move: entry roamed to locked port"
-+
-+	log_test "Locked port station move"
-+}
-+
-+# Roaming to and from a MAB enabled port should work if sticky flag is not set
-+locked_port_mab_station_move()
-+{
-+	local mac=10:20:30:30:20:10
-+
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	bridge link set dev $swp1 locked on
-+	bridge link set dev $swp1 learning on
-+	if ! bridge link set dev $swp1 mab on 2>/dev/null; then
-+		echo "SKIP: iproute2 too old; MacAuth feature not supported."
-+		return $ksft_skip
-+	fi
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	if bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0" | grep -q sticky; then
-+		echo "SKIP: Roaming not possible with sticky flag, run sticky flag roaming test"
-+		return $ksft_skip
-+	fi
-+
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
-+	check_err $? "MAB station move: no locked entry on first injection"
-+
-+	$MZ $h2 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
-+	check_fail $? "MAB station move: locked entry did not move"
-+
-+	bridge fdb show dev $swp2 | grep -q "$mac vlan 1 master br0"
-+	check_err $? "MAB station move: roamed entry not found"
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
-+	check_err $? "MAB station move: entry did not roam back to locked port"
-+
-+	log_test "Locked port MAB station move"
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
-diff --git a/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh b/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-index 1f8ef0eff862..bca77bc3fe09 100755
---- a/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-@@ -1,7 +1,7 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
--ALL_TESTS="sticky"
-+ALL_TESTS="sticky sticky_no_roaming"
- NUM_NETIFS=4
- TEST_MAC=de:ad:be:ef:13:37
- source lib.sh
-@@ -59,6 +59,25 @@ sticky()
- 	log_test "Sticky fdb entry"
- }
- 
-+# No roaming allowed with the sticky flag set
-+sticky_no_roaming()
-+{
-+	local mac=a8:b4:c2:c2:b4:a8
-+
-+	RET=0
-+
-+	bridge link set dev $swp2 learning on
-+	bridge fdb add $mac dev $swp1 master static sticky
-+	bridge fdb show dev $swp1 | grep "$mac master br0" | grep -q sticky
-+	check_err $? "Sticky no roaming: No sticky FDB entry found after adding"
-+
-+	$MZ $h2 -q -t udp -c 10 -d 100msec -a $mac -b rand
-+	bridge fdb show dev $swp2 | grep "$mac master br0" | grep -q sticky
-+	check_fail $? "Sticky no roaming: Sticky entry roamed"
-+
-+	log_test "Sticky no roaming"
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
--- 
-2.30.2
+BR,
+Jensen
 
+On Wed, Aug 24, 2022 at 10:58 PM Doug Anderson <dianders@chromium.org> wrot=
+e:
+>
+> Hi,
+>
+> On Tue, Aug 23, 2022 at 8:11 PM Jensen Huang
+> <jensenhuang@friendlyarm.com> wrote:
+> >
+> > Hi,
+> >
+> > Sorry for sending an email in HTML format.
+> >
+> > I realized that only some devices may be affected, so I considered
+> > modifying rk3399-nanopi4.dtsi only,
+> > but other boards without external pull-down should still need this patc=
+h.
+>
+> I guess the other alternative would be to change how the dt property
+> works. You could say:
+>
+> 1. If `enable-strobe-pulldown` is set then enable the strobe pulldown.
+>
+> 2. If `enable-strobe-pulldown` is not set then don't touch the pin in
+> the kernel.
+>
+> 3. If someone later needs to explicitly disable the strobe pulldown
+> they could add a new property like `disable-strobe-pulldown`.
+>
+>
+> Obviously there are tradeoffs between that and what you've done and
+> I'm happy to let others make the call of which they'd prefer.
+>
+>
+> > BR,
+> > Jensen
+> >
+> > On Tue, Aug 23, 2022 at 10:13 PM Doug Anderson <dianders@chromium.org> =
+wrote:
+> > >
+> > > Hi,
+> > >
+> > > On Tue, Aug 23, 2022 at 4:53 AM Heiko St=C3=BCbner <heiko@sntech.de> =
+wrote:
+> > > >
+> > > > Am Montag, 22. August 2022, 09:41:39 CEST schrieb Jensen Huang:
+> > > > > Internal pull-down for strobe line (GRF_EMMCPHY_CON2[9]) was disa=
+bled
+> > > > > by commit 8b5c2b45b8f0, which causes I/O error in HS400 mode.
+> > > > >
+> > > > > Tested on NanoPC-T4.
+> > > > >
+> > > > > Fixes: 8b5c2b45b8f0 ("phy: rockchip: set pulldown for strobe line=
+ in dts")
+> > > > > Signed-off-by: Jensen Huang <jensenhuang@friendlyarm.com>
+> > > >
+> > > > ok, so this looks like it restores previous functionality.
+> > > >
+> > > > I'm just wondering as the "offending" patch is from 2020, why this
+> > > > only turns up now. Any ideas?
+> > >
+> > > Ah, I see. So before the offending patch we used to just leave the
+> > > pull state at whatever the default was when the kernel was booted.
+> > > After the offending patch we chose a default.
+> > >
+> > > On kevin I see an external pull down on this line. Enabling both the
+> > > internal and external is probably not a huge deal, it'll just affect
+> > > the strength of the pull.
+> > >
+> > > On bob I _think_ the external pull down is also stuffed.
+> > >
+> > > ...so I guess that would explain why it didn't cause a problem for at
+> > > least those two boards?
+> > >
+> > > -Doug
