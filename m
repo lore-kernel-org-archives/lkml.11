@@ -2,117 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F28EC0502A
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 22:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFE7ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 22:50:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231531AbiHZWtD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 18:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
+        id S1345403AbiHZWuT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 18:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345399AbiHZWtB (ORCPT
+        with ESMTP id S234440AbiHZWuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 18:49:01 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01215E97F1;
-        Fri, 26 Aug 2022 15:48:58 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 74E6A5C0409;
-        Fri, 26 Aug 2022 18:48:56 -0400 (EDT)
-Received: from imap50 ([10.202.2.100])
-  by compute3.internal (MEProxy); Fri, 26 Aug 2022 18:48:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1661554136; x=1661640536; bh=MXga4g9UYI
-        TGqOF8D51W6gwR+kSZb+o+/avVdF0bauo=; b=anAbeX55M56dKH5uYg6lr2OFEL
-        w7OIXcCwkDsm3MAdxfwMOttNRNXrRYhUACedHx7oTJqHVCCcuEK10faDpBvvnGwX
-        D076ttjNYA0+jQghEu4BOTEvUuVhvWAiKV5oGluCcXoOb1lb5E+DQQQDH7PQUYIz
-        H/KVRtxGbyfsJla0ZpOTI04qb90u+QB2YOBcFTmjaOC3RZr8+TjBJqX9fd1peDA3
-        +HlGZoZsgv7xvAQXXCrLUUkZnnDOSsKynSKlKXLUhM/JaO2FMZRo/5k5kvGwPIZ3
-        X1GWI+GJJv7lHk2syfecqUiTBR3xOYXIlLQ8Wg4DwL9WUZVqt3bQjf+A3/Pg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1661554136; x=1661640536; bh=MXga4g9UYITGqOF8D51W6gwR+kSZ
-        b+o+/avVdF0bauo=; b=pQWpLtvfa+h486WRDspso+lUE0LI4uWo8V2FCsRUx3Si
-        Vqh9/Ft52xt5lvvEOrW62MROjzajE3Pmbe2KxMEmjGC7xpqVQCc7Z1cuDPzeKIIG
-        QgIdacZYbGOxR3W5Gz1uYCvdPkMFQzv93rqR3JnuaqtMon+sECuRQtxf7IR0Mipb
-        NV7rX2Kt/aHqPKpkhXp4CTBy9cKcMkULzp1IIEdgzbAIlj2DzzUv4vzlRm4dEeDi
-        tbu3dX1IgzbES6cVr7gBX9go5Ms8QFw1M8Hr8mBvmCzq6kLI/Mncd5vTkvR4qKwm
-        oF1jMfH782ww9nMCD9Un/XSSAQt8y6BlpijF0wgmOw==
-X-ME-Sender: <xms:100JY0lFb400hCxXGyMblEcv_YVOrwddDaU8y7-X6IZNpmFkCyUlhw>
-    <xme:100JYz0y4qVohGmvFuHjjieFuyF4aIHHULNlWE_36m0yMTtmlvQaOCCtprB0jf95Z
-    uE2b6qRKpitRF6Kvg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejiedgudehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehn
-    ughrvgifucflvghffhgvrhihfdcuoegrnhgurhgvfiesrghjrdhiugdrrghuqeenucggtf
-    frrghtthgvrhhnpeekvdekjeekgfejudffteetgeejkeetteduvedtffdtledutdfhheev
-    feetkeeiteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvfiesrghjrdhiugdrrghu
-X-ME-Proxy: <xmx:100JYyqKDggMGLrUJ8mVCsfhNBH8cdOKtyC7fR3z9hPR9JZaLHhJBw>
-    <xmx:100JYwn87Y0OJ4W9t1_ei72_EVxwT5gKId2ldDIC0-62AF0vQ-oJjQ>
-    <xmx:100JYy0qVKF8Lcm3iqrxYP9LrgcfIqmWKzprwxedoKQf6YnSSwMLBQ>
-    <xmx:2E0JY-_-45oRT2uedeVW_GVQbiOkBuX3h4I3qs6IYccjRlwC2p8Nqw>
-Feedback-ID: idfb84289:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 07F971700083; Fri, 26 Aug 2022 18:48:55 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
-Mime-Version: 1.0
-Message-Id: <e501d2fb-aaa0-470d-a8d5-5f8e97898df7@beta.fastmail.com>
-In-Reply-To: <CACRpkdYpp_1JJQmuX27pECxN0cjzciCuETLPTrSYKqpX0FPABQ@mail.gmail.com>
-References: <20220818101839.28860-1-billy_tsai@aspeedtech.com>
- <CACRpkdYpp_1JJQmuX27pECxN0cjzciCuETLPTrSYKqpX0FPABQ@mail.gmail.com>
-Date:   Sat, 27 Aug 2022 08:18:33 +0930
-From:   "Andrew Jeffery" <andrew@aj.id.au>
-To:     "Linus Walleij" <linus.walleij@linaro.org>,
-        "Billy Tsai" <billy_tsai@aspeedtech.com>
-Cc:     "Joel Stanley" <joel@jms.id.au>, linux-aspeed@lists.ozlabs.org,
-        openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pinctrl: aspeed: Force to disable the function's signal
-Content-Type: text/plain
+        Fri, 26 Aug 2022 18:50:15 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CFD2C666;
+        Fri, 26 Aug 2022 15:50:14 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id s8so2866046ljj.5;
+        Fri, 26 Aug 2022 15:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=4pc2oAidrj6yhUG2VXLcLsOrtbTR1Oyi+VKlwu+INl8=;
+        b=R529Deg9qrsUPKylDTBFVydt0KHPodA86KNyWEzwMKDPI0qc7f8w4pm5lEpo2djUnp
+         Fmhv5RzkZ80cSkMNsf2aAgLGYoRxFPKOYW0VCqGEXtMQh7B0zzzg5kKJvHn11yLqp1er
+         HMZlhJhpY+Z8GBYcNZ1kQOHGFYPoc//n7QtnYPaa94PhR6mthEtO82rr3XSRgdC7NvQ1
+         xk64BAK3JYFyYuL28T4zOkL5YsbI9UtrYlzQYoJEgC6dWsUFlhnXnapfh7S2ZZXKgUid
+         j8BPCWa1TSwEWj384je/p1aK4Xag8JJwb3lDyJq++HkAKePjxme00RUvS/vXGGzAR3Cv
+         NITw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=4pc2oAidrj6yhUG2VXLcLsOrtbTR1Oyi+VKlwu+INl8=;
+        b=U7yGL+3ilKMHcnt27aq4mjXIERupcLdm2OeRq/csFCWWeds33NPQKnP+ZT5e7JNt9H
+         dTon7cXR9AJ3EmQcLkyvp1DOTPOWjN/IkijLPrbZejyvOeu2rQrMSHQ7fdpAD7IPka7Y
+         7zpSi5WdNF6Ci7lXaWHSRansmdt4K+6x43zpOgiVwrz5j1WQjh8kkKtM2aLjPmPHh3qQ
+         gL4Jwu/FnCxbHnn+WkQo1XiWZSDbwRNby1rl7di0Y79i8HWy/tbgpctAJgZvtXASGpoU
+         fLGTBWhzU9DEY1/RE4woJwtk2jOUf2TjFaTaHj57vEmrFThg4ovy8N/55TpJ72ho+aDc
+         LoFA==
+X-Gm-Message-State: ACgBeo1TpKFAOcJElB84mhftvXOdLote+jaKZI0PplZXft9qbtqkN9rM
+        JsYX1gCDXW/nm1QVVb1jrRvLT0yK1S1DRw==
+X-Google-Smtp-Source: AA6agR74p1nHA8uH4eqONhVaJ6eot9xw+yA5nFlIlGeCu5x42hB1AkobVbtU+oDATjJ6jQoQZqdEqg==
+X-Received: by 2002:a05:651c:10b0:b0:261:ca24:def5 with SMTP id k16-20020a05651c10b000b00261ca24def5mr2778197ljn.169.1661554212465;
+        Fri, 26 Aug 2022 15:50:12 -0700 (PDT)
+Received: from mobilestation ([95.79.140.178])
+        by smtp.gmail.com with ESMTPSA id t14-20020a2e8e6e000000b0025e1ec74e25sm589154ljk.43.2022.08.26.15.50.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 15:50:11 -0700 (PDT)
+Date:   Sat, 27 Aug 2022 01:50:09 +0300
+From:   Serge Semin <fancer.lancer@gmail.com>
+To:     Sudip Mukherjee <sudip.mukherjee@sifive.com>
+Cc:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        greentime.hu@sifive.com, jude.onyenegecha@sifive.com,
+        william.salmon@sifive.com, adnan.chowdhury@sifive.com,
+        ben.dooks@sifive.com, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jeegar.lakhani@sifive.com
+Subject: Re: [PATCH 06/11] spi: dw: update SPI_CTRLR0 register
+Message-ID: <20220826225009.hipxcffq2ddpiv4s@mobilestation>
+References: <20220802175755.6530-1-sudip.mukherjee@sifive.com>
+ <20220802175755.6530-7-sudip.mukherjee@sifive.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220802175755.6530-7-sudip.mukherjee@sifive.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Aug 02, 2022 at 06:57:50PM +0100, Sudip Mukherjee wrote:
+> If the controller supports enhanced SPI modes then update the register
+> or reset the register if the transfer is not using dual/quad/octal mode.
+> 
+> Signed-off-by: Sudip Mukherjee <sudip.mukherjee@sifive.com>
+> ---
+>  drivers/spi/spi-dw-core.c | 29 +++++++++++++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+> 
+> diff --git a/drivers/spi/spi-dw-core.c b/drivers/spi/spi-dw-core.c
+> index 8e624620864f..9d499bdf2ce6 100644
+> --- a/drivers/spi/spi-dw-core.c
+> +++ b/drivers/spi/spi-dw-core.c
+> @@ -676,6 +676,32 @@ static void dw_spi_stop_mem_op(struct dw_spi *dws, struct spi_device *spi)
+>  	dw_spi_enable_chip(dws, 1);
+>  }
+>  
+> +static void update_spi_ctrl0(struct dw_spi *dws, const struct spi_mem_op *op, bool enable)
+> +{
+> +	u32 spi_ctrlr0;
+> +
+> +	spi_ctrlr0 = dw_readl(dws, DW_HSSI_SPI_CTRLR0);
+> +	if (enable) {
+> +		spi_ctrlr0 |= FIELD_PREP(DW_HSSI_SPI_CTRLR0_WAIT_CYCLE_MASK,
 
+> +					 op->dummy.nbytes * BITS_PER_BYTE);
+> +		/* 8 bit instruction length */
+> +		spi_ctrlr0 |= FIELD_PREP(DW_HSSI_SPI_CTRLR0_INST_L_MASK,
+> +					 DW_HSSI_SPI_CTRLR0_INST_L8);
+> +		/* 32 bit address length */
+> +		spi_ctrlr0 |= FIELD_PREP(DW_HSSI_SPI_CTRLR0_ADDR_L_MASK,
+> +					 DW_HSSI_SPI_CTRLR0_ADDR_L32);
 
-On Sat, 27 Aug 2022, at 07:26, Linus Walleij wrote:
-> On Thu, Aug 18, 2022 at 12:18 PM Billy Tsai <billy_tsai@aspeedtech.com> wrote:
->
->> When the driver want to disable the signal of the function, it doesn't
->> need to query the state of the mux function's signal on a pin. The
->> condition below will miss the disable of the signal:
->> Ball | Default | P0 Signal | P0 Expression               | Other
->> -----+---------+-----------+-----------------------------+----------
->>  E21   GPIOG0    SD2CLK      SCU4B4[16]=1 & SCU450[1]=1    GPIOG0
->> -----+---------+-----------+-----------------------------+----------
->>  B22   GPIOG1    SD2CMD      SCU4B4[17]=1 & SCU450[1]=1    GPIOG1
->> -----+---------+-----------+-----------------------------+----------
->> Assume the register status like below:
->> SCU4B4[16] == 1 & SCU4B4[17] == 1 & SCU450[1]==1
->> After the driver set the Ball E21 to the GPIOG0:
->> SCU4B4[16] == 0 & SCU4B4[17] == 1 & SCU450[1]==0
->> When the driver want to set the Ball B22 to the GPIOG1, the condition of
->> the SD2CMD will be false causing SCU4B4[17] not to be cleared.
->>
->> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
->
-> I can't see the verdict for this patch? Will there be a new
-> version, or are we in the middle of a discussion?
-> I'd really like Andrew's ACK on the result before merging.
+Just add new fields dw_spi_cfg.{trans_t,inst_l,addr_l,wait_c},
+initialize them with the values taken from the spi_mem_op (trans_t -
+based on the bus widths, inst_l - cmd.nbytes, addr_l - addr.nbytes,
+wait_c - dummy.nbytes / dummy.buswidth) and use them to accordingly
+update the SPI_CTRLR0 CSR in the dw_spi_update_config() method. Update
+the CSR if spi_frf has value other than STD_SPI_FRF, otherwise
+according to the HW manual the SPI_CTRLR0 register isn't relevant so
+don't touch it.
 
-Apologies, it's been a bit of A Week :)
+> +		/* Enable clock stretching */
+> +		spi_ctrlr0 |= DW_HSSI_SPI_CTRLR0_CLK_STRETCH_EN;
+> +	} else {
+> +		spi_ctrlr0 &= ~DW_HSSI_SPI_CTRLR0_WAIT_CYCLE_MASK;
+> +		spi_ctrlr0 &= ~DW_HSSI_SPI_CTRLR0_INST_L_MASK;
+> +		spi_ctrlr0 &= ~DW_HSSI_SPI_CTRLR0_ADDR_L_MASK;
+> +		spi_ctrlr0 &= ~DW_HSSI_SPI_CTRLR0_CLK_STRETCH_EN;
+> +	}
+> +
+> +	dw_writel(dws, DW_HSSI_SPI_CTRLR0, spi_ctrlr0);
+> +}
+> +
+>  /*
+>   * The SPI memory operation implementation below is the best choice for the
+>   * devices, which are selected by the native chip-select lane. It's
+> @@ -738,6 +764,9 @@ static int dw_spi_exec_mem_op(struct spi_mem *mem, const struct spi_mem_op *op)
+>  
+>  	dw_spi_enable_chip(dws, 0);
+>  
 
-Given the approach has been discussed with the IP designer and solves a bug I'm okay for it to be merged. If we run into issues it is easy enough to back it out.
+> +	if (dws->caps & DW_SPI_CAP_EXT_SPI)
+> +		update_spi_ctrl0(dws, op, enhanced_spi);
+> +
 
-Acked-by: Andrew Jeffery <andrew@aj.id.au>
+This won't be needed as long as you do as I suggested above.
 
->
-> Yours,
-> Linus Walleij
+-Sergey
+
+>  	dw_spi_update_config(dws, mem->spi, &cfg);
+>  
+>  	dw_spi_mask_intr(dws, 0xff);
+> -- 
+> 2.30.2
+> 
