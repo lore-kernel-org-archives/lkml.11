@@ -2,72 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79F8C001B5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E3BC001B5
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344734AbiHZVVo (ORCPT
+        id S1344873AbiHZVWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 17:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41664 "EHLO
+        Fri, 26 Aug 2022 17:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239997AbiHZVVm (ORCPT
+        with ESMTP id S234440AbiHZVWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 17:21:42 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22CF51403E;
-        Fri, 26 Aug 2022 14:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=jA15Q1AsL1CdeNBKwMd0iWzOfyNlFoAbN16yRdeZrpU=; b=LHSaq3B7n9zwAdH9ODgDMjlqwn
-        pjU/9JXzHBahjJC0FYcCwoRYqTxYpCn/xNGWrJC4SLynDeTpnGzeoS/Nck/2rj6607nBucn8yacCu
-        yQo21WQcSJhTEXZKxQX6Z+Xl8g5/cKhU85KHPkdi0i1+R/LmpfIgSd8rlI0adT68dA02HWEM0orva
-        bkPH5ONKMT8KRMZicpgd6wzOOpDg8W9MWF30oRIAsYBPbQB29699Ekvz3j5BdHU40hcelBIGKrxum
-        SOBYPUtgJkjQgIfMN8Nrz4Qsd/Ca/ouvP7NVByTqVp8qH6YE/xsAR5cmQyfVOKvpW5evjpaVjt0i2
-        ZwKUJdDg==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oRglg-008f84-Nw;
-        Fri, 26 Aug 2022 21:21:32 +0000
-Date:   Fri, 26 Aug 2022 22:21:32 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Steve French <smfrench@gmail.com>,
-        Shyam Prasad N <nspmangalore@gmail.com>,
-        Rohith Surabattula <rohiths.msft@gmail.com>,
-        Jeff Layton <jlayton@kernel.org>, linux-cifs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/7] iov_iter: Add a function to extract an iter's
- buffers to a bvec iter
-Message-ID: <Ywk5XE6FvP5pI5d4@ZenIV>
-References: <166126392703.708021.14465850073772688008.stgit@warthog.procyon.org.uk>
- <166126393409.708021.16165278011941496946.stgit@warthog.procyon.org.uk>
+        Fri, 26 Aug 2022 17:22:13 -0400
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634EEBA9DF
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:22:09 -0700 (PDT)
+Received: from imladris.surriel.com ([96.67.55.152])
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1oRgj3-0000ZA-44;
+        Fri, 26 Aug 2022 17:18:49 -0400
+Message-ID: <6448b9a8dba8ef39e42e56a3c0ce0633fff7c6a6.camel@surriel.com>
+Subject: Re: [RFC 2/3] mm: changes to split_huge_page() to free zero filled
+ tail pages
+From:   Rik van Riel <riel@surriel.com>
+To:     David Hildenbrand <david@redhat.com>, alexlzhu@fb.com,
+        linux-mm@kvack.org
+Cc:     willy@infradead.org, hannes@cmpxchg.org, akpm@linux-foundation.org,
+        kernel-team@fb.com, linux-kernel@vger.kernel.org
+Date:   Fri, 26 Aug 2022 17:18:48 -0400
+In-Reply-To: <ead1bc0e-c9df-d590-3423-9cfa449167e7@redhat.com>
+References: <cover.1661461643.git.alexlzhu@fb.com>
+         <490fcdd204ae129a2e43614a569a1cf4bdde9196.1661461643.git.alexlzhu@fb.com>
+         <ead1bc0e-c9df-d590-3423-9cfa449167e7@redhat.com>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-t7auAH4ZwjgMioVwL5kI"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <166126393409.708021.16165278011941496946.stgit@warthog.procyon.org.uk>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 03:12:14PM +0100, David Howells wrote:
-> +		ret = iov_iter_get_pages2(orig, pages, count, max_pages - npages,
-> +					  &start);
-> +		if (ret < 0) {
-> +			pr_err("Couldn't get user pages (rc=%zd)\n", ret);
-> +			break;
-> +		}
-> +
-> +		if (ret > count) {
-> +			pr_err("get_pages rc=%zd more than %zu\n", ret, count);
-> +			break;
-> +		}
-> +
-> +		iov_iter_advance(orig, ret);
 
-Have you even tested that?  iov_iter_get_pages2() advances the iterator it had been
-given.  And no, it does *not* return more than it had been asked to, so the second
-check is complete BS.
+--=-t7auAH4ZwjgMioVwL5kI
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-That's aside of the usefulness of the primitive in question...
+On Fri, 2022-08-26 at 12:18 +0200, David Hildenbrand wrote:
+> On 25.08.22 23:30, alexlzhu@fb.com=C2=A0wrote:
+> > From: Alexander Zhu <alexlzhu@fb.com>
+> >=20
+> > Currently, split_huge_page() does not have a way to identify zero
+> > filled
+> > pages within the THP. Thus these zero pages get remapped and
+> > continue to
+> > create memory waste. In this patch, we identify and free tail pages
+> > that
+> > are zero filled in split_huge_page(). In this way, we avoid mapping
+> > these
+> > pages back into page table entries and can free up unused memory
+> > within
+> > THPs.=20
+> >=20
+>=20
+> Isn't this to some degree splitting the THP (PMDs->PTEs + dissolve
+> compound page) and then letting KSM replace the zero-filled page by
+> the
+> shared zeropage?
+>=20
+Many systems do not run KSM, though, and even on the systems
+where it does, KSM only covers a subset of the memory in the
+system.
+
+I could see wanting to maybe consolidate the scanning between
+KSM and this thing at some point, if it could be done without
+too much complexity, but keeping this change to split_huge_page
+looks like it might make sense even when KSM is enabled, since
+it will get rid of the unnecessary memory much faster than KSM could.
+
+Keeping a hundred MB of unnecessary memory around for longer
+would simply result in more THPs getting split up, and more
+memory pressure for a longer time than we need.
+
+--=20
+All Rights Reversed.
+
+--=-t7auAH4ZwjgMioVwL5kI
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmMJOLgACgkQznnekoTE
+3oOSiwf/Z0jX3IxD6abgm8xNOn+XsJMaGEfbsbN2b6y266szPkcPOnKshck+4BkK
+7pU5kcT/uNiqQp98UKVmHtbVtE/W+5K135IjeZyn+hd1zmye7NLAsuXWQ3U0hsBx
+21iFKOseM5WK06IrnoAPklu/x4p5wKNmEFnV7Dz3mFK/mXfhbDG6gnMwknJXKty8
+6sGONhpIYoyLWqIFmOYzX/IWHu8V9PabtIPk7aiZjQvnOL5WqSrEYiC24mZoq+8m
+5UbKd/9kY9p9YMMw31IAL453BxlYcYHU1CdqdOAzZnF9L+HD82QTJ5gnQ41/hyhi
+VgW/QDY9OHdSYtQKdyntQyxxbVuLHw==
+=+VGD
+-----END PGP SIGNATURE-----
+
+--=-t7auAH4ZwjgMioVwL5kI--
