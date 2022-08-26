@@ -2,184 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E033ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 065F5ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:37:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233959AbiHZHgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33148 "EHLO
+        id S232163AbiHZHhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbiHZHgf (ORCPT
+        with ESMTP id S244999AbiHZHh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:36:35 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E502572B72
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:36:32 -0700 (PDT)
-Received: from localhost.localdomain (unknown [113.200.148.30])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8DxX+D6dwhjNj0KAA--.45610S3;
-        Fri, 26 Aug 2022 15:36:27 +0800 (CST)
-From:   Qing Zhang <zhangqing@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>, hejinyang@loongson.cn
-Subject: [PATCH v2 8/9] LoongArch/ftrace: Add HAVE_FUNCTION_GRAPH_RET_ADDR_PTR support
-Date:   Fri, 26 Aug 2022 15:36:25 +0800
-Message-Id: <20220826073626.1716-2-zhangqing@loongson.cn>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220826073626.1716-1-zhangqing@loongson.cn>
-References: <20220826073626.1716-1-zhangqing@loongson.cn>
+        Fri, 26 Aug 2022 03:37:27 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEB2A830D
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:37:25 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 52D231F8BD;
+        Fri, 26 Aug 2022 07:37:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1661499444; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1p2xME7kAvCPtIhoSfeZxGkK6SEIAeyNE2bD/HJuXL4=;
+        b=SdH8625ujYPc8wCfZMEAkqUEiWc8JPXp9epO3MYjdRexAXsE7R1IBuKzrdWiDGMy8cYycp
+        r5Cbw+NfsvE1iZoqY+Dow5ZvGPVnsmnUNDlGxSnzfxjq3ZIjjewVNNai5wXsCmreP8VFhF
+        DsWOyNK291zoX6xdWjCwhU3NHTt4NKM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1661499444;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1p2xME7kAvCPtIhoSfeZxGkK6SEIAeyNE2bD/HJuXL4=;
+        b=pFmvlH2H2ES6LC+8XbeyIr0RwhgctqmPUXrRjXNUzhD2yqUOyyS55hYKbwTcrM4wZMluWi
+        cvGP8XqHmzLOJlCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3489713421;
+        Fri, 26 Aug 2022 07:37:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id V7s1DDR4CGNREQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 26 Aug 2022 07:37:24 +0000
+Message-ID: <c38a2012-d1c4-4860-881d-66ce0955700d@suse.cz>
+Date:   Fri, 26 Aug 2022 09:37:23 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf8DxX+D6dwhjNj0KAA--.45610S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxAr43CF45Zr4xCr1fZr4ktFb_yoWrtF1xpF
-        9xAas5GrWxWF9agrnFqr1Uur4kGrnF9w1agFWDtryFkFsFqF17WrnFvryDXFWkt3ykWrWI
-        qas5GrZ0kF4UX3JanT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBm14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
-        x26xkF7I0E14v26r1I6r4UM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
-        A2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1l
-        e2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI
-        8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwAC
-        jcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4xMxAIw2
-        8IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4l
-        x2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrw
-        CI42IY6xIIjxv20xvE14v26r1I6r4UMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l
-        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4
-        A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyTuYvjfUnCzuDUUUU
-X-CM-SenderInfo: x2kd0wptlqwqxorr0wxvrqhubq/
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [RFC PATCH] mm: reduce noise in show_mem for lowmem allocations
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     linux-mm@kvack.org, Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <YwScVmVofIZkopkF@dhcp22.suse.cz>
+ <a461479d-a5cd-dc86-013a-d8827d7d321a@suse.cz>
+ <YwdIDpqNlziTn/et@dhcp22.suse.cz>
+Content-Language: en-US
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <YwdIDpqNlziTn/et@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ftrace_graph_ret_addr can be called by stack unwinding code to convert
-a found stack return address ('ret') to its original value, in case the
-function graph tracer has modified it to be 'return_to_handler',If the
-hasn't been modified, the unchanged value of 'ret' is returned.
+On 8/25/22 11:59, Michal Hocko wrote:
+> On Thu 25-08-22 11:52:09, Vlastimil Babka wrote:
+>> On 8/23/22 11:22, Michal Hocko wrote:
+>> > All but node0 are really completely irrelevant for this allocation
+>> > because they do not have ZONE_DMA yet it swamps the log and makes it
+>> > harder to visually inspect.
+>> > 
+>> > Address this by providing gfp_maks parameter to show_mem and filter the
+>> > output to only those zones/nodes which are relevant for the allocation.
+>> > That means nodes which have at least one managed zone which is usable
+>> > for the allocation (zone_idx(zone) <= gfp_zone(gfp_mask)).
+>> > The resulting output for the same failure would become:
+>> 
+>> Looks good to me.
+>> 
+>> > [...]
+>> > [   14.017605][    T1] Mem-Info:
+>> 
+>> Maybe print the gfp_mask (or just max zone) here again, to make it more
+>> obvious in case somebody sents a report without the top header?
+> 
+> I have tried to not alter the output but rather filter it out. The gfp
+> mask is the first line of the allocation failure and from my past
+> experience it is usually included in reports.
 
-Signed-off-by: Qing Zhang <zhangqing@loongson.cn>
----
- arch/loongarch/include/asm/ftrace.h     |  3 +++
- arch/loongarch/include/asm/unwind.h     |  1 +
- arch/loongarch/kernel/ftrace_dyn.c      |  2 +-
- arch/loongarch/kernel/unwind_guess.c    |  4 +++-
- arch/loongarch/kernel/unwind_prologue.c | 10 +++++++++-
- 5 files changed, 17 insertions(+), 3 deletions(-)
+OK
 
-diff --git a/arch/loongarch/include/asm/ftrace.h b/arch/loongarch/include/asm/ftrace.h
-index ce119496c6d0..0c306f42a512 100644
---- a/arch/loongarch/include/asm/ftrace.h
-+++ b/arch/loongarch/include/asm/ftrace.h
-@@ -10,6 +10,8 @@
- #define FTRACE_REGS_PLT_IDX	1
- #define NR_FTRACE_PLTS		2
- 
-+#define GRAPH_FAKE_OFFSET (sizeof(struct pt_regs) - offsetof(struct pt_regs, regs[1]))
-+
- #ifdef CONFIG_FUNCTION_TRACER
- #define MCOUNT_INSN_SIZE 4		/* sizeof mcount call */
- 
-@@ -20,6 +22,7 @@ extern void _mcount(void);
- #endif
- 
- #ifdef CONFIG_DYNAMIC_FTRACE
-+#define HAVE_FUNCTION_GRAPH_RET_ADDR_PTR
- static inline unsigned long ftrace_call_adjust(unsigned long addr)
- {
- 	return addr;
-diff --git a/arch/loongarch/include/asm/unwind.h b/arch/loongarch/include/asm/unwind.h
-index 6af4718bdf01..f66b07c3e6a1 100644
---- a/arch/loongarch/include/asm/unwind.h
-+++ b/arch/loongarch/include/asm/unwind.h
-@@ -21,6 +21,7 @@ struct unwind_state {
- 	struct stack_info stack_info;
- 	struct task_struct *task;
- 	bool first, error;
-+	int graph_idx;
- 	unsigned long sp, pc, ra;
- };
- 
-diff --git a/arch/loongarch/kernel/ftrace_dyn.c b/arch/loongarch/kernel/ftrace_dyn.c
-index dd37185d446e..b070ce225989 100644
---- a/arch/loongarch/kernel/ftrace_dyn.c
-+++ b/arch/loongarch/kernel/ftrace_dyn.c
-@@ -219,7 +219,7 @@ void prepare_ftrace_return(unsigned long self_addr, unsigned long *parent)
- 
- 	old = *parent;
- 
--	if (!function_graph_enter(old, self_addr, 0, NULL))
-+	if (!function_graph_enter(old, self_addr, 0, parent))
- 		*parent = return_hooker;
- }
- 
-diff --git a/arch/loongarch/kernel/unwind_guess.c b/arch/loongarch/kernel/unwind_guess.c
-index 5afa6064d73e..229ba014cea0 100644
---- a/arch/loongarch/kernel/unwind_guess.c
-+++ b/arch/loongarch/kernel/unwind_guess.c
-@@ -2,6 +2,7 @@
- /*
-  * Copyright (C) 2022 Loongson Technology Corporation Limited
-  */
-+#include <linux/ftrace.h>
- #include <linux/kernel.h>
- 
- #include <asm/unwind.h>
-@@ -53,7 +54,8 @@ bool unwind_next_frame(struct unwind_state *state)
- 		     state->sp < info->end;
- 		     state->sp += sizeof(unsigned long)) {
- 			addr = *(unsigned long *)(state->sp);
--
-+			state->pc = ftrace_graph_ret_addr(state->task, &state->graph_idx,
-+				addr, (unsigned long *)(state->sp - GRAPH_FAKE_OFFSET));
- 			if (__kernel_text_address(addr))
- 				return true;
- 		}
-diff --git a/arch/loongarch/kernel/unwind_prologue.c b/arch/loongarch/kernel/unwind_prologue.c
-index b206d9159205..03f8b31a90cc 100644
---- a/arch/loongarch/kernel/unwind_prologue.c
-+++ b/arch/loongarch/kernel/unwind_prologue.c
-@@ -2,6 +2,7 @@
- /*
-  * Copyright (C) 2022 Loongson Technology Corporation Limited
-  */
-+#include <linux/ftrace.h>
- #include <linux/kallsyms.h>
- 
- #include <asm/inst.h>
-@@ -32,6 +33,8 @@ static bool unwind_by_guess(struct unwind_state *state)
- 	     state->sp < info->end;
- 	     state->sp += sizeof(unsigned long)) {
- 		addr = *(unsigned long *)(state->sp);
-+		state->pc = ftrace_graph_ret_addr(state->task, &state->graph_idx,
-+			addr, (unsigned long *)(state->sp - GRAPH_FAKE_OFFSET));
- 		if (__kernel_text_address(addr))
- 			return true;
- 	}
-@@ -146,8 +149,11 @@ bool unwind_next_frame(struct unwind_state *state)
- 			break;
- 
- 		case UNWINDER_PROLOGUE:
--			if (unwind_by_prologue(state))
-+			if (unwind_by_prologue(state)) {
-+				state->pc = ftrace_graph_ret_addr(state->task, &state->graph_idx,
-+					state->pc, (unsigned long *)(state->sp - GRAPH_FAKE_OFFSET));
- 				return true;
-+			}
- 
- 			if (info->type == STACK_TYPE_IRQ &&
- 				info->end == state->sp) {
-@@ -159,6 +165,8 @@ bool unwind_next_frame(struct unwind_state *state)
- 
- 				state->pc = pc;
- 				state->sp = regs->regs[3];
-+				state->pc = ftrace_graph_ret_addr(state->task, &state->graph_idx,
-+					pc, (unsigned long *)(state->sp - GRAPH_FAKE_OFFSET));
- 				state->ra = regs->regs[1];
- 				state->first = true;
- 				get_stack_info(state->sp, state->task, info);
--- 
-2.20.1
+>> > [   14.017956][    T1] active_anon:0 inactive_anon:0 isolated_anon:0
+>> > [   14.017956][    T1]  active_file:0 inactive_file:0 isolated_file:0
+>> > [   14.017956][    T1]  unevictable:0 dirty:0 writeback:0
+>> > [   14.017956][    T1]  slab_reclaimable:876 slab_unreclaimable:30300
+>> > [   14.017956][    T1]  mapped:0 shmem:0 pagetables:12 bounce:0
+>> > [   14.017956][    T1]  free:3170151735 free_pcp:6868 free_cma:0
+>> > [   14.017962][    T1] Node 0 active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB mapped:0kB dirty:0kB writeback:0kB shmem:0kB shmem_thp: 0kB shmem_pmdmapped: 0kB anon_thp: 0kB writeback_tmp:0kB kernel_stack:7200kB pagetables:4kB all_unreclaimable? no
+>> > [   14.018026][    T1] Node 0 DMA free:160kB boost:0kB min:0kB low:0kB high:0kB reserved_highatomic:0KB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB writepending:0kB present:15996kB managed:15360kB mlocked:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB
+>> > [   14.018035][    T1] lowmem_reserve[]: 0 0 0 0 0
+>> > [   14.018339][    T1] Node 0 DMA: 0*4kB 0*8kB 0*16kB 1*32kB (U) 0*64kB 1*128kB (U) 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 160kB
+>> > [   14.018480][    T1] 0 total pagecache pages
+>> > [   14.018483][    T1] 0 pages in swap cache
+>> > [   14.018484][    T1] Swap cache stats: add 0, delete 0, find 0/0
+>> > [   14.018486][    T1] Free swap  = 0kB
+>> > [   14.018487][    T1] Total swap = 0kB
+>> > [   14.018488][    T1] 3221164600 pages RAM
+>> > [   14.018489][    T1] 0 pages HighMem/MovableOnly
+>> > [   14.018490][    T1] 50531051 pages reserved
+>> > [   14.018491][    T1] 0 pages cma reserved
+>> > [   14.018492][    T1] 0 pages hwpoisoned
+>> > 
+>> > Signed-off-by: Michal Hocko <mhocko@suse.com>
 
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
