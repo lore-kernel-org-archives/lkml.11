@@ -2,235 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFB4BECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 17:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67070ECAAA6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 17:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344657AbiHZRlz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 13:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
+        id S244746AbiHZRmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 13:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344726AbiHZRlt (ORCPT
+        with ESMTP id S1344930AbiHZRmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 13:41:49 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD11475385;
-        Fri, 26 Aug 2022 10:41:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661535706; x=1693071706;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=y+5UHSCKqDo8+5mfChXR80HnmMPwWmD45j5P+hWg1wk=;
-  b=V91dgmRq0VFwA5+fbwzwuTpKbf04M7deayiSZ2ySYHNx0MRBaKLz/Vsc
-   Yrr8MllZsb5in6qYm83nLQStQjlmn/z7iwoNApFY2eAwflqc1k9ysjMGv
-   eD0cjIzMEjZCt3oJReNwwO8K2LkOUADu3D+QXd4vfH0e8xBBq2iYgbjma
-   ToM2L7VU2ml/H4D5HbHI0QA5u7Ek+ofuvbPwoKfgr6McQN+oKIQoOtb1M
-   X4XZR9ORjXyMNQVaJZL8cAhfQ4EzetBSL/Uwj2IADSK7PK8yGb1Rb2lRR
-   th6nI5UQ747OguGudPnnC+/yLHG7ubwMGgFJ1PpnudjwXwz/PTxWw8JPm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="295833336"
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="295833336"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 10:41:31 -0700
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="640142949"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.50.209])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 10:41:19 -0700
-Message-ID: <b9ffea78-48c4-e2cd-20c2-dc0c9c2c69f7@intel.com>
-Date:   Fri, 26 Aug 2022 20:41:12 +0300
+        Fri, 26 Aug 2022 13:42:04 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB26E2C64
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 10:42:01 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id w22so2254232ljg.7
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 10:42:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=rw3ft7Xiuq6jQh7CexeaJRVGi6CosNconl2BfPOtJXg=;
+        b=s847w+OO7cYhJyVS3QmbSC+ByjtLv8K5yKznoyPw5hZeTr4Bek8MTxQEaof5/WC8Gf
+         pwxv/xSzlQA9YefMjG/9uI/pKA3KUT93EN1o+cVxKj9RaxHdjMSmcBWzrXNjfMgFUWvy
+         tMYh1xSmY8EkAu2FJET39FDgmdDpVOqajSQvmNw1wWFo1qMpzK2amdWuDd/JNbIQXSSh
+         8wjGDV+o5d9/o7zJbIV502ev5GDKfTHqmOo9abPNo1GrGju9iSLJlQqOIbx0XwapaHGX
+         umrbKtRe92nJj8Sx+mflxGhb//qti5iUngVfK3wcsIJLEf+O+M6gOMDSHuXj7Doy+6jo
+         lkRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=rw3ft7Xiuq6jQh7CexeaJRVGi6CosNconl2BfPOtJXg=;
+        b=hk20kVRpeCyVUeHJIsB516Pk7tDE/u1lGAA1CgO1YWNHzcyT2+UiOCa7PtushRXVF4
+         8s/q/oSubFWrE5JgRTYojS9d/4CM6MVtbtRjvQrF0BTbSBcFBogpEA3HFSdxOBIBdbWl
+         7KJp3deELbVcgdqiX18TSZl/F5gDZTn6LQkvTXpBaIWuBlxNoWexrTOtQw0j0OFzVwnC
+         tp5dO/HacF+g/Sy2NR+iHYBL16EHd+UtCuzYtKbCfnuwIsr/Krd3xzeJ/AMHhEJnhtcH
+         E/LJfVO3eAtPhcj6BpiRhG+0/wOKsp5jFhxgfHbo8XNsOuCyBJmEqJjBUlm5jj3Ftnep
+         WPCg==
+X-Gm-Message-State: ACgBeo1PgQU7RIXP2ZNJra8kGbzQKIILnuH+WDkpFVxda7pQegs6Zt7c
+        c5Say7Yua0OaOL72CtfY7VUmag==
+X-Google-Smtp-Source: AA6agR5O4np8N7uZzKIuzC3AmkW23UMkTi/wwqOWxiQRm5W1buJbivDheV/iRyfq+Jvv1q4deP+neg==
+X-Received: by 2002:a2e:93c8:0:b0:261:e5a7:56ed with SMTP id p8-20020a2e93c8000000b00261e5a756edmr2689909ljh.483.1661535720141;
+        Fri, 26 Aug 2022 10:42:00 -0700 (PDT)
+Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
+        by smtp.gmail.com with ESMTPSA id c28-20020ac244bc000000b00492ef1ee7b0sm422450lfm.290.2022.08.26.10.41.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 10:41:59 -0700 (PDT)
+Message-ID: <58d791f3-2a45-1ddb-79ac-852656be2b50@linaro.org>
+Date:   Fri, 26 Aug 2022 20:41:58 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH v3 16/18] perf sched: Fixes for thread safety analysis
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 1/2] dt-bindings: arm: qcom: Document additional skus for
+ sc7180 pazquel360
 Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Dario Petrillo <dario.pk1@gmail.com>,
-        Hewenliang <hewenliang4@huawei.com>,
-        yaowenbin <yaowenbin1@huawei.com>,
-        Wenyu Liu <liuwenyu7@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Pavithra Gurushankar <gpavithrasha@gmail.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        William Cohen <wcohen@redhat.com>,
-        Andres Freund <andres@anarazel.de>,
-        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
-        Colin Ian King <colin.king@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Fangrui Song <maskray@google.com>,
-        Stephane Eranian <eranian@google.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Zechuan Chen <chenzechuan1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Remi Bernon <rbernon@codeweavers.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-References: <20220824153901.488576-1-irogers@google.com>
- <20220824153901.488576-17-irogers@google.com>
- <a7176263-7dc8-6cbd-af2d-5338c4c4b546@intel.com>
- <CAP-5=fXk+mLv=C0CTrvnBeuhCTAtJ=x2O8D2YqvmVZSMHqcLvQ@mail.gmail.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <CAP-5=fXk+mLv=C0CTrvnBeuhCTAtJ=x2O8D2YqvmVZSMHqcLvQ@mail.gmail.com>
+To:     Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Bob Moragues <moragues@chromium.org>,
+        Henry Sun <henrysun@google.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <20220826102513.1.If97ef7a7d84bcc2cf20e0479b3e00c4a8fb5a2fd@changeid>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220826102513.1.If97ef7a7d84bcc2cf20e0479b3e00c4a8fb5a2fd@changeid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/08/22 19:06, Ian Rogers wrote:
-> On Fri, Aug 26, 2022 at 5:12 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
->>
->> On 24/08/22 18:38, Ian Rogers wrote:
->>> Add annotations to describe lock behavior. Add unlocks so that mutexes
->>> aren't conditionally held on exit from perf_sched__replay. Add an exit
->>> variable so that thread_func can terminate, rather than leaving the
->>> threads blocked on mutexes.
->>>
->>> Signed-off-by: Ian Rogers <irogers@google.com>
->>> ---
->>>  tools/perf/builtin-sched.c | 46 ++++++++++++++++++++++++--------------
->>>  1 file changed, 29 insertions(+), 17 deletions(-)
->>>
->>> diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
->>> index 7e4006d6b8bc..b483ff0d432e 100644
->>> --- a/tools/perf/builtin-sched.c
->>> +++ b/tools/perf/builtin-sched.c
->>> @@ -246,6 +246,7 @@ struct perf_sched {
->>>       const char      *time_str;
->>>       struct perf_time_interval ptime;
->>>       struct perf_time_interval hist_time;
->>> +     volatile bool   thread_funcs_exit;
->>>  };
->>>
->>>  /* per thread run time data */
->>> @@ -633,31 +634,34 @@ static void *thread_func(void *ctx)
->>>       prctl(PR_SET_NAME, comm2);
->>>       if (fd < 0)
->>>               return NULL;
->>> -again:
->>> -     ret = sem_post(&this_task->ready_for_work);
->>> -     BUG_ON(ret);
->>> -     mutex_lock(&sched->start_work_mutex);
->>> -     mutex_unlock(&sched->start_work_mutex);
->>>
->>> -     cpu_usage_0 = get_cpu_usage_nsec_self(fd);
->>> +     while (!sched->thread_funcs_exit) {
->>> +             ret = sem_post(&this_task->ready_for_work);
->>> +             BUG_ON(ret);
->>> +             mutex_lock(&sched->start_work_mutex);
->>> +             mutex_unlock(&sched->start_work_mutex);
->>>
->>> -     for (i = 0; i < this_task->nr_events; i++) {
->>> -             this_task->curr_event = i;
->>> -             perf_sched__process_event(sched, this_task->atoms[i]);
->>> -     }
->>> +             cpu_usage_0 = get_cpu_usage_nsec_self(fd);
->>>
->>> -     cpu_usage_1 = get_cpu_usage_nsec_self(fd);
->>> -     this_task->cpu_usage = cpu_usage_1 - cpu_usage_0;
->>> -     ret = sem_post(&this_task->work_done_sem);
->>> -     BUG_ON(ret);
->>> +             for (i = 0; i < this_task->nr_events; i++) {
->>> +                     this_task->curr_event = i;
->>> +                     perf_sched__process_event(sched, this_task->atoms[i]);
->>> +             }
->>>
->>> -     mutex_lock(&sched->work_done_wait_mutex);
->>> -     mutex_unlock(&sched->work_done_wait_mutex);
->>> +             cpu_usage_1 = get_cpu_usage_nsec_self(fd);
->>> +             this_task->cpu_usage = cpu_usage_1 - cpu_usage_0;
->>> +             ret = sem_post(&this_task->work_done_sem);
->>> +             BUG_ON(ret);
->>>
->>> -     goto again;
->>> +             mutex_lock(&sched->work_done_wait_mutex);
->>> +             mutex_unlock(&sched->work_done_wait_mutex);
->>> +     }
->>> +     return NULL;
->>>  }
->>>
->>>  static void create_tasks(struct perf_sched *sched)
->>> +     EXCLUSIVE_LOCK_FUNCTION(sched->start_work_mutex)
->>> +     EXCLUSIVE_LOCK_FUNCTION(sched->work_done_wait_mutex)
->>>  {
->>>       struct task_desc *task;
->>>       pthread_attr_t attr;
->>> @@ -687,6 +691,8 @@ static void create_tasks(struct perf_sched *sched)
->>>  }
->>>
->>>  static void wait_for_tasks(struct perf_sched *sched)
->>> +     EXCLUSIVE_LOCKS_REQUIRED(sched->work_done_wait_mutex)
->>> +     EXCLUSIVE_LOCKS_REQUIRED(sched->start_work_mutex)
->>>  {
->>>       u64 cpu_usage_0, cpu_usage_1;
->>>       struct task_desc *task;
->>> @@ -738,6 +744,8 @@ static void wait_for_tasks(struct perf_sched *sched)
->>>  }
->>>
->>>  static void run_one_test(struct perf_sched *sched)
->>> +     EXCLUSIVE_LOCKS_REQUIRED(sched->work_done_wait_mutex)
->>> +     EXCLUSIVE_LOCKS_REQUIRED(sched->start_work_mutex)
->>>  {
->>>       u64 T0, T1, delta, avg_delta, fluct;
->>>
->>> @@ -3309,11 +3317,15 @@ static int perf_sched__replay(struct perf_sched *sched)
->>>       print_task_traces(sched);
->>>       add_cross_task_wakeups(sched);
->>>
->>> +     sched->thread_funcs_exit = false;
->>>       create_tasks(sched);
->>>       printf("------------------------------------------------------------\n");
->>>       for (i = 0; i < sched->replay_repeat; i++)
->>>               run_one_test(sched);
->>>
->>> +     sched->thread_funcs_exit = true;
->>> +     mutex_unlock(&sched->start_work_mutex);
->>> +     mutex_unlock(&sched->work_done_wait_mutex);
->>
->> I think you still need to wait for the threads to exit before
->> destroying the mutexes.
+On 26/08/2022 13:26, Yunlong Jia wrote:
+> pazquel360 is an extension project based on pazquel.
+> We create 3 sku on pazquel360:
+>    sku 20 for LTE with physical SIM _and_ eSIM and WiFi
+>    sku 21 for WiFi only
+>    sku 22 for LTE with only a physical SIM
+>  Both sku20 and sku22 are LTE SKUs.
+>  One has the eSIM stuffed and one doesn't.
+>  There is a single shared device tree for the two.
 > 
-> This is a pre-existing issue and beyond the scope of this patch set.
+> Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
 
-You added the mutex_destroy functions in patch 8, so it is still
-fallout from that.
 
-> 
-> Thanks,
-> Ian
-> 
->>>       return 0;
->>>  }
->>>
->>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
