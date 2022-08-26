@@ -2,99 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93DBECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E801ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244516AbiHZSbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 14:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52278 "EHLO
+        id S1344653AbiHZScl (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 14:32:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231703AbiHZSbq (ORCPT
+        with ESMTP id S1344205AbiHZSch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 14:31:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7772E1ABA;
-        Fri, 26 Aug 2022 11:31:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74C1761DC8;
-        Fri, 26 Aug 2022 18:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B26C43470;
-        Fri, 26 Aug 2022 18:31:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661538704;
-        bh=0H01RklNGrPANMW+PptFqvWyKqPZuO1DsLzgvE1+ZRw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=equV6IgP31VxjutZFVThpMqRhVWcMn3ZaTiDfghJ9CkjN0VLE/YyEM+/vLmK1ZUA5
-         RndJdRwzm8aER7ImWDgg507EA0j6h/WrZuDuit3LxpP7vE0DDHcRAEWdcCbq83RATC
-         9ATNsG3n63V6GslG6rbasAtEMIl7a+oY6QktdVPhVdwKJxx4c1NUoWCOCXwORgEDep
-         LjTIpNKgUlE6XLgZcQZvf/Nps4bGKoGn7g0/Hn4oD8kpQJJA4vVBzzisNvcV/+m+dO
-         TKGH9wjkG8N1RWgvLgrdkXXPX0XJ/wmXLDPgQZRuHDql6IJVvZhnRcBeh5QeVlld/q
-         68l54dfdSazyw==
-Received: by mail-wr1-f53.google.com with SMTP id bs25so2763715wrb.2;
-        Fri, 26 Aug 2022 11:31:44 -0700 (PDT)
-X-Gm-Message-State: ACgBeo1MPprELN8L2FfDf5LFp6yucaSoBplWibuvrzV+V87Db5q1BfaB
-        SndBsMKM53wZecHNGHFLQ37is7143BnjVUBaZPw=
-X-Google-Smtp-Source: AA6agR7ObnkDMb8uSexWZlMD5F3llB3RlifIrpjHl1fXLMlaTnYkDOfF7gBtBmoEedimNc5izZWz67KkAzM8k53xQXo=
-X-Received: by 2002:a05:6000:782:b0:225:3e46:3dd5 with SMTP id
- bu2-20020a056000078200b002253e463dd5mr477961wrb.103.1661538703104; Fri, 26
- Aug 2022 11:31:43 -0700 (PDT)
+        Fri, 26 Aug 2022 14:32:37 -0400
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8321DE3977;
+        Fri, 26 Aug 2022 11:32:34 -0700 (PDT)
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-11e9a7135easo596060fac.6;
+        Fri, 26 Aug 2022 11:32:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=fJ/8Ppmhz2rOgqo1WRAkAwO2X5ZqhRIREXlDqJL8Pas=;
+        b=0B+pafSEg9i0qfBBgqq6txxOetF+tVdyMio+xmO163WoeF4TpD1+SgcDf/tQ9WkrpU
+         KHgpOSzZfcxgISp6l6J+QoIKtzHqdwuhnhtZmcku9Q6iBfUKF34TuCqZW3hHbz+ktYcX
+         BahYgL1zEyPm5W+vd6hJ99rSOJ4vKumn9SGHKYdRWZt0BW1Htk9XUSzWzgt3cacljqpz
+         Bkgg5K4vv36feNSXwdPtFVJ/NPstWkbPR8nx1J/JX20bAbpeqYptpFKaJeW5vJ20dlI4
+         4bK9Ztwm29CrgbxAIS4h3bVPrjqeCqxUKMl+QcBgBWreAiAuJyetZgTvTdGNIQUoCPym
+         nfJg==
+X-Gm-Message-State: ACgBeo1yMyivBwiqfp18xCpT4/1Hw4ntH03j4EfGuhoLT461ML2ddT0l
+        RkCmUV7XA2yUHdKGvZzSuDK4FgAeqMvZ+eYXWcQ=
+X-Google-Smtp-Source: AA6agR4WfanpQSFAHlsJ2gTSPjnKZ0xCn0qXF2r1Krud3tJ12s4bgt22/0hlIMmsjXvmHpIKXhkYGI7YyM9aOl6/kfc=
+X-Received: by 2002:a05:6870:5b84:b0:10c:d1fa:2f52 with SMTP id
+ em4-20020a0568705b8400b0010cd1fa2f52mr2490201oab.92.1661538753637; Fri, 26
+ Aug 2022 11:32:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <alpine.LRH.2.02.2208220530050.32093@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wh-6RJQWxdVaZSsntyXJWJhivVX8JFH4MqkXv12AHm_=Q@mail.gmail.com>
- <CAHk-=whfZSEc40wtq5H51JcsBdB50ctZPtM3rS3E+xUNvadLog@mail.gmail.com>
- <alpine.LRH.2.02.2208251501200.31977@file01.intranet.prod.int.rdu2.redhat.com>
- <20220826112327.GA19774@willie-the-truck> <alpine.LRH.2.02.2208260727020.17585@file01.intranet.prod.int.rdu2.redhat.com>
- <alpine.LRH.2.02.2208261003590.27240@file01.intranet.prod.int.rdu2.redhat.com>
- <20220826174352.GA20386@willie-the-truck> <alpine.LRH.2.02.2208261424580.31963@file01.intranet.prod.int.rdu2.redhat.com>
-In-Reply-To: <alpine.LRH.2.02.2208261424580.31963@file01.intranet.prod.int.rdu2.redhat.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Fri, 26 Aug 2022 20:31:31 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHmXHKG4TXG+e7FgHCB2KKjmSeAdoAVR_bQTjb6NTVD4A@mail.gmail.com>
-Message-ID: <CAMj1kXHmXHKG4TXG+e7FgHCB2KKjmSeAdoAVR_bQTjb6NTVD4A@mail.gmail.com>
-Subject: Re: [PATCH] wait_on_bit: add an acquire memory barrier
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
+References: <CABwm_eTnARC1GwMD-JF176k8WXU1Z0+H190mvXn61yr369qt6g@mail.gmail.com>
+ <YwfYyLE3ajSFVHGQ@kernel.org> <CABwm_eSvcnygceTU0sNXLkBFaNfEfrThFVmwH=TS4hN=HVGrGg@mail.gmail.com>
+In-Reply-To: <CABwm_eSvcnygceTU0sNXLkBFaNfEfrThFVmwH=TS4hN=HVGrGg@mail.gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Fri, 26 Aug 2022 11:32:22 -0700
+Message-ID: <CAM9d7cjsbhHnaAiHSBb6qAfH0bNgdKrBHdg16esRCt+4DPmvtQ@mail.gmail.com>
+Subject: Re: [PATCH] perf/genelf: Switch deprecated openssl MD5_* functions to
+ new EVP API
+To:     Zixuan Tan <tanzixuan.me@gmail.com>
+Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 26 Aug 2022 at 20:25, Mikulas Patocka <mpatocka@redhat.com> wrote:
->
->
->
-> On Fri, 26 Aug 2022, Will Deacon wrote:
->
-> > > So, the bad commit is aacd149b62382c63911060b8f64c1e3d89bd405a ("arm64:
-> > > head: avoid relocating the kernel twice for KASLR").
-> >
-> > Thanks. Any chance you could give this a go, please?
-> >
-> > https://lore.kernel.org/r/20220826164800.2059148-1-ardb@kernel.org
-> >
-> > Will
->
-> This doesn't help.
->
+Hello,
 
-Could you try booting with earlycon?
+On Fri, Aug 26, 2022 at 10:22 AM Zixuan Tan <tanzixuan.me@gmail.com> wrote:
+>
+> On Fri, Aug 26, 2022 at 4:17 AM Arnaldo Carvalho de Melo
+> <arnaldo.melo@gmail.com> wrote:
+> >
+> > Em Fri, Aug 26, 2022 at 01:00:58AM +0800, Zixuan Tan escreveu:
+> > > Switch to the flavored EVP API like in test-libcrypto.c, and remove the
+> > > bad gcc #pragma.
+> > >
+> > > Inspired-By: 5b245985a6de ("tools build: Switch to new openssl API for
+> > > test-libcrypto")
+> >
+> > How did you test the end result? Can you please describe step by step?
+> >
+> > Also please consider adding a 'perf test' entry to make sure this
+> > doesn't regress.
+>
+> Sorry but I don't get what you mean, what results do I need to test?
+>
+> These EVP_* APIs are just replacements for the deprecated MD5_* APIs in
+> openssl v3 [1][2]. With the same input, they produce the same MD5 digest.
+>
+> And this patch just does the migration work for the upgrade and does not
+> change the logic of the code. so...what should I test?
 
-Just 'earlycon' and if that does not help,
-'earlycon=uart8250,mmio32,<uart PA>' [IIRC, mcbin uses 16550
-compatible UARTs, right?]
+Yeah, I understand that this merely changes the MD5 APIs.
+While it's good to have a test case for the genelf code, I don't think
+it belongs to this patch.  So,
+
+Acked-by: Namhyung Kim <namhyung@kernel.org>
+
+
+>
+> Links:
+> [1] https://www.openssl.org/docs/man3.0/man3/MD5.html
+> [2] https://stackoverflow.com/questions/69806220/advice-needed-for-migration-of-low-level-openssl-api-to-high-level-openssl-apis
