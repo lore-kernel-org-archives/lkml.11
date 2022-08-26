@@ -2,142 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8E7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEED7ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343972AbiHZKul (ORCPT
+        id S1343962AbiHZKwO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49420 "EHLO
+        Fri, 26 Aug 2022 06:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343999AbiHZKub (ORCPT
+        with ESMTP id S1343723AbiHZKwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 06:50:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21405201BA
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:50:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661511029;
+        Fri, 26 Aug 2022 06:52:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967D7C59D5;
+        Fri, 26 Aug 2022 03:52:06 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 12:52:03 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661511125;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pLii0dfj1y7lFu87Lg22T36M6OnU1zUptup5Hy8q+CA=;
-        b=OO2eonGXI9WqD0QmWdZnmaxtBbAOekzMpYI+f2KtcvxrIDcXWsOoK27oQWiCmnWAoRHATe
-        FOjQM5g5kGBXFCRv7aP+wrFE0FfLVsVfdnpefR2C8q2RYyZaqpiV6wB+waagVuEv7Ux8RJ
-        Zb71dA6MZmzsniqX861DzKSsu4NZlNM=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-376-9P4Rg-nQOjum7rEWsBXLew-1; Fri, 26 Aug 2022 06:50:28 -0400
-X-MC-Unique: 9P4Rg-nQOjum7rEWsBXLew-1
-Received: by mail-ed1-f71.google.com with SMTP id f20-20020a05640214d400b004470930f180so901213edx.10
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:50:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=pLii0dfj1y7lFu87Lg22T36M6OnU1zUptup5Hy8q+CA=;
-        b=C92fm4XEDhdUwohZMOFne0S9duMkHin76ZL5PBXdq+MvYATKGMzNpexvrWj6w/RCPk
-         xiPCSwvUkX/9UIjkXxXhyBNVP8enEqEjFfvx9CcdmCw9xdq652urhs1b9nJOneOYgUmy
-         XNa5EBshvLLO+xsbJMiQkarztnMAbuyOzYucXMssK51Sn250sQw3gDLZWGYQ9iwxA1nC
-         1B6JG6/v1lEZRhPLY1hXvCt8Lm+syt/PLnYEml1GXRn2usOwqwF5fQBD5pZTDkDDk9Gb
-         C+2PJMYxmseMqDAEUdBaiZm4KdgVtENeN5KqO3oXw9eqvhEpoWforkX+W7pkPwAwKR/d
-         GZSA==
-X-Gm-Message-State: ACgBeo2CxdUtbg0833w1/xYjPM0s/WcO0Gz4Q4pEWD65EvLyYsKFfVfI
-        hofRA67YwpY+g/SYDjd+JxQ4i8gqxUD3lc9JMZlz4NzolMldVVis04xZHUG7wH1yZqDGWsvckPE
-        oF9mQ+D7R8uH4LgLWTokOJULw
-X-Received: by 2002:a17:907:84a:b0:733:735:2b1a with SMTP id ww10-20020a170907084a00b0073307352b1amr5021055ejb.290.1661511026933;
-        Fri, 26 Aug 2022 03:50:26 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7I33tIVReqn9qteZcQFjZQwkCSQgOePSldWnAYXVK6po7eIEvLdgg+W/uNc+AQTkft1CgJvQ==
-X-Received: by 2002:a17:907:84a:b0:733:735:2b1a with SMTP id ww10-20020a170907084a00b0073307352b1amr5021032ejb.290.1661511026688;
-        Fri, 26 Aug 2022 03:50:26 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id 1-20020a170906218100b0072af4af2f46sm750652eju.74.2022.08.26.03.50.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 03:50:26 -0700 (PDT)
-Message-ID: <9e7cb09c-82c5-9492-bccd-5511f5bede26@redhat.com>
-Date:   Fri, 26 Aug 2022 12:50:24 +0200
+        bh=AcBhOUfjCU0/EpkwIrVCvmsXvHvFxYrl5N/njRsUdYc=;
+        b=ScOCwBbVqwD1I7R7PWDqWaPibViOyq/x5Nzh7T0FlAl614JW3V1Sx0Gq5WnS2J6Fz13ho7
+        wdAb5BRMM+iWoLcjxAkMCLmvRYSoCtMP4WTbWrQBMcIuFWGnpH2E2qnfofUIApc/OO7ra3
+        jaHk6/uG6N+RZ3z2lIXHVse1Wo0U3zAsy2llj0QSjVJSSJ//Q36aUanToUJ2TdyCi73JEk
+        Qy7SgejFtKNSlO9lfilUUW7tfwwc9EB7c/aUszrmH+/D3hocxbFU37xNh9BeTv85rYiIWH
+        DeNcR0h3sbp0Khs7Oc4ydrUF4qXaDx3pMvIsOBAZoRs5LEHiTiiNldb2IB5QLw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661511125;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AcBhOUfjCU0/EpkwIrVCvmsXvHvFxYrl5N/njRsUdYc=;
+        b=bWKqx4HnixDXaaYz3oju6CqNuhoyWH15Q++CzHTNkvS7tR/lPlG+bGohFhelKvt9BPIE9p
+        w//by8Fhf3jRPyBw==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        Dmitry Bogdanov <d.bogdanov@yadro.com>,
+        Nicholas Bellinger <nab@linux-iscsi.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        John Youn <John.Youn@synopsys.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrzej Pietrasiewicz <andrzej.p@samsung.com>,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v2 00/25] usb: gadget: f_tcm: Enhance UASP driver
+Message-ID: <Ywil0y5I/oXjPJp9@linutronix.de>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Content-Language: en-US
-To:     Marc Zyngier <maz@kernel.org>, Peter Xu <peterx@redhat.com>
-Cc:     Gavin Shan <gshan@redhat.com>, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, corbet@lwn.net,
-        james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, oliver.upton@linux.dev,
-        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
-        seanjc@google.com, dmatlack@google.com, bgardon@google.com,
-        ricarkol@google.com, zhenyzha@redhat.com, shan.gavin@gmail.com
-References: <20220819005601.198436-1-gshan@redhat.com>
- <20220819005601.198436-2-gshan@redhat.com> <87lerkwtm5.wl-maz@kernel.org>
- <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
- <87fshovtu0.wl-maz@kernel.org>
- <171d0159-4698-354b-8b2f-49d920d03b1b@redhat.com>
- <YwTc++Lz6lh3aR4F@xz-m1.local> <87bksawz0w.wl-maz@kernel.org>
- <YwVEoM1pj2MPCELp@xz-m1.local> <878rnewpaw.wl-maz@kernel.org>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory
- tracking
-In-Reply-To: <878rnewpaw.wl-maz@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/24/22 00:47, Marc Zyngier wrote:
->> I definitely don't think I 100% understand all the ordering things since
->> they're complicated.. but my understanding is that the reset procedure
->> didn't need memory barrier (unlike pushing, where we have explicit wmb),
->> because we assumed the userapp is not hostile so logically it should only
->> modify the flags which is a 32bit field, assuming atomicity guaranteed.
-> Atomicity doesn't guarantee ordering, unfortunately. Take the
-> following example: CPU0 is changing a bunch of flags for GFNs A, B, C,
-> D that exist in the ring in that order, and CPU1 performs an ioctl to
-> reset the page state.
-> 
-> CPU0:
->      write_flag(A, KVM_DIRTY_GFN_F_RESET)
->      write_flag(B, KVM_DIRTY_GFN_F_RESET)
->      write_flag(C, KVM_DIRTY_GFN_F_RESET)
->      write_flag(D, KVM_DIRTY_GFN_F_RESET)
->      [...]
-> 
-> CPU1:
->     ioctl(KVM_RESET_DIRTY_RINGS)
-> 
-> Since CPU0 writes do not have any ordering, CPU1 can observe the
-> writes in a sequence that have nothing to do with program order, and
-> could for example observe that GFN A and D have been reset, but not B
-> and C. This in turn breaks the logic in the reset code (B, C, and D
-> don't get reset), despite userspace having followed the spec to the
-> letter. If each was a store-release (which is the case on x86), it
-> wouldn't be a problem, but nothing calls it in the documentation.
-> 
-> Maybe that's not a big deal if it is expected that each CPU will issue
-> a KVM_RESET_DIRTY_RINGS itself, ensuring that it observe its own
-> writes. But expecting this to work across CPUs without any barrier is
-> wishful thinking.
+On 2022-07-18 18:26:01 [-0700], Thinh Nguyen wrote:
+> The Linux UASP gadget driver is incomplete and remained broken for a long time.
+> It was not implemented for performance either. This series adds some of the
+> required features for the UASP driver to work. It also makes some changes to
+> the target core.
 
-Agreed, but that's a problem for userspace to solve.  If userspace wants 
-to reset the fields in different CPUs, it has to synchronize with its 
-own invoking of the ioctl.
+Some patches here have fixes: tags and are in the middle of the series.
+If they are indeed fixes which are needed for the driver function
+regardless of the other changes, which are part of the series, then they
+should be moved to the front of series _or_ submitted independently as
+in "lets first fix the broken things and then make it pretty".
 
-That is, CPU0 must ensure that a ioctl(KVM_RESET_DIRTY_RINGS) is done 
-after (in the memory-ordering sense) its last write_flag(D, 
-KVM_DIRTY_GFN_F_RESET).  If there's no such ordering, there's no 
-guarantee that the write_flag will have any effect.
+All in all I am happy to see that somebody is looking into the target
+USB gadget.
 
-The main reason why I preferred a global KVM_RESET_DIRTY_RINGS ioctl was 
-because it takes kvm->slots_lock so the execution would be serialized 
-anyway.  Turning slots_lock into an rwsem would be even worse because it 
-also takes kvm->mmu_lock (since slots_lock is a mutex, at least two 
-concurrent invocations won't clash with each other on the mmu_lock).
-
-Paolo
-
+Sebastian
