@@ -2,199 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B8E4ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B46DDECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245074AbiHZHCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47998 "EHLO
+        id S245125AbiHZHCz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:02:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244029AbiHZHCD (ORCPT
+        with ESMTP id S244686AbiHZHCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:02:03 -0400
-Received: from mail-vk1-xa2b.google.com (mail-vk1-xa2b.google.com [IPv6:2607:f8b0:4864:20::a2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833CFB9422
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:02:01 -0700 (PDT)
-Received: by mail-vk1-xa2b.google.com with SMTP id g185so263260vkb.13
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:02:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nb30IeBYlNCm8COYdWtT+NwLEjGs+E4jf3hbuLim9Zg=;
-        b=by8E/XRfPLlvKvkN3s95Up+mY3By3W4x8doh/J7BVnFzqHaw38MrXk7SIvsanVKg6z
-         HL3tFsbSnFokvmWEiqBAwTXe8cd6RnOFQCQ9u8Xnk9EwFyzkGPDWoQL7u3Q0wfnWLx/x
-         B4AF0IjIMg3nBYpOfv/3yinNeZLYuEwJ+vRJMPWO+ufB0Qy4Cx/Sos4re+WJYowByHBc
-         M08ylkfGMIRXA0isVrZMHezOW5V4YJ0nT6VErcaymEkfs0Mcs3KorIoWjUH6bR92jSId
-         EPC+h7uHmzVCNc1MUjyG8ojO3dqxAl2Iicb7Bd8NqgF80uZn0hSf1JUE0vhwE8Zrq2vR
-         AknA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nb30IeBYlNCm8COYdWtT+NwLEjGs+E4jf3hbuLim9Zg=;
-        b=HWrsUFLnl3DLjde8G5dfWH994Tvx3vCZlqnuaNDRUlLG/mhMb5WZTsDh6FeIP+a8PG
-         smYc7CXpVb8RZskiCKLiK9G7CChqqKWjNb3G5HYWZcfsIe6PjEytGAQBmVsaqH2j7H6h
-         9ZJUSbgAFParG8lp0DAaJ/6BUUf/dbPvuoUti4q0q3seun4p8MoUkWAFG585OO0voxYS
-         hIfGt17t9VL1bHzJdIFPMzCr9JTyvAcDjzZNFT91outUGGfAEfCBTCQxi0vOLhevq+RF
-         MeiY1eFcz2omMGWWdlTcdiWC8AAzajpmKHnTCTYiFqgOnyR5uc8fQPzEMApPRZZY2bSo
-         xHgw==
-X-Gm-Message-State: ACgBeo0MMORHgknaW+fB/LFXTVcml/AUJqisG1cDf9e9Twcue4Hk6WPB
-        sbcjEKEGj4kheGJo6PPTfD9CcUcfBWtwrXL3NKCztg==
-X-Google-Smtp-Source: AA6agR5YIgRD7icrEPbMo91EGOok4fOYKpDJ8hyhpp8YDdFqB05P37vSLYM6jMxTZZTheFfN3bRbXt/+bNfyIynoR4k=
-X-Received: by 2002:a05:6122:178a:b0:380:c120:6760 with SMTP id
- o10-20020a056122178a00b00380c1206760mr2698897vkf.7.1661497320522; Fri, 26 Aug
- 2022 00:02:00 -0700 (PDT)
+        Fri, 26 Aug 2022 03:02:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C076BA9EB;
+        Fri, 26 Aug 2022 00:02:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32A3261C2F;
+        Fri, 26 Aug 2022 07:02:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C527C433D6;
+        Fri, 26 Aug 2022 07:02:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661497370;
+        bh=9H+D7s1IwU51jZwiF9ZOTedbH+3hTtzpcIr/Dur84VY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JstaSn+QgEaGDQbdq6Q7htpbmrxCHa0yGlZYxNMMPk1pykNs0xJEPzQez8wldYe7a
+         GCQ+xmhwgBDxVbC20XN8FP3AZGaVsq+bBqax3U4ABYiT7VRFBsZ8fUhiH8Ajw7z4s5
+         ai/hkkZRyDwdFx6gpJXKZUGiUMTG3ubNBIYJUU2/l7/lSVqNLf/5Q84tQRe2Q2BgTP
+         6X4bx0BuQPj9m1TdCOW4ItHDQ0fM/ylo326q1r5c7Os8sQhfNk021O3lZsIuhtSby7
+         EFRwhU/GjCQViWCmS+WGl2smpYvFm95BXn7RH2SaOf58unI30wN7Z8rlP5bw3Ml8zH
+         b+HK/AE6vAeqg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oRTMn-0000jW-DY; Fri, 26 Aug 2022 09:02:57 +0200
+Date:   Fri, 26 Aug 2022 09:02:57 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/7] arm64: dts: qcom: Fix broken regulator spec on RPMH
+ boards
+Message-ID: <YwhwIX+Ib8epUYWS@hovoldconsulting.com>
+References: <20220825164205.4060647-1-dianders@chromium.org>
 MIME-Version: 1.0
-References: <20220819053234.241501-1-tales.aparecida@gmail.com>
- <20220819053234.241501-3-tales.aparecida@gmail.com> <f0c491f2-39fd-b778-bc63-99b3338c6d8a@riseup.net>
-In-Reply-To: <f0c491f2-39fd-b778-bc63-99b3338c6d8a@riseup.net>
-From:   David Gow <davidgow@google.com>
-Date:   Fri, 26 Aug 2022 15:01:46 +0800
-Message-ID: <CABVgOSmbU+rrQsKYjiGcx95yJ-hyr5SS9W-oDCHRyH6Sfe_Cvg@mail.gmail.com>
-Subject: Re: [PATCH 2/8] Documentation: KUnit: avoid repeating "kunit.py run"
- in start.rst
-To:     =?UTF-8?B?TWHDrXJhIENhbmFs?= <mairacanal@riseup.net>
-Cc:     Tales Aparecida <tales.aparecida@gmail.com>,
-        Sadiya Kazi <sadiyakazi@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Brendan Higgins <brendan.higgins@linux.dev>,
-        Trevor Woerner <twoerner@gmail.com>, siqueirajordao@riseup.net,
-        mwen@igalia.com, andrealmeid@riseup.net,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000009ad9d505e71f7d5f"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825164205.4060647-1-dianders@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000009ad9d505e71f7d5f
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Thu, Aug 25, 2022 at 09:41:58AM -0700, Douglas Anderson wrote:
+> Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
+> get_optimum_mode(), not set_load()") several boards were able to
+> change their regulator mode even though they had nothing listed in
+> "regulator-allowed-modes". After that commit (and fixes [1]) we'll be
+> stuck at the initial mode. Discussion of this (again, see [1]) has
+> resulted in the decision that the old dts files were wrong and should
+> be fixed to fully restore old functionality.
+> 
+> This series attempts to fix everyone. I've kept each board in a
+> separate patch to make stable / backports work easier.
+> 
+> Affected boards were found with:
+>   rpmh_users=$(git grep -l -i rpmh -- arch/arm*/boot/dts/qcom)
+>   set_modes=$(grep -l regulator-allow-set-load ${rpmh_users})
+>   but_no_allowed_modes=$(grep -l -v regulator-allowed-modes ${set_modes})
+> 
+> Fix was applied with:
+>   for f in ${but_no_allowed_modes}; do
+>     sed -i~ -e \
+>       's/^\(\s*\)regulator-allow-set-load;/\1regulator-allow-set-load;\n\1regulator-allowed-modes =\n\1    <RPMH_REGULATOR_MODE_LPM\n\1     RPMH_REGULATOR_MODE_HPM>;/'\
+>       $f
+>   done
+> 
+> Then results were manually inspected. In one board I removed a
+> "regulator-allow-set-load" from a fixed regulator since that was
+> clearly wrong.
+> 
+> [1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
+> 
+> 
+> Douglas Anderson (7):
+>   arm64: dts: qcom: sa8155p-adp: Specify which LDO modes are allowed
 
-On Fri, Aug 19, 2022 at 7:04 PM Ma=C3=ADra Canal <mairacanal@riseup.net> wr=
-ote:
->
-> Hi Tales
->
-> On 8/19/22 02:32, Tales Aparecida wrote:
-> > Combine two sections mentioning "kunit.py run" to streamline the
-> > getting-started guide.
-> >
-> > Signed-off-by: Tales Aparecida <tales.aparecida@gmail.com>
-> > ---
-> >  Documentation/dev-tools/kunit/start.rst | 38 ++++++++++---------------
-> >  1 file changed, 15 insertions(+), 23 deletions(-)
-> >
-> > diff --git a/Documentation/dev-tools/kunit/start.rst b/Documentation/de=
-v-tools/kunit/start.rst
-> > index e730df1f468e..165d7964aa13 100644
-> > --- a/Documentation/dev-tools/kunit/start.rst
-> > +++ b/Documentation/dev-tools/kunit/start.rst
-> > @@ -19,7 +19,21 @@ can run kunit_tool:
-> >
-> >       ./tools/testing/kunit/kunit.py run
-> >
-> > -For more information on this wrapper, see:
-> > +If everything worked correctly, you should see the following:
-> > +
-> > +.. code-block::
-> > +
-> > +     Generating .config ...
->
-> When I run ./tools/testing/kunit/kunit.py run, I usually see
-> "Configuring KUnit Kernel ..." instead of "Generating .config ...".
-> Maybe there was a change in the code that didn't reflect on the docs.
->
+>   arm64: dts: qcom: sa8295p-adp: Specify which LDO modes are allowed
+>   arm64: dts: qcom: sc8280xp-crd: Specify which LDO modes are allowed
 
-FYI, The "Generating .config..." message will only appear if there's
-no .config file present in the build dir. Since this is the case the
-first time kunit_tool is used, it makes sense to mention it here in
-the "Getting Started" docs, IMHO.
+These two should be rebased on
 
-Cheers,
--- David
+	https://lore.kernel.org/all/20220803121942.30236-1-johan+linaro@kernel.org/
 
---0000000000009ad9d505e71f7d5f
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+which disallows mode-switching for all but the UFS regulators (this
+series addresses the DP PHY LPM regression we've discussed elsewhere).
 
-MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-z/tQRXr3iPeVmZCr7nttMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
-dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
-AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
-c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
-LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
-LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
-Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQAx+EQjLATc/sze
-VoZkH7OLz+/no1+y31x4BQ3wjW7lKfay9DAAVym896b7ECttSo95GEvS7pYMikzud57WypK7Bjpi
-ep8YLarLRDrvyyvBuYtyDrIewkuASHtV1oy5E6QZZe2VOxMm6e2oJnFFjbflot4A08D3SwqDwV0i
-OOYwT0BUtHYR/3903Dmdx5Alq+NDvUHDjozgo0f6oIkwDXT3yBV36utQ/jFisd36C8RD5mM+NFpu
-3aqLXARRbKtxw29ErCwulof2dcAonG7cd5j+gmS84sLhKU+BhL1OQVXnJ5tj7xZ5Ri5I23brcwk0
-lk/gWqfgs3ppT9Xk7zVit9q8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
-R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
-MDIwAhABh9LgIPnlfMFHR0Die8n7MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCDM
-Cizit2CYi+Po7iHI61hdM1Pz0e4JuL/NYSBisvlyqDAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0yMjA4MjYwNzAyMDBaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
-BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
-CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAMGvx4tgK1pbYQPA3f6dN
-/EmQiFaWBkpct8WQ7tbAYfntprvSVMYN9IVOwKxse16btWChe7ASzsXptVNdEqH9yKcB7CA96LWB
-lN6pMf6pIkCgSZ0v71YNDlNEbMTDUnyM+m9OLqdRaAHj2xQqhnXUGM0/Kgu59xHt6MIRQqWDVedx
-g+6fyoFYLqe2SIdk0F8TBwWxLvihKt/g6+pebA+KZRlZZPHWdQ4RAqEIJEDiu2e6kPZB3ITDCa12
-LmBulaE+HTIzmv5xgAKUaj8e36Gd38wqgicZbUvWoPYOxKTMDA4ghAOLUWS9RqaqHhZischB2+Tl
-V/O+hCTfM8WrKPbBHQ==
---0000000000009ad9d505e71f7d5f--
+>   arm64: dts: qcom: sc8280xp-thinkpad-x13s: Specify which LDO modes are
+>     allowed
+
+And this one should not be needed at all with the above series applied.
+
+>   arm64: dts: qcom: sm8150-xperia-kumano: Specify which LDO modes are
+>     allowed
+>   arm64: dts: qcom: sm8250-xperia-edo: Specify which LDO modes are
+>     allowed
+>   arm64: dts: qcom: sm8350-hdk: Specify which LDO modes are allowed
+
+Johan
