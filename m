@@ -2,141 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A6FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 06:46:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57603ECAAD7
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 06:46:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbiHZGqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 02:46:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
+        id S245091AbiHZGqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 02:46:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245071AbiHZGp6 (ORCPT
+        with ESMTP id S245092AbiHZGqA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 02:45:58 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE43BB6AC;
+        Fri, 26 Aug 2022 02:46:00 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 065B0B6D2F
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 23:45:59 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id n24so672108ljc.13
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 23:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=kS++P7f/sxm+5fpcUlBki4yBaSJvYpRpgROhsMETBW8=;
+        b=g2PebV7DA2dG91zJ+3A5Ck9fY4G2rWpOELAfA2Ey7hk2LYZzSBnkKYTY7Zr6rAbdFd
+         q46AAJBJE7yTCTd+hQDxa0jNPkVOv6mbAFOM4C+ydfPvRyUAa72QWu+0x1jf6bRp+k79
+         lnGUQedJWnwGTSwtefSnqfcdXKg/IVEad78NLN2cumTD4n0okhNXYRHGQtKwsTfJ5sJn
+         Wqz+JOCykDAXL+y297nti4d0npk/wvA06rQKSCKAFQeCih8lregz+K+CbeJZe8GzmywA
+         PdzsHZaJNXcDaszh3RQOSIntAryy2ULRKf0t72Ibxvpf1CrUBguJYGKnt6cX4aKaaVBP
+         DhGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=kS++P7f/sxm+5fpcUlBki4yBaSJvYpRpgROhsMETBW8=;
+        b=kXzL3owrrLKOKcYjMwvpw9I8Zwa+qk9ci5rfeEglW3CIiMR8rzMEteMMq+2sK2uIaW
+         Owbr9lzLT8XzmXPZLR1kW69A5NH7owCqFmLY9I7N6HSPOxS2j7+T2kybGHUiG6yRBNth
+         r3Fk73OM5ABSs/YISjevkVgLB6BFRQtlgfW/e33Km3eLYYP1DDVkz+iWm6VgoCppUrvE
+         LPBhQeErxmwVYCjDsJ+OWVogh0UoaHm/oZB9pBtvMJ1GvhdY6pRtX+CmRzEkwjK4cl69
+         8UNiqUHUtcrEvpDxCBhv4H+5VIy3Ff6bh9iyOq4dRfQzz72WImMadGTM644XWKow+i8i
+         fAdQ==
+X-Gm-Message-State: ACgBeo1za7ayGGKwjSkmfcwTucO/LYOt/BnlAfPwbbeb4eE6NcmxCDQ6
+        y6G47THJDKolecbJimCT4auMqA==
+X-Google-Smtp-Source: AA6agR4P1Lppd9IyB4a2iit7fR1482AuCseveFfT3iZ+aY3X33NJaw9K20gOE/6FuNs2mXlh6X8R1A==
+X-Received: by 2002:a05:651c:90a:b0:25d:57c9:30c4 with SMTP id e10-20020a05651c090a00b0025d57c930c4mr1790962ljq.386.1661496357412;
+        Thu, 25 Aug 2022 23:45:57 -0700 (PDT)
+Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
+        by smtp.gmail.com with ESMTPSA id f18-20020a056512229200b0048a73d83b7csm262960lfu.133.2022.08.25.23.45.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
         Thu, 25 Aug 2022 23:45:56 -0700 (PDT)
-Received: from lenovo.Home (unknown [39.53.61.43])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6AEE46601EC5;
-        Fri, 26 Aug 2022 07:45:51 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661496354;
-        bh=IN7X9l9wVicY4dNzgT/RD/PEIb50SV6fqcw6KEssYKM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=T8/ooc3a3tld/c4fwpKspyWrUR2soAQzKuW/L+DKrbYypHWjVrXM+SUdBmh8/fHzI
-         DFa5ZP+jexhPLfQedos91GOw8g+1c6WadRNE+yl3R7Jf6BHW0j6biDvOmzXdO/JX8T
-         smoyd2C9JzIOb3d+bzcztDUC3I3Etl256JgVWbqWL51yoopp/X9xoDqSNQHZGXN4Ou
-         6itnGfHTMPsmKLxMGhgtdC+HbvvEdLI1V71EIIPiB6gkzuEN8u7p30zpDpZ8eUJR93
-         BQXJsR02swvyM3pHHVKw8NERJD4J0Ub5W7zcvGfjpLRmMYOLjPdJHctaZ3acZIUQ+x
-         XTEAdZAh0+a0g==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>,
-        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-        linux-kernel@vger.kernel.org (open list),
-        linux-fsdevel@vger.kernel.org (open list:PROC FILESYSTEM),
-        linux-mm@kvack.org (open list:MEMORY MANAGEMENT),
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK)
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        David Hildenbrand <david@redhat.com>,
-        Peter Enderborg <peter.enderborg@sony.com>,
-        Greg KH <gregkh@linuxfoundation.org>
-Subject: [PATCH v3 0/4] Implement IOCTL to get and clear soft dirty PTE
-Date:   Fri, 26 Aug 2022 11:45:31 +0500
-Message-Id: <20220826064535.1941190-1-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
+Message-ID: <c5e22875-745d-7334-84bf-d854b2011af3@linaro.org>
+Date:   Fri, 26 Aug 2022 09:45:55 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v6 0/6] completely rework mediatek,mt7530 binding
+Content-Language: en-US
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220825082301.409450-1-arinc.unal@arinc9.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220825082301.409450-1-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 25/08/2022 11:22, Arınç ÜNAL wrote:
+> Hello.
+> 
+> This patch series brings complete rework of the mediatek,mt7530 binding.
+> 
+> The binding is checked with "make dt_binding_check
+> DT_SCHEMA_FILES=mediatek,mt7530.yaml".
+> 
+> If anyone knows the GIC bit for interrupt for multi-chip module MT7530 in
+> MT7623AI SoC, let me know. I'll add it to the examples.
+> 
+> If anyone got a Unielec U7623 or another MT7623AI board, please reach out.
+> 
+> v6:
+> - Do not remove binding for DSA ports from top level.
+> - On the first patch, remove requiring reg as it's already required by
+> dsa-port.yaml and define acceptable reg values for the CPU ports.
+> - Add Krzysztof's Reviewed-by: and Acked-by: to where they're given except
+> the first patch because of the changes above.
 
-Hello,
+Review should have stayed. It's a close to trivial change.
 
-This patch series implements a new ioctl on the pagemap proc fs file to
-get, clear and perform both get and clear at the same time atomically on
-the specified range of the memory.
+https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
 
-Soft-dirty PTE bit of the memory pages can be viewed by using pagemap
-procfs file. The soft-dirty PTE bit for the whole memory range of the
-process can be cleared by writing to the clear_refs file. This series
-adds features that weren't present earlier.
-- There is no atomic get soft-dirty PTE bit status and clear operation
-  present.
-- The soft-dirty PTE bit of only a part of memory cannot be cleared.
-
-Historically, soft-dirty PTE bit tracking has been used in the CRIU
-project. The proc fs interface is enough for that as I think the process
-is frozen. We have the use case where we need to track the soft-dirty
-PTE bit for the running processes. We need this tracking and clear
-mechanism of a region of memory while the process is running to emulate
-the getWriteWatch() syscall of Windows. This syscall is used by games to
-keep track of dirty pages and keep processing only the dirty pages. This
-new ioctl can be used by the CRIU project and other applications which
-require soft-dirty PTE bit information.
-
-As in the current kernel there is no way to clear a part of memory (instead
-of clearing the Soft-Dirty bits for the entire process) and get+clear
-operation cannot be performed atomically, there are other methods to mimic
-this information entirely in userspace with poor performance:
-- The mprotect syscall and SIGSEGV handler for bookkeeping
-- The userfaultfd syscall with the handler for bookkeeping
-Some benchmarks can be seen [1].
-
-This ioctl can be used by the CRIU project and other applications which
-require soft-dirty PTE bit information. The following operations are
-supported in this ioctl:
-- Get the pages that are soft-dirty.
-- Clear the pages which are soft-dirty.
-- The optional flag to ignore the VM_SOFTDIRTY and only track per page
-soft-dirty PTE bit
-
-There are two decisions which have been taken about how to get the output
-from the syscall.
-- Return offsets of the pages from the start in the vec
-- Stop execution when vec is filled with dirty pages
-These two arguments doesn't follow the mincore() philosophy where the
-output array corresponds to the address range in one to one fashion, hence
-the output buffer length isn't passed and only a flag is set if the page
-is present. This makes mincore() easy to use with less control. We are
-passing the size of the output array and putting return data consecutively
-which is offset of dirty pages from the start. The user can convert these
-offsets back into the dirty page addresses easily. Suppose, the user want
-to get first 10 dirty pages from a total memory of 100 pages. He'll
-allocate output buffer of size 10 and the ioctl will abort after finding the
-10 pages. This behaviour is needed to support Windows' getWriteWatch(). The
-behaviour like mincore() can be achieved by passing output buffer of 100
-size. This interface can be used for any desired behaviour.
-
-[1] https://lore.kernel.org/lkml/54d4c322-cd6e-eefd-b161-2af2b56aae24@collabora.com/
-
-Regards,
-Muhammad Usama Anjum
-
-Muhammad Usama Anjum (4):
-  fs/proc/task_mmu: update functions to clear the soft-dirty PTE bit
-  fs/proc/task_mmu: Implement IOCTL to get and clear soft dirty PTE bit
-  selftests: vm: add pagemap ioctl tests
-  mm: add documentation of the new ioctl on pagemap
-
- Documentation/admin-guide/mm/soft-dirty.rst |  42 +-
- fs/proc/task_mmu.c                          | 342 ++++++++++-
- include/uapi/linux/fs.h                     |  23 +
- tools/include/uapi/linux/fs.h               |  23 +
- tools/testing/selftests/vm/.gitignore       |   1 +
- tools/testing/selftests/vm/Makefile         |   2 +
- tools/testing/selftests/vm/pagemap_ioctl.c  | 649 ++++++++++++++++++++
- 7 files changed, 1050 insertions(+), 32 deletions(-)
- create mode 100644 tools/testing/selftests/vm/pagemap_ioctl.c
-
--- 
-2.30.2
-
+Best regards,
+Krzysztof
