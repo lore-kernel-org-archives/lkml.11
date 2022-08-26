@@ -2,107 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D77ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:11:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9B2ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245597AbiHZMLe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:11:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
+        id S245692AbiHZMM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245546AbiHZML3 (ORCPT
+        with ESMTP id S229917AbiHZMMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:11:29 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F934DD753;
-        Fri, 26 Aug 2022 05:11:29 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id r15-20020a17090a1bcf00b001fabf42a11cso1437023pjr.3;
-        Fri, 26 Aug 2022 05:11:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=PotJ1wRmqkbv3voX6k4qeuA7obENHsV2m/UgBbrlOOI=;
-        b=Db340hCV4Fq8RLFaxcWdmacj0FyV5VSYpqXRmmpyxPjvvKSj9w9uEhYtoPjIQ7BI2X
-         iaPtydFptX3IrPlBjVj5jNAOg3LPeLSt4uFuC66jKoeL37A644lShCu0iNzLRm0IMeGN
-         rl8fAwGLbTiUdgi5D7wuHdRdLJ6bkjGdSD7bpQoTUpWaaPRt6M1ORDH5nqgf5E+L+3hD
-         2W4980+/0o1A+lkERMnTIE7ii8HgUBNTOwLBpxSX3rN1i9BVVun0G9rCh/tkym+cvhrf
-         3/y5cWO5wX1gXyNajyOX2V5kMbpQJxKKTTPfQmeT0RyRT+xmZbxPE/dXiwtfPpRaYZAa
-         TkyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=PotJ1wRmqkbv3voX6k4qeuA7obENHsV2m/UgBbrlOOI=;
-        b=xw+5o5YMXvwLkeI7CdNlwX5wkzoJx5u6cJXbtux879JBfrkGSmhjxiKY+S0p6KlbqF
-         Ymwrh+p8M2fMivUKSv4r0HGtuA5OznOGh/3GDmaXFaCqOKnN5yQ+iZMbNsk44UoDPSlR
-         W8CC6ILVwIjy5zF3TafW397R+Y9tXdPIMQAGjxfa5R/pSe9nNaOiSEXpohsGpmaP6DHj
-         lzfwzkCymTWpVeaWlJnfeb+TqJf9/J5GEOiX1+htTsHDEn8QkG1iLylsMwAjVR7nYBa5
-         nRyrRdWfJy295A3yc7kVLcKEBp78GScCLFwIqULW/njtrz2ZxvVu79TX3zb3llvbDrvl
-         3Yqw==
-X-Gm-Message-State: ACgBeo0idrzJLVtBtL87p52sI7o4/bUJhuLfMR5YtqNHJ/HaZ+VR5Jm+
-        yaqq8i9eU83JBvj7x+39NUQ=
-X-Google-Smtp-Source: AA6agR61Fy97WeEjRcYwmgw2ZGGc63DLAP1ZQwZfLZx/2DyREl0AeNYmXWxW8htKkhU3H5bYlJMKSw==
-X-Received: by 2002:a17:90b:388c:b0:1fb:6738:6e50 with SMTP id mu12-20020a17090b388c00b001fb67386e50mr4005131pjb.231.1661515888580;
-        Fri, 26 Aug 2022 05:11:28 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id r10-20020aa79eca000000b0052d981e7842sm1545874pfq.208.2022.08.26.05.11.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 05:11:27 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Fri, 26 Aug 2022 05:11:26 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     cgel.zte@gmail.com
-Cc:     heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xupanda <xu.panda@zte.com.cn>, Zeal Robot <zeal@zte.com.cn>
-Subject: Re: [PATCH linux-next v2] usb: typec: tcpm: tcpci: Remove the
- unneeded result variable
-Message-ID: <20220826120548.GA2897306@roeck-us.net>
-References: <20220826091731.254966-1-xu.panda@zte.com.cn>
+        Fri, 26 Aug 2022 08:12:54 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546CADDA93;
+        Fri, 26 Aug 2022 05:12:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661515973; x=1693051973;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=8gzeq3HsKshBpNjIIChQDXSz7Xg1mcO3yxgdPGuVa2A=;
+  b=Gm0FsFNVYtMIw82tYTf+GLrn3cxVX3qlqqUBH0bZ7n3oEGGie4gahSGr
+   4xCGcZHP3iLZO09rcuwJnhjRKglQONhlTJtn1R3c+6h3L/6AevD6waC53
+   KDzqHioXHlmdlcMt49ADYRKl17ffF4HmO42f2yyEWdLxvvb1/maobyk4Y
+   Qa2YCw0Yv/Kd+QqAUMIfSY7XAHo+X+jk0e3PFyxlpxJTA/zYA95gPdGW9
+   Ni7TvGiYAh3L/aOwEhUmaqEHpQ63Qxu/5PHv3yo/Xgx0K3A0JKJhsomIE
+   spTW77D3YZyYt0dOnseX7Za+lu9O0uCLyu8P5NEmtv2/Z5nBE2Lt83una
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="295764431"
+X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
+   d="scan'208";a="295764431"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:12:52 -0700
+X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
+   d="scan'208";a="640034953"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.50.209])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:12:40 -0700
+Message-ID: <a7176263-7dc8-6cbd-af2d-5338c4c4b546@intel.com>
+Date:   Fri, 26 Aug 2022 15:12:34 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220826091731.254966-1-xu.panda@zte.com.cn>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v3 16/18] perf sched: Fixes for thread safety analysis
+Content-Language: en-US
+To:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Dario Petrillo <dario.pk1@gmail.com>,
+        Hewenliang <hewenliang4@huawei.com>,
+        yaowenbin <yaowenbin1@huawei.com>,
+        Wenyu Liu <liuwenyu7@huawei.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Pavithra Gurushankar <gpavithrasha@gmail.com>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        William Cohen <wcohen@redhat.com>,
+        Andres Freund <andres@anarazel.de>,
+        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
+        Colin Ian King <colin.king@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Fangrui Song <maskray@google.com>,
+        Stephane Eranian <eranian@google.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Zechuan Chen <chenzechuan1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Remi Bernon <rbernon@codeweavers.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        bpf@vger.kernel.org, llvm@lists.linux.dev
+References: <20220824153901.488576-1-irogers@google.com>
+ <20220824153901.488576-17-irogers@google.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220824153901.488576-17-irogers@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 09:17:32AM +0000, cgel.zte@gmail.com wrote:
-> From: xupanda <xu.panda@zte.com.cn>
+On 24/08/22 18:38, Ian Rogers wrote:
+> Add annotations to describe lock behavior. Add unlocks so that mutexes
+> aren't conditionally held on exit from perf_sched__replay. Add an exit
+> variable so that thread_func can terminate, rather than leaving the
+> threads blocked on mutexes.
 > 
-> Return the value regmap_update_bits() directly instead of
-> storing it in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zeal@zte.com.cn>
-> Signed-off-by: xupanda <xu.panda@zte.com.cn>
-
-This needs to be a real (full) name.
-
-> 
+> Signed-off-by: Ian Rogers <irogers@google.com>
 > ---
-> change for v2
->  - remove those irrelevant sentences 
-> ---
+>  tools/perf/builtin-sched.c | 46 ++++++++++++++++++++++++--------------
+>  1 file changed, 29 insertions(+), 17 deletions(-)
 > 
->  drivers/usb/typec/tcpm/tcpci.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
-> index b2bfcebe218f..29047da826a9 100644
-> --- a/drivers/usb/typec/tcpm/tcpci.c
-> +++ b/drivers/usb/typec/tcpm/tcpci.c
-> @@ -328,11 +328,9 @@ static int tcpci_set_vconn(struct tcpc_dev *tcpc, bool enable)
->  static int tcpci_enable_auto_vbus_discharge(struct tcpc_dev *dev, bool enable)
->  {
->  	struct tcpci *tcpci = tcpc_to_tcpci(dev);
-> -	int ret;
+> diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
+> index 7e4006d6b8bc..b483ff0d432e 100644
+> --- a/tools/perf/builtin-sched.c
+> +++ b/tools/perf/builtin-sched.c
+> @@ -246,6 +246,7 @@ struct perf_sched {
+>  	const char	*time_str;
+>  	struct perf_time_interval ptime;
+>  	struct perf_time_interval hist_time;
+> +	volatile bool   thread_funcs_exit;
+>  };
 >  
-> -	ret = regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
-> +	return regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
->  				 enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
+>  /* per thread run time data */
+> @@ -633,31 +634,34 @@ static void *thread_func(void *ctx)
+>  	prctl(PR_SET_NAME, comm2);
+>  	if (fd < 0)
+>  		return NULL;
+> -again:
+> -	ret = sem_post(&this_task->ready_for_work);
+> -	BUG_ON(ret);
+> -	mutex_lock(&sched->start_work_mutex);
+> -	mutex_unlock(&sched->start_work_mutex);
+>  
+> -	cpu_usage_0 = get_cpu_usage_nsec_self(fd);
+> +	while (!sched->thread_funcs_exit) {
+> +		ret = sem_post(&this_task->ready_for_work);
+> +		BUG_ON(ret);
+> +		mutex_lock(&sched->start_work_mutex);
+> +		mutex_unlock(&sched->start_work_mutex);
+>  
+> -	for (i = 0; i < this_task->nr_events; i++) {
+> -		this_task->curr_event = i;
+> -		perf_sched__process_event(sched, this_task->atoms[i]);
+> -	}
+> +		cpu_usage_0 = get_cpu_usage_nsec_self(fd);
+>  
+> -	cpu_usage_1 = get_cpu_usage_nsec_self(fd);
+> -	this_task->cpu_usage = cpu_usage_1 - cpu_usage_0;
+> -	ret = sem_post(&this_task->work_done_sem);
+> -	BUG_ON(ret);
+> +		for (i = 0; i < this_task->nr_events; i++) {
+> +			this_task->curr_event = i;
+> +			perf_sched__process_event(sched, this_task->atoms[i]);
+> +		}
+>  
+> -	mutex_lock(&sched->work_done_wait_mutex);
+> -	mutex_unlock(&sched->work_done_wait_mutex);
+> +		cpu_usage_1 = get_cpu_usage_nsec_self(fd);
+> +		this_task->cpu_usage = cpu_usage_1 - cpu_usage_0;
+> +		ret = sem_post(&this_task->work_done_sem);
+> +		BUG_ON(ret);
+>  
+> -	goto again;
+> +		mutex_lock(&sched->work_done_wait_mutex);
+> +		mutex_unlock(&sched->work_done_wait_mutex);
+> +	}
+> +	return NULL;
+>  }
+>  
+>  static void create_tasks(struct perf_sched *sched)
+> +	EXCLUSIVE_LOCK_FUNCTION(sched->start_work_mutex)
+> +	EXCLUSIVE_LOCK_FUNCTION(sched->work_done_wait_mutex)
+>  {
+>  	struct task_desc *task;
+>  	pthread_attr_t attr;
+> @@ -687,6 +691,8 @@ static void create_tasks(struct perf_sched *sched)
+>  }
+>  
+>  static void wait_for_tasks(struct perf_sched *sched)
+> +	EXCLUSIVE_LOCKS_REQUIRED(sched->work_done_wait_mutex)
+> +	EXCLUSIVE_LOCKS_REQUIRED(sched->start_work_mutex)
+>  {
+>  	u64 cpu_usage_0, cpu_usage_1;
+>  	struct task_desc *task;
+> @@ -738,6 +744,8 @@ static void wait_for_tasks(struct perf_sched *sched)
+>  }
+>  
+>  static void run_one_test(struct perf_sched *sched)
+> +	EXCLUSIVE_LOCKS_REQUIRED(sched->work_done_wait_mutex)
+> +	EXCLUSIVE_LOCKS_REQUIRED(sched->start_work_mutex)
+>  {
+>  	u64 T0, T1, delta, avg_delta, fluct;
+>  
+> @@ -3309,11 +3317,15 @@ static int perf_sched__replay(struct perf_sched *sched)
+>  	print_task_traces(sched);
+>  	add_cross_task_wakeups(sched);
+>  
+> +	sched->thread_funcs_exit = false;
+>  	create_tasks(sched);
+>  	printf("------------------------------------------------------------\n");
+>  	for (i = 0; i < sched->replay_repeat; i++)
+>  		run_one_test(sched);
+>  
+> +	sched->thread_funcs_exit = true;
+> +	mutex_unlock(&sched->start_work_mutex);
+> +	mutex_unlock(&sched->work_done_wait_mutex);
 
-Continuation line alignment still needs to be adjusted.
+I think you still need to wait for the threads to exit before
+destroying the mutexes.
 
-Both were aready mentioned in feedback to v1 of the patch.
+>  	return 0;
+>  }
+>  
 
-Guenter
