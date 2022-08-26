@@ -2,99 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4DB8ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 451A7ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:40:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244360AbiHZCkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46044 "EHLO
+        id S244738AbiHZCkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233284AbiHZCkM (ORCPT
+        with ESMTP id S239526AbiHZCkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:40:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF742140FC;
-        Thu, 25 Aug 2022 19:40:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71DE8B82F67;
-        Fri, 26 Aug 2022 02:40:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFA6CC433C1;
-        Fri, 26 Aug 2022 02:40:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661481607;
-        bh=F/XrCpR9e6lLBg9nz08XniZFdkkOADRu12wJy7b0C1I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PqRDbFlPCk05E8YnGrrMdNZNjAjJI2WJ01UElGjl4bs9oNqKYy+IH4/hqBpwjCX7+
-         1PpPmr70tQkFgqodpDSelmlZTwC0zTYz/IBKzcdiv9awRI/dXeAafwlOuuTcKLibaI
-         iawv0wLvrlVzuL0Ktm5agTauZHVAGJR7U493kwVAIPevCJeNODIY/YlYx8ThMXjhZa
-         7gDy5M46y7rP4aVIYjfeQOvejxmYepkCHrA0KUvpBPAPLpH+zLFvEUmYKNfj2v7MDc
-         zg/rMin0QzFZPD5gsvkoj1CXb7rzDPtJ+fhPZgGUIxvJ1Z91R5cCTn4vdhKeb8E9Cy
-         IuDJ/m+MCiChw==
-Date:   Thu, 25 Aug 2022 21:40:03 -0500
-From:   Bjorn Andersson <andersson@kernel.org>
-To:     Matthias Kaehlcke <mka@chromium.org>,
-        Rajendra Nayak <quic_rjendra@quicinc.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        linux-clk@vger.kernel.org,
-        Krishna Kurapati <quic_kriskura@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Re: [PATCH v2 1/2] clk: qcom: gcc-sc7180: Keep the USB GDSC always on
-Message-ID: <20220826024003.qpqtdmdohdmpcskt@baldur>
-References: <20220825182152.v2.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
+        Thu, 25 Aug 2022 22:40:22 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFB41AF00
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 19:40:19 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MDPCb4gFMzGprV;
+        Fri, 26 Aug 2022 10:38:35 +0800 (CST)
+Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 26 Aug 2022 10:40:17 +0800
+Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
+ (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
+ 2022 10:40:16 +0800
+From:   Shang XiaoJing <shangxiaojing@huawei.com>
+To:     <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
+        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>
+CC:     <shangxiaojing@huawei.com>
+Subject: [PATCH -next] sched/deadline: Add start_new_instance helper
+Date:   Fri, 26 Aug 2022 11:15:21 +0800
+Message-ID: <20220826031521.13391-1-shangxiaojing@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825182152.v2.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
+Content-Type: text/plain
+X-Originating-IP: [10.175.100.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600008.china.huawei.com (7.193.23.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 06:21:58PM -0700, Matthias Kaehlcke wrote:
-> When the GDSC is disabled during system suspend USB is broken on
-> sc7180 when the system resumes. Mark the GDSC as always on to
-> make sure USB still works after system suspend.
-> 
-> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+Wrap repeated code in helper function start_new_instance, which set
+the deadline and runtiem of input dl_se based on pi_of(dl_se). Note that
+setup_new_dl_entity originally set the deadline and runtime base on
+dl_se, which should equals to pi_of(dl_se) for non-boosted task.
 
-Rajendra, where you able to find some time to look into take the GDSC
-into retention state? Do you suggest that I merge these two patches for
-now?
+Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
+---
+ kernel/sched/deadline.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-Thanks,
-Bjorn
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 4a40a462717c..5e9c28847610 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -770,6 +770,13 @@ static void enqueue_task_dl(struct rq *rq, struct task_struct *p, int flags);
+ static void __dequeue_task_dl(struct rq *rq, struct task_struct *p, int flags);
+ static void check_preempt_curr_dl(struct rq *rq, struct task_struct *p, int flags);
+ 
++static inline void start_new_instance(struct sched_dl_entity *dl_se, struct rq *rq)
++{
++	/* for non-boosted task, pi_of(dl_se) == dl_se */
++	dl_se->deadline = rq_clock(rq) + pi_of(dl_se)->dl_deadline;
++	dl_se->runtime = pi_of(dl_se)->dl_runtime;
++}
++
+ /*
+  * We are being explicitly informed that a new instance is starting,
+  * and this means that:
+@@ -803,8 +810,7 @@ static inline void setup_new_dl_entity(struct sched_dl_entity *dl_se)
+ 	 * future; in fact, we must consider execution overheads (time
+ 	 * spent on hardirq context, etc.).
+ 	 */
+-	dl_se->deadline = rq_clock(rq) + dl_se->dl_deadline;
+-	dl_se->runtime = dl_se->dl_runtime;
++	start_new_instance(dl_se, rq);
+ }
+ 
+ /*
+@@ -836,10 +842,8 @@ static void replenish_dl_entity(struct sched_dl_entity *dl_se)
+ 	 * This could be the case for a !-dl task that is boosted.
+ 	 * Just go with full inherited parameters.
+ 	 */
+-	if (dl_se->dl_deadline == 0) {
+-		dl_se->deadline = rq_clock(rq) + pi_of(dl_se)->dl_deadline;
+-		dl_se->runtime = pi_of(dl_se)->dl_runtime;
+-	}
++	if (dl_se->dl_deadline == 0)
++		start_new_instance(dl_se, rq);
+ 
+ 	if (dl_se->dl_yielded && dl_se->runtime > 0)
+ 		dl_se->runtime = 0;
+@@ -866,8 +870,7 @@ static void replenish_dl_entity(struct sched_dl_entity *dl_se)
+ 	 */
+ 	if (dl_time_before(dl_se->deadline, rq_clock(rq))) {
+ 		printk_deferred_once("sched: DL replenish lagged too much\n");
+-		dl_se->deadline = rq_clock(rq) + pi_of(dl_se)->dl_deadline;
+-		dl_se->runtime = pi_of(dl_se)->dl_runtime;
++		start_new_instance(dl_se, rq);
+ 	}
+ 
+ 	if (dl_se->dl_yielded)
+@@ -1024,8 +1027,7 @@ static void update_dl_entity(struct sched_dl_entity *dl_se)
+ 			return;
+ 		}
+ 
+-		dl_se->deadline = rq_clock(rq) + pi_of(dl_se)->dl_deadline;
+-		dl_se->runtime = pi_of(dl_se)->dl_runtime;
++		start_new_instance(dl_se, rq);
+ 	}
+ }
+ 
+-- 
+2.17.1
 
-> ---
-> I'm not entirely sure that this is the correct solution. What makes
-> me doubt is that only msm8953 sets ALWAYS_ON for the USB GDSC. Is USB
-> broken after suspend on all the other QC platforms?
-> 
-> Changes in v2:
-> - set the flags of the GDSC not of the GDSC power domain
-> - updated commit message
-> 
->  drivers/clk/qcom/gcc-sc7180.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/clk/qcom/gcc-sc7180.c b/drivers/clk/qcom/gcc-sc7180.c
-> index c2ea09945c47..c0d7509a782e 100644
-> --- a/drivers/clk/qcom/gcc-sc7180.c
-> +++ b/drivers/clk/qcom/gcc-sc7180.c
-> @@ -2225,6 +2225,7 @@ static struct gdsc usb30_prim_gdsc = {
->  		.name = "usb30_prim_gdsc",
->  	},
->  	.pwrsts = PWRSTS_OFF_ON,
-> +	.flags = ALWAYS_ON,
->  };
->  
->  static struct gdsc hlos1_vote_mmnoc_mmu_tbu_hf0_gdsc = {
-> -- 
-> 2.37.2.672.g94769d06f0-goog
-> 
