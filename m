@@ -2,318 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D601ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A42EDECAAA2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244170AbiHZCNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:13:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
+        id S244689AbiHZCQx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236072AbiHZCNJ (ORCPT
+        with ESMTP id S233431AbiHZCQt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:13:09 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2595CCAC92;
-        Thu, 25 Aug 2022 19:13:04 -0700 (PDT)
-X-UUID: c402bdaddaff492a99060e2f1a7dc99d-20220826
-X-GW-Reason: 11109
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
-X-Content-Feature: ica/max.line-size 103
-        audit/email.address 1
-        dict/adv 1
-        dict/contack 1
-        dict/notice 1
-        dict/operate 1
-        meta/cnt.alert 1
-X-UUID: c402bdaddaff492a99060e2f1a7dc99d-20220826
-X-User: oushixiong@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by mailgw
-        (envelope-from <oushixiong@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 205237631; Fri, 26 Aug 2022 09:31:22 +0800
-From:   oushixiong <oushixiong@kylinos.cn>
-To:     Dave Airlie <airlied@redhat.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        oushixiong <oushixiong@kylinos.cn>
-Subject: [PATCH] drm/ast: add dmabuf/prime buffer sharing support
-Date:   Fri, 26 Aug 2022 09:31:03 +0800
-Message-Id: <20220826013103.1519411-1-oushixiong@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 25 Aug 2022 22:16:49 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684EFC9EA3;
+        Thu, 25 Aug 2022 19:16:48 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 019A420441;
+        Fri, 26 Aug 2022 02:16:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661480207; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rdewQxjoX3h2OYaDP8Q52JaGQBN0oIzHjo+RTRN04G4=;
+        b=MBjbPDKRhm92P0yOj50KQYPjcAwo5rPA217+WOb37bH9d6Hrr/QwT9H8SKTSvFYf95Ujct
+        ScnjsCkqwlaqlBCiMaO9hB56oLl3xcyPNA8fouOLDFh2cLSgfDyU4NAxeZA/+Nx7eC4sdY
+        hRUh8Syjaimegb0WF51F/EHDozAJszA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661480207;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=rdewQxjoX3h2OYaDP8Q52JaGQBN0oIzHjo+RTRN04G4=;
+        b=DnlkIkPs1iBbbePvziGXurxqyOTbqAazE1qRcEhbnn5zMTgt4Ju9viiCoDAr2SJK2lDKn8
+        Q/Q/L9OiKI6a/fBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 6B17313A65;
+        Fri, 26 Aug 2022 02:16:44 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 1NFdCQwtCGNCMQAAMHmgww
+        (envelope-from <neilb@suse.de>); Fri, 26 Aug 2022 02:16:44 +0000
+Subject: [PATCH/RFC 00/10 v5] Improve scalability of directory operations
+From:   NeilBrown <neilb@suse.de>
+To:     Al Viro <viro@zeniv.linux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Daire Byrne <daire@dneg.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Cc:     Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Date:   Fri, 26 Aug 2022 12:10:43 +1000
+Message-ID: <166147828344.25420.13834885828450967910.stgit@noble.brown>
+User-Agent: StGit/1.5
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds ast specific codes for DRM prime feature, this is to
-allow for offloading of rending in one direction and outputs in other.
+[I made up "v5" - I haven't been counting]
 
-This patch is designed to solve the problem that the AST is not displayed
-when the server plug in a discrete graphics graphics card at the same time.
-We call the dirty callback function to copy the rendering results of the
-discrete graphics card to the ast side by dma-buf.
+VFS currently holds an exclusive lock on the directory while making
+changes: add, remove, rename.
+When multiple threads make changes in the one directory, the contention
+can be noticeable.
+In the case of NFS with a high latency link, this can easily be
+demonstrated.  NFS doesn't really need VFS locking as the server ensures
+correctness.
 
-v1->v2:
-  - Fix the comment.
-v2->v3:
-  - we remove the attach function, add the drm_gem_pin() before dma_buf_vmap(),
-    and add the drm_gem_unpin() after the dma_buf_vunmap().
+Lustre uses a single(?) directory for object storage, and has patches
+for ext4 to support concurrent updates (Lustre accesses ext4 directly,
+not via the VFS).
 
-Signed-off-by: oushixiong <oushixiong@kylinos.cn>
+XFS (it is claimed) doesn't its own locking and doesn't need the VFS to
+help at all.
+
+This patch series allows filesystems to request a shared lock on
+directories and provides serialisation on just the affected name, not the
+whole directory.  It changes both the VFS and NFSD to use shared locks
+when appropriate, and changes NFS to request shared locks.
+
+The central enabling feature is a new dentry flag DCACHE_PAR_UPDATE
+which acts as a bit-lock.  The ->d_lock spinlock is taken to set/clear
+it, and wait_var_event() is used for waiting.  This flag is set on all
+dentries that are part of a directory update, not just when a shared
+lock is taken.
+
+When a shared lock is taken we must use alloc_dentry_parallel() which
+needs a wq which must remain until the update is completed.  To make use
+of concurrent create, kern_path_create() would need to be passed a wq.
+Rather than the churn required for that, we use exclusive locking when
+no wq is provided.
+
+One interesting consequence of this is that silly-rename becomes a
+little more complex.  As the directory may not be exclusively locked,
+the new silly-name needs to be locked (DCACHE_PAR_UPDATE) as well.
+A new LOOKUP_SILLY_RENAME is added which helps implement this using
+common code.
+
+While testing I found some odd behaviour that was caused by
+d_revalidate() racing with rename().  To resolve this I used
+DCACHE_PAR_UPDATE to ensure they cannot race any more.
+
+Testing, review, or other comments would be most welcome,
+
+NeilBrown
+
+
 ---
- drivers/gpu/drm/ast/ast_drv.c  |  27 +++++++
- drivers/gpu/drm/ast/ast_mode.c | 134 ++++++++++++++++++++++++++++++++-
- drivers/gpu/drm/drm_gem.c      |   2 +
- include/drm/drm_gem.h          |   3 +
- 4 files changed, 165 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/ast/ast_drv.c b/drivers/gpu/drm/ast/ast_drv.c
-index 7465c4f0156a..107383a56ca7 100644
---- a/drivers/gpu/drm/ast/ast_drv.c
-+++ b/drivers/gpu/drm/ast/ast_drv.c
-@@ -28,6 +28,7 @@
- 
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/dma-buf.h>
- 
- #include <drm/drm_aperture.h>
- #include <drm/drm_atomic_helper.h>
-@@ -50,6 +51,29 @@ module_param_named(modeset, ast_modeset, int, 0400);
- 
- DEFINE_DRM_GEM_FOPS(ast_fops);
- 
-+struct drm_gem_object *ast_gem_prime_import(struct drm_device *dev,
-+						struct dma_buf *dma_buf)
-+{
-+	struct drm_gem_vram_object *gbo;
-+
-+	gbo = drm_gem_vram_of_gem(dma_buf->priv);
-+	if (gbo->bo.base.dev == dev) {
-+		/*
-+		* Importing dmabuf exported from out own gem increases
-+		* refcount on gem itself instead of f_count of dmabuf.
-+		*/
-+		drm_gem_object_get(&gbo->bo.base);
-+		return &gbo->bo.base;
-+	}
-+
-+	gbo = drm_gem_vram_create(dev, dma_buf->size, 0);
-+	if (IS_ERR(gbo))
-+		return NULL;
-+
-+	get_dma_buf(dma_buf);
-+	return &gbo->bo.base;
-+}
-+
- static const struct drm_driver ast_driver = {
- 	.driver_features = DRIVER_ATOMIC |
- 			   DRIVER_GEM |
-@@ -63,6 +87,9 @@ static const struct drm_driver ast_driver = {
- 	.minor = DRIVER_MINOR,
- 	.patchlevel = DRIVER_PATCHLEVEL,
- 
-+	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
-+	.gem_prime_import = ast_gem_prime_import,
-+
- 	DRM_GEM_VRAM_DRIVER
- };
- 
-diff --git a/drivers/gpu/drm/ast/ast_mode.c b/drivers/gpu/drm/ast/ast_mode.c
-index 45b56b39ad47..c81a6148b6df 100644
---- a/drivers/gpu/drm/ast/ast_mode.c
-+++ b/drivers/gpu/drm/ast/ast_mode.c
-@@ -48,6 +48,8 @@
- #include "ast_drv.h"
- #include "ast_tables.h"
- 
-+MODULE_IMPORT_NS(DMA_BUF);
-+
- static inline void ast_load_palette_index(struct ast_private *ast,
- 				     u8 index, u8 red, u8 green,
- 				     u8 blue)
-@@ -1535,8 +1537,138 @@ static const struct drm_mode_config_helper_funcs ast_mode_config_helper_funcs =
- 	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
- };
- 
-+static int ast_handle_damage(struct drm_framebuffer *fb, int x, int y,
-+					int width, int height)
-+{
-+	struct drm_gem_vram_object *dst_bo = NULL;
-+	void *dst = NULL;
-+	int ret = 0, i;
-+	unsigned long offset = 0;
-+	bool unmap = false;
-+	unsigned int bytesPerPixel;
-+	struct iosys_map map;
-+	struct iosys_map dmabuf_map;
-+
-+	bytesPerPixel = fb->format->cpp[0];
-+
-+	if (!fb->obj[0]->dma_buf)
-+		return -EINVAL;
-+
-+	if (!fb->obj[0]->dma_buf->vmap_ptr.vaddr) {
-+		ret = drm_gem_pin(fb->obj[0]->dma_buf->priv);
-+		if (ret)
-+			return ret;
-+		ret = dma_buf_vmap(fb->obj[0]->dma_buf, &dmabuf_map);
-+		if (ret)
-+			goto err_vmap_dmabuf;
-+	} else
-+		dmabuf_map.vaddr = fb->obj[0]->dma_buf->vmap_ptr.vaddr;
-+
-+	dst_bo = drm_gem_vram_of_gem(fb->obj[0]);
-+
-+	ret = drm_gem_vram_pin(dst_bo, 0);
-+	if (ret) {
-+		DRM_ERROR("ast_bo_pin failed\n");
-+		goto err_ast_pin;
-+	}
-+
-+	if (!dst_bo->map.vaddr) {
-+		ret = drm_gem_vram_vmap(dst_bo, &map);
-+		if (ret) {
-+			DRM_ERROR("failed to vmap fbcon\n");
-+			goto err_vmap_ast_bo;
-+		}
-+		unmap = true;
-+	}
-+	dst = dst_bo->map.vaddr;
-+
-+	for (i = y; i < y + height; i++) {
-+		offset = i * fb->pitches[0] + (x * bytesPerPixel);
-+		memcpy_toio(dst + offset, dmabuf_map.vaddr + offset,
-+			width * bytesPerPixel);
-+	}
-+
-+	if (unmap)
-+		drm_gem_vram_vunmap(dst_bo, &map);
-+
-+	drm_gem_vram_unpin(dst_bo);
-+	return 0;
-+
-+err_vmap_ast_bo:
-+	drm_gem_vram_unpin(dst_bo);
-+err_ast_pin:
-+err_vmap_dmabuf:
-+	drm_gem_unpin(fb->obj[0]->dma_buf->priv);
-+	return ret;
-+}
-+
-+
-+static int ast_user_framebuffer_dirty(struct drm_framebuffer *fb,
-+				struct drm_file *file,
-+				unsigned int flags,
-+				unsigned int color,
-+				struct drm_clip_rect *clips,
-+				unsigned int num_clips)
-+{
-+	int i, ret = 0;
-+
-+	drm_modeset_lock_all(fb->dev);
-+	if (fb->obj[0]->dma_buf) {
-+		ret = dma_buf_begin_cpu_access(fb->obj[0]->dma_buf,
-+				DMA_FROM_DEVICE);
-+		if (ret)
-+			goto unlock;
-+	}
-+
-+	for (i = 0; i < num_clips; i++) {
-+		ret = ast_handle_damage(fb, clips[i].x1, clips[i].y1,
-+				clips[i].x2 - clips[i].x1, clips[i].y2 - clips[i].y1);
-+		if (ret)
-+			break;
-+	}
-+
-+	if (fb->obj[0]->dma_buf) {
-+		dma_buf_end_cpu_access(fb->obj[0]->dma_buf,
-+				DMA_FROM_DEVICE);
-+	}
-+
-+unlock:
-+	drm_modeset_unlock_all(fb->dev);
-+
-+	return ret;
-+}
-+
-+static void ast_user_framebuffer_destroy(struct drm_framebuffer *fb)
-+{
-+	struct iosys_map dmabuf_map;
-+
-+	if (fb->obj[0]->dma_buf) {
-+		dmabuf_map.is_iomem = fb->obj[0]->dma_buf->vmap_ptr.is_iomem;
-+		dmabuf_map.vaddr = fb->obj[0]->dma_buf->vmap_ptr.vaddr;
-+		if (dmabuf_map.vaddr)
-+			dma_buf_vunmap(fb->obj[0]->dma_buf, &dmabuf_map);
-+		drm_gem_unpin(fb->obj[0]->dma_buf->priv);
-+	}
-+
-+	drm_gem_fb_destroy(fb);
-+}
-+
-+static const struct drm_framebuffer_funcs ast_gem_fb_funcs_dirtyfb = {
-+	.destroy	= ast_user_framebuffer_destroy,
-+	.create_handle	= drm_gem_fb_create_handle,
-+	.dirty		= ast_user_framebuffer_dirty,
-+};
-+
-+static struct drm_framebuffer *
-+ast_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
-+				const struct drm_mode_fb_cmd2 *mode_cmd)
-+{
-+	return drm_gem_fb_create_with_funcs(dev, file, mode_cmd,
-+					&ast_gem_fb_funcs_dirtyfb);
-+}
-+
- static const struct drm_mode_config_funcs ast_mode_config_funcs = {
--	.fb_create = drm_gem_fb_create,
-+	.fb_create = ast_gem_fb_create_with_dirty,
- 	.mode_valid = drm_vram_helper_mode_valid,
- 	.atomic_check = drm_atomic_helper_check,
- 	.atomic_commit = drm_atomic_helper_commit,
-diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
-index 56fb87885146..3a4f5137abc5 100644
---- a/drivers/gpu/drm/drm_gem.c
-+++ b/drivers/gpu/drm/drm_gem.c
-@@ -1159,12 +1159,14 @@ int drm_gem_pin(struct drm_gem_object *obj)
- 	else
- 		return 0;
- }
-+EXPORT_SYMBOL(drm_gem_pin);
- 
- void drm_gem_unpin(struct drm_gem_object *obj)
- {
- 	if (obj->funcs->unpin)
- 		obj->funcs->unpin(obj);
- }
-+EXPORT_SYMBOL(drm_gem_unpin);
- 
- int drm_gem_vmap(struct drm_gem_object *obj, struct iosys_map *map)
- {
-diff --git a/include/drm/drm_gem.h b/include/drm/drm_gem.h
-index e2941cee14b6..30c4366968bf 100644
---- a/include/drm/drm_gem.h
-+++ b/include/drm/drm_gem.h
-@@ -352,6 +352,9 @@ int drm_gem_mmap_obj(struct drm_gem_object *obj, unsigned long obj_size,
- 		     struct vm_area_struct *vma);
- int drm_gem_mmap(struct file *filp, struct vm_area_struct *vma);
- 
-+int drm_gem_pin(struct drm_gem_object *obj);
-+void drm_gem_unpin(struct drm_gem_object *obj);
-+
- /**
-  * drm_gem_object_get - acquire a GEM buffer object reference
-  * @obj: GEM buffer object
--- 
-2.17.1
+NeilBrown (10):
+      VFS: support parallel updates in the one directory.
+      VFS: move EEXIST and ENOENT tests into lookup_hash_update()
+      VFS: move want_write checks into lookup_hash_update()
+      VFS: move dput() and mnt_drop_write() into done_path_update()
+      VFS: export done_path_update()
+      VFS: support concurrent renames.
+      VFS: hold DCACHE_PAR_UPDATE lock across d_revalidate()
+      NFSD: allow parallel creates from nfsd
+      VFS: add LOOKUP_SILLY_RENAME
+      NFS: support parallel updates in the one directory.
 
 
-No virus found
-		Checked by Hillstone Network AntiVirus
+ fs/dcache.c            |  72 ++++-
+ fs/namei.c             | 616 ++++++++++++++++++++++++++++++++---------
+ fs/nfs/dir.c           |  28 +-
+ fs/nfs/fs_context.c    |   6 +-
+ fs/nfs/internal.h      |   3 +-
+ fs/nfs/unlink.c        |  51 +++-
+ fs/nfsd/nfs3proc.c     |  28 +-
+ fs/nfsd/nfs4proc.c     |  29 +-
+ fs/nfsd/nfsfh.c        |   9 +
+ fs/nfsd/nfsproc.c      |  29 +-
+ fs/nfsd/vfs.c          | 177 +++++-------
+ include/linux/dcache.h |  28 ++
+ include/linux/fs.h     |   5 +-
+ include/linux/namei.h  |  39 ++-
+ 14 files changed, 799 insertions(+), 321 deletions(-)
+
+--
+Signature
+
