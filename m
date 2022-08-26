@@ -2,222 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F60FECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D601ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242730AbiHZCIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
+        id S244170AbiHZCNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244689AbiHZCIL (ORCPT
+        with ESMTP id S236072AbiHZCNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:08:11 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF1ECB5CE;
-        Thu, 25 Aug 2022 19:08:10 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id r141so190240iod.4;
-        Thu, 25 Aug 2022 19:08:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=fERtzDctzEgNBIaU4dCxwXZi2ONbhFJ/oi3xF/aUGXg=;
-        b=oKp7GMafkmShi+aJkF+5jK2VKKtkn7+qV8h5HcfyXNqs52MpRiHACqgb34U7tQVpos
-         BZiWLHW7MIlkdWpqT8sn+zGySIZqrR1YFKeCytvv7ImQS/7GGE5S8CP6PWe1dX1LsNpn
-         ID+8f5Zun2vZSdk6ud3ZT0dnlG50nl1qIKHGBXKIz9WHdE4CeDQ/Dpx+PqRanQDPHW7m
-         S/wigs2P9ujolxMLYOxcLAX7FZbLfN1GdpDJcvGFeU/odJD7SsIbhvo+tVZxguDA2OHQ
-         C/rSo/sjyyHdPpI0y9QbRtqh+3MCxasvD2CdLnsAhkdt59N+gNp8xG4OhVlgsOxcLaaG
-         m/sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=fERtzDctzEgNBIaU4dCxwXZi2ONbhFJ/oi3xF/aUGXg=;
-        b=6ForWiJhX89Ij9Zx/1zzP1YKcYkf5zlxN2j0MsJ1JstJpA99CRQVR1TcPgLmlT/xmZ
-         ly7XmHBYxlBabcaTbsWfzfbmwWsvgDyHo/gMa//MfVSEXa6hYPGahJed7/RfGgbfhYfy
-         qZUkdOhG7a818z1+Tp9i1kX+QR4FBFlCSDwzecTbmks+nOAzAalJZZbzznh2O5v/yvwX
-         Q8r4aJwfGH7Dvp0PJb2+9zb/9MOnZbftUvIrqXN9Z/Zs1+m9zH5ZGeI2iMcaht9Q39IG
-         /VXTnYVphRyaiGNZB4Wdd/h1qsGCY7NnKJQF/qWygjXBO3aJg/hR8CieBoMUysHMn9L0
-         b7AQ==
-X-Gm-Message-State: ACgBeo2/MWYH0yOa4YOJsiSko4Fns5PkajZA3IcdWAdhSGmyYduWy+fJ
-        QuGDFM9CDqi35Cr51YyQVk1IahmI/O4XvVdJyV9SHE+L
-X-Google-Smtp-Source: AA6agR4ldtT2jXu2MMdWpyUaleDmiGpun9w/4YV89ydabuMBA9T2L5GHZQgrPu70W4tTfH2ZT7eK9ZO8UDRXogqQkRY=
-X-Received: by 2002:a05:6638:16cf:b0:34a:263f:966d with SMTP id
- g15-20020a05663816cf00b0034a263f966dmr497631jat.124.1661479689438; Thu, 25
- Aug 2022 19:08:09 -0700 (PDT)
+        Thu, 25 Aug 2022 22:13:09 -0400
+Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2595CCAC92;
+        Thu, 25 Aug 2022 19:13:04 -0700 (PDT)
+X-UUID: c402bdaddaff492a99060e2f1a7dc99d-20220826
+X-GW-Reason: 11109
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
+X-Content-Feature: ica/max.line-size 103
+        audit/email.address 1
+        dict/adv 1
+        dict/contack 1
+        dict/notice 1
+        dict/operate 1
+        meta/cnt.alert 1
+X-UUID: c402bdaddaff492a99060e2f1a7dc99d-20220826
+X-User: oushixiong@kylinos.cn
+Received: from localhost.localdomain [(116.128.244.169)] by mailgw
+        (envelope-from <oushixiong@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 205237631; Fri, 26 Aug 2022 09:31:22 +0800
+From:   oushixiong <oushixiong@kylinos.cn>
+To:     Dave Airlie <airlied@redhat.com>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        oushixiong <oushixiong@kylinos.cn>
+Subject: [PATCH] drm/ast: add dmabuf/prime buffer sharing support
+Date:   Fri, 26 Aug 2022 09:31:03 +0800
+Message-Id: <20220826013103.1519411-1-oushixiong@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com> <20220824134055.1328882-4-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220824134055.1328882-4-benjamin.tissoires@redhat.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Fri, 26 Aug 2022 04:07:33 +0200
-Message-ID: <CAP01T75Xs8HqDzsqJ5_69ei6ujnBXSbOg=ad7fGaei6OVNpiOg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 03/23] selftests/bpf: add test for accessing
- ctx from syscall program type
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> We need to also export the kfunc set to the syscall program type,
-> and then add a couple of eBPF programs that are testing those calls.
->
-> The first one checks for valid access, and the second one is OK
-> from a static analysis point of view but fails at run time because
-> we are trying to access outside of the allocated memory.
->
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
-> ---
->
-> no changes in v9
->
-> no changes in v8
->
-> changes in v7:
-> - add 1 more case to ensure we can read the entire sizeof(ctx)
-> - add a test case for when the context is NULL
->
-> new in v6
-> ---
->  net/bpf/test_run.c                            |  1 +
->  .../selftests/bpf/prog_tests/kfunc_call.c     | 28 +++++++++++++++
->  .../selftests/bpf/progs/kfunc_call_test.c     | 36 +++++++++++++++++++
->  3 files changed, 65 insertions(+)
->
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index 25d8ecf105aa..f16baf977a21 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -1634,6 +1634,7 @@ static int __init bpf_prog_test_run_init(void)
->
->         ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &bpf_prog_test_kfunc_set);
->         ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &bpf_prog_test_kfunc_set);
-> +       ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SYSCALL, &bpf_prog_test_kfunc_set);
->         return ret ?: register_btf_id_dtor_kfuncs(bpf_prog_test_dtor_kfunc,
->                                                   ARRAY_SIZE(bpf_prog_test_dtor_kfunc),
->                                                   THIS_MODULE);
-> diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-> index eede7c304f86..1edad012fe01 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-> @@ -9,10 +9,22 @@
->
->  #include "cap_helpers.h"
->
-> +struct syscall_test_args {
-> +       __u8 data[16];
-> +       size_t size;
-> +};
-> +
->  static void test_main(void)
->  {
->         struct kfunc_call_test_lskel *skel;
->         int prog_fd, err;
-> +       struct syscall_test_args args = {
-> +               .size = 10,
-> +       };
-> +       DECLARE_LIBBPF_OPTS(bpf_test_run_opts, syscall_topts,
-> +               .ctx_in = &args,
-> +               .ctx_size_in = sizeof(args),
-> +       );
->         LIBBPF_OPTS(bpf_test_run_opts, topts,
->                 .data_in = &pkt_v4,
->                 .data_size_in = sizeof(pkt_v4),
-> @@ -38,6 +50,22 @@ static void test_main(void)
->         ASSERT_OK(err, "bpf_prog_test_run(test_ref_btf_id)");
->         ASSERT_EQ(topts.retval, 0, "test_ref_btf_id-retval");
->
-> +       prog_fd = skel->progs.kfunc_syscall_test.prog_fd;
-> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
-> +       ASSERT_OK(err, "bpf_prog_test_run(syscall_test)");
-> +
-> +       prog_fd = skel->progs.kfunc_syscall_test_fail.prog_fd;
-> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
-> +       ASSERT_ERR(err, "bpf_prog_test_run(syscall_test_fail)");
+This patch adds ast specific codes for DRM prime feature, this is to
+allow for offloading of rending in one direction and outputs in other.
 
-It would be better to assert on the verifier error string, to make
-sure we continue actually testing the error we care about and not
-something else.
+This patch is designed to solve the problem that the AST is not displayed
+when the server plug in a discrete graphics graphics card at the same time.
+We call the dirty callback function to copy the rendering results of the
+discrete graphics card to the ast side by dma-buf.
 
-> +
-> +       syscall_topts.ctx_in = NULL;
-> +       syscall_topts.ctx_size_in = 0;
-> +
-> +       prog_fd = skel->progs.kfunc_syscall_test_null.prog_fd;
-> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
-> +       ASSERT_OK(err, "bpf_prog_test_run(syscall_test_null)");
-> +       ASSERT_EQ(syscall_topts.retval, 0, "syscall_test_null-retval");
-> +
->         kfunc_call_test_lskel__destroy(skel);
->  }
->
-> diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-> index 5aecbb9fdc68..da7ae0ef9100 100644
-> --- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-> +++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-> @@ -92,4 +92,40 @@ int kfunc_call_test_pass(struct __sk_buff *skb)
->         return 0;
->  }
->
-> +struct syscall_test_args {
-> +       __u8 data[16];
-> +       size_t size;
-> +};
-> +
-> +SEC("syscall")
-> +int kfunc_syscall_test(struct syscall_test_args *args)
-> +{
-> +       const int size = args->size;
-> +
-> +       if (size > sizeof(args->data))
-> +               return -7; /* -E2BIG */
-> +
-> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(args->data));
-> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args));
-> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, size);
-> +
-> +       return 0;
-> +}
-> +
-> +SEC("syscall")
-> +int kfunc_syscall_test_null(struct syscall_test_args *args)
-> +{
-> +       bpf_kfunc_call_test_mem_len_pass1(args, 0);
-> +
+v1->v2:
+  - Fix the comment.
+v2->v3:
+  - we remove the attach function, add the drm_gem_pin() before dma_buf_vmap(),
+    and add the drm_gem_unpin() after the dma_buf_vunmap().
 
-Where is it testing 'NULL'? It is testing zero_size_allowed.
+Signed-off-by: oushixiong <oushixiong@kylinos.cn>
+---
+ drivers/gpu/drm/ast/ast_drv.c  |  27 +++++++
+ drivers/gpu/drm/ast/ast_mode.c | 134 ++++++++++++++++++++++++++++++++-
+ drivers/gpu/drm/drm_gem.c      |   2 +
+ include/drm/drm_gem.h          |   3 +
+ 4 files changed, 165 insertions(+), 1 deletion(-)
 
-> +       return 0;
-> +}
-> +
-> +SEC("syscall")
-> +int kfunc_syscall_test_fail(struct syscall_test_args *args)
-> +{
-> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args) + 1);
-> +
-> +       return 0;
-> +}
-> +
->  char _license[] SEC("license") = "GPL";
-> --
-> 2.36.1
->
+diff --git a/drivers/gpu/drm/ast/ast_drv.c b/drivers/gpu/drm/ast/ast_drv.c
+index 7465c4f0156a..107383a56ca7 100644
+--- a/drivers/gpu/drm/ast/ast_drv.c
++++ b/drivers/gpu/drm/ast/ast_drv.c
+@@ -28,6 +28,7 @@
+ 
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/dma-buf.h>
+ 
+ #include <drm/drm_aperture.h>
+ #include <drm/drm_atomic_helper.h>
+@@ -50,6 +51,29 @@ module_param_named(modeset, ast_modeset, int, 0400);
+ 
+ DEFINE_DRM_GEM_FOPS(ast_fops);
+ 
++struct drm_gem_object *ast_gem_prime_import(struct drm_device *dev,
++						struct dma_buf *dma_buf)
++{
++	struct drm_gem_vram_object *gbo;
++
++	gbo = drm_gem_vram_of_gem(dma_buf->priv);
++	if (gbo->bo.base.dev == dev) {
++		/*
++		* Importing dmabuf exported from out own gem increases
++		* refcount on gem itself instead of f_count of dmabuf.
++		*/
++		drm_gem_object_get(&gbo->bo.base);
++		return &gbo->bo.base;
++	}
++
++	gbo = drm_gem_vram_create(dev, dma_buf->size, 0);
++	if (IS_ERR(gbo))
++		return NULL;
++
++	get_dma_buf(dma_buf);
++	return &gbo->bo.base;
++}
++
+ static const struct drm_driver ast_driver = {
+ 	.driver_features = DRIVER_ATOMIC |
+ 			   DRIVER_GEM |
+@@ -63,6 +87,9 @@ static const struct drm_driver ast_driver = {
+ 	.minor = DRIVER_MINOR,
+ 	.patchlevel = DRIVER_PATCHLEVEL,
+ 
++	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
++	.gem_prime_import = ast_gem_prime_import,
++
+ 	DRM_GEM_VRAM_DRIVER
+ };
+ 
+diff --git a/drivers/gpu/drm/ast/ast_mode.c b/drivers/gpu/drm/ast/ast_mode.c
+index 45b56b39ad47..c81a6148b6df 100644
+--- a/drivers/gpu/drm/ast/ast_mode.c
++++ b/drivers/gpu/drm/ast/ast_mode.c
+@@ -48,6 +48,8 @@
+ #include "ast_drv.h"
+ #include "ast_tables.h"
+ 
++MODULE_IMPORT_NS(DMA_BUF);
++
+ static inline void ast_load_palette_index(struct ast_private *ast,
+ 				     u8 index, u8 red, u8 green,
+ 				     u8 blue)
+@@ -1535,8 +1537,138 @@ static const struct drm_mode_config_helper_funcs ast_mode_config_helper_funcs =
+ 	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
+ };
+ 
++static int ast_handle_damage(struct drm_framebuffer *fb, int x, int y,
++					int width, int height)
++{
++	struct drm_gem_vram_object *dst_bo = NULL;
++	void *dst = NULL;
++	int ret = 0, i;
++	unsigned long offset = 0;
++	bool unmap = false;
++	unsigned int bytesPerPixel;
++	struct iosys_map map;
++	struct iosys_map dmabuf_map;
++
++	bytesPerPixel = fb->format->cpp[0];
++
++	if (!fb->obj[0]->dma_buf)
++		return -EINVAL;
++
++	if (!fb->obj[0]->dma_buf->vmap_ptr.vaddr) {
++		ret = drm_gem_pin(fb->obj[0]->dma_buf->priv);
++		if (ret)
++			return ret;
++		ret = dma_buf_vmap(fb->obj[0]->dma_buf, &dmabuf_map);
++		if (ret)
++			goto err_vmap_dmabuf;
++	} else
++		dmabuf_map.vaddr = fb->obj[0]->dma_buf->vmap_ptr.vaddr;
++
++	dst_bo = drm_gem_vram_of_gem(fb->obj[0]);
++
++	ret = drm_gem_vram_pin(dst_bo, 0);
++	if (ret) {
++		DRM_ERROR("ast_bo_pin failed\n");
++		goto err_ast_pin;
++	}
++
++	if (!dst_bo->map.vaddr) {
++		ret = drm_gem_vram_vmap(dst_bo, &map);
++		if (ret) {
++			DRM_ERROR("failed to vmap fbcon\n");
++			goto err_vmap_ast_bo;
++		}
++		unmap = true;
++	}
++	dst = dst_bo->map.vaddr;
++
++	for (i = y; i < y + height; i++) {
++		offset = i * fb->pitches[0] + (x * bytesPerPixel);
++		memcpy_toio(dst + offset, dmabuf_map.vaddr + offset,
++			width * bytesPerPixel);
++	}
++
++	if (unmap)
++		drm_gem_vram_vunmap(dst_bo, &map);
++
++	drm_gem_vram_unpin(dst_bo);
++	return 0;
++
++err_vmap_ast_bo:
++	drm_gem_vram_unpin(dst_bo);
++err_ast_pin:
++err_vmap_dmabuf:
++	drm_gem_unpin(fb->obj[0]->dma_buf->priv);
++	return ret;
++}
++
++
++static int ast_user_framebuffer_dirty(struct drm_framebuffer *fb,
++				struct drm_file *file,
++				unsigned int flags,
++				unsigned int color,
++				struct drm_clip_rect *clips,
++				unsigned int num_clips)
++{
++	int i, ret = 0;
++
++	drm_modeset_lock_all(fb->dev);
++	if (fb->obj[0]->dma_buf) {
++		ret = dma_buf_begin_cpu_access(fb->obj[0]->dma_buf,
++				DMA_FROM_DEVICE);
++		if (ret)
++			goto unlock;
++	}
++
++	for (i = 0; i < num_clips; i++) {
++		ret = ast_handle_damage(fb, clips[i].x1, clips[i].y1,
++				clips[i].x2 - clips[i].x1, clips[i].y2 - clips[i].y1);
++		if (ret)
++			break;
++	}
++
++	if (fb->obj[0]->dma_buf) {
++		dma_buf_end_cpu_access(fb->obj[0]->dma_buf,
++				DMA_FROM_DEVICE);
++	}
++
++unlock:
++	drm_modeset_unlock_all(fb->dev);
++
++	return ret;
++}
++
++static void ast_user_framebuffer_destroy(struct drm_framebuffer *fb)
++{
++	struct iosys_map dmabuf_map;
++
++	if (fb->obj[0]->dma_buf) {
++		dmabuf_map.is_iomem = fb->obj[0]->dma_buf->vmap_ptr.is_iomem;
++		dmabuf_map.vaddr = fb->obj[0]->dma_buf->vmap_ptr.vaddr;
++		if (dmabuf_map.vaddr)
++			dma_buf_vunmap(fb->obj[0]->dma_buf, &dmabuf_map);
++		drm_gem_unpin(fb->obj[0]->dma_buf->priv);
++	}
++
++	drm_gem_fb_destroy(fb);
++}
++
++static const struct drm_framebuffer_funcs ast_gem_fb_funcs_dirtyfb = {
++	.destroy	= ast_user_framebuffer_destroy,
++	.create_handle	= drm_gem_fb_create_handle,
++	.dirty		= ast_user_framebuffer_dirty,
++};
++
++static struct drm_framebuffer *
++ast_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
++				const struct drm_mode_fb_cmd2 *mode_cmd)
++{
++	return drm_gem_fb_create_with_funcs(dev, file, mode_cmd,
++					&ast_gem_fb_funcs_dirtyfb);
++}
++
+ static const struct drm_mode_config_funcs ast_mode_config_funcs = {
+-	.fb_create = drm_gem_fb_create,
++	.fb_create = ast_gem_fb_create_with_dirty,
+ 	.mode_valid = drm_vram_helper_mode_valid,
+ 	.atomic_check = drm_atomic_helper_check,
+ 	.atomic_commit = drm_atomic_helper_commit,
+diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
+index 56fb87885146..3a4f5137abc5 100644
+--- a/drivers/gpu/drm/drm_gem.c
++++ b/drivers/gpu/drm/drm_gem.c
+@@ -1159,12 +1159,14 @@ int drm_gem_pin(struct drm_gem_object *obj)
+ 	else
+ 		return 0;
+ }
++EXPORT_SYMBOL(drm_gem_pin);
+ 
+ void drm_gem_unpin(struct drm_gem_object *obj)
+ {
+ 	if (obj->funcs->unpin)
+ 		obj->funcs->unpin(obj);
+ }
++EXPORT_SYMBOL(drm_gem_unpin);
+ 
+ int drm_gem_vmap(struct drm_gem_object *obj, struct iosys_map *map)
+ {
+diff --git a/include/drm/drm_gem.h b/include/drm/drm_gem.h
+index e2941cee14b6..30c4366968bf 100644
+--- a/include/drm/drm_gem.h
++++ b/include/drm/drm_gem.h
+@@ -352,6 +352,9 @@ int drm_gem_mmap_obj(struct drm_gem_object *obj, unsigned long obj_size,
+ 		     struct vm_area_struct *vma);
+ int drm_gem_mmap(struct file *filp, struct vm_area_struct *vma);
+ 
++int drm_gem_pin(struct drm_gem_object *obj);
++void drm_gem_unpin(struct drm_gem_object *obj);
++
+ /**
+  * drm_gem_object_get - acquire a GEM buffer object reference
+  * @obj: GEM buffer object
+-- 
+2.17.1
+
+
+No virus found
+		Checked by Hillstone Network AntiVirus
