@@ -2,141 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D728ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A53ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343770AbiHZJ1H (ORCPT
+        id S1343814AbiHZJZW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 05:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
+        Fri, 26 Aug 2022 05:25:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343856AbiHZJ0m (ORCPT
+        with ESMTP id S1343672AbiHZJY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 05:26:42 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5C93D7CE2;
-        Fri, 26 Aug 2022 02:26:15 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id D0BC91256;
-        Fri, 26 Aug 2022 11:26:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661505972;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5Gn4ptS3/ed2Lm1nmPK54UxVCGs6kaZ+V6UVk8hc79U=;
-        b=Irw98jOHKcCBpzxbXnbnBm2WErySqK5FadcE+qJOfx92ZI0qBZ9UHGmrTx8X2oz2XLU00a
-        tmaoSaNRgzuL/++suOPWBSMvQGWiIh42Nre8sKtp04SGTywJdLWuTYOrOOTHxqjKJIEw5W
-        fiO/RbCqoQftZleMGu5NYvjZGR6TIoP1yU+x+tId8hstkPGk0QqfDhuRW9dB6pDMvCreMK
-        v3FqDTu43Kak3T+C5omcDOPgybjR06bMlVQUIw/zk5qSj8gSmoRSqdFQx2MRY5G3uVeYKJ
-        pCIn4yfCvmndIHmCnj7iGs75SBE5VFaHkcnqPkYvAys5ETHxUblhg9sszHQmxQ==
+        Fri, 26 Aug 2022 05:24:58 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0E176761
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:24:56 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MDZBS4mjmzGps0;
+        Fri, 26 Aug 2022 17:23:12 +0800 (CST)
+Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
+ (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
+ 2022 17:24:54 +0800
+From:   Miaohe Lin <linmiaohe@huawei.com>
+To:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
+        <songmuchun@bytedance.com>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <linmiaohe@huawei.com>
+Subject: [PATCH 07/10] hugetlb: kill hugetlbfs_pagecache_page()
+Date:   Fri, 26 Aug 2022 17:24:19 +0800
+Message-ID: <20220826092422.39591-8-linmiaohe@huawei.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20220826092422.39591-1-linmiaohe@huawei.com>
+References: <20220826092422.39591-1-linmiaohe@huawei.com>
 MIME-Version: 1.0
-Date:   Fri, 26 Aug 2022 11:26:12 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Divya.Koppera@microchip.com,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     UNGLinuxDriver@microchip.com, andrew@lunn.ch, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net-next] net: phy: micrel: Adding SQI support for lan8814
- phy
-In-Reply-To: <CO1PR11MB477162C762EF35B0E115B952E2759@CO1PR11MB4771.namprd11.prod.outlook.com>
-References: <20220825080549.9444-1-Divya.Koppera@microchip.com>
- <20220826084249.1031557-1-michael@walle.cc>
- <CO1PR11MB477162C762EF35B0E115B952E2759@CO1PR11MB4771.namprd11.prod.outlook.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <421712ea840fbe5edffcae4a6cb08150@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+ Oleksij Rempel]
+Fold hugetlbfs_pagecache_page() into its sole caller to remove some
+duplicated code. No functional change intended.
 
-Hi,
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+---
+ mm/hugetlb.c | 15 +--------------
+ 1 file changed, 1 insertion(+), 14 deletions(-)
 
-Am 2022-08-26 11:11, schrieb Divya.Koppera@microchip.com:
->> > Supports SQI(Signal Quality Index) for lan8814 phy, where it has SQI
->> > index of 0-7 values and this indicator can be used for cable integrity
->> > diagnostic and investigating other noise sources.
->> >
->> > Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 58eeae934e09..7934188bbed0 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -5467,19 +5467,6 @@ static vm_fault_t hugetlb_wp(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	return ret;
+ }
+ 
+-/* Return the pagecache page at a given address within a VMA */
+-static struct page *hugetlbfs_pagecache_page(struct hstate *h,
+-			struct vm_area_struct *vma, unsigned long address)
+-{
+-	struct address_space *mapping;
+-	pgoff_t idx;
+-
+-	mapping = vma->vm_file->f_mapping;
+-	idx = vma_hugecache_offset(h, vma, address);
+-
+-	return find_lock_page(mapping, idx);
+-}
+-
+ /*
+  * Return whether there is a pagecache page to back given address within VMA.
+  * Caller follow_hugetlb_page() holds page_table_lock so we cannot lock_page.
+@@ -5885,7 +5872,7 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
+ 		/* Just decrements count, does not deallocate */
+ 		vma_end_reservation(h, vma, haddr);
+ 
+-		pagecache_page = hugetlbfs_pagecache_page(h, vma, haddr);
++		pagecache_page = find_lock_page(mapping, idx);
+ 	}
+ 
+ 	ptl = huge_pte_lock(h, mm, ptep);
+-- 
+2.23.0
 
-..
-
->> > +#define LAN8814_DCQ_CTRL_CHANNEL_MASK                        GENMASK(1,
->> 0)
->> > +#define LAN8814_DCQ_SQI                                      0xe4
->> > +#define LAN8814_DCQ_SQI_MAX                          7
->> > +#define LAN8814_DCQ_SQI_VAL_MASK                     GENMASK(3, 1)
->> > +
->> >  static int lanphy_read_page_reg(struct phy_device *phydev, int page,
->> > u32 addr)  {
->> >       int data;
->> > @@ -2927,6 +2934,32 @@ static int lan8814_probe(struct phy_device
->> *phydev)
->> >       return 0;
->> >  }
->> >
->> > +static int lan8814_get_sqi(struct phy_device *phydev) {
->> > +     int rc, val;
->> > +
->> > +     val = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_CTRL);
->> > +     if (val < 0)
->> > +             return val;
->> > +
->> > +     val &= ~LAN8814_DCQ_CTRL_CHANNEL_MASK;
->> 
->> I do have a datasheet for this PHY, but it doesn't mention 0xe6 on 
->> EP1.
-> 
-> This register values are present in GPHY hard macro as below
-> 
-> 4.2.225	DCQ Control Register
-> Index (In Decimal):	EP 1.230	Size:	16 bits
-> 
-> Can you give me the name of the datasheet which you are following, so
-> that I'll check and let you know the reason.
-
-I have the AN4286/DS00004286A ("LAN8804/LAN8814 GPHY Register
-Definitions"). Maybe there is a newer version of it.
-
-> 
->> So I can only guess that this "channel mask" is for the 4 rx/tx pairs 
->> on GbE?
-> 
-> Yes channel mask is for wire pair.
-> 
->> And you only seem to evaluate one of them. Is that the correct thing 
->> to do
->> here?
->> 
-> 
-> I found in below link is that, get_SQI returns sqi value for 100 
-> base-t1 phy's
-> https://lore.kernel.org/netdev/20200519075200.24631-2-o.rempel@pengutronix.de/T/
-
-That one is for the 100base-t1 which has only one pair.
-
-> In lan8814 phy only channel 0 is used for 100base-tx. So returning SQI
-> value for channel 0.
-
-What if the other pairs are bad? Maybe Oleksij has an opinion here.
-
-Also 100baseTX (and 10baseT) has two pairs, one for transmitting and one
-for receiving. I guess you meassure the SQI on the receiving side. So is
-channel 0 correct here?
-
-Again this is the first time I hear about SQI but it puzzles me that
-it only evaluate one pair in this case. So as a user who reads this
-SQI might be misleaded.
-
--michael
