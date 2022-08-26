@@ -2,84 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0845DECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B149AECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:25:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343677AbiHZMYd (ORCPT
+        id S1344048AbiHZMZp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:24:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
+        Fri, 26 Aug 2022 08:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiHZMYa (ORCPT
+        with ESMTP id S245432AbiHZMZ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:24:30 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563E0E9D;
-        Fri, 26 Aug 2022 05:24:29 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPv6:2405:201:10:389d:42df:ae4c:c047:294c])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: shreeya)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 829BD6601EC8;
-        Fri, 26 Aug 2022 13:24:25 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661516667;
-        bh=x89a8TvfcoIEzBD2+gLPAUruz1s8rtys3PetrUIb6xc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dbdEzMnnKG3ER31kdXrzaxxao0JBbpW386BCpHg+L5YtlTFwd+bnow3gPket6+Vsb
-         B169O8KzxPR3Zv14CRcbtQb5hJGa6zqDkY5HR2B8rzSxnmqWrQOnOyS3gbHhr9SEXb
-         g9hjgeqCob+dq0t/nhrYOKtU/0MO/61ycylKOJVoMqrnumjBq+QFuO24uzsoMSTSNC
-         dDqBPpszKDUCdVIvakDRVFwOnoUSXzI9+mYSz9gF7rxV6TWNbDCdDAPvzkhaVM8lpk
-         sh+v7To32hot+P0tKDC5mhD9cNHONafNpigivEyABYUUVKn74TjbfyWe+HsYQFz3YM
-         hLUwB7RaHYGLw==
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-To:     jic23@kernel.org, lars@metafoo.de
-Cc:     krisman@collabora.com, dmitry.osipenko@collabora.com,
-        kernel@collabora.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Shreeya Patel <shreeya.patel@collabora.com>,
-        stable@vger.kernel.org
-Subject: [PATCH v2] iio: light: tsl2583: Fix module unloading
-Date:   Fri, 26 Aug 2022 17:53:52 +0530
-Message-Id: <20220826122352.288438-1-shreeya.patel@collabora.com>
+        Fri, 26 Aug 2022 08:25:28 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A3E2655B;
+        Fri, 26 Aug 2022 05:25:23 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 9CEDD188A411;
+        Fri, 26 Aug 2022 12:25:21 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 7296725032BA;
+        Fri, 26 Aug 2022 12:25:21 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 50A509EC00AD; Fri, 26 Aug 2022 11:45:51 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from wse-c0127.beijerelectronics.com (unknown [208.127.141.28])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 3836A9EC0008;
+        Fri, 26 Aug 2022 11:45:49 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH v5 net-next 0/6] Extend locked port feature with FDB locked flag (MAC-Auth/MAB)
+Date:   Fri, 26 Aug 2022 13:45:32 +0200
+Message-Id: <20220826114538.705433-1-netdev@kapio-technology.com>
 X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
+Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tsl2583 uses devm_iio_device_register() function and
-calling iio_device_unregister() in remove breaks the
-module unloading.
-Fix this by using iio_device_register() instead of
-devm_iio_device_register() function in probe.
+This patch set extends the locked port feature for devices
+that are behind a locked port, but do not have the ability to
+authorize themselves as a supplicant using IEEE 802.1X.
+Such devices can be printers, meters or anything related to
+fixed installations. Instead of 802.1X authorization, devices
+can get access based on their MAC addresses being whitelisted.
 
-Cc: stable@vger.kernel.org
-Fixes: 371894f5d1a0 ("iio: tsl2583: add runtime power management support")
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
----
-Changes in v2
-  - Use iio_device_register() instead of devm_iio_device_register()
-  - Add fixes and stable tags
+For an authorization daemon to detect that a device is trying
+to get access through a locked port, the bridge will add the
+MAC address of the device to the FDB with a locked flag to it.
+Thus the authorization daemon can catch the FDB add event and
+check if the MAC address is in the whitelist and if so replace
+the FDB entry without the locked flag enabled, and thus open
+the port for the device.
 
- drivers/iio/light/tsl2583.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This feature is known as MAC-Auth or MAC Authentication Bypass
+(MAB) in Cisco terminology, where the full MAB concept involves
+additional Cisco infrastructure for authorization. There is no
+real authentication process, as the MAC address of the device
+is the only input the authorization daemon, in the general
+case, has to base the decision if to unlock the port or not.
 
-diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
-index 82662dab87c0..94d75ec687c3 100644
---- a/drivers/iio/light/tsl2583.c
-+++ b/drivers/iio/light/tsl2583.c
-@@ -858,7 +858,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
- 					 TSL2583_POWER_OFF_DELAY_MS);
- 	pm_runtime_use_autosuspend(&clientp->dev);
- 
--	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-+	ret = iio_device_register(indio_dev);
- 	if (ret) {
- 		dev_err(&clientp->dev, "%s: iio registration failed\n",
- 			__func__);
+With this patch set, an implementation of the offloaded case is
+supplied for the mv88e6xxx driver. When a packet ingresses on
+a locked port, an ATU miss violation event will occur. When
+handling such ATU miss violation interrupts, the MAC address of
+the device is added to the FDB with a zero destination port
+vector (DPV) and the MAC address is communicated through the
+switchdev layer to the bridge, so that a FDB entry with the
+locked flag enabled can be added.
+
+Log:
+        v3:     Added timers and lists in the driver (mv88e6xxx)
+                to keep track of and remove locked entries.
+
+        v4:     Leave out enforcing a limit to the number of
+                locked entries in the bridge.
+                Removed the timers in the driver and use the
+                worker only. Add locked FDB flag to all drivers
+                using port_fdb_add() from the dsa api and let
+                all drivers ignore entries with this flag set.
+                Change how to get the ageing timeout of locked
+                entries. See global1_atu.c and switchdev.c.
+                Use struct mv88e6xxx_port for locked entries
+                variables instead of struct dsa_port.
+
+	v5:	Added 'mab' flag to enable MAB/MacAuth feature,
+		in a similar way to the locked feature flag.
+
+		In these implementations for the mv88e6xxx, the
+		switchport must be configured with learning on.
+
+		To tell userspace about the behavior of the
+		locked entries in the driver, a 'blackhole'
+		FDB flag has been added, which locked FDB
+		entries coming from the driver gets. Also the
+		'sticky' flag comes with those locked entries,
+		as the drivers locked entries cannot roam.
+
+		Fixed issues with taking mutex locks, and added
+		a function to read the fid, that supports all
+		versions of the chipset family.
+		
+
+Hans Schultz (6):
+  net: bridge: add locked entry fdb flag to extend locked port feature
+  net: switchdev: add support for offloading of fdb locked flag
+  drivers: net: dsa: add locked fdb entry flag to drivers
+  net: dsa: mv88e6xxx: allow reading FID when handling ATU violations
+  net: dsa: mv88e6xxx: MacAuth/MAB implementation
+  selftests: forwarding: add test of MAC-Auth Bypass to locked port
+    tests
+
+ drivers/net/dsa/b53/b53_common.c              |   5 +
+ drivers/net/dsa/b53/b53_priv.h                |   1 +
+ drivers/net/dsa/hirschmann/hellcreek.c        |   5 +
+ drivers/net/dsa/lan9303-core.c                |   5 +
+ drivers/net/dsa/lantiq_gswip.c                |   5 +
+ drivers/net/dsa/microchip/ksz_common.c        |   5 +
+ drivers/net/dsa/mt7530.c                      |   5 +
+ drivers/net/dsa/mv88e6xxx/Makefile            |   1 +
+ drivers/net/dsa/mv88e6xxx/chip.c              |  81 ++++-
+ drivers/net/dsa/mv88e6xxx/chip.h              |  19 ++
+ drivers/net/dsa/mv88e6xxx/global1.h           |   1 +
+ drivers/net/dsa/mv88e6xxx/global1_atu.c       |  76 ++++-
+ drivers/net/dsa/mv88e6xxx/port.c              |  15 +-
+ drivers/net/dsa/mv88e6xxx/port.h              |   6 +
+ drivers/net/dsa/mv88e6xxx/switchdev.c         | 285 ++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/switchdev.h         |  37 +++
+ drivers/net/dsa/ocelot/felix.c                |   5 +
+ drivers/net/dsa/qca/qca8k-common.c            |   5 +
+ drivers/net/dsa/qca/qca8k.h                   |   1 +
+ drivers/net/dsa/sja1105/sja1105_main.c        |   7 +-
+ include/linux/if_bridge.h                     |   1 +
+ include/net/dsa.h                             |   1 +
+ include/net/switchdev.h                       |   3 +
+ include/uapi/linux/if_link.h                  |   1 +
+ include/uapi/linux/neighbour.h                |   4 +-
+ net/bridge/br.c                               |   5 +-
+ net/bridge/br_fdb.c                           |  43 ++-
+ net/bridge/br_input.c                         |  16 +-
+ net/bridge/br_netlink.c                       |   9 +-
+ net/bridge/br_private.h                       |   7 +-
+ net/bridge/br_switchdev.c                     |   5 +-
+ net/dsa/dsa_priv.h                            |   4 +-
+ net/dsa/port.c                                |   7 +-
+ net/dsa/slave.c                               |   4 +-
+ net/dsa/switch.c                              |  10 +-
+ .../net/forwarding/bridge_locked_port.sh      | 107 ++++++-
+ .../net/forwarding/bridge_sticky_fdb.sh       |  21 +-
+ 37 files changed, 768 insertions(+), 50 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.c
+ create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.h
+
 -- 
 2.30.2
 
