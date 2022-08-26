@@ -2,205 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E458EECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66174ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245714AbiHZMSd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:18:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51964 "EHLO
+        id S1343878AbiHZMSh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343861AbiHZMSC (ORCPT
+        with ESMTP id S1343967AbiHZMSF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:18:02 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2052.outbound.protection.outlook.com [40.107.93.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBA6DDB75;
-        Fri, 26 Aug 2022 05:18:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=juUWhNHqDn2+sPKvVbeVt44WEdJrKQvaxewKza8Q5LAlMLOvLTtCrhsdK+MxAMM9fP9Y/vlNW/1s/hRmEexbbscHo1SGoIBIPdbaj7lB8g9kZMguAgIShNb8rvpFptZxDEFNvrllcClxx9riU2JE25RCBuH5p43XyD+iEWQWohSqOt7wMIXaPnJxAikn+Q1AgM6T/66vc4Dstf82w6z5RGpvgxez3GJDbd7TMYP+SI95URJeYgUCpEHAwjyrZg0klC2HWnyE9JVeMvJuoq9pvfkkT1FATppyXtOAk7i7hkPq7uwK+6EW5trR7lGsDV9KPiy7IcQXt+nIqg7j1aFF6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I6UKajqs/S/laLntuOMFWN+aKmwPPb05+IjUjthsek4=;
- b=b6flBx4jOa5eT9byaWL/u+EYjqFauyRrclqIPrT89HZjKolgeCg8eY5gTB9gnGCWq8xTiVXRS2m+e6eTqilIlXOmtNKOkxkC9pigWrvkR0bSSnCYEq2at7uS/TPvZeqwc+WHYne+7w36UO5XG8KvSvSBTpXn94KsPfLMdIOGOdarrUNi2WldfAwWqDEL3r/DHIOunSH5Sr0BD9Xxq+6mA0Xw+/HtgjrXzIfUCPVas+gYPhff166Dec/h+bhpyxJ/0U6Ibxwxk8/f8LDW6IMK7TMaKMY/IQ5FcI2lMkZAUQDQQlTfseutsb1RSiYy1TO8yW1fuTe4967MsP2wlZCAxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I6UKajqs/S/laLntuOMFWN+aKmwPPb05+IjUjthsek4=;
- b=qLGls8ovz/BL5phOgtjgUU06f+0ZktDoJeynUdGIICN4uHwV03ofwXEg3smkuQOnz1EcxtehGB1WAQ5ztXAxg9i3pBXCe/uwuLoWCUhVEREJP8xixDnekVyuCBsFHwv3ZyvpOWwjnlCp4hQwsx3jmi8zMqw0Btci5dQ56TfUmP2wLTV5buxp3H5VJeINg5kQf8movW2M7Xbbb365XuG450FckiaZJcAktkugP67ZPLqb3tjBimTlVtcTJb2EfnHRuGabPdKZgbb8blAhAM9aVYOCRC3673jKN7nM2TwkYIgS6e2bLi8DUg2yhIspo1ibDDBhckuH4kqaj8/PxA2ZXA==
-Received: from BN9PR03CA0622.namprd03.prod.outlook.com (2603:10b6:408:106::27)
- by MN2PR12MB2960.namprd12.prod.outlook.com (2603:10b6:208:101::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Fri, 26 Aug
- 2022 12:17:58 +0000
-Received: from BN8NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:106:cafe::8b) by BN9PR03CA0622.outlook.office365.com
- (2603:10b6:408:106::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
- Transport; Fri, 26 Aug 2022 12:17:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT024.mail.protection.outlook.com (10.13.177.38) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5566.15 via Frontend Transport; Fri, 26 Aug 2022 12:17:58 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.38; Fri, 26 Aug 2022 12:17:56 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Fri, 26 Aug 2022 05:17:56 -0700
-Received: from sandipan-pc.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Fri, 26 Aug 2022 05:17:53 -0700
-From:   Sandipan Patra <spatra@nvidia.com>
-To:     <thierry.reding@gmail.com>, <jonathanh@nvidia.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <bbasu@nvidia.com>, <kyarlagadda@nvidia.com>,
-        Sandipan Patra <spatra@nvidia.com>
-Subject: [PATCH 1/2] arm64: tegra: Add PWM controllers on Tegra234
-Date:   Fri, 26 Aug 2022 17:47:45 +0530
-Message-ID: <20220826121746.32003-1-spatra@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-X-NVConfidentiality: public
+        Fri, 26 Aug 2022 08:18:05 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEBCFDDB67;
+        Fri, 26 Aug 2022 05:18:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661516283; x=1693052283;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ObzvQqeBoSBlsmWjwsS3zHDgHc5l4grO57A2Q8YN6wE=;
+  b=YvReF5dZ3sojMNIi0FEJt7g5UQeIYSE7Rv0zhpQ6ZBAgKb/FUYE4YrE1
+   nU8/ItolLf1gKnBZeR38ojYz2M11gGnGvNTVLHl4vIBVpDg+9X63a4cjU
+   kNwI8kpAUqF4GHhZJuZWWJFI4lPBiMtoF/af4hdMLSUWzIEodD808r6e1
+   2ub2eC/AD54qDt0R2xqtDwVBW6oIu2CEGo4QrZwLuFGlG1SXG5TevSEGm
+   6SOVnLzg01uZAf6mRrXAwziJS/2S8ghskyn0gK+xYE8x/o02Y04Nun7Hq
+   ljGENgjOqR2CENOQ8Ss2ztkWD8ZXhhbPjdA2Dzz8G8s3CuaBVI0NeEEjp
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="292072157"
+X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
+   d="scan'208";a="292072157"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:18:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
+   d="scan'208";a="606747707"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:17:59 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v12 09/17] iommu/vt-d: Add blocking domain support
+Date:   Fri, 26 Aug 2022 20:11:33 +0800
+Message-Id: <20220826121141.50743-10-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 970ef1da-dfd3-4880-f686-08da875d033f
-X-MS-TrafficTypeDiagnostic: MN2PR12MB2960:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B9DcQzI9vLmXrc+PbF+T71KMN+/x344EwiEysYIGPr8ied7wunVBC4nXNwI/lLdIRj/1XdDCP0MzsM1dOBstnyY8Pwq+SSxADf5yZSyRaGhPRjvWfZcamjD5RSKMtCK1kAm7WXzNrmDG7B0o69ppe6N+0T4Eq232duQpwfUyJhvvF7gYoxsS81Gt/jScVlbjpmlOeUiklEx+OAsDkMImZIl8i6todxu9z7g4X1g8DXDx7d2b6csVJJTv46lJyBXGyT+BvArciyiQDlqPdC//Lz3+yIJYnSgi7fILU7/u/2aRFKm19P6dwz4kGlygP9+MeUAeXVJzmxWle4+sXkHGl+05mZQWEfnT+efzhEnUWaSZG4GKVrmwXX2TSfymPqGLcJ1s9Ow4/Q1qFzQoOA66/x0T4YNMF7XXL2k9m6KIZVDGG+EcBp1TwLLlLTASOL7Z5OzkkuuxtXDRIdIjQlL/NBZugmr/s3gvUOHbfPZeSbq9+n7XoDkv496ccXt8IJ8S/fk+hCfOahekVgOiqXZZTv95zHzXvecKpYwYbbWehLCG/A5CBumSWYJcEbMYUakCw6tobPm358gV+CzGjtMih98Z+HTIyQN7KHMCVjGg9whOTggerlOQTDIrqyZ8qs1GRRg6INGCoh7LUQKitpUMCsUVpnY3DU3oxuMyOG6pyW8U12KTNf7oc0Ci08LdN/5h+TSIHebYbnP/9cQQGedoKwhfa0/b154NLXZRaug3sCUfrdkNzwC/FNLXauU9emH5Z0SJ7XHm8g3HW4WC4Fm33jKNdCXDDD6uwwZIkPmW/cmAnUTVjR/p6FVKjnRjQR4LiFVA13NN/WymC2ULOYq+8Q==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(39860400002)(136003)(376002)(40470700004)(36840700001)(46966006)(110136005)(316002)(54906003)(6666004)(7696005)(40480700001)(36860700001)(8676002)(4326008)(82740400003)(478600001)(5660300002)(36756003)(107886003)(41300700001)(26005)(40460700003)(47076005)(426003)(8936002)(2906002)(83380400001)(86362001)(82310400005)(356005)(70206006)(70586007)(2616005)(336012)(186003)(1076003)(81166007)(36900700001)(16060500005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 12:17:58.0703
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 970ef1da-dfd3-4880-f686-08da875d033f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT024.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB2960
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tegra234 has eight single-channel PWM controllers, one of them in the
-AON block.
+The Intel IOMMU hardwares support blocking DMA transactions by clearing
+the translation table entries. This implements a real blocking domain to
+avoid using an empty UNMANAGED domain. The detach_dev callback of the
+domain ops is not used in any path. Remove it to avoid dead code as well.
 
-Signed-off-by: Sandipan Patra <spatra@nvidia.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Tested-by: Tony Zhu <tony.zhu@intel.com>
 ---
- arch/arm64/boot/dts/nvidia/tegra234.dtsi | 84 ++++++++++++++++++++++++
- 1 file changed, 84 insertions(+)
+ drivers/iommu/intel/iommu.c | 25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-index 81a0f599685f..c2dc651f0842 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-@@ -840,6 +840,90 @@
- 			#pwm-cells = <2>;
- 		};
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 64d30895a4c8..ffd1ff69bf25 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4127,12 +4127,30 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
+ 	return 0;
+ }
  
-+		pwm2: pwm@3290000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x3290000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM2>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM2>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
++/*
++ * Intel IOMMU blocking domain support:
++ */
++static int blocking_domain_attach_dev(struct iommu_domain *domain,
++				      struct device *dev)
++{
++	dmar_remove_one_dev_info(dev);
++	return 0;
++}
 +
-+		pwm3: pwm@32a0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32a0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM3>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM3>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
++static struct iommu_domain blocking_domain = {
++	.ops = &(const struct iommu_domain_ops) {
++		.attach_dev	= blocking_domain_attach_dev
++	}
++};
 +
-+		pwm4: pwm@c340000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0xc340000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM4>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM4>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm5: pwm@32c0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32c0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM5>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM5>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm6: pwm@32d0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32d0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM6>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM6>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm7: pwm@32e0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32e0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM7>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM7>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm8: pwm@32f0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32f0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM8>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM8>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
- 		spi@3300000 {
- 			compatible = "nvidia,tegra234-qspi";
- 			reg = <0x3300000 0x1000>;
+ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ {
+ 	struct dmar_domain *dmar_domain;
+ 	struct iommu_domain *domain;
+ 
+ 	switch (type) {
++	case IOMMU_DOMAIN_BLOCKED:
++		return &blocking_domain;
+ 	case IOMMU_DOMAIN_DMA:
+ 	case IOMMU_DOMAIN_DMA_FQ:
+ 	case IOMMU_DOMAIN_UNMANAGED:
+@@ -4239,12 +4257,6 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
+ 	return domain_add_dev_info(to_dmar_domain(domain), dev);
+ }
+ 
+-static void intel_iommu_detach_device(struct iommu_domain *domain,
+-				      struct device *dev)
+-{
+-	dmar_remove_one_dev_info(dev);
+-}
+-
+ static int intel_iommu_map(struct iommu_domain *domain,
+ 			   unsigned long iova, phys_addr_t hpa,
+ 			   size_t size, int iommu_prot, gfp_t gfp)
+@@ -4767,7 +4779,6 @@ const struct iommu_ops intel_iommu_ops = {
+ #endif
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev		= intel_iommu_attach_device,
+-		.detach_dev		= intel_iommu_detach_device,
+ 		.map_pages		= intel_iommu_map_pages,
+ 		.unmap_pages		= intel_iommu_unmap_pages,
+ 		.iotlb_sync_map		= intel_iommu_iotlb_sync_map,
 -- 
-2.17.1
+2.25.1
 
