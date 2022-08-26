@@ -2,97 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BCDECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 13:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3367ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 13:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344368AbiHZNeK (ORCPT
+        id S1343758AbiHZNes (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 09:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58534 "EHLO
+        Fri, 26 Aug 2022 09:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344346AbiHZNeF (ORCPT
+        with ESMTP id S232858AbiHZNeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 09:34:05 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F36DC5F2
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:34:03 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-3378303138bso36074877b3.9
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:34:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=qiR3kqY1FtS7aluiuV2htyDwOrHtB3ABTNirVnY7LY0=;
-        b=Badek9Z3Zw7k7MP3T3YzVdM7CAxTgNBC24Y9sxs8xUcI7ApWgF7W8s+Gcvz5ZVhKP1
-         Gv/BM4JpKuQ0UsB3GLYAcuMHJrwhuMYNb4FXaxY6qW5KzLK0QVcBuDwguYH4jNNxTedj
-         lCUZuv+5g6OWaGpzsg7CujNCCX8jo0zwxY/d62havl0hP9HtOY07Lla1ygso+jhceuRo
-         c6zerpixbQK+eKtQ2/j8/OVTJ7t+7dCHSEbF6H4JAlv0ncMGq4l8alqAwd7ZBJWq49W7
-         dduQbKTdmgNjW5trp2/imaB1kqDb2eJN79QRGfSzutp/zKzz9em/stAFPeeyWGJku245
-         agtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=qiR3kqY1FtS7aluiuV2htyDwOrHtB3ABTNirVnY7LY0=;
-        b=MW+gqLlLrduHL6dl6JDSj2Y04wHpHCGOQlr8VxgHzb+dCwraxIsu9jtcPEwhhSUdFi
-         gdJ4/sa0QVzQPAemVgw9k02XsBLeqw2/Pm6YnTZHBB0t1TkJKtV7pYgx9TUFmP+CZQcJ
-         53e1PjslUcHnDjI606D0i9vmgd9O2RJfK1mQRQRynoH07jkFx/F2k7COUsKnCiMRFICM
-         b31biwXMwD/lUCB+UMUxp+oyAs9VWzEkM/V63QvdbKLpuObp6Lj0F3y2memmAdZtikph
-         GBGGOPh8h69iaqqzkSgiutx7TmHhTJeO+lXm/xtaiKPtlRdEKNn1ev/ESEWt3bQr/9iz
-         Nouw==
-X-Gm-Message-State: ACgBeo1RtYsNESHLoenJkgI2yrVeXEuYJls1DyVy4oQmlpeEyRVIJLaC
-        W3YGSNPyoXqOjSry0JCcGuvtmuf06cr5+CicD1w5Pg==
-X-Google-Smtp-Source: AA6agR4cSYDUjHjKqgs9zKaZ58NNESabUJfIrLT+OTCGH4HwSfACpDx/ctbx5ozgIrEgXjQk7zDpKuMhmKfrTiLRGm0=
-X-Received: by 2002:a05:6902:124e:b0:668:222c:e8da with SMTP id
- t14-20020a056902124e00b00668222ce8damr7302689ybu.383.1661520843052; Fri, 26
- Aug 2022 06:34:03 -0700 (PDT)
+        Fri, 26 Aug 2022 09:34:46 -0400
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [IPv6:2001:4190:8020::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CE3821CD;
+        Fri, 26 Aug 2022 06:34:44 -0700 (PDT)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id C7F2392009C; Fri, 26 Aug 2022 15:34:42 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id C1B9D92009B;
+        Fri, 26 Aug 2022 14:34:42 +0100 (BST)
+Date:   Fri, 26 Aug 2022 14:34:42 +0100 (BST)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] serial: dz: xmit buffer is UART_XMIT_SIZE'd
+In-Reply-To: <20220825131746.21257-2-ilpo.jarvinen@linux.intel.com>
+Message-ID: <alpine.DEB.2.21.2208261419080.26998@angie.orcam.me.uk>
+References: <20220825131746.21257-1-ilpo.jarvinen@linux.intel.com> <20220825131746.21257-2-ilpo.jarvinen@linux.intel.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-References: <20220823145649.3118479-6-robh@kernel.org>
-In-Reply-To: <20220823145649.3118479-6-robh@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 26 Aug 2022 15:33:51 +0200
-Message-ID: <CACRpkdZ3syQzLaZJ1aksB6o7Q_xOMGSC1RfT_9iVYgpXHi_mfw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: pinctrl: Add missing (unevaluated|additional)Properties
- on child nodes
-To:     Rob Herring <robh@kernel.org>
-Cc:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Andy Teng <andy.teng@mediatek.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, openbmc@lists.ozlabs.org,
-        linux-renesas-soc@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 4:57 PM Rob Herring <robh@kernel.org> wrote:
+On Thu, 25 Aug 2022, Ilpo Järvinen wrote:
 
-> In order to ensure only documented properties are present, node schemas
-> must have unevaluatedProperties or additionalProperties set to false
-> (typically).
->
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> In theory, the Tx code would be buggy if UART_XMIT_SIZE differs from
+> 4096 (occurs when PAGE_SIZE > 4k), however, given the lack of issue
+> reports such configuration likely doesn't occur with any real platform
+> with dz HW. The inconsisted sizes would cause missing characters and
+> never-ending bogus Tx when ->head reaches the region above 4k. The
+> issue, if it would be real, would predate git days.
 
-Patch applied to the pinctrl tree for v6.1
+ This is misleading.  There are exactly 3 machine models (2 major ones and 
+1 extra submodel) that we currently support which make use of this serial 
+port hardware and driver, and they all have their R2000/R3000 MIPS CPU 
+soldered onto their respective mainboards.  And the CPUs they use all have 
+their page size hardwired to 4KiB, so it's not the lack of reports, but a 
+firm assertion that this driver as it stands shall never be used with a 
+different page size.
 
-Yours,
-Linus Walleij
+ There exists an option card using a DZ11-compatible chipset that can be 
+used with systems we currently support with page sizes of up to 64KiB, but 
+to the best of my knowledge only a number of prototype cards has been made 
+and I have heard of exactly one person having such a card.  Therefore we 
+do not support it and may never do, so it is not a concern for the driver 
+as it stands and shall not be mentioned.
+
+ Please just state then that the change is for design consistency with the 
+serial core and redefine DZ_XMIT_SIZE in terms of UART_XMIT_SIZE as I 
+suggested for v1.  I'll ack such a change.  Please drop 2/2 at this stage 
+as it does not fix any bug and does not appear to add any value to this 
+driver.
+
+ Thanks,
+
+  Maciej
