@@ -2,112 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E98ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C460ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245146AbiHZPJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33938 "EHLO
+        id S245212AbiHZPJj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 11:09:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244406AbiHZPJC (ORCPT
+        with ESMTP id S244402AbiHZPJC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 11:09:02 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760F6DD4EA
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:08:35 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id x26so1804505pfo.8
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:08:35 -0700 (PDT)
+Received: from mail-ej1-x649.google.com (mail-ej1-x649.google.com [IPv6:2a00:1450:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33123DD4E6
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:08:34 -0700 (PDT)
+Received: by mail-ej1-x649.google.com with SMTP id gt9-20020a1709072d8900b0073d82402ea6so731360ejc.21
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:08:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=rDCiGRameoc44J7lHWbl0JPQBn/IEONwz9o9l1i/k5o=;
-        b=VQf8EKuL0X7CTzQMT9/lmQ+1rlvFbqSdWJ43L2omf4zYAogNVKx+E1+/4NxJWp71SJ
-         upBbQVhWVUJgfYiXHlKIPENQcY4w5U5t2RiKYJ1PfGxVKiRSReXEYab8Qccb52pLO1Gz
-         9k6Yu3mGdHw96K7FOVQvnspayt0a1/FKDnVi8LZ03IepA9Ug+67nWgCGDqoT3JkI05xu
-         nbk0SFMOuytiK/CcgApCgKitlSaJ+nc/lkDgP+Tj82x0OHPOdPl7qO+otN0tngOpDBh8
-         nQw21ypSGxxW1TEWOIRpqxxDz8wh9kWTKp1xo+SGr3tJ0u90VX3TrVPkKVczUhCGQoZz
-         /e2w==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc;
+        bh=c5NepUxkZ67sJe7jHUeDkh2lejA2rZ0n/lgzGJfAW+w=;
+        b=c+6A8OMgE+PXXvaKjkvUnzf0Zny9FaGQw3ITZ0eOqhvk/xJ6RvxfKh+stOxXyatXl4
+         YGr0F0FGxuPcv8CUWTObk59qFjdxmNbRa0oHquDksvKKfT8Zu2vHF6G0vca6kOpAbhNI
+         OVOEZTiTMx/xUIeNXpsat3eCswFWmSuMpYNt42aS00HKw95twaAXWDw2g1FqoKpczn16
+         IuVC8oufvBy3n96QICaiFTQbEIjqBDPQxH/4XN690eGkbiZ3y/ft7KJ0uT7Yb+5MevGJ
+         DRahR3sL+vhkXEP7eUoI9WqyhhSukcLsMWy7BqvewYy5XGfr72OPIP7WRVR5q3FgsYZn
+         IVMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=rDCiGRameoc44J7lHWbl0JPQBn/IEONwz9o9l1i/k5o=;
-        b=x2VXRBbnScIuGdX1jx4YWLBEuUFUuqPB6cCEFVUJX7RZuZoWGj5ckMs8xNePBRL8A1
-         lmpGcyqWt1D8jbl/k337veu6T6U3WrSy8nya6wtWt3jGVdKSE1bLqCxbW8LnXzgb0HrT
-         kOvTuCs4auj0PZwwkfsTy2YTjBAmKfxfqE9PthPaxJ992nLXpPmRJbu1UIxL0iS0INRR
-         J/DrpM8WfSXE8SFwQXRRvAI3qeOAHNzb+TkmNgdye+fmGYGja4sip09XAu30i1ICA+Yp
-         B/wnOCCxJv8oWvX+kZ/4VrPRw9BCjrqTRhCuY2V7XCz18VaFiPj0kEOwf17tRrg0qYPX
-         W24g==
-X-Gm-Message-State: ACgBeo1OtrfAkVfYiXO9UP1HRQ6529oKS+wkH79DGtIp0avzkxlPY/4y
-        bfedN66UovaWyCCdM8PR5ChjGQ==
-X-Google-Smtp-Source: AA6agR5uCZ7VBJfvhJmt8rw74pIfwFba099AydbeQHgPwVRGBIy1lChlBYYL7MzvcFd9dTtAf6OYiw==
-X-Received: by 2002:a63:f704:0:b0:42b:7fa6:19bd with SMTP id x4-20020a63f704000000b0042b7fa619bdmr1671900pgh.283.1661526514860;
-        Fri, 26 Aug 2022 08:08:34 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id z15-20020a170902cccf00b0016c0eb202a5sm1693664ple.225.2022.08.26.08.08.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 08:08:34 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 15:08:28 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Xiaoyao Li <xiaoyao.li@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=c5NepUxkZ67sJe7jHUeDkh2lejA2rZ0n/lgzGJfAW+w=;
+        b=WeHv4rZuqj6WBSof5IVNxUbmNXUk+QYYI9HepB/Ve85/EpteGbNocaWA6VuNH2eTb3
+         5phi7rmCUFRVGyP6w5uFdpYHtRQH1z5DR6FpTh4NdCBpRD34HJHbTkGSTO8qDpDtN2fP
+         rVI7Vq8hRLaIfQxrd6DyqrBbhxzh61cS2BWNqfPD+q8CSvGoC8oC9y/jYVit91+IG1Sq
+         O7pKNvSAv1+6JIDkVZphRGWDpUlmCyFuZwRHR+CeVJGr7JePlnYCs7S3eX0XGAQh8jXZ
+         5lFF5MTT56P9pEuqzHDbWXabMt1ujyUVkppdh1T6N5aTRqjhp1weZJxy67Jm9+IVZ/vV
+         vdKg==
+X-Gm-Message-State: ACgBeo0PCmpDnRDxnAYSPHBg1x8Cdy6MJ5nHwV7s5Vf52LwrCLMCWMqb
+        PkYFuL7bkoxywI0jbfLuUh5QE6IqoNg=
+X-Google-Smtp-Source: AA6agR5ehbhUugsFXAPBIbmUJl2ccI1z6E6toZVNB9pK3XsABZI5EGu5QKmG8MsBqiQScrt+e+ok3n5vJiE=
+X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:5207:ac36:fdd3:502d])
+ (user=glider job=sendgmr) by 2002:a05:6402:515:b0:447:780c:39d6 with SMTP id
+ m21-20020a056402051500b00447780c39d6mr7244136edv.265.1661526512626; Fri, 26
+ Aug 2022 08:08:32 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 17:07:30 +0200
+In-Reply-To: <20220826150807.723137-1-glider@google.com>
+Mime-Version: 1.0
+References: <20220826150807.723137-1-glider@google.com>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220826150807.723137-8-glider@google.com>
+Subject: [PATCH v5 07/44] kmsan: introduce __no_sanitize_memory and __no_kmsan_checks
+From:   Alexander Potapenko <glider@google.com>
+To:     glider@google.com
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Marco Elver <elver@google.com>,
         Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [RFC PATCH 2/2] KVM: VMX: Stop/resume host PT before/after VM
- entry when PT_MODE_HOST_GUEST
-Message-ID: <YwjhaPdvmklwXf9B@google.com>
-References: <20220825085625.867763-1-xiaoyao.li@intel.com>
- <20220825085625.867763-3-xiaoyao.li@intel.com>
- <YweWmF3wMPRnthIh@google.com>
- <6bcab33b-3fde-d470-88b9-7667c7dc4b2d@intel.com>
- <YwecducnM/U6tqJT@google.com>
- <4e383b85-6777-4452-a073-4d2f439e28b1@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4e383b85-6777-4452-a073-4d2f439e28b1@intel.com>
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022, Xiaoyao Li wrote:
-> On 8/25/2022 11:59 PM, Sean Christopherson wrote:
-> > But ensuring the RTIT_CTL.TraceEn=0 is all that's needed to make VM-Entry happy,
-> > and if the host isn't using Intel PT, what do we care if other bits that, for all
-> > intents and purposes are ignored, are lost across VM-Entry/VM-Exit?  I gotta
-> > imaging the perf will fully initialize RTIT_CTL if it starts using PT.
-> 
-> Personally, I agree with it.
-> 
-> But I'm not sure if there is a criteria that host context needs to be
-> unchanged after being virtualized.
-> 
-> > Actually, if the host isn't actively using Intel PT, can KVM avoid saving the
-> > other RTIT MSRs?
-> 
-> I don't think it's a good idea that it requires PT driver never and won't
-> rely on the previous value of PT MSRs. But it's OK if handing it over to
-> perf as the idea you gave below.
+__no_sanitize_memory is a function attribute that instructs KMSAN to
+skip a function during instrumentation. This is needed to e.g. implement
+the noinstr functions.
 
-Yep, my thought exactly.
+__no_kmsan_checks is a function attribute that makes KMSAN
+ignore the uninitialized values coming from the function's
+inputs, and initialize the function's outputs.
 
-> > Even better, can we hand that off to perf?  I really dislike KVM making assumptions
-> > about perf's internal behavior.  E.g. can this be made to look like
-> 
-> you mean let perf subsystem to do the context save/restore staff of host and
-> KVM focuses on save/restore of guest context, right?
+Functions marked with this attribute can't be inlined into functions
+not marked with it, and vice versa. This behavior is overridden by
+__always_inline.
 
-Yep!  KVM already more or less does this for "regular" PMU MSRs, though in that
-case perf hands back a list of MSRs+data.  But for Intel PT I don't see any point
-in having KVM do the actual MSR accesses.  Tracing has to be turned off _before_
-VM-Enter, so using the MSR load/save lists doesn't buy us anything. 
+__SANITIZE_MEMORY__ is a macro that's defined iff the file is
+instrumented with KMSAN. This is not the same as CONFIG_KMSAN, which is
+defined for every file.
+
+Signed-off-by: Alexander Potapenko <glider@google.com>
+Reviewed-by: Marco Elver <elver@google.com>
+
+---
+Link: https://linux-review.googlesource.com/id/I004ff0360c918d3cd8b18767ddd1381c6d3281be
+---
+ include/linux/compiler-clang.h | 23 +++++++++++++++++++++++
+ include/linux/compiler-gcc.h   |  6 ++++++
+ 2 files changed, 29 insertions(+)
+
+diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
+index c84fec767445d..4fa0cc4cbd2c8 100644
+--- a/include/linux/compiler-clang.h
++++ b/include/linux/compiler-clang.h
+@@ -51,6 +51,29 @@
+ #define __no_sanitize_undefined
+ #endif
  
-> I would like to see comment from perf folks on this and maybe need their
-> help on how to implement.
++#if __has_feature(memory_sanitizer)
++#define __SANITIZE_MEMORY__
++/*
++ * Unlike other sanitizers, KMSAN still inserts code into functions marked with
++ * no_sanitize("kernel-memory"). Using disable_sanitizer_instrumentation
++ * provides the behavior consistent with other __no_sanitize_ attributes,
++ * guaranteeing that __no_sanitize_memory functions remain uninstrumented.
++ */
++#define __no_sanitize_memory __disable_sanitizer_instrumentation
++
++/*
++ * The __no_kmsan_checks attribute ensures that a function does not produce
++ * false positive reports by:
++ *  - initializing all local variables and memory stores in this function;
++ *  - skipping all shadow checks;
++ *  - passing initialized arguments to this function's callees.
++ */
++#define __no_kmsan_checks __attribute__((no_sanitize("kernel-memory")))
++#else
++#define __no_sanitize_memory
++#define __no_kmsan_checks
++#endif
++
+ /*
+  * Support for __has_feature(coverage_sanitizer) was added in Clang 13 together
+  * with no_sanitize("coverage"). Prior versions of Clang support coverage
+diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+index 9b157b71036f1..f55a37efdb974 100644
+--- a/include/linux/compiler-gcc.h
++++ b/include/linux/compiler-gcc.h
+@@ -114,6 +114,12 @@
+ #define __SANITIZE_ADDRESS__
+ #endif
+ 
++/*
++ * GCC does not support KMSAN.
++ */
++#define __no_sanitize_memory
++#define __no_kmsan_checks
++
+ /*
+  * Turn individual warnings and errors on and off locally, depending
+  * on version.
+-- 
+2.37.2.672.g94769d06f0-goog
+
