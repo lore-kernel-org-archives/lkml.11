@@ -2,57 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10393ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E63C65C0D
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239180AbiHZVSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 17:18:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34448 "EHLO
+        id S244601AbiHZVUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 17:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiHZVSc (ORCPT
+        with ESMTP id S1344716AbiHZVUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 17:18:32 -0400
+        Fri, 26 Aug 2022 17:20:44 -0400
 Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191307A531
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:18:31 -0700 (PDT)
-Received: by mail-oi1-x234.google.com with SMTP id a133so3497883oif.4
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:18:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C487518B39
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:20:41 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id v125so3544607oie.0
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:20:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=jqevxu4nJYrCA5b/jGqZsRGIEdJzHcXCyvdNgZHsnbM=;
-        b=QfOoHLhXnaCXUNqj40fmWtqEJK9iLp4VqIPPjoRxwTGg6pIcDFWmDFTOOIY3ZbNCvY
-         d/6MfMCg8w1r8AhBCsSyV0gCHZcue2j4r84siacgAem5S6xH/P+6zFNU74yZ22v3Fa4C
-         ESPeAPI23/jwA26O8hqQzYSy3F3p4856PaEvZ55kR/lKia2cmQ3f1MTeyK7voO5QQ/+x
-         zJN6/aN9aXiLO1/PbgJURvzl273zG9c9gjc+dbu9TmaRjGiolYAD8hIBxKnUgz3Gd/xC
-         yqK2sCCjStNi1r/+zEefgPNxTrnXA2hXmC9ix4fuUmB0FqEd9Q0p0rPiXxpz9Ij5z9W5
-         JxEw==
+        bh=8LX/LWZmqa6eGAYDU2BrYIU+cWB57WWRs6WluHAKqX0=;
+        b=S1I3a6uY5L7Y/jAwrrjQfT+MElLrT3t4+XRnTSCiDk18s1DhVAd8be3FaOAHXKBew5
+         8cYKFjEviU9F5jUS0dgqbFvN+ptv2FP055xXYJugSpR+Z9HRn4jKIc54flBcDJaRwiGy
+         ELMiNO4H271uGGlZ5iMwAIx2Imu4HP1Mhyk3yUUJis+riqhYZxk9GKz+/8oJbhywAWnm
+         pezaE0Z5GPTw1+XNfqmj4+10wz1uAlDXgizaoEuMzy77GxdHttcfagsBol3Z9+YvnGyt
+         CLPHANkO2JpNvJ1zQgmfYu6Ggf+yCa5SdBwtzg9aac+aZhGtdYu/8AUj7CHdnWJ/VwIb
+         35Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=jqevxu4nJYrCA5b/jGqZsRGIEdJzHcXCyvdNgZHsnbM=;
-        b=3SIdsWRjACxOhBmZ52Gl+Os97C1btKIe0mxmpiNcp2LTGeKgPYLC+FJI8SfQ/WsTp9
-         bh/rq+wVtSEmdGFzUHfMa7576sCAb/ff+mSvbFz4bPzZWKiOpM8Y2ES3DhLAM7Hhra3J
-         0tgaXBt5K2YtgmCtdwHN8z5w2CbH1JhTyJ0CuAUaIdZ5tocP07jxgAkRCo7KIu1+ZoJ/
-         zdDqhCEBSrSCp5Zy2JkaYaUBQIZlogR1CGzJABIgNMTOJQdF4GENdFaGJumM97IAq11v
-         85TkoI0lsX9QbwN7peUXm/AIJsmqepybehNCEXrLsedXgr/1Y6VYdonzvkNg+DXk0pFh
-         XYmQ==
-X-Gm-Message-State: ACgBeo0bxuutrGDbEa2WtpdyqgfCX3ftXTEwR3KfuHDUCU8d6nNq3ann
-        am8+13QFqgMlaIudT5N2M5fZlwUjek1FpRXynWaU
-X-Google-Smtp-Source: AA6agR5l9c3L7Ec5r6wGQrv+AOhwxaa6G2u9mbsXmXlKW51sowK/zgnXpm8km7tyjIHItq4ciMgqkuldfis0MVJpgaE=
-X-Received: by 2002:aca:b7d5:0:b0:343:c478:91c6 with SMTP id
- h204-20020acab7d5000000b00343c47891c6mr2522236oif.136.1661548710417; Fri, 26
- Aug 2022 14:18:30 -0700 (PDT)
+        bh=8LX/LWZmqa6eGAYDU2BrYIU+cWB57WWRs6WluHAKqX0=;
+        b=iOS8E5jira3ekKzL/4+JUGNbIYUHb98197f/SMsXQwYyVWK3G4WihVm8DBUvlDQV4N
+         g4MLXTdltZfXikXcGWv577NVBbAWYaMCmGPpBMC+IGU9TKuPsZg9eTpPknhgxgXdWRfR
+         bOeN/u+uxXMo6/zL3Wc1grH6pufT3998e63sBo0TE4i+KHQPRDVSKZCQlKOXNcLUo5yn
+         K7kDybU3SKC3DSdU6AunN1YK4m9TWJ6CIUpJtA/r5AmPEMcpomIULrt1pSVBhe/Lh0HN
+         WzsMGPG/5ctwptZNTio0excQRf2VIQps3yeQ5ePxUNu3FkrLwbeFpfV/GUDq9EMo3pCl
+         GrnQ==
+X-Gm-Message-State: ACgBeo0EgVjU7M/B+z3809KNq2zuPt3xDMkiBh01TNTc249kN5nkxNPN
+        J+LONR0Mg2HGYxMYXnVzOtdivcHNszuzy3qDu1rvd447t/JA
+X-Google-Smtp-Source: AA6agR5qWLhqOOTSHmpbGvQVdH0QmxCHUjR5sZokf5s6WIW/9TEpoDZl2pcr80/wKgay4WYe18gGsc9v6kB0Y9ZA4G0=
+X-Received: by 2002:a05:6808:3a9:b0:343:4b14:ccce with SMTP id
+ n9-20020a05680803a900b003434b14cccemr2523259oie.41.1661548840989; Fri, 26 Aug
+ 2022 14:20:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1661449312.git.rgb@redhat.com> <8728d12e4d765aa388602d9bc894bde75d9f476f.1661449312.git.rgb@redhat.com>
-In-Reply-To: <8728d12e4d765aa388602d9bc894bde75d9f476f.1661449312.git.rgb@redhat.com>
+References: <cover.1661449312.git.rgb@redhat.com> <c925257a4e99a76f8a8efef014a58ca7af40d537.1661449312.git.rgb@redhat.com>
+In-Reply-To: <c925257a4e99a76f8a8efef014a58ca7af40d537.1661449312.git.rgb@redhat.com>
 From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 26 Aug 2022 17:18:19 -0400
-Message-ID: <CAHC9VhSCGyeZALunjMdB_tOgJ-WY1xbTo6=85iM_C=Q9JeSc+Q@mail.gmail.com>
-Subject: Re: [PATCH ghak138 v2 2/4] audit: explicitly check
- audit_context->context enum value
+Date:   Fri, 26 Aug 2022 17:20:30 -0400
+Message-ID: <CAHC9VhTC_CSQK9r0aEC4cAaAS04XhGZGSW7JdqRAB13OBtVL4g@mail.gmail.com>
+Subject: Re: [PATCH ghak138 v2 3/4] audit: free audit_proctitle only on task exit
 To:     Richard Guy Briggs <rgb@redhat.com>
 Cc:     Linux-Audit Mailing List <linux-audit@redhat.com>,
         LKML <linux-kernel@vger.kernel.org>,
@@ -65,8 +64,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Thu, Aug 25, 2022 at 3:33 PM Richard Guy Briggs <rgb@redhat.com> wrote:
 >
-> Be explicit in checking the struct audit_context "context" member enum
-> value rather than assuming the order of context enum values.
+> Since audit_proctitle is generated at syscall exit time, its value is
+> used immediately and cached for the next syscall.  Since this is the
+> case, then only clear it at task exit time.  Otherwise, there is no
+> point in caching the value OR bearing the overhead of regenerating it.
 >
 > Fixes: 12c5e81d3fd0 ("audit: prepare audit_context for use in calling contexts beyond syscalls")
 > Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
