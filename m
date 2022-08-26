@@ -2,82 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDC9ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E71EECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:22:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243886AbiHZLUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 07:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48270 "EHLO
+        id S244927AbiHZLW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 07:22:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbiHZLUR (ORCPT
+        with ESMTP id S230141AbiHZLWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 07:20:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00543E760;
-        Fri, 26 Aug 2022 04:20:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 70A4861B41;
-        Fri, 26 Aug 2022 11:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CB051C433D7;
-        Fri, 26 Aug 2022 11:20:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661512814;
-        bh=al1BYldTpOTootqG41dhJTt73kWohLiYx4+8rM8Sluw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DHsR16XIMWROQpSzqdKbQ7HYoTEqGBspbW5ux+KhTKcSKWNjnuCRCCEVA4J5C5WIR
-         nSxswGhfL9fYRRscDB31ckcFZkLL8//ucg5qLc27/HqSbicvCV4FQ+yYZw1g+hW2A4
-         byCwPx6Ysa44VKeCGQyyCi+kQhFJ5DDGEmAjP7GUvrDayz0jKWW1rhFdnDmFbiubqs
-         5Ty3PeJq4mngnx/2AQOzmjYO6RiKZQWEps9EaEeo+JsTQULC+8S25jjB1m/tEsrGEW
-         OQ2A3lngu1P9mJRUl0nwNowSOMdMhtfGM76Q3/F1RtTEEq5scJtSVdMbcO1/jUacbB
-         rfWtHVxklecHA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B1D70E2A040;
-        Fri, 26 Aug 2022 11:20:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 26 Aug 2022 07:22:55 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A13DDAEE5;
+        Fri, 26 Aug 2022 04:22:52 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27QBMXjO053966;
+        Fri, 26 Aug 2022 06:22:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661512953;
+        bh=ePfG0EpOr92S+PbFmQ5kcqb6z6CZ0FlDegmJSjIPXS4=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=X1jqprEr5Ge3M5OAjXkoOT61Kl+0cQDUwmmHg9e8CfjE2SWtIZycC5Gz/trZ+j2BH
+         PCjYT+LI5MupgxV300uEAbu06/UJM8RSb8+mxND9RsegQOWKDxZwUB75LBEVCFaJPT
+         HlZik/MSp9FALpDmBb15ackyCrY8K5tbFyBWZgpI=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27QBMXKf032353
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 26 Aug 2022 06:22:33 -0500
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Fri, 26
+ Aug 2022 06:22:32 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Fri, 26 Aug 2022 06:22:32 -0500
+Received: from [172.24.145.182] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27QBMSws052231;
+        Fri, 26 Aug 2022 06:22:29 -0500
+Message-ID: <fd8bdb08-5ed3-8d97-c394-0cab5460df1c@ti.com>
+Date:   Fri, 26 Aug 2022 16:52:28 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: sched: remove unnecessary init of qidsc skb
- head
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166151281472.24189.7543834802818916872.git-patchwork-notify@kernel.org>
-Date:   Fri, 26 Aug 2022 11:20:14 +0000
-References: <20220824091003.15935-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220824091003.15935-1-shaozhengchao@huawei.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, weiyongjun1@huawei.com, yuehaibing@huawei.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 2/4] dt-bindings: pinctrl: k3: Introduce pinmux
+ definitions for J784s4
+Content-Language: en-US
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Apurva Nandan <a-nandan@ti.com>
+CC:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, Hari Nagalla <hnagalla@ti.com>
+References: <20220819190054.31348-1-a-nandan@ti.com>
+ <20220819190054.31348-3-a-nandan@ti.com>
+ <CACRpkdaktinAJveF_nH9NYYk7mAvnResRzoyuVDVWpwKKq6JOQ@mail.gmail.com>
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+In-Reply-To: <CACRpkdaktinAJveF_nH9NYYk7mAvnResRzoyuVDVWpwKKq6JOQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
 
-On Wed, 24 Aug 2022 17:10:03 +0800 you wrote:
-> The memory allocated by using kzallloc_node and kcalloc has been cleared.
-> Therefore, the structure members of the new qdisc are 0. So there's no
-> need to explicitly assign a value of 0.
+On 26/08/22 13:59, Linus Walleij wrote:
+> On Fri, Aug 19, 2022 at 9:01 PM Apurva Nandan <a-nandan@ti.com> wrote:
 > 
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> ---
->  include/net/sch_generic.h | 7 -------
->  net/sched/sch_generic.c   | 1 -
->  net/sched/sch_htb.c       | 2 --
->  3 files changed, 10 deletions(-)
+>> Add pinctrl macros for J784s4 SoC. These macro definitions are
+>> similar to that of J721s2, but adding new definitions to avoid
+>> any naming confusions in the soc dts files.
+>>
+>> checkpatch insists the following error exists:
+>> ERROR: Macros with complex values should be enclosed in parentheses
+>>
+>> However, we do not need parentheses enclosing the values for this
+>> macro as we do intend it to generate two separate values as has been
+>> done for other similar platforms.
+>>
+>> Signed-off-by: Hari Nagalla <hnagalla@ti.com>
+>> Signed-off-by: Apurva Nandan <a-nandan@ti.com>
+> 
+> Acked-by: Linus Walleij <linus.walleij@linaro.org>
+> I guess you will merge these patches together?
+> Tell me if you rather want that I apply this one patch to the pinctrl tree.
+> 
 
-Here is the summary with links:
-  - [net-next] net: sched: remove unnecessary init of qidsc skb head
-    https://git.kernel.org/netdev/net-next/c/44387d1736c4
-
-You are awesome, thank you!
+I will the patch via TI K3 SoC tree once other patches are in good shape.
+Thanks for the review!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Regards
+Vignesh
