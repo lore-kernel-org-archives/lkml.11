@@ -2,102 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69FB2ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3B3ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:27:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245303AbiHZH00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37824 "EHLO
+        id S245275AbiHZH1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245295AbiHZH0R (ORCPT
+        with ESMTP id S245327AbiHZH0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:26:17 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BC64C609
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:26:09 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id p18so881792plr.8
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:26:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=lI4CWqG6v5ZBU8gDLirXlKuy5ZufBDP2aWB6a62sKfw=;
-        b=mR4gX7Tz+bNOj8ZzMZoRVkmpEQhvnSujiHvBAKEJJTnaXeuBZDHISmfru+LfBZJcRJ
-         s1ynwTszEuGn54naMqxe6eyI/Uj/YM2yFR0RoBkgjw8Aon/64Doi5hfqZkFfdQ6EPVe+
-         ytiiPMMyxUwpGr/B/ZSHgUwA0nqIy1DXu8g9d5onC7reo1fO77NWQll/357mgvAnTitG
-         jDLFub43SqrRc4Ir5Pb9Vxe+d92XQME9hOSLR0BUBpEKP0FzkkXvOMW8+91H12J4/kWp
-         NaeJGOzhRk9lE4hSN0vHd9P4dUGJoV2GYFFHPZT8ITd6cazaPztl3agXkaELg2nC2eqL
-         NJFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=lI4CWqG6v5ZBU8gDLirXlKuy5ZufBDP2aWB6a62sKfw=;
-        b=nPj2ZRmmVImFCvKC1lR2+EpC+JIhTq2iAcKGeKbTTeAPSoTnVONLYBIdz2AgXSaQrT
-         IxInSbp08uyJiysPHqtdYuv5LFsMTwnj8uAdafb1CB3Ywr+Gjn4j8BEIJ7mLQZ5rjlVA
-         bvovnaR0kSQZ1sWqScg3WsZZeZDMdZnvi8nbeYuHkxaKHFXDbPB+tlUpKq70YYTFtvoC
-         WIsA9EFTEh6GH99f2r6EOu8eWaKRZP0xosuRS+mknShrNjfadcE5PvbFR7y36OtEuGeU
-         2u5D41takrjTx1q3NrB+ZnInXssHK97D7pZu1AgUP6tOrBeyoIFCdd7xSAHTnZ0K8V+c
-         6JBg==
-X-Gm-Message-State: ACgBeo1grlpGDDjXaaPhj5IyBQUY0TFbJFoLy/DaeZw4CMLj7xB4unlk
-        EVUjZa6lJdOx+9wi/+QONjU=
-X-Google-Smtp-Source: AA6agR6FI/XsvaYBR+70cHAeWlu/xebq0AOp1LX8OGvxawzLhq1Hg86HQbk/7tSHO6xTF62n7L4SvA==
-X-Received: by 2002:a17:902:9886:b0:172:bb36:70f1 with SMTP id s6-20020a170902988600b00172bb3670f1mr2577202plp.139.1661498768536;
-        Fri, 26 Aug 2022 00:26:08 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id f60-20020a17090a704200b001f319e9b9e5sm944505pjk.16.2022.08.26.00.26.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 00:26:08 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: ye.xingchen@zte.com.cn
-To:     linux@armlinux.org.uk
-Cc:     rostedt@goodmis.org, mingo@redhat.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] arm/ftrace: Remove the unneeded result variable
-Date:   Fri, 26 Aug 2022 07:26:03 +0000
-Message-Id: <20220826072603.252909-1-ye.xingchen@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 26 Aug 2022 03:26:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A521E5F120;
+        Fri, 26 Aug 2022 00:26:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661498809; x=1693034809;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=bQ66rxBi1p20bacYHk7InPQ7hqfavItr+gjhZj1ZfJU=;
+  b=RNVuZPXOwxtg95z7OPGo4elBGb5uz4lguNoTsWAwbfTa6RU+kvR2DNJW
+   G1SkAiPHrjqXS8YlxQUyrPzKzCgppf9D7JOF3aerM+77V3DdTecQgibBP
+   HJWZ+P9t+DIPDSYjpvMFiCKOxh4rUNPriFUkmVY7I1z9zOxCGRS6IYnqa
+   mVpuhsAu2MfoRZW7Ox+thkyzM6DZHJB3qsYUfC5Xfsy6A6YKQBBIDI3+7
+   oBgfyiAPXo4BnYTcBF3DD4II/zLXTDOE66EIJGYs1Yp6ragigY//9xrA/
+   97xdNiEcn0CHQE7Uisuw5HT7ZB2cmmTG5ISyll4pQ+Ts6AUFng/rBFJj2
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
+   d="scan'208";a="174276053"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2022 00:26:48 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 26 Aug 2022 00:26:48 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Fri, 26 Aug 2022 00:26:48 -0700
+Date:   Fri, 26 Aug 2022 09:31:03 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: lan9662-otpc: document Lan9662 OTPC
+Message-ID: <20220826073103.kkotbaxc3latculo@soft-dev3-1.localhost>
+References: <20220825204041.1485731-1-horatiu.vultur@microchip.com>
+ <20220825204041.1485731-2-horatiu.vultur@microchip.com>
+ <96da4897-7b55-84d5-8f1d-892e116153df@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <96da4897-7b55-84d5-8f1d-892e116153df@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ye xingchen <ye.xingchen@zte.com.cn>
+The 08/26/2022 09:42, Krzysztof Kozlowski wrote:
 
-Return the value ftrace_modify_code() directly instead of storing it in
-another redundant variable.
+Hi Krzysztof,
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+> > +properties:
+> > +  compatible:
+> > +    items:
+> > +      - const: microchip,lan9662-otpc
+> > +      - const: microchip,lan9668-otpc
+> 
+> Does not look like you tested the bindings. Please run `make
+> dt_binding_check` (see
+> Documentation/devicetree/bindings/writing-schema.rst for instructions).
+> 
+> This won't work...
+
+You are right. That was a silly mistake on my side.
+
+It should be:
 ---
- arch/arm/kernel/ftrace.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+properties:
+  compatible:
+    enum:
+      - microchip,lan9662-otpc
+      - microchip,lan9668-otpc
+---
+Because what I want to achive is to be able to use any of
+string(microchip,lan9662-otpc or microchip,lan9668-otpc) as compatible
+string.
 
-diff --git a/arch/arm/kernel/ftrace.c b/arch/arm/kernel/ftrace.c
-index a0b6d1e3812f..94924a2ecd94 100644
---- a/arch/arm/kernel/ftrace.c
-+++ b/arch/arm/kernel/ftrace.c
-@@ -190,7 +190,6 @@ int ftrace_make_nop(struct module *mod,
- 	unsigned long ip = rec->ip;
- 	unsigned long old;
- 	unsigned long new;
--	int ret;
- 
- #ifdef CONFIG_ARM_MODULE_PLTS
- 	/* mod is only supplied during module loading */
-@@ -216,9 +215,8 @@ int ftrace_make_nop(struct module *mod,
- 	 * so validation may fail spuriously in such cases. Let's work around
- 	 * this by omitting those from validation.
- 	 */
--	ret = ftrace_modify_code(ip, old, new, !is_kernel_inittext(ip));
- 
--	return ret;
-+	return ftrace_modify_code(ip, old, new, !is_kernel_inittext(ip));
- }
- #endif /* CONFIG_DYNAMIC_FTRACE */
- 
+Or this is not the correct change?
+At least with this change dt_binding_check is happy.
+
+> 
+> Best regards,
+> Krzysztof
+
 -- 
-2.25.1
+/Horatiu
