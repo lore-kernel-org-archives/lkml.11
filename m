@@ -2,91 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39046ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A90BECAAD1
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244733AbiHZCoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
+        id S244889AbiHZCqL convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235416AbiHZCof (ORCPT
+        with ESMTP id S235939AbiHZCqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:44:35 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CC9CCD41;
-        Thu, 25 Aug 2022 19:44:34 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id t5so399637pjs.0;
-        Thu, 25 Aug 2022 19:44:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=RHgqZb2XQveY9G/sJMRmpzdx+tOdeQ4iM+KusnEyRoY=;
-        b=Pb3YzDPspbBnUW3qH117ZXq0J6MB5B7vyjogOalJat+W8jYnbkqOQmZKmQXSrSMupU
-         8+kgv305Qpxb6/tniUToXHZSlc/AET1thtBvLtPRxkEdAPkY0ykBUrdhR8QMTBlTs6H9
-         igIxdfupYdjQbH5yv8D+3AfaH79ZrSyF64Ux5Hxv1BjssyNRhsU+V7IB1/+zjpDA8r0b
-         oDnB5/Nq6ymuDeZXNi1ar0XiVSpLiT1L6JPS8DTd11KP17pofDLEpzGWZfWsCL6yssAq
-         GOI6sABvOCFYY4wPvVzQ0vZrwtC3nD7Z+QZ/95DPX7FpVRROdAqroybtH0oBTdcUW0el
-         8FUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=RHgqZb2XQveY9G/sJMRmpzdx+tOdeQ4iM+KusnEyRoY=;
-        b=2GXdH/TYfTr8s7aobY7uKB9cmnOzRhEN3ndrMwSE0Tjt2EkVjYDAIpl09px22QS8d6
-         GsH0hXcn29G2Q3UAy2EC37uSHcrwhs/iWbU1oO+vrXKjTGzL5aKi7vCwBQ6mYzbIiZuG
-         v/8+BQJbV4jb9tha9b3tBABUqCc7TMi0ybHCEfBgUF7/HYexnGvnqN5KYdpPnNwWlo5P
-         8v58RRfs4t4qirX6qXi/1qYRlFqIKUITEqcCxqbx8K3YPXmtUzzcdOstEOu4OoYtqbv2
-         vYaMIoB/KhKmpYPeG4KLNOiGh8mUOzxAt15cCOT6ndxer3N5opw3TCC5F42YPiLAExu/
-         fvEA==
-X-Gm-Message-State: ACgBeo1pSgT9ajylfChQS1PyTEGgZ/U9DgNi84f1k1dnd4Y8hVJ3CsMW
-        wh5hpT5SPepO/odcFkZn5f8nbWPgWV0=
-X-Google-Smtp-Source: AA6agR6/mZIc51xeKyzCEubIDIr7nj3XWgCoAHMnse7l9ViUyaiGY+7eDf8YHsYdtsZzHXQFDvj0ew==
-X-Received: by 2002:a17:90a:3ee2:b0:1fb:71a9:698f with SMTP id k89-20020a17090a3ee200b001fb71a9698fmr2055049pjc.127.1661481874144;
-        Thu, 25 Aug 2022 19:44:34 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id i9-20020a170902c94900b00173cfb184c0sm294212pla.32.2022.08.25.19.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 19:44:33 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: lu.fengchang@zte.com.cn
-To:     tj@kernel.org
-Cc:     lizefan.x@bytedance.com, hannes@cmpxchg.org, corbet@lwn.net,
-        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        lufengchang <lu.fengchang@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] admin-guide: cgroup: fix a typo in description
-Date:   Fri, 26 Aug 2022 02:05:54 +0000
-Message-Id: <20220826020552.239407-1-lu.fengchang@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 25 Aug 2022 22:46:07 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C925F51A3B;
+        Thu, 25 Aug 2022 19:46:05 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27Q2iQoN5005022, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27Q2iQoN5005022
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Fri, 26 Aug 2022 10:44:26 +0800
+Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Fri, 26 Aug 2022 10:44:41 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Fri, 26 Aug 2022 10:44:40 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97]) by
+ RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97%5]) with mapi id
+ 15.01.2375.007; Fri, 26 Aug 2022 10:44:40 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        Bernie Huang <phhuang@realtek.com>
+Subject: RE: [PATCH -next v2] wifi: rtw88: add missing destroy_workqueue() on error path in rtw_core_init()
+Thread-Topic: [PATCH -next v2] wifi: rtw88: add missing destroy_workqueue() on
+ error path in rtw_core_init()
+Thread-Index: AQHYuPPXTVNverb67E6eoXZA/kccLq3AeYDg
+Date:   Fri, 26 Aug 2022 02:44:40 +0000
+Message-ID: <3388603e9a874c2d893b5fff8949390e@realtek.com>
+References: <20220826023817.3908255-1-yangyingliang@huawei.com>
+In-Reply-To: <20220826023817.3908255-1-yangyingliang@huawei.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/8/25_=3F=3F_11:50:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lufengchang <lu.fengchang@zte.com.cn>
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: lufengchang <lu.fengchang@zte.com.cn>
----
- Documentation/admin-guide/cgroup-v1/cgroups.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> -----Original Message-----
+> From: Yang Yingliang <yangyingliang@huawei.com>
+> Sent: Friday, August 26, 2022 10:38 AM
+> To: linux-kernel@vger.kernel.org; netdev@vger.kernel.org; linux-wireless@vger.kernel.org
+> Cc: tony0620emma@gmail.com; kvalo@kernel.org; Bernie Huang <phhuang@realtek.com>
+> Subject: [PATCH -next v2] wifi: rtw88: add missing destroy_workqueue() on error path in rtw_core_init()
+> 
+> Add the missing destroy_workqueue() before return from rtw_core_init()
+> in error path.
+> 
+> Fixes: fe101716c7c9 ("rtw88: replace tx tasklet with work queue")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-diff --git a/Documentation/admin-guide/cgroup-v1/cgroups.rst b/Documentation/admin-guide/cgroup-v1/cgroups.rst
-index b0688011ed06..fa747466e304 100644
---- a/Documentation/admin-guide/cgroup-v1/cgroups.rst
-+++ b/Documentation/admin-guide/cgroup-v1/cgroups.rst
-@@ -573,7 +573,7 @@ cgroup_for_each_descendant_pre() for details.
- ``void css_offline(struct cgroup *cgrp);``
- (cgroup_mutex held by caller)
- 
--This is the counterpart of css_online() and called iff css_online()
-+This is the counterpart of css_online() and called if css_online()
- has succeeded on @cgrp. This signifies the beginning of the end of
- @cgrp. @cgrp is being removed and the subsystem should start dropping
- all references it's holding on @cgrp. When all references are dropped,
--- 
-2.25.1
+Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
 
+Thanks
+
+> ---
+> v2:
+>   Change labe name to 'out'.
+> ---
+>  drivers/net/wireless/realtek/rtw88/main.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+> index 790dcfed1125..475ce0e3071c 100644
+> --- a/drivers/net/wireless/realtek/rtw88/main.c
+> +++ b/drivers/net/wireless/realtek/rtw88/main.c
+> @@ -2094,7 +2094,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+>  	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
+>  	if (ret) {
+>  		rtw_warn(rtwdev, "no firmware loaded\n");
+> -		return ret;
+> +		goto out;
+>  	}
+> 
+>  	if (chip->wow_fw_name) {
+> @@ -2104,11 +2104,15 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+>  			wait_for_completion(&rtwdev->fw.completion);
+>  			if (rtwdev->fw.firmware)
+>  				release_firmware(rtwdev->fw.firmware);
+> -			return ret;
+> +			goto out;
+>  		}
+>  	}
+> 
+>  	return 0;
+> +
+> +out:
+> +	destroy_workqueue(rtwdev->tx_wq);
+> +	return ret;
+>  }
+>  EXPORT_SYMBOL(rtw_core_init);
+> 
+> --
+> 2.25.1
+> 
+> 
+> ------Please consider the environment before printing this e-mail.
