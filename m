@@ -2,86 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE8B9ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:10:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAECECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243998AbiHZBKR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 21:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
+        id S244037AbiHZBLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 21:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243864AbiHZBKN (ORCPT
+        with ESMTP id S235832AbiHZBLN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 21:10:13 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BEDC65839;
-        Thu, 25 Aug 2022 18:10:12 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MDMBs5skcznTjS;
-        Fri, 26 Aug 2022 09:07:49 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 09:10:10 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
-CC:     <vladbu@mellanox.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next] net: sched: tbf: don't call qdisc_put() while holding tree lock
-Date:   Fri, 26 Aug 2022 09:12:48 +0800
-Message-ID: <20220826011248.323922-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 25 Aug 2022 21:11:13 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F674C6CEC
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 18:11:12 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id x14-20020a17090a8a8e00b001fb61a71d99so6644649pjn.2
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 18:11:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=R7xpL2cmCkMD4jtRFgP1b3ShRkD2+jaz3DYrJUN7tfs=;
+        b=SqU9cO8kD/wD1O+bTGLiXC4p6XIs1R6rFC/4FHxEwYybU1h2ZBaJy3E338XFJ7t6MZ
+         2ThdV0pPgtklaaTHok5FcRz81/gKnh8b2Giu7KR0zH8Sr4StIieOscmhiLQv0KXTwnQ7
+         kB2soe7ry9pjFpy5TSe1sjoCGdGhjQVUrFaWU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=R7xpL2cmCkMD4jtRFgP1b3ShRkD2+jaz3DYrJUN7tfs=;
+        b=nLxAceyJV419W0i0aksQaZaFpozkRFwbpceXoKJ3zIegcL4QbCo1N9d4Z1tAb4x70T
+         BwBfi+nHApPvtLX+LU3RdP6sVcnXCFubfWfqiJ7FvXi7pDJRS4Nuic6shWOR+RxfpDRh
+         TZ20/jvAI0lkABVzx9gmL7/KZO64VwQfI+r3GqL35v+7kHpK6oIQ8ffQeK0lXPkiKaBy
+         qTlailvCjNuV+Xu+1VcqU/0Y4jzpSn9ixej0xa3fdPKEn9fcYyHAfqP2j0eyon4Biybh
+         DtHerJsY3/lSAnp1saPCW+yeqQdjaSWa8H9ETKsCrSB0+hLqeu1Le3tvNV+VZn8WOSE/
+         x6EA==
+X-Gm-Message-State: ACgBeo3HHRV6j/IkN4JeDAXEszgJx/6jUFGFEtLvSuaA3z2MmZQpADTq
+        DBqXQlwb0TLS67JkAvgO0g87rhaTcIi4Yg==
+X-Google-Smtp-Source: AA6agR5WQSRy3QZ3a5qpBgOwTSFImlWhuv1MyJbjJ785Jq2ALsUtA/lkhiGhSpSdprO/IOsqR7UgNA==
+X-Received: by 2002:a17:902:e552:b0:16c:571d:fc08 with SMTP id n18-20020a170902e55200b0016c571dfc08mr1577589plf.151.1661476271952;
+        Thu, 25 Aug 2022 18:11:11 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:4eb0:cafb:7713:1e6])
+        by smtp.gmail.com with ESMTPSA id y18-20020aa793d2000000b0053602e1d6fcsm273846pff.105.2022.08.25.18.11.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 18:11:11 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 18:11:09 -0700
+From:   Brian Norris <briannorris@chromium.org>
+To:     Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH] power: supply: core: Ignore -EIO for uevent
+Message-ID: <YwgdraBXTWk1DhCE@google.com>
+References: <20220824165459.1.I059ae712dd6d324897162ee9f37c22849aa22745@changeid>
+ <20220825140243.tgotqpymswduzlyy@mercury.elektranox.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825140243.tgotqpymswduzlyy@mercury.elektranox.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The issue is the same to commit c2999f7fb05b ("net: sched: multiq: don't
-call qdisc_put() while holding tree lock"). Qdiscs call qdisc_put() while
-holding sch tree spinlock, which results sleeping-while-atomic BUG.
+Hi Sebastian,
 
-Fixes: c266f64dbfa2 ("net: sched: protect block state with mutex")
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- net/sched/sch_tbf.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Thanks for the response.
 
-diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
-index 72102277449e..36079fdde2cb 100644
---- a/net/sched/sch_tbf.c
-+++ b/net/sched/sch_tbf.c
-@@ -356,6 +356,7 @@ static int tbf_change(struct Qdisc *sch, struct nlattr *opt,
- 	struct nlattr *tb[TCA_TBF_MAX + 1];
- 	struct tc_tbf_qopt *qopt;
- 	struct Qdisc *child = NULL;
-+	struct Qdisc *old = NULL;
- 	struct psched_ratecfg rate;
- 	struct psched_ratecfg peak;
- 	u64 max_size;
-@@ -447,7 +448,7 @@ static int tbf_change(struct Qdisc *sch, struct nlattr *opt,
- 	sch_tree_lock(sch);
- 	if (child) {
- 		qdisc_tree_flush_backlog(q->qdisc);
--		qdisc_put(q->qdisc);
-+		old = q->qdisc;
- 		q->qdisc = child;
- 	}
- 	q->limit = qopt->limit;
-@@ -467,6 +468,7 @@ static int tbf_change(struct Qdisc *sch, struct nlattr *opt,
- 	memcpy(&q->peak, &peak, sizeof(struct psched_ratecfg));
- 
- 	sch_tree_unlock(sch);
-+	qdisc_put(old);
- 	err = 0;
- 
- 	tbf_offload_change(sch);
--- 
-2.17.1
+On Thu, Aug 25, 2022 at 04:02:43PM +0200, Sebastian Reichel wrote:
+> > For uevents, we enumerate all properties. Some battery implementations
+> > don't implement all standard properties, and may return -EIO for
+> > properties that aren't recognized. This means we never report uevents
+> > for such batteries.
+> > 
+> > It's better to ignore these errors and skip the property, as we do with
+> > ENODATA and ENODEV.
+> > 
+> > Example battery implementation: Acer Chromebook Tab 10 (a.k.a. Google
+> > Gru-Scarlet) has a virtual "SBS" battery implementation in its Embedded
+> > Controller on top of an otherwise non-SBS battery.
+> > 
+> > Signed-off-by: Brian Norris <briannorris@chromium.org>
+> > ---
+> 
+> -EIO means input/output error. If a driver is reporting that for an
+> unimplemented feature it's a bug that should be fixed in the driver.
+> Handling it here means userspace ABI changes for temporary issues.
 
+I suppose I can agree with your last sentence.
+
+But the first part is much easier said than done. This is sbs-battery.c,
+on top of i2c-cros-ec-tunnel.c, talking to an EC (whose firmware is
+pretty much unchangeable at this point), which implements a subset of
+commands.
+
+The intention is that i2c-cros-ec-tunnel.c will see something like a NAK
+/ "invalid argument" response, and it converts that to ENXIO.
+Unforunately, for reasons I have yet to figure out, it's very common for
+retries (|i2c_retry_count|) to eventually yield an unexpected response
+size, which i2c_smbus_xfer_emulated() treats as EIO; so this layer is
+seeing EIO.
+
+Anyway, I might be able to coax the i2c/sbs-battery driver to return
+ENXIO instead. Would you consider that to be a better case to handle
+here? "No such device or address" seems like an appropriate description
+of a permanent error, and not a temporary IO error.
+
+Brian
