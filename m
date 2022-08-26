@@ -2,88 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3404ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 13:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C0BECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 13:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344364AbiHZNdh (ORCPT
+        id S1343761AbiHZNeE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 09:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58180 "EHLO
+        Fri, 26 Aug 2022 09:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344346AbiHZNdf (ORCPT
+        with ESMTP id S1344346AbiHZNeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 09:33:35 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3082CDC5D9
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:33:34 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id r141so1160575iod.4
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:33:34 -0700 (PDT)
+        Fri, 26 Aug 2022 09:34:00 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282B6DC5DE
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:33:59 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id w2so1638166pld.0
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:33:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=bm4tNFuy7lSf2+m8K3Mk3PHBL0KBtw2bz6p4BIebiH8=;
-        b=4rmQtelHxrXF2TehFEJmJDM3lHeF+2qSetwNFnF/P/zC3gHySXd3t2+mS4RMBRfqp+
-         BlNfWSXG8ipBdGO6V0gMY4TG464nywtsNx/nJ+FsktyVWv+hUq7pmk7L2OtYDd6iud3j
-         fInjKY9s3mR/Rvjo50SCrkVzHVyXOyAmjukKyvKeEacg8EEsIEHsFfvDhTJnRvDe+K+G
-         S5QNrXosnVYg47XJHVQcMJzP4aOo2d37N7k/bmFcwackGUw7RwAwIEgagWqoSRffZoVc
-         GiG/YEfLr4fzrIT8uVdM0y+DXMG0FVdcKehgU+wWzrOO0Wl49QKNuNk1fqYPWCdCb41t
-         xcBg==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=rWHO5zmUF7bZRGY8k3CrPBg15/SbyMngXXzYsL3BysI=;
+        b=BVtuM9mKurY9NgLyr5DBTUimx39q+/B6q8hWHrCMcR7ZPHUmKpdIxVzhYTB0Izkrmb
+         Yo+ht1MDnEe3k4E3rztZ/bdCo5yve76+yjrZZi9XR3KXDi6cio1xflou0lnxCtP1jzKP
+         AxB1M6MFuUQqOZ7I8KAFFpBwvfZ+5bPVGofPw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=bm4tNFuy7lSf2+m8K3Mk3PHBL0KBtw2bz6p4BIebiH8=;
-        b=Wt+kMyggurHvDswuouiepLwHupo+fqBmjsUwzrJkK6HJIt3ukF+cJ1RCpt7OrdyjUM
-         OzdUa3D7ItAdy7lzu9yuAqbXEdmy2fD6gzfq2neiVauSgkRjWA3M7yQ7Zz9+fLcpxv0e
-         V1NmjmfsEgGvhTDA4Yn8ZF7tWUQC0DzF6xM9LDGNW6K3mxceztPyS0eJhC8BaiMNOuUc
-         QY+vVO7XeUBW90wNFNUFPpN3slfTWSTHoubKVrPEfpyHjU1ke+h9CrIDpDMSE2yU+Wlz
-         6Dd58BTfQbnkVI7kBFRWzxFs4eR4ilIEZJCBGdrSIB2uriR3iNu1n5xEZ/DAXubJB5PN
-         bE2w==
-X-Gm-Message-State: ACgBeo3p0ZmYe3aGxEvdzTKbfA1nBVnaWjLU6r0TfJqna11NWiFV6uNl
-        SUIOyUlxWvC6YlGFr8JWBFSXWg==
-X-Google-Smtp-Source: AA6agR7F0eMxPcgqhP1YNe+QE43HU/WkX+NniCKip1RcGWHW3S3Wl/CWmsLIO535/YTQCkewOgiTeQ==
-X-Received: by 2002:a02:cb5b:0:b0:341:aebb:d13 with SMTP id k27-20020a02cb5b000000b00341aebb0d13mr4010731jap.176.1661520813508;
-        Fri, 26 Aug 2022 06:33:33 -0700 (PDT)
-Received: from [192.168.1.94] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id v12-20020a02b08c000000b0034338e975b3sm927694jah.50.2022.08.26.06.33.32
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=rWHO5zmUF7bZRGY8k3CrPBg15/SbyMngXXzYsL3BysI=;
+        b=JKhHjNNojUWNlYAcODXYRyP7G9kgM1JTv7g2tShf4sVcXvmfpcnV2nNrvtSVP5da3P
+         qbDhqj4G5JFDWyw2G+/oGq+tF3uU6snZdESsJCfm4xKiZrXCVmuznS+KAifqPB/khc0v
+         whyRqnWyRUNrI/oRHdsSUB697sRPnQzGgHhfOMQ+Cr5G/PW1O8yaXLu5N9pOYmxvdsif
+         2HTZRw0G0dNw46gW1H8Ab129Bb81fShdZ+8oxypDB5v3N/VbwtRWCeiAesQAoHJu//CT
+         /PCaaRdmlVpxNQTqucSvYZpVIm9ulZAMVFCZjs7jqtx0TtNIuShobBaLhydy35yrIhwU
+         SuSg==
+X-Gm-Message-State: ACgBeo3PZHYlaPPPL7um2R0k/u13+pHEDvtLIl73YhmTrAV+wdE+NlPN
+        Yy9i94u3ALgMq0Gba72zKwSptA==
+X-Google-Smtp-Source: AA6agR5Qd66kzZf/KIFbuWJgshdCyJXTni5AcvbARZ8KIRGS5zRC1A4KOawa1wvaCECwIXC0ycsH1g==
+X-Received: by 2002:a17:902:f54e:b0:173:3c4d:2be4 with SMTP id h14-20020a170902f54e00b001733c4d2be4mr3793540plf.71.1661520838697;
+        Fri, 26 Aug 2022 06:33:58 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:2a3c:773f:ac25:a127])
+        by smtp.gmail.com with UTF8SMTPSA id x196-20020a6286cd000000b00536816c0d4asm1757215pfd.147.2022.08.26.06.33.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 06:33:32 -0700 (PDT)
-Message-ID: <4fff9af8-90c3-86f9-37c7-75dcd3e95dc0@kernel.dk>
-Date:   Fri, 26 Aug 2022 07:33:31 -0600
+        Fri, 26 Aug 2022 06:33:58 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 06:33:56 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Krishna Kurapati <quic_kriskura@quicinc.com>,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH 2/2] clk: qcom: gcc-sc7280: Keep USB GDSC power domains
+ on when USB wakeup is enabled
+Message-ID: <YwjLxODQhuftOY2W@google.com>
+References: <20220822115246.2.If09027f73daa6e1ed95f5eab02326b543c67132e@changeid>
+ <YwS3FCOqIeajMEgz@hovoldconsulting.com>
+ <YwUDjaG6n95Ddij2@google.com>
+ <YwXlsK3pjK/q1xwO@hovoldconsulting.com>
+ <Ywf02oIXEL8G/Heo@google.com>
+ <YwjFD9uHnSxoZHvT@google.com>
+ <YwjGpSXOscDwbvQH@hovoldconsulting.com>
+ <YwjIadKu0Wv2+VDk@google.com>
+ <YwjJlRE1qRskZi/y@google.com>
+ <YwjKG83tmRT0Y6sj@hovoldconsulting.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH] blk-mq: determine in advance whether batch alloc can be
- performed
-To:     Liu Song <liusong@linux.alibaba.com>
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1661477190-86862-1-git-send-email-liusong@linux.alibaba.com>
-Content-Language: en-US
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <1661477190-86862-1-git-send-email-liusong@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YwjKG83tmRT0Y6sj@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/25/22 7:26 PM, Liu Song wrote:
-> From: Liu Song <liusong@linux.alibaba.com>
+On Fri, Aug 26, 2022 at 03:26:51PM +0200, Johan Hovold wrote:
+> On Fri, Aug 26, 2022 at 06:24:37AM -0700, Matthias Kaehlcke wrote:
+> > On Fri, Aug 26, 2022 at 06:19:37AM -0700, Matthias Kaehlcke wrote:
+> > > On Fri, Aug 26, 2022 at 03:12:05PM +0200, Johan Hovold wrote:
+> > > > On Fri, Aug 26, 2022 at 06:05:19AM -0700, Matthias Kaehlcke wrote:
+> > > > > On Thu, Aug 25, 2022 at 03:16:58PM -0700, Matthias Kaehlcke wrote:
+> > > > > > On Wed, Aug 24, 2022 at 10:47:44AM +0200, Johan Hovold wrote:
+> > > > 
+> > > > > > > The wakeup setting doesn't seem to have anything to do with the genpd
+> > > > > > > issues on sc8280xp and the controller doesn't resume properly regardless
+> > > > > > > of whether the PHYs have been disabled or not during suspend unless the
+> > > > > > > PD is left on.
+> > > > > > 
+> > > > > > I'm essentially seeing the same. USB is hosed after resume unless the PD
+> > > > > > is left on.
+> > > > > > 
+> > > > > > On Chrome OS we currently work around that with a version of commit
+> > > > > > d9be8d5c5b03 ("usb: dwc3: qcom: Keep power domain on to retain controller
+> > > > > > status") which was reverted upstream. I'm not sure whether USB worked after
+> > > > > > resume before we enabled wakeup support. I would have sworn it did, but we
+> > > > > > landed an old version of the wakeup patches a long time ago, so my
+> > > > > > memory might be failing me.
+> > > > > 
+> > > > > I need to remind myself that keeping the GDSC on is only needed when the PHYs
+> > > > > are kept on. The PHYs were always off before wakeup support was added, which
+> > > > > is why USB wasn't broken after suspend in the pre-wakeup days.
+> > > > 
+> > > > Ok, so to be clear: if you disable wakeup with my patches applied so
+> > > > that the PD is actually turned off, USB still resumes with only
+> > > > GENPD_FLAG_ACTIVE_WAKEUP set?
+> > 
+> > Actually without GENPD_FLAG_ACTIVE_WAKEUP
 > 
-> Some conditions for judging whether batch alloc can be performed are
-> included in "blk_mq_get_tags", and this function is only used by
-> "__blk_mq_alloc_requests_batch".
-> 
-> This patch introduced a helper "can_do_batch_alloc" to prepend the
-> judgment condition and avoid unnecessary function calls.
+> Sure, that only comes into play with wakeup enabled. I assume you still
+> need it for USB wakeup to work?
 
-Curious if you saw any differences from this? Or do you just consider
-it a cleanup?
-
--- 
-Jens Axboe
-
-
+Yes, for USB wakeup to work either setting the above genpd flag or (better)
+the ALWAYS_ON flag of the GDSC is needed.
