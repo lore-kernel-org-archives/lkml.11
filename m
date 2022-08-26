@@ -2,89 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB3CECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F749ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244624AbiHZCX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:23:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
+        id S244754AbiHZCZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230259AbiHZCX4 (ORCPT
+        with ESMTP id S244154AbiHZCZC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:23:56 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64C2FC924C;
-        Thu, 25 Aug 2022 19:23:55 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MDNpr6tX9zlWMm;
-        Fri, 26 Aug 2022 10:20:36 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 26 Aug 2022 10:23:53 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600010.china.huawei.com
- (7.193.23.86) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 10:23:52 +0800
-From:   Sun Ke <sunke32@huawei.com>
-To:     <dhowells@redhat.com>
-CC:     <linux-cachefs@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <kernel-janitors@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <jefflexu@linux.alibaba.com>, <dan.carpenter@oracle.com>,
-        <hsiangkao@linux.alibaba.com>, <sunke32@huawei.com>
-Subject: [PATCH v4] cachefiles: fix error return code in cachefiles_ondemand_copen()
-Date:   Fri, 26 Aug 2022 10:35:15 +0800
-Message-ID: <20220826023515.3437469-1-sunke32@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 25 Aug 2022 22:25:02 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CBC71BEC;
+        Thu, 25 Aug 2022 19:24:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=20px62CgKdyZ2pwfDZVxI7cSmjDuUU373ANc6eVkIj4=; b=yxgPl1jZvpyjIwubW1Rm05LnHa
+        lJDVcwL0p4dPy0yHblGQmZ7aZv/8J22Lpbzr5ZIBCBbsXT+pn/O+CqenKuuhZsO+/vrbZw/SkShrx
+        7m03p1qKYrMMaeugTxjH5X+eEJiS47WZtMAluQUs0lX/ba9ef0HxXQaH7sZO+UeLj3BtSNuzyH03/
+        yC0uxE0VvUMAmn5dDFSzeS143bmBbKxSsIwd7uh6968C7m3uLRqfzL7J+tS1ss425hAisaMBvjnUH
+        IGfTwRmL65p+dvvxbeZzlJVKU9gzivlgNCMYrRVVF7g10CBYXR2UGby3EYcqYE/htZRJbNOtzIbHP
+        xOoNwDeg==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oRP1m-005Eci-7b; Fri, 26 Aug 2022 02:24:58 +0000
+Message-ID: <090894ea-3539-fdca-b470-49d72cb3228e@infradead.org>
+Date:   Thu, 25 Aug 2022 19:24:55 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH] docs: Update version number from 5.x to 6.x in README.rst
+Content-Language: en-US
+To:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220824080836.23087-1-lukas.bulwahn@gmail.com>
+ <87a67syxa0.fsf@meer.lwn.net> <YwgtoiKl5Azt7Pre@debian.me>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <YwgtoiKl5Azt7Pre@debian.me>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The cache_size field of copen is specified by the user daemon.
-If cache_size < 0, then the OPEN request is expected to fail,
-while copen itself shall succeed. However, returning 0 is indeed
-unexpected when cache_size is an invalid error code.
+Hi--
 
-Fix this by returning error when cache_size is an invalid error code.
+On 8/25/22 19:19, Bagas Sanjaya wrote:
+> On Thu, Aug 25, 2022 at 12:48:39PM -0600, Jonathan Corbet wrote:
+>>  - applying-patches.rst should just go.  I didn't prevail last time I
+>>    tried to make that point, but I still don't think that we help
+>>    anybody by dragging 1990's instructions around now.
+>>
+> 
+> Hi jon,
+> 
+> If we're about to rm applying-patches.rst, at least we also need to add
+> a warning to the doc, saying "This documentation is obsolete and will be
+> removed in the future.", while adding the same deprecation message on
+> scripts/patch-kernel. The script can still be usable and kept around for
+> a cycle. If no users complain, we will go ahead rm-ing.
 
-Fixes: c8383054506c ("cachefiles: notify the user daemon when looking up cookie")
-Signed-off-by: Sun Ke <sunke32@huawei.com>
-Suggested-by: Jeffle Xu <jefflexu@linux.alibaba.com>
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-v4: update the code suggested by Dan
-v3: update the commit log suggested by Jingbo.
- fs/cachefiles/ondemand.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+It already says:
 
-diff --git a/fs/cachefiles/ondemand.c b/fs/cachefiles/ondemand.c
-index 1fee702d5529..7e1586bd5cf3 100644
---- a/fs/cachefiles/ondemand.c
-+++ b/fs/cachefiles/ondemand.c
-@@ -158,9 +158,13 @@ int cachefiles_ondemand_copen(struct cachefiles_cache *cache, char *args)
- 
- 	/* fail OPEN request if daemon reports an error */
- 	if (size < 0) {
--		if (!IS_ERR_VALUE(size))
--			size = -EINVAL;
--		req->error = size;
-+		if (!IS_ERR_VALUE(size)) {
-+			req->error = -EINVAL;
-+			ret = -EINVAL;
-+		} else {
-+			req->error = size;
-+			ret = 0;
-+		}
- 		goto out;
- 	}
- 
+   This document is obsolete.  In most cases, rather than using ``patch``
+   manually, you'll almost certainly want to look at using Git instead.
+
+although the bit about "will be removed in the [near] future"
+would be a good addition.
+
 -- 
-2.31.1
-
+~Randy
