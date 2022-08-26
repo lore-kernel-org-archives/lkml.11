@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 561D9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80CC7ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343798AbiHZPNr (ORCPT
+        id S1344228AbiHZPNy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35052 "EHLO
+        Fri, 26 Aug 2022 11:13:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245014AbiHZPM1 (ORCPT
+        with ESMTP id S239844AbiHZPM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:12:27 -0400
-Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED790DEB5D
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:26 -0700 (PDT)
-Received: by mail-ed1-x549.google.com with SMTP id r20-20020a05640251d400b00446e3eee8a1so1242407edd.21
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:26 -0700 (PDT)
+        Fri, 26 Aug 2022 11:12:29 -0400
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 846FCDF088
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:28 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id sc3-20020a1709078a0300b0073d77f805b3so732114ejc.22
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=BnKMvyT06ziUGsHEJ+YEVg1tx1KzLMz0gVcHVszo8K8=;
-        b=EiVhLZEafaAyrZD6tszEO+TFY0OwioS1rJEC090Ib8NqUc5RrN05qy/vhK9oORIELc
-         q/QX5phZQlclN0vAwmre9pavOoMPSMR6b7/nDdQZXXzMUIiI3CVSylEHitI3THbl54p2
-         4qw7aI/LSIwMFTpLkQNpGoFPsRI8VBvLcPDhmP9K+AZRW4ddxRhKn6L+7er0aEKIUpsq
-         bMu4phiNih75hkLHoSGS+NneFlparqIZFfB/r7Zkjuxpl6dn28Io0lrtCQeI4wsT5Qmi
-         1J6Z/uAiwcf/d7OWXeqDUXR7Tj6ogWTRPjMPRiCmUlSHq/K3bRhSzPnBf90OnZ0vFN0L
-         8vMA==
+        bh=1gFHCXdD1YZhZE1n87Od5kpjEzNiLhH4oD7CKEg8NyA=;
+        b=C36uYdPsFbGg613/pEp7hUDG4/V4Hby9x4YJDjLdSHXRVADGe3qYmz+FhENc9qWMpn
+         1fHH+6dULxF6nztHlikbu+gl/MQWdeDCP9VB2zmHX7SxVaqPprtH8w7ACXfxBbSDIKlS
+         kWtqNRu27MLLf6vQ4GWLQZltqrIfq9HjjMB2CrQ8XK2g1T2veDcTsdCIa2olLf0K3eB0
+         rg+ABbqOAL/7dhxwjAOJ4Hp69x9veOEyPpurQPf3/PZhpf9MC+hMgs6YPAy2sAPS4ix/
+         hldXHsSDQFNMlA9A7JgVHVRI19radrkKrNpF4RzeUo6MiKv+aKuCDRBFbaAp0IFkmn8h
+         cu8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=BnKMvyT06ziUGsHEJ+YEVg1tx1KzLMz0gVcHVszo8K8=;
-        b=HLCll9qw+30Kx28+vCBPzUcg/T/zyvKnSsR2mm5+ZwM6VoM6NlR96BXeFcVKHEWjcg
-         oa13Llq547PSUUz33c6xI0JDlnGjG8LYRR7jtq5oKMb3JUy7mtZjvcuU9S+2JtDapAGf
-         9Dwf4SaLaNDIvaV5Xi+nTIeBNlUJzh5uzebixkciXIaRi/msrsxOuJyUF3XHZO3xIvdy
-         YcggX+lNvw2Yg3IcovCp+C4uWY29Ep+ZJddQWEVL8fbXe1sJuPNShrhc+KyGjSB4nltt
-         PR+1BCn4Y+a4DQdDdScBYtZXOMsDNAzRudERsZFFJLb7GLDB9ty0Dl+zo7vT8Z4LKaGw
-         ak/A==
-X-Gm-Message-State: ACgBeo1scz6xh4mJOnla+0eosX6X7ikRNX+bflS7BkvCh15kpV8mKrRm
-        W6DE0B7j+/1CZFJHLEboR5XQzq3Qp5g=
-X-Google-Smtp-Source: AA6agR530TBlVn6mJbY7hmqOW/mIwoixWfGev+K32pLS7qNxq2UBJFhzrDfOIH4huqWlAfhVzxFwU8akYLI=
+        bh=1gFHCXdD1YZhZE1n87Od5kpjEzNiLhH4oD7CKEg8NyA=;
+        b=OW+X3pc7+gNumAu+8j6p/W1NAQ/Go2Qi15SO8lEGGEOoV/dsY1z9O0WDmIw/T5rF8C
+         QyKM/lrTcYCxKB/hDNQf7eUc+hxcyut7Tr+KLzVbRwMRfVkmGlA5ylUM+LsKGJWiCkJt
+         lev+88OMsW9mWK2TEE+pAK9Epjgz69qxAQUKwj3TPMLKmoD7sg6H0i+0WiJX8doE4Ko8
+         cn/kLkYkJB3s4ks1Cbg7wdCN4tPlEwNJVWS+5R5vKPaIR14idWHZyuZ3g1Jcy2Vqamhr
+         L7wBOINujLb5B1r1o5abr2ZV5PTpRuQ4gC7ysfBW9qecdU4jhK+P/S0Mo/R2lNKNfbRM
+         vn7w==
+X-Gm-Message-State: ACgBeo13E2dU44N9fZyhc/laNmZRk9Jw7vQuF4tGeYxeIT/TdAsOsURL
+        EilspTD0sUpmdPuqxRtwd5yBBhW+DCc=
+X-Google-Smtp-Source: AA6agR4dU1oVd473jtavrnrWb2PmEIjOlLC7x44i18xmbb0FTAubsZR2JzCTs0yhSsAGbXPQw2wAkr5SI/I=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:5207:ac36:fdd3:502d])
- (user=glider job=sendgmr) by 2002:a17:907:7388:b0:73d:c311:2f3e with SMTP id
- er8-20020a170907738800b0073dc3112f3emr5671141ejc.158.1661526562331; Fri, 26
- Aug 2022 08:09:22 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 17:07:48 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:882:b0:447:e6b9:89db with SMTP id
+ e2-20020a056402088200b00447e6b989dbmr2901305edy.346.1661526567955; Fri, 26
+ Aug 2022 08:09:27 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 17:07:50 +0200
 In-Reply-To: <20220826150807.723137-1-glider@google.com>
 Mime-Version: 1.0
 References: <20220826150807.723137-1-glider@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220826150807.723137-26-glider@google.com>
-Subject: [PATCH v5 25/44] kmsan: add tests for KMSAN
+Message-ID: <20220826150807.723137-28-glider@google.com>
+Subject: [PATCH v5 27/44] crypto: kmsan: disable accelerated configs under KMSAN
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -92,623 +92,274 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The testing module triggers KMSAN warnings in different cases and checks
-that the errors are properly reported, using console probes to capture
-the tool's output.
+KMSAN is unable to understand when initialized values come from assembly.
+Disable accelerated configs in KMSAN builds to prevent false positive
+reports.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
+
 ---
-v2:
- -- add memcpy tests
 
-v4:
- -- change sizeof(type) to sizeof(*ptr)
- -- add test expectations for CONFIG_KMSAN_CHECK_PARAM_RETVAL
-
-v5:
- -- reapply clang-format
- -- use modern style for-loops
- -- address Marco Elver's comments
-
-Link: https://linux-review.googlesource.com/id/I49c3f59014cc37fd13541c80beb0b75a75244650
+Link: https://linux-review.googlesource.com/id/Idb2334bf3a1b68b31b399709baefaa763038cc50
 ---
- lib/Kconfig.kmsan     |  12 +
- mm/kmsan/Makefile     |   4 +
- mm/kmsan/kmsan_test.c | 552 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 568 insertions(+)
- create mode 100644 mm/kmsan/kmsan_test.c
+ crypto/Kconfig      | 30 ++++++++++++++++++++++++++++++
+ drivers/net/Kconfig |  1 +
+ 2 files changed, 31 insertions(+)
 
-diff --git a/lib/Kconfig.kmsan b/lib/Kconfig.kmsan
-index 5b19dbd34d76e..b2489dd6503fa 100644
---- a/lib/Kconfig.kmsan
-+++ b/lib/Kconfig.kmsan
-@@ -47,4 +47,16 @@ config KMSAN_CHECK_PARAM_RETVAL
- 	  may potentially report errors in corner cases when non-instrumented
- 	  functions call instrumented ones.
+diff --git a/crypto/Kconfig b/crypto/Kconfig
+index bb427a835e44a..182fb817ebb52 100644
+--- a/crypto/Kconfig
++++ b/crypto/Kconfig
+@@ -319,6 +319,7 @@ config CRYPTO_CURVE25519
+ config CRYPTO_CURVE25519_X86
+ 	tristate "x86_64 accelerated Curve25519 scalar multiplication library"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_LIB_CURVE25519_GENERIC
+ 	select CRYPTO_ARCH_HAVE_LIB_CURVE25519
  
-+config KMSAN_KUNIT_TEST
-+	tristate "KMSAN integration test suite" if !KUNIT_ALL_TESTS
-+	default KUNIT_ALL_TESTS
-+	depends on TRACEPOINTS && KUNIT
-+	help
-+	  Test suite for KMSAN, testing various error detection scenarios,
-+	  and checking that reports are correctly output to console.
-+
-+	  Say Y here if you want the test to be built into the kernel and run
-+	  during boot; say M if you want the test to build as a module; say N
-+	  if you are unsure.
-+
- endif
-diff --git a/mm/kmsan/Makefile b/mm/kmsan/Makefile
-index 401acb1a491ce..98eab2856626f 100644
---- a/mm/kmsan/Makefile
-+++ b/mm/kmsan/Makefile
-@@ -22,3 +22,7 @@ CFLAGS_init.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_instrumentation.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_report.o := $(CC_FLAGS_KMSAN_RUNTIME)
- CFLAGS_shadow.o := $(CC_FLAGS_KMSAN_RUNTIME)
-+
-+obj-$(CONFIG_KMSAN_KUNIT_TEST) += kmsan_test.o
-+KMSAN_SANITIZE_kmsan_test.o := y
-+CFLAGS_kmsan_test.o += $(call cc-disable-warning, uninitialized)
-diff --git a/mm/kmsan/kmsan_test.c b/mm/kmsan/kmsan_test.c
-new file mode 100644
-index 0000000000000..b68f4334cf184
---- /dev/null
-+++ b/mm/kmsan/kmsan_test.c
-@@ -0,0 +1,552 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Test cases for KMSAN.
-+ * For each test case checks the presence (or absence) of generated reports.
-+ * Relies on 'console' tracepoint to capture reports as they appear in the
-+ * kernel log.
-+ *
-+ * Copyright (C) 2021-2022, Google LLC.
-+ * Author: Alexander Potapenko <glider@google.com>
-+ *
-+ */
-+
-+#include <kunit/test.h>
-+#include "kmsan.h"
-+
-+#include <linux/jiffies.h>
-+#include <linux/kernel.h>
-+#include <linux/kmsan.h>
-+#include <linux/mm.h>
-+#include <linux/random.h>
-+#include <linux/slab.h>
-+#include <linux/spinlock.h>
-+#include <linux/string.h>
-+#include <linux/tracepoint.h>
-+#include <trace/events/printk.h>
-+
-+static DEFINE_PER_CPU(int, per_cpu_var);
-+
-+/* Report as observed from console. */
-+static struct {
-+	spinlock_t lock;
-+	bool available;
-+	bool ignore; /* Stop console output collection. */
-+	char header[256];
-+} observed = {
-+	.lock = __SPIN_LOCK_UNLOCKED(observed.lock),
-+};
-+
-+/* Probe for console output: obtains observed lines of interest. */
-+static void probe_console(void *ignore, const char *buf, size_t len)
-+{
-+	unsigned long flags;
-+
-+	if (observed.ignore)
-+		return;
-+	spin_lock_irqsave(&observed.lock, flags);
-+
-+	if (strnstr(buf, "BUG: KMSAN: ", len)) {
-+		/*
-+		 * KMSAN report and related to the test.
-+		 *
-+		 * The provided @buf is not NUL-terminated; copy no more than
-+		 * @len bytes and let strscpy() add the missing NUL-terminator.
-+		 */
-+		strscpy(observed.header, buf,
-+			min(len + 1, sizeof(observed.header)));
-+		WRITE_ONCE(observed.available, true);
-+		observed.ignore = true;
-+	}
-+	spin_unlock_irqrestore(&observed.lock, flags);
-+}
-+
-+/* Check if a report related to the test exists. */
-+static bool report_available(void)
-+{
-+	return READ_ONCE(observed.available);
-+}
-+
-+/* Information we expect in a report. */
-+struct expect_report {
-+	const char *error_type; /* Error type. */
-+	/*
-+	 * Kernel symbol from the error header, or NULL if no report is
-+	 * expected.
-+	 */
-+	const char *symbol;
-+};
-+
-+/* Check observed report matches information in @r. */
-+static bool report_matches(const struct expect_report *r)
-+{
-+	typeof(observed.header) expected_header;
-+	unsigned long flags;
-+	bool ret = false;
-+	const char *end;
-+	char *cur;
-+
-+	/* Doubled-checked locking. */
-+	if (!report_available() || !r->symbol)
-+		return (!report_available() && !r->symbol);
-+
-+	/* Generate expected report contents. */
-+
-+	/* Title */
-+	cur = expected_header;
-+	end = &expected_header[sizeof(expected_header) - 1];
-+
-+	cur += scnprintf(cur, end - cur, "BUG: KMSAN: %s", r->error_type);
-+
-+	scnprintf(cur, end - cur, " in %s", r->symbol);
-+	/* The exact offset won't match, remove it; also strip module name. */
-+	cur = strchr(expected_header, '+');
-+	if (cur)
-+		*cur = '\0';
-+
-+	spin_lock_irqsave(&observed.lock, flags);
-+	if (!report_available())
-+		goto out; /* A new report is being captured. */
-+
-+	/* Finally match expected output to what we actually observed. */
-+	ret = strstr(observed.header, expected_header);
-+out:
-+	spin_unlock_irqrestore(&observed.lock, flags);
-+
-+	return ret;
-+}
-+
-+/* ===== Test cases ===== */
-+
-+/* Prevent replacing branch with select in LLVM. */
-+static noinline void check_true(char *arg)
-+{
-+	pr_info("%s is true\n", arg);
-+}
-+
-+static noinline void check_false(char *arg)
-+{
-+	pr_info("%s is false\n", arg);
-+}
-+
-+#define USE(x)                           \
-+	do {                             \
-+		if (x)                   \
-+			check_true(#x);  \
-+		else                     \
-+			check_false(#x); \
-+	} while (0)
-+
-+#define EXPECTATION_ETYPE_FN(e, reason, fn) \
-+	struct expect_report e = {          \
-+		.error_type = reason,       \
-+		.symbol = fn,               \
-+	}
-+
-+#define EXPECTATION_NO_REPORT(e) EXPECTATION_ETYPE_FN(e, NULL, NULL)
-+#define EXPECTATION_UNINIT_VALUE_FN(e, fn) \
-+	EXPECTATION_ETYPE_FN(e, "uninit-value", fn)
-+#define EXPECTATION_UNINIT_VALUE(e) EXPECTATION_UNINIT_VALUE_FN(e, __func__)
-+#define EXPECTATION_USE_AFTER_FREE(e) \
-+	EXPECTATION_ETYPE_FN(e, "use-after-free", __func__)
-+
-+/* Test case: ensure that kmalloc() returns uninitialized memory. */
-+static void test_uninit_kmalloc(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE(expect);
-+	int *ptr;
-+
-+	kunit_info(test, "uninitialized kmalloc test (UMR report)\n");
-+	ptr = kmalloc(sizeof(*ptr), GFP_KERNEL);
-+	USE(*ptr);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that kmalloc'ed memory becomes initialized after memset().
-+ */
-+static void test_init_kmalloc(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	int *ptr;
-+
-+	kunit_info(test, "initialized kmalloc test (no reports)\n");
-+	ptr = kmalloc(sizeof(*ptr), GFP_KERNEL);
-+	memset(ptr, 0, sizeof(*ptr));
-+	USE(*ptr);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Test case: ensure that kzalloc() returns initialized memory. */
-+static void test_init_kzalloc(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	int *ptr;
-+
-+	kunit_info(test, "initialized kzalloc test (no reports)\n");
-+	ptr = kzalloc(sizeof(*ptr), GFP_KERNEL);
-+	USE(*ptr);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Test case: ensure that local variables are uninitialized by default. */
-+static void test_uninit_stack_var(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE(expect);
-+	volatile int cond;
-+
-+	kunit_info(test, "uninitialized stack variable (UMR report)\n");
-+	USE(cond);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Test case: ensure that local variables with initializers are initialized. */
-+static void test_init_stack_var(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	volatile int cond = 1;
-+
-+	kunit_info(test, "initialized stack variable (no reports)\n");
-+	USE(cond);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+static noinline void two_param_fn_2(int arg1, int arg2)
-+{
-+	USE(arg1);
-+	USE(arg2);
-+}
-+
-+static noinline void one_param_fn(int arg)
-+{
-+	two_param_fn_2(arg, arg);
-+	USE(arg);
-+}
-+
-+static noinline void two_param_fn(int arg1, int arg2)
-+{
-+	int init = 0;
-+
-+	one_param_fn(init);
-+	USE(arg1);
-+	USE(arg2);
-+}
-+
-+static void test_params(struct kunit *test)
-+{
-+#ifdef CONFIG_KMSAN_CHECK_PARAM_RETVAL
-+	/*
-+	 * With eager param/retval checking enabled, KMSAN will report an error
-+	 * before the call to two_param_fn().
-+	 */
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_params");
-+#else
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "two_param_fn");
-+#endif
-+	volatile int uninit, init = 1;
-+
-+	kunit_info(test,
-+		   "uninit passed through a function parameter (UMR report)\n");
-+	two_param_fn(uninit, init);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+static int signed_sum3(int a, int b, int c)
-+{
-+	return a + b + c;
-+}
-+
-+/*
-+ * Test case: ensure that uninitialized values are tracked through function
-+ * arguments.
-+ */
-+static void test_uninit_multiple_params(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE(expect);
-+	volatile char b = 3, c;
-+	volatile int a;
-+
-+	kunit_info(test, "uninitialized local passed to fn (UMR report)\n");
-+	USE(signed_sum3(a, b, c));
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Helper function to make an array uninitialized. */
-+static noinline void do_uninit_local_array(char *array, int start, int stop)
-+{
-+	volatile char uninit;
-+
-+	for (int i = start; i < stop; i++)
-+		array[i] = uninit;
-+}
-+
-+/*
-+ * Test case: ensure kmsan_check_memory() reports an error when checking
-+ * uninitialized memory.
-+ */
-+static void test_uninit_kmsan_check_memory(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_uninit_kmsan_check_memory");
-+	volatile char local_array[8];
-+
-+	kunit_info(
-+		test,
-+		"kmsan_check_memory() called on uninit local (UMR report)\n");
-+	do_uninit_local_array((char *)local_array, 5, 7);
-+
-+	kmsan_check_memory((char *)local_array, 8);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: check that a virtual memory range created with vmap() from
-+ * initialized pages is still considered as initialized.
-+ */
-+static void test_init_kmsan_vmap_vunmap(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	const int npages = 2;
-+	struct page **pages;
-+	void *vbuf;
-+
-+	kunit_info(test, "pages initialized via vmap (no reports)\n");
-+
-+	pages = kmalloc_array(npages, sizeof(*pages), GFP_KERNEL);
-+	for (int i = 0; i < npages; i++)
-+		pages[i] = alloc_page(GFP_KERNEL);
-+	vbuf = vmap(pages, npages, VM_MAP, PAGE_KERNEL);
-+	memset(vbuf, 0xfe, npages * PAGE_SIZE);
-+	for (int i = 0; i < npages; i++)
-+		kmsan_check_memory(page_address(pages[i]), PAGE_SIZE);
-+
-+	if (vbuf)
-+		vunmap(vbuf);
-+	for (int i = 0; i < npages; i++) {
-+		if (pages[i])
-+			__free_page(pages[i]);
-+	}
-+	kfree(pages);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that memset() can initialize a buffer allocated via
-+ * vmalloc().
-+ */
-+static void test_init_vmalloc(struct kunit *test)
-+{
-+	EXPECTATION_NO_REPORT(expect);
-+	int npages = 8;
-+	char *buf;
-+
-+	kunit_info(test, "vmalloc buffer can be initialized (no reports)\n");
-+	buf = vmalloc(PAGE_SIZE * npages);
-+	buf[0] = 1;
-+	memset(buf, 0xfe, PAGE_SIZE * npages);
-+	USE(buf[0]);
-+	for (int i = 0; i < npages; i++)
-+		kmsan_check_memory(&buf[PAGE_SIZE * i], PAGE_SIZE);
-+	vfree(buf);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/* Test case: ensure that use-after-free reporting works. */
-+static void test_uaf(struct kunit *test)
-+{
-+	EXPECTATION_USE_AFTER_FREE(expect);
-+	volatile int value;
-+	volatile int *var;
-+
-+	kunit_info(test, "use-after-free in kmalloc-ed buffer (UMR report)\n");
-+	var = kmalloc(80, GFP_KERNEL);
-+	var[3] = 0xfeedface;
-+	kfree((int *)var);
-+	/* Copy the invalid value before checking it. */
-+	value = var[3];
-+	USE(value);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that uninitialized values are propagated through per-CPU
-+ * memory.
-+ */
-+static void test_percpu_propagate(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE(expect);
-+	volatile int uninit, check;
-+
-+	kunit_info(test,
-+		   "uninit local stored to per_cpu memory (UMR report)\n");
-+
-+	this_cpu_write(per_cpu_var, uninit);
-+	check = this_cpu_read(per_cpu_var);
-+	USE(check);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that passing uninitialized values to printk() leads to an
-+ * error report.
-+ */
-+static void test_printk(struct kunit *test)
-+{
-+#ifdef CONFIG_KMSAN_CHECK_PARAM_RETVAL
-+	/*
-+	 * With eager param/retval checking enabled, KMSAN will report an error
-+	 * before the call to pr_info().
-+	 */
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_printk");
-+#else
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "number");
-+#endif
-+	volatile int uninit;
-+
-+	kunit_info(test, "uninit local passed to pr_info() (UMR report)\n");
-+	pr_info("%px contains %d\n", &uninit, uninit);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that memcpy() correctly copies uninitialized values between
-+ * aligned `src` and `dst`.
-+ */
-+static void test_memcpy_aligned_to_aligned(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_memcpy_aligned_to_aligned");
-+	volatile int uninit_src;
-+	volatile int dst = 0;
-+
-+	kunit_info(
-+		test,
-+		"memcpy()ing aligned uninit src to aligned dst (UMR report)\n");
-+	memcpy((void *)&dst, (void *)&uninit_src, sizeof(uninit_src));
-+	kmsan_check_memory((void *)&dst, sizeof(dst));
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that memcpy() correctly copies uninitialized values between
-+ * aligned `src` and unaligned `dst`.
-+ *
-+ * Copying aligned 4-byte value to an unaligned one leads to touching two
-+ * aligned 4-byte values. This test case checks that KMSAN correctly reports an
-+ * error on the first of the two values.
-+ */
-+static void test_memcpy_aligned_to_unaligned(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect, "test_memcpy_aligned_to_unaligned");
-+	volatile int uninit_src;
-+	volatile char dst[8] = { 0 };
-+
-+	kunit_info(
-+		test,
-+		"memcpy()ing aligned uninit src to unaligned dst (UMR report)\n");
-+	memcpy((void *)&dst[1], (void *)&uninit_src, sizeof(uninit_src));
-+	kmsan_check_memory((void *)dst, 4);
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+/*
-+ * Test case: ensure that memcpy() correctly copies uninitialized values between
-+ * aligned `src` and unaligned `dst`.
-+ *
-+ * Copying aligned 4-byte value to an unaligned one leads to touching two
-+ * aligned 4-byte values. This test case checks that KMSAN correctly reports an
-+ * error on the second of the two values.
-+ */
-+static void test_memcpy_aligned_to_unaligned2(struct kunit *test)
-+{
-+	EXPECTATION_UNINIT_VALUE_FN(expect,
-+				    "test_memcpy_aligned_to_unaligned2");
-+	volatile int uninit_src;
-+	volatile char dst[8] = { 0 };
-+
-+	kunit_info(
-+		test,
-+		"memcpy()ing aligned uninit src to unaligned dst - part 2 (UMR report)\n");
-+	memcpy((void *)&dst[1], (void *)&uninit_src, sizeof(uninit_src));
-+	kmsan_check_memory((void *)&dst[4], sizeof(uninit_src));
-+	KUNIT_EXPECT_TRUE(test, report_matches(&expect));
-+}
-+
-+static struct kunit_case kmsan_test_cases[] = {
-+	KUNIT_CASE(test_uninit_kmalloc),
-+	KUNIT_CASE(test_init_kmalloc),
-+	KUNIT_CASE(test_init_kzalloc),
-+	KUNIT_CASE(test_uninit_stack_var),
-+	KUNIT_CASE(test_init_stack_var),
-+	KUNIT_CASE(test_params),
-+	KUNIT_CASE(test_uninit_multiple_params),
-+	KUNIT_CASE(test_uninit_kmsan_check_memory),
-+	KUNIT_CASE(test_init_kmsan_vmap_vunmap),
-+	KUNIT_CASE(test_init_vmalloc),
-+	KUNIT_CASE(test_uaf),
-+	KUNIT_CASE(test_percpu_propagate),
-+	KUNIT_CASE(test_printk),
-+	KUNIT_CASE(test_memcpy_aligned_to_aligned),
-+	KUNIT_CASE(test_memcpy_aligned_to_unaligned),
-+	KUNIT_CASE(test_memcpy_aligned_to_unaligned2),
-+	{},
-+};
-+
-+/* ===== End test cases ===== */
-+
-+static int test_init(struct kunit *test)
-+{
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&observed.lock, flags);
-+	observed.header[0] = '\0';
-+	observed.ignore = false;
-+	observed.available = false;
-+	spin_unlock_irqrestore(&observed.lock, flags);
-+
-+	return 0;
-+}
-+
-+static void test_exit(struct kunit *test)
-+{
-+}
-+
-+static void register_tracepoints(struct tracepoint *tp, void *ignore)
-+{
-+	check_trace_callback_type_console(probe_console);
-+	if (!strcmp(tp->name, "console"))
-+		WARN_ON(tracepoint_probe_register(tp, probe_console, NULL));
-+}
-+
-+static void unregister_tracepoints(struct tracepoint *tp, void *ignore)
-+{
-+	if (!strcmp(tp->name, "console"))
-+		tracepoint_probe_unregister(tp, probe_console, NULL);
-+}
-+
-+static int kmsan_suite_init(struct kunit_suite *suite)
-+{
-+	/*
-+	 * Because we want to be able to build the test as a module, we need to
-+	 * iterate through all known tracepoints, since the static registration
-+	 * won't work here.
-+	 */
-+	for_each_kernel_tracepoint(register_tracepoints, NULL);
-+	return 0;
-+}
-+
-+static void kmsan_suite_exit(struct kunit_suite *suite)
-+{
-+	for_each_kernel_tracepoint(unregister_tracepoints, NULL);
-+	tracepoint_synchronize_unregister();
-+}
-+
-+static struct kunit_suite kmsan_test_suite = {
-+	.name = "kmsan",
-+	.test_cases = kmsan_test_cases,
-+	.init = test_init,
-+	.exit = test_exit,
-+	.suite_init = kmsan_suite_init,
-+	.suite_exit = kmsan_suite_exit,
-+};
-+kunit_test_suites(&kmsan_test_suite);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Alexander Potapenko <glider@google.com>");
+@@ -367,11 +368,13 @@ config CRYPTO_AEGIS128
+ config CRYPTO_AEGIS128_SIMD
+ 	bool "Support SIMD acceleration for AEGIS-128"
+ 	depends on CRYPTO_AEGIS128 && ((ARM || ARM64) && KERNEL_MODE_NEON)
++	depends on !KMSAN # avoid false positives from assembly
+ 	default y
+ 
+ config CRYPTO_AEGIS128_AESNI_SSE2
+ 	tristate "AEGIS-128 AEAD algorithm (x86_64 AESNI+SSE2 implementation)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_AEAD
+ 	select CRYPTO_SIMD
+ 	help
+@@ -517,6 +520,7 @@ config CRYPTO_NHPOLY1305
+ config CRYPTO_NHPOLY1305_SSE2
+ 	tristate "NHPoly1305 hash function (x86_64 SSE2 implementation)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_NHPOLY1305
+ 	help
+ 	  SSE2 optimized implementation of the hash function used by the
+@@ -525,6 +529,7 @@ config CRYPTO_NHPOLY1305_SSE2
+ config CRYPTO_NHPOLY1305_AVX2
+ 	tristate "NHPoly1305 hash function (x86_64 AVX2 implementation)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_NHPOLY1305
+ 	help
+ 	  AVX2 optimized implementation of the hash function used by the
+@@ -649,6 +654,7 @@ config CRYPTO_CRC32C
+ config CRYPTO_CRC32C_INTEL
+ 	tristate "CRC32c INTEL hardware acceleration"
+ 	depends on X86
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_HASH
+ 	help
+ 	  In Intel processor with SSE4.2 supported, the processor will
+@@ -689,6 +695,7 @@ config CRYPTO_CRC32
+ config CRYPTO_CRC32_PCLMUL
+ 	tristate "CRC32 PCLMULQDQ hardware acceleration"
+ 	depends on X86
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_HASH
+ 	select CRC32
+ 	help
+@@ -748,6 +755,7 @@ config CRYPTO_BLAKE2B
+ config CRYPTO_BLAKE2S_X86
+ 	bool "BLAKE2s digest algorithm (x86 accelerated version)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_LIB_BLAKE2S_GENERIC
+ 	select CRYPTO_ARCH_HAVE_LIB_BLAKE2S
+ 
+@@ -762,6 +770,7 @@ config CRYPTO_CRCT10DIF
+ config CRYPTO_CRCT10DIF_PCLMUL
+ 	tristate "CRCT10DIF PCLMULQDQ hardware acceleration"
+ 	depends on X86 && 64BIT && CRC_T10DIF
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_HASH
+ 	help
+ 	  For x86_64 processors with SSE4.2 and PCLMULQDQ supported,
+@@ -831,6 +840,7 @@ config CRYPTO_POLY1305
+ config CRYPTO_POLY1305_X86_64
+ 	tristate "Poly1305 authenticator algorithm (x86_64/SSE2/AVX2)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_LIB_POLY1305_GENERIC
+ 	select CRYPTO_ARCH_HAVE_LIB_POLY1305
+ 	help
+@@ -920,6 +930,7 @@ config CRYPTO_SHA1
+ config CRYPTO_SHA1_SSSE3
+ 	tristate "SHA1 digest algorithm (SSSE3/AVX/AVX2/SHA-NI)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SHA1
+ 	select CRYPTO_HASH
+ 	help
+@@ -931,6 +942,7 @@ config CRYPTO_SHA1_SSSE3
+ config CRYPTO_SHA256_SSSE3
+ 	tristate "SHA256 digest algorithm (SSSE3/AVX/AVX2/SHA-NI)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SHA256
+ 	select CRYPTO_HASH
+ 	help
+@@ -943,6 +955,7 @@ config CRYPTO_SHA256_SSSE3
+ config CRYPTO_SHA512_SSSE3
+ 	tristate "SHA512 digest algorithm (SSSE3/AVX/AVX2)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SHA512
+ 	select CRYPTO_HASH
+ 	help
+@@ -1168,6 +1181,7 @@ config CRYPTO_WP512
+ config CRYPTO_GHASH_CLMUL_NI_INTEL
+ 	tristate "GHASH hash function (CLMUL-NI accelerated)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_CRYPTD
+ 	help
+ 	  This is the x86_64 CLMUL-NI accelerated implementation of
+@@ -1228,6 +1242,7 @@ config CRYPTO_AES_TI
+ config CRYPTO_AES_NI_INTEL
+ 	tristate "AES cipher algorithms (AES-NI)"
+ 	depends on X86
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_AEAD
+ 	select CRYPTO_LIB_AES
+ 	select CRYPTO_ALGAPI
+@@ -1369,6 +1384,7 @@ config CRYPTO_BLOWFISH_COMMON
+ config CRYPTO_BLOWFISH_X86_64
+ 	tristate "Blowfish cipher algorithm (x86_64)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_BLOWFISH_COMMON
+ 	imply CRYPTO_CTR
+@@ -1399,6 +1415,7 @@ config CRYPTO_CAMELLIA
+ config CRYPTO_CAMELLIA_X86_64
+ 	tristate "Camellia cipher algorithm (x86_64)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	imply CRYPTO_CTR
+ 	help
+@@ -1415,6 +1432,7 @@ config CRYPTO_CAMELLIA_X86_64
+ config CRYPTO_CAMELLIA_AESNI_AVX_X86_64
+ 	tristate "Camellia cipher algorithm (x86_64/AES-NI/AVX)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_CAMELLIA_X86_64
+ 	select CRYPTO_SIMD
+@@ -1433,6 +1451,7 @@ config CRYPTO_CAMELLIA_AESNI_AVX_X86_64
+ config CRYPTO_CAMELLIA_AESNI_AVX2_X86_64
+ 	tristate "Camellia cipher algorithm (x86_64/AES-NI/AVX2)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_CAMELLIA_AESNI_AVX_X86_64
+ 	help
+ 	  Camellia cipher algorithm module (x86_64/AES-NI/AVX2).
+@@ -1478,6 +1497,7 @@ config CRYPTO_CAST5
+ config CRYPTO_CAST5_AVX_X86_64
+ 	tristate "CAST5 (CAST-128) cipher algorithm (x86_64/AVX)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_CAST5
+ 	select CRYPTO_CAST_COMMON
+@@ -1501,6 +1521,7 @@ config CRYPTO_CAST6
+ config CRYPTO_CAST6_AVX_X86_64
+ 	tristate "CAST6 (CAST-256) cipher algorithm (x86_64/AVX)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_CAST6
+ 	select CRYPTO_CAST_COMMON
+@@ -1534,6 +1555,7 @@ config CRYPTO_DES_SPARC64
+ config CRYPTO_DES3_EDE_X86_64
+ 	tristate "Triple DES EDE cipher algorithm (x86-64)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_LIB_DES
+ 	imply CRYPTO_CTR
+@@ -1604,6 +1626,7 @@ config CRYPTO_CHACHA20
+ config CRYPTO_CHACHA20_X86_64
+ 	tristate "ChaCha stream cipher algorithms (x86_64/SSSE3/AVX2/AVX-512VL)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_LIB_CHACHA_GENERIC
+ 	select CRYPTO_ARCH_HAVE_LIB_CHACHA
+@@ -1674,6 +1697,7 @@ config CRYPTO_SERPENT
+ config CRYPTO_SERPENT_SSE2_X86_64
+ 	tristate "Serpent cipher algorithm (x86_64/SSE2)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_SERPENT
+ 	select CRYPTO_SIMD
+@@ -1693,6 +1717,7 @@ config CRYPTO_SERPENT_SSE2_X86_64
+ config CRYPTO_SERPENT_SSE2_586
+ 	tristate "Serpent cipher algorithm (i586/SSE2)"
+ 	depends on X86 && !64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_SERPENT
+ 	select CRYPTO_SIMD
+@@ -1712,6 +1737,7 @@ config CRYPTO_SERPENT_SSE2_586
+ config CRYPTO_SERPENT_AVX_X86_64
+ 	tristate "Serpent cipher algorithm (x86_64/AVX)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_SERPENT
+ 	select CRYPTO_SIMD
+@@ -1732,6 +1758,7 @@ config CRYPTO_SERPENT_AVX_X86_64
+ config CRYPTO_SERPENT_AVX2_X86_64
+ 	tristate "Serpent cipher algorithm (x86_64/AVX2)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SERPENT_AVX_X86_64
+ 	help
+ 	  Serpent cipher algorithm, by Anderson, Biham & Knudsen.
+@@ -1876,6 +1903,7 @@ config CRYPTO_TWOFISH_586
+ config CRYPTO_TWOFISH_X86_64
+ 	tristate "Twofish cipher algorithm (x86_64)"
+ 	depends on (X86 || UML_X86) && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_ALGAPI
+ 	select CRYPTO_TWOFISH_COMMON
+ 	imply CRYPTO_CTR
+@@ -1893,6 +1921,7 @@ config CRYPTO_TWOFISH_X86_64
+ config CRYPTO_TWOFISH_X86_64_3WAY
+ 	tristate "Twofish cipher algorithm (x86_64, 3-way parallel)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_TWOFISH_COMMON
+ 	select CRYPTO_TWOFISH_X86_64
+@@ -1913,6 +1942,7 @@ config CRYPTO_TWOFISH_X86_64_3WAY
+ config CRYPTO_TWOFISH_AVX_X86_64
+ 	tristate "Twofish cipher algorithm (x86_64/AVX)"
+ 	depends on X86 && 64BIT
++	depends on !KMSAN # avoid false positives from assembly
+ 	select CRYPTO_SKCIPHER
+ 	select CRYPTO_SIMD
+ 	select CRYPTO_TWOFISH_COMMON
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 94c889802566a..2aaf02bfe6f7e 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -76,6 +76,7 @@ config WIREGUARD
+ 	tristate "WireGuard secure network tunnel"
+ 	depends on NET && INET
+ 	depends on IPV6 || !IPV6
++	depends on !KMSAN # KMSAN doesn't support the crypto configs below
+ 	select NET_UDP_TUNNEL
+ 	select DST_CACHE
+ 	select CRYPTO
 -- 
 2.37.2.672.g94769d06f0-goog
 
