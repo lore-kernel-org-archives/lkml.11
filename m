@@ -2,114 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB8AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 13:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC82ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 13:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344352AbiHZN3c (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 09:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50552 "EHLO
+        id S242333AbiHZN34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 09:29:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344335AbiHZN31 (ORCPT
+        with ESMTP id S1344191AbiHZN3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 09:29:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE57D99E4
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:29:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661520566;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JyOYiH8iFRFdQ9WUABlh8E7Nflw5YGAiJGOckPykOu4=;
-        b=d4nKnJy5RVIz8421bVMKtdOPfQ9oYN+qHODLf6sw1OtIeNd0BYmh3J3hWubGKtvCD3GEBL
-        k4/6HFrmakeKdvARaByc2HAHAeK1Dn8ON3sRjhHg0v9UVzKcOzofr9n8BhzWOYSEamWhef
-        62h89c37fyuVE2JP5SYcVUWzmcGiZHU=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-34-iy5wQigUOb-J0Cm4eKnS6Q-1; Fri, 26 Aug 2022 09:29:17 -0400
-X-MC-Unique: iy5wQigUOb-J0Cm4eKnS6Q-1
-Received: by mail-wr1-f70.google.com with SMTP id a7-20020adfbc47000000b002257209590cso170815wrh.12
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:29:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=JyOYiH8iFRFdQ9WUABlh8E7Nflw5YGAiJGOckPykOu4=;
-        b=ZOgpEb6qpWm6fMFdsCk4Ftba6VoDwij7+zUNJXOWVpSTjImLiqTV1RYd7OnDU47STB
-         HnG/daS0bwW0IsQie/eVhWm6CTVhc0OwzZL+4rQQtHXe4hyTetHJgJCSPUg4FEkdf24D
-         PUUy8vCWF7w/4umzGp7/00TJFEQ7AQtKbpGf6o8Q0q4xfGTKM9TYStaXB5N9MvCat/Ki
-         wGSmoPBM+nFXb2vM3QCLA3RHCL3S32m3y7h0rcjn+Z1NSuz0IBiqpwmj4tVaO7ZrRLYB
-         kvwtCpDJgMJDKn4hvpzyxAwkMU3pkIzMg8+QwydqXLZ4vgwrawTvwGLvTBZfP7RCEBWh
-         z+Gw==
-X-Gm-Message-State: ACgBeo08awHR8pxKsmeUGDS1QbFezZvSIQo8pZ7DduP+0qS+FEHCDOV4
-        4bTMH6WFYIQLwmSa/YLG7S6POmOe3Elo/FGwOnCvCpsswcPbfFqOYS5t2utTagwZbb9UzQwTSc5
-        Kf/9A2fvD7xersqvfCmT6QO0=
-X-Received: by 2002:a5d:6d07:0:b0:220:68a1:9ecb with SMTP id e7-20020a5d6d07000000b0022068a19ecbmr5276406wrq.116.1661520556609;
-        Fri, 26 Aug 2022 06:29:16 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7SKH8Ic0ZS2D06PiFXVipnW2vE66/mTXlbBQAv87GY61fOpzUZs37CFvoKq6aDOGdy9DEYqg==
-X-Received: by 2002:a5d:6d07:0:b0:220:68a1:9ecb with SMTP id e7-20020a5d6d07000000b0022068a19ecbmr5276392wrq.116.1661520556403;
-        Fri, 26 Aug 2022 06:29:16 -0700 (PDT)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id bj22-20020a0560001e1600b002251639bfd0sm1928626wrb.59.2022.08.26.06.29.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 06:29:15 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 14:29:14 +0100
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>, frederic@kernel.org,
-        cl@linux.com, tglx@linutronix.de, mingo@kernel.org,
-        peterz@infradead.org, pauld@redhat.com, neelx@redhat.com,
-        oleksandr@natalenko.name, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH v7 1/3] mm/vmstat: Use per cpu variable to track a vmstat
- discrepancy
-Message-ID: <20220826132914.ia77vdzhi7dna6ww@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220817191346.287594886@redhat.com>
- <20220817191524.140710201@redhat.com>
- <20220824132054.54ec0472496db153223282c4@linux-foundation.org>
+        Fri, 26 Aug 2022 09:29:52 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A47183A5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 06:29:49 -0700 (PDT)
+Received: from notapiano (unknown [70.107.189.129])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 224F16601B24;
+        Fri, 26 Aug 2022 14:29:46 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661520587;
+        bh=+m7sis5b7W8J1KdNle4N0fSBG5qi9iWA0tl/U2ExgXg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kbcQ27OiXN4L4WS3AG+PvOv7ae/3Eg8kbk7YBuBUC451fN1xBzRc0WTGIhVkh8HRA
+         TjnnsPne5t5aFubjmIdbgMCnPSfBYMq8B8N/2i44+DEE6HFX0XI3/J/PLASYLlqRan
+         ib9M6x+PUgv0jJrNhDpSem+wsnOeqLeBE2sJ9VpHNavFzGqM2JPtCYIkVj1pcaeDu4
+         0Hac8gIJTwbgOy1YeeL0/8fYXgSET8355QagOgJ5ViauNhJ7lMU0DgJeGQ5OiH/g5n
+         YPZpygzbV8XhLtZmaV05NRDhq41G9pTlFIIBEeRjmHgfcmjQP2jhjQ4yw/g0B9WM7z
+         mt2K9gggrZFrA==
+Date:   Fri, 26 Aug 2022 09:29:42 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     "xinlei.lee" <xinlei.lee@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, airlied@linux.ie, daniel@ffwll.ch,
+        rex-bc.chen@mediatek.com, angelogioacchino.delregno@collabora.com,
+        jason-jh.lin@mediatek.com, yongqiang.niu@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Jitao Shi <jitao.shi@mediatek.com>
+Subject: Re: [PATCH v3,1/2] soc: mediatek: Add mmsys func to adapt to dpi
+ output for MT8186
+Message-ID: <20220826132942.k2rnlz5wwi62tity@notapiano>
+References: <1661236702-30682-1-git-send-email-xinlei.lee@mediatek.com>
+ <20220823201758.ffbgb5t5odoicgir@notapiano>
+ <b0f6a3c6-8fef-8983-fb69-6157a9859afd@gmail.com>
+ <30f536c754829011e78239a9a400945faa4580e4.camel@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220824132054.54ec0472496db153223282c4@linux-foundation.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <30f536c754829011e78239a9a400945faa4580e4.camel@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-08-24 13:20 -0700, Andrew Morton wrote:
-> > --- linux-2.6.orig/mm/vmstat.c
-> > +++ linux-2.6/mm/vmstat.c
-> > @@ -195,6 +195,12 @@ void fold_vm_numa_events(void)
-> >  #endif
-> >  
-> >  #ifdef CONFIG_SMP
-> > +static DEFINE_PER_CPU_ALIGNED(bool, vmstat_dirty);
-> > +
-> > +static inline void mark_vmstat_dirty(void)
-> > +{
-> > +	this_cpu_write(vmstat_dirty, true);
-> > +}
+On Fri, Aug 26, 2022 at 02:12:00PM +0800, xinlei.lee wrote:
+> On Thu, 2022-08-25 at 17:04 +0200, Matthias Brugger wrote:
+> > 
+> > On 23/08/2022 22:17, Nícolas F. R. A. Prado wrote:
+> > > On Tue, Aug 23, 2022 at 02:38:22PM +0800, xinlei.lee@mediatek.com
+> > > wrote:
+> > > > From: Xinlei Lee <xinlei.lee@mediatek.com>
+> > > > 
+> > > > Add mmsys function to manipulate dpi output format configuration
+> > > > for MT8186.
+> > > > 
+> > > > Co-developed-by: Jitao Shi <jitao.shi@mediatek.com>
+> > > > Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+> > > > Signed-off-by: Xinlei Lee <xinlei.lee@mediatek.com>
+> > > 
+> > > Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> > > 
+> > 
+> > Patch looks fine, I'll wait for v4 as there is still some discussion
+> > on the DRM 
+> > part. Please try to fix the threading problem you had in sending this
+> > series.
+> > 
+> > Thanks,
+> > Matthias
 > 
-> If we're to have a helper for this then how about helpers for clearing
-> it and reading it?
+> Hi Matthias:
 > 
-> Also, vmstat_mark_dirty(), vmstat_clear_dirty() and vmstat_dirty()
-> would be better identifiers.
+> Thanks for your review.
 > 
-> Then those helper functions become good sites for comments explaining
-> what's going on.
-> 
+> Before I send the next version, do you mean the treading problem you
+> are talking about is the problem I'm discussing in another patch in
+> this series, or something else?
 
-Hi Andrew,
+Hi Xinlei,
 
-Fair enough. I'll work on that.
+no, the threading problem Matthias is referring to is the fact that this version
+of your series had two cover letters (patch 0) and a patch 2 [1], while patch 1
+was sent in a different email thread [2]. The whole series (cover letter,
+patches 1 and 2), should have been in the same email thread. Also, I noticed
+that your cover letter lists the patches with incorrect prefixes "FROMLIST".
 
+So something weird happened when you sent this version of the series. It was ok
+in the previous version. So just make sure this is fixed when you send the next
+version of the series (after we finish the discussion on patch 2).
 
-Kind regards,
+[1] https://lore.kernel.org/linux-mediatek/1661235517-23699-1-git-send-email-xinlei.lee@mediatek.com/
+[2] https://lore.kernel.org/linux-mediatek/1661236702-30682-1-git-send-email-xinlei.lee@mediatek.com/
 
--- 
-Aaron Tomlin
-
+Thanks,
+Nícolas
