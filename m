@@ -2,89 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC85ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACFE3ECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343498AbiHZICA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
+        id S245569AbiHZIFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 04:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244686AbiHZIB5 (ORCPT
+        with ESMTP id S245009AbiHZIFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:01:57 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5354CD4754
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:01:52 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id w20so1125417edd.10
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:01:52 -0700 (PDT)
+        Fri, 26 Aug 2022 04:05:41 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01BE0C00D9
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:05:39 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id cu2so1758694ejb.0
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:05:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=tWIs8cEPcFM8qOdbk90dp96g6UtdbhFONDoS8mVkd8Y=;
-        b=kTBkZ/vJ5n2n97pr3kT81obP3hfsaezJ6KFMEJTL1lsNXFKhKzemQUQdgcdRNbzyTZ
-         s0HWMKsbc+lbyQDjhFij+Cp2TS2lUir7QmbYUJJbFIBEwTNB7adCi0QzywlXhPfYs8s2
-         SQdE03uMV25M1ok9gNeKENF0H6S/jqSw+Ndac2t6yXHqvPtYaTokRd+r/eDg6DIaXOTv
-         OaADBgD0JfADnq+jT76Cp3WZcNBPQ0aT5cHGaD4KjqzxPr24IRohzL371KJ72NXcLs+g
-         Nz0tqT8QLidJhxQgFiuIi4h4YJxshl+nNhA1mGcu0C4N+SmDNQKBxJrD8hH8wP5zSrv4
-         GyXQ==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=us6a+2w38MVWRp+x+cBiJGnbvKgPbkAshBT44b7qxRo=;
+        b=SuM/dfQorTdjvY+sn9+yhhK0yYIFo96ETN6NZBz3VXQa87jm2uhSY/+QAfrn1dDMiy
+         gNMach8yNQg3PiqRLOaYWuOXpuyKOOFEXx3LaEAPfw0+A7bn6TUuCTsaqxavyxdziHPm
+         QVdsTar93YJvIHlAALTt4aWO0PV+h0F9v2vnjwVfqOFYkbl62v9wAS4kxYoQLWG86L+f
+         t0NPncepnJDq4oW5uOqLks514SifS/JS26L8vevZg6NM85WS5j1DEKNRrjCb8I3rtag+
+         8ySmlyc/FLZc12algffeOLulK/yhR+B7ciw9aqOPM8JrDmkQrOPTY+zm2HQFNubbqrkW
+         Um9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=tWIs8cEPcFM8qOdbk90dp96g6UtdbhFONDoS8mVkd8Y=;
-        b=LJlbwp1qK6Bxd+wrtxRwZ5USUFDhvrBlNCNx7q47Ac9XERWfVw4cRDxBCBMYoS4lGd
-         2CS9ORcja+ZSjksDLRn3t5cJj+/EzBCbC/3oYeOP6DNdqXoLHzN0vlrzQY9/jEB7tYcv
-         NMeUUCoTOS7b5ARAAxMaA9nj5/9H2GbNWls1YhqnbRjLyDBPcWDThVk3utzHFH34v/MN
-         mocQHY9b34BO5bFLq53hu40BpBbglgaWkIEV/bTNP3F8ZZ+YcfMTGiaMyCZonM/QlKnF
-         6srsPBvyOc06QRFunHDNw5CqhD/7UNN/iuBurM6jzOcPA34yFq1EuJF2nFJRz0yEvSP/
-         QR4g==
-X-Gm-Message-State: ACgBeo0D3qoXQ63TM7C8s8uQlTYkvM0E/Q8HRJ8QATOOk2InFTBCMLML
-        8IZs5+KxFiuaf+CAKh+9Vgu1q9DNKQOHPhw0Uknt4w==
-X-Google-Smtp-Source: AA6agR46aDo68kfNYLpzXurqLX2JUxoPuwhHyxbf0HWbQkstABaXM8HF7+f5S1ulK2ZyQnwOMdOgwGAxQUVpUedU7FI=
-X-Received: by 2002:a05:6402:4517:b0:443:7fe1:2d60 with SMTP id
- ez23-20020a056402451700b004437fe12d60mr5913742edb.133.1661500911209; Fri, 26
- Aug 2022 01:01:51 -0700 (PDT)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=us6a+2w38MVWRp+x+cBiJGnbvKgPbkAshBT44b7qxRo=;
+        b=aGTtpXlCCgokda4FVYLPqOKk0QxfmgFqrYU/L98ucvQwBpbnymY/cWauwbz7Ete3L2
+         E/BRgDIvrIFiSuNM3q0j8u3ZSBssgprSOIcZxR8Nx3ehPlKZ/tPVgyUq7CdfYhASKE34
+         0fo0cnm9cH8EPPteSPu1iKXWJMx5+BPFsKTK3G13PIbLQp2v/kvCfeBet6iMDPwt3vgG
+         ZiUsS2A1RNGXTZs/ifgchzXzUGynlhQO76LyksfAepk2R4F4zbgt3DQvXSBiab5V53LP
+         sqAg6m12VajULHCnObkF5AYu/l0+4EP/RNu46KC5+cEr0A0Hx+JakRqDFPVujRepZyMU
+         iaxw==
+X-Gm-Message-State: ACgBeo16PP+Ndi49UEeovZ4NLnGOeXpEaGHCwjgFYXW1G0KDoTKiHNsS
+        MqVRI6Qq0qMWWZykscM6MM3jL6HjwzIVPzb21p1kpQ==
+X-Google-Smtp-Source: AA6agR482POjrHU7UEj08J/xiUvRkTbGO3ZP9C1XXIt/DeZCorz43iLD519ONM1EksuUcQhKLggIFuOQqGAS3Zv6bLU=
+X-Received: by 2002:a17:906:58c8:b0:6fe:91d5:18d2 with SMTP id
+ e8-20020a17090658c800b006fe91d518d2mr4861877ejs.190.1661501137575; Fri, 26
+ Aug 2022 01:05:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220826152650.2c55e482@canb.auug.org.au>
-In-Reply-To: <20220826152650.2c55e482@canb.auug.org.au>
+References: <20220818172528.23062-1-pali@kernel.org> <20220818172528.23062-2-pali@kernel.org>
+In-Reply-To: <20220818172528.23062-2-pali@kernel.org>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 26 Aug 2022 10:01:40 +0200
-Message-ID: <CACRpkdYZOK9NhEqqU4Wkg1XHCHEQk=AR6w9730qo_tHmgGrorA@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the pinctrl tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Wolfram Sang <wsa@the-dreams.de>
-Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Wolfram Sang <wsa@kernel.org>,
-        Naresh Solanki <naresh.solanki@9elements.com>,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
+Date:   Fri, 26 Aug 2022 10:05:26 +0200
+Message-ID: <CACRpkdYWQVW_akJS7hvtU2=c063LCMfjN22X-neTfuTZRbt+yw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] leds: syscon: Implement support for active-low property
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 7:26 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+On Thu, Aug 18, 2022 at 7:25 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
 
-> After merging the pinctrl tree, today's linux-next build (x86_64
-> allmodconfig) failed like this:
-(...)
-> Caused by commit
+> This new active-low property specify that LED has inverted logic
+> (0 - enable LED, 1 - disable LED).
 >
->   e6cbbe42944d ("pinctrl: Add Cypress cy8c95x0 support")
->
-> interacting with commit
->
->   ed5c2f5fd10d ("i2c: Make remove callback return void")
->
-> from the i2c tree.
+> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
 
-How typical, the ideal way to resolve it is if there is an immutable
-branch with the
-basic changes I can pull in from the i2c tree and apply Stephen's fix on top,
-or we can just wait for the merge window and let Torvalds sort it out?
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
 Yours,
 Linus Walleij
