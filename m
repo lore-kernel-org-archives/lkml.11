@@ -2,57 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57312ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D021ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231626AbiHZTXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 15:23:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48314 "EHLO
+        id S1344544AbiHZTXi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 15:23:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241984AbiHZTXX (ORCPT
+        with ESMTP id S240616AbiHZTXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 15:23:23 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F81FBD74A;
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C19BBD1C4;
         Fri, 26 Aug 2022 12:23:21 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([104.5.61.88]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MAxNa-1obaYC2O3Q-009ylT;
- Fri, 26 Aug 2022 21:23:00 +0200
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LuO6D-1pSrpI3FaB-011fPg;
+ Fri, 26 Aug 2022 21:23:03 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Abel Vesa <abelvesa@kernel.org>,
         Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
         NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
         Rob Herring <robh+dt@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/5] ARM: dts: imx6sl: use tabs for code indent
-Date:   Fri, 26 Aug 2022 21:22:48 +0200
-Message-Id: <20220826192252.794651-2-marcel@ziswiler.com>
+        Shawn Guo <shawnguo@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 4/5] clk: imx6sll: add proper spdx license identifier
+Date:   Fri, 26 Aug 2022 21:22:51 +0200
+Message-Id: <20220826192252.794651-5-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220826192252.794651-1-marcel@ziswiler.com>
 References: <20220826192252.794651-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:9lDwyVjEVDSvIfUZAiZVxnA/2RAVdX8hKdg+kkZ+gZLLhLBLiSU
- IOXg9nzNfbx1g0QlxllestKkhgqJhCyB9Fks+It459IAPuq+uDZRbWY87J9avrrZ9xCXNAO
- 9NrykUsjC6BEEzaXbs2WPxQM2v/8SjBSOugoYCE+gZnpc71rSK4BkFYuqsdQq0TWY+I/o6L
- YtLbcTeDYLDy3oFe50Auw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+r7/XnQsCtE=:NZ2WhorXxIHbxpgU/Rz8Ja
- ifczISVUvjfssEF01l+DAYKVnKaPGx6f7f7ppQY7pUgFG8mqB/4RNAI+UJDOo/Zm/MNhEdCeA
- k445AMpWL+Efp/hIdWMLT5t+dnp8Q0eV6Uc3rtjqFWArR225JvMR7MRJp3ABsJoqgMTGCADjk
- s50nO0crElgzvHRbQsC3VSYDRayqxow36lXvRG67IgJIiEh8Jpd87jBNeBDCcRyWQ3A+kG+BE
- TwqOUA/91tWBEAVNKxYU3FujS5mRPm6+HhEG7S3ZRsN4lrjwrLHaSTpgt1BcNNv2uudzj3iEx
- 2EoNjpUsBbB3M3zS08RfBm5x4qSY7qUMPlMcVAE8NKV3BTjn45NjLXkcQ3EMCEFsPg5RVyVBt
- 8z9UgsG7wGPk7chWsambLYxPE3Taii99m4akFuXnK7wpZguEta1fu2a0A47HB+rgEGhpGrgHo
- 4AOovqTHAy/gTBFLfUhxRovzl1NIg3MbV6VW8pptZm164k0yxF4YNHTzuadeOOOtRv8zg5CqJ
- A8K6cWOJawQZ8dGuo+ardlDE0z8+Xyd9cqlMGEKZhFo4Vd/59JESy6miL0Lz2FtWtfpJG8vqZ
- WEMYLwPM8vMPpywNf6y4El+mnf/bzPXXIi/RP2RQnXj+qanVx7TdLWF8ADa66JyE8NhE7d4Eo
- 6o/DXKIHaw4eXWyBzW6l0sls0nohEl3tZuOZnJ2QUa/Id2bkygAlqNeJnr7nNJ6rq9tgi6nqW
- e1WUCFDU+WpZ26Tu+inZ0Y4UmtDRTdZa+rYemw==
+X-Provags-ID: V03:K1:bBK5+ccOcg9oFHuj71fLYRCm5D4tGKkcLhNY9czGB1ZIYOl1ijT
+ 1Gi5n4SW03McExgteWoyTNYSe6iFb0m7L8wbFi2TFSphKleqalwxiyZHOwekqVaobfM1+em
+ 4C3zmkd4/FffP0I1GPyKI0mJp5TbsHM7s0mofdqllARZr5TfYqUHOt+ZDKOSYjtGVEJBpX/
+ GssUz4AloE94dIjBLY0JQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3AetIU6BX+A=:WWYTYyYyqXfMQ1JtnaT7yx
+ R8Lxd0DlH7tHg4IRdcV5IFaM1OICVckYETHNv0XIugkbBv5FWc8nmaNExJqqJnIP9G+TdyPAt
+ evSY0ebMl0vOlntvU0f3DIau3FykVKeUV6jCmXnr2v34WsVobSOTuqRWSGC5SP4NJTWSFXH2e
+ 7AynmJ9W6naELYwHXd8VAWYsaNMLoBC+ho0q2EnPrl9pTLf2xjsgJHhkofBSyeC4GcL+e8/bd
+ sC9wbJolk7MHRPz37JKoeou4/ZZpdJjV6DwikaF5/YSBI0CUToB8/7ql+QrZkk+l+ON0VnCME
+ CUmC3cha6fekIIqpon/xsf7nDO4URTWgwJMRVyDoib1O58AhHloYjhpmMtGei/xHTU+wmoim+
+ 0RgiCCwx8sg96VhybUBpd7D7wbX6gRbYI1pAYFhutz8swBC/ZZNXL8OwpRIWmP8QMTJITOKP0
+ 21CVqHFoWVSzMEUyknYGL+wg9vltLsm1jv91iWlr/S4fG7yV6ffHUdP6GPg9Nvh8Q7elwef+i
+ LekIjnNQ69KRwzkVsqg4p7Y0N3VFnPkh4hxs8ubT7B6tIM95q5/LFsXqbFpY5DX5rkav2skLE
+ w/ulX4sVar7NqSiMsG0qWNu2riSTA15IjI0E4zb/0qp/n1TksI9y0vj22V+7DW0DCbciuLp6E
+ UjZhbrr00NQnjGL8nioCKRYBQEeSn9RuwhDaU2mXI66tByq7tJrM1H5joyCLz/fT+fZcHODmA
+ K8MIu4dXyTlg39WFbJOULI2zn4yl7agX0ziDhA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -61,88 +65,28 @@ From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
 This fixes the following error:
 
-arch/arm/boot/dts/imx6sl.dtsi:714: error: code indent should use tabs
-where possible
+include/dt-bindings/clock/imx6sll-clock.h:1: warning: Improper SPDX
+ comment style for 'include/dt-bindings/clock/imx6sll-clock.h', please
+ use '/*' instead
+include/dt-bindings/clock/imx6sll-clock.h:1: warning: Missing or
+ malformed SPDX-License-Identifier tag in line 1
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
 
- arch/arm/boot/dts/imx6sl.dtsi | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ include/dt-bindings/clock/imx6sll-clock.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/imx6sl.dtsi b/arch/arm/boot/dts/imx6sl.dtsi
-index 06a515121dfc..271f4b971a83 100644
---- a/arch/arm/boot/dts/imx6sl.dtsi
-+++ b/arch/arm/boot/dts/imx6sl.dtsi
-@@ -61,10 +61,10 @@ cpu0: cpu@0 {
- 				<792000  1175000>,
- 				<396000  975000>;
- 			fsl,soc-operating-points =
--				/* ARM kHz      SOC-PU uV */
--				<996000         1225000>,
--				<792000         1175000>,
--				<396000         1175000>;
-+				/* ARM kHz	SOC-PU uV */
-+				<996000		1225000>,
-+				<792000		1175000>,
-+				<396000		1175000>;
- 			clock-latency = <61036>; /* two CLK32 periods */
- 			#cooling-cells = <2>;
- 			clocks = <&clks IMX6SL_CLK_ARM>, <&clks IMX6SL_CLK_PLL2_PFD2>,
-@@ -222,7 +222,7 @@ ecspi4: spi@2014000 {
- 
- 				uart5: serial@2018000 {
- 					compatible = "fsl,imx6sl-uart",
--						   "fsl,imx6q-uart", "fsl,imx21-uart";
-+						     "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02018000 0x4000>;
- 					interrupts = <0 30 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -235,7 +235,7 @@ uart5: serial@2018000 {
- 
- 				uart1: serial@2020000 {
- 					compatible = "fsl,imx6sl-uart",
--						   "fsl,imx6q-uart", "fsl,imx21-uart";
-+						     "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02020000 0x4000>;
- 					interrupts = <0 26 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -248,7 +248,7 @@ uart1: serial@2020000 {
- 
- 				uart2: serial@2024000 {
- 					compatible = "fsl,imx6sl-uart",
--						   "fsl,imx6q-uart", "fsl,imx21-uart";
-+						     "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02024000 0x4000>;
- 					interrupts = <0 27 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -309,7 +309,7 @@ ssi3: ssi@2030000 {
- 
- 				uart3: serial@2034000 {
- 					compatible = "fsl,imx6sl-uart",
--						   "fsl,imx6q-uart", "fsl,imx21-uart";
-+						     "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02034000 0x4000>;
- 					interrupts = <0 28 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -322,7 +322,7 @@ uart3: serial@2034000 {
- 
- 				uart4: serial@2038000 {
- 					compatible = "fsl,imx6sl-uart",
--						   "fsl,imx6q-uart", "fsl,imx21-uart";
-+						     "fsl,imx6q-uart", "fsl,imx21-uart";
- 					reg = <0x02038000 0x4000>;
- 					interrupts = <0 29 IRQ_TYPE_LEVEL_HIGH>;
- 					clocks = <&clks IMX6SL_CLK_UART>,
-@@ -711,7 +711,7 @@ pd_pu: power-domain@1 {
- 						#power-domain-cells = <0>;
- 						power-supply = <&reg_pu>;
- 						clocks = <&clks IMX6SL_CLK_GPU2D_OVG>,
--						         <&clks IMX6SL_CLK_GPU2D_PODF>;
-+							 <&clks IMX6SL_CLK_GPU2D_PODF>;
- 					};
- 
- 					pd_disp: power-domain@2 {
+diff --git a/include/dt-bindings/clock/imx6sll-clock.h b/include/dt-bindings/clock/imx6sll-clock.h
+index f446710fe63d..494fd0c37fb5 100644
+--- a/include/dt-bindings/clock/imx6sll-clock.h
++++ b/include/dt-bindings/clock/imx6sll-clock.h
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++/* SPDX-License-Identifier: GPL-2.0 */
+ /*
+  * Copyright (C) 2016 Freescale Semiconductor, Inc.
+  * Copyright 2017-2018 NXP.
 -- 
 2.36.1
 
