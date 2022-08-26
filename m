@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D133AECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6680AECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:14:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344335AbiHZPOU (ORCPT
+        id S1343622AbiHZPOl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35178 "EHLO
+        Fri, 26 Aug 2022 11:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343829AbiHZPMh (ORCPT
+        with ESMTP id S1343558AbiHZPNB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:12:37 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17045DEA43
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:41 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-33dc390f26cso29461217b3.9
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:40 -0700 (PDT)
+        Fri, 26 Aug 2022 11:13:01 -0400
+Received: from mail-ed1-x549.google.com (mail-ed1-x549.google.com [IPv6:2a00:1450:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19FD2F5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:45 -0700 (PDT)
+Received: by mail-ed1-x549.google.com with SMTP id q32-20020a05640224a000b004462f105fa9so1239895eda.4
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=l4zm1sbHMytNqYdogbjGF6C06dm3yrxkJ0CqfKBvE4Y=;
-        b=kOld3GJAUrMocd7PaWFDM8/h7CQ5GhgeZ5vgr609uraCY0vVS54oj+Y6R1RPWTH0by
-         Bq5BNkaD35EK0na6N/L6VeFnDv7KaDTKmgH3r12GWsfNfB14gNvqr5BIJupwb+18QZwN
-         EpJnwctEvW1mQUg89fj3mc+MvJbBuJ+7CVC7Ke4U8VHWQC9tI9ma3K6ekZgZjWQ54T49
-         jfxIHJNRWKeLLjMm2ThoMvBFZ4QwkjUTc4z2kPoHnmbFzmrfDXm4QKlvn1DyC5ty9ZjW
-         KFjhK6XLeZbpXZp2sTAzuIjtMg/FCCX5xS76W6rdKcowYCqow2Y6Z86qCxoGhCl8H6pW
-         cgBA==
+        bh=TL1IO7xzXsHa87B/8VTzh6zaFcPyOOUQBNZupLxKBzY=;
+        b=HmM0VO6gyAfILflJdnMgQCrJGnTi5XVkH3YSfQa6Ep7rg4UjuRksDwsSKfdFWywrKQ
+         X82KrgKGqPOH7W1Y085jaYB8hH48o1UO09SOdX25urL9IS+XrJIM0Ssl/7EKgVgUGuxb
+         suAFkuoPLhsCY3yiCTAbiGImLbwkQ5FdkgDFrYP2s7UE16Wpzs+b87M7ywZwNSRcm9YT
+         cGnqAcNCOOLNxnkJmTHzwJPrKl7dQaDEoIofp21fLLf8UCuU8TSnY933jziAvQ7zwjo3
+         /ax/hZi6c/lKBcQc7+qabk0byKdenq8IrwbzMmcRBwdyqFxWLtVcbbN3QqtnjPKNbk+n
+         t0fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=l4zm1sbHMytNqYdogbjGF6C06dm3yrxkJ0CqfKBvE4Y=;
-        b=NCP4EW4+nWmeEx7HKiO/A0kzbnCIBKwuJc+KivIf/imZwO1rIWivOYmFHQajx9uPh/
-         6MYA9GNw9Of0Mt4MsUe/ofrhF541TM6b/KESo60Osp+cYKZX+XxaY7zBMeII/X4NuyM4
-         00URyE4pjFDDxLVswXKrOnYBAFmQIRY8FkCbn8Hf5ohz92wvudFq/kzmRkFymrK1Ya9T
-         tlJ0B+5iVByT31UK6oxS8iSx77SBFJYhIt8+Nc/M0IrFgNGlSgdLtEZuFYtUgB3syFxM
-         AQ4YbKqvAc24+hKEu0/trox2csyRmRb5SmwzFMZPrc6u3fSyhMUG/s5N1ZmYMZ6rNxUO
-         QbTg==
-X-Gm-Message-State: ACgBeo2xmjbkW2o8U5S4ctluEVB0mNuWLkNIM3bDB8aKlVNI6fADRSjO
-        Me1ghqON75vXbI8KbndbBZjbYenHrew=
-X-Google-Smtp-Source: AA6agR5iGmN+D99SNwa8hGxZHvyED7rP3I7yucWmOXY/88v8RIwEBSFuEsCfj86kvBE/XBr/3trnlWmswJk=
+        bh=TL1IO7xzXsHa87B/8VTzh6zaFcPyOOUQBNZupLxKBzY=;
+        b=AiRkh3+VKJOzjOCIVJ6lacTjGpiEJvFl2qqjKsLQ40W3bcXH1wz3wou+s7WHL/cvw0
+         QK8C4PAy8CNfCxDe/h5S6niweTgPwFxuzepwAXXY4fohgqUOuQ3H3OZXzzT0kI3qdMo4
+         z9bmIH1oas+psDbfaeFtoJFPcsfm65hnorkDmaPM6Dfg7oHZ+R5J0QtVKGL915BOyei7
+         jzy/KL0nCrwafHcen9am+/fsBW3+KaVJiXzgsK7X0mIeQOXrttgQJkkQFMbDfF4GJXfp
+         h0uHhBVZgNZZemQqkEBR9aQydfHBjaPDmzBCqpS9+kW55lKyb4P9WRKXZT28T+HfOTXh
+         TzYQ==
+X-Gm-Message-State: ACgBeo0b/2YODm2T/da/WfMWzgRKktAanICqQ3mmuhSJL94FH0rNzewa
+        QTDPtKPmzZItBkdGmlqQY9UYp3FazeQ=
+X-Google-Smtp-Source: AA6agR76x5AzTzEwn7EdrRuhdUjJW6rIUhqvD9uYbbBW+SigP/bQyvCEvWgW5kLb9e6YBzYDFPgy1GTjMDc=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:5207:ac36:fdd3:502d])
- (user=glider job=sendgmr) by 2002:a81:6e06:0:b0:33b:4e1:dd6e with SMTP id
- j6-20020a816e06000000b0033b04e1dd6emr129882ywc.212.1661526579691; Fri, 26 Aug
- 2022 08:09:39 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 17:07:54 +0200
+ (user=glider job=sendgmr) by 2002:a50:fe91:0:b0:43d:c97d:1b93 with SMTP id
+ d17-20020a50fe91000000b0043dc97d1b93mr7390732edt.67.1661526585272; Fri, 26
+ Aug 2022 08:09:45 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 17:07:56 +0200
 In-Reply-To: <20220826150807.723137-1-glider@google.com>
 Mime-Version: 1.0
 References: <20220826150807.723137-1-glider@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220826150807.723137-32-glider@google.com>
-Subject: [PATCH v5 31/44] security: kmsan: fix interoperability with auto-initialization
+Message-ID: <20220826150807.723137-34-glider@google.com>
+Subject: [PATCH v5 33/44] x86: kmsan: disable instrumentation of unsupported code
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -92,80 +92,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Heap and stack initialization is great, but not when we are trying
-uses of uninitialized memory. When the kernel is built with KMSAN,
-having kernel memory initialization enabled may introduce false
-negatives.
+Instrumenting some files with KMSAN will result in kernel being unable
+to link, boot or crashing at runtime for various reasons (e.g. infinite
+recursion caused by instrumentation hooks calling instrumented code again).
 
-We disable CONFIG_INIT_STACK_ALL_PATTERN and CONFIG_INIT_STACK_ALL_ZERO
-under CONFIG_KMSAN, making it impossible to auto-initialize stack
-variables in KMSAN builds. We also disable CONFIG_INIT_ON_ALLOC_DEFAULT_ON
-and CONFIG_INIT_ON_FREE_DEFAULT_ON to prevent accidental use of heap
-auto-initialization.
-
-We however still let the users enable heap auto-initialization at
-boot-time (by setting init_on_alloc=1 or init_on_free=1), in which case
-a warning is printed.
+Completely omit KMSAN instrumentation in the following places:
+ - arch/x86/boot and arch/x86/realmode/rm, as KMSAN doesn't work for i386;
+ - arch/x86/entry/vdso, which isn't linked with KMSAN runtime;
+ - three files in arch/x86/kernel - boot problems;
+ - arch/x86/mm/cpu_entry_area.c - recursion.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
-Link: https://linux-review.googlesource.com/id/I86608dd867018683a14ae1870f1928ad925f42e9
----
- mm/page_alloc.c            | 4 ++++
- security/Kconfig.hardening | 4 ++++
- 2 files changed, 8 insertions(+)
+v2:
+ -- moved the patch earlier in the series so that KMSAN can compile
+ -- split off the non-x86 part into a separate patch
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index b28093e3bb42a..e5eed276ee41d 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -936,6 +936,10 @@ void init_mem_debugging_and_hardening(void)
- 	else
- 		static_branch_disable(&init_on_free);
+v3:
+ -- added a comment to lib/Makefile
+
+v5:
+ -- removed a comment belonging to another patch
+
+Link: https://linux-review.googlesource.com/id/Id5e5c4a9f9d53c24a35ebb633b814c414628d81b
+---
+ arch/x86/boot/Makefile            | 1 +
+ arch/x86/boot/compressed/Makefile | 1 +
+ arch/x86/entry/vdso/Makefile      | 3 +++
+ arch/x86/kernel/Makefile          | 2 ++
+ arch/x86/kernel/cpu/Makefile      | 1 +
+ arch/x86/mm/Makefile              | 2 ++
+ arch/x86/realmode/rm/Makefile     | 1 +
+ 7 files changed, 11 insertions(+)
+
+diff --git a/arch/x86/boot/Makefile b/arch/x86/boot/Makefile
+index ffec8bb01ba8c..9860ca5979f8a 100644
+--- a/arch/x86/boot/Makefile
++++ b/arch/x86/boot/Makefile
+@@ -12,6 +12,7 @@
+ # Sanitizer runtimes are unavailable and cannot be linked for early boot code.
+ KASAN_SANITIZE			:= n
+ KCSAN_SANITIZE			:= n
++KMSAN_SANITIZE			:= n
+ OBJECT_FILES_NON_STANDARD	:= y
  
-+	if (IS_ENABLED(CONFIG_KMSAN) &&
-+	    (_init_on_alloc_enabled_early || _init_on_free_enabled_early))
-+		pr_info("mem auto-init: please make sure init_on_alloc and init_on_free are disabled when running KMSAN\n");
+ # Kernel does not boot with kcov instrumentation here.
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 35ce1a64068b7..3a261abb6d158 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -20,6 +20,7 @@
+ # Sanitizer runtimes are unavailable and cannot be linked for early boot code.
+ KASAN_SANITIZE			:= n
+ KCSAN_SANITIZE			:= n
++KMSAN_SANITIZE			:= n
+ OBJECT_FILES_NON_STANDARD	:= y
+ 
+ # Prevents link failures: __sanitizer_cov_trace_pc() is not linked in.
+diff --git a/arch/x86/entry/vdso/Makefile b/arch/x86/entry/vdso/Makefile
+index 12f6c4d714cd6..ce4eb7e44e5b8 100644
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -11,6 +11,9 @@ include $(srctree)/lib/vdso/Makefile
+ 
+ # Sanitizer runtimes are unavailable and cannot be linked here.
+ KASAN_SANITIZE			:= n
++KMSAN_SANITIZE_vclock_gettime.o := n
++KMSAN_SANITIZE_vgetcpu.o	:= n
 +
- #ifdef CONFIG_DEBUG_PAGEALLOC
- 	if (!debug_pagealloc_enabled())
- 		return;
-diff --git a/security/Kconfig.hardening b/security/Kconfig.hardening
-index bd2aabb2c60f9..2739a6776454e 100644
---- a/security/Kconfig.hardening
-+++ b/security/Kconfig.hardening
-@@ -106,6 +106,7 @@ choice
- 	config INIT_STACK_ALL_PATTERN
- 		bool "pattern-init everything (strongest)"
- 		depends on CC_HAS_AUTO_VAR_INIT_PATTERN
-+		depends on !KMSAN
- 		help
- 		  Initializes everything on the stack (including padding)
- 		  with a specific debug value. This is intended to eliminate
-@@ -124,6 +125,7 @@ choice
- 	config INIT_STACK_ALL_ZERO
- 		bool "zero-init everything (strongest and safest)"
- 		depends on CC_HAS_AUTO_VAR_INIT_ZERO
-+		depends on !KMSAN
- 		help
- 		  Initializes everything on the stack (including padding)
- 		  with a zero value. This is intended to eliminate all
-@@ -218,6 +220,7 @@ config STACKLEAK_RUNTIME_DISABLE
+ UBSAN_SANITIZE			:= n
+ KCSAN_SANITIZE			:= n
+ OBJECT_FILES_NON_STANDARD	:= y
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index a20a5ebfacd73..ac564c5d7b1f0 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -33,6 +33,8 @@ KASAN_SANITIZE_sev.o					:= n
+ # With some compiler versions the generated code results in boot hangs, caused
+ # by several compilation units. To be safe, disable all instrumentation.
+ KCSAN_SANITIZE := n
++KMSAN_SANITIZE_head$(BITS).o				:= n
++KMSAN_SANITIZE_nmi.o					:= n
  
- config INIT_ON_ALLOC_DEFAULT_ON
- 	bool "Enable heap memory zeroing on allocation by default"
-+	depends on !KMSAN
- 	help
- 	  This has the effect of setting "init_on_alloc=1" on the kernel
- 	  command line. This can be disabled with "init_on_alloc=0".
-@@ -230,6 +233,7 @@ config INIT_ON_ALLOC_DEFAULT_ON
+ # If instrumentation of this dir is enabled, boot hangs during first second.
+ # Probably could be more selective here, but note that files related to irqs,
+diff --git a/arch/x86/kernel/cpu/Makefile b/arch/x86/kernel/cpu/Makefile
+index 9661e3e802be5..f10a921ee7565 100644
+--- a/arch/x86/kernel/cpu/Makefile
++++ b/arch/x86/kernel/cpu/Makefile
+@@ -12,6 +12,7 @@ endif
+ # If these files are instrumented, boot hangs during the first second.
+ KCOV_INSTRUMENT_common.o := n
+ KCOV_INSTRUMENT_perf_event.o := n
++KMSAN_SANITIZE_common.o := n
  
- config INIT_ON_FREE_DEFAULT_ON
- 	bool "Enable heap memory zeroing on free by default"
-+	depends on !KMSAN
- 	help
- 	  This has the effect of setting "init_on_free=1" on the kernel
- 	  command line. This can be disabled with "init_on_free=0".
+ # As above, instrumenting secondary CPU boot code causes boot hangs.
+ KCSAN_SANITIZE_common.o := n
+diff --git a/arch/x86/mm/Makefile b/arch/x86/mm/Makefile
+index f8220fd2c169a..39c0700c9955c 100644
+--- a/arch/x86/mm/Makefile
++++ b/arch/x86/mm/Makefile
+@@ -12,6 +12,8 @@ KASAN_SANITIZE_mem_encrypt_identity.o	:= n
+ # Disable KCSAN entirely, because otherwise we get warnings that some functions
+ # reference __initdata sections.
+ KCSAN_SANITIZE := n
++# Avoid recursion by not calling KMSAN hooks for CEA code.
++KMSAN_SANITIZE_cpu_entry_area.o := n
+ 
+ ifdef CONFIG_FUNCTION_TRACER
+ CFLAGS_REMOVE_mem_encrypt.o		= -pg
+diff --git a/arch/x86/realmode/rm/Makefile b/arch/x86/realmode/rm/Makefile
+index 83f1b6a56449f..f614009d3e4e2 100644
+--- a/arch/x86/realmode/rm/Makefile
++++ b/arch/x86/realmode/rm/Makefile
+@@ -10,6 +10,7 @@
+ # Sanitizer runtimes are unavailable and cannot be linked here.
+ KASAN_SANITIZE			:= n
+ KCSAN_SANITIZE			:= n
++KMSAN_SANITIZE			:= n
+ OBJECT_FILES_NON_STANDARD	:= y
+ 
+ # Prevents link failures: __sanitizer_cov_trace_pc() is not linked in.
 -- 
 2.37.2.672.g94769d06f0-goog
 
