@@ -2,73 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE71ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69FB2ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244943AbiHZH0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
+        id S245303AbiHZH00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245276AbiHZH0I (ORCPT
+        with ESMTP id S245295AbiHZH0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:26:08 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DB44BD04
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:26:01 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MDWW63cczz19S70;
-        Fri, 26 Aug 2022 15:22:26 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 26 Aug 2022 15:25:58 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 15:25:58 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>
-CC:     <mhiramat@kernel.org>, <ast@kernel.org>, <jbacik@fb.com>,
-        <akpm@linux-foundation.org>
-Subject: [PATCH -next 3/3] fail_function: fix wrong use of fei_attr_remove()
-Date:   Fri, 26 Aug 2022 15:33:37 +0800
-Message-ID: <20220826073337.2085798-3-yangyingliang@huawei.com>
+        Fri, 26 Aug 2022 03:26:17 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BC64C609
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:26:09 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id p18so881792plr.8
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:26:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=lI4CWqG6v5ZBU8gDLirXlKuy5ZufBDP2aWB6a62sKfw=;
+        b=mR4gX7Tz+bNOj8ZzMZoRVkmpEQhvnSujiHvBAKEJJTnaXeuBZDHISmfru+LfBZJcRJ
+         s1ynwTszEuGn54naMqxe6eyI/Uj/YM2yFR0RoBkgjw8Aon/64Doi5hfqZkFfdQ6EPVe+
+         ytiiPMMyxUwpGr/B/ZSHgUwA0nqIy1DXu8g9d5onC7reo1fO77NWQll/357mgvAnTitG
+         jDLFub43SqrRc4Ir5Pb9Vxe+d92XQME9hOSLR0BUBpEKP0FzkkXvOMW8+91H12J4/kWp
+         NaeJGOzhRk9lE4hSN0vHd9P4dUGJoV2GYFFHPZT8ITd6cazaPztl3agXkaELg2nC2eqL
+         NJFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=lI4CWqG6v5ZBU8gDLirXlKuy5ZufBDP2aWB6a62sKfw=;
+        b=nPj2ZRmmVImFCvKC1lR2+EpC+JIhTq2iAcKGeKbTTeAPSoTnVONLYBIdz2AgXSaQrT
+         IxInSbp08uyJiysPHqtdYuv5LFsMTwnj8uAdafb1CB3Ywr+Gjn4j8BEIJ7mLQZ5rjlVA
+         bvovnaR0kSQZ1sWqScg3WsZZeZDMdZnvi8nbeYuHkxaKHFXDbPB+tlUpKq70YYTFtvoC
+         WIsA9EFTEh6GH99f2r6EOu8eWaKRZP0xosuRS+mknShrNjfadcE5PvbFR7y36OtEuGeU
+         2u5D41takrjTx1q3NrB+ZnInXssHK97D7pZu1AgUP6tOrBeyoIFCdd7xSAHTnZ0K8V+c
+         6JBg==
+X-Gm-Message-State: ACgBeo1grlpGDDjXaaPhj5IyBQUY0TFbJFoLy/DaeZw4CMLj7xB4unlk
+        EVUjZa6lJdOx+9wi/+QONjU=
+X-Google-Smtp-Source: AA6agR6FI/XsvaYBR+70cHAeWlu/xebq0AOp1LX8OGvxawzLhq1Hg86HQbk/7tSHO6xTF62n7L4SvA==
+X-Received: by 2002:a17:902:9886:b0:172:bb36:70f1 with SMTP id s6-20020a170902988600b00172bb3670f1mr2577202plp.139.1661498768536;
+        Fri, 26 Aug 2022 00:26:08 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id f60-20020a17090a704200b001f319e9b9e5sm944505pjk.16.2022.08.26.00.26.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 00:26:08 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     linux@armlinux.org.uk
+Cc:     rostedt@goodmis.org, mingo@redhat.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] arm/ftrace: Remove the unneeded result variable
+Date:   Fri, 26 Aug 2022 07:26:03 +0000
+Message-Id: <20220826072603.252909-1-ye.xingchen@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220826073337.2085798-1-yangyingliang@huawei.com>
-References: <20220826073337.2085798-1-yangyingliang@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If register_kprobe() fails, the new attr is not added to the list yet,
-so it should call fei_attr_free() intstead.
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-Fixes: 4b1a29a7f542 ("error-injection: Support fault injection framework")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Return the value ftrace_modify_code() directly instead of storing it in
+another redundant variable.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
 ---
- kernel/fail_function.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/kernel/ftrace.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/kernel/fail_function.c b/kernel/fail_function.c
-index 893e8f9a9118..a7ccd2930c5f 100644
---- a/kernel/fail_function.c
-+++ b/kernel/fail_function.c
-@@ -295,7 +295,7 @@ static ssize_t fei_write(struct file *file, const char __user *buffer,
+diff --git a/arch/arm/kernel/ftrace.c b/arch/arm/kernel/ftrace.c
+index a0b6d1e3812f..94924a2ecd94 100644
+--- a/arch/arm/kernel/ftrace.c
++++ b/arch/arm/kernel/ftrace.c
+@@ -190,7 +190,6 @@ int ftrace_make_nop(struct module *mod,
+ 	unsigned long ip = rec->ip;
+ 	unsigned long old;
+ 	unsigned long new;
+-	int ret;
  
- 	ret = register_kprobe(&attr->kp);
- 	if (ret) {
--		fei_attr_remove(attr);
-+		fei_attr_free(attr);
- 		goto out;
- 	}
- 	fei_debugfs_add_attr(attr);
+ #ifdef CONFIG_ARM_MODULE_PLTS
+ 	/* mod is only supplied during module loading */
+@@ -216,9 +215,8 @@ int ftrace_make_nop(struct module *mod,
+ 	 * so validation may fail spuriously in such cases. Let's work around
+ 	 * this by omitting those from validation.
+ 	 */
+-	ret = ftrace_modify_code(ip, old, new, !is_kernel_inittext(ip));
+ 
+-	return ret;
++	return ftrace_modify_code(ip, old, new, !is_kernel_inittext(ip));
+ }
+ #endif /* CONFIG_DYNAMIC_FTRACE */
+ 
 -- 
 2.25.1
-
