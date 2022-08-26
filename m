@@ -2,85 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54558ECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:41:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2609FECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345628AbiHZSlb (ORCPT
+        id S1345004AbiHZSol (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 14:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42738 "EHLO
+        Fri, 26 Aug 2022 14:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345164AbiHZSkV (ORCPT
+        with ESMTP id S1345143AbiHZSoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 14:40:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34FBEE48A
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 11:37:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 26 Aug 2022 14:44:21 -0400
+Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [IPv6:2001:4b7a:2000:18::167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62767EF9EA;
+        Fri, 26 Aug 2022 11:41:18 -0700 (PDT)
+Received: from [192.168.1.101] (afbd60.neoplus.adsl.tpnet.pl [95.49.29.60])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6583961D94
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 18:35:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5828AC433D6;
-        Fri, 26 Aug 2022 18:35:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661538956;
-        bh=xF0KNsI2IlIUzyH8YZ8MnRxmK+IVlETUPKl64/0iTl0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=L7r7Mev+tcF/CzzQZyLFUkE0G5aCB0QtF3sHVUe1axvDI+WFx91pZSYGU0YCpYsHa
-         feJKZL5yk8GtR5XZnW+TWZXZzbT0gF7rbMubqvM6DhtFC/wpwb+DFJ6gpEDo2rXUGw
-         NnoqPlpot8EvakJ0pOS/T6K3RlKUBocJb5JwKSCjQBX0Z3duSRI39Ss6gbYyB1XzUB
-         Ws6A2d5QlI+74cLb/3GfWth2VAB6l8kC2WbVZeM5EwL22PDMtLobY8XifgtEPNf4A/
-         4hUPEvMysFBkYwClzhqphc0a6rlCsCitx6/IQIL7/+MUWToJRSveMC4JmeqrbvyYzt
-         ryrNSNHAq03xA==
-Date:   Fri, 26 Aug 2022 19:35:55 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ASoC: codecs: allow compile testing without MFD drivers
-Message-ID: <YwkSi1IIRsW2Hc/u@sirena.org.uk>
-References: <20220826093659.1059276-1-krzysztof.kozlowski@linaro.org>
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 6FA513F760;
+        Fri, 26 Aug 2022 20:40:48 +0200 (CEST)
+Message-ID: <9c2a2d4a-8b68-d1b3-92fa-ec2b1c7bb28e@somainline.org>
+Date:   Fri, 26 Aug 2022 20:40:47 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="c/r7lq7RHI8JSL7A"
-Content-Disposition: inline
-In-Reply-To: <20220826093659.1059276-1-krzysztof.kozlowski@linaro.org>
-X-Cookie: Necessity is a mother.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 4/7] arm64: dts: qcom: sc8280xp-thinkpad-x13s: Specify
+ which LDO modes are allowed
+Content-Language: en-US
+To:     Douglas Anderson <dianders@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andrew Halaney <ahalaney@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220825164205.4060647-1-dianders@chromium.org>
+ <20220825094155.4.I897770a7ac41f8dc3e37dfed12102bacdbf9da56@changeid>
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+In-Reply-To: <20220825094155.4.I897770a7ac41f8dc3e37dfed12102bacdbf9da56@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---c/r7lq7RHI8JSL7A
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 
-On Fri, Aug 26, 2022 at 12:36:59PM +0300, Krzysztof Kozlowski wrote:
-> Motorola CPCAP, Lochnagar Sound, Rockchip RK817 and Qualcomm
-> WCD9340/WCD9341 do not depend on parent MFD driver in build time and can
-> be compile tested without respective MFD part for increased build
-> coverage.
+On 25.08.2022 18:42, Douglas Anderson wrote:
+> This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
+> but doesn't specify any modes with "regulator-allowed-modes".
+> 
+> Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
+> get_optimum_mode(), not set_load()") the above meant that we were able
+> to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
+> be stuck at the initial mode. Discussion of this has resulted in the
+> decision that the old dts files were wrong and should be fixed to
+> fully restore old functionality.
+> 
+> Let's re-enable the old functionality by fixing the dts.
+> 
+> [1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
+> 
+> Fixes: 32c231385ed4 ("arm64: dts: qcom: sc8280xp: add Lenovo Thinkpad X13s devicetree")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-Although generally it's easy enough to just turn on the MFDs
-themselves, it's not the same base platform issue as the firmware
-interfaces can be.
+Konrad
 
---c/r7lq7RHI8JSL7A
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMJEooACgkQJNaLcl1U
-h9BjFAf/TBEERO4EdaYIfc9zPGIPzPZihH1I2Kf9uMcL/8bbjjUTFTTD6EZjThN8
-AJJNvvlU8K+vJ21+mULAtPZ7V2438t/yjHDHbntubmY4hzcFhDZx30jMUb413+S7
-MOFbRePQljnUEkVo62082YtgQxquZ3dAxXv+CB/thTOh6Br+1VoQ7wupKc81uCZa
-RuIdpGyXbtKjYEuPJGLaOoUVw25IKocp/hULjpb01sQljTc4ge+a1IGk96oeQNGO
-P9qerPHtrEMA7lp0/WeAuZurTNfqu1Z4p+cyrQ10e+CctMGVTqgTgETxMrjVlJRe
-ml870sq3S6bw+QmHaqiKZaSwz4vusQ==
-=ft5I
------END PGP SIGNATURE-----
-
---c/r7lq7RHI8JSL7A--
+> 
+>  .../qcom/sc8280xp-lenovo-thinkpad-x13s.dts    | 30 +++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> index 16c6e4d920bb..0c2534b4ec24 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-lenovo-thinkpad-x13s.dts
+> @@ -80,6 +80,9 @@ vreg_l3b: ldo3 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-boot-on;
+>  		};
+>  
+> @@ -89,6 +92,9 @@ vreg_l4b: ldo4 {
+>  			regulator-max-microvolt = <912000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l6b: ldo6 {
+> @@ -97,6 +103,9 @@ vreg_l6b: ldo6 {
+>  			regulator-max-microvolt = <880000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-boot-on;
+>  			regulator-always-on;	// FIXME: VDD_A_EDP_0_0P9
+>  		};
+> @@ -112,6 +121,9 @@ vreg_l1c: ldo1 {
+>  			regulator-max-microvolt = <1800000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l12c: ldo12 {
+> @@ -120,6 +132,9 @@ vreg_l12c: ldo12 {
+>  			regulator-max-microvolt = <1800000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l13c: ldo13 {
+> @@ -128,6 +143,9 @@ vreg_l13c: ldo13 {
+>  			regulator-max-microvolt = <3072000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  	};
+>  
+> @@ -143,6 +161,9 @@ vreg_l3d: ldo3 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l4d: ldo4 {
+> @@ -151,6 +172,9 @@ vreg_l4d: ldo4 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l7d: ldo7 {
+> @@ -159,6 +183,9 @@ vreg_l7d: ldo7 {
+>  			regulator-max-microvolt = <3072000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l9d: ldo9 {
+> @@ -167,6 +194,9 @@ vreg_l9d: ldo9 {
+>  			regulator-max-microvolt = <912000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  	};
+>  };
