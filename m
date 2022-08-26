@@ -2,595 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C99ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D49F5ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345181AbiHZS64 (ORCPT
+        id S1344905AbiHZS7B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 14:58:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50596 "EHLO
+        Fri, 26 Aug 2022 14:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345209AbiHZS6d (ORCPT
+        with ESMTP id S1345300AbiHZS6e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 14:58:33 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2071.outbound.protection.outlook.com [40.107.22.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF636EF2A
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 11:58:02 -0700 (PDT)
+        Fri, 26 Aug 2022 14:58:34 -0400
+Received: from mx0b-00230701.pphosted.com (mx0b-00230701.pphosted.com [148.163.158.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26CFA3D583;
+        Fri, 26 Aug 2022 11:58:04 -0700 (PDT)
+Received: from pps.filterd (m0098572.ppops.net [127.0.0.1])
+        by mx0b-00230701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27QG5mJT011669;
+        Fri, 26 Aug 2022 11:37:44 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-id : content-transfer-encoding : mime-version; s=pfptdkimsnps;
+ bh=wZCAUkmgoeBPSjB9rakFcVRO3f/6QkBKXbO6FglvZrQ=;
+ b=rRx7WmxJN4rr7oWO3bfHXu2ZcBb2B8wMIRRZg9V3vlzCTufqJbnwS6UqfRQQF7Vtk087
+ IDkoBAeFvh5C/uMTEjSmjgRBQ8DqD6a2tpQQ8D4rlArIYUWwxxXgSFLIxo/KIJq26X7A
+ b/zsM8VTCUE6d8RPIJwdHYhywfTz6zIQGyPT89xYUXPSBL+ULXw37FuEsNl+oESwDsfa
+ 4cs6K7ESyhlLPISXCrSfeLAxx1l3nkQR37NOS0kmnA2WWxfBkizXr+clC+fpJu2fZIin
+ 46Oh0cRi3kuOi7cLLuLrF6TnadqNmedTDjyCse8NugaCUJQDz+3j9m4V1F6pu1GmyjTC lw== 
+Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com [149.117.87.133])
+        by mx0b-00230701.pphosted.com (PPS) with ESMTPS id 3j5abruf85-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 26 Aug 2022 11:37:44 -0700
+Received: from mailhost.synopsys.com (badc-mailhost4.synopsys.com [10.192.0.82])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 33194C00F3;
+        Fri, 26 Aug 2022 18:37:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1661539063; bh=wZCAUkmgoeBPSjB9rakFcVRO3f/6QkBKXbO6FglvZrQ=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=Hl/FEDqUqwfwA+KGsARJO7XkXOdVGKbHwCK3GbuP890fUIEM/mF6e32WwZsfn62/5
+         y8D4r61zV2OR3NtQGNQiLahpiL2qsTiEiuZ+MDMazQv71xJM8PN43xdRyyGyFHgXlr
+         FosS7huHG89OXoC0nVqIz0qFjuDdX6kXEsITVJMjjaRVTaJJZ+xlLCfgrkEZCEl3Ch
+         v3CD87vlm1ZzObcAl/k4C1UWlYIZrqCcS8wkukzdJarMRnjN12EIKmm7yh3PONRPJJ
+         Y7B80l/+XIWFtQcF/Jb4Tm2BaxKd7FNJ3rWZiK0IWIcvraVlwtl8FMOG0WAKoUpd7V
+         MePfII3tSlPNQ==
+Received: from o365relay-in.synopsys.com (us03-o365relay1.synopsys.com [10.4.161.137])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client CN "o365relay-in.synopsys.com", Issuer "Entrust Certification Authority - L1K" (verified OK))
+        by mailhost.synopsys.com (Postfix) with ESMTPS id E11D9A009F;
+        Fri, 26 Aug 2022 18:37:41 +0000 (UTC)
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2101.outbound.protection.outlook.com [104.47.58.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "mail.protection.outlook.com", Issuer "DigiCert Cloud Services CA-1" (verified OK))
+        by o365relay-in.synopsys.com (Postfix) with ESMTPS id 0E0EA800BD;
+        Fri, 26 Aug 2022 18:37:39 +0000 (UTC)
+Authentication-Results: o365relay-in.synopsys.com; dmarc=pass (p=reject dis=none) header.from=synopsys.com
+Authentication-Results: o365relay-in.synopsys.com; spf=pass smtp.mailfrom=thinhn@synopsys.com
+Authentication-Results: o365relay-in.synopsys.com;
+        dkim=pass (1024-bit key; unprotected) header.d=synopsys.com header.i=@synopsys.com header.b="mtl34NqK";
+        dkim-atps=neutral
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gxM6s96+0QF9tK5Yvu7PDuCEsCF7VHtqe3EQBRYRHiM76n7IQ8KHXcZwQ9j+mTV0w1BV3VJ0UUTI+20Cmp0oI+u96+Frj0boN8DM3w2KyxyOB3gUEqfE+60EEMbCM1dtygNOdcgEaaD39tnrgwYlCxVVKQMZkMo8mGAAlFWV3XUlrrcXprO367jpZwuWLcXSg8gKDKbx3fKuy9+/VPVv7bt2nTjiV4w1cqk5L0JWkFxtfRI9Q086ABr5aGxtg1g4LvzrDb0AnshHwyz9PqRWv031tnXhTSa8dRcqpzJyEJeeiAOndpuiTCIgl7GFtUTtglCJ5ystmQLF/Ntk1bjz+Q==
+ b=mk6jflZ6NRapUB2jCrq62nqMJslIZYefRFZDMQKjjOtYAaFc5V0O/B4zNQ2EacMbvnfGZ6FZPQ7HfdsMhC9grDsEt8wE7RwAuriMwlg6mUZMOLbxU5Z0AOWXGEqBqoWsyEmlmw9Z59U/gUm9537SdmFJC6ZCKd6svMBLCQYmUl9h26KUV9zUwZLEtBlD15gAViB3yVjevyIT4GcNeyGYoZwZkTC6s3V5q8nd+EquBpB56NGwTzBIlT/pIbNpiXRwPHzm1IsZ5rc2cHGvcLsGfeUfE98P78ZJTjPnYO44e4wYiB2fZq7dqsbZWtH6qM39/RSGL5ImOFaGxQIpFFL28Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZWaXVn1i/cMWRr0s/Ts0gUxd5Iv4yWzp6FsCyRfIbZk=;
- b=J1LydXy3nwCbxr9X+nq6O4xF8WM4fmBjxi+9EOSg1LzaN6KrZInJJ+T9pwm4dCkSduLvbd47PBIunlNhvOPN729eydBMfg+w+pGnteqh0ZRtI888MeO7eLQvv12MCVu+Era2LAIopqPiOtsCSed58+l4zzKtIZwiGtf6AXQIZpbSc6xo/iIkPNTDpmbX82fKmfqaxEBJtcdIBjS6ZBvJ4zq9smW2l25a/U+wjyjs/j+m2Oi1WnLbi4xmEvDlLlk73pDSweo2lhPRRuWj+vPJH8THQrB6e7smV28MeIXI59qpktxZNvbwIjLMAeIGsPsNA7k+atG/AO+rXzSckERj7w==
+ bh=wZCAUkmgoeBPSjB9rakFcVRO3f/6QkBKXbO6FglvZrQ=;
+ b=PEDRt6r7U++Kzjz26eAo6Y6fG+TiFuyH5+ZJc0rcNTx2gF07Pwf4t+bsYmFjNgdiVV4fVurKfTneI5AK6i4Pl30zsy0PJ6IUiv1WerUOS+a96SCkViE/No9CSpOSu0xGjZuGcSjQ2496efBetXzpE63v+21fqZZxSGfVB8bhzRcW8GcB414mhobN4rGlUZ/AuRF+4FagXPGmlutmHQtaMQO7YufKXEWZmaINm05Ubpp6qJopIFqHI0pyDWIdLFs3haHoOX+g6ARKKT6psYTP48/Rp+K165Eu5ki2WAttvjlygskrAIcZwz+RrcKoVO/1X9RjZ7KsR/LaLbUOuZ5t4w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZWaXVn1i/cMWRr0s/Ts0gUxd5Iv4yWzp6FsCyRfIbZk=;
- b=dUy3LAC/0H79gZGRRjspravu5TzpZMdI9PY7Vgz9xeK02XHo1/Fkiz85W851fEtQOF0zULkQL/y0BKuojoJh9BhSaxa7gHj/cNcSNQJ6xhoqJbPN0dGB++WUUtUA5S6GWSunEZX7itkKA4c6oqBjxypDZ6qo3GsfV0LSH40CRHtsFzXICQudkwMKfmfJkQzv8d7MseEOcnH2j5yn/H4X38veB8SX/nZtmoBDyFxzTZpqJAia95577RBT6qFAedbquYtE5lphl70SiYRBaNK8TwW7CtWUX24lCrZhqos3zqhzW67raLgF9NbQN+QKPceYm3n4ACTj4+r2Kq0c1Ha5UA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by HE1PR03MB3146.eurprd03.prod.outlook.com (2603:10a6:7:5a::18) with
+ bh=wZCAUkmgoeBPSjB9rakFcVRO3f/6QkBKXbO6FglvZrQ=;
+ b=mtl34NqK/5LhkB1rQqN0CcKLvYRgl2FOxwh6iCAVMtdcN5JlYnGRshnDZIvkMK9AG7VNnUB8eaRqLEja31zE9sE4LhHhIu+fYGFchFluXQHugvCF/cV1UjxKbj3sBQDCuiYo+uDxpfHcsLDThAKq3i2W/uJaJnhRoMKm7pN+pl8=
+Received: from BYAPR12MB4791.namprd12.prod.outlook.com (2603:10b6:a03:10a::12)
+ by BY5PR12MB3860.namprd12.prod.outlook.com (2603:10b6:a03:1ac::25) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Fri, 26 Aug
- 2022 18:57:58 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::ecaa:a5a9:f0d5:27a2]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::ecaa:a5a9:f0d5:27a2%4]) with mapi id 15.20.5504.019; Fri, 26 Aug 2022
- 18:57:58 +0000
-Subject: Re: retire_capture_urb: Corrected urb data len
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        alsa-devel@alsa-project.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <68a97d61-21bf-b45e-f6ed-c0906dd4b197@seco.com>
- <87ilmfj72j.wl-tiwai@suse.de>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <9d41eda1-1172-ea60-dd87-b3e38a529170@seco.com>
-Date:   Fri, 26 Aug 2022 14:57:53 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <87ilmfj72j.wl-tiwai@suse.de>
-Content-Type: text/plain; charset=utf-8
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Fri, 26 Aug
+ 2022 18:37:37 +0000
+Received: from BYAPR12MB4791.namprd12.prod.outlook.com
+ ([fe80::69ee:633:f068:3ca1]) by BYAPR12MB4791.namprd12.prod.outlook.com
+ ([fe80::69ee:633:f068:3ca1%3]) with mapi id 15.20.5566.016; Fri, 26 Aug 2022
+ 18:37:37 +0000
+X-SNPS-Relay: synopsys.com
+From:   Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+CC:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dmitry Bogdanov <d.bogdanov@yadro.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>
+Subject: Re: [PATCH v2 11/25] usb: gadget: f_tcm: Execute command on write
+ completion
+Thread-Topic: [PATCH v2 11/25] usb: gadget: f_tcm: Execute command on write
+ completion
+Thread-Index: AQHYmw6u7mupoIR4k0KWMCBmFxWkbK3A/P8AgADCsQA=
+Date:   Fri, 26 Aug 2022 18:37:36 +0000
+Message-ID: <20220826183732.vxogtdlwqiqbcg2t@synopsys.com>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+ <b030d10834c13aa09bbbba7b33b1957d5ba3664c.1658192351.git.Thinh.Nguyen@synopsys.com>
+ <YwhvmpdbG8WXhhZ0@linutronix.de>
+In-Reply-To: <YwhvmpdbG8WXhhZ0@linutronix.de>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR13CA0001.namprd13.prod.outlook.com
- (2603:10b6:610:b1::6) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 20a6f681-1dd1-40a4-e412-08da87920c82
+x-ms-traffictypediagnostic: BY5PR12MB3860:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SOeHWs0R5+Rf8/VDZ6vu0z0ajOOsMgPj4KP23lAC4MWdVhVv/7u3EcwmoU/OVni6UBeBaWB7EjwhXfWZR4WC3VWaAWbEIQjR5DRS+PK1BGrrNenOzVdxiKzUUpZvmLZAwT+FxlqQt3nYZJstNIvprOEPJTIN6hbMxT8bAobWs/RVveLdVfAwLqO2ie5kMnS16UjjbB/OngdM1YAc8abHROyAuezP8qFmymmgikR7KDp0/o9TrtR0s35bBlDanuhVUI8mf9bILvpp6MOYvuvsSwBw+SkuW6pKxpWU3BeUn5zMxXOBGVhBZ9O7imaFKQkWYFhmeYoC3HKnllD/0/ZrTqdGPPAm0MuWbtvT0EscQDREYUn0JMwTTo8WfM0zkWAIktI6dXTC4MOmHUhIKSDiHqcJmdR2ukT7OJ+bTJUlJXBhIpISNkdnr2g1BPkEXhlG3zmgzS4E0anVtLoXze5NWZkQh6TQHqSvj74DB4G3c3uUT7KeqaSz4xdMhQvHcplXT90B+dCfnlrgKYZvAv+xkMobB9sIURsQqQbCarkI7PZQctQ51T+A8DYpnX2iv6hKZ4vmJuaHfd/JIDbwNUpUF4RbyA8dP6LVcPQQMjhQjDmMG+6yQ9r0csumF3eEWjRUUtFlxVx+8H4XSQ2iz6WlbPlD2UsRP2jSwgYRm1TbPZFs0UflLAC/av8vpKwRE8JTSQR37E1KHY4zaJCHIMRth1Ny2n+/ZBr744CUhhM8NbsnotzOPvB6BvLpY038bfBnREU5uu9mb4hLyzDlXSgwQg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB4791.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(376002)(396003)(136003)(366004)(346002)(8676002)(5660300002)(66946007)(66556008)(316002)(64756008)(66476007)(66446008)(76116006)(6916009)(122000001)(4326008)(2906002)(6512007)(8936002)(38070700005)(86362001)(36756003)(2616005)(6486002)(53546011)(38100700002)(26005)(41300700001)(186003)(71200400001)(54906003)(83380400001)(1076003)(6506007)(478600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?b2h1amI2MnVsSGRRSjVLNzk0dkFtSzlGcDQ2b0ZMOHAzWUVaaTJOcS8yTVpF?=
+ =?utf-8?B?eUk4Q2lEL21ub29BV3R1R1NSS2hUR3h4U1p6cndxSlBhVXZyZ2dCUUQ3Wm05?=
+ =?utf-8?B?dXB1YkVienZPSWtSSTdyQWZLN04veGNqSnpUcHE5aU5tU095aE5OcXFpTy9v?=
+ =?utf-8?B?RVphcGFKNnBPeUdjTDdZL01JOFVoRWdLaHV4Q2gycTNOcXorODEzSUJEd3pM?=
+ =?utf-8?B?ZDYxeDNDTVhpZ05EcGNkd2lpUzZZRDZJTjNlbENodlhoY1RuTlpDN1VaZmkz?=
+ =?utf-8?B?QnVtcGNYRmQyRElQRkpoby9WdXhacDVURHlQZGRKNVd6M3hRNTFOeDZpUElX?=
+ =?utf-8?B?a0JSZytuU1dPNEtGZTA4VFVCa29kb3Q5VkFnREp3eGtkYnpKak90Z0QrRlhL?=
+ =?utf-8?B?WEc1blhSenEzSlROTDVBYTBkYU1FT3dLYWc1S2N4OTU3WnFCSFdMeFpML2pP?=
+ =?utf-8?B?QUNNNktCeC8rTzhLZ3hRWG9xTmJlVjhyY1Q5SWU0RFpNMHlxV0RYN1c3Z3FF?=
+ =?utf-8?B?OE5HUFppdWRKYXF4cEd2RHlxNktaUEdxQk1wWlRlR1I3YmRuYXNDZmpDMzJD?=
+ =?utf-8?B?eHU5Yld0M0dwUFVMb0grU09iT0xwWjBoMXRxRUVKazNPanNlNHZpVm5pdFI5?=
+ =?utf-8?B?WHk2NVk4L2toRG9uYzVxRlRYR1ZwYktvSkg5SzFnU2dkb0pjNU9YeFJvMEdB?=
+ =?utf-8?B?WmhXVHpCY0FnSkh1RjMzbkhsd1lvbUE2WXVHUUl5dTdSSjJRUFFZZG9mekpj?=
+ =?utf-8?B?U2xVVFVUWk8zYXdUOWJINjBsTzhvbWxvWlZnNGM1VG9NRlkvSzd0OW1peUZx?=
+ =?utf-8?B?V01BQ2JFYy9hTjZqZVVVQmd2b0dLYlh2TmdFWjdrWEQxVGN1UmZ1NzdqNitJ?=
+ =?utf-8?B?T00zd0duNVdwaWw0cVkzMGdUeWZZWkhMWFVONGRZZHdxVHgvbGc1RXMzTkNR?=
+ =?utf-8?B?MFJZd2g5Ti82Mm9QQnYrY0syemh2Zm85RjEwMVVXWTR2amIvNXFkVjFnRDlV?=
+ =?utf-8?B?YXFXYSt6ZmRIanF2RTJXdTJpcHdFaWxMWk9MSWtURjQ4K21TcVJ1UHR1VU9R?=
+ =?utf-8?B?VjZwdFFIZWs1ek9oWTMxZGVacDJmWEVyZDgwUStUTnJZaDIzbHlycWVvQkgx?=
+ =?utf-8?B?eitXWHhBZXpSVnhyYTdiTWhjYUZMZ2svS3NlUGxScSs5N1lSNUI1UE5ScUdt?=
+ =?utf-8?B?M3J6SzVncVNuTlB5bzRtdTVReVhMM3dJVGgvamIrTTdzazk1ZjBZNFRWdW0z?=
+ =?utf-8?B?MGdHcFp0dysyUitnUlhxbGRXbE54YWowbTdZUitqSmcxNW5Gc0ovd0pjNGd4?=
+ =?utf-8?B?eDJwaUlka3o2UXRFZGZSaGlIT3d6ZGxDemcybWNTUFVWajE4SXRYZ0t3VGMr?=
+ =?utf-8?B?S2ZCc3VCdEtTcS9RbkZoOUFKT2xZUE9BYkJpdmRJMkhObFlaa3ZDbDJWUGY5?=
+ =?utf-8?B?V2t4ZmlndHczWG5JYUpyZFJwNTNUQ1h2MUh1eHlLVlF6RHVjMS9FTmZCbjVs?=
+ =?utf-8?B?SXg0Yk1MK1BtcWFNdUxUcGRMbEt4NjlBekc4Ty9qOTJuYnRJVlJQVTl5cExl?=
+ =?utf-8?B?UGhFNDY2ZzJFVXhyZ1IwZjUzSEN4ZXJia1FhemlEdWkxSTNsL1NkZm56aGZa?=
+ =?utf-8?B?NGtKNEpkWktMdVpBQmVlZCtMdGNQeFpVQTZ6OStWMWZIRG5YNGhKTzZGdDN2?=
+ =?utf-8?B?aTN3L2NicTdXR2RkZmNlK3E5Q0dHOGFDWVYyNktCVWpyK0dGRUdJbmxzYitR?=
+ =?utf-8?B?M1Z5RDdUT2daVWV0d1I3ZTkxUXllangvUko5TUlsemhCbHFIbDFhNTk2NGEw?=
+ =?utf-8?B?Rm5Sa3VMdm9BMHMxOUpNQXlUcVlVZDFuWGlYZ3g5MHN2TFJIVUkrTnByOFVr?=
+ =?utf-8?B?Zkp3VjBZRmN3QUFFcTRzNWVRYkpwNmpkQW1wNlYzTU44Qmd5VEEzWkRUdXl2?=
+ =?utf-8?B?WG80Z25XK1JWWmJXSkdNYm5uZCsvbHhBb3BROE84K1VJS1lza1ZxYSs5VmZq?=
+ =?utf-8?B?NmdkcG0vakE3NFBQME45TmxPRmRiRkJRL0IyM0krVXI4dzloSGtyYjFkeDJp?=
+ =?utf-8?B?MnZNNG10VkNGU2FITTg2RDlrZHczdWhLNUFkc0cweC9ORUF4cTlnYXZRYW9I?=
+ =?utf-8?Q?OT+yaSb65W/b11CpyU75uW1I4?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A4213C7288E3D94197B9EC29C2931049@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0b0df0c8-c09d-475f-9655-08da8794e481
-X-MS-TrafficTypeDiagnostic: HE1PR03MB3146:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tE1oaB5KnoZYOC9b2Vc1fDcMuKitVa+wH4NvShBKH7FXHXsUZb0jpnh8tvTnxnocDkLuUMGLVcTMlNA8E/C0vXszLLn4QtT7fOx92QRJNOlJkdbRloq4uapWrdgvfD5o8oInMDoWYXbAzQ5qodu5DEoOg6BNQMngF9GfkUJkQHiJE3Z5MEbcZjXUN0UBY0b7XBXdNscvVzlhe1U+o3N+dlxj581dva0WlNcIsRRn8m5XbjID/UohMkEhN1TnCnlIsr4ZlmlD+aYV0DpGhKI+4cB/FduZORJZOQJyH+K52YdgND6Sc3klvlH5ncfLDcblD2Q7Mhv/KYdId8KeNuwjCYxxmBm5e/k+VUjpkDonVAx0+ZMbuSupfSzvcLy6k0E1rf5l9ryz2PDvWpuiyieXqZQvXNrecV08bovhZE0uHohR64m+rAFtbIzKh6PwL9HlEPM0UkxRNrc6twdRfwsW4g43739GDXv8ZOA87LbfjmR4kprRAKBrTfcdshDkzPJJ+YuHgoGiYjBCDgkqnYXJ9kbAXENYHyidWgUfQjTYizTgnqEBFi75IBqG8yAy0bz4T/J2HkMhWUtdVy5nOK1k52NLO4xhYUWKV4Asy5WPz8NYOXzojt32iOxMFVNEnsc1h5i+ON6ADa+qrlAuVSXUP6xpt0EY8znFp5eI3J1a1Qqp8E1Nf+yK34EauCeLr+jADwUC1fR4pheJVc3bx6LaybdkDb8dnD10PIqNoFXIAEOZI1gceMac5Ahnrd2A81odljOcctQ0aiyaXwZzVK0MSxYv2osfaVmx7urmnPIiYHRf6kecPik+xofGjGV2TsJzBW5380sinuFDpg+scO0fIto//f4OVHmJzXW0AopnkZI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(39850400004)(396003)(136003)(366004)(8676002)(66556008)(54906003)(86362001)(31696002)(66946007)(83380400001)(44832011)(316002)(6916009)(38350700002)(26005)(38100700002)(8936002)(6506007)(6512007)(41300700001)(2616005)(966005)(6666004)(30864003)(6486002)(52116002)(478600001)(36756003)(66476007)(4326008)(5660300002)(186003)(31686004)(2906002)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VXNNZnNROXI5TFV5MUUxdFU3RlgweDlsZ0c5cEY4RVRtNFRLL3QyK0lENTBM?=
- =?utf-8?B?TlByOGprR0lMOGErMjlzWGpCQUxvblI2anE1NEdnTERLb1RGRmxzcnI4bnZ3?=
- =?utf-8?B?Y2ROOGNUK3Q2TDM0ZGJraFhOenpxWXNibU5rREhJWnB2bXlaNndzZXYxNWY3?=
- =?utf-8?B?ZTkrU2hHVEVFUFZOYW5oY2owc2w0MzJxNjkvSHdMblJCN0RFa1lpOGJwT0NV?=
- =?utf-8?B?VFV4bkdoUWhFQ2RUbFo1SnhiVitNRUV4M1VrQ2hJMExpZnRibDRndDRZSENQ?=
- =?utf-8?B?NEt5MStoaVRwbVF0bVV0QU9nOGtYSW5jWi9pQWYxbFd4aEd6YWNuOWQ3TU1p?=
- =?utf-8?B?aCt5VERRZkpNd2xWZzltd0dLT2kyUTR5VVdRNnBHckl2MzJwZnNmblFudlRm?=
- =?utf-8?B?b3hVamRPbmJWNVRDMHFmVEYrdlpValRyS2hibmY3NnNWcDR1N1dqR3owTy9K?=
- =?utf-8?B?RE0xcE1Fc2hacUdLRVpHZ0xoZksvTk5nL3pTS1N4aHY4NnRIZkdjUEJvRU5j?=
- =?utf-8?B?U1pweGlEZTVvR1llc0NGN0pmeGdVa0VLRlhxbEROUm1STEczREFWV3BXS0RT?=
- =?utf-8?B?Z1M5bGNmdFpmZUppMWw1OXBwWjNrRDhxeEM5VUxvSG1PRkJJQVI0c0thNWd3?=
- =?utf-8?B?MGhPU2JENzFVVFc4bmpadGdOdHhEbElnMEZzV0tCUkxKWTdsUEMzK2kyZG5i?=
- =?utf-8?B?ZXVTMk9nYkFRQ3Zxc0hsbUEyb3BvL0xJMk1zOXVkb3JHaWVKdy9zc3RhZnA4?=
- =?utf-8?B?MGxwU2NYMlFIUUFVUW1ndm5URnV1TGhXd3hJQk1NRjlyMFBiekNUZEswR0lk?=
- =?utf-8?B?OEpYazlvM0tRUG8wbFNEQWpmZnd5TlJvTjlUMUFzVFlVSlJ5Um5DWGEzMkVh?=
- =?utf-8?B?RmhvS2VQcEprc01GampBWEFGQjJ2TXdzRGV4ZXZVZGc4SFd4Vjg3MjJxUkRp?=
- =?utf-8?B?dzl1MHhQNDcxYjBreXgwWmVLZGp1MkFKZUo3SFRMZk02YzRBUnZnQXBoUlZV?=
- =?utf-8?B?YjcxSUxkME96czBMUFNSZmdrVDVGdmFEc2sxaXg2MVlFYmtRUmpzMFRNZ3FD?=
- =?utf-8?B?dnBhck85OVFORW9NUlp5UVdEcjRVNlhRaWhvQ3FEeGNwV1F0VXFkSjhiWEls?=
- =?utf-8?B?NEoycm1VUTVUSnh2SUNicTM4dWJ3ZmxqeldWQnJ0UmJnK09CRUxIeFdSZWJ2?=
- =?utf-8?B?Tll6ck1OQnREdDB6eGRCNHN6MGlyeXlTbG1NNmVpbzA2VU9ndWVweEdKUXdq?=
- =?utf-8?B?WEtSellBR3k5dkt2SlZhUHZGenNqTnRQUEpIZEZCUWU0Q1E3YjdQMysyVzMy?=
- =?utf-8?B?VGMrUUVadzlVcjhKY096OW1xTmVjcnBWK0UvdGkvdTFYRXA4Tm8wOURVcUU3?=
- =?utf-8?B?dko3UjlMUzFWTWJQbTNlSG1yTjRiNlB4WTJqUWtZTkRHNmhqeHk5UHNPemsw?=
- =?utf-8?B?bzhHV1NCMEVQcVBRTVhNTkxseTEwL2FCZ0tZNWNodWxpeDRkSElnMXYvTVFN?=
- =?utf-8?B?RlhseDRsRW5uV0dCMUVHeHpQSTZKMDJ1ZHlYOStRdVlBQzAza2ZqQnBaeXlU?=
- =?utf-8?B?UExDd3NXZ3Z0eWtIS0VndExUUzFnWUtPWXd0Vy9sa1Z1WXMrWCs3ZDdGbkE3?=
- =?utf-8?B?NmZFcExUQldFODV2SzV3bGovekdnMnVYNHYxUTYyNXR4Z0FqVStxdHd5L1l5?=
- =?utf-8?B?OXIwSEFqZmU2TGIzUzlIcXBSZzZRYmlzZXdxVUdJMDQyVmlZdS9nMi9Jelh3?=
- =?utf-8?B?elRWcFhaRnppNzVUdjI2V0pka3FKaTBHWjRDajRqS2ZHN2hqaVErNU5rSzV3?=
- =?utf-8?B?SC9OZUp0OVlzbXQvN3hoM3YwaVZRT3RrcWlQU3daRlh1QkgwZ2VWU1dZR3ZV?=
- =?utf-8?B?cFJwaVNFUGZYYWZBM0ExUlZaTjRLVit4MS9kZXdCa0gxczJMSm1JVFEyUjVx?=
- =?utf-8?B?R0RQVXFHMWxjTzhnbTV3M3NKSFkrVFREMUxwVDIrN3lmcGFHYWhGa3VwOWxi?=
- =?utf-8?B?ZWV0Q1hBVS85a0s1b3JVdEF4a1RLZEViTzhkM3BqNFlmRmp6cEtYTmhCUi9T?=
- =?utf-8?B?TlpsVEo0ZS9JUlhhZEozM3l1TlR4clhuNE4rWWhyYlVqVHBwUVRvZVRVdTMr?=
- =?utf-8?B?cElVcnZ4SGU4VlZVNlBUZlhTbHlXVy9xRGcyM09WUGpwakhGbHhKeU1QdWth?=
- =?utf-8?B?RGc9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b0df0c8-c09d-475f-9655-08da8794e481
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
+X-OriginatorOrg: synopsys.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 18:57:58.7610
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4791.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20a6f681-1dd1-40a4-e412-08da87920c82
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2022 18:37:37.0757
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /0c7AOLs44loUOiNsiTNxMhTiGGzSgmdF4U/jD4PGuQGdYJHwa/cztst47khdcq2JcF5mmXrGa82T0n4vZf8Ng==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR03MB3146
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eg2EAXOfQiPxdCKtPCSkcC4QBHb3mr6nAgOATe9Yw3Y2Fo1mHfr1N/nTASV9hBI5uKp9LtzlG/l9Yzy/nT+yqQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3860
+X-Proofpoint-GUID: MdRQWYYTtPhd8drPI4r8Y2J-Q_-e9t0y
+X-Proofpoint-ORIG-GUID: MdRQWYYTtPhd8drPI4r8Y2J-Q_-e9t0y
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-26_10,2022-08-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_active_cloned_notspam policy=outbound_active_cloned score=0
+ malwarescore=0 bulkscore=0 adultscore=0 phishscore=0 mlxscore=0
+ spamscore=0 impostorscore=0 priorityscore=1501 suspectscore=0
+ mlxlogscore=963 lowpriorityscore=0 clxscore=1015 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208260074
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 8/26/22 12:36 PM, Takashi Iwai wrote:
-> On Fri, 26 Aug 2022 18:22:24 +0200,
-> Sean Anderson wrote:
->> 
->> Hi all,
->> 
->> I have a "FiiO DigiHug USB Audio" sound card (1852:7022) [3]. I have had
->> no problems with the audio, but I did notice a large number of message
->> like 
->> 
->> retire_capture_urb: 4992 callbacks suppressed
->> 
->> in my dmesg [1]. This is caused by the "Corrected urb data len."
->> warning.
-> 
-> What exact values are shown there?
-
-Unfortunately, as detailed below, I was unable to turn off ratelimiting.
-
-> The problem is that your hardware
-> (likely a buggy firmware) returns the unaligned size of bytes as the
-> data.  Maybe it's worth to replace dev_warn_ratelimited() there with
-> dev_warn() and take all warnings once.  Then we can see what kind of
-> values are delivered from the hardware.
-
-I'll have an attempt at that next week
-
->> The patch adding this warning [2] makes it seem like
->> this warning should be an uncommon occurance. However, based on the
->> number of suppressed callbacks, this seems to be happening at a rate of
->> around 500 Hz.
->> 
->> Is this buggy hardware? Or is this a bug in the driver? Does there need
->> to be a quirk? Or perhaps the warning above should be a debug instead?
-> 
-> There is no quirk for that.  As long as the device works with that
-> workaround (except for messages), we can simply add a quirk to not
-> warn but always apply the workaround silently for such devices.
-
-OK. I wasn't sure what the correct resolution would be.
-
---Sean
-
-> 
->> 
->> I'm using 5.15.0-46-generic. I know, I know; this is a vendor
->> kernel. However, I went through the commits for sound/usb/pcm.c and
->> didn't see any major differences. I also previously saw this issue on
->> 5.4, so this probably isn't a regression.
->> 
->> --Sean
->> 
->> [1] I would have liked to post the actual message, but I was unable to
->> figure out how to disable ratelimiting. I tried setting
->> /proc/sys/kernel/printk_ratelimit to 0,
->> /proc/sys/kernel/printk_ratelimit_burst to 5000, and
->> /proc/sys/kernel/printk to 8. However, nothing seemed to have any effect
->> (except that the callbacks suppressed messages were disabled). I find
->> this very strange, given that the callbacks suppressed message uses
->> KERN_WARN, and so does dev_warn_ratelimited.
->> [2] https://lore.kernel.org/all/4B28A659.6070303@ladisch.de/T/
->> [3]
->> Device Descriptor:
->>   bLength                18
->>   bDescriptorType         1
->>   bcdUSB               1.10
->>   bDeviceClass            0 
->>   bDeviceSubClass         0 
->>   bDeviceProtocol         0 
->>   bMaxPacketSize0         8
->>   idVendor           0x1852 GYROCOM C&C Co., LTD
->>   idProduct          0x7022 
->>   bcdDevice            0.01
->>   iManufacturer           1 FiiO
->>   iProduct                2 DigiHug USB Audio
->>   iSerial                 0 
->>   bNumConfigurations      1
->>   Configuration Descriptor:
->>     bLength                 9
->>     bDescriptorType         2
->>     wTotalLength       0x0182
->>     bNumInterfaces          4
->>     bConfigurationValue     1
->>     iConfiguration          0 
->>     bmAttributes         0x80
->>       (Bus Powered)
->>     MaxPower              500mA
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        0
->>       bAlternateSetting       0
->>       bNumEndpoints           1
->>       bInterfaceClass         3 Human Interface Device
->>       bInterfaceSubClass      0 
->>       bInterfaceProtocol      0 
->>       iInterface              0 
->>         HID Device Descriptor:
->>           bLength                 9
->>           bDescriptorType        33
->>           bcdHID               1.00
->>           bCountryCode            0 Not supported
->>           bNumDescriptors         1
->>           bDescriptorType        34 Report
->>           wDescriptorLength      58
->>          Report Descriptors: 
->>            ** UNAVAILABLE **
->>       Endpoint Descriptor:
->>         bLength                 7
->>         bDescriptorType         5
->>         bEndpointAddress     0x81  EP 1 IN
->>         bmAttributes            3
->>           Transfer Type            Interrupt
->>           Synch Type               None
->>           Usage Type               Data
->>         wMaxPacketSize     0x0012  1x 18 bytes
->>         bInterval              32
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        1
->>       bAlternateSetting       0
->>       bNumEndpoints           0
->>       bInterfaceClass         1 Audio
->>       bInterfaceSubClass      1 Control Device
->>       bInterfaceProtocol      0 
->>       iInterface              3 FiiO USB DAC-E10
->>       AudioControl Interface Descriptor:
->>         bLength                10
->>         bDescriptorType        36
->>         bDescriptorSubtype      1 (HEADER)
->>         bcdADC               1.00
->>         wTotalLength       0x003e
->>         bInCollection           2
->>         baInterfaceNr(0)        2
->>         baInterfaceNr(1)        3
->>       AudioControl Interface Descriptor:
->>         bLength                12
->>         bDescriptorType        36
->>         bDescriptorSubtype      2 (INPUT_TERMINAL)
->>         bTerminalID             5
->>         wTerminalType      0x0605 SPDIF interface
->>         bAssocTerminal          0
->>         bNrChannels             2
->>         wChannelConfig     0x0003
->>           Left Front (L)
->>           Right Front (R)
->>         iChannelNames           0 
->>         iTerminal               0 
->>       AudioControl Interface Descriptor:
->>         bLength                12
->>         bDescriptorType        36
->>         bDescriptorSubtype      2 (INPUT_TERMINAL)
->>         bTerminalID             9
->>         wTerminalType      0x0101 USB Streaming
->>         bAssocTerminal          0
->>         bNrChannels             2
->>         wChannelConfig     0x0003
->>           Left Front (L)
->>           Right Front (R)
->>         iChannelNames           0 
->>         iTerminal               0 
->>       AudioControl Interface Descriptor:
->>         bLength                 9
->>         bDescriptorType        36
->>         bDescriptorSubtype      3 (OUTPUT_TERMINAL)
->>         bTerminalID             3
->>         wTerminalType      0x0605 SPDIF interface
->>         bAssocTerminal          0
->>         bSourceID              16
->>         iTerminal               0 
->>       AudioControl Interface Descriptor:
->>         bLength                 9
->>         bDescriptorType        36
->>         bDescriptorSubtype      3 (OUTPUT_TERMINAL)
->>         bTerminalID             7
->>         wTerminalType      0x0101 USB Streaming
->>         bAssocTerminal          0
->>         bSourceID               5
->>         iTerminal               0 
->>       AudioControl Interface Descriptor:
->>         bLength                10
->>         bDescriptorType        36
->>         bDescriptorSubtype      6 (FEATURE_UNIT)
->>         bUnitID                16
->>         bSourceID               9
->>         bControlSize            1
->>         bmaControls(0)       0x01
->>           Mute Control
->>         bmaControls(1)       0x02
->>           Volume Control
->>         bmaControls(2)       0x02
->>           Volume Control
->>         iFeature                0 
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        2
->>       bAlternateSetting       0
->>       bNumEndpoints           0
->>       bInterfaceClass         1 Audio
->>       bInterfaceSubClass      2 Streaming
->>       bInterfaceProtocol      0 
->>       iInterface              0 
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        2
->>       bAlternateSetting       1
->>       bNumEndpoints           1
->>       bInterfaceClass         1 Audio
->>       bInterfaceSubClass      2 Streaming
->>       bInterfaceProtocol      0 
->>       iInterface              0 
->>       AudioStreaming Interface Descriptor:
->>         bLength                 7
->>         bDescriptorType        36
->>         bDescriptorSubtype      1 (AS_GENERAL)
->>         bTerminalLink           7
->>         bDelay                  0 frames
->>         wFormatTag         0x0001 PCM
->>       AudioStreaming Interface Descriptor:
->>         bLength                26
->>         bDescriptorType        36
->>         bDescriptorSubtype      2 (FORMAT_TYPE)
->>         bFormatType             1 (FORMAT_TYPE_I)
->>         bNrChannels             2
->>         bSubframeSize           2
->>         bBitResolution         16
->>         bSamFreqType            6 Discrete
->>         tSamFreq[ 0]         8000
->>         tSamFreq[ 1]        16000
->>         tSamFreq[ 2]        32000
->>         tSamFreq[ 3]        44100
->>         tSamFreq[ 4]        48000
->>         tSamFreq[ 5]        96000
->>       Endpoint Descriptor:
->>         bLength                 9
->>         bDescriptorType         5
->>         bEndpointAddress     0x82  EP 2 IN
->>         bmAttributes            9
->>           Transfer Type            Isochronous
->>           Synch Type               Adaptive
->>           Usage Type               Data
->>         wMaxPacketSize     0x0184  1x 388 bytes
->>         bInterval               1
->>         bRefresh                0
->>         bSynchAddress           0
->>         AudioStreaming Endpoint Descriptor:
->>           bLength                 7
->>           bDescriptorType        37
->>           bDescriptorSubtype      1 (EP_GENERAL)
->>           bmAttributes         0x01
->>             Sampling Frequency
->>           bLockDelayUnits         2 Decoded PCM samples
->>           wLockDelay         0x0002
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        2
->>       bAlternateSetting       2
->>       bNumEndpoints           1
->>       bInterfaceClass         1 Audio
->>       bInterfaceSubClass      2 Streaming
->>       bInterfaceProtocol      0 
->>       iInterface              0 
->>       AudioStreaming Interface Descriptor:
->>         bLength                 7
->>         bDescriptorType        36
->>         bDescriptorSubtype      1 (AS_GENERAL)
->>         bTerminalLink           7
->>         bDelay                  0 frames
->>         wFormatTag         0x0001 PCM
->>       AudioStreaming Interface Descriptor:
->>         bLength                26
->>         bDescriptorType        36
->>         bDescriptorSubtype      2 (FORMAT_TYPE)
->>         bFormatType             1 (FORMAT_TYPE_I)
->>         bNrChannels             2
->>         bSubframeSize           3
->>         bBitResolution         24
->>         bSamFreqType            6 Discrete
->>         tSamFreq[ 0]         8000
->>         tSamFreq[ 1]        16000
->>         tSamFreq[ 2]        32000
->>         tSamFreq[ 3]        44100
->>         tSamFreq[ 4]        48000
->>         tSamFreq[ 5]        96000
->>       Endpoint Descriptor:
->>         bLength                 9
->>         bDescriptorType         5
->>         bEndpointAddress     0x82  EP 2 IN
->>         bmAttributes            9
->>           Transfer Type            Isochronous
->>           Synch Type               Adaptive
->>           Usage Type               Data
->>         wMaxPacketSize     0x0246  1x 582 bytes
->>         bInterval               1
->>         bRefresh                0
->>         bSynchAddress           0
->>         AudioStreaming Endpoint Descriptor:
->>           bLength                 7
->>           bDescriptorType        37
->>           bDescriptorSubtype      1 (EP_GENERAL)
->>           bmAttributes         0x01
->>             Sampling Frequency
->>           bLockDelayUnits         2 Decoded PCM samples
->>           wLockDelay         0x0002
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        3
->>       bAlternateSetting       0
->>       bNumEndpoints           0
->>       bInterfaceClass         1 Audio
->>       bInterfaceSubClass      2 Streaming
->>       bInterfaceProtocol      0 
->>       iInterface              0 
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        3
->>       bAlternateSetting       1
->>       bNumEndpoints           1
->>       bInterfaceClass         1 Audio
->>       bInterfaceSubClass      2 Streaming
->>       bInterfaceProtocol      0 
->>       iInterface              0 
->>       AudioStreaming Interface Descriptor:
->>         bLength                 7
->>         bDescriptorType        36
->>         bDescriptorSubtype      1 (AS_GENERAL)
->>         bTerminalLink           9
->>         bDelay                  0 frames
->>         wFormatTag         0x0001 PCM
->>       AudioStreaming Interface Descriptor:
->>         bLength                20
->>         bDescriptorType        36
->>         bDescriptorSubtype      2 (FORMAT_TYPE)
->>         bFormatType             1 (FORMAT_TYPE_I)
->>         bNrChannels             2
->>         bSubframeSize           2
->>         bBitResolution         16
->>         bSamFreqType            4 Discrete
->>         tSamFreq[ 0]        32000
->>         tSamFreq[ 1]        44100
->>         tSamFreq[ 2]        48000
->>         tSamFreq[ 3]        96000
->>       Endpoint Descriptor:
->>         bLength                 9
->>         bDescriptorType         5
->>         bEndpointAddress     0x03  EP 3 OUT
->>         bmAttributes            9
->>           Transfer Type            Isochronous
->>           Synch Type               Adaptive
->>           Usage Type               Data
->>         wMaxPacketSize     0x0184  1x 388 bytes
->>         bInterval               1
->>         bRefresh                0
->>         bSynchAddress           0
->>         AudioStreaming Endpoint Descriptor:
->>           bLength                 7
->>           bDescriptorType        37
->>           bDescriptorSubtype      1 (EP_GENERAL)
->>           bmAttributes         0x01
->>             Sampling Frequency
->>           bLockDelayUnits         2 Decoded PCM samples
->>           wLockDelay         0x0002
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        3
->>       bAlternateSetting       2
->>       bNumEndpoints           1
->>       bInterfaceClass         1 Audio
->>       bInterfaceSubClass      2 Streaming
->>       bInterfaceProtocol      0 
->>       iInterface              0 
->>       AudioStreaming Interface Descriptor:
->>         bLength                 7
->>         bDescriptorType        36
->>         bDescriptorSubtype      1 (AS_GENERAL)
->>         bTerminalLink           9
->>         bDelay                  0 frames
->>         wFormatTag         0x0001 PCM
->>       AudioStreaming Interface Descriptor:
->>         bLength                20
->>         bDescriptorType        36
->>         bDescriptorSubtype      2 (FORMAT_TYPE)
->>         bFormatType             1 (FORMAT_TYPE_I)
->>         bNrChannels             2
->>         bSubframeSize           3
->>         bBitResolution         24
->>         bSamFreqType            4 Discrete
->>         tSamFreq[ 0]        32000
->>         tSamFreq[ 1]        44100
->>         tSamFreq[ 2]        48000
->>         tSamFreq[ 3]        96000
->>       Endpoint Descriptor:
->>         bLength                 9
->>         bDescriptorType         5
->>         bEndpointAddress     0x03  EP 3 OUT
->>         bmAttributes            9
->>           Transfer Type            Isochronous
->>           Synch Type               Adaptive
->>           Usage Type               Data
->>         wMaxPacketSize     0x0246  1x 582 bytes
->>         bInterval               1
->>         bRefresh                0
->>         bSynchAddress           0
->>         AudioStreaming Endpoint Descriptor:
->>           bLength                 7
->>           bDescriptorType        37
->>           bDescriptorSubtype      1 (EP_GENERAL)
->>           bmAttributes         0x01
->>             Sampling Frequency
->>           bLockDelayUnits         2 Decoded PCM samples
->>           wLockDelay         0x0002
->>     Interface Descriptor:
->>       bLength                 9
->>       bDescriptorType         4
->>       bInterfaceNumber        3
->>       bAlternateSetting       3
->>       bNumEndpoints           1
->>       bInterfaceClass         1 Audio
->>       bInterfaceSubClass      2 Streaming
->>       bInterfaceProtocol      0 
->>       iInterface              0 
->>       AudioStreaming Interface Descriptor:
->>         bLength                 7
->>         bDescriptorType        36
->>         bDescriptorSubtype      1 (AS_GENERAL)
->>         bTerminalLink           9
->>         bDelay                  0 frames
->>         wFormatTag         0x2001 IEC1937_AC-3
->>       AudioStreaming Interface Descriptor:
->>         bLength                11
->>         bDescriptorType        36
->>         bDescriptorSubtype      2 (FORMAT_TYPE)
->>         bFormatType             3 (FORMAT_TYPE_III)
->>         bNrChannels             2
->>         bSubframeSize           2
->>         bBitResolution         16
->>         bSamFreqType            1 Discrete
->>         tSamFreq[ 0]        48000
->>       Endpoint Descriptor:
->>         bLength                 9
->>         bDescriptorType         5
->>         bEndpointAddress     0x03  EP 3 OUT
->>         bmAttributes            9
->>           Transfer Type            Isochronous
->>           Synch Type               Adaptive
->>           Usage Type               Data
->>         wMaxPacketSize     0x00c0  1x 192 bytes
->>         bInterval               1
->>         bRefresh                0
->>         bSynchAddress           0
->>         AudioStreaming Endpoint Descriptor:
->>           bLength                 7
->>           bDescriptorType        37
->>           bDescriptorSubtype      1 (EP_GENERAL)
->>           bmAttributes         0x01
->>             Sampling Frequency
->>           bLockDelayUnits         2 Decoded PCM samples
->>           wLockDelay         0x0002
->> can't get debug descriptor: Resource temporarily unavailable
->> Device Status:     0x0000
->>   (Bus Powered)
->> 
-> 
+T24gRnJpLCBBdWcgMjYsIDIwMjIsIFNlYmFzdGlhbiBBbmRyemVqIFNpZXdpb3Igd3JvdGU6DQo+
+IE9uIDIwMjItMDctMTggMTg6Mjc6MTIgWy0wNzAwXSwgVGhpbmggTmd1eWVuIHdyb3RlOg0KPiA+
+IGluZGV4IDZmZWE4MGFmZTJkNy4uZWM4M2YyZjlhODU4IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZl
+cnMvdXNiL2dhZGdldC9mdW5jdGlvbi9mX3RjbS5jDQo+ID4gKysrIGIvZHJpdmVycy91c2IvZ2Fk
+Z2V0L2Z1bmN0aW9uL2ZfdGNtLmMNCj4gPiBAQCAtOTU1LDcgKzk0OSw3IEBAIHN0YXRpYyB2b2lk
+IHVzYmdfZGF0YV93cml0ZV9jbXBsKHN0cnVjdCB1c2JfZXAgKmVwLCBzdHJ1Y3QgdXNiX3JlcXVl
+c3QgKnJlcSkNCj4gPiAgCQkJCXNlX2NtZC0+ZGF0YV9sZW5ndGgpOw0KPiA+ICAJfQ0KPiA+ICAN
+Cj4gPiAtCWNvbXBsZXRlKCZjbWQtPndyaXRlX2NvbXBsZXRlKTsNCj4gPiArCXRhcmdldF9leGVj
+dXRlX2NtZChzZV9jbWQpOw0KPiANCj4gdXNiZ19kYXRhX3dyaXRlX2NtcGwoKSBpcyBpbnZva2Vk
+IGZyb20gaW50ZXJydXB0IHNlcnZpY2Ugcm91dGluZyB3aGljaA0KPiBtYXkgcnVuIHdpdGggZGlz
+YWJsZWQgaW50ZXJydXB0cy4gRnJvbSBsb29raW5nIGF0IHRhcmdldF9leGVjdXRlX2NtZCgpOg0K
+DQpJdCB3aWxsIGFsd2F5cyBiZSBjYWxsZWQgd2l0aCBpbnRlcnJ1cHRzIGRpc2FibGVkIGFzIGRv
+Y3VtZW50ZWQgaW4NCnVzYl9yZXF1ZXN0IEFQSS4NCg0KPiB8IHZvaWQgdGFyZ2V0X2V4ZWN1dGVf
+Y21kKHN0cnVjdCBzZV9jbWQgKmNtZCkNCj4gfCB7DQo+IOKApg0KPiB8ICAgICAgICAgc3Bpbl9s
+b2NrX2lycSgmY21kLT50X3N0YXRlX2xvY2spOw0KPiDigKYNCj4gfCAgICAgICAgIHNwaW5fdW5s
+b2NrX2lycSgmY21kLT50X3N0YXRlX2xvY2spOw0KPiDigKYNCj4gfCB9DQo+IA0KPiB3aGljaCBt
+ZWFucyBpbnRlcnJ1cHRzIHdpbGwgcmVtYWluIG9wZW4gYWZ0ZXIgbGVhdmluZw0KPiB0YXJnZXRf
+ZXhlY3V0ZV9jbWQoKS4gTm93LCB3aHkgZGlkbid0IHRoZSBXQVJOX09OQ0UoKSBpbg0KPiBfX2hh
+bmRsZV9pcnFfZXZlbnRfcGVyY3B1KCkgdHJpZ2dlcj8gQW0gSSBtaXNzaW5nIHNvbWV0aGluZz8N
+Cj4gDQo+ID4gIAlyZXR1cm47DQo+IA0KDQpTaW5jZSB0YXJnZXRfZXhlY3V0ZV9jbWQoKSBpcyBj
+YWxsZWQgaW4gdXNiZ19kYXRhX3dyaXRlX2NtcGwoKSwNCmludGVycnVwdHMgYXJlIHN0aWxsIGRp
+c2FibGVkLg0KDQpUaGFua3MsDQpUaGluaA==
