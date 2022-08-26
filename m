@@ -2,206 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58835ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:51:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96208ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236695AbiHZBvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 21:51:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
+        id S242853AbiHZByh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 21:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244630AbiHZBvC (ORCPT
+        with ESMTP id S230076AbiHZByf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 21:51:02 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9138210F4;
-        Thu, 25 Aug 2022 18:51:00 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id f3so133465ilq.5;
-        Thu, 25 Aug 2022 18:51:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=TCqawMB1BroOCCY1cc8Q17JbFwztT5yJfejMYO+xyio=;
-        b=A8fs/dlzuT6PUty0lbVyz0q0+xTQqIHFn15K6fRclJhp9s2LfmcuUI1X0RkTD8cJkl
-         JXE+z/4FETSi2C7j2KWcDp0fGPO5GPHUYz3vuJX3TQWvg/WVTZRLbDVyZJwYp/cTFWhu
-         UY3tK01OANEecnfD93Xz1SpRzkCoJ6a8U4N9a1iSg0611WuHVi1I/XB4WQNlk2kYMwMk
-         qSfUSTN/7e/pyxn2/2J7dE+h4MlRptsC+gAtOX9cslMaygc5RSPV63CZOnbWtJ/gYhs9
-         loHwDCFrFXY1SN+EGuWfF7SaLaqRXLeUcyrdctrvKpe5uLjp71c4uKhzfaeKUhc27xlW
-         9THQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=TCqawMB1BroOCCY1cc8Q17JbFwztT5yJfejMYO+xyio=;
-        b=dFWW+AMkO4cECtwNiHUInsJqkEYKW1Vt0et2TOUDgIJiwtuKwuD3B3RurzrIjB9Pj6
-         T3h6WVDbbRaI1tPMvOIp4iWYkyQum73PGim2DgfWJdwJBZ3cxdu2ZbmcmAkiOB4geNl9
-         F+Kt6QyWdfkCCeixOV+QWJUA9GjfYpqZjpJ/FBS199zCVPlyOm4Kmq0/HvMDjeV+6hNN
-         MR2/CXCy6KzdfRt3id8fhUi00Z/sjKLMbPnzfE38bd5Xw3H/RixHh4bE4IErHxaXy3V0
-         VLOAzWNk9OkF+iwMIv6erPNkpAxYGAnT+sC2/FBVwsfjoXiyHykM/WshexccXGn9cK+I
-         xIJw==
-X-Gm-Message-State: ACgBeo2RW2ACiWi23ydnBfSLpAZIH+gsyezFsxlsiSDBa/zWCml392Ai
-        PKhtiTQsXclySh9bIEjiTTPoWimkAF3ty2YGsgw=
-X-Google-Smtp-Source: AA6agR7mPpEE04KxGm5s+rx+HDYxbojQyCxdvOMGim2Cjswq1vX3nSCs02H46wmyRz6//iZCZ3W+P59NEF3AZIyCb+M=
-X-Received: by 2002:a05:6e02:1c04:b0:2df:6b58:5fe8 with SMTP id
- l4-20020a056e021c0400b002df6b585fe8mr3180072ilh.68.1661478659768; Thu, 25 Aug
- 2022 18:50:59 -0700 (PDT)
+        Thu, 25 Aug 2022 21:54:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00E5C990E;
+        Thu, 25 Aug 2022 18:54:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3271E61E02;
+        Fri, 26 Aug 2022 01:54:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DE4AC433D7;
+        Fri, 26 Aug 2022 01:54:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661478873;
+        bh=VTjuvuwwT8hjNkX+GFhxYEDBgRdC7heutl3noSay0e0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=r7eF5pNNk5QUj5hGtC4x0UikOal/VegR4RcuD+wErd5QxfUtkoXR3NRgBK2b6UQKK
+         GSMeE6NWXsBziP2leBBzUD+HOds5jTv74SLBw3jqIUhL3MKS6gvSviWsDNfuItFRFe
+         hyvIjR9oWkJuxxw2mvHcknHcttiSM+0CX6JnhGmETmnPMe6eXX/cTev6OQK1JDHVzp
+         7byUkQ6kS5YT6Kni1XJ3xSj6ztCsWh7sZpxYGURK0Xhv2ANYehA3ZzqZYLRh+HiGW6
+         kP0UJV+G2OtEhoSenjO5qIZ6GD12SbVonmYPfuHk36mw4Cg9hs7iJVnMQBV6hV6ngs
+         05b487EAGrUcg==
+Date:   Fri, 26 Aug 2022 04:54:26 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Dave Hansen <dave.hansen@linux.intel.com>,
+        linux-sgx@vger.kernel.org
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4] x86/sgx: Do not consider unsanitized pages an error
+Message-ID: <Ywgn0mj942ouebj1@kernel.org>
+References: <20220826014126.291156-1-jarkko@kernel.org>
 MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
- <20220824134055.1328882-2-benjamin.tissoires@redhat.com> <CAADnVQKgkFpLh_URJn6qCiAONteA1dwZHd6=4cZn15g1JCAPag@mail.gmail.com>
-In-Reply-To: <CAADnVQKgkFpLh_URJn6qCiAONteA1dwZHd6=4cZn15g1JCAPag@mail.gmail.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Fri, 26 Aug 2022 03:50:23 +0200
-Message-ID: <CAP01T75ec_T0M6DU=JE2tfNsWRZuPSMu_7JHA7ZoOBw5eDh1Bg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 01/23] bpf/verifier: allow all functions to
- read user provided context
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220826014126.291156-1-jarkko@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 26 Aug 2022 at 03:42, Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Aug 24, 2022 at 6:41 AM Benjamin Tissoires
-> <benjamin.tissoires@redhat.com> wrote:
-> >
-> > When a function was trying to access data from context in a syscall eBPF
-> > program, the verifier was rejecting the call unless it was accessing the
-> > first element.
-> > This is because the syscall context is not known at compile time, and
-> > so we need to check this when actually accessing it.
-> >
-> > Check for the valid memory access if there is no convert_ctx callback,
-> > and allow such situation to happen.
-> >
-> > There is a slight hiccup with subprogs. btf_check_subprog_arg_match()
-> > will check that the types are matching, which is a good thing, but to
-> > have an accurate result, it hides the fact that the context register may
-> > be null. This makes env->prog->aux->max_ctx_offset being set to the size
-> > of the context, which is incompatible with a NULL context.
-> >
-> > Solve that last problem by storing max_ctx_offset before the type check
-> > and restoring it after.
-> >
-> > Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> >
-> > ---
-> >
-> > changes in v9:
-> > - rewrote the commit title and description
-> > - made it so all functions can make use of context even if there is
-> >   no convert_ctx
-> > - remove the is_kfunc field in bpf_call_arg_meta
-> >
-> > changes in v8:
-> > - fixup comment
-> > - return -EACCESS instead of -EINVAL for consistency
-> >
-> > changes in v7:
-> > - renamed access_t into atype
-> > - allow zero-byte read
-> > - check_mem_access() to the correct offset/size
-> >
-> > new in v6
-> > ---
-> >  kernel/bpf/btf.c      | 11 ++++++++++-
-> >  kernel/bpf/verifier.c | 19 +++++++++++++++++++
-> >  2 files changed, 29 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index 903719b89238..386300f52b23 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -6443,8 +6443,8 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
-> >  {
-> >         struct bpf_prog *prog = env->prog;
-> >         struct btf *btf = prog->aux->btf;
-> > +       u32 btf_id, max_ctx_offset;
-> >         bool is_global;
-> > -       u32 btf_id;
-> >         int err;
-> >
-> >         if (!prog->aux->func_info)
-> > @@ -6457,9 +6457,18 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
-> >         if (prog->aux->func_info_aux[subprog].unreliable)
-> >                 return -EINVAL;
-> >
-> > +       /* subprogs arguments are not actually accessing the data, we need
-> > +        * to check for the types if they match.
-> > +        * Store the max_ctx_offset and restore it after btf_check_func_arg_match()
-> > +        * given that this function will have a side effect of changing it.
-> > +        */
-> > +       max_ctx_offset = env->prog->aux->max_ctx_offset;
-> > +
-> >         is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
-> >         err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, 0);
-> >
-> > +       env->prog->aux->max_ctx_offset = max_ctx_offset;
->
-> I don't understand this.
-> If we pass a ctx into a helper and it's going to
-> access [0..N] bytes from it why do we need to hide it?
-> max_ctx_offset will be used later raw_tp, tp, syscall progs
-> to determine whether it's ok to load them.
-> By hiding the actual size of access somebody can construct
-> a prog that reads out of bounds.
-> How is this related to NULL-ness property?
+On Fri, Aug 26, 2022 at 04:41:26AM +0300, Jarkko Sakkinen wrote:
+> In sgx_init(), if misc_register() for the provision device fails, and
+> neither sgx_drv_init() nor sgx_vepc_init() succeeds, then ksgxd will be
+> prematurely stopped.
+> 
+> This triggers WARN_ON() because sgx_dirty_page_list ends up being
+> non-empty. Ultimately this can crash the kernel, depending on the kernel
+> command line, which is not correct behavior because SGX driver is not
+> working incorrectly.
+> 
+> Print simple warning instead, and improve the output by printing the
+> number of unsanitized pages.
+> 
+> Link: https://lore.kernel.org/linux-sgx/20220825051827.246698-1-jarkko@kernel.org/T/#u
+> Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+> Fixes: 51ab30eb2ad4 ("x86/sgx: Replace section->init_laundry_list with sgx_dirty_page_list")
+> Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 
-Same question, was just typing exactly the same thing.
+Speaking of non-inlining __eremove(). On a second thought, I think it
+would make sense to non-inline all of __e*(). Then you can attach kprobe
+to any of e-opcodes, which would be also sometimes useful for user space
+debugging.
 
->
-> > +
-> >         /* Compiler optimizations can remove arguments from static functions
-> >          * or mismatched type can be passed into a global function.
-> >          * In such cases mark the function as unreliable from BTF point of view.
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 2c1f8069f7b7..d694f43ab911 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -5229,6 +5229,25 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
-> >                                 env,
-> >                                 regno, reg->off, access_size,
-> >                                 zero_size_allowed, ACCESS_HELPER, meta);
-> > +       case PTR_TO_CTX:
-> > +               /* in case the function doesn't know how to access the context,
-> > +                * (because we are in a program of type SYSCALL for example), we
-> > +                * can not statically check its size.
-> > +                * Dynamically check it now.
-> > +                */
-> > +               if (!env->ops->convert_ctx_access) {
-> > +                       enum bpf_access_type atype = meta && meta->raw_mode ? BPF_WRITE : BPF_READ;
-> > +                       int offset = access_size - 1;
-> > +
-> > +                       /* Allow zero-byte read from PTR_TO_CTX */
-> > +                       if (access_size == 0)
-> > +                               return zero_size_allowed ? 0 : -EACCES;
-> > +
-> > +                       return check_mem_access(env, env->insn_idx, regno, offset, BPF_B,
-> > +                                               atype, -1, false);
-> > +               }
->
-> This part looks good alone. Without max_ctx_offset save/restore.
+You can attach kprobe and kretprobe for each of them, and grab all
+the info required.
 
-+1, save/restore would be incorrect.
+Thoughts?
+
+BR, Jarkko
