@@ -2,219 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9B2ECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A2DECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245692AbiHZMM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
+        id S244780AbiHZMRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiHZMMy (ORCPT
+        with ESMTP id S229651AbiHZMRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:12:54 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 546CADDA93;
-        Fri, 26 Aug 2022 05:12:53 -0700 (PDT)
+        Fri, 26 Aug 2022 08:17:21 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CC517E03;
+        Fri, 26 Aug 2022 05:17:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661515973; x=1693051973;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=8gzeq3HsKshBpNjIIChQDXSz7Xg1mcO3yxgdPGuVa2A=;
-  b=Gm0FsFNVYtMIw82tYTf+GLrn3cxVX3qlqqUBH0bZ7n3oEGGie4gahSGr
-   4xCGcZHP3iLZO09rcuwJnhjRKglQONhlTJtn1R3c+6h3L/6AevD6waC53
-   KDzqHioXHlmdlcMt49ADYRKl17ffF4HmO42f2yyEWdLxvvb1/maobyk4Y
-   Qa2YCw0Yv/Kd+QqAUMIfSY7XAHo+X+jk0e3PFyxlpxJTA/zYA95gPdGW9
-   Ni7TvGiYAh3L/aOwEhUmaqEHpQ63Qxu/5PHv3yo/Xgx0K3A0JKJhsomIE
-   spTW77D3YZyYt0dOnseX7Za+lu9O0uCLyu8P5NEmtv2/Z5nBE2Lt83una
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="295764431"
+  t=1661516238; x=1693052238;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=MO0tvvrlbNTcgcasvKU2WmNROliMDlqgfs5fC3Hx/2Q=;
+  b=jczeQ5Dd3tenv+3NU65oUv+4TaqevhDqf0BpMd4dd1t14c6lMdPhe52G
+   fW8sofwCvUqB9WYCdAQsNhHD1PId/TK1VXNuH7zuZSrl5gvqR5VRcclam
+   myShtqlIdGZwrA2xOxhl6kpQlzfSRfFc0p1YriVfXL8Wm+8Cvm4J8Ihqo
+   w/qo3gH1KRokECUVJgoE3+TiI7EmY136Y6Q9xBs6TJSL7SejkG1103aYx
+   qZXS5HHdhipu9ghR/frtKVga/Hx+sAhTBgCPXApwQ3Q/cLSque7r3PF8d
+   kC4fbnfI9YOLWAvcqq4HFk3JcuKSjSna/jfr4Ac26vep9+EGT1sgdt5fL
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="293234162"
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="295764431"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:12:52 -0700
+   d="scan'208";a="293234162"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:17:18 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="640034953"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.50.209])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 05:12:40 -0700
-Message-ID: <a7176263-7dc8-6cbd-af2d-5338c4c4b546@intel.com>
-Date:   Fri, 26 Aug 2022 15:12:34 +0300
+   d="scan'208";a="606747455"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 26 Aug 2022 05:17:13 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Eric Auger <eric.auger@redhat.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v12 00/17] iommu: SVA and IOPF refactoring
+Date:   Fri, 26 Aug 2022 20:11:24 +0800
+Message-Id: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH v3 16/18] perf sched: Fixes for thread safety analysis
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Dario Petrillo <dario.pk1@gmail.com>,
-        Hewenliang <hewenliang4@huawei.com>,
-        yaowenbin <yaowenbin1@huawei.com>,
-        Wenyu Liu <liuwenyu7@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Pavithra Gurushankar <gpavithrasha@gmail.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        William Cohen <wcohen@redhat.com>,
-        Andres Freund <andres@anarazel.de>,
-        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
-        Colin Ian King <colin.king@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Fangrui Song <maskray@google.com>,
-        Stephane Eranian <eranian@google.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Zechuan Chen <chenzechuan1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Remi Bernon <rbernon@codeweavers.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-References: <20220824153901.488576-1-irogers@google.com>
- <20220824153901.488576-17-irogers@google.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <20220824153901.488576-17-irogers@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/08/22 18:38, Ian Rogers wrote:
-> Add annotations to describe lock behavior. Add unlocks so that mutexes
-> aren't conditionally held on exit from perf_sched__replay. Add an exit
-> variable so that thread_func can terminate, rather than leaving the
-> threads blocked on mutexes.
-> 
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/builtin-sched.c | 46 ++++++++++++++++++++++++--------------
->  1 file changed, 29 insertions(+), 17 deletions(-)
-> 
-> diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
-> index 7e4006d6b8bc..b483ff0d432e 100644
-> --- a/tools/perf/builtin-sched.c
-> +++ b/tools/perf/builtin-sched.c
-> @@ -246,6 +246,7 @@ struct perf_sched {
->  	const char	*time_str;
->  	struct perf_time_interval ptime;
->  	struct perf_time_interval hist_time;
-> +	volatile bool   thread_funcs_exit;
->  };
->  
->  /* per thread run time data */
-> @@ -633,31 +634,34 @@ static void *thread_func(void *ctx)
->  	prctl(PR_SET_NAME, comm2);
->  	if (fd < 0)
->  		return NULL;
-> -again:
-> -	ret = sem_post(&this_task->ready_for_work);
-> -	BUG_ON(ret);
-> -	mutex_lock(&sched->start_work_mutex);
-> -	mutex_unlock(&sched->start_work_mutex);
->  
-> -	cpu_usage_0 = get_cpu_usage_nsec_self(fd);
-> +	while (!sched->thread_funcs_exit) {
-> +		ret = sem_post(&this_task->ready_for_work);
-> +		BUG_ON(ret);
-> +		mutex_lock(&sched->start_work_mutex);
-> +		mutex_unlock(&sched->start_work_mutex);
->  
-> -	for (i = 0; i < this_task->nr_events; i++) {
-> -		this_task->curr_event = i;
-> -		perf_sched__process_event(sched, this_task->atoms[i]);
-> -	}
-> +		cpu_usage_0 = get_cpu_usage_nsec_self(fd);
->  
-> -	cpu_usage_1 = get_cpu_usage_nsec_self(fd);
-> -	this_task->cpu_usage = cpu_usage_1 - cpu_usage_0;
-> -	ret = sem_post(&this_task->work_done_sem);
-> -	BUG_ON(ret);
-> +		for (i = 0; i < this_task->nr_events; i++) {
-> +			this_task->curr_event = i;
-> +			perf_sched__process_event(sched, this_task->atoms[i]);
-> +		}
->  
-> -	mutex_lock(&sched->work_done_wait_mutex);
-> -	mutex_unlock(&sched->work_done_wait_mutex);
-> +		cpu_usage_1 = get_cpu_usage_nsec_self(fd);
-> +		this_task->cpu_usage = cpu_usage_1 - cpu_usage_0;
-> +		ret = sem_post(&this_task->work_done_sem);
-> +		BUG_ON(ret);
->  
-> -	goto again;
-> +		mutex_lock(&sched->work_done_wait_mutex);
-> +		mutex_unlock(&sched->work_done_wait_mutex);
-> +	}
-> +	return NULL;
->  }
->  
->  static void create_tasks(struct perf_sched *sched)
-> +	EXCLUSIVE_LOCK_FUNCTION(sched->start_work_mutex)
-> +	EXCLUSIVE_LOCK_FUNCTION(sched->work_done_wait_mutex)
->  {
->  	struct task_desc *task;
->  	pthread_attr_t attr;
-> @@ -687,6 +691,8 @@ static void create_tasks(struct perf_sched *sched)
->  }
->  
->  static void wait_for_tasks(struct perf_sched *sched)
-> +	EXCLUSIVE_LOCKS_REQUIRED(sched->work_done_wait_mutex)
-> +	EXCLUSIVE_LOCKS_REQUIRED(sched->start_work_mutex)
->  {
->  	u64 cpu_usage_0, cpu_usage_1;
->  	struct task_desc *task;
-> @@ -738,6 +744,8 @@ static void wait_for_tasks(struct perf_sched *sched)
->  }
->  
->  static void run_one_test(struct perf_sched *sched)
-> +	EXCLUSIVE_LOCKS_REQUIRED(sched->work_done_wait_mutex)
-> +	EXCLUSIVE_LOCKS_REQUIRED(sched->start_work_mutex)
->  {
->  	u64 T0, T1, delta, avg_delta, fluct;
->  
-> @@ -3309,11 +3317,15 @@ static int perf_sched__replay(struct perf_sched *sched)
->  	print_task_traces(sched);
->  	add_cross_task_wakeups(sched);
->  
-> +	sched->thread_funcs_exit = false;
->  	create_tasks(sched);
->  	printf("------------------------------------------------------------\n");
->  	for (i = 0; i < sched->replay_repeat; i++)
->  		run_one_test(sched);
->  
-> +	sched->thread_funcs_exit = true;
-> +	mutex_unlock(&sched->start_work_mutex);
-> +	mutex_unlock(&sched->work_done_wait_mutex);
+Hi folks,
 
-I think you still need to wait for the threads to exit before
-destroying the mutexes.
+The former part of this series introduces the IOMMU interfaces to attach
+or detach an iommu domain to/from a pasid of a device, and refactors the
+exsiting IOMMU SVA implementation by assigning an SVA type of iommu
+domain to a shared virtual address and replacing sva_bind/unbind iommu
+ops with a set_dev_pasid domain ops.
 
->  	return 0;
->  }
->  
+The latter part changes the existing I/O page fault handling framework
+from only serving SVA to a generic one. Any driver or component could
+handle the I/O page faults for its domain in its own way by installing
+an I/O page fault handler.
+
+This series has been functionally tested by Tony Zhu on Intel hardware
+and Zhangfei Gao on arm64 (Kunpeng920) hardware. Thanks a lot for the
+efforts. 
+
+This series is also available on github:
+https://github.com/LuBaolu/intel-iommu/commits/iommu-sva-refactoring-v12
+
+Please review and suggest.
+
+Best regards,
+baolu
+
+Change log:
+v12:
+ - Add blocking domain support in both vt-d and smmuv3 drivers and make
+   the set blocking domain through its own domain ops.
+ - Add a type parameter in iommu_get_domain_for_dev_pasid() to matach
+   the interested domain type.
+ - Only enforce ACS RR & UF in pci_enable_pasid() and refine the commit
+   messages according to Bjorn's suggestions.
+ - Misc code and comment refinement.
+
+v11:
+ - https://lore.kernel.org/linux-iommu/20220817012024.3251276-1-baolu.lu@linux.intel.com/
+ - [PATCH 04/13] PCI: Allow PASID only when ACS enforced on upstreaming path
+   - new patch
+ - [PATCH 05/13] iommu: Add attach/detach_dev_pasid iommu interface
+   - Remove block_dev_pasid domain ops and use setting group blocking
+     domain instead.
+   - Remove iommu_group_immutable_singleton(). Move the PCI/ACS
+     requirement into the pci_enable_pasid(). All devices in an iommu
+     group share a same iommu domain for each pasid.
+ - [PATCH 06/13] iommu: Add IOMMU SVA domain support
+   - Add a refcount for SVA multiple bindings.
+ - [PATCH 07/13] iommu/vt-d: Add SVA domain support
+   - Use set_dev_pasid for both domain attaching and detaching.
+ - [PATCH 08/13] arm-smmu-v3/sva: Add SVA domain support
+   - Use set_dev_pasid for both domain attaching and detaching.
+ - [PATCH 09/13] iommu/sva: Refactoring iommu_sva_bind/unbind_device()
+   - Remove the refcount of iommu_sva::users.
+   - Add iommu_sva::domain.
+ - [PATCH 11/13] iommu: Prepare IOMMU domain for IOPF
+   - Remove unnecessary check of IS_ERR_OR_NULL(mm).
+ - [Overall]
+   - Rebase to v6.0-rc1.
+   - Remove previous Test-by's as some APIs are changed.
+   - Polishing of various codes and comments.
+
+v10:
+ - https://lore.kernel.org/linux-iommu/20220705050710.2887204-1-baolu.lu@linux.intel.com/
+ - Rebase on next branch of iommu tree.
+ - Split attach/detach_device_pasid interfaces and SVA domain extensions
+   to different patches.
+ - Handle the return error of xa_cmpxchg() gracefully.
+ - Directly pass mm in as the SVA fault data.
+ - Rename iopf_handle_group() to iopf_handler().
+ - Some commit message and code comment refinement.
+ - Add Tested-by's from Zhangfei and Tony.
+
+v9:
+ - https://lore.kernel.org/linux-iommu/20220621144353.17547-1-baolu.lu@linux.intel.com/
+ - Some minor changes on comments and function names.
+ - Simplify dev_iommu_get_max_pasids().
+
+v8:
+ - https://lore.kernel.org/linux-iommu/20220607014942.3954894-1-baolu.lu@linux.intel.com/
+ - Add support for calculating the max pasids that a device could
+   consume.
+ - Replace container_of_safe() with container_of.
+ - Remove iommu_ops->sva_domain_ops and make sva support through the
+   generic domain_alloc/free() interfaces.
+ - [Robin] It would be logical to pass IOMMU_DOMAIN_SVA to the normal
+   domain_alloc call, so that driver-internal stuff like context
+   descriptors can be still be hung off the domain as usual (rather than
+   all drivers having to implement some extra internal lookup mechanism
+   to handle all the SVA domain ops).
+ - [Robin] I'd just stick the mm pointer in struct iommu_domain, in a
+   union with the fault handler stuff those are mutually exclusive with
+   SVA.
+ - https://lore.kernel.org/linux-iommu/f3170016-4d7f-e78e-db48-68305f683349@arm.com/
+
+v7:
+ - https://lore.kernel.org/linux-iommu/20220519072047.2996983-1-baolu.lu@linux.intel.com/
+ - Remove duplicate array for sva domain.
+ - Rename detach_dev_pasid to block_dev_pasid.
+ - Add raw device driver interfaces for iommufd.
+ - Other misc refinements and patch reorganization.
+ - Drop "dmaengine: idxd: Separate user and kernel pasid enabling" which
+   has been picked for dmaengine tree.
+
+v6:
+ - https://lore.kernel.org/linux-iommu/20220510061738.2761430-1-baolu.lu@linux.intel.com/
+ - Refine the SVA basic data structures.
+   Link: https://lore.kernel.org/linux-iommu/YnFv0ps0Ad8v+7uH@myrica/
+ - Refine arm smmuv3 sva domain allocation.
+ - Fix a possible lock issue.
+   Link: https://lore.kernel.org/linux-iommu/YnFydE8j8l7Q4m+b@myrica/
+
+v5:
+ - https://lore.kernel.org/linux-iommu/20220502014842.991097-1-baolu.lu@linux.intel.com/
+ - Address review comments from Jean-Philippe Brucker. Very appreciated!
+ - Remove redundant pci aliases check in
+   device_group_immutable_singleton().
+ - Treat all buses except PCI as static in immutable singleton check.
+ - As the sva_bind/unbind() have already guaranteed sva domain free only
+   after iopf_queue_flush_dev(), remove the unnecessary domain refcount.
+ - Move domain get() out of the list iteration in iopf_handle_group().
+
+v4:
+ - https://lore.kernel.org/linux-iommu/20220421052121.3464100-1-baolu.lu@linux.intel.com/
+ - Solve the overlap with another series and make this series
+   self-contained.
+ - No objection to the abstraction of data structure during v3 review.
+   Hence remove the RFC subject prefix.
+ - Refine the immutable singleton group code according to Kevin's
+   comments.
+
+v3:
+ - https://lore.kernel.org/linux-iommu/20220410102443.294128-1-baolu.lu@linux.intel.com/
+ - Rework iommu_group_singleton_lockdown() by adding a flag to the group
+   that positively indicates the group can never have more than one
+   member, even after hot plug.
+ - Abstract the data structs used for iommu sva in a separated patches to
+   make it easier for review.
+ - I still keep the RFC prefix in this series as above two significant
+   changes need at least another round review to be finalized.
+ - Several misc refinements.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20220329053800.3049561-1-baolu.lu@linux.intel.com/
+ - Add sva domain life cycle management to avoid race between unbind and
+   page fault handling.
+ - Use a single domain for each mm.
+ - Return a single sva handler for the same binding.
+ - Add a new helper to meet singleton group requirement.
+ - Rework the SVA domain allocation for arm smmu v3 driver and move the
+   pasid_bit initialization to device probe.
+ - Drop the patch "iommu: Handle IO page faults directly".
+ - Add mmget_not_zero(mm) in SVA page fault handler.
+
+v1:
+ - https://lore.kernel.org/linux-iommu/20220320064030.2936936-1-baolu.lu@linux.intel.com/
+ - Initial post.
+
+Lu Baolu (17):
+  iommu: Add max_pasids field in struct iommu_device
+  iommu: Add max_pasids field in struct dev_iommu
+  iommu: Remove SVM_FLAG_SUPERVISOR_MODE support
+  PCI: Enable PASID only when ACS RR & UF enabled on upstream path
+  iommu: Add attach/detach_dev_pasid iommu interface
+  iommu: Add IOMMU SVA domain support
+  iommu: Try to allocate blocking domain when probing device
+  iommu: Make free of iommu_domain_ops optional
+  iommu/vt-d: Add blocking domain support
+  iommu/vt-d: Add SVA domain support
+  arm-smmu-v3: Add blocking domain support
+  arm-smmu-v3/sva: Add SVA domain support
+  iommu/sva: Refactoring iommu_sva_bind/unbind_device()
+  iommu: Remove SVA related callbacks from iommu ops
+  iommu: Prepare IOMMU domain for IOPF
+  iommu: Per-domain I/O page fault handling
+  iommu: Rename iommu-sva-lib.{c,h}
+
+ include/linux/intel-svm.h                     |  13 -
+ include/linux/iommu.h                         | 112 +++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  22 +-
+ drivers/iommu/intel/iommu.h                   |  17 +-
+ .../iommu/{iommu-sva-lib.h => iommu-sva.h}    |  14 +-
+ drivers/dma/idxd/cdev.c                       |   3 +-
+ drivers/dma/idxd/init.c                       |  25 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 104 ++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  45 ++-
+ drivers/iommu/intel/dmar.c                    |   7 +
+ drivers/iommu/intel/iommu.c                   |  48 ++-
+ drivers/iommu/intel/svm.c                     | 147 ++++-----
+ drivers/iommu/io-pgfault.c                    |  77 +----
+ drivers/iommu/iommu-sva-lib.c                 |  71 -----
+ drivers/iommu/iommu-sva.c                     | 239 ++++++++++++++
+ drivers/iommu/iommu.c                         | 294 +++++++++++-------
+ drivers/misc/uacce/uacce.c                    |   2 +-
+ drivers/pci/ats.c                             |   3 +
+ drivers/iommu/Makefile                        |   2 +-
+ 19 files changed, 769 insertions(+), 476 deletions(-)
+ rename drivers/iommu/{iommu-sva-lib.h => iommu-sva.h} (83%)
+ delete mode 100644 drivers/iommu/iommu-sva-lib.c
+ create mode 100644 drivers/iommu/iommu-sva.c
+
+-- 
+2.25.1
 
