@@ -2,103 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 109E1ECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:42:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E837ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344534AbiHZOmX (ORCPT
+        id S1344416AbiHZOoE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 10:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
+        Fri, 26 Aug 2022 10:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230255AbiHZOmT (ORCPT
+        with ESMTP id S243916AbiHZOn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 10:42:19 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F27D3996
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:42:18 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id m3-20020a05600c3b0300b003a5e0557150so4179389wms.0
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:42:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=lZLJoIWsXsqa+EaO47AoJNbezNHg+wFL+Ah5uTdYlwk=;
-        b=KLyLNrCoJwl+5GwKMfIX792NGKHxwN6CwoN19TkfC9cJysJIjrduUKHxb0+yWzgPD0
-         E1cvx9do1g7IrPPt+Pb7osZ9oZI02WQCKE4T8tBaK0SmdrzMqVx85I4eRc+XvcrVNTXG
-         veK3oQmN5PqjIuWiG7Wfc8/opAook1+EgHPj1wr8CMYu1OZbJijFDAvEUlu26MiT5tNi
-         fgKnVtCy9t4zDW5s8MkjjwWmalXolPLhHi2fJpdJ8l/lxTAq9aJ76hpYnOLly7cPNUcq
-         +MKkcsxtNyAhqRvSkYFMBAsZJcbLwhOPPZypSTBaBzzbN31iaZvSrhAarROudcEp38Nk
-         HQWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=lZLJoIWsXsqa+EaO47AoJNbezNHg+wFL+Ah5uTdYlwk=;
-        b=1R3+WVcsCMDz80bmHGHJdXwtnZz2QXhGBSR89DEy/AONfQzBEXIN3dcNojRwcLJXkp
-         rR4XGs/2vNqLU1t1f+LAzFutwuFvOoN13f1FfZezeHqcxBmODYtjrY1bxLf0GJg7hKpN
-         cVCvEYFBT1kZMHlM5R5vyYwHoimS3FeUHgIGgAcgSnHfcYOpeJdVrPYKr2APsfTc2MQG
-         9Nr+boZ9hIgCuHZ1OouMGNaCJ0nAFprJrFhoHaFF0VKOEhMFxpPpKigR8JIv83y7ndtJ
-         xnggo3/k0WDCRQ+x54YcNZPAuM2mJDjieqyGMhMHZIyLAhbl+5CIV9zgTMDMd9wyd8zT
-         eQQQ==
-X-Gm-Message-State: ACgBeo1iOdExOFSrV5Ja+woibJ/g5AKLi5OsQuiptLNmLcez/JMdz1C8
-        FOdYw22/XAH3gnmn6PyK8ZvKBS0wBLZ98ELv
-X-Google-Smtp-Source: AA6agR6DMgDGXJ3XhgJFIVcmP9tyyxiw62Mu4CdcheESQmuIWil8nfX+s4MTdQxlI0jsktqF1CsfAQ==
-X-Received: by 2002:a1c:3b04:0:b0:3a5:487c:6240 with SMTP id i4-20020a1c3b04000000b003a5487c6240mr11564634wma.152.1661524936715;
-        Fri, 26 Aug 2022 07:42:16 -0700 (PDT)
-Received: from [10.83.37.24] ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id t18-20020a5d49d2000000b00224f5bfa890sm2052764wrs.97.2022.08.26.07.42.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 07:42:16 -0700 (PDT)
-Message-ID: <843fda3c-f1bd-61e0-e94d-38026ad98e5f@arista.com>
-Date:   Fri, 26 Aug 2022 15:42:09 +0100
+        Fri, 26 Aug 2022 10:43:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B421DD399F;
+        Fri, 26 Aug 2022 07:43:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7111AB83128;
+        Fri, 26 Aug 2022 14:43:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8578C433D6;
+        Fri, 26 Aug 2022 14:43:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661525034;
+        bh=JPZJww0LdQuFZEeGZp8ZP+3D6d0plXd37LSA7I8HWfA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=m9yTFBdzL1nv1ZlimA3HujtdlB051fDo7InetsnuqnrliWH6mwg4dS47izNjwTw7N
+         egKRpflIzkOkwJyh6Qn9blT+Wd6Dc47JWmKjnljpy+/Abr3LU9bTEehzI5IJ3F65cF
+         kZ5xLMXxrTFebR3sGJJCKpptQdhNB3ro5tnQQ1yqEWviCQYSgneCc6qnp9zAt+2Qy7
+         wHaXG5w7uz/q3/2XNR6F5MPjk0rjmJ7lRS10GhsHqzjirU0tN8xSAR0noFsOgcaH0J
+         uCUklpshhvkSnKWvALTuvSoFbuSE6kgt3BmuNZIduiOW/bGrznKCX1YOnECB/YPaUM
+         aHcW3qo6FShgA==
+Date:   Fri, 26 Aug 2022 17:43:46 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     roberto.sassu@huaweicloud.com, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        David Howells <dhowells@redhat.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E . Hallyn" <serge@hallyn.com>,
+        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        keyrings@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Daniel =?iso-8859-1?Q?M=FCller?= <deso@posteo.net>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Joanne Koong <joannelkoong@gmail.com>
+Subject: Re: [PATCH v12 02/10] btf: Handle dynamic pointer parameter in kfuncs
+Message-ID: <YwjcItv0q8GdzPbb@kernel.org>
+References: <20220818152929.402605-1-roberto.sassu@huaweicloud.com>
+ <20220818152929.402605-3-roberto.sassu@huaweicloud.com>
+ <YwhSCE0H+JfUe4Ew@kernel.org>
+ <CAADnVQJbTzfe28ife1+vg+ByLfyLBTCoEZW_eg8TEw838JGaog@mail.gmail.com>
+ <YwheJqUDLOxL3iTi@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH 02/31] crypto_pool: Add crypto_pool_reserve_scratch()
-Content-Language: en-US
-To:     Dan Carpenter <dan.carpenter@oracle.com>, kbuild@lists.01.org,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Cc:     lkp@intel.com, kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        linux-crypto@vger.kernel.org
-References: <202208221817.t5uzfegL-lkp@intel.com>
-From:   Dmitry Safonov <dima@arista.com>
-In-Reply-To: <202208221817.t5uzfegL-lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwheJqUDLOxL3iTi@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dan,
-
-On 8/22/22 11:45, Dan Carpenter wrote:
-> Hi Dmitry,
-[..]
-> "err" not set.  It was supposed to be set to zero at the start.  But
-> better to say "ret = i;" here maybe?
+On Fri, Aug 26, 2022 at 08:46:14AM +0300, Jarkko Sakkinen wrote:
+> On Thu, Aug 25, 2022 at 10:16:14PM -0700, Alexei Starovoitov wrote:
+> > On Thu, Aug 25, 2022 at 9:54 PM Jarkko Sakkinen <jarkko@kernel.org> wrote:
+> > > >
+> > > > -static bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
+> > > > -                                  enum bpf_arg_type arg_type)
+> > > > +bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
+> > > > +                           enum bpf_arg_type arg_type)
+> > > >  {
+> > > >       struct bpf_func_state *state = func(env, reg);
+> > > >       int spi = get_spi(reg->off);
+> > > > --
+> > > > 2.25.1
+> > > >
+> > >
+> > > Might be niticking but generally I'd consider splitting
+> > > exports as commits of their own.
+> > 
+> > -static bool
+> > +bool
+> > 
+> > into a separate commit?
+> > 
+> > I guess it makes sense for people whose salary depends on
+> > number of commits.
+> > We don't play these games.
 > 
-> Why is i unsigned?  It leads to unsightly casts.  Presumably some static
-> checker insists on this... :/
+> What kind of argument is that anyway.
 
-Thanks! Will be addressed/reworked in v2.
+"Separate each *logical change* into a separate patch." [*]
 
-Thank you,
-          Dmitry
+To add, generally any user space visible space should be an
+isolated patch.
+
+Please, stop posting nonsense.
+
+[*] https://www.kernel.org/doc/html/v5.19/process/submitting-patches.html#separate-your-changes
+
+BR, Jarkko
