@@ -2,124 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA583ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAB0ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344063AbiHZMrs (ORCPT
+        id S1343682AbiHZMsS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42156 "EHLO
+        Fri, 26 Aug 2022 08:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343682AbiHZMrp (ORCPT
+        with ESMTP id S230230AbiHZMsP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:47:45 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC035C2FA6;
-        Fri, 26 Aug 2022 05:47:44 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id p9-20020a17090a2d8900b001fb86ec43aaso1592794pjd.0;
-        Fri, 26 Aug 2022 05:47:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=+Kcf/ilkfosRaI9H3BNXX0k/yxzDkhOZSru9GqiL9jA=;
-        b=WNOTzWNVgtdaIp1aUJra0XEKEqYUVT19JjcYu73V6mhk+cNk+Ytox93PhWpF+Tg2HP
-         VKVEi5IKMB7VYGNKy8eaAuqr2BVSBtOoJwgcT0xnJ68h6x9dUWQ7khJ2alpWzC44XY5W
-         PMLXxsRaTrjUuINDQWQ1sXHbSPmkt89HkcUKyglqQELcoNJhAMwaBEBLqT583quXVpon
-         8w+lD8jYB4SPKgSJe8/p3PQ3FSvxXcOP9xVGSSZzVYvrQzMpYM082NJ3BKJ8qzpIBaOJ
-         STZzTv3PpZW/gbWqkVlSlqBMZq8UH3Tp/WIzSmOuV3pbmh1iQMFaQdmdv7hPWaPxgt4u
-         bjUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=+Kcf/ilkfosRaI9H3BNXX0k/yxzDkhOZSru9GqiL9jA=;
-        b=eTEnO8wotoxPOXAbANI/eCjAuQNkn/oCU9p1vDXwITIO3McHSuklOZx+Ts0HHnB5wu
-         XQOooFaWoUIJPuREeAUxJHAahpEWbdZ/PVphJPUn1m9L1Eph7hg3c3bfESiXXkh5kZ4D
-         ELei/gRUn0p4fGCsq/1zlkHfbB9ftleEKO9E86ImjY22HS3fXmdpJrBnqeGOYWHL0gBe
-         VprPI9+tChPiu0o0blFYm8Cz1yCRuLoVGAYYXEgrZg4VOtH9OlgFNKUHqwkbeV/x55MW
-         rF35xrQqMMjBdKacymjQg+pNCgZgLcmjhl4SlxdRVHsY2ljKPIzvLi1k8nBNYdwizLnW
-         /keg==
-X-Gm-Message-State: ACgBeo0ah0zqagIbivtg+3uRlXZJmPecuXsEL9P8nndgMRZNDz9Ph31y
-        oJUo6J6GRP3pxWO6JJvqL/g=
-X-Google-Smtp-Source: AA6agR48WOVhmjDpuEYQ4QeDwx7heuyx3xJ67kLhmkxct+VbL+HX9Ms3zVtGihUaTm2ir2J1CmBEsQ==
-X-Received: by 2002:a17:90a:cb93:b0:1fa:c4db:ef42 with SMTP id a19-20020a17090acb9300b001fac4dbef42mr4237385pju.10.1661518064229;
-        Fri, 26 Aug 2022 05:47:44 -0700 (PDT)
-Received: from [192.168.43.80] (subs03-180-214-233-70.three.co.id. [180.214.233.70])
-        by smtp.gmail.com with ESMTPSA id n8-20020a170903110800b0017440342b5bsm1158443plh.206.2022.08.26.05.47.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 05:47:43 -0700 (PDT)
-Message-ID: <30415bcb-c367-9ee3-a5bb-4c97510f4749@gmail.com>
-Date:   Fri, 26 Aug 2022 19:47:37 +0700
+        Fri, 26 Aug 2022 08:48:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D79DC6FF8;
+        Fri, 26 Aug 2022 05:48:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE7DE61D07;
+        Fri, 26 Aug 2022 12:48:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F4BCC433D6;
+        Fri, 26 Aug 2022 12:48:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661518093;
+        bh=MobuG4jMIn9bpIc0n67GLnZfMcL4pik8R1v8//dhajk=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=OxzGPE+3x3FRELKe1EyF9bv2Iat2Av+t1aB4a4RI7dWoL+h3mjk4TVCJbhiQ7XL7t
+         DDnuHcTMYZ4K1ykj1rGBREu+HkaQG1hzOdmbUWLNsc7bIh5ja69jTKsS71+NLtjO5n
+         g8pY+0h1vRDtMCJSj9fmVg9FDdn9NpEUhMziH4lZOxtuo3iFYF0jteZMgdYZmexhKb
+         hFej0gHPBAqxrwRXxKrYjF+P7ZocGypc0hxJqIV61IfMCKDT0xZR03IQPS38gZBwCX
+         TYCA3Jw9Lpl1Iej43pl3TQ/GW3bdt9kK1CpKHjmUG03dX+CedNKNlT16emYwXHh3Fm
+         jHu4XS9S3tY/Q==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 929175C055A; Fri, 26 Aug 2022 05:48:12 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 05:48:12 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     stern@rowland.harvard.edu, parri.andrea@gmail.com, will@kernel.org,
+        peterz@infradead.org, boqun.feng@gmail.com, npiggin@gmail.com,
+        dhowells@redhat.com, j.alglave@ucl.ac.uk, luc.maranget@inria.fr,
+        akiyks@gmail.com, dlustig@nvidia.com, joel@joelfernandes.org
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Subject: "Verifying and Optimizing Compact NUMA-Aware Locks on Weak Memory
+ Models"
+Message-ID: <20220826124812.GA3007435@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH net-next] docs/conf.py: add function attribute
- '__fix_address' to conf.py
-Content-Language: en-US
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     menglong8.dong@gmail.com
-Cc:     kuba@kernel.org, sfr@canb.auug.org.au, corbet@lwn.net,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Menglong Dong <imagedong@tencent.com>
-References: <20220826061914.816239-1-imagedong@tencent.com>
- <YwiU4DPEPryi1cMZ@debian.me>
-In-Reply-To: <YwiU4DPEPryi1cMZ@debian.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/26/22 16:39, Bagas Sanjaya wrote:
-> On Fri, Aug 26, 2022 at 02:19:14PM +0800, menglong8.dong@gmail.com wrote:
->> From: Menglong Dong <imagedong@tencent.com>
->>
->> Stephen Rothwell report that the function attribute '__fix_address'
->> causes a warning when create html docs with the command:
->>
->>   make htmldocs
->>
->> Therefor, add this attribute to c_id_attributes in Documentation/conf.py
->> to clean this warning.
->>
->> BTW, I'm not able to reproduce this warning (both ubuntu and centos are
->> tested). I will appreciate it if anyone can have a test for this
->> commit.
->>
-> Hi,
-> 
-> The patch description can be improved, like:
-> "Stephen Rothwell reported htmldocs warning when merging net-next:
-> 
-> Documentation/networking/kapi:26: net/core/skbuff.c:780: WARNING: Error in declarator or parameters
-> Invalid C declaration: Expecting "(" in parameters. [error at 19]
->   void __fix_address kfree_skb_reason (struct sk_buff *skb, enum skb_drop_reason reason)
->   -------------------^
-> 
-> Add __fix_address keyword to c_id_attributes array in conf.py to fix the
-> warning."
-> 
-> So next time when you spot documentation warnings like above, specify the
-> exact warning in the patch description. This will help reviewers what warning
-> the patch is fixing.
-> 
->> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
->> Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> 
-> Also, don't forget to add Link tag, like:
-> Link: https://lore.kernel.org/linux-next/20220825154105.534d78ab@canb.auug.org.au/
-> 
-> Otherwise, the warning disappeared on my htmldocs build, thanks.
-> 
-> Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> 
+Hello!
 
-Oops, ignore my Reviewed-by above (not LGTM until my comments above
-are addressed).
+I have not yet done more than glance at this one, but figured I should
+send it along sooner rather than later.
 
--- 
-An old man doll... just what I always wanted! - Clara
+"Verifying and Optimizing Compact NUMA-Aware Locks on Weak
+Memory Models", Antonio Paolillo, Hernán Ponce-de-León, Thomas
+Haas, Diogo Behrens, Rafael Chehab, Ming Fu, and Roland Meyer.
+https://arxiv.org/abs/2111.15240
+
+The claim is that the queued spinlocks implementation with CNA violates
+LKMM but actually works on all architectures having a formal hardware
+memory model.
+
+Thoughts?
+
+							Thanx, Paul
