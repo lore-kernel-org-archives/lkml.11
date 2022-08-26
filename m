@@ -2,69 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D02E9ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 03:14:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D26ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 03:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238517AbiHZDOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 23:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        id S244928AbiHZDPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 23:15:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244922AbiHZDOi (ORCPT
+        with ESMTP id S244850AbiHZDPE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 23:14:38 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F63CE339;
-        Thu, 25 Aug 2022 20:14:34 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=3;SR=0;TI=SMTPD_---0VNH5TJ6_1661483653;
-Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VNH5TJ6_1661483653)
-          by smtp.aliyun-inc.com;
-          Fri, 26 Aug 2022 11:14:32 +0800
-From:   Liu Song <liusong@linux.alibaba.com>
-To:     axboe@kernel.dk
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] sbitmap: remove unnecessary code in __sbitmap_queue_get_batch
-Date:   Fri, 26 Aug 2022 11:14:13 +0800
-Message-Id: <1661483653-27326-1-git-send-email-liusong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        Thu, 25 Aug 2022 23:15:04 -0400
+Received: from SHSQR01.spreadtrum.com (unknown [222.66.158.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A724212752
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 20:14:59 -0700 (PDT)
+Received: from SHSend.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
+        by SHSQR01.spreadtrum.com with ESMTPS id 27Q3CVPW028931
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
+        Fri, 26 Aug 2022 11:12:31 +0800 (CST)
+        (envelope-from zhaoyang.huang@unisoc.com)
+Received: from bj03382pcu.spreadtrum.com (10.0.74.65) by
+ BJMBX01.spreadtrum.com (10.0.64.7) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.23; Fri, 26 Aug 2022 11:12:30 +0800
+From:   "zhaoyang.huang" <zhaoyang.huang@unisoc.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Zhaoyang Huang <huangzhaoyang@gmail.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>, <ke.wang@unisoc.com>
+Subject: [PATCH] mm: skip reserved page for kmem leak scanning
+Date:   Fri, 26 Aug 2022 11:12:10 +0800
+Message-ID: <1661483530-11308-1-git-send-email-zhaoyang.huang@unisoc.com>
+X-Mailer: git-send-email 1.9.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.0.74.65]
+X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
+ BJMBX01.spreadtrum.com (10.0.64.7)
+X-MAIL: SHSQR01.spreadtrum.com 27Q3CVPW028931
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Song <liusong@linux.alibaba.com>
+From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 
-If "nr + nr_tags <= map_depth", then the value of nr_tags will not be
-greater than map_depth, so no additional comparison is required.
+It is no need to scan reserved page, skip it.
 
-Signed-off-by: Liu Song <liusong@linux.alibaba.com>
+Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 ---
- lib/sbitmap.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ mm/kmemleak.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/lib/sbitmap.c b/lib/sbitmap.c
-index 29eb048..34c904b 100644
---- a/lib/sbitmap.c
-+++ b/lib/sbitmap.c
-@@ -533,10 +533,9 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
- 		nr = find_first_zero_bit(&map->word, map_depth);
- 		if (nr + nr_tags <= map_depth) {
- 			atomic_long_t *ptr = (atomic_long_t *) &map->word;
--			int map_tags = min_t(int, nr_tags, map_depth);
- 			unsigned long val, ret;
- 
--			get_mask = ((1UL << map_tags) - 1) << nr;
-+			get_mask = ((1UL << nr_tags) - 1) << nr;
- 			do {
- 				val = READ_ONCE(map->word);
- 				if ((val & ~get_mask) != val)
-@@ -547,7 +546,7 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
- 			if (get_mask) {
- 				*offset = nr + (index << sb->shift);
- 				update_alloc_hint_after_get(sb, depth, hint,
--							*offset + map_tags - 1);
-+							*offset + nr_tags - 1);
- 				return get_mask;
- 			}
- 		}
+diff --git a/mm/kmemleak.c b/mm/kmemleak.c
+index a182f5d..c546250 100644
+--- a/mm/kmemleak.c
++++ b/mm/kmemleak.c
+@@ -1471,7 +1471,7 @@ static void kmemleak_scan(void)
+ 			if (page_zone(page) != zone)
+ 				continue;
+ 			/* only scan if page is in use */
+-			if (page_count(page) == 0)
++			if (page_count(page) == 0 && !PageReserved(page))
+ 				continue;
+ 			scan_block(page, page + 1, NULL);
+ 			if (!(pfn & 63))
 -- 
-1.8.3.1
+1.9.1
 
