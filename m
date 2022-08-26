@@ -2,242 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 376A7ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 576BFECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343801AbiHZKhn (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
+        id S245065AbiHZKis (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242864AbiHZKhk (ORCPT
+        with ESMTP id S242864AbiHZKiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 06:37:40 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23DED570D;
-        Fri, 26 Aug 2022 03:37:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661510259; x=1693046259;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=9hnCuIQP0Do9Va8hiUiS3qPMSpvIWNQCjLORaXq96rM=;
-  b=SkN7+8A8mFTAywJwapYZC4VN9VBqMP4vOj9mMlam4gdn8rex+34AVvYA
-   jkCrdxf0cXhuzs0exIQ9fsVGQYS1CfbEh27VgMcmeSL3C2Rf2Meubusmq
-   1oer5ZqlWeavcdZyEyOZltAWsoyw5t+eJGDIayszalqzYlqL4edfK6AVr
-   fhHY+h50PEMqZBcvaAHI7qZcaVyHkL1RpmBez/0Rl0cMu49HTAMK+Don0
-   /FEMlYNvh6xs8Ll/r9hACXjuHis34AXg6mV8u0MpCdROhHiOrR1kYnkFI
-   xp9eVdmiJTv7SkHsXVlo8rbu6Iyir0OQtp/x2XfRw+ecUE6gMfsGONl16
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="293220362"
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="293220362"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 03:37:39 -0700
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="606726872"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.50.209])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 03:37:26 -0700
-Message-ID: <12acbe02-bd73-07bb-d0e1-cb13dcd790c0@intel.com>
-Date:   Fri, 26 Aug 2022 13:37:21 +0300
+        Fri, 26 Aug 2022 06:38:46 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF97DD5993
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:38:45 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id gb36so2333986ejc.10
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:38:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ionos.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=3qJESbYubFMD5Pl68KvSnzTCaMJv8nnmIuPcfcljgGA=;
+        b=BMmK213iwKHTtGXLQ+Jl9K09jzii1LmixoAATTZVHd+coxUxdRdtFvp9ClSm1aSKdJ
+         62FSzx13a3JjWCpYpqpf44VhZaP0YC7oqManoiNWzkiNV04JORvBOJEZ3g5NGhzIk5uG
+         gQymPuBiPBu7mPxLDJlb92EFW+wrXOvTNWSGhT3V90+N2Gl4QZJBRPz1OOYQfiT+mLjV
+         v0/vi/dg8oIlkPrItuWnRf7w/pkqGD4PBivg0+nFR6b6tvMJMlwziO70oVAtT9GaUpTY
+         y9sUVePr0iZtQnuRal8qx43lHZez0zeHFIa0+9YnsRk59aIOmlB/rDoRaXCxE5B5QJrR
+         /WRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=3qJESbYubFMD5Pl68KvSnzTCaMJv8nnmIuPcfcljgGA=;
+        b=Bwy6rko/2S/fILrz46uP0yQhvb/mpShabroffn/qG/6eKm4C1myHdratc80Gku7Ox5
+         Mtol8GpJerS302YDHBKi6AEOwwytn0/iTo5KTtzQJFAVBDyhGHv+ODCD17sydx4zSD/8
+         apHTTWE091fvpVVdLm4PW5/VDV0VF4pEbR9xXs+JcRluF4P+2EJ/tl/gbv2GwjSXWWEH
+         AsQolYRg1E8ODmTEIWs15No1BOleTE4OrROYU6oFd7yFoJTO9p4P0Bxd8U3GNm5WsnQh
+         qAx6OITJ1/Jb9+JUvp0Vae+6wXR4g/baB+dehFPvr7hOV9GHAFtHw3c1y025voTHdhWA
+         Ig9g==
+X-Gm-Message-State: ACgBeo3JAwN2KL5QIz6e3sKi+TWTvG79iCcK2lvOH1v0RJnPgy99Q5f6
+        o3UWiZ4d2H7SLSwrWR3kIJS9RVGSVh1coA==
+X-Google-Smtp-Source: AA6agR5pldxWvZDxGPC+I83/e0f/jDzZikBhLKDonJc1XwGfwWhsm/M6BldQSsz8ky2NHve1hI09ng==
+X-Received: by 2002:a17:906:6d98:b0:715:76eb:9e33 with SMTP id h24-20020a1709066d9800b0071576eb9e33mr5054178ejt.729.1661510324338;
+        Fri, 26 Aug 2022 03:38:44 -0700 (PDT)
+Received: from lb02065.fritz.box ([2001:9e8:140d:2300:3a17:fa67:2b0b:b905])
+        by smtp.gmail.com with ESMTPSA id ot11-20020a170906cccb00b0073dcc912fa3sm707923ejb.202.2022.08.26.03.38.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 03:38:43 -0700 (PDT)
+From:   Jack Wang <jinpu.wang@ionos.com>
+To:     alexander.shishkin@linux.intel.com
+Cc:     christophe.jaillet@wanadoo.fr, linux-kernel@vger.kernel.org
+Subject: [PATCHv2] intel_th: Fix dma_map_sg error check
+Date:   Fri, 26 Aug 2022 12:38:43 +0200
+Message-Id: <20220826103843.83582-1-jinpu.wang@ionos.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH v3 11/18] perf dso: Update use of pthread mutex
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Darren Hart <dvhart@infradead.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        Ravi Bangoria <ravi.bangoria@amd.com>,
-        Dario Petrillo <dario.pk1@gmail.com>,
-        Hewenliang <hewenliang4@huawei.com>,
-        yaowenbin <yaowenbin1@huawei.com>,
-        Wenyu Liu <liuwenyu7@huawei.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Pavithra Gurushankar <gpavithrasha@gmail.com>,
-        Alexandre Truong <alexandre.truong@arm.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        William Cohen <wcohen@redhat.com>,
-        Andres Freund <andres@anarazel.de>,
-        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
-        Colin Ian King <colin.king@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Fangrui Song <maskray@google.com>,
-        Stephane Eranian <eranian@google.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Zechuan Chen <chenzechuan1@huawei.com>,
-        Jason Wang <wangborong@cdjrlc.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Remi Bernon <rbernon@codeweavers.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev
-References: <20220824153901.488576-1-irogers@google.com>
- <20220824153901.488576-12-irogers@google.com>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <20220824153901.488576-12-irogers@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/08/22 18:38, Ian Rogers wrote:
-> Switch to the use of mutex wrappers that provide better error checking.
-> 
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/perf/util/dso.c    | 12 ++++++------
+dma_map_sg return 0 on error, return -EIO in case of error.
 
-Some not done yet
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: christophe.jaillet@wanadoo.fr
+Cc: linux-kernel@vger.kernel.org
+Fixes: 4e0eaf239fb3 ("intel_th: msu: Fix single mode with IOMMU")
+Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
+---
+ drivers/hwtracing/intel_th/msu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-$ grep -i pthread_mut tools/perf/util/dso.c
-static pthread_mutex_t dso__data_open_lock = PTHREAD_MUTEX_INITIALIZER;
-        pthread_mutex_lock(&dso__data_open_lock);
-        pthread_mutex_unlock(&dso__data_open_lock);
-        if (pthread_mutex_lock(&dso__data_open_lock) < 0)
-                pthread_mutex_unlock(&dso__data_open_lock);
-        pthread_mutex_unlock(&dso__data_open_lock);
-        pthread_mutex_lock(&dso__data_open_lock);
-        pthread_mutex_unlock(&dso__data_open_lock);
-        pthread_mutex_lock(&dso__data_open_lock);
-        pthread_mutex_unlock(&dso__data_open_lock);
-
-
->  tools/perf/util/dso.h    |  4 ++--
->  tools/perf/util/symbol.c |  4 ++--
->  3 files changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/tools/perf/util/dso.c b/tools/perf/util/dso.c
-> index 5ac13958d1bd..a9789a955403 100644
-> --- a/tools/perf/util/dso.c
-> +++ b/tools/perf/util/dso.c
-> @@ -795,7 +795,7 @@ dso_cache__free(struct dso *dso)
->  	struct rb_root *root = &dso->data.cache;
->  	struct rb_node *next = rb_first(root);
->  
-> -	pthread_mutex_lock(&dso->lock);
-> +	mutex_lock(&dso->lock);
->  	while (next) {
->  		struct dso_cache *cache;
->  
-> @@ -804,7 +804,7 @@ dso_cache__free(struct dso *dso)
->  		rb_erase(&cache->rb_node, root);
->  		free(cache);
->  	}
-> -	pthread_mutex_unlock(&dso->lock);
-> +	mutex_unlock(&dso->lock);
->  }
->  
->  static struct dso_cache *__dso_cache__find(struct dso *dso, u64 offset)
-> @@ -841,7 +841,7 @@ dso_cache__insert(struct dso *dso, struct dso_cache *new)
->  	struct dso_cache *cache;
->  	u64 offset = new->offset;
->  
-> -	pthread_mutex_lock(&dso->lock);
-> +	mutex_lock(&dso->lock);
->  	while (*p != NULL) {
->  		u64 end;
->  
-> @@ -862,7 +862,7 @@ dso_cache__insert(struct dso *dso, struct dso_cache *new)
->  
->  	cache = NULL;
->  out:
-> -	pthread_mutex_unlock(&dso->lock);
-> +	mutex_unlock(&dso->lock);
->  	return cache;
->  }
->  
-> @@ -1297,7 +1297,7 @@ struct dso *dso__new_id(const char *name, struct dso_id *id)
->  		dso->root = NULL;
->  		INIT_LIST_HEAD(&dso->node);
->  		INIT_LIST_HEAD(&dso->data.open_entry);
-> -		pthread_mutex_init(&dso->lock, NULL);
-> +		mutex_init(&dso->lock);
->  		refcount_set(&dso->refcnt, 1);
->  	}
->  
-> @@ -1336,7 +1336,7 @@ void dso__delete(struct dso *dso)
->  	dso__free_a2l(dso);
->  	zfree(&dso->symsrc_filename);
->  	nsinfo__zput(dso->nsinfo);
-> -	pthread_mutex_destroy(&dso->lock);
-> +	mutex_destroy(&dso->lock);
->  	free(dso);
->  }
->  
-> diff --git a/tools/perf/util/dso.h b/tools/perf/util/dso.h
-> index 66981c7a9a18..58d94175e714 100644
-> --- a/tools/perf/util/dso.h
-> +++ b/tools/perf/util/dso.h
-> @@ -2,7 +2,6 @@
->  #ifndef __PERF_DSO
->  #define __PERF_DSO
->  
-> -#include <pthread.h>
->  #include <linux/refcount.h>
->  #include <linux/types.h>
->  #include <linux/rbtree.h>
-> @@ -11,6 +10,7 @@
->  #include <stdio.h>
->  #include <linux/bitops.h>
->  #include "build-id.h"
-> +#include "mutex.h"
->  
->  struct machine;
->  struct map;
-> @@ -145,7 +145,7 @@ struct dso_cache {
->  struct auxtrace_cache;
->  
->  struct dso {
-> -	pthread_mutex_t	 lock;
-> +	struct mutex	 lock;
->  	struct list_head node;
->  	struct rb_node	 rb_node;	/* rbtree node sorted by long name */
->  	struct rb_root	 *root;		/* root of rbtree that rb_node is in */
-> diff --git a/tools/perf/util/symbol.c b/tools/perf/util/symbol.c
-> index a4b22caa7c24..656d9b4dd456 100644
-> --- a/tools/perf/util/symbol.c
-> +++ b/tools/perf/util/symbol.c
-> @@ -1800,7 +1800,7 @@ int dso__load(struct dso *dso, struct map *map)
->  	}
->  
->  	nsinfo__mountns_enter(dso->nsinfo, &nsc);
-> -	pthread_mutex_lock(&dso->lock);
-> +	mutex_lock(&dso->lock);
->  
->  	/* check again under the dso->lock */
->  	if (dso__loaded(dso)) {
-> @@ -1964,7 +1964,7 @@ int dso__load(struct dso *dso, struct map *map)
->  		ret = 0;
->  out:
->  	dso__set_loaded(dso);
-> -	pthread_mutex_unlock(&dso->lock);
-> +	mutex_unlock(&dso->lock);
->  	nsinfo__mountns_exit(&nsc);
->  
->  	return ret;
+diff --git a/drivers/hwtracing/intel_th/msu.c b/drivers/hwtracing/intel_th/msu.c
+index 6c8215a47a60..472e1a4bafc1 100644
+--- a/drivers/hwtracing/intel_th/msu.c
++++ b/drivers/hwtracing/intel_th/msu.c
+@@ -931,8 +931,10 @@ static int msc_buffer_contig_alloc(struct msc *msc, unsigned long size)
+ 
+ 	ret = dma_map_sg(msc_dev(msc)->parent->parent, msc->single_sgt.sgl, 1,
+ 			 DMA_FROM_DEVICE);
+-	if (ret < 0)
++	if (!ret) {
++		ret = -EIO;
+ 		goto err_free_pages;
++	}
+ 
+ 	msc->nr_pages = nr_pages;
+ 	msc->base = page_address(page);
+-- 
+2.34.1
 
