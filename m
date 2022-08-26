@@ -2,273 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8384ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5A8ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:36:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244009AbiHZQfh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 12:35:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46342 "EHLO
+        id S244667AbiHZQf7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 12:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243858AbiHZQf0 (ORCPT
+        with ESMTP id S231379AbiHZQfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 12:35:26 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D43C1E3E9
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:35:23 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oRcIf-0001BS-Mg; Fri, 26 Aug 2022 18:35:17 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     atishp@atishpatra.org, anup@brainfault.org, will@kernel.org,
-        mark.rutland@arm.com, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        philipp.tomsich@vrull.eu, cmuellner@linux.com, samuel@sholland.org,
-        guoren@kernel.org, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v2] drivers/perf: riscv_pmu_sbi: add support for PMU variant on T-Head C9xx cores
-Date:   Fri, 26 Aug 2022 18:35:00 +0200
-Message-Id: <20220826163500.1748653-1-heiko@sntech.de>
-X-Mailer: git-send-email 2.35.1
+        Fri, 26 Aug 2022 12:35:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4C425C53
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:35:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661531741;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xJrtDOE1LS6YjgDSPmg59up2c2x/o9+GnjMuyWVSMCo=;
+        b=aE5N79Hue/vqual5q4CMjSvHOdvAi6aviBnSm5N49YurfgjOg4W6XQ9oM4bnRBDJywVV/r
+        n/cwpKvlhEVIMXFibEbH8NWHZKrWy5CUNQridvDT8b/lyHwbomrDTewr5gp5XEtg/NiCW/
+        2gdDpOtxUF5zHaz+XrOAwvzNM2IrpYw=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-613-tiZpvfBCPSaTtlLYxVcYuQ-1; Fri, 26 Aug 2022 12:35:39 -0400
+X-MC-Unique: tiZpvfBCPSaTtlLYxVcYuQ-1
+Received: by mail-wr1-f71.google.com with SMTP id j4-20020adfa544000000b002255264474bso220065wrb.17
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:35:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=xJrtDOE1LS6YjgDSPmg59up2c2x/o9+GnjMuyWVSMCo=;
+        b=e3GKcenSnqTOd3zWDFqgUOwEo57IUWk8gpNBTRLV2LCh5RxOTaZht4AJASdYOit7sx
+         5seSwzDrSKhJSMPbusuczq6IhTmYEv+I+2X6GrAYpePLPtlKXk0ga39F7/2F3qjdyczC
+         g3PRssI9lWlFlRbeyV9ElMayWaSEmVwQLLaMH4p8MCGlqpnYbr5XFQJCIT8HvLPslA8j
+         OJ1hxpUoIZofeDvG4ctteWrowUA5sCpuinI1cTw+YiL/FGu9MrY8TElhcc+CcOrEytLD
+         Z7yLz0LpA1QpWLU7UZygFpC4M/KCL4oO9HnK2ZLQtlNiG+slCm/6pbXmmkTda4iNWKxI
+         1dfg==
+X-Gm-Message-State: ACgBeo2emiteWSc8zCxNoMDv9trwZbUP5biP63iKxpS9/XZnLK5/I6y3
+        aiwKWtBXNCc/24jNsBp0xfiCTQClk2GvUPNRVjXjGlskwgrlq+G1KBAwchBXj7caWhY7Y4Ty9ww
+        fBFpTg9f0ApIkaPrwmlq6uN01
+X-Received: by 2002:a05:600c:290a:b0:3a5:515d:4f69 with SMTP id i10-20020a05600c290a00b003a5515d4f69mr244851wmd.127.1661531738256;
+        Fri, 26 Aug 2022 09:35:38 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5EIHMKQi/zXPpLKIV0JdmfWhkQBXmKVB2m1LedfaFyGwzgbKghd2AEaeUXKNQ8MGWtQi3a4A==
+X-Received: by 2002:a05:600c:290a:b0:3a5:515d:4f69 with SMTP id i10-20020a05600c290a00b003a5515d4f69mr244839wmd.127.1661531737961;
+        Fri, 26 Aug 2022 09:35:37 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c708:f600:abad:360:c840:33fa? (p200300cbc708f600abad0360c84033fa.dip0.t-ipconnect.de. [2003:cb:c708:f600:abad:360:c840:33fa])
+        by smtp.gmail.com with ESMTPSA id m21-20020a05600c4f5500b003a327b98c0asm102915wmq.22.2022.08.26.09.35.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 09:35:37 -0700 (PDT)
+Message-ID: <f8e80df6-1c56-6a55-0926-67f5e2c3e204@redhat.com>
+Date:   Fri, 26 Aug 2022 18:35:36 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] mm/mprotect: Only reference swap pfn page if type match
+Content-Language: en-US
+To:     Peter Xu <peterx@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Huang Ying <ying.huang@intel.com>, stable@vger.kernel.org,
+        Yu Zhao <yuzhao@google.com>
+References: <20220823221138.45602-1-peterx@redhat.com>
+ <411d7b8c-f914-875e-b397-856e6a894366@redhat.com>
+ <YwjXxC2BbJ5+3Isx@xz-m1.local>
+ <ca62c992-6242-5e82-22de-a6e8ffa824b1@redhat.com>
+ <YwjvC1wYcODUuiSf@xz-m1.local>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <YwjvC1wYcODUuiSf@xz-m1.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the T-HEAD C9XX cores being designed before or during the ratification
-to the SSCOFPMF extension, they implement functionality very similar but
-not equal to it. So add some adaptions to allow the C9XX to still handle
-its PMU through the regular SBI PMU interface instead of defining new
-interfaces or drivers.
+On 26.08.22 18:04, Peter Xu wrote:
+> On Fri, Aug 26, 2022 at 04:39:08PM +0200, David Hildenbrand wrote:
+>> On 26.08.22 16:25, Peter Xu wrote:
+>>> On Fri, Aug 26, 2022 at 12:49:37PM +0200, David Hildenbrand wrote:
+>>>> On 24.08.22 00:11, Peter Xu wrote:
+>>>>> Yu Zhao reported a bug after the commit "mm/swap: Add swp_offset_pfn() to
+>>>>> fetch PFN from swap entry" added a check in swp_offset_pfn() for swap type [1]:
+>>>>>
+>>>>>   kernel BUG at include/linux/swapops.h:117!
+>>>>>   CPU: 46 PID: 5245 Comm: EventManager_De Tainted: G S         O L 6.0.0-dbg-DEV #2
+>>>>>   RIP: 0010:pfn_swap_entry_to_page+0x72/0xf0
+>>>>>   Code: c6 48 8b 36 48 83 fe ff 74 53 48 01 d1 48 83 c1 08 48 8b 09 f6
+>>>>>   c1 01 75 7b 66 90 48 89 c1 48 8b 09 f6 c1 01 74 74 5d c3 eb 9e <0f> 0b
+>>>>>   48 ba ff ff ff ff 03 00 00 00 eb ae a9 ff 0f 00 00 75 13 48
+>>>>>   RSP: 0018:ffffa59e73fabb80 EFLAGS: 00010282
+>>>>>   RAX: 00000000ffffffe8 RBX: 0c00000000000000 RCX: ffffcd5440000000
+>>>>>   RDX: 1ffffffffff7a80a RSI: 0000000000000000 RDI: 0c0000000000042b
+>>>>>   RBP: ffffa59e73fabb80 R08: ffff9965ca6e8bb8 R09: 0000000000000000
+>>>>>   R10: ffffffffa5a2f62d R11: 0000030b372e9fff R12: ffff997b79db5738
+>>>>>   R13: 000000000000042b R14: 0c0000000000042b R15: 1ffffffffff7a80a
+>>>>>   FS:  00007f549d1bb700(0000) GS:ffff99d3cf680000(0000) knlGS:0000000000000000
+>>>>>   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>>>>   CR2: 0000440d035b3180 CR3: 0000002243176004 CR4: 00000000003706e0
+>>>>>   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>>>>   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>>>>   Call Trace:
+>>>>>    <TASK>
+>>>>>    change_pte_range+0x36e/0x880
+>>>>>    change_p4d_range+0x2e8/0x670
+>>>>>    change_protection_range+0x14e/0x2c0
+>>>>>    mprotect_fixup+0x1ee/0x330
+>>>>>    do_mprotect_pkey+0x34c/0x440
+>>>>>    __x64_sys_mprotect+0x1d/0x30
+>>>>>
+>>>>> It triggers because pfn_swap_entry_to_page() could be called upon e.g. a
+>>>>> genuine swap entry.
+>>>>>
+>>>>> Fix it by only calling it when it's a write migration entry where the page*
+>>>>> is used.
+>>>>>
+>>>>> [1] https://lore.kernel.org/lkml/CAOUHufaVC2Za-p8m0aiHw6YkheDcrO-C3wRGixwDS32VTS+k1w@mail.gmail.com/
+>>>>>
+>>>>> Fixes: 6c287605fd56 ("mm: remember exclusively mapped anonymous pages with PG_anon_exclusive")
+>>>>> Cc: David Hildenbrand <david@redhat.com>
+>>>>> Cc: <stable@vger.kernel.org>
+>>>>> Reported-by: Yu Zhao <yuzhao@google.com>
+>>>>> Signed-off-by: Peter Xu <peterx@redhat.com>
+>>>>> ---
+>>>>>  mm/mprotect.c | 3 ++-
+>>>>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/mm/mprotect.c b/mm/mprotect.c
+>>>>> index f2b9b1da9083..4549f5945ebe 100644
+>>>>> --- a/mm/mprotect.c
+>>>>> +++ b/mm/mprotect.c
+>>>>> @@ -203,10 +203,11 @@ static unsigned long change_pte_range(struct mmu_gather *tlb,
+>>>>>  			pages++;
+>>>>>  		} else if (is_swap_pte(oldpte)) {
+>>>>>  			swp_entry_t entry = pte_to_swp_entry(oldpte);
+>>>>> -			struct page *page = pfn_swap_entry_to_page(entry);
+>>>>>  			pte_t newpte;
+>>>>>  
+>>>>>  			if (is_writable_migration_entry(entry)) {
+>>>>> +				struct page *page = pfn_swap_entry_to_page(entry);
+>>>>> +
+>>>>>  				/*
+>>>>>  				 * A protection check is difficult so
+>>>>>  				 * just be safe and disable write
+>>>>
+>>>>
+>>>> Stumbling over the THP code, I was wondering if we also want to adjust change_huge_pmd()
+>>>> and hugetlb_change_protection. There are no actual swap entries, so I assume we're fine.
+>>>>
+>>>>
+>>>> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+>>>> index 482c1826e723..466364e7fc5f 100644
+>>>> --- a/mm/huge_memory.c
+>>>> +++ b/mm/huge_memory.c
+>>>> @@ -1798,10 +1798,10 @@ int change_huge_pmd(struct mmu_gather *tlb, struct vm_area_struct *vma,
+>>>>  #ifdef CONFIG_ARCH_ENABLE_THP_MIGRATION
+>>>>         if (is_swap_pmd(*pmd)) {
+>>>>                 swp_entry_t entry = pmd_to_swp_entry(*pmd);
+>>>> -               struct page *page = pfn_swap_entry_to_page(entry);
+>>>>  
+>>>>                 VM_BUG_ON(!is_pmd_migration_entry(*pmd));
+>>>>                 if (is_writable_migration_entry(entry)) {
+>>>> +                       struct page *page = pfn_swap_entry_to_page(entry);
+>>>>                         pmd_t newpmd;
+>>>>                         /*
+>>>>                          * A protection check is difficult so
+>>>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+>>>> index 2480ba627aa5..559465fae5cd 100644
+>>>> --- a/mm/hugetlb.c
+>>>> +++ b/mm/hugetlb.c
+>>>> @@ -6370,9 +6370,9 @@ unsigned long hugetlb_change_protection(struct vm_area_struct *vma,
+>>>>                 }
+>>>>                 if (unlikely(is_hugetlb_entry_migration(pte))) {
+>>>>                         swp_entry_t entry = pte_to_swp_entry(pte);
+>>>> -                       struct page *page = pfn_swap_entry_to_page(entry);
+>>>>  
+>>>>                         if (!is_readable_migration_entry(entry)) {
+>>>> +                               struct page *page = pfn_swap_entry_to_page(entry);
+>>>>                                 pte_t newpte;
+>>>>  
+>>>>                                 if (PageAnon(page))
+>>>>
+>>>>
+>>>> @Peter, what's your thought?
+>>>
+>>> IMHO they're not needed?
+>>>
+>>> The rule is simple in my mind: we should only pass in a pfn-typed swap
+>>> entry into pfn_swap_entry_to_page() (or the new swp_offset_pfn()), or it's
+>>> a violation of the API.  In these two cases they do not violate the API and
+>>> they're always safe because they're guaranteed to be pfn swap entries when
+>>> calling.
+>>
+>> I was wondering about extreme corner cases regarding the struct page.
+>>
+>> Assume we have a hwpoison_entry that pointed at a valid struct page. We
+>> can succeed in offlining+removing the section it's located on (I was
+>> recently challenging if we want to keep that behavior as it's really
+>> shaky already), freeing the relevant memmap entry and the memory section.
+>>
+>> pfn_swap_entry_to_page() -> pfn_to_page() would be problematic if there
+>> is no memmap anymore.
+>>
+>>
+>> I assume it's ok to always call it for is_pfn_swap_entry(), but in the
+>> PMD case we only check for is_swap_pmd()? Isn't that problematic?
+> 
+> I don't know extensively enough on hwpoison on validity of fetching page
+> from pfn inside on online/offline ops, but.. if the only concern is about
+> hwpoison entry existance here I think its fine?  Because iirc we'l split
+> thp when any of the subpage got poisoned, so we should never hit a hwpoison
+> entry in thp path.
 
-To work properly, this requires a matching change in SBI, though the actual
-interface between kernel and SBI does not change.
+Ah right, so we're good. Thanks!
 
-The main differences are a the overflow CSR and irq number.
-
-As the reading of the overflow-csr is in the hot-path during irq handling
-use an errata and alternatives to not introduce new conditionals there.
-
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
----
-changes in v2:
-- use alternatives for the CSR access
-- make the irq num selection a bit nicer
-
-There is of course a matching opensbi-part whose current implementation can
-be found on [0], but as comments show, this needs some more work still.
-
-
-[0] https://patchwork.ozlabs.org/project/opensbi/cover/20220817112004.745776-1-heiko@sntech.de/
-
- arch/riscv/Kconfig.erratas           | 14 ++++++++++++
- arch/riscv/errata/thead/errata.c     | 19 +++++++++++++++++
- arch/riscv/include/asm/errata_list.h | 16 +++++++++++++-
- drivers/perf/riscv_pmu_sbi.c         | 32 +++++++++++++++++++---------
- 4 files changed, 70 insertions(+), 11 deletions(-)
-
-diff --git a/arch/riscv/Kconfig.erratas b/arch/riscv/Kconfig.erratas
-index 6850e9389930..f1eaac4c0073 100644
---- a/arch/riscv/Kconfig.erratas
-+++ b/arch/riscv/Kconfig.erratas
-@@ -66,4 +66,18 @@ config ERRATA_THEAD_CMO
- 
- 	  If you don't know what to do here, say "Y".
- 
-+config ERRATA_THEAD_PMU
-+	bool "Apply T-Head PMU errata"
-+	depends on ERRATA_THEAD
-+	depends on RISCV_PMU_SBI
-+	default y
-+	help
-+	  The T-Head C9xx cores implement a PMU overflow extension very
-+	  similar to the core SSCOFPMF extension.
-+
-+	  This will apply the overflow errata to handle the non-standard
-+	  behaviour via the regular SBI PMU driver and interface.
-+
-+	  If you don't know what to do here, say "Y".
-+
- endmenu # "CPU errata selection"
-diff --git a/arch/riscv/errata/thead/errata.c b/arch/riscv/errata/thead/errata.c
-index 202c83f677b2..e6101eab25c8 100644
---- a/arch/riscv/errata/thead/errata.c
-+++ b/arch/riscv/errata/thead/errata.c
-@@ -44,6 +44,22 @@ static bool errata_probe_cmo(unsigned int stage,
- #endif
- }
- 
-+static bool errata_probe_pmu(unsigned int stage,
-+			     unsigned long arch_id, unsigned long impid)
-+{
-+#ifdef CONFIG_ERRATA_THEAD_PMU
-+	if (arch_id != 0 || impid != 0)
-+		return false;
-+
-+	if (stage == RISCV_ALTERNATIVES_EARLY_BOOT)
-+		return false;
-+
-+	return true;
-+#else
-+	return false;
-+#endif
-+}
-+
- static u32 thead_errata_probe(unsigned int stage,
- 			      unsigned long archid, unsigned long impid)
- {
-@@ -55,6 +71,9 @@ static u32 thead_errata_probe(unsigned int stage,
- 	if (errata_probe_cmo(stage, archid, impid))
- 		cpu_req_errata |= (1U << ERRATA_THEAD_CMO);
- 
-+	if (errata_probe_pmu(stage, archid, impid))
-+		cpu_req_errata |= (1U << ERRATA_THEAD_PMU);
-+
- 	return cpu_req_errata;
- }
- 
-diff --git a/arch/riscv/include/asm/errata_list.h b/arch/riscv/include/asm/errata_list.h
-index 19a771085781..4180312d2a70 100644
---- a/arch/riscv/include/asm/errata_list.h
-+++ b/arch/riscv/include/asm/errata_list.h
-@@ -6,6 +6,7 @@
- #define ASM_ERRATA_LIST_H
- 
- #include <asm/alternative.h>
-+#include <asm/csr.h>
- #include <asm/vendorid_list.h>
- 
- #ifdef CONFIG_ERRATA_SIFIVE
-@@ -17,7 +18,8 @@
- #ifdef CONFIG_ERRATA_THEAD
- #define	ERRATA_THEAD_PBMT 0
- #define	ERRATA_THEAD_CMO 1
--#define	ERRATA_THEAD_NUMBER 2
-+#define	ERRATA_THEAD_PMU 2
-+#define	ERRATA_THEAD_NUMBER 3
- #endif
- 
- #define	CPUFEATURE_SVPBMT 0
-@@ -142,6 +144,18 @@ asm volatile(ALTERNATIVE_2(						\
- 	    "r"((unsigned long)(_start) + (_size))			\
- 	: "a0")
- 
-+#define THEAD_C9XX_RV_IRQ_PMU			17
-+#define THEAD_C9XX_CSR_SCOUNTEROF		0x5c5
-+
-+#define ALT_SBI_PMU_OVERFLOW(__ovl)					\
-+asm volatile(ALTERNATIVE(						\
-+	"csrr %0, " __stringify(CSR_SSCOUNTOVF),			\
-+	"csrr %0, " __stringify(THEAD_C9XX_CSR_SCOUNTEROF),		\
-+		THEAD_VENDOR_ID, ERRATA_THEAD_PMU,			\
-+		CONFIG_ERRATA_THEAD_PMU)				\
-+	: "=r" (__ovl) :						\
-+	: "memory")
-+
- #endif /* __ASSEMBLY__ */
- 
- #endif
-diff --git a/drivers/perf/riscv_pmu_sbi.c b/drivers/perf/riscv_pmu_sbi.c
-index 6f6681bbfd36..f814d3ce5ba2 100644
---- a/drivers/perf/riscv_pmu_sbi.c
-+++ b/drivers/perf/riscv_pmu_sbi.c
-@@ -19,6 +19,7 @@
- #include <linux/of.h>
- #include <linux/cpu_pm.h>
- 
-+#include <asm/errata_list.h>
- #include <asm/sbi.h>
- #include <asm/hwcap.h>
- 
-@@ -46,6 +47,8 @@ static const struct attribute_group *riscv_pmu_attr_groups[] = {
-  * per_cpu in case of harts with different pmu counters
-  */
- static union sbi_pmu_ctr_info *pmu_ctr_list;
-+static bool riscv_pmu_use_irq;
-+static unsigned int riscv_pmu_irq_num;
- static unsigned int riscv_pmu_irq;
- 
- struct sbi_pmu_event_data {
-@@ -575,7 +578,7 @@ static irqreturn_t pmu_sbi_ovf_handler(int irq, void *dev)
- 	fidx = find_first_bit(cpu_hw_evt->used_hw_ctrs, RISCV_MAX_COUNTERS);
- 	event = cpu_hw_evt->events[fidx];
- 	if (!event) {
--		csr_clear(CSR_SIP, SIP_LCOFIP);
-+		csr_clear(CSR_SIP, BIT(riscv_pmu_irq_num));
- 		return IRQ_NONE;
- 	}
- 
-@@ -583,13 +586,13 @@ static irqreturn_t pmu_sbi_ovf_handler(int irq, void *dev)
- 	pmu_sbi_stop_hw_ctrs(pmu);
- 
- 	/* Overflow status register should only be read after counter are stopped */
--	overflow = csr_read(CSR_SSCOUNTOVF);
-+	ALT_SBI_PMU_OVERFLOW(overflow);
- 
- 	/*
- 	 * Overflow interrupt pending bit should only be cleared after stopping
- 	 * all the counters to avoid any race condition.
- 	 */
--	csr_clear(CSR_SIP, SIP_LCOFIP);
-+	csr_clear(CSR_SIP, BIT(riscv_pmu_irq_num));
- 
- 	/* No overflow bit is set */
- 	if (!overflow)
-@@ -651,10 +654,10 @@ static int pmu_sbi_starting_cpu(unsigned int cpu, struct hlist_node *node)
- 	/* Stop all the counters so that they can be enabled from perf */
- 	pmu_sbi_stop_all(pmu);
- 
--	if (riscv_isa_extension_available(NULL, SSCOFPMF)) {
-+	if (riscv_pmu_use_irq) {
- 		cpu_hw_evt->irq = riscv_pmu_irq;
--		csr_clear(CSR_IP, BIT(RV_IRQ_PMU));
--		csr_set(CSR_IE, BIT(RV_IRQ_PMU));
-+		csr_clear(CSR_IP, BIT(riscv_pmu_irq_num));
-+		csr_set(CSR_IE, BIT(riscv_pmu_irq_num));
- 		enable_percpu_irq(riscv_pmu_irq, IRQ_TYPE_NONE);
- 	}
- 
-@@ -663,9 +666,9 @@ static int pmu_sbi_starting_cpu(unsigned int cpu, struct hlist_node *node)
- 
- static int pmu_sbi_dying_cpu(unsigned int cpu, struct hlist_node *node)
- {
--	if (riscv_isa_extension_available(NULL, SSCOFPMF)) {
-+	if (riscv_pmu_use_irq) {
- 		disable_percpu_irq(riscv_pmu_irq);
--		csr_clear(CSR_IE, BIT(RV_IRQ_PMU));
-+		csr_clear(CSR_IE, BIT(riscv_pmu_irq_num));
- 	}
- 
- 	/* Disable all counters access for user mode now */
-@@ -681,7 +684,16 @@ static int pmu_sbi_setup_irqs(struct riscv_pmu *pmu, struct platform_device *pde
- 	struct device_node *cpu, *child;
- 	struct irq_domain *domain = NULL;
- 
--	if (!riscv_isa_extension_available(NULL, SSCOFPMF))
-+	if (riscv_isa_extension_available(NULL, SSCOFPMF)) {
-+		riscv_pmu_irq_num = RV_IRQ_PMU;
-+		riscv_pmu_use_irq = true;
-+	} else if (sbi_get_mvendorid() == THEAD_VENDOR_ID &&
-+		   sbi_get_marchid() == 0 && sbi_get_mimpid() == 0) {
-+		riscv_pmu_irq_num = THEAD_C9XX_RV_IRQ_PMU;
-+		riscv_pmu_use_irq = true;
-+	}
-+
-+	if (!riscv_pmu_use_irq)
- 		return -EOPNOTSUPP;
- 
- 	for_each_of_cpu_node(cpu) {
-@@ -703,7 +715,7 @@ static int pmu_sbi_setup_irqs(struct riscv_pmu *pmu, struct platform_device *pde
- 		return -ENODEV;
- 	}
- 
--	riscv_pmu_irq = irq_create_mapping(domain, RV_IRQ_PMU);
-+	riscv_pmu_irq = irq_create_mapping(domain, riscv_pmu_irq_num);
- 	if (!riscv_pmu_irq) {
- 		pr_err("Failed to map PMU interrupt for node\n");
- 		return -ENODEV;
 -- 
-2.35.1
+Thanks,
+
+David / dhildenb
 
