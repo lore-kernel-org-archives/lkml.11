@@ -2,205 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB3E4ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD3DCECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344595AbiHZPZ0 (ORCPT
+        id S1344658AbiHZPZc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59690 "EHLO
+        Fri, 26 Aug 2022 11:25:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344469AbiHZPY6 (ORCPT
+        with ESMTP id S1344484AbiHZPY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:24:58 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EF663DE
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:20:09 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id j5so2354069oih.6
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:20:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=JxB2qaa3GXj7Ww0WJz/K7eVu2ESNhoaSdSA9k8puE0w=;
-        b=rNZHisjyMKdc1KU7tmh/nGQkaLaNeYt3bMs5VKI6xJP2h2AOfOUzwRZRLla65xJeDe
-         CEYqIxWJMO3nXKmE2NClEC3ph5qIL8NDIQhMrgP6gJ0WU4aWnONbzX+FJWCvfdfcSIsP
-         AezQ9zuYWaHPSiF6LfTwPDglMWkbw4zeg+3bhrcfEcjamrhe4gPIvEzOpxfWMPFeywgQ
-         UoNWH8KGUwupF/7+yTAgAVu4bX9J2NJTBc7jkz7aI3melLIyLqn9dmv13Lxx0qNdblrw
-         TITwMBj98834n0fELMej+U+DtcWyCv5lRYX7IgVMedybI7TbJ5XNWzkK1RBJSfbEeA4F
-         GDXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=JxB2qaa3GXj7Ww0WJz/K7eVu2ESNhoaSdSA9k8puE0w=;
-        b=jIR8RNoPMCrD3rll8hVvw9VgXGuTMfR/5se9D8TaIRnKGSLdH2Nw+ZdSD+rFG6h/ec
-         eIoUjtNIwpitIxiuYn9cdZeryZuTV0n9MiJc3n2cWyL7DqhcJj4sOrXs4vr7yI6YYaU4
-         rILDAmNuwEyK0jClnYZR4BcmVB2qGUhRlLZM6agBwU4bNHIBGAUEghvw2kT99rzbvT0v
-         HN3rahZCYYO4imqYtmMm4yG250SZerIeGPVOeDzYY3nO72Vzu5NWWVz+pf15iKHag2zI
-         KC+0atXfzKN0Oh70nRnaISm/gbGlIVnaNksNyKDP9IcgOtS6K6apoVsgyK6FbAlAhNAw
-         j+5A==
-X-Gm-Message-State: ACgBeo1mkxsERQ2KI7j4koSv9zA2pctSLTv6xfMDoBkHpG8tu0/ZQ1/P
-        d+MhIL0PWPW1FMHKzmp1RhsazxCLDFOd1sTu0pm7Mw==
-X-Google-Smtp-Source: AA6agR6SQe5onizWDvNdLrAzua1I9O94/DWXsFjcgNFZAlcVSFzWJyrqTisu6QhEpjJ6FUet5mh61grmllD7Si4hFpE=
-X-Received: by 2002:a05:6808:152a:b0:344:c8d1:27e1 with SMTP id
- u42-20020a056808152a00b00344c8d127e1mr1877973oiw.294.1661527208826; Fri, 26
- Aug 2022 08:20:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com> <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
-In-Reply-To: <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
-From:   Fuad Tabba <tabba@google.com>
-Date:   Fri, 26 Aug 2022 16:19:32 +0100
-Message-ID: <CA+EHjTzRcEQcZRJixBa=fBXd4=-oZK=unmBLwBAFVixCPfY-dQ@mail.gmail.com>
-Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 26 Aug 2022 11:24:59 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CB49A18E
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:20:11 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 743CF1F949;
+        Fri, 26 Aug 2022 15:20:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661527209; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=97iE3p86LmL5nUt7jtSPzfO+8BqMwNIDg5V6WRooFvo=;
+        b=Fvy/YmQ++k2snw5ygCkZsCkSBP3pMOpZ0kHAWTnhKDLty7Vh6e3U848l3kumjv5agbeQl+
+        E+45C2hWkyRllWYaX1VdkHAc6+BmUaJ5gPg7ZoHi9eAL/LYNlk3EievHbV2sBiqgvAiozH
+        O3flP2dcxE4IcHiJv2uOaVarlc62O5s=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661527209;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=97iE3p86LmL5nUt7jtSPzfO+8BqMwNIDg5V6WRooFvo=;
+        b=E3klih5m/Ngy7425d9QqRZ7n3kql1r8/nYNwA7Dcn0lO8/mk/VYG2DhOczxseDad7BCr6o
+        Yeu70xLSO75fR2Bw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4789813A7E;
+        Fri, 26 Aug 2022 15:20:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id NAODEKnkCGPMWQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Fri, 26 Aug 2022 15:20:09 +0000
+Date:   Fri, 26 Aug 2022 17:20:08 +0200
+Message-ID: <87r113jal3.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Lennert Van Alboom <lennert@vanalboom.org>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ls.yoyo.m@gmail.com" <ls.yoyo.m@gmail.com>
+Subject: Re: [PATCH] USB DAC broken since commit bf6313a0ff766925462e97b4e733d5952de02367 (5.10.0-rc5)
+In-Reply-To: <m8XpaeWJS23wth20p7EgE-Cxwi-5ZwWl0InTEc-wsDGOwh8Nw5RViGXqM_yP92eOmX0Kxfs2hcizPwZaEce80T3OH1rLQ3ph555M1iTCmFc=@vanalboom.org>
+References: <T3VPXtCc4uFws9Gfh2RjX6OdwM1RqfC6VqQr--_LMDyB2x5N3p9_q6AtPna17IXhHwBtcJVdXuS80ZZSCMjh_BafIbnzJPhbrkmhmWS6DlI=@vanalboom.org>
+        <874jy0mvwv.wl-tiwai@suse.de>
+        <JGbq2exwKdQ4T8GQCI5YWzGredZVbYtBOxlnBN0ROtba40PvCdEKfz2mKzClqejgZMck374nGQyEIwzjiBi6sKYYNnJgKp26n1-_j6GT3hw=@vanalboom.org>
+        <87bks7leun.wl-tiwai@suse.de>
+        <m8XpaeWJS23wth20p7EgE-Cxwi-5ZwWl0InTEc-wsDGOwh8Nw5RViGXqM_yP92eOmX0Kxfs2hcizPwZaEce80T3OH1rLQ3ph555M1iTCmFc=@vanalboom.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chao,
+On Fri, 26 Aug 2022 11:07:55 +0200,
+Lennert Van Alboom wrote:
+> 
+> ------- Original Message -------
+> On Friday, August 26th, 2022 at 08:05, Takashi Iwai <tiwai@suse.de> wrote:
+> > 
+> 
+> > This option is passed per card instance, as the driver may hold
+> > multiple cards. Check your /proc/asound/cards. The first argument of
+> > quirk_flags is applied to the first USB-audio card, the second to the
+> > second USB audio device, and so on.
+> > 
+> 
+> > At best, give alsa-info.sh output before and after applying the
+> > quirk. Run the script with --no-upload option and attach the
+> > outputs.
+> > 
+> 
+> > And, as a reference, you can see the existing quirk tables in
+> > sound/usb/quirks.c.
+> > 
+> 
+> > 
+> 
+> > Takashi
+> 
+> 
+> Not sure why it failed before (didn't look further then, so possibly PEBKAC) but as you suggested, this works now (tested on debian's 5.19 kernel):
+> 
+> # modprobe snd_usb_audio vid=0x2522 pid=0x0007 quirk_flags=0x10000
+> 
+> 
+> Confirmed that setting a quirk_alias also works: 
+> 
+> 
+> # grep -A 1 "0x054c, 0x0b8c" linux/sound/usb/quirks.c 
+> 
+> 	DEVICE_FLG(0x054c, 0x0b8c, /* Sony WALKMAN NW-A45 DAC */
+> 		   QUIRK_FLAG_SET_IFACE_FIRST),
+> # modprobe snd_usb_audio quirk_alias=25220007:054c0b8c
+> 
+> 
+> I've added a patch for quirks.c to make this default behaviour for
+> this device.
 
-On Wed, Jul 6, 2022 at 9:25 AM Chao Peng <chao.p.peng@linux.intel.com> wrote:
->
-> Normally, a write to unallocated space of a file or the hole of a sparse
-> file automatically causes space allocation, for memfd, this equals to
-> memory allocation. This new seal prevents such automatically allocating,
-> either this is from a direct write() or a write on the previously
-> mmap-ed area. The seal does not prevent fallocate() so an explicit
-> fallocate() can still cause allocating and can be used to reserve
-> memory.
->
-> This is used to prevent unintentional allocation from userspace on a
-> stray or careless write and any intentional allocation should use an
-> explicit fallocate(). One of the main usecases is to avoid memory double
-> allocation for confidential computing usage where we use two memfds to
-> back guest memory and at a single point only one memfd is alive and we
-> want to prevent memory allocation for the other memfd which may have
-> been mmap-ed previously. More discussion can be found at:
->
->   https://lkml.org/lkml/2022/6/14/1255
->
-> Suggested-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> ---
->  include/uapi/linux/fcntl.h |  1 +
->  mm/memfd.c                 |  3 ++-
->  mm/shmem.c                 | 16 ++++++++++++++--
->  3 files changed, 17 insertions(+), 3 deletions(-)
->
-> diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
-> index 2f86b2ad6d7e..98bdabc8e309 100644
-> --- a/include/uapi/linux/fcntl.h
-> +++ b/include/uapi/linux/fcntl.h
-> @@ -43,6 +43,7 @@
->  #define F_SEAL_GROW    0x0004  /* prevent file from growing */
->  #define F_SEAL_WRITE   0x0008  /* prevent writes */
->  #define F_SEAL_FUTURE_WRITE    0x0010  /* prevent future writes while mapped */
-> +#define F_SEAL_AUTO_ALLOCATE   0x0020  /* prevent allocation for writes */
+Good to hear.  Will you submit the fix patch for the merge, or shall I
+do it in my side?
 
-I think this should also be added to tools/include/uapi/linux/fcntl.h
+> Looking at the Arch bug report at https://bugs.archlinux.org/task/70636, it's likely similar behaviour may be needed for pid=0009 (LH Labs Geek Pulse X 1V5) but I have no way of testing this. Added the reporter in CC.
 
-Cheers,
-/fuad
+It's likely OK to apply the same quirk, but it's certainly safer to
+hear the test result, of course.
 
 
->  /* (1U << 31) is reserved for signed error codes */
->
->  /*
-> diff --git a/mm/memfd.c b/mm/memfd.c
-> index 08f5f8304746..2afd898798e4 100644
-> --- a/mm/memfd.c
-> +++ b/mm/memfd.c
-> @@ -150,7 +150,8 @@ static unsigned int *memfd_file_seals_ptr(struct file *file)
->                      F_SEAL_SHRINK | \
->                      F_SEAL_GROW | \
->                      F_SEAL_WRITE | \
-> -                    F_SEAL_FUTURE_WRITE)
-> +                    F_SEAL_FUTURE_WRITE | \
-> +                    F_SEAL_AUTO_ALLOCATE)
->
->  static int memfd_add_seals(struct file *file, unsigned int seals)
->  {
-> diff --git a/mm/shmem.c b/mm/shmem.c
-> index a6f565308133..6c8aef15a17d 100644
-> --- a/mm/shmem.c
-> +++ b/mm/shmem.c
-> @@ -2051,6 +2051,8 @@ static vm_fault_t shmem_fault(struct vm_fault *vmf)
->         struct vm_area_struct *vma = vmf->vma;
->         struct inode *inode = file_inode(vma->vm_file);
->         gfp_t gfp = mapping_gfp_mask(inode->i_mapping);
-> +       struct shmem_inode_info *info = SHMEM_I(inode);
-> +       enum sgp_type sgp;
->         int err;
->         vm_fault_t ret = VM_FAULT_LOCKED;
->
-> @@ -2113,7 +2115,12 @@ static vm_fault_t shmem_fault(struct vm_fault *vmf)
->                 spin_unlock(&inode->i_lock);
->         }
->
-> -       err = shmem_getpage_gfp(inode, vmf->pgoff, &vmf->page, SGP_CACHE,
-> +       if (unlikely(info->seals & F_SEAL_AUTO_ALLOCATE))
-> +               sgp = SGP_NOALLOC;
-> +       else
-> +               sgp = SGP_CACHE;
-> +
-> +       err = shmem_getpage_gfp(inode, vmf->pgoff, &vmf->page, sgp,
->                                   gfp, vma, vmf, &ret);
->         if (err)
->                 return vmf_error(err);
-> @@ -2459,6 +2466,7 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
->         struct inode *inode = mapping->host;
->         struct shmem_inode_info *info = SHMEM_I(inode);
->         pgoff_t index = pos >> PAGE_SHIFT;
-> +       enum sgp_type sgp;
->         int ret = 0;
->
->         /* i_rwsem is held by caller */
-> @@ -2470,7 +2478,11 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
->                         return -EPERM;
->         }
->
-> -       ret = shmem_getpage(inode, index, pagep, SGP_WRITE);
-> +       if (unlikely(info->seals & F_SEAL_AUTO_ALLOCATE))
-> +               sgp = SGP_NOALLOC;
-> +       else
-> +               sgp = SGP_WRITE;
-> +       ret = shmem_getpage(inode, index, pagep, sgp);
->
->         if (ret)
->                 return ret;
-> --
-> 2.25.1
->
+thanks,
+
+Takashi
