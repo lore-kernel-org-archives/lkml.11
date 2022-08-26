@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E296ECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D325AECAAD7
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343695AbiHZJZB (ORCPT
+        id S1343718AbiHZJZE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 05:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55586 "EHLO
+        Fri, 26 Aug 2022 05:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245701AbiHZJYz (ORCPT
+        with ESMTP id S1343652AbiHZJYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 05:24:55 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F8C63F306
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891DC402DF
         for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:24:54 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MDZ8H329MzkWjG;
-        Fri, 26 Aug 2022 17:21:19 +0800 (CST)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MDZBQ5x3XzGprt;
+        Fri, 26 Aug 2022 17:23:10 +0800 (CST)
 Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
  (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 17:24:51 +0800
+ 2022 17:24:52 +0800
 From:   Miaohe Lin <linmiaohe@huawei.com>
 To:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
         <songmuchun@bytedance.com>
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         <linmiaohe@huawei.com>
-Subject: [PATCH 01/10] hugetlb: make hugetlb_cma_check() static
-Date:   Fri, 26 Aug 2022 17:24:13 +0800
-Message-ID: <20220826092422.39591-2-linmiaohe@huawei.com>
+Subject: [PATCH 03/10] hugetlb: Use LIST_HEAD() to define a list head
+Date:   Fri, 26 Aug 2022 17:24:15 +0800
+Message-ID: <20220826092422.39591-4-linmiaohe@huawei.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20220826092422.39591-1-linmiaohe@huawei.com>
 References: <20220826092422.39591-1-linmiaohe@huawei.com>
@@ -45,61 +45,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make hugetlb_cma_check() static as it's only used inside mm/hugetlb.c.
+We can avoid unneeded WRITE_ONCE() overhead by using LIST_HEAD() to define
+a list head.
 
 Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- include/linux/hugetlb.h |  4 ----
- mm/hugetlb.c            | 10 +++++++++-
- 2 files changed, 9 insertions(+), 5 deletions(-)
+ mm/hugetlb.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/hugetlb.h b/include/linux/hugetlb.h
-index 852f911d676e..c2abbd7950de 100644
---- a/include/linux/hugetlb.h
-+++ b/include/linux/hugetlb.h
-@@ -1155,14 +1155,10 @@ static inline spinlock_t *huge_pte_lock(struct hstate *h,
- 
- #if defined(CONFIG_HUGETLB_PAGE) && defined(CONFIG_CMA)
- extern void __init hugetlb_cma_reserve(int order);
--extern void __init hugetlb_cma_check(void);
- #else
- static inline __init void hugetlb_cma_reserve(int order)
- {
- }
--static inline __init void hugetlb_cma_check(void)
--{
--}
- #endif
- 
- bool want_pmd_share(struct vm_area_struct *vma, unsigned long addr);
 diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index f1dc80f47dd6..10d84abb1ca7 100644
+index 24f580ddf130..b3e6592247a3 100644
 --- a/mm/hugetlb.c
 +++ b/mm/hugetlb.c
-@@ -4058,6 +4058,14 @@ static void hugetlb_register_all_nodes(void) { }
- 
- #endif
- 
-+#ifdef CONFIG_CMA
-+static void __init hugetlb_cma_check(void);
-+#else
-+static inline __init void hugetlb_cma_check(void)
-+{
-+}
-+#endif
-+
- static int __init hugetlb_init(void)
+@@ -459,14 +459,12 @@ static int allocate_file_region_entries(struct resv_map *resv,
+ 					int regions_needed)
+ 	__must_hold(&resv->lock)
  {
- 	int i;
-@@ -7546,7 +7554,7 @@ void __init hugetlb_cma_reserve(int order)
- 		hugetlb_cma_size = 0;
- }
+-	struct list_head allocated_regions;
++	LIST_HEAD(allocated_regions);
+ 	int to_allocate = 0, i = 0;
+ 	struct file_region *trg = NULL, *rg = NULL;
  
--void __init hugetlb_cma_check(void)
-+static void __init hugetlb_cma_check(void)
+ 	VM_BUG_ON(regions_needed < 0);
+ 
+-	INIT_LIST_HEAD(&allocated_regions);
+-
+ 	/*
+ 	 * Check for sufficient descriptors in the cache to accommodate
+ 	 * the number of in progress add operations plus regions_needed.
+@@ -2352,7 +2350,7 @@ struct page *alloc_huge_page_vma(struct hstate *h, struct vm_area_struct *vma,
+ static int gather_surplus_pages(struct hstate *h, long delta)
+ 	__must_hold(&hugetlb_lock)
  {
- 	if (!hugetlb_cma_size || cma_reserve_called)
- 		return;
+-	struct list_head surplus_list;
++	LIST_HEAD(surplus_list);
+ 	struct page *page, *tmp;
+ 	int ret;
+ 	long i;
+@@ -2367,7 +2365,6 @@ static int gather_surplus_pages(struct hstate *h, long delta)
+ 	}
+ 
+ 	allocated = 0;
+-	INIT_LIST_HEAD(&surplus_list);
+ 
+ 	ret = -ENOMEM;
+ retry:
 -- 
 2.23.0
 
