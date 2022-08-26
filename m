@@ -2,143 +2,329 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B284ECAAD6
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 081A0ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 12:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243947AbiHZMWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 08:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
+        id S1344264AbiHZMWx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 08:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344093AbiHZMVi (ORCPT
+        with ESMTP id S1343859AbiHZMWe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 08:21:38 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6437674C;
-        Fri, 26 Aug 2022 05:20:07 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id t129so1386766pfb.6;
-        Fri, 26 Aug 2022 05:20:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :from:to:cc;
-        bh=59ExtF48Z2+vGviQ5JT32mWzE6IvJ75v7GYqKj4e16Y=;
-        b=WQOU5q+OoOzPr1bMskgUFeCAK4d9cXLh0yU/HA9rpkwVwKZb2OdqaFSn81kuQpFPJ7
-         Fg1dCA0trRi70qnxrD2CmVv2wQGeQtpyt7mf0FcXn9xsycAFtr4mz3i477yfiQOuxsEd
-         8ce0i6vdT3sELTNlUvqS3yecvu2poHH4WthCWVmmJi9lbdaGwp80AoaivLS3oHRMEu0c
-         D0C5dO5G0bEgbnLayrCLD9oL2BRH6unPk+I0WxJKA4VpmuRF1TVFY5soAst07v/iLd6G
-         9hbqvdfoTQ5BVciOltyX8Bhc3a9zSlWZao8sNFo9qm9NUFSODNjsJz5UjJ25pPkSJ8xS
-         u/AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :x-gm-message-state:from:to:cc;
-        bh=59ExtF48Z2+vGviQ5JT32mWzE6IvJ75v7GYqKj4e16Y=;
-        b=ZoyAcMI7Ohr98GpiZ73ee7Ky2Fn1xwOjFUywYOAOsgjTDNy4AE4tzhtNEmIjoQkC3D
-         6xTSpjyuVPe4ygSm8kfXe0Oa26bEfovf3LQxI7nKTG9G5n66B4fuYwiLMqFqxmjzvynG
-         77ScDxKy380SRw/D9h54HSHYRZQqS3pTOcy8U4wq9b0BajGE7H5F2khc+VIf8okxMhex
-         4TbNRQsg2tvxPwS13Zq35X5bH8eoKIzKTy3/xfUazQkh+SWoENwXKMxBcGVuHJcpKCQl
-         BUbF4rcyCs1ujou0yWQZl/TOsOO+oKawFtJQaoOr1I4tfmr18r41Sn7V3SDDmUmzqo7V
-         JoJw==
-X-Gm-Message-State: ACgBeo3QTOdSU/cOnGMMMXwtD5m0G6oyogUKOx4XmI+dlmy3g52kLL3M
-        5FBOfhpjb2h9ly6WZ5ihThU=
-X-Google-Smtp-Source: AA6agR4OpfpC6IwX4K56VI00fJs3GzZ/3hkLwq6ovd57/qBTvUsWIzHX98cZUrRLT/iO90pZh12IuA==
-X-Received: by 2002:a05:6a00:acc:b0:530:e79e:fc27 with SMTP id c12-20020a056a000acc00b00530e79efc27mr3640679pfl.61.1661516395878;
-        Fri, 26 Aug 2022 05:19:55 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id x19-20020a170902ea9300b0016f975be2e7sm1407426plb.139.2022.08.26.05.19.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 05:19:55 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Fri, 26 Aug 2022 05:19:54 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Robert Marko <robert.marko@sartura.hr>,
-        Andreas =?iso-8859-1?Q?B=F6hler?= <dev@aboehler.at>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Jean Delvare <jdelvare@suse.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] Documentation: devicetree: update bindings for
- tps23861
-Message-ID: <20220826121954.GB2897306@roeck-us.net>
-References: <20220825143737.77732-1-dev@aboehler.at>
- <20220825150236.GB240395@roeck-us.net>
- <CA+HBbNEEvyn7a-CXzbFHywvHBky-Kwu8O3POrqo=huOJf-n2pQ@mail.gmail.com>
- <20220825152934.GA1439919@roeck-us.net>
- <CA+HBbNH5GGrqN4mUB2hByVuTjc02f_t88pdpKEKXNjxScYyrtw@mail.gmail.com>
- <9d25d239-8d40-e639-c5e5-a308bc41d22f@linaro.org>
+        Fri, 26 Aug 2022 08:22:34 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BA8DF0BA;
+        Fri, 26 Aug 2022 05:20:52 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 1C668188D8A4;
+        Fri, 26 Aug 2022 12:20:20 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 08D7E25032B7;
+        Fri, 26 Aug 2022 12:20:20 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id D34489EC005C; Fri, 26 Aug 2022 11:45:59 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+Received: from wse-c0127.beijerelectronics.com (unknown [208.127.141.28])
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 93D6E9EC0008;
+        Fri, 26 Aug 2022 11:45:56 +0000 (UTC)
+From:   Hans Schultz <netdev@kapio-technology.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH v5 net-next 2/6] net: switchdev: add support for offloading of fdb locked flag
+Date:   Fri, 26 Aug 2022 13:45:34 +0200
+Message-Id: <20220826114538.705433-3-netdev@kapio-technology.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220826114538.705433-1-netdev@kapio-technology.com>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <9d25d239-8d40-e639-c5e5-a308bc41d22f@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 09:56:29AM +0300, Krzysztof Kozlowski wrote:
-> On 25/08/2022 18:31, Robert Marko wrote:
-> > On Thu, Aug 25, 2022 at 5:29 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> >>
-> >> On Thu, Aug 25, 2022 at 05:07:45PM +0200, Robert Marko wrote:
-> >>> On Thu, Aug 25, 2022 at 5:02 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> >>>>
-> >>>> On Thu, Aug 25, 2022 at 04:37:36PM +0200, Andreas Böhler wrote:
-> >>>>> The tps23861 driver does not initialize the chip and relies on it being
-> >>>>> in auto-mode by default. On some devices, these controllers default to
-> >>>>> OFF-Mode and hence cannot be used at all.
-> >>>>>
-> >>>>> This brings minimal support for initializing the controller in a user-
-> >>>>> defined mode.
-> >>>>>
-> >>>>> Signed-off-by: Andreas Böhler <dev@aboehler.at>
-> >>>>
-> >>>> nack for the series, sorry. The suggested properties are not hardware
-> >>>> monitoring but phy properties. There should be a separate phy driver
-> >>>> to manage those.
-> >>>>
-> >>>> Also, as mentioned, the hwmon 'enable' attribute is abused to control
-> >>>> port functionality and should be removed.
-> >>>
-> >>> Hi Guenter,
-> >>> Are you referring to an ethernet PHY driver or the generic PHY framework?
-> >>>
-> >>
-> >> Could be both, though ethernet phy sounds about right for me.
-> >> I don't know where/how similar chips are handled. hwmon is most definitey
-> >> the wrong place.
-> > 
-> > Hi,
-> > 
-> > Well, that is the thing, this is definitively not an ethernet PHY nor
-> > a PHY of any other kind.
-> > I dont see where it would fit if not hwmon, there is no more specific
-> > subsystem in the
-> > kernel.
-> 
-> It's not hwmon. The device has monitoring capabilities, but it's only
-> one piece and calling something hwmon just because can provide sensor
-> data is like calling a plane a car, because it has wheels.
-> 
-> Maybe this is similar to these series:
-> https://lore.kernel.org/linux-devicetree/20220825130211.3730461-1-o.rempel@pengutronix.de/
-> ?
-> 
-> The datasheet says it is a "PSE Controller" so looks similar to the
-> problem solved above...
+Used for MacAuth/MAB feature in the offloaded case.
+Send the fdb locked flag down through the switchdev and DSA layers.
 
-Excellent find. That infrastructure is exactly what the driver for this chip
-needs to tie into. I would suggest to get in touch with the author of that
-series - it is quite likely that they are working on adding support for one
-or more real PSE chips.
+Also add support for drivers to set additional flags on bridge
+FDB entries including the new 'blackhole' flag.
 
-The only open question is if the hwmon driver should be retained as a
-separate driver or be implemented as part of the PSE networking driver.
-I am open to both.
+And add support for offloading of the MAB/MacAuth feature flag.
 
-Thanks,
-Guenter
+Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
+---
+ include/net/switchdev.h   |  3 +++
+ net/bridge/br.c           |  5 ++++-
+ net/bridge/br_fdb.c       | 14 ++++++++++++--
+ net/bridge/br_private.h   |  3 ++-
+ net/bridge/br_switchdev.c |  5 +++--
+ net/dsa/dsa_priv.h        |  4 +++-
+ net/dsa/port.c            |  7 ++++---
+ net/dsa/slave.c           |  4 +++-
+ net/dsa/switch.c          |  6 +++---
+ 9 files changed, 37 insertions(+), 14 deletions(-)
+
+diff --git a/include/net/switchdev.h b/include/net/switchdev.h
+index 7dcdc97c0bc3..437945179373 100644
+--- a/include/net/switchdev.h
++++ b/include/net/switchdev.h
+@@ -247,7 +247,10 @@ struct switchdev_notifier_fdb_info {
+ 	const unsigned char *addr;
+ 	u16 vid;
+ 	u8 added_by_user:1,
++	   sticky:1,
+ 	   is_local:1,
++	   locked:1,
++	   blackhole:1,
+ 	   offloaded:1;
+ };
+ 
+diff --git a/net/bridge/br.c b/net/bridge/br.c
+index 96e91d69a9a8..3671c0a12b7d 100644
+--- a/net/bridge/br.c
++++ b/net/bridge/br.c
+@@ -166,7 +166,10 @@ static int br_switchdev_event(struct notifier_block *unused,
+ 	case SWITCHDEV_FDB_ADD_TO_BRIDGE:
+ 		fdb_info = ptr;
+ 		err = br_fdb_external_learn_add(br, p, fdb_info->addr,
+-						fdb_info->vid, false);
++						fdb_info->vid, false,
++						fdb_info->locked,
++						fdb_info->blackhole,
++						fdb_info->sticky);
+ 		if (err) {
+ 			err = notifier_from_errno(err);
+ 			break;
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 1962d9594a48..30126af9c42f 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -1147,7 +1147,7 @@ static int __br_fdb_add(struct ndmsg *ndm, struct net_bridge *br,
+ 					   "FDB entry towards bridge must be permanent");
+ 			return -EINVAL;
+ 		}
+-		err = br_fdb_external_learn_add(br, p, addr, vid, true);
++		err = br_fdb_external_learn_add(br, p, addr, vid, true, false, false, false);
+ 	} else {
+ 		spin_lock_bh(&br->hash_lock);
+ 		err = fdb_add_entry(br, p, addr, ndm, nlh_flags, vid, nfea_tb);
+@@ -1383,7 +1383,8 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
+ 
+ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+-			      bool swdev_notify)
++			      bool swdev_notify, bool locked,
++			      bool blackhole, bool sticky)
+ {
+ 	struct net_bridge_fdb_entry *fdb;
+ 	bool modified = false;
+@@ -1403,6 +1404,15 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 		if (!p)
+ 			flags |= BIT(BR_FDB_LOCAL);
+ 
++		if (locked)
++			flags |= BIT(BR_FDB_ENTRY_LOCKED);
++
++		if (blackhole)
++			flags |= BIT(BR_FDB_BLACKHOLE);
++
++		if (sticky)
++			flags |= BIT(BR_FDB_STICKY);
++
+ 		fdb = fdb_create(br, p, addr, vid, flags);
+ 		if (!fdb) {
+ 			err = -ENOMEM;
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 048e4afbc5a0..2836fec2dafb 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -812,7 +812,8 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p);
+ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p);
+ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+-			      bool swdev_notify);
++			      bool swdev_notify, bool locked,
++			      bool blackhole, bool sticky);
+ int br_fdb_external_learn_del(struct net_bridge *br, struct net_bridge_port *p,
+ 			      const unsigned char *addr, u16 vid,
+ 			      bool swdev_notify);
+diff --git a/net/bridge/br_switchdev.c b/net/bridge/br_switchdev.c
+index 8f3d76c751dd..9aaefbc07e02 100644
+--- a/net/bridge/br_switchdev.c
++++ b/net/bridge/br_switchdev.c
+@@ -71,8 +71,8 @@ bool nbp_switchdev_allowed_egress(const struct net_bridge_port *p,
+ }
+ 
+ /* Flags that can be offloaded to hardware */
+-#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | \
+-				  BR_MCAST_FLOOD | BR_BCAST_FLOOD | BR_PORT_LOCKED | \
++#define BR_PORT_FLAGS_HW_OFFLOAD (BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD | \
++				  BR_PORT_LOCKED | BR_PORT_MAB | \
+ 				  BR_HAIRPIN_MODE | BR_ISOLATED | BR_MULTICAST_TO_UNICAST)
+ 
+ int br_switchdev_set_port_flag(struct net_bridge_port *p,
+@@ -136,6 +136,7 @@ static void br_switchdev_fdb_populate(struct net_bridge *br,
+ 	item->added_by_user = test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags);
+ 	item->offloaded = test_bit(BR_FDB_OFFLOADED, &fdb->flags);
+ 	item->is_local = test_bit(BR_FDB_LOCAL, &fdb->flags);
++	item->locked = test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
+ 	item->info.dev = (!p || item->is_local) ? br->dev : p->dev;
+ 	item->info.ctx = ctx;
+ }
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 614fbba8fe39..b05685418b20 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -65,6 +65,7 @@ struct dsa_notifier_fdb_info {
+ 	const struct dsa_port *dp;
+ 	const unsigned char *addr;
+ 	u16 vid;
++	bool is_locked;
+ 	struct dsa_db db;
+ };
+ 
+@@ -131,6 +132,7 @@ struct dsa_switchdev_event_work {
+ 	unsigned char addr[ETH_ALEN];
+ 	u16 vid;
+ 	bool host_addr;
++	bool is_locked;
+ };
+ 
+ enum dsa_standalone_event {
+@@ -232,7 +234,7 @@ int dsa_port_vlan_msti(struct dsa_port *dp,
+ 		       const struct switchdev_vlan_msti *msti);
+ int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu);
+ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-		     u16 vid);
++		     u16 vid, bool is_locked);
+ int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
+ 		     u16 vid);
+ int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 7afc35db0c29..3399cc1f7be0 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -303,7 +303,7 @@ static int dsa_port_inherit_brport_flags(struct dsa_port *dp,
+ 					 struct netlink_ext_ack *extack)
+ {
+ 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
+-				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
++				   BR_BCAST_FLOOD | BR_PORT_LOCKED | BR_PORT_MAB;
+ 	struct net_device *brport_dev = dsa_port_to_bridge_port(dp);
+ 	int flag, err;
+ 
+@@ -327,7 +327,7 @@ static void dsa_port_clear_brport_flags(struct dsa_port *dp)
+ {
+ 	const unsigned long val = BR_FLOOD | BR_MCAST_FLOOD | BR_BCAST_FLOOD;
+ 	const unsigned long mask = BR_LEARNING | BR_FLOOD | BR_MCAST_FLOOD |
+-				   BR_BCAST_FLOOD | BR_PORT_LOCKED;
++				   BR_BCAST_FLOOD | BR_PORT_LOCKED | BR_PORT_MAB;
+ 	int flag, err;
+ 
+ 	for_each_set_bit(flag, &mask, 32) {
+@@ -954,12 +954,13 @@ int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu)
+ }
+ 
+ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-		     u16 vid)
++		     u16 vid, bool is_locked)
+ {
+ 	struct dsa_notifier_fdb_info info = {
+ 		.dp = dp,
+ 		.addr = addr,
+ 		.vid = vid,
++		.is_locked = is_locked,
+ 		.db = {
+ 			.type = DSA_DB_BRIDGE,
+ 			.bridge = *dp->bridge,
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 345106b1ed78..a6486d7d9c7c 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -2908,6 +2908,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 		container_of(work, struct dsa_switchdev_event_work, work);
+ 	const unsigned char *addr = switchdev_work->addr;
+ 	struct net_device *dev = switchdev_work->dev;
++	bool is_locked = switchdev_work->is_locked;
+ 	u16 vid = switchdev_work->vid;
+ 	struct dsa_switch *ds;
+ 	struct dsa_port *dp;
+@@ -2923,7 +2924,7 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
+ 		else if (dp->lag)
+ 			err = dsa_port_lag_fdb_add(dp, addr, vid);
+ 		else
+-			err = dsa_port_fdb_add(dp, addr, vid);
++			err = dsa_port_fdb_add(dp, addr, vid, is_locked);
+ 		if (err) {
+ 			dev_err(ds->dev,
+ 				"port %d failed to add %pM vid %d to fdb: %d\n",
+@@ -3031,6 +3032,7 @@ static int dsa_slave_fdb_event(struct net_device *dev,
+ 	ether_addr_copy(switchdev_work->addr, fdb_info->addr);
+ 	switchdev_work->vid = fdb_info->vid;
+ 	switchdev_work->host_addr = host_addr;
++	switchdev_work->is_locked = fdb_info->locked;
+ 
+ 	dsa_schedule_work(&switchdev_work->work);
+ 
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 4dfd68cf61c5..f29604f25c67 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -234,7 +234,7 @@ static int dsa_port_do_mdb_del(struct dsa_port *dp,
+ }
+ 
+ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
+-			       u16 vid, struct dsa_db db)
++			       u16 vid, bool is_locked, struct dsa_db db)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+ 	struct dsa_mac_addr *a;
+@@ -399,7 +399,7 @@ static int dsa_switch_host_fdb_add(struct dsa_switch *ds,
+ 	dsa_switch_for_each_port(dp, ds) {
+ 		if (dsa_port_host_address_match(dp, info->dp)) {
+ 			err = dsa_port_do_fdb_add(dp, info->addr, info->vid,
+-						  info->db);
++						  false, info->db);
+ 			if (err)
+ 				break;
+ 		}
+@@ -438,7 +438,7 @@ static int dsa_switch_fdb_add(struct dsa_switch *ds,
+ 	if (!ds->ops->port_fdb_add)
+ 		return -EOPNOTSUPP;
+ 
+-	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->db);
++	return dsa_port_do_fdb_add(dp, info->addr, info->vid, info->is_locked, info->db);
+ }
+ 
+ static int dsa_switch_fdb_del(struct dsa_switch *ds,
+-- 
+2.30.2
+
