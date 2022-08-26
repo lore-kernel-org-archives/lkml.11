@@ -2,170 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CE3ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8724DECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244781AbiHZCZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51650 "EHLO
+        id S244848AbiHZCZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230259AbiHZCZr (ORCPT
+        with ESMTP id S244154AbiHZCZs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:25:47 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A981CC3F78
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 19:25:46 -0700 (PDT)
+        Thu, 25 Aug 2022 22:25:48 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D34C59E0
+        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 19:25:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661480746; x=1693016746;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fvCb7PvtYSSZYcUziXmyfxEeKXkqyaESbgiDBr55I0M=;
-  b=LQECxCDDooyCsNdYsND+/aGiZ8kn5ZVD324/kyFX7mmvf9zqOY4PsVX7
-   gxNdSJqR3TFoZKDfHQOFb224mtpeNPovnNrPCco2Tdopfimkjsl9Al95g
-   N1kAbC0bfv+LU5SL8G6ZbLmjMtJ9RxuAEtNriz2vB9lgT/0Ejg35UwVQr
-   H3ypuHBOh7gKip7QWjeyFp9OpSBGNE+wvFS9VwTPcwHHguZ0qPO4WDZr3
-   1sZ1MTjRlhLxXpf4/oLpY06K0d9JXAorruFOK3wNRepxmmydrd85Mlpu1
-   E0EQD8mPyXzDiynLEryjm5Hv8LW4a1tz0ILyD3aK+KJc7sPhZe1lK/Ori
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="356122012"
+  t=1661480747; x=1693016747;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=DAdEbK/q7nGjXDdZ7NpHAffn5Cx2ccndJW77ay7UV9s=;
+  b=nvRIU93p6u7pQOmLb0aqUGexu4tD8qFpnnds3SayRbvJSiULh3L1wS/8
+   t+106J7aTKBfNtwlUVrTiX6b1+0ZZ4uFSBiwxHsTkF0vxzAq36lTG5W+G
+   A4RbCwvRI5hxWQqLXRaB6IdyLg5EhgC6M0PdXItXiYiRGK4r9/QsE2If9
+   N6x9gG+IFPVHrjmMp+CPt/xp12/7qgG6TbUYVNd2o97PD0lLCQ+6lECYh
+   lfQBsuJ6lsA3Q0iPtbCGn0gzsKU8T1ndV6tqxU9Wkos6VSiH48aO0qONR
+   67qqs6i94x2phHkqIQi4MzN9C32zetIbBHDT6pHsgfko4otzu2eDFZOE6
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="320496541"
 X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="356122012"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 19:25:46 -0700
+   d="scan'208";a="320496541"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 19:25:46 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="639869819"
+   d="scan'208";a="587132577"
 Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 25 Aug 2022 19:25:45 -0700
+  by orsmga006.jf.intel.com with ESMTP; 25 Aug 2022 19:25:45 -0700
 Received: from kbuild by 34e741d32628 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oRP2W-0003Fy-1X;
+        id 1oRP2W-0003G0-1a;
         Fri, 26 Aug 2022 02:25:44 +0000
-Date:   Fri, 26 Aug 2022 10:24:52 +0800
+Date:   Fri, 26 Aug 2022 10:25:21 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:master] BUILD SUCCESS
- 9203577122076d0d92df25b3787949f540567c26
-Message-ID: <63082ef4.RYrnGc+afRCvKMI5%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: arch/arm/mach-imx/cpu-imx25.c:40:5: warning: no previous prototype
+ for 'mx25_revision'
+Message-ID: <202208261020.uj1YdaoI-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
-branch HEAD: 9203577122076d0d92df25b3787949f540567c26  Merge x86/urgent into tip/master
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   4c612826bec1441214816827979b62f84a097e91
+commit: a3102fafdce6f150e5a46e1725bb1732f8953a01 ARM: iop32x: enable multiplatform support
+date:   5 months ago
+config: arm-randconfig-r032-20220826 (https://download.01.org/0day-ci/archive/20220826/202208261020.uj1YdaoI-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a3102fafdce6f150e5a46e1725bb1732f8953a01
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a3102fafdce6f150e5a46e1725bb1732f8953a01
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash arch/arm/mach-imx/ arch/arm/mach-versatile/ drivers/clk/spear/
 
-elapsed time: 724m
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-configs tested: 95
-configs skipped: 3
+All warnings (new ones prefixed by >>):
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+   In file included from include/linux/gfp.h:6,
+                    from include/linux/umh.h:4,
+                    from include/linux/kmod.h:9,
+                    from include/linux/module.h:17,
+                    from arch/arm/mach-imx/cpu-imx25.c:8:
+   include/linux/mmzone.h: In function '__nr_to_section':
+   include/linux/mmzone.h:1404:13: warning: the comparison will always evaluate as 'true' for the address of 'mem_section' will never be NULL [-Waddress]
+    1404 |         if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+         |             ^
+   include/linux/mmzone.h:1390:27: note: 'mem_section' declared here
+    1390 | extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
+         |                           ^~~~~~~~~~~
+   arch/arm/mach-imx/cpu-imx25.c: At top level:
+>> arch/arm/mach-imx/cpu-imx25.c:40:5: warning: no previous prototype for 'mx25_revision' [-Wmissing-prototypes]
+      40 | int mx25_revision(void)
+         |     ^~~~~~~~~~~~~
+--
+   In file included from include/linux/swap.h:7,
+                    from include/linux/suspend.h:5,
+                    from arch/arm/mach-imx/pm-imx25.c:7:
+   include/linux/mmzone.h: In function '__nr_to_section':
+   include/linux/mmzone.h:1404:13: warning: the comparison will always evaluate as 'true' for the address of 'mem_section' will never be NULL [-Waddress]
+    1404 |         if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+         |             ^
+   include/linux/mmzone.h:1390:27: note: 'mem_section' declared here
+    1390 | extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
+         |                           ^~~~~~~~~~~
+   arch/arm/mach-imx/pm-imx25.c: At top level:
+>> arch/arm/mach-imx/pm-imx25.c:31:13: warning: no previous prototype for 'imx25_pm_init' [-Wmissing-prototypes]
+      31 | void __init imx25_pm_init(void)
+         |             ^~~~~~~~~~~~~
+--
+   In file included from include/linux/gfp.h:6,
+                    from include/linux/radix-tree.h:12,
+                    from include/linux/idr.h:15,
+                    from include/linux/kernfs.h:12,
+                    from include/linux/sysfs.h:16,
+                    from include/linux/kobject.h:20,
+                    from include/linux/of.h:17,
+                    from arch/arm/mach-versatile/versatile.c:13:
+   include/linux/mmzone.h: In function '__nr_to_section':
+   include/linux/mmzone.h:1404:13: warning: the comparison will always evaluate as 'true' for the address of 'mem_section' will never be NULL [-Waddress]
+    1404 |         if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+         |             ^
+   include/linux/mmzone.h:1390:27: note: 'mem_section' declared here
+    1390 | extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
+         |                           ^~~~~~~~~~~
+   arch/arm/mach-versatile/versatile.c: At top level:
+>> arch/arm/mach-versatile/versatile.c:56:14: warning: no previous prototype for 'mmc_status' [-Wmissing-prototypes]
+      56 | unsigned int mmc_status(struct device *dev)
+         |              ^~~~~~~~~~
+--
+   In file included from include/linux/gfp.h:6,
+                    from include/linux/slab.h:15,
+                    from include/linux/clkdev.h:12,
+                    from drivers/clk/spear/spear3xx_clock.c:13:
+   include/linux/mmzone.h: In function '__nr_to_section':
+   include/linux/mmzone.h:1404:13: warning: the comparison will always evaluate as 'true' for the address of 'mem_section' will never be NULL [-Waddress]
+    1404 |         if (!mem_section[SECTION_NR_TO_ROOT(nr)])
+         |             ^
+   include/linux/mmzone.h:1390:27: note: 'mem_section' declared here
+    1390 | extern struct mem_section mem_section[NR_SECTION_ROOTS][SECTIONS_PER_ROOT];
+         |                           ^~~~~~~~~~~
+   drivers/clk/spear/spear3xx_clock.c: At top level:
+>> drivers/clk/spear/spear3xx_clock.c:390:13: warning: no previous prototype for 'spear3xx_clk_init' [-Wmissing-prototypes]
+     390 | void __init spear3xx_clk_init(void __iomem *misc_base, void __iomem *soc_config_base)
+         |             ^~~~~~~~~~~~~~~~~
 
-gcc tested configs:
-loongarch                         allnoconfig
-um                             i386_defconfig
-loongarch                           defconfig
-um                           x86_64_defconfig
-powerpc                          allmodconfig
-mips                             allyesconfig
-powerpc                           allnoconfig
-sh                               allmodconfig
-arc                                 defconfig
-i386                                defconfig
-s390                             allmodconfig
-alpha                               defconfig
-s390                                defconfig
-s390                             allyesconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-arc                              allyesconfig
-x86_64                        randconfig-a006
-alpha                            allyesconfig
-m68k                             allmodconfig
-m68k                             allyesconfig
-x86_64                              defconfig
-i386                             allyesconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-x86_64                        randconfig-a013
-arm                                 defconfig
-x86_64                        randconfig-a011
-x86_64                        randconfig-a015
-x86_64                           rhel-8.3-kvm
-x86_64                    rhel-8.3-kselftests
-x86_64                          rhel-8.3-func
-arm                              allyesconfig
-x86_64                         rhel-8.3-kunit
-arm64                            allyesconfig
-i386                          randconfig-a012
-x86_64                           rhel-8.3-syz
-i386                          randconfig-a016
-i386                          randconfig-a014
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-riscv                randconfig-r042-20220824
-s390                 randconfig-r044-20220824
-arc                  randconfig-r043-20220824
-arc                  randconfig-r043-20220825
-arc                  randconfig-r043-20220823
-ia64                             allmodconfig
-i386                          debian-10.3-kvm
-i386                        debian-10.3-kunit
-i386                         debian-10.3-func
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-nios2                            allyesconfig
-nios2                               defconfig
-parisc                              defconfig
-parisc64                            defconfig
-parisc                           allyesconfig
-powerpc                          allyesconfig
-riscv                               defconfig
-riscv                            allmodconfig
-riscv                            allyesconfig
-m68k                        m5407c3_defconfig
-arm                        mvebu_v7_defconfig
-powerpc                     mpc83xx_defconfig
-alpha                            alldefconfig
-arm                          pxa910_defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
 
-clang tested configs:
-x86_64                        randconfig-a005
-x86_64                        randconfig-a001
-x86_64                        randconfig-a003
-x86_64                        randconfig-a016
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-i386                          randconfig-a013
-i386                          randconfig-a011
-i386                          randconfig-a015
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-hexagon              randconfig-r045-20220825
-hexagon              randconfig-r045-20220823
-riscv                randconfig-r042-20220823
-riscv                randconfig-r042-20220825
-hexagon              randconfig-r041-20220823
-hexagon              randconfig-r041-20220825
-s390                 randconfig-r044-20220825
-s390                 randconfig-r044-20220823
-x86_64                        randconfig-k001
+vim +/mx25_revision +40 arch/arm/mach-imx/cpu-imx25.c
+
+d27536c6619221 Jason Liu 2011-08-26  39  
+d27536c6619221 Jason Liu 2011-08-26 @40  int mx25_revision(void)
+
+:::::: The code at line 40 was first introduced by commit
+:::::: d27536c6619221528114746317def345467a3e80 ARM: mx25: Print silicon revision on boot
+
+:::::: TO: Jason Liu <jason.hui@linaro.org>
+:::::: CC: Sascha Hauer <s.hauer@pengutronix.de>
 
 -- 
 0-DAY CI Kernel Test Service
