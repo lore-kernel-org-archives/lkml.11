@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF438ECAAD7
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D047ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 18:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344993AbiHZSo4 (ORCPT
+        id S1345271AbiHZSo6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 14:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42662 "EHLO
+        Fri, 26 Aug 2022 14:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345018AbiHZSo2 (ORCPT
+        with ESMTP id S1345224AbiHZSob (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 14:44:28 -0400
-Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [IPv6:2001:4b7a:2000:18::168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6E3EE6AB
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 11:41:25 -0700 (PDT)
+        Fri, 26 Aug 2022 14:44:31 -0400
+Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [IPv6:2001:4b7a:2000:18::169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DEFBF074E
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 11:41:26 -0700 (PDT)
 Received: from [192.168.1.101] (afbd60.neoplus.adsl.tpnet.pl [95.49.29.60])
         (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id A214F3F761;
-        Fri, 26 Aug 2022 20:41:00 +0200 (CEST)
-Message-ID: <e125ec73-200b-a5cf-4396-b56b2ac70b8b@somainline.org>
-Date:   Fri, 26 Aug 2022 20:40:58 +0200
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 9AD3C3F70E;
+        Fri, 26 Aug 2022 20:40:35 +0200 (CEST)
+Message-ID: <a643efa6-75fa-63c5-e139-72339d0db4cb@somainline.org>
+Date:   Fri, 26 Aug 2022 20:40:34 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH 5/7] arm64: dts: qcom: sm8150-xperia-kumano: Specify which
- LDO modes are allowed
+Subject: Re: [PATCH 3/7] arm64: dts: qcom: sc8280xp-crd: Specify which LDO
+ modes are allowed
 Content-Language: en-US
 To:     Douglas Anderson <dianders@chromium.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Andrew Halaney <ahalaney@redhat.com>,
         Mark Brown <broonie@kernel.org>,
         Andy Gross <agross@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20220825164205.4060647-1-dianders@chromium.org>
- <20220825094155.5.I51d60414a42ba9e3008e208d60a04c9ffc425fa7@changeid>
+ <20220825094155.3.Ie7d2c50d2b42ef2d364f3a0c8e300e5ce1875b79@changeid>
 From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20220825094155.5.I51d60414a42ba9e3008e208d60a04c9ffc425fa7@changeid>
+In-Reply-To: <20220825094155.3.Ie7d2c50d2b42ef2d364f3a0c8e300e5ce1875b79@changeid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -67,7 +66,7 @@ On 25.08.2022 18:42, Douglas Anderson wrote:
 > 
 > [1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
 > 
-> Fixes: d0a6ce59ea4e ("arm64: dts: qcom: sm8150: Add support for SONY Xperia 1 / 5 (Kumano platform)")
+> Fixes: ccd3517faf18 ("arm64: dts: qcom: sc8280xp: Add reference device")
 > Signed-off-by: Douglas Anderson <dianders@chromium.org>
 > ---
 Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
@@ -75,15 +74,25 @@ Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 Konrad
 
 > 
->  arch/arm64/boot/dts/qcom/sm8150-sony-xperia-kumano.dtsi | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  arch/arm64/boot/dts/qcom/sc8280xp-crd.dts | 33 +++++++++++++++++++++++
+>  1 file changed, 33 insertions(+)
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8150-sony-xperia-kumano.dtsi b/arch/arm64/boot/dts/qcom/sm8150-sony-xperia-kumano.dtsi
-> index 014fe3a31548..fb6e5a140c9f 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8150-sony-xperia-kumano.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8150-sony-xperia-kumano.dtsi
-> @@ -348,6 +348,9 @@ vreg_l6c_2p9: ldo6 {
->  			regulator-max-microvolt = <2960000>;
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+> index d6f272c71a47..f64d58e371bd 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+> @@ -88,6 +88,9 @@ vreg_l3b: ldo3 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-boot-on;
+>  			regulator-always-on;
+>  		};
+> @@ -98,6 +101,9 @@ vreg_l4b: ldo4 {
+>  			regulator-max-microvolt = <912000>;
 >  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 >  			regulator-allow-set-load;
 > +			regulator-allowed-modes =
@@ -91,9 +100,19 @@ Konrad
 > +			     RPMH_REGULATOR_MODE_HPM>;
 >  		};
 >  
->  		vreg_l7c_3p0: ldo7 {
-> @@ -367,6 +370,9 @@ vreg_l9c_2p9: ldo9 {
->  			regulator-max-microvolt = <2960000>;
+>  		vreg_l6b: ldo6 {
+> @@ -106,6 +112,9 @@ vreg_l6b: ldo6 {
+>  			regulator-max-microvolt = <880000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-boot-on;
+>  		};
+>  	};
+> @@ -120,6 +129,9 @@ vreg_l1c: ldo1 {
+>  			regulator-max-microvolt = <1800000>;
 >  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
 >  			regulator-allow-set-load;
 > +			regulator-allowed-modes =
@@ -101,4 +120,74 @@ Konrad
 > +			     RPMH_REGULATOR_MODE_HPM>;
 >  		};
 >  
->  		vreg_l10c_3p3: ldo10 {
+>  		vreg_l7c: ldo7 {
+> @@ -128,6 +140,9 @@ vreg_l7c: ldo7 {
+>  			regulator-max-microvolt = <2504000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l13c: ldo13 {
+> @@ -136,6 +151,9 @@ vreg_l13c: ldo13 {
+>  			regulator-max-microvolt = <3072000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  	};
+>  
+> @@ -151,6 +169,9 @@ vreg_l3d: ldo3 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l4d: ldo4 {
+> @@ -159,6 +180,9 @@ vreg_l4d: ldo4 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l6d: ldo6 {
+> @@ -167,6 +191,9 @@ vreg_l6d: ldo6 {
+>  			regulator-max-microvolt = <880000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l7d: ldo7 {
+> @@ -175,6 +202,9 @@ vreg_l7d: ldo7 {
+>  			regulator-max-microvolt = <3072000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l9d: ldo9 {
+> @@ -183,6 +213,9 @@ vreg_l9d: ldo9 {
+>  			regulator-max-microvolt = <912000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  	};
+>  };
