@@ -2,203 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5F02ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF3FDC0502A
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 22:00:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237892AbiHZV7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 17:59:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
+        id S239997AbiHZWAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 18:00:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbiHZV73 (ORCPT
+        with ESMTP id S231131AbiHZWAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 17:59:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B959FCCE3D;
-        Fri, 26 Aug 2022 14:59:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5607E615D2;
-        Fri, 26 Aug 2022 21:59:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0B3DC433D6;
-        Fri, 26 Aug 2022 21:59:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661551166;
-        bh=5xR3EC5MWZoN0OXGdyuL9WrQBUm1gv5VQ3OGVer9NL8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fnKGIUyipaVboyQ8u4/rlhxDe0P+rbyGQEJuzGfBPJFpXkh6wENXpFpYyZwKDVwPk
-         NKcpT3VxV6YTynepeMmkTIdN0lshrk7tEOr2vXbD/Yg+cGwaYzQYG22xdTDPwcXzb5
-         MfKASkYhoOxm7xzZ1T4dDce00BjoIeDwo5Skh0Wdma6erSawLtpDttiTvMItG5PYhV
-         A7SqGCPkZJVC4t81aAVx1UWhL/grl8YV5fynpZ5y6t/LsFgJD/V0L4or15tcHRQpN6
-         addZA9KMTMc5ZZQjZfPA2sI9INIVJNw80lKjG6zwv4WHxD33r67mZk9trURh/tZh7b
-         kOgaYqsURBkBw==
-From:   SeongJae Park <sj@kernel.org>
-To:     SeongJae Park <sj@kernel.org>
-Cc:     Maximilian Heyne <mheyne@amazon.de>, jgross@suse.com,
-        roger.pau@citrix.com, marmarek@invisiblethingslab.com,
-        xen-devel@lists.xenproject.org, axboe@kernel.dk,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH 2/2] xen-blkfront: Advertise feature-persistent as user requested
-Date:   Fri, 26 Aug 2022 21:59:24 +0000
-Message-Id: <20220826215924.50813-1-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220826212039.50736-1-sj@kernel.org>
-References: 
+        Fri, 26 Aug 2022 18:00:35 -0400
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0380B02A6;
+        Fri, 26 Aug 2022 15:00:33 -0700 (PDT)
+Received: by mail-pf1-f177.google.com with SMTP id y127so2765605pfy.5;
+        Fri, 26 Aug 2022 15:00:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=drYo/HPpt3swBa4tChpUwjOD5tPA9oSu7mOGrZPzAC8=;
+        b=wbtimq+gfGmXS8rymNOXZR/A08vA4rHJH/Vy9KBRQ5Cl5ZBzhHeJ5xFgpNxUIMszKw
+         tzyxpVSfsu4H4MjbR7yLH3MgMarjetbXj1PlL25oKj0d1QwTi2fxDCp4XicLp3XEQTur
+         MnnwYImjoLkZ9euHfB9I557NP0JG5pxqNroCZ4ZspWsSU9JuhLY7P3GS+jCMMLE78Eo2
+         9kH3/e7wkukICoycbDbiUF7xQk1aiYN08NL9CJxa4IYM2A50gAfHKiUT43YH4QHYHB9A
+         DK5y6wsvadLnWBD8ie9OkQZC/XhaPA+P5Yf5PZD4uOM423HI0jU0ao0iP04DInCm6ETG
+         iAgA==
+X-Gm-Message-State: ACgBeo1RHupsWDYfkn2dPwh6ZiaL1loJT8+wSgNjeJWdk1cSZiD1+iRv
+        Fqs1gvpKDFkEc1f86RGXhQM=
+X-Google-Smtp-Source: AA6agR7vg8/aKDBrWQKRqBLO9T32XbxH+7iIBLMWlJ4dUIvlOM4CNbhI1XRH6aVmXDDnoZFCHOUh+A==
+X-Received: by 2002:a65:42c8:0:b0:41a:8138:f47f with SMTP id l8-20020a6542c8000000b0041a8138f47fmr4831436pgp.476.1661551232944;
+        Fri, 26 Aug 2022 15:00:32 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:a12:b4b9:f1b3:ec63? ([2620:15c:211:201:a12:b4b9:f1b3:ec63])
+        by smtp.gmail.com with ESMTPSA id x187-20020a6263c4000000b00528c066678csm2248566pfb.72.2022.08.26.15.00.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 15:00:32 -0700 (PDT)
+Message-ID: <95742dba-1dcd-090a-8920-31d0ef6eef49@acm.org>
+Date:   Fri, 26 Aug 2022 15:00:29 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] scsi: ufs: ufsfbo: Introduce File Based Optimization
+ feature
+Content-Language: en-US
+To:     Jiaming Li <lijiamingsofine@gmail.com>, avri.altman@wdc.com,
+        alim.akhtar@samsung.com, jejb@linux.ibm.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lijiaming3 <lijiaming3@xiaomi.com>
+References: <20220824084633.14428-1-lijiamingsofine@gmail.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220824084633.14428-1-lijiamingsofine@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 26 Aug 2022 21:20:39 +0000 SeongJae Park <sj@kernel.org> wrote:
+On 8/24/22 01:46, Jiaming Li wrote:
+> diff --git a/drivers/scsi/ufs/Kconfig b/drivers/scsi/ufs/Kconfig
+> index 432df76e6318..57b0e8b14543 100644
+> --- a/drivers/scsi/ufs/Kconfig
+> +++ b/drivers/scsi/ufs/Kconfig
+> @@ -199,3 +199,12 @@ config SCSI_UFS_FAULT_INJECTION
+>   	help
+>   	  Enable fault injection support in the UFS driver. This makes it easier
+>   	  to test the UFS error handler and abort handler.
+> +
+> +config SCSI_UFS_FBO
+> +	bool "Support UFS File-based Optimization"
+> +	depends on SCSI_UFSHCD
+> +	help
+> +	 The UFS FBO feature improves Sequential read performance. The Host can
 
-> Hi Max,
-> 
-> On Fri, 26 Aug 2022 14:26:58 +0000 Maximilian Heyne <mheyne@amazon.de> wrote:
-> 
-> > On Thu, Aug 25, 2022 at 04:15:11PM +0000, SeongJae Park wrote:
-> > > 
-> > > Commit e94c6101e151 ("xen-blkback: Apply 'feature_persistent' parameter
-> > > when connect") made blkback to advertise its support of the persistent
-> > > grants feature only if the user sets the 'feature_persistent' parameter
-> > > of the driver and the frontend advertised its support of the feature.
-> > > However, following commit 402c43ea6b34 ("xen-blkfront: Apply
-> > > 'feature_persistent' parameter when connect") made the blkfront to work
-> > > in the same way.  That is, blkfront also advertises its support of the
-> > > persistent grants feature only if the user sets the 'feature_persistent'
-> > > parameter of the driver and the backend advertised its support of the
-> > > feature.
-> > > 
-> > > Hence blkback and blkfront will never advertise their support of the
-> > > feature but wait until the other advertises the support, even though
-> > > users set the 'feature_persistent' parameters of the drivers.  As a
-> > > result, the persistent grants feature is disabled always regardless of
-> > > the 'feature_persistent' values[1].
-> > > 
-> > > The problem comes from the misuse of the semantic of the advertisement
-> > > of the feature.  The advertisement of the feature should means only
-> > > availability of the feature not the decision for using the feature.
-> > > However, current behavior is working in the wrong way.
-> > > 
-> > > This commit fixes the issue by making the blkfront advertises its
-> > > support of the feature as user requested via 'feature_persistent'
-> > > parameter regardless of the otherend's support of the feature.
-> > > 
-> > > [1] https://lore.kernel.org/xen-devel/bd818aba-4857-bc07-dc8a-e9b2f8c5f7cd@suse.com/
-> > > 
-> > > Fixes: 402c43ea6b34 ("xen-blkfront: Apply 'feature_persistent' parameter when connect")
-> > > Cc: <stable@vger.kernel.org> # 5.10.x
-> > > Reported-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
-> > > Suggested-by: Juergen Gross <jgross@suse.com>
-> > > Signed-off-by: SeongJae Park <sj@kernel.org>
-> > > ---
-> > >  drivers/block/xen-blkfront.c | 8 ++++++--
-> > >  1 file changed, 6 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-> > > index 8e56e69fb4c4..dfae08115450 100644
-> > > --- a/drivers/block/xen-blkfront.c
-> > > +++ b/drivers/block/xen-blkfront.c
-> > > @@ -213,6 +213,9 @@ struct blkfront_info
-> > >         unsigned int feature_fua:1;
-> > >         unsigned int feature_discard:1;
-> > >         unsigned int feature_secdiscard:1;
-> > > +       /* Connect-time cached feature_persistent parameter */
-> > > +       unsigned int feature_persistent_parm:1;
-> > > +       /* Persistent grants feature negotiation result */
-> > >         unsigned int feature_persistent:1;
-> > >         unsigned int bounce:1;
-> > >         unsigned int discard_granularity;
-> > > @@ -1848,7 +1851,7 @@ static int talk_to_blkback(struct xenbus_device *dev,
-> > >                 goto abort_transaction;
-> > >         }
-> > >         err = xenbus_printf(xbt, dev->nodename, "feature-persistent", "%u",
-> > > -                       info->feature_persistent);
-> > > +                       info->feature_persistent_parm);
-> > >         if (err)
-> > >                 dev_warn(&dev->dev,
-> > >                          "writing persistent grants feature to xenbus");
-> > > @@ -2281,7 +2284,8 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
-> > >         if (xenbus_read_unsigned(info->xbdev->otherend, "feature-discard", 0))
-> > >                 blkfront_setup_discard(info);
-> > > 
-> > > -       if (feature_persistent)
-> > > +       info->feature_persistent_parm = feature_persistent;
-> > 
-> > I think setting this here is too late because "feature-persistent" was already
-> > written to xenstore via talk_to_blkback but with default 0. So during the
-> > connect blkback will not see that the guest supports the feature and falls back
-> > to no persistent grants.
-> > 
-> > Tested only this patch with some hacky dom0 kernel that doesn't have the patch
-> > from your series yet. Will do more testing next week.
-> 
-> Appreciate for your test!  And you're right, this patch is not fixing the issue
-> completely.  That is, commit 402c43ea6b34 ("xen-blkfront: Apply
-> 'feature_persistent' parameter when connect") introduced two bugs.  One is the
-> misuse of the semantic of the advertisement.  It's fixed by this patch.  The
-> second bug, which you found here, is caching the parameter in a wrong place.
+Sequential -> sequential
+Host -> host
 
-To be fair, I think we should say the misuse of the semantic issue came from
-the initial commit[1] that uses only one field for the two different
-information (availability of the feature and decision to use the feature), and
-the mis-placed caching has introduced by the behavior change commit[2].
+> +	 send the LBA to device. The device will return a fragmented state. It
 
-[1] 74a852479c68 ("xen-blkfront: add a parameter for disabling of persistent grants")
-[2] 402c43ea6b34 ("xen-blkfront: Apply 'feature_persistent' parameter when connect")
+"The host can send the LBA to the device" is misleading since the host 
+typically sends multiple LBAs to the device.
 
+"The device will return a fragmented state." is wrong - did you perhaps 
+want to write that the device will start defragmentation?
+
+> +	FBO_DESC_PARAM_MAX_LBA_RANGE_CONUT	= 0xF,
+
+What is "CONUT"? Did you perhaps want to write "COUNT"?
+
+> +static void ufsfbo_scsi_unblock_requests(struct ufs_hba *hba)
+> +{
+> +	if (atomic_dec_and_test(&hba->scsi_block_reqs_cnt))
+> +		scsi_unblock_requests(hba->host);
+> +}
+> +
+> +static void ufsfbo_scsi_block_requests(struct ufs_hba *hba)
+> +{
+> +	if (atomic_inc_return(&hba->scsi_block_reqs_cnt) == 1)
+> +		scsi_block_requests(hba->host);
+> +}
+
+Please use ufshcd_scsi_unblock_requests() and 
+ufshcd_scsi_block_requests() instead of duplicating these.
+
+> +static int ufsfbo_wait_for_doorbell_clr(struct ufs_hba *hba,
+> +					u64 wait_timeout_us)
+> +{
+> +	unsigned long flags;
+> +	int ret = 0;
+> +	u32 tm_doorbell;
+> +	u32 tr_doorbell;
+> +	bool timeout = false, do_last_check = false;
+> +	ktime_t start;
+> +
+> +	ufshcd_hold(hba, false);
+> +	spin_lock_irqsave(hba->host->host_lock, flags);
+> +	/*
+> +	 * Wait for all the outstanding tasks/transfer requests.
+> +	 * Verify by checking the doorbell registers are clear.
+> +	 */
+> +	start = ktime_get();
+> +	do {
+> +		if (hba->ufshcd_state != UFSHCD_STATE_OPERATIONAL) {
+> +			ret = -EBUSY;
+> +			goto out;
+> +		}
+> +		tm_doorbell = ufshcd_readl(hba, REG_UTP_TASK_REQ_DOOR_BELL);
+> +		tr_doorbell = ufshcd_readl(hba, REG_UTP_TRANSFER_REQ_DOOR_BELL);
+> +		if (!tm_doorbell && !tr_doorbell) {
+> +			timeout = false;
+> +			break;
+> +		} else if (do_last_check) {
+> +			break;
+> +		}
+> +		spin_unlock_irqrestore(hba->host->host_lock, flags);
+> +		schedule();
+> +		if (ktime_to_us(ktime_sub(ktime_get(), start)) >
+> +		    wait_timeout_us) {
+> +			timeout = true;
+> +			/*
+> +			 * We might have scheduled out for long time so make
+> +			 * sure to check if doorbells are cleared by this time
+> +			 * or not.
+> +			 */
+> +			do_last_check = true;
+> +		}
+> +		spin_lock_irqsave(hba->host->host_lock, flags);
+> +	} while (tm_doorbell || tr_doorbell);
+> +	if (timeout) {
+> +		dev_err(hba->dev,
+> +			"%s: timedout waiting for doorbell to clear (tm=0x%x, tr=0x%x)\n",
+> +			__func__, tm_doorbell, tr_doorbell);
+> +		ret = -EBUSY;
+> +	}
+> +out:
+> +	spin_unlock_irqrestore(hba->host->host_lock, flags);
+> +	ufshcd_release(hba);
+> +	return ret;
+> +}
+
+This looks like a copy of ufshcd_wait_for_doorbell_clr()? Please do not 
+duplicate existing code but instead reuse it. The same comment holds for 
+all the functions below that have been copy/pasted from ufshcd.c.
+
+> +int ufsfbo_read_frag_level(struct ufsfbo_dev *fbo, char *buf)
+> +{
+[ ... ]
+> +	hba->host->eh_noresume = 1;
+
+Why is this set? This should be documented.
+
+> +int ufsfbo_init_lba_buffer(struct ufsfbo_dev *fbo, const char *buf, char *lba_buf)
+> +{
+> +	int ret = 0;
+> +	char *buf_ptr;
+> +	char *lba;
+> +	u64 lba_value_pre, lba_value_post;
+> +	int len_index = 1, lba_index = FBO_HEADER_SIZE + FBO_BODY_HEADER_SIZE;
+> +
+> +	buf_ptr = kzalloc(strlen(buf) + 1, GFP_KERNEL);
+> +	if (!buf_ptr) {
+> +		FBO_ERR_MSG("alloc buffer fail");
+> +		ret = -ENOMEM;
+> +		return ret;
+> +	}
+> +	memcpy(buf_ptr, buf, strlen(buf) + 1);
+
+Please use kstrdup() instead of open-coding it.
+
+> +	/*create lba range buf send for device*/
+> +	lba_buf[5] = fbo->fbo_lba_count; //lba range count
+> +	lba_buf[6] = fbo->fbo_wholefile; //calculate whole file
+
+C++-style comments are not allowed in kernel code.
+
+> +	while ((lba = strsep(&buf_ptr, ",")) != NULL) {
+
+Another style violation. Please check patches with checkpatch before 
+posting these.
+
+> +int ufsfbo_lba_list_write(struct ufsfbo_dev *fbo, const char *buf)
+> +{
+
+[ ... ]
+
+> +	hba->host->eh_noresume = 1;
+
+Again, why is this set here? Please document this.
+
+> +void ufsfbo_init(struct ufs_hba *hba)
+> +{
+
+[ ... ]
+
+> +	ret = ufsfbo_create_sysfs(fbo);
+
+Please do not call sysfs_create_file() nor kobject_add() directly but 
+instead add an attribute group to ufshcd_driver_groups.
+
+> +	ufsfbo_set_state(hba, FBO_PRESENT);
+
+Consider renaming FBO_PRESENT into FBO_SUPPORTED.
+
+> +/* SYSFS DEFINE */
+> +#define define_sysfs_ro(_name) __ATTR(_name, 0444,			\
+> +				      ufsfbo_sysfs_show_##_name, NULL)
+> +#define define_sysfs_wo(_name) __ATTR(_name, 0200,			\
+> +				       NULL, ufsfbo_sysfs_store_##_name)
+> +#define define_sysfs_rw(_name) __ATTR(_name, 0644,			\
+> +				      ufsfbo_sysfs_show_##_name,	\
+> +				      ufsfbo_sysfs_store_##_name)
+
+Why are these macros necessary? Why can't any of the existing macros be 
+used to define these sysfs attributes, e.g. DEVICE_ATTR_RO()?
+
+> diff --git a/drivers/scsi/ufs/ufsfbo.h b/drivers/scsi/ufs/ufsfbo.h
+> new file mode 100644
+> index 000000000000..c2549032815e
+> --- /dev/null
+> +++ b/drivers/scsi/ufs/ufsfbo.h
+> @@ -0,0 +1,143 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Universal Flash Storage File-based Optimization
+> + *
+> + * Copyright (C) 2022 Xiaomi Mobile Software Co., Ltd
+> + *
+> + * Authors:
+> + *		lijiaming <lijiaming3@xiaomi.com>
+> + */
+> +
+> +#ifndef _UFSFBO_H_
+> +#define _UFSFBO_H_
+
+Please insert a blank line between the header guard and the include 
+directives.
+
+> +#include <linux/interrupt.h>
+
+Why has this header file been included? Please minimize include directives.
+
+> +#include <linux/blktrace_api.h>
+
+Why has this header file been included?
+
+> +#include <linux/blkdev.h>
+> +#include <linux/bitfield.h>
+
+Why has this header file been included?
+
+
+> diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+> index 2f6468f22b48..9c377c514e17 100644
+> --- a/drivers/scsi/ufs/ufshcd.c
+> +++ b/drivers/scsi/ufs/ufshcd.c
+> @@ -4956,6 +4956,14 @@ static void ufshcd_hpb_configure(struct ufs_hba *hba, struct scsi_device *sdev)
+>   	ufshpb_init_hpb_lu(hba, sdev);
+>   }
+>   
+> +static void ufshcd_fbo_configure(struct ufs_hba *hba, struct scsi_device *sdev)
+> +{
+> +#ifdef CONFIG_SCSI_UFS_FBO
+> +	if (sdev->lun == 0)
+> +		hba->fbo.sdev_ufs_lu = sdev;
+> +#endif
+> +}
+
+Shouldn't this function occur in the file with FBO functions? 
+Additionally, please document why the SCSI device for LUN zero is stored 
+since this is not required by the FBO specification.
 
 Thanks,
-SJ
 
-> 
-> In detail, blkfront does the advertisement before connect (for init and resume)
-> and then negotiation after connected.  And the blkback does the negotiation
-> first, and then the advertisement during the establishing the connection.
-> Hence, blkback should cache the parameter just before the negotiation logic
-> while blkfront should do that just before the advertisement logic.
-> 
-> The blkback behavior change commit (e94c6101e151) did the work in the right
-> place, but the blkfront behavior change commit didn't.
-> 
-> So, I guess below change would fix the issue entirely when applied together
-> with this patch.  Any opinion, please?
-> 
-> 
-> diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-> index dfae08115450..7d3bde271e69 100644
-> --- a/drivers/block/xen-blkfront.c
-> +++ b/drivers/block/xen-blkfront.c
-> @@ -1850,6 +1850,7 @@ static int talk_to_blkback(struct xenbus_device *dev,
->                 message = "writing protocol";
->                 goto abort_transaction;
->         }
-> +       info->feature_persistent_parm = feature_persistent;
->         err = xenbus_printf(xbt, dev->nodename, "feature-persistent", "%u",
->                         info->feature_persistent_parm);
->         if (err)
-> @@ -2284,7 +2285,6 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
->         if (xenbus_read_unsigned(info->xbdev->otherend, "feature-discard", 0))
->                 blkfront_setup_discard(info);
-> 
-> -       info->feature_persistent_parm = feature_persistent;
->         if (info->feature_persistent_parm)
->                 info->feature_persistent =
->                         !!xenbus_read_unsigned(info->xbdev->otherend,
-> 
-> 
-> Thanks,
-> SJ
-> 
-> 
-> > 
-> > > +       if (info->feature_persistent_parm)
-> > >                 info->feature_persistent =
-> > >                         !!xenbus_read_unsigned(info->xbdev->otherend,
-> > >                                                "feature-persistent", 0);
-> > > --
-> > > 2.25.1
-> > > 
-> > 
+Bart.
