@@ -2,110 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0344CECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1B6ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343857AbiHZOtT (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 10:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34902 "EHLO
+        id S230335AbiHZOwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 10:52:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230408AbiHZOtP (ORCPT
+        with ESMTP id S229946AbiHZOwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 10:49:15 -0400
-X-Greylist: delayed 432 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 26 Aug 2022 07:49:14 PDT
-Received: from mail.stoffel.org (li1843-175.members.linode.com [172.104.24.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54314D87EB;
-        Fri, 26 Aug 2022 07:49:14 -0700 (PDT)
-Received: from quad.stoffel.org (068-116-170-226.res.spectrum.com [68.116.170.226])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.stoffel.org (Postfix) with ESMTPSA id 0BD202189D;
-        Fri, 26 Aug 2022 10:42:01 -0400 (EDT)
-Received: by quad.stoffel.org (Postfix, from userid 1000)
-        id 4B1F7A7E15; Fri, 26 Aug 2022 10:42:00 -0400 (EDT)
-MIME-Version: 1.0
+        Fri, 26 Aug 2022 10:52:44 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2057.outbound.protection.outlook.com [40.107.96.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1785D8B1A;
+        Fri, 26 Aug 2022 07:52:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DGWxpuJpCn4EJdpyoHdaSPwvvRCXCZx0Otug6F8eRDNvFutOvc2dFFB5XS9NH5fIHFCRKWfan6LC1K+HPhvF/qM/Jeq3aZBtjaOnj6WCYA2xK0RIgaoJjqVlf095slM0mTvHn8FVYguxC8lc0Wh4gEUTt463FRpPNPCG0z1Pbl8PxJPpOQUlY5ASiyN5L3QlyI03TFWGx6TO01p0MPQmBPMTYGb4VEy3MgbFOyOv+s/r3eml3oSQtk+YZIflKIHw9fP1LubTjrG28Wy+Vw7g02K7YTthchliZAV5cSwEA2sIzRJ0OE5YgjSVYXKT490IaEe6xMLwTy+XamFeeX5fFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=E8XZpsqJevGJHpeNjo6D/YJfbYoZYBuAU0ZXIEeksug=;
+ b=fhHmVB/HodC9gR0khqW9gBuaLf3Rcg7cOZcttoM9jidi/z3kz+K+RzFnfciVesJk6QdgP/C0Y5ClBny7Xmm9gC/UrKQAxnIgtyPAcfRCng5/7JpX+amRmus0Z5RA8ZbvJ8QWgEhRuAMBd7BYqTCJNgHYJF7U6GFbMDdrQxUIv7XYcdOuhQR1TvzSnBNGNSaHe5kR058Qf1wTKzSaqLMO0HnTDx0ky88kkaqIP34RajOheUom/ojNvk6xsUX502hKBtf3PBsVmDtHxSEAMPg3AK2M2YKkF8hWrrIdMnNa52qCjgoWuLLJOqrIVYzlhvhXBYaP5TEeTjTiip4obvfx5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=E8XZpsqJevGJHpeNjo6D/YJfbYoZYBuAU0ZXIEeksug=;
+ b=cMIOzC+N9dJC5s+Krjp8JGqCLtRY32N3LG5NoI8A1IBrRoyoKY4xQ9LGsBL05u449p1jwrfh5P/ZDNOlqReySu91zuhyesbUGcpCBOxUUvAxuiAnZ6ldXWc0dpN8E8w9itbfU7jS1OaiqJJBkZUytH1b5rWZ9ZW6NYpG9TCLYIFRFNLIgVYiZmhd96DO72VGqKyForyZsA3yJErol/35rv/IzcO4gi8eopHsvLsGkVWEnDsoMNh0QquOf9OdTwvzhiBhMGunV/fvFmpUviFppGJDbCwjyz7EcHYR5Ws69e3+GOylvOXrXAxAHgRNArejq74uZty6C4pYUu/aQ4LrTw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+ by DM6PR12MB3034.namprd12.prod.outlook.com (2603:10b6:5:3e::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Fri, 26 Aug
+ 2022 14:52:35 +0000
+Received: from MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
+ ([fe80::462:7fe:f04f:d0d5%8]) with mapi id 15.20.5566.016; Fri, 26 Aug 2022
+ 14:52:33 +0000
+Date:   Fri, 26 Aug 2022 11:52:31 -0300
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
+ probing device
+Message-ID: <YwjeL2SVmdRpoWb6@nvidia.com>
+References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
+ <20220826121141.50743-8-baolu.lu@linux.intel.com>
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Message-ID: <25352.56248.283092.213037@quad.stoffel.home>
-Date:   Fri, 26 Aug 2022 10:42:00 -0400
-From:   "John Stoffel" <john@stoffel.org>
-To:     NeilBrown <neilb@suse.de>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Daire Byrne <daire@dneg.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH/RFC 00/10 v5] Improve scalability of directory operations
-In-Reply-To: <166147828344.25420.13834885828450967910.stgit@noble.brown>
-References: <166147828344.25420.13834885828450967910.stgit@noble.brown>
-X-Mailer: VM 8.2.0b under 27.1 (x86_64-pc-linux-gnu)
+Content-Disposition: inline
+In-Reply-To: <20220826121141.50743-8-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: MN2PR07CA0019.namprd07.prod.outlook.com
+ (2603:10b6:208:1a0::29) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 65eaa174-8e0f-4504-2838-08da87729b54
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3034:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uwWpuDSmE+PBU4CgixeAidtGawgkx/hJua4wQRt+L99e3aufF4xSUJbr+/Q8Qp5d1Uv13FdFv7H07FF3so32dCgT2qBk7Qq795zvcpJmfe0uvR+ErQPjrBU6yLRFqoIy0BmisA+vQ7IiZmuJu0lW1itAWqVcS1PndvDh7rpXnwF/wqlxqHvx9gj+mr8tLETNEq+O76b/I7cLI5qrC70JKygMXJvmOmEHqTmPmHJgFFVkaQoUUDMwtV+vpXNN877ctxLXCYYARlmNX9e3lWAtzmVSkXkqY5+O2Y/njz1OlMxOuMeKZLkRTI7jSQz/cSDMUuApkaQ8sHNGIrvUqd9bfe+4Q/0Re/NNGOAf2rIh1vtj1EqEgGFYEOzDYi0EBBccydwraFpB1dLPj6PcwQZr5d4JE8nrpvV8TDa4AzrrdgYJl4H+05LeeaZJuPV3ksJwcfdmn1z7gJ8P1IYCVeNmtbYWoYuaXX2P71v+1VXCHMVRJ3x/EP5FPlPZ9m3NYkzNpokZ0mUMktXjabxv+mL2CqISklEdHGj2UKQcCuARZB0KSx7RNPfx2TETlYistmspMq5wO8/QJqSLJPxrgJ57CU+a915VqkDIdbZmLfW9a89O72ldiLHVLBHmw00pk+VhC3jrvv0lJ09iau75CdqvS9YSQoGZ/6bvs8X/cVm0XXPgvpX4BT8qqXM1/ADBY1/791boUhRzVCNe7TiV2/pQoA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(396003)(346002)(39860400002)(136003)(186003)(26005)(41300700001)(6512007)(86362001)(36756003)(6506007)(83380400001)(2616005)(6486002)(478600001)(38100700002)(8936002)(66946007)(54906003)(8676002)(66476007)(66556008)(316002)(6916009)(4326008)(4744005)(2906002)(7416002)(5660300002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?z8ZrQEqd5dNDbg2ooD7JZNmiE+fhLS0UaGav5YCS+9IVVt1wLUjHdRV/NMSn?=
+ =?us-ascii?Q?DosWNeUYX6msUyIJqw6aA+M2EZJMU9usrdBPftY0y+bP2W7uZRHmzasXE8/p?=
+ =?us-ascii?Q?61XLuENY+X60prYSvR3+sx/fhf02wuDZAepwpl7k44sr+6ufaHPheFJChXSg?=
+ =?us-ascii?Q?1cJP6XbR/NswPgnB7mKL0URwGt19GIfsDQwg0QcOdy/nC/+Yv4D5P+8R/55y?=
+ =?us-ascii?Q?T78/UYaLr9TTajr0Balgru11zo9FpuxQMtPzRUGo+UN1ix4aI63S8z0r7Gd1?=
+ =?us-ascii?Q?rMuutMqUy3zInr+VEdBMhHjlNEqb6Hm20l6N8Koeqs6Jr63v7xtP/u+ULAx8?=
+ =?us-ascii?Q?+fTRLuZfx9j1SM/zrpAh/EV3MqbD4UmyVit6SgQFliKjFn+beUr+wrvvqn3B?=
+ =?us-ascii?Q?NhU97oPbFYv8Rm+cO+HxMwN10UvpnR1cAODDQbDymARlr2SKjuqpgAHgOpw7?=
+ =?us-ascii?Q?62BwjRbXzDYsVViFoDU9COtaVVQKUTbvBYKDvIbFbLjeaYS8sJQtH17OSIC1?=
+ =?us-ascii?Q?XXDQRlqwxoFcjEerip7D6tY8r91NWw9hY7wIbw4q/ZehBAXa+SBOo0MqaNX5?=
+ =?us-ascii?Q?wD4TTGCU9iseon24/HydqYFzOmBe1mHY4hXe9M97nmYnEoN+VHPwVdLCJ8p2?=
+ =?us-ascii?Q?mYLDDhQE2hF7Q/x2tdJcvaHNFzEqfk3ce+eJTwndurCLThzjCR8beC9Wgv7f?=
+ =?us-ascii?Q?cB6nykffMCCf4i0CrZOkbtnWtI5jVWhGiXnnWTKMJvh4Abgs9NEMO5kS5guR?=
+ =?us-ascii?Q?g2DxOoppn0sD1CY+In42AH65IW5knodPAon1F4/Vouz6UABaIV70lH8LSqzn?=
+ =?us-ascii?Q?b8qkquDZYmv/RYatrKKj/jsuf8NeZtD0khk8CO0UsaV7D3kOEiPipwcG3iqx?=
+ =?us-ascii?Q?Zg4+2gvxq4l3IbGJyE0+ci43nqxR1ELME+Ip2ma9B5bn9mXZnhDjjBaoxWCF?=
+ =?us-ascii?Q?EfdBCUVGMfDnZvf33ZevK+XY0KcOCgB8YCgjBdPY65H+7aIL8lTucIxWmCN/?=
+ =?us-ascii?Q?pehH15OtoWp8ZUIwLJRRTNP9mzcC844lM3EVo28m/3+qYci2R8VEk9j8NJHt?=
+ =?us-ascii?Q?oZ03DK82IcN+q/yzKDnc8aIXJAJhVDRZT4EINF5VxkSj2ypaQwQ3tFd0uVCw?=
+ =?us-ascii?Q?FktxU71brGZ1FG7zNpcRMOT1nt54Na9z8j2rnuMK8XLVW7uyTlXs9IFRq9Xh?=
+ =?us-ascii?Q?ouwIpKC461Xwb7MxDNxMGvSaj0AzhqEo2rYN7TPhQaphuZLUiFW+4KcUitgF?=
+ =?us-ascii?Q?PqHwr1FF+N8bINMg6fGIBy3xr4QnNZN2UMXTGEmeHEgGqVhcGREAM1oopG5P?=
+ =?us-ascii?Q?20iOZ7G3si52RxD0VoUA1avxlHY2T/G39RPuXa3Vh9fCH7kC8FEKVwD6+bYn?=
+ =?us-ascii?Q?RyVksOjwQfjknvAUxs0qlPm+l7/kOr6DabFfv8VXYtB+zdty9NdQaoS7VDMk?=
+ =?us-ascii?Q?ekPKb53Y7Aj4voBiet5d/pzoRQhUiUlofBvdS2CT/JJlMoM9lw/uU3M7nW+T?=
+ =?us-ascii?Q?KeJY5AsAdEuYdTeGT1EAgSlunRGLuBBzzGvZRZUNdWAC/1SddIaho5ucqNxk?=
+ =?us-ascii?Q?ldffmAEmcZlzJKkIf2PRGGOiMSqd+druV+r03b9a?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 65eaa174-8e0f-4504-2838-08da87729b54
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 14:52:33.0553
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fl9lpqUDRJF/OJsCVj7hgJARoOFUfwrHc7kcZ2Z1mBjdSRNP1w+DMIEmc0hPdi7/
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3034
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>>>> "NeilBrown" == NeilBrown  <neilb@suse.de> writes:
+On Fri, Aug 26, 2022 at 08:11:31PM +0800, Lu Baolu wrote:
+> Allocate the blocking domain when probing devices if the driver supports
+> blocking domain allocation. Otherwise, revert to the previous behavior,
+> that is, use UNMANAGED domain instead when the blocking domain is needed.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Tested-by: Tony Zhu <tony.zhu@intel.com>
+> ---
+>  drivers/iommu/iommu.c | 29 +++++++++++++++++------------
+>  1 file changed, 17 insertions(+), 12 deletions(-)
 
-NeilBrown> [I made up "v5" - I haven't been counting]
+This seems like a lot of overhead to allocate these things for every
+group?
 
-My first comments, but I'm not a serious developer...
+Why not add a simple refcount on the blocking domain instead and
+allocate the domain on the pasid attach like we do for ownership?
 
-NeilBrown> VFS currently holds an exclusive lock on the directory while making
-NeilBrown> changes: add, remove, rename.
-NeilBrown> When multiple threads make changes in the one directory, the contention
-NeilBrown> can be noticeable.
-NeilBrown> In the case of NFS with a high latency link, this can easily be
-NeilBrown> demonstrated.  NFS doesn't really need VFS locking as the server ensures
-NeilBrown> correctness.
-
-NeilBrown> Lustre uses a single(?) directory for object storage, and has patches
-NeilBrown> for ext4 to support concurrent updates (Lustre accesses ext4 directly,
-NeilBrown> not via the VFS).
-
-NeilBrown> XFS (it is claimed) doesn't its own locking and doesn't need the VFS to
-NeilBrown> help at all.
-
-This sentence makes no sense to me... I assume you meant to say "...does
-it's own locking..."
-
-NeilBrown> This patch series allows filesystems to request a shared lock on
-NeilBrown> directories and provides serialisation on just the affected name, not the
-NeilBrown> whole directory.  It changes both the VFS and NFSD to use shared locks
-NeilBrown> when appropriate, and changes NFS to request shared locks.
-
-Are there any performance results?  Why wouldn't we just do a shared
-locked across all VFS based filesystems?  
-
-NeilBrown> The central enabling feature is a new dentry flag DCACHE_PAR_UPDATE
-NeilBrown> which acts as a bit-lock.  The ->d_lock spinlock is taken to set/clear
-NeilBrown> it, and wait_var_event() is used for waiting.  This flag is set on all
-NeilBrown> dentries that are part of a directory update, not just when a shared
-NeilBrown> lock is taken.
-
-NeilBrown> When a shared lock is taken we must use alloc_dentry_parallel() which
-NeilBrown> needs a wq which must remain until the update is completed.  To make use
-NeilBrown> of concurrent create, kern_path_create() would need to be passed a wq.
-NeilBrown> Rather than the churn required for that, we use exclusive locking when
-NeilBrown> no wq is provided.
-
-Is this a per-operation wq or a per-directory wq?  Can there be issues
-if someone does something silly like having 1,000 directories, all of
-which have multiple processes making parallel changes?  
-
-Does it degrade gracefully if a wq can't be allocated?  
-
-NeilBrown> One interesting consequence of this is that silly-rename becomes a
-NeilBrown> little more complex.  As the directory may not be exclusively locked,
-NeilBrown> the new silly-name needs to be locked (DCACHE_PAR_UPDATE) as well.
-NeilBrown> A new LOOKUP_SILLY_RENAME is added which helps implement this using
-NeilBrown> common code.
-
-NeilBrown> While testing I found some odd behaviour that was caused by
-NeilBrown> d_revalidate() racing with rename().  To resolve this I used
-NeilBrown> DCACHE_PAR_UPDATE to ensure they cannot race any more.
-
-NeilBrown> Testing, review, or other comments would be most welcome,
-
+Jason
