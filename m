@@ -2,90 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C5FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37FC2ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 11:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245233AbiHZLYC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 07:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
+        id S245154AbiHZL1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 07:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiHZLX7 (ORCPT
+        with ESMTP id S232994AbiHZL1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 07:23:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B32DAEE5;
-        Fri, 26 Aug 2022 04:23:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99EAB61ABC;
-        Fri, 26 Aug 2022 11:23:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4517CC433D6;
-        Fri, 26 Aug 2022 11:23:56 +0000 (UTC)
-Message-ID: <a4fbbf75-7fad-3124-6d42-21749b507115@xs4all.nl>
-Date:   Fri, 26 Aug 2022 13:23:54 +0200
+        Fri, 26 Aug 2022 07:27:15 -0400
+X-Greylist: delayed 409 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 26 Aug 2022 04:27:13 PDT
+Received: from pokefinder.org (pokefinder.org [135.181.139.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D4F1C743C;
+        Fri, 26 Aug 2022 04:27:13 -0700 (PDT)
+Received: from localhost (dynamic-046-114-176-008.46.114.pool.telefonica.de [46.114.176.8])
+        by pokefinder.org (Postfix) with ESMTPSA id 93843A4079C;
+        Fri, 26 Aug 2022 13:20:22 +0200 (CEST)
+Date:   Fri, 26 Aug 2022 13:20:17 +0200
+From:   Wolfram Sang <wsa@the-dreams.de>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Naresh Solanki <naresh.solanki@9elements.com>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the pinctrl tree
+Message-ID: <YwiscXaIDER6SnBf@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@the-dreams.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+        Naresh Solanki <naresh.solanki@9elements.com>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220826152650.2c55e482@canb.auug.org.au>
+ <CACRpkdYZOK9NhEqqU4Wkg1XHCHEQk=AR6w9730qo_tHmgGrorA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH] media: i2c: Fix repeated word in comments
-Content-Language: en-US
-To:     Jacopo Mondi <jacopo@jmondi.org>,
-        Jules Maselbas <jmaselbas@kalray.eu>
-Cc:     linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-References: <20220826100052.22945-22-jmaselbas@kalray.eu>
- <20220826102447.kpwpj2n5mta4k3xi@uno.localdomain>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220826102447.kpwpj2n5mta4k3xi@uno.localdomain>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3p7vEnOaM5CiwDdJ"
+Content-Disposition: inline
+In-Reply-To: <CACRpkdYZOK9NhEqqU4Wkg1XHCHEQk=AR6w9730qo_tHmgGrorA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm rejecting these patches in patchwork. All (or almost all) are duplicates.
 
-Regards,
+--3p7vEnOaM5CiwDdJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-	Hans
+Hi Linus,
 
-On 8/26/22 12:24, Jacopo Mondi wrote:
-> Hi Jules
-> 
->   thanks, but as reported in patchwork and lore
-> https://patchwork.linuxtv.org/project/linux-media/list/?series=&submitter=&state=*&q=mt9v111&archive=both&delegate=
-> https://lore.kernel.org/all/20220824135433.h2udwtnub7mlmtam@uno.localdomain/
-> 
-> This is the 4th patch to fix the same repeated word in a comment.
-> 
-> As I asked to Jilin, are you submitting this as part of a new
-> contributor program ?
-> 
-> Thanks
->    j
-> 
-> On Fri, Aug 26, 2022 at 12:00:50PM +0200, Jules Maselbas wrote:
->> Remove redundant word `the`.
->>
->> CC: Jacopo Mondi <jacopo@jmondi.org>
->> CC: linux-media@vger.kernel.org
->> Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
->> ---
->>  drivers/media/i2c/mt9v111.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/media/i2c/mt9v111.c b/drivers/media/i2c/mt9v111.c
->> index 2dc4a0f24ce8..7beca0b70b72 100644
->> --- a/drivers/media/i2c/mt9v111.c
->> +++ b/drivers/media/i2c/mt9v111.c
->> @@ -633,7 +633,7 @@ static int mt9v111_hw_config(struct mt9v111_dev *mt9v111)
->>
->>  	/*
->>  	 * Set pixel integration time to the whole frame time.
->> -	 * This value controls the the shutter delay when running with AE
->> +	 * This value controls the shutter delay when running with AE
->>  	 * disabled. If longer than frame time, it affects the output
->>  	 * frame rate.
->>  	 */
->> --
->> 2.17.1
->>
+> How typical, the ideal way to resolve it is if there is an immutable
+> branch with the > basic changes I can pull in from the i2c tree
+
+It is already there:
+
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git i2c/make_remove_callback_void-immutable
+
+Uwe (originator of the series) spread this information. Sorry that it
+did not reach you.
+
+
+--3p7vEnOaM5CiwDdJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmMIrG0ACgkQFA3kzBSg
+KbbrfxAAsc1NtFpnpn4HBwPM0TiCgIM0xgl7SbitH/M5J7P+PZ+0ycNpzAVvMHgQ
+efeWpodBYPlprIvbHsVYD9del1MG0CoHEzwEMpD4VIupirhBWqZZn0BY7zvWX6WD
+n4wxs7lU8qThnDVAdtdfp0DkoUfmSyp2ELkRGnutdUbDCcDGYX/t35SQ4ynOeXVz
+IC8oJmdEvCywzQkHvQgs567IvA9fj+Qm+r8glOr+3waog/efPkUkGHhaZxZaa3R+
+4oTU1m95mq+hNW/1r83nR4cHboCoy8rP/65Zs4ki3wYLDYiFXdm4E2HKcerZzykF
+OK+gtC5F63DBvN7r/YVBq2dk8Pc90jxFCbXGt2Zv/x552VcHj+TRcjLPnib2lf7e
+mZhrrcXC3q7h2mfZYxDrbl2clkXww4go61pRJRUj/EMo1azaWexY3jFaFquDTIZW
+7FoAmQ59tsLee0uqbufA9OVfBwkyXhz4Rj92ZKR0dcdvIak261NlOdvrbpA0b64m
+fVMR+FPfWWzrKvYdJNUiT+6Pq4McmNsN6n7VA9la12YWYbCvtDqgysWzqU6RSVH5
+OVS/pBq+fGUv4zRQiJGVyu/gfzJdzcCP/5nIaglZVMGv9QfLIjmN+2axgwYng7Co
+ixTWdEOJVPs+z40dZwCSPDlaSxtHqTNPUipGoATTtOuCta/U6VE=
+=aKln
+-----END PGP SIGNATURE-----
+
+--3p7vEnOaM5CiwDdJ--
