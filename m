@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74632ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C13AECAAA6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344807AbiHZQxF (ORCPT
+        id S1344809AbiHZQxI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 12:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57386 "EHLO
+        Fri, 26 Aug 2022 12:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243496AbiHZQxB (ORCPT
+        with ESMTP id S1344311AbiHZQxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 12:53:01 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74C96156;
-        Fri, 26 Aug 2022 09:52:59 -0700 (PDT)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C21CB3D;
+        Fri, 26 Aug 2022 09:53:00 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 4E4863369A;
+        by smtp-out2.suse.de (Postfix) with ESMTPS id BE3A81F940;
         Fri, 26 Aug 2022 16:52:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
         t=1661532778; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Hvh3ocNfi9tDUDY607bUOsG3YfmuEtYhO6IYXUHPG/Y=;
-        b=iZPWN9zbTtAeBhE6GPmrISfKZTKDyRDEBt/NCX6jxUD5aOCumahpiZpRRQZJG5sSstyR9V
-        /CxenkC8LBSDzl0Q+lWiZZEEKR1HoAnVbCQkvVBEV8A9g9upAyc090FiUXaE4EB5ZKwDUj
-        vA1rDztB+5zLeJtfleOJOBR6UpCuVXE=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pqsTghk3lUf2zHqs/aiods7p+Uf7TePr7J7612j6zrs=;
+        b=p34Dq3Vuy2HqGPFdeYH7O52fSFA8g/UAZmA7N24XfyIGdml3BtgZVdhx2Ej3Y+oAbrTlKY
+        Ex0mtRWCzPU8+v7ioOeQRhqkNknKuL4HiP1/msumCtrA/zMXjEFZl3H51bRZznXNrCWaPm
+        cepNDpurKY/9ucFIoDCyWyVnaQi/rus=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0A8BB13A7E;
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 86C8113A7E;
         Fri, 26 Aug 2022 16:52:58 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id 99GqAWr6CGMofAAAMHmgww
+        id OL79H2r6CGMofAAAMHmgww
         (envelope-from <mkoutny@suse.com>); Fri, 26 Aug 2022 16:52:58 +0000
 From:   =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>
 To:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
@@ -50,10 +51,12 @@ Cc:     Tejun Heo <tj@kernel.org>, Aditya Kali <adityakali@google.com>,
         Muneendra Kumar <muneendra.kumar@broadcom.com>,
         Yosry Ahmed <yosryahmed@google.com>,
         Hao Luo <haoluo@google.com>
-Subject: [PATCH 0/4] Honor cgroup namespace when resolving cgroup id
-Date:   Fri, 26 Aug 2022 18:52:34 +0200
-Message-Id: <20220826165238.30915-1-mkoutny@suse.com>
+Subject: [PATCH 2/4] cgroup: cgroup: Honor caller's cgroup NS when resolving cgroup id
+Date:   Fri, 26 Aug 2022 18:52:36 +0200
+Message-Id: <20220826165238.30915-3-mkoutny@suse.com>
 X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220826165238.30915-1-mkoutny@suse.com>
+References: <20220826165238.30915-1-mkoutny@suse.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -61,33 +64,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Cgroup id is becoming a new way for userspace how to refer to cgroups it
-wants to act upon. As opposed to cgroupfs (paths, opened FDs), the
-current approach does not reflect limited view by (non-init) cgroup
-namespaces.
+Cgroup ids are resolved in the global scope. That may be needed sometime
+(in future) but currently it violates virtual view provided through
+cgroup namespaces.
 
-This patches don't aim to limit what a user can do (consider an uid=0 in
-mere cgroup namespace) but to provide consistent view within a
-namespace.
+There are currently following users of the resolution:
+- fc_appid_store
+- bpf_iter_attach_cgroup
+- mem_cgroup_get_from_ino
 
-The series is based on bpf-next with the new cgroup_iter. I've only
-boot-tested it (especially I didn't run the BPF selftest).
+None of the is a called on behalf of kernel but the resolution is made
+with proper userspace context, hence the default to current->nsproxy
+makes sens. (This doesn't rule out cgroup_get_from_id with cgroup NS
+parameter in the future.)
 
-Michal Koutný (4):
-  cgroup: Honor caller's cgroup NS when resolving path
-  cgroup: cgroup: Honor caller's cgroup NS when resolving cgroup id
-  cgroup: Homogenize cgroup_get_from_id() return value
-  cgroup/bpf: Honor cgroup NS in cgroup_iter for ancestors
+Since cgroup ids are defined on v2 hierarchy only, we simply check
+existence in the cgroup namespace by looking at ancestry on the default
+hierarchy.
 
- block/blk-cgroup-fc-appid.c |  4 +--
- include/linux/cgroup.h      |  8 +++---
- kernel/bpf/cgroup_iter.c    |  9 ++++---
- kernel/cgroup/cgroup.c      | 53 ++++++++++++++++++++++++++++---------
- mm/memcontrol.c             |  4 +--
- 5 files changed, 54 insertions(+), 24 deletions(-)
+Fixes: 6b658c4863c1 ("scsi: cgroup: Add cgroup_get_from_id()")
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
+---
+ kernel/cgroup/cgroup.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-
-base-commit: 343949e10798a52c6d6a14effc962e010ed471ae
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 1a8b50d15ebf..4ca90ee6b902 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -6007,11 +6007,12 @@ void cgroup_path_from_kernfs_id(u64 id, char *buf, size_t buflen)
+  * cgroup_get_from_id : get the cgroup associated with cgroup id
+  * @id: cgroup id
+  * On success return the cgrp, on failure return NULL
++ * Only cgroups within current task's cgroup NS are valid.
+  */
+ struct cgroup *cgroup_get_from_id(u64 id)
+ {
+ 	struct kernfs_node *kn;
+-	struct cgroup *cgrp = NULL;
++	struct cgroup *cgrp = NULL, *root_cgrp;
+ 
+ 	kn = kernfs_find_and_get_node_by_id(cgrp_dfl_root.kf_root, id);
+ 	if (!kn)
+@@ -6024,8 +6025,18 @@ struct cgroup *cgroup_get_from_id(u64 id)
+ 		cgrp = NULL;
+ 
+ 	rcu_read_unlock();
+-
+ 	kernfs_put(kn);
++
++	if (!cgrp)
++		goto out;
++
++	spin_lock_irq(&css_set_lock);
++	root_cgrp = current_cgns_cgroup_from_root(&cgrp_dfl_root);
++	spin_unlock_irq(&css_set_lock);
++	if (!cgroup_is_descendant(cgrp, root_cgrp)) {
++		cgroup_put(cgrp);
++		cgrp = NULL;
++	}
+ out:
+ 	return cgrp;
+ }
 -- 
 2.37.0
 
