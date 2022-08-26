@@ -2,113 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEA2ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:50:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7D4ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344436AbiHZPt7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:49:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57910 "EHLO
+        id S243956AbiHZPuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 11:50:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344746AbiHZPt2 (ORCPT
+        with ESMTP id S1344732AbiHZPtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:49:28 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A03FC6E96
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:49:20 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id io24so1925131plb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:49:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=9Xr0k1F/n6DXUYyny/jSc9xyKQVr9bMMBjQ0x9hJugc=;
-        b=EFek5s+75roAZuIl4BSgg8kXDr1+N1he6wQ9DGg6l6S91/oI41FAUIF1zAinsrbmEu
-         QPE743pmSEttSnsgEY7SIvXx+NG59pxAfXWRmKW/vDRqcfiv4M+JSKkDRQZP50ynbPIs
-         YuxCzxvqjk62RMWy7fSbDXP9JbxIU/v2XBmWOcyooYH+kCjF1xZgNytPj0TSEktMQkjQ
-         3cAGIVmPZCQEzIBJ+2SVB8LeXK3IAwGiSJB5HNjNe7qKmcD1vAsklEO5RdrfgnE7hn2F
-         cDeCGF++9Z1E55kAUk4Ub8jtVBAcazTYnzHCP8C65q5chM0dzRzXKmqyVuoCuDlhMDGl
-         RjSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=9Xr0k1F/n6DXUYyny/jSc9xyKQVr9bMMBjQ0x9hJugc=;
-        b=mMdUGDMXC36xJfhMLJ0dpXvbGQtBpGWHNcMAskRDOcZdHFrAXdFBhWIBEmXa7E71em
-         fvyidhdSez/Mae15GAddBYf+3b739er8LnlHSQzS9CGRUYBoD2RzCt1hk591eOPw9Rm6
-         mL3QyEdAADDdWMUcV6abP0T1oePt7kpauzXs84LMtiK1yxXTxUkuWiZcZrvgSrbiKnnL
-         6sYZH9GCPAMwObO19zKL3UuqHydP/sK+3LOHxBgwK/C7T2fiY+4ww9ZmPDMgK2Rcyutw
-         lPKEf3ELmBo+BQwFvKh77lkos3ebPWezLr8G/Hry5suRBGpsTxFUKijpv6+KMomtOPpt
-         5ZNg==
-X-Gm-Message-State: ACgBeo39onamS7TDjY7KAiPm27oDTy6uXoZmYZaN3h0vfZCui3Ambl5h
-        j7RlEfHXaTR/AcljhzLanuA=
-X-Google-Smtp-Source: AA6agR40CnhS7gTvEftrm3vIxOndD/sHMM/MGhyRdeYci8Oq8W9u/jnQ5Cxvolba0GoK9xvfVY52bQ==
-X-Received: by 2002:a17:90b:4a0e:b0:1fb:4c5e:9584 with SMTP id kk14-20020a17090b4a0e00b001fb4c5e9584mr5137723pjb.152.1661528959477;
-        Fri, 26 Aug 2022 08:49:19 -0700 (PDT)
-Received: from localhost ([36.112.195.70])
-        by smtp.gmail.com with ESMTPSA id e11-20020a170902784b00b00173164792aasm1741388pln.127.2022.08.26.08.49.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 08:49:19 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     dan.carpenter@oracle.com
-Cc:     akpm@linux-foundation.org, anton@tuxera.com,
-        chenxiaosong2@huawei.com, linux-kernel@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net,
-        syzbot+5f8dcabe4a3b2c51c607@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
-Subject: Re: [PATCH] ntfs: change check order in ntfs_attr_find
-Date:   Fri, 26 Aug 2022 23:42:32 +0800
-Message-Id: <20220826154231.6634-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220826151520.GF2071@kadam>
-References: <20220826151520.GF2071@kadam>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Fri, 26 Aug 2022 11:49:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F7260E3;
+        Fri, 26 Aug 2022 08:49:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B19FEB831BF;
+        Fri, 26 Aug 2022 15:49:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA0AC433D6;
+        Fri, 26 Aug 2022 15:49:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661528984;
+        bh=K54SpPn1dkF1YSkCv3pZX5DMshbcliLagDP1w7JkHK8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XyGtAHQC8bDQuh5z3roeuf3F7oOT/o24TT23/VB0gxzu/pRzuOmh7+qQIrWBSiYxX
+         +SIitVbdoYfIY2BQgQwcAGyXLjkqcYnDRsh24xpK5O2FuH5dbgYZ0Jyr2YPTWu3Sj9
+         B/PjOu5a0atbxONek8h/twl3bXND9jqNDTZmChRmPscKr3KwBiDyjvgf0dIAwxZBkU
+         xA0G/XSK7CrIGEMFg0RobNRKgCJNxfikx8UWoZevnrrdT8+2IFDGIsrhtq/yuhRWuH
+         +aJqN0S38A6pFafmjSqOO0plKjcIyGKVTyP51CRHkix/OOEWXrvSNjaExHGVOoMIMn
+         Tx3NWbRclwQuQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oRbaY-005zap-Bd;
+        Fri, 26 Aug 2022 16:49:42 +0100
+Date:   Fri, 26 Aug 2022 16:49:41 +0100
+Message-ID: <8735djvwbu.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Peter Xu <peterx@redhat.com>, Gavin Shan <gshan@redhat.com>,
+        kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        corbet@lwn.net, james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, oliver.upton@linux.dev,
+        catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org,
+        seanjc@google.com, dmatlack@google.com, bgardon@google.com,
+        ricarkol@google.com, zhenyzha@redhat.com, shan.gavin@gmail.com
+Subject: Re: [PATCH v1 1/5] KVM: arm64: Enable ring-based dirty memory tracking
+In-Reply-To: <9e7cb09c-82c5-9492-bccd-5511f5bede26@redhat.com>
+References: <20220819005601.198436-1-gshan@redhat.com>
+        <20220819005601.198436-2-gshan@redhat.com>
+        <87lerkwtm5.wl-maz@kernel.org>
+        <41fb5a1f-29a9-e6bb-9fab-4c83a2a8fce5@redhat.com>
+        <87fshovtu0.wl-maz@kernel.org>
+        <171d0159-4698-354b-8b2f-49d920d03b1b@redhat.com>
+        <YwTc++Lz6lh3aR4F@xz-m1.local>
+        <87bksawz0w.wl-maz@kernel.org>
+        <YwVEoM1pj2MPCELp@xz-m1.local>
+        <878rnewpaw.wl-maz@kernel.org>
+        <9e7cb09c-82c5-9492-bccd-5511f5bede26@redhat.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: pbonzini@redhat.com, peterx@redhat.com, gshan@redhat.com, kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org, corbet@lwn.net, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, oliver.upton@linux.dev, catalin.marinas@arm.com, will@kernel.org, shuah@kernel.org, seanjc@google.com, dmatlack@google.com, bgardon@google.com, ricarkol@google.com, zhenyzha@redhat.com, shan.gavin@gmail.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 26 Aug 2022 at 23:15, Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> On Fri, Aug 26, 2022 at 08:32:57PM +0800, Hawkins Jiawei wrote:
-> > > syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> > >
-> > > Looks like it is improper check order that causes this bug.
-> >
-> > Sorry for wrong command.
-> > #syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> >
-> > diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
-> > index 52615e6090e1..6480cd2d371d 100644
-> > --- a/fs/ntfs/attrib.c
-> > +++ b/fs/ntfs/attrib.c
-> > @@ -594,10 +594,11 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
-> >       for (;; a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
-> >               u8 *mrec_end = (u8 *)ctx->mrec +
-> >                              le32_to_cpu(ctx->mrec->bytes_allocated);
-> > +             if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end)
-> > +                     break;
->
-> This definitely seems like a bug.  But your code won't build.  Syzbot
-> must have -Werror turned off?
-Hi Dan,
-Did you mean we should put the variable declares at the beginning of the function?
-(Correct me if I understand anything wrong)
+On Fri, 26 Aug 2022 11:50:24 +0100,
+Paolo Bonzini <pbonzini@redhat.com> wrote:
+> 
+> On 8/24/22 00:47, Marc Zyngier wrote:
+> >> I definitely don't think I 100% understand all the ordering things since
+> >> they're complicated.. but my understanding is that the reset procedure
+> >> didn't need memory barrier (unlike pushing, where we have explicit wmb),
+> >> because we assumed the userapp is not hostile so logically it should only
+> >> modify the flags which is a 32bit field, assuming atomicity guaranteed.
+> > Atomicity doesn't guarantee ordering, unfortunately. Take the
+> > following example: CPU0 is changing a bunch of flags for GFNs A, B, C,
+> > D that exist in the ring in that order, and CPU1 performs an ioctl to
+> > reset the page state.
+> > 
+> > CPU0:
+> >      write_flag(A, KVM_DIRTY_GFN_F_RESET)
+> >      write_flag(B, KVM_DIRTY_GFN_F_RESET)
+> >      write_flag(C, KVM_DIRTY_GFN_F_RESET)
+> >      write_flag(D, KVM_DIRTY_GFN_F_RESET)
+> >      [...]
+> > 
+> > CPU1:
+> >     ioctl(KVM_RESET_DIRTY_RINGS)
+> > 
+> > Since CPU0 writes do not have any ordering, CPU1 can observe the
+> > writes in a sequence that have nothing to do with program order, and
+> > could for example observe that GFN A and D have been reset, but not B
+> > and C. This in turn breaks the logic in the reset code (B, C, and D
+> > don't get reset), despite userspace having followed the spec to the
+> > letter. If each was a store-release (which is the case on x86), it
+> > wouldn't be a problem, but nothing calls it in the documentation.
+> > 
+> > Maybe that's not a big deal if it is expected that each CPU will issue
+> > a KVM_RESET_DIRTY_RINGS itself, ensuring that it observe its own
+> > writes. But expecting this to work across CPUs without any barrier is
+> > wishful thinking.
+> 
+> Agreed, but that's a problem for userspace to solve.  If userspace
+> wants to reset the fields in different CPUs, it has to synchronize
+> with its own invoking of the ioctl.
 
->
-> Btw, this was in the original code, but those casts are ugly.  Ideally
-> there would be some way to get rid of them.  But otherwise at least
-> put a space after the u8.  "(u8 *)a < (u8 *)ctx->mrec".
->
-> >               u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
-> >                              a->name_length * sizeof(ntfschar);
-> > -             if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
-> > -                 name_end > mrec_end)
-> > +             if (name_end > mrec_end)
-> >                       break;
->
-> regards,
-> dan carpenter
-So maybe I can try to refactor these codes. But I wonder if this can be
-done in a seperate bug
+userspace has no choice. It cannot order on its own the reads that the
+kernel will do to *other* rings.
+
+> That is, CPU0 must ensure that a ioctl(KVM_RESET_DIRTY_RINGS) is done
+> after (in the memory-ordering sense) its last write_flag(D,
+> KVM_DIRTY_GFN_F_RESET).  If there's no such ordering, there's no
+> guarantee that the write_flag will have any effect.
+
+The problem isn't on CPU0 The problem is that CPU1 does observe
+inconsistent data on arm64, and I don't think this difference in
+behaviour is acceptable. Nothing documents this, and there is a baked
+in assumption that there is a strong ordering between writes as well
+as between writes and read.
+
+> The main reason why I preferred a global KVM_RESET_DIRTY_RINGS ioctl
+> was because it takes kvm->slots_lock so the execution would be
+> serialized anyway.  Turning slots_lock into an rwsem would be even
+> worse because it also takes kvm->mmu_lock (since slots_lock is a
+> mutex, at least two concurrent invocations won't clash with each other
+> on the mmu_lock).
+
+Whatever the reason, the behaviour should be identical on all
+architectures. As is is, it only really works on x86, and I contend
+this is a bug that needs fixing.
+
+Thankfully, this can be done at zero cost for x86, and at that of a
+set of load-acquires on other architectures.
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
