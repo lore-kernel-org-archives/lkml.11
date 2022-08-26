@@ -2,121 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DACB0ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 17:15:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84EC2ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 17:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344814AbiHZRPY (ORCPT
+        id S1344887AbiHZRPm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 13:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36586 "EHLO
+        Fri, 26 Aug 2022 13:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344686AbiHZRPU (ORCPT
+        with ESMTP id S1344911AbiHZRPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 13:15:20 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D787333365
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 10:15:15 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id lx1so4318508ejb.12
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 10:15:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=g1nhytGbLlPdFV0nY3tszrR1h/TIhkoKAPu2ahL0p/k=;
-        b=b6SDldaWa7pnH5+2X9Grz6EJaMgJ2WMkQlr77r5OvIob6I976rGlXH0vexkLDXx7U3
-         0OwV2PETanSenQ1JiMZzz9h6XEA+sgT3AFQpsSSkXNG+Cekpcplt3HHFKmFNiYEdyS19
-         k/JyheHd2Fv+PSyCmDoRlTs4+oNEusAljCg9s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=g1nhytGbLlPdFV0nY3tszrR1h/TIhkoKAPu2ahL0p/k=;
-        b=K8B1PjBrQOwHFlDc3AV+dlME0p1CgkNeA2VenUBPA4qLr8Eq+sH4vsC8E+PZebmXnD
-         70aalrlIxUL5AAd88B59VL3EAOOoFN79oieoWEGNlkHvyzonsOK6FkmwoXCp0Vzsv7Bt
-         /xmVnmaHI5ZSJ0HNtVgkKsVQhNcx6+Yo6PXMs2OWRqzDBxLfzTlKkK27Jxqj2AVnWYLk
-         eIjtLVu12vdTmhqmkORmaszke7nKKcLUERC++QeU17l2xPakeGNnm3aUhWsjAToCa5Ss
-         3QkIAzKX6ybapzIEbx9rGpsOh3MKkhMErFfY9TPOQtdg0RUoWZ2EJ43xzkODZXwwN7XR
-         l8KQ==
-X-Gm-Message-State: ACgBeo3pPOaTNVkYl1ksQgJ5uWzG25TsphF/ujWfuCsMX+0U49L56ZeU
-        hrGqcl37wF08+aC6ugo1ZwmqDpWaHVjPV2Om
-X-Google-Smtp-Source: AA6agR7btfOO3M7okaNoY1TEL3u2dIhiyf0fDrfXizGYYwMezauABXNr4Tu5GE0SKCDHQ9slCueQsA==
-X-Received: by 2002:a17:906:eeca:b0:730:6880:c397 with SMTP id wu10-20020a170906eeca00b007306880c397mr5967448ejb.593.1661534114106;
-        Fri, 26 Aug 2022 10:15:14 -0700 (PDT)
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com. [209.85.128.41])
-        by smtp.gmail.com with ESMTPSA id f8-20020a170906494800b0073d68db09ecsm1134330ejt.23.2022.08.26.10.15.10
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 10:15:12 -0700 (PDT)
-Received: by mail-wm1-f41.google.com with SMTP id v7-20020a1cac07000000b003a6062a4f81so4753255wme.1
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 10:15:10 -0700 (PDT)
-X-Received: by 2002:a05:600c:4e8b:b0:3a5:f5bf:9c5a with SMTP id
- f11-20020a05600c4e8b00b003a5f5bf9c5amr357285wmq.85.1661534110473; Fri, 26 Aug
- 2022 10:15:10 -0700 (PDT)
+        Fri, 26 Aug 2022 13:15:35 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475F7459A3;
+        Fri, 26 Aug 2022 10:15:32 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id A3B6821BC9;
+        Fri, 26 Aug 2022 17:15:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661534131; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ujnem+82jghAPynX8D89kMmJ0aBREjhSFJXo32+xYis=;
+        b=D+mtfhJ2z4xrDBSNcnA4TFx+/P44V+D+ZE5amHfKim/P5TlSVXi301DlnwO+/YhaB2ZXcs
+        1Y0vqyxwh/ULCExOilHOj8dTxoVzWOcxNxTqMpnHlDg3Sub36rAXeHC4bPkKDu/0U5QlFi
+        Z/vzm0/agm7LOHVNfvT7HVOPhhzrNiU=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 357E013A7E;
+        Fri, 26 Aug 2022 17:15:31 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qdA1DLP/CGMaBQAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Fri, 26 Aug 2022 17:15:31 +0000
+Date:   Fri, 26 Aug 2022 19:15:29 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Hao Luo <haoluo@google.com>
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        cgroups@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Yosry Ahmed <yosryahmed@google.com>
+Subject: Re: [PATCH bpf-next v9 1/5] bpf: Introduce cgroup iter
+Message-ID: <20220826171529.GB30475@blackbody.suse.cz>
+References: <20220824030031.1013441-1-haoluo@google.com>
+ <20220824030031.1013441-2-haoluo@google.com>
+ <20220825152455.GA29058@blackbody.suse.cz>
+ <CA+khW7hKk8yMvsQCQjnEoR3=G9=77F2TgAEDa+uSVedoOE=NsA@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220826065621.2255795-1-judyhsiao@chromium.org>
-In-Reply-To: <20220826065621.2255795-1-judyhsiao@chromium.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 26 Aug 2022 10:14:58 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VrgrvJb_sJ8AO6pN8dRNXzzOJ9WvngeJrtVYw_wD1Akg@mail.gmail.com>
-Message-ID: <CAD=FV=VrgrvJb_sJ8AO6pN8dRNXzzOJ9WvngeJrtVYw_wD1Akg@mail.gmail.com>
-Subject: Re: [PATCH v4] arm64: dts: qcom: sc7280: Fix Dmic no sound on villager-r1
-To:     Judy Hsiao <judyhsiao@chromium.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Jimmy Cheng-Yi Chiang <cychiang@google.com>,
-        Judy Hsiao <judyhsiao@google.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="uZ3hkaAS1mZxFaxD"
+Content-Disposition: inline
+In-Reply-To: <CA+khW7hKk8yMvsQCQjnEoR3=G9=77F2TgAEDa+uSVedoOE=NsA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Thu, Aug 25, 2022 at 11:56 PM Judy Hsiao <judyhsiao@chromium.org> wrote:
->
-> Fix the DMIC no sound issue of villager-r1 by using "PP1800_L2C" as the
-> DMIC power source to match the hardware schematic.
->
-> This patch:
->    1. set vdd-micb-supply to PP1800_L2C as the MIC Bias voltage regulator.
->    2. In audio-routing, set VA DMIC01~VA DMIC03 to use the vdd-micb-supply
->       setting.
->
-> Co-developed-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
-> ---
-> Changes since V3:
->   -- Update the commit message and fix extra blank line.
-> Changes since V2:
->   -- Update the commit message.
-> Changes since V1:
->   -- Update the commit message.
->
-> This patch depends on:
-> arm64: dts: qcom: sc7280: Add herobrine-villager-r1. [1]
->
-> [1] https://patchwork.kernel.org/patch/12929106
+--uZ3hkaAS1mZxFaxD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-After applying your [1] then your patch applies without merge
-conflicts. However, it still doesn't compile. You also depend on
-whatever patch adds the nodes "lpass_va_macro" and "sound" since
-you're referencing them in your patch. I haven't been keeping track of
-the latest status of all the audio patches, so I myself can't point to
-exactly what patches you depend on and whether those patches are ready
-to land.
+On Thu, Aug 25, 2022 at 10:58:26AM -0700, Hao Luo <haoluo@google.com> wrote:
+> Permission is a valid point about FD. There was discussion in an
+> earlier version of this patch series [0].
 
-In any case, the contents of this patch seem OK assuming the dependent
-patches cause something that looks like the current (downstream)
-chromeos-5.15 tree.
+(I'm sorry, I didn't follow all the version discussions closely.)
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+I think the permissions are a non-issue when unprivileged BPF is
+disabled. If it's allowed, I think it'd be better solved generally
+within the BPF iterator framework. (Maybe it's already present, I didn't
+check.)
+
+(OT:
+> The good thing about ID is that it can be passed across processes=20
+
+FDs can be passed too (parent-child trivially, others via SCM_RIGHTS
+message).
+
+> and it's meaningful to appear in logs. It's more user-friendly.
+
+I'd say cgroup path wins both in meaning and user friendliness.
+(Or maybe you meant different class of users.)
+)
+
+> So we decided to support both.
+
+I accept cgroup ids are an establish{ing,ed} way to refer to cgroups
+=66rom userspace. Hence my fixups for the BPF cgroup iter (another thread)
+for better namespacing consisntency.
+
+Thanks,
+Michal
+
+--uZ3hkaAS1mZxFaxD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYIAB0WIQTrXXag4J0QvXXBmkMkDQmsBEOquQUCYwj/rgAKCRAkDQmsBEOq
+uRDtAP95KSUf5eIbnMtX+q0mP/oOLO5HxrPBR3LcuKDvtCX16gEA1qMMMrMNNSRI
+PnRFq9cTUofRflCF69bLsiCRXGQYSQk=
+=zlex
+-----END PGP SIGNATURE-----
+
+--uZ3hkaAS1mZxFaxD--
