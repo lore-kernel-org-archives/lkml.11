@@ -2,208 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED1A8C0502A
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A683ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345329AbiHZVt4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 17:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54144 "EHLO
+        id S242352AbiHZVyi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 17:54:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345318AbiHZVt2 (ORCPT
+        with ESMTP id S231216AbiHZVyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 17:49:28 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92583E97FE
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:48:37 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id l5so2046954qvs.13
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:48:37 -0700 (PDT)
+        Fri, 26 Aug 2022 17:54:36 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B9795BB
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:54:34 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-33dc345ad78so68470927b3.3
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:54:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=IxFQvG8uCDNWfOw4XKW76il4dfl0HaGEva3keb0z0fc=;
-        b=iSpsXSQHohS4/3ld/K/EJJ3fu7p0M/ym/KZ9P84gjCtQTisLl0uc+udZl4PcGZiroN
-         ECjHNIvFpuFmqHTl203if+F0+fLgqxvjTBKmycWTPWcvSrC6iFmQbW+HZl9n9A9FrcNt
-         IUn+3rzkAPoKjJBQXmI7r0IMbwGNggWtdIq/c=
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=iD+oDgmA+uqkgZAjiZVwNKXzpAuCVIysHt0xaw4YizU=;
+        b=Ca+dkdvTTZAOLDvgw3Z9TkaUnMZcEWn4NTxm5+zjenuU2n7vyLOc9KPh6+KdZ5gwBJ
+         tn/9thf3hXLJO9QmMCTrPu9UeA9bqXKkdHcD3t26KAQo8P0j/mO2Wsp3546vXy2g5DVe
+         7hsSOEj3K89mu/jqNLHDZpbjrvMfyUGLE++bdQHX7CDFGQhtlU3YxsNnf8kvVYpVHf5L
+         lxVu/SLHlqgK0HT7NNi6O08XfosRfNiRI1W7yI7n62C0LRD+iwPjN2kz2hv3wdQVmP8E
+         SrxuPd7hPHS0iDGfnSjx5LwMaLY9kxqbUtS5dWAWogDi+uOzyJWbWoS9ExFdkez6KFbW
+         ThmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=IxFQvG8uCDNWfOw4XKW76il4dfl0HaGEva3keb0z0fc=;
-        b=uERW3pTOaOUbO4+XctxS3QCDaW9YmqYesfWqF+WytB4ZxkzAfProxOMD+YK8a26oKy
-         iTH6s9vGSN0kXVE7cnAHv5mLf8xpMgqeYAstyqegzdasGZbFY8EEWN6D0zJbW75ltxDF
-         XguzvmV44auhMeni+k0DKiedqmuezkgK4XkIN/otZnmvYB92QMuLZRxDTEkwHV9nVcZE
-         A4XaxDBulU20tMkhKC8kzVdL7dL6G4SkTBC/ZibcRL4thFYWmdUz5aCTV7Ok8Y/GbNS4
-         8AvejIg3AsxHjlqC2mfSpEhldF5eij7pJvIDHiBtuqct3NF+i6zTjnMdvlkASi7nO311
-         CQZw==
-X-Gm-Message-State: ACgBeo2uelGC7Ko6Dg7PhxYP9CkgqXQkNdsXNLnROgnIhHMQZa0KG70b
-        8IzyJOJ8k4Pj1Xl5WUNVCrY48mLH56eanA==
-X-Google-Smtp-Source: AA6agR5owK3OO0fDHyIb+UZcKsDvMBKtvxrVQWT5T7PDgpyIWkj0epVYPefJxB1vJa1/mV5ljAJqNw==
-X-Received: by 2002:a05:6214:19e1:b0:476:95b7:1dc9 with SMTP id q1-20020a05621419e100b0047695b71dc9mr1331184qvc.124.1661550516493;
-        Fri, 26 Aug 2022 14:48:36 -0700 (PDT)
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com. [209.85.160.172])
-        by smtp.gmail.com with ESMTPSA id y13-20020a05620a44cd00b006bb8b5b79efsm623605qkp.129.2022.08.26.14.48.35
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 14:48:36 -0700 (PDT)
-Received: by mail-qt1-f172.google.com with SMTP id a4so2259053qto.10
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:48:35 -0700 (PDT)
-X-Received: by 2002:a05:622a:1196:b0:342:f7a9:a138 with SMTP id
- m22-20020a05622a119600b00342f7a9a138mr1432696qtk.344.1661550515375; Fri, 26
- Aug 2022 14:48:35 -0700 (PDT)
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=iD+oDgmA+uqkgZAjiZVwNKXzpAuCVIysHt0xaw4YizU=;
+        b=M8yX28rVFB6dP6EMmwLGcUflGBYKvP874ZOMx/IpRw/mVLq48xJjWMtyZVNvwGzxV7
+         AYAFzWdM8ZHVQAnFwFCKOAaPvaBzcNlzOIJC2C0rZg3XSaOhIZwQd9p1ONOGBl+ma97a
+         whDbDy9ts3O/YmerZSrLCHmpiOU9sjZTYNOYmbIb26XHOX/ZL8v5dE3KyDSBjZi6f5wI
+         gcX65AqeGlxofzH0mLZ7QNQ/TcQoUYXLDjMjgl6uJefHZHjFRgkdvrQMZwDUun4iJwhF
+         2Ewxth6/A6mLNBVjBAKkT7eZ9nnR1BaP9kHwJB65aenQosNhZXago0cwvYiSI1p4R7M+
+         B3vQ==
+X-Gm-Message-State: ACgBeo0a5cRqBGzMVw9i4v2M5ioj5O7GaQfuDQmJlfDs1VTPQBul/Rfs
+        8l5NWfMxYN+dZc/ekBLU5obm4PX6+63o/0y6PcrpgQ==
+X-Google-Smtp-Source: AA6agR6/Js/n7u8uAt+Vs5/9brwPzqXD8oV9j9u5xOFLL3KiwQvGzqQugDWZuWB0GKL5dR3cPMdqCyb0gjesC5DDHLQ=
+X-Received: by 2002:a25:7902:0:b0:67b:d842:1184 with SMTP id
+ u2-20020a257902000000b0067bd8421184mr1609196ybc.374.1661550874022; Fri, 26
+ Aug 2022 14:54:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <12042830.O9o76ZdvQC@kreacher> <1c7fa65d-47ab-b064-9087-648bcfbf4ab5@amd.com>
- <CAJZ5v0ie7B=GvhbfBsi7Zxu+=YzYKUqvUNs6dNZQfT3CRm=KPg@mail.gmail.com>
- <a2d2b61e-87c0-ee39-ea4e-3c575da0a66c@redhat.com> <CAHQZ30DjkyDT8KbsHzfwiyg6Tst9EFhtCnjx3MmwbWRerzW_6A@mail.gmail.com>
- <CAJZ5v0gXizr6szRA09fNYC0njUv-Dg7kDSu9FtmfDRgX2n45wg@mail.gmail.com>
-In-Reply-To: <CAJZ5v0gXizr6szRA09fNYC0njUv-Dg7kDSu9FtmfDRgX2n45wg@mail.gmail.com>
-From:   Raul Rangel <rrangel@chromium.org>
-Date:   Fri, 26 Aug 2022 15:48:24 -0600
-X-Gmail-Original-Message-ID: <CAHQZ30CNORQMD=URhEv3mCV8ELGYs8W6Z2tSqrLiUbxUbikauA@mail.gmail.com>
-Message-ID: <CAHQZ30CNORQMD=URhEv3mCV8ELGYs8W6Z2tSqrLiUbxUbikauA@mail.gmail.com>
-Subject: Re: [PATCH] i2c: ACPI: Do not check ACPI_FADT_LOW_POWER_S0
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        "Limonciello, Mario" <mario.limonciello@amd.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ACPI <linux-acpi@vger.kernel.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-input <linux-input@vger.kernel.org>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Tim Van Patten <timvp@google.com>
+References: <f31b818cf8d682de61c74b133beffcc8a8202478.1660041358.git.christophe.leroy@csgroup.eu>
+ <CACRpkdY53c0qXx24Am1TMivXr-MV+fQ8B0CDjtGi6=+2tn4-7A@mail.gmail.com>
+ <CAK8P3a1Vh1Uehuin-u5QrTO5qh+t0aK_hA-QZwqc00Db_+MKcw@mail.gmail.com>
+ <CACRpkdbhbwBe=jU5prifXCYUXPqULhst0se3ZRH+sWOh9XeoLQ@mail.gmail.com>
+ <CAK8P3a0j-54_OkXC7x3NSNaHhwJ+9umNgbpsrPxUB4dwewK63A@mail.gmail.com>
+ <CACRpkda0+iy8H0YmyowSDn8RbYgnVbC1k+o5F67inXg4Qb934Q@mail.gmail.com>
+ <CAK8P3a0uuJ_z8wmNmQTW_qPNqzz7XoxZdHgqbzmK+ydtjraeHg@mail.gmail.com>
+ <CACRpkdb5ow4hD3td6agCuKWvuxptm5AV4rsCrcxNStNdXnBzrA@mail.gmail.com>
+ <87f2ff4c-3426-201c-df86-2d06d3587a20@csgroup.eu> <CACRpkdYizQhiJXzXNHg7TXUVHzhkwXHFN5+e58kH4udGm1ziEA@mail.gmail.com>
+ <f76dbc49-526f-6dc7-2ef1-558baea5848b@csgroup.eu>
+In-Reply-To: <f76dbc49-526f-6dc7-2ef1-558baea5848b@csgroup.eu>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 26 Aug 2022 23:54:22 +0200
+Message-ID: <CACRpkdZpwdP+1VitohznqRfhFGcLT2f+sQnmsRWwMBB3bobwAw@mail.gmail.com>
+Subject: Re: [PATCH] gpio: Allow user to customise maximum number of GPIOs
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Alexandre Courbot <gnurou@gmail.com>,
+        Alexandre Courbot <acourbot@nvidia.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So after tracing a bunch of code, I finally got a solution that I
-think will work. I just uploaded the patch train here:
-https://chromium-review.googlesource.com/c/chromiumos/third_party/kernel/+/3858568.
-I'll push it to the mailing list once I do a bit more testing.
-
-Do we need to support setting the wake_irq for systems that don't use
-DT or ACPI? Ideally I would drop the following block:
-
-if (!dev->of_node && !has_acpi_companion(dev)) {
-    device_init_wakeup(dev, true);
-    dev_pm_set_wake_irq(dev, client->irq);
-}
-
-There are also a few other i2c drivers that need cleanup:
-* https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/kernel/v5.15/drivers/mfd/max8925-i2c.c;l=218
-* https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/kernel/v5.15/drivers/input/touchscreen/elants_i2c.c;l=1629
-* https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/kernel/v5.15/drivers/input/touchscreen/raydium_i2c_ts.c;l=1190
-
-I can send CLs to delete the enable_irq_wake calls from those drivers
-if we don't need to support non-DT/non-ACPI boards. Or I can send CLs
-to add the boiler plate from above. Do we even need the `disable_irq`
-calls in the suspend handlers or can the PM subsystem take care of
-that?
-
-Do we also need to handle reading the wake bit from Interrupt/IRQ ACPI
-resources? Can those actually wake the system? On AMD platforms the
-IO-APIC/PIC can't actually wake the system. It either needs to be an
-ACPI GPE or the GPIO controller. If we do need to support it, I can
-add some more plumbing.
-
-Thanks!
-
-
-On Mon, Aug 8, 2022 at 11:10 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
->
-> On Sat, Aug 6, 2022 at 4:20 AM Raul Rangel <rrangel@chromium.org> wrote:
+On Fri, Aug 26, 2022 at 5:08 PM Christophe Leroy
+<christophe.leroy@csgroup.eu> wrote:
+> Le 26/08/2022 =C3=A0 15:49, Linus Walleij a =C3=A9crit :
+> > On Thu, Aug 25, 2022 at 4:00 PM Christophe Leroy
+> > <christophe.leroy@csgroup.eu> wrote:
 > >
-> > I do plan on coming back and updating those patches. I got derailed
-> > with other priorities.
->
-> I'll leave it to you then.  I'm mostly interested in dropping the
-> misguided ACPI_FADT_LOW_POWER_S0 check.
->
-> > But as Hans pointed out, we wanted to use
-> > `ExclusiveAndWake` to make the decision since not all IRQs can be wake
-> > sources while in s0i3.
->
-> S0i3 is still S0, so all of the interrupts that work in S0 will still work.
->
-> What really matters is whether or not enable_irq_wake() is called for
-> the given IRQ, but I'm not sufficiently familiar with the code in
-> question to comment on it any further without thorough investigation.
->
-> And of course the device needs to be able to generate interrupts in
-> the first place and if it is power-manageable by ACPI, I would just
-> leave the wakeup handling to the generic ACPI code.
->
+> >>> Christophe? Will you take a stab at it?
+> >>
+> >> Which patch should I write ?
 > >
-> > On Fri, Aug 5, 2022 at 12:54 PM Hans de Goede <hdegoede@redhat.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > On 8/5/22 19:08, Rafael J. Wysocki wrote:
-> > > > On Fri, Aug 5, 2022 at 6:59 PM Limonciello, Mario
-> > > > <mario.limonciello@amd.com> wrote:
-> > > >>
-> > > >> On 8/5/2022 11:51, Rafael J. Wysocki wrote:
-> > > >>> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > >>>
-> > > >>> The ACPI_FADT_LOW_POWER_S0 flag merely means that it is better to
-> > > >>> use low-power S0 idle on the given platform than S3 (provided that
-> > > >>> the latter is supported) and it doesn't preclude using either of
-> > > >>> them (which of them will be used depends on the choices made by user
-> > > >>> space).
-> > > >>>
-> > > >>> Because of that, ACPI_FADT_LOW_POWER_S0 is generally not sufficient
-> > > >>> for making decisions in device drivers and so i2c_hid_acpi_probe()
-> > > >>> should not use it.
-> > > >>>
-> > > >>> Moreover, Linux always supports suspend-to-idle, so if a given
-> > > >>> device can wake up the system from suspend-to-idle, then it can be
-> > > >>> marked as wakeup capable unconditionally, so make that happen in
-> > > >>> i2c_hid_acpi_probe().
-> > > >>>
-> > > >>> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> > > >>
-> > > >> +Raul
-> > > >> +Hans
-> > > >> +KH
-> > > >>
-> > > >> Raul had a patch that was actually going to just tear out this code
-> > > >> entirely:
-> > > >> https://lkml.kernel.org/lkml/20211220163823.1.Ie20ca47a26d3ea68124d8197b67bb1344c67f650@changeid/
-> > > >>
-> > > >> As part of that patch series discussion another suggestion had
-> > > >> transpired
-> > > >> (https://patchwork.kernel.org/project/linux-input/patch/20211220163823.2.Id022caf53d01112188308520915798f08a33cd3e@changeid/#24681016):
-> > > >>
-> > > >> ```
-> > > >> if ((acpi_gbl_FADT.flags & ACPI_FADT_LOW_POWER_S0) &&
-> > > >>             !adev->flags.power_manageable) {
-> > > >>                  device_set_wakeup_capable(dev, true);
-> > > >>                  device_set_wakeup_enable(dev, false);
-> > > >>          }
-> > > >> ```
-> > > >>
-> > > >> If this is being changed, maybe consider that suggestion to
-> > > >> check `adev->flags.power_manageable`.
-> > > >
-> > > > Fair enough, I'll send a v2 with this check added.
-> > >
-> > > Re-reading the original thread:
-> > > https://lkml.kernel.org/lkml/20211220163823.1.Ie20ca47a26d3ea68124d8197b67bb1344c67f650@changeid/T/#u
-> > >
-> > > The conclusion there was that the :
-> > >
-> > >                  device_set_wakeup_capable(dev, true);
-> > >                  device_set_wakeup_enable(dev, false);
-> > >
-> > > Calls should be made conditional on the IRQ being
-> > > marked ExclusiveAndWake instead of the ACPI_FADT_LOW_POWER_S0
-> > > check.
-> > >
-> > > Regards,
-> > >
-> > > Hans
-> > >
+> > One that removes CONFIG_ARCH_HAS_NR_GPIO entirely, then
+> > allocate bases for new GPIO chips from 0 and upward instead.
+> > And then see what happens.
+> >
+>
+> Ok, I can give it a try.
+
+Nice!
+
+> But what do I do with:
+>
+> drivers/gpio/gpio-aggregator.c: bitmap =3D bitmap_alloc(ARCH_NR_GPIOS,
+> GFP_KERNEL);
+
+That's just used locally in that driver to loop over the arguments to the
+aggregator (from the file in sysfs). I would set some arbitrary root
+like
+#define AGGREGATOR_MAX_GPIOS 512
+and just search/replace with that.
+
+Yours,
+Linus Walleij
