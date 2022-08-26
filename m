@@ -2,123 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6DEECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 17:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5867EECAAA6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 17:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344649AbiHZRHX (ORCPT
+        id S1343829AbiHZRIZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 13:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        Fri, 26 Aug 2022 13:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243995AbiHZRHN (ORCPT
+        with ESMTP id S230486AbiHZRIY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 13:07:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60E6CCD73;
-        Fri, 26 Aug 2022 10:07:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661533632; x=1693069632;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=wHbno+9bH5FlaHl2aCUA9a9noFNnMz8wJkNpCpcnCGc=;
-  b=acxhi9j/FcgeWG+zUF+dUQtki3isCOWyEyQNIFRRwWPrt7a7ijDamkSt
-   Bo0rMhJKha1F2yguYrU48yu6RgUptsZ49+727OlmtjmhJgtlnW0b0bfMF
-   07Nrw0qi0CsNiNM1OUHndZlrA7jFHYMxs56fqKILMGUTWAnmSvTYlRzlQ
-   I4CJbMGoY9ytgwm/9YkbwPeebGZpNRJ2+SdxmHDQRhH2h+FnbWgRQLC+A
-   0pD8Ek+7Z6rdZujizi2MWKaokZuqRWDxB/rnRipyr8BrtPS5Jc2+MgycX
-   NJ8dUtDpGalnovMvtPmwM1OixtWiiWiBCm/Rwvnugz96WPadckjRzwbdg
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="295825585"
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="295825585"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 10:07:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="640131972"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 26 Aug 2022 10:07:07 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5D85E1C3; Fri, 26 Aug 2022 20:07:21 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH v2 2/4] pwm: sysfs: Return directly from the for-loop in PM callbacks
-Date:   Fri, 26 Aug 2022 20:07:14 +0300
-Message-Id: <20220826170716.6886-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220826170716.6886-1-andriy.shevchenko@linux.intel.com>
-References: <20220826170716.6886-1-andriy.shevchenko@linux.intel.com>
+        Fri, 26 Aug 2022 13:08:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F202CE305
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 10:08:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CE5D61BA2
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 17:08:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69C1CC433C1;
+        Fri, 26 Aug 2022 17:08:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661533702;
+        bh=JNWgzqw2tKu/IX/8pc1hZ71PjLuc8vnbXaaTYzYOVqo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rDfBAJ8bVPWABbCjjYIv+k1fEpTx6a0eLEdqz6XZPoY4zq1SYEerpdmETH7OYZt9M
+         skgKatTSN3AEbor1Jpr5W4kAg2K6F/3J41YYTw6WdXJTffyFhCkAq0pH+Haqp52TCj
+         cBvv1jI+l6WqHrm7h+021WQI8cG0F9ml5IKlfAKV4oqMzejBdSdbC9naewR1liiSc5
+         h6m3rHVBLI7u5INQH6nCWf2ol7XuKMpMKQA4SpQBJ48A/ZGBD/x28RAmYIHyfFjwwG
+         e5j1wkbTWkitMUR/gUjdTHiyQ/41Z1kHRD7psMqHbb9DjwJshs20F/R46RFYK7CJR3
+         R0zOBzVXNl8kQ==
+From:   SeongJae Park <sj@kernel.org>
+To:     xiakaixu1987@gmail.com
+Cc:     sj@kernel.org, akpm@linux-foundation.org, damon@lists.linux.dev,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Kaixu Xia <kaixuxia@tencent.com>
+Subject: Re: [PATCH 1/2] mm/damon: simplify the parameter passing for 'check_accesses'
+Date:   Fri, 26 Aug 2022 17:08:18 +0000
+Message-Id: <20220826170818.50050-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <1661502678-19336-2-git-send-email-kaixuxia@tencent.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is no need to assign ret to 0 and then break the loop just
-for returning the error to the caller. Instead, return directly
-from the for-loop, and 0 otherwise.
+Hi Kaixu,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
-v2: added tag (Uwe)
- drivers/pwm/sysfs.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+On Fri, 26 Aug 2022 16:31:17 +0800 xiakaixu1987@gmail.com wrote:
 
-diff --git a/drivers/pwm/sysfs.c b/drivers/pwm/sysfs.c
-index c21b6046067b..1543fe07765b 100644
---- a/drivers/pwm/sysfs.c
-+++ b/drivers/pwm/sysfs.c
-@@ -413,7 +413,7 @@ static int pwm_class_resume_npwm(struct device *parent, unsigned int npwm)
- {
- 	struct pwm_chip *chip = dev_get_drvdata(parent);
- 	unsigned int i;
--	int ret = 0;
-+	int ret;
- 
- 	for (i = 0; i < npwm; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
-@@ -427,17 +427,17 @@ static int pwm_class_resume_npwm(struct device *parent, unsigned int npwm)
- 		state.enabled = export->suspend.enabled;
- 		ret = pwm_class_apply_state(export, pwm, &state);
- 		if (ret < 0)
--			break;
-+			return ret;
- 	}
- 
--	return ret;
-+	return 0;
- }
- 
- static int pwm_class_suspend(struct device *parent)
- {
- 	struct pwm_chip *chip = dev_get_drvdata(parent);
- 	unsigned int i;
--	int ret = 0;
-+	int ret;
- 
- 	for (i = 0; i < chip->npwm; i++) {
- 		struct pwm_device *pwm = &chip->pwms[i];
-@@ -457,11 +457,11 @@ static int pwm_class_suspend(struct device *parent)
- 			 * this suspend function.
- 			 */
- 			pwm_class_resume_npwm(parent, i);
--			break;
-+			return ret;
- 		}
- 	}
- 
--	return ret;
-+	return 0;
- }
- 
- static int pwm_class_resume(struct device *parent)
--- 
-2.35.1
+> From: Kaixu Xia <kaixuxia@tencent.com>
+> 
+> The parameter 'struct damon_ctx *ctx' is unnecessary in damon
+> 'check_accesses' callback operation, so we can remove it.
 
+Thank you for the finding, but this wording is not 100% perfect, strictly
+speaking.  The callback operations indeed use the parameter, but the internal
+functions called by the callbacks (__damon_{p,v}a_check_access()) aren't.
+
+Could you please update the message?
+
+> 
+> Signed-off-by: Kaixu Xia <kaixuxia@tencent.com>
+> ---
+>  mm/damon/paddr.c | 5 ++---
+>  mm/damon/vaddr.c | 5 ++---
+>  2 files changed, 4 insertions(+), 6 deletions(-)
+> 
+> diff --git a/mm/damon/paddr.c b/mm/damon/paddr.c
+> index dc131c6a5403..6b0d9e6aa677 100644
+> --- a/mm/damon/paddr.c
+> +++ b/mm/damon/paddr.c
+> @@ -166,8 +166,7 @@ static bool damon_pa_young(unsigned long paddr, unsigned long *page_sz)
+>  	return result.accessed;
+>  }
+>  
+> -static void __damon_pa_check_access(struct damon_ctx *ctx,
+> -				    struct damon_region *r)
+> +static void __damon_pa_check_access(struct damon_region *r)
+>  {
+>  	static unsigned long last_addr;
+>  	static unsigned long last_page_sz = PAGE_SIZE;
+> @@ -196,7 +195,7 @@ static unsigned int damon_pa_check_accesses(struct damon_ctx *ctx)
+>  
+>  	damon_for_each_target(t, ctx) {
+>  		damon_for_each_region(r, t) {
+> -			__damon_pa_check_access(ctx, r);
+> +			__damon_pa_check_access(r);
+>  			max_nr_accesses = max(r->nr_accesses, max_nr_accesses);
+>  		}
+>  	}
+> diff --git a/mm/damon/vaddr.c b/mm/damon/vaddr.c
+> index 3c7b9d6dca95..c8c2f306bb6d 100644
+> --- a/mm/damon/vaddr.c
+> +++ b/mm/damon/vaddr.c
+> @@ -532,8 +532,7 @@ static bool damon_va_young(struct mm_struct *mm, unsigned long addr,
+>   * mm	'mm_struct' for the given virtual address space
+>   * r	the region to be checked
+>   */
+> -static void __damon_va_check_access(struct damon_ctx *ctx,
+> -			       struct mm_struct *mm, struct damon_region *r)
+> +static void __damon_va_check_access(struct mm_struct *mm, struct damon_region *r)
+
+I still prefer 80 columns rule[1].  Could you please break this line?
+
+
+[1] https://docs.kernel.org/process/coding-style.html#breaking-long-lines-and-strings
+
+>  {
+>  	static struct mm_struct *last_mm;
+>  	static unsigned long last_addr;
+> @@ -568,7 +567,7 @@ static unsigned int damon_va_check_accesses(struct damon_ctx *ctx)
+>  		if (!mm)
+>  			continue;
+>  		damon_for_each_region(r, t) {
+> -			__damon_va_check_access(ctx, mm, r);
+> +			__damon_va_check_access(mm, r);
+>  			max_nr_accesses = max(r->nr_accesses, max_nr_accesses);
+>  		}
+>  		mmput(mm);
+> -- 
+> 2.27.0
+
+
+Thanks,
+SJ
