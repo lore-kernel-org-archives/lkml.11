@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C9EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE3CECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:16:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344403AbiHZPO4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45282 "EHLO
+        id S244280AbiHZPQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 11:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343764AbiHZPNl (ORCPT
+        with ESMTP id S244642AbiHZPOM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:13:41 -0400
+        Fri, 26 Aug 2022 11:14:12 -0400
 Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445C0DEFD
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:47 -0700 (PDT)
-Received: by mail-ej1-x64a.google.com with SMTP id hb37-20020a170907162500b0073d7f7fbbbfso725540ejc.17
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8FF24BDA
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:56 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id he38-20020a1709073da600b0073d98728570so728419ejc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:09:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=wnBRr6RijpcrZwDY4IvPeedZIJ4FbGOivCI4jGGTq68=;
-        b=Q2dLT3h7TWqrdhr9cKJaZHS7iaLiqYTtydJ8WFBafxLMcKO+tWNvB/c1oHlNA44pJ7
-         /OXz8Sr59WCHZVNiYq5ZO1SudMDbRYsAoPTTGJZwqRehknAE2rlYQmFGjPCW+F59/jA8
-         4CGBdHbeqGVMdW2YUIUBHbdr0K3ckRBLlyr7LkOy1/yf2HWblMEVwWDcc4r9h7xID/vX
-         XMqQsXajhwumZ46fKGFKaccQ9fQsrPuYa0ruT4rNz0CxhrMmw4c71iIpLPuYx4UZ7eQv
-         mqdpWuXSHPVCrwsBJhHLWeKUt/81aDaMfsn199V9hC6WQQ+JcGqn5dar3vI5lIw7PM1Z
-         VyHQ==
+        bh=3xJV8lOEjvc/s3Zvuma5zSeTndu+UAUJOaQAKluuQYo=;
+        b=iowtS53RHlpCL6qU/VWV5GQVG1CF6AM2cb2K8UF+xf9Eri/m9bP/5b0fP/Yv5g71u0
+         G4xosRyjwnbYFvqXAKPuwh/r0w9aoa69XWRuAOHrIhWmWSx0iV2XmDVoCP0JlE47FuAB
+         nmm0HUugDUAGgo/u5XwfJyioj1O9wMPKtRlUGvvX8gKw+EEmNXhvxQbPL/ZKDRcZQQPf
+         MtPg7V/4IJP2t5P4sgZyKRHmwuOCzbI6xunPoBepArW292PT19a5ne9C4DB1Q+Nr1eTB
+         S6mxBrnLUZM9ZZ8fq3aL2JmDi/WAivgNEzeAkYRHzPgQwniErjEHU3w34yBn1hByADXw
+         pmoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=wnBRr6RijpcrZwDY4IvPeedZIJ4FbGOivCI4jGGTq68=;
-        b=luXe1OUtwO59MaVgQQ1GzRya3rEJDPbejPrEeScdKIDoBbFa9oPT+JNvtgIhGidMvx
-         T3UqJV1fzet95uzzYrdqTaShphiFqt/v3dpTwxI3x+u3RpgxRlfuDkb8hQJBkMAXWzRA
-         YNykwn1SwT+ZjNTHRIFqldbH6xweMa/2c+QRW2hU5AgCRwuUWjDDtKKr5SehYN0pJ5KC
-         hnPknlD3Y73uM0xHE59V7GqEI92scFbovENSr0IADQ0w+dRTBHbEizHFAZNxQHqIV8qW
-         fBKsAqdoE6TPdOmTByffqIm0+ZuyWbw+naOjAbdeUKpB24rUncluXobPQ9wxqChMmCys
-         xjwA==
-X-Gm-Message-State: ACgBeo311ehU5ZnRfxG5zHb3RTYpa0OvvodK4Bed98alaqvehCBXh02x
-        Dmnwyl3DLGhRSc/4lcjLOnylmPTmINA=
-X-Google-Smtp-Source: AA6agR5Cviceae2TWrL6o3zdALqTpxVHsH33a+v7kdsRPAsBV/Ys+W35Cv65k+Ev6zMJg2mViJephdzVroE=
+        bh=3xJV8lOEjvc/s3Zvuma5zSeTndu+UAUJOaQAKluuQYo=;
+        b=4xAo+YaCKf4SsAzHpHifrJreBw0yNMEEcOnolbKkCpIm2C6Ox21xXCCjlug3jwQOxx
+         pw5acR220KBO5Wy2JHZr+yjxqEKjCEWMcuRAECg3/dMkpGepo4LQrnQtvdn7XJzgzzC0
+         B8GmrbBehUSrVlKzN5ihoxIN0PopI5t/XT9ozx92+Ws1HnEvpPhJtlBgNvxUneAUoVKs
+         xt606JQU4GBtF7Tj0HqRj+/967LRXQAk8UeJ3zj6pLRCQWw0cGiLgrY5Sm0kPhH3t1kB
+         Penf3Hh8tlY9c7No7ldbERL/97wawMsrZb56LQi+62mnHQ8sVv6T1E0LE/iKPgdhRac7
+         5n/g==
+X-Gm-Message-State: ACgBeo14V2aeQy2yqn6QCBTfVb/MNcRU/bJvSdk7bQx3wtWa8eJ31Yt1
+        wioSLP8IQmS1wbNJAJXzSZK8oS0L4DQ=
+X-Google-Smtp-Source: AA6agR7ZtlC3yezkLYO1v2tXY0fliINor4H6Q3eNUkRHGD2H51HnwKZSVDlZC6/hqKT8jj4k53bs2dn79I8=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:5207:ac36:fdd3:502d])
- (user=glider job=sendgmr) by 2002:a05:6402:268d:b0:43d:b9d0:9efc with SMTP id
- w13-20020a056402268d00b0043db9d09efcmr7340129edd.92.1661526582428; Fri, 26
- Aug 2022 08:09:42 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 17:07:55 +0200
+ (user=glider job=sendgmr) by 2002:a05:6402:3491:b0:446:ea7d:8d9c with SMTP id
+ v17-20020a056402349100b00446ea7d8d9cmr7130674edc.184.1661526588030; Fri, 26
+ Aug 2022 08:09:48 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 17:07:57 +0200
 In-Reply-To: <20220826150807.723137-1-glider@google.com>
 Mime-Version: 1.0
 References: <20220826150807.723137-1-glider@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220826150807.723137-33-glider@google.com>
-Subject: [PATCH v5 32/44] objtool: kmsan: list KMSAN API functions as uaccess-safe
+Message-ID: <20220826150807.723137-35-glider@google.com>
+Subject: [PATCH v5 34/44] x86: kmsan: skip shadow checks in __switch_to()
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -92,71 +91,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KMSAN inserts API function calls in a lot of places (function entries
-and exits, local variables, memory accesses), so they may get called
-from the uaccess regions as well.
+When instrumenting functions, KMSAN obtains the per-task state (mostly
+pointers to metadata for function arguments and return values) once per
+function at its beginning, using the `current` pointer.
 
-KMSAN API functions are used to update the metadata (shadow/origin pages)
-for kernel memory accesses. The metadata pages for kernel pointers are
-also located in the kernel memory, so touching them is not a problem.
-For userspace pointers, no metadata is allocated.
+Every time the instrumented function calls another function, this state
+(`struct kmsan_context_state`) is updated with shadow/origin data of the
+passed and returned values.
 
-If an API function is supposed to read or modify the metadata, it does so
-for kernel pointers and ignores userspace pointers.
-If an API function is supposed to return a pair of metadata pointers for
-the instrumentation to use (like all __msan_metadata_ptr_for_TYPE_SIZE()
-functions do), it returns the allocated metadata for kernel pointers and
-special dummy buffers residing in the kernel memory for userspace
-pointers.
+When `current` changes in the low-level arch code, instrumented code can
+not notice that, and will still refer to the old state, possibly corrupting
+it or using stale data. This may result in false positive reports.
 
-As a result, none of KMSAN API functions perform userspace accesses, but
-since they might be called from UACCESS regions they use
-user_access_save/restore().
+To deal with that, we need to apply __no_kmsan_checks to the functions
+performing context switching - this will result in skipping all KMSAN
+shadow checks and marking newly created values as initialized,
+preventing all false positive reports in those functions. False negatives
+are still possible, but we expect them to be rare and impersistent.
 
+Suggested-by: Marco Elver <elver@google.com>
 Signed-off-by: Alexander Potapenko <glider@google.com>
+Link: https://linux-review.googlesource.com/id/I520c414f52c19f3ea22377a9c570fff0d5943a95
+
 ---
-v3:
- -- updated the patch description
+v2:
+ -- This patch was previously called "kmsan: skip shadow checks in files
+    doing context switches". Per Mark Rutland's suggestion, we now only
+    skip checks in low-level arch-specific code, as context switches in
+    common code should be invisible to KMSAN. We also apply the checks
+    to precisely the functions performing the context switch instead of
+    the whole file.
 
-v4:
- -- add kmsan_unpoison_entry_regs()
+v5:
+ -- Replace KMSAN_ENABLE_CHECKS_process_64.o with __no_kmsan_checks
 
-Link: https://linux-review.googlesource.com/id/I242bc9816273fecad4ea3d977393784396bb3c35
+Link: https://linux-review.googlesource.com/id/I45e3ed9c5f66ee79b0409d1673d66ae419029bcb
 ---
- tools/objtool/check.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ arch/x86/kernel/process_64.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index 91678252a9b67..577dfdca635e8 100644
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1060,6 +1060,26 @@ static const char *uaccess_safe_builtin[] = {
- 	"__sanitizer_cov_trace_cmp4",
- 	"__sanitizer_cov_trace_cmp8",
- 	"__sanitizer_cov_trace_switch",
-+	/* KMSAN */
-+	"kmsan_copy_to_user",
-+	"kmsan_report",
-+	"kmsan_unpoison_entry_regs",
-+	"kmsan_unpoison_memory",
-+	"__msan_chain_origin",
-+	"__msan_get_context_state",
-+	"__msan_instrument_asm_store",
-+	"__msan_metadata_ptr_for_load_1",
-+	"__msan_metadata_ptr_for_load_2",
-+	"__msan_metadata_ptr_for_load_4",
-+	"__msan_metadata_ptr_for_load_8",
-+	"__msan_metadata_ptr_for_load_n",
-+	"__msan_metadata_ptr_for_store_1",
-+	"__msan_metadata_ptr_for_store_2",
-+	"__msan_metadata_ptr_for_store_4",
-+	"__msan_metadata_ptr_for_store_8",
-+	"__msan_metadata_ptr_for_store_n",
-+	"__msan_poison_alloca",
-+	"__msan_warning",
- 	/* UBSAN */
- 	"ubsan_type_mismatch_common",
- 	"__ubsan_handle_type_mismatch",
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index 1962008fe7437..6b3418bff3261 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -553,6 +553,7 @@ void compat_start_thread(struct pt_regs *regs, u32 new_ip, u32 new_sp, bool x32)
+  * Kprobes not supported here. Set the probe on schedule instead.
+  * Function graph tracer not supported too.
+  */
++__no_kmsan_checks
+ __visible __notrace_funcgraph struct task_struct *
+ __switch_to(struct task_struct *prev_p, struct task_struct *next_p)
+ {
 -- 
 2.37.2.672.g94769d06f0-goog
 
