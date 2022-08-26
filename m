@@ -2,190 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC3D7ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22164ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245304AbiHZKCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47872 "EHLO
+        id S245604AbiHZKCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343653AbiHZKB0 (ORCPT
+        with ESMTP id S245723AbiHZKB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 06:01:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8A1D570D
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661508082;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NuQxKCRACYMuhvoslJjsX82dVs3K5Bc7MVUK4nimAtA=;
-        b=PwHeXnIv4+z/dvM7yI90iHu0tc+sINTBhYO2C07ES0c1KpuRlw/4zoa9cohZnPOkKE3DWu
-        VI4jAcoJQzPwfYilo8bxBwFzEYT+hcTLnKVUk44vFw/QiQ/XPYPHZEoYdQNEiAz/ZEiFB8
-        YBunRG/2FYZMYJBSf2iNZdU3aFxPO/4=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-481-kPMFSkmiOyKKaUxGIYmXzA-1; Fri, 26 Aug 2022 06:01:21 -0400
-X-MC-Unique: kPMFSkmiOyKKaUxGIYmXzA-1
-Received: by mail-ed1-f70.google.com with SMTP id p4-20020a056402500400b00447e8b6f62bso834703eda.17
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=NuQxKCRACYMuhvoslJjsX82dVs3K5Bc7MVUK4nimAtA=;
-        b=H3Moi2RcufCb81WJDfTZ/cSkjJYiItPlxdFWOEX/FX4E68sP0gB9L0UBsfbqnyLZCC
-         oWHXeAkrI0MVEG/7VoFkFZY2PvpYo3Jp2VgcNOfci//bwXpcHRYlYVfgO7YUBe2udpa5
-         j8OkPMVawFfH+dXPV1DMjAAddHR5/3rXCRMwyGfGoBUYdlr/jLJPFTdaIXUE637o61dU
-         KPmnPepNV8h4CTBatrirRSgeB1vRbJ+TSSy9UIaWcqsBwv7G6uaCuAeDd5EZNjO81rMW
-         K8eY2pLAHYL8rwETvsn7f+3ChuuQYW3ND+gbaNWF8f1Wyy9b0s0q54yWrOf1rd1pmvJa
-         ssGw==
-X-Gm-Message-State: ACgBeo1B1XmWOeBx4JLOvvfARzaTO2aCnQZXVPIhtzdn9ob85jmLVeTq
-        60iy39CfbHeWM04CBVVLxjxklHgNgN2WouUyeovkT2Q0oUNzQIulJyzs0wwv+4OHD+qjleX7x6h
-        7D1pgi3271+2fMD2csYkql+xv
-X-Received: by 2002:a17:907:d08:b0:72f:b107:c07a with SMTP id gn8-20020a1709070d0800b0072fb107c07amr5080408ejc.340.1661508080120;
-        Fri, 26 Aug 2022 03:01:20 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5rLpuvk4e9zX9oMu00zx556BESJ4F7cOoQCb3jzdcWsWsHCzorutO71yjsgkCLPN8rdpHPMQ==
-X-Received: by 2002:a17:907:d08:b0:72f:b107:c07a with SMTP id gn8-20020a1709070d0800b0072fb107c07amr5080384ejc.340.1661508079855;
-        Fri, 26 Aug 2022 03:01:19 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id 6-20020a170906310600b0073c10031dc9sm208866ejx.80.2022.08.26.03.01.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 03:01:19 -0700 (PDT)
-Message-ID: <b0d54cbc-ea5d-4cad-5017-c4afd4462942@redhat.com>
-Date:   Fri, 26 Aug 2022 12:01:18 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] platform: move from strlcpy with unused retval to strscpy
-Content-Language: en-US
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Mark Gross <markgross@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Divya Bharathi <divya.bharathi@dell.com>,
-        Prasanth Ksr <prasanth.ksr@dell.com>,
-        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
-        platform-driver-x86@vger.kernel.org, Dell.Client.Kernel@dell.com,
-        ibm-acpi-devel@lists.sourceforge.net
-References: <20220818210058.7229-1-wsa+renesas@sang-engineering.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220818210058.7229-1-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Fri, 26 Aug 2022 06:01:29 -0400
+Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39F96F25A
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:01:26 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by fx409.security-mail.net (Postfix) with ESMTP id 4CD483236F2
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:01:25 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
+        s=sec-sig-email; t=1661508085;
+        bh=vvFfyIzVOt+FBtDJHEyLUs+N/uAy6HQNA/KHZSgA5D8=;
+        h=From:To:Cc:Subject:Date;
+        b=CgwopXANpNqyg6YtzA3SripPIjrvnzTiWBwNLhmQi1z17QQipQAAN0OOnGqotm9vM
+         qZIEfaXtms72/nlexVIA1VfhqJR1TU2onBpUWChj97llbhBVP1xxl/K2sgiy1McZVT
+         vjkTtdRQftjGmZTikoDKP8QAr0j9ewyhWFjBzysQ=
+Received: from fx409 (localhost [127.0.0.1])
+        by fx409.security-mail.net (Postfix) with ESMTP id B3E8032363E;
+        Fri, 26 Aug 2022 12:01:24 +0200 (CEST)
+X-Virus-Scanned: E-securemail
+Secumail-id: <5a32.630899f3.d3b51.0>
+Received: from zimbra2.kalray.eu (unknown [217.181.231.53])
+        by fx409.security-mail.net (Postfix) with ESMTPS id D5B9B3238AC;
+        Fri, 26 Aug 2022 12:01:23 +0200 (CEST)
+Received: from zimbra2.kalray.eu (localhost [127.0.0.1])
+        by zimbra2.kalray.eu (Postfix) with ESMTPS id B5F5827E02FA;
+        Fri, 26 Aug 2022 12:01:23 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra2.kalray.eu (Postfix) with ESMTP id 9E51827E0392;
+        Fri, 26 Aug 2022 12:01:23 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu 9E51827E0392
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
+        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661508083;
+        bh=M/RfIAISD7kAlTMJPp9AUX7+0n4u8J4cxKaRTfK45Jk=;
+        h=From:To:Date:Message-Id;
+        b=gGI6sadZ5EwB55pMsAHuFLe/ZLEWEaWS4jmEeGy0Rmcwx+BoKeK03zXymXKatxl1k
+         fRH59Y5+Lr3wmydZI3NheomjaQMBJ6lnxwbltN2ev4tkacOWA2dbES6H3oi0aN9Aq4
+         6uv9RGDeLEML9faz7OvFYcqcrgPRhvuN+sGXtlnA=
+Received: from zimbra2.kalray.eu ([127.0.0.1])
+        by localhost (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id wanPIDXbM-ba; Fri, 26 Aug 2022 12:01:23 +0200 (CEST)
+Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206])
+        by zimbra2.kalray.eu (Postfix) with ESMTPSA id 8CED527E02FA;
+        Fri, 26 Aug 2022 12:01:23 +0200 (CEST)
+From:   Jules Maselbas <jmaselbas@kalray.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jules Maselbas <jmaselbas@kalray.eu>,
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        linux-media@vger.kernel.org
+Subject: [PATCH] media: platform: ti: Fix repeated word in comments
+Date:   Fri, 26 Aug 2022 12:00:46 +0200
+Message-Id: <20220826100052.22945-18-jmaselbas@kalray.eu>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: by Secumail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Remove redundant word `the`.
 
-On 8/18/22 23:00, Wolfram Sang wrote:
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
-> 
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+CC: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+CC: linux-media@vger.kernel.org
+Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
+---
+ drivers/media/platform/ti/davinci/vpbe.c | 2 +-
+ drivers/media/platform/ti/omap3isp/isp.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Thank you for your patch, I've applied this patch to my review-hans 
-branch:
-https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
-
-Note it will show up in my review-hans branch once I've pushed my
-local branch there, which might take a while.
-
-Once I've run some tests on this branch the patches there will be
-added to the platform-drivers-x86/for-next branch and eventually
-will be included in the pdx86 pull-request to Linus for the next
-merge-window.
-
-Regards,
-
-Hans
-
-
-> ---
->  drivers/platform/surface/surface3_power.c          | 2 +-
->  drivers/platform/x86/dell/dell-wmi-sysman/sysman.c | 2 +-
->  drivers/platform/x86/intel/chtwc_int33fe.c         | 6 +++---
->  drivers/platform/x86/thinkpad_acpi.c               | 4 ++--
->  4 files changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/platform/surface/surface3_power.c b/drivers/platform/surface/surface3_power.c
-> index 444ec81ba02d..4c53d116d59b 100644
-> --- a/drivers/platform/surface/surface3_power.c
-> +++ b/drivers/platform/surface/surface3_power.c
-> @@ -519,7 +519,7 @@ static int mshw0011_probe(struct i2c_client *client)
->  	i2c_set_clientdata(client, data);
->  
->  	memset(&board_info, 0, sizeof(board_info));
-> -	strlcpy(board_info.type, "MSHW0011-bat0", I2C_NAME_SIZE);
-> +	strscpy(board_info.type, "MSHW0011-bat0", I2C_NAME_SIZE);
->  
->  	bat0 = i2c_acpi_new_device(dev, 1, &board_info);
->  	if (IS_ERR(bat0))
-> diff --git a/drivers/platform/x86/dell/dell-wmi-sysman/sysman.c b/drivers/platform/x86/dell/dell-wmi-sysman/sysman.c
-> index 636bdfa83284..0a6411a8a104 100644
-> --- a/drivers/platform/x86/dell/dell-wmi-sysman/sysman.c
-> +++ b/drivers/platform/x86/dell/dell-wmi-sysman/sysman.c
-> @@ -270,7 +270,7 @@ void strlcpy_attr(char *dest, char *src)
->  	size_t len = strlen(src) + 1;
->  
->  	if (len > 1 && len <= MAX_BUFF)
-> -		strlcpy(dest, src, len);
-> +		strscpy(dest, src, len);
->  
->  	/*len can be zero because any property not-applicable to attribute can
->  	 * be empty so check only for too long buffers and log error
-> diff --git a/drivers/platform/x86/intel/chtwc_int33fe.c b/drivers/platform/x86/intel/chtwc_int33fe.c
-> index c52ac23e2331..1ea989df513c 100644
-> --- a/drivers/platform/x86/intel/chtwc_int33fe.c
-> +++ b/drivers/platform/x86/intel/chtwc_int33fe.c
-> @@ -270,7 +270,7 @@ cht_int33fe_register_max17047(struct device *dev, struct cht_int33fe_data *data)
->  	}
->  
->  	memset(&board_info, 0, sizeof(board_info));
-> -	strlcpy(board_info.type, "max17047", I2C_NAME_SIZE);
-> +	strscpy(board_info.type, "max17047", I2C_NAME_SIZE);
->  	board_info.dev_name = "max17047";
->  	board_info.fwnode = fwnode;
->  	data->battery_fg = i2c_acpi_new_device(dev, 1, &board_info);
-> @@ -361,7 +361,7 @@ static int cht_int33fe_typec_probe(struct platform_device *pdev)
->  	}
->  
->  	memset(&board_info, 0, sizeof(board_info));
-> -	strlcpy(board_info.type, "typec_fusb302", I2C_NAME_SIZE);
-> +	strscpy(board_info.type, "typec_fusb302", I2C_NAME_SIZE);
->  	board_info.dev_name = "fusb302";
->  	board_info.fwnode = fwnode;
->  	board_info.irq = fusb302_irq;
-> @@ -381,7 +381,7 @@ static int cht_int33fe_typec_probe(struct platform_device *pdev)
->  	memset(&board_info, 0, sizeof(board_info));
->  	board_info.dev_name = "pi3usb30532";
->  	board_info.fwnode = fwnode;
-> -	strlcpy(board_info.type, "pi3usb30532", I2C_NAME_SIZE);
-> +	strscpy(board_info.type, "pi3usb30532", I2C_NAME_SIZE);
->  
->  	data->pi3usb30532 = i2c_acpi_new_device(dev, 3, &board_info);
->  	if (IS_ERR(data->pi3usb30532)) {
-> diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-> index 22d4e8633e30..8dad0428a83c 100644
-> --- a/drivers/platform/x86/thinkpad_acpi.c
-> +++ b/drivers/platform/x86/thinkpad_acpi.c
-> @@ -7623,9 +7623,9 @@ static int __init volume_create_alsa_mixer(void)
->  	data = card->private_data;
->  	data->card = card;
->  
-> -	strlcpy(card->driver, TPACPI_ALSA_DRVNAME,
-> +	strscpy(card->driver, TPACPI_ALSA_DRVNAME,
->  		sizeof(card->driver));
-> -	strlcpy(card->shortname, TPACPI_ALSA_SHRTNAME,
-> +	strscpy(card->shortname, TPACPI_ALSA_SHRTNAME,
->  		sizeof(card->shortname));
->  	snprintf(card->mixername, sizeof(card->mixername), "ThinkPad EC %s",
->  		 (thinkpad_id.ec_version_str) ?
+diff --git a/drivers/media/platform/ti/davinci/vpbe.c b/drivers/media/platform/ti/davinci/vpbe.c
+index 5f0aeb744e81..509ecc84624e 100644
+--- a/drivers/media/platform/ti/davinci/vpbe.c
++++ b/drivers/media/platform/ti/davinci/vpbe.c
+@@ -280,7 +280,7 @@ static int vpbe_set_default_output(struct vpbe_device *vpbe_dev)
+  * vpbe_get_output - Get output
+  * @vpbe_dev: vpbe device ptr
+  *
+- * return current vpbe output to the the index
++ * return current vpbe output to the index
+  */
+ static unsigned int vpbe_get_output(struct vpbe_device *vpbe_dev)
+ {
+diff --git a/drivers/media/platform/ti/omap3isp/isp.c b/drivers/media/platform/ti/omap3isp/isp.c
+index d251736eb420..a6052df9bb19 100644
+--- a/drivers/media/platform/ti/omap3isp/isp.c
++++ b/drivers/media/platform/ti/omap3isp/isp.c
+@@ -1528,7 +1528,7 @@ void omap3isp_print_status(struct isp_device *isp)
+  * To solve this problem power management support is split into prepare/complete
+  * and suspend/resume operations. The pipelines are stopped in prepare() and the
+  * ISP clocks get disabled in suspend(). Similarly, the clocks are re-enabled in
+- * resume(), and the the pipelines are restarted in complete().
++ * resume(), and the pipelines are restarted in complete().
+  *
+  * TODO: PM dependencies between the ISP and sensors are not modelled explicitly
+  * yet.
+-- 
+2.17.1
 
