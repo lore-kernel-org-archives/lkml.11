@@ -2,111 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1EEECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA6FECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245645AbiHZHwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
+        id S245677AbiHZHwz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245610AbiHZHwB (ORCPT
+        with ESMTP id S241320AbiHZHwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:52:01 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7BBD347E
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 00:52:00 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRU8E-0001SH-B3; Fri, 26 Aug 2022 09:51:58 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRU8E-0004tJ-0G; Fri, 26 Aug 2022 09:51:58 +0200
-Date:   Fri, 26 Aug 2022 09:51:57 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        Jakub Kicinski <kuba@kernel.org>, UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v3 15/17] net: dsa: microchip: ksz9477: remove
- unused "on" variable
-Message-ID: <20220826075157.GD2116@pengutronix.de>
-References: <20220823080231.2466017-1-o.rempel@pengutronix.de>
- <20220823080231.2466017-16-o.rempel@pengutronix.de>
- <20220825205407.jayiksjrnccpknoj@skbuf>
+        Fri, 26 Aug 2022 03:52:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3BDD3E7A;
+        Fri, 26 Aug 2022 00:52:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4E82B82F77;
+        Fri, 26 Aug 2022 07:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7296CC433C1;
+        Fri, 26 Aug 2022 07:52:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661500370;
+        bh=AZSQuTUMuhBCSTAYFJauQHwCcy1qF0ZF2OFYaJubPX8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mOaxH6Xbs4xleND4L7NXXvj2gkBXfyj7XXvIJpbBhuye/i/A1xdPd9YfeCUAWZoXp
+         zYHkfIp4xzbPTe0aacaBajz2j+TU2kclI6++QUAiADH03LNAZ6DZvI4gD+wsrzxv2C
+         jYyen8YC2N1IROJHAn9iiSSEtS0uEb+2dohyiYulvUTkaLt1wgZ3M0sdG4AfoYBq1o
+         pvQkLUwsc8YV5LWRAR2E1FJDPSuCtL0jzKYG1dSFsDEqRHkVJka8pHuOfHO+EkdFvi
+         T4vUZCfWFRnvfI63nEo/W4knzOGrffA4eovuffa512HD4h4fTKnPEYa2CmkDbevo9k
+         ELmIFpck3Gl3g==
+Date:   Fri, 26 Aug 2022 09:52:42 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v2 2/8] dentry: Use preempt_[dis|en]able_nested()
+Message-ID: <20220826075242.wrczbyj5742t5r4c@wittgenstein>
+References: <20220825164131.402717-1-bigeasy@linutronix.de>
+ <20220825164131.402717-3-bigeasy@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220825205407.jayiksjrnccpknoj@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220825164131.402717-3-bigeasy@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:54:07PM +0300, Vladimir Oltean wrote:
-> On Tue, Aug 23, 2022 at 10:02:29AM +0200, Oleksij Rempel wrote:
-> > This variable is not used on ksz9477 side. Remove it.
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  drivers/net/dsa/microchip/ksz9477.c | 2 --
-> >  1 file changed, 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-> > index bfefb60ec91bf..609bd63f4cdb1 100644
-> > --- a/drivers/net/dsa/microchip/ksz9477.c
-> > +++ b/drivers/net/dsa/microchip/ksz9477.c
-> > @@ -1070,7 +1070,6 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
-> >  
-> >  			/* enable cpu port */
-> >  			ksz9477_port_setup(dev, i, true);
-> > -			p->on = 1;
-> >  		}
-> >  	}
-> >  
-> > @@ -1080,7 +1079,6 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
-> >  		p = &dev->ports[i];
-> >  
-> >  		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
-> > -		p->on = 1;
-> >  		if (dev->chip_id == 0x00947700 && i == 6) {
-> >  			p->sgmii = 1;
-> >  		}
-> > -- 
-> > 2.30.2
-> > 
+On Thu, Aug 25, 2022 at 06:41:25PM +0200, Sebastian Andrzej Siewior wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
 > 
-> And it seems like it's not used on ksz8 either. The reason I'm saying
-> that is that ksz8_flush_dyn_mac_table() is the only apparent user of
-> p->on, and that only for the case where flushing the FDB of all ports is
-> requested (port > dev->info->port_cnt). But ksz8_flush_dyn_mac_table()
-> (through dev->dev_ops->flush_dyn_mac_table) is only called from DSA's
-> ds->ops->port_fast_age() method, and that will never be requested
-> "for all ports" (and to my knowledge never was in the past, either).
-> Badly ported SDK code would be my guess. So there are more
-> simplifications which could be done.
+> Replace the open coded CONFIG_PREEMPT_RT conditional
+> preempt_disable/enable() with the new helper.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+> Cc: linux-fsdevel@vger.kernel.org
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
 
-Ok, i'll take a look on it as soon as i get one of ksz8 board in my
-fingers.
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
