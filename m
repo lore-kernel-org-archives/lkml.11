@@ -2,80 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB6AECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:34:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A29ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344349AbiHZOes (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 10:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
+        id S245434AbiHZOgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 10:36:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344439AbiHZOen (ORCPT
+        with ESMTP id S229472AbiHZOgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 10:34:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7901181B2E;
-        Fri, 26 Aug 2022 07:34:41 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MDj22065BzlVxb;
-        Fri, 26 Aug 2022 22:31:22 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 26 Aug 2022 22:34:39 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- dggpemm500005.china.huawei.com (7.185.36.74) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 26 Aug 2022 22:34:39 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <jgg@ziepe.ca>, <leon@kernel.org>
-CC:     <linux-rdma@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH] RDMA/core: remove 'device' argument from rdma_build_skb()
-Date:   Fri, 26 Aug 2022 22:32:15 +0800
-Message-ID: <20220826143215.18111-1-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.33.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
+        Fri, 26 Aug 2022 10:36:52 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4DC918B32
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:36:51 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id p18so1732779plr.8
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:36:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc;
+        bh=3s/DZ1HMqv5ArgVIfPof2jbOwBTqzvpHj16AfB2LQj0=;
+        b=BZYGbfglNN8fxsFeOWsuC0LXGX2d/8nArqKX7dVH4c/wys6/GG+suHxzkQJlEqTsdT
+         +DXnjPa2SLm+Op25EqIHYRgr8iq46eRbWYZ+Gm2dlXPt2essYIP6kjfkqzwZDhzqrxEl
+         JewMr4g0Ql6myCi3MuH/ORzD05ASBg5E8BgCvvIiNIOv+qlyQocoOVTQ/NT1ejb9fy/r
+         7xtNYXOCmi6vYWx5pIVBeURMa5Wx5DHfP/lZq1/Wkx2N8gK1VcHIqnFeemfX5uYthpbG
+         xql1KpDSfo6OvZ8xlR39KvJQnCiC+aNKKIEfXJlJ8RnmIQLGih0hluPjp1LJ5K7I5oZj
+         E9jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc;
+        bh=3s/DZ1HMqv5ArgVIfPof2jbOwBTqzvpHj16AfB2LQj0=;
+        b=L0ieiTZwk97WGOub/mnMiDFt2XgZmk3MnsmT9u+83TEBr9AxIwha7FDBKdozEYD0fh
+         sQkZFW36/k1ZVcXYgWKQW2qjybiqOK/X6KqW8Bn7VhB7b/LAfbGF3eE24sDl+NZhzeap
+         67OpmtovFHmY2r4SyKC5dIA2fOvGwcvkNVE5/LyGSR6oJ0/GpC4Vh+qDtezjfhd39rND
+         NvP815bMnu9nyWODtWw9ZEeDDQcP91xofLxCTRGItNULeh2OlPz2dOEFS5PAm1aqrov7
+         wGSvoPswk5+EFs6Q2MFhpE1l8DPlWT094dJ9Ohbe/p3NhaCn2gEtg7KxeuaZz2AVrnBj
+         mjAQ==
+X-Gm-Message-State: ACgBeo3C/W/I6lk0OOeGIS2QMr1rynY88LeUQIG+qklalkAcuvJxkxIv
+        Hu7r3cU5r2ZXp/SrqfKW1mZFDw==
+X-Google-Smtp-Source: AA6agR4zIgpIZ2CZPqZlSbGx+bqX5pgq2MOr6rh7Ztu0DVlWBE1iN3FOffN/AYPJH7RWDTJRnszOgg==
+X-Received: by 2002:a17:90b:4a41:b0:1fb:77e0:3ff2 with SMTP id lb1-20020a17090b4a4100b001fb77e03ff2mr4848871pjb.161.1661524611313;
+        Fri, 26 Aug 2022 07:36:51 -0700 (PDT)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id k27-20020a635a5b000000b0042aca53b4cesm268925pgm.70.2022.08.26.07.36.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 07:36:50 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 07:36:50 -0700 (PDT)
+X-Google-Original-Date: Fri, 26 Aug 2022 07:36:36 PDT (-0700)
+Subject:     Re: [PATCH 1/1] riscv: enable CD-ROM file systems in defconfig
+In-Reply-To: <20220812200853.311474-1-heinrich.schuchardt@canonical.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
+        apatel@ventanamicro.com, Atish Patra <atishp@rivosinc.com>,
+        guoren@kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, heinrich.schuchardt@canonical.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     heinrich.schuchardt@canonical.com
+Message-ID: <mhng-69fe0aa5-65ee-4dc3-b3ba-41e307ebc4e5@palmer-mbp2014>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'device' argument is never used since rdma_build_skb()
-is introduced, so remove it.
+On Fri, 12 Aug 2022 13:08:53 PDT (-0700), heinrich.schuchardt@canonical.com wrote:
+> CD-ROM images are still commonly used for installer images and other
+> data exchange.
+>
+> These file systems should be supported on RISC-V by default
+> like they are on x86_64.
+>
+> Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+> ---
+>  arch/riscv/configs/defconfig | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+> index aed332a9d4ea..05fd5fcf24f9 100644
+> --- a/arch/riscv/configs/defconfig
+> +++ b/arch/riscv/configs/defconfig
+> @@ -166,6 +166,9 @@ CONFIG_BTRFS_FS=m
+>  CONFIG_BTRFS_FS_POSIX_ACL=y
+>  CONFIG_AUTOFS4_FS=y
+>  CONFIG_OVERLAY_FS=m
+> +CONFIG_ISO9660_FS=y
+> +CONFIG_JOLIET=y
+> +CONFIG_ZISOFS=y
+>  CONFIG_MSDOS_FS=y
+>  CONFIG_VFAT_FS=y
+>  CONFIG_TMPFS=y
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
- drivers/infiniband/core/lag.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/infiniband/core/lag.c b/drivers/infiniband/core/lag.c
-index 7063e41eaf26..c77d7d2559a1 100644
---- a/drivers/infiniband/core/lag.c
-+++ b/drivers/infiniband/core/lag.c
-@@ -7,8 +7,7 @@
- #include <rdma/ib_cache.h>
- #include <rdma/lag.h>
- 
--static struct sk_buff *rdma_build_skb(struct ib_device *device,
--				      struct net_device *netdev,
-+static struct sk_buff *rdma_build_skb(struct net_device *netdev,
- 				      struct rdma_ah_attr *ah_attr,
- 				      gfp_t flags)
- {
-@@ -86,7 +85,7 @@ static struct net_device *rdma_get_xmit_slave_udp(struct ib_device *device,
- 	struct net_device *slave;
- 	struct sk_buff *skb;
- 
--	skb = rdma_build_skb(device, master, ah_attr, flags);
-+	skb = rdma_build_skb(master, ah_attr, flags);
- 	if (!skb)
- 		return ERR_PTR(-ENOMEM);
- 
--- 
-2.33.0
-
+Thanks, this is on for-next.
