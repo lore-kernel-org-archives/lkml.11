@@ -2,92 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC103ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECEDECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234424AbiHZKOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
+        id S240949AbiHZKPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236831AbiHZKOl (ORCPT
+        with ESMTP id S1343588AbiHZKPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 06:14:41 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB23C2FBC
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:14:38 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id e20so1212136wri.13
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:14:38 -0700 (PDT)
+        Fri, 26 Aug 2022 06:15:00 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF531A446
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:14:56 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id bq23so1383154lfb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:14:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ionos.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=YRpdcaJ4r7VRT3/3i///gd/6IhC/k0ujvr195lrn9Lk=;
-        b=VSUkeWQzqxVlhVFu4DC9tyaajVlj//djUl8X7BaKZwQua+k3/xBJFtIuDLjNJjQWLL
-         GUaedmIJPtnNIiSBpY5M30o+30Jmmq1+sM9Rcp9s3vlmgwWWjzOLVA9s2rUJiYwfzqSI
-         ruXSplnM+iFUnlzG+3jlq28Y6R/yJQmNN42YpzLUNlvU/DMtnH8RREhwp6CNmsiD6cAn
-         P+odQZOAnBZyjm6qfeiccNeyztJh7Y0leBhqXWaNypkUwVE/lTfDMjJZ14dvEqlveVCO
-         JbSmJo0t4quHGh+3J0eEE02Ec8Xn1LwKIkbOSGlqxJVVetWJH28se8Gz+WiQRhVspY0M
-         RAiQ==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=nBDls8p7zWKgMsdae7qsDU8nms79A1faHjvYu7tARvE=;
+        b=piJ7BEpevaGNdTfb+iohBsjVd8y6wP7fyx2scpDUXdludX6+pLspOYMOnspr5RJUmE
+         OIh1n/nMbN506hH3wRUECtpn215qzlyev8PAdv9fkUrfkWN8RbOIkAAv7iCnj/GpRewr
+         6b8p81mVhXkt+JAB6KBcurlZ+unI6qZhm+lUuSOQ1aVLUbncBRWCYQHGm7l3rhjuEEDJ
+         RjWZPIryyeV1a9Ua7OflgMFcrcgLy0YL1gskTh695mZRAbIF7D/CS172snBeNCYvtNLW
+         KiLBOlEow99lBrYt00L0fYGxGF8kqOX5BJxf2PcQjnNJbHR8CkNz3o+2HAoT3HYzO0fA
+         RAjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=YRpdcaJ4r7VRT3/3i///gd/6IhC/k0ujvr195lrn9Lk=;
-        b=A9HoUC2TGG9C5iQgn89BwowORj+i0lRPv0zXFA7TIuRAxvgsey+OJ4T8XFs8bHPpLf
-         6k3XpB6pS8/AujSPGaR+nOFuuaup7BFU01p526MQQe+zKoB9/iyCOdE4QKLiCfSN0S81
-         4PlDY/y+dCnYvO9lj1BJN83dPnViFGEzSJMgSGCMV52VSQet12CoPNY7Pzdmp+llf7i8
-         qOwEMq/yuJjmQ8Wy5U1o8aJ8EXVnQzzqN2BO8ssyPb/xAhDnFCXCz87Nhf9ae65RQ4Sx
-         jKjVnksloJ+98KWSZHTWjgEWQiW5n2ZYmPFb9B0ozpgxpiMBntj2JcuUZ72EsF3YdwZV
-         oOrQ==
-X-Gm-Message-State: ACgBeo1hT69q5V45MtaI09BXruA9msxEeOL5gY+AsR3uv8ynZXfoJ6+z
-        leinJuBmvqViWT8QZ/3l7Yh97aRpVJXV/w==
-X-Google-Smtp-Source: AA6agR6XuzcSJ7avTDDbXtkKVvQcQEVjKXh2P9x7wWoHp7sT5sEudBIMCpUai6U2OGmhHrEje1PKMg==
-X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id b13-20020adff90d000000b0020cde324d35mr4466170wrr.583.1661508877365;
-        Fri, 26 Aug 2022 03:14:37 -0700 (PDT)
-Received: from lb02065.fritz.box ([2001:9e8:140d:2300:3a17:fa67:2b0b:b905])
-        by smtp.gmail.com with ESMTPSA id r8-20020a05600c284800b003a3561d4f3fsm1920423wmb.43.2022.08.26.03.14.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 03:14:36 -0700 (PDT)
-From:   Jack Wang <jinpu.wang@ionos.com>
-To:     jejb@linux.ibm.com
-Cc:     "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] scsi/qlogicpti: Fix dma_map_sg check
-Date:   Fri, 26 Aug 2022 12:14:35 +0200
-Message-Id: <20220826101435.79170-1-jinpu.wang@ionos.com>
-X-Mailer: git-send-email 2.34.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=nBDls8p7zWKgMsdae7qsDU8nms79A1faHjvYu7tARvE=;
+        b=baN8h2DSG7Kx4wvmRAtorBctH6yV6S470CJxIZuI7+apkIAfmxlu3PwCHu9h3j6qok
+         0sZ1weQ9JWuUOaPGr95ViaJqYRC2YGZtrIX2e5Nn4oD6i5sAJlvnVp5AfIUsIMlA4hsD
+         xQdU2kYPJXBEmD0SAQY4fRv5ouY8YeXcp1kcOsCyy9uBgRNeT9SCO5LZ+DA2URMTRCXn
+         mVCXEm9xx+0OFP4fOpwaBIp0DpXLrHo4CyQ8hS/fF6sMS7gJvkMe6ft7RnVghilvzkxw
+         KL+lMqY4e7Wkt/0UD85KVnidgDgInRIDVGPmp21Yl32OVWzU6UhXQRU9xqit9hct9beM
+         miEw==
+X-Gm-Message-State: ACgBeo00TOPVXN9iln5Ozu7F+1lYcdOg/m/jzVFv5wcT24i7y1FVQy0T
+        BxXBBbND2mUKzEFWTD7PYOL7Fg==
+X-Google-Smtp-Source: AA6agR7caUbLwyQSa715SFZUEGY9QFvmhTYs0wWUx3epIqtDxGXY7MC1nfcBGHa9KKFMrtkkLdDXyw==
+X-Received: by 2002:a19:915c:0:b0:492:f06d:b3b1 with SMTP id y28-20020a19915c000000b00492f06db3b1mr2554374lfj.1.1661508894364;
+        Fri, 26 Aug 2022 03:14:54 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id y7-20020a05651c106700b0025e42f8e771sm414675ljm.34.2022.08.26.03.14.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 03:14:53 -0700 (PDT)
+Message-ID: <ad2db009-8660-db05-60d9-fea61a5cde26@linaro.org>
+Date:   Fri, 26 Aug 2022 13:14:53 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH v3] drm/msm/dp: correct 1.62G link rate at
+ dp_catalog_ctrl_config_msa()
+Content-Language: en-GB
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, robdclark@gmail.com,
+        sean@poorly.run, swboyd@chromium.org, dianders@chromium.org,
+        vkoul@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
+        agross@kernel.org, bjorn.andersson@linaro.org
+Cc:     quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com,
+        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1661372150-3764-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <1661372150-3764-1-git-send-email-quic_khsieh@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing error check for dma_map_sg.
+On 24/08/2022 23:15, Kuogee Hsieh wrote:
+> At current implementation there is an extra 0 at 1.62G link rate which cause
+> no correct pixel_div selected for 1.62G link rate to calculate mvid and nvid.
+> This patch delete the extra 0 to have mvid and nvid be calculated correctly.
+> 
+> Changes in v2:
+> -- fix Fixes tag's text
+> 
+> Changes in v3:
+> -- fix misspelling of "Reviewed-by"
+> 
+> Fixes: 937f941ca06f  ("drm/msm/dp: Use qmp phy for DP PLL and PHY")
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> 
 
-Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
-Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
-Cc: linux-scsi@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
+No extra empty lines between the tags please. I'll correct this manually 
+while applying.
 
-Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
----
- drivers/scsi/qlogicpti.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+> ---
+>   drivers/gpu/drm/msm/dp/dp_catalog.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
+> index 7257515..676279d 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_catalog.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
+> @@ -431,7 +431,7 @@ void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog,
+>   
+>   	if (rate == link_rate_hbr3)
+>   		pixel_div = 6;
+> -	else if (rate == 1620000 || rate == 270000)
+> +	else if (rate == 162000 || rate == 270000)
+>   		pixel_div = 2;
+>   	else if (rate == link_rate_hbr2)
+>   		pixel_div = 4;
 
-diff --git a/drivers/scsi/qlogicpti.c b/drivers/scsi/qlogicpti.c
-index 57f2f4135a06..8c961ff03fcd 100644
---- a/drivers/scsi/qlogicpti.c
-+++ b/drivers/scsi/qlogicpti.c
-@@ -909,7 +909,8 @@ static inline int load_cmd(struct scsi_cmnd *Cmnd, struct Command_Entry *cmd,
- 		sg_count = dma_map_sg(&qpti->op->dev, sg,
- 				      scsi_sg_count(Cmnd),
- 				      Cmnd->sc_data_direction);
--
-+		if (!sg_count)
-+			return -1;
- 		ds = cmd->dataseg;
- 		cmd->segment_cnt = sg_count;
- 
 -- 
-2.34.1
+With best wishes
+Dmitry
 
