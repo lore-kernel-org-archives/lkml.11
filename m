@@ -2,142 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE50ECAAD7
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 20:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09A25ECAAD7
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 20:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242178AbiHZUUM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 16:20:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40484 "EHLO
+        id S245286AbiHZUXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 16:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiHZUUG (ORCPT
+        with ESMTP id S231643AbiHZUXD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 16:20:06 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC51B32EE3
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 13:20:04 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id p185so2533062pfb.13
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 13:20:04 -0700 (PDT)
+        Fri, 26 Aug 2022 16:23:03 -0400
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43FB8AF4BA
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 13:23:02 -0700 (PDT)
+Received: by mail-oi1-x234.google.com with SMTP id w197so3312469oie.5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 13:23:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=Yy3h91/LZL0yMN3Y+gPnYCc8uzqqu6+PEMw/uYOkvrQ=;
-        b=QI2iqRq9/94E6zl7r9mZw4F+7Daqhq8WErAzs7MCXRZvrz4GpEbY7Dstc+ZZ2JEyb2
-         q0xcA8xKqPk01eYmQLRlBIm9I9enL9gle1pvxTgv3hEVqdUw5C4cSi7lwuKtIjcxf5KZ
-         MNemfeMqo0zzfRvxEdPkaXJq+V0CXBJoNhrKZhmH2a/6fEvyddf2Pci6F7c3hz5Uh2KZ
-         p9XfmAZB3QDZNhI51WLuUsrX5a34H43X0h0MgNESMM7lb3mZRO5lRiW8QfXtTjK0Iio8
-         Bx/faeNKIHAHpdLZt2Qt47/Jnw19TxwGoB6eZJ5V4qbulyod0s+zhEZ6nWzqexbUBQl1
-         6MGQ==
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:user-agent
+         :from:references:in-reply-to:mime-version:from:to:cc;
+        bh=kS5gLref/yeXZPJM95FO6NB/TUzDNorimdYNoC2IhY0=;
+        b=IfVDWnPh2pmitTa0mBVU5yMTg+GsLz0HAEtrsCYHNyYSyNi0PcHNVvrYQ5qRfDp2E/
+         /fgifVueS3Cc6X8ANEDD8CYYVML5YLtbft40vaA3eDiT/xTAeYiZPjP/ieTmv9KqoJzg
+         FwiQLsNubVZrD7CJdYxgclePk2dDaptC0GFsE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=Yy3h91/LZL0yMN3Y+gPnYCc8uzqqu6+PEMw/uYOkvrQ=;
-        b=DTuld6IrXlX26JioGFZ7jKo2VfVBeRnOtJYOuAoL4B/y/Yl0v8twcFE6iyDdFlJ7nh
-         W4vF4FH56BRla8WM41tLfA7NQ+EyFi3Y3fIyde/d9rXz1X78V+OA3yZsdv5F8XcDvsEP
-         qsfsHMo68jy32CshryoidtKNf5ZYzHWtT+K4CokOWyndTMjn3qMGVhuvQKvISCop2ouV
-         /SyLdh3hVvyQ/gIkYA6ut4QI0erBrj3OMv/lFo+3+vt+3wks882BED2B8y4/T3tdvODV
-         TwzbhHx16xMFrQ2rg4yGWsxd55LL1hNecTbkecFx183kL8DgD3u1MCDKicZxL/ev9N9W
-         YHnQ==
-X-Gm-Message-State: ACgBeo03CTiIPpYuOEs2P6UR6cDXM89ZoGxw2sByk+FwKE4HwxnYBe/9
-        nwAn0SgvTQAmTIl0cFOvHkZ19Q==
-X-Google-Smtp-Source: AA6agR5n02jhbK1nhPu/jZhpJFX2d1euSOaYUkGIxcjNNi+QlVmGNtQ1h1+3uTxVaQGYEwd8dNh3mw==
-X-Received: by 2002:a05:6a00:4147:b0:52e:2d56:17c8 with SMTP id bv7-20020a056a00414700b0052e2d5617c8mr5478964pfb.51.1661545204289;
-        Fri, 26 Aug 2022 13:20:04 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id x21-20020a63f715000000b0042b117e8bf8sm1843703pgh.23.2022.08.26.13.20.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 13:20:03 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 20:20:00 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Yosry Ahmed <yosryahmed@google.com>
-Cc:     Tejun Heo <tj@kernel.org>, Johannes Weiner <hannes@cmpxchg.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Oliver Upton <oupton@google.com>, Huang@google.com,
-        Shaoqin <shaoqin.huang@intel.com>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH v7 3/4] KVM: x86/mmu: count KVM mmu usage in secondary
- pagetable stats.
-Message-ID: <Ywkq8HYyTI1eStSO@google.com>
-References: <20220823004639.2387269-1-yosryahmed@google.com>
- <20220823004639.2387269-4-yosryahmed@google.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:user-agent
+         :from:references:in-reply-to:mime-version:x-gm-message-state:from:to
+         :cc;
+        bh=kS5gLref/yeXZPJM95FO6NB/TUzDNorimdYNoC2IhY0=;
+        b=U8NHxfNEY7QTGmSu7QfxziSKWIAqTTG1TExhch5np0/9F9rn+NE8pzvoV7gzzzUTtD
+         zYDphgWhXRLEawC9Nx9WTL/kwXqAbga4gZY+tyovynjzzBtlrsvPhf7Svsc7SjJohfl8
+         VWGP3jC/fxSzmFShi3WadIZjG36KfqKvvnpd2M3BAWxekLEFLXeEM4DXaTMMYpMz7LJT
+         EDikluz9mihpXirhJH8fQ2FzXfgl9dJ4Yp/qHuAxjnWckwNbMmTwtCpRx8jo5+UZo81T
+         dCIVxFw5vzsNpBi67QHzTz2ZZrjoj7byFEq6/Wmwxela61/EgwBnrkp5hwPL+U2NQX4q
+         Vx8w==
+X-Gm-Message-State: ACgBeo0j8YlCZi3tACOb5cqqAHFIlmybIlwDmsmeL2rZggRnHNNAexpV
+        jkP2Az0v75xbg/uM5KONYzOQlxAR3OLDPpC606UT5g==
+X-Google-Smtp-Source: AA6agR7yBBd6qqy3Gg/HIxNowO98A36LwiC1i0R4WBg6931/LkLIDTNxeKijqVcsS3bUCwt5oh5WK0bf4vUSE18eWcY=
+X-Received: by 2002:a05:6808:bca:b0:344:ef42:930f with SMTP id
+ o10-20020a0568080bca00b00344ef42930fmr2306646oik.0.1661545381545; Fri, 26 Aug
+ 2022 13:23:01 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 26 Aug 2022 15:23:00 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823004639.2387269-4-yosryahmed@google.com>
+In-Reply-To: <81dcbf72-92bb-093a-da48-89a73ead820e@quicinc.com>
+References: <1659526134-22978-1-git-send-email-quic_krichai@quicinc.com>
+ <1659526134-22978-3-git-send-email-quic_krichai@quicinc.com>
+ <CAE-0n500y-n+ZjasYQRAa3JgamQG1c+Aqn0YiX-i0L-w6C4dbQ@mail.gmail.com>
+ <3d052733-3600-b6eb-baf3-d8806a150af3@quicinc.com> <CAE-0n53oMnnn7rOPEiibc=XM52z9THDc9jYhe3x3C_AsLtmARQ@mail.gmail.com>
+ <81dcbf72-92bb-093a-da48-89a73ead820e@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Fri, 26 Aug 2022 15:23:00 -0500
+Message-ID: <CAE-0n50NRiBNDjK2UrA_wOoRz3+3cKb4uiUiCw4t1F19Kw9EhA@mail.gmail.com>
+Subject: Re: [PATCH v5 2/3] PCI: qcom: Restrict pci transactions after pci suspend
+To:     Krishna Chaitanya Chundru <quic_krichai@quicinc.com>,
+        helgaas@kernel.org
+Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mka@chromium.org,
+        quic_vbadigan@quicinc.com, quic_hemantk@quicinc.com,
+        quic_nitegupt@quicinc.com, quic_skananth@quicinc.com,
+        quic_ramkri@quicinc.com, manivannan.sadhasivam@linaro.org,
+        dmitry.baryshkov@linaro.org, Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022, Yosry Ahmed wrote:
-> Count the pages used by KVM mmu on x86 in memory stats under secondary
-> pagetable stats (e.g. "SecPageTables" in /proc/meminfo) to give better
-> visibility into the memory consumption of KVM mmu in a similar way to
-> how normal user page tables are accounted.
-> 
-> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> Reviewed-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/mmu/mmu.c     | 16 ++++++++++++++--
->  arch/x86/kvm/mmu/tdp_mmu.c | 12 ++++++++++++
->  2 files changed, 26 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-> index e418ef3ecfcb..4d38e4eba772 100644
-> --- a/arch/x86/kvm/mmu/mmu.c
-> +++ b/arch/x86/kvm/mmu/mmu.c
-> @@ -1665,6 +1665,18 @@ static inline void kvm_mod_used_mmu_pages(struct kvm *kvm, long nr)
->  	percpu_counter_add(&kvm_total_used_mmu_pages, nr);
->  }
->  
-> +static void kvm_account_mmu_page(struct kvm *kvm, struct kvm_mmu_page *sp)
-> +{
-> +	kvm_mod_used_mmu_pages(kvm, +1);
-> +	kvm_account_pgtable_pages((void *)sp->spt, +1);
-> +}
-> +
-> +static void kvm_unaccount_mmu_page(struct kvm *kvm, struct kvm_mmu_page *sp)
-> +{
-> +	kvm_mod_used_mmu_pages(kvm, -1);
-> +	kvm_account_pgtable_pages((void *)sp->spt, -1);
-> +}
+Quoting Krishna Chaitanya Chundru (2022-08-25 06:52:43)
+>
+> On 8/24/2022 10:50 PM, Stephen Boyd wrote:
+> > Quoting Krishna Chaitanya Chundru (2022-08-23 20:37:59)
+> >> On 8/9/2022 12:42 AM, Stephen Boyd wrote:
+> >>> Quoting Krishna chaitanya chundru (2022-08-03 04:28:53)
+> >>>> If the endpoint device state is D0 and irq's are not freed, then
+> >>>> kernel try to mask interrupts in system suspend path by writing
+> >>>> in to the vector table (for MSIX interrupts) and config space (for M=
+SI's).
+> >>>>
+> >>>> These transactions are initiated in the pm suspend after pcie clocks=
+ got
+> >>>> disabled as part of platform driver pm  suspend call. Due to it, the=
+se
+> >>>> transactions are resulting in un-clocked access and eventually to cr=
+ashes.
+> >>> Why are the platform driver pm suspend calls disabling clks that earl=
+y?
+> >>> Can they disable clks in noirq phase, or even later, so that we don't
+> >>> have to check if the device is clocking in the irq poking functions?
+> >>> It's best to keep irq operations fast, so that irq control is fast gi=
+ven
+> >>> that these functions are called from irq flow handlers.
+> >> We are registering the pcie pm suspend ops as noirq ops only. And this
+> >> msix and config
+> >>
+> >> access is coming at the later point of time that is reason we added th=
+at
+> >> check.
+> >>
+> > What is accessing msix and config? Can you dump_stack() after noirq ops
+> > are called and figure out what is trying to access the bus when it is
+> > powered down?
+>
+> The msix and config space is being accessed to mask interrupts. The
+> access is coming at the end of the suspend
+>
+> and near CPU disable. We tried to dump the stack there but the call
+> stack is not coming as it is near cpu disable.
 
-Hrm, this is causing build on x86 issues for me.  AFAICT, modpost doesn't detect
-that this creates a new module dependency on __mod_lruvec_page_state() and so doesn't
-refresh vmlinux.symvers.
+That is odd that you can't get a stacktrace.
 
-  ERROR: modpost: "__mod_lruvec_page_state" [arch/x86/kvm/kvm.ko] undefined!
-  make[2]: *** [scripts/Makefile.modpost:128: modules-only.symvers] Error 1
-  make[1]: *** [Makefile:1769: modules] Error 2
-  make[1]: *** Waiting for unfinished jobs....
-  Kernel: arch/x86/boot/bzImage is ready  (#128)
-  make[1]: Leaving directory '/usr/local/google/home/seanjc/build/kernel/vm'
-  make: *** [Makefile:222: __sub-make] Error 2
+>
+> But we got dump at resume please have look at it
+>
+> [=C2=A0=C2=A0 54.946268] Enabling non-boot CPUs ...
+> [=C2=A0=C2=A0 54.951182] CPU: 1 PID: 21 Comm: cpuhp/1 Not tainted 5.15.41=
+ #105
+> 43491e4414b1db8a6f59d56b617b520d92a9498e
+> [=C2=A0=C2=A0 54.961122] Hardware name: Qualcomm Technologies, Inc. sc728=
+0 IDP
+> SKU2 platform (DT)
+> [=C2=A0=C2=A0 54.969088] Call trace:
+> [=C2=A0=C2=A0 54.971612]=C2=A0 dump_backtrace+0x0/0x200
+> [=C2=A0=C2=A0 54.975399]=C2=A0 show_stack+0x20/0x2c
+> [=C2=A0=C2=A0 54.978826]=C2=A0 dump_stack_lvl+0x6c/0x90
+> [=C2=A0=C2=A0 54.982614]=C2=A0 dump_stack+0x18/0x38
+> [=C2=A0=C2=A0 54.986043]=C2=A0 dw_msi_unmask_irq+0x2c/0x58
+> [=C2=A0=C2=A0 54.990096]=C2=A0 irq_enable+0x58/0x90
+> [=C2=A0=C2=A0 54.993522]=C2=A0 __irq_startup+0x68/0x94
+> [=C2=A0=C2=A0 54.997216]=C2=A0 irq_startup+0xf4/0x140
+> [=C2=A0=C2=A0 55.000820]=C2=A0 irq_affinity_online_cpu+0xc8/0x154
+> [=C2=A0=C2=A0 55.005491]=C2=A0 cpuhp_invoke_callback+0x19c/0x6e4
+> [=C2=A0=C2=A0 55.010077]=C2=A0 cpuhp_thread_fun+0x11c/0x188
+> [=C2=A0=C2=A0 55.014216]=C2=A0 smpboot_thread_fn+0x1ac/0x30c
+> [=C2=A0=C2=A0 55.018445]=C2=A0 kthread+0x140/0x30c
+> [=C2=A0=C2=A0 55.021788]=C2=A0 ret_from_fork+0x10/0x20
+> [=C2=A0=C2=A0 55.028243] CPU1 is up
+>
+> So the same stack should be called at the suspend path while disabling CP=
+U.
 
-Both gcc and clang yield the same behavior, so I doubt it's the compiler doing
-something odd.  Cleaning the build makes the problem go away, but that's a poor
-band-aid.
+Sounds like you're getting hit by affinity changes while offlining CPUs
+during suspend (see irq_migrate_all_off_this_cpu()). That will happen
+after devices are suspended (all phases of suspend ops).
 
-If I squash this with the prior patch that adds kvm_account_pgtable_pages() to
-kvm_host.h, modpost detects the need to refresh and all is well.
+>
+> If there is any other way to remove these calls can you please help us
+> point that way.
 
-Given that ARM doesn't support building KVM as a module, i.e. can't run afoul
-of whatever modpost weirdness I'm hitting, I'm inclined to squash this with the
-previous patch and punt on the modpost issue so that we can get this merged.
+I'm not sure. I believe genirq assumes the irqchips are always
+accessible. There is some support to suspend irqchips. See how the
+struct irq_chip::irq_suspend() function is called by syscore ops in the
+generic irqchip 'irq_gc_syscore_ops' hooks. Maybe you could add a
+syscore suspend/resume hook to disable/enable the clks and power to the
+PCI controller. syscore ops run after secondary CPUs are hotplugged out
+during suspend.
 
-Any objections?  Or thoughts on what's going wrong?
+Or maybe setting the IRQCHIP_MASK_ON_SUSPEND flag can be used so that on
+irq migration nothing writes the irq hardware because it is already
+masked in the hardware earlier. I think the problem is that on resume
+we'll restart the irq from the first CPU online event, when you don't
+want to do that because it is too early.
+
+I have another question though, which is do MSIs support wakeup? I don't
+see how it works if the whole bus is effectively off during suspend. If
+wakeup needs to be supported then I suspect the bus can't be powered
+down during suspend.
