@@ -2,119 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14592ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758BEECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:37:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244922AbiHZIgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56472 "EHLO
+        id S245254AbiHZIhX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 04:37:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343671AbiHZIgs (ORCPT
+        with ESMTP id S245724AbiHZIhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:36:48 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C419AF96;
-        Fri, 26 Aug 2022 01:36:40 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id x10so917578ljq.4;
-        Fri, 26 Aug 2022 01:36:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=0mzSJLrYErOqc1s11b3RmVKhpdRQXjWEWDYCPDuYlHM=;
-        b=jh5j0MNihGo71XS/a1txQyJn7NCts42QUd7sRcGQOz3T6IY3i3n8zHhKgcg+EihtmC
-         rUyyJDD5rxY3vM8c86yi2+pTosxeMLgaev3uRxZl+jGq5AdxxwXqCNRnV9wycMd/yF32
-         YuPPRohcLKxd5sTNOkLCBLl8qQPuun+JQILXTShj+X2NC5gBipvekyb1jrdewdqIwotK
-         hjx1cZLmc6/hsWc2MZeJIr0io6tGqMz10LKPfs+FrRm/iHYMMWY3vI4s5fLEjoV3t9ip
-         jkPZ14sEh1My+eIa2nvt+9xDP6jh7LIT/vGrLbNmIjzZWISvmvOvCZtJ9tu73mSRa2HI
-         CohQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc;
-        bh=0mzSJLrYErOqc1s11b3RmVKhpdRQXjWEWDYCPDuYlHM=;
-        b=3ot7B2chvRkVZ3yNXBBtKhN0GBO+AqqXHpYeJtwExAgWW/Rv4/lDobBWm8JKj3ervB
-         3NkQGP80wIQRY2rYpgbdmCgSvqrF9KX/SzicBW7XXWTwWBnjd5+ELFvuSZdNVtcMZjdR
-         PGKzuYhssaeswqXwVKACOMX2XFqtYi2R6C8/v/A7xT/7CNgFSTrxVD4K4LD3cs0r4OXg
-         GW4hm8M6N+BrQhS086JYjP3q/rQr+GhfsN2DNDpFzaw0NEdbcZvDrVA7Z6EZyoKJqHKM
-         +4q1oPeIcu3NX0QGQE2HLEnHGO4pFwYXrsB9q/iXZrSwWSGhAqM6foSrMH7rixeJnisS
-         T5zQ==
-X-Gm-Message-State: ACgBeo1ndHs1HVV2t9/+z3qQHwppfTZN8m4vEpLnE6kHPsRhTwu2gLZB
-        x9JwwI5RUDCDxlTuHG6Y5D/OnZtf52w=
-X-Google-Smtp-Source: AA6agR6xn7+0871p78M2qgVzH7qB6JDVNIF/5V0KvfufEACYqwVFvQ720t8e+yAL7p7ALWs8CWOK0g==
-X-Received: by 2002:a2e:3e17:0:b0:261:c12c:2b2c with SMTP id l23-20020a2e3e17000000b00261c12c2b2cmr1900288lja.179.1661502998825;
-        Fri, 26 Aug 2022 01:36:38 -0700 (PDT)
-Received: from [192.168.1.103] ([31.173.85.51])
-        by smtp.gmail.com with ESMTPSA id j8-20020a2e6e08000000b0025fe7f33bc4sm376520ljc.49.2022.08.26.01.36.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 01:36:38 -0700 (PDT)
-Subject: Re: [PATCH linux-next] usb: typec: tcpm: tcpci: Remove the unneeded
- result variable
-To:     cgel.zte@gmail.com, linux@roeck-us.net
-Cc:     heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xupanda <xu.panda@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-References: <20220826074856.253810-1-xu.panda@zte.com.cn>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Message-ID: <84246f1c-97b9-1bb3-3981-15ea3871f97d@gmail.com>
-Date:   Fri, 26 Aug 2022 11:36:36 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Fri, 26 Aug 2022 04:37:11 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1087E802;
+        Fri, 26 Aug 2022 01:37:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661503028; x=1693039028;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3AOsxGTtrlPJreKgOH7rFOJHmY6DpAE/RWsW5da4KDU=;
+  b=IqawFW2v18e2OmNkKcmbK81C200WSayjBBTXtkvaGBDzsqw1Z18UR6rt
+   FrIqvbGbYWZhjJElI4+Q7ITt6Hj64PumwfrhZEJNXwJ8HjJ1XDryl3QvR
+   /WS3Gseh0EKi/V14QPvYhqDFfLXh6Ta5hp5iXrWnoO5I1OrTUmSGPX0hA
+   YuMXsS+hux1QUupOGW8kwGvOk1SvGojn3GYMbYAaOf2U6Xm8Te09jzSos
+   Ovh6DmtxvKdDcUI6bm8GDJV1Udm8pw5SRgVcP6xiweDU6+yLGh4hJSF16
+   XbY6uIz2gUFl0ji8o7AeZ9lsZA9hxulSNRGxvdqbvAPrfxsTQmxe3jJx9
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
+   d="scan'208";a="174284207"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2022 01:37:07 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 26 Aug 2022 01:37:07 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Fri, 26 Aug 2022 01:37:04 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
+        <arnd@arndb.de>
+CC:     <cristian.birsan@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/9] ARM: at91: some fixes and one cleanup
+Date:   Fri, 26 Aug 2022 11:39:18 +0300
+Message-ID: <20220826083927.3107272-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-In-Reply-To: <20220826074856.253810-1-xu.panda@zte.com.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+Hi,
 
-On 8/26/22 10:48 AM, cgel.zte@gmail.com wrote:
+The following series adds some fixes on PM and device trees and a
+cleanup on sam9x60ek device tree.
 
-> From: xupanda <xu.panda@zte.com.cn>
-> 
-> Return the value regmap_update_bits() directly instead of
-> storing it in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: xupanda <xu.panda@zte.com.cn>
+Thank you,
+Claudiu Beznea
 
-   Is that a real name?
+Claudiu Beznea (9):
+  ARM: configs: at91: remove CONFIG_MICROCHIP_PIT64B
+  ARM: at91: pm: fix self-refresh for sama7g5
+  ARM: at91: pm: fix DDR recalibration when resuming from backup and
+    self-refresh
+  ARM: dts: at91: sama5d27_wlsom1: specify proper regulator output
+    ranges
+  ARM: dts: at91: sama5d2_icp: specify proper regulator output ranges
+  ARM: dts: at91: sama7g5ek: specify proper regulator output ranges
+  ARM: dts: at91: sama5d27_wlsom1: don't keep ldo2 enabled all the time
+  ARM: dts: at91: sama5d2_icp: don't keep vdd_other enabled all the time
+  ARM: dts: at91: sam9x60ek: remove simple-bus for regulators
 
-> ---
->  drivers/usb/typec/tcpm/tcpci.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
-> 
-> diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
-> index b2bfcebe218f..4436e9e5e2f7 100644
-> --- a/drivers/usb/typec/tcpm/tcpci.c
-> +++ b/drivers/usb/typec/tcpm/tcpci.c
-> @@ -328,11 +328,9 @@ static int tcpci_set_vconn(struct tcpc_dev *tcpc, bool enable)
->  static int tcpci_enable_auto_vbus_discharge(struct tcpc_dev *dev, bool enable)
->  {
->  	struct tcpci *tcpci = tcpc_to_tcpci(dev);
-> -	int ret;
->  
-> -	ret = regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
-> +	return regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
->  				 enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
+ arch/arm/boot/dts/at91-sam9x60ek.dts        | 78 ++++++++++-----------
+ arch/arm/boot/dts/at91-sama5d27_wlsom1.dtsi | 21 +++---
+ arch/arm/boot/dts/at91-sama5d2_icp.dts      | 21 +++---
+ arch/arm/boot/dts/at91-sama7g5ek.dts        | 18 ++---
+ arch/arm/configs/at91_dt_defconfig          |  1 -
+ arch/arm/configs/sama7_defconfig            |  1 -
+ arch/arm/mach-at91/pm.c                     | 36 ++++++++--
+ arch/arm/mach-at91/pm_suspend.S             | 24 +++++--
+ include/soc/at91/sama7-ddr.h                |  8 +++
+ 9 files changed, 122 insertions(+), 86 deletions(-)
 
-   You need to re-align this line now...
+-- 
+2.34.1
 
-> -	return ret;
->  }
->  
->  static int tcpci_set_auto_vbus_discharge_threshold(struct tcpc_dev *dev, enum typec_pwr_opmode mode,
-> @@ -884,5 +882,3 @@ static struct i2c_driver tcpci_i2c_driver = {
->  };
->  module_i2c_driver(tcpci_i2c_driver);
->  
-> -MODULE_DESCRIPTION("USB Type-C Port Controller Interface driver");
-> -MODULE_LICENSE("GPL");
-
-   Hm, what's that?
-
-MBR, Sergey
