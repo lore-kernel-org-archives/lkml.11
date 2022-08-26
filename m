@@ -2,154 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81CCFECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13809ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343493AbiHZKHH (ORCPT
+        id S1343815AbiHZKH1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
+        Fri, 26 Aug 2022 06:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343491AbiHZKGh (ORCPT
+        with ESMTP id S245468AbiHZKGu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 06:06:37 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5BB4D5DCB;
-        Fri, 26 Aug 2022 03:05:19 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 10:05:16 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661508318;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8Vkeal0AztGkEtbXmbLzaghy0nAXJByD5CEpU8ihtJ4=;
-        b=qDToFtGfrV8hGKn+rPvW46yzDCBp/UIG4Sfn9CB3wTr04CDOPK/Cptb7OS12pVLbmse951
-        I7iVfHCsabc2Dpv4Q+LM+dSEi+NR9HL80HkB12e7cRf0qVP7wO3xevzLC5nSfjU5CMz934
-        LldgKD9Z/jC57BluDRRmtuRYVkTFtiTVSs4FuFh8JjhPlyeJzHla4vEY73aCEL+PMNQbTs
-        tm478/grsHV3bk7pBRaYba5ZKkK3vloT3GdQivD9k7eNPwvObTsYC64Ie+wqyDoF9qkqWk
-        9Ty3JnxULZZ7lZ0pyte9MNcqNIsYvNLJK4F/Fgg7Hx5Ci9QDB6hO8pQIgCEPYg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661508318;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8Vkeal0AztGkEtbXmbLzaghy0nAXJByD5CEpU8ihtJ4=;
-        b=GiZk9SLqbMVE7CYdUn6FDdfknqsba/kC6BqI89ixbgY6J2DWiJxCz2RL0WlBGzrbVAP6M8
-        GggUugkaQNGs/TBg==
-From:   "tip-bot2 for Borislav Petkov" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/microcode] x86/microcode: Remove ->request_microcode_user()
-Cc:     Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        Fri, 26 Aug 2022 06:06:50 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A17FDAB91
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:05:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661508330; x=1693044330;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=RT2l6I70dS2D1qFm0X2jCIsJzv3TAYMiItWXNDSgPu8=;
+  b=n2/INwmnm8T+tbfEDtAfogp4ADgAhtF/miqmhLrXnVbzA+dGgn8wFxwG
+   U5pFFIpqaF/jsiFY9wNCM0JH438F7P369tHRQDD/thhowZ0ujwDg86RFv
+   uJ7ELm95Uk0dmrvDJHdonQwFbKQbx4DC3ljKTfIPy/xdDqcNAxaEoMj7M
+   eTeKWMZS3pGsDDv6AI2MmxkIuEfKDIe3xXnlVhJWkuljFbptR3PZdZdWf
+   KTd1qUsMcbBr8Lk2KNoImR1YSa8fpn/Nj3b06iGJo0r6Huv2kACEVbzlr
+   mFRxjdA3za/CnFLMnS0vSi+csUaL6u3ufNTyP1m4x0K/YzoRJ2HcD8yuR
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="274224176"
+X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
+   d="scan'208";a="274224176"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 03:05:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
+   d="scan'208";a="587247174"
+Received: from lkp-server02.sh.intel.com (HELO 34e741d32628) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 26 Aug 2022 03:05:26 -0700
+Received: from kbuild by 34e741d32628 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oRWDN-0003tW-2J;
+        Fri, 26 Aug 2022 10:05:25 +0000
+Date:   Fri, 26 Aug 2022 18:04:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220825075445.28171-1-bp@alien8.de>
-References: <20220825075445.28171-1-bp@alien8.de>
+Subject: [peterz-queue:perf/wip.rewrite 8/8] drivers/perf/arm_pmu.c:560:21:
+ error: no member named 'filter_match' in 'struct arm_pmu'
+Message-ID: <202208261745.ErnwTbzL-lkp@intel.com>
 MIME-Version: 1.0
-Message-ID: <166150831648.401.9089001181596106367.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/microcode branch of tip:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/wip.rewrite
+head:   b149fd14e2fb487c8d8b07d353421101c33bbf2b
+commit: b149fd14e2fb487c8d8b07d353421101c33bbf2b [8/8] Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+config: arm64-randconfig-r021-20220823 (https://download.01.org/0day-ci/archive/20220826/202208261745.ErnwTbzL-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5364f4940711561b8c0a549c39c654413b704c28)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=b149fd14e2fb487c8d8b07d353421101c33bbf2b
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue perf/wip.rewrite
+        git checkout b149fd14e2fb487c8d8b07d353421101c33bbf2b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/
 
-Commit-ID:     8c61eafd22d7207039bff85c6e1d386f15abd17e
-Gitweb:        https://git.kernel.org/tip/8c61eafd22d7207039bff85c6e1d386f15abd17e
-Author:        Borislav Petkov <bp@suse.de>
-AuthorDate:    Thu, 25 Aug 2022 09:51:57 +02:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Fri, 26 Aug 2022 11:56:08 +02:00
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-x86/microcode: Remove ->request_microcode_user()
+All errors (new ones prefixed by >>):
 
-  181b6f40e9ea ("x86/microcode: Rip out the OLD_INTERFACE")
+>> drivers/perf/arm_pmu.c:560:21: error: no member named 'filter_match' in 'struct arm_pmu'
+           if (ret && armpmu->filter_match)
+                      ~~~~~~  ^
+   drivers/perf/arm_pmu.c:561:18: error: no member named 'filter_match' in 'struct arm_pmu'
+                   return armpmu->filter_match(event);
+                          ~~~~~~  ^
+>> drivers/perf/arm_pmu.c:888:4: error: field designator 'filter_match' does not refer to any field in type 'struct pmu'
+                   .filter_match   = armpmu_filter_match,
+                    ^
+   3 errors generated.
 
-removed the old microcode loading interface but forgot to remove the
-related ->request_microcode_user() functionality which it uses.
 
-Rip it out now too.
+vim +560 drivers/perf/arm_pmu.c
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220825075445.28171-1-bp@alien8.de
----
- arch/x86/include/asm/microcode.h      |  3 ---
- arch/x86/kernel/cpu/microcode/amd.c   |  7 -------
- arch/x86/kernel/cpu/microcode/intel.c | 17 -----------------
- 3 files changed, 27 deletions(-)
+1b8873a0c6ec51 arch/arm/kernel/perf_event.c Jamie Iles   2010-02-02  547  
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  548  /*
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  549   * In heterogeneous systems, events are specific to a particular
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  550   * microarchitecture, and aren't suitable for another. Thus, only match CPUs of
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  551   * the same microarchitecture.
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  552   */
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  553  static int armpmu_filter_match(struct perf_event *event)
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  554  {
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  555  	struct arm_pmu *armpmu = to_arm_pmu(event->pmu);
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  556  	unsigned int cpu = smp_processor_id();
+ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  557  	int ret;
+ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  558  
+ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  559  	ret = cpumask_test_cpu(cpu, &armpmu->supported_cpus);
+ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05 @560  	if (ret && armpmu->filter_match)
+ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  561  		return armpmu->filter_match(event);
+ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  562  
+ca2b497253ad01 drivers/perf/arm_pmu.c       Will Deacon  2018-10-05  563  	return ret;
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  564  }
+c904e32a69b7c7 arch/arm/kernel/perf_event.c Mark Rutland 2015-05-13  565  
 
-diff --git a/arch/x86/include/asm/microcode.h b/arch/x86/include/asm/microcode.h
-index 0c3d344..7f7800e 100644
---- a/arch/x86/include/asm/microcode.h
-+++ b/arch/x86/include/asm/microcode.h
-@@ -32,9 +32,6 @@ enum ucode_state {
- };
- 
- struct microcode_ops {
--	enum ucode_state (*request_microcode_user) (int cpu,
--				const void __user *buf, size_t size);
--
- 	enum ucode_state (*request_microcode_fw) (int cpu, struct device *,
- 						  bool refresh_fw);
- 
-diff --git a/arch/x86/kernel/cpu/microcode/amd.c b/arch/x86/kernel/cpu/microcode/amd.c
-index 8b2fcdf..5f38dd7 100644
---- a/arch/x86/kernel/cpu/microcode/amd.c
-+++ b/arch/x86/kernel/cpu/microcode/amd.c
-@@ -924,12 +924,6 @@ static enum ucode_state request_microcode_amd(int cpu, struct device *device,
- 	return ret;
- }
- 
--static enum ucode_state
--request_microcode_user(int cpu, const void __user *buf, size_t size)
--{
--	return UCODE_ERROR;
--}
--
- static void microcode_fini_cpu_amd(int cpu)
- {
- 	struct ucode_cpu_info *uci = ucode_cpu_info + cpu;
-@@ -938,7 +932,6 @@ static void microcode_fini_cpu_amd(int cpu)
- }
- 
- static struct microcode_ops microcode_amd_ops = {
--	.request_microcode_user           = request_microcode_user,
- 	.request_microcode_fw             = request_microcode_amd,
- 	.collect_cpu_info                 = collect_cpu_info_amd,
- 	.apply_microcode                  = apply_microcode_amd,
-diff --git a/arch/x86/kernel/cpu/microcode/intel.c b/arch/x86/kernel/cpu/microcode/intel.c
-index 025c8f0..1fcbd67 100644
---- a/arch/x86/kernel/cpu/microcode/intel.c
-+++ b/arch/x86/kernel/cpu/microcode/intel.c
-@@ -916,24 +916,7 @@ static enum ucode_state request_microcode_fw(int cpu, struct device *device,
- 	return ret;
- }
- 
--static enum ucode_state
--request_microcode_user(int cpu, const void __user *buf, size_t size)
--{
--	struct iov_iter iter;
--	struct iovec iov;
--
--	if (is_blacklisted(cpu))
--		return UCODE_NFOUND;
--
--	iov.iov_base = (void __user *)buf;
--	iov.iov_len = size;
--	iov_iter_init(&iter, WRITE, &iov, 1, size);
--
--	return generic_load_microcode(cpu, &iter);
--}
--
- static struct microcode_ops microcode_intel_ops = {
--	.request_microcode_user		  = request_microcode_user,
- 	.request_microcode_fw             = request_microcode_fw,
- 	.collect_cpu_info                 = collect_cpu_info,
- 	.apply_microcode                  = apply_microcode_intel,
+:::::: The code at line 560 was first introduced by commit
+:::::: ca2b497253ad01c80061a1f3ee9eb91b5d54a849 arm64: perf: Reject stand-alone CHAIN events for PMUv3
+
+:::::: TO: Will Deacon <will.deacon@arm.com>
+:::::: CC: Will Deacon <will.deacon@arm.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
