@@ -2,85 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5828AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80068ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245110AbiHZIiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57956 "EHLO
+        id S245300AbiHZIiF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 04:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245610AbiHZIhj (ORCPT
+        with ESMTP id S1343684AbiHZIhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:37:39 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07866D571B;
+        Fri, 26 Aug 2022 04:37:40 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB5FED5729;
         Fri, 26 Aug 2022 01:37:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661503052; x=1693039052;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=NhTYybz8cFKXvPDczCL3sDgZh+OWnjOmY+XsBCIQazs=;
-  b=dz3bGmMHvCzh1UO4U+PzOThni5f13jYBdJ6lKoFJXvldCk91T3vhjrw+
-   cqZ3jlx5/LC3NXqU7F9ui2m3sbnLjoTf4qLEyfiYnEGR5S4er3HTyw005
-   SL+7gGU+esV2TbVOndsPcPOvpXXU1XHniBoUx8YoAlSlAHmklFywSBoyZ
-   UDoYn73TWLSkk3fzHo3Gd74k83tLyIsEPpPa453gwe4h4tDCtJaTBuXFk
-   h7tBN8t9JBuSZjWhaChZzDRGw0VZWnDEOMd7cgkBrZeDWWqckK416vWq2
-   GQALTCfS4aLl5uFQUpzhzYng7blFm5ryWSP26pN9J6zsvcqo4tx4X7ld/
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="188164732"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2022 01:37:32 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MDY7m3NxDzGprc;
+        Fri, 26 Aug 2022 16:35:48 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 26 Aug 2022 01:37:30 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 26 Aug 2022 01:37:27 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux@armlinux.org.uk>,
-        <arnd@arndb.de>
-CC:     <cristian.birsan@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 8/9] ARM: dts: at91: sama5d2_icp: don't keep vdd_other enabled all the time
-Date:   Fri, 26 Aug 2022 11:39:26 +0300
-Message-ID: <20220826083927.3107272-9-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220826083927.3107272-1-claudiu.beznea@microchip.com>
-References: <20220826083927.3107272-1-claudiu.beznea@microchip.com>
+ 15.1.2375.24; Fri, 26 Aug 2022 16:37:30 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
+ 2022 16:37:29 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>
+CC:     <robdclark@gmail.com>, <quic_abhinavk@quicinc.com>
+Subject: [PATCH -next] drm/msm/adreno: Switch to memdup_user_nul() helper
+Date:   Fri, 26 Aug 2022 16:45:24 +0800
+Message-ID: <20220826084524.2217022-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VDD_OTHER is not connected to any on board consumer thus it is not
-needed to keep it enabled all the time.
+Use memdup_user_nul() helper instead of open-coding to
+simplify the code.
 
-Fixes: 68a95ef72cef ("ARM: dts: at91: sama5d2-icp: add SAMA5D2-ICP")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- arch/arm/boot/dts/at91-sama5d2_icp.dts | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm/boot/dts/at91-sama5d2_icp.dts b/arch/arm/boot/dts/at91-sama5d2_icp.dts
-index 6296e3ffd303..dd1dec9d4e07 100644
---- a/arch/arm/boot/dts/at91-sama5d2_icp.dts
-+++ b/arch/arm/boot/dts/at91-sama5d2_icp.dts
-@@ -257,7 +257,6 @@ VDD_OTHER {
- 					regulator-max-microvolt = <1850000>;
- 					regulator-initial-mode = <2>;
- 					regulator-allowed-modes = <2>, <4>;
--					regulator-always-on;
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+index 382fb7f9e497..50b33e14237b 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+@@ -339,17 +339,9 @@ int adreno_set_param(struct msm_gpu *gpu, struct msm_file_private *ctx,
+ 	case MSM_PARAM_CMDLINE: {
+ 		char *str, **paramp;
  
- 					regulator-state-standby {
- 						regulator-on-in-suspend;
+-		str = kmalloc(len + 1, GFP_KERNEL);
+-		if (!str)
+-			return -ENOMEM;
+-
+-		if (copy_from_user(str, u64_to_user_ptr(value), len)) {
+-			kfree(str);
+-			return -EFAULT;
+-		}
+-
+-		/* Ensure string is null terminated: */
+-		str[len] = '\0';
++		str = memdup_user_nul(u64_to_user_ptr(value), len);
++		if (IS_ERR(str))
++			return PTR_ERR(str);
+ 
+ 		if (param == MSM_PARAM_COMM) {
+ 			paramp = &ctx->comm;
 -- 
-2.34.1
+2.25.1
 
