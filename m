@@ -2,219 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B021ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC29ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344445AbiHZOcm (ORCPT
+        id S1344486AbiHZOdT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 10:32:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
+        Fri, 26 Aug 2022 10:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344574AbiHZOcV (ORCPT
+        with ESMTP id S1344477AbiHZOdQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 10:32:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E403CE44E
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:32:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661524335;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rx2FKGUlOIaH18EmtIfbPwlvVef3uy1QGtBjrZhEA+U=;
-        b=Jb5tigxRMniCJ6IaPa4fbhEDsDtCQGZ+2Dbv9AyIeQoq8mFyU7FqQsjDfY/OqX7xYW68p8
-        6AhXyb80Sgr3i/Uvig0T4s92Oi49OiQ0mTrktlbavBTWKcuraA2TsANbjYwWuLBB2u9OeE
-        WE7szmRJxsGRHl82QCtdSocIDTqcK2A=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-397-7S53NThmPhWOT8f7BFDghw-1; Fri, 26 Aug 2022 10:32:14 -0400
-X-MC-Unique: 7S53NThmPhWOT8f7BFDghw-1
-Received: by mail-qv1-f69.google.com with SMTP id c1-20020a0cfb01000000b00495ad218c74so1077067qvp.20
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:32:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=rx2FKGUlOIaH18EmtIfbPwlvVef3uy1QGtBjrZhEA+U=;
-        b=3cXjlibMlEHpxJZbmJjewitjqFqO7x8tsqdVCoUKSFrIFBphRM1KZfTTIGrvBOP/Sa
-         z1L5PtureSMqrzlBjEoXfy0UcN+bLrgfTrvFqOAlu1DBi12eOZJtnO0CiRMxvJ7wUXoY
-         N8oNcFayfDuvQ1HyRxh+95mKx0ptKDPo64c2/s06yQkI5j1dpMFABzDSiwHCGWXmtHa8
-         0yuAVlMxxViyyjB04ZpW00WwNrKBJSKZ1OygOJnzEAQQYOqjDu+W0ELzfIeLxNt0+yuy
-         J6XdtGgtEjAc2scCat6xqI121DPTkBXi5Vl6m95tw2ihLyGIqp0ZMyf4hLxj5FhdZFXf
-         gSYQ==
-X-Gm-Message-State: ACgBeo2RWDnmImUxGrTr9WoxJaluiMTY3UbkAaZWxq8VMjuwLmyOQmUb
-        EnOyen7yRAi5GXiqpr0uVvrCcF/milBriwR+ol8yU/z5AGzHZxHSTeW0XRcxYsnrAP7W3UlvuEo
-        wOIyPD5VZGBmQJwOKOnXb+2Q9
-X-Received: by 2002:a05:620a:1404:b0:6ba:c2c2:5eca with SMTP id d4-20020a05620a140400b006bac2c25ecamr6734924qkj.220.1661524333946;
-        Fri, 26 Aug 2022 07:32:13 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5H2DPJrrTdbtaxbHHrpQykfjh2vpuVbPL5I2n1u2lNVZP8JaHXyWomoNuISyWTWhIM87OAtA==
-X-Received: by 2002:a05:620a:1404:b0:6ba:c2c2:5eca with SMTP id d4-20020a05620a140400b006bac2c25ecamr6734907qkj.220.1661524333696;
-        Fri, 26 Aug 2022 07:32:13 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
-        by smtp.gmail.com with ESMTPSA id bj11-20020a05620a190b00b006a6ab259261sm1836181qkb.29.2022.08.26.07.32.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 07:32:12 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 10:32:10 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Alistair Popple <apopple@nvidia.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        Nadav Amit <nadav.amit@gmail.com>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org,
-        Huang Ying <ying.huang@intel.com>
-Subject: Re: [PATCH v3 2/3] mm/migrate_device.c: Copy pte dirty bit to page
-Message-ID: <YwjZamk4n/dz+Y/M@xz-m1.local>
-References: <3b01af093515ce2960ac39bb16ff77473150d179.1661309831.git-series.apopple@nvidia.com>
- <ffbc824af5daa2c44b91c66834a341894fba4ce6.1661309831.git-series.apopple@nvidia.com>
- <YwZGHyYJiJ+CGLn2@xz-m1.local>
- <8735dkeyyg.fsf@nvdebian.thelocal>
- <YwgFRLn43+U/hxwt@xz-m1.local>
- <8735dj7qwb.fsf@nvdebian.thelocal>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8735dj7qwb.fsf@nvdebian.thelocal>
+        Fri, 26 Aug 2022 10:33:16 -0400
+Received: from smtpout140.security-mail.net (smtpout140.security-mail.net [85.31.212.148])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE6C81B2E
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:33:14 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by fx408.security-mail.net (Postfix) with ESMTP id F394B1B7B0B9
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 16:33:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kalray.eu;
+        s=sec-sig-email; t=1661524393;
+        bh=bMQHm9FHKP0igbY8RmVj0GPPueBKFqVXF4ImoKEiKe8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=NkoEn6d4r2qH2ThXa2TctibGJFGK2gUvRsQJdSfv3Nvc531ztd0wBBMNo4hU55KLo
+         lknereEu0PLmRHmx687muxxcYPjWTownIxCBfh6Xly18oR31ZDMXvH+aueNZmS5meG
+         d4tuejYV0fQr316PDsDi3kefZ4eF63DIANhIdyzs=
+Received: from fx408 (localhost [127.0.0.1])
+        by fx408.security-mail.net (Postfix) with ESMTP id A102B1B7B02C;
+        Fri, 26 Aug 2022 16:33:12 +0200 (CEST)
+X-Virus-Scanned: E-securemail
+Secumail-id: <153b0.6308d9a8.24f67.0>
+Received: from zimbra2.kalray.eu (unknown [217.181.231.53])
+        by fx408.security-mail.net (Postfix) with ESMTPS id 2599C1B7B081;
+        Fri, 26 Aug 2022 16:33:12 +0200 (CEST)
+Received: from zimbra2.kalray.eu (localhost [127.0.0.1])
+        by zimbra2.kalray.eu (Postfix) with ESMTPS id 0671E27E02FA;
+        Fri, 26 Aug 2022 16:33:12 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by zimbra2.kalray.eu (Postfix) with ESMTP id E0BA127E0392;
+        Fri, 26 Aug 2022 16:33:11 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 zimbra2.kalray.eu E0BA127E0392
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kalray.eu;
+        s=32AE1B44-9502-11E5-BA35-3734643DEF29; t=1661524391;
+        bh=c3cPqQyjOphfQrx1xunIlqGBObVLkJW/2AnFPcY3L0w=;
+        h=From:To:Date:Message-Id;
+        b=b5BZVyR73wo/2888srxtxtuDqY+147RUm2PlmuisD0mqcYOlGSt7VZzK0RQI30GNs
+         FaBGRK650rSvR2/50JNzC4l0kTxPByifRtSBag4MIwdbLZmguNsPmYIr/FQCSQ/9zW
+         KcA8rwjx9Nbx+2a4V6bOdnB664RkcdKaKobzw+yQ=
+Received: from zimbra2.kalray.eu ([127.0.0.1])
+        by localhost (zimbra2.kalray.eu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id sS82OsDCsIuf; Fri, 26 Aug 2022 16:33:11 +0200 (CEST)
+Received: from tellis.lin.mbt.kalray.eu (unknown [192.168.36.206])
+        by zimbra2.kalray.eu (Postfix) with ESMTPSA id C59A227E02FA;
+        Fri, 26 Aug 2022 16:33:11 +0200 (CEST)
+From:   Jules Maselbas <jmaselbas@kalray.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jules Maselbas <jmaselbas@kalray.eu>,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
+Subject: [PATCH v2] Remove duplicated 'the' across the whole documentation
+Date:   Fri, 26 Aug 2022 16:33:00 +0200
+Message-Id: <20220826143300.6794-1-jmaselbas@kalray.eu>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220826095321.21548-1-jmaselbas@kalray.eu>
+References: <20220826095321.21548-1-jmaselbas@kalray.eu>
+X-Virus-Scanned: by Secumail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 11:02:58AM +1000, Alistair Popple wrote:
-> 
-> Peter Xu <peterx@redhat.com> writes:
-> 
-> > On Fri, Aug 26, 2022 at 08:21:44AM +1000, Alistair Popple wrote:
-> >>
-> >> Peter Xu <peterx@redhat.com> writes:
-> >>
-> >> > On Wed, Aug 24, 2022 at 01:03:38PM +1000, Alistair Popple wrote:
-> >> >> migrate_vma_setup() has a fast path in migrate_vma_collect_pmd() that
-> >> >> installs migration entries directly if it can lock the migrating page.
-> >> >> When removing a dirty pte the dirty bit is supposed to be carried over
-> >> >> to the underlying page to prevent it being lost.
-> >> >>
-> >> >> Currently migrate_vma_*() can only be used for private anonymous
-> >> >> mappings. That means loss of the dirty bit usually doesn't result in
-> >> >> data loss because these pages are typically not file-backed. However
-> >> >> pages may be backed by swap storage which can result in data loss if an
-> >> >> attempt is made to migrate a dirty page that doesn't yet have the
-> >> >> PageDirty flag set.
-> >> >>
-> >> >> In this case migration will fail due to unexpected references but the
-> >> >> dirty pte bit will be lost. If the page is subsequently reclaimed data
-> >> >> won't be written back to swap storage as it is considered uptodate,
-> >> >> resulting in data loss if the page is subsequently accessed.
-> >> >>
-> >> >> Prevent this by copying the dirty bit to the page when removing the pte
-> >> >> to match what try_to_migrate_one() does.
-> >> >>
-> >> >> Signed-off-by: Alistair Popple <apopple@nvidia.com>
-> >> >> Acked-by: Peter Xu <peterx@redhat.com>
-> >> >> Reported-by: Huang Ying <ying.huang@intel.com>
-> >> >> Fixes: 8c3328f1f36a ("mm/migrate: migrate_vma() unmap page from vma while collecting pages")
-> >> >> Cc: stable@vger.kernel.org
-> >> >>
-> >> >> ---
-> >> >>
-> >> >> Changes for v3:
-> >> >>
-> >> >>  - Defer TLB flushing
-> >> >>  - Split a TLB flushing fix into a separate change.
-> >> >>
-> >> >> Changes for v2:
-> >> >>
-> >> >>  - Fixed up Reported-by tag.
-> >> >>  - Added Peter's Acked-by.
-> >> >>  - Atomically read and clear the pte to prevent the dirty bit getting
-> >> >>    set after reading it.
-> >> >>  - Added fixes tag
-> >> >> ---
-> >> >>  mm/migrate_device.c |  9 +++++++--
-> >> >>  1 file changed, 7 insertions(+), 2 deletions(-)
-> >> >>
-> >> >> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
-> >> >> index 6a5ef9f..51d9afa 100644
-> >> >> --- a/mm/migrate_device.c
-> >> >> +++ b/mm/migrate_device.c
-> >> >> @@ -7,6 +7,7 @@
-> >> >>  #include <linux/export.h>
-> >> >>  #include <linux/memremap.h>
-> >> >>  #include <linux/migrate.h>
-> >> >> +#include <linux/mm.h>
-> >> >>  #include <linux/mm_inline.h>
-> >> >>  #include <linux/mmu_notifier.h>
-> >> >>  #include <linux/oom.h>
-> >> >> @@ -196,7 +197,7 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
-> >> >>  			anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
-> >> >>  			if (anon_exclusive) {
-> >> >>  				flush_cache_page(vma, addr, pte_pfn(*ptep));
-> >> >> -				ptep_clear_flush(vma, addr, ptep);
-> >> >> +				pte = ptep_clear_flush(vma, addr, ptep);
-> >> >>
-> >> >>  				if (page_try_share_anon_rmap(page)) {
-> >> >>  					set_pte_at(mm, addr, ptep, pte);
-> >> >> @@ -206,11 +207,15 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
-> >> >>  					goto next;
-> >> >>  				}
-> >> >>  			} else {
-> >> >> -				ptep_get_and_clear(mm, addr, ptep);
-> >> >> +				pte = ptep_get_and_clear(mm, addr, ptep);
-> >> >>  			}
-> >> >
-> >> > I remember that in v2 both flush_cache_page() and ptep_get_and_clear() are
-> >> > moved above the condition check so they're called unconditionally.  Could
-> >> > you explain the rational on why it's changed back (since I think v2 was the
-> >> > correct approach)?
-> >>
-> >> Mainly because I agree with your original comments, that it would be
-> >> better to keep the batching of TLB flushing if possible. After the
-> >> discussion I don't think there is any issues with HW pte dirty bits
-> >> here. There are already other cases where HW needs to get that right
-> >> anyway (eg. zap_pte_range).
-> >
-> > Yes tlb batching was kept, thanks for doing that way.  Though if only apply
-> > patch 1 we'll have both ptep_clear_flush() and batched flush which seems to
-> > be redundant.
-> >
-> >>
-> >> > The other question is if we want to split the patch, would it be better to
-> >> > move the tlb changes to patch 1, and leave the dirty bit fix in patch 2?
-> >>
-> >> Isn't that already the case? Patch 1 moves the TLB flush before the PTL
-> >> as suggested, patch 2 atomically copies the dirty bit without changing
-> >> any TLB flushing.
-> >
-> > IMHO it's cleaner to have patch 1 fix batch flush, replace
-> > ptep_clear_flush() with ptep_get_and_clear() and update pte properly.
-> 
-> Which ptep_clear_flush() are you referring to? This one?
-> 
-> 			if (anon_exclusive) {
-> 				flush_cache_page(vma, addr, pte_pfn(*ptep));
-> 				ptep_clear_flush(vma, addr, ptep);
+Remove duplicated 'the' across the whole documentation
 
-Correct.
+CC: Bagas Sanjaya <bagasdotme@gmail.com>
+CC: Jonathan Corbet <corbet@lwn.net>
+CC: linux-doc@vger.kernel.org
+Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
+---
+in v2:
+ - also remove the second 'the' in one sentence as suggested by
+   Bagas Sanjaya
 
-> 
-> My understanding is that we need to do a flush for anon_exclusive.
+ Documentation/admin-guide/kdump/vmcoreinfo.rst    | 2 +-
+ Documentation/bpf/map_cgroup_storage.rst          | 4 ++--
+ Documentation/core-api/cpu_hotplug.rst            | 3 +--
+ Documentation/driver-api/isa.rst                  | 2 +-
+ Documentation/filesystems/caching/backend-api.rst | 2 +-
+ Documentation/locking/seqlock.rst                 | 2 +-
+ Documentation/sphinx/cdomain.py                   | 2 +-
+ 7 files changed, 8 insertions(+), 9 deletions(-)
 
-To me anon exclusive only shows this mm exclusively owns this page. I
-didn't quickly figure out why that requires different handling on tlb
-flushs.  Did I perhaps miss something?
-
-Thanks,
-
+diff --git a/Documentation/admin-guide/kdump/vmcoreinfo.rst b/Documentation/admin-guide/kdump/vmcoreinfo.rst
+index 8419019b6a88..6726f439958c 100644
+--- a/Documentation/admin-guide/kdump/vmcoreinfo.rst
++++ b/Documentation/admin-guide/kdump/vmcoreinfo.rst
+@@ -200,7 +200,7 @@ prb
+ 
+ A pointer to the printk ringbuffer (struct printk_ringbuffer). This
+ may be pointing to the static boot ringbuffer or the dynamically
+-allocated ringbuffer, depending on when the the core dump occurred.
++allocated ringbuffer, depending on when the core dump occurred.
+ Used by user-space tools to read the active kernel log buffer.
+ 
+ printk_rb_static
+diff --git a/Documentation/bpf/map_cgroup_storage.rst b/Documentation/bpf/map_cgroup_storage.rst
+index cab9543017bf..8e5fe532c07e 100644
+--- a/Documentation/bpf/map_cgroup_storage.rst
++++ b/Documentation/bpf/map_cgroup_storage.rst
+@@ -31,7 +31,7 @@ The map uses key of type of either ``__u64 cgroup_inode_id`` or
+     };
+ 
+ ``cgroup_inode_id`` is the inode id of the cgroup directory.
+-``attach_type`` is the the program's attach type.
++``attach_type`` is the program's attach type.
+ 
+ Linux 5.9 added support for type ``__u64 cgroup_inode_id`` as the key type.
+ When this key type is used, then all attach types of the particular cgroup and
+@@ -155,7 +155,7 @@ However, the BPF program can still only associate with one map of each type
+ ``BPF_MAP_TYPE_CGROUP_STORAGE`` or more than one
+ ``BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE``.
+ 
+-In all versions, userspace may use the the attach parameters of cgroup and
++In all versions, userspace may use the attach parameters of cgroup and
+ attach type pair in ``struct bpf_cgroup_storage_key`` as the key to the BPF map
+ APIs to read or update the storage for a given attachment. For Linux 5.9
+ attach type shared storages, only the first value in the struct, cgroup inode
+diff --git a/Documentation/core-api/cpu_hotplug.rst b/Documentation/core-api/cpu_hotplug.rst
+index c6f4ba2fb32d..c326f4a86d34 100644
+--- a/Documentation/core-api/cpu_hotplug.rst
++++ b/Documentation/core-api/cpu_hotplug.rst
+@@ -560,8 +560,7 @@ available:
+   * cpuhp_state_remove_instance(state, node)
+   * cpuhp_state_remove_instance_nocalls(state, node)
+ 
+-The arguments are the same as for the the cpuhp_state_add_instance*()
+-variants above.
++The arguments are the same as for cpuhp_state_add_instance*() variants above.
+ 
+ The functions differ in the way how the installed callbacks are treated:
+ 
+diff --git a/Documentation/driver-api/isa.rst b/Documentation/driver-api/isa.rst
+index def4a7b690b5..3df1b1696524 100644
+--- a/Documentation/driver-api/isa.rst
++++ b/Documentation/driver-api/isa.rst
+@@ -100,7 +100,7 @@ I believe platform_data is available for this, but if rather not, moving
+ the isa_driver pointer to the private struct isa_dev is ofcourse fine as
+ well.
+ 
+-Then, if the the driver did not provide a .match, it matches. If it did,
++Then, if the driver did not provide a .match, it matches. If it did,
+ the driver match() method is called to determine a match.
+ 
+ If it did **not** match, dev->platform_data is reset to indicate this to
+diff --git a/Documentation/filesystems/caching/backend-api.rst b/Documentation/filesystems/caching/backend-api.rst
+index d7507becf674..3a199fc50828 100644
+--- a/Documentation/filesystems/caching/backend-api.rst
++++ b/Documentation/filesystems/caching/backend-api.rst
+@@ -122,7 +122,7 @@ volumes, calling::
+ to tell fscache that a volume has been withdrawn.  This waits for all
+ outstanding accesses on the volume to complete before returning.
+ 
+-When the the cache is completely withdrawn, fscache should be notified by
++When the cache is completely withdrawn, fscache should be notified by
+ calling::
+ 
+ 	void fscache_relinquish_cache(struct fscache_cache *cache);
+diff --git a/Documentation/locking/seqlock.rst b/Documentation/locking/seqlock.rst
+index 64405e5da63e..bfda1a5fecad 100644
+--- a/Documentation/locking/seqlock.rst
++++ b/Documentation/locking/seqlock.rst
+@@ -39,7 +39,7 @@ as the writer can invalidate a pointer that the reader is following.
+ Sequence counters (``seqcount_t``)
+ ==================================
+ 
+-This is the the raw counting mechanism, which does not protect against
++This is the raw counting mechanism, which does not protect against
+ multiple writers.  Write side critical sections must thus be serialized
+ by an external lock.
+ 
+diff --git a/Documentation/sphinx/cdomain.py b/Documentation/sphinx/cdomain.py
+index ca8ac9e59ded..a7d1866e72ff 100644
+--- a/Documentation/sphinx/cdomain.py
++++ b/Documentation/sphinx/cdomain.py
+@@ -151,7 +151,7 @@ class CObject(Base_CObject):
+     def handle_func_like_macro(self, sig, signode):
+         u"""Handles signatures of function-like macros.
+ 
+-        If the objtype is 'function' and the the signature ``sig`` is a
++        If the objtype is 'function' and the signature ``sig`` is a
+         function-like macro, the name of the macro is returned. Otherwise
+         ``False`` is returned.  """
+ 
 -- 
-Peter Xu
+2.17.1
 
