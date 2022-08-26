@@ -2,124 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4C2ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39046ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244869AbiHZCnp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:43:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50346 "EHLO
+        id S244733AbiHZCoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244883AbiHZCnd (ORCPT
+        with ESMTP id S235416AbiHZCof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:43:33 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E41ECD50E
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 19:43:09 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R771e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=rocking@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VNHDA4g_1661481784;
-Received: from IT-C02ZG85SLVDL.local(mailfrom:rocking@linux.alibaba.com fp:SMTPD_---0VNHDA4g_1661481784)
-          by smtp.aliyun-inc.com;
-          Fri, 26 Aug 2022 10:43:06 +0800
-Subject: Re: [PATCH] sched/fair: select waker's cpu for wakee on sync wakeup
-To:     Mel Gorman <mgorman@suse.de>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-References: <1508aa17d1a169077c8d8d8c22d2bd529101af0e.1661313074.git.rocking@linux.alibaba.com>
- <20220824084614.kykmtbhyawcei67z@suse.de>
- <093acf40-9e57-d011-d90b-ea216700edc3@linux.alibaba.com>
- <20220825090932.4cfxvt4ktm24guur@suse.de>
-From:   Peng Wang <rocking@linux.alibaba.com>
-Message-ID: <3e248fab-9ee3-3041-f4d5-99d6313f018b@linux.alibaba.com>
-Date:   Fri, 26 Aug 2022 10:43:04 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.10.1
+        Thu, 25 Aug 2022 22:44:35 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CC9CCD41;
+        Thu, 25 Aug 2022 19:44:34 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id t5so399637pjs.0;
+        Thu, 25 Aug 2022 19:44:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=RHgqZb2XQveY9G/sJMRmpzdx+tOdeQ4iM+KusnEyRoY=;
+        b=Pb3YzDPspbBnUW3qH117ZXq0J6MB5B7vyjogOalJat+W8jYnbkqOQmZKmQXSrSMupU
+         8+kgv305Qpxb6/tniUToXHZSlc/AET1thtBvLtPRxkEdAPkY0ykBUrdhR8QMTBlTs6H9
+         igIxdfupYdjQbH5yv8D+3AfaH79ZrSyF64Ux5Hxv1BjssyNRhsU+V7IB1/+zjpDA8r0b
+         oDnB5/Nq6ymuDeZXNi1ar0XiVSpLiT1L6JPS8DTd11KP17pofDLEpzGWZfWsCL6yssAq
+         GOI6sABvOCFYY4wPvVzQ0vZrwtC3nD7Z+QZ/95DPX7FpVRROdAqroybtH0oBTdcUW0el
+         8FUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=RHgqZb2XQveY9G/sJMRmpzdx+tOdeQ4iM+KusnEyRoY=;
+        b=2GXdH/TYfTr8s7aobY7uKB9cmnOzRhEN3ndrMwSE0Tjt2EkVjYDAIpl09px22QS8d6
+         GsH0hXcn29G2Q3UAy2EC37uSHcrwhs/iWbU1oO+vrXKjTGzL5aKi7vCwBQ6mYzbIiZuG
+         v/8+BQJbV4jb9tha9b3tBABUqCc7TMi0ybHCEfBgUF7/HYexnGvnqN5KYdpPnNwWlo5P
+         8v58RRfs4t4qirX6qXi/1qYRlFqIKUITEqcCxqbx8K3YPXmtUzzcdOstEOu4OoYtqbv2
+         vYaMIoB/KhKmpYPeG4KLNOiGh8mUOzxAt15cCOT6ndxer3N5opw3TCC5F42YPiLAExu/
+         fvEA==
+X-Gm-Message-State: ACgBeo1pSgT9ajylfChQS1PyTEGgZ/U9DgNi84f1k1dnd4Y8hVJ3CsMW
+        wh5hpT5SPepO/odcFkZn5f8nbWPgWV0=
+X-Google-Smtp-Source: AA6agR6/mZIc51xeKyzCEubIDIr7nj3XWgCoAHMnse7l9ViUyaiGY+7eDf8YHsYdtsZzHXQFDvj0ew==
+X-Received: by 2002:a17:90a:3ee2:b0:1fb:71a9:698f with SMTP id k89-20020a17090a3ee200b001fb71a9698fmr2055049pjc.127.1661481874144;
+        Thu, 25 Aug 2022 19:44:34 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id i9-20020a170902c94900b00173cfb184c0sm294212pla.32.2022.08.25.19.44.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 19:44:33 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lu.fengchang@zte.com.cn
+To:     tj@kernel.org
+Cc:     lizefan.x@bytedance.com, hannes@cmpxchg.org, corbet@lwn.net,
+        cgroups@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        lufengchang <lu.fengchang@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] admin-guide: cgroup: fix a typo in description
+Date:   Fri, 26 Aug 2022 02:05:54 +0000
+Message-Id: <20220826020552.239407-1-lu.fengchang@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20220825090932.4cfxvt4ktm24guur@suse.de>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/08/2022 17:09, , Mel Gorman wrote:
-> On Thu, Aug 25, 2022 at 02:45:05PM +0800, Peng Wang wrote:
->> On 24/08/2022 16:46, , Mel Gorman wrote:
->>> On Wed, Aug 24, 2022 at 12:37:50PM +0800, Peng Wang wrote:
->>>> On sync wakeup, waker is about to sleep, and if it is the only
->>>> running task, wakee can get warm data on waker's cpu.
->>>>
->>>> Unixbench, schbench, and hackbench are tested on
->>>> Intel(R) Xeon(R) Platinum 8163 CPU @ 2.50GHz (192 logic CPUs)
->>>>
->>>> Unixbench get +20.7% improvement with full threads mainly
->>>> because of the pipe-based context switch and fork test.
->>>>
->>>> No obvious impact on schbench.
->>>>
->>>> This change harms hackbench with lower concurrency, while gets improvement
->>>> when concurrency increases.
->>>>
->>>
->>> Note that historically patches in this direction have been hazardous because
->>> it makes a key assumption "sync wakers always go to sleep in the near future"
->>> when the sync hint is not that reliable. Networking from a brief glance
->>> still uses sync wakeups where wakers could have a 1:N relationship between
->>> work producers and work consumers that would then stack multiple tasks on
->>> one CPU for multiple consumers. The workloads mentioned in the changelog
->>> are mostly strictly-synchronous wakeups (i.e. the waker definitely goes
->>> to sleep almost immediately) and benefit from this sort of patch but it's
->>> not necessarily a universal benefit.
->>
->> Hi, Mel
->>
->> Thanks for your clarification.
->>
->> Besides these benchmarks, I also find a similar strictly-synchronous wakeup
->> case [1].
->>
->> [1]https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1478754.html
->>
-> 
-> Yep, but it falls under the same heading, sometimes the caller knows it's
-> a strict sync wakeup but not always.
-> 
->>>
->>> Note that most of these hazards occurred *LONG* before I was paying much
->>> attention to how the scheduler behaved so I cannot state "sync is still
->>> unreliable" with absolute certainty. However, long ago there was logic
->>> that tried to track the accuracy of the sync hint that was ultimately
->>> abandoned by commit e12f31d3e5d3 ("sched: Remove avg_overlap"). AFAIK,
->>> the sync hint is still not 100% reliable and while stacking sync works
->>> for some workloads, it's likely to be a regression magnet for network
->>> intensive workloads or client/server workloads like databases where
->>> "synchronous wakeups are not always synchronous".
->>>
->> Yes, you are right. Perhaps in such situation, a strong contract from user
->> is a better alternative than struggling with the weak hint in kernel.
->>
-> 
-> Even the kernel doesn't always know if a wakeup is really sync or not
-> because it lacks valuable context and the number of tasks on the runqueue is
-> insufficient if there are multiple wakeups in quick succession. At best,
-> there could be two WF_SYNC hints and hope every caller gets it right
-> (hint, they won't because even if it's right once, cargo cult copying
-> will eventually get it wrong and there is an API explosion issue such as
-> wake_up_interruptible_*). A user hint would be tricky. Core libraries
-> couldn't use it because it has no idea if the linked application wants
-> a strictly sync wakeup or not, a core library couldn't tell given just
-> a pthread_mute_t for example. Even if it was true at one point in time,
+From: lufengchang <lu.fengchang@zte.com.cn>
 
-OK, I get it now, thanks!
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: lufengchang <lu.fengchang@zte.com.cn>
+---
+ Documentation/admin-guide/cgroup-v1/cgroups.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-If we passed more information dealing with pthread_mute_t, it would
-bring too much changes through user core libraries to this kernel
-scheduling decision.
-
-And the current weak sync-wakeup hint can only bring us a candidate
-in the same LLC cache domain at most.
-
-> it might not be true later if the application design changed leading to
-> application bugs being blamed on the kernel for poor placement decisions.
-> 
+diff --git a/Documentation/admin-guide/cgroup-v1/cgroups.rst b/Documentation/admin-guide/cgroup-v1/cgroups.rst
+index b0688011ed06..fa747466e304 100644
+--- a/Documentation/admin-guide/cgroup-v1/cgroups.rst
++++ b/Documentation/admin-guide/cgroup-v1/cgroups.rst
+@@ -573,7 +573,7 @@ cgroup_for_each_descendant_pre() for details.
+ ``void css_offline(struct cgroup *cgrp);``
+ (cgroup_mutex held by caller)
+ 
+-This is the counterpart of css_online() and called iff css_online()
++This is the counterpart of css_online() and called if css_online()
+ has succeeded on @cgrp. This signifies the beginning of the end of
+ @cgrp. @cgrp is being removed and the subsystem should start dropping
+ all references it's holding on @cgrp. When all references are dropped,
+-- 
+2.25.1
 
