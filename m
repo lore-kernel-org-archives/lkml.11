@@ -2,178 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BEFECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 13:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2E0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 13:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243574AbiHZNr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 09:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45208 "EHLO
+        id S245543AbiHZNsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 09:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344378AbiHZNpZ (ORCPT
+        with ESMTP id S229837AbiHZNsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 09:45:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B5943E73;
-        Fri, 26 Aug 2022 06:45:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 26 Aug 2022 09:48:52 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7B0B8053C;
+        Fri, 26 Aug 2022 06:48:51 -0700 (PDT)
+Received: from [192.168.10.7] (unknown [39.53.61.43])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7FE6B82F84;
-        Fri, 26 Aug 2022 13:45:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8466CC433D6;
-        Fri, 26 Aug 2022 13:45:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661521520;
-        bh=/wCO+8NSsd2IYaROtKGfH5tdFKHXG6nMlG+xYwW1HJk=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=oZUROb8qX+9vmEmC4yo3jFzm26WdhONdNte9Nj1h7bIjlxeM0fdO/WkSUsg2SmV5I
-         FGlDnvy9isRLKMkqtfXr6i6Oh8WMQzZSttVt2iIaHtC9/Z4jsHYGl9+O9/METg+xFH
-         PsL8XHqVghg+eFaG4Tn8YTHEdDIT7wOBHtTEou6eM8vP6aOX/TqQN9DLLkCXVRTMaY
-         7EnAsvKAyq6PqBURbknt42CUz9ZuWEQ+PlCXayS5d7UUBZa3YJSX2BlofCs+JqWPyb
-         DUsbjGkYUwFVWA9c7ql/21r+TBd8gSrjmkzo66Nnxc+guBh2RSTZbzaDyKrKu+fCdB
-         94IqVvvTF2dvw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 1FF0F5C03F3; Fri, 26 Aug 2022 06:45:20 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 06:45:20 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>, rcu@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 1/1] rcu: Simplify the code logic of rcu_init_nohz()
-Message-ID: <20220826134520.GS6159@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220825092311.179-1-thunder.leizhen@huawei.com>
- <20220825092311.179-2-thunder.leizhen@huawei.com>
- <20220825172654.GP6159@paulmck-ThinkPad-P17-Gen-1>
- <43370a3c-8c7a-c7c7-ac2b-bec2bf6c8728@huawei.com>
+        (Authenticated sender: usama.anjum)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 661336601ECE;
+        Fri, 26 Aug 2022 14:48:46 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661521730;
+        bh=wyZTBkl/LljdYgt4Tb8GKYj0jjhaykvQW272r+/nshQ=;
+        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+        b=IgmxoTsgUfOVWXf/KEJQDzoqZeRe0KKtoYXfGSkmDpS70G0baYwxBg3F2BqF2MGbE
+         XzjP1GFlFTKafCVRBVyvmR/osEtcgutNdIrT5s55ThREBgT9h4SB0EvlgEdJ5yzfGO
+         CGfa5OvyJcoXrqEJ+FXFd/ZE6EsVOGYEGWMn4HxMruXKB4qMsJQK8gSeXiYeFsEocE
+         zKgDqcRM8SmS71qVZlBhlcO9Y0g4N82giiCEfnxosfGX/mKS1RoZaQdfU7QB62J8s4
+         KhVwkhQEw+whtbjPQJbw8/7MSt6j+zOEpeZ2zNmqXqr0KRujOsrHigOsvkAajkarA6
+         FififvfrelAew==
+Message-ID: <f1aa5e6c-6bcd-c605-97e9-c8aa58520cc3@collabora.com>
+Date:   Fri, 26 Aug 2022 18:48:41 +0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <43370a3c-8c7a-c7c7-ac2b-bec2bf6c8728@huawei.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Cc:     usama.anjum@collabora.com, Andrii Nakryiko <andrii@kernel.org>,
+        Mykola Lysenko <mykolal@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests/bpf: Fix bind{4,6} tcp/socket header type
+ conflict
+Content-Language: en-US
+To:     James Hilliard <james.hilliard1@gmail.com>, bpf@vger.kernel.org
+References: <20220825221751.258958-1-james.hilliard1@gmail.com>
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20220825221751.258958-1-james.hilliard1@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 09:42:11AM +0800, Leizhen (ThunderTown) wrote:
+On 8/26/22 3:17 AM, James Hilliard wrote:
+> There is a potential for us to hit a type conflict when including
+> netinet/tcp.h with sys/socket.h, we can replace both of these includes
+> with linux/tcp.h to avoid this conflict.
 > 
+> Fixes errors like:
+> In file included from /usr/include/netinet/tcp.h:91,
+>                  from progs/bind4_prog.c:10:
+> /home/buildroot/opt/cross/lib/gcc/bpf/13.0.0/include/stdint.h:34:23: error: conflicting types for 'int8_t'; have 'char'
+>    34 | typedef __INT8_TYPE__ int8_t;
+>       |                       ^~~~~~
+> In file included from /usr/include/x86_64-linux-gnu/sys/types.h:155,
+>                  from /usr/include/x86_64-linux-gnu/bits/socket.h:29,
+>                  from /usr/include/x86_64-linux-gnu/sys/socket.h:33,
+>                  from progs/bind4_prog.c:9:
+> /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:24:18: note: previous declaration of 'int8_t' with type 'int8_t' {aka 'signed char'}
+>    24 | typedef __int8_t int8_t;
+>       |                  ^~~~~~
+> /home/buildroot/opt/cross/lib/gcc/bpf/13.0.0/include/stdint.h:43:24: error: conflicting types for 'int64_t'; have 'long int'
+>    43 | typedef __INT64_TYPE__ int64_t;
+>       |                        ^~~~~~~
+> /usr/include/x86_64-linux-gnu/bits/stdint-intn.h:27:19: note: previous declaration of 'int64_t' with type 'int64_t' {aka 'long long int'}
+>    27 | typedef __int64_t int64_t;
+>       |                   ^~~~~~~
+> make: *** [Makefile:537: /home/buildroot/bpf-next/tools/testing/selftests/bpf/bpf_gcc/bind4_prog.o] Error 1
 > 
-> On 2022/8/26 1:26, Paul E. McKenney wrote:
-> > On Thu, Aug 25, 2022 at 05:23:11PM +0800, Zhen Lei wrote:
-> >> When CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y or CONFIG_NO_HZ_FULL=y, additional
-> >> CPUs need to be added to 'rcu_nocb_mask'. But 'rcu_nocb_mask' may be not
-> >> available now, due to 'rcu_nocbs' is not specified. Check and initialize
-> >> 'rcu_nocb_mask' before using it. This code simplification strictly follows
-> >> this logic, compared with old implementations, unnecessary crossovers are
-> >> avoided and easy to understand.
-> >>
-> >> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> > 
-> > Much nicer, thank you!
-> > 
-> > As usual, I could not resist the urge to wordsmith.  Could you please
-> > check to make sure that I did not mess anything up?
-> 
-> Okay, thank you very much. The boot option name "rcu_nocb_mask=" is
-> incorrect, should be "rcu_nocbs=".
+> Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Reviewed-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 
-Good eyes, thank you!  I will fix this on the next rebase.
+> ---
+>  tools/testing/selftests/bpf/progs/bind4_prog.c | 3 +--
+>  tools/testing/selftests/bpf/progs/bind6_prog.c | 3 +--
+>  2 files changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/progs/bind4_prog.c b/tools/testing/selftests/bpf/progs/bind4_prog.c
+> index 474c6a62078a..6bd20042fd53 100644
+> --- a/tools/testing/selftests/bpf/progs/bind4_prog.c
+> +++ b/tools/testing/selftests/bpf/progs/bind4_prog.c
+> @@ -6,8 +6,7 @@
+>  #include <linux/bpf.h>
+>  #include <linux/in.h>
+>  #include <linux/in6.h>
+> -#include <sys/socket.h>
+> -#include <netinet/tcp.h>
+> +#include <linux/tcp.h>
+>  #include <linux/if.h>
+>  #include <errno.h>
+>  
+> diff --git a/tools/testing/selftests/bpf/progs/bind6_prog.c b/tools/testing/selftests/bpf/progs/bind6_prog.c
+> index c19cfa869f30..f37617b35a55 100644
+> --- a/tools/testing/selftests/bpf/progs/bind6_prog.c
+> +++ b/tools/testing/selftests/bpf/progs/bind6_prog.c
+> @@ -6,8 +6,7 @@
+>  #include <linux/bpf.h>
+>  #include <linux/in.h>
+>  #include <linux/in6.h>
+> -#include <sys/socket.h>
+> -#include <netinet/tcp.h>
+> +#include <linux/tcp.h>
+>  #include <linux/if.h>
+>  #include <errno.h>
+>  
 
-							Thanx, Paul
-
-> > ------------------------------------------------------------------------
-> > 
-> > commit 4ac3b3d1a19943b1522c0b1d0895aefbb80ec294
-> > Author: Zhen Lei <thunder.leizhen@huawei.com>
-> > Date:   Thu Aug 25 17:23:11 2022 +0800
-> > 
-> >     rcu: Simplify rcu_init_nohz() cpumask handling
-> >     
-> >     In kernels built with either CONFIG_RCU_NOCB_CPU_DEFAULT_ALL=y or
-> >     CONFIG_NO_HZ_FULL=y, additional CPUs must be added to rcu_nocb_mask.
-> >     Except that kernels booted without the rcu_nocb_mask= will not have
-> 
-> rcu_nocb_mask=   ---->  rcu_nocbs=
-> 
-> >     allocated rcu_nocb_mask.  And the current rcu_init_nohz() function uses
-> >     its need_rcu_nocb_mask and offload_all local variables to track the
-> >     rcu_nocb and nohz_full state.
-> >     
-> >     But there is a much simpler approach, namely creating a cpumask pointer
-> >     to track the default and then using cpumask_available() to check the
-> >     rcu_nocb_mask state.  This commit takes this approach, thereby simplifying
-> >     and shortening the rcu_init_nohz() function.
-> >     
-> >     Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > 
-> > diff --git a/kernel/rcu/tree_nocb.h b/kernel/rcu/tree_nocb.h
-> > index 0a5f0ef414845..c8167be2288fa 100644
-> > --- a/kernel/rcu/tree_nocb.h
-> > +++ b/kernel/rcu/tree_nocb.h
-> > @@ -1210,45 +1210,31 @@ EXPORT_SYMBOL_GPL(rcu_nocb_cpu_offload);
-> >  void __init rcu_init_nohz(void)
-> >  {
-> >  	int cpu;
-> > -	bool need_rcu_nocb_mask = false;
-> > -	bool offload_all = false;
-> >  	struct rcu_data *rdp;
-> > +	const struct cpumask *cpumask = NULL;
-> >  
-> >  #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL)
-> > -	if (!rcu_state.nocb_is_setup) {
-> > -		need_rcu_nocb_mask = true;
-> > -		offload_all = true;
-> > -	}
-> > -#endif /* #if defined(CONFIG_RCU_NOCB_CPU_DEFAULT_ALL) */
-> > -
-> > -#if defined(CONFIG_NO_HZ_FULL)
-> > -	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask)) {
-> > -		need_rcu_nocb_mask = true;
-> > -		offload_all = false; /* NO_HZ_FULL has its own mask. */
-> > -	}
-> > -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
-> > +	cpumask = cpu_possible_mask;
-> > +#elif defined(CONFIG_NO_HZ_FULL)
-> > +	if (tick_nohz_full_running && !cpumask_empty(tick_nohz_full_mask))
-> > +		cpumask = tick_nohz_full_mask;
-> > +#endif
-> >  
-> > -	if (need_rcu_nocb_mask) {
-> > +	if (cpumask) {
-> >  		if (!cpumask_available(rcu_nocb_mask)) {
-> >  			if (!zalloc_cpumask_var(&rcu_nocb_mask, GFP_KERNEL)) {
-> >  				pr_info("rcu_nocb_mask allocation failed, callback offloading disabled.\n");
-> >  				return;
-> >  			}
-> >  		}
-> > +
-> > +		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, cpumask);
-> >  		rcu_state.nocb_is_setup = true;
-> >  	}
-> >  
-> >  	if (!rcu_state.nocb_is_setup)
-> >  		return;
-> >  
-> > -#if defined(CONFIG_NO_HZ_FULL)
-> > -	if (tick_nohz_full_running)
-> > -		cpumask_or(rcu_nocb_mask, rcu_nocb_mask, tick_nohz_full_mask);
-> > -#endif /* #if defined(CONFIG_NO_HZ_FULL) */
-> > -
-> > -	if (offload_all)
-> > -		cpumask_setall(rcu_nocb_mask);
-> > -
-> >  	if (!cpumask_subset(rcu_nocb_mask, cpu_possible_mask)) {
-> >  		pr_info("\tNote: kernel parameter 'rcu_nocbs=', 'nohz_full', or 'isolcpus=' contains nonexistent CPUs.\n");
-> >  		cpumask_and(rcu_nocb_mask, cpu_possible_mask,
-> > .
-> > 
-> 
-> -- 
-> Regards,
->   Zhen Lei
+-- 
+Muhammad Usama Anjum
