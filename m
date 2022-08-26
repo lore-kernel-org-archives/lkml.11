@@ -2,152 +2,325 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B995AECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85528ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbiHZPb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45770 "EHLO
+        id S1343572AbiHZPbs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 11:31:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344194AbiHZPaT (ORCPT
+        with ESMTP id S237200AbiHZPbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:30:19 -0400
-Received: from mout.web.de (mout.web.de [212.227.17.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FF73890
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:29:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1661527772;
-        bh=vybn/ViyNZp+SZt4R+o06lIHL1/q8XEV7JitarIyZUw=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=FUbqtduUcGbzwwG/RlAdq2Iudaa+Ht+yirkgCZuksUHuemvMY/mB3Sgdc0o7RZGMm
-         ph/q9N+xhqNDrgH9fSJv0KZy5yOLUZ+np/rsjoTDoi65nQgGKPiq8zU6JTSWQXV5kr
-         Gnp2y1mauCt6TQwA4z1W3Q1sVz6UzY/MxVYW5T1c=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from gecko ([46.223.150.91]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1MoNV4-1pBeOy20Fc-00oiZn; Fri, 26
- Aug 2022 17:29:32 +0200
-Date:   Fri, 26 Aug 2022 15:29:31 +0000
-From:   Lukas Straub <lukasstraub2@web.de>
-To:     linux-um <linux-um@lists.infradead.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>, <x86@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/2] um: Cleanup compiler warning in arch/x86/um/tls_32.c
-Message-ID: <20220826152931.5835fdf8@gecko>
+        Fri, 26 Aug 2022 11:31:38 -0400
+Received: from mail.stoffel.org (li1843-175.members.linode.com [172.104.24.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14FCF399DC;
+        Fri, 26 Aug 2022 08:31:34 -0700 (PDT)
+Received: from quad.stoffel.org (068-116-170-226.res.spectrum.com [68.116.170.226])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by mail.stoffel.org (Postfix) with ESMTPSA id 03776283F6;
+        Fri, 26 Aug 2022 11:31:34 -0400 (EDT)
+Received: by quad.stoffel.org (Postfix, from userid 1000)
+        id 9A976A7E17; Fri, 26 Aug 2022 11:31:33 -0400 (EDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/LZycpH1Xjhw3hn5+7RWproQ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Provags-ID: V03:K1:zRfBwWFCxLDu4xtAgPM58Sbn1rcr0fvj0TQWpsr2TlOF43NWZuA
- EQe8GTqssKt+x7JhGp0DNAWhk5QM0YwPYgGn6gHFGHlg1k6Kgn8JCRvGoHzb+oYmkJAJHk+
- 7jt4tUq0hN8ArWbVXBQYX4sTur1nFVjOZSs0jQI6sS5kOps2i3Ra397XXeiZpkEIH/H27da
- DEWXxWxzxR0zloYCOqs/A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:wfGKSGR36wQ=:jwBIW4fn8rS/IBz1EQSFFe
- joylk/5JRyaS3iM5ChO0yigi/Yjj19wKHqHcFiMyxmrX8UDj9wYWT6feINqO6M7qow5kAHBf/
- Xrw/dSpau28uRT+JZuZTdQtMYO1sGKh00l/GMD/hHuP3jwfGat6axd42rzL1bmCAMGFyIxDXF
- udhlLiO4q8SEJwE37g157taapWMj9W1glutvoK7RqOJYz0c7moeklun9rYeyYUwOobwQ5KqwE
- ePCqJzMzglUuD8lx/HFwLa60xCaHDj2ng/o2f3/BjFHWaQJuEx2/w+YDK6s08F29ZbRGApq66
- WTON2wuDaHsyW34xvSltW4UM5X4K4Vb8lvWcrAZjqvGGNSnDeX7alZUpKXeguoJ7oxtmS/vWb
- gf1Bsm7fxwxkZRBXK5jSOlFnITmAPkL7gNYk/VFwQLSwmP0JiGtilYK9RtKJmFEHDGaQZboi+
- Uqf68VuGCBaObrLTjzXwTlGodHfgzBspSfcAz0QByZP7g0MJeM9lm7614AvzGRCA4HavpdO4U
- tTsHgDZ3D0ijSMyGAXRjs7WHbr6neQIIdrSKr7pY2MRBQvh9TR6UfaeWyF1Az0NUA393qVSIg
- 5sW4H7ix/Rah/ZKnouONafuNK/4Oyyf8KoOSpxc5mX7uvIcg0N3EjL2iKaxDQW4v0CAwb7UH9
- JRBRRDLiSgPQ0Di64t+YkfHhML4BzUgWGTeEF7y9D8NeBr0tyBOCrMxPYgsLpouK1RIWGNrj/
- KZRkTGS6nqkfwVaFA8xGfJDrqBACVcJbzCoYIum8ZS+cQvsAj4DYiNgp6KHwGn4bKz6UTDMeA
- 3NhcxmRe/0zuzYBXIELIPWltoaE/yKtBYSoDiqglWl6w/p7tInmZgT2U0aJi38LAunJFh9BlA
- ycECYW1by6f4Zj0IMxvfC6aTvju8sVM4/6e5WcP8sfw077JEeEqWJb9API734oSZNFDwS/YUs
- E0mvTfvlQQG4IGIETowCgIHOgVCkUgAH58ZWdCQJwYnHoksiD/YXg3i7Wa94ZZbLfJb48U7yF
- UNakweCgDzBpavM/bP8WBUk7rKq+dME8hili3VtkEmqXNhMF2RHPuZGGW0QtHtcgosgtOwvtF
- OfeP62gY2KXNymSeMiKLFnqCNcCDjCgdXRRgPSkONR2J4Rq9xD7RQ/sSA==
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <25352.59221.528023.534884@quad.stoffel.home>
+Date:   Fri, 26 Aug 2022 11:31:33 -0400
+From:   "John Stoffel" <john@stoffel.org>
+To:     NeilBrown <neilb@suse.de>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Daire Byrne <daire@dneg.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 10/10] NFS: support parallel updates in the one directory.
+In-Reply-To: <166147984378.25420.4023980607067991846.stgit@noble.brown>
+References: <166147828344.25420.13834885828450967910.stgit@noble.brown>
+        <166147984378.25420.4023980607067991846.stgit@noble.brown>
+X-Mailer: VM 8.2.0b under 27.1 (x86_64-pc-linux-gnu)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/LZycpH1Xjhw3hn5+7RWproQ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+>>>>> "NeilBrown" == NeilBrown  <neilb@suse.de> writes:
 
-arch.tls_array is statically allocated so checking for NULL doesn't
-make sense. This causes the compiler warning below.
+NeilBrown> NFS can easily support parallel updates as the locking is done on the
+NeilBrown> server, so this patch enables parallel updates for NFS.
 
-Remove the checks to silence these warnings.
+Just curious, how is this handled if I have a server with an EXT#
+filesystem which is exported via NFS to multiple clients.  If those
+NFS clients are doing lots of changes in a single directory, I can see
+how the NFS server handles that, but what about if at the same time
+someone does multiple changes on the server in that EXT# behind the
+NFSd's back, how are the conflicts handled?
 
-../arch/x86/um/tls_32.c: In function 'get_free_idx':
-../arch/x86/um/tls_32.c:68:13: warning: the comparison will always evaluate=
- as 'true' for the address of 'tls_array' will never be NULL [-Waddress]
-   68 |         if (!t->arch.tls_array)
-      |             ^
-In file included from ../arch/x86/um/asm/processor.h:10,
-                 from ../include/linux/rcupdate.h:30,
-                 from ../include/linux/rculist.h:11,
-                 from ../include/linux/pid.h:5,
-                 from ../include/linux/sched.h:14,
-                 from ../arch/x86/um/tls_32.c:7:
-../arch/x86/um/asm/processor_32.h:22:31: note: 'tls_array' declared here
-   22 |         struct uml_tls_struct tls_array[GDT_ENTRY_TLS_ENTRIES];
-      |                               ^~~~~~~~~
-../arch/x86/um/tls_32.c: In function 'get_tls_entry':
-../arch/x86/um/tls_32.c:243:13: warning: the comparison will always evaluat=
-e as 'true' for the address of 'tls_array' will never be NULL [-Waddress]
-  243 |         if (!t->arch.tls_array)
-      |             ^
-../arch/x86/um/asm/processor_32.h:22:31: note: 'tls_array' declared here
-   22 |         struct uml_tls_struct tls_array[GDT_ENTRY_TLS_ENTRIES];
-      |                               ^~~~~~~~~
+It would seem that this all really needs to purely happen at the VFS
+layer, but I'm probably missing something.
 
-Signed-off-by: Lukas Straub <lukasstraub2@web.de>
----
- arch/x86/um/tls_32.c | 6 ------
- 1 file changed, 6 deletions(-)
+I ask this because my home server exports /home to a couple of other
+systems via NFS, but I still work in /home on the server.  
 
-diff --git a/arch/x86/um/tls_32.c b/arch/x86/um/tls_32.c
-index ac8eee093f9c..66162eafd8e8 100644
---- a/arch/x86/um/tls_32.c
-+++ b/arch/x86/um/tls_32.c
-@@ -65,9 +65,6 @@ static int get_free_idx(struct task_struct* task)
- 	struct thread_struct *t =3D &task->thread;
- 	int idx;
-=20
--	if (!t->arch.tls_array)
--		return GDT_ENTRY_TLS_MIN;
--
- 	for (idx =3D 0; idx < GDT_ENTRY_TLS_ENTRIES; idx++)
- 		if (!t->arch.tls_array[idx].present)
- 			return idx + GDT_ENTRY_TLS_MIN;
-@@ -240,9 +237,6 @@ static int get_tls_entry(struct task_struct *task, stru=
-ct user_desc *info,
- {
- 	struct thread_struct *t =3D &task->thread;
-=20
--	if (!t->arch.tls_array)
--		goto clear;
--
- 	if (idx < GDT_ENTRY_TLS_MIN || idx > GDT_ENTRY_TLS_MAX)
- 		return -EINVAL;
-=20
---=20
-2.37.2
 
---Sig_/LZycpH1Xjhw3hn5+7RWproQ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+NeilBrown> Handling of silly-rename - both for unlink and for the rename target -
+NeilBrown> requires some care as we need to get an exclusive lock on the chosen
+NeilBrown> silly name and for rename we need to keep the original target name
+NeilBrown> locked after it has been renamed to the silly name.
 
------BEGIN PGP SIGNATURE-----
+NeilBrown> So nfs_sillyrename() now uses d_exchange() to swap the target and the
+NeilBrown> silly name after the silly-rename has happened on the server, and the
+NeilBrown> silly dentry - which now has the name of the target - is returned.
 
-iQIzBAEBCAAdFiEEg/qxWKDZuPtyYo+kNasLKJxdslgFAmMI5tsACgkQNasLKJxd
-sli3qRAAkgRBGEM2oxLpbfJhsLdW21G4iDuBKV5sUnRsRzt2Wgxx8osNg28GNg+k
-xsM+8Fr2Qnjgqci8p5sIB4sqGxr5sAl3Lof7KTo2JfSs/i6pkAf4i2aXQo/8lmHd
-8lQPxzmSn6oWkGyfLYNxSMZG3ax7B1sx4tjMomaAoqF6jp0pzU9m3Kx3+c5Pw2U0
-waPRbj0R4pELzFzAinqW+tU815/UxtScYVGIJtGX5mNa0q1Nywm9iHdx7Ay2x2Bw
-QmuhfjCOQIt3hvAebILiYFLV7GBLrr93pEvnQOaozW+oHjXsM1uEXM3qCuAD/7ti
-BNpVoTTiCaNKO1PvnGpiYzky67WbsUchbSJrDcpBIPBL1NL9JDKr72B1Dg+WAUHH
-ae55V9qaye07Bg8+MiEgzGoMvE6tb4lcA6m7zhO/4uaQVv2CpNpUHNX9jyY1i3/R
-9PnR62D+kWkiqsRW5CL/bAA5mtDbkQ8gu+bov3M2IvceC9aAQe1sam5sxqcQqcFK
-CQRqAcv6hcVUx30JqLv1clx7JZwdpVrXA3DE+N2O3IKnE8xO247uAoOQ0r2Db8v3
-0964pe4JOjYprIDVyFrKAFFkntSvga5t+zJf0ZCVECn7t4IgN8xad7ar/+Yzcy2b
-FX0PVBW9FG0Vces/8byR1B/+mBwjEbb96RFK5jvQ294gXRg9LsA=
-=y+Wt
------END PGP SIGNATURE-----
+NeilBrown> For unlink(), this is immediately unlocked and discarded with a call to
+NeilBrown> nfs_sillyrename_finish().  For rename it is kept locked until the
+NeilBrown> originally requested rename completes.
 
---Sig_/LZycpH1Xjhw3hn5+7RWproQ--
+NeilBrown> Signed-off-by: NeilBrown <neilb@suse.de>
+NeilBrown> ---
+NeilBrown>  fs/dcache.c         |    5 ++++-
+NeilBrown>  fs/nfs/dir.c        |   28 ++++++++++++++++------------
+NeilBrown>  fs/nfs/fs_context.c |    6 ++++--
+NeilBrown>  fs/nfs/internal.h   |    3 ++-
+NeilBrown>  fs/nfs/unlink.c     |   51 ++++++++++++++++++++++++++++++++++++++-------------
+NeilBrown>  5 files changed, 64 insertions(+), 29 deletions(-)
+
+NeilBrown> diff --git a/fs/dcache.c b/fs/dcache.c
+NeilBrown> index 9bf346a9de52..a5eaab16d39f 100644
+NeilBrown> --- a/fs/dcache.c
+NeilBrown> +++ b/fs/dcache.c
+NeilBrown> @@ -3056,7 +3056,9 @@ void d_exchange(struct dentry *dentry1, struct dentry *dentry2)
+NeilBrown>  	write_seqlock(&rename_lock);
+ 
+NeilBrown>  	WARN_ON(!dentry1->d_inode);
+NeilBrown> -	WARN_ON(!dentry2->d_inode);
+NeilBrown> +	/* Allow dentry2 to be negative, so we can do a rename
+NeilBrown> +	 * but keep both names locked (DCACHE_PAR_UPDATE)
+NeilBrown> +	 */
+NeilBrown>  	WARN_ON(IS_ROOT(dentry1));
+NeilBrown>  	WARN_ON(IS_ROOT(dentry2));
+ 
+NeilBrown> @@ -3064,6 +3066,7 @@ void d_exchange(struct dentry *dentry1, struct dentry *dentry2)
+ 
+NeilBrown>  	write_sequnlock(&rename_lock);
+NeilBrown>  }
+NeilBrown> +EXPORT_SYMBOL(d_exchange);
+ 
+NeilBrown>  /**
+NeilBrown>   * d_ancestor - search for an ancestor
+NeilBrown> diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
+NeilBrown> index 5d6c2ddc7ea6..fbb608fbe6bf 100644
+NeilBrown> --- a/fs/nfs/dir.c
+NeilBrown> +++ b/fs/nfs/dir.c
+NeilBrown> @@ -1935,8 +1935,12 @@ struct dentry *nfs_lookup(struct inode *dir, struct dentry * dentry, unsigned in
+NeilBrown>  	/*
+NeilBrown>  	 * If we're doing an exclusive create, optimize away the lookup
+NeilBrown>  	 * but don't hash the dentry.
+NeilBrown> +	 * A silly_rename is marked exclusive, but we need to do an
+NeilBrown> +	 * explicit lookup.
+NeilBrown>  	 */
+NeilBrown> -	if (nfs_is_exclusive_create(dir, flags) || flags & LOOKUP_RENAME_TARGET)
+NeilBrown> +	if ((nfs_is_exclusive_create(dir, flags) ||
+NeilBrown> +	     flags & LOOKUP_RENAME_TARGET) &&
+NeilBrown> +	    !(flags & LOOKUP_SILLY_RENAME))
+NeilBrown>  		return NULL;
+ 
+NeilBrown>  	res = ERR_PTR(-ENOMEM);
+NeilBrown> @@ -2472,10 +2476,14 @@ int nfs_unlink(struct inode *dir, struct dentry *dentry)
+NeilBrown>  	spin_lock(&dentry->d_lock);
+NeilBrown>  	if (d_count(dentry) > 1 && !test_bit(NFS_INO_PRESERVE_UNLINKED,
+NeilBrown>  					     &NFS_I(d_inode(dentry))->flags)) {
+NeilBrown> +		struct dentry *silly;
+NeilBrown> +
+NeilBrown>  		spin_unlock(&dentry->d_lock);
+NeilBrown>  		/* Start asynchronous writeout of the inode */
+NeilBrown>  		write_inode_now(d_inode(dentry), 0);
+NeilBrown> -		error = nfs_sillyrename(dir, dentry);
+NeilBrown> +		silly = nfs_sillyrename(dir, dentry);
+NeilBrown> +		error = PTR_ERR_OR_ZERO(silly);
+NeilBrown> +		nfs_sillyrename_finish(dir, silly);
+NeilBrown>  		goto out;
+NeilBrown>  	}
+NeilBrown>  	/* We must prevent any concurrent open until the unlink
+NeilBrown> @@ -2685,16 +2693,12 @@ int nfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+ 
+NeilBrown>  			spin_unlock(&new_dentry->d_lock);
+ 
+NeilBrown> -			/* copy the target dentry's name */
+NeilBrown> -			dentry = d_alloc(new_dentry->d_parent,
+NeilBrown> -					 &new_dentry->d_name);
+NeilBrown> -			if (!dentry)
+NeilBrown> -				goto out;
+NeilBrown> -
+NeilBrown>  			/* silly-rename the existing target ... */
+NeilBrown> -			err = nfs_sillyrename(new_dir, new_dentry);
+NeilBrown> -			if (err)
+NeilBrown> +			dentry = nfs_sillyrename(new_dir, new_dentry);
+NeilBrown> +			if (IS_ERR(dentry)) {
+NeilBrown> +				err = PTR_ERR(dentry);
+NeilBrown>  				goto out;
+NeilBrown> +			}
+ 
+NeilBrown>  			new_dentry = dentry;
+NeilBrown>  			new_inode = NULL;
+NeilBrown> @@ -2750,9 +2754,9 @@ int nfs_rename(struct user_namespace *mnt_userns, struct inode *old_dir,
+NeilBrown>  	} else if (error == -ENOENT)
+NeilBrown>  		nfs_dentry_handle_enoent(old_dentry);
+ 
+NeilBrown> -	/* new dentry created? */
+NeilBrown>  	if (dentry)
+NeilBrown> -		dput(dentry);
+NeilBrown> +		nfs_sillyrename_finish(new_dir, dentry);
+NeilBrown> +
+NeilBrown>  	return error;
+NeilBrown>  }
+NeilBrown>  EXPORT_SYMBOL_GPL(nfs_rename);
+NeilBrown> diff --git a/fs/nfs/fs_context.c b/fs/nfs/fs_context.c
+NeilBrown> index 4da701fd1424..7133ca9433d2 100644
+NeilBrown> --- a/fs/nfs/fs_context.c
+NeilBrown> +++ b/fs/nfs/fs_context.c
+NeilBrown> @@ -1577,7 +1577,8 @@ struct file_system_type nfs_fs_type = {
+NeilBrown>  	.init_fs_context	= nfs_init_fs_context,
+NeilBrown>  	.parameters		= nfs_fs_parameters,
+NeilBrown>  	.kill_sb		= nfs_kill_super,
+NeilBrown> -	.fs_flags		= FS_RENAME_DOES_D_MOVE|FS_BINARY_MOUNTDATA,
+NeilBrown> +	.fs_flags		= FS_RENAME_DOES_D_MOVE|FS_BINARY_MOUNTDATA|
+NeilBrown> +				  FS_PAR_DIR_UPDATE,
+NeilBrown>  };
+NeilBrown>  MODULE_ALIAS_FS("nfs");
+NeilBrown>  EXPORT_SYMBOL_GPL(nfs_fs_type);
+NeilBrown> @@ -1589,7 +1590,8 @@ struct file_system_type nfs4_fs_type = {
+NeilBrown>  	.init_fs_context	= nfs_init_fs_context,
+NeilBrown>  	.parameters		= nfs_fs_parameters,
+NeilBrown>  	.kill_sb		= nfs_kill_super,
+NeilBrown> -	.fs_flags		= FS_RENAME_DOES_D_MOVE|FS_BINARY_MOUNTDATA,
+NeilBrown> +	.fs_flags		= FS_RENAME_DOES_D_MOVE|FS_BINARY_MOUNTDATA|
+NeilBrown> +				  FS_PAR_DIR_UPDATE,
+NeilBrown>  };
+NeilBrown>  MODULE_ALIAS_FS("nfs4");
+NeilBrown>  MODULE_ALIAS("nfs4");
+NeilBrown> diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
+NeilBrown> index 27c720d71b4e..3a7fd30a8e29 100644
+NeilBrown> --- a/fs/nfs/internal.h
+NeilBrown> +++ b/fs/nfs/internal.h
+NeilBrown> @@ -611,7 +611,8 @@ extern struct rpc_task *
+NeilBrown>  nfs_async_rename(struct inode *old_dir, struct inode *new_dir,
+NeilBrown>  		 struct dentry *old_dentry, struct dentry *new_dentry,
+NeilBrown>  		 void (*complete)(struct rpc_task *, struct nfs_renamedata *));
+NeilBrown> -extern int nfs_sillyrename(struct inode *dir, struct dentry *dentry);
+NeilBrown> +extern struct dentry *nfs_sillyrename(struct inode *dir, struct dentry *dentry);
+NeilBrown> +extern void nfs_sillyrename_finish(struct inode *dir, struct dentry *dentry);
+ 
+NeilBrown>  /* direct.c */
+NeilBrown>  void nfs_init_cinfo_from_dreq(struct nfs_commit_info *cinfo,
+NeilBrown> diff --git a/fs/nfs/unlink.c b/fs/nfs/unlink.c
+NeilBrown> index 9697cd5d2561..c8a718f09fe6 100644
+NeilBrown> --- a/fs/nfs/unlink.c
+NeilBrown> +++ b/fs/nfs/unlink.c
+NeilBrown> @@ -428,6 +428,10 @@ nfs_complete_sillyrename(struct rpc_task *task, struct nfs_renamedata *data)
+NeilBrown>   *
+NeilBrown>   * The final cleanup is done during dentry_iput.
+NeilBrown>   *
+NeilBrown> + * We exchange the original with the new (silly) dentries, and return
+NeilBrown> + * the new dentry which will have the original name.  This ensures that
+NeilBrown> + * the target name remains locked until the rename completes.
+NeilBrown> + *
+NeilBrown>   * (Note: NFSv4 is stateful, and has opens, so in theory an NFSv4 server
+NeilBrown>   * could take responsibility for keeping open files referenced.  The server
+NeilBrown>   * would also need to ensure that opened-but-deleted files were kept over
+NeilBrown> @@ -436,7 +440,7 @@ nfs_complete_sillyrename(struct rpc_task *task, struct nfs_renamedata *data)
+NeilBrown>   * use to advertise that it does this; some day we may take advantage of
+NeilBrown>   * it.))
+NeilBrown>   */
+NeilBrown> -int
+NeilBrown> +struct dentry *
+NeilBrown>  nfs_sillyrename(struct inode *dir, struct dentry *dentry)
+NeilBrown>  {
+NeilBrown>  	static unsigned int sillycounter;
+NeilBrown> @@ -445,6 +449,8 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
+NeilBrown>  	struct dentry *sdentry;
+NeilBrown>  	struct inode *inode = d_inode(dentry);
+NeilBrown>  	struct rpc_task *task;
+NeilBrown> +	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
+NeilBrown> +	struct path path = {};
+NeilBrown>  	int            error = -EBUSY;
+ 
+NeilBrown>  	dfprintk(VFS, "NFS: silly-rename(%pd2, ct=%d)\n",
+NeilBrown> @@ -459,10 +465,11 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
+ 
+NeilBrown>  	fileid = NFS_FILEID(d_inode(dentry));
+ 
+NeilBrown> +	path.dentry = d_find_alias(dir);
+NeilBrown>  	sdentry = NULL;
+NeilBrown>  	do {
+NeilBrown>  		int slen;
+NeilBrown> -		dput(sdentry);
+NeilBrown> +
+NeilBrown>  		sillycounter++;
+NeilBrown>  		slen = scnprintf(silly, sizeof(silly),
+NeilBrown>  				SILLYNAME_PREFIX "%0*llx%0*x",
+NeilBrown> @@ -472,14 +479,19 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
+NeilBrown>  		dfprintk(VFS, "NFS: trying to rename %pd to %s\n",
+NeilBrown>  				dentry, silly);
+ 
+NeilBrown> -		sdentry = lookup_one_len(silly, dentry->d_parent, slen);
+NeilBrown> -		/*
+NeilBrown> -		 * N.B. Better to return EBUSY here ... it could be
+NeilBrown> -		 * dangerous to delete the file while it's in use.
+NeilBrown> -		 */
+NeilBrown> -		if (IS_ERR(sdentry))
+NeilBrown> -			goto out;
+NeilBrown> -	} while (d_inode(sdentry) != NULL); /* need negative lookup */
+NeilBrown> +		sdentry = filename_create_one_len(silly, slen,
+NeilBrown> +						  &path,
+NeilBrown> +						  LOOKUP_CREATE | LOOKUP_EXCL |
+NeilBrown> +						  LOOKUP_SILLY_RENAME,
+NeilBrown> +						  &wq);
+NeilBrown> +	} while (PTR_ERR_OR_ZERO(sdentry) == -EEXIST);
+NeilBrown> +	dput(path.dentry);
+NeilBrown> +	/*
+NeilBrown> +	 * N.B. Better to return EBUSY here ... it could be
+NeilBrown> +	 * dangerous to delete the file while it's in use.
+NeilBrown> +	 */
+NeilBrown> +	if (IS_ERR(sdentry))
+NeilBrown> +		goto out;
+ 
+NeilBrown>  	ihold(inode);
+ 
+NeilBrown> @@ -513,7 +525,7 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
+NeilBrown>  						     NFS_INO_INVALID_CTIME |
+NeilBrown>  						     NFS_INO_REVAL_FORCED);
+NeilBrown>  		spin_unlock(&inode->i_lock);
+NeilBrown> -		d_move(dentry, sdentry);
+NeilBrown> +		d_exchange(dentry, sdentry);
+NeilBrown>  		break;
+NeilBrown>  	case -ERESTARTSYS:
+NeilBrown>  		/* The result of the rename is unknown. Play it safe by
+NeilBrown> @@ -524,7 +536,20 @@ nfs_sillyrename(struct inode *dir, struct dentry *dentry)
+NeilBrown>  	rpc_put_task(task);
+NeilBrown>  out_dput:
+NeilBrown>  	iput(inode);
+NeilBrown> -	dput(sdentry);
+NeilBrown> +	if (!error)
+NeilBrown> +		return sdentry;
+NeilBrown> +
+NeilBrown> +	d_lookup_done(sdentry);
+NeilBrown> +	__done_path_update(&path, sdentry, true, LOOKUP_SILLY_RENAME);
+NeilBrown>  out:
+NeilBrown> -	return error;
+NeilBrown> +	return ERR_PTR(error);
+NeilBrown> +}
+NeilBrown> +
+NeilBrown> +void nfs_sillyrename_finish(struct inode *dir, struct dentry *dentry)
+NeilBrown> +{
+NeilBrown> +	struct path path = { .dentry = d_find_alias(dir) };
+NeilBrown> +
+NeilBrown> +	if (!IS_ERR(dentry))
+NeilBrown> +		__done_path_update(&path, dentry, true, LOOKUP_SILLY_RENAME);
+NeilBrown> +	dput(path.dentry);
+NeilBrown>  }
+
+
