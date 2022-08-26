@@ -2,32 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC40ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36DE3ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344180AbiHZK5u (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:57:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60284 "EHLO
+        id S245563AbiHZK6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 06:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344084AbiHZK45 (ORCPT
+        with ESMTP id S1344048AbiHZK45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 26 Aug 2022 06:56:57 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58047A779
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955217A531
         for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:56:54 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0x-0002uW-6O; Fri, 26 Aug 2022 12:56:39 +0200
+        id 1oRX0x-0002vJ-H0; Fri, 26 Aug 2022 12:56:39 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0v-0024Z5-Vp; Fri, 26 Aug 2022 12:56:37 +0200
+        id 1oRX0w-0024ZC-5m; Fri, 26 Aug 2022 12:56:38 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0t-00GB3w-Kk; Fri, 26 Aug 2022 12:56:35 +0200
+        id 1oRX0t-00GB4E-Lj; Fri, 26 Aug 2022 12:56:35 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -40,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 14/17] net: dsa: microchip: remove unused port phy variable
-Date:   Fri, 26 Aug 2022 12:56:31 +0200
-Message-Id: <20220826105634.3855578-15-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v4 16/17] net: dsa: microchip: remove unused sgmii variable
+Date:   Fri, 26 Aug 2022 12:56:33 +0200
+Message-Id: <20220826105634.3855578-17-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220826105634.3855578-1-o.rempel@pengutronix.de>
 References: <20220826105634.3855578-1-o.rempel@pengutronix.de>
@@ -56,58 +55,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This variable is unused. So, drop it.
+This variable is not used. So, remove it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 1 -
  drivers/net/dsa/microchip/ksz9477.c    | 5 -----
  drivers/net/dsa/microchip/ksz_common.h | 1 -
- 3 files changed, 7 deletions(-)
+ 2 files changed, 6 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index f020d9f402845..bd3b133e7085b 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1251,7 +1251,6 @@ void ksz8_config_cpu_port(struct dsa_switch *ds)
- 		if (i == dev->phy_port_cnt)
- 			break;
- 		p->on = 1;
--		p->phy = 1;
- 	}
- 	for (i = 0; i < dev->phy_port_cnt; i++) {
- 		p = &dev->ports[i];
 diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index d1ee6b4b49542..4a2074a12b3f7 100644
+index 18375309233ad..077b4e5c29c7c 100644
 --- a/drivers/net/dsa/microchip/ksz9477.c
 +++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1080,13 +1080,8 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
- 
- 		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
- 		p->on = 1;
--		if (dev->info->internal_phy[i])
--			p->phy = 1;
- 		if (dev->chip_id == 0x00947700 && i == 6) {
- 			p->sgmii = 1;
+@@ -1075,12 +1075,7 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 	for (i = 0; i < dev->info->port_cnt; i++) {
+ 		if (i == dev->cpu_port)
+ 			continue;
+-		p = &dev->ports[i];
 -
--			/* SGMII PHY detection code is not implemented yet. */
--			p->phy = 0;
- 		}
+ 		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
+-		if (dev->chip_id == 0x00947700 && i == 6) {
+-			p->sgmii = 1;
+-		}
  	}
  }
+ 
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 4491cedd32c32..99da2092d0d7d 100644
+index 99da2092d0d7d..4914cc1c803a4 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -73,7 +73,6 @@ struct ksz_port {
- 	struct phy_device phydev;
+@@ -74,7 +74,6 @@ struct ksz_port {
  
  	u32 on:1;			/* port is not disabled by hardware */
--	u32 phy:1;			/* port has a PHY */
  	u32 fiber:1;			/* port is fiber */
- 	u32 sgmii:1;			/* port is SGMII */
+-	u32 sgmii:1;			/* port is SGMII */
  	u32 force:1;
+ 	u32 read:1;			/* read MIB counters in background */
+ 	u32 freeze:1;			/* MIB counter freeze is enabled */
 -- 
 2.30.2
 
