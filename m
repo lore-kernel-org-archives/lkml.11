@@ -2,100 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CAC7ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:22:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F177ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:22:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231610AbiHZBWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 21:22:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
+        id S244249AbiHZBWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 21:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244245AbiHZBWJ (ORCPT
+        with ESMTP id S244298AbiHZBW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 21:22:09 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37FDC6E81
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 18:22:05 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 12so91570pga.1
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 18:22:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=gY3tlF3vENa5itYuSBx/pa6KL0Udf7AS/e/RUrrnffM=;
-        b=H3igN1/yHvXXMjmVn4kWJ8Doatb6ptuxzFkFWpXbIRJUBy2um69V57WqimgHiLgkqm
-         +Iysp9DuFgCDu1pfdZnUJYGJg0/XCZV+ubCs7nBX4fG8hRcbdzVaqRSl17ULmpE366aC
-         UIjGOygGlVeIc0gNPqyQ2zAYPRXg4/npFzmAg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=gY3tlF3vENa5itYuSBx/pa6KL0Udf7AS/e/RUrrnffM=;
-        b=nuxDMXcngGdS3+UgVcnQ8Btvjah6OnKEOrX7arwDBrLvH/KgKApkGei0byrYXWkyr2
-         uv9CSQi0lXRIPL2iBX7GV7SooYXndY/q4LZJ1wYbvXmuYHteG+x6vybheChNvQ/cX1RE
-         uPjFl7djGhG9f8tjxHwnxstgEYQAFJydschnKYTpVicBtdDiJ4NUSolAPMvUXHs/CdM3
-         zmMEoacoeYrusIY1bldKyn2DjB849dsJo8C9ipWz7hplXBMLyyQkzIMk3U+1zu4hLUny
-         BRs/9N0NPep89Lrpbw+NfOiS0NfZEYUukrsEFfX/wjrpD0wOM0Ljha8kkuYlczPrNJ0s
-         ZOXw==
-X-Gm-Message-State: ACgBeo0fYNgB/J2AZ4+bja5A/AZjV/npx3tDGVnPHDMkCEex8rCi4BaY
-        1gy3y+1tv1C7bOKIBfMbz0yTzw==
-X-Google-Smtp-Source: AA6agR5Tq03n2LBQdmBzk9YoR2dPliY0RNs3VGu0MMT6FJlzVsdMYfhy5YqbQISsMs4sqNR7md9nEg==
-X-Received: by 2002:a65:6d13:0:b0:41d:7380:e9cc with SMTP id bf19-20020a656d13000000b0041d7380e9ccmr1375243pgb.153.1661476925137;
-        Thu, 25 Aug 2022 18:22:05 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:d529:f79d:2a1a:4e61])
-        by smtp.gmail.com with UTF8SMTPSA id q17-20020a170902dad100b0017315b11bb8sm192415plx.213.2022.08.25.18.22.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 18:22:04 -0700 (PDT)
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     Johan Hovold <johan+linaro@kernel.org>, linux-clk@vger.kernel.org,
-        Krishna Kurapati <quic_kriskura@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH v2 2/2] clk: qcom: gcc-sc7280: Keep the USB GDSCs always on
-Date:   Thu, 25 Aug 2022 18:21:59 -0700
-Message-Id: <20220825182152.v2.2.If09027f73daa6e1ed95f5eab02326b543c67132e@changeid>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-In-Reply-To: <20220825182152.v2.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
-References: <20220825182152.v2.1.I45235b7c40997bc2abf813e4722b4dcdd6aecf6b@changeid>
+        Thu, 25 Aug 2022 21:22:26 -0400
+X-Greylist: delayed 300 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 Aug 2022 18:22:23 PDT
+Received: from 189.cn (ptr.189.cn [183.61.185.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 066C9C9EBB;
+        Thu, 25 Aug 2022 18:22:22 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.31:54744.126691956
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-123.150.8.42 (unknown [10.64.8.31])
+        by 189.cn (HERMES) with SMTP id EA46C1002D0;
+        Fri, 26 Aug 2022 09:17:16 +0800 (CST)
+Received: from  ([123.150.8.42])
+        by gateway-153622-dep-84fc4d489d-822zj with ESMTP id c30d0bbec68e4e9dbe7acbbe1a5dfb80 for pierre.gondois@arm.com;
+        Fri, 26 Aug 2022 09:17:20 CST
+X-Transaction-ID: c30d0bbec68e4e9dbe7acbbe1a5dfb80
+X-Real-From: chensong_2000@189.cn
+X-Receive-IP: 123.150.8.42
+X-MEDUSA-Status: 0
+Sender: chensong_2000@189.cn
+Message-ID: <b946d81b-3777-51e1-8a01-e4ace99d829f@189.cn>
+Date:   Fri, 26 Aug 2022 09:17:16 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] irqchip/gic-v3-its: Remove cpumask_var_t allocation
+Content-Language: en-US
+To:     Pierre Gondois <pierre.gondois@arm.com>,
+        linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+References: <20220825152348.1634133-1-pierre.gondois@arm.com>
+From:   Song Chen <chensong_2000@189.cn>
+In-Reply-To: <20220825152348.1634133-1-pierre.gondois@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the GDSC is disabled during system suspend USB is broken on
-sc7280 when the system resumes. Mark the GDSC as always on to
-make sure USB still works after system suspend.
+hi,
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
----
+在 2022/8/25 23:23, Pierre Gondois 写道:
+> In KvmTool, on a ThunderX2, when running a preemp_rt kernel based on
+> v5.19-rc3-rt4, the following happens:
+> [    4.070739] [ BUG: Invalid wait context ]
+> [    4.070740] 5.19.0-rc3-rt4-00001-g1a6597c0bdcf #153 Not tainted
+> [    4.070742] -----------------------------
+> [    4.070743] swapper/0/1 is trying to lock:
+> [    4.070744] ffff0000ab7405d8 ((&c->lock)){+.+.}-{3:3}, at: ___slab_alloc (mm/slub.c:2954)
+> [    4.070757] other info that might help us debug this:
+> [    4.070758] context-{5:5}
+> [    4.070759] 5 locks held by swapper/0/1:
+> [    4.070760] #0: ffff0000811491e0 (&dev->mutex){....}-{4:4}, at: __device_driver_lock (drivers/base/dd.c:1055)
+> [    4.070769] #1: ffff0000846c5670 (&desc->request_mutex){+.+.}-{4:4}, at: __setup_irq (kernel/irq/internals.h:147)
+> [    4.070778] #2: ffff0000846c54c8 (&irq_desc_lock_class){....}-{2:2}, at: __setup_irq (kernel/irq/manage.c:1612)
+> [    4.070784] #3: ffff80000b23ea78 (mask_lock){....}-{2:2}, at: irq_setup_affinity (./include/linux/irq.h:381)
+> [    4.070791] #4: ffff80000b23ea38 (tmp_mask_lock){....}-{2:2}, at: irq_do_set_affinity (./include/linux/irq.h:381)
+> [    4.070797] stack backtrace:
+> [    4.070801] CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.19.0-rc3-rt4-00001-g1a6597c0bdcf #153
+> [    4.070805] Call trace:
+> [    4.070806] dump_backtrace (arch/arm64/kernel/stacktrace.c:200)
+> [    4.070811] show_stack (arch/arm64/kernel/stacktrace.c:207)
+> [    4.070813] dump_stack_lvl (lib/dump_stack.c:107)
+> [    4.070818] dump_stack (lib/dump_stack.c:114)
+> [    4.070820] __lock_acquire (kernel/locking/lockdep.c:4707)
+> [    4.070823] lock_acquire (kernel/locking/lockdep.c:466)
+> [    4.070825] rt_spin_lock (./arch/arm64/include/asm/current.h:19 (discriminator 4))
+> [    4.070830] ___slab_alloc (mm/slub.c:2954)
+> [    4.070832] __slab_alloc.isra.0 (mm/slub.c:3116)
+> [    4.070835] __kmalloc_node (mm/slub.c:3207)
+> [    4.070837] alloc_cpumask_var_node (lib/cpumask.c:115)
+> [    4.070843] alloc_cpumask_var (lib/cpumask.c:147)
+> [    4.070846] its_select_cpu (drivers/irqchip/irq-gic-v3-its.c:1580)
+> [    4.070850] its_set_affinity (drivers/irqchip/irq-gic-v3-its.c:1659)
+> [    4.070853] msi_domain_set_affinity (kernel/irq/msi.c:501)
+> [    4.070857] irq_do_set_affinity (kernel/irq/manage.c:276)
+> [    4.070860] irq_setup_affinity (kernel/irq/manage.c:633)
+> [    4.070863] irq_startup (kernel/irq/chip.c:280)
+> [    4.070865] __setup_irq (kernel/irq/manage.c:1777)
+> [    4.070869] request_threaded_irq (kernel/irq/manage.c:2206)
+> [    4.070872] vp_find_vqs_msix (./include/linux/interrupt.h:168)
+> [    4.070876] vp_find_vqs (drivers/virtio/virtio_pci_common.c:400)
+> [    4.070878] vp_modern_find_vqs (drivers/virtio/virtio_pci_modern.c:259)
+> [    4.070880] init_vq (./include/linux/virtio_config.h:213)
+> [    4.070885] virtblk_probe (drivers/block/virtio_blk.c:936)
+> [    4.070887] virtio_dev_probe (drivers/virtio/virtio.c:303)
+> [    4.070892] really_probe (drivers/base/dd.c:555)
+> [    4.070895] __driver_probe_device (drivers/base/dd.c:764)
+> [    4.070897] driver_probe_device (drivers/base/dd.c:794)
+> [    4.070899] __driver_attach (drivers/base/dd.c:1164)
+> [    4.070901] bus_for_each_dev (drivers/base/bus.c:301)
+> [    4.070904] driver_attach (drivers/base/dd.c:1181)
+> [    4.070906] bus_add_driver (drivers/base/bus.c:618)
+> [    4.070908] driver_register (drivers/base/driver.c:240)
+> [    4.070910] register_virtio_driver (drivers/virtio/virtio.c:356 (discriminator 4))
+> [    4.070913] virtio_blk_init (drivers/block/virtio_blk.c:1218)
+> [    4.070918] do_one_initcall (init/main.c:1295)
+> [    4.070921] kernel_init_freeable (init/main.c:1367)
+> [    4.070924] kernel_init (init/main.c:1503)
+> [    4.070927] ret_from_fork (arch/arm64/kernel/entry.S:868)
+> 
+> commit cba4235e6031e ("genirq: Remove mask argument from
+> setup_affinity()")
+> and
+> commit 11ea68f553e24 ("genirq, sched/isolation: Isolate from handling
+> managed interrupts")
+> overcome this issue by defining a static struct cpumask and protecting
+> it by a raw spinlock. The code in these commits is executed with IRQs
+> disabled.
+> its_select_cpu() can be executed with IRQs enabled or disabled. Thus
+> disabling IRQs is necesserary to avoid deadlocking.
+> 
+> This patch:
+> - makes tmpmask a 'static struct cpumask'. This prevents storing it on
+>    the stack and having to dynamically allocate it
+> - protects tmpmask with a raw spinlock
+> - disables IRQs around the spinlock for the case its_select_cpu() is
+>    called with IRQs enabled
+> 
+> Signed-off-by: Pierre Gondois <pierre.gondois@arm.com>
+> ---
+>   drivers/irqchip/irq-gic-v3-its.c | 34 +++++++++++++++++---------------
+>   1 file changed, 18 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+> index 5ff09de6c48f..3cf89e59b036 100644
+> --- a/drivers/irqchip/irq-gic-v3-its.c
+> +++ b/drivers/irqchip/irq-gic-v3-its.c
+> @@ -1574,14 +1574,15 @@ static int its_select_cpu(struct irq_data *d,
+>   			  const struct cpumask *aff_mask)
+>   {
+>   	struct its_device *its_dev = irq_data_get_irq_chip_data(d);
+> -	cpumask_var_t tmpmask;
+> +	static DEFINE_RAW_SPINLOCK(tmpmask_lock);
+> +	static struct cpumask tmpmask;
+> +	unsigned long flags;
+>   	int cpu, node;
+> -
+> -	if (!alloc_cpumask_var(&tmpmask, GFP_ATOMIC))
+> -		return -ENOMEM;
+> -
+>   	node = its_dev->its->numa_node;
+>   
+> +	local_irq_save(flags);
+> +	raw_spin_lock(&tmpmask_lock);
+> +
 
-Changes in v2:
-- set the flags of the GDSC not of the GDSC power domain
-- updated commit message
+why not call raw_spin_lock_irqsave and raw_spin_unlock_irqrestore?
 
- drivers/clk/qcom/gcc-sc7280.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Song
 
-diff --git a/drivers/clk/qcom/gcc-sc7280.c b/drivers/clk/qcom/gcc-sc7280.c
-index 7ff64d4d5920..adef68d2cb0b 100644
---- a/drivers/clk/qcom/gcc-sc7280.c
-+++ b/drivers/clk/qcom/gcc-sc7280.c
-@@ -3127,7 +3127,7 @@ static struct gdsc gcc_usb30_prim_gdsc = {
- 		.name = "gcc_usb30_prim_gdsc",
- 	},
- 	.pwrsts = PWRSTS_OFF_ON,
--	.flags = VOTABLE,
-+	.flags = VOTABLE | ALWAYS_ON,
- };
- 
- static struct gdsc gcc_usb30_sec_gdsc = {
--- 
-2.37.2.672.g94769d06f0-goog
-
+>   	if (!irqd_affinity_is_managed(d)) {
+>   		/* First try the NUMA node */
+>   		if (node != NUMA_NO_NODE) {
+> @@ -1589,8 +1590,8 @@ static int its_select_cpu(struct irq_data *d,
+>   			 * Try the intersection of the affinity mask and the
+>   			 * node mask (and the online mask, just to be safe).
+>   			 */
+> -			cpumask_and(tmpmask, cpumask_of_node(node), aff_mask);
+> -			cpumask_and(tmpmask, tmpmask, cpu_online_mask);
+> +			cpumask_and(&tmpmask, cpumask_of_node(node), aff_mask);
+> +			cpumask_and(&tmpmask, &tmpmask, cpu_online_mask);
+>   
+>   			/*
+>   			 * Ideally, we would check if the mask is empty, and
+> @@ -1604,7 +1605,7 @@ static int its_select_cpu(struct irq_data *d,
+>   			 * Instead, just fallback on the online mask. This
+>   			 * diverges from Thomas' suggestion above.
+>   			 */
+> -			cpu = cpumask_pick_least_loaded(d, tmpmask);
+> +			cpu = cpumask_pick_least_loaded(d, &tmpmask);
+>   			if (cpu < nr_cpu_ids)
+>   				goto out;
+>   
+> @@ -1616,25 +1617,26 @@ static int its_select_cpu(struct irq_data *d,
+>   		}
+>   
+>   		/* Try the intersection of the affinity and online masks */
+> -		cpumask_and(tmpmask, aff_mask, cpu_online_mask);
+> +		cpumask_and(&tmpmask, aff_mask, cpu_online_mask);
+>   
+>   		/* If that doesn't fly, the online mask is the last resort */
+> -		if (cpumask_empty(tmpmask))
+> -			cpumask_copy(tmpmask, cpu_online_mask);
+> +		if (cpumask_empty(&tmpmask))
+> +			cpumask_copy(&tmpmask, cpu_online_mask);
+>   
+> -		cpu = cpumask_pick_least_loaded(d, tmpmask);
+> +		cpu = cpumask_pick_least_loaded(d, &tmpmask);
+>   	} else {
+> -		cpumask_copy(tmpmask, aff_mask);
+> +		cpumask_copy(&tmpmask, aff_mask);
+>   
+>   		/* If we cannot cross sockets, limit the search to that node */
+>   		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
+>   		    node != NUMA_NO_NODE)
+> -			cpumask_and(tmpmask, tmpmask, cpumask_of_node(node));
+> +			cpumask_and(&tmpmask, &tmpmask, cpumask_of_node(node));
+>   
+> -		cpu = cpumask_pick_least_loaded(d, tmpmask);
+> +		cpu = cpumask_pick_least_loaded(d, &tmpmask);
+>   	}
+>   out:
+> -	free_cpumask_var(tmpmask);
+> +	raw_spin_unlock(&tmpmask_lock);
+> +	local_irq_restore(flags);
+>   
+>   	pr_debug("IRQ%d -> %*pbl CPU%d\n", d->irq, cpumask_pr_args(aff_mask), cpu);
+>   	return cpu;
