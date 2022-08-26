@@ -2,121 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F071CECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 981CBECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 07:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245582AbiHZHpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 03:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
+        id S245603AbiHZHp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 03:45:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245506AbiHZHpb (ORCPT
+        with ESMTP id S245595AbiHZHpr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 03:45:31 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CA88E0D7;
-        Fri, 26 Aug 2022 00:45:30 -0700 (PDT)
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27Q7Wdra023548;
-        Fri, 26 Aug 2022 07:45:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=ETkj+QXTCULceRPEha9GhQ71BYIoHHYCDlJY3zP5qIs=;
- b=MQAwx0HQ/6SekDZplIFA1FXuWJsCP14YleGxwuZRl50UADeby6bXZZw/8R2NdlQBCSLn
- eEvutKJ0esCirP+MViY7mj21QnjwBXosfc8ElX/qxg0cGWb4GzVyLgsqU5ktebXT+eSN
- SlT4LjdwABQva01jwzcSFaF+syRruwNFptr6BAoYlnj9deFan8UTRS48UhdSOnsEnCOt
- 5jgm1Z1YNT2oGQNu4RUSLNdrK9xQeHlPsjqpPx6siq2k97xzEdlDeOkdNiWKtoBOGjwj
- UqMQxPMMt8HOCOEzE/dW1KIApa06sz1F6hYaxh6j7rWy4tVillow6r7GHzBUUJlkU4b/ ww== 
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j6sv7829c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 26 Aug 2022 07:45:28 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-        by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27Q7eRx8005942
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 26 Aug 2022 07:40:27 GMT
-Received: from [10.216.58.196] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 26 Aug
- 2022 00:40:23 -0700
-Message-ID: <089f50b7-a87e-8570-d85f-be7470153493@quicinc.com>
-Date:   Fri, 26 Aug 2022 13:10:18 +0530
+        Fri, 26 Aug 2022 03:45:47 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E201CA260F;
+        Fri, 26 Aug 2022 00:45:45 -0700 (PDT)
+Received: from canpemm500005.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MDX013WslzGprJ;
+        Fri, 26 Aug 2022 15:44:01 +0800 (CST)
+Received: from [10.67.110.73] (10.67.110.73) by canpemm500005.china.huawei.com
+ (7.192.104.229) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
+ 2022 15:45:43 +0800
+Message-ID: <1fa01bcf-15e5-279e-79ac-056c70a9401d@huawei.com>
+Date:   Fri, 26 Aug 2022 15:45:43 +0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH linux-next] rpmsg: char: Remove the unneeded result
- variable
-Content-Language: en-US
-To:     <cgel.zte@gmail.com>, <bjorn.andersson@linaro.org>
-CC:     <mathieu.poirier@linaro.org>, <linux-remoteproc@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220826071954.252485-1-ye.xingchen@zte.com.cn>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <20220826071954.252485-1-ye.xingchen@zte.com.cn>
+ Thunderbird/91.1.0
+Subject: Re: [PATCH] rtc: fsl-ftm-alarm: Use module_init and add module_exit
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+CC:     <a.zummo@towertech.it>, <linux-rtc@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220826070017.2340617-1-chris.zjh@huawei.com>
+ <Ywh00crgSilSfZnC@mail.local>
+From:   "zhangjianhua (E)" <chris.zjh@huawei.com>
+In-Reply-To: <Ywh00crgSilSfZnC@mail.local>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: W3Ltf_LZM7JtQnhzXs2JeSd5AdWV_8z7
-X-Proofpoint-GUID: W3Ltf_LZM7JtQnhzXs2JeSd5AdWV_8z7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-26_02,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 spamscore=0
- lowpriorityscore=0 malwarescore=0 mlxscore=0 bulkscore=0 mlxlogscore=999
- impostorscore=0 suspectscore=0 phishscore=0 clxscore=1011
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208260028
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.73]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500005.china.huawei.com (7.192.104.229)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+在 2022/8/26 15:22, Alexandre Belloni 写道:
+> On 26/08/2022 15:00:17+0800, Zhang Jianhua wrote:
+>> - Use module_init instead of device_initcall.
+>> - Add a function for module_exit to unregister driver.
+>>
+> I can see what you are doing but this doesn't explain why. Also, was
+> this tested on any actual hardware?
 
-On 8/26/2022 12:49 PM, cgel.zte@gmail.com wrote:
-> From: ye xingchen <ye.xingchen@zte.com.cn>
-> 
-> Return the value rpmsg_chrdev_eptdev_add() directly instead of storing it
-> in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
-> ---
->   drivers/rpmsg/rpmsg_char.c | 5 +----
->   1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
-> index 4f2189111494..0850ae34fb88 100644
-> --- a/drivers/rpmsg/rpmsg_char.c
-> +++ b/drivers/rpmsg/rpmsg_char.c
-> @@ -424,15 +424,12 @@ int rpmsg_chrdev_eptdev_create(struct rpmsg_device *rpdev, struct device *parent
->   			       struct rpmsg_channel_info chinfo)
->   {
->   	struct rpmsg_eptdev *eptdev;
-> -	int ret;
->   
->   	eptdev = rpmsg_chrdev_eptdev_alloc(rpdev, parent);
->   	if (IS_ERR(eptdev))
->   		return PTR_ERR(eptdev);
->   
-> -	ret = rpmsg_chrdev_eptdev_add(eptdev, chinfo);
-> -
-> -	return ret;
-> +	return rpmsg_chrdev_eptdev_add(eptdev, chinfo);
->   }
+I find this problem by code review, so solve it smoothly, and there is 
+no hardware, so I just test it on qemu.
 
-LGTM.
+May I need to modify the commit message?
 
-Reviewed-by:Mukesh Ojha <quic_mojha@quicinc.com>
-
--Mukesh
-
-
-
->   EXPORT_SYMBOL(rpmsg_chrdev_eptdev_create);
->   
+>> Signed-off-by: Zhang Jianhua <chris.zjh@huawei.com>
+>> ---
+>>   drivers/rtc/rtc-fsl-ftm-alarm.c | 8 +++++++-
+>>   1 file changed, 7 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/rtc/rtc-fsl-ftm-alarm.c b/drivers/rtc/rtc-fsl-ftm-alarm.c
+>> index c0df49fb978c..28bdc6c97b64 100644
+>> --- a/drivers/rtc/rtc-fsl-ftm-alarm.c
+>> +++ b/drivers/rtc/rtc-fsl-ftm-alarm.c
+>> @@ -332,7 +332,13 @@ static int __init ftm_alarm_init(void)
+>>   	return platform_driver_register(&ftm_rtc_driver);
+>>   }
+>>   
+>> -device_initcall(ftm_alarm_init);
+>> +static void __exit ftm_alarm_exit(void)
+>> +{
+>> +	platform_driver_unregister(&ftm_rtc_driver);
+>> +}
+>> +
+>> +module_init(ftm_alarm_init)
+>> +module_exit(ftm_alarm_exit)
+>>   
+>>   MODULE_DESCRIPTION("NXP/Freescale FlexTimer alarm driver");
+>>   MODULE_AUTHOR("Biwen Li <biwen.li@nxp.com>");
+>> -- 
+>> 2.31.0
+>>
