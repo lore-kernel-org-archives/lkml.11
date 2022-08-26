@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A72DECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 102C5ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:16:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344225AbiHZPQ1 (ORCPT
+        id S1344139AbiHZPQe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47006 "EHLO
+        Fri, 26 Aug 2022 11:16:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244437AbiHZPOq (ORCPT
+        with ESMTP id S1344440AbiHZPO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:14:46 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2CC874E2D
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:10:02 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id i6-20020a05640242c600b00447c00a776aso1250231edc.20
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:10:02 -0700 (PDT)
+        Fri, 26 Aug 2022 11:14:59 -0400
+Received: from mail-wm1-x34a.google.com (mail-wm1-x34a.google.com [IPv6:2a00:1450:4864:20::34a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82FD89A9C6
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:10:09 -0700 (PDT)
+Received: by mail-wm1-x34a.google.com with SMTP id h133-20020a1c218b000000b003a5fa79008bso4191228wmh.5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:10:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=G7zTeV7HivGGK7/AmFGwNvvgE+xYoTaOW1pCL0nph+s=;
-        b=rllUU8td54J92uwD4gqMdf7quRrn9vs+RF/VGfmhTNifoonDDOGDzA+ehk2F0Nktis
-         bzsb1L86DwkC+0Lwn7biXr7xSRRAyztcTTabYoOev0SalCjTFvsRPApNrtWrG92arrNL
-         vYy30mjcDtboOMLaYF/EGB9Bb67OhSnqrd9929GMzB46msZdCnUGmupRwBiLOAMpOTu/
-         xgXxZRY8JK8LqcDPH4Z1qbgGAF+6QrIMppgLaa1fjdmq/jeISdUH5rHhnHGN0itBSODe
-         GmUzrI95aXvhJ1Ss7JdEnAwqbHxBSkafgMVWr/h9flFgsjbzEK99uA8DU4lsh1XM5zFP
-         k9rw==
+        bh=BglHskuQEcyUyCGOJUH508pmeGJAtuUxUacPJvhZbyk=;
+        b=dLOEePxQJ3Q8NTUKaCKscxiPUndoB4UtDuE3c4k6e51Ijeopi1Q2jwY0fQKx91/gRV
+         tjQCOKAvn8SFyX8Z/lnl+CXNB72GSSg2BB8Hq6Vt7SqvWnhLYEqRJylixp3qoaDTG2zm
+         raV0B1FrZYeNKlh2L47/qDrSM5egy+WYAo9m1hFPEaFpdxuy6sh5qTqGIMfCAvjZyI9j
+         3naaSJ5illmzgZ7ldkbeAiiQNTjVVsYNVEYdyNBLpQSwjzyRINT8fbPdzQGGY0zreFu8
+         UWmcW7wtBNkjvMa2czQus+EuHAF96CwCURikCoYjx9Tb33q6CXTdGxIjYlAAIrQDAeMj
+         IDGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=G7zTeV7HivGGK7/AmFGwNvvgE+xYoTaOW1pCL0nph+s=;
-        b=uBN/w5FYItL4Z3oK7YWakKY+Ywc68+CwAftzaKOyo0bNLA3q9cLrXmN8K6J4OuskKY
-         qAz5A+Oea+0jmFiwPdRm+ohQzH0l1f9wk/mrW/yF2UJfAKmcHIQVmSnylS59LpIlfXLT
-         3HyRMVGdsY5sBNF1TpdkNCh6orTpbeg+ZE1cZ9DKwta/YSi8pgORU3CV0QUr1I6ZUAkb
-         pCqtGYHle/PKEBgXeX3+1M4djNKR3QeWG50xWR37gV/ir2ITpxzgGPmCSeOynaOnuknT
-         JqJm17bIRBzNhLNUU1cC57N6L0AvqGrowaYH/J1M2OzyRlgxBb7di6K8ppTwYnOeFzIM
-         v7Eg==
-X-Gm-Message-State: ACgBeo0hFe6nVSUJvPwmY/mk+VdqXCIQ+MOn3noxgTnE73O7zneaPEZ5
-        ibXUxJF41RDDinzEy3v+Q2hkdLDqrW0=
-X-Google-Smtp-Source: AA6agR6mygGnpoLM0Fz1GI/HNspwZBf2HxeWieGPgMrRMoJDYKMR11CPv0kXU0SX1XneClLqmTxEKKFSAKQ=
+        bh=BglHskuQEcyUyCGOJUH508pmeGJAtuUxUacPJvhZbyk=;
+        b=s+A4717zCg4bY836GpgVtcAt5ODOoHUBvwI3F6Abpt0k+ZicLQ1gifxbH8huFlczzW
+         IsurGDhBcwi0VhswT1dNENaPYzMhba4mUrRLzv43BnZd4N+rLcTIoHLDxZSnLq1Tsy+c
+         f77cfVyE0eJnuE51SBJS7ugMGmv+5DMjq1gevdciEUe1KmKmMfDnYetK0g+PeAFZj36w
+         CQbpG4PV9cIbwxEX5bOu2G2OnSvI/f7YG/VvUk1j8H6OVsemLqOzBoS+lnXRfcq3Q4Wt
+         gWv5Trj1gV239FeVsl5FY1+lpy4VxDqeufDFSksXE5FCMMMkk7wNpw0VfoSj/0hFM2x4
+         2Zag==
+X-Gm-Message-State: ACgBeo2Mdfy8QFFaRrgNlbR4Y+EriR/lOOu/IwN5bTCXyTIWQeGbJSSs
+        cXmn3wPonOg9vmTcbcerxlw+Zl0O+6Q=
+X-Google-Smtp-Source: AA6agR6NknND7Ys7dLoaR0YpbVpHtssuPzgQY9WE+k93NXy2tjYdfG5ALV06XNy3sKThCmImd1fIcvZnQyg=
 X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:5207:ac36:fdd3:502d])
- (user=glider job=sendgmr) by 2002:a17:907:b17:b0:72a:edb8:7529 with SMTP id
- h23-20020a1709070b1700b0072aedb87529mr5717591ejl.749.1661526599889; Fri, 26
- Aug 2022 08:09:59 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 17:08:01 +0200
+ (user=glider job=sendgmr) by 2002:a5d:58d6:0:b0:226:cf81:f68d with SMTP id
+ o22-20020a5d58d6000000b00226cf81f68dmr60412wrf.131.1661526605261; Fri, 26 Aug
+ 2022 08:10:05 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 17:08:03 +0200
 In-Reply-To: <20220826150807.723137-1-glider@google.com>
 Mime-Version: 1.0
 References: <20220826150807.723137-1-glider@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220826150807.723137-39-glider@google.com>
-Subject: [PATCH v5 38/44] x86: kasan: kmsan: support CONFIG_GENERIC_CSUM on
- x86, enable it for KASAN/KMSAN
+Message-ID: <20220826150807.723137-41-glider@google.com>
+Subject: [PATCH v5 40/44] x86: kmsan: don't instrument stack walking functions
 From:   Alexander Potapenko <glider@google.com>
 To:     glider@google.com
 Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
@@ -93,78 +92,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is needed to allow memory tools like KASAN and KMSAN see the
-memory accesses from the checksum code. Without CONFIG_GENERIC_CSUM the
-tools can't see memory accesses originating from handwritten assembly
-code.
-For KASAN it's a question of detecting more bugs, for KMSAN using the C
-implementation also helps avoid false positives originating from
-seemingly uninitialized checksum values.
+Upon function exit, KMSAN marks local variables as uninitialized.
+Further function calls may result in the compiler creating the stack
+frame where these local variables resided. This results in frame
+pointers being marked as uninitialized data, which is normally correct,
+because they are not stack-allocated.
+
+However stack unwinding functions are supposed to read and dereference
+the frame pointers, in which case KMSAN might be reporting uses of
+uninitialized values.
+
+To work around that, we mark update_stack_state(), unwind_next_frame()
+and show_trace_log_lvl() with __no_kmsan_checks, preventing all KMSAN
+reports inside those functions and making them return initialized
+values.
 
 Signed-off-by: Alexander Potapenko <glider@google.com>
-
 ---
-
-Link: https://linux-review.googlesource.com/id/I3e95247be55b1112af59dbba07e8cbf34e50a581
+Link: https://linux-review.googlesource.com/id/I6550563768fbb08aa60b2a96803675dcba93d802
 ---
- arch/x86/Kconfig                |  4 ++++
- arch/x86/include/asm/checksum.h | 16 ++++++++++------
- arch/x86/lib/Makefile           |  2 ++
- 3 files changed, 16 insertions(+), 6 deletions(-)
+ arch/x86/kernel/dumpstack.c    |  6 ++++++
+ arch/x86/kernel/unwind_frame.c | 11 +++++++++++
+ 2 files changed, 17 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index f9920f1341c8d..33f4d4baba079 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -324,6 +324,10 @@ config GENERIC_ISA_DMA
- 	def_bool y
- 	depends on ISA_DMA_API
+diff --git a/arch/x86/kernel/dumpstack.c b/arch/x86/kernel/dumpstack.c
+index afae4dd774951..476eb504084e4 100644
+--- a/arch/x86/kernel/dumpstack.c
++++ b/arch/x86/kernel/dumpstack.c
+@@ -177,6 +177,12 @@ static void show_regs_if_on_stack(struct stack_info *info, struct pt_regs *regs,
+ 	}
+ }
  
-+config GENERIC_CSUM
-+	bool
-+	default y if KMSAN || KASAN
-+
- config GENERIC_BUG
- 	def_bool y
- 	depends on BUG
-diff --git a/arch/x86/include/asm/checksum.h b/arch/x86/include/asm/checksum.h
-index bca625a60186c..6df6ece8a28ec 100644
---- a/arch/x86/include/asm/checksum.h
-+++ b/arch/x86/include/asm/checksum.h
-@@ -1,9 +1,13 @@
- /* SPDX-License-Identifier: GPL-2.0 */
--#define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
--#define HAVE_CSUM_COPY_USER
--#define _HAVE_ARCH_CSUM_AND_COPY
--#ifdef CONFIG_X86_32
--# include <asm/checksum_32.h>
-+#ifdef CONFIG_GENERIC_CSUM
-+# include <asm-generic/checksum.h>
- #else
--# include <asm/checksum_64.h>
-+# define  _HAVE_ARCH_COPY_AND_CSUM_FROM_USER 1
-+# define HAVE_CSUM_COPY_USER
-+# define _HAVE_ARCH_CSUM_AND_COPY
-+# ifdef CONFIG_X86_32
-+#  include <asm/checksum_32.h>
-+# else
-+#  include <asm/checksum_64.h>
-+# endif
++/*
++ * This function reads pointers from the stack and dereferences them. The
++ * pointers may not have their KMSAN shadow set up properly, which may result
++ * in false positive reports. Disable instrumentation to avoid those.
++ */
++__no_kmsan_checks
+ static void show_trace_log_lvl(struct task_struct *task, struct pt_regs *regs,
+ 			unsigned long *stack, const char *log_lvl)
+ {
+diff --git a/arch/x86/kernel/unwind_frame.c b/arch/x86/kernel/unwind_frame.c
+index 8e1c50c86e5db..d8ba93778ae32 100644
+--- a/arch/x86/kernel/unwind_frame.c
++++ b/arch/x86/kernel/unwind_frame.c
+@@ -183,6 +183,16 @@ static struct pt_regs *decode_frame_pointer(unsigned long *bp)
+ }
  #endif
-diff --git a/arch/x86/lib/Makefile b/arch/x86/lib/Makefile
-index f76747862bd2e..7ba5f61d72735 100644
---- a/arch/x86/lib/Makefile
-+++ b/arch/x86/lib/Makefile
-@@ -65,7 +65,9 @@ ifneq ($(CONFIG_X86_CMPXCHG64),y)
- endif
- else
-         obj-y += iomap_copy_64.o
-+ifneq ($(CONFIG_GENERIC_CSUM),y)
-         lib-y += csum-partial_64.o csum-copy_64.o csum-wrappers_64.o
-+endif
-         lib-y += clear_page_64.o copy_page_64.o
-         lib-y += memmove_64.o memset_64.o
-         lib-y += copy_user_64.o
+ 
++/*
++ * While walking the stack, KMSAN may stomp on stale locals from other
++ * functions that were marked as uninitialized upon function exit, and
++ * now hold the call frame information for the current function (e.g. the frame
++ * pointer). Because KMSAN does not specifically mark call frames as
++ * initialized, false positive reports are possible. To prevent such reports,
++ * we mark the functions scanning the stack (here and below) with
++ * __no_kmsan_checks.
++ */
++__no_kmsan_checks
+ static bool update_stack_state(struct unwind_state *state,
+ 			       unsigned long *next_bp)
+ {
+@@ -250,6 +260,7 @@ static bool update_stack_state(struct unwind_state *state,
+ 	return true;
+ }
+ 
++__no_kmsan_checks
+ bool unwind_next_frame(struct unwind_state *state)
+ {
+ 	struct pt_regs *regs;
 -- 
 2.37.2.672.g94769d06f0-goog
 
