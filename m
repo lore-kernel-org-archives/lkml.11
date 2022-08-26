@@ -2,99 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F731ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1049ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 15:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344652AbiHZPyi (ORCPT
+        id S1344565AbiHZPzx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 11:54:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41294 "EHLO
+        Fri, 26 Aug 2022 11:55:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344606AbiHZPyc (ORCPT
+        with ESMTP id S237300AbiHZPzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 11:54:32 -0400
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA441D076E;
-        Fri, 26 Aug 2022 08:54:31 -0700 (PDT)
-Received: by mail-qk1-x733.google.com with SMTP id f4so1419481qkl.7;
-        Fri, 26 Aug 2022 08:54:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=VoZZLFDbWcdv8jm5ypqJnq3zDL5dbLMry5IM4+TKOHU=;
-        b=RZWfljlS2yVC7jjEUkW2mCrFIs87PdpSGPxhOzMEUQ/nOdUtXO7EVRhu6PlQbgfoyQ
-         o0ynanbHMIkqYmxYfn24DyXGzAoZ+Gfoa/3piKJOFOx5e/e6YxRhhZhpxAzdGyB9VXp/
-         cIb/iUcPrBiUl66uQR5c8rD6HLvlQcbuvhAEsXSRx0MDD8Az7IAV7vy3j+jdaeoPbZ4j
-         rodnmGgwyg+zsobw0x0mkMPwzSXz8CMg9noZhgq3Jw1hWEQ8kDgD0AMsCQ9UCbh8+x2K
-         eMaM/FLtU730nYNwKgxNe4Ei27zg3ZtYnvm8nzPacW9Zo2ZvC1NxhI6YhthBGuuXk332
-         6zLg==
+        Fri, 26 Aug 2022 11:55:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983EC8E0EB
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:55:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661529347;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kxP+Dmq/9QrBSNE7t25KnXniHyhrvm0D5T7RzuSjQVM=;
+        b=BckzJXwoci2ns9E9yfw/86jPHpQKs9xHUuTgB04a61ObWrE/GjkMlfGkizRzrgeLSh6102
+        VdSC3T9bWcjGy7OR0WNyWSqiVx2RAs0lCXToLlpNWFoVMEccbDnSOcXLmDFE66DjJo9J91
+        N5ugMYbRfRuHR/fSe59qGNfWsRmTfxo=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-235-jiFvlhDbM6uC_rsRZXS0Hg-1; Fri, 26 Aug 2022 11:55:46 -0400
+X-MC-Unique: jiFvlhDbM6uC_rsRZXS0Hg-1
+Received: by mail-qk1-f200.google.com with SMTP id g6-20020a05620a40c600b006bbdeb0b1f2so1554030qko.22
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 08:55:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=VoZZLFDbWcdv8jm5ypqJnq3zDL5dbLMry5IM4+TKOHU=;
-        b=nqcy6qv/sfciNtL2xxJet2bfYPyAIn48E+RP4hYFPAyioVAS8gRJxix6iE8YU0PIvI
-         bRxzdZkaFIuAjYrPmTsPm7qEPbrV1mJStZopcq5ocDuIGhgjGIeqWIjnenVasZuV9toO
-         RU63pM0lxdRQbFBIFOs3EHz3PseanEF5an+6pgfaSODUL4Dta1YtktTb4U8UlwGt6dYK
-         06+jmWhElsqFlzPbC0Yv/5T+WhPNR8tfG+hWBuNnaiXSNVlNqe/0xLLN7ejyq+7IDo5e
-         oBrSc4JV38RqVaoyIF6/h3o5/nPxDuOGjGV/lASBVjxng3hoorFQNchx2c4TDbHJ/Okt
-         fMvA==
-X-Gm-Message-State: ACgBeo2Qi8qhr5HBig13rPVHizm6PmKODxAp+eFHhxlno+e/cbZG3o7/
-        SAYIwhfpMUAdh9PX8lTew9LhmkkhRr3nhbYgZ8qwYki+Foo=
-X-Google-Smtp-Source: AA6agR5pcvtrmJk0mlfYcddOwvV0H3YXuIYkXI5Yhm6gnI6usWDdSLbolwyPHS713FQzXN+lqi8w/8Qd9uHygvW4SiY=
-X-Received: by 2002:a05:620a:2987:b0:6ba:dc04:11ae with SMTP id
- r7-20020a05620a298700b006badc0411aemr252697qkp.748.1661529270876; Fri, 26 Aug
- 2022 08:54:30 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=kxP+Dmq/9QrBSNE7t25KnXniHyhrvm0D5T7RzuSjQVM=;
+        b=i8FjyNA0PSiYlzo/JSL3HEQAOlfUlgmPXP0YBgyXSNZ96aekHS+wkRQ4nPUFeRFaYY
+         kgSrJBAi18vO6XUmE1zCjwIH6jSfFBjdeEXURwAVYm7xy32KljHkBQSDzv+fzboUKKxo
+         DP/FJnEFhavWGnUxkGg+7FIvB6hEANzeTA8ZQ7mSKfUBLypZSORF7lGtFk0jLSpfzQy6
+         +RiDRlE/Xpv6g2YHm5fz2IIgTUwMQuP3I3gGL+QCByCbtw/SJktcRAiGIn1pRYO18RSK
+         4mPINwZG8U6zErYjHke09jjGeTCG4LXNVr1Js4qZZBoxo4/kbls2TYvIfvUMy3m/Pvfn
+         yvJA==
+X-Gm-Message-State: ACgBeo2pMcTCQ3ZJxR727F5nF6sdGQDTLySLGzkMgvzG3L8V/1u4BpFE
+        OteTuVzUJ/F8El0UgsysA2MFo9biFsZItfnZHrVS/1w8lRWhbJOjp62SgIhm9coBkMwxdK76WkO
+        59wZN7e7XeU2YpOgYlLc7zGd/
+X-Received: by 2002:a05:620a:4549:b0:6bb:bcd5:bebd with SMTP id u9-20020a05620a454900b006bbbcd5bebdmr237505qkp.281.1661529345636;
+        Fri, 26 Aug 2022 08:55:45 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7ptvaOj1PH8113xcy+IwXkhfYIf0njU7CP9Dg6jANrLlzn5ahE+pvxpqeln6UJrgFHbun7Bg==
+X-Received: by 2002:a05:620a:4549:b0:6bb:bcd5:bebd with SMTP id u9-20020a05620a454900b006bbbcd5bebdmr237473qkp.281.1661529345399;
+        Fri, 26 Aug 2022 08:55:45 -0700 (PDT)
+Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
+        by smtp.gmail.com with ESMTPSA id y6-20020a05620a25c600b006b59f02224asm2017524qko.60.2022.08.26.08.55.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 08:55:44 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 11:55:42 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Alistair Popple <apopple@nvidia.com>, linux-mm@kvack.org,
+        akpm@linux-foundation.org, Nadav Amit <nadav.amit@gmail.com>,
+        huang ying <huang.ying.caritas@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
+        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
+        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org,
+        Huang Ying <ying.huang@intel.com>
+Subject: Re: [PATCH v3 2/3] mm/migrate_device.c: Copy pte dirty bit to page
+Message-ID: <Ywjs/i4kIVlxZwpb@xz-m1.local>
+References: <3b01af093515ce2960ac39bb16ff77473150d179.1661309831.git-series.apopple@nvidia.com>
+ <ffbc824af5daa2c44b91c66834a341894fba4ce6.1661309831.git-series.apopple@nvidia.com>
+ <YwZGHyYJiJ+CGLn2@xz-m1.local>
+ <8735dkeyyg.fsf@nvdebian.thelocal>
+ <YwgFRLn43+U/hxwt@xz-m1.local>
+ <8735dj7qwb.fsf@nvdebian.thelocal>
+ <YwjZamk4n/dz+Y/M@xz-m1.local>
+ <72146725-3d70-0427-50d4-165283a5a85d@redhat.com>
 MIME-Version: 1.0
-References: <20220825085810.7290-1-ilpo.jarvinen@linux.intel.com> <20220825085810.7290-3-ilpo.jarvinen@linux.intel.com>
-In-Reply-To: <20220825085810.7290-3-ilpo.jarvinen@linux.intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 26 Aug 2022 18:53:55 +0300
-Message-ID: <CAHp75Vf+ksuv6Y_xY=qPdGT7XTZGKpDwPT5UDqwBMUwkW47gRA@mail.gmail.com>
-Subject: Re: [PATCH 2/5] serial: cpm_uart: Remove custom frame size calculation
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <72146725-3d70-0427-50d4-165283a5a85d@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:58 AM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@linux.intel.com> wrote:
->
-> The number of bits can be calculated using helpers in core, no need for
-> the driver to do it on its own.
->
-> The mode register is programmed with frame bits minus 1, rearrange the
-> comments related to that "feature" closer to the actual write.
+On Fri, Aug 26, 2022 at 04:47:22PM +0200, David Hildenbrand wrote:
+> > To me anon exclusive only shows this mm exclusively owns this page. I
+> > didn't quickly figure out why that requires different handling on tlb
+> > flushs.  Did I perhaps miss something?
+> 
+> GUP-fast is the magic bit, we have to make sure that we won't see new
+> GUP pins, thus the TLB flush.
+> 
+> include/linux/mm.h:gup_must_unshare() contains documentation.
 
-...
+Hmm.. Shouldn't ptep_get_and_clear() (e.g., xchg() on x86_64) already
+guarantees that no other process/thread will see this pte anymore
+afterwards?
 
-> +               out_be16(&smcp->smc_smcmr, smcr_mk_clen(tty_get_frame_siz=
-e(termios->c_cflag) - 1) |
-> +                                          cval | SMCMR_SM_UART | prev_mo=
-de);
->         } else {
->                 out_be16(&pinfo->sccup->scc_genscc.scc_mrblr, pinfo->rx_f=
-ifosize);
->                 out_be16(&pinfo->sccup->scc_maxidl, maxidl);
-> -               out_be16(&sccp->scc_psmr, (sbits << 12) | scval);
-> +               out_be16(&sccp->scc_psmr, (UART_LCR_WLEN(tty_get_char_siz=
-e(termios->c_cflag))
-> +                                          << 12) | scval);
+-- 
+Peter Xu
 
-Seems it's better to calc it beforehand in the temporary variable for
-both branches of the conditional and fix a bit strange indentation
-here.
-
->         }
-
-
---=20
-With Best Regards,
-Andy Shevchenko
