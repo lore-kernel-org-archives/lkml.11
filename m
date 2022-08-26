@@ -2,231 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65782ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0344CECAAD4
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 14:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229843AbiHZOrn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 10:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
+        id S1343857AbiHZOtT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 10:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344596AbiHZOr3 (ORCPT
+        with ESMTP id S230408AbiHZOtP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 10:47:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F30FD8B3B
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:47:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661525247;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=99JWd2r7uI+NtQEfMTMU0psWdgteknoK0WTYvTciCxY=;
-        b=YGy7Al/yIDUPXKq1aR4YxdLc0JQUPxs/ZMzouTh3+WrVC6wOOMnIzys4+tOY8m8n1EpqhW
-        2HR6EWUuwjI/IGSj2rMXlRpUO5XfZJhX1//u08q+EU8ebtZJPQ5SkqigaoBnu1RuT+GETo
-        RGzyRSxx6u4iFuRX6gDwTSjG8sV1XBs=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-256-uFxQ7Tl-N7qF9PAyvzVSkw-1; Fri, 26 Aug 2022 10:47:25 -0400
-X-MC-Unique: uFxQ7Tl-N7qF9PAyvzVSkw-1
-Received: by mail-wm1-f71.google.com with SMTP id p19-20020a05600c1d9300b003a5c3141365so4158373wms.9
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 07:47:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=99JWd2r7uI+NtQEfMTMU0psWdgteknoK0WTYvTciCxY=;
-        b=kM4Du1sOXwWct4O/UuBOJQkcnuaPBbvomZyFqutIIyRAXH/weGZwSa8AhCtMHxPkKy
-         oeEaMX8OcIeAulZkJU2cMMsk5CGP/sXEPI1EEBp6d0PE60qPmPw2HInOw8gYigJ9tUY+
-         NVEQjRANSNwNvMByzFjoeUJuMr+9ZRZeEtBimC++w+4DuHKOJdGCSkIcpzfG4KMrqBu2
-         dbiUkgcGBrrGaXM2xDIh4H0vI8jhOFmDoIenpJ3PNJ5Y1hgkaVP1z6NIw72xFrQ3iOe8
-         znjuUq9PDDT1rfsCbB8tpTjeofgQI5d7z6DOL/APQdyK833NAI88t9zkQhmhu2krLkQG
-         LiQQ==
-X-Gm-Message-State: ACgBeo2mg3NdAf/5CcrS7bgBrWRBicV9kX3bAPUZhMO2RNlAK6FncJ8w
-        j4fN80reN3SzSHpu7LCcDYrNXWPbrahd0Mt2N3tkmFYexA4jULZB6PK8+dKcwZWDcXiqgnE96Qe
-        4Ugr4Jum8CRpZ0rI1t4hXaJsp
-X-Received: by 2002:a5d:5985:0:b0:222:c827:11d5 with SMTP id n5-20020a5d5985000000b00222c82711d5mr523wri.323.1661525243921;
-        Fri, 26 Aug 2022 07:47:23 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6DwZULOBS0dk+aCd9iIC0MR/e4UA3DRO6z9TwsFVCvv46I7xo6Oq/KhO+SKX3jNfwHlL+UnQ==
-X-Received: by 2002:a5d:5985:0:b0:222:c827:11d5 with SMTP id n5-20020a5d5985000000b00222c82711d5mr499wri.323.1661525243581;
-        Fri, 26 Aug 2022 07:47:23 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c708:f600:abad:360:c840:33fa? (p200300cbc708f600abad0360c84033fa.dip0.t-ipconnect.de. [2003:cb:c708:f600:abad:360:c840:33fa])
-        by smtp.gmail.com with ESMTPSA id l25-20020a05600c1d1900b003a62052053csm10503423wms.18.2022.08.26.07.47.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 07:47:23 -0700 (PDT)
-Message-ID: <72146725-3d70-0427-50d4-165283a5a85d@redhat.com>
-Date:   Fri, 26 Aug 2022 16:47:22 +0200
+        Fri, 26 Aug 2022 10:49:15 -0400
+X-Greylist: delayed 432 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 26 Aug 2022 07:49:14 PDT
+Received: from mail.stoffel.org (li1843-175.members.linode.com [172.104.24.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54314D87EB;
+        Fri, 26 Aug 2022 07:49:14 -0700 (PDT)
+Received: from quad.stoffel.org (068-116-170-226.res.spectrum.com [68.116.170.226])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.stoffel.org (Postfix) with ESMTPSA id 0BD202189D;
+        Fri, 26 Aug 2022 10:42:01 -0400 (EDT)
+Received: by quad.stoffel.org (Postfix, from userid 1000)
+        id 4B1F7A7E15; Fri, 26 Aug 2022 10:42:00 -0400 (EDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v3 2/3] mm/migrate_device.c: Copy pte dirty bit to page
-Content-Language: en-US
-To:     Peter Xu <peterx@redhat.com>, Alistair Popple <apopple@nvidia.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        Nadav Amit <nadav.amit@gmail.com>,
-        huang ying <huang.ying.caritas@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Sierra Guiza, Alejandro (Alex)" <alex.sierra@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>, Ben Skeggs <bskeggs@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org, stable@vger.kernel.org,
-        Huang Ying <ying.huang@intel.com>
-References: <3b01af093515ce2960ac39bb16ff77473150d179.1661309831.git-series.apopple@nvidia.com>
- <ffbc824af5daa2c44b91c66834a341894fba4ce6.1661309831.git-series.apopple@nvidia.com>
- <YwZGHyYJiJ+CGLn2@xz-m1.local> <8735dkeyyg.fsf@nvdebian.thelocal>
- <YwgFRLn43+U/hxwt@xz-m1.local> <8735dj7qwb.fsf@nvdebian.thelocal>
- <YwjZamk4n/dz+Y/M@xz-m1.local>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <YwjZamk4n/dz+Y/M@xz-m1.local>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+Message-ID: <25352.56248.283092.213037@quad.stoffel.home>
+Date:   Fri, 26 Aug 2022 10:42:00 -0400
+From:   "John Stoffel" <john@stoffel.org>
+To:     NeilBrown <neilb@suse.de>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Daire Byrne <daire@dneg.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH/RFC 00/10 v5] Improve scalability of directory operations
+In-Reply-To: <166147828344.25420.13834885828450967910.stgit@noble.brown>
+References: <166147828344.25420.13834885828450967910.stgit@noble.brown>
+X-Mailer: VM 8.2.0b under 27.1 (x86_64-pc-linux-gnu)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26.08.22 16:32, Peter Xu wrote:
-> On Fri, Aug 26, 2022 at 11:02:58AM +1000, Alistair Popple wrote:
->>
->> Peter Xu <peterx@redhat.com> writes:
->>
->>> On Fri, Aug 26, 2022 at 08:21:44AM +1000, Alistair Popple wrote:
->>>>
->>>> Peter Xu <peterx@redhat.com> writes:
->>>>
->>>>> On Wed, Aug 24, 2022 at 01:03:38PM +1000, Alistair Popple wrote:
->>>>>> migrate_vma_setup() has a fast path in migrate_vma_collect_pmd() that
->>>>>> installs migration entries directly if it can lock the migrating page.
->>>>>> When removing a dirty pte the dirty bit is supposed to be carried over
->>>>>> to the underlying page to prevent it being lost.
->>>>>>
->>>>>> Currently migrate_vma_*() can only be used for private anonymous
->>>>>> mappings. That means loss of the dirty bit usually doesn't result in
->>>>>> data loss because these pages are typically not file-backed. However
->>>>>> pages may be backed by swap storage which can result in data loss if an
->>>>>> attempt is made to migrate a dirty page that doesn't yet have the
->>>>>> PageDirty flag set.
->>>>>>
->>>>>> In this case migration will fail due to unexpected references but the
->>>>>> dirty pte bit will be lost. If the page is subsequently reclaimed data
->>>>>> won't be written back to swap storage as it is considered uptodate,
->>>>>> resulting in data loss if the page is subsequently accessed.
->>>>>>
->>>>>> Prevent this by copying the dirty bit to the page when removing the pte
->>>>>> to match what try_to_migrate_one() does.
->>>>>>
->>>>>> Signed-off-by: Alistair Popple <apopple@nvidia.com>
->>>>>> Acked-by: Peter Xu <peterx@redhat.com>
->>>>>> Reported-by: Huang Ying <ying.huang@intel.com>
->>>>>> Fixes: 8c3328f1f36a ("mm/migrate: migrate_vma() unmap page from vma while collecting pages")
->>>>>> Cc: stable@vger.kernel.org
->>>>>>
->>>>>> ---
->>>>>>
->>>>>> Changes for v3:
->>>>>>
->>>>>>  - Defer TLB flushing
->>>>>>  - Split a TLB flushing fix into a separate change.
->>>>>>
->>>>>> Changes for v2:
->>>>>>
->>>>>>  - Fixed up Reported-by tag.
->>>>>>  - Added Peter's Acked-by.
->>>>>>  - Atomically read and clear the pte to prevent the dirty bit getting
->>>>>>    set after reading it.
->>>>>>  - Added fixes tag
->>>>>> ---
->>>>>>  mm/migrate_device.c |  9 +++++++--
->>>>>>  1 file changed, 7 insertions(+), 2 deletions(-)
->>>>>>
->>>>>> diff --git a/mm/migrate_device.c b/mm/migrate_device.c
->>>>>> index 6a5ef9f..51d9afa 100644
->>>>>> --- a/mm/migrate_device.c
->>>>>> +++ b/mm/migrate_device.c
->>>>>> @@ -7,6 +7,7 @@
->>>>>>  #include <linux/export.h>
->>>>>>  #include <linux/memremap.h>
->>>>>>  #include <linux/migrate.h>
->>>>>> +#include <linux/mm.h>
->>>>>>  #include <linux/mm_inline.h>
->>>>>>  #include <linux/mmu_notifier.h>
->>>>>>  #include <linux/oom.h>
->>>>>> @@ -196,7 +197,7 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
->>>>>>  			anon_exclusive = PageAnon(page) && PageAnonExclusive(page);
->>>>>>  			if (anon_exclusive) {
->>>>>>  				flush_cache_page(vma, addr, pte_pfn(*ptep));
->>>>>> -				ptep_clear_flush(vma, addr, ptep);
->>>>>> +				pte = ptep_clear_flush(vma, addr, ptep);
->>>>>>
->>>>>>  				if (page_try_share_anon_rmap(page)) {
->>>>>>  					set_pte_at(mm, addr, ptep, pte);
->>>>>> @@ -206,11 +207,15 @@ static int migrate_vma_collect_pmd(pmd_t *pmdp,
->>>>>>  					goto next;
->>>>>>  				}
->>>>>>  			} else {
->>>>>> -				ptep_get_and_clear(mm, addr, ptep);
->>>>>> +				pte = ptep_get_and_clear(mm, addr, ptep);
->>>>>>  			}
->>>>>
->>>>> I remember that in v2 both flush_cache_page() and ptep_get_and_clear() are
->>>>> moved above the condition check so they're called unconditionally.  Could
->>>>> you explain the rational on why it's changed back (since I think v2 was the
->>>>> correct approach)?
->>>>
->>>> Mainly because I agree with your original comments, that it would be
->>>> better to keep the batching of TLB flushing if possible. After the
->>>> discussion I don't think there is any issues with HW pte dirty bits
->>>> here. There are already other cases where HW needs to get that right
->>>> anyway (eg. zap_pte_range).
->>>
->>> Yes tlb batching was kept, thanks for doing that way.  Though if only apply
->>> patch 1 we'll have both ptep_clear_flush() and batched flush which seems to
->>> be redundant.
->>>
->>>>
->>>>> The other question is if we want to split the patch, would it be better to
->>>>> move the tlb changes to patch 1, and leave the dirty bit fix in patch 2?
->>>>
->>>> Isn't that already the case? Patch 1 moves the TLB flush before the PTL
->>>> as suggested, patch 2 atomically copies the dirty bit without changing
->>>> any TLB flushing.
->>>
->>> IMHO it's cleaner to have patch 1 fix batch flush, replace
->>> ptep_clear_flush() with ptep_get_and_clear() and update pte properly.
->>
->> Which ptep_clear_flush() are you referring to? This one?
->>
->> 			if (anon_exclusive) {
->> 				flush_cache_page(vma, addr, pte_pfn(*ptep));
->> 				ptep_clear_flush(vma, addr, ptep);
-> 
-> Correct.
-> 
->>
->> My understanding is that we need to do a flush for anon_exclusive.
-> 
-> To me anon exclusive only shows this mm exclusively owns this page. I
-> didn't quickly figure out why that requires different handling on tlb
-> flushs.  Did I perhaps miss something?
+>>>>> "NeilBrown" == NeilBrown  <neilb@suse.de> writes:
 
-GUP-fast is the magic bit, we have to make sure that we won't see new
-GUP pins, thus the TLB flush.
+NeilBrown> [I made up "v5" - I haven't been counting]
 
-include/linux/mm.h:gup_must_unshare() contains documentation.
+My first comments, but I'm not a serious developer...
 
-Without GUP-fast, some things would be significantly easier to handle.
+NeilBrown> VFS currently holds an exclusive lock on the directory while making
+NeilBrown> changes: add, remove, rename.
+NeilBrown> When multiple threads make changes in the one directory, the contention
+NeilBrown> can be noticeable.
+NeilBrown> In the case of NFS with a high latency link, this can easily be
+NeilBrown> demonstrated.  NFS doesn't really need VFS locking as the server ensures
+NeilBrown> correctness.
 
+NeilBrown> Lustre uses a single(?) directory for object storage, and has patches
+NeilBrown> for ext4 to support concurrent updates (Lustre accesses ext4 directly,
+NeilBrown> not via the VFS).
 
--- 
-Thanks,
+NeilBrown> XFS (it is claimed) doesn't its own locking and doesn't need the VFS to
+NeilBrown> help at all.
 
-David / dhildenb
+This sentence makes no sense to me... I assume you meant to say "...does
+it's own locking..."
+
+NeilBrown> This patch series allows filesystems to request a shared lock on
+NeilBrown> directories and provides serialisation on just the affected name, not the
+NeilBrown> whole directory.  It changes both the VFS and NFSD to use shared locks
+NeilBrown> when appropriate, and changes NFS to request shared locks.
+
+Are there any performance results?  Why wouldn't we just do a shared
+locked across all VFS based filesystems?  
+
+NeilBrown> The central enabling feature is a new dentry flag DCACHE_PAR_UPDATE
+NeilBrown> which acts as a bit-lock.  The ->d_lock spinlock is taken to set/clear
+NeilBrown> it, and wait_var_event() is used for waiting.  This flag is set on all
+NeilBrown> dentries that are part of a directory update, not just when a shared
+NeilBrown> lock is taken.
+
+NeilBrown> When a shared lock is taken we must use alloc_dentry_parallel() which
+NeilBrown> needs a wq which must remain until the update is completed.  To make use
+NeilBrown> of concurrent create, kern_path_create() would need to be passed a wq.
+NeilBrown> Rather than the churn required for that, we use exclusive locking when
+NeilBrown> no wq is provided.
+
+Is this a per-operation wq or a per-directory wq?  Can there be issues
+if someone does something silly like having 1,000 directories, all of
+which have multiple processes making parallel changes?  
+
+Does it degrade gracefully if a wq can't be allocated?  
+
+NeilBrown> One interesting consequence of this is that silly-rename becomes a
+NeilBrown> little more complex.  As the directory may not be exclusively locked,
+NeilBrown> the new silly-name needs to be locked (DCACHE_PAR_UPDATE) as well.
+NeilBrown> A new LOOKUP_SILLY_RENAME is added which helps implement this using
+NeilBrown> common code.
+
+NeilBrown> While testing I found some odd behaviour that was caused by
+NeilBrown> d_revalidate() racing with rename().  To resolve this I used
+NeilBrown> DCACHE_PAR_UPDATE to ensure they cannot race any more.
+
+NeilBrown> Testing, review, or other comments would be most welcome,
 
