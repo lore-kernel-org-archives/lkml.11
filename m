@@ -2,90 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A53ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 421DEECAAD2
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343814AbiHZJZW (ORCPT
+        id S1343806AbiHZJ1q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 05:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55604 "EHLO
+        Fri, 26 Aug 2022 05:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343672AbiHZJY6 (ORCPT
+        with ESMTP id S1343800AbiHZJ12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 05:24:58 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE0E176761
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:24:56 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MDZBS4mjmzGps0;
-        Fri, 26 Aug 2022 17:23:12 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 26 Aug
- 2022 17:24:54 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
-        <songmuchun@bytedance.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH 07/10] hugetlb: kill hugetlbfs_pagecache_page()
-Date:   Fri, 26 Aug 2022 17:24:19 +0800
-Message-ID: <20220826092422.39591-8-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20220826092422.39591-1-linmiaohe@huawei.com>
-References: <20220826092422.39591-1-linmiaohe@huawei.com>
+        Fri, 26 Aug 2022 05:27:28 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2A5D7D2B
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:27:26 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id z4-20020a6b0a04000000b006887f66dcf3so612328ioi.18
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:27:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:in-reply-to:date:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=JYJG5UxiN0a2AO6OxY+5nDjC+apgSZhDXbL9j4TOLYk=;
+        b=5GZ5BoRVOYW3VeckwVtp+OyOn4QKPMEDa3HhoH0t3zU2a2GL+7lz2X03RMR7o6V7yg
+         sfQonmDM+ACcabypIiH3Ur3PJR7QKGMilHc90oaXOYSJv2FnUTXknrctBtIkSzPne7u+
+         lR2AKNrFO7qSS8QTaOo3eJZxSLfbrZTTVkCDV+ng5wQ139CaENz4AIJgRLj0705B+lSA
+         9GQzUUmnDSIHXqN8I+Bhf/ak/1HftxfIVp1/+xqZ2ENwsxZ/LXydiy2b4AalTNP/uWkQ
+         orSRX0iCrbJnYjW/cVVWAdPvbFmctjTzBMnqwiSbotlRwLXCez15/DDaPf+whBZXqzOQ
+         Tu7w==
+X-Gm-Message-State: ACgBeo0YKG0HBfupluNbLOl1P3fdn8nuGn79ypvAkGCYGk4fb+GbdO9o
+        skFpt9VjQntNKfzB38b2NJFF3cVgDeeQvenC9thHeqiGV+0L
+X-Google-Smtp-Source: AA6agR6eqwrjrpVeMwl7VIFrNYLBEzwhHeODpy8ynmimx1Emvv50z6yX3MEaOBySec/ep1PjTIEFxOXyikHH/wkaDNMqiuXiUZg0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a05:6e02:158a:b0:2d3:f198:9f39 with SMTP id
+ m10-20020a056e02158a00b002d3f1989f39mr3895529ilu.206.1661506045661; Fri, 26
+ Aug 2022 02:27:25 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 02:27:25 -0700
+In-Reply-To: <0000000000002c7abf05e721698d@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000a4d93d05e7218510@google.com>
+Subject: Re: [syzbot] KMSAN: uninit-value in psi_poll_worker
+From:   syzbot <syzbot+dd8e45eb61404849cde9@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, brauner@kernel.org, cgroups@vger.kernel.org,
+        glider@google.com, hannes@cmpxchg.org,
+        linux-kernel@vger.kernel.org, lizefan.x@bytedance.com,
+        syzkaller-bugs@googlegroups.com, tj@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fold hugetlbfs_pagecache_page() into its sole caller to remove some
-duplicated code. No functional change intended.
+syzbot has found a reproducer for the following issue on:
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/hugetlb.c | 15 +--------------
- 1 file changed, 1 insertion(+), 14 deletions(-)
+HEAD commit:    3a2b6b904ea7 x86: kmsan: enable KMSAN builds for x86
+git tree:       https://github.com/google/kmsan.git master
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=14d6a513080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8e64bc5364a1307e
+dashboard link: https://syzkaller.appspot.com/bug?extid=dd8e45eb61404849cde9
+compiler:       clang version 15.0.0 (https://github.com/llvm/llvm-project.git 610139d2d9ce6746b3c617fb3e2f7886272d26ff), GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10fc7ac7080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14ea06db080000
 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 58eeae934e09..7934188bbed0 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -5467,19 +5467,6 @@ static vm_fault_t hugetlb_wp(struct mm_struct *mm, struct vm_area_struct *vma,
- 	return ret;
- }
- 
--/* Return the pagecache page at a given address within a VMA */
--static struct page *hugetlbfs_pagecache_page(struct hstate *h,
--			struct vm_area_struct *vma, unsigned long address)
--{
--	struct address_space *mapping;
--	pgoff_t idx;
--
--	mapping = vma->vm_file->f_mapping;
--	idx = vma_hugecache_offset(h, vma, address);
--
--	return find_lock_page(mapping, idx);
--}
--
- /*
-  * Return whether there is a pagecache page to back given address within VMA.
-  * Caller follow_hugetlb_page() holds page_table_lock so we cannot lock_page.
-@@ -5885,7 +5872,7 @@ vm_fault_t hugetlb_fault(struct mm_struct *mm, struct vm_area_struct *vma,
- 		/* Just decrements count, does not deallocate */
- 		vma_end_reservation(h, vma, haddr);
- 
--		pagecache_page = hugetlbfs_pagecache_page(h, vma, haddr);
-+		pagecache_page = find_lock_page(mapping, idx);
- 	}
- 
- 	ptl = huge_pte_lock(h, mm, ptep);
--- 
-2.23.0
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dd8e45eb61404849cde9@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in psi_show+0x701/0x810 kernel/sched/psi.c:1082
+ psi_show+0x701/0x810 kernel/sched/psi.c:1082
+ cgroup_io_pressure_show+0x2b6/0x2f0 kernel/cgroup/cgroup.c:3662
+ cgroup_seqfile_show+0x1fe/0x470 kernel/cgroup/cgroup.c:3991
+ kernfs_seq_show+0x13b/0x1f0 fs/kernfs/file.c:217
+ seq_read_iter+0x926/0x20c0 fs/seq_file.c:230
+ kernfs_fop_read_iter+0x1f2/0xa10 fs/kernfs/file.c:299
+ call_read_iter include/linux/fs.h:2181 [inline]
+ generic_file_splice_read+0x1e5/0x770 fs/splice.c:309
+ do_splice_to fs/splice.c:793 [inline]
+ splice_direct_to_actor+0x5b2/0x1190 fs/splice.c:865
+ do_splice_direct+0x252/0x3d0 fs/splice.c:974
+ do_sendfile+0xbe9/0x1ba0 fs/read_write.c:1249
+ __do_sys_sendfile64 fs/read_write.c:1317 [inline]
+ __se_sys_sendfile64+0x202/0x2a0 fs/read_write.c:1303
+ __x64_sys_sendfile64+0xb9/0x110 fs/read_write.c:1303
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:732 [inline]
+ slab_alloc_node mm/slub.c:3258 [inline]
+ slab_alloc mm/slub.c:3266 [inline]
+ kmem_cache_alloc_trace+0x696/0xdf0 mm/slub.c:3297
+ kmalloc include/linux/slab.h:600 [inline]
+ psi_cgroup_alloc+0x83/0x250 kernel/sched/psi.c:960
+ cgroup_create kernel/cgroup/cgroup.c:5430 [inline]
+ cgroup_mkdir+0x10a3/0x3080 kernel/cgroup/cgroup.c:5550
+ kernfs_iop_mkdir+0x2ba/0x520 fs/kernfs/dir.c:1185
+ vfs_mkdir+0x62a/0x870 fs/namei.c:4013
+ do_mkdirat+0x466/0x7b0 fs/namei.c:4038
+ __do_sys_mkdirat fs/namei.c:4053 [inline]
+ __se_sys_mkdirat fs/namei.c:4051 [inline]
+ __x64_sys_mkdirat+0xc4/0x120 fs/namei.c:4051
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x3d/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+CPU: 1 PID: 3493 Comm: syz-executor306 Not tainted 6.0.0-rc2-syzkaller-47460-g3a2b6b904ea7 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+=====================================================
 
