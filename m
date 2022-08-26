@@ -2,171 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28148ECAADA
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:11:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B5AECAAD6
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:12:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244892AbiHZTLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 15:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
+        id S1343808AbiHZTMB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 15:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229704AbiHZTLW (ORCPT
+        with ESMTP id S229704AbiHZTL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 15:11:22 -0400
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5B46CD03;
-        Fri, 26 Aug 2022 12:11:20 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4MDq6s1nGVz9v7N9;
-        Sat, 27 Aug 2022 03:05:57 +0800 (CST)
-Received: from [10.81.204.244] (unknown [10.81.204.244])
-        by APP2 (Coremail) with SMTP id GxC2BwA38hmqGgljYsJSAA--.58619S2;
-        Fri, 26 Aug 2022 20:10:50 +0100 (CET)
-Message-ID: <9e11d51c-891f-739f-30a9-bb5361ceccb2@huaweicloud.com>
-Date:   Fri, 26 Aug 2022 21:10:21 +0200
+        Fri, 26 Aug 2022 15:11:58 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F3C9752D;
+        Fri, 26 Aug 2022 12:11:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=D2FZxcQC9y0keHeh1Gz35sboDmYEDxmnU4IkfnpBHxE=; b=KalePySq2NWzhZcgB7bfe9ZWFt
+        wF+vz6mrG3Alp+vjclDWbf+52PeCbRz/VCduDfEeRn8TF3H2v9Si/PY7mflmmRo/LawsgiHSi5nBp
+        gFRvquSZ/Xh9ZKL0jELUq5iZKVNVubPEhga3wC1MaPllHDgHY36iop5zNOl1apPcBGY8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oRek0-00EiV3-Tc; Fri, 26 Aug 2022 21:11:40 +0200
+Date:   Fri, 26 Aug 2022 21:11:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arun.Ramadoss@microchip.com
+Cc:     olteanv@gmail.com, linux-kernel@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
+        linux@armlinux.org.uk, Tristram.Ha@microchip.com,
+        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        Woojung.Huh@microchip.com, davem@davemloft.net
+Subject: Re: [RFC Patch net-next v2] net: dsa: microchip: lan937x: enable
+ interrupt for internal phy link detection
+Message-ID: <Ywka7MuutP93wIv2@lunn.ch>
+References: <20220822092017.5671-1-arun.ramadoss@microchip.com>
+ <YwOAxh7Bc12OornD@lunn.ch>
+ <b1e66b49e8006bd7dcb3fd74d5185db807e5a9f6.camel@microchip.com>
+ <YwTlKnpgMRp2Nugm@lunn.ch>
+ <650478ca37c09c91566784db2b496838a15d567c.camel@microchip.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v12 02/10] btf: Handle dynamic pointer parameter in kfuncs
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Howells <dhowells@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Daniel_M=c3=bcller?= <deso@posteo.net>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Joanne Koong <joannelkoong@gmail.com>
-References: <20220818152929.402605-1-roberto.sassu@huaweicloud.com>
- <20220818152929.402605-3-roberto.sassu@huaweicloud.com>
- <YwhSCE0H+JfUe4Ew@kernel.org>
- <CAADnVQJbTzfe28ife1+vg+ByLfyLBTCoEZW_eg8TEw838JGaog@mail.gmail.com>
- <YwheJqUDLOxL3iTi@kernel.org> <YwjcItv0q8GdzPbb@kernel.org>
- <bb4bdd90017d5772bdc31dfac93f2e86c6c61b82.camel@huaweicloud.com>
- <Ywj1s6d7XowV82PZ@kernel.org> <Ywj3pOahYdxA8Dza@kernel.org>
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-In-Reply-To: <Ywj3pOahYdxA8Dza@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: GxC2BwA38hmqGgljYsJSAA--.58619S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxJw1ruw1UAF47KFW3KFyxGrg_yoW5Wr4Dpa
-        48Aayqkr4UJr45Cwnrtr1xtF10yrWjqr48Xry5J34FyF1qvF1SgF4xJr1Yka45Gr18AF18
-        Za1UX347XF15A37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvab4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7Cj
-        xVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxV
-        AFwI0_Gr1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
-        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
-        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7Mxk0xIA0c2IE
-        e2xFo4CEbIxvr21l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
-        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a
-        6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
-        kF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE
-        14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr1j6F4UJbIYCTnIWIevJa73UjIFyT
-        uYvjxUFYFCUUUUU
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAQBF1jj35XHQABsS
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <650478ca37c09c91566784db2b496838a15d567c.camel@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/26/2022 6:41 PM, Jarkko Sakkinen wrote:
-> On Fri, Aug 26, 2022 at 07:32:54PM +0300, Jarkko Sakkinen wrote:
->> On Fri, Aug 26, 2022 at 05:34:57PM +0200, Roberto Sassu wrote:
->>> On Fri, 2022-08-26 at 17:43 +0300, Jarkko Sakkinen wrote:
->>>> On Fri, Aug 26, 2022 at 08:46:14AM +0300, Jarkko Sakkinen wrote:
->>>>> On Thu, Aug 25, 2022 at 10:16:14PM -0700, Alexei Starovoitov wrote:
->>>>>> On Thu, Aug 25, 2022 at 9:54 PM Jarkko Sakkinen <
->>>>>> jarkko@kernel.org> wrote:
->>>>>>>> -static bool is_dynptr_reg_valid_init(struct bpf_verifier_env
->>>>>>>> *env, struct bpf_reg_state *reg,
->>>>>>>> -                                  enum bpf_arg_type
->>>>>>>> arg_type)
->>>>>>>> +bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env,
->>>>>>>> struct bpf_reg_state *reg,
->>>>>>>> +                           enum bpf_arg_type arg_type)
->>>>>>>>   {
->>>>>>>>        struct bpf_func_state *state = func(env, reg);
->>>>>>>>        int spi = get_spi(reg->off);
->>>>>>>> --
->>>>>>>> 2.25.1
->>>>>>>>
->>>>>>>
->>>>>>> Might be niticking but generally I'd consider splitting
->>>>>>> exports as commits of their own.
->>>>>>
->>>>>> -static bool
->>>>>> +bool
->>>>>>
->>>>>> into a separate commit?
->>>>>>
->>>>>> I guess it makes sense for people whose salary depends on
->>>>>> number of commits.
->>>>>> We don't play these games.
->>>>>
->>>>> What kind of argument is that anyway.
->>>>
->>>> "Separate each *logical change* into a separate patch." [*]
->>>
->>> The logical change, as per the patch subject, is allowing the
->>> possibility of including eBPF dynamic pointers in a kfunc definition.
->>> It requires to call an existing function that was already defined
->>> elsewhere.
->>>
->>> Maybe I'm wrong, but I don't see only exporting a function definition
->>> to an include file as a logical change. To me, the changes in this
->>> patch are clearly connected. Or even better, they tell why the function
->>> definition has been exported, that would not appear if moving the
->>> function definition is a standalone patch.
->>>
->>>>
->>>> To add, generally any user space visible space should be an
->>>> isolated patch.
->>>
->>> As far as I understood, definitions visible to user space should be in
->>> include/uapi.
->>
->> It does change e.g. the output of kallsyms.
->>
->> It's not ABI but it's still user space visble.
->>
->>>
->>>>
->>>> Please, stop posting nonsense.
->>>
->>> If I may, saying this does not encourage people to try to submit their
->>> code. I feel it is a bit strong, and I kindly ask you to express your
->>> opinion in a more gentle way.
->>
->> I agree. That's why I was wondering what is this nonsense
->> about salary and games.
+On Fri, Aug 26, 2022 at 04:21:39PM +0000, Arun.Ramadoss@microchip.com wrote:
+> Hi Andrew,
+> Thanks for the reply.
 > 
-> Please denote that I started my review with "Might be nitpicking...".
+> On Tue, 2022-08-23 at 16:33 +0200, Andrew Lunn wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you
+> > know the content is safe
+> > 
+> > 
+> > 
+> https://elixir.bootlin.com/linux/latest/source/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts#L93
+> > 
+> > Doing it this way is however very verbose. I later discovered a short
+> > cut:
+> > 
+> > 
+> https://elixir.bootlin.com/linux/latest/source/drivers/net/dsa/mv88e6xxx/global2.c#L1164
+> > 
+> > by setting mdiobus->irq[] to the interrupt number, phylib will
+> > automatically use the correct interrupt without needing an DT.
+> > 
+> >         Andrew
 > 
-> It's neither particularly disencouraging nor enforcing for anyone.
+> In LAN937x, register REG_SW_PORT_INT_MASK__4 BIT7:0 used to
+> enable/disable the interrupts for each port. It is the global interrupt
+> enable for ports. In turn each port has REG_PORT_INT_MASK register,
+> which enable/disable interrupts like PTP, PHY (BIT 1). And in turn for
+> each phy it has different interrupts like link up, link down etc.
+> 
+> As per your suggestion, I enabled the global_irq domain for each port
+> and port_irq domain for port 1 alone and the corresponding mdio irq is
+> updated. The dts is updated with *only one user port*. And it is
+> working as expected.
+> 
+> How can I extend the above procedure for remaining ports 2 -8. Do I
+> need to create the array of port_irq[8] domain. But when I analyzed
+> code flow, if the port_irq_thread is triggered it has function
+> parameter as irq only. From this irq how can we derive the parent irq
+> i.e from which port is triggered. Only if I know the port, then I can
+> read the corresponding status register and check if the interrupt is
+> from phy or ptp etc.
+> 
+> Can you suggest how to enable irq_domain for the each port and find out
+> the phy interrupt. So that it can be extended further in our ptp
+> interrupt based implementation. 
 
-Thanks for clarifying. Yes, it is not. Sorry, I misunderstood.
+You need an interrupt controller per port.
 
-Roberto
+Your top level interrupt controller should be pretty similar to the
+mv88e6xxx global 1.
 
+However, your need to create a second level interrupt controller per
+port.
+
+This is where mv88e6xxx creates its one second level interrupt
+controller:
+
+https://elixir.bootlin.com/linux/latest/source/drivers/net/dsa/mv88e6xxx/global2.c#L1135
+
+Rather than finding the mapping for a fixed interrupt number, you need
+to get the mapping for the specific port you are creating the
+interrupt controller for.
+
+In the end you will have a tree of interrupt controllers, where as
+mv88e6xxx just has a chain.
+
+Here is what mv88e6xxx looks like:
+
+ 47:          0  gpio-vf610  27 Level     mv88e6xxx-mdio_mux-0.1:00
+ 51:          0  mv88e6xxx-g1   3 Edge      mv88e6xxx-mdio_mux-0.1:00-g1-atu-prob
+ 53:          0  mv88e6xxx-g1   5 Edge      mv88e6xxx-mdio_mux-0.1:00-g1-vtu-prob
+ 55:          0  mv88e6xxx-g1   7 Edge      mv88e6xxx-mdio_mux-0.1:00-g2
+ 57:          0  mv88e6xxx-g2   0 Edge      !mdio-mux!mdio@1!switch@0!mdio:00
+ 58:          0  mv88e6xxx-g2   1 Edge      !mdio-mux!mdio@1!switch@0!mdio:01
+ 59:          0  mv88e6xxx-g2   2 Edge      !mdio-mux!mdio@1!switch@0!mdio:02
+ 72:          0  mv88e6xxx-g2  15 Edge      mv88e6xxx-mdio_mux-0.1:00-watchdog
+
+Interrupt 47 is the GPIO line the switch it attached to. Interrupts 51
+and 53 are handlers registered to the top level interrupt
+controller. Interrupt 55 is the chain into the second level interrupt
+handler. Interrupts 57-59 are PHY interrupts in the second level
+interrupt controller, and interrupt 72 is also part of the second level.
+
+For you, you will have a chain interrupt in the top level for each
+port, rather than the single 55 interrupt here.
+
+Build the tree and it should all work.
+
+But make sure you turn on lockdep. I took me a while to get all the
+locking correct with mv88e6xxx_reg_lock(). Maybe you wont face this
+problem with the ksz driver, its locking could be different.
+
+As to your question about knowing where the interrupt came from, you
+can see in:
+
+https://elixir.bootlin.com/linux/latest/source/drivers/net/dsa/mv88e6xxx/global2.c#L1026
+
+that the interrupt handler gets called with a void * dev_id. For
+mv88e6xxx this points to the chip structure. You can make it point to
+the port structure. This is the last parameter you pass to
+request_threaded_irq().
+
+      Andrew
