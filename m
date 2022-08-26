@@ -2,69 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E915ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:35:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8001EECAAD8
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 19:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344005AbiHZTfl (ORCPT
+        id S1344469AbiHZTgR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 15:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40854 "EHLO
+        Fri, 26 Aug 2022 15:36:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbiHZTfi (ORCPT
+        with ESMTP id S230408AbiHZTgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 15:35:38 -0400
-Received: from zeniv.linux.org.uk (zeniv.linux.org.uk [IPv6:2a03:a000:7:0:5054:ff:fe1c:15ff])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AF6BB93B
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 12:35:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=linux.org.uk; s=zeniv-20220401; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=x+UMVnujX+X39oLXzhe/HhYNdkWkFHYnX0Mj23junlg=; b=WR6NHCgYDvvQiuvmHDFS2QjkrD
-        zxpBieFdz8zXKZaTBOZ2eo3bvI8UEm6kuTHCwfdD82/ES84mG3sFgChiT3EpJztCVAh8wESBXuC7k
-        sbpAKpUlPN9wYol+RqgklQi0pBZO1Mq3IThb0O4IUcQkJteSr4m+63qwc+FYQRdRztleSnIeqcCIK
-        Vz82hYFQ0hRBH7Wsk4MVbxytjoAXW5MNUxLi4GkzKOQAVqKWL5rqmmHBnId0c8nkVR1cCVoUA/n5r
-        Tf/PWye0IFxrahKkq+FEMOyqyGuTHR/Fq+fEew2pZdwy6OaxM0R57lZ1zia4Y1fnczYhD6mPm3NCC
-        Je95WuDg==;
-Received: from viro by zeniv.linux.org.uk with local (Exim 4.95 #2 (Red Hat Linux))
-        id 1oRf6r-008dnk-VB;
-        Fri, 26 Aug 2022 19:35:18 +0000
-Date:   Fri, 26 Aug 2022 20:35:17 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        James Smart <james.smart@broadcom.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Chaitanya Kulkarni <chaitanyak@nvidia.com>
-Subject: Re: [PATCH v3 1/1] nvmet-tcp: Don't kmap() pages which can't come
- from HIGHMEM
-Message-ID: <YwkgdYNkjNWkz+Gv@ZenIV>
-References: <20220822142438.5954-1-fmdefrancesco@gmail.com>
- <20220822142438.5954-2-fmdefrancesco@gmail.com>
- <YwVjpTW6vWvdVQTK@ZenIV>
- <2887364.VdNmn5OnKV@opensuse>
- <YwkSXZtO+i+36pXI@kbusch-mbp.dhcp.thefacebook.com>
+        Fri, 26 Aug 2022 15:36:12 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA82DCE49A;
+        Fri, 26 Aug 2022 12:36:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661542571; x=1693078571;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=iSj/SuZhPON+rDmdOdwBzP5dOtaScuuVxlTIXwYMKPE=;
+  b=DRt/p4S7CY0viVcYn0LywGrg+HrBcUCJhmQLo8HoqzUeYB+qRvxyVvW4
+   gWyjgvOcuAcIMJ/H1xXOgDwKthBmpEGvKcburnsLqDO6ysDPZ2UFszDkV
+   w8EBCSGY0Bxh69TojQBDItbGWGzWO5GtEP/IIuRGesOdWli5ryVA94Mcj
+   Yh5Df2M0RNiq6ZbL+DJe+ACClc+OMagH9q8VdfUUBzaNPYlBdUv5q2Txm
+   W74U0MebEUWCxTQZZnZkzyzPCwtn700sJwwjcxqFZ06ybZhAYY17fktmn
+   lXNr6sk/J9Fb0rKeMLP3vkCjjk89bpgYqqxtEzA1xqCRjFxi7zPbx2SRC
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="274332374"
+X-IronPort-AV: E=Sophos;i="5.93,266,1654585200"; 
+   d="scan'208";a="274332374"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 12:36:11 -0700
+X-IronPort-AV: E=Sophos;i="5.93,266,1654585200"; 
+   d="scan'208";a="671592528"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.50.209])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 12:36:00 -0700
+Message-ID: <5a0b4083-084a-56b3-a6a1-0fad1100a316@intel.com>
+Date:   Fri, 26 Aug 2022 22:35:53 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YwkSXZtO+i+36pXI@kbusch-mbp.dhcp.thefacebook.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v3 16/18] perf sched: Fixes for thread safety analysis
+Content-Language: en-US
+To:     Namhyung Kim <namhyung@kernel.org>, Ian Rogers <irogers@google.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Weiguo Li <liwg06@foxmail.com>,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Dario Petrillo <dario.pk1@gmail.com>,
+        Hewenliang <hewenliang4@huawei.com>,
+        yaowenbin <yaowenbin1@huawei.com>,
+        Wenyu Liu <liuwenyu7@huawei.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Pavithra Gurushankar <gpavithrasha@gmail.com>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        William Cohen <wcohen@redhat.com>,
+        Andres Freund <andres@anarazel.de>,
+        =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>,
+        Colin Ian King <colin.king@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Fangrui Song <maskray@google.com>,
+        Stephane Eranian <eranian@google.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Zechuan Chen <chenzechuan1@huawei.com>,
+        Jason Wang <wangborong@cdjrlc.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Remi Bernon <rbernon@codeweavers.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, llvm@lists.linux.dev
+References: <20220824153901.488576-1-irogers@google.com>
+ <20220824153901.488576-17-irogers@google.com>
+ <a7176263-7dc8-6cbd-af2d-5338c4c4b546@intel.com>
+ <CAP-5=fXk+mLv=C0CTrvnBeuhCTAtJ=x2O8D2YqvmVZSMHqcLvQ@mail.gmail.com>
+ <b9ffea78-48c4-e2cd-20c2-dc0c9c2c69f7@intel.com>
+ <CAP-5=fVXuwxP-REryDShX0RZQjkdy2YJKJ5M+zczUqDE2=59Bg@mail.gmail.com>
+ <CAM9d7cgcLHYded1w4h22F_KWcHUpuxqak7Ny02Awj1WDFLynDQ@mail.gmail.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <CAM9d7cgcLHYded1w4h22F_KWcHUpuxqak7Ny02Awj1WDFLynDQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 12:35:09PM -0600, Keith Busch wrote:
-
-> > Can you please provide further information or links to documentation?
+On 26/08/22 21:26, Namhyung Kim wrote:
+> On Fri, Aug 26, 2022 at 10:48 AM Ian Rogers <irogers@google.com> wrote:
+>>
+>> On Fri, Aug 26, 2022 at 10:41 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>>>
+>>> On 26/08/22 19:06, Ian Rogers wrote:
+>>>> On Fri, Aug 26, 2022 at 5:12 AM Adrian Hunter <adrian.hunter@intel.com> wrote:
+>>>>>
+>>>>> On 24/08/22 18:38, Ian Rogers wrote:
+>>>>>> Add annotations to describe lock behavior. Add unlocks so that mutexes
+>>>>>> aren't conditionally held on exit from perf_sched__replay. Add an exit
+>>>>>> variable so that thread_func can terminate, rather than leaving the
+>>>>>> threads blocked on mutexes.
+>>>>>>
+>>>>>> Signed-off-by: Ian Rogers <irogers@google.com>
+>>>>>> ---
+>>>>>>  tools/perf/builtin-sched.c | 46 ++++++++++++++++++++++++--------------
+>>>>>>  1 file changed, 29 insertions(+), 17 deletions(-)
+>>>>>>
+>>>>>> diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
+>>>>>> index 7e4006d6b8bc..b483ff0d432e 100644
+>>>>>> --- a/tools/perf/builtin-sched.c
+>>>>>> +++ b/tools/perf/builtin-sched.c
+>>>>>> @@ -246,6 +246,7 @@ struct perf_sched {
+>>>>>>       const char      *time_str;
+>>>>>>       struct perf_time_interval ptime;
+>>>>>>       struct perf_time_interval hist_time;
+>>>>>> +     volatile bool   thread_funcs_exit;
+>>>>>>  };
+>>>>>>
+>>>>>>  /* per thread run time data */
+>>>>>> @@ -633,31 +634,34 @@ static void *thread_func(void *ctx)
+>>>>>>       prctl(PR_SET_NAME, comm2);
+>>>>>>       if (fd < 0)
+>>>>>>               return NULL;
+>>>>>> -again:
+>>>>>> -     ret = sem_post(&this_task->ready_for_work);
+>>>>>> -     BUG_ON(ret);
+>>>>>> -     mutex_lock(&sched->start_work_mutex);
+>>>>>> -     mutex_unlock(&sched->start_work_mutex);
+>>>>>>
+>>>>>> -     cpu_usage_0 = get_cpu_usage_nsec_self(fd);
+>>>>>> +     while (!sched->thread_funcs_exit) {
+>>>>>> +             ret = sem_post(&this_task->ready_for_work);
+>>>>>> +             BUG_ON(ret);
+>>>>>> +             mutex_lock(&sched->start_work_mutex);
+>>>>>> +             mutex_unlock(&sched->start_work_mutex);
+>>>>>>
+>>>>>> -     for (i = 0; i < this_task->nr_events; i++) {
+>>>>>> -             this_task->curr_event = i;
+>>>>>> -             perf_sched__process_event(sched, this_task->atoms[i]);
+>>>>>> -     }
+>>>>>> +             cpu_usage_0 = get_cpu_usage_nsec_self(fd);
+>>>>>>
+>>>>>> -     cpu_usage_1 = get_cpu_usage_nsec_self(fd);
+>>>>>> -     this_task->cpu_usage = cpu_usage_1 - cpu_usage_0;
+>>>>>> -     ret = sem_post(&this_task->work_done_sem);
+>>>>>> -     BUG_ON(ret);
+>>>>>> +             for (i = 0; i < this_task->nr_events; i++) {
+>>>>>> +                     this_task->curr_event = i;
+>>>>>> +                     perf_sched__process_event(sched, this_task->atoms[i]);
+>>>>>> +             }
+>>>>>>
+>>>>>> -     mutex_lock(&sched->work_done_wait_mutex);
+>>>>>> -     mutex_unlock(&sched->work_done_wait_mutex);
+>>>>>> +             cpu_usage_1 = get_cpu_usage_nsec_self(fd);
+>>>>>> +             this_task->cpu_usage = cpu_usage_1 - cpu_usage_0;
+>>>>>> +             ret = sem_post(&this_task->work_done_sem);
+>>>>>> +             BUG_ON(ret);
+>>>>>>
+>>>>>> -     goto again;
+>>>>>> +             mutex_lock(&sched->work_done_wait_mutex);
+>>>>>> +             mutex_unlock(&sched->work_done_wait_mutex);
+>>>>>> +     }
+>>>>>> +     return NULL;
+>>>>>>  }
+>>>>>>
+>>>>>>  static void create_tasks(struct perf_sched *sched)
+>>>>>> +     EXCLUSIVE_LOCK_FUNCTION(sched->start_work_mutex)
+>>>>>> +     EXCLUSIVE_LOCK_FUNCTION(sched->work_done_wait_mutex)
+>>>>>>  {
+>>>>>>       struct task_desc *task;
+>>>>>>       pthread_attr_t attr;
+>>>>>> @@ -687,6 +691,8 @@ static void create_tasks(struct perf_sched *sched)
+>>>>>>  }
+>>>>>>
+>>>>>>  static void wait_for_tasks(struct perf_sched *sched)
+>>>>>> +     EXCLUSIVE_LOCKS_REQUIRED(sched->work_done_wait_mutex)
+>>>>>> +     EXCLUSIVE_LOCKS_REQUIRED(sched->start_work_mutex)
+>>>>>>  {
+>>>>>>       u64 cpu_usage_0, cpu_usage_1;
+>>>>>>       struct task_desc *task;
+>>>>>> @@ -738,6 +744,8 @@ static void wait_for_tasks(struct perf_sched *sched)
+>>>>>>  }
+>>>>>>
+>>>>>>  static void run_one_test(struct perf_sched *sched)
+>>>>>> +     EXCLUSIVE_LOCKS_REQUIRED(sched->work_done_wait_mutex)
+>>>>>> +     EXCLUSIVE_LOCKS_REQUIRED(sched->start_work_mutex)
+>>>>>>  {
+>>>>>>       u64 T0, T1, delta, avg_delta, fluct;
+>>>>>>
+>>>>>> @@ -3309,11 +3317,15 @@ static int perf_sched__replay(struct perf_sched *sched)
+>>>>>>       print_task_traces(sched);
+>>>>>>       add_cross_task_wakeups(sched);
+>>>>>>
+>>>>>> +     sched->thread_funcs_exit = false;
+>>>>>>       create_tasks(sched);
+>>>>>>       printf("------------------------------------------------------------\n");
+>>>>>>       for (i = 0; i < sched->replay_repeat; i++)
+>>>>>>               run_one_test(sched);
+>>>>>>
+>>>>>> +     sched->thread_funcs_exit = true;
+>>>>>> +     mutex_unlock(&sched->start_work_mutex);
+>>>>>> +     mutex_unlock(&sched->work_done_wait_mutex);
+>>>>>
+>>>>> I think you still need to wait for the threads to exit before
+>>>>> destroying the mutexes.
+>>>>
+>>>> This is a pre-existing issue and beyond the scope of this patch set.
+>>>
+>>> You added the mutex_destroy functions in patch 8, so it is still
+>>> fallout from that.
+>>
+>> In the previous code the threads were blocked on mutexes that were
+>> stack allocated and the stack memory went away. You are correct to say
+>> that to those locks I added an init and destroy call. The lifetime of
+>> the mutex was wrong previously and remains wrong in this change.
 > 
-> This kvec/bvec talk is a digression from your original goal: reduce unnecessary
-> kmap() usage. If anyone wants to take on the bvec optimization in this code
-> path, then by all means lets do it in a separate patch.
+> I think you fixed the lifetime issue with sched->thread_funcs_exit here.
+> All you need to do is calling pthread_join() after the mutex_unlock, no?
 
-Oh?  And why is a switch to iov_iter_bvec() *not* a reduction of kmap() usage?
-ITER_BVEC methods use kmap_local() for data transfers, TYVM...
+Like this maybe:
+
+diff --git a/tools/perf/builtin-sched.c b/tools/perf/builtin-sched.c
+index b483ff0d432e..8090c1218855 100644
+--- a/tools/perf/builtin-sched.c
++++ b/tools/perf/builtin-sched.c
+@@ -3326,6 +3326,13 @@ static int perf_sched__replay(struct perf_sched *sched)
+ 	sched->thread_funcs_exit = true;
+ 	mutex_unlock(&sched->start_work_mutex);
+ 	mutex_unlock(&sched->work_done_wait_mutex);
++	/* Get rid of threads so they won't be upset by mutex destruction */
++	for (i = 0; i < sched->nr_tasks; i++) {
++		int err = pthread_join(sched->tasks[i]->thread, NULL);
++
++		if (err)
++			pr_err("pthread_join() failed for task nr %lu, error %d\n", i, err);
++	}
+ 	return 0;
+ }
+ 
+
+
