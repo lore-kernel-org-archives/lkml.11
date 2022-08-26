@@ -2,202 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15739ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4DCECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 02:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244678AbiHZCHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 22:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
+        id S244409AbiHZCII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 22:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbiHZCHT (ORCPT
+        with ESMTP id S229512AbiHZCIG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 22:07:19 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C9BCACAE;
-        Thu, 25 Aug 2022 19:07:17 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id r4so461241edi.8;
-        Thu, 25 Aug 2022 19:07:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=sNnPMIZQy9D9gjpYfGcE1SVZtL4xWDIGuz4eBBNIoo4=;
-        b=AM1NJ8qAWx3OhSqX83axCsaSNdkH8jOrxcX4nb/tn/my+jjOcViIcoa1q9z+7rqMHE
-         jvvy1SAsycpU5E3VdjMXfrvxEe0Dn2o5Thr7pcfWO43eBIwV+a0OSTEEK3/kSHwASyDU
-         i/GJ80Qjj5HoDWwD8j7cGt7JShusELwN9vUke6E2EPghHO5mD00yrmE+rAH/R0gNKel3
-         8xqEEjoz+lJMsL+Rx8Ya+0BPWtErKAArn3q2+tIHS+2ttQqixPMYRyK2+ocIXo8yPFjv
-         zfSVw+UfL0rpB/Zbf/La6BFnkC3gBH9G1VIL3WUSxIu9f/gESXhLlbD6rLLYC2beMaFk
-         sPVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=sNnPMIZQy9D9gjpYfGcE1SVZtL4xWDIGuz4eBBNIoo4=;
-        b=dpfOll4o76aUfP3xlJgYmu0m5uvaTdHgtFJiSzkaEkQMFMNh+P2FvXCJ5n6M/5ngCq
-         qxudTVIc0gHpoRuepJzvEqNcOVjI+i3BsqaXQigEyeWwvp24FGBTqLR2lX2gCeOp2mmX
-         clP+mbPaWTu29e5y9pGzXqmtL4RnVtUK1YimfOk+YM0ZVcJScWYzg/Y41tFO4R1h1zUn
-         yqVbHqmM61iWPsMv2xBb/8kS3FsKiPeGOq8ilYJHLYbcnqdJ8GE2ewub1IOHYryq9QUn
-         6Yz4YzOe13OOKTvMaEsl490gtB+Umi6AUGXTZ4NVmHTDjEpBNoMWS9+BXbwgMXX8UZUa
-         A5jQ==
-X-Gm-Message-State: ACgBeo0L1WYOHt+pvaVDOHqfyk+WONuzPY/0sjAzN38/9UVOSAkgqiLJ
-        UtSxvUJ5wLKyQJhefkuZyBM5kvEVGHp/L93qzmg=
-X-Google-Smtp-Source: AA6agR4trNwGKZnTGd6YCgQAKwcNhdK3PVx7FWUpSj/FvOqjE2rM4Z/+Lkt4cXdiTAQQjVcEr78odUO/Y1kIG6iQU2M=
-X-Received: by 2002:aa7:c3cd:0:b0:447:e24b:842a with SMTP id
- l13-20020aa7c3cd000000b00447e24b842amr1095912edr.6.1661479636251; Thu, 25 Aug
- 2022 19:07:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <38269a1610deebf8d51127f15b1c55d00caa4283.1661392989.git.mqaio@linux.alibaba.com>
-In-Reply-To: <38269a1610deebf8d51127f15b1c55d00caa4283.1661392989.git.mqaio@linux.alibaba.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 25 Aug 2022 19:07:05 -0700
-Message-ID: <CAADnVQKm-TGJxjwByaMBcvFA_7g+wC2hB+cqkZKhSc83a2H0Pg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] selftests/bpf: fix incorrect fcntl call (test_sockmap.c)
-To:     Qiao Ma <mqaio@linux.alibaba.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
+        Thu, 25 Aug 2022 22:08:06 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB917CACB6;
+        Thu, 25 Aug 2022 19:08:04 -0700 (PDT)
+X-UUID: 8b52145f80f44bd3aec98913f8f8437f-20220826
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=KgBpaU7vRZoDlQXa+zssEHDfGBzr1B9I2Bio6kdXfOU=;
+        b=U5qNUb/ICHSrFGDajBga2+HPy+9PZsQdnNX6o4BZiWyETFZzfZh7SBA8tBHl+j9wRSkqhrosZqhWUqnbXDsCnRb43+WEDitaJ3xbcau/ztr5esBLjwwVa0DMcMnCfgHlX3RjzWbTgLuKSEhDyD5b7V1T0btTOLVDo/ZL/21QsHY=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:8e2f6988-934e-4294-8818-24dc287055dc,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:28,RULE:Releas
+        e_Ham,ACTION:release,TS:73
+X-CID-INFO: VERSION:1.1.10,REQID:8e2f6988-934e-4294-8818-24dc287055dc,OB:0,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:45,FILE:0,BULK:28,RULE:Spam_GS9
+        81B3D,ACTION:quarantine,TS:73
+X-CID-META: VersionHash:84eae18,CLOUDID:74fa2520-1c20-48a5-82a0-25f9c331906d,C
+        OID:e39118a24036,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,Bulk:40|20,QS:nil,BEC:nil,COL:0
+X-UUID: 8b52145f80f44bd3aec98913f8f8437f-20220826
+Received: from mtkmbs09n1.mediatek.inc [(172.21.101.35)] by mailgw01.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1964532857; Fri, 26 Aug 2022 10:07:58 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Fri, 26 Aug 2022 10:07:57 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Fri, 26 Aug 2022 10:07:57 +0800
+Message-ID: <8f3dba943170361211d9bb4c8bf1be12bbfdec20.camel@mediatek.com>
+Subject: Re: [PATCH v2] dt-bindings: arm: mediatek: mmsys: change compatible
+ for MT8195
+From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>
+CC:     Jason-JH Lin =?UTF-8?Q?=28=E6=9E=97=E7=9D=BF=E7=A5=A5=29?= 
+        <Jason-JH.Lin@mediatek.com>,
+        Nancy Lin =?UTF-8?Q?=28=E6=9E=97=E6=AC=A3=E8=9E=A2=29?= 
+        <Nancy.Lin@mediatek.com>,
+        "CK Hu =?UTF-8?Q?=28=E8=83=A1=E4=BF=8A=E5=85=89=29?=" 
+        <ck.hu@mediatek.com>,
+        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+        "angelogioacchino.delregno@collabora.com" 
+        <angelogioacchino.delregno@collabora.com>,
+        "hsinyi@google.com" <hsinyi@google.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Fri, 26 Aug 2022 10:07:56 +0800
+In-Reply-To: <3ed3d73a-1671-708e-7c42-498cca6aaf1d@gmail.com>
+References: <20220825091448.14008-1-rex-bc.chen@mediatek.com>
+         <3ed3d73a-1671-708e-7c42-498cca6aaf1d@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 7:11 PM Qiao Ma <mqaio@linux.alibaba.com> wrote:
->
-> In test_sockmap.c, the testcase sets socket nonblock first, and then
-> calls select() and recvmsg() to receive data.
-> If some error occur, nonblock setting will make recvmsg() return
-> immediately, rather than blocking forever.
->
-> However, the way to call fcntl() to set nonblock is wrong.
-> To set socket noblock, we need to use
-> > fcntl(fd, F_SETFL, O_NONBLOCK);
-> rather than:
-> > fcntl(fd, O_NONBLOCK);
->
-> Signed-off-by: Qiao Ma <mqaio@linux.alibaba.com>
-> ---
->  tools/testing/selftests/bpf/test_sockmap.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/bpf/test_sockmap.c b/tools/testing/selftests/bpf/test_sockmap.c
-> index 0fbaccdc8861..abb4102f33b0 100644
-> --- a/tools/testing/selftests/bpf/test_sockmap.c
-> +++ b/tools/testing/selftests/bpf/test_sockmap.c
-> @@ -598,7 +598,12 @@ static int msg_loop(int fd, int iov_count, int iov_length, int cnt,
->                 struct timeval timeout;
->                 fd_set w;
->
-> -               fcntl(fd, fd_flags);
-> +               err = fcntl(fd, F_SETFL, fd_flags);
-> +               if (err < 0) {
-> +                       perror("fcntl failed");
-> +                       goto out_errno;
-> +               }
-> +
+On Thu, 2022-08-25 at 22:57 +0800, Matthias Brugger wrote:
+> 
+> On 25/08/2022 11:14, Bo-Chen Chen wrote:
+> > From: "Jason-JH.Lin" <jason-jh.lin@mediatek.com>
+> > 
+> > For previous MediaTek SoCs, such as MT8173, there are 2 display HW
+> > pipelines binding to 1 mmsys with the same power domain, the same
+> > clock driver and the same mediatek-drm driver.
+> > 
+> > For MT8195, VDOSYS0 and VDOSYS1 are 2 display HW pipelines binding
+> > to
+> > 2 different power domains, different clock drivers and different
+> > mediatek-drm drivers.
+> > 
+> > Moreover, Hardware pipeline of VDOSYS0 has these components: COLOR,
+> > CCORR, AAL, GAMMA, DITHER. They are related to the PQ (Picture
+> > Quality)
+> > and they makes VDOSYS0 supports PQ function while they are not
+> > including in VDOSYS1.
+> > 
+> > Hardware pipeline of VDOSYS1 has the component ETHDR (HDR related
+> > component). It makes VDOSYS1 supports the HDR function while it's
+> > not
+> > including in VDOSYS0.
+> > 
+> > To summarize0:
+> > Only VDOSYS0 can support PQ adjustment.
+> > Only VDOSYS1 can support HDR adjustment.
+> > 
+> > Therefore, we need to separate these two different mmsys hardwares
+> > to
+> > 2 different compatibles for MT8195.
+> > 
+> > Fixes: 81c5a41d10b9 ("dt-bindings: arm: mediatek: mmsys: add mt8195
+> > SoC binding")
+> > Signed-off-by: Jason-JH.Lin <jason-jh.lin@mediatek.com>
+> > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> > ---
+> > Changes for v2:
+> > 1. Add hardware difference for VDOSYS0 and VDOSYS1 in commit
+> > message.
+> > ---
+> >   .../devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml       |
+> > 3 ++-
+> >   1 file changed, 2 insertions(+), 1 deletion(-)
+> > 
+> > diff --git
+> > a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yam
+> > l
+> > b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yam
+> > l
+> > index 6ad023eec193..bfbdd30d2092 100644
+> > ---
+> > a/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yam
+> > l
+> > +++
+> > b/Documentation/devicetree/bindings/arm/mediatek/mediatek,mmsys.yam
+> > l
+> > @@ -31,7 +31,8 @@ properties:
+> >                 - mediatek,mt8183-mmsys
+> >                 - mediatek,mt8186-mmsys
+> >                 - mediatek,mt8192-mmsys
+> > -              - mediatek,mt8195-mmsys
+> > +              - mediatek,mt8195-vdosys0
+> 
+> Thanks for you patch. As I mentioned on v1, I propose to set 
+> mediatek,mt8195-mmsys as fallback for mediatek,mt8195-vdosys0 to not
+> break 
+> backwards compatibility.
+> 
+> Apart from that, the binding change will need some changes to support
+> the new 
+> binding. Please provide these together with this patch.
+> 
+> Regards,
+> Matthias
+> 
 
-John, Jakub,
+Hello Matthias,
 
-Please review this.
-Unfortunately test_sockmap (and sockmap kernel) is broken
-before and after this patch,
-so I'm hesitant to apply it not to make thing harder to debug.
-Here is what I see:
-# ./test_sockmap
-recv failed(): Bad address
-rx thread exited with err 1.
-recv failed(): Bad address
-rx thread exited with err 1.
-recv failed(): Bad address
-rx thread exited with err 1.
-# 4/ 6  sockmap::txmsg test ingress redirect:FAIL
-detected skb data error with skb ingress update @iov[0]:0 "00 00 00
-00" != "PASS"
-data verify msg failed: Unknown error -5
-rx thread exited with err 1.
-[   16.735850] ------------[ cut here ]------------
-[   16.736195] WARNING: CPU: 3 PID: 1480 at net/core/stream.c:205
-sk_stream_kill_queues+0x18a/0x1a0
-[   16.736799] Modules linked in:
-[   16.737007] CPU: 3 PID: 1480 Comm: test_sockmap Not tainted
-5.19.0-14050-g343949e10798 #4212
-[   16.737543] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[   16.738522] RIP: 0010:sk_stream_kill_queues+0x18a/0x1a0
-[   16.738883] Code: 41 5f c3 89 ee 48 89 df e8 13 69 fe ff 4c 89 e7
-e8 db 01 4f ff 8b ab 28 02 00 00 eb c1 0f 0b e9 62 ff ff ff 0f 0b 85
-ed 74 ce <0f> 0b 5b 5d 41 5c 41 5d 41 5e 41 5f c3 66 0f 1f 84 00 00 00
-00 00
-[   16.740082] RSP: 0018:ffff888118007ab8 EFLAGS: 00010206
-[   16.740435] RAX: 0000000000000000 RBX: ffff8881174b2400 RCX: ffffffff81f5d47a
-[   16.740915] RDX: 0000000000000003 RSI: dffffc0000000000 RDI: ffff8881174b2670
-[   16.741374] RBP: 0000000000000b00 R08: fffffbfff08cfbdf R09: fffffbfff08cfbdf
-[   16.741841] R10: ffffffff8467def7 R11: fffffbfff08cfbde R12: ffff8881174b2628
-[   16.742298] R13: ffffffff85c13c00 R14: ffff88810611d824 R15: ffff8881174b25c8
-[   16.742768] FS:  00007f937403c400(0000) GS:ffff888628f80000(0000)
-knlGS:0000000000000000
-[   16.743283] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   16.743657] CR2: 00007f937403c378 CR3: 0000000125983005 CR4: 00000000003706e0
-[   16.744124] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[   16.744584] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[   16.745065] Call Trace:
-[   16.745241]  <TASK>
-[   16.745401]  inet_csk_destroy_sock+0x9f/0x1c0
-[   16.745707]  tcp_rcv_state_process+0x1a84/0x2120
-[   16.746013]  ? lock_release+0x3b0/0x3b0
-[   16.746271]  ? tcp_established_options+0x189/0x300
-[   16.746592]  ? tcp_finish_connect+0x240/0x240
-[   16.746894]  ? rcu_read_lock_bh_held+0xa0/0xa0
-[   16.747190]  ? rcu_read_lock_held_common+0x1a/0x50
-[   16.747505]  ? rcu_read_lock_sched_held+0x56/0xc0
-[   16.747823]  ? rcu_read_lock_held_common+0x1a/0x50
-[   16.748139]  ? lock_release+0xad/0x3b0
-[   16.748390]  ? __release_sock+0x83/0x150
-[   16.748646]  ? lock_downgrade+0x360/0x360
-[   16.748932]  ? lock_acquire+0xab/0x380
-[   16.749187]  ? lock_downgrade+0x360/0x360
-[   16.749440]  ? tcp_v4_do_rcv+0x195/0x4f0
-[   16.749696]  tcp_v4_do_rcv+0x195/0x4f0
-[   16.749933]  ? trace_hardirqs_on+0x2d/0xe0
-[   16.750194]  __release_sock+0xb9/0x150
-...
-[  213.529908] ------------[ cut here ]------------
-[  213.530232] page_counter underflow: -7 nr_pages=31
-[  213.530571] WARNING: CPU: 1 PID: 1925 at mm/page_counter.c:57
-page_counter_cancel+0x56/0x80
-[  213.531125] Modules linked in:
-[  213.531332] CPU: 1 PID: 1925 Comm: test_sockmap Tainted: G        W
-         5.19.0-14050-g343949e10798 #4212
-[  213.531989] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[  213.532734] RIP: 0010:page_counter_cancel+0x56/0x80
-[  213.533070] Code: 0a 48 89 df 5b 5d e9 89 fe ff ff 80 3d d1 b6 1e
-03 00 75 18 48 89 ea 48 c7 c7 60 6a b3 82 c6 05 be b6 1e 03 01 e8 aa
-aa 0b 01 <0f> 0b be 08 00 00 00 48 89 df e8 bb 22 fe ff 48 89 df e8 13
-1a fe
-[  213.534259] RSP: 0018:ffff88811ae2f8b0 EFLAGS: 00010086
-[  213.534607] RAX: 0000000000000000 RBX: ffff888100c08120 RCX: 0000000000000000
-[  213.535071] RDX: 0000000000000027 RSI: dffffc0000000000 RDI: ffffed10235c5f0c
-[  213.535535] RBP: 000000000000001f R08: ffffed10c51d4ee6 R09: ffffed10c51d4ee6
-[  213.536000] R10: ffff888628ea772b R11: ffffed10c51d4ee5 R12: ffff888628eb5d18
-[  213.536479] R13: ffff888628eb5d10 R14: ffff888628eb5d18 R15: 000000000000001f
-[  213.536953] FS:  00007fe0f0478400(0000) GS:ffff888628e80000(0000)
-knlGS:0000000000000000
-[  213.537463] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  213.537858] CR2: 00007fe0f04786d0 CR3: 000000011ab33004 CR4: 00000000003706e0
-[  213.538325] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[  213.538838] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[  213.539318] Call Trace:
-[  213.539488]  <TASK>
-[  213.539635]  page_counter_uncharge+0x1d/0x40
-[  213.539927]  drain_stock.isra.54+0x5d/0xb0
-[  213.540200]  __refill_stock+0x42/0xb0
-[  213.540451]  refill_stock+0xc1/0x1c0
-[  213.540688]  try_charge_memcg+0xb2e/0xb50
+Thanks for your comments.
+The purpose of this patch is to confirm we can separate mt8195 mmsys
+into two compatibles. I think this modification is accepted.
 
-and test_sockmap 'hangs' (or doing something for long time) after
-#31/ 6 sockhash:ktls:txmsg test drop:OK
+After this, I think Jason-JH will push another series with this binding
+patch. In Jason-JH's series, we will modify mmsys driver based on this.
+And I think we don't need to keep "mediatek,mt8195-mmsys" if we also
+modify mmsys drivers in the same series.
+
+Is it ok that postpones to pick this patch until we finish review
+follow-up series?
+
+BRs,
+Bo-Chen
+> > +              - mediatek,mt8195-vdosys >                 -
+> > mediatek,mt8365-mmsys
+> >             - const: syscon
+> >         - items:
+
