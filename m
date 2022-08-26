@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A704DECAAD4
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8FEECAAD5
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 10:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344232AbiHZK51 (ORCPT
+        id S1343508AbiHZK5e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 06:57:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60264 "EHLO
+        Fri, 26 Aug 2022 06:57:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344071AbiHZK44 (ORCPT
+        with ESMTP id S1344076AbiHZK45 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 06:56:56 -0400
+        Fri, 26 Aug 2022 06:56:57 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954647A52E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955A27A75A
         for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 03:56:54 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0x-0002uV-0B; Fri, 26 Aug 2022 12:56:39 +0200
+        id 1oRX0w-0002uU-Uw; Fri, 26 Aug 2022 12:56:38 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0v-0024Z3-Ua; Fri, 26 Aug 2022 12:56:37 +0200
+        id 1oRX0v-0024Z0-Rn; Fri, 26 Aug 2022 12:56:37 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0t-00GB23-D0; Fri, 26 Aug 2022 12:56:35 +0200
+        id 1oRX0t-00GB45-LH; Fri, 26 Aug 2022 12:56:35 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -40,9 +40,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 01/17] net: dsa: microchip: add separate struct ksz_chip_data for KSZ8563 chip
-Date:   Fri, 26 Aug 2022 12:56:18 +0200
-Message-Id: <20220826105634.3855578-2-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v4 15/17] net: dsa: microchip: ksz9477: remove unused "on" variable
+Date:   Fri, 26 Aug 2022 12:56:32 +0200
+Message-Id: <20220826105634.3855578-16-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220826105634.3855578-1-o.rempel@pengutronix.de>
 References: <20220826105634.3855578-1-o.rempel@pengutronix.de>
@@ -56,140 +56,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add separate entry for the KSZ8563 chip. According to the documentation
-it can support Gbit only on RGMII port. So, we will need to be able to
-describe in the followup patch.
+This variable is not used on ksz9477 side. Remove it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz_common.c | 39 ++++++++++++++++++++++++--
- drivers/net/dsa/microchip/ksz_common.h |  6 ++++
- drivers/net/dsa/microchip/ksz_spi.c    |  2 +-
- 3 files changed, 44 insertions(+), 3 deletions(-)
+ drivers/net/dsa/microchip/ksz9477.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 6bd69a7e6809d..5cadc831c75d5 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -413,6 +413,29 @@ static const u8 lan937x_shifts[] = {
- };
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 4a2074a12b3f7..18375309233ad 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -1069,7 +1069,6 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
  
- const struct ksz_chip_data ksz_switch_chips[] = {
-+	[KSZ8563] = {
-+		.chip_id = KSZ8563_CHIP_ID,
-+		.dev_name = "KSZ8563",
-+		.num_vlans = 4096,
-+		.num_alus = 4096,
-+		.num_statics = 16,
-+		.cpu_ports = 0x07,	/* can be configured as cpu port */
-+		.port_cnt = 3,		/* total port count */
-+		.ops = &ksz9477_dev_ops,
-+		.mib_names = ksz9477_mib_names,
-+		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-+		.reg_mib_cnt = MIB_COUNTER_NUM,
-+		.regs = ksz9477_regs,
-+		.masks = ksz9477_masks,
-+		.shifts = ksz9477_shifts,
-+		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
-+		.xmii_ctrl1 = ksz8795_xmii_ctrl1, /* Same as ksz8795 */
-+		.supports_mii = {false, false, true},
-+		.supports_rmii = {false, false, true},
-+		.supports_rgmii = {false, false, true},
-+		.internal_phy = {true, true, false},
-+	},
-+
- 	[KSZ8795] = {
- 		.chip_id = KSZ8795_CHIP_ID,
- 		.dev_name = "KSZ8795",
-@@ -1366,6 +1389,7 @@ static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
- 		proto = DSA_TAG_PROTO_KSZ8795;
+ 			/* enable cpu port */
+ 			ksz9477_port_setup(dev, i, true);
+-			p->on = 1;
+ 		}
+ 	}
  
- 	if (dev->chip_id == KSZ8830_CHIP_ID ||
-+	    dev->chip_id == KSZ8563_CHIP_ID ||
- 	    dev->chip_id == KSZ9893_CHIP_ID)
- 		proto = DSA_TAG_PROTO_KSZ9893;
+@@ -1079,7 +1078,6 @@ void ksz9477_config_cpu_port(struct dsa_switch *ds)
+ 		p = &dev->ports[i];
  
-@@ -1685,7 +1709,7 @@ static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 
- static int ksz_switch_detect(struct ksz_device *dev)
- {
--	u8 id1, id2;
-+	u8 id1, id2, id4;
- 	u16 id16;
- 	u32 id32;
- 	int ret;
-@@ -1731,7 +1755,6 @@ static int ksz_switch_detect(struct ksz_device *dev)
- 		switch (id32) {
- 		case KSZ9477_CHIP_ID:
- 		case KSZ9897_CHIP_ID:
--		case KSZ9893_CHIP_ID:
- 		case KSZ9567_CHIP_ID:
- 		case LAN9370_CHIP_ID:
- 		case LAN9371_CHIP_ID:
-@@ -1739,6 +1762,18 @@ static int ksz_switch_detect(struct ksz_device *dev)
- 		case LAN9373_CHIP_ID:
- 		case LAN9374_CHIP_ID:
- 			dev->chip_id = id32;
-+			break;
-+		case KSZ9893_CHIP_ID:
-+			ret = ksz_read8(dev, REG_CHIP_ID4,
-+					&id4);
-+			if (ret)
-+				return ret;
-+
-+			if (id4 == SKU_ID_KSZ8563)
-+				dev->chip_id = KSZ8563_CHIP_ID;
-+			else
-+				dev->chip_id = KSZ9893_CHIP_ID;
-+
- 			break;
- 		default:
- 			dev_err(dev->dev,
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 0d9520dc6d2db..eedcbcddd000c 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -124,6 +124,7 @@ struct ksz_device {
- 
- /* List of supported models */
- enum ksz_model {
-+	KSZ8563,
- 	KSZ8795,
- 	KSZ8794,
- 	KSZ8765,
-@@ -140,6 +141,7 @@ enum ksz_model {
- };
- 
- enum ksz_chip_id {
-+	KSZ8563_CHIP_ID = 0x8563,
- 	KSZ8795_CHIP_ID = 0x8795,
- 	KSZ8794_CHIP_ID = 0x8794,
- 	KSZ8765_CHIP_ID = 0x8765,
-@@ -483,6 +485,10 @@ static inline int is_lan937x(struct ksz_device *dev)
- 
- #define SW_REV_ID_M			GENMASK(7, 4)
- 
-+/* KSZ9893, KSZ9563, KSZ8563 specific register  */
-+#define REG_CHIP_ID4			0x0f
-+#define SKU_ID_KSZ8563			0x3c
-+
- /* Driver set switch broadcast storm protection at 10% rate. */
- #define BROADCAST_STORM_PROT_RATE	10
- 
-diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-index 05bd089795f83..746b725b09ec4 100644
---- a/drivers/net/dsa/microchip/ksz_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -160,7 +160,7 @@ static const struct of_device_id ksz_dt_ids[] = {
- 	},
- 	{
- 		.compatible = "microchip,ksz8563",
--		.data = &ksz_switch_chips[KSZ9893]
-+		.data = &ksz_switch_chips[KSZ8563]
- 	},
- 	{
- 		.compatible = "microchip,ksz9567",
+ 		ksz_port_stp_state_set(ds, i, BR_STATE_DISABLED);
+-		p->on = 1;
+ 		if (dev->chip_id == 0x00947700 && i == 6) {
+ 			p->sgmii = 1;
+ 		}
 -- 
 2.30.2
 
