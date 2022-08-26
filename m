@@ -2,187 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E8BECAAD8
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FAEC64991
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344540AbiHZVNQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 17:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        id S231388AbiHZVNg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 17:13:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231388AbiHZVNK (ORCPT
+        with ESMTP id S1344651AbiHZVNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 17:13:10 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF74E58A1;
-        Fri, 26 Aug 2022 14:13:09 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 823F12B3;
-        Fri, 26 Aug 2022 23:13:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1661548386;
-        bh=5f0gP12QTNlFrSClyCypQH3rw2Mfu1Bl+NgEw0jt7uY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W5ZD/HuZPyLfhQlfYVDxqXyy1oqcuOWmG7pEWy4zYFGS7AzmsQQTSRMgLF1/WV2HU
-         Nw+wa29mQ1vpUGhmGm8gxU9sHFPhTM9LMxw12xtnF4eAXNGbQMfqr1NbtmcPYWE5bu
-         4DRN1Pyi8Un37f4VWWALCWvmY8aLBjhN/yYmKMxg=
-Date:   Sat, 27 Aug 2022 00:12:59 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-Cc:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v6 1/6] dt-bindings: media: Add Allwinner A31 ISP
- bindings documentation
-Message-ID: <Ywk3W6pTOOlzLYVn@pendragon.ideasonboard.com>
-References: <20220826184144.605605-1-paul.kocialkowski@bootlin.com>
- <20220826184144.605605-2-paul.kocialkowski@bootlin.com>
+        Fri, 26 Aug 2022 17:13:30 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F27E68CD
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:13:27 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id q7so3525618lfu.5
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 14:13:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=tbpadwyNsGF5OvB8OARNmocarvqfqchX8oAmiz2J6Do=;
+        b=im090+OfFLEr50nKUecm4rK2iVu3y9FkYyrT2CcXNSzAxsnMc5I5ad+hcrrRTg5R8q
+         xh/yj0a0v9xxVLj7XhzT13KW1ZE9m933i7G+igrYt8kT/UIPhQH+3vQB/qvT/X4fkAYP
+         L+1O2tRtRIk9UYDA47u6KAD04tP31oAwMXl313v3PYetnrspzL3jUKscNZ1H52sSFxQL
+         oEoayALbOaqMe27KsddtTeb7YryUHvGHm5mGP9r/9whVU1Mf6J6Mm6ZQgBDzgd0g69aB
+         25j7x1Xjx2sZRdh63+Y1VYpB9hvc0tVB89aDR8oCvsuV1hnSptpYNEBkNdp2RPhccu5z
+         SXNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=tbpadwyNsGF5OvB8OARNmocarvqfqchX8oAmiz2J6Do=;
+        b=CyOj63siogJj+k6m12/vP0X0cndGaVLiV49smjtBTqjjnItcHaybTTg7+4nEDy/CVq
+         TZLxrSHS9XGVrJdHNKtTtz2egpzEngS1mo2OGdwb0vJwe2aNFBoUyIt2WYt0OYZUSXDh
+         4+aoAIRG721RsjI/theyt4J30iYxM5ipDyUaP1+0cbjEZ7VQb9yt8FQ65R/GaWDd9ric
+         9GNkxlUQxz2hi4B/2KCNNcdAz290VFrAx6JkonaOm/nc75dHtL1F7RjpheZXaWSGE45X
+         BpzvvupQ1rUhskC2qMDqC1NTnaFKX9aPhgVf9MIoeAPhXjt4p5krsm3nv9saoHoN9cS0
+         1fpw==
+X-Gm-Message-State: ACgBeo1ZfT61eQCWDewzWxl5p1wxssIV6g/PseBBC63JLJdYXW9xT8K9
+        8hXyAQsZmsNfRp6clF98v4xto6X8uMXFnYbdopBm0lMgeAs=
+X-Google-Smtp-Source: AA6agR6gSYM8FeWg1aka9MqO6V98wH2USEWbt+ev7Qg7QXHkG1gzvGeKWkDNS0yQzQtoyqiD5NDZFJNmSHuS/utNNGk=
+X-Received: by 2002:a05:6512:3d06:b0:492:c211:b781 with SMTP id
+ d6-20020a0565123d0600b00492c211b781mr3351561lfv.511.1661548405311; Fri, 26
+ Aug 2022 14:13:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220826184144.605605-2-paul.kocialkowski@bootlin.com>
+References: <20220826184500.1940077-1-vipinsh@google.com> <20220826184500.1940077-2-vipinsh@google.com>
+In-Reply-To: <20220826184500.1940077-2-vipinsh@google.com>
+From:   Vipin Sharma <vipinsh@google.com>
+Date:   Fri, 26 Aug 2022 14:12:49 -0700
+Message-ID: <CAHVum0e0piX9zS6BuqzzeCu1M=2fdOjdov18aA-AEOm=+bd2mg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] KVM: selftests: Explicitly set variables based on
+ options in dirty_log_perf_test
+To:     seanjc@google.com, dmatlack@google.com, pbonzini@redhat.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
-
-Thank you for the patch.
-
-On Fri, Aug 26, 2022 at 08:41:39PM +0200, Paul Kocialkowski wrote:
-> This introduces YAML bindings documentation for the Allwinner A31 Image
-> Signal Processor (ISP).
-> 
-> Signed-off-by: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
+On Fri, Aug 26, 2022 at 11:45 AM Vipin Sharma <vipinsh@google.com> wrote:
+>
+> Variable set via -g are also indirectly set by -e option by omitting
+> break statement. Set them explicitly so that movement of switch-case
+> statements does not unintentionally break features.
+>
+> No functional change intended.
+>
+> Signed-off-by: Vipin Sharma <vipinsh@google.com>
 > ---
->  .../media/allwinner,sun6i-a31-isp.yaml        | 97 +++++++++++++++++++
->  1 file changed, 97 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> new file mode 100644
-> index 000000000000..2fda6e05e16c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/media/allwinner,sun6i-a31-isp.yaml
-> @@ -0,0 +1,97 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/media/allwinner,sun6i-a31-isp.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Allwinner A31 Image Signal Processor Driver (ISP) Device Tree Bindings
-> +
-> +maintainers:
-> +  - Paul Kocialkowski <paul.kocialkowski@bootlin.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - allwinner,sun6i-a31-isp
-> +      - allwinner,sun8i-v3s-isp
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: Bus Clock
-> +      - description: Module Clock
-> +      - description: DRAM Clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: bus
-> +      - const: mod
-> +      - const: ram
-> +
-> +  resets:
-> +    maxItems: 1
-> +
-> +  ports:
-> +    $ref: /schemas/graph.yaml#/properties/ports
-> +
-> +    properties:
-> +      port@0:
-> +        $ref: /schemas/graph.yaml#/properties/port
-> +        description: CSI0 input port
-> +
-> +      port@1:
-> +        $ref: /schemas/graph.yaml#/properties/port
-> +        description: CSI1 input port
-> +
-> +    anyOf:
-> +      - required:
-> +          - port@0
-> +      - required:
-> +          - port@1
+>  tools/testing/selftests/kvm/dirty_log_perf_test.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/tools/testing/selftests/kvm/dirty_log_perf_test.c b/tools/testing/selftests/kvm/dirty_log_perf_test.c
+> index f99e39a672d3..a03db7f9f4c0 100644
+> --- a/tools/testing/selftests/kvm/dirty_log_perf_test.c
+> +++ b/tools/testing/selftests/kvm/dirty_log_perf_test.c
+> @@ -411,6 +411,8 @@ int main(int argc, char *argv[])
+>                 case 'e':
+>                         /* 'e' is for evil. */
+>                         run_vcpus_while_disabling_dirty_logging = true;
+> +                       dirty_log_manual_caps = 0;
+> +                       break;
 
-I'd still like to see all ports that exist in the hardware being
-mandatory. I assume at least one of the A31 and V3s has two connected
-ports in the SoC or you wouldn't declare them both here :-)
+@Sean, I hope you intentionally didn't write a break between -e and -g
+when you created the patch and it is not just a missed thing :)
 
-Apart from that, this looks good.
 
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +  - resets
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/clock/sun8i-v3s-ccu.h>
-> +    #include <dt-bindings/reset/sun8i-v3s-ccu.h>
-> +
-> +    isp: isp@1cb8000 {
-> +        compatible = "allwinner,sun8i-v3s-isp";
-> +        reg = <0x01cb8000 0x1000>;
-> +        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&ccu CLK_BUS_CSI>,
-> +             <&ccu CLK_CSI1_SCLK>,
-> +             <&ccu CLK_DRAM_CSI>;
-> +        clock-names = "bus", "mod", "ram";
-> +        resets = <&ccu RST_BUS_CSI>;
-> +
-> +        ports {
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            port@0 {
-> +                reg = <0>;
-> +
-> +                isp_in_csi0: endpoint {
-> +                    remote-endpoint = <&csi0_out_isp>;
-> +                };
-> +            };
-> +        };
-> +    };
-> +
-> +...
-
--- 
-Regards,
-
-Laurent Pinchart
+>                 case 'g':
+>                         dirty_log_manual_caps = 0;
+>                         break;
+> --
+> 2.37.2.672.g94769d06f0-goog
+>
