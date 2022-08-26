@@ -2,141 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B103AECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47976ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 16:19:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344501AbiHZQS7 (ORCPT
+        id S1344554AbiHZQTN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 12:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52406 "EHLO
+        Fri, 26 Aug 2022 12:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245720AbiHZQSz (ORCPT
+        with ESMTP id S1344241AbiHZQTL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 12:18:55 -0400
-Received: from matoro.tk (unknown [IPv6:2600:1700:4b10:9d80::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11871D91C5;
-        Fri, 26 Aug 2022 09:18:48 -0700 (PDT)
-DKIM-Signature: a=rsa-sha256; bh=rngoAUfTvl93BSKur1UsnUCm+wAmd5fS1fyUrfe3Tjk=;
- c=relaxed/relaxed; d=matoro.tk;
- h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
- i=@matoro.tk; s=20220801; t=1661530580; v=1; x=1661962580;
- b=l+iFCCbnYuqIIc0pzyehnyH4fQBERr+/rAXMhG1iop5tqOPsVsGvIMpTegIekbm8TXssaOti
- jI3R54FA9hiSAc7J3+LxKY9GJ6hqo/82DNv/y+vOag+8l32rl62HhHyE0oyiFro7yyqUDy57SWd
- W/Nzpf62Ic7w9A89l/eAF3Lcit/b7MwJQqbVCxts+NoSFhh18fz8JgB4atmqfz3jq5Psexteu1e
- vY7qlZTfdgpaTPkBTOemcI3LjHHeN1bL7z7F5qSijL7iVGyXCzhc/mN0NBXfCajdSZZn5aEdG1+
- vmrcCgzAqZXFqHyLMkBFrworatzVG8zCNK40SkkKsySVB6NZeOw4JIHg/JZVuunWO7gEtu+k7yx
- wR+oUlD8BWIKjOY2RP4zIfzfeB+NW/7Lw3olP8mwHA6iNGk/CA3xXOmdnfv05H2a2C6qU+a1VCf
- Gj2EYSLW2MOIsFQ6/WW9nzR++S/rNWBSabI5OyQ2lPWB5yQALBA09qND3bH1/lUNdpOI+OxRSlG
- d0ojZoa/u+Rxm47DRLrG2IOjVd2k9yi83Onbeml9zr0MPlFZvfm+ltTPYeaMsWC4NJCaVoqKaUa
- uWhT9tvD3NnSSBJAtZieKSlQB1hEKC1AYU9YKU/d5MoCUuguqIE2BKR/SYj48LfNfssPIIk1CwM
- 7WwM+aNxfQI=
-Received: by matoro.tk (envelope-sender
- <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id 66436cf2; Fri, 26 Aug
- 2022 12:16:20 -0400
+        Fri, 26 Aug 2022 12:19:11 -0400
+Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F25AD9D5A
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:19:10 -0700 (PDT)
+Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-334dc616f86so48104637b3.8
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 09:19:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1in29G4BteIRakRuuoxRuXqGQ7UlsROlnjbxci51a0M=;
+        b=Ww6/9i888Lv4eGNktEUK6+TxKPacYVk3H/C7dNHJ56y1BH3v6MQCLDSPE04XHWr8sp
+         gfOx4tjbfxgTjEFyHXEvXEXvmrejVTr5plM2OxR7bg3cUblbu8/v9vgfu3tGGbqR/522
+         oGc0PKLc2p3B3SsdGldQyG3PeznGcPIppvgu0yz81NnCwtJfQNKdl/riHC8N414nBg7V
+         LRZQPmbFP2/8fgbZZb5c1lD9MhGZ1lchKh4KHbAiDrWFRVZwVT2JMS5npB6g5l88iTcb
+         IeYTBrqXY5dTlEpYbnhn/Iw7UmFJPKVnHojLZlTladmMPYXHzSiLmFZzgZg6TRF/vJR6
+         YFGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1in29G4BteIRakRuuoxRuXqGQ7UlsROlnjbxci51a0M=;
+        b=hB5LqzHFysRG9/BNpEwothAT6jSd1DDWuFu9CuylXF9Z0kZExAIpLMSBo4XrhEvP4v
+         2nVNT/bXqXdGOhmVnIbikmSYBYIkqSlF05eJOxNAnNlbe1cswt0mDJwu3TgjX1Us+ff9
+         zobmksGWSjRLuFsk42t7hm5qFz2X/jG+Qgj3WLtDCDSB5DSpkOTplllUzfOvUJoLp1+6
+         sUe1pAPZCTL/Kym6l5flA8xC62W9Ni2//Ivj64LWNpqfk/fMQrZut1zniqvxiivi6vWO
+         Idb4DEHx9OYRUs9GuXLyvqCsmQM+Bxk/2JlqMxAnQe9PSqDl+I5gcK52vktHTAkOkxYv
+         8F2g==
+X-Gm-Message-State: ACgBeo1DZ0wuAVploeXQVts/fvfC1+nQ2n0brkJOlXsBIHA+MAWoOedb
+        7ZtRMX6CHwLaeJjeDfYxOBostJKQNH5qzbJNK4eHew==
+X-Google-Smtp-Source: AA6agR7JXQUVq2bDVZImv8O/NZfpAP3Xcm8rxZX7womrZYkhqV4Zhy3N7W7G0t4ASCauxPm8JFeNcxZqtrjCHzPHfro=
+X-Received: by 2002:a25:b083:0:b0:695:9a91:317d with SMTP id
+ f3-20020a25b083000000b006959a91317dmr370577ybj.387.1661530749022; Fri, 26 Aug
+ 2022 09:19:09 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Fri, 26 Aug 2022 12:16:19 -0400
-From:   matoro <matoro_mailinglist_kernel@matoro.tk>
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Jan Kara <jack@suse.cz>, Meelis Roos <mroos@linux.ee>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Theodore Y. Ts'o" <tytso@mit.edu>, linux-alpha@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-block@vger.kernel.org,
-        linux-mm@kvack.org, vbabka@suse.com
-Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
-In-Reply-To: <bf093f5c-bd0b-e843-d9e5-a4edf0f70cae@suse.cz>
-References: <e175b885-082a-97c1-a0be-999040a06443@linux.ee>
- <20190218120209.GC20919@quack2.suse.cz>
- <4e015688-8633-d1a0-308b-ba2a78600544@linux.ee>
- <20190219132026.GA28293@quack2.suse.cz>
- <20190219144454.GB12668@bombadil.infradead.org>
- <d444f653-9b99-5e9b-3b47-97f824c29b0e@linux.ee>
- <20190220094813.GA27474@quack2.suse.cz>
- <2381c264-92f5-db43-b6a5-8e00bd881fef@linux.ee>
- <20190221132916.GA22886@quack2.suse.cz>
- <97dbffaefa65a83b36e1ec134fd53a66@matoro.tk>
- <20220826105513.eo5otoujtz75u7dg@quack3>
- <bf093f5c-bd0b-e843-d9e5-a4edf0f70cae@suse.cz>
-Message-ID: <1ef4d01e1fb81656544c296fe11f41b4@matoro.tk>
-X-Sender: matoro_mailinglist_kernel@matoro.tk
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220826002530.1153296-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20220826002530.1153296-1-kai.heng.feng@canonical.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 26 Aug 2022 09:18:58 -0700
+Message-ID: <CANn89i+hm1MmbQQRtPg7CbCihfYfoNjDt6ZJKRyNpJHAENp8oQ@mail.gmail.com>
+Subject: Re: [PATCH v2] tg3: Disable tg3 device on system reboot to avoid
+ triggering AER
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     siva.kallam@broadcom.com, prashant@broadcom.com,
+        mchan@broadcom.com, Josef Bacik <josef@toxicpanda.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At least according to the docs I see, fakenuma is x86-specific.  There 
-are multi-socket machines, but the one I have is single-socket 
-single-core.
+On Thu, Aug 25, 2022 at 5:25 PM Kai-Heng Feng
+<kai.heng.feng@canonical.com> wrote:
+>
+> Commit d60cd06331a3 ("PM: ACPI: reboot: Use S5 for reboot") caused a
+> reboot hang on one Dell servers so the commit was reverted.
+>
+> Someone managed to collect the AER log and it's caused by MSI:
+> [ 148.762067] ACPI: Preparing to enter system sleep state S5
+> [ 148.794638] {1}[Hardware Error]: Hardware error from APEI Generic Hardware Error Source: 5
+> [ 148.803731] {1}[Hardware Error]: event severity: recoverable
+> [ 148.810191] {1}[Hardware Error]: Error 0, type: fatal
+> [ 148.816088] {1}[Hardware Error]: section_type: PCIe error
+> [ 148.822391] {1}[Hardware Error]: port_type: 0, PCIe end point
+> [ 148.829026] {1}[Hardware Error]: version: 3.0
+> [ 148.834266] {1}[Hardware Error]: command: 0x0006, status: 0x0010
+> [ 148.841140] {1}[Hardware Error]: device_id: 0000:04:00.0
+> [ 148.847309] {1}[Hardware Error]: slot: 0
+> [ 148.852077] {1}[Hardware Error]: secondary_bus: 0x00
+> [ 148.857876] {1}[Hardware Error]: vendor_id: 0x14e4, device_id: 0x165f
+> [ 148.865145] {1}[Hardware Error]: class_code: 020000
+> [ 148.870845] {1}[Hardware Error]: aer_uncor_status: 0x00100000, aer_uncor_mask: 0x00010000
+> [ 148.879842] {1}[Hardware Error]: aer_uncor_severity: 0x000ef030
+> [ 148.886575] {1}[Hardware Error]: TLP Header: 40000001 0000030f 90028090 00000000
+> [ 148.894823] tg3 0000:04:00.0: AER: aer_status: 0x00100000, aer_mask: 0x00010000
+> [ 148.902795] tg3 0000:04:00.0: AER: [20] UnsupReq (First)
+> [ 148.910234] tg3 0000:04:00.0: AER: aer_layer=Transaction Layer, aer_agent=Requester ID
+> [ 148.918806] tg3 0000:04:00.0: AER: aer_uncor_severity: 0x000ef030
+> [ 148.925558] tg3 0000:04:00.0: AER: TLP Header: 40000001 0000030f 90028090 00000000
+>
+> The MSI is probably raised by incoming packets, so power down the device
+> and disable bus mastering to stop the traffic, as user confirmed this
+> approach works.
+>
+> In addition to that, be extra safe and cancel reset task if it's running.
+>
+> Cc: Josef Bacik <josef@toxicpanda.com>
+> Link: https://lore.kernel.org/all/b8db79e6857c41dab4ef08bdf826ea7c47e3bafc.1615947283.git.josef@toxicpanda.com/
+> BugLink: https://bugs.launchpad.net/bugs/1917471
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> ---
+> v2:
+>  - Move tg3_reset_task_cancel() outside of rtnl_lock() to prevent
+>    deadlock.
+>
 
-I can provide access to this machine to play around with it though!  
-Either simple shell access or serial access if some kernel poking is 
-needed.
+It seems tg3_reset_task_cancel() is already called while rtnl is held/owned.
+Should we worry about that ?
 
-Would that be helpful or is a NUMA system going to be required for 
-debugging?
-
--------- Original Message --------
-Subject: Re: ext4 corruption on alpha with 4.20.0-09062-gd8372ba8ce28
-Date: 2022-08-26 07:04
- From: Vlastimil Babka <vbabka@suse.cz>
-To: Jan Kara <jack@suse.cz>, matoro 
-<matoro_mailinglist_kernel@matoro.tk>
-
-On 8/26/22 12:55, Jan Kara wrote:
-> On Thu 25-08-22 11:05:48, matoro wrote:
->> Hello all, I know this is quite an old thread.  I recently acquired 
->> some
->> alpha hardware and have run into this exact same problem on the latest
->> stable kernel (5.18 and 5.19).  CONFIG_COMPACTION seems to be totally 
->> broken
->> and causes userspace to be extremely unstable - random segfaults, 
->> corruption
->> of glibc data structures, gcc ICEs etc etc - seems most noticable 
->> during
->> tasks with heavy I/O load.
->> 
->> My hardware is a DS15 (Titan), so only slightly newer than the 
->> Tsunamis
->> mentioned earlier.  The problem is greatly exacerbated when using a
->> machine-optimized kernel (CONFIG_ALPHA_TITAN) over one with
->> CONFIG_ALPHA_GENERIC.  But it still doesn't go away on a generic 
->> kernel,
->> just pops up less often, usually very I/O heavy tasks like checking 
->> out a
->> tag in the kernel repo.
->> 
->> However all of this seems to be dependent on CONFIG_COMPACTION.  With 
->> this
->> toggled off all problems disappear, regardless of other options.  I 
->> tried
->> reverting the commit 88dbcbb3a4847f5e6dfeae952d3105497700c128 
->> mentioned
->> earlier in the thread (the structure has moved to a different file but 
->> was
->> otherwise the same), but it unfortunately did not make a difference.
->> 
->> Since this doesn't seem to have a known cause or an easy fix, would it 
->> be
->> reasonable to just add a Kconfig dep to disable it automatically on 
->> alpha?
-> 
-> Thanks for report. I guess this just confirms that migration of 
-> pagecache
-> pages is somehow broken on Alpha. Maybe we are missing to flush some 
-> cache
-> specific for Alpha? Or maybe the page migration code is not safe wrt 
-> the
-> peculiar memory ordering Alpha has... I think this will need someone 
-> with
-> Alpha HW and willingness to dive into MM internals to debug this. Added
-> Vlasta to CC mostly for awareness and in case it rings some bells :).
-
-Hi, doesn't ring any bells unfortunately. Does corruption also happen 
-when
-mmapping a file and applying mbind() with MPOL_MF_MOVE or 
-migrate_pages()?
-That should allow more controlled migration experimens than through
-compaction. But that would also need a NUMA machine or a fakenuma 
-support,
-dunno if alpha has that?
+>  drivers/net/ethernet/broadcom/tg3.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+> index db1e9d810b416..89889d8150da1 100644
+> --- a/drivers/net/ethernet/broadcom/tg3.c
+> +++ b/drivers/net/ethernet/broadcom/tg3.c
+> @@ -18076,16 +18076,20 @@ static void tg3_shutdown(struct pci_dev *pdev)
+>         struct net_device *dev = pci_get_drvdata(pdev);
+>         struct tg3 *tp = netdev_priv(dev);
+>
+> +       tg3_reset_task_cancel(tp);
+> +
+>         rtnl_lock();
+> +
+>         netif_device_detach(dev);
+>
+>         if (netif_running(dev))
+>                 dev_close(dev);
+>
+> -       if (system_state == SYSTEM_POWER_OFF)
+> -               tg3_power_down(tp);
+> +       tg3_power_down(tp);
+>
+>         rtnl_unlock();
+> +
+> +       pci_disable_device(pdev);
+>  }
+>
+>  /**
+> --
+> 2.36.1
+>
