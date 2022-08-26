@@ -2,99 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A82C0502A
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:54:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9CDECAAD8
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 21:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344574AbiHZVy4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 17:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35238 "EHLO
+        id S231483AbiHZV5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 17:57:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231803AbiHZVyw (ORCPT
+        with ESMTP id S231298AbiHZV44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 17:54:52 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8453325D9;
-        Fri, 26 Aug 2022 14:54:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ZYOb94mj7PmrgZ8lf4hGillqW9ALQbpLDBnuQXLsL/Q=; b=de6bz6m8RXsGeButLQ0GZiYofc
-        CeHk/fHUC4HlAP5P4dFY8S9LoE538UWtSdCPwW6Hx7rfr1dpuGoaXyhPeqgo+Rgaw/4a8CAA9Z8F+
-        JUG9bkYNE+hGy97YclJtshfiP1+K4i2MX/3VTALQgUmQLNXvZuQfylY2ZFP23Qgz6l0S75Z9gdLcq
-        2uiXhvdmCx/Fr3Nwbvm3xweKduR+qPlPRkLA+d32MyL8GKYAVth5Q4B1WXk0S95K1rw8Ejbck14ea
-        +pGNlTzSzsBirRccGMr7uztSxR2igoUM/lJ+QzXX6NWCzSelgbpLtwWdul3vBkaZKzTudSdaPUTPf
-        gOGjj7Fg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oRhHT-006UVY-Cc; Fri, 26 Aug 2022 21:54:23 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id ED60798018A; Fri, 26 Aug 2022 23:54:21 +0200 (CEST)
-Date:   Fri, 26 Aug 2022 23:54:21 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Tejun Heo <tj@kernel.org>, Linux PM <linux-pm@vger.kernel.org>
-Subject: Re: [PATCH v3 4/6] sched/completion: Add wait_for_completion_state()
-Message-ID: <YwlBDWIah0fVYRXK@worktop.programming.kicks-ass.net>
-References: <20220822111816.760285417@infradead.org>
- <20220822114648.922711674@infradead.org>
- <CAJZ5v0i=+jXz71DBx=Hr9_6bxOx7yFF_xZJc4tXB0j4kSW0Q_g@mail.gmail.com>
+        Fri, 26 Aug 2022 17:56:56 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE92CACA2;
+        Fri, 26 Aug 2022 14:56:54 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-32a09b909f6so69161807b3.0;
+        Fri, 26 Aug 2022 14:56:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=YIsmXK/1IMUzBKPFPBCOzWlrG3vuxnAl26/EQEinaGU=;
+        b=Woi3HMQVUTh9wjBeAKXEpTFy4sf0GT5G162/idyorzEjanNHHAAO45K6yb3Gq251vx
+         vdGkWXeLHyJD1Eg5RShfMvgsW17hKDHZr/WeeDtgdpyt32v1ggnnjCHlRuAQ94Dpc11n
+         zS2IwMRHR9s2PGlSxiCxhhs3r1G6RPkeqBKCOCYCE4mPWzWmQqlnHguY0hSWkrhmHkVP
+         c80tnpQQ8aynngWmq9c20Rz5FIJYqJ1lG8EM+uu+/Bn+bD/1qLICngiaAtk0lCNG7gJn
+         U7gXacECwV1iR4jaz+0w7cw+lJzQltivxlZf7vX/cHXdyHNxlEyqXdk9GMeHqzK764xE
+         fj2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=YIsmXK/1IMUzBKPFPBCOzWlrG3vuxnAl26/EQEinaGU=;
+        b=xtJ3U2yLwssHKz6czZ3Qs+tai4dTBlgdlPzgdlZ5kCmBHzUs4Q4+BqpIaYTYJg4xwe
+         8+vxr/EqO+65qpYAatXv95S53IEZZsG2hUZ085JMjr6AbuvME6i/pZREpB+TwwKMdVHE
+         zhSgFb++RH4cSFbCvG7DXaKiDQArf5momXl+O7c2qNE6BUgi8pfDLfxF8QZUUziI3QYR
+         Uh+Gk8zGQwFCCaU4UI2Be3KXwtXeLFSudMPcrXeJo0P1dDs3t9n9xM8UBfk8A5mpAnhj
+         tnR1KXjFx4EWJJVq5bNdBEiyhK1gyMCMIQXSmci6mxjMhgAO0fXPdePWtphaKpNjQ+lq
+         rd9w==
+X-Gm-Message-State: ACgBeo3R57Ucj1iiEZDefLlEEItyUdZ6LUMTw7XMYwhM9jqqaOQLDS4d
+        Z99ETb3AKLCcvbQuHmrV/AEaeUx6m0PGS7sLv6Y=
+X-Google-Smtp-Source: AA6agR4UTuA3qINNphj7afBVZTaQiWFU8zQh4oSl0I8d9SplK6OhHc5jyFq4/aR+zST0rOWp264LYbZR9vv+Gc1Ll04=
+X-Received: by 2002:a5b:68e:0:b0:671:76c9:ff with SMTP id j14-20020a5b068e000000b0067176c900ffmr1606448ybq.630.1661551013566;
+ Fri, 26 Aug 2022 14:56:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJZ5v0i=+jXz71DBx=Hr9_6bxOx7yFF_xZJc4tXB0j4kSW0Q_g@mail.gmail.com>
+References: <20220820082936.686924-1-dario.binacchi@amarulasolutions.com> <20220820082936.686924-5-dario.binacchi@amarulasolutions.com>
+In-Reply-To: <20220820082936.686924-5-dario.binacchi@amarulasolutions.com>
+From:   Vincent Mailhol <vincent.mailhol@gmail.com>
+Date:   Sat, 27 Aug 2022 06:56:42 +0900
+Message-ID: <CAMZ6RqKQJZBVOSU7oA3AGSRG11vxdysAyRotHavUzsVRuM28Kw@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 4/4] can: bxcan: add support for ST bxCAN controller
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        michael@amarulasolutions.com, Dario Binacchi <dariobin@libero.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 07:32:33PM +0200, Rafael J. Wysocki wrote:
-> On Mon, Aug 22, 2022 at 1:48 PM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > Allows waiting with a custom @state.
-> >
-> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > ---
-> >  include/linux/completion.h |    1 +
-> >  kernel/sched/completion.c  |    9 +++++++++
-> >  2 files changed, 10 insertions(+)
-> >
-> > --- a/include/linux/completion.h
-> > +++ b/include/linux/completion.h
-> > @@ -103,6 +103,7 @@ extern void wait_for_completion(struct c
-> >  extern void wait_for_completion_io(struct completion *);
-> >  extern int wait_for_completion_interruptible(struct completion *x);
-> >  extern int wait_for_completion_killable(struct completion *x);
-> > +extern int wait_for_completion_state(struct completion *x, unsigned int state);
-> >  extern unsigned long wait_for_completion_timeout(struct completion *x,
-> >                                                    unsigned long timeout);
-> >  extern unsigned long wait_for_completion_io_timeout(struct completion *x,
-> > --- a/kernel/sched/completion.c
-> > +++ b/kernel/sched/completion.c
-> > @@ -247,6 +247,15 @@ int __sched wait_for_completion_killable
-> >  }
-> >  EXPORT_SYMBOL(wait_for_completion_killable);
-> >
-> > +int __sched wait_for_completion_state(struct completion *x, unsigned int state)
-> > +{
-> > +       long t = wait_for_common(x, MAX_SCHEDULE_TIMEOUT, state);
-> > +       if (t == -ERESTARTSYS)
-> > +               return t;
-> > +       return 0;
-> > +}
-> > +EXPORT_SYMBOL(wait_for_completion_state);
-> 
-> Why not EXPORT_SYMBOL_GPL?  I guess to match the above?
+On Sat. 20 Aug. 2022 =C3=A0 17:32, Dario Binacchi
+<dario.binacchi@amarulasolutions.com> a =C3=A9crit :
+> Add support for the basic extended CAN controller (bxCAN) found in many
+> low- to middle-end STM32 SoCs. It supports the Basic Extended CAN
+> protocol versions 2.0A and B with a maximum bit rate of 1 Mbit/s.
+>
+> The controller supports two channels (CAN1 as master and CAN2 as slave)
+> and the driver can enable either or both of the channels. They share
+> some of the required logic (e. g. clocks and filters), and that means
+> you cannot use the slave CAN without enabling some hardware resources
+> managed by the master CAN.
+>
+> Each channel has 3 transmit mailboxes, 2 receive FIFOs with 3 stages and
+> 28 scalable filter banks.
+> It also manages 4 dedicated interrupt vectors:
+> - transmit interrupt
+> - FIFO 0 receive interrupt
+> - FIFO 1 receive interrupt
+> - status change error interrupt
+>
+> Driver uses all 3 available mailboxes for transmission and FIFO 0 for
+> reception. Rx filter rules are configured to the minimum. They accept
+> all messages and assign filter 0 to CAN1 and filter 14 to CAN2 in
+> identifier mask mode with 32 bits width. It enables and uses transmit,
+> receive buffers for FIFO 0 and error and status change interrupts.
+>
+> Signed-off-by: Dario Binacchi <dariobin@libero.it>
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+>
+> ---
 
-Yeah; I'm torn between preference and consistency here :-)
+(...)
+
+> +static void bxcan_handle_state_change(struct net_device *ndev, u32 esr)
+> +{
+> +       struct bxcan_priv *priv =3D netdev_priv(ndev);
+> +       struct net_device_stats *stats =3D &ndev->stats;
+> +       enum can_state new_state =3D priv->can.state;
+> +       struct can_berr_counter bec;
+> +       enum can_state rx_state, tx_state;
+> +       struct sk_buff *skb;
+> +       struct can_frame *cf;
+> +
+> +       /* Early exit if no error flag is set */
+> +       if (!(esr & (BXCAN_ESR_EWGF | BXCAN_ESR_EPVF | BXCAN_ESR_BOFF)))
+> +               return;
+> +
+> +       bec.txerr =3D BXCAN_TEC(esr);
+> +       bec.rxerr =3D BXCAN_REC(esr);
+> +
+> +       if (esr & BXCAN_ESR_BOFF)
+> +               new_state =3D CAN_STATE_BUS_OFF;
+> +       else if (esr & BXCAN_ESR_EPVF)
+> +               new_state =3D CAN_STATE_ERROR_PASSIVE;
+> +       else if (esr & BXCAN_ESR_EWGF)
+> +               new_state =3D CAN_STATE_ERROR_WARNING;
+> +
+> +       /* state hasn't changed */
+> +       if (unlikely(new_state =3D=3D priv->can.state))
+> +               return;
+> +
+> +       skb =3D alloc_can_err_skb(ndev, &cf);
+> +       if (unlikely(!skb))
+> +               return;
+> +
+> +       tx_state =3D bec.txerr >=3D bec.rxerr ? new_state : 0;
+> +       rx_state =3D bec.txerr <=3D bec.rxerr ? new_state : 0;
+> +       can_change_state(ndev, cf, tx_state, rx_state);
+> +
+> +       if (new_state =3D=3D CAN_STATE_BUS_OFF)
+> +               can_bus_off(ndev);
+> +
+> +       stats->rx_bytes +=3D cf->len;
+
+Please do not increment the stats if the frame is remote (c.f. CAN_RTR_FLAG=
+).
+
+> +       stats->rx_packets++;
+> +       netif_rx(skb);
+> +}
+
+
+Yours sincerely,
+Vincent Mailhol
