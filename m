@@ -2,115 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A57BECAAD7
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:40:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054E1ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 08:40:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245428AbiHZIk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 04:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58078 "EHLO
+        id S245130AbiHZIky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 04:40:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245536AbiHZIj7 (ORCPT
+        with ESMTP id S241853AbiHZIkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 04:39:59 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92B85D632D
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:39:08 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-31f445bd486so18620907b3.13
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:39:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=Gbnh/nnDbuL5T5BvLNj3zwAmlE8d4k5PawHmbvFEFbk=;
-        b=MNjXddBAOd+w9wkV5muswSppV6x5Jv+YS9ecOjXsUWJBVbPQURDBrSTe3Rss2i0p/r
-         Jhmif2aOct4FrfcfpD9SRO9RHxr4LmccGOUui2+rtO1i6NUewZYaWAF1Uj3qq59pfr91
-         VjwTW2OAdfNyC5ON+2WWx86GER7zk9LtKCZGNCcc/bhubscXBSXf0GihTtUlUsBLA3Xn
-         vuWQ47vl8nc81EKOuzXoehfRScxfeaXU9CceWTlAIRodc4v7g6LuKc+2uSzDQqYIngTy
-         F8vTYNtLOiuY3iezgI6TMtgUOBkC4/bd55SIlfcNGNOfJt1siO9gbTktwflBScPg/B+A
-         IwQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=Gbnh/nnDbuL5T5BvLNj3zwAmlE8d4k5PawHmbvFEFbk=;
-        b=Du6OQAlKD2iXuvYq5ifEG+XEhWCouiuW7wRLucdc1OGVzCG0JWuUTFoGuKXMlCllb8
-         yrX4F5OPud/SiJK/mU6wSjUnl0bzFv3JW6ko0dZzb72aBKPSKpxGNqDNrK7R8kWnCW++
-         qn6ynrWAc7eAJkqOWdK6TZv7KKBs0Htn/Y4ubrYb0Yl8rPgHSp4JXgtuOSDISsQp92Wv
-         zUnUf6EAUBXgYMTZ/BmaFHfxqo4281L/g8SH2MvgGwtp6dflAncvBHoffQcpDZBxHXLO
-         Z9b3eaj5OXBdXzc8jLHqwL56IqCWRwIlybmUnQXGlI0CUshJAkvGC+jWUye8Rr2Mi4ZK
-         PpRw==
-X-Gm-Message-State: ACgBeo1VIBj92jHpHQDmfzISmzfZosjhWQ2Rl/FD7fAqBgNlDIQyCIcR
-        0V/pVMalKugIISYtM26pH9+izv6DgCiQFtRu1ScEUA==
-X-Google-Smtp-Source: AA6agR7kYKsB2aFgL4J8UVJXiRDCFz4t/tXSI4PkJwjvI/Lg1d/SZ2cRrdBUXdzofU6od8Ey4X/QYzkYrxgTJmY4jhk=
-X-Received: by 2002:a81:10a:0:b0:333:618e:190b with SMTP id
- 10-20020a81010a000000b00333618e190bmr7063483ywb.10.1661503147204; Fri, 26 Aug
- 2022 01:39:07 -0700 (PDT)
+        Fri, 26 Aug 2022 04:40:20 -0400
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com [66.111.4.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDA2D5EB1
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:39:37 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id BADFF5803A3;
+        Fri, 26 Aug 2022 04:39:35 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Fri, 26 Aug 2022 04:39:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1661503175; x=1661510375; bh=9xtBw9bGVh
+        /VC2EF6GzMgiE93Tg5R1QYL3cLjDRDYzc=; b=cyxbPTjcl4hcUxTxY9R3TEaBtP
+        ChkWzg86WrWHSb8+ifunp/H1FZDvxH36HLAyVP6q4NBEtlCQSrihx87KO4+HjQIZ
+        S+6jjIJ9aHhKlPyBEjm1Z196OjkLhy5dSL1+CrJ+mcGPC9sPf/zKipQ7dwl7BcA+
+        3XxEv/SySp5yWccenDgtPsQK7clK5UaTfvBWZx+80EG9L3HSpEp+1W+hpBIiIyxH
+        jsHv7RjzkIxKfNT1krrbsp7I0R9Tuf7R9ax/YLuZ4vcr9SNf0F2ZlXc/7Gyh4dFf
+        DTJQ8704P5yE0RMQDOEwKNyK/VdockUbBz1FIuLiKnBmYW+qkWj4+xPuR37g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1661503175; x=1661510375; bh=9xtBw9bGVh/VC2EF6GzMgiE93Tg5
+        R1QYL3cLjDRDYzc=; b=tApEFqsJzgIpkdw3IAPFB+tnDdhT/p4Z/63Z0OYt3OTc
+        VdzFOn+20lhMDNIyvxC/XxNpxpIwVJ4TSpZXW+lqW+L8XV6ikpUlITX/lSTGgBlC
+        qbZNwcpKCj0A93ph8YNR5gLzOMi87MBG5cWctotHXU5TA7u2b9BPHToT68urDc9V
+        j7uLnWRM3nka8Pt/dc+5boJIPbNnwX0hYblSYD5r+/EjgHWhXEg1tr4fy6exNY96
+        s0yxTzw1nD2Sd0lyxPOj6u817l+NAqIu5ofSqBW+9WYUPT0/bMSJcbP+JdHJjh5I
+        iY6py0HZTr4oqeNyuoLaYNKCMv7kwtWuc+vEa6sVNQ==
+X-ME-Sender: <xms:xoYIY-bWt0kDLwGe_MuCy3E-nXQf6GJweskoJXSSAxT0QDNXhcck2g>
+    <xme:xoYIYxZAV2bURDoMbSb4oZwCK6jVpg6zu9qesNnODHH4Dx1zqgTOKxOtzZTGEuFLE
+    jTxbcmn_YMzNB3euRU>
+X-ME-Received: <xmr:xoYIY49lYhb1uM0-1L_ltuZCJ4-FAVszUJmu66xWZPGW7F81Gnc9byQW454>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejhedgtdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeevuddthffgfeeiffejgfeghfeludegkedtgefgffejtdegtddvleduvdfh
+    teehveenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
+    hh
+X-ME-Proxy: <xmx:xoYIYwok29UQGcnLMHb6Bz0QVvzQUwkG5u8Jjo3kNt44HmYdjYpTnA>
+    <xmx:xoYIY5oYKxL0RG3Z8nBl3J3f19P2Bhcnrp8YROGaca0jh0pheWolwg>
+    <xmx:xoYIY-RxUi_8QDamJh6hWOr4i3lYTtgp4tKuufNO5MXg7wx__HWbFQ>
+    <xmx:x4YIYyZcUH30FUMCvxBJ4wrOJiTrOL_b0pYJw95tPAU9nCwstGOmuw>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 26 Aug 2022 04:39:34 -0400 (EDT)
+Date:   Fri, 26 Aug 2022 10:39:31 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Mateusz Kwiatkowski <kfyatek@gmail.com>
+Cc:     Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: Re: [PATCH v1 00/35] drm: Analog TV Improvements
+Message-ID: <20220826083931.sd7oxpbsnxrqij52@houat>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <987d6114-5fcb-d668-3b0d-ad6d8723dfdb@tronnes.org>
+ <20220822074800.qzyctchqn5usr55g@houat>
+ <9a15b1cf-692c-1b0d-02a6-316cbd954525@gmail.com>
+ <20220825155506.wqurh5r752qfufqs@houat>
+ <18737c8a-78f4-5b9f-aea2-588bc65c13d9@gmail.com>
+ <9d9ba040-99d7-25cb-ba10-1c132d7f7663@gmail.com>
 MIME-Version: 1.0
-References: <000000000000c98a7f05ac744f53@google.com> <000000000000734fe705acb9f3a2@google.com>
- <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com> <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
- <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
- <CAG_fn=Wq51FMbty4c_RwjBSFWS1oceL1rOAUzCyRnGEzajQRAg@mail.gmail.com> <46fee955-a5fa-fbd6-bcc4-d9344e6801d9@I-love.SAKURA.ne.jp>
-In-Reply-To: <46fee955-a5fa-fbd6-bcc4-d9344e6801d9@I-love.SAKURA.ne.jp>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Fri, 26 Aug 2022 10:38:30 +0200
-Message-ID: <CAG_fn=X5a=2vhDR6Lt_6wEUZCmDqhy0dTW62FphATNgpuDbqNg@mail.gmail.com>
-Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     ath9k-devel@qca.qualcomm.com, phil@philpotter.co.uk,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ztr76q3jbdkzy3rp"
+Content-Disposition: inline
+In-Reply-To: <9d9ba040-99d7-25cb-ba10-1c132d7f7663@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 3:35 AM Tetsuo Handa
-<penguin-kernel@i-love.sakura.ne.jp> wrote:
->
-> On 2022/08/26 0:09, Alexander Potapenko wrote:
-> > On Thu, Aug 25, 2022 at 4:34 PM Tetsuo Handa
-> > <penguin-kernel@i-love.sakura.ne.jp> wrote:
-> >>
-> >> Hello.
-> > Hi Tetsuo,
-> >
-> >> I found that your patch was applied. But since the reproducer tested o=
-nly 0 byte
-> >> case, I think that rejecting only less than sizeof(struct htc_frame_hd=
-r) bytes
-> >> is not sufficient.
-> >>
-> >> More complete patch with Ack from Toke is waiting at
-> >> https://lkml.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.=
-SAKURA.ne.jp .
-> >
-> > Thanks for letting me know! I just checked that your patch indeed
-> > fixes the issue I am facing.
-> > If it is more complete, I think we'd indeed better use yours.
->
-> I recognized that "ath9k: fix an uninit value use in ath9k_htc_rx_msg()" =
-is
-> local to KMSAN tree.
-> https://github.com/google/kmsan/commit/d891e35583bf2e81ccc7a2ea548bf7cf47=
-329f40
-I actually did a rebase of KMSAN tree to v6.0-rc2 yesterday and
-dropped that patch (picked yours instead).
-Thanks for the heads-up!
 
---=20
-Alexander Potapenko
-Software Engineer
+--ztr76q3jbdkzy3rp
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
+On Fri, Aug 26, 2022 at 06:07:47AM +0200, Mateusz Kwiatkowski wrote:
+> Hi Maxime, Noralf and everyone,
+>=20
+> Just as a quick update. I isolated the issue to the power management subs=
+ystem.
+> Unfortunately I know very little about the power management subsystem so
+> I don't think I can help.
+>=20
+> There are two alternative dirty ad-hoc hacks that get things working.
+>=20
+> - Commenting out the pm_runtime_put() / pm_runtime_get_sync() calls in vc=
+4_vec.c
+> - Reverting this PR by Dom Cobley a.k.a. popcornmix:
+> =A0 https://github.com/raspberrypi/linux/pull/4639
 
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+We don't have that PR upstream, so that might be the explanation to why
+you're seeing this and I don't. I'll look into this further and will
+open an issue.
+
+I can't see anything wrong with the pm_runtime use though.
+
+> Either of these approaches makes VEC mode switching work again. Obviously
+> neither is appropriate for a permanent solution.
+>=20
+> I tried some random code permutations that came to my mind, like using the
+> vc4_encoder callbacks (e.g. post_crtc_powerdown) instead of the standard
+> enable/disable encoder callbacks, but to no avail.
+>=20
+> Since the clocks and power management seem to be delegated to the firmwar=
+e now,
+> my guess is that this might be a firmware issue, but I can't really check=
+ all
+> the firmware versions. It certainly crashes on the version currently avai=
+lable
+> in Raspberry Pi OS repos, and on this one:
+> https://github.com/raspberrypi/rpi-firmware/commit/4dde751. My Pi4 doesn'=
+t boot
+> using any newer firmware, at least not from USB - I might try some SD card
+> after the weekend.
+
+Thanks for your testing
+
+Maxime
+
+--ztr76q3jbdkzy3rp
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYwiGwwAKCRDj7w1vZxhR
+xVloAP9b+eN7Fz3nq/+s3sKOXlcj/RDnTbMCfoNAKYheAd1bJQD/SVISMs+ofJwg
+ATFobKVjQ6spDBEO2dCXYu2C237MFwM=
+=AUEX
+-----END PGP SIGNATURE-----
+
+--ztr76q3jbdkzy3rp--
