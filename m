@@ -2,177 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC3FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A91FECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 09:29:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343685AbiHZJ2c (ORCPT
+        id S1343659AbiHZJ3K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 05:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
+        Fri, 26 Aug 2022 05:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237428AbiHZJ2W (ORCPT
+        with ESMTP id S237130AbiHZJ3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 05:28:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25FF7D7D2F
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:28:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661506093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Fri, 26 Aug 2022 05:29:08 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F38BB5A44;
+        Fri, 26 Aug 2022 02:29:07 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 30ED21F899;
+        Fri, 26 Aug 2022 09:29:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661506146; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=tZm8+FPJNVay8zI5ZDreamxl1om7Nr78rlpU7kmodO4=;
-        b=A8Z6DApgLYFkQiBTtK1YaGAXgKyBF4HfBKGEFTeUZEvMci14veaMvhRfzbI0W1QsoQphB8
-        InZl9c3pTTKUJWmT0cQ6InAOT7LjO+enIW4QmrO0vpN7kxbbyY+CNRaIQ9LNufkwE5Vt03
-        HzuCrMNfI/CJ0DUMCPWKAfmVCu3vcxc=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-662-DGhZ-JknPXWob9dkKP9__g-1; Fri, 26 Aug 2022 05:28:12 -0400
-X-MC-Unique: DGhZ-JknPXWob9dkKP9__g-1
-Received: by mail-wr1-f70.google.com with SMTP id s20-20020adf9794000000b002258607240eso106594wrb.23
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 02:28:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=tZm8+FPJNVay8zI5ZDreamxl1om7Nr78rlpU7kmodO4=;
-        b=wbbi1etzbfhblyF0na/WBIfJIuL3Cvw8RJ+5PvpVOKZ98RwXWc32UD3nvv1bqd79Gy
-         /RrMafh6+ES6C96FhvZCeg52GnksKoqTu548OzEDD+nq8Tn7WtpruqUc1MP+LG+QRZ9V
-         4OJriaIvp6TRV3dQ4zTGc4W0sw3rc6NqSfynlY1WowNsQUWGfPqukGVFkkLIuvn0kNAd
-         /K3MRYNGoJTyjETS3WK0Aw26VLqrx+h1BoM43yPHInM8YX4tkB1xAMDN58RgzOiEv5os
-         5d35pRMOgpMsmSd1fi6nmJxUyY4OckQlPrqoa9xL6irp5tbx3upxJPk4IoUdp0LUyG/j
-         6ljw==
-X-Gm-Message-State: ACgBeo0uwb+4+Pc5gu01zgzrZqktq6fPWsIVdlqJUmve1JLjwaqlwbYR
-        4l4yeSqUrHY2k0GJ569P46OubOxRac1sfvfHu5zK0kgOJ3sQfh/zja3/4oiDg1oeeEj1bQtDbyO
-        oP7n3jAZedf9Q0hWhblWEpYIk
-X-Received: by 2002:adf:9ccf:0:b0:225:4934:53e3 with SMTP id h15-20020adf9ccf000000b00225493453e3mr4509917wre.210.1661506091102;
-        Fri, 26 Aug 2022 02:28:11 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR710MOt95gvLSyB2DYQA8RD1oC554oWsCWqEuY3W3PaubYO9NAho/V4h0PHCqjnn7amuZl2oA==
-X-Received: by 2002:adf:9ccf:0:b0:225:4934:53e3 with SMTP id h15-20020adf9ccf000000b00225493453e3mr4509905wre.210.1661506090767;
-        Fri, 26 Aug 2022 02:28:10 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c708:f600:abad:360:c840:33fa? (p200300cbc708f600abad0360c84033fa.dip0.t-ipconnect.de. [2003:cb:c708:f600:abad:360:c840:33fa])
-        by smtp.gmail.com with ESMTPSA id v16-20020a5d6110000000b0021e13efa17esm1403883wrt.70.2022.08.26.02.28.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 02:28:09 -0700 (PDT)
-Message-ID: <8092cd73-f165-9026-ea6e-076e6a96f206@redhat.com>
-Date:   Fri, 26 Aug 2022 11:28:09 +0200
+        bh=FfcCFtkfDcYPIDq2ZP7yv9qy/D1i2BMmbbUfbOxhjCA=;
+        b=JmLvkBsUASdHRrnDtIkr0CfZfwONubrN2KcXaFtugqIcqdIRqrn7bdi3FTvkyTHEoZCmpd
+        BTzCdCmk+SAhkl48KjbOYUW585jrj1sby3lQhc5m2g97/ZlZfGkuCqjDCDQd02uSEvqzQa
+        HOuBRc9eRE4pDw6bmvf7Xxp88N3ZLm8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D45DA13421;
+        Fri, 26 Aug 2022 09:29:05 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id pIayMGGSCGMZQQAAMHmgww
+        (envelope-from <jgross@suse.com>); Fri, 26 Aug 2022 09:29:05 +0000
+Message-ID: <df018a26-d81b-7785-6deb-1721cf7f4530@suse.com>
+Date:   Fri, 26 Aug 2022 11:29:05 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 5/8] memblock tests: update alloc_api to test
- memblock_alloc_raw
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4] xen/privcmd: fix error exit of privcmd_ioctl_dm_op()
 Content-Language: en-US
-To:     Rebecca Mckeever <remckee0@gmail.com>
-Cc:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1660897732.git.remckee0@gmail.com>
- <48cfb01ba417895f28ce7ef9b99d1ce0854bfd5e.1660897732.git.remckee0@gmail.com>
- <d65cf9fe-e22c-7698-0313-879685f1319b@redhat.com>
- <20220825213546.GA13624@sophie>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220825213546.GA13624@sophie>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Oleksandr Tyshchenko <Oleksandr_Tyshchenko@epam.com>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc:     Stefano Stabellini <sstabellini@kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Rustam Subkhankulov <subkhankulov@ispras.ru>
+References: <20220825141918.3581-1-jgross@suse.com>
+ <5e749d5e-08d9-81c9-0f46-a06be2d752ce@epam.com>
+From:   Juergen Gross <jgross@suse.com>
+In-Reply-To: <5e749d5e-08d9-81c9-0f46-a06be2d752ce@epam.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------3ZehxU7Kxog0RUTYx1upyhdH"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.08.22 23:35, Rebecca Mckeever wrote:
-> On Tue, Aug 23, 2022 at 11:49:46AM +0200, David Hildenbrand wrote:
->> On 19.08.22 10:34, Rebecca Mckeever wrote:
->>> Update memblock_alloc() tests so that they test either memblock_alloc()
->>> or memblock_alloc_raw() depending on the value of alloc_test_flags. Run
->>> through all the existing tests in memblock_alloc_api twice: once for
->>> memblock_alloc() and once for memblock_alloc_raw().
->>>
->>> When the tests run memblock_alloc(), they test that the entire memory
->>> region is zero. When the tests run memblock_alloc_raw(), they test that
->>> the entire memory region is nonzero.
->>
->> Could add a comment stating that we initialize the content to nonzero in
->> that case, and expect it to remain unchanged (== not zeroed).
->>
->>>
->>> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
->>> ---
->>>  tools/testing/memblock/tests/alloc_api.c | 98 ++++++++++++++++--------
->>>  tools/testing/memblock/tests/common.h    | 25 ++++++
->>>  2 files changed, 90 insertions(+), 33 deletions(-)
->>>
->>> diff --git a/tools/testing/memblock/tests/alloc_api.c b/tools/testing/memblock/tests/alloc_api.c
->>> index 65bff77dd55b..cf67687ae044 100644
->>> --- a/tools/testing/memblock/tests/alloc_api.c
->>> +++ b/tools/testing/memblock/tests/alloc_api.c
->>> @@ -1,6 +1,29 @@
->>>  // SPDX-License-Identifier: GPL-2.0-or-later
->>>  #include "alloc_api.h"
->>>  
->>> +static const char * const func_testing[] = {
->>> +	"memblock_alloc",
->>> +	"memblock_alloc_raw"
->>> +};
->>> +
->>> +static int alloc_test_flags = TEST_ZEROED;
->>> +
->>> +static inline const char * const get_func_testing(int flags)
->>> +{
->>> +	if (flags & TEST_RAW)
->>> +		return func_testing[1];
->>> +	else
->>> +		return func_testing[0];
->>
->> No need for the else, you can return directly.
->>
->> Can we avoid the func_testing array?
->>
->>
->> Persoally, I consider the "get_func_testing()" name a bit confusing.
->>
->> get_memblock_alloc_name() ?
->>
->>
->>> diff --git a/tools/testing/memblock/tests/common.h b/tools/testing/memblock/tests/common.h
->>> index 58f84bf2c9ae..4fd3534ff955 100644
->>> --- a/tools/testing/memblock/tests/common.h
->>> +++ b/tools/testing/memblock/tests/common.h
->>> @@ -12,6 +12,11 @@
->>>  
->>>  #define MEM_SIZE SZ_16K
->>>  
->>> +enum test_flags {
->>> +	TEST_ZEROED = 0x0,
->>> +	TEST_RAW = 0x1
->>> +};
->>
->> I'd have called this
->>
->> enum test_flags {
->> 	/* No special request. */
->> 	TEST_F_NONE = 0x0,
->> 	/* Perform raw allocations (no zeroing of memory).
->> 	TEST_F_RAW = 0x1,
->> };
->>
->> Further, I'd just have use #define for the flags.
->>
-> Do you mean use two #defines instead of the enum? I thought enums were
-> preferred when defining related constants.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------3ZehxU7Kxog0RUTYx1upyhdH
+Content-Type: multipart/mixed; boundary="------------LXd8SIJhQ6wEjyb0DFez00ic";
+ protected-headers="v1"
+From: Juergen Gross <jgross@suse.com>
+To: Oleksandr Tyshchenko <Oleksandr_Tyshchenko@epam.com>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Stefano Stabellini <sstabellini@kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>,
+ Rustam Subkhankulov <subkhankulov@ispras.ru>
+Message-ID: <df018a26-d81b-7785-6deb-1721cf7f4530@suse.com>
+Subject: Re: [PATCH v4] xen/privcmd: fix error exit of privcmd_ioctl_dm_op()
+References: <20220825141918.3581-1-jgross@suse.com>
+ <5e749d5e-08d9-81c9-0f46-a06be2d752ce@epam.com>
+In-Reply-To: <5e749d5e-08d9-81c9-0f46-a06be2d752ce@epam.com>
 
-I guess we have a wild mixture of raw define, enums and __bitwise +
-defines nowdays.
+--------------LXd8SIJhQ6wEjyb0DFez00ic
+Content-Type: multipart/mixed; boundary="------------0g0dy3cM1Rn8cvW5XvCx2EFw"
 
-E.g., take a look at include/linux/rmap.h "typedef int __bitwise rmap_t"
-and how it's used --  that seems to be the new "best" solution for use
-in the kernel.
+--------------0g0dy3cM1Rn8cvW5XvCx2EFw
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Having that said, feel free to just let it be an enum :)
+T24gMjYuMDguMjIgMTE6MDgsIE9sZWtzYW5kciBUeXNoY2hlbmtvIHdyb3RlOg0KPiANCj4g
+T24gMjUuMDguMjIgMTc6MTksIEp1ZXJnZW4gR3Jvc3Mgd3JvdGU6DQo+IA0KPiBIZWxsbyBK
+dWVyZ2VuDQo+IA0KPj4gVGhlIGVycm9yIGV4aXQgb2YgcHJpdmNtZF9pb2N0bF9kbV9vcCgp
+IGlzIGNhbGxpbmcgdW5sb2NrX3BhZ2VzKCkNCj4+IHBvdGVudGlhbGx5IHdpdGggcGFnZXMg
+YmVpbmcgTlVMTCwgbGVhZGluZyB0byBhIE5VTEwgZGVyZWZlcmVuY2UuDQo+Pg0KPj4gQWRk
+aXRpb25hbGx5IGxvY2tfcGFnZXMoKSBkb2Vzbid0IGNoZWNrIGZvciBwaW5fdXNlcl9wYWdl
+c19mYXN0KCkNCj4+IGhhdmluZyBiZWVuIGNvbXBsZXRlbHkgc3VjY2Vzc2Z1bCwgcmVzdWx0
+aW5nIGluIHBvdGVudGlhbGx5IG5vdA0KPj4gbG9ja2luZyBhbGwgcGFnZXMgaW50byBtZW1v
+cnkuIFRoaXMgY291bGQgcmVzdWx0IGluIHNwb3JhZGljIGZhaWx1cmVzDQo+PiB3aGVuIHVz
+aW5nIHRoZSByZWxhdGVkIG1lbW9yeSBpbiB1c2VyIG1vZGUuDQo+Pg0KPj4gRml4IGFsbCBv
+ZiB0aGF0IGJ5IGNhbGxpbmcgdW5sb2NrX3BhZ2VzKCkgYWx3YXlzIHdpdGggdGhlIHJlYWwg
+bnVtYmVyDQo+PiBvZiBwaW5uZWQgcGFnZXMsIHdoaWNoIHdpbGwgYmUgemVybyBpbiBjYXNl
+IHBhZ2VzIGJlaW5nIE5VTEwsIGFuZCBieQ0KPj4gY2hlY2tpbmcgdGhlIG51bWJlciBvZiBw
+YWdlcyBwaW5uZWQgYnkgcGluX3VzZXJfcGFnZXNfZmFzdCgpIG1hdGNoaW5nDQo+PiB0aGUg
+ZXhwZWN0ZWQgbnVtYmVyIG9mIHBhZ2VzLg0KPj4NCj4+IENjOiA8c3RhYmxlQHZnZXIua2Vy
+bmVsLm9yZz4NCj4+IEZpeGVzOiBhYjUyMGJlOGNkNWQgKCJ4ZW4vcHJpdmNtZDogQWRkIElP
+Q1RMX1BSSVZDTURfRE1fT1AiKQ0KPj4gUmVwb3J0ZWQtYnk6IFJ1c3RhbSBTdWJraGFua3Vs
+b3YgPHN1YmtoYW5rdWxvdkBpc3ByYXMucnU+DQo+PiBTaWduZWQtb2ZmLWJ5OiBKdWVyZ2Vu
+IEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+DQo+IA0KPiANCj4gSSBoYXZlbid0IHNwb3R0ZWQg
+YW55IGlzc3VlczoNCj4gDQo+IFJldmlld2VkLWJ5OiBPbGVrc2FuZHIgVHlzaGNoZW5rbyA8
+b2xla3NhbmRyX3R5c2hjaGVua29AZXBhbS5jb20+DQo+IA0KPiANCj4+IC0tLQ0KPj4gVjI6
+DQo+PiAtIHVzZSAicGlubmVkIiBhcyBwYXJhbWV0ZXIgZm9yIHVubG9ja19wYWdlcygpIChK
+YW4gQmV1bGljaCkNCj4+IC0gZHJvcCBsYWJlbCAidW5sb2NrIiBhZ2FpbiAoSmFuIEJldWxp
+Y2gpDQo+PiAtIGFkZCBjaGVjayBmb3IgY29tcGxldGUgc3VjY2VzcyBvZiBwaW5fdXNlcl9w
+YWdlc19mYXN0KCkNCj4+IFYzOg0KPj4gLSBjb250aW51ZSBhZnRlciBwYXJ0aWFsIHN1Y2Nl
+c3Mgb2YgcGluX3VzZXJfcGFnZXNfZmFzdCgpIChKYW4gQmV1bGljaCkNCj4+IFY0Og0KPj4g
+LSBmaXggY2FzZSBvZiBtdWx0aXBsZSBwYXJ0aWFsIHN1Y2Nlc3NlcyBmb3Igb25lIGJ1ZmZl
+ciAoSmFuIEJldWxpY2gpDQo+PiAtLS0NCj4+ICAgIGRyaXZlcnMveGVuL3ByaXZjbWQuYyB8
+IDIxICsrKysrKysrKysrLS0tLS0tLS0tLQ0KPj4gICAgMSBmaWxlIGNoYW5nZWQsIDExIGlu
+c2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQ0KPj4NCj4+IGRpZmYgLS1naXQgYS9kcml2
+ZXJzL3hlbi9wcml2Y21kLmMgYi9kcml2ZXJzL3hlbi9wcml2Y21kLmMNCj4+IGluZGV4IDMz
+Njk3MzQxMDhhZi4uZTg4ZThmNmYwYTMzIDEwMDY0NA0KPj4gLS0tIGEvZHJpdmVycy94ZW4v
+cHJpdmNtZC5jDQo+PiArKysgYi9kcml2ZXJzL3hlbi9wcml2Y21kLmMNCj4+IEBAIC01ODEs
+MjcgKzU4MSwzMCBAQCBzdGF0aWMgaW50IGxvY2tfcGFnZXMoDQo+PiAgICAJc3RydWN0IHBy
+aXZjbWRfZG1fb3BfYnVmIGtidWZzW10sIHVuc2lnbmVkIGludCBudW0sDQo+PiAgICAJc3Ry
+dWN0IHBhZ2UgKnBhZ2VzW10sIHVuc2lnbmVkIGludCBucl9wYWdlcywgdW5zaWduZWQgaW50
+ICpwaW5uZWQpDQo+PiAgICB7DQo+PiAtCXVuc2lnbmVkIGludCBpOw0KPj4gKwl1bnNpZ25l
+ZCBpbnQgaSwgb2ZmID0gMDsNCj4+ICAgIA0KPj4gLQlmb3IgKGkgPSAwOyBpIDwgbnVtOyBp
+KyspIHsNCj4+ICsJZm9yIChpID0gMDsgaSA8IG51bTsgKSB7DQo+PiAgICAJCXVuc2lnbmVk
+IGludCByZXF1ZXN0ZWQ7DQo+PiAgICAJCWludCBwYWdlX2NvdW50Ow0KPj4gICAgDQo+PiAg
+ICAJCXJlcXVlc3RlZCA9IERJVl9ST1VORF9VUCgNCj4+ICAgIAkJCW9mZnNldF9pbl9wYWdl
+KGtidWZzW2ldLnVwdHIpICsga2J1ZnNbaV0uc2l6ZSwNCj4+IC0JCQlQQUdFX1NJWkUpOw0K
+Pj4gKwkJCVBBR0VfU0laRSkgLSBvZmY7DQo+PiAgICAJCWlmIChyZXF1ZXN0ZWQgPiBucl9w
+YWdlcykNCj4+ICAgIAkJCXJldHVybiAtRU5PU1BDOw0KPj4gICAgDQo+PiAgICAJCXBhZ2Vf
+Y291bnQgPSBwaW5fdXNlcl9wYWdlc19mYXN0KA0KPj4gLQkJCSh1bnNpZ25lZCBsb25nKSBr
+YnVmc1tpXS51cHRyLA0KPj4gKwkJCSh1bnNpZ25lZCBsb25nKWtidWZzW2ldLnVwdHIgKyBv
+ZmYgKiBQQUdFX1NJWkUsDQo+PiAgICAJCQlyZXF1ZXN0ZWQsIEZPTExfV1JJVEUsIHBhZ2Vz
+KTsNCj4+IC0JCWlmIChwYWdlX2NvdW50IDwgMCkNCj4+IC0JCQlyZXR1cm4gcGFnZV9jb3Vu
+dDsNCj4+ICsJCWlmIChwYWdlX2NvdW50IDw9IDApDQo+PiArCQkJcmV0dXJuIHBhZ2VfY291
+bnQgPyA6IC1FRkFVTFQ7DQo+IA0KPiANCj4gW25vdCByZWxhdGVkIHRvIHRoZSBjdXJyZW50
+IHBhdGNoXQ0KPiANCj4gSSBqdXN0IHdvbmRlciwgd2hldGhlciBkcml2ZXJzL3hlbi9nbnRk
+ZXYuYzpnbnRkZXZfZ2V0X3BhZ2UoKSByZWFsbHkNCj4gd2FudHMgdG8gZ2FpbiB0aGUgc2Ft
+ZSBjaGVjaz8NCj4gDQo+IGluZGV4IDU5ZmZlYTgwMDA3OS4uNDVlMTYwMzEyMDRkIDEwMDY0
+NA0KPiAtLS0gYS9kcml2ZXJzL3hlbi9nbnRkZXYuYw0KPiArKysgYi9kcml2ZXJzL3hlbi9n
+bnRkZXYuYw0KPiBAQCAtNzQwLDggKzc0MCw4IEBAIHN0YXRpYyBpbnQgZ250ZGV2X2dldF9w
+YWdlKHN0cnVjdCBnbnRkZXZfY29weV9iYXRjaA0KPiAqYmF0Y2gsIHZvaWQgX191c2VyICp2
+aXJ0LA0KPiAgIMKgwqDCoMKgwqDCoMKgIGludCByZXQ7DQo+IA0KPiAgIMKgwqDCoMKgwqDC
+oMKgIHJldCA9IHBpbl91c2VyX3BhZ2VzX2Zhc3QoYWRkciwgMSwgYmF0Y2gtPndyaXRlYWJs
+ZSA/DQo+IEZPTExfV1JJVEUgOiAwLCAmcGFnZSk7DQo+IC3CoMKgwqDCoMKgwqAgaWYgKHJl
+dCA8IDApDQo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHJldHVybiByZXQ7DQo+
+ICvCoMKgwqDCoMKgwqAgaWYgKHJldCA8PSAwKQ0KPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCByZXR1cm4gcmV0ID8gOiAtRUZBVUxUOw0KPiANCj4gICDCoMKgwqDCoMKgwqDC
+oCBiYXRjaC0+cGFnZXNbYmF0Y2gtPm5yX3BhZ2VzKytdID0gcGFnZTsNCg0KSSBkb24ndCB0
+aGluayB0aGlzIGlzIG5lZWRlZCBoZXJlLCBhcyBwaW5fdXNlcl9wYWdlc19mYXN0KCkgY2Fu
+J3QNCnJldHVybiAwIHdoZW4gY2FsbGVkIGZvciBhIHNpbmdsZSBwYWdlLg0KDQoNCkp1ZXJn
+ZW4NCg==
+--------------0g0dy3cM1Rn8cvW5XvCx2EFw
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Thanks,
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-David / dhildenb
+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
+jR/i1DG86lem3iBDXzXsZDn8R38=3D
+=3D2wuH
+-----END PGP PUBLIC KEY BLOCK-----
 
+--------------0g0dy3cM1Rn8cvW5XvCx2EFw--
+
+--------------LXd8SIJhQ6wEjyb0DFez00ic--
+
+--------------3ZehxU7Kxog0RUTYx1upyhdH
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmMIkmEFAwAAAAAACgkQsN6d1ii/Ey9F
+vQgAgpiT4qJaY9fkhEvt04XcDlwwR0APCP+KFd7oXoHTRCu1mer7oiWcnpNHKbtDeSFouaMaulBC
+3hfNAxj0QSmXK9CEeI5PgfjqPW8QkZlNXaHOKPJr6Lvzmb9Gilvs3k6XcdQYS6VSYfuOACpn6NlZ
+Yp3x8dIM6yPBT/ERzM86tzxAD3lxPx7BGoK/8xo8hAMpjrA8gPpINxfuc7ofWpIMy96FSwmm41SB
+99eFVhF04M7WPk620po00+G8oXhT8ozPXumNTQvD028btNVMkssiy9ciTwZy+nZ92V/Q+EvSAA5g
++9kMSeHC4ORVjhGphn4U+Q/cEuA7VDBFMzSxf1Re+w==
+=weEA
+-----END PGP SIGNATURE-----
+
+--------------3ZehxU7Kxog0RUTYx1upyhdH--
