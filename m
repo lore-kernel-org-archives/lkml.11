@@ -2,77 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF31ECAAA3
-	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2F4ECAAA3
+	for <linux-kernel@archiver.kernel.org>; Fri, 26 Aug 2022 01:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235824AbiHZBSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 25 Aug 2022 21:18:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        id S244161AbiHZBSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 25 Aug 2022 21:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiHZBSR (ORCPT
+        with ESMTP id S229536AbiHZBSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 25 Aug 2022 21:18:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE90C992E
-        for <linux-kernel@vger.kernel.org>; Thu, 25 Aug 2022 18:18:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83913B82A67
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 01:18:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F7ACC433D6;
-        Fri, 26 Aug 2022 01:18:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1661476694;
-        bh=xAL9DV0Gl9UV41+zmuVYq/S955LLBpe4w8CM7IzMAPw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2Rhulgtr8+DE/T+bEgl2/HeE7PC5m3vSZh+0tX0rK4WlUdfCduqjcebXZy7tdIdgw
-         Y59oDFrYFn3w5YMOezN+4WYo0s2Z++LnVRF4OcpjFnfPMGa7q0eMf53ls6WLhsyMHl
-         c+8vmCzc6eOOKKyL9eXqCI/Mbw34QTxwkYfKJ8gs=
-Date:   Thu, 25 Aug 2022 18:18:13 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Stephen Brennan <stephen.s.brennan@oracle.com>
-Cc:     Baoquan He <bhe@redhat.com>, Dave Young <dyoung@redhat.com>,
-        linux-kernel@vger.kernel.org, Vivek Goyal <vgoyal@redhat.com>,
-        kexec@lists.infradead.org
-Subject: Re: [PATCH] vmcoreinfo: add kallsyms_num_syms symbol
-Message-Id: <20220825181813.7a83043882be706bc8391c99@linux-foundation.org>
-In-Reply-To: <a151e3d3-db1d-c3ad-dcd5-3f758b4138ab@oracle.com>
-References: <20220808205410.18590-1-stephen.s.brennan@oracle.com>
-        <a151e3d3-db1d-c3ad-dcd5-3f758b4138ab@oracle.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 25 Aug 2022 21:18:37 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C2DEC9E87;
+        Thu, 25 Aug 2022 18:18:35 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MDMM926bQzkWft;
+        Fri, 26 Aug 2022 09:15:01 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 26 Aug 2022 09:18:33 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.175) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 26 Aug 2022 09:18:32 +0800
+From:   Lu Jialin <lujialin4@huawei.com>
+To:     Zefan Li <lizefan.x@bytedance.com>, Tejun Heo <tj@kernel.org>,
+        "Johannes Weiner" <hannes@cmpxchg.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>
+CC:     Lu Jialin <lujialin4@huawei.com>,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        <cgroups@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mm@kvack.org>
+Subject: [RFC 0/2] Introduce cgroup.top interface
+Date:   Fri, 26 Aug 2022 09:15:01 +0800
+Message-ID: <20220826011503.103894-1-lujialin4@huawei.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.175]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 25 Aug 2022 10:27:04 -0700 Stephen Brennan <stephen.s.brennan@oracle.com> wrote:
+Cgroup is used to organize and manage resource available processes.
+Currently there are no handy tool for gathering reousrce usage
+information for each and every child cgroups, makes it hard to detect
+resource outage and debug resource issues.
 
-> I just wanted to check on the status of this. I got your email about it 
-> being added to mm-hotfixes-unstable, and I do still see it in the quilt 
-> patches set:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/akpm/25-new.git/tree/patches/vmcoreinfo-add-kallsyms_num_syms-symbol.patch
-> 
-> I see the patch in mm-everything-2022-08-15-02-47 but it seems to have 
-> dropped out in mm-everything-2022-08-17-20-59 and later tags. As a 
-> result, it no longer shows up in linux-next.
-> 
-> Please excuse me if I'm ignorant of part of your process here, I know 
-> you handle a huge volume of patches!
+To overcome this, we present the cgroup.top interface. Just like the
+top command, user is able to easily gather resource usage information
+, allowing user to detect and respond to resource outage in child
+cgroups
 
-Thanks for noticing this - I appear to have messed up a rebase and lost
-a batch of hotfixes :(
+Show case:
+/ # mount -t cgroup2 none /sys/fs/cgroup
+/ # cd /sys/fs/cgroup/
+/sys/fs/cgroup # echo "+memory" > cgroup.subtree_control
+/sys/fs/cgroup # mkdir test1
+/sys/fs/cgroup # mkdir test2
+/sys/fs/cgroup # mkdir test3
+/sys/fs/cgroup # echo $$ > test2/cgroup.procs
+/sys/fs/cgroup # cd /test
+/test # ./memcg_malloc 512000 &
+/test # ./memcg_malloc 512000 &
+/test # ./memcg_malloc 512000 &
+/test # cd /sys/fs/cgroup
+/sys/fs/cgroup # echo $$ > test1/cgroup.procs
+/sys/fs/cgroup # cd /test
+/test # ./memcg_malloc 512000 &
+/test # cd /sys/fs/cgroup
+/sys/fs/cgroup # echo $$ > test3/cgroup.procs
+/sys/fs/cgroup # cat cgroup.top
+memory top:
+name            usage           anon            file            kernel
+test2           1974272         1671168         0               270336
+test1           700416          569344          0               94208
+test3           196608          86016           0               86016
 
-I readded
 
-mm-hugetlb-avoid-corrupting-page-mapping-in-hugetlb_mcopy_atomic_pte.patch
-shmem-update-folio-if-shmem_replace_page-updates-the-page.patch
-writeback-avoid-use-after-free-after-removing-device.patch
-mailmap-update-guilherme-g-piccolis-email-addresses.patch
-vmcoreinfo-add-kallsyms_num_syms-symbol.patch
-mm-re-allow-pinning-of-zero-pfns-again.patch
+Lu Jialin (1):
+  memcg: Adapt cgroup.top into per-memcg
 
-to the hotfixes queue.
+Xiu Jianfeng (1):
+  cgroup: Introduce per-cgroup resource top show interface
+
+ include/linux/cgroup-defs.h |  1 +
+ kernel/cgroup/cgroup.c      | 20 +++++++++
+ mm/memcontrol.c             | 87 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 108 insertions(+)
+
+-- 
+2.17.1
+
