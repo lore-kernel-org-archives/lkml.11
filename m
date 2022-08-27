@@ -2,357 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F119ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 11:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51663ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 12:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231805AbiH0LvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 07:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S230131AbiH0MFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 08:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbiH0Ltk (ORCPT
+        with ESMTP id S229659AbiH0MFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 07:49:40 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79D865811;
-        Sat, 27 Aug 2022 04:49:38 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id w10so4951066edc.3;
-        Sat, 27 Aug 2022 04:49:38 -0700 (PDT)
+        Sat, 27 Aug 2022 08:05:53 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5929612602;
+        Sat, 27 Aug 2022 05:05:52 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id t129so3978835pfb.6;
+        Sat, 27 Aug 2022 05:05:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=BNJgC72AfpKIQnb1cHvCbNdeeyBRjYBsxilXEw1s+b4=;
-        b=JBVTrcuHo3vu2cIL12cUK3btsvVf3xkxKhycstbYi6JGAWzzoFBrcsSoSknIuqmiv5
-         k4ct2GOLJC2FUM6sDQe3grNJlbhQ/E5Ze7YVFAehplhHvjoREkBN9LVTB6EWgR+GbQTw
-         qYReHiewnYkT7+5DZYzvw74rCURHdtp7jl5Hn6g3OZRPIeiMD2mASmjYlvDv6wXqNmhO
-         iWuoWJJnnfJliuCKMs6S7Bj//7FjDIk3oVCXwjoMlRjroCZsZuSLXVaIZTi1RPY/giF/
-         x6kdRwTBHT7fVtfMplvaSOfbwIgvs/6dAcDx7fFYitLTaTWMKCqb6gUSCo40Gac9t3Vx
-         k1Bw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=Xm1nhA4qs4Pjpc09I2GPMsrr76SU/YUnQePs9+vlA4Y=;
+        b=PWCRF10ZlJ8x5xSxr1AjjIxi6mMod5unparcdBbL3CcXvXAQFnQ2TJoGEUCRy5POdy
+         UhgUv0+3VT6SUzsIC9qjmOULw14A76zXogxudPTe5lPsfxZVTXNvPRRLXYYgf5B2jZD+
+         59Q4eIhj9GdjbS23gzjW+4EwJpd8NFK9XOde7YUOlmMv263S/sNdE/375KtEmOsiNIgH
+         +VZS31LlrnyxD+t8LCFijQzSJiiXH2U/fB0WLRbAkuzBI4FPKw3iF4e+VSQG7aPu6+nT
+         PflxEjpZvfi4BcPt1IHw73VMAfYPxJdlgrystLflrRsW9K74a30q/vorUcCQaJg4NZpC
+         7a7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=BNJgC72AfpKIQnb1cHvCbNdeeyBRjYBsxilXEw1s+b4=;
-        b=FPGtZ/v7wTSjpXY2KVObpvEfc40bsnzFTI54Og9T0NrthF3C+fCQcIT2t4dE3vNR2C
-         LIvMLnIRdl1YkQYM8iI15iKI8ewkH2vX+pcXwo72vgnNf0MSDBuEsGAXXRptnM2lDF+p
-         2VZsHWMBKYczKAcvaWWDescby6PBGrw5+dMo6W0jw0PZx7gsY0RJQRckZMXSWx/rJB3I
-         W2rXjyCLoxTeypg0eApvoddlb/4ORtap6rnfsz+/WL83EGAgDTrZWOSweR0CJQbNgGvl
-         A5hSEoy73Gjs9PmeEK6ZD6na8fdRE1dMVCfnCGKwl9ZMMCYGc2Wm/0X3OWxI16y+fETb
-         orYA==
-X-Gm-Message-State: ACgBeo3KZMdyaaaNYRArzzgHUwCYYrpUGhmz82VshnjOJtBlI5GZE8ac
-        QUSn1ldkmdEmtFbgk/zmg0w=
-X-Google-Smtp-Source: AA6agR46kwmpaNii76+kHULnGaX0OY3DgTjx0MB8aeXmnfihjX24Zz0Ony4sXUo6LtDahfYMGGAQNQ==
-X-Received: by 2002:a05:6402:25c6:b0:43b:7797:d953 with SMTP id x6-20020a05640225c600b0043b7797d953mr9930577edb.254.1661600977315;
-        Sat, 27 Aug 2022 04:49:37 -0700 (PDT)
-Received: from localhost.localdomain (host-95-247-89-207.retail.telecomitalia.it. [95.247.89.207])
-        by smtp.googlemail.com with ESMTPSA id f20-20020a17090631d400b006fee7b5dff2sm2021683ejf.143.2022.08.27.04.49.36
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Xm1nhA4qs4Pjpc09I2GPMsrr76SU/YUnQePs9+vlA4Y=;
+        b=VmdNJQLEBl4VfqqdOF4zYoDay4Rgvwiy16mN/MEekp6FKfBF+4/DP6haJqZFM3gDDb
+         czmH7nK5pYKyirw8p+bVevHCZaLqlP0kvLLUCM7n8oHtr7bRvh6pKG7v3myV8ItPcPrx
+         w/xsvAuWY9SlMzBM9rknv6l2EbgbeG7bo35ijsB+Dvtrh/zXfkAU6YgAzeM+SdjcQMYZ
+         HL/OQpgp7O8bpiZN8u0Jes9C3ingxyUFmI1Ky2ntKyDgHM4NEUhAd+7TmIjoJJrfPBnw
+         BvvpIIAgyolzlgj8/7iuaAJFMJ8qvv+eI/fssSEZBOxdmIgcvdMkY69Ecd8FZmAFfDWu
+         TN+A==
+X-Gm-Message-State: ACgBeo3NY0IF2AM/ipP/hGFg4n0lscNuyQ0r01hSB2I0lsLwOKmuPDaW
+        NoA9cDOfy7mdmJN9dtdSDRg=
+X-Google-Smtp-Source: AA6agR7NWXqJVbjUgWkTmIL7EezW2s1Rs+B6k/9g1ebsxLxD/uvFuUTj8hLYhwKfxJkfC/wEje0t+g==
+X-Received: by 2002:a63:da13:0:b0:42a:7f03:a00e with SMTP id c19-20020a63da13000000b0042a7f03a00emr6777867pgh.332.1661601951215;
+        Sat, 27 Aug 2022 05:05:51 -0700 (PDT)
+Received: from DESKTOP-KA7F9LU.localdomain ([49.207.219.204])
+        by smtp.gmail.com with ESMTPSA id t15-20020a1709027fcf00b0017446f8d494sm2621921plb.240.2022.08.27.05.05.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Aug 2022 04:49:36 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>
-Subject: [net-next PATCH v2] net: dsa: qca8k: convert to regmap read/write API
-Date:   Sat, 27 Aug 2022 13:49:18 +0200
-Message-Id: <20220827114918.8863-1-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Sat, 27 Aug 2022 05:05:50 -0700 (PDT)
+Date:   Sat, 27 Aug 2022 17:35:45 +0530
+From:   Vimal Kumar <vimal.kumar32@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     chinmoyghosh2001@gmail.com, Mintu Patel <mintupatel89@gmail.com>,
+        Vishal Badole <badolevishal1116@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v2] PM: runtime: Add support to disable wakeup sources
+Message-ID: <20220827120545.GA332@DESKTOP-KA7F9LU.localdomain>
+References: <20220825173457.23298-1-vimal.kumar32@gmail.com>
+ <YwnPFdYL0W3e5E+n@kroah.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwnPFdYL0W3e5E+n@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert qca8k to regmap read/write bulk API. The mgmt eth can write up
-to 16 bytes of data at times. Currently we use a custom function to do
-it but regmap now supports declaration of read/write bulk even without a
-bus.
+On Sat, Aug 27, 2022 at 10:00:21AM +0200, Greg KH wrote:
+> On Thu, Aug 25, 2022 at 11:04:41PM +0530, Vimal Kumar wrote:
+> > User could find many wakeup sources available in the bsp, which
+> > they won't be using. Currently users can only get the status and
+> > list of enabled wakeup sources, but users can't disable it runtime.
+> > It's very difficult to find the driver for each wakeup sources from
+> > where it's getting enabled and make the changes for disabling it.
+> > 
+> > This will help users to disable any wakeup sources at runtime,
+> > avoiding any code change and re-compilation. A new class attribute
+> > "disable_ws" will be added in the wakeup calss. If user want to disable
+> > any wakeup sources, user need to find the wakeup dev node associated
+> > with the particular wakeup source and write the devnode name to the
+> > class attribute "disable_ws".
+> > 
+> > Example:
+> > Need to disable the wakeup source '1c08000.qcom,pcie'. The dev node
+> > associated with this wakeup source is:
+> > cat /sys/class/wakeup3/name ==> "1c08000.qcom,pcie", then for disabling
+> > this wakeup source :
+> > 	echo wakeup3 > /sys/class/wakeup/disable_ws
+> > 
+> > Co-developed-by: Mintu Patel <mintupatel89@gmail.com>
+> > Signed-off-by: Mintu Patel <mintupatel89@gmail.com>
+> > Co-developed-by: Vishal Badole <badolevishal1116@gmail.com>
+> > Signed-off-by: Vishal Badole <badolevishal1116@gmail.com>
+> > Signed-off-by: Vimal Kumar <vimal.kumar32@gmail.com>
+> > ---
+> >  Documentation/ABI/testing/sysfs-class-wakeup | 16 +++++
+> >  drivers/base/power/wakeup_stats.c            | 65 +++++++++++++++++++-
+> >  2 files changed, 80 insertions(+), 1 deletion(-)
+> 
+> Based on previous discussions on the original submission that you seem
+> to have taken private, sorry but no, I can't even consider this
+> submission from you.
+> 
+> Please work on other portions of the kernel first to get used to the
+> development process.
+> 
+> Rafael, please don't worry about this.
+> 
+> greg k-h
 
-Drop the custom function and rework the regmap function to this new
-implementation.
+Hi Greg k-h,
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca/qca8k-8xxx.c   | 94 +++++++++++++++++++++++-------
- drivers/net/dsa/qca/qca8k-common.c | 49 ++--------------
- drivers/net/dsa/qca/qca8k.h        |  5 +-
- 3 files changed, 82 insertions(+), 66 deletions(-)
+My sincere apologies for responding privetly on the original
+submission, It was not intended to do so. There was some issue
+while responding via mutt and I end up responding privetly.
 
-v2:
-- Move out of RFC.
-- CC Mark Brown for first implementation of this kind of regmap stuff.
+I have responded publicly on original submission as well. Please 
+consider this second version, I have taken care of some previous
+reviews.
 
-diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 1d3e7782a71f..c9ddc4848f58 100644
---- a/drivers/net/dsa/qca/qca8k-8xxx.c
-+++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -342,16 +342,12 @@ qca8k_regmap_update_bits_eth(struct qca8k_priv *priv, u32 reg, u32 mask, u32 wri
- }
- 
- static int
--qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
-+qca8k_read_mii(struct qca8k_priv *priv, uint32_t reg, uint32_t *val)
- {
--	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
- 	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	int ret;
- 
--	if (!qca8k_read_eth(priv, reg, val, sizeof(*val)))
--		return 0;
--
- 	qca8k_split_addr(reg, &r1, &r2, &page);
- 
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-@@ -368,16 +364,12 @@ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
- }
- 
- static int
--qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
-+qca8k_write_mii(struct qca8k_priv *priv, uint32_t reg, uint32_t val)
- {
--	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
- 	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	int ret;
- 
--	if (!qca8k_write_eth(priv, reg, &val, sizeof(val)))
--		return 0;
--
- 	qca8k_split_addr(reg, &r1, &r2, &page);
- 
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-@@ -394,17 +386,14 @@ qca8k_regmap_write(void *ctx, uint32_t reg, uint32_t val)
- }
- 
- static int
--qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_val)
-+qca8k_regmap_update_bits_mii(struct qca8k_priv *priv, uint32_t reg,
-+			     uint32_t mask, uint32_t write_val)
- {
--	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
- 	struct mii_bus *bus = priv->bus;
- 	u16 r1, r2, page;
- 	u32 val;
- 	int ret;
- 
--	if (!qca8k_regmap_update_bits_eth(priv, reg, mask, write_val))
--		return 0;
--
- 	qca8k_split_addr(reg, &r1, &r2, &page);
- 
- 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
-@@ -427,17 +416,84 @@ qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_
- 	return ret;
- }
- 
-+static int
-+qca8k_bulk_read(void *ctx, const void *reg_buf, size_t reg_len,
-+		void *val_buf, size_t val_len)
-+{
-+	int i, count = val_len / sizeof(u32), ret;
-+	struct qca8k_priv *priv = ctx;
-+	u32 reg = *(u32 *)reg_buf;
-+
-+	if (priv->mgmt_master &&
-+	    !qca8k_read_eth(priv, reg, val_buf, val_len))
-+		return 0;
-+
-+	/* loop count times and increment reg of 4 */
-+	for (i = 0; i < count; i++, reg += sizeof(u32)) {
-+		ret = qca8k_read_mii(priv, reg, val_buf + i);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+qca8k_bulk_gather_write(void *ctx, const void *reg_buf, size_t reg_len,
-+			const void *val_buf, size_t val_len)
-+{
-+	int i, count = val_len / sizeof(u32), ret;
-+	struct qca8k_priv *priv = ctx;
-+	u32 *val = (u32 *)val_buf;
-+	u32 reg = *(u32 *)reg_buf;
-+
-+	if (priv->mgmt_master &&
-+	    !qca8k_write_eth(priv, reg, val, val_len))
-+		return 0;
-+
-+	/* loop count times, increment reg of 4 and increment val ptr to
-+	 * the next value
-+	 */
-+	for (i = 0; i < count; i++, reg += sizeof(u32), val++) {
-+		ret = qca8k_write_mii(priv, reg, *val);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int
-+qca8k_bulk_write(void *ctx, const void *data, size_t bytes)
-+{
-+	return qca8k_bulk_gather_write(ctx, data, sizeof(u32), data + sizeof(u32),
-+				       bytes - sizeof(u32));
-+}
-+
-+static int
-+qca8k_regmap_update_bits(void *ctx, uint32_t reg, uint32_t mask, uint32_t write_val)
-+{
-+	struct qca8k_priv *priv = (struct qca8k_priv *)ctx;
-+
-+	if (!qca8k_regmap_update_bits_eth(priv, reg, mask, write_val))
-+		return 0;
-+
-+	return qca8k_regmap_update_bits_mii(priv, reg, mask, write_val);
-+}
-+
- static struct regmap_config qca8k_regmap_config = {
--	.reg_bits = 16,
-+	.reg_bits = 32,
- 	.val_bits = 32,
- 	.reg_stride = 4,
- 	.max_register = 0x16ac, /* end MIB - Port6 range */
--	.reg_read = qca8k_regmap_read,
--	.reg_write = qca8k_regmap_write,
-+	.read = qca8k_bulk_read,
-+	.write = qca8k_bulk_write,
- 	.reg_update_bits = qca8k_regmap_update_bits,
- 	.rd_table = &qca8k_readable_table,
- 	.disable_locking = true, /* Locking is handled by qca8k read/write */
- 	.cache_type = REGCACHE_NONE, /* Explicitly disable CACHE */
-+	.max_raw_read = 16, /* mgmt eth can read/write up to 4 bytes at times */
-+	.max_raw_write = 16,
- };
- 
- static int
-@@ -2014,8 +2070,6 @@ static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
- 
- static const struct qca8k_info_ops qca8xxx_ops = {
- 	.autocast_mib = qca8k_get_ethtool_stats_eth,
--	.read_eth = qca8k_read_eth,
--	.write_eth = qca8k_write_eth,
- };
- 
- static const struct qca8k_match_data qca8327 = {
-diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index bba95613e218..a3bcff4bac29 100644
---- a/drivers/net/dsa/qca/qca8k-common.c
-+++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -101,45 +101,6 @@ const struct regmap_access_table qca8k_readable_table = {
- 	.n_yes_ranges = ARRAY_SIZE(qca8k_readable_ranges),
- };
- 
--/* TODO: remove these extra ops when we can support regmap bulk read/write */
--static int qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
--{
--	int i, count = len / sizeof(u32), ret;
--
--	if (priv->mgmt_master && priv->info->ops->read_eth &&
--	    !priv->info->ops->read_eth(priv, reg, val, len))
--		return 0;
--
--	for (i = 0; i < count; i++) {
--		ret = regmap_read(priv->regmap, reg + (i * 4), val + i);
--		if (ret < 0)
--			return ret;
--	}
--
--	return 0;
--}
--
--/* TODO: remove these extra ops when we can support regmap bulk read/write */
--static int qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
--{
--	int i, count = len / sizeof(u32), ret;
--	u32 tmp;
--
--	if (priv->mgmt_master && priv->info->ops->write_eth &&
--	    !priv->info->ops->write_eth(priv, reg, val, len))
--		return 0;
--
--	for (i = 0; i < count; i++) {
--		tmp = val[i];
--
--		ret = regmap_write(priv->regmap, reg + (i * 4), tmp);
--		if (ret < 0)
--			return ret;
--	}
--
--	return 0;
--}
--
- static int qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
- {
- 	u32 val;
-@@ -150,11 +111,12 @@ static int qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
- 
- static int qca8k_fdb_read(struct qca8k_priv *priv, struct qca8k_fdb *fdb)
- {
--	u32 reg[3];
-+	u32 reg[QCA8K_ATU_TABLE_SIZE];
- 	int ret;
- 
- 	/* load the ARL table into an array */
--	ret = qca8k_bulk_read(priv, QCA8K_REG_ATU_DATA0, reg, sizeof(reg));
-+	ret = regmap_bulk_read(priv->regmap, QCA8K_REG_ATU_DATA0, reg,
-+			       QCA8K_ATU_TABLE_SIZE);
- 	if (ret)
- 		return ret;
- 
-@@ -178,7 +140,7 @@ static int qca8k_fdb_read(struct qca8k_priv *priv, struct qca8k_fdb *fdb)
- static void qca8k_fdb_write(struct qca8k_priv *priv, u16 vid, u8 port_mask,
- 			    const u8 *mac, u8 aging)
- {
--	u32 reg[3] = { 0 };
-+	u32 reg[QCA8K_ATU_TABLE_SIZE] = { 0 };
- 
- 	/* vid - 83:72 */
- 	reg[2] = FIELD_PREP(QCA8K_ATU_VID_MASK, vid);
-@@ -195,7 +157,8 @@ static void qca8k_fdb_write(struct qca8k_priv *priv, u16 vid, u8 port_mask,
- 	reg[0] |= FIELD_PREP(QCA8K_ATU_ADDR5_MASK, mac[5]);
- 
- 	/* load the array into the ARL table */
--	qca8k_bulk_write(priv, QCA8K_REG_ATU_DATA0, reg, sizeof(reg));
-+	regmap_bulk_write(priv->regmap, QCA8K_REG_ATU_DATA0, reg,
-+			  QCA8K_ATU_TABLE_SIZE);
- }
- 
- static int qca8k_fdb_access(struct qca8k_priv *priv, enum qca8k_fdb_cmd cmd,
-diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index e36ecc9777f4..fc5766a40b8a 100644
---- a/drivers/net/dsa/qca/qca8k.h
-+++ b/drivers/net/dsa/qca/qca8k.h
-@@ -148,6 +148,8 @@
- #define QCA8K_REG_IPV4_PRI_ADDR_MASK			0x474
- 
- /* Lookup registers */
-+#define QCA8K_ATU_TABLE_SIZE				3 /* 12 bytes wide table / sizeof(u32) */
-+
- #define QCA8K_REG_ATU_DATA0				0x600
- #define   QCA8K_ATU_ADDR2_MASK				GENMASK(31, 24)
- #define   QCA8K_ATU_ADDR3_MASK				GENMASK(23, 16)
-@@ -328,9 +330,6 @@ struct qca8k_priv;
- 
- struct qca8k_info_ops {
- 	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
--	/* TODO: remove these extra ops when we can support regmap bulk read/write */
--	int (*read_eth)(struct qca8k_priv *priv, u32 reg, u32 *val, int len);
--	int (*write_eth)(struct qca8k_priv *priv, u32 reg, u32 *val, int len);
- };
- 
- struct qca8k_match_data {
--- 
-2.36.1
+Thanks Rafael, for the review comments as well, I will be respondig
+to the queries in a seperate thread.  
 
+
+Warm Regards,
+Vimal Kumar
