@@ -2,186 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB4CECAAD1
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 17:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31354ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 18:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229984AbiH0R6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 13:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33048 "EHLO
+        id S229927AbiH0SAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 14:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbiH0R61 (ORCPT
+        with ESMTP id S229565AbiH0SAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 13:58:27 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6553BF3262
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 10:58:12 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id cv7so932172qvb.3
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 10:58:11 -0700 (PDT)
+        Sat, 27 Aug 2022 14:00:13 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F5893E759;
+        Sat, 27 Aug 2022 11:00:04 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id u6so5580882eda.12;
+        Sat, 27 Aug 2022 11:00:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=lkk0aNtBdprK6/w6JDryUnYgq5tZfZLWxr5bNxCaRTc=;
-        b=cUOpGrFUBGR9Oh8Uy8dOhTXuMqO7GQro/NIk/L2wTn/SFNLHyqY7tYM/U4U0pF4y3V
-         /bSWlSe5YdkELLX8uy0kOAQeJus+ouMVDbavQPpQmypwnt9IQW7hWj3iOcQWWva4Dajh
-         EGFDSCwk1AGfW2TvfDTBe4LYt7DSlznylUd5/y7KIU0xH/en7v31yCdp1ZbFC6JRg/+d
-         F0PWA3wHwPih02wYhc2Z9VuSy2Hd3RBDFogoQ9qfzLoNBSJGv9eo7ukueKzxhZRMFRji
-         +xbWy1uD0fWw8sVrN8F2SBPc/TAwltDs6jzd3RYhEIKLyiA3otxH9laugaEt0+rW1tJ+
-         jnEQ==
+        h=content-transfer-encoding:in-reply-to:from:references:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc;
+        bh=35c4+qpZ3c/mnDdsvmqY7PyVUwNZT2G1anxf++wtomc=;
+        b=MpGj9NOCcs0MUiC5UVbBgEYP7Pk8D1XeoHudjO7GO/wykd1C9HflcupQW4AR4UJpEG
+         9KdE6Sq5SK0Lik8hYudjrZIqU2ZvFAL8f4vF2AfklIBFprDxpjWf+hY8ooWKm6FMheDQ
+         5cla3fV/CH49kqdQ7hAsjmLpeOa9RRtylyNznZGThlnedlNVh3UTHMKZRuj/r2hi5lEM
+         jtLg9Hlf1nlhNZU7WTDaT6/EqvIXAdDWXMSAJBb/ZMZoNMCBAGbQSTwZZuTgYLyHa1in
+         FTDrLO8iOA9qq45rNk2i0YJYYGRf0q/kTUZJE8d1favDfB5YiV09Vfw5j56iMQO+XWBR
+         FnOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=lkk0aNtBdprK6/w6JDryUnYgq5tZfZLWxr5bNxCaRTc=;
-        b=maLsXKO2dMsC+1NafOed0uLO74eWBkirZt6gomsQ58wmtN4IGU4XJrhVKZRnG6RpDJ
-         WUPSFU03vk8nx/xNIMLMEiDNdaa0o4zfU/92Pa82fPS/NL6LA4B5L3FMJh0B8QAfvoDR
-         2s0rXVqfZAZmey/NX4FoP4zwqkhMrni27SZpS0Kmq7AkrqTyNEPYY+KOv+Pzrkxd8YjR
-         a8gr4gE6R/VWApL+sIgrvXiVThuQrvLPv333pxvpjsulanhEO1JF2TvjaLTdr5HWR1EK
-         hrzszMtY3al939PfHiRiwdGgu9ZoPTgg1Efi3k4uCWDhz2/15T67GmhuLhg071J6OAYP
-         S5fg==
-X-Gm-Message-State: ACgBeo3HXz5AUDShwHRsi7AQTLJ246n6tQ+aSlVtzzlLkU/X4EqPchFR
-        EyDXdZagCQhDIXpUeoI69CM=
-X-Google-Smtp-Source: AA6agR7slLkZEQvL0YLebJFYcI/RfCWbweYpS1bnNyfegL53J7FIMntAv+UkUyP2stCiCr/bpIrBsA==
-X-Received: by 2002:a05:6214:2301:b0:498:9f6f:28d with SMTP id gc1-20020a056214230100b004989f6f028dmr4457995qvb.5.1661623090442;
-        Sat, 27 Aug 2022 10:58:10 -0700 (PDT)
-Received: from localhost ([2601:4c1:c100:2270:2454:ae5e:5655:e298])
-        by smtp.gmail.com with ESMTPSA id z23-20020ac81017000000b00338ae1f5421sm2053827qti.0.2022.08.27.10.58.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Aug 2022 10:58:10 -0700 (PDT)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Alexey Klimov <klimov.linux@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Dennis Zhou <dennis@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Kees Cook <keescook@chromium.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v3 1/4] lib/find_bit: introduce FIND_FIRST_BIT() macro
-Date:   Sat, 27 Aug 2022 10:58:04 -0700
-Message-Id: <20220827175807.4017673-2-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220827175807.4017673-1-yury.norov@gmail.com>
-References: <20220827175807.4017673-1-yury.norov@gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc;
+        bh=35c4+qpZ3c/mnDdsvmqY7PyVUwNZT2G1anxf++wtomc=;
+        b=DR7ISJe9JGLD719rit66KCOjvpAQIUeQUIzNQEHIGoAxEqdZ0iOGrQCy0338FkTw5Q
+         cP48neZQlVbXqBqQK9UZogh6JuYyy+K/wE9hqSVPDAgwHOHFt51F4XrUJ9Tzc+B0UOEL
+         Z81WM85Dj10IJf/jgRVlLAGFYkqcqcTlwL1DyzYkIqkQsj81UiCa+J+Gx/5fw8arZTcM
+         veszdWFTfULCDR9TIb1Q+gzXG+j0+SsgFF3SOTQfpctghEKz/t1DvUCUY1XR4Z6bN6Zk
+         fsHzO6rn1H/PgftJXkPkJFz73hbI3lAG2MxtbdkhW9jNpRj2pFYBM/T1kPVnmOoURBFh
+         IKWQ==
+X-Gm-Message-State: ACgBeo1FGXUaSaewHl+OIgt2w1pvqRAq3Y5DCSrIKNLXszM3mic+RNhL
+        rUXn9ADrTpqqsy+I6MdguBA=
+X-Google-Smtp-Source: AA6agR5OVWys2umL1veKUwoXDOOo6bNvfIUQ0xLAInKMCUIC/mFbw0RzAcIBNZq5bZVDdd62RYSWBA==
+X-Received: by 2002:a05:6402:524a:b0:43d:aa71:33d8 with SMTP id t10-20020a056402524a00b0043daa7133d8mr11141177edd.33.1661623202390;
+        Sat, 27 Aug 2022 11:00:02 -0700 (PDT)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id r13-20020aa7d58d000000b00447c89a63f4sm3096870edq.35.2022.08.27.11.00.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 27 Aug 2022 11:00:01 -0700 (PDT)
+Message-ID: <664df6a1-cb83-4d28-7b2a-9fc69d24e6b8@gmail.com>
+Date:   Sat, 27 Aug 2022 20:00:01 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH] MIPS: BCM77xx: Fix comments typo
+To:     Shaomin Deng <dengshaomin@cdjrlc.com>, hauke@hauke-m.de,
+        tsbogend@alpha.franken.de, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220827155306.11757-1-dengshaomin@cdjrlc.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <20220827155306.11757-1-dengshaomin@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that we have many flavors of find_first_bit(), and expect even more,
-it's better to have one macro that generates optimal code for all and makes
-maintaining of slightly different functions simpler.
+On 27.08.2022 17:53, Shaomin Deng wrote:
+> Delete the unneeded word "that" in comments.
+> 
+> Signed-off-by: Shaomin Deng <dengshaomin@cdjrlc.com>
+> ---
+>   arch/mips/bcm47xx/prom.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/mips/bcm47xx/prom.c b/arch/mips/bcm47xx/prom.c
+> index 0a63721d0fbf..bcb9c90ea041 100644
+> --- a/arch/mips/bcm47xx/prom.c
+> +++ b/arch/mips/bcm47xx/prom.c
+> @@ -69,7 +69,7 @@ static __init void prom_init_mem(void)
+>   	 * call them at the beginning of the boot.
+>   	 *
+>   	 * BCM47XX uses 128MB for addressing the ram, if the system contains
+> -	 * less that that amount of ram it remaps the ram more often into the
+> +	 * less that amount of ram it remaps the ram more often into the
+>   	 * available space.
+>   	 */
 
-The logic common to all versions is moved to the new macro, and all the
-flavors are generated by providing an FETCH macro-parameter, like
-in this example:
+Are you sure you based your work on the latest mips tree? Please double
+check that.
 
-  #define FIND_FIRST_BIT(FETCH, MUNGE, size) ...
+Also please read that sentence after your patch. Hint: that extra "that"
+wasn't actually a simple duplication.
 
-  find_first_ornot_and_bit(addr1, addr2, addr3, size)
-  {
-        return FIND_NEXT_BIT(addr1[idx] | ~addr2[idx] & addr3[idx], /* nop */, size);
-  }
-
-The FETCH may be of any complexity, as soon as it only refers
-the bitmap(s) and an iterator idx.
-
-MUNGE is here to support _le code generation for BE builds. May be
-empty.
-
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- lib/find_bit.c | 49 ++++++++++++++++++++++++-------------------------
- 1 file changed, 24 insertions(+), 25 deletions(-)
-
-diff --git a/lib/find_bit.c b/lib/find_bit.c
-index 1b8e4b2a9cba..894b656f6836 100644
---- a/lib/find_bit.c
-+++ b/lib/find_bit.c
-@@ -19,6 +19,27 @@
- #include <linux/minmax.h>
- #include <linux/swab.h>
- 
-+/*
-+ * Common helper for find_bit() function family
-+ * @FETCH: The expression that fetches and pre-processes each word of bitmap(s)
-+ * @MUNGE: The expression that post-processes a word containing found bit (may be empty)
-+ * @size: The bitmap size in bits
-+ */
-+#define FIND_FIRST_BIT(FETCH, MUNGE, size)					\
-+({										\
-+	unsigned long idx, val, sz = (size);					\
-+										\
-+	for (idx = 0; idx * BITS_PER_LONG < sz; idx++) {			\
-+		val = (FETCH);							\
-+		if (val) {							\
-+			sz = min(idx * BITS_PER_LONG + __ffs(MUNGE(val)), sz);	\
-+			break;							\
-+		}								\
-+	}									\
-+										\
-+	sz;									\
-+})
-+
- #if !defined(find_next_bit) || !defined(find_next_zero_bit) ||			\
- 	!defined(find_next_bit_le) || !defined(find_next_zero_bit_le) ||	\
- 	!defined(find_next_and_bit)
-@@ -77,14 +98,7 @@ EXPORT_SYMBOL(_find_next_bit);
-  */
- unsigned long _find_first_bit(const unsigned long *addr, unsigned long size)
- {
--	unsigned long idx;
--
--	for (idx = 0; idx * BITS_PER_LONG < size; idx++) {
--		if (addr[idx])
--			return min(idx * BITS_PER_LONG + __ffs(addr[idx]), size);
--	}
--
--	return size;
-+	return FIND_FIRST_BIT(addr[idx], /* nop */, size);
- }
- EXPORT_SYMBOL(_find_first_bit);
- #endif
-@@ -97,15 +111,7 @@ unsigned long _find_first_and_bit(const unsigned long *addr1,
- 				  const unsigned long *addr2,
- 				  unsigned long size)
- {
--	unsigned long idx, val;
--
--	for (idx = 0; idx * BITS_PER_LONG < size; idx++) {
--		val = addr1[idx] & addr2[idx];
--		if (val)
--			return min(idx * BITS_PER_LONG + __ffs(val), size);
--	}
--
--	return size;
-+	return FIND_FIRST_BIT(addr1[idx] & addr2[idx], /* nop */, size);
- }
- EXPORT_SYMBOL(_find_first_and_bit);
- #endif
-@@ -116,14 +122,7 @@ EXPORT_SYMBOL(_find_first_and_bit);
-  */
- unsigned long _find_first_zero_bit(const unsigned long *addr, unsigned long size)
- {
--	unsigned long idx;
--
--	for (idx = 0; idx * BITS_PER_LONG < size; idx++) {
--		if (addr[idx] != ~0UL)
--			return min(idx * BITS_PER_LONG + ffz(addr[idx]), size);
--	}
--
--	return size;
-+	return FIND_FIRST_BIT(~addr[idx], /* nop */, size);
- }
- EXPORT_SYMBOL(_find_first_zero_bit);
- #endif
--- 
-2.34.1
-
+Finally: this isn't BCM77xx patch as stated in your subject.
