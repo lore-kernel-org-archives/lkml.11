@@ -2,333 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E2FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 11:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B768ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 11:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345476AbiH0LQ3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 07:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47800 "EHLO
+        id S232934AbiH0LSw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 07:18:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234627AbiH0LP5 (ORCPT
+        with ESMTP id S230283AbiH0LSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 07:15:57 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5258F222A4;
-        Sat, 27 Aug 2022 04:15:55 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MFDY10qwnzYcn5;
-        Sat, 27 Aug 2022 19:11:33 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 19:15:53 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <mic@digikod.net>, <paul@paul-moore.com>, <jmorris@namei.org>,
-        <serge@hallyn.com>, <shuah@kernel.org>, <corbet@lwn.net>
-CC:     <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>
-Subject: [PATCH -next v2 4/6] landlock/selftests: add selftests for chmod and chown
-Date:   Sat, 27 Aug 2022 19:12:13 +0800
-Message-ID: <20220827111215.131442-5-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220827111215.131442-1-xiujianfeng@huawei.com>
-References: <20220827111215.131442-1-xiujianfeng@huawei.com>
+        Sat, 27 Aug 2022 07:18:48 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764E725C7B
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 04:18:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661599127; x=1693135127;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=o5PDN8PE5mWe9H2K5ioOi/PHS2bbo3ogtkR3N6LFNEA=;
+  b=CuEA2RR3teOgq/ab32KV10NAij2pOMtopoW7mF/O3pJ5u4i5cqb8ZSNj
+   IrdYCzlWc8vYTU6FgqM5Uu+SNRbXAJkVYSYaZLvFrxb1kJ49gp3BsIon9
+   fryLQgXanzSNgR65gJKrpiEtDmfik+9XOtnsm3NoppgnsA7aTEbiys8nF
+   vI7l1LC1LH3g99Wj/eDQRpqYbWQ9SIYYjB8nVckW7QqQeAgXSG6B0garD
+   YYfTEAi3i9MwMH6cYMjeT1cWefd3mt2L75sjr2m3GAMem1JCDTTFv0rn5
+   Su4d/G3r7jBKj0yKwXrUo1pzG7c+DeEa8JeTOPWKEw/C8ybvUtKnvDh9J
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="356370255"
+X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
+   d="scan'208";a="356370255"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2022 04:18:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
+   d="scan'208";a="939037463"
+Received: from lkp-server01.sh.intel.com (HELO fc16deae1c42) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 27 Aug 2022 04:18:45 -0700
+Received: from kbuild by fc16deae1c42 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oRtpt-00007j-0N;
+        Sat, 27 Aug 2022 11:18:45 +0000
+Date:   Sat, 27 Aug 2022 19:18:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:rcu/next] BUILD SUCCESS
+ 97a2c50e702a410ab273adcf7463f757b9ada970
+Message-ID: <6309fd82.i8pL+F9Zcbt7UUpZ%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following APIs are tested with simple scenarios.
-1. chmod/fchmod/fchmodat;
-2. chmod/fchmod/lchown/fchownat;
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git rcu/next
+branch HEAD: 97a2c50e702a410ab273adcf7463f757b9ada970  rcutorture: Verify NUM_ACTIVE_RCU_POLL_OLDSTATE
 
-The key point is that set these access rights on a directory but only for
-its content, not the directory itself. this scenario is covered.
+elapsed time: 1315m
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- tools/testing/selftests/landlock/fs_test.c | 261 +++++++++++++++++++++
- 1 file changed, 261 insertions(+)
+configs tested: 110
+configs skipped: 3
 
-diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
-index f513cd8d9d51..982cb824967c 100644
---- a/tools/testing/selftests/landlock/fs_test.c
-+++ b/tools/testing/selftests/landlock/fs_test.c
-@@ -3272,6 +3272,267 @@ TEST_F_FORK(layout1, truncate)
- 	EXPECT_EQ(0, test_creat(file_in_dir_w));
- }
- 
-+/* Invokes chmod(2) and returns its errno or 0. */
-+static int test_chmod(const char *const path, mode_t mode)
-+{
-+	if (chmod(path, mode) < 0)
-+		return errno;
-+	return 0;
-+}
-+
-+/* Invokes fchmod(2) and returns its errno or 0. */
-+static int test_fchmod(int fd, mode_t mode)
-+{
-+	if (fchmod(fd, mode) < 0)
-+		return errno;
-+	return 0;
-+}
-+
-+/* Invokes fchmodat(2) and returns its errno or 0. */
-+static int test_fchmodat(int dirfd, const char *path, mode_t mode, int flags)
-+{
-+	if (fchmodat(dirfd, path, mode, flags) < 0)
-+		return errno;
-+	return 0;
-+}
-+
-+/* Invokes chown(2) and returns its errno or 0. */
-+static int test_chown(const char *path, uid_t uid, gid_t gid)
-+{
-+	if (chown(path, uid, gid) < 0)
-+		return errno;
-+	return 0;
-+}
-+
-+/* Invokes fchown(2) and returns its errno or 0. */
-+static int test_fchown(int fd, uid_t uid, gid_t gid)
-+{
-+	if (fchown(fd, uid, gid) < 0)
-+		return errno;
-+	return 0;
-+}
-+
-+/* Invokes lchown(2) and returns its errno or 0. */
-+static int test_lchown(const char *path, uid_t uid, gid_t gid)
-+{
-+	if (lchown(path, uid, gid) < 0)
-+		return errno;
-+	return 0;
-+}
-+
-+/* Invokes fchownat(2) and returns its errno or 0. */
-+static int test_fchownat(int dirfd, const char *path,
-+			 uid_t uid, gid_t gid, int flags)
-+{
-+	if (fchownat(dirfd, path, uid, gid, flags) < 0)
-+		return errno;
-+	return 0;
-+}
-+
-+TEST_F_FORK(layout1, unhandled_chmod)
-+{
-+	int ruleset_fd, file1_fd;
-+	const char *file1 = file1_s1d1;
-+	const char *file2 = file2_s1d1;
-+	const char *dir1 = dir_s1d1;
-+	const struct rule rules[] = {
-+		{
-+			.path = file1,
-+			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
-+		},
-+		{
-+			.path = file2,
-+			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-+				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-+		},
-+		{
-+			.path = dir1,
-+			.access = ACCESS_RW,
-+		},
-+		{},
-+	};
-+
-+	ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
-+	ASSERT_LE(0, ruleset_fd);
-+	file1_fd = open(file1, O_WRONLY | O_CLOEXEC);
-+	ASSERT_LE(0, file1_fd);
-+
-+	enforce_ruleset(_metadata, ruleset_fd);
-+	ASSERT_EQ(0, close(ruleset_fd));
-+
-+	EXPECT_EQ(0, test_chmod(file1, 0400));
-+	EXPECT_EQ(0, test_fchmod(file1_fd, 0400));
-+	EXPECT_EQ(0, test_fchmodat(AT_FDCWD, file1, 0400, 0));
-+	EXPECT_EQ(0, test_chmod(file2, 0400));
-+	EXPECT_EQ(0, test_chmod(dir1, 0700));
-+	ASSERT_EQ(0, close(file1_fd));
-+}
-+
-+TEST_F_FORK(layout1, chmod)
-+{
-+	int ruleset_fd, file1_fd;
-+	const char *file1 = file1_s1d1;
-+	const char *file2 = file2_s1d1;
-+	const char *file3 = file1_s2d1;
-+	const char *dir1 = dir_s1d1;
-+	const char *dir2 = dir_s2d1;
-+	const struct rule rules[] = {
-+		{
-+			.path = file1,
-+			.access = LANDLOCK_ACCESS_FS_WRITE_FILE |
-+				  LANDLOCK_ACCESS_FS_CHMOD,
-+		},
-+		{
-+			.path = file2,
-+			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-+				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-+		},
-+		{
-+			.path = dir1,
-+			.access = ACCESS_RW,
-+		},
-+		{
-+			.path = dir2,
-+			.access = ACCESS_RW | LANDLOCK_ACCESS_FS_CHMOD,
-+		},
-+		{},
-+	};
-+
-+	ruleset_fd = create_ruleset(_metadata, ACCESS_RW | LANDLOCK_ACCESS_FS_CHMOD, rules);
-+	ASSERT_LE(0, ruleset_fd);
-+	file1_fd = open(file1, O_WRONLY | O_CLOEXEC);
-+	ASSERT_LE(0, file1_fd);
-+
-+	enforce_ruleset(_metadata, ruleset_fd);
-+	ASSERT_EQ(0, close(ruleset_fd));
-+
-+	EXPECT_EQ(0, test_chmod(file1, 0400));
-+	EXPECT_EQ(0, test_fchmod(file1_fd, 0400));
-+	EXPECT_EQ(0, test_fchmodat(AT_FDCWD, file1, 0400, 0));
-+	EXPECT_EQ(EACCES, test_chmod(file2, 0400));
-+	EXPECT_EQ(EACCES, test_chmod(dir1, 0700));
-+	/* set CHMOD right on dir will only affect its context not dir itself*/
-+	EXPECT_EQ(0, test_chmod(file3, 0400));
-+	EXPECT_EQ(0, test_fchmodat(AT_FDCWD, file3, 0400, 0));
-+	EXPECT_EQ(EACCES, test_chmod(dir2, 0700));
-+	EXPECT_EQ(EACCES, test_fchmodat(AT_FDCWD, dir2, 0700, 0));
-+	ASSERT_EQ(0, close(file1_fd));
-+}
-+
-+TEST_F_FORK(layout1, unhandled_chown)
-+{
-+	int ruleset_fd, file1_fd;
-+	const char *file1 = file1_s1d1;
-+	const char *file2 = file2_s1d1;
-+	const char *dir1 = dir_s1d1;
-+	const struct rule rules[] = {
-+		{
-+			.path = file1,
-+			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
-+		},
-+		{
-+			.path = file2,
-+			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-+				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-+		},
-+		{
-+			.path = dir1,
-+			.access = ACCESS_RW,
-+		},
-+		{},
-+	};
-+	struct stat st;
-+	uid_t uid;
-+	gid_t gid;
-+
-+	ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
-+	ASSERT_LE(0, ruleset_fd);
-+	file1_fd = open(file1, O_WRONLY | O_CLOEXEC);
-+	ASSERT_LE(0, file1_fd);
-+	/*
-+	 * there is no CAP_CHOWN when the testcases framework setup,
-+	 * and we cannot assume the testcases are run as root, to make
-+	 * sure {f}chown syscall won't fail, get the original uid/gid and
-+	 * use them in test_{f}chown.
-+	 */
-+	ASSERT_EQ(0, stat(dir1, &st));
-+	uid = st.st_uid;
-+	gid = st.st_gid;
-+
-+	enforce_ruleset(_metadata, ruleset_fd);
-+	ASSERT_EQ(0, close(ruleset_fd));
-+
-+	EXPECT_EQ(0, test_chown(file1, uid, gid));
-+	EXPECT_EQ(0, test_fchown(file1_fd, uid, gid));
-+	EXPECT_EQ(0, test_lchown(file1, uid, gid));
-+	EXPECT_EQ(0, test_fchownat(AT_FDCWD, file1, uid, gid, 0));
-+	EXPECT_EQ(0, test_chown(file2, uid, gid));
-+	EXPECT_EQ(0, test_chown(dir1, uid, gid));
-+	ASSERT_EQ(0, close(file1_fd));
-+}
-+
-+TEST_F_FORK(layout1, chown)
-+{
-+	int ruleset_fd, file1_fd;
-+	const char *file1 = file1_s1d1;
-+	const char *file2 = file2_s1d1;
-+	const char *file3 = file1_s2d1;
-+	const char *dir1 = dir_s1d1;
-+	const char *dir2 = dir_s2d1;
-+	const struct rule rules[] = {
-+		{
-+			.path = file1,
-+			.access = LANDLOCK_ACCESS_FS_WRITE_FILE |
-+				  LANDLOCK_ACCESS_FS_CHGRP,
-+		},
-+		{
-+			.path = file2,
-+			.access = LANDLOCK_ACCESS_FS_READ_FILE |
-+				  LANDLOCK_ACCESS_FS_WRITE_FILE,
-+		},
-+		{
-+			.path = dir1,
-+			.access = ACCESS_RW,
-+		},
-+		{
-+			.path = dir2,
-+			.access = ACCESS_RW | LANDLOCK_ACCESS_FS_CHGRP,
-+		},
-+		{},
-+	};
-+	struct stat st;
-+	uid_t uid;
-+	gid_t gid;
-+
-+	ruleset_fd = create_ruleset(_metadata, ACCESS_RW | LANDLOCK_ACCESS_FS_CHGRP, rules);
-+	ASSERT_LE(0, ruleset_fd);
-+	file1_fd = open(file1, O_WRONLY | O_CLOEXEC);
-+	ASSERT_LE(0, file1_fd);
-+	/*
-+	 * there is no CAP_CHOWN when the testcases framework setup,
-+	 * and we cannot assume the testcases are run as root, to make
-+	 * sure {f}chown syscall won't fail, get the original uid/gid and
-+	 * use them in test_{f}chown.
-+	 */
-+	ASSERT_EQ(0, stat(dir1, &st));
-+	uid = st.st_uid;
-+	gid = st.st_gid;
-+
-+	enforce_ruleset(_metadata, ruleset_fd);
-+	ASSERT_EQ(0, close(ruleset_fd));
-+
-+	EXPECT_EQ(0, test_chown(file1, uid, gid));
-+	EXPECT_EQ(0, test_fchown(file1_fd, uid, gid));
-+	EXPECT_EQ(0, test_lchown(file1, uid, gid));
-+	EXPECT_EQ(0, test_fchownat(AT_FDCWD, file1, uid, gid, 0));
-+	EXPECT_EQ(EACCES, test_chown(file2, uid, gid));
-+	EXPECT_EQ(EACCES, test_chown(dir1, uid, gid));
-+	/* set CHOWN right on dir will only affect its context not dir itself*/
-+	EXPECT_EQ(0, test_chown(file3, uid, gid));
-+	EXPECT_EQ(EACCES, test_chown(dir2, uid, gid));
-+	ASSERT_EQ(0, close(file1_fd));
-+}
-+
- /* clang-format off */
- FIXTURE(layout1_bind) {};
- /* clang-format on */
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+alpha                               defconfig
+arm                              allyesconfig
+arm64                            allyesconfig
+loongarch                         allnoconfig
+s390                                defconfig
+loongarch                           defconfig
+arc                                 defconfig
+s390                             allmodconfig
+um                             i386_defconfig
+um                           x86_64_defconfig
+x86_64                              defconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+x86_64                               rhel-8.3
+s390                             allyesconfig
+x86_64                           allyesconfig
+m68k                             allyesconfig
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+i386                                defconfig
+x86_64                        randconfig-a006
+i386                          randconfig-a001
+i386                          randconfig-a003
+i386                          randconfig-a005
+sh                               allmodconfig
+x86_64                          rhel-8.3-func
+x86_64                         rhel-8.3-kunit
+x86_64                        randconfig-a015
+x86_64                    rhel-8.3-kselftests
+arc                  randconfig-r043-20220827
+x86_64                           rhel-8.3-syz
+x86_64                           rhel-8.3-kvm
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+s390                       zfcpdump_defconfig
+sh                ecovec24-romimage_defconfig
+powerpc                 mpc8540_ads_defconfig
+arm                           sama5_defconfig
+csky                              allnoconfig
+alpha                             allnoconfig
+arc                               allnoconfig
+riscv                             allnoconfig
+i386                          debian-10.3-kvm
+i386                        debian-10.3-kunit
+i386                         debian-10.3-func
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+nios2                            allyesconfig
+nios2                               defconfig
+parisc                              defconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+sparc                               defconfig
+xtensa                           allyesconfig
+csky                                defconfig
+sparc                            allyesconfig
+x86_64                                  kexec
+powerpc                          allyesconfig
+riscv                               defconfig
+riscv                            allmodconfig
+riscv                            allyesconfig
+powerpc                           allnoconfig
+i386                             allyesconfig
+powerpc                          allmodconfig
+mips                             allyesconfig
+arm64                               defconfig
+arm                              allmodconfig
+m68k                                defconfig
+ia64                                defconfig
+mips                             allmodconfig
+ia64                             allmodconfig
+m68k                             allmodconfig
+s390                 randconfig-r044-20220826
+arc                  randconfig-r043-20220823
+riscv                randconfig-r042-20220826
+arc                  randconfig-r043-20220826
+arc                  randconfig-r043-20220825
+
+clang tested configs:
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+i386                          randconfig-a002
+i386                          randconfig-a004
+i386                          randconfig-a006
+hexagon              randconfig-r041-20220827
+x86_64                        randconfig-a014
+hexagon              randconfig-r045-20220827
+riscv                randconfig-r042-20220827
+x86_64                        randconfig-a016
+s390                 randconfig-r044-20220827
+i386                          randconfig-a013
+i386                          randconfig-a011
+i386                          randconfig-a015
+arm                                 defconfig
+arm                         bcm2835_defconfig
+hexagon              randconfig-r041-20220825
+hexagon              randconfig-r041-20220823
+hexagon              randconfig-r045-20220825
+s390                 randconfig-r044-20220823
+hexagon              randconfig-r045-20220826
+hexagon              randconfig-r041-20220826
+riscv                randconfig-r042-20220825
+s390                 randconfig-r044-20220825
+riscv                randconfig-r042-20220823
+hexagon              randconfig-r045-20220823
+
 -- 
-2.17.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
