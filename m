@@ -2,94 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82246C0502E
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 09:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233B6C0502C
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 09:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234043AbiH0Jmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 05:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
+        id S234124AbiH0Jtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 05:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232646AbiH0Jmb (ORCPT
+        with ESMTP id S230226AbiH0Jtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 05:42:31 -0400
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1694396FF8;
-        Sat, 27 Aug 2022 02:42:31 -0700 (PDT)
-Received: by mail-oo1-xc30.google.com with SMTP id p48-20020a4a95f3000000b0044b0f5a8d17so675460ooi.0;
-        Sat, 27 Aug 2022 02:42:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=rqXbDU0e1tN4j5qNVRfAuljmb4yEN9erSBSwCMYT9p4=;
-        b=ClMxVp+vwHXZuCvXg9uAgklzyD8SdlevrrCBTD0YEFrqGGPCOFJzyyISmPpuF27pqp
-         Gg0k14dwf5ws2PSjWdiX8zm1tWEgYY9jMXoQcCFeSPe3aHRLDD1DK0ubptEBXt4e5AWX
-         /ycS1tINPMWt6jWr43uERP3X097Qh/yRP61wdaUbDXIHSGc5OF1pqZpJ4Dll0iY/ukrO
-         8P+J+gHcWofpYWC938hYiu0BNJ08y/EQIqch3XMlEIZqHjBo6aweYjCNjYIexL5VsNMK
-         cURhZ7AUK1um6itvwquxmRr2FiIf0NFIy1q8ehRKrOx7UKgnat9IuEPRyFlqxKipye9A
-         N6Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=rqXbDU0e1tN4j5qNVRfAuljmb4yEN9erSBSwCMYT9p4=;
-        b=zqrG5fhYw4LnYDg+4LsiNKnd1AcllaA76lemVygAcbE5WZPfO7L+QECRsQrg3bQTAQ
-         Pr8dCLRZalT2uVdxmSprW2xhwqcHWIRPZHH01Uh6YtPdBeHfdXNrF4z8hpNx9BjCRq9g
-         QngTV5H3EztQ7hpU6ehKTwpBNhIyqydlSn8koF95HCGbPLuBdVTxCs+bNgYp5NmREDLP
-         5+odBhJK/45zjduCp7XRTYgSC5ugWG6q6e20dGu2jUyiqWK7vem5mdwUX7Lu4676kKC0
-         YtZhKsVkSqpKcbltbhJvBUsIhIntz90OyBDAMERZ/6dcV02VAmlmMHw+y8AHaCuhieR/
-         Vo7g==
-X-Gm-Message-State: ACgBeo0SKYAeK/Av2bH5+TJcrOnJo0De7lEhuTHNJqu5+BkzsA+kkddM
-        mvXa2eW4+JQPLNao5Za6s0mVQNzYvsK9MVhsNF0k7kje9Koi6g==
-X-Google-Smtp-Source: AA6agR7B9I6t4g5X3YmiBGfhO1RGQqgDYZA8IWaaMnL2zcRgHEWvokmIMvvJe4Yh7jD5YugeIEhqZwAPSP+Qq9w1Y58=
-X-Received: by 2002:a4a:d154:0:b0:449:681b:3e76 with SMTP id
- o20-20020a4ad154000000b00449681b3e76mr2496123oor.47.1661593350486; Sat, 27
- Aug 2022 02:42:30 -0700 (PDT)
+        Sat, 27 Aug 2022 05:49:49 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4BA282;
+        Sat, 27 Aug 2022 02:49:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661593787; x=1693129787;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=uvIblq34aYIPJlbRVx73G0ZjG5Pc8EFbqlJh/UMzIhQ=;
+  b=BDLoQ8z8xR74yTmC6sfSDyZkdpky0EZrFHA/xyDtzU2ZlPDsO7nsJo58
+   ymh64BBngCVEJDCfFJwldBLiASD366HEzJnT+Tdfcnkjh1P9iF3fOEq7h
+   KYuu2sNmvT6kBtgnKu83AyyvKnXsXd5uv9hzurGUjhxAd1qZl+fwkkm0C
+   3GdtOjdW7GuNuTvJSnEUi1evC6CKeG9gXInanUvplJXQbmIufwMMgwRek
+   x4Ell/ecic4HU+PfpjI5GfIuFfVF3wwbELONbl3MLH322f1VjXTTT8aUO
+   Ri4qXZRPZ7FS7ia1k66kNrBLooTYiqFR1tI48SdlwLSQP2QfAVuurLWvK
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="356365703"
+X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
+   d="scan'208";a="356365703"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2022 02:49:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
+   d="scan'208";a="640353741"
+Received: from sqa-gate.sh.intel.com (HELO michael.clx.dev.tsp.org) ([10.239.48.212])
+  by orsmga008.jf.intel.com with ESMTP; 27 Aug 2022 02:49:38 -0700
+From:   Kevin Tian <kevin.tian@intel.com>
+To:     Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tony Krowiak <akrowiak@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Longfang Liu <liulongfang@huawei.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Abhishek Sahu <abhsahu@nvidia.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH 00/15] Tidy up vfio_device life cycle
+Date:   Sun, 28 Aug 2022 01:10:22 +0800
+Message-Id: <20220827171037.30297-1-kevin.tian@intel.com>
+X-Mailer: git-send-email 2.21.3
 MIME-Version: 1.0
-References: <20220822141110.17199-1-91tuocao@gmail.com> <YwORy3QMbRUSlBZE@kroah.com>
-In-Reply-To: <YwORy3QMbRUSlBZE@kroah.com>
-From:   tuo cao <91tuocao@gmail.com>
-Date:   Sat, 27 Aug 2022 17:42:19 +0800
-Message-ID: <CAEVeK2AiYFK9eopn1Uzp+osA-j22e1KbfUohJ+hRVmLNsq0gpQ@mail.gmail.com>
-Subject: Re: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to
- spin_lock in interrupt handler
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No, whether it's spin_lock_irqsave() or spin_lock(), the security is
-the same. Since this commit:e58aa3d2d0cc01ad8d6f7f640a0670433f794922,
-interrupt nesting is disabled, which means interrupts has disabled in
-the interrupt handlers. So, it is unnecessary to call
-spin_lock_irqsave in a interrupt handler. And it takes less time
-obviously to use spin_lock()=EF=BC=8Cso I think this change is needed.
+The idea is to let vfio core manage the vfio_device life cycle instead
+of duplicating the logic cross drivers. Besides cleaner code in driver
+side this also allows adding struct device to vfio_device as the first
+step toward adding cdev uAPI in the future. Another benefit is that
+user can now look at sysfs to decide whether a device is bound to
+vfio [1], e.g.:
 
-Finally, I'm sorry I lacked real hardware to verify it and can't
-provide changelog text.
+	/sys/devices/pci0000\:6f/0000\:6f\:01.0/vfio-dev/vfio0
 
-Thanks.
+Though most drivers can fit the new model naturally:
 
-Greg KH <gregkh@linuxfoundation.org> =E4=BA=8E2022=E5=B9=B48=E6=9C=8822=E6=
-=97=A5=E5=91=A8=E4=B8=80 22:25=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Mon, Aug 22, 2022 at 10:11:10PM +0800, Tuo Cao wrote:
-> > it is unnecessary to call spin_lock_irqsave in a interrupt handler.
->
-> Yes, but it is safer to do so, right?
->
-> Why is this change needed?
->
-> Did you test it on real hardware to verify it works?
->
-> We need a lot more information in the changelog text before being able
-> to accept this.
->
-> thanks,
->
-> greg k-h
+ - vfio_alloc_device() to allocate and initialize vfio_device
+ - vfio_put_device() to release vfio_device
+ - dev_ops->init() for driver private initialization
+ - dev_ops->release() for driver private cleanup
+
+vfio-ccw is the only exception due to a life cycle mess that its private
+structure mixes both parent and mdev info hence must be alloc/free'ed
+outside of the life cycle of vfio device.
+
+Per prior discussions this won't be fixed in short term by IBM folks [2].
+
+Instead of waiting this series introduces a few tricks to move forward:
+
+ - vfio_init_device() to initialize a pre-allocated device structure;
+
+ - require *EVERY* driver to implement @release and free vfio_device
+   inside. Then vfio-ccw can use a completion mechanism to delay the
+   free to css driver;
+
+The second trick is not a real burden to other drivers because they
+all require a @release for private cleanup anyay. Later once the ccw
+mess is fixed a simple cleanup can be done by moving free from @release
+to vfio core.
+
+Thanks
+Kevin
+
+[1] https://listman.redhat.com/archives/libvir-list/2022-August/233482.html
+[2] https://lore.kernel.org/all/0ee29bd6583f17f0ee4ec0769fa50e8ea6703623.camel@linux.ibm.com/
+
+Kevin Tian (6):
+  vfio: Add helpers for unifying vfio_device life cycle
+  drm/i915/gvt: Use the new device life cycle helpers
+  vfio/platform: Use the new device life cycle helpers
+  vfio/amba: Use the new device life cycle helpers
+  vfio/ccw: Use the new device life cycle helpers
+  vfio: Rename vfio_device_put() and vfio_device_try_get()
+
+Yi Liu (9):
+  vfio/pci: Use the new device life cycle helpers
+  vfio/mlx5: Use the new device life cycle helpers
+  vfio/hisi_acc: Use the new device life cycle helpers
+  vfio/mdpy: Use the new device life cycle helpers
+  vfio/mtty: Use the new device life cycle helpers
+  vfio/mbochs: Use the new device life cycle helpers
+  vfio/ap: Use the new device life cycle helpers
+  vfio/fsl-mc: Use the new device life cycle helpers
+  vfio: Add struct device to vfio_device
+
+ drivers/gpu/drm/i915/gvt/gvt.h                |   5 +-
+ drivers/gpu/drm/i915/gvt/kvmgt.c              |  52 ++++--
+ drivers/gpu/drm/i915/gvt/vgpu.c               |  31 ++--
+ drivers/s390/cio/vfio_ccw_ops.c               |  52 +++++-
+ drivers/s390/cio/vfio_ccw_private.h           |   3 +
+ drivers/s390/crypto/vfio_ap_ops.c             |  50 +++---
+ drivers/vfio/fsl-mc/vfio_fsl_mc.c             |  87 +++++----
+ .../vfio/pci/hisilicon/hisi_acc_vfio_pci.c    |  80 ++++-----
+ drivers/vfio/pci/mlx5/main.c                  |  49 ++++--
+ drivers/vfio/pci/vfio_pci.c                   |  20 +--
+ drivers/vfio/pci/vfio_pci_core.c              |  23 ++-
+ drivers/vfio/platform/vfio_amba.c             |  72 ++++++--
+ drivers/vfio/platform/vfio_platform.c         |  66 +++++--
+ drivers/vfio/platform/vfio_platform_common.c  |  61 +++----
+ drivers/vfio/platform/vfio_platform_private.h |  18 +-
+ drivers/vfio/vfio_main.c                      | 165 +++++++++++++++---
+ include/linux/vfio.h                          |  29 ++-
+ include/linux/vfio_pci_core.h                 |   6 +-
+ samples/vfio-mdev/mbochs.c                    |  73 +++++---
+ samples/vfio-mdev/mdpy.c                      |  81 +++++----
+ samples/vfio-mdev/mtty.c                      |  67 ++++---
+ 21 files changed, 724 insertions(+), 366 deletions(-)
+
+
+base-commit: 1c23f9e627a7b412978b4e852793c5e3c3efc555
+-- 
+2.21.3
+
