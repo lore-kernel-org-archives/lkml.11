@@ -2,140 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B8F2C0502E
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 08:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71BEDECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 09:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231463AbiH0I4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 04:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
+        id S232180AbiH0JCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 05:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbiH0I4P (ORCPT
+        with ESMTP id S230427AbiH0JCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 04:56:15 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 186E81A800
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 01:56:14 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id x10so3582967ljq.4
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 01:56:14 -0700 (PDT)
+        Sat, 27 Aug 2022 05:02:40 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D440427CFC
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 02:02:39 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id q63so3433537pga.9
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 02:02:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=QJ4HT0he87HIgYoNNPjNZYpebuQrG8KDl61t9yCXsaY=;
-        b=BaWqQvP4at07HKbZdqtc0L8oDdEaQYPfd7KBR+mYZ/CisEiBqIcJ8kzbcAY2g2tYpZ
-         jHbuE8F56jVyhmXF3ZjAmh5frvuiJEj9ruNZ+R7Re30akwJLgkyZaaFhNCReoJ0zQnqE
-         c6QURcK7vm1ofxsR4SZTKRJfxQPJchPhBaikT8MV9E7QdtmjnVowN/tH3cspjNnyH3zT
-         n+rECFpc95h6++tIo/KGObvUOBkXmwlEh7Z9ya8k0ZfrYOImfWvcH6QL4ODDidNyS+vg
-         alkBLFySZiDrf151hSSbeO8v/KExGY1SZBxdhNDnlPYHb3H1RjXG1/bl+hhAg3vaRLac
-         RFmg==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=D7wwbAuLXWf5SB+NrnBAoFyECHS6XWLYdUvOon1TCXE=;
+        b=EdrAPX3fWMDCt2nPBgcPLvrxq6br95yWD8pDZjJZHeiC8vfwNudi1/FPnHY2e7toVy
+         i4FXOAAmjRSbloR/Ii3Ev6Q0Tn1j6+og1LqZB/vO4KQ0rK/qwL1Nj2qeBmbO783aXdSf
+         FE+kbXlPcKRfBlYiutc0bTuT5Yce9DZJvoHfa6H3B2hUdIY89GDNXE/Kbnj9uAf4kDAm
+         uxwDxWAhbBuQw3Q/VNiy7TrOiN1xQdmXwA8VSe02c4M+FFUXuL+ad2aUAj5dVcU3S+pm
+         V4GiO4/vNDYlTEn42J+WwlskCoO4CqL+keVtpqMDGincSKnZDyKDM6fQBNTrZ+EGLKkP
+         uOHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=QJ4HT0he87HIgYoNNPjNZYpebuQrG8KDl61t9yCXsaY=;
-        b=35w0kVU9zJNunE4HIoPD91jx470mjSWtj36V+RyUmn1A+YaflaUljFCfhtd0gyUTQX
-         XrZt2m+S12NIw0yMlOxphB4dtz4M5ewfW4uwXOiilDNNvn3ArzOTinh+3zIgYNuLT1ta
-         t0yz84Qh2zeSQ0xBcOgXaKZG1YoCxVKLaDTURYoaLTcu0SmHuMf9VxEsHKt1D1/3kgYe
-         1VPVnvdkwnbkLpvVgsQ4IkUCvRw+cTFtCkLqzYLEPx/fo0m32gICi2vITKizsEnWqImN
-         LBfVwvYreVF0dZUJedUkUn5SPBeZO1CZHGp+WjhaO9oPjeGw+uOKw/S+n3Or961aLIdQ
-         VhFw==
-X-Gm-Message-State: ACgBeo1gnvId1gP2z3Dc15/FBVAi295neseueDhlS6uFQf28za2yke/i
-        SLzITBqJ6zZiWYorEAy91rythw==
-X-Google-Smtp-Source: AA6agR5Gf2HiB0PYqIOyopTJHVHjtmH8tqD3JHxMYot9zAwjH2AhyPPMzu27/HBBbMawPBnpWAwh0Q==
-X-Received: by 2002:a2e:a78e:0:b0:261:d661:14b8 with SMTP id c14-20020a2ea78e000000b00261d66114b8mr3384038ljf.452.1661590572347;
-        Sat, 27 Aug 2022 01:56:12 -0700 (PDT)
-Received: from [192.168.0.71] (82.131.98.15.cable.starman.ee. [82.131.98.15])
-        by smtp.gmail.com with ESMTPSA id u16-20020a056512129000b00492c2394ea5sm41760lfs.165.2022.08.27.01.56.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Aug 2022 01:56:11 -0700 (PDT)
-Message-ID: <ee6dc940-8b90-1f57-28b7-6de8e3483027@linaro.org>
-Date:   Sat, 27 Aug 2022 11:56:10 +0300
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=D7wwbAuLXWf5SB+NrnBAoFyECHS6XWLYdUvOon1TCXE=;
+        b=fpCwJ/A2BCllm/gM0gV6vyytRmvqMFO9U2rT3YrGFitQloW+Jsfn3dHREReoVJVbmk
+         K2dClFL7q+dyYV1KFUR74T4LT95iS2NSoiKsETx7IGG0jSv0qaA4Ut2P7upr8Itkl0tl
+         0kNUoEmJh+8ROQ6M8fgPIoiGiQUWe6rJfO3cq7E7BFwgIESzcwPfTG1x+/QcqfZJWUH5
+         h8bTjdAWv3bxLeqO7h8zMu3JdqpWEf49bINed5SaiE2H+XNjbYqUfG+WjgwVNBS59Grf
+         UsdF0hAM/9Q7ZgYAc69IuFg9IZ/UsPsCx77EpTa7S7VWTKP9Xbrm3ci7X3nGjp+oMdxr
+         r+nA==
+X-Gm-Message-State: ACgBeo0Iqqu8QliAVo6FGjbKmwL20Bi3vszzXnCFBYe1IQzhAZGdhEIQ
+        MPnu4mHanHkO+D5cztb1Zdw=
+X-Google-Smtp-Source: AA6agR6SduTHI/dh7+uOOuXv2bOQOJLw1oK9Z9i3q8mttMJatnvVJZ+6PtRXtZKOmgbxIG+W2ljGSg==
+X-Received: by 2002:a05:6a00:22cd:b0:52f:706a:5268 with SMTP id f13-20020a056a0022cd00b0052f706a5268mr7469640pfj.80.1661590959325;
+        Sat, 27 Aug 2022 02:02:39 -0700 (PDT)
+Received: from localhost ([223.104.39.136])
+        by smtp.gmail.com with ESMTPSA id i17-20020a170902cf1100b0016d785ef6d2sm3031403plg.223.2022.08.27.02.02.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 27 Aug 2022 02:02:38 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     dan.carpenter@oracle.com
+Cc:     akpm@linux-foundation.org, anton@tuxera.com,
+        chenxiaosong2@huawei.com, linux-kernel@vger.kernel.org,
+        linux-ntfs-dev@lists.sourceforge.net,
+        syzbot+5f8dcabe4a3b2c51c607@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
+Subject: Re: [PATCH] ntfs: change check order in ntfs_attr_find
+Date:   Sat, 27 Aug 2022 17:02:31 +0800
+Message-Id: <20220827090230.3287-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220827064217.GK2030@kadam>
+References: <20220827064217.GK2030@kadam>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: Aw: Re: [PATCH v5 5/5] arm64: dts: rockchip: Add PCIe v3 nodes to
- BPI-R2-Pro
-Content-Language: en-US
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-rockchip@lists.infradead.org,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Yifeng Zhao <yifeng.zhao@rock-chips.com>,
-        Johan Jonker <jbx6244@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Simon Xue <xxm@rock-chips.com>, Liang Chen <cl@rock-chips.com>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220825193836.54262-1-linux@fw-web.de>
- <20220825193836.54262-6-linux@fw-web.de>
- <cae915f6-c951-ba97-346d-00922c85067d@linaro.org>
- <trinity-88fbbdbe-de76-4479-9580-70edc34a4181-1661590200169@3c-app-gmx-bs16>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <trinity-88fbbdbe-de76-4479-9580-70edc34a4181-1661590200169@3c-app-gmx-bs16>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/08/2022 11:50, Frank Wunderlich wrote:
-> Hi
-> 
->> Gesendet: Freitag, 26. August 2022 um 08:50 Uhr
->> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
->> On 25/08/2022 22:38, Frank Wunderlich wrote:
->>> From: Frank Wunderlich <frank-w@public-files.de>
-> 
->>> diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
->>> index 93d383b8be87..40b90c052634 100644
->>> --- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
->>> +++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
->>> @@ -86,6 +86,66 @@ vcc5v0_sys: vcc5v0-sys {
->>>  		vin-supply = <&dc_12v>;
->>>  	};
->>>
->>> +	pcie30_avdd0v9: pcie30-avdd0v9 {
->>
->> Use consistent naming, so if other nodes have "regulator" suffix, use it
->> here as well.
-> 
-> only these 3 new have the suffix:
-> 
-> vcc3v3_pi6c_05: vcc3v3-pi6c-05-regulator
-> vcc3v3_minipcie: vcc3v3-minipcie-regulator
-> vcc3v3_ngff: vcc3v3-ngff-regulator
-> 
-> so i would drop it there...
-> 
-> so i end up with (including existing ones to compare):
-> 
-> vcc3v3_sys: vcc3v3-sys
-> vcc5v0_sys: vcc5v0-sys
-> pcie30_avdd0v9: pcie30-avdd0v9
-> pcie30_avdd1v8: pcie30-avdd1v8
-> vcc3v3_pi6c_05: vcc3v3-pi6c-05
-> vcc3v3_minipcie: vcc3v3-minipcie
-> vcc3v3_ngff: vcc3v3-ngff
-> vcc5v0_usb: vcc5v0_usb
-> vcc5v0_usb_host: vcc5v0-usb-host
-> vcc5v0_usb_otg: vcc5v0-usb-otg
-> 
-> is this ok?
-> 
-> maybe swap avdd* and pcie30 part to have voltage in front of function.
-> 
+On Sat, 27 Aug 2022 at 14:42, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> On Fri, Aug 26, 2022 at 11:42:32PM +0800, Hawkins Jiawei wrote:
+> > On Fri, 26 Aug 2022 at 23:15, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> > >
+> > > On Fri, Aug 26, 2022 at 08:32:57PM +0800, Hawkins Jiawei wrote:
+> > > > > syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git   master
+> > > > >
+> > > > > Looks like it is improper check order that causes this bug.
+> > > >
+> > > > Sorry for wrong command.
+> > > > #syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git   master
+> > > >
+> > > > diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
+> > > > index 52615e6090e1..6480cd2d371d 100644
+> > > > --- a/fs/ntfs/attrib.c
+> > > > +++ b/fs/ntfs/attrib.c
+> > > > @@ -594,10 +594,11 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
+> > > >       for (;; a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
+> > > >               u8 *mrec_end = (u8 *)ctx->mrec +
+> > > >                              le32_to_cpu(ctx->mrec->bytes_allocated);
+> > > > +             if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end)
+> > > > +                     break;
+> > >
+> > > This definitely seems like a bug.  But your code won't build.  Syzbot
+> > > must have -Werror turned off?
+> > Hi Dan,
+> > Did you mean we should put the variable declares at the beginning of the function?
+> > (Correct me if I understand anything wrong)
+>
+> You can declare it at the beginning of the block.
+OK, I will do like that.
 
-I prefer all of them have regulator suffix. I think reasonable is also
-to rename the old ones and then add new ones with suffix.
+>
+> >
+> > >
+> > > Btw, this was in the original code, but those casts are ugly.  Ideally
+> > > there would be some way to get rid of them.  But otherwise at least
+> > > put a space after the u8.  "(u8 *)a < (u8 *)ctx->mrec".
+> > >
+> > > >               u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
+> > > >                              a->name_length * sizeof(ntfschar);
+> > > > -             if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
+> > > > -                 name_end > mrec_end)
+> > > > +             if (name_end > mrec_end)
+> > > >                       break;
+> > >
+> > > regards,
+> > > dan carpenter
+> > So maybe I can try to refactor these codes. But I wonder if this can be
+> > done in a seperate bug
+>
+> The kernel has a strict "one thing per patch rule".  Those rules are
+> for reviewers and easier backporting.  So the trick is to write the
+> commit message to persuade the reviewer that the way you've written the
+> patch is the easiest way to review it.  So here is how I would write the
+> commit message:
+>
+> [PATCH] ntfs: fix out of bounds read in ntfs_attr_find()
+>
+> This code deferences "a" to calculate "name_end" and then it checks to
+> ensure that "a" is within bounds.  Move the bounds checks earlier and
+> add some comments to make it more clear what they're doing.  Then
+> calculate "name_end" and check that.
+>
+> (Btw, are the wrap around checks really sufficient?  It seems like it
+> could wrap to something still within the ->mrec buffer but before the
+> current entry so it would end up in a forever loop or something?)
+I am not for sure, but it seems that it is OK before.
+As for the forever loop, there is a break when a->length is 0 in the loop,
+So I think it probably would not end up in a forever loop?(Correct me if
+I am wrong)
 
-
-Best regards,
-Krzysztof
+>
+> diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
+> index 52615e6090e1..90d567acb2a3 100644
+> --- a/fs/ntfs/attrib.c
+> +++ b/fs/ntfs/attrib.c
+> @@ -594,11 +594,20 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
+>         for (;; a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
+>                 u8 *mrec_end = (u8 *)ctx->mrec +
+>                                le32_to_cpu(ctx->mrec->bytes_allocated);
+> -               u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
+> -                              a->name_length * sizeof(ntfschar);
+> -               if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
+> -                   name_end > mrec_end)
+> +               u8 *name_end;
+> +
+> +               /* check for wrap around */
+> +               if ((u8 *)a < (u8 *)ctx->mrec)
+> +                       break;
+> +               /* check for overflow */
+> +               if ((u8 *)a > mrec_end)
+>                         break;
+> +
+> +               name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
+> +                          a->name_length * sizeof(ntfschar);
+> +               if (name_end > mrec_end)
+> +                       break;
+> +
+>                 ctx->attr = a;
+>                 if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
+>                                 a->type == AT_END))
+Thanks for your suggestion, I will refactor these codes in this way.
