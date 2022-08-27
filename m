@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49032ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 07:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E375ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 07:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239707AbiH0HCD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 03:02:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
+        id S232691AbiH0HCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 03:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232911AbiH0HBg (ORCPT
+        with ESMTP id S231880AbiH0HBe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 03:01:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9359D24F3E;
-        Sat, 27 Aug 2022 00:01:35 -0700 (PDT)
+        Sat, 27 Aug 2022 03:01:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F414E8FD49;
+        Sat, 27 Aug 2022 00:01:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26D55B82783;
-        Sat, 27 Aug 2022 07:01:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88DB1C43470;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ADAC610A4;
         Sat, 27 Aug 2022 07:01:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5FB4C433B5;
+        Sat, 27 Aug 2022 07:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661583693;
-        bh=0xuShhm2dGVlVdS35K/psQMXih/7EA3C0nxlthmzrd0=;
+        s=k20201202; t=1661583692;
+        bh=8UZ3nfyjvR/tlY+3mxGCVsnHwuM9TQPRtN/Xaf4/Y3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pedZYWIoNW+9lCIp8+WakPS5vapg3nIeS1G4/mysv6CfIZndcJTyFf+55ZsuA+aoX
-         Xdxp1ueHBL0vwGMKdhP0aU5LtCqsXe8WsW8LhTz8F7hpOiJnrPVkiKkzcu3lp+y0E7
-         llWBt5CZ4CIdjIhOsdRdJYxaxOIwvwI9gQB12Oj/V61yCCzR2tpROudUnv4gbqNlLl
-         8UlxBfBIyMt3TQf7vsDjgDAw3nyZWmoGWLAu9ea3XxRiDAsbBFueT1r59i4i2W4diN
-         G5c+MDjU1hRMW+b3c3tnXbKIMnNrsaWpg/h9XW7XmikreLpz2cX9EqaF6JT/a64zmD
-         s/bGohFpVzqcg==
+        b=Ow3GS9VpEWEwaBcfZsOmQP3mhfwpOEhyaxUiMt1sumBXKJzOjeWFbPUm+P0JSfHsg
+         VtA6vPA/q4JLRxmxt2pGM5L693TcfBzdpgRm/EFZ1NZhJ6lfmYUel8pwvNZoifkQds
+         JXuuBeZheUzAFx5xwRSEwfEQO8LFPmen2nLAipWnVExDTkuoBDj8j0a1B0MO0mG8SF
+         xmekiN4n+XelAPcJSWJRL6/k2QglePYbdIO7cyDRxuiPHYT1b7K6GPDXEhkT1VFn56
+         wEi6KFndg39w3zleKkYb/RGdzMpBQZtBoqG0/n6XWum3PyNszMiwFUD4a4geFjHMfC
+         C3oDVdTYXnQ1g==
 From:   Eric Biggers <ebiggers@kernel.org>
 To:     linux-fsdevel@vger.kernel.org
 Cc:     linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
         linux-xfs@vger.kernel.org, linux-api@vger.kernel.org,
         linux-fscrypt@vger.kernel.org, linux-block@vger.kernel.org,
         linux-kernel@vger.kernel.org, Keith Busch <kbusch@kernel.org>
-Subject: [PATCH v5 8/8] xfs: support STATX_DIOALIGN
-Date:   Fri, 26 Aug 2022 23:58:51 -0700
-Message-Id: <20220827065851.135710-9-ebiggers@kernel.org>
+Subject: [PATCH v5 6/8] f2fs: simplify f2fs_force_buffered_io()
+Date:   Fri, 26 Aug 2022 23:58:49 -0700
+Message-Id: <20220827065851.135710-7-ebiggers@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220827065851.135710-1-ebiggers@kernel.org>
 References: <20220827065851.135710-1-ebiggers@kernel.org>
@@ -52,35 +52,71 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Eric Biggers <ebiggers@google.com>
 
-Add support for STATX_DIOALIGN to xfs, so that direct I/O alignment
-restrictions are exposed to userspace in a generic way.
+f2fs only allows direct I/O that is aligned to the filesystem block
+size.  Given that fact, simplify f2fs_force_buffered_io() by removing
+the redundant call to block_unaligned_IO().
+
+This makes it easier to reuse this code for STATX_DIOALIGN.
 
 Signed-off-by: Eric Biggers <ebiggers@google.com>
 ---
- fs/xfs/xfs_iops.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ fs/f2fs/file.c | 27 +++++----------------------
+ 1 file changed, 5 insertions(+), 22 deletions(-)
 
-diff --git a/fs/xfs/xfs_iops.c b/fs/xfs/xfs_iops.c
-index 45518b8c613c9a..f51c60d7e2054a 100644
---- a/fs/xfs/xfs_iops.c
-+++ b/fs/xfs/xfs_iops.c
-@@ -604,6 +604,16 @@ xfs_vn_getattr(
- 		stat->blksize = BLKDEV_IOSIZE;
- 		stat->rdev = inode->i_rdev;
- 		break;
-+	case S_IFREG:
-+		if (request_mask & STATX_DIOALIGN) {
-+			struct xfs_buftarg	*target = xfs_inode_buftarg(ip);
-+			struct block_device	*bdev = target->bt_bdev;
-+
-+			stat->result_mask |= STATX_DIOALIGN;
-+			stat->dio_mem_align = bdev_dma_alignment(bdev) + 1;
-+			stat->dio_offset_align = bdev_logical_block_size(bdev);
-+		}
-+		fallthrough;
- 	default:
- 		stat->blksize = xfs_stat_blksize(ip);
- 		stat->rdev = 0;
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index 8a9455bf956f16..8e11311db21060 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -808,22 +808,9 @@ int f2fs_truncate(struct inode *inode)
+ 	return 0;
+ }
+ 
+-static int block_unaligned_IO(struct inode *inode, struct kiocb *iocb,
+-			      struct iov_iter *iter)
+-{
+-	unsigned int i_blkbits = READ_ONCE(inode->i_blkbits);
+-	unsigned int blocksize_mask = (1 << i_blkbits) - 1;
+-	loff_t offset = iocb->ki_pos;
+-	unsigned long align = offset | iov_iter_alignment(iter);
+-
+-	return align & blocksize_mask;
+-}
+-
+-static bool f2fs_force_buffered_io(struct inode *inode,
+-				   struct kiocb *iocb, struct iov_iter *iter)
++static bool f2fs_force_buffered_io(struct inode *inode, int rw)
+ {
+ 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+-	int rw = iov_iter_rw(iter);
+ 
+ 	if (!fscrypt_dio_supported(inode))
+ 		return true;
+@@ -836,13 +823,9 @@ static bool f2fs_force_buffered_io(struct inode *inode,
+ 	if (f2fs_is_multi_device(sbi) && !sbi->aligned_blksize)
+ 		return true;
+ 
+-	if (f2fs_lfs_mode(sbi) && (rw == WRITE)) {
+-		if (block_unaligned_IO(inode, iocb, iter))
+-			return true;
+-		if (F2FS_IO_ALIGNED(sbi))
+-			return true;
+-	}
+-	if (is_sbi_flag_set(F2FS_I_SB(inode), SBI_CP_DISABLED))
++	if (f2fs_lfs_mode(sbi) && rw == WRITE && F2FS_IO_ALIGNED(sbi))
++		return true;
++	if (is_sbi_flag_set(sbi, SBI_CP_DISABLED))
+ 		return true;
+ 
+ 	return false;
+@@ -4222,7 +4205,7 @@ static bool f2fs_should_use_dio(struct inode *inode, struct kiocb *iocb,
+ 	if (!(iocb->ki_flags & IOCB_DIRECT))
+ 		return false;
+ 
+-	if (f2fs_force_buffered_io(inode, iocb, iter))
++	if (f2fs_force_buffered_io(inode, iov_iter_rw(iter)))
+ 		return false;
+ 
+ 	/*
 -- 
 2.37.2
 
