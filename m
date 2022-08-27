@@ -2,71 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EED27ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 07:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE2FBC3DA6B
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 07:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232836AbiH0HOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 03:14:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        id S240379AbiH0HOk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 03:14:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232507AbiH0HOP (ORCPT
+        with ESMTP id S239800AbiH0HOh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 03:14:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1BAB941F;
-        Sat, 27 Aug 2022 00:14:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A56ECB82B8D;
-        Sat, 27 Aug 2022 07:14:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F6ABC4347C;
-        Sat, 27 Aug 2022 07:14:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661584451;
-        bh=bQaVKBfsaLgFQiFbtFaJvcqVdo/u/g4Ip0tVdWmYieQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=MuvtgXa0YJPctLv2mT8DfNi0I5KdPrtZD8YgtzWdktEzyf/YogOa/LKGqu5nVWK+H
-         Z/Jy1DsA5qi5+ZmGLhJTw6q30Ixe9S4To6brhk8PzAfRbitjd7TULsBwhQrwEU+S4h
-         KxTieZLSV2ngyyRacvTGeGvMRvGYw4ccE17vx4jHnsYBEyv0AA26+Egw8EjTGWz6zz
-         CdUTbOKzSpAfbv61qT2Cw2DFQvVD2BYJcfIDHAFaHnppPgtv9Qsp48xZUnifVtj70O
-         VZzHlRQZpQsXV/vyoNG1zSmyCYj6BoKL7bKeQbWWnpybGFjp6Biny5JZA/EOkd2Qqf
-         sqjS9WTInxJAg==
-Received: by mail-wm1-f53.google.com with SMTP id n23-20020a7bc5d7000000b003a62f19b453so5455948wmk.3;
-        Sat, 27 Aug 2022 00:14:11 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2crqYSz1YLQi25NSxQUVPF3Gc74q4m02TB91HuiLt87Z6MTQaZ
-        wdF6KqZTUldAGrH6OIaHaz65FW6i/rhIjK9ze8w=
-X-Google-Smtp-Source: AA6agR7p8GijcUOtJGznPBKhpfg9HyxCqjidJlhRFBvsrg/twaTrPlEhxNPEg5Uu1s2eYVOnl4WfetJWsHoWy5eWk/c=
-X-Received: by 2002:a1c:3b55:0:b0:3a6:7b62:3901 with SMTP id
- i82-20020a1c3b55000000b003a67b623901mr1520421wma.113.1661584449515; Sat, 27
- Aug 2022 00:14:09 -0700 (PDT)
+        Sat, 27 Aug 2022 03:14:37 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48657BB037;
+        Sat, 27 Aug 2022 00:14:36 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MF7Cl3vYRzlWHb;
+        Sat, 27 Aug 2022 15:11:15 +0800 (CST)
+Received: from CHINA (10.175.102.38) by canpemm500009.china.huawei.com
+ (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 27 Aug
+ 2022 15:14:33 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Sebastian Reichel <sre@kernel.org>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <linux-pm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next 1/2] power: supply: adp5061: fix out-of-bounds read in adp5061_get_chg_type()
+Date:   Sat, 27 Aug 2022 07:32:23 +0000
+Message-ID: <20220827073224.713803-2-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220827073224.713803-1-weiyongjun1@huawei.com>
+References: <20220827073224.713803-1-weiyongjun1@huawei.com>
 MIME-Version: 1.0
-References: <20220819102037.2697798-1-chenhuacai@loongson.cn> <9b6f0aeaebbd36882b5b40d655f9ccd20c7be496.camel@xry111.site>
-In-Reply-To: <9b6f0aeaebbd36882b5b40d655f9ccd20c7be496.camel@xry111.site>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Sat, 27 Aug 2022 09:13:58 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXFOd+gMHbi6MH0KHWkBEKN9V0LeZbyGRw8h630OxtMrdA@mail.gmail.com>
-Message-ID: <CAMj1kXFOd+gMHbi6MH0KHWkBEKN9V0LeZbyGRw8h630OxtMrdA@mail.gmail.com>
-Subject: Re: [PATCH V3] LoongArch: Add efistub booting support
-To:     Xi Ruoyao <xry111@xry111.site>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Huacai Chen <chenhuacai@kernel.org>, loongarch@lists.linux.dev,
-        linux-arch@vger.kernel.org, Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.102.38]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 27 Aug 2022 at 06:41, Xi Ruoyao <xry111@xry111.site> wrote:
->
-> Tested V3 with the magic number check manually removed in my GRUB build.
-> The system boots successfully.  I've not tested Arnd's zBoot patch yet.
+ADP5061_CHG_STATUS_1_CHG_STATUS is masked with 0x07, which means a length
+of 8, but adp5061_chg_type array size is 4, may end up reading 4 elements
+beyond the end of the adp5061_chg_type[] array.
 
-I am Ard not Arnd :-)
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+---
+ drivers/power/supply/adp5061.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Please use this branch when testing the EFI decompressor:
-https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/log/?h=efi-decompressor-v4
+diff --git a/drivers/power/supply/adp5061.c b/drivers/power/supply/adp5061.c
+index 003557043ab3..daee1161c305 100644
+--- a/drivers/power/supply/adp5061.c
++++ b/drivers/power/supply/adp5061.c
+@@ -427,11 +427,11 @@ static int adp5061_get_chg_type(struct adp5061_state *st,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	chg_type = adp5061_chg_type[ADP5061_CHG_STATUS_1_CHG_STATUS(status1)];
+-	if (chg_type > ADP5061_CHG_FAST_CV)
++	chg_type = ADP5061_CHG_STATUS_1_CHG_STATUS(status1);
++	if (chg_type >= ARRAY_SIZE(adp5061_chg_type))
+ 		val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
+ 	else
+-		val->intval = chg_type;
++		val->intval = adp5061_chg_type[chg_type];
+ 
+ 	return ret;
+ }
+-- 
+2.34.1
+
