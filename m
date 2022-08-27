@@ -2,190 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A23ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 06:31:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78CDECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 06:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232344AbiH0GbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 02:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41452 "EHLO
+        id S232880AbiH0GdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 02:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230027AbiH0GbF (ORCPT
+        with ESMTP id S231808AbiH0GdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 02:31:05 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29C7040E0B;
-        Fri, 26 Aug 2022 23:31:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661581864; x=1693117864;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=2RdCy6tyMucjJ+3ngZSsWyiE4xxEX4EO/OwoRyYj4oU=;
-  b=T/egcI7soO5io6EVHok/Son4qe+lEiRXzrPyYpt0qqulVpUiq8dHXJfM
-   gd/pHoXeDf5LC/CtZXHwJ418PD248nHg4zyu4B6Xo3hEC7L/9U7Ftq46h
-   IqDbbfOE54hptl/ApGpbRGj5e3PFMkTg9bxtD3mOIDDmtc1ITI9flFbC+
-   7Esk6hd+6t2EJ82NKJ2rx0O/JMCBL+HCNxafnu7nYVoPRviKRJ9nrGgo3
-   nmKJzTO3Xo4JK0B7DejmGNzZNVfcLjyPWMKnyt7XJuT41iIUHg57YTQ43
-   XZH4J0ME15vbMP3sG3yhSQqWN4/AKAeOq8g+Sq4c6D1pwQ1+69chNUwPE
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="275044533"
-X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
-   d="scan'208";a="275044533"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 23:31:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
-   d="scan'208";a="938992735"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga005.fm.intel.com with ESMTP; 26 Aug 2022 23:30:58 -0700
-Date:   Sat, 27 Aug 2022 14:21:42 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <nava.kishore.manne@amd.com>
-Cc:     git@amd.com, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        michal.simek@xilinx.com, mdf@kernel.org, hao.wu@intel.com,
-        trix@redhat.com, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, ronak.jain@xilinx.com,
-        rajan.vaja@xilinx.com, abhyuday.godhasara@xilinx.com,
-        piyush.mehta@xilinx.com, lakshmi.sai.krishna.potthuri@xilinx.com,
-        harsha.harsha@xilinx.com, linus.walleij@linaro.org,
-        nava.manne@xilinx.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, yilun.xu@intel.com
-Subject: Re: [PATCH 1/4] firmware: xilinx: Add afi ioctl support
-Message-ID: <Ywm39iYGLliU9ncv@yilunxu-OptiPlex-7050>
-References: <20220824035542.706433-1-nava.kishore.manne@amd.com>
- <20220824035542.706433-2-nava.kishore.manne@amd.com>
+        Sat, 27 Aug 2022 02:33:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDE8DD763;
+        Fri, 26 Aug 2022 23:33:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B002B82851;
+        Sat, 27 Aug 2022 06:32:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3D65C43140;
+        Sat, 27 Aug 2022 06:32:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661581977;
+        bh=qmU3paAtykBex7YGKV/aqzGRIkXBQc960SgD6HR6SY8=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=YEHT/bli5qd1ay+q9HVMBR0oI+9PoTqAAy0yM6hF5kclq8yMNW/F4uefUyffak5sU
+         ypg6p/CyD+jGLvDXIl5lg1S4Z/zONnl3Y7YAGB3qMP/Iw4x8Ox2h2AOkN67BmRhHzu
+         tN9veLAeutSoousW4F7HKg+Svsh5BuwXeKKqkLZEkMWnAu531Qd+pBLVcSSFovwk0P
+         nMKpkmOIe1mUWEDDWhjZRMFR0vR3TiafeqjCcIc0LKpkuXW/cPMfeQcKslxyRg4F2u
+         hIU2Q9mIk45VNGJQrbT1bTD+YihVieLVcv4MgbZyiQDQMBFj61NDFPQ/VmvUJLpQcf
+         992piLBHt21yA==
+Received: by mail-wm1-f41.google.com with SMTP id k18-20020a05600c0b5200b003a5dab49d0bso1827828wmr.3;
+        Fri, 26 Aug 2022 23:32:57 -0700 (PDT)
+X-Gm-Message-State: ACgBeo1V1PsYdOVpo6tTIFD6vlUWzmJC6Q0tKeFxL+abwM4s//APZ5A3
+        Q8ULSoX6tqoorScAuddTP69pyOib4DenjHbS8ic=
+X-Google-Smtp-Source: AA6agR4he6zsNcQiJrvVUUEahEtSHtY6xyW/86rJ3vJuW45ByDRjY2ilU7UTEpf5R0bj+rVl2HMTawK+DUNyZiAZmwY=
+X-Received: by 2002:a05:600c:384f:b0:3a6:603c:4338 with SMTP id
+ s15-20020a05600c384f00b003a6603c4338mr1504042wmr.192.1661581976098; Fri, 26
+ Aug 2022 23:32:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220824035542.706433-2-nava.kishore.manne@amd.com>
+References: <alpine.LRH.2.02.2208220530050.32093@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAHk-=wh-6RJQWxdVaZSsntyXJWJhivVX8JFH4MqkXv12AHm_=Q@mail.gmail.com>
+ <CAHk-=whfZSEc40wtq5H51JcsBdB50ctZPtM3rS3E+xUNvadLog@mail.gmail.com>
+ <alpine.LRH.2.02.2208251501200.31977@file01.intranet.prod.int.rdu2.redhat.com>
+ <20220826112327.GA19774@willie-the-truck> <alpine.LRH.2.02.2208260727020.17585@file01.intranet.prod.int.rdu2.redhat.com>
+ <alpine.LRH.2.02.2208261003590.27240@file01.intranet.prod.int.rdu2.redhat.com>
+ <20220826174352.GA20386@willie-the-truck> <alpine.LRH.2.02.2208261424580.31963@file01.intranet.prod.int.rdu2.redhat.com>
+ <CAMj1kXHmXHKG4TXG+e7FgHCB2KKjmSeAdoAVR_bQTjb6NTVD4A@mail.gmail.com> <alpine.LRH.2.02.2208261447400.32583@file01.intranet.prod.int.rdu2.redhat.com>
+In-Reply-To: <alpine.LRH.2.02.2208261447400.32583@file01.intranet.prod.int.rdu2.redhat.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Sat, 27 Aug 2022 08:32:44 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXEqF_wKibwvdXVzjBfLrTJpXquNLOyuQVrbF+ZyNvLDaA@mail.gmail.com>
+Message-ID: <CAMj1kXEqF_wKibwvdXVzjBfLrTJpXquNLOyuQVrbF+ZyNvLDaA@mail.gmail.com>
+Subject: Re: [PATCH] wait_on_bit: add an acquire memory barrier
+To:     Mikulas Patocka <mpatocka@redhat.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-24 at 09:25:39 +0530, Nava kishore Manne wrote:
-> Adds afi ioctl to support dynamic PS-PL bus width settings.
+On Fri, 26 Aug 2022 at 21:10, Mikulas Patocka <mpatocka@redhat.com> wrote:
+>
+>
+>
+> On Fri, 26 Aug 2022, Ard Biesheuvel wrote:
+>
+> > Could you try booting with earlycon?
+> >
+> > Just 'earlycon' and if that does not help,
+>
+> It doesn't help.
+>
+> > 'earlycon=uart8250,mmio32,<uart PA>' [IIRC, mcbin uses 16550
+> > compatible UARTs, right?]
+>
+> mcbin is the host system (running a stable kernel fine). The crash happens
+> in a virtual machine. The vm uses /dev/ttyAMA0 as a console:
+>
+> Serial: AMBA PL011 UART driver
+> 9000000.pl011: ttyAMA0 at MMIO 0x9000000 (irq = 45, base_baud = 0) is a PL011 rev1
+> printk: console [ttyAMA0] enabled
+>
+> I tried earlycon=pl011,mmio32,0x9000000 - but it doesn't help, it hangs
+> without printing anything.
+>
 
-Please also describe what is afi, PS, PL here, Patch #0 won't appear in
-upstream tree finally.
-
-Thanks,
-Yilun
-
-> 
-> Signed-off-by: Nava kishore Manne <nava.kishore.manne@amd.com>
-> ---
->  drivers/firmware/xilinx/zynqmp.c     | 14 +++++++++++
->  include/linux/firmware/xlnx-zynqmp.h | 36 ++++++++++++++++++++++++++++
->  2 files changed, 50 insertions(+)
-> 
-> diff --git a/drivers/firmware/xilinx/zynqmp.c b/drivers/firmware/xilinx/zynqmp.c
-> index d1f652802181..cbd84c96a66a 100644
-> --- a/drivers/firmware/xilinx/zynqmp.c
-> +++ b/drivers/firmware/xilinx/zynqmp.c
-> @@ -843,6 +843,20 @@ int zynqmp_pm_read_pggs(u32 index, u32 *value)
->  }
->  EXPORT_SYMBOL_GPL(zynqmp_pm_read_pggs);
->  
-> +/**
-> + * zynqmp_pm_afi() - PM API for setting the PS-PL bus width
-> + * @config_id:	Register index value
-> + * @bus_width:	Afi interface bus width value.
-> + *
-> + * Return:	Returns status, either success or error+reason
-
-I see other functions are also like this, but I still can't figure out
-what values for success and what for error+reason.
-
-Thanks,
-Yilun
-
-> + */
-> +int zynqmp_pm_afi(u32 config_id, u32 bus_width)
-> +{
-> +	return zynqmp_pm_invoke_fn(PM_IOCTL, 0, IOCTL_AFI,
-> +				   config_id, bus_width, NULL);
-> +}
-> +EXPORT_SYMBOL_GPL(zynqmp_pm_afi);
-> +
->  /**
->   * zynqmp_pm_set_boot_health_status() - PM API for setting healthy boot status
->   * @value:	Status value to be written
-> diff --git a/include/linux/firmware/xlnx-zynqmp.h b/include/linux/firmware/xlnx-zynqmp.h
-> index 9f50dacbf7d6..7d0d98303acc 100644
-> --- a/include/linux/firmware/xlnx-zynqmp.h
-> +++ b/include/linux/firmware/xlnx-zynqmp.h
-> @@ -78,6 +78,16 @@
->  #define EVENT_ERROR_PSM_ERR1	(0x28108000U)
->  #define EVENT_ERROR_PSM_ERR2	(0x2810C000U)
->  
-> +#define AFIFM_BUS_WIDTH_128_CONFIG_VAL	0x0U
-> +#define AFIFM_BUS_WIDTH_64_CONFIG_VAL	0x1U
-> +#define AFIFM_BUS_WIDTH_32_CONFIG_VAL	0x2U
-> +
-> +#define AFIFS_SS0_SS2_BUS_WIDTH_128_CONFIG_VAL	0x200U
-> +#define AFIFS_SS0_SS2_BUS_WIDTH_64_CONFIG_VAL	0x100U
-> +#define AFIFS_SS1_BUS_WIDTH_128_CONFIG_VAL	0x800U
-> +#define AFIFS_SS1_BUS_WIDTH_64_CONFIG_VAL	0x400U
-> +#define AFIFS_SS_BUS_WIDTH_32_CONFIG_VAL	0x0U
-> +
->  enum pm_api_cb_id {
->  	PM_INIT_SUSPEND_CB = 30,
->  	PM_ACKNOWLEDGE_CB = 31,
-> @@ -147,6 +157,7 @@ enum pm_ioctl_id {
->  	IOCTL_READ_PGGS = 15,
->  	/* Set healthy bit value */
->  	IOCTL_SET_BOOT_HEALTH_STATUS = 17,
-> +	IOCTL_AFI = 18,
->  	IOCTL_OSPI_MUX_SELECT = 21,
->  	/* Register SGI to ATF */
->  	IOCTL_REGISTER_SGI = 25,
-> @@ -155,6 +166,25 @@ enum pm_ioctl_id {
->  	IOCTL_GET_FEATURE_CONFIG = 27,
->  };
->  
-> +enum pm_afi_config_id {
-> +	AFIFM0_RDCTRL = 0,
-> +	AFIFM0_WRCTRL = 1,
-> +	AFIFM1_RDCTRL = 2,
-> +	AFIFM1_WRCTRL = 3,
-> +	AFIFM2_RDCTRL = 4,
-> +	AFIFM2_WRCTRL = 5,
-> +	AFIFM3_RDCTRL = 6,
-> +	AFIFM3_WRCTRL = 7,
-> +	AFIFM4_RDCTRL = 8,
-> +	AFIFM4_WRCTRL = 9,
-> +	AFIFM5_RDCTRL = 10,
-> +	AFIFM5_WRCTRL = 11,
-> +	AFIFM6_RDCTRL = 12,
-> +	AFIFM6_WRCTRL = 13,
-> +	AFIFS = 14,
-> +	AFIFS_SS2 = 15,
-> +};
-> +
->  enum pm_query_id {
->  	PM_QID_INVALID = 0,
->  	PM_QID_CLOCK_GET_NAME = 1,
-> @@ -475,6 +505,7 @@ int zynqmp_pm_is_function_supported(const u32 api_id, const u32 id);
->  int zynqmp_pm_set_feature_config(enum pm_feature_config_id id, u32 value);
->  int zynqmp_pm_get_feature_config(enum pm_feature_config_id id, u32 *payload);
->  int zynqmp_pm_register_sgi(u32 sgi_num, u32 reset);
-> +int zynqmp_pm_afi(u32 config_id, u32 bus_width);
->  #else
->  static inline int zynqmp_pm_get_api_version(u32 *version)
->  {
-> @@ -745,6 +776,11 @@ static inline int zynqmp_pm_register_sgi(u32 sgi_num, u32 reset)
->  {
->  	return -ENODEV;
->  }
-> +
-> +static inline int zynqmp_pm_afi(u32 config_id, u32 bus_width)
-> +{
-> +	return -ENODEV;
-> +}
->  #endif
->  
->  #endif /* __FIRMWARE_ZYNQMP_H__ */
-> -- 
-> 2.25.1
-> 
+If you are using pl011, you should drop the mmio32 - it only takes a
+physical address (and optionally baud rate etc, but QEMU doesn't need
+those)
