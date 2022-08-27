@@ -2,79 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8738DECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 13:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 000CEECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 13:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232806AbiH0Na5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 09:30:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41196 "EHLO
+        id S232958AbiH0Njp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 09:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiH0Naz (ORCPT
+        with ESMTP id S231577AbiH0Njn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 09:30:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D934521E2E;
-        Sat, 27 Aug 2022 06:30:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74B3FB8013C;
-        Sat, 27 Aug 2022 13:30:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0384EC433D6;
-        Sat, 27 Aug 2022 13:30:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661607050;
-        bh=NMxqpqaBLhAnK0P2jMNxG42gIO1zGsISRaqGFoRIfV0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=aUmwBrPcCYxYZJqxv/+Bc3XGD3iJ24M63V3UQ06pqJ3u8BHN+rT8jheh+8Jl9sTwF
-         pqOY9ZMwPKdKahy7abjK5oC35rgVwESoqhto3TZdrbSjvgfC6cZTL5D2VY5TDMdFdK
-         8YYVAmN7ZvxOAUDinn1Hba0i5x7Eg9CTWaE1QWaL6nItbS9gasitu/CHqmyPMl6Rpy
-         n/5rcXA6lvO8O55+yJ8ZFqkZ3ITIBeoyvt/M2VHZmwXc8IL+sdFaPTUaPDmGs3EjQa
-         zn05bc9pJsQQfFMUY1e2D8MEUXc1tpODofiOirCgGu+Vr/hGenfEplsv7jvsLBCwhh
-         ltpkzVkrt3KRA==
-Received: by pali.im (Postfix)
-        id F2586C7A; Sat, 27 Aug 2022 15:30:46 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Matthew Garrett <mjg59@srcf.ucam.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] platform/x86: dell-wmi: Add WMI event 0x0012 0x0003 to the list
-Date:   Sat, 27 Aug 2022 15:30:40 +0200
-Message-Id: <20220827133040.15932-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        Sat, 27 Aug 2022 09:39:43 -0400
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B85A32B8B;
+        Sat, 27 Aug 2022 06:39:42 -0700 (PDT)
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-324ec5a9e97so97616477b3.7;
+        Sat, 27 Aug 2022 06:39:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=T9+HQLzrIDsU5QNLiDsdH0Nj22g6zUGsbNi5IX8RcwI=;
+        b=Se5GnqpTvBjyz9oIvoRndFD1C3n7/c0XCFtnIbBeOdeLveBavA5mBwY6z4Pmfsaj61
+         3zkA9kK1wYWILQB2H+FVzgg0YGR2mPBQ3IQlH8XJaYgG5IoOuePlaIEUuBAcLZQYfe3F
+         adPNbwuzre/QCYIe5Utll1o/icVK7dDkhy+t5QPLRRk1X3RRlBQXNhgeTFHOdjJ6VBTs
+         0US7PdgzTgxJKsuoYjQ1cubrHTA9L0UtIt9axnGMKcNxuwcaSTOgrdFa1Rm0xxpVSaVe
+         6HFqB1jIK+YsFNzdYbmlBiTYGiB1Vy65GjnWVZNnylc2VCgHDZRH5JvK44tcK+WIhf0n
+         tLSw==
+X-Gm-Message-State: ACgBeo1sRg+nkl0YvWFDhSD0wNi+8wLTXlNneZWmSJUigq+4GIqLBF5L
+        J7XxFAyjR8U03gUX9nEBSTWcuUu7gONzXrwGj1zOn4QuRrM=
+X-Google-Smtp-Source: AA6agR4C3JqsjNNgvmr1O21r2/DRaP9kFjIBCFfCT6ks1nzzdB+ieQj/ePX2+0pmF+Bv2YBU4ZkH98pBUqJ+58dLhAU=
+X-Received: by 2002:a0d:c841:0:b0:33d:bf96:f823 with SMTP id
+ k62-20020a0dc841000000b0033dbf96f823mr3717177ywd.326.1661607581213; Sat, 27
+ Aug 2022 06:39:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Sat, 27 Aug 2022 15:39:30 +0200
+Message-ID: <CAJZ5v0jnkSjtMff7uEKTCHLENMJYDd26BEjjZ3XK7fZMxHtd=Q@mail.gmail.com>
+Subject: [GIT PULL] ACPI fixes for v6.0-rc3
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It looks like that on Dell Latitude E6440 is WMI event 0x0012 0x0003 sent
-when display changes brightness. When it happens kernel prints
-"dell_wmi: Unknown WMI event type 0x12" message into dmesg.
+Hi Linus,
 
-So ignore it for now to not spam dmesg.
+Please pull from the tag
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/platform/x86/dell/dell-wmi-base.c | 3 +++
- 1 file changed, 3 insertions(+)
+ git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
+ acpi-6.0-rc3
 
-diff --git a/drivers/platform/x86/dell/dell-wmi-base.c b/drivers/platform/x86/dell/dell-wmi-base.c
-index e07d3ba85a3f..0a259a27459f 100644
---- a/drivers/platform/x86/dell/dell-wmi-base.c
-+++ b/drivers/platform/x86/dell/dell-wmi-base.c
-@@ -344,6 +344,9 @@ static const struct key_entry dell_wmi_keymap_type_0011[] = {
-  * They are events with extended data
-  */
- static const struct key_entry dell_wmi_keymap_type_0012[] = {
-+	/* Backlight brightness change event */
-+	{ KE_IGNORE, 0x0003, { KEY_RESERVED } },
-+
- 	/* Ultra-performance mode switch request */
- 	{ KE_IGNORE, 0x000d, { KEY_RESERVED } },
- 
--- 
-2.20.1
+with top-most commit 2413a85200ee9cbed40d12c6e3b856752b089790
 
+ Merge branch 'acpi-processor' into acpi
+
+on top of commit 1c23f9e627a7b412978b4e852793c5e3c3efc555
+
+ Linux 6.0-rc2
+
+to receive ACPI fixes for 6.0-rc3.
+
+These fix issues introduced by recent changes related to the handling of
+ACPI device properties and a coding mistake in the exit path of the ACPI
+processor driver.
+
+Specifics:
+
+ - Prevent acpi_thermal_cpufreq_exit() from attempting to remove
+   the same frequency QoS request for multiple times (Riwen Lu).
+
+ - Fix type detection for integer ACPI device properties (Stefan
+   Binding).
+
+ - Avoid emitting false-positive warnings when processing ACPI
+   device properties and drop the useless default case from the
+   acpi_copy_property_array_uint() macro (Sakari Ailus).
+
+Thanks!
+
+
+---------------
+
+Riwen Lu (1):
+      ACPI: processor: Remove freq Qos request for all CPUs
+
+Sakari Ailus (2):
+      ACPI: property: Ignore already existing data node tags
+      ACPI: property: Remove default association from integer maximum values
+
+Stefan Binding (1):
+      ACPI: property: Fix type detection of unified integer reading functions
+
+---------------
+
+ drivers/acpi/processor_thermal.c |  2 +-
+ drivers/acpi/property.c          | 11 +++++------
+ 2 files changed, 6 insertions(+), 7 deletions(-)
