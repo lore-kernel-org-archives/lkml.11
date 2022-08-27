@@ -2,107 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5901DC0502C
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 07:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F62ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 07:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232940AbiH0HvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 03:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60846 "EHLO
+        id S232873AbiH0HyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 03:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbiH0HvO (ORCPT
+        with ESMTP id S230027AbiH0HyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 03:51:14 -0400
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A39D425C40;
-        Sat, 27 Aug 2022 00:51:12 -0700 (PDT)
-Received: by mail-ed1-f44.google.com with SMTP id b44so4515099edf.9;
-        Sat, 27 Aug 2022 00:51:12 -0700 (PDT)
+        Sat, 27 Aug 2022 03:54:07 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2872A2A40B
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 00:54:06 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id m2so942238lfp.11
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 00:54:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=qMotkyLyfuzYTs8cUkh1HNEz4QJ/WmmadHhl7Jt1DmY=;
+        b=DsJDBE3rKA03wvYjQRiUEIr3xrEZDQLItZKnjHG5ueTbZqsM4/yTZZTWSfr17GB/XQ
+         Rwt3lz0euM8j92m94jSV5dCQQXtbbNqz7bpJOUTyVd+PQUf1IjRvHeONo22/T/e67uBU
+         YqK47L4ic3p7StOG+SkJQih006KiRpqOBDqDHPSHwufIXL7uPkcOmqx88X9iUg7XFC7t
+         bERTKkP/Y+BzuDAwIEO+ibVB4KNs0v8TDjAeuPBVzM5Kru/HMLm4+++ee30xDl8VfbSU
+         k5bO9VxiySLN8kCQGU+/zGUFZP20wwd6dkxr+gH5sZ8wGXvtYdO4T/7TEoKsRo5ZLHr7
+         SpOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=9aJASg3DbmlcvW4GqcDsy2Ha1OLvo6SjlyAb3ozLG2I=;
-        b=SbvmZXc38Uck8opcapveH9Z0A7q2Y0XlhfUVPCOc7rTvCVDD9jIK/12mbjL2kknzQ/
-         zePMZ1XhOzKzQD5nbcwQJo+Bhhh4eCeongFizUvzXbEahkXMEq+ClqeqFu1EyCnI/gxC
-         KoWNBFKi9S4McxFSpBeGzVbS7r8C04foUz8gj5qPyqXwh/ungGyL+taRuIDgXLsrkHBZ
-         FoQNCN4RhXI50zx4sXzcwFDLEiZYzw//vydpxTGW83cxk05HwzTj2fZmtQc6QRUGc0o0
-         qTK5NZCmeJMI1LaIA59g4K5nyVh8gUwPoU66FdohVrU0lcM6FpzGA1m7JK4Atxgq3eZ4
-         yeMg==
-X-Gm-Message-State: ACgBeo1Xj2HEsO7YfNdnp0LpbXUcD18kJGSb61UyPKQLiDv5vvH9Djke
-        ePTN+8jHj1v2tVdsBzn/DGXMeEPFfEs=
-X-Google-Smtp-Source: AA6agR47VKAWPvE5G/lnfjA1jqUxY7uPHYKkjKqYUsGzraZ5F2Rark6IIDKsFOShSY8nS9YwNx7r7A==
-X-Received: by 2002:aa7:ca46:0:b0:447:af0a:be68 with SMTP id j6-20020aa7ca46000000b00447af0abe68mr8898417edt.327.1661586671021;
-        Sat, 27 Aug 2022 00:51:11 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::49? ([2a0b:e7c0:0:107::49])
-        by smtp.gmail.com with ESMTPSA id a8-20020aa7cf08000000b0044604ad8b41sm2380616edy.23.2022.08.27.00.51.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Aug 2022 00:51:10 -0700 (PDT)
-Message-ID: <9996285f-5a50-e56a-eb1c-645598381a20@kernel.org>
-Date:   Sat, 27 Aug 2022 09:51:09 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=qMotkyLyfuzYTs8cUkh1HNEz4QJ/WmmadHhl7Jt1DmY=;
+        b=CcPah5HV6yVYntX6lCr/cmq2ZU9FqpiKuPV/o6z6s0RARB0BlRmxWAEfcP1BM2WI1c
+         +y2yEVY3T560kORI/xgT7ORb2xoflBw0+4kJXUIBp1uRcWRumNPyRfqrqd/6An65aC/u
+         s/2hebyCmnK1CDb1X04jFTTo0QyOlnVDifHwl3z1L8MoRybKb6FrmFPrStr2Fcq0dNRU
+         hMoP1zerCsQYuI6heifpWVyDzaYMA5gHIL0qkevZeYTo0Cj6hwRicW208vch+Kqx9uAp
+         rbfP5JK9xt1G/zAeEJkg1MSOdqVcHagwGMuGkdQDePkcTUC6V+Mm8uOO1I6EAxV6N3YR
+         FGAA==
+X-Gm-Message-State: ACgBeo2lhw9XZi/uhPDqR8AhD+JMc5OZsohPjNPemBjrMdZgcXgjXVUx
+        UD1CYAJ0v11imo9stCVItDyUsRRrouUAhRU8WHj7FWGCc0s=
+X-Google-Smtp-Source: AA6agR4LppQS/3wDkPRk2bMljwPa4EBqEZ8k6ssqzInCpLRmy+5MWuh4gDmQNV5tPqyqIsZXV5VEnX/4TohWZDDrAX4=
+X-Received: by 2002:a05:6512:68f:b0:492:cbb1:c4b2 with SMTP id
+ t15-20020a056512068f00b00492cbb1c4b2mr3811823lfe.130.1661586844506; Sat, 27
+ Aug 2022 00:54:04 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH 5.19 145/365] kbuild: dummy-tools: avoid tmpdir leak in
- dummy gcc
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-References: <20220823080118.128342613@linuxfoundation.org>
- <20220823080124.294570326@linuxfoundation.org>
-Content-Language: en-US
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220823080124.294570326@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <1661496048-26410-1-git-send-email-zhaoyang.huang@unisoc.com> <e5856ab3-3cbc-929a-d885-ceb456b0d3b2@kernel.org>
+In-Reply-To: <e5856ab3-3cbc-929a-d885-ceb456b0d3b2@kernel.org>
+From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
+Date:   Sat, 27 Aug 2022 15:53:36 +0800
+Message-ID: <CAGWkznG4vT9GaEHq85G9JDzkpqm4yHG7-Yt=em0AMc7yFWzytw@mail.gmail.com>
+Subject: Re: [RFC PATCH] mm: introduce __GFP_TRACKLEAK to track in-kernel allocation
+To:     "Vlastimil Babka (SUSE)" <vbabka@kernel.org>
+Cc:     "zhaoyang.huang" <zhaoyang.huang@unisoc.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>, Ke Wang <ke.wang@unisoc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23. 08. 22, 10:00, Greg Kroah-Hartman wrote:
-> From: Ondrej Mosnacek <omosnace@redhat.com>
-> 
-> commit aac289653fa5adf9e9985e4912c1d24a3e8cbab2 upstream.
-> 
-> When passed -print-file-name=plugin, the dummy gcc script creates a
-> temporary directory that is never cleaned up. To avoid cluttering
-> $TMPDIR, instead use a static directory included in the source tree.
-
-This breaks our (SUSE) use of dummy tools (GCC_PLUGINS became =n). I 
-will investigate whether this is stable-only and the root cause later.
-
-> Fixes: 76426e238834 ("kbuild: add dummy toolchains to enable all cc-option etc. in Kconfig")
-> Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->   .../dummy-tools/dummy-plugin-dir/include/plugin-version.h | 0
->   scripts/dummy-tools/gcc |    8 ++------
->   1 file changed, 2 insertions(+), 6 deletions(-)
->   create mode 100644 scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
-> 
-> --- a/scripts/dummy-tools/gcc
-> +++ b/scripts/dummy-tools/gcc
-> @@ -96,12 +96,8 @@ fi
->   
->   # To set GCC_PLUGINS
->   if arg_contain -print-file-name=plugin "$@"; then
-> -	plugin_dir=$(mktemp -d)
-> -
-> -	mkdir -p $plugin_dir/include
-> -	touch $plugin_dir/include/plugin-version.h
-> -
-> -	echo $plugin_dir
-> +	# Use $0 to find the in-tree dummy directory
-> +	echo "$(dirname "$(readlink -f "$0")")/dummy-plugin-dir"
->   	exit 0
->   fi
->   
-> 
-> 
-
--- 
-js
-suse labs
-
+On Fri, Aug 26, 2022 at 7:49 PM Vlastimil Babka (SUSE)
+<vbabka@kernel.org> wrote:
+>
+> On 8/26/22 08:40, zhaoyang.huang wrote:
+> > From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> >
+> > Kthread and drivers could fetch memory via alloc_pages directly which make them
+> > hard to debug when leaking. Solve this by introducing __GFP_TRACELEAK and reuse
+> > kmemleak mechanism which unified most of kernel cosuming pages into kmemleak.
+>
+> Can you expand how exactly this is expected to be used? So you first have to
+> suspect some concrete allocation and add __GFP_TRACKLEAK to it?
+It could be used to investigate suspicious drivers or kthread which
+may introduce in-kernel leak during debug phase by enabling kmemleak.
+This can be done via page owner things now. I would like to unified it
+together with slab leak into kmemleak.
+>
+> > Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+> > ---
+> >  include/linux/gfp.h        | 4 +++-
+> >  include/linux/page-flags.h | 3 +++
+> >  mm/kmemleak.c              | 2 +-
+> >  mm/page_alloc.c            | 6 ++++++
+> >  4 files changed, 13 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+> > index 2d2ccae..081ab54 100644
+> > --- a/include/linux/gfp.h
+> > +++ b/include/linux/gfp.h
+> > @@ -68,6 +68,7 @@
+> >  #else
+> >  #define ___GFP_NOLOCKDEP     0
+> >  #endif
+> > +#define ___GFP_TRACKLEAK     0x10000000u
+> >  /* If the above are modified, __GFP_BITS_SHIFT may need updating */
+> >
+> >  /*
+> > @@ -259,12 +260,13 @@
+> >  #define __GFP_SKIP_ZERO ((__force gfp_t)___GFP_SKIP_ZERO)
+> >  #define __GFP_SKIP_KASAN_UNPOISON ((__force gfp_t)___GFP_SKIP_KASAN_UNPOISON)
+> >  #define __GFP_SKIP_KASAN_POISON   ((__force gfp_t)___GFP_SKIP_KASAN_POISON)
+> > +#define __GFP_TRACKLEAK   ((__force gfp_t)___GFP_TRACKLEAK)
+> >
+> >  /* Disable lockdep for GFP context tracking */
+> >  #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
+> >
+> >  /* Room for N __GFP_FOO bits */
+> > -#define __GFP_BITS_SHIFT (27 + IS_ENABLED(CONFIG_LOCKDEP))
+> > +#define __GFP_BITS_SHIFT (28 + IS_ENABLED(CONFIG_LOCKDEP))
+> >  #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
+> >
+> >  /**
+> > diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+> > index e66f7aa..ef0f814 100644
+> > --- a/include/linux/page-flags.h
+> > +++ b/include/linux/page-flags.h
+> > @@ -942,6 +942,7 @@ static inline bool is_page_hwpoison(struct page *page)
+> >  #define PG_offline   0x00000100
+> >  #define PG_table     0x00000200
+> >  #define PG_guard     0x00000400
+> > +#define PG_trackleak 0x00000800
+> >
+> >  #define PageType(page, flag)                                         \
+> >       ((page->page_type & (PAGE_TYPE_BASE | flag)) == PAGE_TYPE_BASE)
+> > @@ -1012,6 +1013,8 @@ static inline int page_has_type(struct page *page)
+> >   */
+> >  PAGE_TYPE_OPS(Guard, guard)
+> >
+> > +PAGE_TYPE_OPS(Trackleak, trackleak)
+> > +
+> >  extern bool is_free_buddy_page(struct page *page);
+> >
+> >  PAGEFLAG(Isolated, isolated, PF_ANY);
+> > diff --git a/mm/kmemleak.c b/mm/kmemleak.c
+> > index 422f28f..a182f5d 100644
+> > --- a/mm/kmemleak.c
+> > +++ b/mm/kmemleak.c
+> > @@ -1471,7 +1471,7 @@ static void kmemleak_scan(void)
+> >                       if (page_zone(page) != zone)
+> >                               continue;
+> >                       /* only scan if page is in use */
+> > -                     if (page_count(page) == 0 || PageReserved(page))
+> > +                     if (page_count(page) == 0)
+> >                               continue;
+> >                       scan_block(page, page + 1, NULL);
+> >                       if (!(pfn & 63))
+> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> > index e008a3d..d8995c6 100644
+> > --- a/mm/page_alloc.c
+> > +++ b/mm/page_alloc.c
+> > @@ -1361,6 +1361,8 @@ static __always_inline bool free_pages_prepare(struct page *page,
+> >               page->mapping = NULL;
+> >       if (memcg_kmem_enabled() && PageMemcgKmem(page))
+> >               __memcg_kmem_uncharge_page(page, order);
+> > +     if (PageTrackleak(page))
+> > +             kmemleak_free(page);
+> >       if (check_free)
+> >               bad += check_free_page(page);
+> >       if (bad)
+> > @@ -5444,6 +5446,10 @@ struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
+> >               __free_pages(page, order);
+> >               page = NULL;
+> >       }
+> > +     if (gfp & __GFP_TRACKLEAK) {
+> > +             kmemleak_alloc(page_address(page), PAGE_SIZE << order, 1, gfp & ~__GFP_TRACKLEAK);
+> > +             __SetPageTrackleak(page);
+> > +     }
+> >
+> >       trace_mm_page_alloc(page, order, alloc_gfp, ac.migratetype);
+> >
+>
