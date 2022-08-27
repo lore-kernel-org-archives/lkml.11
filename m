@@ -2,101 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C34DC0502C
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 16:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD2EDC0502E
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 16:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbiH0Q4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 12:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50146 "EHLO
+        id S233523AbiH0Q6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 12:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbiH0Q4j (ORCPT
+        with ESMTP id S233884AbiH0Q6D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 12:56:39 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93C2B58DED
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 09:56:37 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id se27so564661ejb.8
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 09:56:37 -0700 (PDT)
+        Sat, 27 Aug 2022 12:58:03 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C0D59250;
+        Sat, 27 Aug 2022 09:58:01 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id b5so5242273wrr.5;
+        Sat, 27 Aug 2022 09:58:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=WAEr4zCif0zp++lZAUWZkj4GJhtO7eOsEWQzvmzftQQ=;
-        b=Usv9scAAadihgjNYDL+pCD+vdqOGF1X0cWC9MSgKis7DY1nR47sOn/fUFAwpVGARg2
-         R28Rkid0Z4bmdsM2qMAaJdSP1ygPFSKxdXwNRtDIYxO/YduZhQYknWZKo4dOrEu2FVgH
-         hZLhNoIfLH15LdDClrvelFDdmfGzL5gJ5DcEs=
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=R8/bF5KHLjTt9GLEnmNnJrfmlxn+HrK5JbBv33yEUFg=;
+        b=W4DsfOUo7kKFGo7dVPXf0A9z/bKIKPbGdjgVun0Q2pPxb+6oybEGLtuAk5nqHI8Uql
+         xTBMozGCA9RRFp4mcWnafvbNyeGx1Q92B142WdY3yImSz9TKkdl7O08y7irg/aLAubrm
+         lcfvbV8UIJ76iHZRoo557DhYHLf5YQxzIdUl+oWyL5xUk+zWp2aIcWvjwcIV208biuaW
+         QQVdQwaNRRkiUndjx7EB6rsyCMF92jmD/7nO2WtEA8wF4C31swCdsshyo1DLiI53VX3t
+         rzDGhqO1l8A4csN92AcBM0+dhs0/mxvH0HOumnGOCl1S2xQyRMU0ZhSVUw0SwTZAMrIW
+         EVAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=WAEr4zCif0zp++lZAUWZkj4GJhtO7eOsEWQzvmzftQQ=;
-        b=ZTk3wfyDy6v63Trz/4d7ZJY5WvbfQBtO7MXDKeX8DX6q+EfPGefVwasMy2HTZtRUCh
-         FjhflYIOxdJGm05P33jsOxzPja/r5sBfW+s3d6z90Jfr88llEii++89BeQtmOHWUOzcK
-         0U4TIzLevHwMiPnTp6cOYmnyxZdWFWkDkr30W2VINWpZTPCpX4n0FNsqk6+yx1FFsb8M
-         J5k8YCqCOmghKpp/2zMqMJVyJfjsnH2jJxlBnzrzjJ0VRx3kNmL+Ib1zCIoA0c+JxzEK
-         savfsNIURVPxDg9MAvvqZ6qnWCiKVFwqmgMoG1qxPiCW3eLkMeJyytiPI+yRXETkkfMK
-         rybw==
-X-Gm-Message-State: ACgBeo0WxOtCtMpUelt6ZMHu90QQVL/ZZRZOiS1JgxzrnWa0GIEGZOfW
-        iv+VRjjCT36c3iPbyYuHSUO+D/yty+eqXVQaOSI=
-X-Google-Smtp-Source: AA6agR50bgac8X1By6Mk1nVU2ngLVJ97I86XCAhgE8ygOJeilrwTNVwsqNd7c5VZJw9EL+eeMqOMzw==
-X-Received: by 2002:a17:906:cc14:b0:73d:d230:2aa8 with SMTP id ml20-20020a170906cc1400b0073dd2302aa8mr7771138ejb.218.1661619395882;
-        Sat, 27 Aug 2022 09:56:35 -0700 (PDT)
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com. [209.85.128.51])
-        by smtp.gmail.com with ESMTPSA id z19-20020a1709063ad300b0073dd7e586f9sm2245434ejd.193.2022.08.27.09.56.35
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Aug 2022 09:56:35 -0700 (PDT)
-Received: by mail-wm1-f51.google.com with SMTP id v7-20020a1cac07000000b003a6062a4f81so5965807wme.1
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 09:56:35 -0700 (PDT)
-X-Received: by 2002:a05:600c:2195:b0:3a6:b3c:c100 with SMTP id
- e21-20020a05600c219500b003a60b3cc100mr2617660wme.8.1661619061056; Sat, 27 Aug
- 2022 09:51:01 -0700 (PDT)
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=R8/bF5KHLjTt9GLEnmNnJrfmlxn+HrK5JbBv33yEUFg=;
+        b=vtqzz7lCaxM2zcXy1erSPyXtTQpspd7GAQo906mGepeI0T7WiFW4XGz2Z70azrl6Xp
+         8993V4YyBaVe/OcS4BWXbnVcdV/ZfIYZjXl+K4iRtstFomBeohwhjZfN6yqdZVwTA40L
+         dynzb6j5q0XWl6wTSukludSdNb8mXBPbpGLxNCwEsgmELsklUBO5c1owoCx2BXttSh6M
+         R8xgGOKkFCbIY56a+EyURftIM5H21h1n7exD2aFqHPTNS7giUtgFF7mdYnHq7i7QPLrW
+         o68gu+ONtID5O/UROMiAhs4iwV8xs/VUseo0yFWe3KlK2ZcCbiKMGknW1lVPSUwA1zlp
+         ZJeQ==
+X-Gm-Message-State: ACgBeo3U39nZKgAhLsY/BifUIzAlitAPmYegQyX98gxGIHFJx0Dwm158
+        AlNPsVtAxvWmEGGRw37uUOYMsIv6+iE=
+X-Google-Smtp-Source: AA6agR6UjKEFuzwxXRJQ8K7HktrS0FN9VJTqTixMwsekgRMuos7HeIk6TxzL0FmvmlvvYedZB016Kg==
+X-Received: by 2002:adf:e0c3:0:b0:226:d598:85ee with SMTP id m3-20020adfe0c3000000b00226d59885eemr405190wri.589.1661619479950;
+        Sat, 27 Aug 2022 09:57:59 -0700 (PDT)
+Received: from nuc ([2a02:168:633b:1:1e69:7aff:fe05:97e6])
+        by smtp.gmail.com with ESMTPSA id x3-20020a05600c420300b003a5bd9448e5sm3111585wmh.28.2022.08.27.09.57.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 27 Aug 2022 09:57:59 -0700 (PDT)
+Date:   Sat, 27 Aug 2022 18:57:57 +0200
+From:   =?iso-8859-1?Q?G=FCnther?= Noack <gnoack3000@gmail.com>
+To:     xiujianfeng <xiujianfeng@huawei.com>
+Cc:     mic@digikod.net, paul@paul-moore.com, jmorris@namei.org,
+        serge@hallyn.com, shuah@kernel.org, corbet@lwn.net,
+        linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH -next 3/5] landlock/selftests: add selftests for chmod
+ and chown
+Message-ID: <YwpNFWB9ELDLNLA1@nuc>
+References: <20220822114701.26975-1-xiujianfeng@huawei.com>
+ <20220822114701.26975-4-xiujianfeng@huawei.com>
+ <YwPYbY/HbHTOv7Ux@nuc>
+ <64b93d8e-f2b0-31c8-0736-3194053de687@huawei.com>
 MIME-Version: 1.0
-References: <alpine.LRH.2.02.2208220530050.32093@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wh-6RJQWxdVaZSsntyXJWJhivVX8JFH4MqkXv12AHm_=Q@mail.gmail.com>
- <CAHk-=whfZSEc40wtq5H51JcsBdB50ctZPtM3rS3E+xUNvadLog@mail.gmail.com>
- <alpine.LRH.2.02.2208251501200.31977@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=wh7ystLBs7r=KrgFhuYpNULoTY1FFPgq=a=Kr2mxc3jdg@mail.gmail.com>
- <alpine.LRH.2.02.2208260508360.26588@file01.intranet.prod.int.rdu2.redhat.com>
- <CAMuHMdWQXqi__8q66R7cL4VVgr4r7WwqNmDExFFsi4aC=K3NPw@mail.gmail.com>
- <CAHk-=wh91FqN2sNSRFZPxfGnqAbJ1o66ew8TXh+neM9hW0xZiA@mail.gmail.com>
- <alpine.LRH.2.02.2208261620210.9648@file01.intranet.prod.int.rdu2.redhat.com>
- <CAHk-=whO2sd233T8AXNMhYztPiF9hae+1ePOX1fEMEu6Ow1CQQ@mail.gmail.com> <alpine.LRH.2.02.2208270720500.18630@file01.intranet.prod.int.rdu2.redhat.com>
-In-Reply-To: <alpine.LRH.2.02.2208270720500.18630@file01.intranet.prod.int.rdu2.redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 27 Aug 2022 09:50:44 -0700
-X-Gmail-Original-Message-ID: <CAHk-=whyBQzofeFc1a1d2=HKcrTCLDi_FY+K2NG0R4e-9epqPw@mail.gmail.com>
-Message-ID: <CAHk-=whyBQzofeFc1a1d2=HKcrTCLDi_FY+K2NG0R4e-9epqPw@mail.gmail.com>
-Subject: Re: [PATCH] provide arch_test_bit_acquire for architectures that
- define test_bit
-To:     Mikulas Patocka <mpatocka@redhat.com>
-Cc:     Brian Cain <bcain@quicinc.com>, linux-hexagon@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <64b93d8e-f2b0-31c8-0736-3194053de687@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 27, 2022 at 4:38 AM Mikulas Patocka <mpatocka@redhat.com> wrote:
+On Sat, Aug 27, 2022 at 07:14:30PM +0800, xiujianfeng wrote:
+> Hi，
 >
-> I compile-tested this patch on alpha, s390x, m68k, sh, sparc32, sparc64.
-> So, you can commit it to close these uncompilable-kernel reports.
+> 在 2022/8/23 3:26, Günther Noack 写道:
+> > On Mon, Aug 22, 2022 at 07:46:59PM +0800, Xiu Jianfeng wrote:
+> > > +TEST_F_FORK(layout1, unhandled_chmod)
+> > > +{
+> > > +	const struct rule rules[] = {
+> > > +		{
+> > > +			.path = file2_s3d1,
+> > > +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
+> > > +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
+> > > +		},
+> > > +		{
+> > > +			.path = file3_s3d1,
+> > > +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
+> > > +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
+> > > +		},
+> > > +		{},
+> > > +	};
+> > > +	const int ruleset_fd =
+> > > +		create_ruleset(_metadata, ACCESS_RW, rules);
+> > > +
+> > > +	ASSERT_LE(0, ruleset_fd);
+> > > +	enforce_ruleset(_metadata, ruleset_fd);
+> > > +	ASSERT_EQ(0, close(ruleset_fd));
+> > > +
+> > > +	ASSERT_EQ(0, test_chmod(file2_s3d1));
+> > > +	ASSERT_EQ(0, test_fchmod(file2_s3d1));
+> > > +	ASSERT_EQ(0, test_chmod(file3_s3d1));
+> > > +	ASSERT_EQ(0, test_chmod(dir_s3d1));
+> > > +}
+> >
+> > I missed it in the previous mail:
+> >
+> > There are also the chown variants lchown() and fchownat(), as well as
+> > the chmod variant fchmodat(), which might be interesting to test,
+> > especially the symlink scenarios.
+> >
+> > fchmodat() has a AT_SYMLINK_NOFOLLOW flag which does the chmod
+> > equivalent to lchown().
+> >
+>
+> man fchmodat shows as follows:
+> ...
+> AT_SYMLINK_NOFOLLOW
+> If pathname is a symbolic link, do not dereference it: instead operate on
+> the link itself. This flag is not currently implemented.
+> ...
+>
+> so I suppose this can not be test. Please correct me if I am wrong.
 
-Thanks, done.
+Good point - I didn't realize that AT_SYMLINK_NOFOLLOW was not
+implemented for fchmodat. In that case, this only applies to lchown.
 
-                Linus
+—Günther
+
+--
