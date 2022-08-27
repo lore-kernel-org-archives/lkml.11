@@ -2,83 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D917CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 05:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D4AC0502C
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 05:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234440AbiH0FK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 01:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
+        id S1345100AbiH0FLB (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 01:11:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230385AbiH0FKX (ORCPT
+        with ESMTP id S232279AbiH0FK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 01:10:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 642CAC6B59;
-        Fri, 26 Aug 2022 22:10:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0892CCE262C;
-        Sat, 27 Aug 2022 05:10:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 999B4C433D7;
-        Sat, 27 Aug 2022 05:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661577017;
-        bh=qxbc6ItJY4JOx9zX20fdcui4zbehBsaR5L57jp+YIQ4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Qulo3zfIPbNJzrgOWaOeTz8dRox53mahNpCITXOlfpag56tOHRmLQmpHSelooVuSh
-         2VUYIt3J4AJju1on5ysahOxBACFBUApPxop26dBF0VwnySMeQVlOCRUjsM8F+8SxZy
-         iSaCDnxcIhxoKpW7TwfDXkv2qvjWgQDEFhgG06ED/g62Oiop0WTHUUTen+T4eFNW6y
-         n7+48bzAZlgAEqdR9AGfcE20kN2iKAMLUrMZZ6qTyn74qnNuJwKOevAShrTRJjKJHM
-         /QchGYWWi37qjmU7P03C4eaUkMlBKav0EaoMlTG4dPsGP/rsTCPoJKyyP8juga0MlF
-         K6gjiKEwe/2mQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7DB55E2A040;
-        Sat, 27 Aug 2022 05:10:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Sat, 27 Aug 2022 01:10:59 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE9BDEB60
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 22:10:57 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oRo5i-00025y-SH; Sat, 27 Aug 2022 07:10:42 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oRo5g-002E5U-20; Sat, 27 Aug 2022 07:10:40 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oRo5e-00GNWL-9d; Sat, 27 Aug 2022 07:10:38 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        David Jander <david@protonic.nl>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: [PATCH net-next v3 2/7] dt-bindings: net: phy: add PoDL PSE property
+Date:   Sat, 27 Aug 2022 07:10:28 +0200
+Message-Id: <20220827051033.3903585-3-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220827051033.3903585-1-o.rempel@pengutronix.de>
+References: <20220827051033.3903585-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests/bpf: declare subprog_noise as static in
- tailcall_bpf2bpf4
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166157701750.27504.17586503142900793998.git-patchwork-notify@kernel.org>
-Date:   Sat, 27 Aug 2022 05:10:17 +0000
-References: <20220826035141.737919-1-james.hilliard1@gmail.com>
-In-Reply-To: <20220826035141.737919-1-james.hilliard1@gmail.com>
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
-        mykolal@fb.com, shuah@kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Add property to reference node representing a PoDL Power Sourcing Equipment.
 
-This patch was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ Documentation/devicetree/bindings/net/ethernet-phy.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-On Thu, 25 Aug 2022 21:51:39 -0600 you wrote:
-> Due to bpf_map_lookup_elem being declared static we need to also
-> declare subprog_noise as static.
-> 
-> Fixes the following error:
-> progs/tailcall_bpf2bpf4.c:26:9: error: 'bpf_map_lookup_elem' is static but used in inline function 'subprog_noise' which is not static [-Werror]
->    26 |         bpf_map_lookup_elem(&nop_table, &key);
->       |         ^~~~~~~~~~~~~~~~~~~
-> 
-> [...]
-
-Here is the summary with links:
-  - selftests/bpf: declare subprog_noise as static in tailcall_bpf2bpf4
-    https://git.kernel.org/bpf/bpf-next/c/b05d64efbb21
-
-You are awesome, thank you!
+diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+index ed1415a4381f2..0b7b9dc69d454 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+@@ -144,6 +144,11 @@ properties:
+       Mark the corresponding energy efficient ethernet mode as
+       broken and request the ethernet to stop advertising it.
+ 
++  ieee802.3-pse:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Specifies a reference to a node representing a Power Sourcing Equipment.
++
+   phy-is-integrated:
+     $ref: /schemas/types.yaml#/definitions/flag
+     description:
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.30.2
 
