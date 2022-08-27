@@ -2,110 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E80F1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 06:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A85C0502E
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 06:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232363AbiH0GVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 02:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32792 "EHLO
+        id S232353AbiH0GZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 02:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiH0GVn (ORCPT
+        with ESMTP id S229453AbiH0GZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 02:21:43 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2195CDC092
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 23:21:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661581302; x=1693117302;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=aXJC/E7x5q+usZCo0oNBegtsCOu6gFfwtcdSpeMxdpI=;
-  b=TBXqAJp18TwQZhFEUOiMM6m15l6fRLChk4rOMp0UUyuoeamA6GbhdtW5
-   AX0BhMwMj/s0148cokQzAaNa7GjYrDXWTdKIJ+B19/UyPXWzQM5BCU35f
-   poNCXFYS2/+XvYt7eMkjeDK3yx6xtecAKhc2U1Iygy0eKoJ7KQVQrZ5Nb
-   ZcZE3Ov3yRISzCROg23hWEe2NNG7aoHl5eSRmKfUp4tVnf1QyA5b4lcXv
-   DDOou6ZFwe67/5Q1D8dCPlPDME8jrk7AAytZWco5X7oZy1k6Fqj/3TQj3
-   ejUzZb4/FAi0D11ew/MRhdg/IVJMeUxctpZYUmRbnF5gG89k3PeZtTok1
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="294649227"
-X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
-   d="scan'208";a="294649227"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 23:21:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
-   d="scan'208";a="938991188"
-Received: from lkp-server01.sh.intel.com (HELO 71b0d3b5b1bc) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 26 Aug 2022 23:21:40 -0700
-Received: from kbuild by 71b0d3b5b1bc with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oRpCN-000147-2w;
-        Sat, 27 Aug 2022 06:21:39 +0000
-Date:   Sat, 27 Aug 2022 14:21:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [ardb:efi-decompressor-v4 4/9]
- drivers/firmware/efi/libstub/intrinsics.c:18:7: error: definition of builtin
- function '__builtin_memcpy'
-Message-ID: <202208271446.2z1VzPD0-lkp@intel.com>
+        Sat, 27 Aug 2022 02:25:44 -0400
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4E4DCFF0;
+        Fri, 26 Aug 2022 23:25:44 -0700 (PDT)
+Received: by mail-ot1-f48.google.com with SMTP id r1-20020a056830418100b0063938f634feso2413911otu.8;
+        Fri, 26 Aug 2022 23:25:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=2yfUK9kjN+Dqp0bNFYpyDAHMQSTacHZ/w4+QO9mpOhA=;
+        b=WQtjB597wo7aIJ1c5WsR4KfnXTHWp+NRtBEYGn/CkdJ35zsYrjvyQeo+isSRGoIh+7
+         tFGfpRA5QRTp1UPc6Wr7uCBnaphHt5P5JT+nBsLrjjYXtu8Dfi4fnNDNCDDZ5bCawtdK
+         d4xSeDFBwEQKqxE+Hmc9n8E6NNyWsitaw2lPQ1ZlJLO0Ts8wCm73BBTFE2rAivFbjZJC
+         FoHd6lMEjknsjy4Owc2eYxJhuc/WYc18YmV5+kO1rgI0PhTOkconFc4EVEUdatB4yaeL
+         MCUYlMrlPjhWdswYY+TgIKvLAbhGkHLCgU3okwQbaJmWQ2yg0s35Hk+RZf5w04KHxS7r
+         7Niw==
+X-Gm-Message-State: ACgBeo0gvH4WdotwnmaIwdUvvBE07uu93a3EcKSCg7bb9EQUGlH0rTpj
+        TUoj5bCWAJXPRLbWjXMy79HsSrip/tjcerpk06A=
+X-Google-Smtp-Source: AA6agR5lYSlxDtOUB2tat+mjJ1L2urZUGZEBskPyeIaEQ0A6tUldXiz52Mp9TzOM8dzCsDJ+g1rdIFioBIlAOvwNK3Q=
+X-Received: by 2002:a9d:6f18:0:b0:638:b4aa:a546 with SMTP id
+ n24-20020a9d6f18000000b00638b4aaa546mr2612244otq.124.1661581543464; Fri, 26
+ Aug 2022 23:25:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220823210354.1407473-1-namhyung@kernel.org> <CAEf4Bzbd0-jGFCSCJu3eDxxom42xnH9Tevq0n50-AajjHb5t3g@mail.gmail.com>
+ <A9E2E766-E8A2-4E2E-A661-922400D2674D@fb.com> <CAEf4BzbGf6FuM7VcnA7HKb33HJeJjrDuydC4h1_tCUB8sPCW2g@mail.gmail.com>
+ <E215461A-01E7-4677-A404-C4439D66A7AF@fb.com> <CAM9d7cgigkU8quUMpScL=Xt8+WLDVXKiF5xdKiz7BbDPibSNjg@mail.gmail.com>
+ <CAPhsuW5V1U_UTHQw9E80vCTeP4Jqg9Ta8B+7o3pybKB=8CGRFA@mail.gmail.com>
+ <CAM9d7cjTtOkRHLOosxHN8PcbVbhTK=uLDGjw8N5=1QiTHcd6rQ@mail.gmail.com>
+ <C7F3F33B-4A8E-428C-9FED-FB635955C2B1@fb.com> <FCC75F8E-4C2F-42A4-B582-9BE3BB87E15A@fb.com>
+ <CAM9d7cj6YNTL+u38PZjhPF2Qg_BYiJ1NMmDkPDx3N3Xe+ZTbyA@mail.gmail.com>
+ <FD49F694-10FA-4346-8303-E1E185C3E6E4@fb.com> <CAM9d7cjj0X90=NsvdwaLMGCDVkMJBLAGF_q-+Eqj6b44OAnzoQ@mail.gmail.com>
+ <1CA3FC40-BC8D-4836-B3E7-0EB196DE6E66@fb.com>
+In-Reply-To: <1CA3FC40-BC8D-4836-B3E7-0EB196DE6E66@fb.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Fri, 26 Aug 2022 23:25:32 -0700
+Message-ID: <CAM9d7cg-X6iobbmx3HzCz4H2c20peBVGPt3yf9m3WbqLb5H90A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add bpf_read_raw_record() helper
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git efi-decompressor-v4
-head:   2943178d7555c331c19e9cce9a83e47f9513f3b1
-commit: 74f59f87ddbcbacc7232ac6800916260a0632126 [4/9] efi/libstub: use EFI provided memcpy/memset routines
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220827/202208271446.2z1VzPD0-lkp@intel.com/config)
-compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=74f59f87ddbcbacc7232ac6800916260a0632126
-        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
-        git fetch --no-tags ardb efi-decompressor-v4
-        git checkout 74f59f87ddbcbacc7232ac6800916260a0632126
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Fri, Aug 26, 2022 at 2:26 PM Song Liu <songliubraving@fb.com> wrote:
+>
+>
+>
+> > On Aug 26, 2022, at 2:12 PM, Namhyung Kim <namhyung@kernel.org> wrote:
+> >
+> > On Fri, Aug 26, 2022 at 1:59 PM Song Liu <songliubraving@fb.com> wrote:
+> >>
+> >>
+> >>
+> >>> On Aug 26, 2022, at 12:30 PM, Namhyung Kim <namhyung@kernel.org> wrote:
+> >>>
+> >>> On Fri, Aug 26, 2022 at 11:45 AM Song Liu <songliubraving@fb.com> wrote:
+> >>>
+> >>>>> And actually, we can just read ctx->data and get the raw record,
+> >>>>> right..?
+> >>>>
+> >>>> Played with this for a little bit. ctx->data appears to be not
+> >>>> reliable sometimes. I guess (not 100% sure) this is because we
+> >>>> call bpf program before event->orig_overflow_handler. We can
+> >>>> probably add a flag to specify we want to call orig_overflow_handler
+> >>>> first.
+> >>>
+> >>> I'm not sure.  The sample_data should be provided by the caller
+> >>> of perf_event_overflow.  So I guess the bpf program should see
+> >>> a valid ctx->data.
+> >>
+> >> Let's dig into this. Maybe we need some small changes in
+> >> pe_prog_convert_ctx_access.
+> >
+> > Sure, can you explain the problem in detail and share your program?
+>
+> I push the code to
+>
+>  https://git.kernel.org/pub/scm/linux/kernel/git/song/linux.git/log/?h=test-perf-event
+>
+> The code is in tools/bpf/perf-test/.
+>
+> The problem is we cannot get reliable print of data->cpu_entry in
+> /sys/kernel/tracing/trace.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Ah, right.  I've realized that the sample data is passed before full
+initialized.  Please see perf_sample_data_init().  The other members
+are initialized right before written to the ring buffer in the
+orig_overflow_handler (__perf_event_output).
 
-All errors (new ones prefixed by >>):
+That explains why pe_prog_convert_ctx_access() handles
+data and period specially.  We need to handle it first.
 
->> drivers/firmware/efi/libstub/intrinsics.c:18:7: error: definition of builtin function '__builtin_memcpy'
-   void *memcpy(void *dst, const void *src, size_t len)
-         ^
-   arch/x86/include/asm/string_32.h:150:25: note: expanded from macro 'memcpy'
-   #define memcpy(t, f, n) __builtin_memcpy(t, f, n)
-                           ^
->> drivers/firmware/efi/libstub/intrinsics.c:26:7: error: definition of builtin function '__builtin_memset'
-   void *memset(void *dst, int c, size_t len)
-         ^
-   arch/x86/include/asm/string_32.h:195:29: note: expanded from macro 'memset'
-   #define memset(s, c, count) __builtin_memset(s, c, count)
-                               ^
-   2 errors generated.
-
-
-vim +/__builtin_memcpy +18 drivers/firmware/efi/libstub/intrinsics.c
-
-    17	
-  > 18	void *memcpy(void *dst, const void *src, size_t len)
-    19	{
-    20		efi_bs_call(copy_mem, dst, src, len);
-    21		return dst;
-    22	}
-    23	
-    24	extern void *memmove(void *dst, const void *src, size_t len) __alias(memcpy);
-    25	
-  > 26	void *memset(void *dst, int c, size_t len)
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Namhyung
