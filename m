@@ -2,108 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FBD7C0502E
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 16:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8550DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 16:43:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233459AbiH0QmL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 12:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60798 "EHLO
+        id S233180AbiH0Qnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 12:43:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbiH0QmJ (ORCPT
+        with ESMTP id S229905AbiH0Qno (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 12:42:09 -0400
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 410D5474FF;
-        Sat, 27 Aug 2022 09:42:07 -0700 (PDT)
-Received: by mail-oi1-x233.google.com with SMTP id t140so5691795oie.8;
-        Sat, 27 Aug 2022 09:42:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ZmxTNJXdfZJJ2Pe5JS3kCmHqPvETpA9u1Q36GaimG9Q=;
-        b=WfNr5KGqtldRVuwfZONE+mIxQ0mEB5GJ4odOwhsZUPEPZ1UY84Rr2MF9je/ddUvf7Y
-         MV3EtpWzq6UODVlTwUDV/EHVqvmm83oWxxIEJbLPTez587GAA2c0AJEDQUAJmRW/XIhT
-         FX4YYJiDYwfId2Vc1++QvsIfsXsjxD0nNnw3fL6i75AukOj0Le9iS+qOwUsaRYlWm1Mg
-         JkczjQMz8mV7bQIdIyKE4Bo1nq5fbvDFa9UuqVFjcamJBDhwXMp5RcVhFd4ni1HuV4Gq
-         QLj9f4c11qrRbPm9MZN/STcSDtzxpp10D380N13sihUqh2CRXrwdg3l+4Af4OHmxEszP
-         rZCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ZmxTNJXdfZJJ2Pe5JS3kCmHqPvETpA9u1Q36GaimG9Q=;
-        b=IqHLVjzD5790aIfuHEuRX4p3u516lvEfkFLHpWygd66n8tlCkOhuWvJ+FvY9thVWcr
-         e6nM5I2W9llvAVytre3pGuU7DHXXQR99hNOcrzRhHCbx3iXU7yZJ+5C6swWnpDnz6ojD
-         BMgi+pj8T07Ev/YZMfjAmH93N6g76p1SteUCXOGgCUQxHn8MNj3fg4x+0tzupF8piCsb
-         c4YDWPmS67zVUHWncejgEJH8/yhVLyWcFRLLN3wYLtAWCrzC2azsagLpdE2ciPg+jXAX
-         jjeNVPHX2RcH+M2CHqRjsomy4aI2kTGbMoz8g8qzrr+WpEOs2MoY2ccSC8MMa8a/n9Kg
-         dUjg==
-X-Gm-Message-State: ACgBeo3rrCmtn5HhEXknBN0LskrAJAagd0Go6v/4OAiqfKN98be6hJ0G
-        dzdgSKacBeJ7R4SXvTLlbGpiK1B+S+UiVYRjNj8=
-X-Google-Smtp-Source: AA6agR6Wqr0YeZSEMWsmFyC16ahJ1c45RKtBIAagiDq5AHfxZbKwsuTkkIACI1f83+S71M3mN6+sVUYEeO+H5K6QcNg=
-X-Received: by 2002:a05:6808:238d:b0:344:e5f9:db34 with SMTP id
- bp13-20020a056808238d00b00344e5f9db34mr3739338oib.183.1661618526484; Sat, 27
- Aug 2022 09:42:06 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220823115409.46653-1-yuanjilin@cdjrlc.com> <658faa4e-ad16-7b13-87f3-27ea91db4ba3@linaro.org>
-In-Reply-To: <658faa4e-ad16-7b13-87f3-27ea91db4ba3@linaro.org>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Sat, 27 Aug 2022 09:42:42 -0700
-Message-ID: <CAF6AEGvX_J_t04tUUxserXh_rrcdu5eYTt6JOHoD-SJ6944adQ@mail.gmail.com>
-Subject: Re: [PATCH] drm/msm: fix repeated words in comments
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Jilin Yuan <yuanjilin@cdjrlc.com>, quic_abhinavk@quicinc.com,
-        airlied@linux.ie, daniel@ffwll.ch, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        Sat, 27 Aug 2022 12:43:44 -0400
+Received: from conuserg-11.nifty.com (conuserg-11.nifty.com [210.131.2.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FB3474D6;
+        Sat, 27 Aug 2022 09:43:43 -0700 (PDT)
+Received: from localhost.localdomain (133-32-182-133.west.xps.vectant.ne.jp [133.32.182.133]) (authenticated)
+        by conuserg-11.nifty.com with ESMTP id 27RGfBPI000611;
+        Sun, 28 Aug 2022 01:41:12 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com 27RGfBPI000611
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1661618473;
+        bh=+GhN5QiWk8VZrsPB7KRVM8ziElAEYMkGxB8N3aqbfbA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=wow0twov1tOYfhfBWw3b+32Zrm/G3bdf9F7iFroPW/Z6t0so1GOsdJXwBfs3ovRM9
+         7WRVpZuCLVm+8mx5OiE57OGePMReAnAsUp2hUhH15ybhqWrfyjh0Coawe5jgqKJW1H
+         13KMbG8bkA6YoQ/m3kDNbF1lkRtD3SyhiBAKzQBibFpl0tNwLs0O6fkUbejiXPthqE
+         WHTGpbRnkWJ9i4oACKbUzmbl0q9c0ZuS4+/Ps14O7b1ZTxc43XugUsz5gGPY3pxRAw
+         LVG1/EBV7B9JOCktDqG35C5IqSJgUr4T2cBX/u+8xRh/KX0F7ZEirwZPAGo3VquVou
+         Abyatq9iw6TKQ==
+X-Nifty-SrcIP: [133.32.182.133]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linuxppc-dev@lists.ozlabs.org
+Cc:     linux-kbuild@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Axtens <dja@axtens.net>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Kees Cook <keescook@chromium.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH] powerpc: clean up binutils version check
+Date:   Sun, 28 Aug 2022 01:40:56 +0900
+Message-Id: <20220827164056.3365356-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 2:43 AM Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
-> On 23/08/2022 14:54, Jilin Yuan wrote:
-> >   Delete the redundant word 'one'.
->
-> The whitespace is unnecessary.
->
-> >
-> > Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
->
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Fixes: 7198e6b03155 ("drm/msm: add a3xx gpu support")
->
+The checkbin in arch/powerpc/Makefile errors out if ld <= 2.24.
+So, the requirement on PPC is binutils >= 2.25. It is cleaner to
+specify it in scripts/min-tool-version.sh. If binutils < 2.25 is
+used, the toolchain check will fail in the Kconfig stage going
+forward.
 
-jfyi, this comment (and associated list-head) is removed by:
+Since binutils >= 2.25 is already required, another version test
+for --save-restore-funcs on PPC64 is always met.
 
-https://patchwork.freedesktop.org/patch/496131/?series=105633&rev=4
+PPC is the last user of ld-ifversion. With all the callers removed,
+the macro definition in scripts/Makefile.compiler can go away.
 
-BR,
--R
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
 
->
-> > ---
-> >   drivers/gpu/drm/msm/msm_gem.h | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/gpu/drm/msm/msm_gem.h b/drivers/gpu/drm/msm/msm_gem.h
-> > index c75d3b879a53..e300c70e8904 100644
-> > --- a/drivers/gpu/drm/msm/msm_gem.h
-> > +++ b/drivers/gpu/drm/msm/msm_gem.h
-> > @@ -118,7 +118,7 @@ struct msm_gem_object {
-> >        * An object is either:
-> >        *  inactive - on priv->inactive_dontneed or priv->inactive_willneed
-> >        *     (depending on purgeability status)
-> > -      *  active   - on one one of the gpu's active_list..  well, at
-> > +      *  active   - on one of the gpu's active_list..  well, at
-> >        *     least for now we don't have (I don't think) hw sync between
-> >        *     2d and 3d one devices which have both, meaning we need to
-> >        *     block on submit if a bo is already on other ring
->
-> --
-> With best wishes
-> Dmitry
->
+ arch/powerpc/Makefile       | 21 ---------------------
+ arch/powerpc/lib/Makefile   |  8 --------
+ scripts/Makefile.compiler   |  4 ----
+ scripts/min-tool-version.sh |  8 +++++++-
+ 4 files changed, 7 insertions(+), 34 deletions(-)
+
+diff --git a/arch/powerpc/Makefile b/arch/powerpc/Makefile
+index 02742facf895..fb607758eeca 100644
+--- a/arch/powerpc/Makefile
++++ b/arch/powerpc/Makefile
+@@ -46,13 +46,7 @@ UTS_MACHINE := $(subst $(space),,$(machine-y))
+ ifdef CONFIG_PPC32
+ KBUILD_LDFLAGS_MODULE += arch/powerpc/lib/crtsavres.o
+ else
+-ifeq ($(call ld-ifversion, -ge, 22500, y),y)
+-# Have the linker provide sfpr if possible.
+-# There is a corresponding test in arch/powerpc/lib/Makefile
+ KBUILD_LDFLAGS_MODULE += --save-restore-funcs
+-else
+-KBUILD_LDFLAGS_MODULE += arch/powerpc/lib/crtsavres.o
+-endif
+ endif
+ 
+ ifdef CONFIG_CPU_LITTLE_ENDIAN
+@@ -395,8 +389,6 @@ vdso_prepare: prepare0
+ 		$(build)=arch/powerpc/kernel/vdso include/generated/vdso64-offsets.h)
+ endif
+ 
+-archprepare: checkbin
+-
+ archheaders:
+ 	$(Q)$(MAKE) $(build)=arch/powerpc/kernel/syscalls all
+ 
+@@ -411,16 +403,3 @@ else
+ 	$(eval KBUILD_CFLAGS += -mstack-protector-guard-offset=$(shell awk '{if ($$2 == "TASK_CANARY") print $$3;}' include/generated/asm-offsets.h))
+ endif
+ endif
+-
+-PHONY += checkbin
+-# Check toolchain versions:
+-# - gcc-4.6 is the minimum kernel-wide version so nothing required.
+-checkbin:
+-	@if test "x${CONFIG_LD_IS_LLD}" != "xy" -a \
+-		"x$(call ld-ifversion, -le, 22400, y)" = "xy" ; then \
+-		echo -n '*** binutils 2.24 miscompiles weak symbols ' ; \
+-		echo 'in some circumstances.' ; \
+-		echo    '*** binutils 2.23 do not define the TOC symbol ' ; \
+-		echo -n '*** Please use a different binutils version.' ; \
+-		false ; \
+-	fi
+diff --git a/arch/powerpc/lib/Makefile b/arch/powerpc/lib/Makefile
+index 8560c912186d..5eb3971ccb9c 100644
+--- a/arch/powerpc/lib/Makefile
++++ b/arch/powerpc/lib/Makefile
+@@ -38,14 +38,6 @@ obj-$(CONFIG_PPC32)	+= div64.o copy_32.o crtsavres.o
+ 
+ obj-$(CONFIG_FUNCTION_ERROR_INJECTION)	+= error-inject.o
+ 
+-# See corresponding test in arch/powerpc/Makefile
+-# 64-bit linker creates .sfpr on demand for final link (vmlinux),
+-# so it is only needed for modules, and only for older linkers which
+-# do not support --save-restore-funcs
+-ifeq ($(call ld-ifversion, -lt, 22500, y),y)
+-extra-$(CONFIG_PPC64)	+= crtsavres.o
+-endif
+-
+ obj-$(CONFIG_PPC_BOOK3S_64) += copyuser_power7.o copypage_power7.o \
+ 			       memcpy_power7.o restart_table.o
+ 
+diff --git a/scripts/Makefile.compiler b/scripts/Makefile.compiler
+index 94d0d40cddb3..63e7d79dd877 100644
+--- a/scripts/Makefile.compiler
++++ b/scripts/Makefile.compiler
+@@ -68,7 +68,3 @@ cc-ifversion = $(shell [ $(CONFIG_GCC_VERSION)0 $(1) $(2)000 ] && echo $(3) || e
+ # ld-option
+ # Usage: KBUILD_LDFLAGS += $(call ld-option, -X, -Y)
+ ld-option = $(call try-run, $(LD) $(KBUILD_LDFLAGS) $(1) -v,$(1),$(2),$(3))
+-
+-# ld-ifversion
+-# Usage:  $(call ld-ifversion, -ge, 22252, y)
+-ld-ifversion = $(shell [ $(CONFIG_LD_VERSION)0 $(1) $(2)0 ] && echo $(3) || echo $(4))
+diff --git a/scripts/min-tool-version.sh b/scripts/min-tool-version.sh
+index 250925aab101..7df9f2150ea1 100755
+--- a/scripts/min-tool-version.sh
++++ b/scripts/min-tool-version.sh
+@@ -14,7 +14,13 @@ fi
+ 
+ case "$1" in
+ binutils)
+-	echo 2.23.0
++	if [ "$SRCARCH" = powerpc ]; then
++		# binutils 2.24 miscompiles weak symbols in some circumstances
++		# binutils 2.23 do not define the TOC symbol
++		echo 2.25.0
++	else
++		echo 2.23.0
++	fi
+ 	;;
+ gcc)
+ 	echo 5.1.0
+-- 
+2.34.1
+
