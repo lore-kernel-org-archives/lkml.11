@@ -2,133 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 938BAC0502C
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 08:03:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E24F4ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 08:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345149AbiH0IDA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 04:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50470 "EHLO
+        id S238160AbiH0IHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 04:07:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238160AbiH0ICx (ORCPT
+        with ESMTP id S231222AbiH0IHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 04:02:53 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8636170B
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 01:02:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661587372; x=1693123372;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=t4s7PJsF+XQiNPvI7hWCOrw+97ygo5kzYBM70ND3TtU=;
-  b=VVfhIWALDoq+vRL0ONoGbdh5WqnPNaGWvLL3oTSnluGbIdRQ0fYtdPH7
-   vdqf26gFX+RCiOrA9cxmsxq4N+lBiwWsv926Vdi427bYe44AtezWEqJrf
-   MSNIaNYQ77WPsiLUWFSAtlxl73TWqitcN7A4x3JVR13AccKpENu1dTBqj
-   0aPK1r5Ro8UhtS47RU8wdMGZ47YGxA3uqWvADjIKxN3h68Afa81x47SOC
-   T0UdqO961RbCx4CK3mo1vbGdL+53YrSONoBQvQxwEXGqgtCxA9MmD9D2s
-   kV54eb+uMxWN0JsDkMdspuAEf0GJJV+8ruDQ/HEq1CMeBO2kPCL9LK/ck
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="277661530"
-X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
-   d="scan'208";a="277661530"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2022 01:02:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
-   d="scan'208";a="700081484"
-Received: from lkp-server01.sh.intel.com (HELO 71b0d3b5b1bc) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 27 Aug 2022 01:02:42 -0700
-Received: from kbuild by 71b0d3b5b1bc with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oRqmA-000175-09;
-        Sat, 27 Aug 2022 08:02:42 +0000
-Date:   Sat, 27 Aug 2022 16:02:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mark:arm64/insn/rework 9/10] include/linux/compiler_types.h:354:45:
- error: call to '__compiletime_assert_782' declared with attribute error:
- BUILD_BUG_ON failed: !aarch64_insn_is_adrp(insn)
-Message-ID: <202208271534.S8qjhvQ9-lkp@intel.com>
+        Sat, 27 Aug 2022 04:07:41 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B984A55AA
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 01:07:40 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MF8Qp5dnWzGprB;
+        Sat, 27 Aug 2022 16:05:54 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 27 Aug 2022 16:07:31 +0800
+Subject: Re: [PATCH 5/8] hugetlb: rename vma_shareable() and refactor code
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+CC:     Muchun Song <songmuchun@bytedance.com>,
+        David Hildenbrand <david@redhat.com>,
+        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Prakash Sangappa <prakash.sangappa@oracle.com>,
+        James Houghton <jthoughton@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Ray Fucillo <Ray.Fucillo@intersystems.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220824175757.20590-1-mike.kravetz@oracle.com>
+ <20220824175757.20590-6-mike.kravetz@oracle.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <98db8106-77cf-291d-9642-e429b8b33160@huawei.com>
+Date:   Sat, 27 Aug 2022 16:07:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220824175757.20590-6-mike.kravetz@oracle.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git arm64/insn/rework
-head:   93eeddf361d2aa52865155791d8f344896f98cb8
-commit: 484a2f552745c6634031e23e9e14bbc1f5ccd581 [9/10] arm64: insn: rework ADRP helpers
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220827/202208271534.S8qjhvQ9-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/commit/?id=484a2f552745c6634031e23e9e14bbc1f5ccd581
-        git remote add mark https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git
-        git fetch --no-tags mark arm64/insn/rework
-        git checkout 484a2f552745c6634031e23e9e14bbc1f5ccd581
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
+On 2022/8/25 1:57, Mike Kravetz wrote:
+> Rename the routine vma_shareable to vma_addr_pmd_shareable as it is
+> checking a specific address within the vma.  Refactor code to check if
+> an aligned range is shareable as this will be needed in a subsequent
+> patch.
+> 
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+LGTM. Thanks.
 
-All errors (new ones prefixed by >>):
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-   arch/arm64/kernel/module-plts.c:285:5: warning: no previous prototype for 'module_frob_arch_sections' [-Wmissing-prototypes]
-     285 | int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
-         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from <command-line>:
-   In function 'aarch64_insn_adrp_get_offset',
-       inlined from 'plt_entries_equal' at arch/arm64/kernel/module-plts.c:59:14:
->> include/linux/compiler_types.h:354:45: error: call to '__compiletime_assert_782' declared with attribute error: BUILD_BUG_ON failed: !aarch64_insn_is_adrp(insn)
-     354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:335:25: note: in definition of macro '__compiletime_assert'
-     335 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:354:9: note: in expansion of macro '_compiletime_assert'
-     354 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   arch/arm64/include/asm/insn.h:851:9: note: in expansion of macro 'BUILD_BUG_ON'
-     851 |         BUILD_BUG_ON(!aarch64_insn_is_adrp(insn));
-         |         ^~~~~~~~~~~~
+Thanks,
+Miaohe Lin
 
+> ---
+>  mm/hugetlb.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
+> 
+> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> index a6eb46c64baf..758b6844d566 100644
+> --- a/mm/hugetlb.c
+> +++ b/mm/hugetlb.c
+> @@ -6648,26 +6648,33 @@ static unsigned long page_table_shareable(struct vm_area_struct *svma,
+>  	return saddr;
+>  }
+>  
+> -static bool vma_shareable(struct vm_area_struct *vma, unsigned long addr)
+> +static bool __vma_aligned_range_pmd_shareable(struct vm_area_struct *vma,
+> +				unsigned long start, unsigned long end)
+>  {
+> -	unsigned long base = addr & PUD_MASK;
+> -	unsigned long end = base + PUD_SIZE;
+> -
+>  	/*
+>  	 * check on proper vm_flags and page table alignment
+>  	 */
+> -	if (vma->vm_flags & VM_MAYSHARE && range_in_vma(vma, base, end))
+> +	if (vma->vm_flags & VM_MAYSHARE && range_in_vma(vma, start, end))
+>  		return true;
+>  	return false;
+>  }
+>  
+> +static bool vma_addr_pmd_shareable(struct vm_area_struct *vma,
+> +						unsigned long addr)
+> +{
+> +	unsigned long start = addr & PUD_MASK;
+> +	unsigned long end = start + PUD_SIZE;
+> +
+> +	return __vma_aligned_range_pmd_shareable(vma, start, end);
+> +}
+> +
+>  bool want_pmd_share(struct vm_area_struct *vma, unsigned long addr)
+>  {
+>  #ifdef CONFIG_USERFAULTFD
+>  	if (uffd_disable_huge_pmd_share(vma))
+>  		return false;
+>  #endif
+> -	return vma_shareable(vma, addr);
+> +	return vma_addr_pmd_shareable(vma, addr);
+>  }
+>  
+>  /*
+> 
 
-vim +/__compiletime_assert_782 +354 include/linux/compiler_types.h
-
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  340  
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  341  #define _compiletime_assert(condition, msg, prefix, suffix) \
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  342  	__compiletime_assert(condition, msg, prefix, suffix)
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  343  
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  344  /**
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  345   * compiletime_assert - break build and emit msg if condition is false
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  346   * @condition: a compile-time constant condition to check
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  347   * @msg:       a message to emit if condition is false
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  348   *
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  349   * In tradition of POSIX assert, this macro will break the build if the
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  350   * supplied condition is *false*, emitting the supplied error message if the
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  351   * compiler has support to do so.
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  352   */
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  353  #define compiletime_assert(condition, msg) \
-eb5c2d4b45e3d2 Will Deacon 2020-07-21 @354  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  355  
-
-:::::: The code at line 354 was first introduced by commit
-:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Will Deacon <will@kernel.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
