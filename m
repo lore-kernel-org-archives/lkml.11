@@ -2,372 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9466ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 12:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 730A2C0502E
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 12:46:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232763AbiH0MgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 08:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
+        id S233204AbiH0Mqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 08:46:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232793AbiH0MgC (ORCPT
+        with ESMTP id S231222AbiH0Mqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 08:36:02 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C49425C49;
-        Sat, 27 Aug 2022 05:35:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661603760; x=1693139760;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=z1GOHa4sbRW9EZHujjqjnAI2Ul+W2EA/lajLX5wB5rk=;
-  b=LoP6UL0mQxpUnnJObbYHao4lsglsoqq7pfZtLdxmxJVOeR4oquCDrkcu
-   in+7olA+ibllt3JchvhZhJDuzkCm1VHviFS2oKa0uppgs1lvLQuPpdOsx
-   Z2m9ZH8KVR4wzio5MgVba2lMKSGwLSEIHb5rY/wKWY4IAIbbbvVdxcL0E
-   fdi8NPnClSbFOVTuhEoRSyv3BZXHIyl/RZG+fLitI/byt5FgU3LE1JyD8
-   zXhA5IBynEbv5ESX6ScvbSUI/hek/Ub3T7Sf8NF0htLGfOzWNfxlGA2oD
-   0544nUdGaqslhXXjwyGc4QBH9DzmkOj3B9ZKge1RfFwQJdSZxbgXDM7yD
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10451"; a="294668945"
-X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
-   d="scan'208";a="294668945"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2022 05:35:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,267,1654585200"; 
-   d="scan'208";a="671805359"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga008.fm.intel.com with ESMTP; 27 Aug 2022 05:35:45 -0700
-Date:   Sat, 27 Aug 2022 20:26:29 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Nava kishore Manne <nava.kishore.manne@amd.com>
-Cc:     git@amd.com, robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        michal.simek@xilinx.com, mdf@kernel.org, hao.wu@intel.com,
-        trix@redhat.com, p.zabel@pengutronix.de,
-        gregkh@linuxfoundation.org, ronak.jain@xilinx.com,
-        rajan.vaja@xilinx.com, abhyuday.godhasara@xilinx.com,
-        piyush.mehta@xilinx.com, lakshmi.sai.krishna.potthuri@xilinx.com,
-        harsha.harsha@xilinx.com, linus.walleij@linaro.org,
-        nava.manne@xilinx.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org
-Subject: Re: [PATCH 4/4] fpga: zynqmp: Add afi config driver
-Message-ID: <YwoNdUPoSKKHhzxx@yilunxu-OptiPlex-7050>
-References: <20220824035542.706433-1-nava.kishore.manne@amd.com>
- <20220824035542.706433-5-nava.kishore.manne@amd.com>
+        Sat, 27 Aug 2022 08:46:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F8A4507D
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 05:46:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661604410;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=inruV9tiW8qwXrnkVI+Ao+ITZBbbO5sFc1aw762dWrY=;
+        b=AR4s0pdDMsMU1McxfZABuUAI0PgnZK5dXtD6za75yrSWMUuJ57xTTzbnhiBLZORsWCXTsF
+        G4JaKpwPiOpKU0BuuoPNOV9ccHnVAAZrgdEJRVxLN2oAgnpvWl6AfjXwL3b3c2b8e5YS7J
+        E/8pJfwLQJogsjYDv5isXHxfpWAZYHE=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-492-EYQpl8CNPIeXOGc0jrohOg-1; Sat, 27 Aug 2022 08:46:49 -0400
+X-MC-Unique: EYQpl8CNPIeXOGc0jrohOg-1
+Received: by mail-ed1-f71.google.com with SMTP id l19-20020a056402255300b0043df64f9a0fso2712009edb.16
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 05:46:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc;
+        bh=inruV9tiW8qwXrnkVI+Ao+ITZBbbO5sFc1aw762dWrY=;
+        b=KFD+2TbYCYi11evBPHPupZs4w5VirAYepp/ZUKG/GLuEK9VV2q7HZJCkyGEAHkgJBw
+         oV7cEHsfsTeyWY+pEqGrVZkkZXHI3IgpGZQ0guLvB/2jVUWstFaTPW1mDf0TWSDtc6Fk
+         AawkHxefRq8f1bYQllcVfVtFidIz+w70dq6M0drU5i8A9iThNX+E5UdoJhAZwblfb9AO
+         AKCmZXJkea07hmM2OOl/j0FE+AV79NJftVMNJTbt7tYxXjvVBU13hTg/VftR6SA2eoJ0
+         OpuAy4zbJrIVcTHi8JivtKbvOpd9l/PpntHBi8tTIbpvxwKmiUnmDzu8H4pw0qUbArm4
+         h4oQ==
+X-Gm-Message-State: ACgBeo2M8dhTrFrL/kExRrs59rz2gyUn6gXiAvW+lnrVT+/eNZ3svfnE
+        4iobBibdVWmdvw4q5/QtUlseKFVtq1x1lIktvg9s2Ml3c8loaSwFkT9WIhU56kfShlMqhOpLHHB
+        MiNwWDVwp52uuvmJgSiXX/KB+
+X-Received: by 2002:a17:907:6890:b0:73d:a567:568c with SMTP id qy16-20020a170907689000b0073da567568cmr8053185ejc.521.1661604408245;
+        Sat, 27 Aug 2022 05:46:48 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5TSxNxFhHIWUgDFGh6o2o5A2lHYsq2gKou43zUNTrXz2A2rDfHNazARFNTXYh+19y8woSsTQ==
+X-Received: by 2002:a17:907:6890:b0:73d:a567:568c with SMTP id qy16-20020a170907689000b0073da567568cmr8053169ejc.521.1661604408027;
+        Sat, 27 Aug 2022 05:46:48 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id cb11-20020a0564020b6b00b0044841a78c70sm104257edb.93.2022.08.27.05.46.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 27 Aug 2022 05:46:47 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Deepak Rawat <drawat.floss@gmail.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>
+Subject: RE: [PATCH v2 3/3] Drivers: hv: Never allocate anything besides
+ framebuffer from framebuffer memory region
+In-Reply-To: <SN6PR2101MB16935E50795FAE1FA352C416D7729@SN6PR2101MB1693.namprd21.prod.outlook.com>
+References: <20220825090024.1007883-1-vkuznets@redhat.com>
+ <20220825090024.1007883-4-vkuznets@redhat.com>
+ <SN6PR2101MB16935E50795FAE1FA352C416D7729@SN6PR2101MB1693.namprd21.prod.outlook.com>
+Date:   Sat, 27 Aug 2022 14:46:46 +0200
+Message-ID: <87k06tvop5.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220824035542.706433-5-nava.kishore.manne@amd.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-24 at 09:25:42 +0530, Nava kishore Manne wrote:
-> Add zynqmp AXI FIFO interface(AFI) config driver. This is useful for the
-> configuration of the PS-PL interface on Zynq US+ MPSoC platform.
+"Michael Kelley (LINUX)" <mikelley@microsoft.com> writes:
 
-Please help illustrate how to use the device for FPGA reprogramming, why
-it should be implemented as an FPGA bridge.
+> From: Vitaly Kuznetsov <vkuznets@redhat.com> Sent: Thursday, August 25, 2022 2:00 AM
+>> 
+>> Passed through PCI device sometimes misbehave on Gen1 VMs when Hyper-V
+>> DRM driver is also loaded. Looking at IOMEM assignment, we can see e.g.
+>> 
+>> $ cat /proc/iomem
+>> ...
+>> f8000000-fffbffff : PCI Bus 0000:00
+>>   f8000000-fbffffff : 0000:00:08.0
+>>     f8000000-f8001fff : bb8c4f33-2ba2-4808-9f7f-02f3b4da22fe
+>> ...
+>> fe0000000-fffffffff : PCI Bus 0000:00
+>>   fe0000000-fe07fffff : bb8c4f33-2ba2-4808-9f7f-02f3b4da22fe
+>>     fe0000000-fe07fffff : 2ba2:00:02.0
+>>       fe0000000-fe07fffff : mlx4_core
+>> 
+>> the interesting part is the 'f8000000' region as it is actually the
+>> VM's framebuffer:
+>> 
+>> $ lspci -v
+>> ...
+>> 0000:00:08.0 VGA compatible controller: Microsoft Corporation Hyper-V virtual VGA
+>> (prog-if 00 [VGA controller])
+>> 	Flags: bus master, fast devsel, latency 0, IRQ 11
+>> 	Memory at f8000000 (32-bit, non-prefetchable) [size=64M]
+>> ...
+>> 
+>>  hv_vmbus: registering driver hyperv_drm
+>>  hyperv_drm 5620e0c7-8062-4dce-aeb7-520c7ef76171: [drm] Synthvid Version major 3, minor 5
+>>  hyperv_drm 0000:00:08.0: vgaarb: deactivate vga console
+>>  hyperv_drm 0000:00:08.0: BAR 0: can't reserve [mem 0xf8000000-0xfbffffff]
+>>  hyperv_drm 5620e0c7-8062-4dce-aeb7-520c7ef76171: [drm] Cannot request framebuffer, boot fb still active?
+>> 
+>> Note: "Cannot request framebuffer" is not a fatal error in
+>> hyperv_setup_gen1() as the code assumes there's some other framebuffer
+>> device there but we actually have some other PCI device (mlx4 in this
+>> case) config space there!
+>
+> My apologies for not getting around to commenting on the previous
+> version of this patch.  The function hyperv_setup_gen1() and the
+> "Cannot request framebuffer" message have gone away as of
+> commit a0ab5abced55.
+>
 
-From the code I actually didn't see any operation that gates the
-fpga-region from other part of the machine.
+True, will fix!
 
-> 
-> Signed-off-by: Nava kishore Manne <nava.kishore.manne@amd.com>
-> ---
->  MAINTAINERS               |   6 ++
->  drivers/fpga/Kconfig      |  13 +++
->  drivers/fpga/Makefile     |   1 +
->  drivers/fpga/zynqmp-afi.c | 211 ++++++++++++++++++++++++++++++++++++++
->  4 files changed, 231 insertions(+)
->  create mode 100644 drivers/fpga/zynqmp-afi.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 20ffac651214..957e753e6406 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -8032,6 +8032,12 @@ F:	Documentation/fpga/
->  F:	drivers/fpga/
->  F:	include/linux/fpga/
->  
-> +FPGA ZYNQMP PS-PL BRIDGE DRIVER
-> +M:	Nava kishore Manne <nava.kishore.manne@amd.com>
-> +S:	Supported
-> +F:	Documentation/devicetree/bindings/fpga/xlnx,zynqmp-afi-fpga.yaml
-> +F:	drivers/fpga/zynqmp-afi.c
-> +
->  INTEL MAX10 BMC SECURE UPDATES
->  M:	Russ Weight <russell.h.weight@intel.com>
->  L:	linux-fpga@vger.kernel.org
-> diff --git a/drivers/fpga/Kconfig b/drivers/fpga/Kconfig
-> index 6c416955da53..c08794d30fb5 100644
-> --- a/drivers/fpga/Kconfig
-> +++ b/drivers/fpga/Kconfig
-> @@ -130,6 +130,19 @@ config XILINX_PR_DECOUPLER
->  	  reconfiguration, preventing the system deadlock that can
->  	  occur if AXI transactions are interrupted by DFX.
->  
-> +config ZYNQMP_AFI
-> +	tristate "Xilinx ZYNQMP AFI support"
-> +	depends on FPGA_BRIDGE
-> +	help
-> +	  Say Y to enable drivers to handle the PS-PL clocks configurations
-> +	  and PS-PL Bus-width. Xilinx Zynq US+ MPSoC connect the PS to the
-> +	  programmable logic (PL) through the AXI port. This AXI port helps
-> +	  to establish the data path between the PS and PL.
-> +	  In-order to establish the proper communication path between PS and PL,
-> +	  the AXI port data path should be configured with the proper Bus-width
-> +	  values and it will also handles the PS-PL reset signals to reset the
-> +	  PL domain.
+>> 
+>> The problem appears to be that vmbus_allocate_mmio() can allocate from
+>> the reserved framebuffer region (fb_overlap_ok), however, if the
+>> request to allocate MMIO comes from some other device before
+>> framebuffer region is taken, it can happily use framebuffer region for
+>> it. 
+>
+> Interesting. I had never looked at the details of vmbus_allocate_mmio().
+> The semantics one might assume of a parameter named "fb_overlap_ok"
+> aren't implemented because !fb_overlap_ok essentially has no effect.   The
+> existing semantics are really "prefer_fb_overlap".  This patch implements
+> the expected and needed semantics, which is to not allocate from the frame
+> buffer space when !fb_overlap_ok.
+>
+> If that's an accurate high level summary, maybe this commit message
+> could describe it that way?  The other details you provide about what can
+> go wrong should still be included as well.
 
-Same concern, please describe its relationship to FPGA reprogramming.
+That's acually a very good summary! Let me update the commit message,
+I'll be sending out v3 shortly.
 
-> +
->  config FPGA_REGION
->  	tristate "FPGA Region"
->  	depends on FPGA_BRIDGE
-> diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
-> index 42ae8b58abce..94cfe60972db 100644
-> --- a/drivers/fpga/Makefile
-> +++ b/drivers/fpga/Makefile
-> @@ -31,6 +31,7 @@ obj-$(CONFIG_FPGA_BRIDGE)		+= fpga-bridge.o
->  obj-$(CONFIG_SOCFPGA_FPGA_BRIDGE)	+= altera-hps2fpga.o altera-fpga2sdram.o
->  obj-$(CONFIG_ALTERA_FREEZE_BRIDGE)	+= altera-freeze-bridge.o
->  obj-$(CONFIG_XILINX_PR_DECOUPLER)	+= xilinx-pr-decoupler.o
-> +obj-$(CONFIG_ZYNQMP_AFI)		+= zynqmp-afi.o
->  
->  # High Level Interfaces
->  obj-$(CONFIG_FPGA_REGION)		+= fpga-region.o
-> diff --git a/drivers/fpga/zynqmp-afi.c b/drivers/fpga/zynqmp-afi.c
-> new file mode 100644
-> index 000000000000..bc975d304039
-> --- /dev/null
-> +++ b/drivers/fpga/zynqmp-afi.c
-> @@ -0,0 +1,211 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Copyright (C) 2022 Xilinx, Inc.
-> + */
-> +
-> +#include <linux/err.h>
-> +#include <linux/firmware/xlnx-zynqmp.h>
-> +#include <linux/fpga/fpga-bridge.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/reset.h>
-> +#include <linux/slab.h>
-> +
-> +/* Registers and special values for doing register-based operations */
-> +#define AFI_RDCHAN_CTRL_OFFSET	0x00
-> +#define AFI_WRCHAN_CTRL_OFFSET	0x14
-> +#define AFI_BUSWIDTH_MASK	BIT(0)
-> +
-> +/**
-> + * struct zynqmp_afi - AFI register description.
-> + * @dev: device that owns this.
-> + * @of_node: Device Tree overlay.
-> + * @resets: Pointer to the reset control for ps-pl resets.
-> + */
-> +struct zynqmp_afi {
-> +	struct device *dev;
-> +	struct device_node *of_node;
-> +	struct reset_control *resets;
-> +};
-> +
-> +/**
-> + * struct zynqmp_afi_configreg - AFI configuration registers info.
-> + * @reg:	Name of the AFI configuration register.
-> + * @id:		Register index value.
-> + */
-> +struct zynqmp_afi_configreg {
-> +	char *reg;
-> +	u32 id;
-> +};
-> +
-> +static struct zynqmp_afi_configreg afi_cfgreg[] = {
-> +	{.reg = "xlnx,afi-fm0-rd-bus-width",	.id = AFIFM0_RDCTRL},
-> +	{.reg = "xlnx,afi-fm1-rd-bus-width",	.id = AFIFM1_RDCTRL},
-> +	{.reg = "xlnx,afi-fm2-rd-bus-width",	.id = AFIFM2_RDCTRL},
-> +	{.reg = "xlnx,afi-fm3-rd-bus-width",	.id = AFIFM3_RDCTRL},
-> +	{.reg = "xlnx,afi-fm4-rd-bus-width",	.id = AFIFM4_RDCTRL},
-> +	{.reg = "xlnx,afi-fm5-rd-bus-width",	.id = AFIFM5_RDCTRL},
-> +	{.reg = "xlnx,afi-fm6-rd-bus-width",	.id = AFIFM6_RDCTRL},
-> +	{.reg = "xlnx,afi-fm0-wr-bus-width",	.id = AFIFM0_WRCTRL},
-> +	{.reg = "xlnx,afi-fm1-wr-bus-width",	.id = AFIFM1_WRCTRL},
-> +	{.reg = "xlnx,afi-fm2-wr-bus-width",	.id = AFIFM2_WRCTRL},
-> +	{.reg = "xlnx,afi-fm3-wr-bus-width",	.id = AFIFM3_WRCTRL},
-> +	{.reg = "xlnx,afi-fm4-wr-bus-width",	.id = AFIFM4_WRCTRL},
-> +	{.reg = "xlnx,afi-fm5-wr-bus-width",	.id = AFIFM5_WRCTRL},
-> +	{.reg = "xlnx,afi-fm6-wr-bus-width",	.id = AFIFM6_WRCTRL},
-> +	{.reg = "xlnx,afi-fs-ss0-bus-width",	.id = AFIFS},
-> +	{.reg = "xlnx,afi-fs-ss2-bus-width",	.id = AFIFS_SS2},
-> +	{}
-> +};
-> +
-> +static int zynqmp_afi_config(struct zynqmp_afi *afi_data)
-> +{
-> +	struct zynqmp_afi_configreg *cfgptr = afi_cfgreg;
-> +	struct device_node *np = afi_data->of_node;
-> +	u32 afi_ss0_val, afi_ss1_val, bus_width;
-> +	int ret;
-> +
-> +	while (cfgptr->reg) {
-> +		ret = of_property_read_u32(np, cfgptr->reg, &bus_width);
-> +		if (!ret) {
-> +			if (cfgptr->id == AFIFS_SS2) {
-> +				if (bus_width == 32)
-> +					ret = zynqmp_pm_afi(AFIFS_SS2,
-> +							    AFIFS_SS_BUS_WIDTH_32_CONFIG_VAL);
-> +				else if (bus_width == 64)
-> +					ret = zynqmp_pm_afi(AFIFS_SS2,
-> +							    AFIFS_SS0_SS2_BUS_WIDTH_64_CONFIG_VAL);
-> +				else if (bus_width == 128)
-> +					ret = zynqmp_pm_afi(AFIFS_SS2,
-> +							    AFIFS_SS0_SS2_BUS_WIDTH_128_CONFIG_VAL);
-> +				else
-> +					return -EINVAL;
-> +			} else if (cfgptr->id == AFIFS) {
-> +				if (bus_width == 32)
-> +					afi_ss0_val = AFIFS_SS_BUS_WIDTH_32_CONFIG_VAL;
-> +				else if (bus_width == 64)
-> +					afi_ss0_val = AFIFS_SS0_SS2_BUS_WIDTH_64_CONFIG_VAL;
-> +				else if (bus_width == 128)
-> +					afi_ss0_val = AFIFS_SS0_SS2_BUS_WIDTH_128_CONFIG_VAL;
-> +				else
-> +					return -EINVAL;
-> +
-> +				ret = of_property_read_u32(np, "xlnx,afi-fs-ss1-bus-width",
-> +							   &bus_width);
-> +				if (!ret) {
-> +					if (bus_width == 32)
-> +						afi_ss1_val = AFIFS_SS_BUS_WIDTH_32_CONFIG_VAL;
-> +					else if (bus_width == 64)
-> +						afi_ss1_val = AFIFS_SS1_BUS_WIDTH_64_CONFIG_VAL;
-> +					else if (bus_width == 128)
-> +						afi_ss1_val = AFIFS_SS1_BUS_WIDTH_128_CONFIG_VAL;
-> +					else
-> +						return -EINVAL;
-> +
-> +					ret = zynqmp_pm_afi(AFIFS, afi_ss1_val | afi_ss0_val);
-> +				}
-> +			} else {
-> +				if (bus_width == 32)
-> +					ret = zynqmp_pm_afi(cfgptr->id,
-> +							    AFIFM_BUS_WIDTH_32_CONFIG_VAL);
-> +				else if (bus_width == 64)
-> +					ret = zynqmp_pm_afi(cfgptr->id,
-> +							    AFIFM_BUS_WIDTH_64_CONFIG_VAL);
-> +				else if (bus_width == 128)
-> +					ret = zynqmp_pm_afi(cfgptr->id,
-> +							    AFIFM_BUS_WIDTH_128_CONFIG_VAL);
-> +				else
-> +					return -EINVAL;
-> +			}
-> +		}
-> +		cfgptr++;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int zynqmp_afi_enable_set(struct fpga_bridge *bridge, bool enable)
-> +{
-> +	struct device_node *overlay = bridge->info->overlay;
-> +	struct zynqmp_afi *priv = bridge->priv;
-> +	int ret = 0;
-> +
-> +	if (enable) {
-> +		reset_control_reset(priv->resets);
-> +		return 0;
-> +	}
-> +
-> +	of_node_get(overlay);
-> +	priv->of_node =
-> +	of_find_node_with_property(overlay,
-> +				   "xlnx,afi-fm0-rd-bus-width");
+>
+>> Note, Gen2 VMs are usually unaffected by the issue because
+>> framebuffer region is already taken by EFI fb (in case kernel supports
+>> it) but Gen1 VMs may have this region unclaimed by the time Hyper-V PCI
+>> pass-through driver tries allocating MMIO space if Hyper-V DRM/FB drivers
+>> load after it. Devices can be brought up in any sequence so let's
+>> resolve the issue by always ignoring 'fb_mmio' region for non-FB
+>> requests, even if the region is unclaimed.
+>> 
+>> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+>> ---
+>>  drivers/hv/vmbus_drv.c | 10 +++++++++-
+>>  1 file changed, 9 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+>> index 536f68e563c6..3c833ea60db6 100644
+>> --- a/drivers/hv/vmbus_drv.c
+>> +++ b/drivers/hv/vmbus_drv.c
+>> @@ -2331,7 +2331,7 @@ int vmbus_allocate_mmio(struct resource **new, struct
+>> hv_device *device_obj,
+>>  			bool fb_overlap_ok)
+>>  {
+>>  	struct resource *iter, *shadow;
+>> -	resource_size_t range_min, range_max, start;
+>> +	resource_size_t range_min, range_max, start, end;
+>>  	const char *dev_n = dev_name(&device_obj->device);
+>>  	int retval;
+>> 
+>> @@ -2366,6 +2366,14 @@ int vmbus_allocate_mmio(struct resource **new, struct
+>> hv_device *device_obj,
+>>  		range_max = iter->end;
+>>  		start = (range_min + align - 1) & ~(align - 1);
+>>  		for (; start + size - 1 <= range_max; start += align) {
+>> +			end = start + size - 1;
+>> +
+>> +			/* Skip the whole fb_mmio region if not fb_overlap_ok */
+>> +			if (!fb_overlap_ok && fb_mmio &&
+>> +			    (((start >= fb_mmio->start) && (start <= fb_mmio->end)) ||
+>> +			     ((end >= fb_mmio->start) && (end <= fb_mmio->end))))
+>> +				continue;
+>> +
+>>  			shadow = __request_region(iter, start, size, NULL,
+>>  						  IORESOURCE_BUSY);
+>>  			if (!shadow)
+>> --
+>> 2.37.1
+>
+> Other than my musings on the commit message,
+>
+> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+>
 
-I'm a little confused here. The fpga_image_info.overlay is for
-fpga-region, but from your binding doc this property is for this afi
-device. You want to add another overlay targeting afi dev node during
-reprograming?
+Thanks!
 
-> +	if (priv->of_node)
-> +		ret = zynqmp_afi_config(priv);
-> +	of_node_put(priv->of_node);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct fpga_bridge_ops zynqmp_afi_br_ops = {
-> +	.enable_set = zynqmp_afi_enable_set,
-> +};
-> +
-> +static const struct of_device_id zynqmp_afi_of_match[] = {
-> +	{ .compatible =  "xlnx,zynqmp-afi-fpga" },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, zynqmp_afi_of_match);
-> +
-> +static int zynqmp_afi_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct zynqmp_afi *priv;
-> +	struct fpga_bridge *br;
-> +
-> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	priv->dev = dev;
-> +
-> +	priv->resets = devm_reset_control_array_get_optional_exclusive(&pdev->dev);
-> +	if (IS_ERR(priv->resets))
-> +		return PTR_ERR(priv->resets);
-> +
-> +	br = fpga_bridge_register(dev, "Xilinx ZynqMP AFI",
-> +				  &zynqmp_afi_br_ops, priv);
-> +	if (IS_ERR(br)) {
-> +		dev_err(dev, "unable to register Xilinx ZynqMP AFI");
+-- 
+Vitaly
 
-Need a "\n" at the end?
-
-Thanks,
-Yilun
-
-> +		return PTR_ERR(br);
-> +	}
-> +
-> +	platform_set_drvdata(pdev, br);
-> +
-> +	return 0;
-> +}
-> +
-> +static int zynqmp_afi_remove(struct platform_device *pdev)
-> +{
-> +	struct fpga_bridge *bridge = platform_get_drvdata(pdev);
-> +
-> +	fpga_bridge_unregister(bridge);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver zynqmp_afi_driver = {
-> +	.probe = zynqmp_afi_probe,
-> +	.remove = zynqmp_afi_remove,
-> +	.driver = {
-> +		.name = "zynqmp_afi",
-> +		.of_match_table = of_match_ptr(zynqmp_afi_of_match),
-> +	},
-> +};
-> +
-> +module_platform_driver(zynqmp_afi_driver);
-> +
-> +MODULE_DESCRIPTION("ZYNQMP FPGA AXI FIFO interface configuration module");
-> +MODULE_AUTHOR("Nava kishore Manne <nava.kishore.manne@amd.com>");
-> +MODULE_LICENSE("GPL");
-> -- 
-> 2.25.1
-> 
