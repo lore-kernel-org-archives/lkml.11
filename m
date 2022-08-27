@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BF7C0502C
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 07:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 780B0ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 07:20:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233073AbiH0HUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 03:20:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53028 "EHLO
+        id S1345349AbiH0HUh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 03:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232449AbiH0HUX (ORCPT
+        with ESMTP id S232922AbiH0HUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 27 Aug 2022 03:20:23 -0400
 Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B477C74B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C807CA9A;
         Sat, 27 Aug 2022 00:20:21 -0700 (PDT)
 Received: from canpemm500006.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MF7L60z9mz1N7Gs;
-        Sat, 27 Aug 2022 15:16:46 +0800 (CST)
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MF7L5435vz1N7H4;
+        Sat, 27 Aug 2022 15:16:45 +0800 (CST)
 Received: from ubuntu-82.huawei.com (10.175.104.82) by
  canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 15:20:19 +0800
+ 15.1.2375.24; Sat, 27 Aug 2022 15:20:18 +0800
 From:   Ziyang Xuan <william.xuanziyang@huawei.com>
 To:     <socketcan@hartkopp.net>, <mkl@pengutronix.de>,
         <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
         <pabeni@redhat.com>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next 2/2] can: raw: use guard clause to optimize nesting in raw_rcv()
-Date:   Sat, 27 Aug 2022 15:20:11 +0800
-Message-ID: <0170ad1f07dbe838965df4274fce950980fa9d1f.1661584485.git.william.xuanziyang@huawei.com>
+Subject: [PATCH net-next 1/2] can: raw: process optimization in raw_init()
+Date:   Sat, 27 Aug 2022 15:20:10 +0800
+Message-ID: <7af9401f0d2d9fed36c1667b5ac9b8df8f8b87ee.1661584485.git.william.xuanziyang@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1661584485.git.william.xuanziyang@huawei.com>
 References: <cover.1661584485.git.william.xuanziyang@huawei.com>
@@ -44,39 +45,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can use guard clause to optimize nesting codes like
-if (condition) { ... } else { return; } in raw_rcv();
+Now, register notifier after register proto successfully. It can create
+raw socket and set socket options once register proto successfully, so it
+is possible missing notifier event before register notifier successfully
+although this is a low probability scenario.
+
+Move notifier registration to the front of proto registration like done
+in j1939. In addition, register_netdevice_notifier() may fail, check its
+result is necessary.
 
 Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
 ---
- net/can/raw.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ net/can/raw.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
 diff --git a/net/can/raw.c b/net/can/raw.c
-index 9ae7c4206b9a..e7dfa3584e29 100644
+index d1bd9cc51ebe..9ae7c4206b9a 100644
 --- a/net/can/raw.c
 +++ b/net/can/raw.c
-@@ -136,14 +136,13 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
- 	/* eliminate multiple filter matches for the same skb */
- 	if (this_cpu_ptr(ro->uniq)->skb == oskb &&
- 	    this_cpu_ptr(ro->uniq)->skbcnt == can_skb_prv(oskb)->skbcnt) {
--		if (ro->join_filters) {
--			this_cpu_inc(ro->uniq->join_rx_count);
--			/* drop frame until all enabled filters matched */
--			if (this_cpu_ptr(ro->uniq)->join_rx_count < ro->count)
--				return;
--		} else {
-+		if (!ro->join_filters)
-+			return;
+@@ -942,12 +942,20 @@ static __init int raw_module_init(void)
+ 
+ 	pr_info("can: raw protocol\n");
+ 
++	err = register_netdevice_notifier(&canraw_notifier);
++	if (err)
++		return err;
 +
-+		this_cpu_inc(ro->uniq->join_rx_count);
-+		/* drop frame until all enabled filters matched */
-+		if (this_cpu_ptr(ro->uniq)->join_rx_count < ro->count)
- 			return;
--		}
- 	} else {
- 		this_cpu_ptr(ro->uniq)->skb = oskb;
- 		this_cpu_ptr(ro->uniq)->skbcnt = can_skb_prv(oskb)->skbcnt;
+ 	err = can_proto_register(&raw_can_proto);
+-	if (err < 0)
++	if (err < 0) {
+ 		pr_err("can: registration of raw protocol failed\n");
+-	else
+-		register_netdevice_notifier(&canraw_notifier);
++		goto register_proto_failed;
++	}
+ 
++	return 0;
++
++register_proto_failed:
++	unregister_netdevice_notifier(&canraw_notifier);
+ 	return err;
+ }
+ 
 -- 
 2.25.1
 
