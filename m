@@ -2,91 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9450CECAAD4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C64C5C0502C
 	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 01:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242064AbiH0B3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 21:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
+        id S1344780AbiH0B3d (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 21:29:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbiH0B25 (ORCPT
+        with ESMTP id S230416AbiH0B3b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 21:28:57 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C580CE68C8
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 18:28:55 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MDzYz4THMznTj7;
-        Sat, 27 Aug 2022 09:26:31 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+        Fri, 26 Aug 2022 21:29:31 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61495E68E3
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 18:29:30 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MDzYH125fz1N7Rv;
+        Sat, 27 Aug 2022 09:25:55 +0800 (CST)
+Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 09:28:53 +0800
-Received: from [10.174.176.52] (10.174.176.52) by
- kwepemm600015.china.huawei.com (7.193.23.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 09:28:52 +0800
-Message-ID: <1636796c-c85e-7f47-e96f-e074fee3c7d3@huawei.com>
-Date:   Sat, 27 Aug 2022 09:28:51 +0800
+ 15.1.2375.24; Sat, 27 Aug 2022 09:29:28 +0800
+Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
+ (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 27 Aug
+ 2022 09:29:27 +0800
+From:   Shang XiaoJing <shangxiaojing@huawei.com>
+To:     <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
+        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>
+CC:     <shangxiaojing@huawei.com>
+Subject: [PATCH -next] sched/deadline: Save processing meaningless ops in dl_task_offline_migration
+Date:   Sat, 27 Aug 2022 10:04:30 +0800
+Message-ID: <20220827020430.29415-1-shangxiaojing@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH] ntfs: change check order in ntfs_attr_find
-To:     Hawkins Jiawei <yin31149@gmail.com>,
-        <syzbot+5f8dcabe4a3b2c51c607@syzkaller.appspotmail.com>,
-        Anton Altaparmakov <anton@tuxera.com>
-CC:     <akpm@linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-ntfs-dev@lists.sourceforge.net>,
-        <syzkaller-bugs@googlegroups.com>
-References: <0000000000006886bd05e714ec18@google.com>
- <20220826122735.2690-1-yin31149@gmail.com>
-From:   "chenxiaosong (A)" <chenxiaosong2@huawei.com>
-In-Reply-To: <20220826122735.2690-1-yin31149@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.52]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemm600015.china.huawei.com (7.193.23.52)
+Content-Type: text/plain
+X-Originating-IP: [10.175.100.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600008.china.huawei.com (7.193.23.88)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/8/26 20:27, Hawkins Jiawei 写道:
-> syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> 
-> Looks like it is improper check order that causes this bug.
-> 
-> Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
-> ---
->   fs/ntfs/attrib.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
-> index 52615e6090e1..6480cd2d371d 100644
-> --- a/fs/ntfs/attrib.c
-> +++ b/fs/ntfs/attrib.c
-> @@ -594,10 +594,11 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
->   	for (;;	a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
->   		u8 *mrec_end = (u8 *)ctx->mrec +
->   		               le32_to_cpu(ctx->mrec->bytes_allocated);
-> +		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end)
-> +			break;
->   		u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
->   			       a->name_length * sizeof(ntfschar);
-> -		if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
-> -		    name_end > mrec_end)
-> +		if (name_end > mrec_end)
->   			break;
->   		ctx->attr = a;
->   		if (unlikely(le32_to_cpu(a->type) > le32_to_cpu(type) ||
-> 
+Task's bw will be sub from old rd, and add to new rd, even though
+find_lock_later_rq returns a new rq that belong to the same rd with old
+rq. Save ops for moving task's bw if rd is not changed.
 
-The reason is that a->length is 0, it will occur uaf when deref any 
-field of ATTR_RECORD.
+Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
+---
+ kernel/sched/deadline.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
-It seems that changing check order will not fix root cause, if the 
-condition "if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end)" is false, 
-uaf will still occur.
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 3bf4b12ec5b7..58ca9aaa9c44 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -714,20 +714,22 @@ static struct rq *dl_task_offline_migration(struct rq *rq, struct task_struct *p
+ 		add_rq_bw(&p->dl, &later_rq->dl);
+ 	}
+ 
+-	/*
+-	 * And we finally need to fixup root_domain(s) bandwidth accounting,
+-	 * since p is still hanging out in the old (now moved to default) root
+-	 * domain.
+-	 */
+-	dl_b = &rq->rd->dl_bw;
+-	raw_spin_lock(&dl_b->lock);
+-	__dl_sub(dl_b, p->dl.dl_bw, cpumask_weight(rq->rd->span));
+-	raw_spin_unlock(&dl_b->lock);
++	if (&rq->rd != &later_rq->rd) {
++		/*
++		 * And we finally need to fixup root_domain(s) bandwidth accounting,
++		 * since p is still hanging out in the old (now moved to default) root
++		 * domain.
++		 */
++		dl_b = &rq->rd->dl_bw;
++		raw_spin_lock(&dl_b->lock);
++		__dl_sub(dl_b, p->dl.dl_bw, cpumask_weight(rq->rd->span));
++		raw_spin_unlock(&dl_b->lock);
+ 
+-	dl_b = &later_rq->rd->dl_bw;
+-	raw_spin_lock(&dl_b->lock);
+-	__dl_add(dl_b, p->dl.dl_bw, cpumask_weight(later_rq->rd->span));
+-	raw_spin_unlock(&dl_b->lock);
++		dl_b = &later_rq->rd->dl_bw;
++		raw_spin_lock(&dl_b->lock);
++		__dl_add(dl_b, p->dl.dl_bw, cpumask_weight(later_rq->rd->span));
++		raw_spin_unlock(&dl_b->lock);
++	}
+ 
+ 	set_task_cpu(p, later_rq->cpu);
+ 	double_unlock_balance(later_rq, rq);
+-- 
+2.17.1
 
-Do you have any thoughts on this ?
