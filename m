@@ -2,97 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6491ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 01:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1481C0502A
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 01:37:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345017AbiH0BgD (ORCPT
+        id S1345111AbiH0BhS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 21:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
+        Fri, 26 Aug 2022 21:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344847AbiH0BgB (ORCPT
+        with ESMTP id S233267AbiH0BhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 21:36:01 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49641DEB56
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 18:35:58 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1661564156;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y+NLU0Agr0DzkFmH5v2uMtwuDu7hJTIQm8wF8qUZfKw=;
-        b=TTwfwd156JTzz7U1PxkE+sPW9VMDBvBep0XiY1kqEPo1gEqdCx7Lx/AHs6280v4LG37oeQ
-        hikGa0VMLX3WuXUWIUjZgiGK3JYjEP3Vfk6lW6uRQrc1UBXl+BeUNobyjulyXhFEb91YcR
-        R8SmayHoOqHpM7Ry9pSA4HdiKrsxOHY=
+        Fri, 26 Aug 2022 21:37:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD079DF0AF;
+        Fri, 26 Aug 2022 18:37:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B631B831BD;
+        Sat, 27 Aug 2022 01:37:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA85DC433D6;
+        Sat, 27 Aug 2022 01:37:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661564232;
+        bh=gCe5krUjt94WhtRKYuI73X7CtqBoOaSa4DzCVLYy4Zw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=scS+oXKoPVI7/Fj6tkib3BKNPT+WmkmHIUQ54KyLmfgR3uZTZnojA/Ps//YoWJrJT
+         MsWaN2mpo0SG58YVGaRTxprQ5dIHuS/UtSjMe+AEG+A3XiUxAY0VvPZl053N/iTiFv
+         7fU51+UuAsfptR3A7NYtonhfX4A3AwyazdxRwoPTof/7jPp8I18XS+62czefLJ79C2
+         +3bvldG3SZSh7z+dvuz9shcj8oEK1RbykDSs5pAlf1p8UnNiKASjT0z6wI8SMZqJtU
+         zAuqsLCRqXrDod/AJcX2YRy7X9lphuMHRvT8GpfpNh8ODOkDit1gDowjc47+3E/8IB
+         KiKxdpdOgJtFA==
+Date:   Fri, 26 Aug 2022 18:37:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, michael@walle.cc,
+        UNGLinuxDriver@microchip.com, maxime.chevallier@bootlin.com
+Subject: Re: [PATCH net-next v2] net: phy: micrel: Make the GPIO to be
+ non-exclusive
+Message-ID: <20220826183711.567bc7e8@kernel.org>
+In-Reply-To: <YwfYnwzQsDruVi5y@lunn.ch>
+References: <20220825201447.1444396-1-horatiu.vultur@microchip.com>
+        <YwfYnwzQsDruVi5y@lunn.ch>
 MIME-Version: 1.0
-Subject: Re: [PATCH 08/10] hugetlb: remove unneeded SetHPageVmemmapOptimized()
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Muchun Song <muchun.song@linux.dev>
-In-Reply-To: <20220826092422.39591-9-linmiaohe@huawei.com>
-Date:   Sat, 27 Aug 2022 09:35:52 +0800
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Linux MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <A1ED2200-136D-477E-B1EC-E61E6B75931B@linux.dev>
-References: <20220826092422.39591-1-linmiaohe@huawei.com>
- <20220826092422.39591-9-linmiaohe@huawei.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 25 Aug 2022 22:16:31 +0200 Andrew Lunn wrote:
+> On Thu, Aug 25, 2022 at 10:14:47PM +0200, Horatiu Vultur wrote:
+> > The same GPIO line can be shared by multiple phys for the coma mode pin.
+> > If that is the case then, all the other phys that share the same line
+> > will failed to be probed because the access to the gpio line is not
+> > non-exclusive.
+> > Fix this by making access to the gpio line to be nonexclusive using flag
+> > GPIOD_FLAGS_BIT_NONEXCLUSIVE. This allows all the other PHYs to be
+> > probed.
+> > 
+> > Fixes: 738871b09250ee ("net: phy: micrel: add coma mode GPIO")
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>  
+> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-
-> On Aug 26, 2022, at 17:24, Miaohe Lin <linmiaohe@huawei.com> wrote:
->=20
-> If code reaches here, it's guaranteed that HPageVmemmapOptimized is =
-set
-> for the hugetlb page (or VM_BUG_ON_PAGE() will complain about it). =
-It's
-
-Hi Miaohe,
-
-Right.
-
-> unnecessary to set it again.
-
-No, I suppose you didn=E2=80=99t test this patch since it does not work. =
-The
-HPageVmemmapOptimized is cleared in the above code of line
-(set_page_private(page, 0)). So NAck.
-
-Thanks,
-Muchun
-
->=20
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
-> mm/hugetlb.c | 1 -
-> 1 file changed, 1 deletion(-)
->=20
-> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-> index 7934188bbed0..b432a00061e3 100644
-> --- a/mm/hugetlb.c
-> +++ b/mm/hugetlb.c
-> @@ -1520,7 +1520,6 @@ static void add_hugetlb_page(struct hstate *h, =
-struct page *page,
->=20
-> 	set_compound_page_dtor(page, HUGETLB_PAGE_DTOR);
-> 	set_page_private(page, 0);
-> -	SetHPageVmemmapOptimized(page);
->=20
-> 	/*
-> 	 * This page is about to be managed by the hugetlb allocator and
-> --=20
-> 2.23.0
->=20
->=20
-
+The tree name switch in the subject compared to v1 is unintentional?
