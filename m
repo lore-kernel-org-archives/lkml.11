@@ -2,88 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2183AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 18:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BD39C0502C
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 18:42:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231249AbiH0Si4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 14:38:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59614 "EHLO
+        id S229781AbiH0SmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 14:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiH0Six (ORCPT
+        with ESMTP id S229884AbiH0SmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 14:38:53 -0400
+        Sat, 27 Aug 2022 14:42:06 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 025CDC22B9;
-        Sat, 27 Aug 2022 11:38:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F78B2666;
+        Sat, 27 Aug 2022 11:42:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GkYGAg3qcPD2jpV5HOzvtigzyj8tXyVIkxDsZezVgdI=; b=RIYJrZ+4dnmjFQXx6VLi0MZx18
-        KW7rJpigeSJk74iaPr9D1oXPmbupZjKY+PszhprVY19MqrcZrKAq219yYKA6v0wor51CAFNCi0ICw
-        mUyoQg+fg+Er3H6iaosyw6vnuqFCqvUW5v5BLCCFAEYwlyPwnzhG3yGdRnVZbjzfa7R4=;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=3Ti0t5W7laQ1yjP95FI+9j22q4zm/p9DmlBYb1A7/2g=; b=CM
+        BcyoL5ZQWWkvC3ubN8x8Xt7Rk2wQvNlMETx4shXIKb0R9mRl6cYMwqvDUYh48QEeRgmdVqEets16Q
+        rupibFX4LACnmY5f3Ny2CaEiBqeE7CxWaBhpqkhz8ANqtb38U19/HzoNNxbKMD4CzCCp+W6mry35o
+        za9s5+tqjK50jkg=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oS0hW-00EnON-IQ; Sat, 27 Aug 2022 20:38:34 +0200
-Date:   Sat, 27 Aug 2022 20:38:34 +0200
+        id 1oS0kp-00EnQE-Vx; Sat, 27 Aug 2022 20:41:59 +0200
+Date:   Sat, 27 Aug 2022 20:41:59 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        kernel test robot <lkp@intel.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v3 6/7] ethtool: add interface to interact with
- Ethernet Power Equipment
-Message-ID: <Ywpkqt2pDmpzXWWn@lunn.ch>
-References: <20220827051033.3903585-1-o.rempel@pengutronix.de>
- <20220827051033.3903585-7-o.rempel@pengutronix.de>
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Subject: Re: [PATCH] ARM: dts: turris-omnia: Add switch port 6 node
+Message-ID: <YwpldyOI5x1xgMoM@lunn.ch>
+References: <20220825122102.18634-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220827051033.3903585-7-o.rempel@pengutronix.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220825122102.18634-1-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> +static int pse_set_pse_config(struct net_device *dev,
-> +			      struct netlink_ext_ack *extack,
-> +			      struct nlattr **tb)
-> +{
-> +	struct phy_device *phydev = dev->phydev;
-> +	struct pse_control_config config = {};
-> +	int ret;
+On Thu, Aug 25, 2022 at 02:21:02PM +0200, Pali Rohár wrote:
+> Switch port 6 is connected to eth0, so add appropriate device tree node for it.
+> 
+> Fixes: 26ca8b52d6e1 ("ARM: dts: add support for Turris Omnia")
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> ---
+>  arch/arm/boot/dts/armada-385-turris-omnia.dts | 12 +++++++++++-
+>  1 file changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/boot/dts/armada-385-turris-omnia.dts b/arch/arm/boot/dts/armada-385-turris-omnia.dts
+> index f655e9229d68..8215ffb6a795 100644
+> --- a/arch/arm/boot/dts/armada-385-turris-omnia.dts
+> +++ b/arch/arm/boot/dts/armada-385-turris-omnia.dts
+> @@ -463,7 +463,17 @@
+>  				};
+>  			};
+>  
+> -			/* port 6 is connected to eth0 */
+> +			ports@6 {
+> +				reg = <6>;
+> +				label = "cpu";
+> +				ethernet = <&eth0>;
+> +				phy-mode = "rgmii-id";
 > +
-> +	if (!tb[ETHTOOL_A_PODL_PSE_ADMIN_CONTROL])
-> +		return -EINVAL;
+> +				fixed-link {
+> +					speed = <1000>;
+> +					full-duplex;
+> +				};
+> +			};
 
-I would make use of extack here, and report what is missing.
+Hi Pali
 
-> +
-> +	config.admin_cotrol = nla_get_u8(tb[ETHTOOL_A_PODL_PSE_ADMIN_CONTROL]);
+I've not been following Vladimirs work on multiple CPU ports. Is it
+clearly defined, both for old and new kernels, what happens where
+there are multiple CPU ports defined?
 
-It would be good to have some basic validation here, make sure user
-space has passed a reasonable value.
-
-You should also define what 0 and
-ETHTOOL_A_PODL_PSE_ADMIN_CONTROL_UNKNOWN means here when passed in. In
-future, there could be additional things which could be configured, so
-struct pse_control_config gets additional members.
-ETHTOOL_A_PODL_PSE_ADMIN_CONTROL appears to be mandatory, you return
--EVINAL if missing, so if you don't want to change it, but change some
-other new thing, maybe 0 should be passed here? And the driver should
-not consider it an error?  ETHTOOL_A_PODL_PSE_ADMIN_CONTROL_UNKNOWN
-however seems invalid and so should be rejected here?
-
-	Andrew
+      Andrew
