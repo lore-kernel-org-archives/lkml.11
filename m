@@ -2,131 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8725ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 02:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44BE4ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 02:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239982AbiH0CBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 26 Aug 2022 22:01:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
+        id S1345264AbiH0CD3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 26 Aug 2022 22:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345226AbiH0CBW (ORCPT
+        with ESMTP id S232135AbiH0CD1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 26 Aug 2022 22:01:22 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1303A26117
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 19:01:19 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MF0J72SNdzGpnw;
-        Sat, 27 Aug 2022 09:59:35 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 10:01:18 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 10:01:17 +0800
-Message-ID: <c1c22a8b-bc27-41e0-e709-c2d9fb9bc11c@huawei.com>
-Date:   Sat, 27 Aug 2022 10:01:16 +0800
+        Fri, 26 Aug 2022 22:03:27 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375BBDAA37
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 19:03:24 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1661565802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D/7slZr7aKprYNwHgvO651SPT0Z8XLhxiDf8lcRtpQw=;
+        b=tDZZB4JRrLkqVe4E2jf4nrLsdHCCIn8o015HtLYrQN3xj39KJHXil5iV8dnAPPTXtbJecy
+        UIPJXhTCbR15TLbIwBxx3EfH+wV3DwCOQGdGWxv7WtyIGNTomfPmdWiWSpVZzjbM0urfrz
+        1NQUuRgjfzsnqMHIzpO0VYTA7Wk+Q1I=
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH -next 2/3] mm/zswap: delay the initializaton of zswap
- until the first enablement
-Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Liu Shixin <liushixin2@huawei.com>
-CC:     Seth Jennings <sjenning@redhat.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Vitaly Wool <vitaly.wool@konsulko.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-References: <20220825142037.3214152-1-liushixin2@huawei.com>
- <20220825142037.3214152-3-liushixin2@huawei.com>
- <YwksRZPIfXmlOmHR@dev-arch.thelio-3990X>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <YwksRZPIfXmlOmHR@dev-arch.thelio-3990X>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Subject: Re: [PATCH 09/10] hugetlb: remove meaningless BUG_ON(huge_pte_none())
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Muchun Song <muchun.song@linux.dev>
+In-Reply-To: <20220826092422.39591-10-linmiaohe@huawei.com>
+Date:   Sat, 27 Aug 2022 10:03:19 +0800
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Linux MM <linux-mm@kvack.org>, linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <399D37BF-B33B-476F-97D4-AEB812316617@linux.dev>
+References: <20220826092422.39591-1-linmiaohe@huawei.com>
+ <20220826092422.39591-10-linmiaohe@huawei.com>
+To:     Miaohe Lin <linmiaohe@huawei.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 2022/8/27 4:25, Nathan Chancellor wrote:
-> Hi Liu,
->
-> On Thu, Aug 25, 2022 at 10:20:36PM +0800, Liu Shixin wrote:
->> In the initialization of zswap, about 18MB memory will be allocated for
->> zswap_pool in my machine. Since not all users use zswap, the memory may be
->> wasted. Save the memory for these users by delaying the initialization of
->> zswap to first enablement.
->>
->> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
->> ---
-...
->> This change is in -next as commit 22100432cf14 ("mm/zswap: delay the
->> initializaton of zswap until the first enablement"). I just bisected my
->> arm64 test system running Fedora failing to boot due to that commit,
->> with the following stack trace:
->>
->>    Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000000
->>    Mem abort info:
->>      ESR = 0x0000000096000004
->>      EC = 0x25: DABT (current EL), IL = 32 bits
->>      SET = 0, FnV = 0
->>      EA = 0, S1PTW = 0
->>      FSC = 0x04: level 0 translation fault
->>    Data abort info:
->>      ISV = 0, ISS = 0x00000004
->>      CM = 0, WnR = 0
->>    user pgtable: 4k pages, 48-bit VAs, pgdp=00000020a4fab000
->>    [0000000000000000] pgd=0000000000000000, p4d=0000000000000000
->>    Internal error: Oops: 96000004 [#1] SMP
->>    Modules linked in: zram fsl_dpaa2_eth pcs_lynx phylink ahci_qoriq crct10dif_ce ghash_ce sbsa_gwdt fsl_mc_dpio nvme lm90 nvme_core at803x xhci_plat_hcd rtc_fsl_ftm_alarm xgmac_mdio ahci_platform i2c_imx ip6_tables ip_tables fuse
->>    Unloaded tainted modules: cppc_cpufreq():1
->>    CPU: 10 PID: 761 Comm: swapon Not tainted 6.0.0-rc2-00454-g22100432cf14 #1
->>    Hardware name: SolidRun Ltd. SolidRun CEX7 Platform, BIOS EDK II Jun 21 2022
->>    pstate: 00400005 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->>    pc : frontswap_init+0x38/0x60
->>    lr : __do_sys_swapon+0x8a8/0x9f4
->>    sp : ffff80000969bcf0
->>    x29: ffff80000969bcf0 x28: ffff37bee0d8fc00 x27: ffff80000a7f5000
->>    x26: fffffcdefb971e80 x25: ffffaba797453b90 x24: 0000000000000064
->>    x23: ffff37c1f209d1a8 x22: ffff37bee880e000 x21: ffffaba797748560
->>    x20: ffff37bee0d8fce4 x19: ffffaba797748488 x18: 0000000000000014
->>    x17: 0000000030ec029a x16: ffffaba795a479b0 x15: 0000000000000000
->>    x14: 0000000000000000 x13: 0000000000000030 x12: 0000000000000001
->>    x11: ffff37c63c0aba18 x10: 0000000000000000 x9 : ffffaba7956b8c88
->>    x8 : ffff80000969bcd0 x7 : 0000000000000000 x6 : 0000000000000000
->>    x5 : 0000000000000001 x4 : 0000000000000000 x3 : ffffaba79730f000
->>    x2 : ffff37bee0d8fc00 x1 : 0000000000000000 x0 : 0000000000000000
->>    Call trace:
->>    frontswap_init+0x38/0x60
->>    __do_sys_swapon+0x8a8/0x9f4
->>    __arm64_sys_swapon+0x28/0x3c
->>    invoke_syscall+0x78/0x100
->>    el0_svc_common.constprop.0+0xd4/0xf4
->>    do_el0_svc+0x38/0x4c
->>    el0_svc+0x34/0x10c
->>    el0t_64_sync_handler+0x11c/0x150
->>    el0t_64_sync+0x190/0x194
->>    Code: d000e283 910003fd f9006c41 f946d461 (f9400021)
->>    ---[ end trace 0000000000000000 ]---
->>
->> This is with Fedora's configuration:
->>
->> https://src.fedoraproject.org/rpms/kernel/raw/rawhide/f/kernel-aarch64-fedora.config
->>
->> If there is any more information I can provide or patches I can test, I
->> am more than happy to do so!
-Thanks for your reporting，we will check it.
->
-> Cheers,
-> Nathan
->
-> .
+
+> On Aug 26, 2022, at 17:24, Miaohe Lin <linmiaohe@huawei.com> wrote:
+> 
+> When code reaches here, invalid page would have been accessed if huge pte
+> is none. So this BUG_ON(huge_pte_none()) is meaningless. Remove it.
+> 
+> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+
+Thanks.
+
