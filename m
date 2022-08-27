@@ -2,259 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EBEFECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 08:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC068C0502C
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 08:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232714AbiH0ICF convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 04:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49234 "EHLO
+        id S233214AbiH0ICw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 04:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232944AbiH0IBu (ORCPT
+        with ESMTP id S243326AbiH0ICp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 04:01:50 -0400
+        Sat, 27 Aug 2022 04:02:45 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E2732B5;
-        Sat, 27 Aug 2022 01:01:47 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MF8Fv1sfRzkWVt;
-        Sat, 27 Aug 2022 15:58:11 +0800 (CST)
-Received: from dggpemm100006.china.huawei.com (7.185.36.196) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C0E647D7
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 01:02:44 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MF8H01rR6zkWch;
+        Sat, 27 Aug 2022 15:59:08 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 16:01:45 +0800
-Received: from canpemm500001.china.huawei.com (7.192.104.163) by
- dggpemm100006.china.huawei.com (7.185.36.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 16:01:45 +0800
-Received: from canpemm500001.china.huawei.com ([7.192.104.163]) by
- canpemm500001.china.huawei.com ([7.192.104.163]) with mapi id 15.01.2375.024;
- Sat, 27 Aug 2022 16:01:45 +0800
-From:   "Zhoujian (jay)" <jianjay.zhou@huawei.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-CC:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "Gonglei (Arei)" <arei.gonglei@huawei.com>,
-        zhuangshengen <zhuangshengen@huawei.com>,
-        "Wangjing(Hogan)" <hogan.wang@huawei.com>
-Subject: RE: [Question] Any plan to support enable PCI SRIOV concurrently in
- kernel side?
-Thread-Topic: [Question] Any plan to support enable PCI SRIOV concurrently in
- kernel side?
-Thread-Index: AdiyDNZvspPz1b9KT9CKr88dkJbU8gAIpySAAeyWw1A=
-Date:   Sat, 27 Aug 2022 08:01:44 +0000
-Message-ID: <47c749ec933549b687bd0acfbb4e89f7@huawei.com>
-References: <0a8ce5714e2d4eed909cb096d4832036@huawei.com>
- <20220817194947.GA2270629@bhelgaas>
-In-Reply-To: <20220817194947.GA2270629@bhelgaas>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.151.254]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+ 15.1.2375.24; Sat, 27 Aug 2022 16:02:41 +0800
+Subject: Re: [PATCH 4/8] hugetlb: handle truncate racing with page faults
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+CC:     Muchun Song <songmuchun@bytedance.com>,
+        David Hildenbrand <david@redhat.com>,
+        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Prakash Sangappa <prakash.sangappa@oracle.com>,
+        James Houghton <jthoughton@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Ray Fucillo <Ray.Fucillo@intersystems.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220824175757.20590-1-mike.kravetz@oracle.com>
+ <20220824175757.20590-5-mike.kravetz@oracle.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <b26db6af-ffde-788d-2148-2e0992f96229@huawei.com>
+Date:   Sat, 27 Aug 2022 16:02:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
+In-Reply-To: <20220824175757.20590-5-mike.kravetz@oracle.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500002.china.huawei.com (7.192.104.244)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Bjorn Helgaas [mailto:helgaas@kernel.org]
-> Sent: Thursday, August 18, 2022 3:50 AM
-> To: Zhoujian (jay) <jianjay.zhou@huawei.com>
-> Cc: linux-pci@vger.kernel.org; linux-kernel@vger.kernel.org; bhelgaas@google.com;
-> Gonglei (Arei) <arei.gonglei@huawei.com>; zhuangshengen
-> <zhuangshengen@huawei.com>
-> Subject: Re: [Question] Any plan to support enable PCI SRIOV concurrently in
-> kernel side?
+On 2022/8/25 1:57, Mike Kravetz wrote:
+> When page fault code needs to allocate and instantiate a new hugetlb
+> page (huegtlb_no_page), it checks early to determine if the fault is
+> beyond i_size.  When discovered early, it is easy to abort the fault and
+> return an error.  However, it becomes much more difficult to handle when
+> discovered later after allocating the page and consuming reservations
+> and adding to the page cache.  Backing out changes in such instances
+> becomes difficult and error prone.
 > 
-> On Wed, Aug 17, 2022 at 07:43:34AM +0000, Zhoujian (jay) wrote:
-> > Hi,
-> >
-> > Enable SRIOV concurrently with many different PFs in userspace seems workable.
-> > I'm trying to do it with 8 PFs(each one with 240+ VFs), but get some
-> > warnings, here is the backtrace:
+> Instead of trying to catch and backout all such races, use the hugetlb
+> fault mutex to handle truncate racing with page faults.  The most
+> significant change is modification of the routine remove_inode_hugepages
+> such that it will take the fault mutex for EVERY index in the truncated
+> range (or hole in the case of hole punch).  Since remove_inode_hugepages
+> is called in the truncate path after updating i_size, we can experience
+> races as follows.
+> - truncate code updates i_size and takes fault mutex before a racing
+>   fault.  After fault code takes mutex, it will notice fault beyond
+>   i_size and abort early.
+> - fault code obtains mutex, and truncate updates i_size after early
+>   checks in fault code.  fault code will add page beyond i_size.
+>   When truncate code takes mutex for page/index, it will remove the
+>   page.
+> - truncate updates i_size, but fault code obtains mutex first.  If
+>   fault code sees updated i_size it will abort early.  If fault code
+>   does not see updated i_size, it will add page beyond i_size and
+>   truncate code will remove page when it obtains fault mutex.
 > 
-> This definitely seems like a problem that should be fixed.  If you have a script that
-> can reproduce it, that might help people work on it.  If you can reproduce it in
-> qemu, that would be even better.
-
-The script has posted by zhuangshengen.
-
+> Note, for performance reasons remove_inode_hugepages will still use
+> filemap_get_folios for bulk folio lookups.  For indicies not returned in
+> the bulk lookup, it will need to lookup individual folios to check for
+> races with page fault.
 > 
-> Some comments on the patch below.
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+> ---
+>  fs/hugetlbfs/inode.c | 184 +++++++++++++++++++++++++++++++------------
+>  mm/hugetlb.c         |  41 +++++-----
+>  2 files changed, 152 insertions(+), 73 deletions(-)
 > 
-> > Warning 1:
-> > ---
-> > sysfs: cannot create duplicate filename
-> '/devices/pci0000:30/0000:30:02.0/pci_bus/0000:32'
-> > Call Trace:
-> >  dump_stack+0x6f/0xab
-> >  sysfs_warn_dup+0x56/0x70
-> >  sysfs_create_dir_ns+0x80/0x90
-> >  kobject_add_internal+0xa0/0x2b0
-> >  kobject_add+0x71/0xd0
-> >  device_add+0x126/0x630
-> >  pci_add_new_bus+0x17c/0x4b0
-> >  pci_iov_add_virtfn+0x336/0x390
-> >  sriov_enable+0x26e/0x450
-> >  virtio_pci_sriov_configure+0x61/0xc0 [virtio_pci]
-> > ---
-> > The reason is that different VFs may create the same pci bus number
-> > and try to add new bus concurrently in virtfn_add_bus.
-> >
-> > Warning 2:
-> > ---
-> > proc_dir_entry 'pci/33' already registered
-> > WARNING: CPU: 71 PID: 893 at fs/proc/generic.c:360
-> > proc_register+0xf8/0x130 Call Trace:
-> >  proc_mkdir_data+0x5d/0x80
-> >  pci_proc_attach_device+0xe9/0x120
-> >  pci_bus_add_device+0x33/0x90
-> >  pci_iov_add_virtfn+0x375/0x390
-> >  sriov_enable+0x26e/0x450
-> >  virtio_pci_sriov_configure+0x61/0xc0 [virtio_pci]
-> > ---
-> > The reason is that different VFs may create '/proc/bus/pci/bus_number'
-> > directory using the same bus number in pci_proc_attach_device concurrently.
-> >
-> > Mutex lock can avoid potential conflict. With the patch below the
-> > warnings above are no longer appear.
-> >
-> > My question is that any plan to support enable PCI SRIOV concurrently in kernel
-> side?
-> >
-> > Thanks
-> >
-> > ---
-> > drivers/pci/iov.c | 29 +++++++++++++++++++++++++++--
-> >  1 file changed, 27 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c index
-> > 952217572113..6a8a849298c4 100644
-> > --- a/drivers/pci/iov.c
-> > +++ b/drivers/pci/iov.c
-> > @@ -16,6 +16,12 @@
-> >
-> >  #define VIRTFN_ID_LEN    16
-> >
-> > +static struct mutex add_bus_mutex;
-> > +static int add_bus_mutex_initialized;
-> > +
-> > +static struct mutex add_device_mutex; static int
-> > +add_device_mutex_initialized;
-> > +
-> >  int pci_iov_virtfn_bus(struct pci_dev *dev, int vf_id)  {
-> >      if (!dev->is_physfn)
-> > @@ -127,13 +133,24 @@ static struct pci_bus *virtfn_add_bus(struct pci_bus
-> *bus, int busnr)
-> >      if (bus->number == busnr)
-> >          return bus;
-> >
-> > +    if (!add_bus_mutex_initialized) {
-> > +        mutex_init(&add_bus_mutex);
-> > +        add_bus_mutex_initialized = 1;
-> > +    }
-> 
-> I assume this patch works around the warning.  I see the intent here, but I think
+> diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
+> index d98c6edbd1a4..e83fd31671b3 100644
+> --- a/fs/hugetlbfs/inode.c
+> +++ b/fs/hugetlbfs/inode.c
+> @@ -411,6 +411,95 @@ hugetlb_vmdelete_list(struct rb_root_cached *root, pgoff_t start, pgoff_t end,
+>  	}
+>  }
+>  
+> +/*
+> + * Called with hugetlb fault mutex held.
+> + * Returns true if page was actually removed, false otherwise.
+> + */
+> +static bool remove_inode_single_folio(struct hstate *h, struct inode *inode,
+> +					struct address_space *mapping,
+> +					struct folio *folio, pgoff_t index,
+> +					bool truncate_op)
+> +{
+> +	bool ret = false;
+> +
+> +	/*
+> +	 * If folio is mapped, it was faulted in after being
+> +	 * unmapped in caller.  Unmap (again) while holding
+> +	 * the fault mutex.  The mutex will prevent faults
+> +	 * until we finish removing the folio.
+> +	 */
+> +	if (unlikely(folio_mapped(folio))) {
+> +		i_mmap_lock_write(mapping);
+> +		hugetlb_vmdelete_list(&mapping->i_mmap,
+> +					index * pages_per_huge_page(h),
+> +					(index + 1) * pages_per_huge_page(h),
+> +					ZAP_FLAG_DROP_MARKER);
+> +		i_mmap_unlock_write(mapping);
+> +	}
+> +
+> +	folio_lock(folio);
+> +	/*
+> +	 * After locking page, make sure mapping is the same.
+> +	 * We could have raced with page fault populate and
+> +	 * backout code.
+> +	 */
+> +	if (folio_mapping(folio) == mapping) {
 
-Yes, it is. We have tested for a few weeks and no new problems have found.
+Could you explain this more? IIUC, page fault won't remove the hugetlb page from page
+cache anymore. So this check is unneeded? Or we should always check this in case future
+code changing?
 
-> would need some rework before merging it.  These locks protect
-> pci_add_new_bus() and pci_bus_add_device(), but only for the callers in iov.c.
-> These interfaces are both called from places other than iov.c, and any mutual
-> exclusion should cover all of them.
+> +		/*
+> +		 * We must remove the folio from page cache before removing
+> +		 * the region/ reserve map (hugetlb_unreserve_pages).  In
+> +		 * rare out of memory conditions, removal of the region/reserve
+> +		 * map could fail.  Correspondingly, the subpool and global
+> +		 * reserve usage count can need to be adjusted.
+> +		 */
+> +		VM_BUG_ON(HPageRestoreReserve(&folio->page));
+> +		hugetlb_delete_from_page_cache(&folio->page);
+> +		ret = true;
+> +		if (!truncate_op) {
+> +			if (unlikely(hugetlb_unreserve_pages(inode, index,
+> +								index + 1, 1)))
+> +				hugetlb_fix_reserve_counts(inode);
+> +		}
+> +	}
+> +
+> +	folio_unlock(folio);
+> +	return ret;
+> +}
 
-I agree.
+<snip>
+> @@ -5584,9 +5585,13 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
+>  		clear_huge_page(page, address, pages_per_huge_page(h));
+>  		__SetPageUptodate(page);
+>  		new_page = true;
+> +		if (HPageRestoreReserve(page))
+> +			reserve_alloc = true;
+>  
+>  		if (vma->vm_flags & VM_MAYSHARE) {
+> -			int err = hugetlb_add_to_page_cache(page, mapping, idx);
+> +			int err;
+> +
+> +			err = hugetlb_add_to_page_cache(page, mapping, idx);
+>  			if (err) {
+>  				restore_reserve_on_error(h, vma, haddr, page);
+>  				put_page(page);
+> @@ -5642,10 +5647,6 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
+>  	}
+>  
+>  	ptl = huge_pte_lock(h, mm, ptep);
+> -	size = i_size_read(mapping->host) >> huge_page_shift(h);
+> -	if (idx >= size)
+> -		goto backout;
+> -
+>  	ret = 0;
+>  	/* If pte changed from under us, retry */
+>  	if (!pte_same(huge_ptep_get(ptep), old_pte))
+> @@ -5689,10 +5690,18 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
+>  backout:
+>  	spin_unlock(ptl);
+>  backout_unlocked:
+> -	unlock_page(page);
+> -	/* restore reserve for newly allocated pages not in page cache */
+> -	if (new_page && !new_pagecache_page)
+> +	if (new_page && !new_pagecache_page) {
+> +		/*
+> +		 * If reserve was consumed, make sure flag is set so that it
+> +		 * will be restored in free_huge_page().
+> +		 */
+> +		if (reserve_alloc)
+> +			SetHPageRestoreReserve(page);
 
-> 
-> I'm actually not sure how the other callers are protected.  I assume we're holding a
-> device_lock for some device farther up the chain.  Or, I see that
-> acpi_pci_root_add() and rescan_store() hold pci_rescan_remove_lock while calling
-> these.  
+If code reaches here, it should be a newly allocated page and it's not added to the hugetlb page cache.
+Note that failing to add the page to hugetlb page cache should have returned already. So the page must be
+anon? If so, HPageRestoreReserve isn't cleared yet as it's cleared right before set_huge_pte. Thus above
+check can be removed?
 
-The pci_rescan_remove_lock is added since 2014, see the commit below.
+Anyway, the patch looks good to me.
 
-commit 9d16947b75831acd317ab9a53e0e94d160731d33
-Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Date:   Fri Jan 10 15:22:18 2014 +0100
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 
-    PCI: Add global pci_lock_rescan_remove()
-    
-    There are multiple PCI device addition and removal code paths that may be
-    run concurrently with the generic PCI bus rescan and device removal that
-    can be triggered via sysfs.  If that happens, it may lead to multiple
-    different, potentially dangerous race conditions.
-    
-    The most straightforward way to address those problems is to run
-    the code in question under the same lock that is used by the
-    generic rescan/remove code in pci-sysfs.c.  To prepare for those
-    changes, move the definition of the global PCI remove/rescan lock
-    to probe.c and provide global wrappers, pci_lock_rescan_remove()
-    and pci_unlock_rescan_remove(), allowing drivers to manipulate
-    that lock.  Also provide pci_stop_and_remove_bus_device_locked()
-    for the callers of pci_stop_and_remove_bus_device() who only need
-    to hold the rescan/remove lock around it.
-    
-    Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Thanks,
+Miaohe Lin
 
-Its purpose is to avoid PCI device addition and removal happen concurrently.
-IMHO it is suitable to use this lock to enable SRIOV here to avoid creating a
-new lock.
-
-> We don't seem to hold that uniformly though, which bothers me, because
-> I think there are many other paths, e.g., pci_host_probe() and its callers.
-
-I have checked the other code paths. Most of the callers have hold the
-pci_rescan_remove_lock. Some did missing. In order to hold the lock
-uniformly, it may need to add the pci_rescan_remove_lock to the missing
-place one by one(if it exists the possibility of concurrency). So what do we
-need to do now? (1) fix all of them (2) only add pci_rescan_remove_lock in iov.c
-as a start.
-
-Thanks
-
-> 
-> > +    mutex_lock(&add_bus_mutex);
-> > +
-> >      child = pci_find_bus(pci_domain_nr(bus), busnr);
-> > -    if (child)
-> > +    if (child) {
-> > +        mutex_unlock(&add_bus_mutex);
-> >          return child;
-> > +    }
-> >
-> >      child = pci_add_new_bus(bus, NULL, busnr);
-> > -    if (!child)
-> > +    if (!child) {
-> > +        mutex_unlock(&add_bus_mutex);
-> >          return NULL;
-> > +    }
-> > +    mutex_unlock(&add_bus_mutex);
-> >
-> >      pci_bus_insert_busn_res(child, busnr, busnr);
-> >
-> > @@ -339,8 +356,16 @@ int pci_iov_add_virtfn(struct pci_dev *dev, int id)
-> >      if (rc)
-> >          goto failed1;
-> >
-> > +    if (!add_device_mutex_initialized) {
-> > +        mutex_init(&add_device_mutex);
-> > +        add_device_mutex_initialized = 1;
-> > +    }
-> > +    mutex_lock(&add_device_mutex);
-> > +
-> >      pci_bus_add_device(virtfn);
-> >
-> > +    mutex_unlock(&add_device_mutex);
-> > +
-> >      return 0;
-> >
-> >  failed1:
-> > ---
