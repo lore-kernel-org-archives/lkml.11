@@ -2,32 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF568ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 05:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946FEC0502C
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 05:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345333AbiH0FLR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 01:11:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58734 "EHLO
+        id S232240AbiH0FLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 01:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236435AbiH0FK7 (ORCPT
+        with ESMTP id S1345148AbiH0FLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 01:10:59 -0400
+        Sat, 27 Aug 2022 01:11:03 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39A16DEB6F
-        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 22:10:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 963EFDF0BF
+        for <linux-kernel@vger.kernel.org>; Fri, 26 Aug 2022 22:11:01 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRo5i-00025t-SH; Sat, 27 Aug 2022 07:10:43 +0200
+        id 1oRo5i-00025l-SG; Sat, 27 Aug 2022 07:10:43 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRo5f-002E5L-Lc; Sat, 27 Aug 2022 07:10:39 +0200
+        id 1oRo5f-002E59-4j; Sat, 27 Aug 2022 07:10:39 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRo5e-00GNX4-Dv; Sat, 27 Aug 2022 07:10:38 +0200
+        id 1oRo5e-00GNWC-8R; Sat, 27 Aug 2022 07:10:38 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -45,9 +44,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         David Jander <david@protonic.nl>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v3 7/7] net: pse-pd: add generic PSE driver
-Date:   Sat, 27 Aug 2022 07:10:33 +0200
-Message-Id: <20220827051033.3903585-8-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v3 1/7] dt-bindings: net: pse-dt: add bindings for generic PSE controller
+Date:   Sat, 27 Aug 2022 07:10:27 +0200
+Message-Id: <20220827051033.3903585-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220827051033.3903585-1-o.rempel@pengutronix.de>
 References: <20220827051033.3903585-1-o.rempel@pengutronix.de>
@@ -61,206 +60,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add generic driver to support simple Power Sourcing Equipment without
-automatic classification support.
-
-This driver was tested on 10Bast-T1L switch with regulator based PoDL PSE.
+Add binding for generic Ethernet PSE controller.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
 changes v2:
-- add regulator_enable test to the probe
-- migrate to the new PSE ethtool API
+- rename compatible to more generic "ieee802.3-pse"
+- add class and type properties for PoDL and PoE variants
+- add pairs property
 ---
- drivers/net/pse-pd/Kconfig       |  11 +++
- drivers/net/pse-pd/Makefile      |   2 +
- drivers/net/pse-pd/pse_generic.c | 148 +++++++++++++++++++++++++++++++
- 3 files changed, 161 insertions(+)
- create mode 100644 drivers/net/pse-pd/pse_generic.c
+ .../bindings/net/pse-pd/generic-pse.yaml      | 95 +++++++++++++++++++
+ 1 file changed, 95 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
 
-diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
-index 49c7f0bcff526..a804c9f1af2bc 100644
---- a/drivers/net/pse-pd/Kconfig
-+++ b/drivers/net/pse-pd/Kconfig
-@@ -9,3 +9,14 @@ menuconfig PSE_CONTROLLER
- 	  Generic Power Sourcing Equipment Controller support.
- 
- 	  If unsure, say no.
-+
-+if PSE_CONTROLLER
-+
-+config PSE_GENERIC
-+	tristate "Generic PSE driver"
-+	help
-+	  This module provides support for simple Ethernet Power Sourcing
-+	  Equipment without automatic classification support. For example for
-+	  PoDL (802.3bu) specification.
-+
-+endif
-diff --git a/drivers/net/pse-pd/Makefile b/drivers/net/pse-pd/Makefile
-index cfa780c7801dd..e3f2f434a9e5c 100644
---- a/drivers/net/pse-pd/Makefile
-+++ b/drivers/net/pse-pd/Makefile
-@@ -2,3 +2,5 @@
- # Makefile for Linux PSE drivers
- 
- obj-$(CONFIG_PSE_CONTROLLER) += pse_core.o
-+
-+obj-$(CONFIG_PSE_GENERIC) += pse_generic.o
-diff --git a/drivers/net/pse-pd/pse_generic.c b/drivers/net/pse-pd/pse_generic.c
+diff --git a/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml b/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
 new file mode 100644
-index 0000000000000..2be1a8bf45b48
+index 0000000000000..ecd226df66f4e
 --- /dev/null
-+++ b/drivers/net/pse-pd/pse_generic.c
-@@ -0,0 +1,148 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Driver for the Generic Ethernet Power Sourcing Equipment, without
-+// auto classification support.
-+//
-+// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+//
++++ b/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
+@@ -0,0 +1,95 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/pse-pd/generic-pse.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pse-pd/pse.h>
-+#include <linux/regulator/consumer.h>
++title: Generic Power Sourcing Equipment
 +
-+struct gen_pse_priv {
-+	struct pse_controller_dev pcdev;
-+	struct regulator *ps; /*power source */
-+	enum ethtool_podl_pse_admin_state admin_state;
-+};
++maintainers:
++  - Oleksij Rempel <o.rempel@pengutronix.de>
 +
-+static struct gen_pse_priv *to_gen_pse(struct pse_controller_dev *pcdev)
-+{
-+	return container_of(pcdev, struct gen_pse_priv, pcdev);
-+}
++description: Generic PSE controller. The device must be referenced by the PHY
++  node to control power injection to the Ethernet cable.
 +
-+static int
-+gen_pse_ethtool_set_config(struct pse_controller_dev *pcdev, unsigned long id,
-+			   struct netlink_ext_ack *extack,
-+			   const struct pse_control_config *config)
-+{
-+	struct gen_pse_priv *priv = to_gen_pse(pcdev);
-+	int ret;
++properties:
++  compatible:
++    const: ieee802.3-pse
 +
-+	if (priv->admin_state == config->admin_cotrol)
-+		return 0;
++  '#pse-cells':
++    const: 0
 +
-+	switch (config->admin_cotrol) {
-+	case ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED:
-+		ret = regulator_enable(priv->ps);
-+		break;
-+	case ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED:
-+		ret = regulator_disable(priv->ps);
-+		break;
-+	default:
-+		dev_err(pcdev->dev, "Unknown admin state %i\n",
-+			config->admin_cotrol);
-+		ret = -ENOTSUPP;
-+	}
++  ieee802.3-pse-supply:
++    description: Power supply for the PSE controller
 +
-+	if (ret)
-+		return ret;
++  ieee802.3-pairs:
++    $ref: /schemas/types.yaml#/definitions/int8-array
++    description: Array of number of twisted-pairs capable to deliver power.
++      Since not all circuits are able to support all pair variants, the array of
++      supported variants should be specified.
++      Note - single twisted-pair PSE is formally know as PoDL PSE.
++    items:
++      enum: [1, 2, 4]
 +
-+	priv->admin_state = config->admin_cotrol;
++  ieee802.3-pse-type:
++    $ref: /schemas/types.yaml#/definitions/uint8
++    minimum: 1
++    maximum: 2
++    description: PSE Type. Describes classification- and class-capabilities.
++      Not compatible with PoDL PSE Type.
++      Type 1 - provides a Class 0, 1, 2, or 3 signature during Physical Layer
++      classification.
++      Type 2 - provides a Class 4 signature during Physical Layer
++      classification, understands 2-Event classification, and is capable of
++      Data Link Layer classification.
 +
-+	return 0;
-+}
++  ieee802.3-pse-class:
++    $ref: /schemas/types.yaml#/definitions/int8-array
++    items:
++      enum: [0, 1, 2, 3, 4]
++    description: PSE Class. Array of supported classes by the 2 and 4 pair PSE.
 +
-+static int
-+gen_pse_ethtool_get_status(struct pse_controller_dev *pcdev, unsigned long id,
-+			   struct netlink_ext_ack *extack,
-+			   struct pse_control_status *status)
-+{
-+	struct gen_pse_priv *priv = to_gen_pse(pcdev);
-+	int ret;
++  ieee802.3-podl-pse-type:
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [a, b, c, d, e]
++    description: PoDL PSE Type. Describes compatibility to physical Layer
++      specifications.
++      Type A - cost optimized for 100BASE-T1
++      Type B - cost optimized for 1000BASE-T1
++      Type C - works with 100BASE-T1 and 1000BASE-T1
++      Type D - optimized for 10BASE-T1S
++      Type E - optimized for 10BASE-T1L
 +
-+	ret = regulator_is_enabled(priv->ps);
-+	if (ret < 0)
-+		return ret;
++  ieee802.3-podl-pse-class:
++    $ref: /schemas/types.yaml#/definitions/int8-array
++    items:
++      enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
++    description: PoDL PSE Class. Array of supported classes by the
++      single twisted-pair PoDL PSE.
 +
-+	if (!ret)
-+		status->podl_pw_status = ETHTOOL_PODL_PSE_PW_D_STATUS_DISABLED;
-+	else
-+		status->podl_pw_status =
-+			ETHTOOL_PODL_PSE_PW_D_STATUS_DELIVERING;
++additionalProperties: false
 +
-+	status->podl_admin_state = priv->admin_state;
++required:
++  - compatible
++  - '#pse-cells'
++  - ieee802.3-pse-supply
 +
-+	return 0;
-+}
-+
-+static const struct pse_controller_ops gen_pse_ops = {
-+	.ethtool_get_status = gen_pse_ethtool_get_status,
-+	.ethtool_set_config = gen_pse_ethtool_set_config,
-+};
-+
-+static int
-+gen_pse_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct gen_pse_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	if (!pdev->dev.of_node)
-+		return -ENOENT;
-+
-+	priv->ps = devm_regulator_get_exclusive(dev, "ieee802.3-pse");
-+	if (IS_ERR(priv->ps)) {
-+		dev_err(dev, "failed to get PSE regulator (%pe)\n", priv->ps);
-+		return PTR_ERR(priv->ps);
-+	}
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	ret = regulator_is_enabled(priv->ps);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret)
-+		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED;
-+	else
-+		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED;
-+
-+	priv->pcdev.owner = THIS_MODULE;
-+	priv->pcdev.ops = &gen_pse_ops;
-+	priv->pcdev.dev = dev;
-+	ret = devm_pse_controller_register(dev, &priv->pcdev);
-+	if (ret) {
-+		dev_err(dev, "failed to register PSE controller (%pe)\n",
-+			ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id gen_pse_of_match[] = {
-+	{ .compatible = "ieee802.3-pse", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, gen_pse_of_match);
-+
-+static struct platform_driver gen_pse_driver = {
-+	.probe		= gen_pse_probe,
-+	.driver		= {
-+		.name		= "generic PSE",
-+		.of_match_table = of_match_ptr(gen_pse_of_match),
-+	},
-+};
-+module_platform_driver(gen_pse_driver);
-+
-+MODULE_AUTHOR("Oleksij Rempel <kernel@pengutronix.de>");
-+MODULE_DESCRIPTION("Generic Ethernet Power Sourcing Equipment");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:pse-generic");
++examples:
++  - |
++    pse_t1l2: ethernet-pse-1 {
++      compatible = "ieee802.3-pse";
++      ieee802.3-pse-supply = <&reg_t1l1>;
++      ieee802.3-podl-pse-type = "e";
++      ieee802.3-podl-pse-class = /bits/ 8 <0 1>;
++      ieee802.3-pairs = /bits/ 8 <1>;
++      #pse-cells = <0>;
++    };
++  - |
++    pse_poe: ethernet-pse-2 {
++      compatible = "ieee802.3-pse";
++      ieee802.3-pse-supply = <&reg_poe>;
++      ieee802.3-pairs = /bits/ 8 <2 4>;
++      ieee802.3-pse-type = /bits/ 8 <1>;
++      ieee802.3-pse-class = /bits/ 8 <0 1>;
++      #pse-cells = <0>;
++    };
 -- 
 2.30.2
 
