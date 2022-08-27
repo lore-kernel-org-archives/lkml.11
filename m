@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88DB5C0502C
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 10:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6D0ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 10:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233937AbiH0KL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 06:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48310 "EHLO
+        id S234457AbiH0KME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 06:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233463AbiH0KLp (ORCPT
+        with ESMTP id S233884AbiH0KLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 06:11:45 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1A124F01
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 03:11:43 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MFC9y5qdZzGpGr;
-        Sat, 27 Aug 2022 18:09:58 +0800 (CST)
+        Sat, 27 Aug 2022 06:11:48 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C617252A9
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 03:11:45 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MFC7t0Cm8z1N7Kn;
+        Sat, 27 Aug 2022 18:08:10 +0800 (CST)
 Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 18:11:41 +0800
+ 15.1.2375.24; Sat, 27 Aug 2022 18:11:43 +0800
 Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
  (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 27 Aug
- 2022 18:11:41 +0800
+ 2022 18:11:43 +0800
 From:   Liu Shixin <liushixin2@huawei.com>
 To:     Seth Jennings <sjenning@redhat.com>,
         Dan Streetman <ddstreet@ieee.org>,
@@ -36,9 +36,9 @@ To:     Seth Jennings <sjenning@redhat.com>,
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         Liu Shixin <liushixin2@huawei.com>,
         Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH -next v3 3/5] mm/zswap: replace zswap_init_{started/failed} with zswap_init_state
-Date:   Sat, 27 Aug 2022 18:45:58 +0800
-Message-ID: <20220827104600.1813214-4-liushixin2@huawei.com>
+Subject: [PATCH -next v3 5/5] mm/zswap: skip confusing print info
+Date:   Sat, 27 Aug 2022 18:46:00 +0800
+Message-ID: <20220827104600.1813214-6-liushixin2@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220827104600.1813214-1-liushixin2@huawei.com>
 References: <20220827104600.1813214-1-liushixin2@huawei.com>
@@ -53,98 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-zswap_init_started indicates that the initialization is started. And
-zswap_init_failed indicates that the initialization is failed. As we will
-support to init zswap after system startup, it's necessary to add a state
-to indicate the initialization is complete and succeed to avoid
-concurrency issues. Since we don't care about the difference between
-init started with init completion. We only need three states:
-uninitialized, initial failed, initial succeed.
+It's confusing when we disable zswap while zswap is init failed or has no
+pool. If no change required, just return directly.
 
 Signed-off-by: Liu Shixin <liushixin2@huawei.com>
 ---
- mm/zswap.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ mm/zswap.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/mm/zswap.c b/mm/zswap.c
-index 2d48fd59cc7a..84e38300f571 100644
+index 4c476c463035..ef7463550e49 100644
 --- a/mm/zswap.c
 +++ b/mm/zswap.c
-@@ -214,11 +214,12 @@ static DEFINE_SPINLOCK(zswap_pools_lock);
- /* pool counter to provide unique names to zpool */
- static atomic_t zswap_pools_count = ATOMIC_INIT(0);
- 
--/* used by param callback function */
--static bool zswap_init_started;
-+#define ZSWAP_UNINIT		0
-+#define ZSWAP_INIT_SUCCEED	1
-+#define ZSWAP_INIT_FAILED	2
- 
--/* fatal error during init */
--static bool zswap_init_failed;
-+/* init state */
-+static int zswap_init_state;
- 
- /* init completed, but couldn't create the initial pool */
- static bool zswap_has_pool;
-@@ -772,7 +773,7 @@ static int __zswap_param_set(const char *val, const struct kernel_param *kp,
- 	char *s = strstrip((char *)val);
- 	int ret;
- 
--	if (zswap_init_failed) {
-+	if (zswap_init_state == ZSWAP_INIT_FAILED) {
- 		pr_err("can't set param, initialization failed\n");
- 		return -ENODEV;
- 	}
-@@ -784,7 +785,7 @@ static int __zswap_param_set(const char *val, const struct kernel_param *kp,
- 	/* if this is load-time (pre-init) param setting,
- 	 * don't create a pool; that's done during init.
- 	 */
--	if (!zswap_init_started)
-+	if (zswap_init_state == ZSWAP_UNINIT)
- 		return param_set_charp(s, kp);
- 
- 	if (!type) {
-@@ -875,11 +876,11 @@ static int zswap_zpool_param_set(const char *val,
+@@ -886,6 +886,15 @@ static int zswap_zpool_param_set(const char *val,
  static int zswap_enabled_param_set(const char *val,
  				   const struct kernel_param *kp)
  {
--	if (zswap_init_failed) {
-+	if (zswap_init_state == ZSWAP_INIT_FAILED) {
- 		pr_err("can't enable, initialization failed\n");
- 		return -ENODEV;
- 	}
--	if (!zswap_has_pool && zswap_init_started) {
-+	if (!zswap_has_pool && zswap_init_state == ZSWAP_INIT_SUCCEED) {
- 		pr_err("can't enable, no pool configured\n");
- 		return -ENODEV;
- 	}
-@@ -1476,8 +1477,6 @@ static int __init init_zswap(void)
- 	struct zswap_pool *pool;
- 	int ret;
- 
--	zswap_init_started = true;
--
- 	if (zswap_entry_cache_create()) {
- 		pr_err("entry cache creation failed\n");
- 		goto cache_fail;
-@@ -1517,6 +1516,7 @@ static int __init init_zswap(void)
- 		goto destroy_wq;
- 	if (zswap_debugfs_init())
- 		pr_warn("debugfs initialization failed\n");
-+	zswap_init_state = ZSWAP_INIT_SUCCEED;
- 	return 0;
- 
- destroy_wq:
-@@ -1530,7 +1530,7 @@ static int __init init_zswap(void)
- 	zswap_entry_cache_destroy();
- cache_fail:
- 	/* if built-in, we aren't unloaded on failure; don't allow use */
--	zswap_init_failed = true;
-+	zswap_init_state = ZSWAP_INIT_FAILED;
- 	zswap_enabled = false;
- 	return -ENOMEM;
- }
++	bool res;
++
++	if (kstrtobool(val, &res))
++		return -EINVAL;
++
++	/* no change required */
++	if (res == *(bool *)kp->arg)
++		return 0;
++
+ 	if (system_state == SYSTEM_RUNNING) {
+ 		mutex_lock(&zswap_init_lock);
+ 		if (zswap_setup()) {
 -- 
 2.25.1
 
