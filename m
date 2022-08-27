@@ -2,93 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD99ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 12:49:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93727C0502A
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 13:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232941AbiH0Mti convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 08:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
+        id S232718AbiH0NED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 09:04:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232552AbiH0Mtg (ORCPT
+        with ESMTP id S232158AbiH0NEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 08:49:36 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B54DA491FD
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 05:49:31 -0700 (PDT)
-Received: from mail-ej1-f48.google.com ([209.85.218.48]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MgNMV-1p4HCg3ZLL-00hxMx for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022
- 14:49:29 +0200
-Received: by mail-ej1-f48.google.com with SMTP id sd33so7588617ejc.8
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 05:49:29 -0700 (PDT)
-X-Gm-Message-State: ACgBeo0O5sN0nMSxbKM0p9Fikk69MZnY7vef1bvF35hF3ygvq+VSYzCu
-        6PjX4Q+L/IZEZVtvI1uFffZtKIM3AYeHv8Xz3i8=
-X-Google-Smtp-Source: AA6agR4J9XTdGZjJb8R8xF2Baz3XbMezjaE/aWqaT70o2dkgXf9PwjIXOYEASc9MIhHdMWKvcgt5om3QPK6lTDMaEZo=
-X-Received: by 2002:a17:906:8450:b0:741:5b1b:5c7f with SMTP id
- e16-20020a170906845000b007415b1b5c7fmr501641ejy.766.1661604569536; Sat, 27
- Aug 2022 05:49:29 -0700 (PDT)
+        Sat, 27 Aug 2022 09:04:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B56F5A5
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 06:03:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661605438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yposfSgcqUNKXQMmnTeL+ByxLnXvpJUSRc1BSMzRTZA=;
+        b=BAbM89tdK+yCVYrbm+tbxSrREG1qCf1/iZ4sRnf9qxOz24Gt1ev/C5AOTgeKYAkPsmgayB
+        wPI7MInxA2BRh11Iffvi5E+WTrh/yf6ZHUuzlyn8hrzJobmTXJS0kzXbjbaHWL+6xNI+zk
+        vWhdv2P2WQmZy/R8x+Q4U/CxPdHttEE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-494-6zWf5ZVLNc-QbXOqcCb8zw-1; Sat, 27 Aug 2022 09:03:53 -0400
+X-MC-Unique: 6zWf5ZVLNc-QbXOqcCb8zw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A5FE71C0515C;
+        Sat, 27 Aug 2022 13:03:52 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.192.40])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 46052C15BB3;
+        Sat, 27 Aug 2022 13:03:50 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     linux-hyperv@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Deepak Rawat <drawat.floss@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>
+Subject: [PATCH v3 1/3] PCI: Move PCI_VENDOR_ID_MICROSOFT/PCI_DEVICE_ID_HYPERV_VIDEO definitions to pci_ids.h
+Date:   Sat, 27 Aug 2022 15:03:43 +0200
+Message-Id: <20220827130345.1320254-2-vkuznets@redhat.com>
+In-Reply-To: <20220827130345.1320254-1-vkuznets@redhat.com>
+References: <20220827130345.1320254-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-References: <20220815032025.2685516-1-tongtiangen@huawei.com>
- <20220815032025.2685516-2-tongtiangen@huawei.com> <CAK8P3a0ixaYimjCh77QBJpbHbVsw+9C7RiW2LEnwQ8HnwG_jHg@mail.gmail.com>
- <c0e286b4-3005-71fb-3bb2-476944099d4e@huawei.com>
-In-Reply-To: <c0e286b4-3005-71fb-3bb2-476944099d4e@huawei.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sat, 27 Aug 2022 14:49:13 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0akgBkyVQuAfi5qdi9O5DhxZJ3FknxGH-gedpJpAVw6w@mail.gmail.com>
-Message-ID: <CAK8P3a0akgBkyVQuAfi5qdi9O5DhxZJ3FknxGH-gedpJpAVw6w@mail.gmail.com>
-Subject: Re: [PATCH -next v2 1/2] riscv: uaccess: rename __get/put_user_nocheck
- to __get/put_mem_nocheck
-To:     Tong Tiangen <tongtiangen@huawei.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Conor.Dooley@microchip.com,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wangkefeng.wang@huawei.com, Guohanjun <guohanjun@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Provags-ID: V03:K1:Ph1mSXHvx7ywdmimX2k4dMJltenSjeYp6dLHodCcQqPFWwPmcxZ
- agvJVY3UUKBvOrubqP8IxCqibIKXYNaGQOFn/DYGFkq5nndB3zbahgZLzY+QiaJWWRbipdI
- zYB2yPV3UPVlB7MnFH69lU9VnOgb1chtV0r8reEKjguN+R5Fdy+aAG1GXvAoxpQ9ZMPo0iQ
- csAC/sPuJh+3cxK1JO9VQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:zIQiTkI6cW0=:wZ0731ZaM9g/WD9beeaEqn
- gL3lU5b9H3IORECa1TdwJEwtO+eUjoNO+Fyzvevn5xRNEdpRmO6JhG/QAdJA9VYnYkosFjODL
- 2t2BiDRqdBNFNGOBX+xRdbQU6SIuazZf+LWGgZdgXQIgASozkfug6HVkBZUkVqnP8Dn06xX0/
- fCCCpI1FAIqfAQTbYUqy3SA4+3WLrjL+GRglUHBToLZ0a6pJ8e0TX9C5wri0aDmcUTdoZI674
- k43i7K2JbVqe2PTjimbOTs1y6lXVkr2ZAvukZdGFNdURpp7JqXWRAg3A1oph4vaKmC6X8dBd2
- nfsZm4FU4aAnN/VQ6fNT1SnIbNhgZ79AZrZXIDk/rSMKQVGoXlYLUV0x1byf18bCIkoxqGsqx
- s0sW15OKcAMLZ4wFpxuynPWLgpHgN0QwsNJ/NcASZ244VR34SJ//B728rc0CPIG6RBUlKxvms
- W6D3opWLKhUCYgPECIHlmfLlKzfrmIvjw/I+w1So3RAi/opzjGZyjrEskfLmh74d2Y+frMRYO
- u9Yqfo0NOiPGapq5RjylhJCaq0Mv3hMzkA+RyMqc3whu4W5ElNW7Ljq6Nt1tNcNEp4QgEkyDf
- KPfQQxWsFyV4Dsg2isEaQTi8db/3A5gPzUEhZTpA+3q8xBvR0acaNrznlwkhPtjh1w9mmkaqp
- ILGR8rKAPjCSS4+LvRJvRv6hue91RcfFJtAIOzyUxNzyhcjs/ZUGYAuIzLhMVVRDQaJs1Ul7C
- F4o0LKOPucBQdP2VH5V6uGROLZY2YiscKoGojw==
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 27, 2022 at 12:43 PM Tong Tiangen <tongtiangen@huawei.com> wrote:
-> 在 2022/8/26 17:30, Arnd Bergmann 写道:
->
-> I am very interested in the implementation of X86. I need to investigate
-> and consider a cross architecture implementation.
+There are already three places in kernel which define PCI_VENDOR_ID_MICROSOFT
+and two for PCI_DEVICE_ID_HYPERV_VIDEO and there's a need to use these
+from core Vmbus code. Move the defines where they belong.
 
-One more point about the cross-architecture work: it generally makes
-sense to do the most commonly used architectures first, usually
-that would be x86, arm64 and powerpc64, followed by riscv, arm,
-s390 and mips. If we can find something that the first architecture
-maintainers like, everyone else can follow and you don't have to
-rework all of them multiple times before getting to a consensus.
+No functional change.
 
-> However, I understand that the modification of the current patch has
-> little to do with the two points mentioned above. We can optimize the
-> code step by step.
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com> # pci_ids.h
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ drivers/gpu/drm/hyperv/hyperv_drm_drv.c         | 3 ---
+ drivers/net/ethernet/microsoft/mana/gdma_main.c | 4 ----
+ drivers/video/fbdev/hyperv_fb.c                 | 4 ----
+ include/linux/pci_ids.h                         | 3 +++
+ 4 files changed, 3 insertions(+), 11 deletions(-)
 
-You are correct that this has little to do with your patch, my point
-was mainly that your patch is moving the code further away from
-the other architectures, so it would make it harder to then do the
-changes we actually want.
+diff --git a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
+index 6d11e7938c83..40888e36f91a 100644
+--- a/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
++++ b/drivers/gpu/drm/hyperv/hyperv_drm_drv.c
+@@ -23,9 +23,6 @@
+ #define DRIVER_MAJOR 1
+ #define DRIVER_MINOR 0
+ 
+-#define PCI_VENDOR_ID_MICROSOFT 0x1414
+-#define PCI_DEVICE_ID_HYPERV_VIDEO 0x5353
+-
+ DEFINE_DRM_GEM_FOPS(hv_fops);
+ 
+ static struct drm_driver hyperv_driver = {
+diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+index 5f9240182351..00d8198072ae 100644
+--- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
++++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+@@ -1465,10 +1465,6 @@ static void mana_gd_shutdown(struct pci_dev *pdev)
+ 	pci_disable_device(pdev);
+ }
+ 
+-#ifndef PCI_VENDOR_ID_MICROSOFT
+-#define PCI_VENDOR_ID_MICROSOFT 0x1414
+-#endif
+-
+ static const struct pci_device_id mana_id_table[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, MANA_PF_DEVICE_ID) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_MICROSOFT, MANA_VF_DEVICE_ID) },
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 886c564787f1..b58b445bb529 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -74,10 +74,6 @@
+ #define SYNTHVID_DEPTH_WIN8 32
+ #define SYNTHVID_FB_SIZE_WIN8 (8 * 1024 * 1024)
+ 
+-#define PCI_VENDOR_ID_MICROSOFT 0x1414
+-#define PCI_DEVICE_ID_HYPERV_VIDEO 0x5353
+-
+-
+ enum pipe_msg_type {
+ 	PIPE_MSG_INVALID,
+ 	PIPE_MSG_DATA,
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index 6feade66efdb..15b49e655ce3 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -2079,6 +2079,9 @@
+ #define PCI_DEVICE_ID_ICE_1712		0x1712
+ #define PCI_DEVICE_ID_VT1724		0x1724
+ 
++#define PCI_VENDOR_ID_MICROSOFT		0x1414
++#define PCI_DEVICE_ID_HYPERV_VIDEO	0x5353
++
+ #define PCI_VENDOR_ID_OXSEMI		0x1415
+ #define PCI_DEVICE_ID_OXSEMI_12PCI840	0x8403
+ #define PCI_DEVICE_ID_OXSEMI_PCIe840		0xC000
+-- 
+2.37.1
 
-       Arnd
