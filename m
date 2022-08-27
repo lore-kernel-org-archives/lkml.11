@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74633ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 17:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83F8ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 17:55:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbiH0RzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 13:55:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50494 "EHLO
+        id S229379AbiH0Rzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 13:55:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiH0RzS (ORCPT
+        with ESMTP id S229736AbiH0Rzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 13:55:18 -0400
-Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD034C608
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 10:55:14 -0700 (PDT)
+        Sat, 27 Aug 2022 13:55:43 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD71A80515
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 10:55:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1661622911;
-        bh=bKbi5ZoBx5MxWUm+sqTXCCyGHbgrGj3hJ6BAG+u95vg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TLatgV5xLXhs/ycZlzSurWpkxb+nGSnfLYGi4+TnyGGx6d455bggg0yhRZw1Gt4A7
-         WccvLeYOXb1Rvamky4BBC+wmgmlSN7DFJKZKYU4s2SV5QvIobD03j/LdqMKuibyqy3
-         1SoX6wtdhhWTdzj/kVPHrHlvXktpbOnp+Guui8O0=
+        s=default; t=1661622938;
+        bh=aWS3z7K5q+R4s35cYvJ4OdynNgvtS0vSuzHZvho9eZY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GYDlhfYBlTndeTYinokoJH/Qg8GwOAhpEqGEYEEHzUiBLYYe17K2cQInkrQWkHbr6
+         u+pR5JsigNRPCOjKzhXJhl7VqiPyOTVS7pQyWMXVFE3ELcZlhKHE/egjz87aZ5hawL
+         KulvSHTpAwMnPr98q6GRrWa6E+eMjBDn4TlbTPyM=
 Received: from xry111-x57s1.. (unknown [IPv6:240e:358:1157:dc00:dc73:854d:832e:4])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-384) server-digest SHA384)
         (Client did not present a certificate)
         (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id BE665667FE;
-        Sat, 27 Aug 2022 13:55:02 -0400 (EDT)
+        by xry111.site (Postfix) with ESMTPSA id EC82C66800;
+        Sat, 27 Aug 2022 13:55:33 -0400 (EDT)
 From:   Xi Ruoyao <xry111@xry111.site>
 To:     loongarch@lists.linux.dev
 Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
@@ -36,67 +36,95 @@ Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
         Youling Tang <tangyouling@loongson.cn>,
         Jinyang He <hejinyang@loongson.cn>,
         Xi Ruoyao <xry111@xry111.site>
-Subject: [PATCH 0/8] LoongArch: Support toolchain with new relocation types
-Date:   Sun, 28 Aug 2022 01:54:28 +0800
-Message-Id: <20220827175436.156464-1-xry111@xry111.site>
+Subject: [PATCH 2/8] LoongArch: Only use -Wa,-mla-* options for !CONFIG_CC_HAS_EXPLICIT_RELOCS
+Date:   Sun, 28 Aug 2022 01:54:30 +0800
+Message-Id: <20220827175436.156464-3-xry111@xry111.site>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220827175436.156464-1-xry111@xry111.site>
+References: <20220827175436.156464-1-xry111@xry111.site>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The version 2.00 of LoongArch ELF ABI specification introduced new
-relocation types, and the development tree of Binutils and GCC has
-started to use them.  If the kernel is built with the latest snapshot of
-Binutils or GCC, it will fail to load the modules because of unrecognized
-relocation types in modules.
+If explicit relocation hints is used by the toolchain, -Wa,-mla-*
+options will be useless for C code.  Only use them for
+!CONFIG_CC_HAS_EXPLICIT_RELOCS.
 
-Add support for GOT and new relocation types for the module loader, so
-the kernel (with modules) can be built with the "normal" code model and
-function properly.
+Replace "la" with "la.pcrel" in head.S to keep the semantic consistent
+with new and old toolchains for the low level startup code.
 
-This series does not break the compatibility with old toolchain using
-stack-based relocation types, so with the patches applied the kernel can
-be be built with both old and new toolchains.
+Signed-off-by: Xi Ruoyao <xry111@xry111.site>
+---
+ arch/loongarch/Makefile      | 15 ++++++++++++++-
+ arch/loongarch/kernel/head.S | 10 +++++-----
+ 2 files changed, 19 insertions(+), 6 deletions(-)
 
-Tested by building the kernel with the following combinations:
-
-- GCC 12 and Binutils 2.39
-- GCC 12 and Binutils trunk
-- GCC trunk and Binutils trunk
-
-and running the builds with 35 in-tree modules loaded, and loading one
-module with 20 GOT loads and a per-CPU variable (loaded addresses
-verified by comparing with /proc/kallsyms).
-
-This superseds "LoongArch: Support new relocation types" series.  I
-don't make it a "v5" because too much things have changed so it's better
-to treat this as a new series.
-
-Xi Ruoyao (8):
-  LoongArch: Add CONFIG_CC_HAS_EXPLICIT_RELOCS
-  LoongArch: Only use -Wa,-mla-* options for
-    !CONFIG_CC_HAS_EXPLICIT_RELOCS
-  LoongArch: Define ELF relocation types added in v2.00 ABI
-  LoongArch: Support R_LARCH_B26 in modules
-  LoongArch: Support R_LARCH_ABS* in modules
-  LoongArch: Use model("extreme") attribute for per-CPU variables in
-    module if CONFIG_CC_HAS_EXPLICIT_RELOCS
-  LoongArch: Support R_LARCH_PCALA* in modules
-  LoongArch: Support R_LARCH_GOT_PC* in modules
-
- arch/loongarch/Kconfig                  |   3 +
- arch/loongarch/Makefile                 |  15 ++-
- arch/loongarch/include/asm/elf.h        |  37 +++++++
- arch/loongarch/include/asm/module.h     |  23 ++++
- arch/loongarch/include/asm/module.lds.h |   1 +
- arch/loongarch/include/asm/percpu.h     |  13 +++
- arch/loongarch/kernel/head.S            |  10 +-
- arch/loongarch/kernel/module-sections.c |  56 +++++++++-
- arch/loongarch/kernel/module.c          | 138 +++++++++++++++++++++++-
- 9 files changed, 285 insertions(+), 11 deletions(-)
-
+diff --git a/arch/loongarch/Makefile b/arch/loongarch/Makefile
+index 415e09bdf31a..bd0ea6623245 100644
+--- a/arch/loongarch/Makefile
++++ b/arch/loongarch/Makefile
+@@ -40,10 +40,23 @@ endif
+ 
+ cflags-y			+= -G0 -pipe -msoft-float
+ LDFLAGS_vmlinux			+= -G0 -static -n -nostdlib
++
++ifdef CONFIG_CC_HAS_EXPLICIT_RELOCS
++# GCC may have -mexplicit-relocs off by default if it was built with an old
++# assembler.  But with CONFIG_CC_HAS_EXPLICIT_RELOCS we are sure explicit
++# relocation hints are supported by the assembler, so force it.
++cflags-y			+= -mexplicit-relocs
++else
++# Likewise, disable -mexplicit-relocs if GCC enables by default but the
++# assembler does not support it.
++cflags-y			+= $(call cc-option,-mno-explicit-relocs)
++# With -mno-explicit-relocs, use assembler options to adjust code generation
++# for symbol address.
+ KBUILD_AFLAGS_KERNEL		+= -Wa,-mla-global-with-pcrel
+ KBUILD_CFLAGS_KERNEL		+= -Wa,-mla-global-with-pcrel
+ KBUILD_AFLAGS_MODULE		+= -Wa,-mla-global-with-abs
+-KBUILD_CFLAGS_MODULE		+= -fplt -Wa,-mla-global-with-abs,-mla-local-with-abs
++KBUILD_CFLAGS_MODULE		+= -Wa,-mla-global-with-abs,-mla-local-with-abs
++endif
+ 
+ cflags-y += -ffreestanding
+ cflags-y += $(call cc-option, -mno-check-zero-division)
+diff --git a/arch/loongarch/kernel/head.S b/arch/loongarch/kernel/head.S
+index 01bac62a6442..eb3f641d5915 100644
+--- a/arch/loongarch/kernel/head.S
++++ b/arch/loongarch/kernel/head.S
+@@ -55,17 +55,17 @@ SYM_CODE_START(kernel_entry)			# kernel entry point
+ 	li.w		t0, 0x00		# FPE=0, SXE=0, ASXE=0, BTE=0
+ 	csrwr		t0, LOONGARCH_CSR_EUEN
+ 
+-	la		t0, __bss_start		# clear .bss
++	la.pcrel	t0, __bss_start		# clear .bss
+ 	st.d		zero, t0, 0
+-	la		t1, __bss_stop - LONGSIZE
++	la.pcrel	t1, __bss_stop - LONGSIZE
+ 1:
+ 	addi.d		t0, t0, LONGSIZE
+ 	st.d		zero, t0, 0
+ 	bne		t0, t1, 1b
+ 
+-	la		t0, fw_arg0
++	la.pcrel	t0, fw_arg0
+ 	st.d		a0, t0, 0		# firmware arguments
+-	la		t0, fw_arg1
++	la.pcrel	t0, fw_arg1
+ 	st.d		a1, t0, 0
+ 
+ 	/* KSave3 used for percpu base, initialized as 0 */
+@@ -73,7 +73,7 @@ SYM_CODE_START(kernel_entry)			# kernel entry point
+ 	/* GPR21 used for percpu base (runtime), initialized as 0 */
+ 	move		u0, zero
+ 
+-	la		tp, init_thread_union
++	la.pcrel	tp, init_thread_union
+ 	/* Set the SP after an empty pt_regs.  */
+ 	PTR_LI		sp, (_THREAD_SIZE - 32 - PT_SIZE)
+ 	PTR_ADD		sp, sp, tp
 -- 
 2.37.0
 
