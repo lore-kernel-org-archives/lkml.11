@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6658C0502C
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 10:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88DB5C0502C
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 10:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233814AbiH0KLw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 06:11:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48238 "EHLO
+        id S233937AbiH0KL7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 06:11:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233008AbiH0KLn (ORCPT
+        with ESMTP id S233463AbiH0KLp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 06:11:43 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7414224BD8
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 03:11:41 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MFC7n5yV1z1N7Zp;
-        Sat, 27 Aug 2022 18:08:05 +0800 (CST)
+        Sat, 27 Aug 2022 06:11:45 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1A124F01
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 03:11:43 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MFC9y5qdZzGpGr;
+        Sat, 27 Aug 2022 18:09:58 +0800 (CST)
 Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 18:11:39 +0800
+ 15.1.2375.24; Sat, 27 Aug 2022 18:11:41 +0800
 Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
  (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 27 Aug
- 2022 18:11:39 +0800
+ 2022 18:11:41 +0800
 From:   Liu Shixin <liushixin2@huawei.com>
 To:     Seth Jennings <sjenning@redhat.com>,
         Dan Streetman <ddstreet@ieee.org>,
@@ -36,9 +36,9 @@ To:     Seth Jennings <sjenning@redhat.com>,
 CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
         Liu Shixin <liushixin2@huawei.com>,
         Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH -next v3 1/5] frontswap: skip frontswap_ops init if zswap init failed.
-Date:   Sat, 27 Aug 2022 18:45:56 +0800
-Message-ID: <20220827104600.1813214-2-liushixin2@huawei.com>
+Subject: [PATCH -next v3 3/5] mm/zswap: replace zswap_init_{started/failed} with zswap_init_state
+Date:   Sat, 27 Aug 2022 18:45:58 +0800
+Message-ID: <20220827104600.1813214-4-liushixin2@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220827104600.1813214-1-liushixin2@huawei.com>
 References: <20220827104600.1813214-1-liushixin2@huawei.com>
@@ -53,74 +53,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If zswap initial failed or has not been initial, frontswap_ops will be
-NULL. In such situation, swap device would enable failed with following
-stack trace:
+zswap_init_started indicates that the initialization is started. And
+zswap_init_failed indicates that the initialization is failed. As we will
+support to init zswap after system startup, it's necessary to add a state
+to indicate the initialization is complete and succeed to avoid
+concurrency issues. Since we don't care about the difference between
+init started with init completion. We only need three states:
+uninitialized, initial failed, initial succeed.
 
-  Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000000
-  Mem abort info:
-    ESR = 0x0000000096000004
-    EC = 0x25: DABT (current EL), IL = 32 bits
-    SET = 0, FnV = 0
-    EA = 0, S1PTW = 0
-    FSC = 0x04: level 0 translation fault
-  Data abort info:
-    ISV = 0, ISS = 0x00000004
-    CM = 0, WnR = 0
-  user pgtable: 4k pages, 48-bit VAs, pgdp=00000020a4fab000
-  [0000000000000000] pgd=0000000000000000, p4d=0000000000000000
-  Internal error: Oops: 96000004 [#1] SMP
-  Modules linked in: zram fsl_dpaa2_eth pcs_lynx phylink ahci_qoriq crct10dif_ce ghash_ce sbsa_gwdt fsl_mc_dpio nvme lm90 nvme_core at803x xhci_plat_hcd rtc_fsl_ftm_alarm xgmac_mdio ahci_platform i2c_imx ip6_tables ip_tables fuse
-  Unloaded tainted modules: cppc_cpufreq():1
-  CPU: 10 PID: 761 Comm: swapon Not tainted 6.0.0-rc2-00454-g22100432cf14 #1
-  Hardware name: SolidRun Ltd. SolidRun CEX7 Platform, BIOS EDK II Jun 21 2022
-  pstate: 00400005 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-  pc : frontswap_init+0x38/0x60
-  lr : __do_sys_swapon+0x8a8/0x9f4
-  sp : ffff80000969bcf0
-  x29: ffff80000969bcf0 x28: ffff37bee0d8fc00 x27: ffff80000a7f5000
-  x26: fffffcdefb971e80 x25: ffffaba797453b90 x24: 0000000000000064
-  x23: ffff37c1f209d1a8 x22: ffff37bee880e000 x21: ffffaba797748560
-  x20: ffff37bee0d8fce4 x19: ffffaba797748488 x18: 0000000000000014
-  x17: 0000000030ec029a x16: ffffaba795a479b0 x15: 0000000000000000
-  x14: 0000000000000000 x13: 0000000000000030 x12: 0000000000000001
-  x11: ffff37c63c0aba18 x10: 0000000000000000 x9 : ffffaba7956b8c88
-  x8 : ffff80000969bcd0 x7 : 0000000000000000 x6 : 0000000000000000
-  x5 : 0000000000000001 x4 : 0000000000000000 x3 : ffffaba79730f000
-  x2 : ffff37bee0d8fc00 x1 : 0000000000000000 x0 : 0000000000000000
-  Call trace:
-  frontswap_init+0x38/0x60
-  __do_sys_swapon+0x8a8/0x9f4
-  __arm64_sys_swapon+0x28/0x3c
-  invoke_syscall+0x78/0x100
-  el0_svc_common.constprop.0+0xd4/0xf4
-  do_el0_svc+0x38/0x4c
-  el0_svc+0x34/0x10c
-  el0t_64_sync_handler+0x11c/0x150
-  el0t_64_sync+0x190/0x194
-  Code: d000e283 910003fd f9006c41 f946d461 (f9400021)
-  ---[ end trace 0000000000000000 ]---
-
-Reported-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Liu Shixin <liushixin2@huawei.com>
 ---
- mm/frontswap.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ mm/zswap.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/mm/frontswap.c b/mm/frontswap.c
-index 1a97610308cb..620f95af81dd 100644
---- a/mm/frontswap.c
-+++ b/mm/frontswap.c
-@@ -125,7 +125,8 @@ void frontswap_init(unsigned type, unsigned long *map)
- 	 * p->frontswap set to something valid to work properly.
- 	 */
- 	frontswap_map_set(sis, map);
--	frontswap_ops->init(type);
-+	if (frontswap_ops)
-+		frontswap_ops->init(type);
- }
+diff --git a/mm/zswap.c b/mm/zswap.c
+index 2d48fd59cc7a..84e38300f571 100644
+--- a/mm/zswap.c
++++ b/mm/zswap.c
+@@ -214,11 +214,12 @@ static DEFINE_SPINLOCK(zswap_pools_lock);
+ /* pool counter to provide unique names to zpool */
+ static atomic_t zswap_pools_count = ATOMIC_INIT(0);
  
- static bool __frontswap_test(struct swap_info_struct *sis,
+-/* used by param callback function */
+-static bool zswap_init_started;
++#define ZSWAP_UNINIT		0
++#define ZSWAP_INIT_SUCCEED	1
++#define ZSWAP_INIT_FAILED	2
+ 
+-/* fatal error during init */
+-static bool zswap_init_failed;
++/* init state */
++static int zswap_init_state;
+ 
+ /* init completed, but couldn't create the initial pool */
+ static bool zswap_has_pool;
+@@ -772,7 +773,7 @@ static int __zswap_param_set(const char *val, const struct kernel_param *kp,
+ 	char *s = strstrip((char *)val);
+ 	int ret;
+ 
+-	if (zswap_init_failed) {
++	if (zswap_init_state == ZSWAP_INIT_FAILED) {
+ 		pr_err("can't set param, initialization failed\n");
+ 		return -ENODEV;
+ 	}
+@@ -784,7 +785,7 @@ static int __zswap_param_set(const char *val, const struct kernel_param *kp,
+ 	/* if this is load-time (pre-init) param setting,
+ 	 * don't create a pool; that's done during init.
+ 	 */
+-	if (!zswap_init_started)
++	if (zswap_init_state == ZSWAP_UNINIT)
+ 		return param_set_charp(s, kp);
+ 
+ 	if (!type) {
+@@ -875,11 +876,11 @@ static int zswap_zpool_param_set(const char *val,
+ static int zswap_enabled_param_set(const char *val,
+ 				   const struct kernel_param *kp)
+ {
+-	if (zswap_init_failed) {
++	if (zswap_init_state == ZSWAP_INIT_FAILED) {
+ 		pr_err("can't enable, initialization failed\n");
+ 		return -ENODEV;
+ 	}
+-	if (!zswap_has_pool && zswap_init_started) {
++	if (!zswap_has_pool && zswap_init_state == ZSWAP_INIT_SUCCEED) {
+ 		pr_err("can't enable, no pool configured\n");
+ 		return -ENODEV;
+ 	}
+@@ -1476,8 +1477,6 @@ static int __init init_zswap(void)
+ 	struct zswap_pool *pool;
+ 	int ret;
+ 
+-	zswap_init_started = true;
+-
+ 	if (zswap_entry_cache_create()) {
+ 		pr_err("entry cache creation failed\n");
+ 		goto cache_fail;
+@@ -1517,6 +1516,7 @@ static int __init init_zswap(void)
+ 		goto destroy_wq;
+ 	if (zswap_debugfs_init())
+ 		pr_warn("debugfs initialization failed\n");
++	zswap_init_state = ZSWAP_INIT_SUCCEED;
+ 	return 0;
+ 
+ destroy_wq:
+@@ -1530,7 +1530,7 @@ static int __init init_zswap(void)
+ 	zswap_entry_cache_destroy();
+ cache_fail:
+ 	/* if built-in, we aren't unloaded on failure; don't allow use */
+-	zswap_init_failed = true;
++	zswap_init_state = ZSWAP_INIT_FAILED;
+ 	zswap_enabled = false;
+ 	return -ENOMEM;
+ }
 -- 
 2.25.1
 
