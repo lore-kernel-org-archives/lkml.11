@@ -2,114 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B08ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 11:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1396EC0502A
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 11:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232966AbiH0LPn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 07:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
+        id S234514AbiH0LP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 07:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233331AbiH0LPk (ORCPT
+        with ESMTP id S233696AbiH0LPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 07:15:40 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0024213E21
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 04:15:38 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MFDbk2LwPzGpsM;
-        Sat, 27 Aug 2022 19:13:54 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+        Sat, 27 Aug 2022 07:15:52 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 126143880;
+        Sat, 27 Aug 2022 04:15:50 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MFDbB2yTnznTYZ;
+        Sat, 27 Aug 2022 19:13:26 +0800 (CST)
+Received: from ubuntu1804.huawei.com (10.67.174.58) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 19:15:37 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sat, 27 Aug 2022 19:15:36 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     David Hildenbrand <david@redhat.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-Subject: [PATCH] mm: kill is_memblock_offlined()
-Date:   Sat, 27 Aug 2022 19:20:43 +0800
-Message-ID: <20220827112043.187028-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
+ 15.1.2375.24; Sat, 27 Aug 2022 19:15:48 +0800
+From:   Xiu Jianfeng <xiujianfeng@huawei.com>
+To:     <mic@digikod.net>, <paul@paul-moore.com>, <jmorris@namei.org>,
+        <serge@hallyn.com>, <shuah@kernel.org>, <corbet@lwn.net>
+CC:     <linux-security-module@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>
+Subject: [PATCH -next v2 0/6] landlock: add chmod and chown support
+Date:   Sat, 27 Aug 2022 19:12:09 +0800
+Message-ID: <20220827111215.131442-1-xiujianfeng@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Directly check state of struct memory_block, no need a single function.
+v2:
+ * abstract walk_to_visible_parent() helper
+ * chmod and chown rights only take affect on directory's context
+ * add testcase for fchmodat/lchown/fchownat
+ * fix other review issues
 
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
----
- drivers/base/memory.c          | 6 ------
- include/linux/memory_hotplug.h | 2 --
- mm/memory_hotplug.c            | 3 +--
- 3 files changed, 1 insertion(+), 10 deletions(-)
+Xiu Jianfeng (6):
+  landlock: expand access_mask_t to u32 type
+  landlock: abstract walk_to_visible_parent() helper
+  landlock: add chmod and chown support
+  landlock/selftests: add selftests for chmod and chown
+  landlock/samples: add chmod and chown support
+  landlock: update chmod and chown support in document
 
-diff --git a/drivers/base/memory.c b/drivers/base/memory.c
-index bc60c9cd3230..9aa0da991cfb 100644
---- a/drivers/base/memory.c
-+++ b/drivers/base/memory.c
-@@ -869,12 +869,6 @@ void remove_memory_block_devices(unsigned long start, unsigned long size)
- 	}
- }
- 
--/* return true if the memory block is offlined, otherwise, return false */
--bool is_memblock_offlined(struct memory_block *mem)
--{
--	return mem->state == MEM_OFFLINE;
--}
--
- static struct attribute *memory_root_attrs[] = {
- #ifdef CONFIG_ARCH_MEMORY_PROBE
- 	&dev_attr_probe.attr,
-diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
-index 409196ef8038..de87545eabe9 100644
---- a/include/linux/memory_hotplug.h
-+++ b/include/linux/memory_hotplug.h
-@@ -11,7 +11,6 @@ struct page;
- struct zone;
- struct pglist_data;
- struct mem_section;
--struct memory_block;
- struct memory_group;
- struct resource;
- struct vmem_altmap;
-@@ -352,7 +351,6 @@ extern void move_pfn_range_to_zone(struct zone *zone, unsigned long start_pfn,
- extern void remove_pfn_range_from_zone(struct zone *zone,
- 				       unsigned long start_pfn,
- 				       unsigned long nr_pages);
--extern bool is_memblock_offlined(struct memory_block *mem);
- extern int sparse_add_section(int nid, unsigned long pfn,
- 		unsigned long nr_pages, struct vmem_altmap *altmap,
- 		struct dev_pagemap *pgmap);
-diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
-index 2fd45ccbce45..9ae1f98548b1 100644
---- a/mm/memory_hotplug.c
-+++ b/mm/memory_hotplug.c
-@@ -1969,11 +1969,10 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
- 
- static int check_memblock_offlined_cb(struct memory_block *mem, void *arg)
- {
--	int ret = !is_memblock_offlined(mem);
- 	int *nid = arg;
- 
- 	*nid = mem->nid;
--	if (unlikely(ret)) {
-+	if (unlikely(mem->state != MEM_OFFLINE)) {
- 		phys_addr_t beginpa, endpa;
- 
- 		beginpa = PFN_PHYS(section_nr_to_pfn(mem->start_section_nr));
+ Documentation/userspace-api/landlock.rst     |   9 +-
+ include/uapi/linux/landlock.h                |  10 +-
+ samples/landlock/sandboxer.c                 |  13 +-
+ security/landlock/fs.c                       | 110 ++++++--
+ security/landlock/limits.h                   |   2 +-
+ security/landlock/ruleset.h                  |   2 +-
+ security/landlock/syscalls.c                 |   2 +-
+ tools/testing/selftests/landlock/base_test.c |   2 +-
+ tools/testing/selftests/landlock/fs_test.c   | 267 ++++++++++++++++++-
+ 9 files changed, 386 insertions(+), 31 deletions(-)
+
 -- 
-2.35.3
+2.17.1
 
