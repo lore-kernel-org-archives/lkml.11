@@ -2,102 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C13C0502A
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 13:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF0C2C0502A
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 13:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233233AbiH0Njz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 09:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
+        id S232827AbiH0NlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 09:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233049AbiH0Nju (ORCPT
+        with ESMTP id S231391AbiH0NlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 09:39:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF18C3D
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 06:39:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35394B80108
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 13:39:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E6CC433D6;
-        Sat, 27 Aug 2022 13:39:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661607585;
-        bh=WpVdubWclY2UMHlcAsADqLj3KpeQOgXN4jbUOblbBQk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GbnCrUrhQ7FWd0XKQtnR0RZ1wAKCkv9XM5JBDTtTJq6j1jcmGUkVTrrc3NKM3ZNKa
-         Yhs2QadSfAP0ZnCrIPCR4G6kf84K9KhBv/d2bP3UZbz03Lke2mAAKcZmWa0iPKQBIk
-         iv3BDBidEAjZPirYGZn0t+0Off0jJhUymt24PenMb+lsawQ1zZHaVqAMHcgoXsJcO2
-         U+7cDY3SBtqs7qxA3IaP0O0e6+0fyqf0EiIilyQGwKgzLMlNOf6x0LEqDmUacY6/E1
-         iLwcK40zDTueJuA0wsPR8kedQfWgbaO20IJtKPC/fTfSVcZojZTgB+dNRb50jwY3Rx
-         wGTc20x1q2nMw==
-Received: by pali.im (Postfix)
-        id 1BDEEC7A; Sat, 27 Aug 2022 15:39:43 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Joel Stanley <joel@jms.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] powerpc/boot: Don't always pass -mcpu=powerpc when building 32-bit uImage
-Date:   Sat, 27 Aug 2022 15:39:00 +0200
-Message-Id: <20220827133900.16634-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220820105200.30425-1-pali@kernel.org>
-References: <20220820105200.30425-1-pali@kernel.org>
+        Sat, 27 Aug 2022 09:41:07 -0400
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279E719C0E;
+        Sat, 27 Aug 2022 06:41:06 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-3378303138bso97685207b3.9;
+        Sat, 27 Aug 2022 06:41:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=3S8GLscL1BbPQnxNrAIv/bfGmf54xyMLKMaxv/NlX1Q=;
+        b=aviSgfyNf7lhDpU7OOeim4ctkReS5o7YZnDQq33j0/oGP8crZMl/auUr7tne0yaN7Y
+         2Bi337WTQrgPVqH68IBIOj+EkgBYvxQV4l9bC/ykCxhRmo/sEipESXJRgBZsiossOQmc
+         dX5Vt9R3ZyvmMPCM/IiviUKfCTN6PNP8Yi8ifaYmScG+b8TaiE3u0RoHt3oaQGlNi0W9
+         r1SlW8SpiihA0qOc9sJcZimFPbsTugMn7FauH58XkD09OwS2gRYEuaN6R4VF4Iqsn5fx
+         B9kbi8AmjFeUvjC0+sJejF/PXWcIQGYVgwZWVcnT5edmmVYNXhNJX3IkXc/zDwBPqMbq
+         wQ0w==
+X-Gm-Message-State: ACgBeo2zCQfPf7u5WkZZSoOp0/FlTgRkWAtOB9ZVkLAHSw0I/8IqadxH
+        MSL+AlBNWmAlu1+uL+DyKjvpJP5ADr4kUca4knZ981KJ2aE=
+X-Google-Smtp-Source: AA6agR5loCahhw7TDcxb8MojEFJLKVXd+hua3jJ2Sv5dARJnF4eyAn5Xj1RYC67Zt4YfwcsthabCF3JrpEFdzTid2zY=
+X-Received: by 2002:a25:c204:0:b0:692:72b9:a778 with SMTP id
+ s4-20020a25c204000000b0069272b9a778mr3399264ybf.81.1661607665415; Sat, 27 Aug
+ 2022 06:41:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Sat, 27 Aug 2022 15:40:54 +0200
+Message-ID: <CAJZ5v0jN76n5aVoh5C+awG5N0ewzp52HCikW-H=L88EMT=DTZQ@mail.gmail.com>
+Subject: [GIT PULL] Power management fix for v6.0-rc3
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For 32-bit uImage try to use CONFIG_TARGET_CPU option for -mcpu. This fixes
-following compiler error when building kernel with powerpc e500 SPE capable
-cross compilers:
+Hi Linus,
 
-    BOOTAS  arch/powerpc/boot/crt0.o
-  powerpc-linux-gnuspe-gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
-  powerpc-linux-gnuspe-gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
-  make[1]: *** [arch/powerpc/boot/Makefile:231: arch/powerpc/boot/crt0.o] Error 1
+Please pull from the tag
 
-For 64-bit uImage and 64-bit kernels with 32-bit uImage wrapper there is no
-change.
+ git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git \
+ pm-6.0-rc3
 
-Similar change was already introduced for the main powerpc Makefile in
-commit 446cda1b21d9 ("powerpc/32: Don't always pass -mcpu=powerpc to the
-compiler").
+with top-most commit 6ca7076fbfaeccce173aeab832d76b9e49e1034b
 
-Fixes: 40a75584e526 ("powerpc/boot: Build wrapper for an appropriate CPU")
-Cc: stable@vger.kernel.org
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- arch/powerpc/boot/Makefile | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ cpufreq: check only freq_table in __resolve_freq()
 
-diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
-index a9cd2ea4a861..f56a5f90a5d8 100644
---- a/arch/powerpc/boot/Makefile
-+++ b/arch/powerpc/boot/Makefile
-@@ -44,8 +44,16 @@ else
- BOOTCFLAGS	+= -m64 -mcpu=powerpc64
- endif
- else
-+ifdef CONFIG_PPC32
-+ifdef CONFIG_TARGET_CPU_BOOL
-+BOOTCFLAGS	+= -m32 -mcpu=$(CONFIG_TARGET_CPU)
-+else
-+BOOTCFLAGS	+= -m32 -mcpu=powerpc
-+endif
-+else
- BOOTCFLAGS	+= -m32 -mcpu=powerpc
- endif
-+endif
- 
- BOOTCFLAGS	+= -isystem $(shell $(BOOTCC) -print-file-name=include)
- 
--- 
-2.20.1
+on top of commit 1c23f9e627a7b412978b4e852793c5e3c3efc555
 
+ Linux 6.0-rc2
+
+to receive a power management fix for 6.0-rc3.
+
+This makes __resolve_freq() check the presence of the frequency table
+instead of checking whether or not the ->target_index() callback is
+implemented by the driver, because that need not be the case when
+__resolve_freq() is used (Lukasz Luba).
+
+Thanks!
+
+
+---------------
+
+Lukasz Luba (1):
+      cpufreq: check only freq_table in __resolve_freq()
+
+---------------
+
+ drivers/cpufreq/cpufreq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
