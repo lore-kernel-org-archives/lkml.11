@@ -2,146 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1735C0502E
-	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 14:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 128C4ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sat, 27 Aug 2022 14:09:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233168AbiH0OI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 27 Aug 2022 10:08:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
+        id S233363AbiH0OJu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 27 Aug 2022 10:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232877AbiH0OI4 (ORCPT
+        with ESMTP id S233346AbiH0OJs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 27 Aug 2022 10:08:56 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AE94CA13;
-        Sat, 27 Aug 2022 07:08:55 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id se27so85384ejb.8;
-        Sat, 27 Aug 2022 07:08:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:from:to:cc;
-        bh=rcZ0EJz/DZ5UPTdwT1hf/oXKDrkeM8iU7bV5Fxp9rVs=;
-        b=gMmJAfApDcc2tbDqdTK4gN0SPqrwHP7kn/WLRYMHv2QDH8R4Y6isrCWtWNAZaXJ2vN
-         i5ZlKDDwkkr1jgJO8+GXtWk7qdMXDebJr3fMP1kuWUU+/H/a+dARzfecG6eIC0AmPnct
-         qNpjdO4hApLGqV+gCBGYv5KGnvqqGdI0Z9PzWZ1d91Wi2D1LBhJEYWmuyOWZrK7fABAp
-         jSp+TsOcU2ZuWt+08hliP5YClZ4/ds5p9mNhU0cQZeIelHrvC6+XS557tcwjyAzWM5G2
-         q+s1P6Wg9tD75r5c0BKzcs/TJv0SBkM1qF1nAjSAPIJPwKVpk1oiP5JlaObd/thKQ415
-         rDRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:subject:cc
-         :to:from:date:message-id:x-gm-message-state:from:to:cc;
-        bh=rcZ0EJz/DZ5UPTdwT1hf/oXKDrkeM8iU7bV5Fxp9rVs=;
-        b=tFU4SRgpAtyoUoyknmnHmMsaZqx3ZGKi9Ag6RBSbqo4s0x27m83WiIdd5KdjGpVioH
-         1cVrM6Zgac2Ke3L9Wn3BQhe4VZpXw/8N6d+eOOH0t28pMhqKEKcedjYTppneuWau3p5w
-         1p3ZQ23wcTHxDTQi7MIQE6Uu3M/9WM+xasGAM9sprt1HghB74fUrqmu2oImshE34/Js+
-         4jmQbKGzG/LYBuASunSmwfDhq5GmPF9cDU7NXuoUcIUXpJmV6vQ4ce3n5nXF81Iuhlml
-         3LFJ514mRVeNEtWHxj/gSuNC2540D7MyUQrjPNAd8w9O3vEZmxdUrRkzjiFZ/NxAqpu2
-         aFLA==
-X-Gm-Message-State: ACgBeo3WvaFloempKhFZXtypzU8atPXNlI2GiL0arnzf6eDi/KQaDrA6
-        JnuywqIvMpZLMuGNd41TgaE=
-X-Google-Smtp-Source: AA6agR5FNEmEpppTO8dkBIN+2n4WN5v8pjhuitQGlxoGWr6DOKQBdWl9exSh0/id5aOjeIyXq4hSNw==
-X-Received: by 2002:a17:907:7f0b:b0:731:b81a:1912 with SMTP id qf11-20020a1709077f0b00b00731b81a1912mr8263133ejc.8.1661609333624;
-        Sat, 27 Aug 2022 07:08:53 -0700 (PDT)
-Received: from Ansuel-xps. (host-95-247-89-207.retail.telecomitalia.it. [95.247.89.207])
-        by smtp.gmail.com with ESMTPSA id v12-20020a1709060b4c00b0073d7b876621sm2056584ejg.205.2022.08.27.07.08.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Aug 2022 07:08:53 -0700 (PDT)
-Message-ID: <630a2575.170a0220.be4f4.6683@mx.google.com>
-X-Google-Original-Message-ID: <YwogsmL18rdNydIq@Ansuel-xps.>
-Date:   Sat, 27 Aug 2022 15:48:34 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: Re: [net-next PATCH v2] net: dsa: qca8k: convert to regmap
- read/write API
-References: <20220827114918.8863-1-ansuelsmth@gmail.com>
- <YwojiJdIsz/qL1XC@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YwojiJdIsz/qL1XC@lunn.ch>
+        Sat, 27 Aug 2022 10:09:48 -0400
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F7764D173;
+        Sat, 27 Aug 2022 07:09:43 -0700 (PDT)
+Received: from hednb3.intra.ispras.ru (unknown [109.252.119.247])
+        by mail.ispras.ru (Postfix) with ESMTPSA id B6E7B40737C1;
+        Sat, 27 Aug 2022 14:09:39 +0000 (UTC)
+From:   Alexey Khoroshilov <khoroshilov@ispras.ru>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>
+Cc:     Rustam Subkhankulov <subkhankulov@ispras.ru>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        ldv-project@linuxtesting.org
+Subject: [PATCH] fs/inode.c: change the order of initialization in inode_init_always()
+Date:   Sat, 27 Aug 2022 17:09:26 +0300
+Message-Id: <1661609366-26144-1-git-send-email-khoroshilov@ispras.ru>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 27, 2022 at 04:00:40PM +0200, Andrew Lunn wrote:
-> >  static struct regmap_config qca8k_regmap_config = {
-> > -	.reg_bits = 16,
-> > +	.reg_bits = 32,
-> 
-> Does this change really allow you to access more registers? 
->
+From: Rustam Subkhankulov <subkhankulov@ispras.ru>
 
-I could be confused but I think the value was wrong from the start. (the
-driver is a bit old and the regmap config struct was very wrong at
-times)
-This should declare how wide is each address right?
+If function 'security_inode_alloc()' returns a nonzero value at
+[fs/inode.c: 195] due to an error (e.g. fail to allocate memory),
+then some of the fields, including 'i_private', will not be
+initialized.
 
-If this is the case then at times who declared the regmap config was
-confused by the fact that the mdio is limited to 16 bits and require
-special handling.
+After that, if the fs-specfic free_inode function is called in
+'i_callback', the nonzero value of 'i_private' field can be interpreted
+as initialized. As a result, this can cause dereferencing of random
+value pointer (e.g. nilfs2).
 
-This is not problematic for the bits ops but is problematic for the bulk
-ops as they base the calculation on these values.
+In earlier versions, a similar situation could occur with the 'u' union
+in 'inode' structure.
 
-Or I could be totally wrong... Anyway without this change the wrong
-address is passed to the bulk ops so it's necessary (and for the said
-reason, the value was wrong from the start)
+Found by Linux Verification Center (linuxtesting.org) with syzkaller.
 
-> >  	.val_bits = 32,
-> >  	.reg_stride = 4,
-> >  	.max_register = 0x16ac, /* end MIB - Port6 range */
-> > -	.reg_read = qca8k_regmap_read,
-> > -	.reg_write = qca8k_regmap_write,
-> > +	.read = qca8k_bulk_read,
-> > +	.write = qca8k_bulk_write,
-> >  	.reg_update_bits = qca8k_regmap_update_bits,
-> >  	.rd_table = &qca8k_readable_table,
-> >  	.disable_locking = true, /* Locking is handled by qca8k read/write */
-> >  	.cache_type = REGCACHE_NONE, /* Explicitly disable CACHE */
-> > +	.max_raw_read = 16, /* mgmt eth can read/write up to 4 bytes at times */
-> > +	.max_raw_write = 16,
-> 
-> I think the word 'bytes' in the comment is wrong. I assume you can
-> access 4 registers, each register is one 32-bit work in size.
-> 
+Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+---
+ fs/inode.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Yes you are right. Any suggestion on how to improve? 
-
-> >  static int qca8k_fdb_read(struct qca8k_priv *priv, struct qca8k_fdb *fdb)
-> >  {
-> > -	u32 reg[3];
-> > +	u32 reg[QCA8K_ATU_TABLE_SIZE];
-> >  	int ret;
-> >  
-> >  	/* load the ARL table into an array */
-> > -	ret = qca8k_bulk_read(priv, QCA8K_REG_ATU_DATA0, reg, sizeof(reg));
-> > +	ret = regmap_bulk_read(priv->regmap, QCA8K_REG_ATU_DATA0, reg,
-> > +			       QCA8K_ATU_TABLE_SIZE);
-> >  	if (ret)
-> >  		return ret;
-> 
-> Please split the 3 -> QCA8K_ATU_TABLE_SIZE change out into a patch of
-> its own.
-> 
-> Ideally you want lots of small, obviously correct patches. A change
-> which replaces 3 for QCA8K_ATU_TABLE_SIZE should be small and
-> obviously correct, meaning it is quick and easy to review, and makes
-> the more complex to review change smaller and also simpler to review.
-> 
-
-Will split in v3 hoping I get some feedback from Mark and you.
-
->     Andrew
-
+diff --git a/fs/inode.c b/fs/inode.c
+index bd4da9c5207e..08d093737e8c 100644
+--- a/fs/inode.c
++++ b/fs/inode.c
+@@ -192,8 +192,6 @@ int inode_init_always(struct super_block *sb, struct inode *inode)
+ 	inode->i_wb_frn_history = 0;
+ #endif
+ 
+-	if (security_inode_alloc(inode))
+-		goto out;
+ 	spin_lock_init(&inode->i_lock);
+ 	lockdep_set_class(&inode->i_lock, &sb->s_type->i_lock_key);
+ 
+@@ -230,9 +228,10 @@ int inode_init_always(struct super_block *sb, struct inode *inode)
+ 	inode->i_flctx = NULL;
+ 	this_cpu_inc(nr_inodes);
+ 
++	if (security_inode_alloc(inode))
++		return -ENOMEM;
++
+ 	return 0;
+-out:
+-	return -ENOMEM;
+ }
+ EXPORT_SYMBOL(inode_init_always);
+ 
 -- 
-	Ansuel
+2.34.1
+
