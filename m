@@ -2,157 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D717ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 194CCECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiH1QzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 12:55:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47738 "EHLO
+        id S229873AbiH1Q5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 12:57:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiH1QzF (ORCPT
+        with ESMTP id S229648AbiH1Q5X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 12:55:05 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB121EAD5
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:55:02 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 62D45E5;
-        Sun, 28 Aug 2022 18:55:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1661705700;
-        bh=zEYTsxaYLGnRiDJdJ2laUCl2+VUb2MAeagyzBAbO5jo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iAgxMEZPrUBFZG9m424Ty19DOW6vRzwN0BOhejMT8FUSE1lmu3m1FN3zzkayXVqtm
-         mNxUCfZdyegTdK2u+T6PBXektpzuSIwtZbIYSDsOe1U62CdEu+34RcJdiKqSMfDOCM
-         BjelKnKUe7K9VR4/qlPglfSC1PfYHUwYm2P16ifk=
-Date:   Sun, 28 Aug 2022 19:54:52 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Tomi Valkeinen <tomi.valkeinen+renesas@ideasonboard.com>
-Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: Re: [pinchartl-media:drm/du/next 13/14]
- drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:614:6: warning: no previous
- prototype for function 'rcar_mipi_dsi_pclk_enable'
-Message-ID: <Ywud3DnKFDCyjcBv@pendragon.ideasonboard.com>
-References: <202208282000.MtTNOyOx-lkp@intel.com>
+        Sun, 28 Aug 2022 12:57:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8E427159;
+        Sun, 28 Aug 2022 09:57:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD366B80B08;
+        Sun, 28 Aug 2022 16:57:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F43C433C1;
+        Sun, 28 Aug 2022 16:57:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661705839;
+        bh=+gVdxXnMj9/yA6l4eDpVf7DZRA/bONWkROmhqNokrPI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hwQ6Do9fa4SfAFmSSS4Oryvivr4yMmb5xHM+0SOvG5c02e4lV3fGWz0OuAuHXZcUa
+         1l4LVcIlUmHJcKIHGPzP8DeiV2uRKHc7P5QBqelF4XnvG7bk3Ojz+QS/xEdgLnxe5G
+         +1gK4Zwz5f0ksANH+UfpleElIY2k4vMkTjohN/BYE52GDIjIIP1Zv3PhzxANFlPXYJ
+         NkqeT4e0jdV4P7SWGRhCWKMHQ0wrfnSP8522+DsHiJ2wVIaQq1UCVSWBqIiwHaAadH
+         1aQpYtvLXvkXxuhYD/1BhlXZUlTUVlFIasHtzTCMyNZMZxdMTF1wLS6skfBgHL4OF5
+         d4bgSeSMptYZA==
+Date:   Sun, 28 Aug 2022 17:22:58 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Cc:     Shreeya Patel <shreeya.patel@collabora.com>, lars@metafoo.de,
+        krisman@collabora.com, kernel@collabora.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: tsl2583: Fix module unloading
+Message-ID: <20220828172258.4a78152f@jic23-huawei>
+In-Reply-To: <793d9ca8-47af-2f3d-6079-e0bbb8e7d898@collabora.com>
+References: <20220825092048.136973-1-shreeya.patel@collabora.com>
+        <793d9ca8-47af-2f3d-6079-e0bbb8e7d898@collabora.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <202208282000.MtTNOyOx-lkp@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tomi,
+On Thu, 25 Aug 2022 21:53:09 +0300
+Dmitry Osipenko <dmitry.osipenko@collabora.com> wrote:
 
-On Sun, Aug 28, 2022 at 08:52:39PM +0800, kernel test robot wrote:
-> tree:   git://linuxtv.org/pinchartl/media.git drm/du/next
-> head:   1a1ef49313becc3127e3bd2b6cdb27e5fc54f761
-> commit: 81c238208c6accde5592851b101986b8b91ec859 [13/14] drm: rcar-du: Fix DSI enable & disable sequence
-> config: riscv-randconfig-c006-20220828 (https://download.01.org/0day-ci/archive/20220828/202208282000.MtTNOyOx-lkp@intel.com/config)
-> compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project a2100daf12fb980a29fd1a9c85ccf8eaaaf79730)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install riscv cross compiling tool for clang build
->         # apt-get install binutils-riscv-linux-gnu
->         git remote add pinchartl-media git://linuxtv.org/pinchartl/media.git
->         git fetch --no-tags pinchartl-media drm/du/next
->         git checkout 81c238208c6accde5592851b101986b8b91ec859
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/gpu/drm/rcar-du/
+> Hi,
 > 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
+> On 8/25/22 12:20, Shreeya Patel wrote:
+> > tsl2583 uses devm_iio_device_register() function and
+> > calling iio_device_unregister() in remove breaks the
+> > module unloading.
+> > Fix this by removing call to iio_device_unregister()
+> > from tsl2583_remove().
+> > 
+> > Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>  
 > 
-> All warnings (new ones prefixed by >>):
+> Stable and fixes tags are missing
+
+Stable tags often added by maintainer when applying the patch
+rather than at submission: can take into account how they want to
+manage stable backports - some maintainers prefer to run a bunch
+of tests before asking for patches to be added to stable. I don't
+do that, but I don't always tag fixes for stable if I think there
+is some risk associated.
+
+Obviously this one is fine for stable material though and I would
+have tagged v2 whilst applying ;)
 > 
-> >> drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:614:6: warning: no previous prototype for function 'rcar_mipi_dsi_pclk_enable' [-Wmissing-prototypes]
->    void rcar_mipi_dsi_pclk_enable(struct drm_bridge *bridge,
->         ^
->    drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:614:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
->    void rcar_mipi_dsi_pclk_enable(struct drm_bridge *bridge,
->    ^
->    static 
-> >> drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:653:6: warning: no previous prototype for function 'rcar_mipi_dsi_pclk_disable' [-Wmissing-prototypes]
->    void rcar_mipi_dsi_pclk_disable(struct drm_bridge *bridge)
->         ^
->    drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:653:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
->    void rcar_mipi_dsi_pclk_disable(struct drm_bridge *bridge)
->    ^
->    static 
->    2 warnings generated.
-
-I'll squash the following fix in "drm: rcar-du: Fix DSI enable & disable
-sequence":
-
-diff --git a/drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c b/drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c
-index 90128d5e3d17..a7f2b7f66a17 100644
---- a/drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c
-+++ b/drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c
-@@ -25,6 +25,7 @@
- #include <drm/drm_panel.h>
- #include <drm/drm_probe_helper.h>
-
-+#include "rcar_mipi_dsi.h"
- #include "rcar_mipi_dsi_regs.h"
-
- struct rcar_mipi_dsi {
-
-> vim +/rcar_mipi_dsi_pclk_enable +614 drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c
+> > ---
+> >  drivers/iio/light/tsl2583.c | 2 --
+> >  1 file changed, 2 deletions(-)
+> > 
+> > diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
+> > index 82662dab87c0..36c25f79e6a6 100644
+> > --- a/drivers/iio/light/tsl2583.c
+> > +++ b/drivers/iio/light/tsl2583.c
+> > @@ -878,8 +878,6 @@ static int tsl2583_remove(struct i2c_client *client)
+> >  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> >  	struct tsl2583_chip *chip = iio_priv(indio_dev);
+> >  
+> > -	iio_device_unregister(indio_dev);
+> > -
+> >  	pm_runtime_disable(&client->dev);
+> >  	pm_runtime_set_suspended(&client->dev);
+> >    
 > 
->    613	
->  > 614	void rcar_mipi_dsi_pclk_enable(struct drm_bridge *bridge,
->    615				       struct drm_atomic_state *state)
->    616	{
->    617		struct rcar_mipi_dsi *dsi = bridge_to_rcar_mipi_dsi(bridge);
->    618		const struct drm_display_mode *mode;
->    619		struct drm_connector *connector;
->    620		struct drm_crtc *crtc;
->    621		int ret;
->    622	
->    623		connector = drm_atomic_get_new_connector_for_encoder(state,
->    624								     bridge->encoder);
->    625		crtc = drm_atomic_get_new_connector_state(state, connector)->crtc;
->    626		mode = &drm_atomic_get_new_crtc_state(state, crtc)->adjusted_mode;
->    627	
->    628		ret = rcar_mipi_dsi_clk_enable(dsi);
->    629		if (ret < 0) {
->    630			dev_err(dsi->dev, "failed to enable DSI clocks\n");
->    631			return;
->    632		}
->    633	
->    634		ret = rcar_mipi_dsi_startup(dsi, mode);
->    635		if (ret < 0)
->    636			goto err_dsi_startup;
->    637	
->    638		rcar_mipi_dsi_set_display_timing(dsi, mode);
->    639	
->    640		ret = rcar_mipi_dsi_start_hs_clock(dsi);
->    641		if (ret < 0)
->    642			goto err_dsi_start_hs;
->    643	
->    644		return;
->    645	
->    646	err_dsi_start_hs:
->    647		rcar_mipi_dsi_shutdown(dsi);
->    648	err_dsi_startup:
->    649		rcar_mipi_dsi_clk_disable(dsi);
->    650	}
->    651	EXPORT_SYMBOL_GPL(rcar_mipi_dsi_pclk_enable);
->    652	
->  > 653	void rcar_mipi_dsi_pclk_disable(struct drm_bridge *bridge)
->    654	{
->    655		struct rcar_mipi_dsi *dsi = bridge_to_rcar_mipi_dsi(bridge);
->    656	
->    657		rcar_mipi_dsi_shutdown(dsi);
->    658		rcar_mipi_dsi_clk_disable(dsi);
->    659	}
->    660	EXPORT_SYMBOL_GPL(rcar_mipi_dsi_pclk_disable);
->    661	
+> Driver removal sequence should be opposite to the registration order.
+> Could be better not to use the devm in this case
 
--- 
-Regards,
+Agreed. Simplest fix is indeed to do what v2 does.
 
-Laurent Pinchart
+Nicer tidy up after that is perhaps to switch to
+devm_pm_runtime_enable()
+which tidies up nicely on that and register a
+separate callback with devm_add_action_or_reset() to deal with
+the power down.  However, I'm struggling to follow how the device
+is powered up in the first place (particularly if we disable runtime
+pm to make the flow simpler). 
+
+I think the driver may only "work" today by merit of letting it 
+autosuspend then resuming. 
+
+Jonathan
+
+
+> 
+
