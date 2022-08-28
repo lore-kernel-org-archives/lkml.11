@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56984ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 15:01:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0473DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 15:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiH1PBi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 11:01:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
+        id S229735AbiH1PIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 11:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229500AbiH1PBh (ORCPT
+        with ESMTP id S229686AbiH1PI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 11:01:37 -0400
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 28 Aug 2022 08:01:36 PDT
-Received: from tulikuusama2.dnainternet.net (tulikuusama2.dnainternet.net [83.102.40.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C723B2F644
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 08:01:36 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by tulikuusama2.dnainternet.net (Postfix) with ESMTP id 4201B28874;
-        Sun, 28 Aug 2022 17:43:14 +0300 (EEST)
-X-Virus-Scanned: DNA Internet at dnainternet.net
-Received: from tulikuusama2.dnainternet.net ([83.102.40.151])
-        by localhost (tulikuusama2.dnainternet.net [127.0.0.1]) (DNA Internet, port 10041)
-        with ESMTP id c8DHOLzE7O2K; Sun, 28 Aug 2022 17:43:14 +0300 (EEST)
-Received: from oliivipuu2.dnainternet.net (oliivipuu2.dnainternet.net [83.102.40.53])
-        by tulikuusama2.dnainternet.net (Postfix) with ESMTP id 1230629831;
-        Sun, 28 Aug 2022 17:43:14 +0300 (EEST)
-Received: from 82-181-17-0.bb.dnainternet.fi (82-181-17-0.bb.dnainternet.fi [82.181.17.0])
-        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 28 Aug 2022 11:08:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A52B32B88
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 08:08:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661699305;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=e8neMr6g7eV8otY6VIAU2DNTfHwU5LClkKQL29JabBA=;
+        b=EgP09V2kGHWufGBeeExTy+cQOZV1m53bJR+lLCUT0O0pLUsSn8M+rhaAFLrgpouthTrGCO
+        NN0bbkKsrTl/Y+Gyw1htctkJpk8ZAOyFUOloAbi9IO0EVqZ40dGVx3RdB1QFWxnuyFpdRc
+        sYvV218I/NjR5meJz232XwveImjwkNo=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-564-tS76eEUuM7ibrrU6cUhUgw-1; Sun, 28 Aug 2022 11:08:22 -0400
+X-MC-Unique: tS76eEUuM7ibrrU6cUhUgw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by oliivipuu2.dnainternet.net (Postfix) with ESMTPS id 62BB19A;
-        Sun, 28 Aug 2022 17:43:09 +0300 (EEST)
-Received: from [IPV6:2001:14ba:4465:aa01:692:26ff:fed3:d163] (ryoko.home [IPv6:2001:14ba:4465:aa01:692:26ff:fed3:d163])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by 82-181-17-0.bb.dnainternet.fi (Postfix) with ESMTPSA id D6616EA017;
-        Sun, 28 Aug 2022 17:43:08 +0300 (EEST)
-Message-ID: <9f3cef03-6efd-138e-8552-e3078ed9b4f7@iki.fi>
-Date:   Sun, 28 Aug 2022 17:43:08 +0300
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 78D65101A54E;
+        Sun, 28 Aug 2022 15:08:21 +0000 (UTC)
+Received: from localhost (ovpn-12-25.pek2.redhat.com [10.72.12.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6B41D2166B26;
+        Sun, 28 Aug 2022 15:08:20 +0000 (UTC)
+Date:   Sun, 28 Aug 2022 23:08:16 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, agordeev@linux.ibm.com,
+        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org,
+        Brian Cain <bcain@quicinc.com>, linux-hexagon@vger.kernel.org
+Subject: Re: [PATCH v2 05/11] hexagon: mm: Convert to GENERIC_IOREMAP
+Message-ID: <YwuE4O/NnRADyrC+@MiWiFi-R3L-srv>
+References: <20220820003125.353570-1-bhe@redhat.com>
+ <20220820003125.353570-6-bhe@redhat.com>
+ <YwHX98KBEnZw9t6e@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-From:   Matti Kurkela <Matti.Kurkela@iki.fi>
-Subject: [PATCH] hwmon: (nct6775) Add Asus PRIME Z390-A to WMI monitoring list
-To:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux@roeck-us.net
-Cc:     Matti.Kurkela@iki.fi
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwHX98KBEnZw9t6e@infradead.org>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Asus PRIME Z390-A (and presumably other Asus Z390 motherboard versions) 
-also requires the nct6775 chip to be accessed by the WMI method. Add it 
-to the asus_wmi_boards list.
+On 08/21/22 at 12:00am, Christoph Hellwig wrote:
+> On Sat, Aug 20, 2022 at 08:31:19AM +0800, Baoquan He wrote:
+> > With it, the old ioremap() and iounmap() can be perfectly removed
+> > since they are duplicated with the standard functions.
+> 
+> Can you write a somewhat better commit message explaining that it
+> switches to the generic code that has equivalent functionality?
 
-Tested-by: Matti Kurkela <Matti.Kurkela@iki.fi>
-Signed-off-by: Matti Kurkela <Matti.Kurkela@iki.fi>
----
-Should apply to any kernel version that includes the commit 
-c3963bc0a0cf9ecb205a9d4976eb92b6df2fa3fd
-(hwmon: (nct6775) Split core and platform driver).
+OK, I will rephrase like below. Please check if it's OK.
+==
+By taking GENERIC_IOREMAP method, the generic ioremap_prot() and
+iounmap() are visible and available to arch. Arch only needs to
+provide implementation of arch_ioremap() or arch_iounmap() if there's
+arch specific handling needed in its ioremap() or iounmap(). This
+change will simplify implementation by removing duplicated codes with
+generic ioremap() and iounma(), and has the equivalent functioality
+as before.
 
---- linux-5.19.4/drivers/hwmon/nct6775-platform.c.orig  2022-08-25 
-12:45:54.000000000 +0300
-+++ linux-5.19.4/drivers/hwmon/nct6775-platform.c       2022-08-28 
-16:28:09.531738685 +0300
-@@ -1054,6 +1054,7 @@ static const char * const asus_wmi_board
-         "PRIME H410M-R",
-         "PRIME X570-P",
-         "PRIME X570-PRO",
-+       "PRIME Z390-A",
-         "ROG CROSSHAIR VIII DARK HERO",
-         "ROG CROSSHAIR VIII FORMULA",
-         "ROG CROSSHAIR VIII HERO",
+> 
+> > +#define ioremap_uc(addr, size) ioremap((addr), (size))
+> 
+> This is wrong and hexagon should use the asm-generic version of
+> ioremap_uc that returns NULL.
 
+I don't follow. Do you mean the function verion, but not a macro? Or
+define it like below?
 
--- 
-Matti.Kurkela@iki.fi
+#define ioremap_uc(addr, size)  \
+        ioremap_prot((addr), (size), _PAGE_IOREMAP)
+
