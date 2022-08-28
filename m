@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD73FC0502E
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 06:30:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09DE2C64991
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 06:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232047AbiH1Gaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 02:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51042 "EHLO
+        id S232427AbiH1Gaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 02:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231730AbiH1Gak (ORCPT
+        with ESMTP id S231800AbiH1Gak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 28 Aug 2022 02:30:40 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2733132A93
-        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 23:30:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C716D32A90
+        for <linux-kernel@vger.kernel.org>; Sat, 27 Aug 2022 23:30:37 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oSBoQ-0003bk-1n; Sun, 28 Aug 2022 08:30:26 +0200
+        id 1oSBoQ-0003ba-1n; Sun, 28 Aug 2022 08:30:26 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oSBoP-002QZo-25; Sun, 28 Aug 2022 08:30:25 +0200
+        id 1oSBoO-002QZc-AH; Sun, 28 Aug 2022 08:30:24 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oSBoN-00GdBP-6w; Sun, 28 Aug 2022 08:30:23 +0200
+        id 1oSBoN-00GdBr-91; Sun, 28 Aug 2022 08:30:23 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -44,9 +44,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         David Jander <david@protonic.nl>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v4 4/7] net: mdiobus: search for PSE nodes by parsing PHY nodes.
-Date:   Sun, 28 Aug 2022 08:30:18 +0200
-Message-Id: <20220828063021.3963761-5-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v4 7/7] net: pse-pd: add regulator based PSE driver
+Date:   Sun, 28 Aug 2022 08:30:21 +0200
+Message-Id: <20220828063021.3963761-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220828063021.3963761-1-o.rempel@pengutronix.de>
 References: <20220828063021.3963761-1-o.rempel@pengutronix.de>
@@ -60,145 +60,208 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some PHYs can be linked with PSE (Power Sourcing Equipment), so search
-for related nodes and attach it to the phydev.
+Add generic, regulator based PSE driver to support simple Power Sourcing
+Equipment without automatic classification support.
+
+This driver was tested on 10Bast-T1L switch with regulator based PoDL PSE.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
 changes v4:
-- add Reviewed-by: Andrew Lunn
-- put pse_control_put() after unregister_mii_timestamper()
-changes v3
-- remove is_acpi_node() check
-- rework fwnode_find_pse_control() error handling
+- rename to pse_regulator
+changes v2:
+- add regulator_enable test to the probe
+- migrate to the new PSE ethtool API
 ---
- drivers/net/mdio/fwnode_mdio.c | 34 ++++++++++++++++++++++++++++++++--
- drivers/net/phy/phy_device.c   |  2 ++
- include/linux/phy.h            |  2 ++
- 3 files changed, 36 insertions(+), 2 deletions(-)
+ drivers/net/pse-pd/Kconfig         |  11 +++
+ drivers/net/pse-pd/Makefile        |   2 +
+ drivers/net/pse-pd/pse_regulator.c | 148 +++++++++++++++++++++++++++++
+ 3 files changed, 161 insertions(+)
+ create mode 100644 drivers/net/pse-pd/pse_regulator.c
 
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index e78ad55c0e091..8e8296964c4e6 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -10,10 +10,28 @@
- #include <linux/fwnode_mdio.h>
- #include <linux/of.h>
- #include <linux/phy.h>
+diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
+index 49c7f0bcff526..73d163704068a 100644
+--- a/drivers/net/pse-pd/Kconfig
++++ b/drivers/net/pse-pd/Kconfig
+@@ -9,3 +9,14 @@ menuconfig PSE_CONTROLLER
+ 	  Generic Power Sourcing Equipment Controller support.
+ 
+ 	  If unsure, say no.
++
++if PSE_CONTROLLER
++
++config PSE_REGULATOR
++	tristate "Regulator based PSE controller"
++	help
++	  This module provides support for simple regulator based Ethernet Power
++	  Sourcing Equipment without automatic classification support. For
++	  example for basic implementation of PoDL (802.3bu) specification.
++
++endif
+diff --git a/drivers/net/pse-pd/Makefile b/drivers/net/pse-pd/Makefile
+index cfa780c7801dd..1b8aa4c70f0b9 100644
+--- a/drivers/net/pse-pd/Makefile
++++ b/drivers/net/pse-pd/Makefile
+@@ -2,3 +2,5 @@
+ # Makefile for Linux PSE drivers
+ 
+ obj-$(CONFIG_PSE_CONTROLLER) += pse_core.o
++
++obj-$(CONFIG_PSE_REGULATOR) += pse_regulator.o
+diff --git a/drivers/net/pse-pd/pse_regulator.c b/drivers/net/pse-pd/pse_regulator.c
+new file mode 100644
+index 0000000000000..46ea5b8215dcd
+--- /dev/null
++++ b/drivers/net/pse-pd/pse_regulator.c
+@@ -0,0 +1,148 @@
++// SPDX-License-Identifier: GPL-2.0-only
++//
++// Driver for the regulator based Ethernet Power Sourcing Equipment, without
++// auto classification support.
++//
++// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
++//
++
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
 +#include <linux/pse-pd/pse.h>
- 
- MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
- MODULE_LICENSE("GPL");
- 
-+static struct pse_control *
-+fwnode_find_pse_control(struct fwnode_handle *fwnode)
++#include <linux/regulator/consumer.h>
++
++struct pse_reg_priv {
++	struct pse_controller_dev pcdev;
++	struct regulator *ps; /*power source */
++	enum ethtool_podl_pse_admin_state admin_state;
++};
++
++static struct pse_reg_priv *to_pse_reg(struct pse_controller_dev *pcdev)
 +{
-+	struct pse_control *psec;
-+	struct device_node *np;
-+
-+	np = to_of_node(fwnode);
-+	if (!np)
-+		return NULL;
-+
-+	psec = of_pse_control_get(np);
-+	if (PTR_ERR(psec) == -ENOENT)
-+		return NULL;
-+
-+	return psec;
++	return container_of(pcdev, struct pse_reg_priv, pcdev);
 +}
 +
- static struct mii_timestamper *
- fwnode_find_mii_timestamper(struct fwnode_handle *fwnode)
- {
-@@ -89,14 +107,21 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 				struct fwnode_handle *child, u32 addr)
- {
- 	struct mii_timestamper *mii_ts = NULL;
-+	struct pse_control *psec = NULL;
- 	struct phy_device *phy;
- 	bool is_c45 = false;
- 	u32 phy_id;
- 	int rc;
- 
-+	psec = fwnode_find_pse_control(child);
-+	if (IS_ERR(psec))
-+		return PTR_ERR(psec);
++static int
++pse_reg_ethtool_set_config(struct pse_controller_dev *pcdev, unsigned long id,
++			   struct netlink_ext_ack *extack,
++			   const struct pse_control_config *config)
++{
++	struct pse_reg_priv *priv = to_pse_reg(pcdev);
++	int ret;
 +
- 	mii_ts = fwnode_find_mii_timestamper(child);
--	if (IS_ERR(mii_ts))
--		return PTR_ERR(mii_ts);
-+	if (IS_ERR(mii_ts)) {
-+		rc = PTR_ERR(mii_ts);
-+		goto clean_pse;
++	if (priv->admin_state == config->admin_cotrol)
++		return 0;
++
++	switch (config->admin_cotrol) {
++	case ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED:
++		ret = regulator_enable(priv->ps);
++		break;
++	case ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED:
++		ret = regulator_disable(priv->ps);
++		break;
++	default:
++		dev_err(pcdev->dev, "Unknown admin state %i\n",
++			config->admin_cotrol);
++		ret = -ENOTSUPP;
 +	}
- 
- 	rc = fwnode_property_match_string(child, "compatible",
- 					  "ethernet-phy-ieee802.3-c45");
-@@ -132,18 +157,23 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 			goto clean_phy;
- 	}
- 
-+	phy->psec = psec;
 +
- 	/* phy->mii_ts may already be defined by the PHY driver. A
- 	 * mii_timestamper probed via the device tree will still have
- 	 * precedence.
- 	 */
- 	if (mii_ts)
- 		phy->mii_ts = mii_ts;
++	if (ret)
++		return ret;
 +
- 	return 0;
- 
- clean_phy:
- 	phy_device_free(phy);
- clean_mii_ts:
- 	unregister_mii_timestamper(mii_ts);
-+clean_pse:
-+	pse_control_put(psec);
- 
- 	return rc;
- }
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 12ff276b80aed..e54b7200ad211 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -26,6 +26,7 @@
- #include <linux/netdevice.h>
- #include <linux/phy.h>
- #include <linux/phy_led_triggers.h>
-+#include <linux/pse-pd/pse.h>
- #include <linux/property.h>
- #include <linux/sfp.h>
- #include <linux/skbuff.h>
-@@ -989,6 +990,7 @@ EXPORT_SYMBOL(phy_device_register);
- void phy_device_remove(struct phy_device *phydev)
- {
- 	unregister_mii_timestamper(phydev->mii_ts);
-+	pse_control_put(phydev->psec);
- 
- 	device_del(&phydev->mdio.dev);
- 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 7c49ab95441b1..472df77935ec6 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -592,6 +592,7 @@ struct macsec_ops;
-  * @master_slave_get: Current master/slave advertisement
-  * @master_slave_state: Current master/slave configuration
-  * @mii_ts: Pointer to time stamper callbacks
-+ * @psec: Pointer to Power Sourcing Equipment control struct
-  * @lock:  Mutex for serialization access to PHY
-  * @state_queue: Work queue for state machine
-  * @shared: Pointer to private data shared by phys in one package
-@@ -705,6 +706,7 @@ struct phy_device {
- 	struct phylink *phylink;
- 	struct net_device *attached_dev;
- 	struct mii_timestamper *mii_ts;
-+	struct pse_control *psec;
- 
- 	u8 mdix;
- 	u8 mdix_ctrl;
++	priv->admin_state = config->admin_cotrol;
++
++	return 0;
++}
++
++static int
++pse_reg_ethtool_get_status(struct pse_controller_dev *pcdev, unsigned long id,
++			   struct netlink_ext_ack *extack,
++			   struct pse_control_status *status)
++{
++	struct pse_reg_priv *priv = to_pse_reg(pcdev);
++	int ret;
++
++	ret = regulator_is_enabled(priv->ps);
++	if (ret < 0)
++		return ret;
++
++	if (!ret)
++		status->podl_pw_status = ETHTOOL_PODL_PSE_PW_D_STATUS_DISABLED;
++	else
++		status->podl_pw_status =
++			ETHTOOL_PODL_PSE_PW_D_STATUS_DELIVERING;
++
++	status->podl_admin_state = priv->admin_state;
++
++	return 0;
++}
++
++static const struct pse_controller_ops pse_reg_ops = {
++	.ethtool_get_status = pse_reg_ethtool_get_status,
++	.ethtool_set_config = pse_reg_ethtool_set_config,
++};
++
++static int
++pse_reg_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct pse_reg_priv *priv;
++	int ret;
++
++	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	if (!pdev->dev.of_node)
++		return -ENOENT;
++
++	priv->ps = devm_regulator_get_exclusive(dev, "pse");
++	if (IS_ERR(priv->ps)) {
++		dev_err(dev, "failed to get PSE regulator (%pe)\n", priv->ps);
++		return PTR_ERR(priv->ps);
++	}
++
++	platform_set_drvdata(pdev, priv);
++
++	ret = regulator_is_enabled(priv->ps);
++	if (ret < 0)
++		return ret;
++
++	if (ret)
++		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED;
++	else
++		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED;
++
++	priv->pcdev.owner = THIS_MODULE;
++	priv->pcdev.ops = &pse_reg_ops;
++	priv->pcdev.dev = dev;
++	ret = devm_pse_controller_register(dev, &priv->pcdev);
++	if (ret) {
++		dev_err(dev, "failed to register PSE controller (%pe)\n",
++			ERR_PTR(ret));
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct of_device_id pse_reg_of_match[] = {
++	{ .compatible = "podl-pse-regulator", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, pse_reg_of_match);
++
++static struct platform_driver pse_reg_driver = {
++	.probe		= pse_reg_probe,
++	.driver		= {
++		.name		= "PSE regulator",
++		.of_match_table = of_match_ptr(pse_reg_of_match),
++	},
++};
++module_platform_driver(pse_reg_driver);
++
++MODULE_AUTHOR("Oleksij Rempel <kernel@pengutronix.de>");
++MODULE_DESCRIPTION("regulator based Ethernet Power Sourcing Equipment");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:pse-regulator");
 -- 
 2.30.2
 
