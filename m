@@ -2,115 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 978A9ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6049CECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbiH1RGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 13:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58540 "EHLO
+        id S230009AbiH1RHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 13:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbiH1RG2 (ORCPT
+        with ESMTP id S229680AbiH1RHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 13:06:28 -0400
-Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1E22714B
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 10:06:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
-        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=VB+iShHArjJp41BB5dqP4/59fbHxHAh8j4VWglqFn7E=; b=U1fK7sWUEHCoKWz84mzGfnRtEQ
-        UrW5fXCEBL4DXz/NpfWik98RVrmZoEVwrwKWPWqQ0D7qmdd5DmT5KDBvnK7BW36hkK2ZBwHN6yVBQ
-        add4aNGQ0gHcc64K2WMXXFCgY/ZT2ZWuJK7zFKRwTtuWXhz3HEcrGpvUxT3KW0F4xQSlzDG+x9qrb
-        a6lUJ/EOI1KyvNFg+KoWOfNGa4TOD9W0e1vfCMmejMqaO4B5WgI9T3oUX781k9Pz/ajsBNJwi/AkG
-        e6l5w3Yg/B8Vlc/dOtdyU30knuOvm5MIZcPp7eyelDP/khmC6e1nNYIFzqScoH8s7FpI/pgIDN42X
-        onXXhHAg==;
-Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=60461)
-        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <noralf@tronnes.org>)
-        id 1oSLjq-0002PX-L9; Sun, 28 Aug 2022 19:06:22 +0200
-Message-ID: <3b6ec59d-4fad-52f9-e96a-55a25ff3cfb4@tronnes.org>
-Date:   Sun, 28 Aug 2022 19:06:14 +0200
+        Sun, 28 Aug 2022 13:07:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E0B3137E;
+        Sun, 28 Aug 2022 10:07:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE640B80B08;
+        Sun, 28 Aug 2022 17:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E8DC433D6;
+        Sun, 28 Aug 2022 17:07:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661706469;
+        bh=iRCrcUJU/gdcFVVqwqMJvmG4wkdRzhFVjxK4n791U20=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=r4c0E5/Ji1azkaovZcwAofgFC631PbBPee91aygbYDQ2zhS93ObIStJPRjn67B/BU
+         Q3ZiRREfnNnMNJApa5NRnh67pIpY4i0XuGBqEC6AysNoBll4IsEUlbYZysS5ostMCr
+         Ry6Avzrbl32RqXfSh/ra2LzIg3hn478mX0WtECvyg9rQTn1R1wkNvFy+4eve+l2Z0I
+         EaiRiRh2f7FuFQUI1dq/o440wSmqGNP6dDo6nMn06roMmOcDBQ9bqcFUq3ZCPK+aqZ
+         wdYtJQYH4RHIQZXKImML++XSgIMnVBnp1SLix6qcfOFdl4tBJjZ0epU9OuOZSBOriR
+         EImG3L+L9/STg==
+Date:   Sun, 28 Aug 2022 17:33:27 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     lars@metafoo.de, krisman@collabora.com,
+        dmitry.osipenko@collabora.com, kernel@collabora.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: tsl2583: Fix module unloading
+Message-ID: <20220828173327.7949ad73@jic23-huawei>
+In-Reply-To: <20220826122352.288438-1-shreeya.patel@collabora.com>
+References: <20220826122352.288438-1-shreeya.patel@collabora.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v1 34/35] drm/modes: Introduce the tv_mode property as a
- command-line option
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
-        Dom Cobley <dom@raspberrypi.com>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
- <20220728-rpi-analog-tv-properties-v1-34-3d53ae722097@cerno.tech>
- <eedb1a86-c1fb-cc76-2a43-4ed349d7d826@tronnes.org>
- <20220824154543.bdtpz2evwzsjrdrz@houat>
- <3cc08f9d-9f01-b771-c16f-ea95acd7e7cd@tronnes.org>
- <20220826064646.ug2djacis7whybpd@houat>
-From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-In-Reply-To: <20220826064646.ug2djacis7whybpd@houat>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 26 Aug 2022 17:53:52 +0530
+Shreeya Patel <shreeya.patel@collabora.com> wrote:
 
+> tsl2583 uses devm_iio_device_register() function and
+> calling iio_device_unregister() in remove breaks the
+> module unloading.
+> Fix this by using iio_device_register() instead of
+> devm_iio_device_register() function in probe.
+Not sure why you are wrapping at 55 chars. I rewrapped this whilst applying.
 
-Den 26.08.2022 08.46, skrev Maxime Ripard:
-> On Thu, Aug 25, 2022 at 02:41:27PM +0200, Noralf Trønnes wrote:
->> Den 24.08.2022 17.45, skrev Maxime Ripard:
->>> Hi Noralf,
->>>
->>> On Sat, Aug 20, 2022 at 10:18:47PM +0200, Noralf Trønnes wrote:
->>>> Den 29.07.2022 18.35, skrev Maxime Ripard:
->>>>> Our new tv mode option allows to specify the TV mode from a property.
->>>>> However, it can still be useful, for example to avoid any boot time
->>>>> artifact, to set that property directly from the kernel command line.
->>>>>
->>>>> Let's add some code to allow it, and some unit tests to exercise that code.
->>>>>
->>>>> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
->>>>>
->>>>
->>>> In the subject it says "tv_mode property", but the property is called
->>>> "tv norm", so the option should be tv_norm?
->>>
->>> Yeah... I don't know. mode is taken but it's obviously the best name. So
->>> I went with norm to avoid the (internal) conflict but I left mode for
->>> the user facing property.
->>>
->>> I'm not sure what's best here, or maybe we can pick another name entirely?
->>>
->>
->> Why not just call it "tv mode" or even better "TV Mode". The state
->> member can be called tv_mode, but the mode_config member will need a
->> temporary name until the "mode" property is removed. tv_tv_mode or maybe
->> connector_tv_mode?
+Reworded it a little too as I was touching it anyway.
+
+Applied to the fixes-togreg branch of iio.git.
+
 > 
-> Yeah, that seems like a good idea. Would legacy_tv_mode work for you?
+> Cc: stable@vger.kernel.org
+> Fixes: 371894f5d1a0 ("iio: tsl2583: add runtime power management support")
+
+I took a look at this patch and it introduces the issue I just pointed
+out in replying to your v1 by dropping the 
+/* Make sure the chip is on */
+Which was correct even with runtime pm because it covered the case of
+runtime_pm being disabled.   We probably need to bring that back as well,
+perhaps as part of a cleanup patch taking this fully devm_
+
+This driver has another issue for working if runtime PM isn't built into
+the kernel which is that it checks the return of pm_runtime_put_autosuspend()
+which calls 
+
+static inline int __pm_runtime_suspend(struct device *dev, int rpmflags)
+{
+	return -ENOSYS;
+}
+
+I've been meaning to do an audit for drivers that have this problem for
+a while, but not yet gotten to it.
+
+An ideal IIO driver needs to work correctly whether or not CONFIG_PM is
+enabled.
+
+Jonathan
+
+
+> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+> ---
+> Changes in v2
+>   - Use iio_device_register() instead of devm_iio_device_register()
+>   - Add fixes and stable tags
 > 
+>  drivers/iio/light/tsl2583.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
+> index 82662dab87c0..94d75ec687c3 100644
+> --- a/drivers/iio/light/tsl2583.c
+> +++ b/drivers/iio/light/tsl2583.c
+> @@ -858,7 +858,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
+>  					 TSL2583_POWER_OFF_DELAY_MS);
+>  	pm_runtime_use_autosuspend(&clientp->dev);
+>  
+> -	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+> +	ret = iio_device_register(indio_dev);
+>  	if (ret) {
+>  		dev_err(&clientp->dev, "%s: iio registration failed\n",
+>  			__func__);
 
-Oh yeah, renaming the "mode" property, that works fine.
-
-Noralf.
