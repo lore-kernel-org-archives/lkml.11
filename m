@@ -2,116 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A139ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 14:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6142C0502A
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 14:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229536AbiH1OQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 10:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
+        id S229556AbiH1OVW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 10:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbiH1OQR (ORCPT
+        with ESMTP id S229489AbiH1OVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 10:16:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0EC713F70
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 07:16:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B186461032
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 14:16:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2688BC4347C
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 14:16:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661696168;
-        bh=kkPmcOGGsxCCHFReaCtdObyszK/ELS4wEedQBkUVZ4I=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jw8fk7eFoIBPjIacZtx3OYLYFkp+s3Cn1IYi5N+i6hzuxuj2p7vsj9t/tpbnk/ofV
-         gkxoF1IXJHltRPzBI0AH3N4DGJhBh4JT1tEeas8cshUA4C+eF+BbdoOyNePfk6jPXK
-         eM2DwVyhn8lseW5Wf4/mZ/SrRM8jlvk8M8YaCncNMl3mtZe1mW1PMM1j5cSGHimsT1
-         8lhWM6WxxbiG2YCgszuSmSRjgkPiIWrSevJq0fItNSBvgNbtxVke11lCllqd1AkC7J
-         SamO5kyjmHL5zkQzdlgrBzmysgrjy+E8XsvLISnSebK7A27/JDeKk6gqSyq/NuPCG8
-         HAFBCbgRfFTnw==
-Received: by mail-vk1-f176.google.com with SMTP id b81so2706905vkf.1
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 07:16:08 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3WsFQKxXj2exY9AbpOI3bu2Xzm9unF+xEW7ol7YbNYmHHsXd3X
-        ANZk1wtkCH965w0Kjl9Pjb1LNRuVcYZ9/suzZlg=
-X-Google-Smtp-Source: AA6agR5h2iG2ixSMVSyapvLRPSHfm146j5ZVosXd1SvXe97qVJ2OyiFXNcZFh8J615F3WMKVM9LNR2xKZ33tCDlxMqs=
-X-Received: by 2002:a1f:9b90:0:b0:374:f09c:876f with SMTP id
- d138-20020a1f9b90000000b00374f09c876fmr2167421vke.12.1661696167088; Sun, 28
- Aug 2022 07:16:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220827175436.156464-1-xry111@xry111.site> <20220827175436.156464-7-xry111@xry111.site>
-In-Reply-To: <20220827175436.156464-7-xry111@xry111.site>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Sun, 28 Aug 2022 22:15:54 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H76ty7nkMffbgTgH-ByBdVc-HsST87ghubTDEWZUhmLuQ@mail.gmail.com>
-Message-ID: <CAAhV-H76ty7nkMffbgTgH-ByBdVc-HsST87ghubTDEWZUhmLuQ@mail.gmail.com>
-Subject: Re: [PATCH 6/8] LoongArch: Use model("extreme") attribute for per-CPU
- variables in module if CONFIG_CC_HAS_EXPLICIT_RELOCS
-To:     Xi Ruoyao <xry111@xry111.site>
-Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Youling Tang <tangyouling@loongson.cn>,
-        Jinyang He <hejinyang@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+        Sun, 28 Aug 2022 10:21:20 -0400
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC01C1928D;
+        Sun, 28 Aug 2022 07:21:19 -0700 (PDT)
+Received: by mail-oi1-f177.google.com with SMTP id p187so7717462oia.9;
+        Sun, 28 Aug 2022 07:21:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=sibDZma8SNC/1fdSULSJhZLiuhIbQTJjp2sPIcXm9F0=;
+        b=tpmfSrXkOh/lB/uPbLfzk1/QvyQ4FFA4KWqozCU3AbDQv8gbS/K2UpTX2BZfhEBujU
+         Wjk0Q4G992UZUjnAK+mHRkekML7svESNzZ0HcX/S59/7xRMiIxZgxLzsOct3H/JM0E5E
+         MlYQlpjf1NM+uEvQXw1ha9juiOdyVSK4FHqDOBCCTXkKPN/H4BcqqCoxMOByIUYsENrJ
+         NzFsKGXz42LAp9BKYD0CqS5ovYoxkgN5YffLMMFBfVJdeHupEB64tnjpS50t1WB8gwrL
+         0o+djr/9IIONQAt5b4oSFH6/eR6tb29sKOLJMJ1VqIT8LGYXFWMJqyN0MQUhZDaCnZnB
+         iM8Q==
+X-Gm-Message-State: ACgBeo0yft2VjS/voBlF9qFNp1v/PpishtfdisGaOvOuEf26J68uwIMb
+        PUKoEVZ0rllOO9kKgZQilw==
+X-Google-Smtp-Source: AA6agR6BEiMKL2SlsQk0aVmQ0dN6+2z35akCIfyts949Lp8DmwKEBIdcRy/TMS8pFCS2MEZvN2bb8w==
+X-Received: by 2002:a05:6808:7dd:b0:344:997f:32c3 with SMTP id f29-20020a05680807dd00b00344997f32c3mr4981010oij.11.1661696478999;
+        Sun, 28 Aug 2022 07:21:18 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id x26-20020a4a2a5a000000b0041ba884d42csm3867442oox.42.2022.08.28.07.21.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Aug 2022 07:21:17 -0700 (PDT)
+Received: (nullmailer pid 3159699 invoked by uid 1000);
+        Sun, 28 Aug 2022 14:21:16 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     netdev@vger.kernel.org, Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+In-Reply-To: <20220826135451.526756-2-maxime.chevallier@bootlin.com>
+References: <20220826135451.526756-1-maxime.chevallier@bootlin.com> <20220826135451.526756-2-maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH net-next 1/5] dt-bindings: net: Convert Altera TSE bindings to yaml
+Date:   Sun, 28 Aug 2022 09:21:16 -0500
+Message-Id: <1661696476.844936.3159698.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Ruoyao,
-
-On Sun, Aug 28, 2022 at 1:56 AM Xi Ruoyao <xry111@xry111.site> wrote:
->
-> On LoongArch, The "address" of a per-CPU variable symbol is actually an
-> offset from $r21.  The value is nearing the loading address of main
-> kernel image, but far from the address of modules.  We need to tell the
-> compiler that a PC-relative addressing with 32-bit offset is not
-> sufficient for local per-CPU variables.
->
-> After some discussion with GCC maintainers, we implemented this
-> attribute to indicate that a PC-relative addressing with 64-bit offset
-> should be used.
->
-> This attribute should be available in GCC 13 release.  Some early GCC 13
-> snapshots may support -mexplicit-relocs but lack this attribute, we
-> simply reject them.
->
-> Link: https://gcc.gnu.org/r13-2199
-> Signed-off-by: Xi Ruoyao <xry111@xry111.site>
+On Fri, 26 Aug 2022 15:54:47 +0200, Maxime Chevallier wrote:
+> This converts the bindings for the Altera Triple-Speed Ethernet to yaml.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 > ---
->  arch/loongarch/include/asm/percpu.h | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->
-> diff --git a/arch/loongarch/include/asm/percpu.h b/arch/loongarch/include/asm/percpu.h
-> index 0bd6b0110198..91d4026b074e 100644
-> --- a/arch/loongarch/include/asm/percpu.h
-> +++ b/arch/loongarch/include/asm/percpu.h
-> @@ -8,6 +8,19 @@
->  #include <asm/cmpxchg.h>
->  #include <asm/loongarch.h>
->
-> +#if defined(MODULE) && defined(CONFIG_CC_HAS_EXPLICIT_RELOCS)
-> +# if __has_attribute(model)
-> +/* The "address" (in fact, offset from $r21) of a per-CPU variable is close
-> + * to the load address of main kernel image, but far from where the modules are
-> + * loaded.  Tell the compiler this fact.
-> + */
-> +#  define PER_CPU_ATTRIBUTES __attribute__((model("extreme")))
-> +# else /* __has_attribute(model) */
-> +/* This should only happen with early GCC 13 snapshots. */
-Can we judge this case in Makefile to quit earlier and make code simpler here?
+>  .../devicetree/bindings/net/altera_tse.txt    | 113 ---------------
+>  .../devicetree/bindings/net/altr,tse.yaml     | 134 ++++++++++++++++++
+>  2 files changed, 134 insertions(+), 113 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/altera_tse.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/altr,tse.yaml
+> 
 
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Huacai
+yamllint warnings/errors:
 
-> +#  error "Compiler with explicit relocs but no model attribute is not supported"
-> +# endif /* __has_attribute(model) */
-> +#endif
-> +
->  /* Use r21 for fast access */
->  register unsigned long __my_cpu_offset __asm__("$r21");
->
-> --
-> 2.37.0
->
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/altr,tse.yaml: allOf:1:then:properties:reg-names: {'maxItems': 4, 'items': [{'const': 'control_port'}, {'const': 'rx_csr'}, {'const': 'tx_csr'}, {'const': 's1'}]} should not be valid under {'required': ['maxItems']}
+	hint: "maxItems" is not needed with an "items" list
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/altr,tse.yaml: allOf:2:then:properties:reg-names: 'oneOf' conditional failed, one must be fixed:
+	[{'const': 'control_port'}, {'const': 'rx_csr'}, {'const': 'rx_desc'}, {'const': 'rx_resp'}, {'const': 'tx_csr'}, {'const': 'tx_desc'}] is too long
+	[{'const': 'control_port'}, {'const': 'rx_csr'}, {'const': 'rx_desc'}, {'const': 'rx_resp'}, {'const': 'tx_csr'}, {'const': 'tx_desc'}] is too short
+	False schema does not allow 6
+	1 was expected
+	6 is greater than the maximum of 2
+	6 is greater than the maximum of 3
+	6 is greater than the maximum of 4
+	6 is greater than the maximum of 5
+	hint: "minItems" is only needed if less than the "items" list length
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/altr,tse.yaml: ignoring, error in schema: allOf: 1: then: properties: reg-names
+Documentation/devicetree/bindings/net/altr,tse.example.dtb:0:0: /example-0/ethernet@1,00001000: failed to match any schema with compatible: ['altr,tse-msgdma-1.0']
+Documentation/devicetree/bindings/net/altr,tse.example.dtb:0:0: /example-0/ethernet@1,00001000/mdio: failed to match any schema with compatible: ['altr,tse-mdio']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
