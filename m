@@ -2,110 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E44AC0502A
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 545A5ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbiH1RMU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 13:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36292 "EHLO
+        id S230118AbiH1RPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 13:15:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiH1RMS (ORCPT
+        with ESMTP id S230053AbiH1RPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 13:12:18 -0400
-Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073D133413
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 10:12:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
-        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=hUHwNV0Eqbp5+kyWPg3hdOExuH1sZ2s4LMJ069EmR+Q=; b=o7UwfkwgYp36t92og3iHfkSouB
-        YESi0tfVO5wQICewKkSIRbnr2KQipFWbED5nxDMlPC6qob1lkztp3GWsGFlwmo57QQBexIlYLG5QA
-        0N1jODHJj2leBFYzx8UPKqX7Z4Anid1HmiyoYemZSvmN1c91xkAfeNNe7XImj/sm5cH680dxftoNP
-        o6B3Qx4dYIa1MEyo+dCXkTnJoat7p46foI6y5CJaeHVq8jgEl0xLshfAP7yf4PwFRWFZPTKR9U/WH
-        k/qJOtNdlEV2tqDF0EFUFOZsGDHd58w18s33QoT3CDvL7rsKMHZmGvGIT8EWk7DLfdVADiXHqLwu/
-        mD0kle2g==;
-Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=60629)
-        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <noralf@tronnes.org>)
-        id 1oSLpX-000560-9b; Sun, 28 Aug 2022 19:12:15 +0200
-Message-ID: <011bcfa3-b655-0851-cfd4-560504efd8b1@tronnes.org>
-Date:   Sun, 28 Aug 2022 19:12:12 +0200
+        Sun, 28 Aug 2022 13:15:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8677C2B1AE;
+        Sun, 28 Aug 2022 10:15:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 428C3B80B79;
+        Sun, 28 Aug 2022 17:15:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83814C433D6;
+        Sun, 28 Aug 2022 17:15:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661706926;
+        bh=7aE7DD8W4A9si1v1mNlnIRm5CgP9eo1ZiVhLiSoMX0E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BNoqo4S0pXoa85U/ArjY4MMOriIPmrnc6lNLGh587TFMcvYObs4UOObzegAFaB8Mu
+         9AOkT3BX4qCC8Kp68lQJNZ3PyyeYOOb2a9agqcQmI0TCiYiN3dOrbrSkUUls0BVMQh
+         dXO5K8mLT9G32p9TDez08ALgUKqpG0dW1FmQNGQWvG+2MYesiqxjkF+RENtWpG21s/
+         PZHZyb3TJfIOt4DWBi05O/hrPCu+zJHaOqgA4tit9gKjB/Pk6/juKaOfn62eBZUcDs
+         IXRzmZKrcfjdXYgFDyO6yKhsassWJFibkXrURoQUTUQDAJum1thh/9coB2ztERw1Ck
+         YG2D3mPc7jAgA==
+Date:   Sun, 28 Aug 2022 17:41:05 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jean Delvare <jdelvare@suse.de>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio:accel:dmard06: Optimize when CONFIG_OF isn't set
+Message-ID: <20220828174105.3ca1b523@jic23-huawei>
+In-Reply-To: <CAHp75VfP-5-MPJs81denx9MT_MY_gi_QXkYqm63FY2sK+Kykcg@mail.gmail.com>
+References: <20220825144012.24a33bb0@endymion.delvare>
+        <CAHp75VeSgmO_=mXVR4uSpbQDO8MBGZu4O2vLEqunHYuoPfJbbQ@mail.gmail.com>
+        <20220826124603.4a28a154@endymion.delvare>
+        <CAHp75VcGopXaksmvXP_vMM-iGK0o_g5Fw_F5zvH+PXcCUx_cDQ@mail.gmail.com>
+        <20220826180609.01262f0a@endymion.delvare>
+        <CAHp75VfP-5-MPJs81denx9MT_MY_gi_QXkYqm63FY2sK+Kykcg@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v1 32/35] drm/sun4i: tv: Convert to the new TV mode
- property
-To:     Maxime Ripard <maxime@cerno.tech>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
-        Dom Cobley <dom@raspberrypi.com>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
- <20220728-rpi-analog-tv-properties-v1-32-3d53ae722097@cerno.tech>
-From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-In-Reply-To: <20220728-rpi-analog-tv-properties-v1-32-3d53ae722097@cerno.tech>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 26 Aug 2022 19:10:33 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-
-Den 29.07.2022 18.35, skrev Maxime Ripard:
-> Now that the core can deal fine with analog TV modes, let's convert the
-> sun4i TV driver to leverage those new features.
+> On Fri, Aug 26, 2022 at 7:06 PM Jean Delvare <jdelvare@suse.de> wrote:
+> > On Fri, 26 Aug 2022 18:18:20 +0300, Andy Shevchenko wrote:  
+> > > On Fri, Aug 26, 2022 at 1:46 PM Jean Delvare <jdelvare@suse.de> wrote:  
+> > > > therefore of_match_ptr() should be
+> > > > removed from the kernel entirely?  
+> > >
+> > > (...) But for some cases it still
+> > > makes sense: platform is known to never be non-OF, component is known
+> > > to be used only on such platforms, etc.  
+> >
+> > Well, I can't see the value of of_match_ptr() in such case either. In
+> > fact I've submitted a couple patches to remove such occurrences lately:
+> >
+> > https://patchwork.kernel.org/project/linux-mediatek/patch/20220730144833.0a0d9825@endymion.delvare/
+> > https://patchwork.kernel.org/project/linux-pm/patch/20220804135938.7f69f5d9@endymion.delvare/  
 > 
-> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+> They are different to what we are discussing here, but yes, in common
+> denominator the of_match_ptr() is useless in almost 100% cases.
 > 
-> diff --git a/drivers/gpu/drm/sun4i/sun4i_tv.c b/drivers/gpu/drm/sun4i/sun4i_tv.c
-> index 74ff5ad6a8b9..bed52423776e 100644
-> --- a/drivers/gpu/drm/sun4i/sun4i_tv.c
-> +++ b/drivers/gpu/drm/sun4i/sun4i_tv.c
 
-> @@ -586,8 +524,17 @@ static int sun4i_tv_bind(struct device *dev, struct device *master,
->  
->  	drm_connector_attach_encoder(&tv->connector, &tv->encoder);
->  
-> +	ret = drm_mode_create_tv_properties(drm,
-> +					    DRM_MODE_TV_NORM_NTSC_M |
-> +					    DRM_MODE_TV_NORM_PAL_B,
-> +					    0, NULL);
-> +	if (ret)
-> +		goto err_cleanup_connector;
-> +
+Agreed. Ever since PRP0001 came in, it's made little to no sense to have
+an of_match_ptr() but it's perhaps also not worth the noise of generally
+removing 1588 cases of it!
 
-Looks like you have forgotten to attach the property?
+As a side note, of_match_ptr() did make sense, then moving to trickery along the lines
+of what was recently done for pm_ptr() to get rid of the need for __maybe_unused
+would be good.
 
-Noralf.
+#define pm_ptr(_ptr) PTR_IF(IS_ENABLED(CONFIG_PM), (_ptr))
 
->  	return 0;
->  
-> +err_cleanup_connector:
-> +	drm_connector_cleanup(&tv->connector);
->  err_cleanup_encoder:
->  	drm_encoder_cleanup(&tv->encoder);
->  err_disable_clk:
-> 
+I 'think' the same trick could be used to make the use of the array visible
+to the compiler but still allow it to remove the array. Not actually tried
+it though...
+
+Jonathan
+
