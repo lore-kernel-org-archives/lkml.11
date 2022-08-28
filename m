@@ -2,95 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05093ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 12:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4243BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 13:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbiH1M4H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 08:56:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56804 "EHLO
+        id S229633AbiH1NB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 09:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiH1M4D (ORCPT
+        with ESMTP id S229536AbiH1NBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 08:56:03 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1540E11A22;
-        Sun, 28 Aug 2022 05:56:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661691361; x=1693227361;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FLrVUspMTdiVkIGP7G50w5Lr795N0ps5SA1lUprfsoQ=;
-  b=LT9hMWA+0io21pjxHdJygiJy1wMw7eVTxRpVRpPjY4GQK3rfYJnqi5Vt
-   0ZXfTXZcEgisavTYTP+TiCz+j13MsHPVgG0ieVy4b1Gf94qN20S1/0nbM
-   Qw8XoMFiU66l1VOimXbAJcrYvgzfLrZY5N1LVo0aGd1+TVxmmFAzi3nBW
-   8MuWoAghLmF3EN2F9n90ohcmehCqj2aV5kYpeQ6XSwaNMj9Ey7aRIT+o0
-   Qu/zoEEVI4oIi/p5pSe3lo7JOgIKRYdk97w/BrD80ZnGWHDdvDkabCKW1
-   DVQq5hzB7vaVZnVELG9BwwfF/WplcnLMVmzb38G6FLCk4fq58j+uvXKL/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="274487311"
-X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
-   d="scan'208";a="274487311"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 05:56:00 -0700
-X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
-   d="scan'208";a="672052008"
-Received: from cyue-mobl1.ccr.corp.intel.com (HELO [10.254.209.98]) ([10.254.209.98])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 05:55:56 -0700
-Message-ID: <18e43d40-577d-2878-5673-706defd699d5@linux.intel.com>
-Date:   Sun, 28 Aug 2022 20:55:55 +0800
+        Sun, 28 Aug 2022 09:01:23 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58EFD10FF1
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 06:01:21 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id m5so7826292lfj.4
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 06:01:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=G6q99tFV5zDIWUnco/c4mKVD0xJW7VMbRdjRGKQjAt8=;
+        b=DLz6IBmV8LBfhG5UiGcd8gNLWxnU9MJAHwyX1cTORiUOcLKCqLnC+9vaGIbI+SJpE2
+         52Z2/UhDmo+KdsmgylbSn8bP3LS/iqjorrtlG82rh6t/h0HypS5bYgRcfQLGXKdIh9QH
+         MBYB71tZn/V0uygZueOoAMIfEPqRPg9cF7FYiwdE7pW8pStZegXzvs0q26D0UEw+4+GW
+         2478ejsTyFaYir5e5jnYWcW+lNGsMoVTfH+Wiyct3Do1HaIoGWppE0U+32QBiG+kvJi7
+         2Woj3dcGNrCu/cYUQiPs3FcTVhglcxxvND8gGNztHZDcYNSERC+rxI4OgoVc7BU6nOLV
+         x2dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=G6q99tFV5zDIWUnco/c4mKVD0xJW7VMbRdjRGKQjAt8=;
+        b=WB9HTY+aHZ49CJGYcNHNWlOSOY6P4KSEQaORdWwXcH+slvWkB0NyzCe51r081gwy8V
+         /i2NMwZpAZCX5WNchi9O1Orv/Vx+clESO3OPXLP3cfVrfAzD7RwkHuGnorOKdA9uh7V7
+         iSNWhgPzJrfnv5H4fmktFfQqsl3/UiNT7XZzahlZRQtHhxMszzgMhIHEiEnInd9Dm0h1
+         mrZEAAfV0Uo55GYECzO2ZAnGJRSiJpNW9ACszng+u7f327FLyDffOuHXAwUFjCaDPZRk
+         E8qsOxyrZc5bcyXROvjbrC68YeWes+YTD+8RPthoDMNHUFo3j7Pr0Vje50Tk5NTdL+N0
+         zfag==
+X-Gm-Message-State: ACgBeo0lCg3DqsILvtb9zktaScXzrfmNH19EgizUCgSUufGLnH6wdaxU
+        vp8ElgMerZKLRfhBYL5apZQcX96ume/le549
+X-Google-Smtp-Source: AA6agR5CMAaUfuNsOo55O6/Pp9V57W6soCFzdY1i+KfmNUgwcA1432j0Xm8It0zqYgrVRHg7viHwvQ==
+X-Received: by 2002:a05:6512:3a94:b0:492:b8d3:2236 with SMTP id q20-20020a0565123a9400b00492b8d32236mr4764772lfu.147.1661691679332;
+        Sun, 28 Aug 2022 06:01:19 -0700 (PDT)
+Received: from krzk-bin.starman.ee (82.131.98.15.cable.starman.ee. [82.131.98.15])
+        by smtp.gmail.com with ESMTPSA id o4-20020ac25e24000000b00492ebf36ac4sm958228lfg.89.2022.08.28.06.01.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Aug 2022 06:01:18 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: mfd: qcom,spmi-pmic: extend example
+Date:   Sun, 28 Aug 2022 16:01:13 +0300
+Message-Id: <20220828130113.5845-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v12 09/17] iommu/vt-d: Add blocking domain support
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-10-baolu.lu@linux.intel.com>
- <YwjetO21TWkhN6KH@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YwjetO21TWkhN6KH@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/26 22:54, Jason Gunthorpe wrote:
-> On Fri, Aug 26, 2022 at 08:11:33PM +0800, Lu Baolu wrote:
->> The Intel IOMMU hardwares support blocking DMA transactions by clearing
->> the translation table entries. This implements a real blocking domain to
->> avoid using an empty UNMANAGED domain. The detach_dev callback of the
->> domain ops is not used in any path. Remove it to avoid dead code as well.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Tested-by: Tony Zhu <tony.zhu@intel.com>
->> ---
->>   drivers/iommu/intel/iommu.c | 25 ++++++++++++++++++-------
->>   1 file changed, 18 insertions(+), 7 deletions(-)
-> 
-> At this point I'd suggest to make a little series that does all the
-> blocking domain stuff in one shot
-> 
-> The removal of detach_dev callbacks is pretty nice for clarity.
+Add a more complete example with PM6150 to provide better validation of
+the bindings.
 
-Yes. As you saw, I have a separated series for above purpose.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../bindings/mfd/qcom,spmi-pmic.yaml          | 84 +++++++++++++++++++
+ 1 file changed, 84 insertions(+)
 
-Best regards,
-baolu
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml b/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
+index 230f3bf9c1ea..9676a9e3d176 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
+@@ -208,3 +208,87 @@ examples:
+             };
+         };
+     };
++
++  - |
++    #include <dt-bindings/input/input.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/iio/qcom,spmi-vadc.h>
++    #include <dt-bindings/spmi/spmi.h>
++
++    pmic@0 {
++        compatible = "qcom,pm6150", "qcom,spmi-pmic";
++        reg = <0x0 SPMI_USID>;
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pon@800 {
++            compatible = "qcom,pm8998-pon";
++            reg = <0x800>;
++            mode-bootloader = <0x2>;
++            mode-recovery = <0x1>;
++
++            pwrkey {
++                compatible = "qcom,pm8941-pwrkey";
++                interrupts = <0x0 0x8 0 IRQ_TYPE_EDGE_BOTH>;
++                debounce = <15625>;
++                bias-pull-up;
++                linux,code = <KEY_POWER>;
++            };
++        };
++
++        temp-alarm@2400 {
++            compatible = "qcom,spmi-temp-alarm";
++            reg = <0x2400>;
++            interrupts = <0x0 0x24 0x0 IRQ_TYPE_EDGE_RISING>;
++            io-channels = <&pm6150_adc ADC5_DIE_TEMP>;
++            io-channel-names = "thermal";
++            #thermal-sensor-cells = <0>;
++        };
++
++        pm6150_adc: adc@3100 {
++            compatible = "qcom,spmi-adc5";
++            reg = <0x3100>;
++            interrupts = <0x0 0x31 0x0 IRQ_TYPE_EDGE_RISING>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++            #io-channel-cells = <1>;
++
++            adc-chan@6 {
++                reg = <ADC5_DIE_TEMP>;
++                label = "die_temp";
++            };
++
++            adc-chan@4f {
++                reg = <ADC5_AMUX_THM3_100K_PU>;
++                qcom,ratiometric;
++                qcom,hw-settle-time = <200>;
++            };
++        };
++
++        adc-tm@3500 {
++            compatible = "qcom,spmi-adc-tm5";
++            reg = <0x3500>;
++            interrupts = <0x0 0x35 0x0 IRQ_TYPE_EDGE_RISING>;
++            #thermal-sensor-cells = <1>;
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            charger-thermistor@0 {
++                reg = <0>;
++                io-channels = <&pm6150_adc ADC5_AMUX_THM3_100K_PU>;
++                qcom,ratiometric;
++                qcom,hw-settle-time-us = <200>;
++            };
++        };
++
++        pm6150_gpio: gpios@c000 {
++            compatible = "qcom,pm6150-gpio", "qcom,spmi-gpio";
++            reg = <0xc000>;
++            gpio-controller;
++            gpio-ranges = <&pm6150_gpio 0 0 10>;
++            #gpio-cells = <2>;
++            interrupt-controller;
++            #interrupt-cells = <2>;
++        };
++    };
+-- 
+2.34.1
+
