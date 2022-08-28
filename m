@@ -2,133 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55011ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 15:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1DD6ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 15:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbiH1PW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 11:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52588 "EHLO
+        id S229912AbiH1PY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 11:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229883AbiH1PWy (ORCPT
+        with ESMTP id S229527AbiH1PYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 11:22:54 -0400
-Received: from mail.stoffel.org (li1843-175.members.linode.com [172.104.24.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D0C32BBD;
-        Sun, 28 Aug 2022 08:22:51 -0700 (PDT)
-Received: from quad.stoffel.org (068-116-170-226.res.spectrum.com [68.116.170.226])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by mail.stoffel.org (Postfix) with ESMTPSA id 4B0BE1E853;
-        Sun, 28 Aug 2022 11:22:50 -0400 (EDT)
-Received: by quad.stoffel.org (Postfix, from userid 1000)
-        id DEAAEA7E25; Sun, 28 Aug 2022 11:22:49 -0400 (EDT)
+        Sun, 28 Aug 2022 11:24:23 -0400
+X-Greylist: delayed 4200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 28 Aug 2022 08:24:22 PDT
+Received: from 4.mo550.mail-out.ovh.net (4.mo550.mail-out.ovh.net [46.105.76.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BA030575
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 08:24:22 -0700 (PDT)
+Received: from player157.ha.ovh.net (unknown [10.111.172.22])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 4E24B2277E
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 14:05:11 +0000 (UTC)
+Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player157.ha.ovh.net (Postfix) with ESMTPSA id 61D582DF32C4F;
+        Sun, 28 Aug 2022 14:04:50 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-101G00488ca032a-118b-4694-88e1-9351a19d5173,
+                    E8B3FA25B4F8D98D1FC0498694F8FFDB0E70245B) smtp.auth=rafal@milecki.pl
+X-OVh-ClientIp: 194.187.74.233
+Message-ID: <f830543b-9b66-5785-60f8-27ea05d49eee@milecki.pl>
+Date:   Sun, 28 Aug 2022 16:04:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [RFC PATCH v1 12/14] nvmem: layouts: rewrite the u-boot-env
+ driver as a NVMEM layout
+To:     Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-13-michael@walle.cc>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+In-Reply-To: <20220825214423.903672-13-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-ID: <25355.34889.890961.350510@quad.stoffel.home>
-Date:   Sun, 28 Aug 2022 11:22:49 -0400
-From:   "John Stoffel" <john@stoffel.org>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     tytso@mit.edu, adilger.kernel@dilger.ca, djwong@kernel.org,
-        david@fromorbit.com, trondmy@hammerspace.com, neilb@suse.de,
-        viro@zeniv.linux.org.uk, zohar@linux.ibm.com, xiubli@redhat.com,
-        chuck.lever@oracle.com, lczerner@redhat.com, jack@suse.cz,
-        brauner@kernel.org, linux-man@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-btrfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-ceph@vger.kernel.org, linux-ext4@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-xfs@vger.kernel.org
-Subject: Re: [man-pages PATCH] statx, inode: document the new STATX_INO_VERSION field
-In-Reply-To: <20220826214747.134964-1-jlayton@kernel.org>
-References: <20220826214747.134964-1-jlayton@kernel.org>
-X-Mailer: VM 8.2.0b under 27.1 (x86_64-pc-linux-gnu)
+X-Ovh-Tracer-Id: 8509270023987571643
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejledgjeehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvvehfhfgjtgfgsehtjeertddtfeejnecuhfhrohhmpeftrghfrghlucfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpedtgeetheeutddvudekuddtkeetveehteegleehffetkeehjeetfffgveegkeefueenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhduheejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehhedt
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>>>> "Jeff" == Jeff Layton <jlayton@kernel.org> writes:
+On 25.08.2022 23:44, Michael Walle wrote:
+> Instead of hardcoding the underlying access method mtd_read() and
+> duplicating all the error handling, rewrite the driver as a nvmem
+> layout which just uses nvmem_device_read() and thus works with any
+> NVMEM device.
+> 
+> But because this is now not a device anymore, the compatible string
+> will have to be changed so the device will still be probed:
+>    compatible = "u-boot,env";
+> to
+>    compatible = "u-boot,env", "nvmem-cells";
+> 
+> "nvmem-cells" will tell the mtd layer to register a nvmem_device().
+> "u-boot,env" will tell the NVMEM that it should apply the u-boot
+> environment layout to the NVMEM device.
 
-Jeff> We're planning to expose the inode change attribute via statx. Document
-Jeff> what this value means and what an observer can infer from a change in
-Jeff> its value.
+That's fishy but maybe we can ignore backward compatibility at
+point.
 
-It might be nice to put in some more example verbiage of how this
-would be used by userland.  For example, if you do a statx() call and
-notice that the ino_version has changed... what would you do next to
-find out what changed?  
-
-Would you have to keep around an old copy of the statx() results and
-then compare them to find the changes?  When talking to userland
-people, don't assume they know anything about the kernel internals
-here.  
-
-
-Jeff> Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Jeff> ---
-Jeff>  man2/statx.2 | 13 +++++++++++++
-Jeff>  man7/inode.7 | 10 ++++++++++
-Jeff>  2 files changed, 23 insertions(+)
-
-Jeff> diff --git a/man2/statx.2 b/man2/statx.2
-Jeff> index 0d1b4591f74c..644fb251f114 100644
-Jeff> --- a/man2/statx.2
-Jeff> +++ b/man2/statx.2
-Jeff> @@ -62,6 +62,7 @@ struct statx {
-Jeff>      __u32 stx_dev_major;   /* Major ID */
-Jeff>      __u32 stx_dev_minor;   /* Minor ID */
-Jeff>      __u64 stx_mnt_id;      /* Mount ID */
-Jeff> +    __u64 stx_ino_version; /* Inode change attribute */
-Jeff>  };
-Jeff>  .EE
-Jeff>  .in
-Jeff> @@ -247,6 +248,7 @@ STATX_BTIME	Want stx_btime
-Jeff>  STATX_ALL	The same as STATX_BASIC_STATS | STATX_BTIME.
-Jeff>  	It is deprecated and should not be used.
-Jeff>  STATX_MNT_ID	Want stx_mnt_id (since Linux 5.8)
-Jeff> +STATX_INO_VERSION	Want stx_ino_version (since Linux 6.1)
-Jeff>  .TE
-Jeff>  .in
-Jeff>  .PP
-Jeff> @@ -411,6 +413,17 @@ and corresponds to the number in the first field in one of the records in
-Jeff>  For further information on the above fields, see
-Jeff>  .BR inode (7).
-Jeff>  .\"
-Jeff> +.TP
-Jeff> +.I stx_ino_version
-Jeff> +The inode version, also known as the inode change attribute. This
-Jeff> +value is intended to change any time there is an inode status change. Any
-Jeff> +operation that would cause the stx_ctime to change should also cause
-Jeff> +stx_ino_version to change, even when there is no apparent change to the
-Jeff> +stx_ctime due to timestamp granularity.
-Jeff> +.IP
-Jeff> +Note that an observer cannot infer anything about the nature or
-Jeff> +magnitude of the change from the value of this field. A change in this value
-Jeff> +only indicates that there may have been an explicit change in the inode.
-Jeff>  .SS File attributes
-Jeff>  The
-Jeff>  .I stx_attributes
-Jeff> diff --git a/man7/inode.7 b/man7/inode.7
-Jeff> index 9b255a890720..d296bb6df70c 100644
-Jeff> --- a/man7/inode.7
-Jeff> +++ b/man7/inode.7
-Jeff> @@ -184,6 +184,16 @@ Last status change timestamp (ctime)
-Jeff>  This is the file's last status change timestamp.
-Jeff>  It is changed by writing or by setting inode information
-Jeff>  (i.e., owner, group, link count, mode, etc.).
-Jeff> +.TP
-Jeff> +Inode version (i_version)
-Jeff> +(not returned in the \fIstat\fP structure); \fIstatx.stx_ino_version\fP
-Jeff> +.IP
-Jeff> +This is the inode change attribute. Any operation that would result in a ctime
-Jeff> +change should also result in a change to this value. The value must change even
-Jeff> +in the case where the ctime change is not evident due to timestamp granularity.
-Jeff> +An observer cannot infer anything from the actual value about the nature or
-Jeff> +magnitude of the change. If it is different from the last time it was checked,
-Jeff> +then something may have made an explicit change to the inode.
-Jeff>  .PP
-Jeff>  The timestamp fields report time measured with a zero point at the
-Jeff>  .IR Epoch ,
-Jeff> -- 
-Jeff> 2.37.2
-
+Still you need to update DT binding.
