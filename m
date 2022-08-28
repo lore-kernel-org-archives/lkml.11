@@ -2,89 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897ECC0502C
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 09:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F66EECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 09:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbiH1Jzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 05:55:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
+        id S229549AbiH1J5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 05:57:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiH1Jzt (ORCPT
+        with ESMTP id S229445AbiH1J5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 05:55:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9613C43E5D;
-        Sun, 28 Aug 2022 02:55:48 -0700 (PDT)
+        Sun, 28 Aug 2022 05:57:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEF355090
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 02:57:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A1EDB80A3A;
-        Sun, 28 Aug 2022 09:55:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A978C433C1;
-        Sun, 28 Aug 2022 09:55:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4708D60FA0
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:57:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C789C433D6;
+        Sun, 28 Aug 2022 09:57:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661680546;
-        bh=TcwxDWZtQS6kMjN2jg9yz87Lt7T5qZ8ftJVQLc8rmrI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Rxq1frQ4Y7jG/7PA4ZNlJ7bYY/4+1Ihaz96hMvhmyswpnbYQ9NfPX9HShQ2ybT6pW
-         It1NQhz+dlZPJe19lcZ+FwtAT1QC0wS7J1y0qZMHoD7pMwPnwLHGMNDo4YxxCJxpdg
-         nDMHMiQE91NuwChoGUW2JC84wJEQOE5uSBM8uP79WzpX9vAq5FH5bhXnTFAkrLlLjx
-         v3OlNw401ZIXH6LvhActC8mcqhOjRwjzPO+wygYnRinPMZaebAgt7yWX4EZAMZiQcM
-         Lgz0AKaIZMWaXfsiePeR9j5QbrhaGtdZhnfw6+8k071rcdP/AOYfBpyBuuee1BNVGS
-         bQmnUOm6KjyYg==
-Date:   Sun, 28 Aug 2022 12:55:41 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev
-Subject: Re: [PATCH net-next] net/mlx5e: Do not use err uninitialized in
- mlx5e_rep_add_meta_tunnel_rule()
-Message-ID: <Yws7nQsU8hIf7gZT@unreal>
-References: <20220825180607.2707947-1-nathan@kernel.org>
+        s=k20201202; t=1661680628;
+        bh=LlULD/IKynjpnLtSqXlGpYdUZVoQFXgtjS3/RSpKnMw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=c8bo5YZVuhSDQnFndpW4iAzdcEMAVonsRehPOM8APZU70KhIk5ag74U515mXJa8/b
+         S37xpSwEHmCoJt256XoXHz0K7Q0jtpmZaS4psVg4lrjVm5krHX1RrbkGzRu+hIOlHg
+         uOOhfahroinEfwulmnCWcUksrD8gLpJ5xHITEkcDju5qcKMitrg7WYs+a+ihsrdz/u
+         yXy90Hkfbjwb1TeONnRpuKhNTmMeLjv8DcrQ8T8nXHC6lj2cjs2JZQXC3k/180R75x
+         1zpYYFF8d9VDY778nPUL+7MUdjiXcfyqCRSvQ5qWArW3tGl4TTM8tzknQO1QeRfYo9
+         T9v+Ez9cSBUUw==
+Received: by pali.im (Postfix)
+        id A47937B3; Sun, 28 Aug 2022 11:57:05 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Joel Stanley <joel@jms.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] powerpc/boot: Don't always pass -mcpu=powerpc when building 32-bit uImage
+Date:   Sun, 28 Aug 2022 11:56:59 +0200
+Message-Id: <20220828095659.4061-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220820105200.30425-1-pali@kernel.org>
+References: <20220820105200.30425-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825180607.2707947-1-nathan@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:06:07AM -0700, Nathan Chancellor wrote:
-> Clang warns:
-> 
->   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:6: error: variable 'err' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
->           if (IS_ERR(flow_rule)) {
->               ^~~~~~~~~~~~~~~~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:489:9: note: uninitialized use occurs here
->           return err;
->                 ^~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:2: note: remove the 'if' if its condition is always true
->           if (IS_ERR(flow_rule)) {
->           ^~~~~~~~~~~~~~~~~~~~~~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:474:9: note: initialize the variable 'err' to silence this warning
->           int err;
->                 ^
->                   = 0
->   1 error generated.
-> 
-> There is little reason to have the 'goto + error variable' construct in
-> this function. Get rid of it and just return the PTR_ERR value in the if
-> statement and 0 at the end.
-> 
-> Fixes: 430e2d5e2a98 ("net/mlx5: E-Switch, Move send to vport meta rule creation")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1695
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
-> 
+When CONFIG_TARGET_CPU is specified then pass its value to the compiler
+-mcpu option. This fixes following build error when building kernel with
+powerpc e500 SPE capable cross compilers:
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+    BOOTAS  arch/powerpc/boot/crt0.o
+  powerpc-linux-gnuspe-gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
+  powerpc-linux-gnuspe-gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
+  make[1]: *** [arch/powerpc/boot/Makefile:231: arch/powerpc/boot/crt0.o] Error 1
+
+Similar change was already introduced for the main powerpc Makefile in
+commit 446cda1b21d9 ("powerpc/32: Don't always pass -mcpu=powerpc to the
+compiler").
+
+Fixes: 40a75584e526 ("powerpc/boot: Build wrapper for an appropriate CPU")
+Cc: stable@vger.kernel.org # 446cda1b21d9 ("powerpc/32: Don't always pass -mcpu=powerpc to the compiler")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ arch/powerpc/boot/Makefile | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
+index a9cd2ea4a861..1957a3de7a1c 100644
+--- a/arch/powerpc/boot/Makefile
++++ b/arch/powerpc/boot/Makefile
+@@ -38,13 +38,19 @@ BOOTCFLAGS    := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+ 		 $(LINUXINCLUDE)
+ 
+ ifdef CONFIG_PPC64_BOOT_WRAPPER
+-ifdef CONFIG_CPU_LITTLE_ENDIAN
+-BOOTCFLAGS	+= -m64 -mcpu=powerpc64le
++BOOTCFLAGS	+= -m64
+ else
+-BOOTCFLAGS	+= -m64 -mcpu=powerpc64
++BOOTCFLAGS	+= -m32
+ endif
++
++ifdef CONFIG_TARGET_CPU_BOOL
++BOOTCFLAGS	+= -mcpu=$(CONFIG_TARGET_CPU)
++else ifdef CONFIG_PPC64_BOOT_WRAPPER
++ifdef CONFIG_CPU_LITTLE_ENDIAN
++BOOTCFLAGS	+= -mcpu=powerpc64le
+ else
+-BOOTCFLAGS	+= -m32 -mcpu=powerpc
++BOOTCFLAGS	+= -mcpu=powerpc64
++endif
+ endif
+ 
+ BOOTCFLAGS	+= -isystem $(shell $(BOOTCC) -print-file-name=include)
+-- 
+2.20.1
+
