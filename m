@@ -2,97 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB0FECAAA2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 04:04:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9384FECAAA2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 04:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231697AbiH1EEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 00:04:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
+        id S229458AbiH1EMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 00:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiH1EEK (ORCPT
+        with ESMTP id S229605AbiH1EMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 00:04:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE5A3DF11;
-        Sat, 27 Aug 2022 21:04:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 641C4B80AC7;
-        Sun, 28 Aug 2022 04:04:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579ADC433C1;
-        Sun, 28 Aug 2022 04:04:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661659446;
-        bh=DV8YmkMB8DacJszyfV7gO6K0eZEBa8075fSuyzAhEwM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SjSMiEBdxsbtyBR2J8Q3wU41QSSonH7rUnb0LogRTdUCi3J8EbLrtQ4+MeCoizuC7
-         SgcDH5oB+p/gp6LjPc40MDdV3wTcYYzmWP4cbP4N8NPSWHERH3LbW6x5uc2RY8LW4G
-         FWrlwvnt7ktXVMpi3rK6I+mh3OYJ+OjE5OOdryCbqbf8q4xdEV9KPXOqf/wmGuowEg
-         wZArkPzw3HkLik1UXrHcq/NkK5803acM/JjGEWMAhAPiD8/28YDUsnVUHsicnJgIyn
-         k6HeB3bJQuAodQwci12EVniEmjjaQglIriaIdp2wiURm0LRC/OxPeGdZPpsd3aVao5
-         PM3OqvsoSr8nQ==
-Date:   Sun, 28 Aug 2022 07:03:59 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Roberto Sassu <roberto.sassu@huaweicloud.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        corbet@lwn.net, dhowells@redhat.com, rostedt@goodmis.org,
-        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
-        serge@hallyn.com, shuah@kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        deso@posteo.net, Roberto Sassu <roberto.sassu@huawei.com>
-Subject: Re: [PATCH v14 04/10] KEYS: Move KEY_LOOKUP_ to include/linux/key.h
- and add flags check function
-Message-ID: <YwrpL9b3NXtjnPru@kernel.org>
-References: <acae432697e854748d9a44c732ec8cab807d9d46.camel@huaweicloud.com>
- <20220826091228.1701185-1-roberto.sassu@huaweicloud.com>
- <6d85d7b1f0c2341698e88bad025bd6e0b34c7666.camel@huaweicloud.com>
- <YwroKjo7IkQDepp5@kernel.org>
+        Sun, 28 Aug 2022 00:12:36 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE9D32EFA;
+        Sat, 27 Aug 2022 21:12:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661659955; x=1693195955;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Y1cvwA5B/KTDuGwWbT7lYJngHEIcaBGUlKJsOxZFDTE=;
+  b=gngvyIobVmWB4suUfw/7i8KzgVgr6WHQgsLUC2cHnR0kJwV/rrdqDD6z
+   TJwvvaR4vLM6IlMunOoJs7FlcYyHZVgHY5BVY0CgL7OM9R0X85n8399hm
+   KIFzonf+9llNiBemj3ZAZxHg82/9cDWjD8Bv4hZ4kfI8qmgLSn9maWPwp
+   UDKo6LOfI2BbDLLZ/Z40uhXjjput2+bov7m5yjuhl7gHRlO7pMVPNVL3l
+   /9kxZLGqfQyzFF+XA8+m7ceobPMzCw66T3CFqfgdIetTGrUJ6TLK8s9be
+   7C+Vo3JOmHlEwe8Wj043ys5IsV2vi8ZyelR9mcuhb/fG3QoS9hjz6eQSc
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10452"; a="294718541"
+X-IronPort-AV: E=Sophos;i="5.93,269,1654585200"; 
+   d="scan'208";a="294718541"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2022 21:12:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,269,1654585200"; 
+   d="scan'208";a="587769335"
+Received: from lkp-server01.sh.intel.com (HELO fc16deae1c42) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 27 Aug 2022 21:12:34 -0700
+Received: from kbuild by fc16deae1c42 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oS9ez-0000mU-1h;
+        Sun, 28 Aug 2022 04:12:33 +0000
+Date:   Sun, 28 Aug 2022 12:12:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [intel-tdx:guest-attest 3/9] htmldocs:
+ Documentation/x86/tdx.rst:275: WARNING: Field list ends without a blank
+ line; unexpected unindent.
+Message-ID: <202208281215.tlxpe8Ws-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YwroKjo7IkQDepp5@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 06:59:41AM +0300, Jarkko Sakkinen wrote:
-> On Fri, Aug 26, 2022 at 11:22:54AM +0200, Roberto Sassu wrote:
-> > On Fri, 2022-08-26 at 11:12 +0200, Roberto Sassu wrote:
-> > > From: Roberto Sassu <roberto.sassu@huawei.com>
-> > > 
-> > > In preparation for the patch that introduces the
-> > > bpf_lookup_user_key() eBPF
-> > > kfunc, move KEY_LOOKUP_ definitions to include/linux/key.h, to be
-> > > able to
-> > > validate the kfunc parameters.
-> > > 
-> > > Also, introduce key_lookup_flags_valid() to check if the caller set
-> > > in the
-> > > argument only defined flags. Introduce it directly in
-> > > include/linux/key.h,
-> > > to reduce the risk that the check is not in sync with currently
-> > > defined
-> > > flags.
-> > > 
-> > > Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> > > Reviewed-by: KP Singh <kpsingh@kernel.org>
-> > 
-> > Jarkko, could you please ack it if it is fine?
-> 
-> So, as said I'm not really confident that a function is
-> even needed in the first place. It's fine if there are
-> enough call sites to make it legit.
+tree:   https://github.com/intel/tdx.git guest-attest
+head:   32e0f882efcb0632adda39679d116f589f249d27
+commit: c7d3f5519cee8f4cc42ed709450b48dd41876418 [3/9] Documentation/x86: Document TDX attestation process
+reproduce:
+        # https://github.com/intel/tdx/commit/c7d3f5519cee8f4cc42ed709450b48dd41876418
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx guest-attest
+        git checkout c7d3f5519cee8f4cc42ed709450b48dd41876418
+        make menuconfig
+        # enable CONFIG_COMPILE_TEST, CONFIG_WARN_MISSING_DOCUMENTS, CONFIG_WARN_ABI_ERRORS
+        make htmldocs
 
-And *if* a named constant is enough, you could probably
-then just squash to the same patch that uses it, right?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-If there overwhelming amount of call sites I do fully
-get having a helper.
+All warnings (new ones prefixed by >>):
 
-BR, Jarkko
+>> Documentation/x86/tdx.rst:275: WARNING: Field list ends without a blank line; unexpected unindent.
+
+vim +275 Documentation/x86/tdx.rst
+
+   266	
+   267	Input parameters: Parameters passed to the IOCTL and related details.
+   268	Output          : Details about output data and return value (with details
+ > 269	                  about the non common error values).
+   270	
+   271	TDX_CMD_GET_REPORT
+   272	------------------
+   273	
+   274	:Input parameters: struct tdx_report_req
+ > 275	:Output          : Upon successful execution, TDREPORT data is copied to
+   276	                   tdx_report_req.tdreport and returns 0 or returns
+   277	                   -EIO on TDCALL failure and standard error number on
+   278	                   other common failures.
+   279	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
