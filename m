@@ -2,153 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69535ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 18:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D251EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 18:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiH1Sh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 14:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55338 "EHLO
+        id S230028AbiH1Slt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 14:41:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiH1Sh4 (ORCPT
+        with ESMTP id S229612AbiH1Slr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 14:37:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 171D53206C;
-        Sun, 28 Aug 2022 11:37:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A794B60BBB;
-        Sun, 28 Aug 2022 18:37:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C7CC433D6;
-        Sun, 28 Aug 2022 18:37:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661711874;
-        bh=jYHVQ0rSstcQBx3vvBMzsqc5C7/5CLyfa/jyYuVEQZM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Vk/UR70PdAV6jPHdLFbhzvud7dL99EaRXVPXgmgxYZ3af/F1WFsfsUijDk+CQtG84
-         /uJshm4Eukzah7YKWgzCZXD014MPovXcpB8RYK7aC0NM0Zq2s4DwFzaKGv/PAsGnWQ
-         yOQjoi9xogfeMnjhMBzOZdD/5M2BpuyA6hhZxi7KubrkU153Oky7s4SV5iOZs1JsmV
-         rH6A1m0jpJZ8Gf7zA2sDbVIQedAHJimN+7F+f3/AHQnabkLe34dIXC7ZI3TrY7/QLl
-         IqV5f8fXiBNj8KeT7Q4kbHajjadI85W5PjeFCyrnAgg0s2LcnhBwm40ldVKe4Ey9Fo
-         EyUmXVZGn0Q8A==
-Date:   Sun, 28 Aug 2022 19:03:32 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: accel: bma400: Add support for single and
- double tap events
-Message-ID: <20220828190332.57ee9aa2@jic23-huawei>
-In-Reply-To: <CAM+2Eu+a8LM+XBELAm9H51EWVwCDqcYaxfdj4_-Sk9TtJ0gLJA@mail.gmail.com>
-References: <20220825194604.15645-1-jagathjog1996@gmail.com>
-        <20220825194604.15645-3-jagathjog1996@gmail.com>
-        <CAHp75Vc5048aQL5cLy-OfBfnH6tz_7z24sFX2H1oGRz+JUyq9Q@mail.gmail.com>
-        <CAM+2Eu+a8LM+XBELAm9H51EWVwCDqcYaxfdj4_-Sk9TtJ0gLJA@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 28 Aug 2022 14:41:47 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 628A32FFD9
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 11:41:46 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id og21so11832972ejc.2
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 11:41:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=9gB7GKo4ZtOkdTHaCKeZUZH/SV1sRdPkXap+dCWBmo0=;
+        b=aGoXvHIs4WqNoqTWcJQi0jqHCrwqxS4x9HKureOIIrnWBW2SSYLm2EIVGp4Nwtq6PG
+         beJuYG7QqykOnmxg9mx7xbblUzyon9aqVcmedbOQk8H6rN1ZbwKSGIN14YL4p64NifX3
+         af+UXxfhYQN9dYiiMTwXBZle8EN1cIHz4XP0g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=9gB7GKo4ZtOkdTHaCKeZUZH/SV1sRdPkXap+dCWBmo0=;
+        b=emasJoSgrYDeTqKw1nutQTNgcGX7PeQk5Z0KSgCVGka79uPvpDFDv10xbqolP/gNwp
+         ZTBR8MvdH+FJyF2SEnvoeQzIFT1i1rCcKzrtgHywLbVGA839yVgGL5aKDTc+q5kyKLSN
+         RSx4HVelOUpCD8BytoicMitNoBkbUYZurO7Ije+mAvKXq5CShV7AAatDMKKrhEGva+oP
+         ePrcAoQ9Ag0A00KST1cqNM8CH8ilZiIfhBh4k5g741X/1gRX85CZ/t3QToFPCAy1lVo1
+         gIGknGCOFguSfjF3rdJlkeqccSTcNE6iWtCz/GYchwBqseut8iwqHxcuENpc7cxsow64
+         2rlQ==
+X-Gm-Message-State: ACgBeo26LExa8/2YDXouFWJ7loTf06K4ugYWKCEGhB7XIjJ96BbQ2EWE
+        ub154i2bEtqPhB4kvQfDWlAD9towY0kaN1AY
+X-Google-Smtp-Source: AA6agR6o2zI1UIndE+y2RTZ/Xar5H1E5fUCNm1LEQEoXK7ggwa0ct05IXb/G5AE8CiC5mqEs1xWKhQ==
+X-Received: by 2002:a17:907:2895:b0:73d:ddfe:79d9 with SMTP id em21-20020a170907289500b0073dddfe79d9mr9388627ejc.387.1661712104707;
+        Sun, 28 Aug 2022 11:41:44 -0700 (PDT)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id bh23-20020a170906a0d700b0073d7e58b1bcsm3472828ejb.157.2022.08.28.11.41.44
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 28 Aug 2022 11:41:44 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id b16so82279wru.7
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 11:41:44 -0700 (PDT)
+X-Received: by 2002:a5d:6248:0:b0:222:cd3b:94c8 with SMTP id
+ m8-20020a5d6248000000b00222cd3b94c8mr4686216wrv.97.1661712103682; Sun, 28 Aug
+ 2022 11:41:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <166170992386.1651569.17504808724724706636@leemhuis.info>
+In-Reply-To: <166170992386.1651569.17504808724724706636@leemhuis.info>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 28 Aug 2022 11:41:27 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjn-GVDLEN0F+WT0PWysqH7HMD+mBjKUr65DEhav47u3w@mail.gmail.com>
+Message-ID: <CAHk-=wjn-GVDLEN0F+WT0PWysqH7HMD+mBjKUr65DEhav47u3w@mail.gmail.com>
+Subject: Re: Linux regressions report for mainline [2022-08-28]
+To:     "Regzbot (on behalf of Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Linux regressions mailing list <regressions@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 27 Aug 2022 03:36:23 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
+On Sun, Aug 28, 2022 at 11:23 AM Regzbot (on behalf of Thorsten
+Leemhuis) <regressions@leemhuis.info> wrote:
+>
+> Not sure, maybe it would have been good if the following fix would have
+> found the way into rc3, as it seems more than just one or two people
+> already stumbled over the regression fixed by it:
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commi=
+t/?h=3Dmaster&id a8e0f6b01b14b2e28ba144e112c883f03a3db2
+> https://lore.kernel.org/all/?q=C5=93bffc7*
 
-> Hi Andy,
-> 
-> On Fri, Aug 26, 2022 at 1:53 AM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> >
-> > On Thu, Aug 25, 2022 at 10:46 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:  
-> > >
-> > > Add support for single and double tap events based on the tap threshold
-> > > value, minimum quiet time before and after the tap and minimum time
-> > > between the taps in the double tap. The INT1 pin is used to interrupt
-> > > and the event is pushed to userspace.  
-> >
-> > ...
-> >  
-> > > +static int tap_reset_timeout[] = {
-> > > +       300000,
-> > > +       400000,
-> > > +       500000,
-> > > +       600000  
-> >
-> > + Comma and so on for the rest of the similar cases.  
-> 
-> This is the terminator case so I have not added a comma in the last.
-> All three tap configurations have only 4 value options.
-> 
-> >  
-> > > +};  
-> >
-> > ...
-> >  
-> > > +static int usec_to_tapreg_raw(int usec, const int *time_list)
-> > > +{
-> > > +       int index;
-> > > +
-> > > +       for (index = 0; index < 4; index++) {  
-> >
-> > Magic. Shouldn't be defined?  
-> 
-> All tap configuration value arrays are of size 4, I will define a
-> macro for that.
-> 
-> >
-> > Also you may add it to each data structure in question.  
-> 
-> Do you mean storing these values in the device's private structure?
+Neither of those links are valid for me.
 
-I suspect Andy means making sure they are all 4 long via
-+static int tap_reset_timeout[NEW_LENGTH_DEFINE] = {
-etc.
+"a8e0f6b01b14b2e28ba144e112c883f03a3db2" doesn't exist in linux-next.
+never mind that that isn't valid link syntax anyway.
 
+The lore.kernel.org link is also just random noise.
 
-> 
-> Tap configuration values are not stored in the device's private
-> structure because.
-> - I am directly accessing the device registers in _read_event_value()
-> and _write_event_value().
-> - These configuration values are not used in the other parts of
-> the driver.
-> - Two of these configurations have a default value so instead of
-> reading and storing these values in the device's private structure
-> during device init, I am directly accessing the device's register.
-> 
-> >  
-> > > +               if (usec == time_list[index])
-> > > +                       return index;
-> > > +       }
-> > > +       return -EINVAL;
-> > > +}  
-> >
-> > ...
-> >  
-> > > +       int ret;
-> > > +       unsigned int mask, field_value;  
-> >
-> > Reversed xmas tree order?
-> >  
-> > > +        * Tap interrupts are operating with the data rate of 200Hz.  
-> >
-> > a data  
-> 
-> Sure, I will correct these in the next patch series.
-> 
-> Thank you
-> Jagath
-> 
-> >  
-> > > +        * See section 4.7 "Tap sensing interrupt" in datasheet v1.2.
-> > > +        */  
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko  
+So I'm not actually sure what you are trying to say...
 
+           Linus
