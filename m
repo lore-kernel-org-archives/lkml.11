@@ -2,106 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F66EECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 09:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B67E7C0502C
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 09:58:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229549AbiH1J5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 05:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
+        id S229565AbiH1J6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 05:58:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiH1J5K (ORCPT
+        with ESMTP id S229684AbiH1J4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 05:57:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFEF355090
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 02:57:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 28 Aug 2022 05:56:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F263D4CA16
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 02:56:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661680561;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=KmoVkJKn7sDlJ8XCXp6Z2DlsC39Vq8jBiod6jjguAyk=;
+        b=B7/KTyOrewLL6TOj0YQCKPfVy4cy38hotDl0AEEE8AWhLqgSua5ai5/TC832YakEBTznbq
+        3ULPsEOyq7o/hFCwRZCkNtLIz8MokFyL5WrnhNuakJVWWgnLAjXyr/T7i3/b0aOnJ7C3+r
+        sdevlVyQdlEaVquI7WMyZjNCqDarfGU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-378--Y5_IFOCNa6f2P_lc1v6tA-1; Sun, 28 Aug 2022 05:55:57 -0400
+X-MC-Unique: -Y5_IFOCNa6f2P_lc1v6tA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4708D60FA0
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C789C433D6;
-        Sun, 28 Aug 2022 09:57:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661680628;
-        bh=LlULD/IKynjpnLtSqXlGpYdUZVoQFXgtjS3/RSpKnMw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c8bo5YZVuhSDQnFndpW4iAzdcEMAVonsRehPOM8APZU70KhIk5ag74U515mXJa8/b
-         S37xpSwEHmCoJt256XoXHz0K7Q0jtpmZaS4psVg4lrjVm5krHX1RrbkGzRu+hIOlHg
-         uOOhfahroinEfwulmnCWcUksrD8gLpJ5xHITEkcDju5qcKMitrg7WYs+a+ihsrdz/u
-         yXy90Hkfbjwb1TeONnRpuKhNTmMeLjv8DcrQ8T8nXHC6lj2cjs2JZQXC3k/180R75x
-         1zpYYFF8d9VDY778nPUL+7MUdjiXcfyqCRSvQ5qWArW3tGl4TTM8tzknQO1QeRfYo9
-         T9v+Ez9cSBUUw==
-Received: by pali.im (Postfix)
-        id A47937B3; Sun, 28 Aug 2022 11:57:05 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Joel Stanley <joel@jms.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] powerpc/boot: Don't always pass -mcpu=powerpc when building 32-bit uImage
-Date:   Sun, 28 Aug 2022 11:56:59 +0200
-Message-Id: <20220828095659.4061-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220820105200.30425-1-pali@kernel.org>
-References: <20220820105200.30425-1-pali@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6EB3780029D;
+        Sun, 28 Aug 2022 09:55:57 +0000 (UTC)
+Received: from localhost (ovpn-12-25.pek2.redhat.com [10.72.12.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4F5794010D43;
+        Sun, 28 Aug 2022 09:55:55 +0000 (UTC)
+Date:   Sun, 28 Aug 2022 17:55:52 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, hch@infradead.org,
+        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 01/11] mm/ioremap: change the return value of
+ io[re|un]map_allowed and rename
+Message-ID: <Yws7qGmhFG0ig/tz@MiWiFi-R3L-srv>
+References: <20220820003125.353570-1-bhe@redhat.com>
+ <20220820003125.353570-2-bhe@redhat.com>
+ <YwspB8OP8/Phv+tO@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwspB8OP8/Phv+tO@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_TARGET_CPU is specified then pass its value to the compiler
--mcpu option. This fixes following build error when building kernel with
-powerpc e500 SPE capable cross compilers:
+On 08/28/22 at 10:36am, Alexander Gordeev wrote:
+> On Sat, Aug 20, 2022 at 08:31:15AM +0800, Baoquan He wrote:
+> 
+> Hi Baoquan,
+> 
+> >  arch_ioremap() return a bool,
+> >    - IS_ERR means return an error
+> >    - NULL means continue to remap
+> >    - a non-NULL, non-IS_ERR pointer is returned directly
+> >  arch_iounmap() return a bool,
+> >    - 0 means continue to vunmap
+> >    - error code means skip vunmap and return directly
+> 
+> It would make more sense if the return values were described
+> from the prospective of an architecture, not the caller.
+> I.e true - unmapped, false - not supported, etc.
 
-    BOOTAS  arch/powerpc/boot/crt0.o
-  powerpc-linux-gnuspe-gcc: error: unrecognized argument in option ‘-mcpu=powerpc’
-  powerpc-linux-gnuspe-gcc: note: valid arguments to ‘-mcpu=’ are: 8540 8548 native
-  make[1]: *** [arch/powerpc/boot/Makefile:231: arch/powerpc/boot/crt0.o] Error 1
+Yes, sounds reasonable to me, thanks.
 
-Similar change was already introduced for the main powerpc Makefile in
-commit 446cda1b21d9 ("powerpc/32: Don't always pass -mcpu=powerpc to the
-compiler").
+While ChristopheL suggested to take another way. Please see below link.
+I will reply to Christophe to discuss that.
 
-Fixes: 40a75584e526 ("powerpc/boot: Build wrapper for an appropriate CPU")
-Cc: stable@vger.kernel.org # 446cda1b21d9 ("powerpc/32: Don't always pass -mcpu=powerpc to the compiler")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- arch/powerpc/boot/Makefile | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+https://lore.kernel.org/all/8df89136-a7f2-9b66-d522-a4fb9860bf22@csgroup.eu/T/#u
 
-diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
-index a9cd2ea4a861..1957a3de7a1c 100644
---- a/arch/powerpc/boot/Makefile
-+++ b/arch/powerpc/boot/Makefile
-@@ -38,13 +38,19 @@ BOOTCFLAGS    := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
- 		 $(LINUXINCLUDE)
- 
- ifdef CONFIG_PPC64_BOOT_WRAPPER
--ifdef CONFIG_CPU_LITTLE_ENDIAN
--BOOTCFLAGS	+= -m64 -mcpu=powerpc64le
-+BOOTCFLAGS	+= -m64
- else
--BOOTCFLAGS	+= -m64 -mcpu=powerpc64
-+BOOTCFLAGS	+= -m32
- endif
-+
-+ifdef CONFIG_TARGET_CPU_BOOL
-+BOOTCFLAGS	+= -mcpu=$(CONFIG_TARGET_CPU)
-+else ifdef CONFIG_PPC64_BOOT_WRAPPER
-+ifdef CONFIG_CPU_LITTLE_ENDIAN
-+BOOTCFLAGS	+= -mcpu=powerpc64le
- else
--BOOTCFLAGS	+= -m32 -mcpu=powerpc
-+BOOTCFLAGS	+= -mcpu=powerpc64
-+endif
- endif
- 
- BOOTCFLAGS	+= -isystem $(shell $(BOOTCC) -print-file-name=include)
--- 
-2.20.1
+If the current arch_ioremap() way is taken, I will change the
+description as you said.
+
+> 
+> > diff --git a/mm/ioremap.c b/mm/ioremap.c
+> > index 8652426282cc..99fde69becc7 100644
+> > --- a/mm/ioremap.c
+> > +++ b/mm/ioremap.c
+> > @@ -17,6 +17,13 @@ void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+> >  	unsigned long offset, vaddr;
+> >  	phys_addr_t last_addr;
+> >  	struct vm_struct *area;
+> > +	void __iomem *ioaddr;
+> > +
+> > +	ioaddr = arch_ioremap(phys_addr, size, prot);
+> > +	if (IS_ERR(ioaddr))
+> > +		return NULL;
+> > +	else if (ioaddr)
+> > +		return ioaddr;
+> 
+> It seems to me arch_ioremap() could simply return an address
+> or an error. Then IOMEM_ERR_PTR(-ENOSYS) if the architecture
+> does not support it reads much better than the cryptic NULL.
+
+I may not follow. Returning NULL means arch_ioremap() doesn't give out a
+mapped address and doesn't encounter wrong thing. NULL is a little
+twisting, maybe '0' is better?
+
+> 
+> Probably arch_iounmap() returning error would look better too,
+> though not sure about that.
+
+Don't follow either. arch_iounmap() is returning error now. 
 
