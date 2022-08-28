@@ -2,103 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E77ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 14:21:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F3AFECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 14:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229445AbiH1OVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 10:21:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47668 "EHLO
+        id S229547AbiH1OZI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 10:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiH1OV1 (ORCPT
+        with ESMTP id S229483AbiH1OZD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 10:21:27 -0400
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61775192AE;
-        Sun, 28 Aug 2022 07:21:24 -0700 (PDT)
-Received: by mail-oi1-f170.google.com with SMTP id n124so7729666oih.7;
-        Sun, 28 Aug 2022 07:21:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:references:in-reply-to:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=Q5Bc5FZPo9xDw7LHXtSCc4yqGa5GrN6FlG7RHElDxNk=;
-        b=R8O9CONTCZIpx1gl1pK6rNoALc1Ypjc+6VqJjIjYJZHoOHZLyO4GjcjthC7In6HSYm
-         Nu70/swOdwc7qHZpSQWrNT2UFgbjE5qfRa948KF4sN5MUCnjMEr+LHChJNyZqWnbnShb
-         IF+v4lpvYqbh0J4GxVVeJLoessXbDAlj8p5EaZ5iJiFif9OjEhupbWh+XWjgWmyG7v6o
-         OWEB3+4qDHGxUTDqANtNigJABVGnpPWlrUT5Wrmvene3ToaBEylacKxKYawqOs45c9xh
-         iOBf4P3viUmcXtJEylPgb5smwjA9F8tnx7ZB8fWSz9oJm8OHYyPRDg8Z5P47IxinUOuh
-         Jxhg==
-X-Gm-Message-State: ACgBeo0X16CZb6iEsaxBD9QD5TsY0Kc72wNg7mSNE+rc61aTBqcY6hNC
-        DDAKENfUpkgpTKYDr1JROg==
-X-Google-Smtp-Source: AA6agR41TAPZjmJinjP6h5JISv8Jmi9exlcKPxNGFmorLt4lJm7OrzRM9R4/PZ25sGnlQL6s4qP7DQ==
-X-Received: by 2002:a05:6808:647:b0:343:43b8:3a18 with SMTP id z7-20020a056808064700b0034343b83a18mr5247052oih.57.1661696483105;
-        Sun, 28 Aug 2022 07:21:23 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r2-20020a056830134200b006370815815asm4024921otq.61.2022.08.28.07.21.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 07:21:22 -0700 (PDT)
-Received: (nullmailer pid 3159702 invoked by uid 1000);
-        Sun, 28 Aug 2022 14:21:16 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Robert Marko <robert.marko@sartura.hr>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Sun, 28 Aug 2022 10:25:03 -0400
+Received: from 2.mo560.mail-out.ovh.net (2.mo560.mail-out.ovh.net [188.165.53.149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A2E59596
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 07:25:00 -0700 (PDT)
+Received: from player715.ha.ovh.net (unknown [10.108.4.73])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 199E623886
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 14:07:20 +0000 (UTC)
+Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player715.ha.ovh.net (Postfix) with ESMTPSA id 28D8F2DC60EFA;
+        Sun, 28 Aug 2022 14:06:58 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-95G00149f8c645-e4ec-4f64-b7dd-17f42bb814aa,
+                    E8B3FA25B4F8D98D1FC0498694F8FFDB0E70245B) smtp.auth=rafal@milecki.pl
+X-OVh-ClientIp: 194.187.74.233
+Message-ID: <b46d0db0-bd82-9ea3-281d-cc3ee3e9b002@milecki.pl>
+Date:   Sun, 28 Aug 2022 16:06:58 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH v1 06/14] nvmem: core: introduce NVMEM layouts
+To:     Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-In-Reply-To: <20220826154650.615582-5-maxime.chevallier@bootlin.com>
-References: <20220826154650.615582-1-maxime.chevallier@bootlin.com> <20220826154650.615582-5-maxime.chevallier@bootlin.com>
-Subject: Re: [PATCH net-next v3 4/5] net: dt-bindings: Introduce the Qualcomm IPQESS Ethernet controller
-Date:   Sun, 28 Aug 2022 09:21:16 -0500
-Message-Id: <1661696476.855610.3159701.nullmailer@robh.at.kernel.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-7-michael@walle.cc>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+In-Reply-To: <20220825214423.903672-7-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Ovh-Tracer-Id: 8545298820861242299
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejledgjeehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvvehfhfgjtgfgsehtjeertddtfeejnecuhfhrohhmpeftrghfrghlucfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpedtgeetheeutddvudekuddtkeetveehteegleehffetkeehjeetfffgveegkeefueenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejudehrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehiedt
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 26 Aug 2022 17:46:49 +0200, Maxime Chevallier wrote:
-> Add the DT binding for the IPQESS Ethernet Controller. This is a simple
-> controller, only requiring the phy-mode, interrupts, clocks, and
-> possibly a MAC address setting.
-> 
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> ---
-> V2->V3:
->  - Cleanup on reset and clock names
-> V1->V2:
->  - Fixed the example
->  - Added reset and clocks
->  - Removed generic ethernet attributes
-> 
->  .../devicetree/bindings/net/qcom,ipqess.yaml  | 95 +++++++++++++++++++
->  1 file changed, 95 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/qcom,ipqess.yaml
-> 
+On 25.08.2022 23:44, Michael Walle wrote:
+> For now, the content can be
+> described by a device tree or a board file. But this only works if the
+> offsets and lengths are static and don't change.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/net/qcom,ipqess.example.dtb:0:0: /example-0/ethernet@c080000: failed to match any schema with compatible: ['qcom,ipq4019-ess-edma']
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Not really true (see Broadcom's NVRAM and U-Boot's env data).
