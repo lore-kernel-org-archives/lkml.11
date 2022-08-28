@@ -2,108 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB2FC0502A
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A47DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230188AbiH1Rks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 13:40:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32934 "EHLO
+        id S230194AbiH1Rlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 13:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiH1Rkq (ORCPT
+        with ESMTP id S229543AbiH1Rlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 13:40:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DFD8DF58;
-        Sun, 28 Aug 2022 10:40:45 -0700 (PDT)
+        Sun, 28 Aug 2022 13:41:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C17BDFE9
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 10:41:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E06DD600BE;
-        Sun, 28 Aug 2022 17:40:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFD8C433C1;
-        Sun, 28 Aug 2022 17:40:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 279ABB80B84
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 17:41:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98891C433C1;
+        Sun, 28 Aug 2022 17:41:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661708444;
-        bh=M6V49NugIE7cNc4R62990NdetudL6kmloeJE8uOD5E8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=c6aDkTUZ9DD4nkoBFIRYme/HO8S9c1GhteVBULvXGeKP7mSWoFlJDzWR2rVOj5Wq/
-         kKV4UPECmB9Ai+CPG8xg9mTFNkAn4TmYG5bJN+6I/J2W6QWOhxWTZX27h27b58bZ93
-         ECCzXdFHAJ4vUIgt4zhk0ynLnYUlrSvANYrrzRrvLsnay2mNnk6Z7tIWwmZ8D9uM+4
-         50G6ckzh+drL7udCYLlip+SmY11OpipJ0v5eFbNIQc8WlpvXC3PTS/TRkI2y+q5OA6
-         +Puml7OcQAOYlkxUXgxB/Ux/3VgIePPOQz0cfo8i5P5sU2Tiv4Ow0nksJZy9h+RiRX
-         jMh5jJrWHRWSg==
-Date:   Sun, 28 Aug 2022 18:06:23 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        kernel <kernel@axis.com>, Lars-Peter Clausen <lars@metafoo.de>,
-        Axel Jonsson <Axel.Jonsson@axis.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] iio: adc: mcp320x: use device managed functions
-Message-ID: <20220828180623.54939dd7@jic23-huawei>
-In-Reply-To: <CAHp75VffYzNTfrki4+o8JJayUGo1n91bP0hSzB-fR=RfcFq-fw@mail.gmail.com>
-References: <20220824104002.2749075-1-vincent.whitchurch@axis.com>
-        <20220824104002.2749075-2-vincent.whitchurch@axis.com>
-        <CAHp75Vf4C0hauoT7F26zS7815Cps=W3o1_HHmWKVbrUi90FcrQ@mail.gmail.com>
-        <Ywiwv8TZ5oomTuHK@axis.com>
-        <CAHp75VffYzNTfrki4+o8JJayUGo1n91bP0hSzB-fR=RfcFq-fw@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1661708498;
+        bh=oWbacq76FiLZIfuBUsffJq7HQY/+kQwKoxWKLOvIweY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VXZAU+Wy9SFqAjZJxRg6k8LSAoVRE3YdgjF/vMFnCwkXO12n80gFY5mjZKWKPVCVA
+         zRwslSfMZr8BsoDOEtOrdYNhyHqML7MIgo0SNRCBsjBCV9NUgWOdMhMyh0sU2j7gbA
+         SXVAhkKvHDYSxuen3IgJA0CZXCcL+vTDD41q63f1wo0OLUTFJO0xSeXsY8P8DBDIEO
+         r8oeaHv5y9E6p/SgQMD9p5lILG3Y3RrDZfi6JMstUAnSZVkkpaiatOvYKSe49N9Um1
+         WyuIzrNjTGJ82sUCoVfMhfRNeAWczzY3wZVA7e/xl5oksAvX3TxsOkZX0t27Ckg6gf
+         UgVHabu3abC8Q==
+Received: by pali.im (Postfix)
+        id BDF7C7B3; Sun, 28 Aug 2022 19:41:35 +0200 (CEST)
+Date:   Sun, 28 Aug 2022 19:41:35 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Joel Stanley <joel@jms.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] powerpc/boot: Don't always pass -mcpu=powerpc when
+ building 32-bit uImage
+Message-ID: <20220828174135.rcql4uiunqbnn5gh@pali>
+References: <20220820105200.30425-1-pali@kernel.org>
+ <20220828095659.4061-1-pali@kernel.org>
+ <e3cb2642-20e4-6c26-104d-329a04260946@csgroup.eu>
+ <c8d657db-02da-7840-5b40-755e47277a2c@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c8d657db-02da-7840-5b40-755e47277a2c@csgroup.eu>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 26 Aug 2022 14:57:44 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-
-> On Friday, August 26, 2022, Vincent Whitchurch <vincent.whitchurch@axis.com>
-> wrote:
+On Sunday 28 August 2022 17:39:25 Christophe Leroy wrote:
+> Le 28/08/2022 à 19:33, Christophe Leroy a écrit :
+> > 
+> > 
+> > Le 28/08/2022 à 11:56, Pali Rohár a écrit :
+> >> When CONFIG_TARGET_CPU is specified then pass its value to the compiler
+> >> -mcpu option. This fixes following build error when building kernel with
+> >> powerpc e500 SPE capable cross compilers:
+> >>
+> >>      BOOTAS  arch/powerpc/boot/crt0.o
+> >>    powerpc-linux-gnuspe-gcc: error: unrecognized argument in option 
+> >> ‘-mcpu=powerpc’
+> >>    powerpc-linux-gnuspe-gcc: note: valid arguments to ‘-mcpu=’ are: 
+> >> 8540 8548 native
+> >>    make[1]: *** [arch/powerpc/boot/Makefile:231: 
+> >> arch/powerpc/boot/crt0.o] Error 1
+> > 
+> > corenet64_smp_defconfig :
+> > 
+> >    BOOTAS  arch/powerpc/boot/crt0.o
+> > powerpc64-linux-gcc: error: missing argument to '-mcpu='
+> > make[1]: *** [arch/powerpc/boot/Makefile:237 : arch/powerpc/boot/crt0.o] 
+> > Erreur 1
+> > make: *** [arch/powerpc/Makefile:253 : uImage] Erreur 2
+> > 
+> > 
 > 
-> > On Thu, Aug 25, 2022 at 10:01:58PM +0200, Andy Shevchenko wrote:  
-> > > On Wed, Aug 24, 2022 at 1:46 PM Vincent Whitchurch
-> > > <vincent.whitchurch@axis.com> wrote:  
-> > > >
-> > > > Use devm_* functions in probe to remove some code and to make it easier
-> > > > to add further calls to the probe function.  
-> > >
-> > > ...
-> > >  
-> > > > +       mutex_init(&adc->lock);  
-> > >  
-> > > > +       return devm_iio_device_register(&spi->dev, indio_dev);  
-> > >
-> > > Do you still need to destroy the mutex? If so, you may not call devm_
-> > > variant of iio_device_register() or you have to wrap mutex_destroy()
-> > > accordingly.  
-> >
-> > mutex_destroy() is only used to ensure that mutex debugging catches
-> > further use of the mutex.  Isn't it rather overkill to add specific
-> > cleanup to do only that, especially in this case when it's anyway going
-> > to get freed immediately afterwards?  The vast majority of IIO drivers
-> > don't call mutex_destroy() (256 calls to mutex_init() in HEAD vs 12 to
-> > mutex_destroy()).
-> >  
+> Seems like in fact, E5500_CPU and E6500_CPU are not taken into account 
+> in CONFIG_TARGET_CPU, and get special treatment directly in 
+> arch/powerpc/Makefile.
 > 
+> This goes unnoticed because of CFLAGS-$(CONFIG_TARGET_CPU_BOOL) += 
+> $(call cc-option,-mcpu=$(CONFIG_TARGET_CPU))
 > 
->  So 256 - 12 = 244 drivers are not pedantic.
+> I think we need to fix that prior to your patch.
 
-I long ago decided mutex_destroy() in remove() paths just isn't worth the
-effort. It makes absolute sense in more complex flows, but in cases
-like this it's just annoying and makes the cleanup harder.
+It looks like that CONFIG_TARGET_CPU is broken.
 
-Hence I'd prefer we just ignore it's existence in cases like this.
+  $ make ARCH=powerpc corenet64_smp_defconfig CROSS_COMPILE=powerpc64-linux-gnu-
+  ...
+  # configuration written to .config
 
-If someone finds me a bug that it would have caught then I might
-change my mind ;)
+  $ grep CONFIG_TARGET_CPU .config
+  CONFIG_TARGET_CPU_BOOL=y
 
-If anyone wants a giggle via adding a devm_mutex_init() call it
-might be interesting to see the responses.  Would be unusual in
-that it would just be mutex_init() in unless the mutex debugging
-is turned on...
+CONFIG_TARGET_CPU_BOOL is set but CONFIG_TARGET_CPU not!
 
-Jonathan
-
-
+> > Christophe
+> > 
+> > 
+> >>
+> >> Similar change was already introduced for the main powerpc Makefile in
+> >> commit 446cda1b21d9 ("powerpc/32: Don't always pass -mcpu=powerpc to the
+> >> compiler").
+> >>
+> >> Fixes: 40a75584e526 ("powerpc/boot: Build wrapper for an appropriate 
+> >> CPU")
+> >> Cc: stable@vger.kernel.org # 446cda1b21d9 ("powerpc/32: Don't always 
+> >> pass -mcpu=powerpc to the compiler")
+> >> Signed-off-by: Pali Rohár <pali@kernel.org>
+> >> ---
+> >>   arch/powerpc/boot/Makefile | 14 ++++++++++----
+> >>   1 file changed, 10 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/arch/powerpc/boot/Makefile b/arch/powerpc/boot/Makefile
+> >> index a9cd2ea4a861..1957a3de7a1c 100644
+> >> --- a/arch/powerpc/boot/Makefile
+> >> +++ b/arch/powerpc/boot/Makefile
+> >> @@ -38,13 +38,19 @@ BOOTCFLAGS    := -Wall -Wundef -Wstrict-prototypes 
+> >> -Wno-trigraphs \
+> >>            $(LINUXINCLUDE)
+> >>   ifdef CONFIG_PPC64_BOOT_WRAPPER
+> >> -ifdef CONFIG_CPU_LITTLE_ENDIAN
+> >> -BOOTCFLAGS    += -m64 -mcpu=powerpc64le
+> >> +BOOTCFLAGS    += -m64
+> >>   else
+> >> -BOOTCFLAGS    += -m64 -mcpu=powerpc64
+> >> +BOOTCFLAGS    += -m32
+> >>   endif
+> >> +
+> >> +ifdef CONFIG_TARGET_CPU_BOOL
+> >> +BOOTCFLAGS    += -mcpu=$(CONFIG_TARGET_CPU)
+> >> +else ifdef CONFIG_PPC64_BOOT_WRAPPER
+> >> +ifdef CONFIG_CPU_LITTLE_ENDIAN
+> >> +BOOTCFLAGS    += -mcpu=powerpc64le
+> >>   else
+> >> -BOOTCFLAGS    += -m32 -mcpu=powerpc
+> >> +BOOTCFLAGS    += -mcpu=powerpc64
+> >> +endif
+> >>   endif
+> >>   BOOTCFLAGS    += -isystem $(shell $(BOOTCC) -print-file-name=include)
