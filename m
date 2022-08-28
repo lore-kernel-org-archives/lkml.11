@@ -2,186 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6651ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D32DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbiH1QZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 12:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
+        id S229731AbiH1Q2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 12:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiH1QZ5 (ORCPT
+        with ESMTP id S230132AbiH1Q0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 12:25:57 -0400
-X-Greylist: delayed 3598 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 28 Aug 2022 09:25:53 PDT
-Received: from 6.mo561.mail-out.ovh.net (6.mo561.mail-out.ovh.net [188.165.43.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FAE13EBE
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:25:53 -0700 (PDT)
-Received: from player756.ha.ovh.net (unknown [10.110.171.5])
-        by mo561.mail-out.ovh.net (Postfix) with ESMTP id 8577421A49
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 15:06:16 +0000 (UTC)
-Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player756.ha.ovh.net (Postfix) with ESMTPSA id 296002D1E2613;
-        Sun, 28 Aug 2022 15:05:54 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-101G0040d0c2933-f865-4457-8ea0-b423c711832b,
-                    E8B3FA25B4F8D98D1FC0498694F8FFDB0E70245B) smtp.auth=rafal@milecki.pl
-X-OVh-ClientIp: 194.187.74.233
-Message-ID: <768ff63a-54f5-9cde-e888-206cdf018df3@milecki.pl>
-Date:   Sun, 28 Aug 2022 17:05:53 +0200
+        Sun, 28 Aug 2022 12:26:22 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEB213F7B
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:26:21 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id r22so5704622pgm.5
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:26:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc;
+        bh=8C0bJbQzCEFFcfsrWxI0t7BFjtp2DVljC6JXCFj30lQ=;
+        b=U9g+XjwM+sAxmgza1T6GKPoRuaTAvqS8wBPXhhhDl1bqMJbhfvvywWM8Nh6xRPi1av
+         c8opNN+Vah09BMgYNQ/nunnyCqOMyXAx94RdXOQ0PTXzsdEVTWSpM/+VEQQINbhgRijL
+         2qU8G3VCIB7Fgi2nsQqOTHsozTsGKslKBrPt9y3Fwr1vY6bK4kHbVIBm7z6YHouMZZuc
+         dCNxLfbq30C/6Own/t7W4we/tyxdo+l7QSfOrgbO0AYYaHFEjJolHdDc8OoT/DDrFNOR
+         BRU/z6V/TbiVSXK15o9KtgWCNN2TpEHWl+bLO8EwWDVAvf2nVTaKVas69mZI9YGyXvpu
+         H74g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc;
+        bh=8C0bJbQzCEFFcfsrWxI0t7BFjtp2DVljC6JXCFj30lQ=;
+        b=1yucxVlwr4Cd+KtCF1wLtfIXtoipsnLOrgR8/YxQAuAqHZbMH8PgNNtKzVUyRMnqsS
+         ntYHrtfoMUnj0eAkh+jCcz+CBb2CCxELrWRYnt4RFRRdKrOU3ZzjulxKBLq4hXBkUr/p
+         BaH+AwLkGAyyeeHTuSXVnetT2BpcCdaundXJSREfuyiA7qUkR/mxwT95ZvDaiRyw++T6
+         f6Btc9ubUKHtr8G07VXZG2RUgS0ski6DC0nIiHBTUkb77WRdZSE1TM+fe+49Z4J1JAYh
+         QOgeI/q7mKJ9mJA8sraDcLiIrnxkd1XAMKIA5hNyih6jt4/aNEfKrdlYA/sQCoDWWwvn
+         EeuA==
+X-Gm-Message-State: ACgBeo3Cns16XA+XBPHni4/NDOiPmReAy8lUqmJO2NMkhGg5bU/ZITIN
+        qlkcIHwIpDNBoBdYIAbW3waaLtzuNmfq6BFi
+X-Google-Smtp-Source: AA6agR7rYAuDcg29gLiNycxpFXqp0FffhM2jislbW58raWnHf+EyySRqCvJHySmdx3H9sJWNnIEqMA==
+X-Received: by 2002:a63:1018:0:b0:42c:2e12:e79d with SMTP id f24-20020a631018000000b0042c2e12e79dmr322683pgl.508.1661703980773;
+        Sun, 28 Aug 2022 09:26:20 -0700 (PDT)
+Received: from ArchLinux ([60.177.34.208])
+        by smtp.gmail.com with ESMTPSA id l5-20020a170903120500b00174c1855cd9sm695799plh.267.2022.08.28.09.26.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Aug 2022 09:26:20 -0700 (PDT)
+References: <20220713134823.95141-1-schspa@gmail.com>
+ <20220713134823.95141-2-schspa@gmail.com>
+ <aad1078b-2620-3122-7796-24e2451d36d6@arm.com>
+User-agent: mu4e 1.7.5; emacs 28.1
+From:   Schspa Shi <schspa@gmail.com>
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, rostedt@goodmis.org,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/2] sched/rt: Trying to push current task when
+ target disable migrating
+Date:   Sun, 28 Aug 2022 23:54:39 +0800
+In-reply-to: <aad1078b-2620-3122-7796-24e2451d36d6@arm.com>
+Message-ID: <m2sflgl4gt.fsf@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-Subject: Re: [PATCH v1 00/14] nvmem: core: introduce NVMEM layouts
-To:     Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-References: <20220825214423.903672-1-michael@walle.cc>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-In-Reply-To: <20220825214423.903672-1-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Ovh-Tracer-Id: 9540875810652269499
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejledgkeejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvvehfhfgjtgfgsehtjeertddtfeejnecuhfhrohhmpeftrghfrghlucfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeehkeevtdeiudeffeefjeevffdvteeuhfegfffgveefffejkeeuieetueevtdeutdenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppedtrddtrddtrddtpdduleegrddukeejrdejgedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeehiedrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehrrghfrghlsehmihhlvggtkhhirdhplhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeiud
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.08.2022 23:44, Michael Walle wrote:
-> This is now the third attempt to fetch the MAC addresses from the VPD
-> for the Kontron sl28 boards. Previous discussions can be found here:
-> https://lore.kernel.org/lkml/20211228142549.1275412-1-michael@walle.cc/
-> 
-> 
-> NVMEM cells are typically added by board code or by the devicetree. But
-> as the cells get more complex, there is (valid) push back from the
-> devicetree maintainers to not put that handling in the devicetree.
 
-I dropped the ball waiting for Rob's reponse in the
-[PATCH 0/2] dt-bindings: nvmem: support describing cells
-https://lore.kernel.org/linux-arm-kernel/0b7b8f7ea6569f79524aea1a3d783665@walle.cc/T/
+Dietmar Eggemann <dietmar.eggemann@arm.com> writes:
 
-Before we go any further can we have a clear answer from Rob (or
-Krzysztof now too?):
+> On 13/07/2022 15:48, Schspa Shi wrote:
+>> When the task to push disable migration, retry to push the current
+>> running task on this CPU away, instead doing nothing for this migrate
+>> disabled task.
+>> 
+>> Signed-off-by: Schspa Shi <schspa@gmail.com>
+>
+> Unfortunately, I can't recreate this issue on my Arm64 6 CPUs system on
+> mainline or PREEMPT_RT (linux-5.19.y-rt and v5.10.59-rt52) (the one you
+> mentioned in v6.)
+>
+> With an rt-app rt workload of 12-18 periodic rt-tasks (4/16ms) all with
+> different priorities I never ran into a `is_migration_disabled(task)`
+> situation. I only ever get `task_rq(task) != rq` or `task_running(rq,
+> task)` under the `if (double_lock_balance(rq, lowest_rq))` condition in
+> find_lock_lowest_rq().
+>
 
+I think we need to write a kernel module to add more hard irq context to
+increase the probability of recurrence.
 
-Is there any point in having bindings like:
-
-compatible = "mac-address";
-
-for NVMEM cells nodes? So systems (Linux, U-Boot) can handle them in a
-more generic way?
-
-
-Or do we prefer more conditional drivers code (or layouts code as in
-this Michael's proposal) that will handle cells properly based on their
-names?
+I never recreate this issue with my test case too. But our test team can
+reproduce the problem, they have more machines to reproduce the problem,
+and the problem is easier to reproduce when the CPU is hotplugging.
 
 
-I'm not arguing for any solution. I just want to make sure we choose the
-right way to proceed.
+> [...]
+>
+>>  	// XXX validate p is still the highest prio task
+>>  	if (task_rq(p) == rq) {
+>> diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+>> index cb3b886a081c..21af20445e7f 100644
+>> --- a/kernel/sched/deadline.c
+>> +++ b/kernel/sched/deadline.c
+>> @@ -2335,6 +2335,15 @@ static int push_dl_task(struct rq *rq)
+>>  		 */
+>>  		task = pick_next_pushable_dl_task(rq);
+>>  		if (task == next_task) {
+>> +			/*
+>> +			 * If next task has now disabled migrating, see if we
+>> +			 * can push the current task.
+>> +			 */
+>> +			if (unlikely(is_migration_disabled(task))) {
+>> +				put_task_struct(next_task);
+>> +				goto retry;
+>> +			}
+>> +
+>
+> Looks like for DL this makes no sense since we're not pushing rq->curr
+> in `retry:` like for RT in case `is_migration_disabled(next_task)`.
+>
 
+It seems we have the opportunity to execute resched_curr, which will
+have a similar effect. I should change the comments for this for next
+patch version.
 
-> Therefore, introduce NVMEM layouts. They operate on the NVMEM device and
-> can add cells during runtime. That way it is possible to add complex
-> cells than it is possible right now with the offset/length/bits
-> description in the device tree. For example, you can have post processing
-> for individual cells (think of endian swapping, or ethernet offset
-> handling). You can also have cells which have no static offset, like the
-> ones in an u-boot environment. The last patches will convert the current
-> u-boot environment driver to a NVMEM layout and lifting the restriction
-> that it only works with mtd devices. But as it will change the required
-> compatible strings, it is marked as RFC for now. It also needs to have
-> its device tree schema update which is left out here.
+> [...]
+>
+> Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
-So do I get it right that we want to have:
-
-1. NVMEM drivers for providing I/O access to NVMEM devices
-2. NVMEM layouts for parsing & NVMEM cells and translating their content
-?
-
-I guess it sounds good and seems to be a clean solution.
-
-
-One thing I believe you need to handle is replacing "cell_post_process"
-callback with your layout thing.
-
-I find it confusing to have
-1. cell_post_process() CB at NVMEM device level
-2. post_process() CB at NVMEM cell level
-
-
-> For now, the layouts are selected by a specifc compatible string in a
-> device tree. E.g. the VPD on the kontron sl28 do (within a SPI flash node):
->    compatible = "kontron,sl28-vpd", "user-otp";
-> or if you'd use the u-boot environment (within an MTD patition):
->    compatible = "u-boot,env", "nvmem";
-> 
-> The "user-otp" (or "nvmem") will lead to a NVMEM device, the
-> "kontron,sl28-vpd" (or "u-boot,env") will then apply the specific layout
-> on top of the NVMEM device.
-> 
-> NVMEM layouts as modules?
-> While possible in principle, it doesn't make any sense because the NVMEM
-> core can't be compiled as a module. The layouts needs to be available at
-> probe time. (That is also the reason why they get registered with
-> subsys_initcall().) So if the NVMEM core would be a module, the layouts
-> could be modules, too.
-> 
-> Michael Walle (14):
->    net: add helper eth_addr_add()
->    of: base: add of_parse_phandle_with_optional_args()
->    nvmem: core: add an index parameter to the cell
->    nvmem: core: drop the removal of the cells in nvmem_add_cells()
->    nvmem: core: add nvmem_add_one_cell()
->    nvmem: core: introduce NVMEM layouts
->    nvmem: core: add per-cell post processing
->    dt-bindings: mtd: relax the nvmem compatible string
->    dt-bindings: nvmem: add YAML schema for the sl28 vpd layout
->    nvmem: layouts: add sl28vpd layout
->    nvmem: core: export nvmem device size
->    nvmem: layouts: rewrite the u-boot-env driver as a NVMEM layout
->    nvmem: layouts: u-boot-env: add device node
->    arm64: dts: ls1028a: sl28: get MAC addresses from VPD
-> 
->   .../devicetree/bindings/mtd/mtd.yaml          |   7 +-
->   .../nvmem/layouts/kontron,sl28-vpd.yaml       |  52 +++++
->   .../fsl-ls1028a-kontron-kbox-a-230-ls.dts     |   8 +
->   .../fsl-ls1028a-kontron-sl28-var1.dts         |   2 +
->   .../fsl-ls1028a-kontron-sl28-var2.dts         |   4 +
->   .../fsl-ls1028a-kontron-sl28-var4.dts         |   2 +
->   .../freescale/fsl-ls1028a-kontron-sl28.dts    |  13 ++
->   drivers/nvmem/Kconfig                         |   2 +
->   drivers/nvmem/Makefile                        |   1 +
->   drivers/nvmem/core.c                          | 183 +++++++++++----
->   drivers/nvmem/imx-ocotp.c                     |   4 +-
->   drivers/nvmem/layouts/Kconfig                 |  22 ++
->   drivers/nvmem/layouts/Makefile                |   7 +
->   drivers/nvmem/layouts/sl28vpd.c               | 144 ++++++++++++
->   drivers/nvmem/layouts/u-boot-env.c            | 147 ++++++++++++
->   drivers/nvmem/u-boot-env.c                    | 218 ------------------
->   include/linux/etherdevice.h                   |  14 ++
->   include/linux/nvmem-consumer.h                |  11 +
->   include/linux/nvmem-provider.h                |  47 +++-
->   include/linux/of.h                            |  25 ++
->   20 files changed, 649 insertions(+), 264 deletions(-)
->   create mode 100644 Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
->   create mode 100644 drivers/nvmem/layouts/Kconfig
->   create mode 100644 drivers/nvmem/layouts/Makefile
->   create mode 100644 drivers/nvmem/layouts/sl28vpd.c
->   create mode 100644 drivers/nvmem/layouts/u-boot-env.c
->   delete mode 100644 drivers/nvmem/u-boot-env.c
+-- 
+BRs
+Schspa Shi
