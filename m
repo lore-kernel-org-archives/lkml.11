@@ -2,96 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4836EECAAA2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6DAC0502F
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230090AbiH1RcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 13:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52780 "EHLO
+        id S230181AbiH1RdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 13:33:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiH1RcX (ORCPT
+        with ESMTP id S229522AbiH1RdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 13:32:23 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9CF9FEB
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 10:32:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661707942; x=1693243942;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=O2dR0BW2PeqIsrT4eW3b9WtboL5iwk7ul0IK/THKWAM=;
-  b=TaxZ418p2yrOjrj43riQS5OHXs4g3CHiZrcXXvWgN7KILBF/37SrKBaE
-   EyXe6WXZCLE7BYvbjBMB2y3v8UW9if/+TkSC5sw6WSmdBWrOBHZclxBAM
-   /OXhW/Z9UIMAynQi0qyiAGzKPdI20CS34R5vkI9Lbi1HSmiiYymV0dXIr
-   7HLJeIToldh9+23s9HYnFJllq9LrVJA6NTDgroMJGXGYbioSWzPeePoG6
-   dybVTvGDWeRj3HKhy6TVaRlU3HI0aUw+1STJ9MMFFvuZcnjhe83i7GSyV
-   uzuy6pxTLaHH4LD0WJCZyAY0R7khmy0NRKRWydgNs4N/oQWW8p4z7za3W
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="356471398"
-X-IronPort-AV: E=Sophos;i="5.93,271,1654585200"; 
-   d="scan'208";a="356471398"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 10:32:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,271,1654585200"; 
-   d="scan'208";a="939325715"
-Received: from lkp-server01.sh.intel.com (HELO fc16deae1c42) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 28 Aug 2022 10:32:21 -0700
-Received: from kbuild by fc16deae1c42 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oSM8y-0001RD-25;
-        Sun, 28 Aug 2022 17:32:20 +0000
-Date:   Mon, 29 Aug 2022 01:32:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [avpatel:riscv_pmem_v1 23/40] arch/riscv/kvm/aia.c:204:36: sparse:
- sparse: incorrect type in argument 2 (different address spaces)
-Message-ID: <202208290123.UHD6rzKM-lkp@intel.com>
+        Sun, 28 Aug 2022 13:33:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540959FEB;
+        Sun, 28 Aug 2022 10:33:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BABDB80B84;
+        Sun, 28 Aug 2022 17:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48EE0C433D6;
+        Sun, 28 Aug 2022 17:32:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661707978;
+        bh=NfogdBuluk97OPjBMZxoFbvB0ss4BI36KZTSdkl4QQQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Vme9/mJ6gIfaMwlGX7syIHQJkjR8RzUaQkQX5JFB2gS3+tN9cgGuel0hZNpQmeASu
+         8SUxOC9gpbU5t7PBvb77HBY0+uvHZze8r3giUTJJC0h29Nbibj5pqZffvVkq7TwuL6
+         fQzCH7OVwna6lDc0eFOMRzNeZIh4gY73K2dUf3aY8YJBag9MFFQ6CVz6z6EJsuHYwo
+         DJm0wfZdvxSOMsL/pSw2oa87gyL7DjBB3EnaAgQ8dqjmsi5L6HWPXvd5V8dE6ltOtJ
+         T7m382bb6RJbUkGL1HEGyw4vx7JCl04q1WVJXrFSJS6U82pEsZYugT0acG4nxFJXDM
+         D+lDL4NqkFhdA==
+Date:   Sun, 28 Aug 2022 17:58:37 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Ramona Bolboaca <ramona.bolboaca@analog.com>
+Cc:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: adc: add max11205 adc driver
+Message-ID: <20220828175837.214c5f9d@jic23-huawei>
+In-Reply-To: <20220824125203.685287-3-ramona.bolboaca@analog.com>
+References: <20220824125203.685287-1-ramona.bolboaca@analog.com>
+        <20220824125203.685287-3-ramona.bolboaca@analog.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_pmem_v1
-head:   b93a90a0cf40bdff2e68b0d1c6ed27f5e7310ec9
-commit: b06e7bdfd87f2fbee3c3a0860c3cdc99d5a33386 [23/40] RISC-V: KVM: Implement guest external interrupt line management
-config: riscv-randconfig-s032-20220828 (https://download.01.org/0day-ci/archive/20220829/202208290123.UHD6rzKM-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/avpatel/linux/commit/b06e7bdfd87f2fbee3c3a0860c3cdc99d5a33386
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel riscv_pmem_v1
-        git checkout b06e7bdfd87f2fbee3c3a0860c3cdc99d5a33386
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kvm/
+On Wed, 24 Aug 2022 15:52:03 +0300
+Ramona Bolboaca <ramona.bolboaca@analog.com> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> Adding support for max11205 16-bit single-channel ultra-low power
+> delta-sigma adc.
+> The MAX11205 is compatible with the 2-wire interface and uses
+> SCLK and RDY/DOUT for serial communica- tions. In this mode, all
+> controls are implemented by tim- ing the high or low phase of the SCLK.
+> The 2-wire serial interface only allows for data to be read out through the
+> RDY/DOUT output.
+> 
+> Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX11205.pdf
+> Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+A few additional comments from me.
 
-sparse warnings: (new ones prefixed by >>)
-   WARNING: invalid argument to '-march': '_zihintpause'
->> arch/riscv/kvm/aia.c:204:36: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void * @@     got struct aia_hgei_control [noderef] __percpu * @@
-   arch/riscv/kvm/aia.c:204:36: sparse:     expected void *
-   arch/riscv/kvm/aia.c:204:36: sparse:     got struct aia_hgei_control [noderef] __percpu *
+Jonathan
 
-vim +204 arch/riscv/kvm/aia.c
+> ---
+>  drivers/iio/adc/Kconfig    |  14 +++
+>  drivers/iio/adc/Makefile   |   1 +
+>  drivers/iio/adc/max11205.c | 192 +++++++++++++++++++++++++++++++++++++
+>  3 files changed, 207 insertions(+)
+>  create mode 100644 drivers/iio/adc/max11205.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 7fe5930891e0..f0de4516a302 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -653,6 +653,20 @@ config MAX1118
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called max1118.
+>  
+> +config MAX11205
+> +	tristate "Maxim max11205 ADC driver"
+> +	depends on SPI
+> +	select AD_SIGMA_DELTA
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +
+> +	help
+> +	  Say yes here to build support for Maxim max11205
+> +	  16-bit, single-channel ultra-low power delta-sigma ADC.
 
-   200	
-   201	static void aia_hgei_exit(void)
-   202	{
-   203		/* Free per-CPU SGEI interrupt */
- > 204		free_irq(hgei_parent_irq, &aia_hgei);
-   205	}
-   206	
+Wrap consistently to 75-80 chars.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called max11205.
+> +
+>  config MAX1241
+>  	tristate "Maxim max1241 ADC driver"
+>  	depends on SPI_MASTER
+
+...
+
+> diff --git a/drivers/iio/adc/max11205.c b/drivers/iio/adc/max11205.c
+> new file mode 100644
+> index 000000000000..b2d9f9085fde
+> --- /dev/null
+> +++ b/drivers/iio/adc/max11205.c
+> @@ -0,0 +1,192 @@
+
+
+> +static const struct ad_sigma_delta_info max11205_sigma_delta_info = {
+> +	.has_registers = false,
+> +	.irq_flags = IRQF_TRIGGER_FALLING,
+
+Generally IRQ direction should come from firmware (dt etc) as, just because
+a device will only provide a particular type of interrupt, it's possible
+the board designer did some cheap level conversion or interupt sharing
+by putting an inverter in the path to the SoC pin.
+
+We have some historical drivers where we hard coded it (and now can't
+change that as there may be boards relying on it) but if possible
+avoid introducing it for new drivers.
+
+> +};
+,,,
+
+>
+> +
+> +static void max11205_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct max11205_state *st = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+
+As Andy pointed out you have an issue here. Make sure you understand
+what the devm_ device managed framework does.
+
+
+> +	regulator_disable(st->vref);
+> +}
+> +
+> +static const struct spi_device_id max11205_spi_ids[] = {
+> +	{"max11205a", TYPE_MAX11205A},
+Prefer space after { and before }
+
+	{ "max11205a, TYPE_MAX11205A }, 
+
+Driver doesn't currently support using this probing method though
+for a reason that Andy raised.
+
+> +	{"max11205b", TYPE_MAX11205B},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, max11205_spi_ids);
+> +
+
+
