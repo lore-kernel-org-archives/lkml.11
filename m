@@ -2,101 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5E3ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 147C0ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbiH1RuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 13:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
+        id S229683AbiH1Rxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 13:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbiH1RuH (ORCPT
+        with ESMTP id S229738AbiH1Rxe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 13:50:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9D2AE59;
-        Sun, 28 Aug 2022 10:50:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 52AC9CE0924;
-        Sun, 28 Aug 2022 17:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7300EC433D6;
-        Sun, 28 Aug 2022 17:49:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661709001;
-        bh=n4c+Zs1RDtqEmf3PHYAX7fiNNaE9MPBLhz4hULHNWTM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CJMfmhAgtYnvEwlPAQ9InnckQiJCbIU7wBRF8qbMKiZkaJDM++SVRRsJs2+rHtUhO
-         wwAS96OsuXxDxxg7V14qKzgxhWq2O1w7NPZj7OHkXNURWkJw1ePtUNlpQ7FhgRP26O
-         0VzPy6N9LyxqE+Fmjz5gzvxuq8uEZ0Tjk4Smetstf8+Ce+Zp4vJmLYVaoAf1IqGdfw
-         aWDNzBYVrcU2kIY5yz0LIA0b4xh4SXp31YjFRrG6QfhH7pU5oLCiWQ8PLmGbX3ipGm
-         0mA/S5Ak7H6FdL2TABeXL5chswNIkvLezHvjhtGv0Kxrx9PsYBXqMkFUdUYBDmDD4a
-         LaxOcHP37jBEQ==
-Date:   Sun, 28 Aug 2022 18:15:39 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Vincent Whitchurch <vincent.whitchurch@axis.com>, kernel@axis.com,
-        Lars-Peter Clausen <lars@metafoo.de>, axel.jonsson@axis.com,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: adc: mcp320x: add triggered buffer support
-Message-ID: <20220828181539.12dfd21e@jic23-huawei>
-In-Reply-To: <CAHp75Vda3bbsRw+mftXjrH445UqSkxcB7q9kXUc+-ODUE+VQ9g@mail.gmail.com>
-References: <20220824104002.2749075-1-vincent.whitchurch@axis.com>
-        <20220824104002.2749075-3-vincent.whitchurch@axis.com>
-        <CAHp75Vda3bbsRw+mftXjrH445UqSkxcB7q9kXUc+-ODUE+VQ9g@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 28 Aug 2022 13:53:34 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D0F19022
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 10:53:33 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id g5-20020a92cda5000000b002e954ecceb0so4585043ild.5
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 10:53:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=Q2ukYj4tpd0/O6neIyA0kBrMxUGYIUM/MZ6IE+AZxV8=;
+        b=1KI2f8B2TSSEZw1Jf/g9dqTgUD74kca2gmxqf55FJnel/GxcR6FJGUnkj/iILBBI8/
+         C0kooh2y7Y2XwhIuCN+oVKEzYKrib4hkPkhG66kCZRzYKD6eazTyzaXhJy9U7mn9qr7N
+         rn13rr5YvfObQ8zIDRp0NQisaFwnzlJOaLLtm0kRxiRskTJtZRhk+Nck/z3uNorGCGu9
+         9Bv9zQSm1n9H3yhg9zYqhRGOcbJ4ee0fQ8lBK+yZHCmqHuGuuQujNW/de7xYQkE7uAp+
+         i3bjdJOBVMZy2gJzZWsP85J1+v0Q2MF9avxXyI2SSRi06+7W6YyfkjYEq/0+v4ZEgVj0
+         bznw==
+X-Gm-Message-State: ACgBeo1p7yq2mt3OqSVnhFV91dL5sytVlFM+tn+zqGT3vuKmWwsj4ybq
+        eBYsVEmaqe+x6m8Phy1IqmZo6IG/+plngWDRUvDyrJg9NjDl
+X-Google-Smtp-Source: AA6agR4csTG9R3fHvITe+sjvNtJc/Gn20+GWGsCZDZah708Npsae65wQyyrkEZ/LUJfgVjkO/g61n4dSxltPMzPYE1SXfORcKdfm
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:184e:b0:2ea:1e2b:d29c with SMTP id
+ b14-20020a056e02184e00b002ea1e2bd29cmr8182798ilv.284.1661709212669; Sun, 28
+ Aug 2022 10:53:32 -0700 (PDT)
+Date:   Sun, 28 Aug 2022 10:53:32 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000575d9305e750d39c@google.com>
+Subject: [syzbot] usb-testing boot error: WARNING in corrupted
+From:   syzbot <syzbot+d39fd48d595c37317338@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 25 Aug 2022 23:06:01 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+Hello,
 
-> On Wed, Aug 24, 2022 at 1:46 PM Vincent Whitchurch
-> <vincent.whitchurch@axis.com> wrote:
-> >
-> > From: Axel Jonsson <axel.jonsson@axis.com>
-> >
-> > Add support for triggered buffers.  Just read the channels in a loop to
-> > keep things simple.  
-> 
-> ...
-> 
-> >  #include <linux/module.h>
-> >  #include <linux/mod_devicetable.h>
-> >  #include <linux/iio/iio.h>
-> > +#include <linux/interrupt.h>  
-> 
-> Ordering?
-> 
-> But honestly, I prefer the linux/iio/* to be split in a separate group...
-> 
-> > +#include <linux/iio/buffer.h>
-> > +#include <linux/iio/triggered_buffer.h>
-> > +#include <linux/iio/trigger_consumer.h>
-> >  #include <linux/regulator/consumer.h>
-> >  
-> 
-> ...and be put here.
-> 
-> ...
-> 
-> > +       device_index = spi_get_device_id(adc->spi)->driver_data;  
-> 
-> Hmm... Wondering if this can be derived from channel number or alike.
-> 
-It is weirder than the name implies. 
-Seem device_index is actually the chip type from amongst those the driver
-supports.
+syzbot found the following issue on:
 
-That wants cleaning up, particularly there is also a chip_info structure.
-Various ways of doing it, but simplest is probably a set of callbacks
-covering the different data extraction methods in mcp320x_adc_conversion.
+HEAD commit:    4dce3b375179 usb/hcd: Fix dma_map_sg error check
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+console output: https://syzkaller.appspot.com/x/log.txt?x=10d30033080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3cb39b084894e9a5
+dashboard link: https://syzkaller.appspot.com/bug?extid=d39fd48d595c37317338
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Jonathan
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d39fd48d595c37317338@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(lock->magic != lock)
+WARNING: CPU: 1 PID: 268 at kernel/locking/mutex.c:582 __mutex_lock_common kernel/locking/mutex.c:582 [inline]
+WARNING: CPU: 1 PID: 268 at kernel/locking/mutex.c:582 __mutex_lock+0xa01/0x1350 kernel/locking/mutex.c:747
+Modules linked in:
+CPU: 1 PID: 268 Comm: kworker/u4:1 Not tainted 6.0.0-rc1-syzkaller-00028-g4dce3b375179 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:__mutex_lock_common kernel/locking/mutex.c:582 [inline]
+RIP: 0010:__mutex_lock+0xa01/0x1350 kernel/locking/mutex.c:747
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
