@@ -2,206 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA18EECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE1C6ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbiH1Qpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 12:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38584 "EHLO
+        id S229648AbiH1QvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 12:51:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbiH1Qpk (ORCPT
+        with ESMTP id S229747AbiH1QvQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 12:45:40 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB051A813
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:45:38 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id az27so7491738wrb.6
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:45:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=T5aRwr6pqcsQk7PMMmsjKOURSAFgkEiep7tVEjgOEu8=;
-        b=eMVxp40D8zIPnnJMVchQvjuBddHTX1y2JuTilTMpaHdYOA3XVTrIWrxlutKoh5Nnuz
-         aKR4a/L3hZGTg+L7entXUOpqVn8ZqYYSHIxRgrubT0r10RqyTRyF1HuFeQSVwqZLjxaQ
-         8+EvGwx+RxWdNbrXTLipQ8kNEUiFeIg7Bp514To1u9GAxH2v9v5jqZ4PYMD7TW1N5V5A
-         EvfFeD3dWFN2c5+OF+BY+osUyL7oh6/c2dCBx724bE38b3IrzlagAPlnIhKXAHqQ6QNI
-         kfTKrBAqOVr+nbulqjGoYep5kW+hPrqa3K8omCdGojVz7II+/B1ovpVktKLGStfFESER
-         JkCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=T5aRwr6pqcsQk7PMMmsjKOURSAFgkEiep7tVEjgOEu8=;
-        b=jI0bP19Mbx8SXhJTE8qTAXnhnQOzbvqbIJuU8v/Q4CpEQ9vRVh7k/Qc9wyrw8DOfnK
-         E96MBemC4Y8kw8iB/1MHvMgHFuyysmBJkwXNG8vZnh7C0bqxj5dqEtt+D51XLgnEX8Z4
-         fq8LVjWx0h6623HuNDWDOQoeMMtyt4Ol80gVw796CN3wVU+UyWt2mrEWcmpIB6ffFJEo
-         PPq82TFUtYaPlLgHt4Xbg1hk8dCX9UVWy7jwQ5hii/ImocF+F5PhiVXxVPLlhtdgN7HK
-         txvaLxEA7gDW1EHw5muyTBN8wH5ftveiqX/KRw1SGARllDdqge7+KqxDjfGyR0knc4q5
-         iQ2Q==
-X-Gm-Message-State: ACgBeo1P37V8qmS/ROgtlLtUOSzdegt4ePJpr67/ytes2XLuBN8O6G73
-        MZz0qCTT0yLslLdkTeqXFN4=
-X-Google-Smtp-Source: AA6agR7V+NPsMLy1J0fh4fleBXVJLxyvQiVED33xvrwNFZhd+KyuovF8/BugiqKciBpAajCx3/Uc/g==
-X-Received: by 2002:a05:6000:702:b0:225:4a84:89ea with SMTP id bs2-20020a056000070200b002254a8489eamr4708496wrb.194.1661705137422;
-        Sun, 28 Aug 2022 09:45:37 -0700 (PDT)
-Received: from localhost.localdomain ([94.73.32.249])
-        by smtp.gmail.com with ESMTPSA id e14-20020adfef0e000000b0021d6924b777sm399926wro.115.2022.08.28.09.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 09:45:37 -0700 (PDT)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     javierm@redhat.com
-Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
-        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
-        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, geert@linux-m68k.org,
-        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
+        Sun, 28 Aug 2022 12:51:16 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEA01FCCF;
+        Sun, 28 Aug 2022 09:51:15 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27SGPoRh011915;
+        Sun, 28 Aug 2022 16:51:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=fPCECHnv11C4AjdzWYsnj3/8k5rXSCOxtstSvkag/Mw=;
+ b=mWJ6AujvTMpo6NNDay69YrY14RZMNBnDPDMNjwLMBhBYAAmQByTisYUjj9AbX5W46Ycx
+ Ho3ucEXwPJ0uDiUL11C4d8fTK4cocPYDMcLpYd9DTW4Vkt3cmgIID1JRwkOu+tvDCGY5
+ y+FJfqoDGPMO93C9ecLTuaUSu4m+dPN507BJ+l/dU1N/wlUl3J2/OSWEfSeolADLOiHU
+ DbBZK5mganpDY4BjcG4034VtMWnLD2sNP5TKquVZL8XN3DzwNe+gpVG8mzvMVziBMJR/
+ JiwfFOqlWe/59HCB/obJiq4SnnL0j0SxzUjxy8PBmIe0BJVrh3fM9OyyBzhRsyX4Udbe DQ== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j7w9sgbwd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 28 Aug 2022 16:51:09 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27SGaSbU014322;
+        Sun, 28 Aug 2022 16:51:07 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03ams.nl.ibm.com with ESMTP id 3j7aw91cav-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 28 Aug 2022 16:51:07 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27SGp4bl41878004
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 28 Aug 2022 16:51:04 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 74333AE04D;
+        Sun, 28 Aug 2022 16:51:04 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 18DFAAE045;
+        Sun, 28 Aug 2022 16:51:04 +0000 (GMT)
+Received: from osiris (unknown [9.145.51.21])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Sun, 28 Aug 2022 16:51:04 +0000 (GMT)
+Date:   Sun, 28 Aug 2022 18:51:02 +0200
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linux-s390@vger.kernel.org,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
         linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-Subject: [PATCH v3 3/3] drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_gray8()
-Date:   Sun, 28 Aug 2022 18:45:17 +0200
-Message-Id: <20220828164517.185092-4-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220828164517.185092-1-jose.exposito89@gmail.com>
-References: <20220828164517.185092-1-jose.exposito89@gmail.com>
+        Sumanth Korikkar <sumanthk@linux.ibm.com>
+Subject: Re: [PATCH RFC] s390: Fix nospec table alignments
+Message-ID: <Ywuc9hxvLIlY516G@osiris>
+References: <8719bf1ce4a72ebdeb575200290094e9ce047bcc.1661557333.git.jpoimboe@kernel.org>
+ <YwphFXr+pHxf4PGT@osiris>
+ <20220827225937.b2mcmvxs7kbrtjda@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220827225937.b2mcmvxs7kbrtjda@treble>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: bn_EnE8hIij8m8ZylPGSxGpdjcvZ0nFX
+X-Proofpoint-ORIG-GUID: bn_EnE8hIij8m8ZylPGSxGpdjcvZ0nFX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-28_10,2022-08-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ suspectscore=0 mlxlogscore=798 clxscore=1015 bulkscore=0
+ lowpriorityscore=0 spamscore=0 phishscore=0 priorityscore=1501
+ adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2208280070
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extend the existing test cases to test the conversion from XRGB8888 to
-grayscale.
+On Sat, Aug 27, 2022 at 03:59:37PM -0700, Josh Poimboeuf wrote:
+> > > While working on another s390 issue, I was getting intermittent boot
+> > > failures in __nospec_revert() when it tried to access 'instr[0]'.  I
+> > > noticed the __nospec_call_start address ended in 'ff'.  This patch
+> > > seemed to fix it.  I have no idea why it was (only sometimes) failing in
+> > > the first place.
+...
+> > > +	. = ALIGN(4);
+> > >  	.nospec_call_table : {
+> > >  		__nospec_call_start = . ;
+> > >  		*(.s390_indirect*)
+> > 
+...
+> > Unfortunately I was unable to let any compiler generate code, that
+> > would use the larl instruction. Instead the address of
+> > nospec_call_table was loaded indirectly via the GOT, which again works
+> > always, regardless if the table starts at an even or uneven address.
+> > 
+> > This needs to be fixed anyway, and your patch certainly is correct.
+> > 
+> > Could you maybe share your kernel config + compiler version, if you
+> > are still able to reproduce this?
+> 
+> I think the trick is to disable CONFIG_RELOCATABLE.  When I compile with
+> CONFIG_RELOCATABLE=n and "gcc version 11.3.1 20220421 (Red Hat 11.3.1-2)
+> (GCC)", I get the following in nospec_init_branches():
+> 
+>  2a8:   c0 20 00 00 00 00       larl    %r2,2a8 <nospec_init_branches+0x30>     2aa: R_390_PC32DBL      __nospec_call_start+0x2
+> 
+> That said, I still haven't been able to figure out how to recreate the
+> program check in __nospec_revert(), even when the nospec_call_table
+> starts at an odd offset.
 
-Tested-by: Maíra Canal <mairacanal@riseup.net>
-Reviewed-by: David Gow <davidgow@google.com>
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- .../gpu/drm/tests/drm_format_helper_test.c    | 62 +++++++++++++++++++
- 1 file changed, 62 insertions(+)
+Right, CONFIG_RELOCATABLE=n will do the trick.
 
-diff --git a/drivers/gpu/drm/tests/drm_format_helper_test.c b/drivers/gpu/drm/tests/drm_format_helper_test.c
-index d8536db4de1e..2f548aa51a30 100644
---- a/drivers/gpu/drm/tests/drm_format_helper_test.c
-+++ b/drivers/gpu/drm/tests/drm_format_helper_test.c
-@@ -37,6 +37,11 @@ struct convert_to_xrgb2101010_result {
- 	const u32 expected[TEST_BUF_SIZE];
- };
- 
-+struct convert_to_gray8_result {
-+	unsigned int dst_pitch;
-+	const u8 expected[TEST_BUF_SIZE];
-+};
-+
- struct convert_xrgb8888_case {
- 	const char *name;
- 	unsigned int pitch;
-@@ -46,6 +51,7 @@ struct convert_xrgb8888_case {
- 	struct convert_to_rgb565_result rgb565_result;
- 	struct convert_to_rgb888_result rgb888_result;
- 	struct convert_to_xrgb2101010_result xrgb2101010_result;
-+	struct convert_to_gray8_result gray8_result;
- };
- 
- static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
-@@ -71,6 +77,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 			.dst_pitch = 0,
- 			.expected = { 0x3FF00000 },
- 		},
-+		.gray8_result = {
-+			.dst_pitch = 0,
-+			.expected = { 0x4C },
-+		},
- 	},
- 	{
- 		.name = "single_pixel_clip_rectangle",
-@@ -97,6 +107,10 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 			.dst_pitch = 0,
- 			.expected = { 0x3FF00000 },
- 		},
-+		.gray8_result = {
-+			.dst_pitch = 0,
-+			.expected = { 0x4C },
-+		},
- 	},
- 	{
- 		/* Well known colors: White, black, red, green, blue, magenta,
-@@ -155,6 +169,15 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 				0x3FFFFC00, 0x000FFFFF,
- 			},
- 		},
-+		.gray8_result = {
-+			.dst_pitch = 0,
-+			.expected = {
-+				0xFF, 0x00,
-+				0x4C, 0x99,
-+				0x19, 0x66,
-+				0xE5, 0xB2,
-+			},
-+		},
- 	},
- 	{
- 		/* Randomly picked colors. Full buffer within the clip area. */
-@@ -206,6 +229,14 @@ static struct convert_xrgb8888_case convert_xrgb8888_cases[] = {
- 				0x2A20300C, 0x1B1705CD, 0x03844672, 0x00000000, 0x00000000,
- 			},
- 		},
-+		.gray8_result = {
-+			.dst_pitch = 5,
-+			.expected = {
-+				0x3C, 0x33, 0x34, 0x00, 0x00,
-+				0x6F, 0x3C, 0x33, 0x00, 0x00,
-+				0x34, 0x6F, 0x3C, 0x00, 0x00,
-+			},
-+		},
- 	},
- };
- 
-@@ -381,11 +412,42 @@ static void xrgb8888_to_xrgb2101010_test(struct kunit *test)
- 	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected, dst_size), 0);
- }
- 
-+static void xrgb8888_to_gray8_test(struct kunit *test)
-+{
-+	const struct convert_xrgb8888_case *params = test->param_value;
-+	const struct convert_to_gray8_result *result = &params->gray8_result;
-+	size_t dst_size;
-+	__u8 *buf = NULL;
-+	__u32 *xrgb8888 = NULL;
-+	struct iosys_map dst, src;
-+
-+	struct drm_framebuffer fb = {
-+		.format = drm_format_info(DRM_FORMAT_XRGB8888),
-+		.pitches = { params->pitch, 0, 0 },
-+	};
-+
-+	dst_size = conversion_buf_size(DRM_FORMAT_R8, result->dst_pitch,
-+				       &params->clip);
-+	KUNIT_ASSERT_GT(test, dst_size, 0);
-+
-+	buf = kunit_kzalloc(test, dst_size, GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, buf);
-+	iosys_map_set_vaddr(&dst, buf);
-+
-+	xrgb8888 = le32buf_to_cpu(test, params->xrgb8888, TEST_BUF_SIZE);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, xrgb8888);
-+	iosys_map_set_vaddr(&src, xrgb8888);
-+
-+	drm_fb_xrgb8888_to_gray8(&dst, &result->dst_pitch, &src, &fb, &params->clip);
-+	KUNIT_EXPECT_EQ(test, memcmp(buf, result->expected, dst_size), 0);
-+}
-+
- static struct kunit_case drm_format_helper_test_cases[] = {
- 	KUNIT_CASE_PARAM(xrgb8888_to_rgb332_test, convert_xrgb8888_gen_params),
- 	KUNIT_CASE_PARAM(xrgb8888_to_rgb565_test, convert_xrgb8888_gen_params),
- 	KUNIT_CASE_PARAM(xrgb8888_to_rgb888_test, convert_xrgb8888_gen_params),
- 	KUNIT_CASE_PARAM(xrgb8888_to_xrgb2101010_test, convert_xrgb8888_gen_params),
-+	KUNIT_CASE_PARAM(xrgb8888_to_gray8_test, convert_xrgb8888_gen_params),
- 	{}
- };
- 
--- 
-2.25.1
+I don't know why you cannot recreate it, however on my system it
+crashes instantly when I make sure that __nospec_call_start starts at
+an odd address.
 
+Apparently 'instr = (u8 *) epo + *epo;' in __nospec_revert() may
+result in a very large address, since without KASLR the kernel is
+located at a low address, and it only takes one entry within the
+incorrectly accessed nospec_call_table which results in a large
+negative value for '*epo' and we end up with an overflow and a very
+large address for 'instr'.
+This will then result in the program check / addressing exception
+you've seen when the kernel tried to access 'instr[0]'.
+
+I'll apply your patch. Thanks a lot for debugging and reporting!
