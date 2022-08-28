@@ -2,92 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADC2ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8882ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:16:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiH1QHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 12:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34642 "EHLO
+        id S229791AbiH1QQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 12:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiH1QHQ (ORCPT
+        with ESMTP id S229489AbiH1QQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 12:07:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27DD32CE0C;
-        Sun, 28 Aug 2022 09:07:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CA1DDCE0924;
-        Sun, 28 Aug 2022 16:07:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A0C8C433D6;
-        Sun, 28 Aug 2022 16:07:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661702828;
-        bh=6QmM8/GiuDkSpxDLj8miyaVK8Mz2SqME5orytHsgun4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iwawSyZ1CVVtLjkqYGlZjo0WWhqb3Y47lhAJj4vXDcTZT48bYySdYaCtOlWLuv1Vo
-         AqSCpcMf2SpgIOn7UtASmAoHLxWDiMRSt3joaW5icqYigDuLNx8f1Nb4rlp3WKUhbM
-         QGKEhktAGGDaNoCMW/fpn7v5zVxsXehwbrfQo/W/V6bqibtVCZ6xL36e+b6VuOgXJi
-         83GXgKnmfpI4maef9p9KchSEaACgPafiZIo/8k2ehniAW9x8onOTYpW6AMC5CX/KVj
-         uTi7+x5rG6tY4BvFJPnYM+1cQ3KMYCT01lxxkH9y7sUbAyjQIMRy9SlO+0nFjUkH0P
-         atwrlYISmNvrQ==
-Date:   Sun, 28 Aug 2022 16:32:47 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        kernel <kernel@axis.com>, Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: buffer: Silence lock nesting splat
-Message-ID: <20220828163247.3d6417d9@jic23-huawei>
-In-Reply-To: <YwSLhWFbGb26B3mx@axis.com>
-References: <20220816080828.1218667-1-vincent.whitchurch@axis.com>
-        <CAHp75VebQfdHrfYTmF0w9M556ZV8fG5jJ2rAN5a3mrB1mbvOQw@mail.gmail.com>
-        <20220820120800.519b5eb5@jic23-huawei>
-        <YwSLhWFbGb26B3mx@axis.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 28 Aug 2022 12:16:06 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CF332A83
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:16:01 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id w88-20020a17090a6be100b001fbb0f0b013so6413138pjj.5
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:16:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=zJ58IbUxUfHQZ1l1Y+m3svyB3b0AMVU5Fh++cHS+4ec=;
+        b=WuBVTtVP2LABsmV48efXcFwxaXdc55lU8gWcRpaDpqcOkhekYrnTJsZdvHkK22Ci8V
+         6vzElzsJ2PR9A89mOTQaaud0Lu9Vd+7njPZw2kvOWtRRwHzG3i/X+e+uV3UIT8D1NUFq
+         lgn073uJZvuI773OJiDTRuh279wJ4BUCFMImlDONWqAGmKhBoEe+1prFZA8A9GFRx4wZ
+         hGAHNozIHkpIj/jnPjLEG1l5HdcBJPoa5hCFScqEhxxUyhPE1r9JUvBbYm+6uSuanw03
+         7PQRAh2EG3nNVKvCoYsQKuEiyG59TxHezkbPXYn5XGhD+9pb3IAtA48N0oaAtq4sTE/w
+         2HnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=zJ58IbUxUfHQZ1l1Y+m3svyB3b0AMVU5Fh++cHS+4ec=;
+        b=N+oiUh6Kec/QCytO+Eck3V8D8SfZknT1X3nKnHK3Q0U9AsYNW3S2jkcFhQzpdbX6oo
+         nQlpgdXD9aucIHkO9FPAlecZHr3ElFIrq4AKxgglUN/ZoczVSGF15Tpi2hd5iqu96cgV
+         xQR0AtXICYcPcRjG3mjxN5STp2zeS3wELNiFJZqmhkfKeKYeBao6w++KrprWJjEms529
+         v/jHWA+7nIac8TeAPoitXQHKo/L3NoAV4Z9jVTfYoBbp39sy8IVFJG5Uqa+lh3gzp7X5
+         30QqQoCg1+YIBrpooncpsX7vo4iic6li4oKIHNrQM8WFLFB0xRzcTUuJRko0CB1uW02Z
+         MgbA==
+X-Gm-Message-State: ACgBeo0cwkcIS4uRhtUXavHMsOuFayB/IZvBG0NWSLUBMa4c+iJfmY63
+        2bH5N1xGffBkAh9Cb6T4VtQ=
+X-Google-Smtp-Source: AA6agR7YxRhxLB0cWsbupFoE/I9EfryO9AnHusPSztq9FIJchsOYA5b2YMBcDndwngcAKxO2Hje+EA==
+X-Received: by 2002:a17:902:e851:b0:172:dda3:77d3 with SMTP id t17-20020a170902e85100b00172dda377d3mr12574751plg.19.1661703360860;
+        Sun, 28 Aug 2022 09:16:00 -0700 (PDT)
+Received: from localhost ([36.112.195.70])
+        by smtp.gmail.com with ESMTPSA id u17-20020a627911000000b00536b975b013sm5422879pfc.24.2022.08.28.09.15.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Aug 2022 09:16:00 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     dan.carpenter@oracle.com
+Cc:     akpm@linux-foundation.org, anton@tuxera.com,
+        chenxiaosong2@huawei.com, linux-kernel@vger.kernel.org,
+        linux-ntfs-dev@lists.sourceforge.net,
+        syzbot+5f8dcabe4a3b2c51c607@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
+Subject: Re: [PATCH] ntfs: change check order in ntfs_attr_find
+Date:   Mon, 29 Aug 2022 00:15:52 +0800
+Message-Id: <20220828161552.3651-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220827105842.GM2030@kadam>
+References: <20220827105842.GM2030@kadam>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 23 Aug 2022 10:10:45 +0200
-Vincent Whitchurch <vincent.whitchurch@axis.com> wrote:
+On Sat, 27 Aug 2022 at 18:59, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> On Sat, Aug 27, 2022 at 05:02:31PM +0800, Hawkins Jiawei wrote:
+> > On Sat, 27 Aug 2022 at 14:42, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> > >
+> > > On Fri, Aug 26, 2022 at 11:42:32PM +0800, Hawkins Jiawei wrote:
+> > > > On Fri, 26 Aug 2022 at 23:15, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> > > > >
+> > > > > On Fri, Aug 26, 2022 at 08:32:57PM +0800, Hawkins Jiawei wrote:
+> > > > > > > syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git     master
+> > > > > > >
+> > > > > > > Looks like it is improper check order that causes this bug.
+> > > > > >
+> > > > > > Sorry for wrong command.
+> > > > > > #syz test https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git     master
+> > > > > >
+> > > > > > diff --git a/fs/ntfs/attrib.c b/fs/ntfs/attrib.c
+> > > > > > index 52615e6090e1..6480cd2d371d 100644
+> > > > > > --- a/fs/ntfs/attrib.c
+> > > > > > +++ b/fs/ntfs/attrib.c
+> > > > > > @@ -594,10 +594,11 @@ static int ntfs_attr_find(const ATTR_TYPE type, const ntfschar *name,
+> > > > > >       for (;; a = (ATTR_RECORD*)((u8*)a + le32_to_cpu(a->length))) {
+> > > > > >               u8 *mrec_end = (u8 *)ctx->mrec +
+> > > > > >                              le32_to_cpu(ctx->mrec->bytes_allocated);
+> > > > > > +             if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end)
+> > > > > > +                     break;
+> > > > >
+> > > > > This definitely seems like a bug.  But your code won't build.  Syzbot
+> > > > > must have -Werror turned off?
+> > > > Hi Dan,
+> > > > Did you mean we should put the variable declares at the beginning of the function?
+> > > > (Correct me if I understand anything wrong)
+> > >
+> > > You can declare it at the beginning of the block.
+> > OK, I will do like that.
+> >
+> > >
+> > > >
+> > > > >
+> > > > > Btw, this was in the original code, but those casts are ugly.  Ideally
+> > > > > there would be some way to get rid of them.  But otherwise at least
+> > > > > put a space after the u8.  "(u8 *)a < (u8 *)ctx->mrec".
+> > > > >
+> > > > > >               u8 *name_end = (u8 *)a + le16_to_cpu(a->name_offset) +
+> > > > > >                              a->name_length * sizeof(ntfschar);
+> > > > > > -             if ((u8*)a < (u8*)ctx->mrec || (u8*)a > mrec_end ||
+> > > > > > -                 name_end > mrec_end)
+> > > > > > +             if (name_end > mrec_end)
+> > > > > >                       break;
+> > > > >
+> > > > > regards,
+> > > > > dan carpenter
+> > > > So maybe I can try to refactor these codes. But I wonder if this can be
+> > > > done in a seperate bug
+> > >
+> > > The kernel has a strict "one thing per patch rule".  Those rules are
+> > > for reviewers and easier backporting.  So the trick is to write the
+> > > commit message to persuade the reviewer that the way you've written the
+> > > patch is the easiest way to review it.  So here is how I would write the
+> > > commit message:
+> > >
+> > > [PATCH] ntfs: fix out of bounds read in ntfs_attr_find()
+> > >
+> > > This code deferences "a" to calculate "name_end" and then it checks to
+> > > ensure that "a" is within bounds.  Move the bounds checks earlier and
+> > > add some comments to make it more clear what they're doing.  Then
+> > > calculate "name_end" and check that.
+> > >
+> > > (Btw, are the wrap around checks really sufficient?  It seems like it
+> > > could wrap to something still within the ->mrec buffer but before the
+> > > current entry so it would end up in a forever loop or something?)
+> > I am not for sure, but it seems that it is OK before.
+> > As for the forever loop, there is a break when a->length is 0 in the loop,
+> > So I think it probably would not end up in a forever loop?(Correct me if
+> > I am wrong)
+> >
+>
+> Checking for zero is not sufficient because it can wrap on 32 bit
+> systems.  It needs something like:
+>
+>                         return -ENOENT;
+>                 len = le32_to_cpu(a->length);
+>                 if (!len ||
+>                     (void *)a + len < (void *)a ||
+>                     (void *)a + len > mrec_end)
+>                         break;
+>                 if (a->type != type)
+>                         continue;
+>
+> Sort of ugly, but hopefully it gives the idea of what I'm saying.
+>
+> regards,
+> dan carpenter
+Hi, Dan
+Do you mean there may be an overflow on 32bit systems?
+It seems that it is, so it may end up in a forever loop
+as you point out before.
 
-> On Sat, Aug 20, 2022 at 01:08:00PM +0200, Jonathan Cameron wrote:
-> > On Fri, 19 Aug 2022 11:03:55 +0300
-> > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:  
-> > > On top of that, Fixes tag?  
-> > It's going to be tricky to identify - the interface predates usecases that were IIO
-> > drivers by a long way.  I guess introduction of first IIO driver that used
-> > a callback buffer? No idea which one that was :(  
-> 
-> AFAICS there's only one IIO driver upstream using a callback buffer, and
-> it's lmp91000, so I can point the fixes tag to the patch which added
-> that.
-
-Ah. That's handy.
-
-> 
-> By the way, note that lmp91000 actually fails to probe in mainline
-> without extra patches, and it seems to have been that way for a while
-> now.  I noticed this lockdep splat when working on a new driver which
-> also uses a callback buffer.  I can post the fixes I used to get
-> lmp91000 to probe successfully (in roadtest) separately.
-That would be great.  Unfortunately drivers sometimes bit rot
-without testing.
-
-Any plans to post updated roadtest soon?  I'm keen to add more test cases
-and use it to cleanup the remaining staging drivers.  Very helpful tool,
-but I don't want to be developing test sets against an old version if
-it's going to be costly to forward port it. No great rush though as
-I've bitten off a bit more than I was aiming to in prep for plumbers so
-not going to get anything significant done in IIO until mid September.
-
-Thanks,
-
-Jonathan
-
+I will try to add an overflow checking helper to fix it.
