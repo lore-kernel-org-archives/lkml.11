@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A59AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 05:05:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC7DAECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 05:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232580AbiH1FFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 01:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52770 "EHLO
+        id S232688AbiH1FF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 01:05:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232224AbiH1FFQ (ORCPT
+        with ESMTP id S232302AbiH1FFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 01:05:16 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0BA20187;
-        Sat, 27 Aug 2022 22:05:04 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id 145so4949171pfw.4;
-        Sat, 27 Aug 2022 22:05:04 -0700 (PDT)
+        Sun, 28 Aug 2022 01:05:19 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64EA622BD1;
+        Sat, 27 Aug 2022 22:05:08 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id c16-20020a17090aa61000b001fb3286d9f7so10193080pjq.1;
+        Sat, 27 Aug 2022 22:05:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc;
-        bh=88iMR9hKTzO75VCZYoWA2Dyf+17rRly6JO4axtKQRAk=;
-        b=lTmTgVWefuYiMBVuFrLa1g5eQioOHeZaNbUAQjZ+AZMYlDFPH5RyLjKfEp5k1fXaNn
-         lc0e3P7vC9FHj9Kk1I1orjytNoE9liLI174dfWbTLwkNFIf+orKY+u0B+B4BiDdG0cjz
-         WEuFWb+PJwoarY7x38VVguCSAPN0PsQDcIhOg975pyMhqzsT/BEVxM+t2gkdMARetsG5
-         gea60SBcLfx95dySBKGYXXgxPSSgs+9PKE6mocMjUyPHq7i1yZHz1yUDN4x2C5kvuao9
-         KNQ1eU3K1pF9FDp26g/3v2fdix63GBLHCQFcU6+06VnkFAl0YhffcAA0SBwYkzhSb21T
-         HnlQ==
+        bh=B3vo1ERHcB4zq3BeH92B14/O9uQqF/BKTHSf1xE1Enc=;
+        b=S0EVI4k7ynhZt0aAXiLq873oNhgtJVoqN10Xy5Xuzkv+5c4rA/oqJec9Wy7QmF/EwI
+         S9lHn+FinHDm1Yj3VkeHYetRTMMHo/IuD7/M78sa31sB9C1wjQRuTkdZcLIPNnPH2B7B
+         PSJFSjbUUO0aIWRNuNvILuntXcwlun2hdc7CSKBcLzAQqAcex7WXpZZSU5lvxuiwn4Gp
+         7acVcLbWmZApILuqh5da12jbxz3ySqoNmq/tRl1yx3UWDpiVSmtTtgavTvHMDYrU7hIr
+         m95zxj+JLYOWvt3dEH16WhXP51jkc8Qtr9lMfjhKuP3el4M/rLrcobz7K7x+fKY5IfHk
+         jj5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc;
-        bh=88iMR9hKTzO75VCZYoWA2Dyf+17rRly6JO4axtKQRAk=;
-        b=U4CrL1BlIIU48mi4SRF7pQhJbJbll1UDhnMWmMVTq+c1BL6gAuKweS0KAM0khoYJWv
-         J/7+vpRE9Ax9rA1cyVHz9xH7JFdpvNp/zD9Xd0x/uHeCV8QGb6wNP+7RdNNk2YnZ9XRY
-         rv01FoVokyRAhvnGT4c2xLbvmgCEU+PIvo3+TAlDuo+MsJxwPIysQY6/v+JgeFqBeC6E
-         imSy+DqwD5Fhw4F55Edqgh7Rgo99GSDHA7gaGqGt9hwHNFasOxZMkeD7bPXjBf/BkzGK
-         xmmekbNZ7klLUemxezp7T6vo6l/Gq/BPu+jl9SxTk3mHpdSqxpSYsPqYi+zgjXBgYRCy
-         5WDQ==
-X-Gm-Message-State: ACgBeo0xCl9K2+qY0nG45GhhOAGoKvpQPH/JIfjqpxS6n14zEMSUU7zv
-        IDyFVt42d2pUy2ioVoKRUtittP65TnA=
-X-Google-Smtp-Source: AA6agR47JMYOXWCuFVL1r98hC3vz/cs21hssdmz3ZDfBQMYVsAqr0m2hQ3kRZIVzuqfVUjtpUq/msg==
-X-Received: by 2002:a63:e352:0:b0:42b:dc03:cc38 with SMTP id o18-20020a63e352000000b0042bdc03cc38mr1658154pgj.545.1661663104101;
-        Sat, 27 Aug 2022 22:05:04 -0700 (PDT)
+        bh=B3vo1ERHcB4zq3BeH92B14/O9uQqF/BKTHSf1xE1Enc=;
+        b=a40X7B7fzr+VM3cAIL3GkzGaL5s2TMOqSuin+nCwpDSWujx+RchTtZOkWMcJjDuy9A
+         TOfpBxdEcVTQTkjyUshmoDrmbVDsxPXZWdyuaslkgHgpl6C/eHDjnXSAybUP2ufQJ4s0
+         o5+7Y4uN93zLFTfh+quXjg8GKCTr8eXFwi2grD2j+a4+jrQId6yDhu3eY+jn99PpQ790
+         PdmCieuTxRcheNGB+cNkSqjn8vJ8zE05ynrc7CYcmSUFIhWx4IE+rNbW0nnvj4avGNNf
+         nJ8aUpoR/pqQXcSc08QhLCY6AkNOj8iixUmibztyR7sD+g5vcR2DklKyz8OkxEmc8Ij3
+         +oaA==
+X-Gm-Message-State: ACgBeo1QNJRHYqVrjvehu5TRoEOxeDzXmxgs4CJz9LP9f0Q/BlQXU9YS
+        Ry6HDrTqoV7KFExA+qXfpSM=
+X-Google-Smtp-Source: AA6agR4b8/MDgCe/zpx0U3Tml7OGFw6R1/0M0oWQd8Y0ejtAM8ACzptlnC2biGnPO+wjP1f3IEZXnQ==
+X-Received: by 2002:a17:902:f711:b0:170:9e3c:1540 with SMTP id h17-20020a170902f71100b001709e3c1540mr10678679plo.22.1661663107603;
+        Sat, 27 Aug 2022 22:05:07 -0700 (PDT)
 Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id bj15-20020a056a02018f00b0041d70c03da5sm3888480pgb.60.2022.08.27.22.05.03
+        by smtp.gmail.com with ESMTPSA id mi6-20020a17090b4b4600b001f1acb6c3ebsm4191395pjb.34.2022.08.27.22.05.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Aug 2022 22:05:03 -0700 (PDT)
+        Sat, 27 Aug 2022 22:05:07 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
 From:   Tejun Heo <tj@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -57,9 +57,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         Johannes Weiner <hannes@cmpxchg.org>,
         Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com,
         Tejun Heo <tj@kernel.org>
-Subject: [PATCH 7/9] kernfs: Factor out kernfs_activate_one()
-Date:   Sat, 27 Aug 2022 19:04:38 -1000
-Message-Id: <20220828050440.734579-8-tj@kernel.org>
+Subject: [PATCH 9/9] cgroup: Implement cgroup_file_show()
+Date:   Sat, 27 Aug 2022 19:04:40 -1000
+Message-Id: <20220828050440.734579-10-tj@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220828050440.734579-1-tj@kernel.org>
 References: <20220828050440.734579-1-tj@kernel.org>
@@ -69,62 +69,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Factor out kernfs_activate_one() from kernfs_activate() and reorder
-operations so that KERNFS_ACTIVATED now simply indicates whether activation
-was attempted on the node ignoring whether activation took place. As the
-flag doesn't have a reader, the refactoring and reordering shouldn't cause
-any behavior difference.
+Add cgroup_file_show() which allows toggling visibility of a cgroup file
+using the new kernfs_show(). This will be used to hide psi interface files
+on cgroups where it's disabled.
 
 Signed-off-by: Tejun Heo <tj@kernel.org>
+Cc: Chengming Zhou <zhouchengming@bytedance.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
 ---
- fs/kernfs/dir.c | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+ include/linux/cgroup.h |  1 +
+ kernel/cgroup/cgroup.c | 20 ++++++++++++++++++++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-index f8cbd05e9b68..c9323956c63c 100644
---- a/fs/kernfs/dir.c
-+++ b/fs/kernfs/dir.c
-@@ -1305,6 +1305,21 @@ static struct kernfs_node *kernfs_next_descendant_post(struct kernfs_node *pos,
- 	return pos->parent;
+diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+index ed53bfe7c46c..f61dd135efbe 100644
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -114,6 +114,7 @@ int cgroup_add_dfl_cftypes(struct cgroup_subsys *ss, struct cftype *cfts);
+ int cgroup_add_legacy_cftypes(struct cgroup_subsys *ss, struct cftype *cfts);
+ int cgroup_rm_cftypes(struct cftype *cfts);
+ void cgroup_file_notify(struct cgroup_file *cfile);
++void cgroup_file_show(struct cgroup_file *cfile, bool show);
+ 
+ int task_cgroup_path(struct task_struct *task, char *buf, size_t buflen);
+ int cgroupstats_build(struct cgroupstats *stats, struct dentry *dentry);
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index ffaccd6373f1..217469a1ea29 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -4339,6 +4339,26 @@ void cgroup_file_notify(struct cgroup_file *cfile)
+ 	spin_unlock_irqrestore(&cgroup_file_kn_lock, flags);
  }
  
-+static void kernfs_activate_one(struct kernfs_node *kn)
++/**
++ * cgroup_file_show - show or hide a hidden cgroup file
++ * @cfile: target cgroup_file obtained by setting cftype->file_offset
++ * @show: whether to show or hide
++ */
++void cgroup_file_show(struct cgroup_file *cfile, bool show)
 +{
-+	lockdep_assert_held_write(&kernfs_root(kn)->kernfs_rwsem);
++	struct kernfs_node *kn;
 +
-+	kn->flags |= KERNFS_ACTIVATED;
++	spin_lock_irq(&cgroup_file_kn_lock);
++	kn = cfile->kn;
++	kernfs_get(kn);
++	spin_unlock_irq(&cgroup_file_kn_lock);
 +
-+	if (kernfs_active(kn) || (kn->flags & KERNFS_REMOVING))
-+		return;
++	if (kn)
++		kernfs_show(kn, show);
 +
-+	WARN_ON_ONCE(kn->parent && RB_EMPTY_NODE(&kn->rb));
-+	WARN_ON_ONCE(atomic_read(&kn->active) != KN_DEACTIVATED_BIAS);
-+
-+	atomic_sub(KN_DEACTIVATED_BIAS, &kn->active);
++	kernfs_put(kn);
 +}
 +
  /**
-  * kernfs_activate - activate a node which started deactivated
-  * @kn: kernfs_node whose subtree is to be activated
-@@ -1326,16 +1341,8 @@ void kernfs_activate(struct kernfs_node *kn)
- 	down_write(&root->kernfs_rwsem);
- 
- 	pos = NULL;
--	while ((pos = kernfs_next_descendant_post(pos, kn))) {
--		if (kernfs_active(pos) || (pos->flags & KERNFS_REMOVING))
--			continue;
--
--		WARN_ON_ONCE(pos->parent && RB_EMPTY_NODE(&pos->rb));
--		WARN_ON_ONCE(atomic_read(&pos->active) != KN_DEACTIVATED_BIAS);
--
--		atomic_sub(KN_DEACTIVATED_BIAS, &pos->active);
--		pos->flags |= KERNFS_ACTIVATED;
--	}
-+	while ((pos = kernfs_next_descendant_post(pos, kn)))
-+		kernfs_activate_one(pos);
- 
- 	up_write(&root->kernfs_rwsem);
- }
+  * css_next_child - find the next child of a given css
+  * @pos: the current position (%NULL to initiate traversal)
 -- 
 2.37.2
 
