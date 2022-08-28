@@ -2,174 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7289C0502A
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCE6C0502A
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbiH1RW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 13:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
+        id S230177AbiH1RaX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 13:30:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229706AbiH1RWy (ORCPT
+        with ESMTP id S229522AbiH1RaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 13:22:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A69AB2FFCE;
-        Sun, 28 Aug 2022 10:22:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FC14B80B08;
-        Sun, 28 Aug 2022 17:22:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55473C433D6;
-        Sun, 28 Aug 2022 17:22:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661707370;
-        bh=X/bJ8/YnfvOS3pILlnvcfejXdvbO54HabKlizeNiJn0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZaJ0C0XqgcCZS4e2cl0mEGa3Zek2R2V4LDwh/hZ5qciexVXV0/Vhr6wns4SmZlxI4
-         zvflcSL6W9SpNwDNi2L/WTNk/PGRKnqrSCQ2BmrhyGDaNu1mejwKUGR7Yu1WUXt+GB
-         FFB2JBDafWTGLaZqclwORULDcQ1vQuMP4l4JcLNAd8tk4d3qLHpuRJbFLf26Gfg77Y
-         oZPSzlVOjV8yHdmFZ9MGyEeGObvGId65185Kh7zOUA05lOWMFAeVaP/8117kUiPcH6
-         z90Ut/JPdjLZ7GhIA6BQola+0lg4Q4dXUBEjdW9JTa5geeCJ80dJ139poiz2ffqQD/
-         4IME/8eYlnktA==
-Date:   Sun, 28 Aug 2022 17:48:29 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Ramona Bolboaca <ramona.bolboaca@analog.com>
-Cc:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] bindings: iio: adc: Add max11205 documentation file
-Message-ID: <20220828174829.68f37d25@jic23-huawei>
-In-Reply-To: <20220824125203.685287-2-ramona.bolboaca@analog.com>
-References: <20220824125203.685287-1-ramona.bolboaca@analog.com>
-        <20220824125203.685287-2-ramona.bolboaca@analog.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sun, 28 Aug 2022 13:30:21 -0400
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A4E7641;
+        Sun, 28 Aug 2022 10:30:19 -0700 (PDT)
+Received: by mail-vs1-xe33.google.com with SMTP id c3so6322879vsc.6;
+        Sun, 28 Aug 2022 10:30:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=rC/kcvyTRMZn63lmOJ8Yw6MSQcVtIHue9Gs8f5KhzxI=;
+        b=QiXycj2Fdgnnrcm4Yd55Jnz3ZDDRPTXPBhcd/BxbbSyT3Zj+SXca6TuWA3S9oQYIpK
+         +DiNwzR4IFUcCb7F93FMJvDvLeKJE1idtoAe7Z7+HxoCXOYDxacZA86EHf0KbFyIF/Uy
+         BPoEEGpBZ0ykd4SmaC1S+kWWUyPoeA8Za81JF+uKMOeoHbf7wjWIyYIrDxuESx6uaiD0
+         nuAqZ9Dd5iytqXuVa+Yl6Obc9b6h6cEANAN4FCVBoi81wp93z2O3BTXvqwFgQrENj2GK
+         ODpG5xkdP+LrQLZXOK7+xcWTXmwoQc4EIhtXhI4QTJsmbChg+T/6xKH9jzGdBoprGUPi
+         qa/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=rC/kcvyTRMZn63lmOJ8Yw6MSQcVtIHue9Gs8f5KhzxI=;
+        b=G41h19QUFyVaeevEK2nMq07L+sjWbqN9qcGoL5fAO6gO5QjSkEX7mMDH5cinaNwllS
+         8/vAHfKrJDL6BvmRjGAhSfAElIJnvuRZ3r/+UBGIEA4Ddd+0B2LWFoeCqes2SoS8H93V
+         JbPNZGvoZZIpnPsiQIfabe0wIkUIoZ0aDm7CESNAa4XjDFZ8kXMfJ9eE66ktHgugmXba
+         /4Axqp43nPwZZw1Ri3KQZNtxJA9JAk2fXm24hBta+wOnGwlv0p4bSNPWmepeULW47EF8
+         Ufc4F+GxsvGHYRdTfbZyX8swmZt7zb+CAM6KEz81iY4hFG8kigD89qwRGlh+PpccYDi0
+         y3bg==
+X-Gm-Message-State: ACgBeo1Rm9TfTRcApnlj4MkOX1HlgUsYG4smilvYqBg/yInzHGfuBsPA
+        FjaAtL/ASUMApGzpC9HBJOQ3mqYhkVu4/F0Z6r4=
+X-Google-Smtp-Source: AA6agR7cmg57rCLNkmwrUUJk/RyfQYniAMvh9OKyjO2Yd3+bL6n6ixaimSWK3PPDLAo0oGuiuEXzn5LzJQt8j7+ovg4=
+X-Received: by 2002:a67:a649:0:b0:390:88c5:6a91 with SMTP id
+ r9-20020a67a649000000b0039088c56a91mr2450540vsh.3.1661707819049; Sun, 28 Aug
+ 2022 10:30:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220826214703.134870-1-jlayton@kernel.org> <20220826214703.134870-5-jlayton@kernel.org>
+ <CAOQ4uxjzE_B_EQktLr8z8gXOhFDNm-_YpUTycfZCdaZNp-i0hQ@mail.gmail.com>
+ <CAOQ4uxge86g=+HPnds-wRXkFHg67G=m9rGK7V_T8yS+2=w9tmg@mail.gmail.com>
+ <35d31d0a5c6c9a20c58f55ef62355ff39a3f18c6.camel@kernel.org> <Ywo8cWRcJUpLFMxJ@magnolia>
+In-Reply-To: <Ywo8cWRcJUpLFMxJ@magnolia>
+From:   Amir Goldstein <amir73il@gmail.com>
+Date:   Sun, 28 Aug 2022 20:30:07 +0300
+Message-ID: <CAOQ4uxj=+7n5vcxNt8CTkPCzv7u8AQYHdzF2mKS29Bj3S3NxnA@mail.gmail.com>
+Subject: Re: [PATCH v3 4/7] xfs: don't bump the i_version on an atime update
+ in xfs_vn_update_time
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     Jeff Layton <jlayton@kernel.org>, Theodore Tso <tytso@mit.edu>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Dave Chinner <david@fromorbit.com>,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Neil Brown <neilb@suse.de>, Al Viro <viro@zeniv.linux.org.uk>,
+        Mimi Zohar <zohar@linux.ibm.com>, xiubli@redhat.com,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Lukas Czerner <lczerner@redhat.com>, Jan Kara <jack@suse.cz>,
+        Christian Brauner <brauner@kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Linux Btrfs <linux-btrfs@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Ext4 <linux-ext4@vger.kernel.org>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        David Wysochanski <dwysocha@redhat.com>,
+        ceph-devel <ceph-devel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 24 Aug 2022 15:52:02 +0300
-Ramona Bolboaca <ramona.bolboaca@analog.com> wrote:
+> > > >
+> > > > Forensics and other applications that care about atime updates can and
+> > > > should check atime and don't need i_version to know that it was changed.
+> > > > The reliability of atime as an audit tool has dropped considerably since
+> > > > the default in relatime.
+>
+> I've been waiting for Amir to appear in this discussion -- ISTR that a
+> few years ago you were wanting the ability to scan a filesystem to look
+> for files that have changed since a given point.  If XFS exported its
+> di_changecount file attribute (as it currently behaves) via BULKSTAT,
+> you'd have the ability to do that, so long as your application could
+> persist bulkstat data and compare.
+>
 
-> Add bindings documentation file and MAINTAINERS entry for MAX11205.
-> 
-> Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
-Hi Ramona,
+It's true that exporting i_version via BULKSTAT could be useful
+to some backup/sync applications.
 
-Welcome to IIO. 
-
-A few comments inline to add to what Krzysztof sent.
+For my case, I was interested in something a bit different -
+finding all the changes in a very large fs tree - or IOW finding if
+anything has changed inside a large tree since a point in time.
+So not sure if i_version would help for that use case.
 
 Thanks,
-
-Jonathan
-
-> ---
->  .../bindings/iio/adc/maxim,max11205.yaml      | 65 +++++++++++++++++++
->  MAINTAINERS                                   |  8 +++
->  2 files changed, 73 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-> new file mode 100644
-> index 000000000000..bddd18a44969
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-> @@ -0,0 +1,65 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/maxim,max11205.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Maxim MAX11205 ADC
-> +
-> +maintainers:
-> +  - Ramona Bolboaca <ramona.bolboaca@analog.com>
-> +
-> +description: |
-> +  The MAX11205 is an ultra-low-power (< 300FA max
-> +  active current), high-resolution, serial-output ADC.
-
-Wrap lines nearer to 75-80 chars.
-
-> +
-> +  https://datasheets.maximintegrated.com/en/ds/MAX11205.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - maxim,max11205a
-> +      - maxim,max11205b
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 5000000
-> +
-> +  spi-cpha: true
-> +
-> +  vref-supply:
-> +    description:
-> +      The regulator supply for the ADC reference voltage.
-
-Might be worth mentioning it's a differential reference. I'm not 100% sure
-how we handle those...  I guess as a regulator, but it's a little unusual.
-
-Jonathan
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - spi-max-frequency
-> +  - spi-cpha
-> +  - interrupts
-> +  - vref-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        max11205@0 {
-> +                      compatible = "maxim,max11205a";
-> +                      reg = <0>;
-> +                      spi-max-frequency = <5000000>;
-> +                      spi-cpha;
-> +                      interrupt-parent = <&gpio>;
-> +                      interrupts = <19 IRQ_TYPE_EDGE_FALLING>;
-> +                      vref-supply = <&max11205_vref>;
-> +        };
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 96f47a7865d6..db1b5dc03988 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -12341,6 +12341,14 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.yaml
->  F:	drivers/iio/proximity/mb1232.c
->  
-> +MAXIM MAX11205 DRIVER
-> +M:	Ramona Bolboaca <ramona.bolboaca@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
-> +F:	drivers/iio/adc/max11205.c
-> +
->  MAXIM MAX17040 FAMILY FUEL GAUGE DRIVERS
->  R:	Iskren Chernev <iskren.chernev@gmail.com>
->  R:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Amir.
