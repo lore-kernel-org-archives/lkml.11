@@ -2,166 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00208C0502C
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 10:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF643C0502E
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 10:44:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229613AbiH1KY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 06:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
+        id S229581AbiH1Kob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 06:44:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiH1KYZ (ORCPT
+        with ESMTP id S229489AbiH1Ko2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 06:24:25 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B853E4CA00;
-        Sun, 28 Aug 2022 03:24:23 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oSFSn-0006qz-Ha; Sun, 28 Aug 2022 12:24:21 +0200
-Message-ID: <9968ab01-f9c4-ee47-9dd0-9e46560e459e@leemhuis.info>
-Date:   Sun, 28 Aug 2022 12:24:21 +0200
+        Sun, 28 Aug 2022 06:44:28 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D3013CD1
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 03:44:27 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id bh11-20020a056602370b00b00688c8a2b56cso3167919iob.13
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 03:44:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=mWpjuw2cEypIEwPl3uUFPCRS5JpzlHOLzs3TgwZBGJ8=;
+        b=RJ33uQpZvk/GkmNDE2CRW/jZSelnw6iDDZC/xKyXE7f7qLeJb9AT7UQTSYTKaWh+jS
+         6M8ipwVMvQ6uXGIS0Gxcjqy6IOqQlaFd42NGct5T6lSGmVBqt6mw3//Zy7b975/p2R8c
+         JrCFgR7ipcwTEP2iMRftCRadWeg2GCQX+VOqg1NxVgqKRzcErPQfJwrefHOaaheU1Ohp
+         S8kI6sT1lnhX99VLF7NZ0jNBeW0ETbWBwCYjn5tC0aQdGDXUFFZ0OdRaR6YMB2hcQPia
+         q2RQkJ02Ig1Fy/kZ1KarKRpwrYf5M2valPwl7VxKjaA2kzRNrFThmh3cbMlJjmLOHkLZ
+         8+cg==
+X-Gm-Message-State: ACgBeo2mMFgagdIFve7X3Mj5ObbpwM/yJEqwnwod1pXANjkOD5hiNyxE
+        T1U9QmvjC+NZD/0iuULR3DqKXkCFGbKq2hltJR91ltLE/ZqU
+X-Google-Smtp-Source: AA6agR6nuK/jedOn6XCE2bkX14AoyBxrnUcfzrL/5xBxG4n5OSiyPFeC5poB3hAAjIY419N82aIif5hhFBf2i5SdioS+22IT0ulS
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: regression caused by block: freeze the queue earlier in
- del_gendisk
-Content-Language: en-US
-To:     Dusty Mabe <dusty@dustymabe.com>, Jens Axboe <axboe@kernel.dk>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     hch@lst.de,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <017845ae-fbae-70f6-5f9e-29aff2742b8c@dustymabe.com>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-In-Reply-To: <017845ae-fbae-70f6-5f9e-29aff2742b8c@dustymabe.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1661682263;b86e50f9;
-X-HE-SMSGID: 1oSFSn-0006qz-Ha
+X-Received: by 2002:a05:6e02:1a8b:b0:2ea:8154:1da0 with SMTP id
+ k11-20020a056e021a8b00b002ea81541da0mr6378225ilv.47.1661683466752; Sun, 28
+ Aug 2022 03:44:26 -0700 (PDT)
+Date:   Sun, 28 Aug 2022 03:44:26 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c3da4d05e74ad4fc@google.com>
+Subject: [syzbot] usb-testing boot error: general protection fault in driver_register
+From:   syzbot <syzbot+e7499dac4bd3955773ed@syzkaller.appspotmail.com>
+To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, rafael@kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker. Thx for the report.
+Hello,
 
-CCing the regression mailing list, as it should be in the loop for all
-regressions, as explained here:
-https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
+syzbot found the following issue on:
 
-On 26.08.22 18:15, Dusty Mabe wrote:
-> 
-> I think I've found a regression introduced by:
-> a09b314 o block: freeze the queue earlier in del_gendisk
+HEAD commit:    4dce3b375179 usb/hcd: Fix dma_map_sg error check
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+console output: https://syzkaller.appspot.com/x/log.txt?x=10344fd3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3cb39b084894e9a5
+dashboard link: https://syzkaller.appspot.com/bug?extid=e7499dac4bd3955773ed
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Just FYI, in case you are not aware of it already: there was another
-report that this commit causes problems. See this thread for details:
-https://lore.kernel.org/all/72a5bf2e-cd56-a85c-2b99-cb8729a66fed@deltatee.com/#t
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e7499dac4bd3955773ed@syzkaller.appspotmail.com
 
-Anyway, let me add this report to the regressions tracking:
+PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+software IO TLB: mapped [mem 0x00000000bbffd000-0x00000000bfffd000] (64MB)
+RAPL PMU: API unit is 2^-32 Joules, 0 fixed counters, 10737418240 ms ovfl timer
+clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x1fb6b90ffa2, max_idle_ns: 440795278193 ns
+clocksource: Switched to clocksource tsc
+Initialise system trusted keyrings
+workingset: timestamp_bits=40 max_order=21 bucket_order=0
+NFS: Registering the id_resolver key type
+Key type id_resolver registered
+Key type id_legacy registered
+9p: Installing v9fs 9p2000 file system support
+Key type asymmetric registered
+Asymmetric key parser 'x509' registered
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 246)
+io scheduler mq-deadline registered
+io scheduler kyber registered
+usbcore: registered new interface driver udlfb
+usbcore: registered new interface driver smscufx
+input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+ACPI: button: Power Button [PWRF]
+input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
+ACPI: button: Sleep Button [SLPF]
+ACPI: \_SB_.LNKC: Enabled at IRQ 11
+virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
+ACPI: \_SB_.LNKD: Enabled at IRQ 10
+virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
+ACPI: \_SB_.LNKB: Enabled at IRQ 10
+virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
+virtio-pci 0000:00:07.0: virtio_pci: leaving for legacy driver
+Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
+00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
+00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
+Non-volatile memory driver v1.3
+Linux agpgart interface v0.103
+ACPI: bus type drm_connector registered
+usbcore: registered new interface driver udl
+loop: module loaded
+usbcore: registered new interface driver rtsx_usb
+usbcore: registered new interface driver viperboard
+usbcore: registered new interface driver dln2
+usbcore: registered new interface driver pn533_usb
+usbcore: registered new interface driver port100
+usbcore: registered new interface driver nfcmrvl
+scsi host0: Virtio SCSI HBA
+scsi 0:0:1:0: Direct-Access     Google   PersistentDisk   1    PQ: 0 ANSI: 6
+sd 0:0:1:0: Attached scsi generic sg0 type 0
+Rounding down aligned max_sectors from 4294967295 to 4294967288
+db_root: cannot open: /etc/target
+general protection fault, probably for non-canonical address 0xffff000000000800: 0000 [#1] PREEMPT SMP KASAN
+KASAN: maybe wild-memory-access in range [0xfff8200000004000-0xfff8200000004007]
+CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-syzkaller-00028-g4dce3b375179 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:freelist_dereference mm/slub.c:347 [inline]
+RIP: 0010:get_freepointer mm/slub.c:354 [inline]
+RIP: 0010:get_freepointer_safe mm/slub.c:368 [inline]
+RIP: 0010:slab_alloc_node mm/slub.c:3211 [inline]
+RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
+RIP: 0010:kmem_cache_alloc_trace+0x15e/0x3b0 mm/slub.c:3282
+Code: 8b 51 08 48 8b 01 48 83 79 10 00 48 89 44 24 08 0f 84 9d 01 00 00 48 85 c0 0f 84 94 01 00 00 48 8b 7d 00 8b 4d 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 a0 01 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
+RSP: 0000:ffffc9000001fce8 EFLAGS: 00010246
+RAX: ffff000000000000 RBX: 0000000000000000 RCX: 0000000000000800
+RDX: 0000000000000d39 RSI: 0000000000000dc0 RDI: 000000000003b470
+RBP: ffff888100042140 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000dc0
+R13: 0000000000000a20 R14: 0000000000000dc0 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 0000000007825000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ kmalloc include/linux/slab.h:600 [inline]
+ kzalloc include/linux/slab.h:733 [inline]
+ kobject_uevent_env+0x230/0x1640 lib/kobject_uevent.c:524
+ driver_register+0x2db/0x3a0 drivers/base/driver.c:248
+ virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4108
+ do_one_initcall+0xfe/0x650 init/main.c:1296
+ do_initcall_level init/main.c:1369 [inline]
+ do_initcalls init/main.c:1385 [inline]
+ do_basic_setup init/main.c:1404 [inline]
+ kernel_init_freeable+0x6ac/0x735 init/main.c:1611
+ kernel_init+0x1a/0x1d0 init/main.c:1500
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+Modules linked in:
+---[ end trace 0000000000000000 ]---
+RIP: 0010:freelist_dereference mm/slub.c:347 [inline]
+RIP: 0010:get_freepointer mm/slub.c:354 [inline]
+RIP: 0010:get_freepointer_safe mm/slub.c:368 [inline]
+RIP: 0010:slab_alloc_node mm/slub.c:3211 [inline]
+RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
+RIP: 0010:kmem_cache_alloc_trace+0x15e/0x3b0 mm/slub.c:3282
+Code: 8b 51 08 48 8b 01 48 83 79 10 00 48 89 44 24 08 0f 84 9d 01 00 00 48 85 c0 0f 84 94 01 00 00 48 8b 7d 00 8b 4d 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 a0 01 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
+RSP: 0000:ffffc9000001fce8 EFLAGS: 00010246
+RAX: ffff000000000000 RBX: 0000000000000000 RCX: 0000000000000800
+RDX: 0000000000000d39 RSI: 0000000000000dc0 RDI: 000000000003b470
+RBP: ffff888100042140 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000dc0
+R13: 0000000000000a20 R14: 0000000000000dc0 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 0000000007825000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	8b 51 08             	mov    0x8(%rcx),%edx
+   3:	48 8b 01             	mov    (%rcx),%rax
+   6:	48 83 79 10 00       	cmpq   $0x0,0x10(%rcx)
+   b:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
+  10:	0f 84 9d 01 00 00    	je     0x1b3
+  16:	48 85 c0             	test   %rax,%rax
+  19:	0f 84 94 01 00 00    	je     0x1b3
+  1f:	48 8b 7d 00          	mov    0x0(%rbp),%rdi
+  23:	8b 4d 28             	mov    0x28(%rbp),%ecx
+  26:	40 f6 c7 0f          	test   $0xf,%dil
+* 2a:	48 8b 1c 08          	mov    (%rax,%rcx,1),%rbx <-- trapping instruction
+  2e:	0f 85 a0 01 00 00    	jne    0x1d4
+  34:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
+  38:	65 48 0f c7 0f       	cmpxchg16b %gs:(%rdi)
+  3d:	0f 94 c0             	sete   %al
 
-[TLDR: I'm adding this regression report to the list of tracked
-regressions; all text from me you find below is based on a few templates
-paragraphs you might have encountered already already in similar form.]
 
-> In Fedora CoreOS we have tests that set up RAID1 on the /boot/ and /root/ partitions
-> and then subsequently removes one of the disks to simulate a failure. Sometime recently
-> this test started timing out occasionally. Looking a bit closer it appears instances are
-> getting stuck during reboot with a bunch of looping messages:
-> 
-> ```
-> [   17.978854] block device autoloading is deprecated and will be removed.
-> [   17.982555] block device autoloading is deprecated and will be removed.
-> [   17.985537] block device autoloading is deprecated and will be removed.
-> [   17.987546] block device autoloading is deprecated and will be removed.
-> [   17.989540] block device autoloading is deprecated and will be removed.
-> [   17.991547] block device autoloading is deprecated and will be removed.
-> [   17.993555] block device autoloading is deprecated and will be removed.
-> [   17.995539] block device autoloading is deprecated and will be removed.
-> [   17.997577] block device autoloading is deprecated and will be removed.
-> [   17.999544] block device autoloading is deprecated and will be removed.
-> [   22.979465] blkdev_get_no_open: 1666 callbacks suppressed
-> ...
-> ...
-> ...
-> [  618.221270] blkdev_get_no_open: 1664 callbacks suppressed
-> [  618.221273] block device autoloading is deprecated and will be removed.
-> [  618.224274] block device autoloading is deprecated and will be removed.
-> [  618.227267] block device autoloading is deprecated and will be removed.
-> [  618.229274] block device autoloading is deprecated and will be removed.
-> [  618.231277] block device autoloading is deprecated and will be removed.
-> [  618.233277] block device autoloading is deprecated and will be removed.
-> [  618.235282] block device autoloading is deprecated and will be removed.
-> [  618.237370] block device autoloading is deprecated and will be removed.
-> [  618.239356] block device autoloading is deprecated and will be removed.
-> [  618.241290] block device autoloading is deprecated and will be removed.
-> ```
-> 
-> Using the Fedora kernels I narrowed it down to being introduced between 
-> `kernel-5.19.0-0.rc3.27.fc37` (good) and `kernel-5.19.0-0.rc4.33.fc37` (bad).
-> 
-> I then did a bisect and found:
-> 
-> ```
-> $ git bisect bad
-> a09b314005f3a0956ebf56e01b3b80339df577cc is the first bad commit
-> commit a09b314005f3a0956ebf56e01b3b80339df577cc
-> Author: Christoph Hellwig <hch@lst.de>
-> Date:   Tue Jun 14 09:48:27 2022 +0200
-> 
->     block: freeze the queue earlier in del_gendisk
->     
->     Freeze the queue earlier in del_gendisk so that the state does not
->     change while we remove debugfs and sysfs files.
->     
->     Ming mentioned that being able to observer request in debugfs might
->     be useful while the queue is being frozen in del_gendisk, which is
->     made possible by this change.
->     
->     Signed-off-by: Christoph Hellwig <hch@lst.de>
->     Link: https://lore.kernel.org/r/20220614074827.458955-5-hch@lst.de
->     Signed-off-by: Jens Axboe <axboe@kernel.dk>
-> 
->  block/genhd.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> ```
-> 
-> Reverting this commit on top of latest git master (4c612826b) gave me successful results.
-> 
-> Any ideas on what could be amiss here? Luckily the patch is tiny so hopefully it might
-> be obvious.
-> 
-> More details (including logs) in the following locations:
-> 
-> - https://bugzilla.redhat.com/show_bug.cgi?id=2121791
-> - https://github.com/coreos/fedora-coreos-tracker/issues/1282
-> 
-> 
-> Thanks!
-> Dusty
-> 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Thanks for the report. To be sure below issue doesn't fall through the
-cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
-tracking bot:
-
-#regzbot ^introduced a09b314005f3a0
-#regzbot title block: timeouts when removing a disk from a RAID1
-#regzbot ignore-activity
-
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply -- ideally with also
-telling regzbot about it, as explained here:
-https://linux-regtracking.leemhuis.info/tracked-regression/
-
-Reminder for developers: When fixing the issue, add 'Link:' tags
-pointing to the report (the mail this one replies to), as explained for
-in the Linux kernel's documentation; above webpage explains why this is
-important for tracked regressions.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
