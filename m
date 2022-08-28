@@ -2,84 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1DD6ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 15:24:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD13FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 15:46:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229912AbiH1PY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 11:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53040 "EHLO
+        id S229945AbiH1PqD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 11:46:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiH1PYX (ORCPT
+        with ESMTP id S229527AbiH1PqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 11:24:23 -0400
-X-Greylist: delayed 4200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 28 Aug 2022 08:24:22 PDT
-Received: from 4.mo550.mail-out.ovh.net (4.mo550.mail-out.ovh.net [46.105.76.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3BA030575
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 08:24:22 -0700 (PDT)
-Received: from player157.ha.ovh.net (unknown [10.111.172.22])
-        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 4E24B2277E
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 14:05:11 +0000 (UTC)
-Received: from milecki.pl (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player157.ha.ovh.net (Postfix) with ESMTPSA id 61D582DF32C4F;
-        Sun, 28 Aug 2022 14:04:50 +0000 (UTC)
-Authentication-Results: garm.ovh; auth=pass (GARM-101G00488ca032a-118b-4694-88e1-9351a19d5173,
-                    E8B3FA25B4F8D98D1FC0498694F8FFDB0E70245B) smtp.auth=rafal@milecki.pl
-X-OVh-ClientIp: 194.187.74.233
-Message-ID: <f830543b-9b66-5785-60f8-27ea05d49eee@milecki.pl>
-Date:   Sun, 28 Aug 2022 16:04:49 +0200
+        Sun, 28 Aug 2022 11:46:01 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B1122B23;
+        Sun, 28 Aug 2022 08:45:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1661701557; x=1693237557;
+  h=message-id:date:mime-version:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:subject;
+  bh=fk2L9Oz7afPMEfjxu/VrtbrPcUwpkveelWUxw8cAevM=;
+  b=AruQ3O6GIC0FQgsZ+e8do/R0bm89Gb+PVDA97Rrm6nCY3uDK0DWiHGnF
+   BuOXk37VxajaZAQaazRjmKMc0I8aczK8iH0hcygiiQmGpQ5Kn83DI8T+p
+   DYuYAc/fU3yQhFqKHj3pPrbWmLxzafwm0LMaTDyOUWU2YQxycekiAEeol
+   M=;
+X-IronPort-AV: E=Sophos;i="5.93,270,1654560000"; 
+   d="scan'208";a="238246321"
+Subject: Re: [PATCH v2 1/2] dt-bindings: at24: add new optional power-supply property
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-8bf71a74.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 15:45:46 +0000
+Received: from EX13MTAUEE001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-8bf71a74.us-east-1.amazon.com (Postfix) with ESMTPS id 71597C1465;
+        Sun, 28 Aug 2022 15:45:44 +0000 (UTC)
+Received: from EX13D08UEE004.ant.amazon.com (10.43.62.182) by
+ EX13MTAUEE001.ant.amazon.com (10.43.62.226) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Sun, 28 Aug 2022 15:45:43 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (10.43.161.207) by
+ EX13D08UEE004.ant.amazon.com (10.43.62.182) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Sun, 28 Aug 2022 15:45:43 +0000
+Received: from [192.168.93.8] (10.85.143.173) by mail-relay.amazon.com
+ (10.43.161.249) with Microsoft SMTP Server id 15.0.1497.38 via Frontend
+ Transport; Sun, 28 Aug 2022 15:45:37 +0000
+Message-ID: <9e8a39d0-6267-cbac-da29-00e41871e14b@amazon.com>
+Date:   Sun, 28 Aug 2022 18:45:36 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-Subject: Re: [RFC PATCH v1 12/14] nvmem: layouts: rewrite the u-boot-env
- driver as a NVMEM layout
-To:     Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-13-michael@walle.cc>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-In-Reply-To: <20220825214423.903672-13-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Ovh-Tracer-Id: 8509270023987571643
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdejledgjeehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvvehfhfgjtgfgsehtjeertddtfeejnecuhfhrohhmpeftrghfrghlucfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpedtgeetheeutddvudekuddtkeetveehteegleehffetkeehjeetfffgveegkeefueenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhduheejrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehhedt
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+To:     Rob Herring <robh@kernel.org>
+CC:     <brgl@bgdev.pl>, <mark.rutland@arm.com>, <arnd@arndb.de>,
+        <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <talel@amazon.com>, <hhhawa@amazon.com>, <jonnyc@amazon.com>,
+        <hanochu@amazon.com>, <ronenk@amazon.com>, <itamark@amazon.com>,
+        <shellykz@amazon.com>, <shorer@amazon.com>, <amitlavi@amazon.com>,
+        <almogbs@amazon.com>, <dkl@amazon.com>, <dwmw@amazon.co.uk>,
+        "Farber, Eliav" <farbere@amazon.com>
+References: <20220822105830.22790-1-farbere@amazon.com>
+ <20220822105830.22790-2-farbere@amazon.com>
+ <20220822214623.GA907654-robh@kernel.org>
+Content-Language: en-US
+From:   "Farber, Eliav" <farbere@amazon.com>
+In-Reply-To: <20220822214623.GA907654-robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.08.2022 23:44, Michael Walle wrote:
-> Instead of hardcoding the underlying access method mtd_read() and
-> duplicating all the error handling, rewrite the driver as a nvmem
-> layout which just uses nvmem_device_read() and thus works with any
-> NVMEM device.
-> 
-> But because this is now not a device anymore, the compatible string
-> will have to be changed so the device will still be probed:
->    compatible = "u-boot,env";
-> to
->    compatible = "u-boot,env", "nvmem-cells";
-> 
-> "nvmem-cells" will tell the mtd layer to register a nvmem_device().
-> "u-boot,env" will tell the NVMEM that it should apply the u-boot
-> environment layout to the NVMEM device.
+On 8/23/2022 12:46 AM, Rob Herring wrote:
+>>  Documentation/devicetree/bindings/eeprom/at24.txt | 3 +++
+>>  1 file changed, 3 insertions(+)
+>
+> This file doesn't exist any more. Use the latest -rc1 kernel unless
+> there is a reason you need a different (even later) base.
+I applied the change on top of v6.0-rc1
 
-That's fishy but maybe we can ignore backward compatibility at
-point.
-
-Still you need to update DT binding.
+--
+Thanks, Eliav
