@@ -2,135 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EA8C0502C
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 10:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A54C0502C
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 10:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229633AbiH1Koe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 06:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52242 "EHLO
+        id S229779AbiH1KvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 06:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiH1Koa (ORCPT
+        with ESMTP id S229685AbiH1Ku4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 06:44:30 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B5113CFA
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 03:44:28 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id i188-20020a1c3bc5000000b003a7b6ae4eb2so1728533wma.4
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 03:44:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=85rO0BXnVLcRaqiYDdjzNr1g4uH0voSH4cu9w//tBVc=;
-        b=R71+93xpR/gNVc40Aesq8usMDWDhuRubeaTvUt5stGxlyPjw6VTLxM6nqBm/Evbw0t
-         RPST3T6K0S2WEE9al8aMdfM7XWETD+LcEYLUTbfRX67rpuwtSkMKIja5voi79fC5rd83
-         V9SV2YJTyqeRvxP1RdE0ymvYZjO7jCfSCRXYmLr8iCLAeB4MZZ6jPkF3RjMpfmIksL0P
-         JJGK2XJkbsvg+l24gNp+7HnboGLpkU7PS1k3gbkhLYLy5wpIU3WSQVca8retsJCxsZEQ
-         K89cTRHl6hvqCulyzvCZ7bK8ddPG9R7RXYp2YoibiwJN3d3ghD1ST8wLlVUi2a2hTUw+
-         10jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=85rO0BXnVLcRaqiYDdjzNr1g4uH0voSH4cu9w//tBVc=;
-        b=sSIl3/0bKoS0qLOdUioLYhoMMaK0IxBXhb8GXhQGEYW09NhUniAeVtFDomYwG6V+UY
-         o85djZHxK4kcyWXZbtz0nkKDrPS4Mzxn7pRYkuJC4fGLhlarjb5GiUPN1MkAF0W2a9ty
-         SKRz2vkk6jobFIJUFb4k2T4KcqClPaE0o8ySNca/fbh90muwzJeZu69K20NRhVfq8mfP
-         kLdtI00q2bhE5HQX4yidVMYFA0257h79dMI7SFmZMZo91NJHRJzFpHetpnpYBMbU7wpy
-         AU6EEsCFFmzpMuNm6mWHPMJNdkBD9oTUJboV4xWej97IGe1i9LdRAYUv/kInTaGA1ctH
-         L4CQ==
-X-Gm-Message-State: ACgBeo1QR3aFx6pVeXb46Avji6YQ7XtZW82PaTEwsXUnlNfeXpms9ddX
-        +38VsVO20liUclw3YQ6AML82yqlvvjSTJxpG
-X-Google-Smtp-Source: AA6agR5pJB1ycqIn1E2FAvrQUq+bYeyS5CvdIKtscf0H0i//AtxYNVhMJH975ePw5ly8d7dyKX7h7A==
-X-Received: by 2002:a05:600c:4e8b:b0:3a5:f5bf:9c5a with SMTP id f11-20020a05600c4e8b00b003a5f5bf9c5amr4331825wmq.85.1661683467029;
-        Sun, 28 Aug 2022 03:44:27 -0700 (PDT)
-Received: from equinox (2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0::2])
-        by smtp.gmail.com with ESMTPSA id r38-20020a05600c322600b003a536d5aa2esm5196364wmp.11.2022.08.28.03.44.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 03:44:26 -0700 (PDT)
-Date:   Sun, 28 Aug 2022 11:44:24 +0100
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Alexander Potapenko <glider@google.com>,
-        ath9k-devel@qca.qualcomm.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
-Message-ID: <YwtHCDTRMtXe/VTt@equinox>
-References: <000000000000c98a7f05ac744f53@google.com>
- <000000000000734fe705acb9f3a2@google.com>
- <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
- <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
- <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
- <CAG_fn=Wq51FMbty4c_RwjBSFWS1oceL1rOAUzCyRnGEzajQRAg@mail.gmail.com>
- <46fee955-a5fa-fbd6-bcc4-d9344e6801d9@I-love.SAKURA.ne.jp>
+        Sun, 28 Aug 2022 06:50:56 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDE318388
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 03:50:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661683854; x=1693219854;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=uBnc/uUl4uYtFqyvUJIC8EP0Jc7OEbx0uhCCIwKRo20=;
+  b=mHkg/y0Kzs+PLSd0VZOemuSRdx0QHbTk64DMUhjK1PQ6zUhw6XZvpDWp
+   eUd1amidvEr50psJ578InQzGv9imbXnOAK0rNI99M5XpP4R4cSe/BQao+
+   VDvSGAI2LIos8SP7KuFqAE4SbI7i4l1spxqrkdpCikZo2uRm/FS82zKfg
+   TBd4gTNQgsxDW015KbRwHEh9tw8O5gMlW9fuozBbdJiNGlYD9m9SsdSvD
+   cx/r6G/1za8G6tPUHlLo55nZn9BLlFWkfJO4aGooXI5zU9tEsTWG5t8Sd
+   vm4frKeHThJ4afdU7Gw7XcPv/UQtS8Sh819tG5MZ1Hat8pcWQAWJXzikS
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10452"; a="296003346"
+X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
+   d="scan'208";a="296003346"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 03:50:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,270,1654585200"; 
+   d="scan'208";a="561905548"
+Received: from lkp-server01.sh.intel.com (HELO fc16deae1c42) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 28 Aug 2022 03:50:52 -0700
+Received: from kbuild by fc16deae1c42 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oSFsS-00010t-0p;
+        Sun, 28 Aug 2022 10:50:52 +0000
+Date:   Sun, 28 Aug 2022 18:50:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c:1321:2-3: Unneeded
+ semicolon
+Message-ID: <202208281859.LUzCrKkS-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <46fee955-a5fa-fbd6-bcc4-d9344e6801d9@I-love.SAKURA.ne.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 10:35:43AM +0900, Tetsuo Handa wrote:
-> On 2022/08/26 0:09, Alexander Potapenko wrote:
-> > On Thu, Aug 25, 2022 at 4:34 PM Tetsuo Handa
-> > <penguin-kernel@i-love.sakura.ne.jp> wrote:
-> >>
-> >> Hello.
-> > Hi Tetsuo,
-> > 
-> >> I found that your patch was applied. But since the reproducer tested only 0 byte
-> >> case, I think that rejecting only less than sizeof(struct htc_frame_hdr) bytes
-> >> is not sufficient.
-> >>
-> >> More complete patch with Ack from Toke is waiting at
-> >> https://lkml.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.SAKURA.ne.jp .
-> > 
-> > Thanks for letting me know! I just checked that your patch indeed
-> > fixes the issue I am facing.
-> > If it is more complete, I think we'd indeed better use yours.
-> 
-> I recognized that "ath9k: fix an uninit value use in ath9k_htc_rx_msg()" is
-> local to KMSAN tree.
-> https://github.com/google/kmsan/commit/d891e35583bf2e81ccc7a2ea548bf7cf47329f40
-> 
-> That patch needs to be dropped, for I confirmed that passing pad_len == 8 below
-> still triggers uninit value at ath9k_htc_fw_panic_report(). (My patch does not
-> trigger at ath9k_htc_fw_panic_report().)
-> 
->         fd = syz_usb_connect_ath9k(3, 0x5a, 0x20000800, 0);
->         *(uint16_t*)0x20000880 = 0 + pad_len;
->         *(uint16_t*)0x20000882 = 0x4e00;
->         memmove((uint8_t*)0x20000884, "\x99\x11\x22\x33\x00\x00\x00\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 16);
->         syz_usb_ep_write(fd, 0x82, 4 + pad_len, 0x20000880);
-> 
-> 
-> 
-> Also, that patch has a skb leak bug; according to comment for ath9k_htc_rx_msg()
-> 
->  * Service messages (Data, WMI) passed to the corresponding
->  * endpoint RX handlers, which have to free the SKB.
-> 
-> , I think that this function is supposed to free skb if skb != NULL.
-> 
-> If dev_kfree_skb_any(skb) needs to be used when epid is invalid and pipe_id != USB_REG_IN_PIPE,
-> why it is OK to use kfree_skb(skb) if epid == 0x99 and pipe_id != USB_REG_IN_PIPE ?
-> 
-> We don't call kfree_skb(skb) if 0 < epid < ENDPOINT_MAX and endpoint->ep_callbacks.rx == NULL.
-> Why it is OK not to call kfree_skb(skb) in that case?
-> 
-> Callers can't pass such combinations? I leave these questions to ath9k developers...
->
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   10d4879f9ef01cc6190fafe4257d06f375bab92c
+commit: 25d7a5f5a6bb15a2dae0a3f39ea5dda215024726 ixgbe: stop resetting SYSTIME in ixgbe_ptp_start_cyclecounter
+date:   4 days ago
+config: alpha-randconfig-c033-20220828 (https://download.01.org/0day-ci/archive/20220828/202208281859.LUzCrKkS-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 12.1.0
 
-Hi Tetsuo,
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thank you for this improved patch. My original one was somewhat naive
-attempt at a resolution.
+cocci warnings: (new ones prefixed by >>)
+>> drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c:1321:2-3: Unneeded semicolon
 
-Regards,
-Phil
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
