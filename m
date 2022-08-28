@@ -2,141 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C33DECAAA2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7EEC0502E
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 17:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230099AbiH1Rxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 13:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45014 "EHLO
+        id S229683AbiH1R6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 13:58:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbiH1Rxe (ORCPT
+        with ESMTP id S229445AbiH1R6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 13:53:34 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8288919035
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 10:53:33 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id n23-20020a056602341700b00689fc6dbfd6so3477315ioz.8
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 10:53:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=zfttuNiZWmjuUsnOponIJcuusQ1LT+/eY2qkTwE8vcc=;
-        b=PltfMTAnfYpu7KYkdfzrJCs/ArRn4ROyHhjOWJwvxX8qWaEOLD2ke1zObmzWY3J8E1
-         cJKL2ydFFeqRZlpUOn/tuUAKhdY6YYxUp8mB85cNfdO5/IlSk7JJLWtZqbzqbwoAs7K1
-         jRuSbEo+ROMt44CVHPuZz7ITtu6YSW+yey9L+pU5b9WidZ4ZtA/kZFJDJ63Z+EOsjoF2
-         +3EK8Y7fZw8V6f4MEivc1UZq+/3gOYl+uU4ELU9YT0seom9jx1S74QZfgPabwyr4hrkv
-         XskG9MnXFgVWtH+4/1w9JYws4ZGqfdIznjs4jz1zQMcnWCGlR3mmoir6Uzx2uu13YZwe
-         3Aqw==
-X-Gm-Message-State: ACgBeo0UYmA5br8v53XkcOUXKHRTOIgY6J0UaPVw44qcWIAJ+0nSl42S
-        Bl9aau5n4qcv6NxB9JTBBfSZD+Xsqki2QZUNy15V/UbB3xwK
-X-Google-Smtp-Source: AA6agR4QwOT4saPMZxj2ssex3/TieH0CNW0ktQDmSKt/fYzS57P5Mv1AdQCbDAHLK8Looz4u+mqVvIb5k9cg3pBDzRUG4R5Jhezb
+        Sun, 28 Aug 2022 13:58:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B191C10D;
+        Sun, 28 Aug 2022 10:58:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C078660DCC;
+        Sun, 28 Aug 2022 17:58:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA53FC433C1;
+        Sun, 28 Aug 2022 17:58:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661709531;
+        bh=9H9TbFkmdLwyyGdSzbjytNfr4f2l2OIo10bnB3M+lS8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pVemWdkKGzZ6rTNdGL33BAoqa09a6Z4nAhZs0BZzPFiF5Z8DO0UzobF+QU63rUJMj
+         /0u3OhZaEs/2894GXbELDh3k+MeaVsYvxPbUVCfKbHHG3ZXkExCEp/LXxyAGHL2JAI
+         3+fkra5BEwZdGJHj86XvC2nJdE4wx64h20+yX89aLa11G4HHyhtSeNVmHZaBSLWBJ1
+         1rizMiRCtkLx540pSpA7KcnA/7k1taeFD/5qqphsDLTGH4ycSEUwQFbPvgrJYjk0iw
+         Amt30d0/f3HlX/T+iw3s7elEftesb4uhjZkA5QoBHHjbQUL/d92I4kL1I0IKarzrpy
+         Ai9kVl5wvhIIQ==
+Date:   Sun, 28 Aug 2022 18:24:30 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     <kernel@axis.com>, <lars@metafoo.de>, <axel.jonsson@axis.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: adc: mcp320x: add triggered buffer support
+Message-ID: <20220828182430.533bf8e0@jic23-huawei>
+In-Reply-To: <20220824104002.2749075-3-vincent.whitchurch@axis.com>
+References: <20220824104002.2749075-1-vincent.whitchurch@axis.com>
+        <20220824104002.2749075-3-vincent.whitchurch@axis.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:150e:b0:689:b4e6:7a46 with SMTP id
- g14-20020a056602150e00b00689b4e67a46mr7893445iow.117.1661709212840; Sun, 28
- Aug 2022 10:53:32 -0700 (PDT)
-Date:   Sun, 28 Aug 2022 10:53:32 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000059f81c05e750d3d5@google.com>
-Subject: [syzbot] usb-testing boot error: BUG: unable to handle kernel paging
- request in path_init
-From:   syzbot <syzbot+90efd69929ca6d662ea9@syzkaller.appspotmail.com>
-To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Wed, 24 Aug 2022 12:40:02 +0200
+Vincent Whitchurch <vincent.whitchurch@axis.com> wrote:
 
-syzbot found the following issue on:
+> From: Axel Jonsson <axel.jonsson@axis.com>
+> 
+> Add support for triggered buffers.  Just read the channels in a loop to
+> keep things simple.
 
-HEAD commit:    4dce3b375179 usb/hcd: Fix dma_map_sg error check
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=1349ab8d080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3cb39b084894e9a5
-dashboard link: https://syzkaller.appspot.com/bug?extid=90efd69929ca6d662ea9
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Just curious, but what other options are there?  A quick datasheet scroll
+through didn't seem to suggest you can overlap setup of next read with
+reading out the previous (common on SPI ADCs).
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+90efd69929ca6d662ea9@syzkaller.appspotmail.com
+A few minor additional comments inline.
 
-BUG: unable to handle page fault for address: ffffdc0000000000
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 100026067 P4D 100026067 PUD 0 
-Oops: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 259 Comm: kworker/u4:3 Not tainted 6.0.0-rc1-syzkaller-00028-g4dce3b375179 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:path_init+0xac/0x1910 fs/namei.c:2350
-Code: da 48 c1 ea 03 80 3c 02 00 0f 85 6a 15 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 0b 48 89 ca 48 89 4d c8 83 e1 07 48 c1 ea 03 <0f> b6 04 02 38 c8 7f 08 84 c0 0f 85 eb 13 00 00 48 8b 45 c8 31 ff
-RSP: 0000:ffffc900016bf998 EFLAGS: 00010a06
+Thanks,
 
-RAX: dffffc0000000000 RBX: ffff88810e6b3300 RCX: 0000000000000000
-RDX: 1fffe00000000000 RSI: ffffffff8183329b RDI: ffffc900016bfc50
-RBP: ffffc900016bfa30 R08: 0000000000000005 R09: 0000000000200000
-R10: 0000000000000040 R11: 0000000000052040 R12: ffffc900016bfb88
-R13: ffffc900016bfd48 R14: 0000000000000001 R15: ffffc900016bfb88
-FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdc0000000000 CR3: 0000000007825000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- path_openat+0x183/0x28f0 fs/namei.c:3686
- do_filp_open+0x1b6/0x400 fs/namei.c:3718
- do_open_execat+0x116/0x730 fs/exec.c:919
- bprm_execve fs/exec.c:1819 [inline]
- bprm_execve+0x48c/0x1960 fs/exec.c:1806
- kernel_execve+0x3ea/0x500 fs/exec.c:2009
- call_usermodehelper_exec_async+0x2e3/0x580 kernel/umh.c:112
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-Modules linked in:
-CR2: ffffdc0000000000
----[ end trace 0000000000000000 ]---
-RIP: 0010:path_init+0xac/0x1910 fs/namei.c:2350
-Code: da 48 c1 ea 03 80 3c 02 00 0f 85 6a 15 00 00 48 b8 00 00 00 00 00 fc ff df 48 8b 0b 48 89 ca 48 89 4d c8 83 e1 07 48 c1 ea 03 <0f> b6 04 02 38 c8 7f 08 84 c0 0f 85 eb 13 00 00 48 8b 45 c8 31 ff
-RSP: 0000:ffffc900016bf998 EFLAGS: 00010a06
-RAX: dffffc0000000000 RBX: ffff88810e6b3300 RCX: 0000000000000000
-RDX: 1fffe00000000000 RSI: ffffffff8183329b RDI: ffffc900016bfc50
-RBP: ffffc900016bfa30 R08: 0000000000000005 R09: 0000000000200000
-R10: 0000000000000040 R11: 0000000000052040 R12: ffffc900016bfb88
-R13: ffffc900016bfd48 R14: 0000000000000001 R15: ffffc900016bfb88
-FS:  0000000000000000(0000) GS:ffff8881f6900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffffdc0000000000 CR3: 0000000007825000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-----------------
-Code disassembly (best guess), 1 bytes skipped:
-   0:	48 c1 ea 03          	shr    $0x3,%rdx
-   4:	80 3c 02 00          	cmpb   $0x0,(%rdx,%rax,1)
-   8:	0f 85 6a 15 00 00    	jne    0x1578
-   e:	48 b8 00 00 00 00 00 	movabs $0xdffffc0000000000,%rax
-  15:	fc ff df
-  18:	48 8b 0b             	mov    (%rbx),%rcx
-  1b:	48 89 ca             	mov    %rcx,%rdx
-  1e:	48 89 4d c8          	mov    %rcx,-0x38(%rbp)
-  22:	83 e1 07             	and    $0x7,%ecx
-  25:	48 c1 ea 03          	shr    $0x3,%rdx
-* 29:	0f b6 04 02          	movzbl (%rdx,%rax,1),%eax <-- trapping instruction
-  2d:	38 c8                	cmp    %cl,%al
-  2f:	7f 08                	jg     0x39
-  31:	84 c0                	test   %al,%al
-  33:	0f 85 eb 13 00 00    	jne    0x1424
-  39:	48 8b 45 c8          	mov    -0x38(%rbp),%rax
-  3d:	31 ff                	xor    %edi,%edi
+Jonathan
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> Signed-off-by: Axel Jonsson <axel.jonsson@axis.com>
+> Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> ---
+>  drivers/iio/adc/Kconfig   |   2 +
+>  drivers/iio/adc/mcp320x.c | 130 ++++++++++++++++++++++++++++----------
+>  2 files changed, 99 insertions(+), 33 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 48ace7412874..9f2628120885 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -696,6 +696,8 @@ config MAX9611
+>  config MCP320X
+>  	tristate "Microchip Technology MCP3x01/02/04/08 and MCP3550/1/3"
+>  	depends on SPI
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	  Say yes here to build support for Microchip Technology's
+>  	  MCP3001, MCP3002, MCP3004, MCP3008, MCP3201, MCP3202, MCP3204,
+> diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+> index 28398f34628a..9782cbd37728 100644
+> --- a/drivers/iio/adc/mcp320x.c
+> +++ b/drivers/iio/adc/mcp320x.c
+> @@ -43,6 +43,10 @@
+>  #include <linux/module.h>
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/iio/iio.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+>  #include <linux/regulator/consumer.h>
+>  
+>  enum {
+> @@ -231,37 +235,51 @@ static int mcp320x_read_raw(struct iio_dev *indio_dev,
+>  	return ret;
+>  }
+>  
+> -#define MCP320X_VOLTAGE_CHANNEL(num)				\
+> -	{							\
+> -		.type = IIO_VOLTAGE,				\
+> -		.indexed = 1,					\
+> -		.channel = (num),				\
+> -		.address = (num),				\
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
+> +#define MCP320X_VOLTAGE_CHANNEL(num)					\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = (num),					\
+> +		.address = (num),					\
+> +		.scan_index = (num),					\
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 32,					\
+> +			.storagebits = 32,				\
+> +			.endianness = IIO_CPU,				\
+> +		},							\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+>  	}
+>  
+> -#define MCP320X_VOLTAGE_CHANNEL_DIFF(chan1, chan2)		\
+> -	{							\
+> -		.type = IIO_VOLTAGE,				\
+> -		.indexed = 1,					\
+> -		.channel = (chan1),				\
+> -		.channel2 = (chan2),				\
+> -		.address = (chan1),				\
+> -		.differential = 1,				\
+> -		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) \
+> +#define MCP320X_VOLTAGE_CHANNEL_DIFF(chan1, chan2, diffoff)		\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = (chan1),					\
+> +		.channel2 = (chan2),					\
+> +		.address = (chan1),					\
+> +		.scan_index = (chan1 + diffoff),			\
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+I wonder if it's just more readable to use scan_index as one of the parameters
+of this macro. If it's the first one, then you'll
+see 
+	*VOLTAGE_CHANNEL(0),
+	*VOLTAGE_CHANNEL(1),
+	*VOLTAGE_CHANNEL_DIFF(2, 0, 1),
+	*VOLTAGE_CHANNEL_DIFF(3, 1, 0),
+etc
+
+If we can avoid reformatting this in the same patch that adds the new
+stuff it will make it easier to see the changes.
+
+If you want to reformat, add another patch to do that as a no-op change.
+
+
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 32,					\
+> +			.storagebits = 32,				\
+> +			.endianness = IIO_CPU,				\
+> +		},							\
+> +		.differential = 1,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+>  	}
+>  
+>  static const struct iio_chan_spec mcp3201_channels[] = {
+> -	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1, 1),
+>  };
+>  
+>  static const struct iio_chan_spec mcp3202_channels[] = {
+>  	MCP320X_VOLTAGE_CHANNEL(0),
+>  	MCP320X_VOLTAGE_CHANNEL(1),
+> -	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
+> -	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0),
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0, 2),
+>  };
+>  
+>  static const struct iio_chan_spec mcp3204_channels[] = {
+> @@ -269,10 +287,10 @@ static const struct iio_chan_spec mcp3204_channels[] = {
+>  	MCP320X_VOLTAGE_CHANNEL(1),
+>  	MCP320X_VOLTAGE_CHANNEL(2),
+>  	MCP320X_VOLTAGE_CHANNEL(3),
+> -	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1),
+> -	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0),
+> -	MCP320X_VOLTAGE_CHANNEL_DIFF(2, 3),
+> -	MCP320X_VOLTAGE_CHANNEL_DIFF(3, 2),
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(0, 1, 4),
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(1, 0, 4),
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(2, 3, 4),
+> +	MCP320X_VOLTAGE_CHANNEL_DIFF(3, 2, 4),
+>  };
+
+
