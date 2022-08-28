@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14018ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 20:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A14ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 20:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiH1U5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 16:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
+        id S230157AbiH1U5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 16:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiH1U5f (ORCPT
+        with ESMTP id S229738AbiH1U5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 28 Aug 2022 16:57:35 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF4530F4B;
-        Sun, 28 Aug 2022 13:57:32 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id 10so5172218iou.2;
-        Sun, 28 Aug 2022 13:57:32 -0700 (PDT)
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC1530F4F;
+        Sun, 28 Aug 2022 13:57:34 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id n202so5162696iod.6;
+        Sun, 28 Aug 2022 13:57:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=mC6gBj0kuKVX2cf4bAsxRZgtAWFeJDMdJEm3tu/7KE0=;
-        b=T0fmWP96TcARxU5ZFjM7lFdHzW89Psc3kO7UC2oX8G5q4OBprGJlGx+gGXdPZ/wkts
-         v6sbtR146h3BAhGS+pJgskLcv20KW/b7YLIbI8b6BpwK3ClfOQo4X1pDW8vEy2h/0T+H
-         XWEhAhx/I7af53VtAP4SivnEvz9f/9WWJZq01VR0dmtxybtBBEVjO9GpENg08SnGWalJ
-         /NH+tLza1adfvOw7Wj55GY0uHnK5u5uurjEYcGdBF72cfVhN1Ag9suAfhfZE86bwF9Ks
-         g//GK/9MBKN0ZB+BSjlp/d2Tm2cvcxii9112ibW4owH68tkpFVonBLjp0geC7YZwbkNv
-         4mNw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=7P/6pkBG5AXeUM81e7/yIGOGSbeqlS3w48j+SavUKtc=;
+        b=XrIMXoY9cddywFxBuH/YBKppaCUzYQB5cf7PDPN+gfTFB/sYRVQXE+jMWGZ9ylWNC2
+         zj1DGScRszt4TYs42WcIInfpD9+jxJZtFXEpkvftMsPlNyNHBckzETF6mxCnCa1fQRI4
+         g3SttZwqE3hzVq9MKr02VfK6Bl1YF5YH3uRQ6qtcOH8gYN/UA3bHM/02EPFLNAUgop6j
+         Y6qM50yW+HiQGLsRK24/iwalUSAOOAeU1RLdtNHvrKV2jC2euL9WLDuCnUXSpbW6wgJ5
+         dpClEw5vd3S9Y0j4SEQrx58LQJGplEKH2VWdUE2PJL4x98zc5YvwnWQFtMt9MKAg5Wc/
+         GLDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=mC6gBj0kuKVX2cf4bAsxRZgtAWFeJDMdJEm3tu/7KE0=;
-        b=kTjWd42MSykTpBguE0uyEmfPTHpLeFQ/xVZv1phMDFG82tSJXWEhoSDSSCb3ob48qQ
-         NIlrwHcqA5/pdwg0zUh++WNy2sBux4qwz3P7DUjaayC7P1GVYI/pcFGWaOsCZwXVvXk6
-         wTb6ADLsq9FjQmL3UWgar9lWiBW4iMZwPeJ/9vl64/inTyW/gRB0SET3SsOfL9XT3WXy
-         1nm+uXHxdSnL7ALs6M4BDas+hD6La0QYs6b4A+deUkA9cELzLEZVVlUc5ACr/jaHXo0o
-         CH2/acmi88PG/5GJcZVrWHh+vLjGrZCU48nzJubFpITY0WaNMI70Xt8J76Lky8B3xMOo
-         4ccw==
-X-Gm-Message-State: ACgBeo1tcMSi34oJq8rn1bsJciTroEjvGbEtwuyPoEIdumyipT3t9o7E
-        im3h0rlIIVc27qbuCYT0LSI=
-X-Google-Smtp-Source: AA6agR6OO+f6eE3ZKSSjmUojO8RtfbWgx8DaB8WYlp3Dx1ldjtQ//0oSwZmHxWqjfUCx/WFJwFzd2w==
-X-Received: by 2002:a05:6638:2105:b0:34a:694:4fa4 with SMTP id n5-20020a056638210500b0034a06944fa4mr9332943jaj.116.1661720251715;
-        Sun, 28 Aug 2022 13:57:31 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=7P/6pkBG5AXeUM81e7/yIGOGSbeqlS3w48j+SavUKtc=;
+        b=Ih2isFSjVAczZ8hmUkkq0EtmcE89ZSPAHy9Zmw3r/RExc1tUlF2T5fZVpNe0aBEmsr
+         SSqnXtppFTCLK6W2OEsVtgOG0eXwkH4YSBkwcNvg2y3ZWgJKDlvptnw3CdPLdrXhrjvs
+         aD8vxDyVvuGKlzV57sv5uQc0xRgvNONoZNdyWEE9MQlUcpQdpiEAxAt/ck4Q6dWMoUDm
+         yC27XLpIkJirdmdoUcni5HHHyUO4k5GFwaiENMcqYDshCpUv7YyVjN594LaZZGIpNim1
+         jVufWqYu3/iJjifn5sDkcptCTThCPkFej6MY8hNUH8ix35IxfJLQj+/8dgzawGs1DQI9
+         ZwEA==
+X-Gm-Message-State: ACgBeo0kI1ZMQZ/Z2m2XmHp2QwsKIT5guhgoTjLWTG45+pmIS98XJg5y
+        slsXgrIq5+hv5HggUgAxPlo=
+X-Google-Smtp-Source: AA6agR5BwsSpiNXIfiqcAo4SLAi5MdpWnyaVhQHPJrajOvWoDZX+QsY1vMgzu/KIn8gH7XCnMybsfQ==
+X-Received: by 2002:a05:6638:d41:b0:349:f7fd:9e1f with SMTP id d1-20020a0566380d4100b00349f7fd9e1fmr9013325jak.278.1661720254217;
+        Sun, 28 Aug 2022 13:57:34 -0700 (PDT)
 Received: from fedora.. ([2604:2d80:4d8e:a000:6063:7cd5:2f24:16a6])
-        by smtp.gmail.com with ESMTPSA id k7-20020a02c767000000b00349be1ef390sm3572404jao.121.2022.08.28.13.57.30
+        by smtp.gmail.com with ESMTPSA id k7-20020a02c767000000b00349be1ef390sm3572404jao.121.2022.08.28.13.57.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 13:57:31 -0700 (PDT)
+        Sun, 28 Aug 2022 13:57:33 -0700 (PDT)
 From:   Joel Selvaraj <joelselvaraj.oss@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,80 +59,117 @@ Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
         linux-kernel@vger.kernel.org,
         ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         Joel Selvaraj <joelselvaraj.oss@gmail.com>
-Subject: [PATCH v4 0/4] Add support for Xiaomi Poco F1 EBBG variant
-Date:   Sun, 28 Aug 2022 15:57:19 -0500
-Message-Id: <20220828205723.20834-1-joelselvaraj.oss@gmail.com>
+Subject: [PATCH v4 2/4] arm64: dts: qcom: split beryllium dts into common dtsi and tianma dts
+Date:   Sun, 28 Aug 2022 15:57:21 -0500
+Message-Id: <20220828205723.20834-3-joelselvaraj.oss@gmail.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220828205723.20834-1-joelselvaraj.oss@gmail.com>
+References: <20220828205723.20834-1-joelselvaraj.oss@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v4:
---------------
-- Update board's compatible and model property to distinguish between the
-two variants. (Suggested by Krzysztof Kozlowski and Marijn Suijten)
-- Update the dt-bindings as per the new compatible values.
-(Fix checkpatch.pl script warnings)
+There are two panel variants of Xiaomi Poco F1. Tianma and EBBG panel.
+The previous beryllium dts supported the Tianma variant. In order to
+add support for EBBG variant, the common nodes from beryllium dts are
+moved to a new common dtsi and to make the variants distinguishable,
+sdm845-xiaomi-beryllium.dts is now named as
+sdm845-xiaomi-beryllium-tianma.dts. The model and compatible property
+are also updated to distinguish between the variants.
 
-Changes in v3:
---------------
-- Approach suggested by Marijn Suijten and Krzysztof Kozlowski to make
-git handle renames more appropriately and to avoid moving large chunks of
-code. Helps with reviewing the patch.
- 
-Changes in v2:
---------------
-- Fix issue with builds breaking across multiple commits making git bisect
-harder to find where the rename has happened.
-
-There are two variants of Xiaomi Poco F1.
-- Tianma variant with NOVATEK NT36672A panel + touchscreen manufactured
-  by Tianma
-- EBBG variant with Focaltech FT8719 panel + touchscreen manufactured
-  by EBBG
-
-The current sdm845-xiaomi-beryllium.dts represents Tianma panel variant.
-
-To add support for the EBBG variant:
-------------------------------------
-- Rename sdm845-xiaomi-beryllium.dts to sdm845-xiaomi-beryllium-common.dtsi
-- Generalize the display panel node by assigning label, removing
-compatible property and renaming the panel endpoints to be generic.
-- Create a dts for the Tianma variant called
-sdm845-xiaomi-beryllium-tianma.dts which will inherit the common dtsi and
-set the compatible property for the respective display panel.
-- Adjust the Makefile since the sdm845-xiaomi-beryllium.dts is now called
-sdm845-xiaomi-beryllium-tianma.dts for the tianma variant.
-- Create sdm845-xiaomi-beryllium-ebbg.dts for the EBBG variant which will
-inherit the common dtsi and set the compatible property for the respective
-display panel.
-
-Note:
------
-Both the panels are already upstreamed and the split is based on them.
-There were patches earlier for both the touchscreens, but they are not
-accepted in upstream yet. Once they are accepted, we will add them to
-respective variants.
-
-Joel Selvaraj (4):
-  dt-bindings: arm: qcom: update beryllium compatible property
-  arm64: dts: qcom: split beryllium dts into common dtsi and tianma dts
-  dt-bindings: arm: qcom: Add Xiaomi Poco F1 EBBG variant bindings
-  arm64: dts: qcom: sdm845-xiaomi-beryllium-ebbg: introduce Xiaomi Poco
-    F1 EBBG variant
-
- Documentation/devicetree/bindings/arm/qcom.yaml   |  3 ++-
- arch/arm64/boot/dts/qcom/Makefile                 |  3 ++-
+Signed-off-by: Joel Selvaraj <joelselvaraj.oss@gmail.com>
+Reviewed-by: Marijn Suijten <marijn.suijten@somainline.org>
+---
+ arch/arm64/boot/dts/qcom/Makefile                 |  2 +-
  ...um.dts => sdm845-xiaomi-beryllium-common.dtsi} | 11 +++++------
- .../dts/qcom/sdm845-xiaomi-beryllium-ebbg.dts     | 15 +++++++++++++++
  .../dts/qcom/sdm845-xiaomi-beryllium-tianma.dts   | 15 +++++++++++++++
- 5 files changed, 39 insertions(+), 8 deletions(-)
+ 3 files changed, 21 insertions(+), 7 deletions(-)
  rename arch/arm64/boot/dts/qcom/{sdm845-xiaomi-beryllium.dts => sdm845-xiaomi-beryllium-common.dtsi} (98%)
- create mode 100644 arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-ebbg.dts
  create mode 100644 arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-tianma.dts
 
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index 1d86a33de528..d0bba59d2a8c 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -128,7 +128,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-oneplus-fajita.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-akari.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-akatsuki.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-sony-xperia-tama-apollo.dtb
+-dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-xiaomi-beryllium.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-xiaomi-beryllium-tianma.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-xiaomi-polaris.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm845-shift-axolotl.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sdm850-lenovo-yoga-c630.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-common.dtsi
+similarity index 98%
+rename from arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
+rename to arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-common.dtsi
+index 82c27f90d300..940ac9cd0aba 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-common.dtsi
+@@ -26,8 +26,6 @@
+ /delete-node/ &rmtfs_mem;
+ 
+ / {
+-	model = "Xiaomi Pocophone F1";
+-	compatible = "xiaomi,beryllium", "qcom,sdm845";
+ 	chassis-type = "handset";
+ 
+ 	/* required for bootloader to select correct board */
+@@ -221,8 +219,7 @@ &dsi0 {
+ 	status = "okay";
+ 	vdda-supply = <&vreg_l26a_1p2>;
+ 
+-	panel@0 {
+-		compatible = "tianma,fhd-video";
++	display_panel: panel@0 {
+ 		reg = <0>;
+ 		vddio-supply = <&vreg_l14a_1p8>;
+ 		vddpos-supply = <&lab>;
+@@ -234,8 +231,10 @@ panel@0 {
+ 		backlight = <&pmi8998_wled>;
+ 		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
+ 
++		status = "disabled";
++
+ 		port {
+-			tianma_nt36672a_in_0: endpoint {
++			panel_in_0: endpoint {
+ 				remote-endpoint = <&dsi0_out>;
+ 			};
+ 		};
+@@ -243,7 +242,7 @@ tianma_nt36672a_in_0: endpoint {
+ };
+ 
+ &dsi0_out {
+-	remote-endpoint = <&tianma_nt36672a_in_0>;
++	remote-endpoint = <&panel_in_0>;
+ 	data-lanes = <0 1 2 3>;
+ };
+ 
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-tianma.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-tianma.dts
+new file mode 100644
+index 000000000000..5411ca29a89b
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium-tianma.dts
+@@ -0,0 +1,15 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/dts-v1/;
++
++#include "sdm845-xiaomi-beryllium-common.dtsi"
++
++/ {
++	model = "Xiaomi Pocophone F1 (Tianma)";
++	compatible = "xiaomi,beryllium-tianma", "qcom,sdm845";
++};
++
++&display_panel {
++	compatible = "tianma,fhd-video";
++	status = "okay";
++};
 -- 
 2.37.2
 
