@@ -2,99 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12512ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 14:42:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E355ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 14:44:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229648AbiH1OmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 10:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44112 "EHLO
+        id S229613AbiH1Oon (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 10:44:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229483AbiH1OmM (ORCPT
+        with ESMTP id S229489AbiH1Ool (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 10:42:12 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FC22E9EA;
-        Sun, 28 Aug 2022 07:42:09 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id CD1F022D1;
-        Sun, 28 Aug 2022 16:42:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661697727;
+        Sun, 28 Aug 2022 10:44:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0B72E9EA
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 07:44:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661697879;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=dqBAZqXYDvhzoXmHe6e4y35S0OHJDpcUa6j95Hgzs9U=;
-        b=oAEZbSk6W/fng85Hmx1hfGvezRZQdnn/W3FvzlQ1CJ2nHzZPXUo68i0K45RNp0KULGblgk
-        ZR+kaPBLcDmrgh6MrCqQqzAnUeWsC49R9qT656pA3ziBKJgi5TIBPTMOkdR6QI3gVUJ+pa
-        UxxMaMCRXX9RByGYCZADVFuyhd95Jqvks509r6OfaC1teRW0pFDxdEk/EP9xb6R1ddtmEq
-        NLANKNnVcXLW4s1v80eTAUSWYUwySN71KTQgl3j4aJ6LOHqw3rv17qPtCdc5bkB6ArM6M5
-        pjSok52jP0J63L+38jWEvwCvxbH8QOGp/zequszdEmfw8cDMatcwyWyzr5wlrg==
+        bh=hTdmiB22wnq3dmvK7RjNhZhCqkVHrOk+1i/pQcMS7HE=;
+        b=eW5tbmvtJqF1lHOcx8vnpRVVu3txzDKjBK7euUbRClUmlgZUk0fBrXA6IY7y1OyOBvTK4/
+        22Yo0GyxiaKIyO38Zcc5Ae7STqjpp6USTo7MPt49E3juKqKZTkR1d/DLxvQdKNOfmDtP3w
+        Yl5S/ZMABDzkZy12PBvd9kHUpzj0bBc=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-660-_VW9_-tSOkiUcRiPCEVYfA-1; Sun, 28 Aug 2022 10:44:36 -0400
+X-MC-Unique: _VW9_-tSOkiUcRiPCEVYfA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8858F1C051AF;
+        Sun, 28 Aug 2022 14:44:35 +0000 (UTC)
+Received: from localhost (ovpn-12-25.pek2.redhat.com [10.72.12.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id DD2B94C816;
+        Sun, 28 Aug 2022 14:44:32 +0000 (UTC)
+Date:   Sun, 28 Aug 2022 22:44:28 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "hch@infradead.org" <hch@infradead.org>,
+        "agordeev@linux.ibm.com" <agordeev@linux.ibm.com>,
+        "wangkefeng.wang@huawei.com" <wangkefeng.wang@huawei.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v2 01/11] mm/ioremap: change the return value of
+ io[re|un]map_allowed and rename
+Message-ID: <Ywt/TB0rsKWrFcVy@MiWiFi-R3L-srv>
+References: <20220820003125.353570-1-bhe@redhat.com>
+ <20220820003125.353570-2-bhe@redhat.com>
+ <d5272f42-f3e3-b2a8-428e-bd7815cf7518@csgroup.eu>
+ <YwQdRg/IS0+3tbNu@MiWiFi-R3L-srv>
+ <a4a9ba6f-9891-cc4c-e512-d221141d998f@csgroup.eu>
+ <YwTu1kzcIUxsTL4j@MiWiFi-R3L-srv>
+ <429cb367-923f-bb3d-ccf0-57dce0c7f35b@csgroup.eu>
+ <b193efbff3a74343839c3dee1702f73c@AcuMS.aculab.com>
 MIME-Version: 1.0
-Date:   Sun, 28 Aug 2022 16:42:07 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [RFC PATCH v1 12/14] nvmem: layouts: rewrite the u-boot-env
- driver as a NVMEM layout
-In-Reply-To: <f830543b-9b66-5785-60f8-27ea05d49eee@milecki.pl>
-References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-13-michael@walle.cc>
- <f830543b-9b66-5785-60f8-27ea05d49eee@milecki.pl>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <3b8a14fe018973dc5450192cce6851e2@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <b193efbff3a74343839c3dee1702f73c@AcuMS.aculab.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-08-28 16:04, schrieb RafaÅ‚ MiÅ‚ecki:
-> On 25.08.2022 23:44, Michael Walle wrote:
->> Instead of hardcoding the underlying access method mtd_read() and
->> duplicating all the error handling, rewrite the driver as a nvmem
->> layout which just uses nvmem_device_read() and thus works with any
->> NVMEM device.
->> 
->> But because this is now not a device anymore, the compatible string
->> will have to be changed so the device will still be probed:
->>    compatible = "u-boot,env";
->> to
->>    compatible = "u-boot,env", "nvmem-cells";
->> 
->> "nvmem-cells" will tell the mtd layer to register a nvmem_device().
->> "u-boot,env" will tell the NVMEM that it should apply the u-boot
->> environment layout to the NVMEM device.
+Hi David,
+
+On 08/24/22 at 08:16am, David Laight wrote:
+......
+> > >>>> Le 20/08/2022 à 02:31, Baoquan He a écrit :
+> > >>>>> In some architectures, there are ARCH specifici io address mapping
+> > >>>>> handling when calling ioremap() or ioremap_prot(), e.g, arc, ia64,
+> > >>>>> openrisc, s390, sh.
+> > >>>>>
+> > >>>>> In oder to convert them to take GENERIC_IOREMAP method, we need change
+> > >>>>> the return value of hook ioremap_allowed() and iounmap_allowed().
+> > >>>>> Meanwhile, rename them to arch_ioremap() and arch_iounmap() to reflect
+> > >>>>> their current behaviour.
+> > >>>
+> > >>> Thanks for reviewing.
+> > >>>
+> > >>>>
+> > >>>> Please don't just say you need to change the return value. Explain why.
+> > >>>
+> > >>> The 1st paragraph and the sentence 'In oder to convert them to take
+> > >>> GENERIC_IOREMAP method' tell the reason, no?
+> > >>
+> > >> What I would like to read is _why_ you need to change the return value
+> > >> in order to convert to GENERIC_IOREMAP
+> > >
+> > > I rephrase the log as below, it's OK to you? Or please help check and
+> > > tell what I need to improve to better explain the reason.
+> > >
+> > > ====
+> > > The current io[re|un]map_allowed() hooks are used to check if the
+> > > io[re|un]map() actions are qualified to proceed when taking
+> > > GENERIC_IOREMAP way to do ioremap()/iounmap(). Otherwise io[re|un]map()
+> > > will return NULL.
+> > >
+> > > On some architectures like arc, ia64, openris, s390, sh, there are
+> > > ARCH specific io address mapping to translate the passed in physical
+> > > address to io address when calling ioremap(). In order to convert
+> > > these architectures to take GENERIC_IOREMAP way to ioremap(), we need
+> > > change the return value of hook ioremap_allowed() and iounmap_allowed().
+> > > With the change, we can move the architecture specific io address
+> > > mapping into ioremap_allowed() hook, and give the mapped io address
+> > > out to let ioremap_prot() return it. While at it, rename the hooks to
+> > > arch_ioremap() and arch_iounmap() to reflect their new behaviour.
+> > > ====
+> > >
+> > 
+> > That looks more in line with the type of explanation I foresee in the
+> > commit message, thanks.
 > 
-> That's fishy but maybe we can ignore backward compatibility at
-> point.
+> I think you also need to summarise the change itself.
+> If the success/fail return actually changes then you really
+> need to change something so the compiler errors unchanged code.
+> Otherwise it is a complete recipe for disaster.
 
-As mentioned in the cover letter, this is why this is an RFC. I
-didn't see any users in the device tree, nor can I see how this
-would have been used anyway, because you cannot find a cell by
-its device tree node, because none is registered. So maybe we
-can still change the compatible string.
+Thanks for looking into this and sorry for late response.
 
--michael
+I am not sure if I follow you. In this patch, I just rename the old
+ioremap_allowed() to arch_ioremap(), and change its return value. Except
+of arm64 which has taken GENERIC_IOREMAP way to provide
+ioremap_allowed(), no other ARCHes are affected yet. This is what have
+been changed. Could you be more specific what I should add?
 
-> Still you need to update DT binding.
+Or are you suggesting words like below sentences need be added to patch
+log?
+
+If the success/fail return actually changes then you really
+need to change something so the compiler errors unchanged code.
+Otherwise it is a complete recipe for disaster.
+
+Thanks
+Baoquan
 
