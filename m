@@ -2,87 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A91AECAAA2
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 20:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E608C0502C
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 20:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229990AbiH1Uyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 16:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50892 "EHLO
+        id S230093AbiH1U5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 16:57:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229445AbiH1Uyd (ORCPT
+        with ESMTP id S229445AbiH1U5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 16:54:33 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F027F21A;
-        Sun, 28 Aug 2022 13:54:29 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id t5so6243513pjs.0;
-        Sun, 28 Aug 2022 13:54:29 -0700 (PDT)
+        Sun, 28 Aug 2022 16:57:34 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8388430F4D;
+        Sun, 28 Aug 2022 13:57:33 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id t11so460755ilf.3;
+        Sun, 28 Aug 2022 13:57:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=WkR9LaSKiyJhtlTTWqMUWeVX6Mln5pRmeIixpHeSGbc=;
-        b=IceoL4PGOPoCpsJ0DfTNHNc/+4q/6ByhIWG7OStXeUIyPthBT5vcdYk+rTyzMuDjlL
-         IjVqYkgfLAmwbnSiHzIV83ehDQ/SiRfIGTbO5CBnJkm8L+3Isf3F64DdUiRV5/9pd4GQ
-         BsMnKRlfov5bLY/jpAhXOncSsD6nUuJ05gK27MUDvitzher+1jLSprVl1nMTKmhpxz7D
-         ehuupBsqjPgQThAbUnBkxSiqGl++sul2fNuG0Aq1UJaZBc0kdlRTKvw325DwQ5nYiN0v
-         B9ZktXqWISLS4dQisgL1U7qmTABLUwItkeDbIhK/Zx+3YidH3VUB6PTXATBUR4WWzMcG
-         nUWA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=yorHfhd/+KmEpVFUDGAaD4F9KMlU0fo7Pjux9PaY7xY=;
+        b=kZknlSh97mOvFluuYbu0PP9Xa+pMb8873Td3naTZb4o6Vn/by9nfYkQmHxB3ElWmdY
+         RcBkMeoznOzYCpOJnzflOFrrM2wXRZBIC2cKgzdOvlqtJRIQllgnqYZr0RapGMPTEVqH
+         LCagT4QJPt7xKFr26JrsBTQNCg+RzIoAZTYogDn/KvrQaloeOP0pHUhVZ5jI3QRgBkan
+         fVGyHOEhvfS+ZkPfxXZgUzy5rmnse6WJJ42yvk3QH3J76MKZyRNvik/AOZpJXyYEgngi
+         h5tt2p5kXVh6BYeTsh3zwu1SrExuYhK1/SzZmA1d+Gs8aC8B/Q9NtLpKPo34Kn4jTUJJ
+         pfzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=WkR9LaSKiyJhtlTTWqMUWeVX6Mln5pRmeIixpHeSGbc=;
-        b=FlQ03779q65Ud4ygKo85ggFiTvM2/zIUq9lCB8GesCrAOusJaf0cBS8ybG5uzyjTnr
-         18DLSAyakwnc0CnsaB43+bkf5BikAr/FnR4xASbdhIYwZAtZbEyJDl4jdB18q4yY7224
-         zN9nFzQ/cJYWrXEtQFlrf8q81toN14YFbSj5wFUQzpYsYS50Idnxks3wpvuuyGLCsM55
-         9LMGi5ewWqqKBtPRSMt5fPeTTissaiYizMe5fnbza2mY4b2n3z+wdomj9MQBm3JD06iu
-         Uhm9va56pHEWJs1AICDzwUmbKoEBwuxB3F8AkRLzg1Bi/L5iaGQX59gKltsGrG3vH72i
-         3dzA==
-X-Gm-Message-State: ACgBeo0Ef9QSmGeiJil3+DFVSr6yZGdE2qORYbObE3p/po8EDczLhSjx
-        8Y9sWv8KOLS1C6ktsf1uEDR4a4BrM7xQfQ==
-X-Google-Smtp-Source: AA6agR4kdxcOS9nzv3/oVdsH1XQhYuTu2SUxhvE6Agpfxe6KsXEKfWMMVPyRDcv7WONer0F6Ebv2eA==
-X-Received: by 2002:a17:902:cf42:b0:172:ed15:ee with SMTP id e2-20020a170902cf4200b00172ed1500eemr13162190plg.149.1661720069334;
-        Sun, 28 Aug 2022 13:54:29 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id 8-20020a17090a018800b001fb277223bdsm5198017pjc.2.2022.08.28.13.54.28
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=yorHfhd/+KmEpVFUDGAaD4F9KMlU0fo7Pjux9PaY7xY=;
+        b=h9PY2IKeJBr/zM/v1lukvSQ/8NAMtGSn3nXxPbuU9wTEjEg41xs1je8ni0D5aIR+10
+         vEUlBghBuPV7/iSFEIHFRgjZVlYxXBo7BMQcBdJ3X3bFSlxf83PtOToD4Isz2Nzv+LMl
+         EhPhLuIDv2whuENqzCa02is5ac4kilWiRi8hFAU5mYCfAKcewQXi6tHX6Ph3c4URgX2g
+         uNZ8yrMagtuJQiXjglr5TsO/CtDzuYVgWT4p1pFfix4mjeYMLaupqB5fcHONXvf5BFIv
+         iS3T08KXUZpk3miX9kvK5QpOy1BVVhpzeWZ5TZ7ugtg7vLhTyOK5coLtSTRgAeifqlmr
+         +fow==
+X-Gm-Message-State: ACgBeo1WgOF2U0qzzrWhJ/6qY8RFp3O0FywfsqZ+73Ii1R2glJ7f3uIN
+        p0LPQgTTu07LoruL9ESVX9M=
+X-Google-Smtp-Source: AA6agR6GLmSPYA6+Jy2X2IFDtgpGl/yusfM4NCxD0QsUKR8GyvrGhChKod1jPQ2vZHSj4JhwFey8aA==
+X-Received: by 2002:a92:b00f:0:b0:2d6:5628:6865 with SMTP id x15-20020a92b00f000000b002d656286865mr8339669ilh.230.1661720253016;
+        Sun, 28 Aug 2022 13:57:33 -0700 (PDT)
+Received: from fedora.. ([2604:2d80:4d8e:a000:6063:7cd5:2f24:16a6])
+        by smtp.gmail.com with ESMTPSA id k7-20020a02c767000000b00349be1ef390sm3572404jao.121.2022.08.28.13.57.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 13:54:29 -0700 (PDT)
-From:   Li Zhong <floridsleeves@gmail.com>
-To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org
-Cc:     rafael@kernel.org, lenb@kernel.org,
-        Li Zhong <floridsleeves@gmail.com>
-Subject: [PATCH v1] drivers/acpi/processor_idle: check the return value of acpi_fetch_acpi_dev()
-Date:   Sun, 28 Aug 2022 13:54:16 -0700
-Message-Id: <20220828205416.1957305-1-floridsleeves@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 28 Aug 2022 13:57:32 -0700 (PDT)
+From:   Joel Selvaraj <joelselvaraj.oss@gmail.com>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Joel Selvaraj <joelselvaraj.oss@gmail.com>
+Subject: [PATCH v4 1/4] dt-bindings: arm: qcom: update beryllium compatible property
+Date:   Sun, 28 Aug 2022 15:57:20 -0500
+Message-Id: <20220828205723.20834-2-joelselvaraj.oss@gmail.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220828205723.20834-1-joelselvaraj.oss@gmail.com>
+References: <20220828205723.20834-1-joelselvaraj.oss@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return value of acpi_fetch_acpi_dev() could be NULL, which will
-cause null pointer dereference if used in acpi_device_hid().
+There are two panel variants of Xiaomi Poco F1. Tianma and EBBG panel.
+The previous beryllium dts supported the Tianma variant. In order to
+add support for EBBG variant, the common nodes from beryllium dts are
+moved to a new common dtsi and to make the variants distinguishable,
+sdm845-xiaomi-beryllium.dts is now named as
+sdm845-xiaomi-beryllium-tianma.dts. The board's model and compatible
+properties are also renamed to distinguish between the variants.
+So update the dt-bindings to reflect the new compatible value.
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+Signed-off-by: Joel Selvaraj <joelselvaraj.oss@gmail.com>
 ---
- drivers/acpi/processor_idle.c | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/processor_idle.c b/drivers/acpi/processor_idle.c
-index 16a1663d02d4..519f8f741da3 100644
---- a/drivers/acpi/processor_idle.c
-+++ b/drivers/acpi/processor_idle.c
-@@ -1117,6 +1117,8 @@ static int acpi_processor_get_lpi_info(struct acpi_processor *pr)
- 	status = acpi_get_parent(handle, &pr_ahandle);
- 	while (ACPI_SUCCESS(status)) {
- 		d = acpi_fetch_acpi_dev(pr_ahandle);
-+		if (!d)
-+			break;
- 		handle = pr_ahandle;
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index fb1d00bcc847..e465ca45c07f 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -666,7 +666,7 @@ properties:
+               - sony,akatsuki-row
+               - sony,apollo-row
+               - thundercomm,db845c
+-              - xiaomi,beryllium
++              - xiaomi,beryllium-tianma
+               - xiaomi,polaris
+           - const: qcom,sdm845
  
- 		if (strcmp(acpi_device_hid(d), ACPI_PROCESSOR_CONTAINER_HID))
 -- 
-2.25.1
+2.37.2
 
