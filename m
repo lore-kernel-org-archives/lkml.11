@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DCBC0502E
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 05:05:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97BBFECAAD5
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 05:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232499AbiH1FF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 01:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52356 "EHLO
+        id S232320AbiH1FFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 01:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232137AbiH1FFH (ORCPT
+        with ESMTP id S232177AbiH1FFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 01:05:07 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5541C1AF1A;
-        Sat, 27 Aug 2022 22:05:03 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id mj6so31846pjb.1;
-        Sat, 27 Aug 2022 22:05:03 -0700 (PDT)
+        Sun, 28 Aug 2022 01:05:12 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445A915719;
+        Sat, 27 Aug 2022 22:05:06 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id x1-20020a17090ab00100b001fda21bbc90so1241934pjq.3;
+        Sat, 27 Aug 2022 22:05:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:from:to:cc;
-        bh=Dk8UIs/c+CLgPEHFmonIUx+xfGZCTd8TAowD0oryF0c=;
-        b=Giww/iA74FMuP7airt9dHd03zh+Hbm7d4y3XijdLQJgvDDQPRk6SCS/iofam5a4i9r
-         nldWSqpdB0PT5Sfu2H0UAfkyGJ7s7kAfV2PCHrJxBZNTAel9dz+IJZ2yk4gxGK2mmvvU
-         MXaCOhlcmWIGGl0LBmoOo1XHcXlzr8pP2k9h679wV89tFpBY3RLB/Um+HgF6mokomlT/
-         glbaNJyCTCujnSFZCn16iO2mIZLINnPxTgZsuDtD1gOB0Sx9+iXH5VCnve/dXj8007Pb
-         8Y+GiUXZzICA8so7z5dVxnBSiGpevGE6idbGdN98b+LMpKs15J1SHBWY25mUJP0DutHB
-         ZXNQ==
+        bh=cLGQY4TMmERTL6YeLGTqdka+ZPGW9a/P3+vJTv296BA=;
+        b=AFlr7fvoyzzbc+TOpmLEXIrStJx5z94G57CBoB8fpxdr+SI24UZQCnoWHwf/NDCE9G
+         6GALJazJOUEpXNSJ5d3o/xXC11z3yBx3Y+W6MkrHpNOjy1Iz7iMpACyVYUmlE/4Ect3M
+         Tgk4TLhLo3wkk4p/zSEPk8RbMqi9EEuGohAIDg3WR5sLpRytMDLbXvjq3rxr5grlE9JP
+         dkDxHnaiRU8sBzyUc1hNVBUCoQdahiw2kb7FKEKKXkCOm32QI1zE9s0Leni6CkKQDzDj
+         kfn1TNB2/XLve7+5ZsdDUPu8Sjbm6gdi2N4ppYukcWDLgILhvsFBO10x9jNSfmV5TUxq
+         /0cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
          :to:cc;
-        bh=Dk8UIs/c+CLgPEHFmonIUx+xfGZCTd8TAowD0oryF0c=;
-        b=UDs1p3hD+J2TV7sUhm5nAzG/8W6+PK+4GB9qj5zJfH72EVJMiDPVThzJy5G1+D8tbb
-         pIROnIowmWXc0O9GnUFNx3+Kdd/wWQJRDi2+E2rdqap6pKCxOwsEiPvBTRyaxJ1AZUkC
-         jP2yY1Q9Amk9H0xVb+7tWgtVR3ngILU+JExdmNnU7i9LH8xQjOhRQDtoVy47q6wQAnDr
-         o6xo0mn+EF/3QKmMVLs7WkBj7oE+7S09zG6kPFluR35Ugo2Wi7a6qaGedE7uT2tDwwfT
-         f7luIjxKtDxeSG0MPIb38BnSCcy05MVbsOfiqP82j3xt/c4avYHGHjsoeQEOmXT6fWbl
-         3j2w==
-X-Gm-Message-State: ACgBeo0JpP7lPW11CC2kPeY9J9e8mKSCK8BJ9QL/oBafsFR16XtPvl54
-        OGy7hrvm5xkDcrxcd4eS5dw=
-X-Google-Smtp-Source: AA6agR7KZ65I/MvGY4mknkkMovblc4YfdtX2xlYVhBkAo4HYWCV9tE/cJHdnQPl2pXLGEIdQWs9gyg==
-X-Received: by 2002:a17:903:18a:b0:16f:8a63:18fe with SMTP id z10-20020a170903018a00b0016f8a6318femr11068503plg.174.1661663102281;
-        Sat, 27 Aug 2022 22:05:02 -0700 (PDT)
+        bh=cLGQY4TMmERTL6YeLGTqdka+ZPGW9a/P3+vJTv296BA=;
+        b=K5jQeZ531R3Wz/yEQ+HG9gc0xHgJO7R9/uzU0DFrVDFfCe+OD9RCYAZAfBOXllhdGA
+         OinVPIQfVkILn5Vwr6j1jOeMQdsARuoDouRbYNygO22l/FhdPGan9nozyeMs+b+uJL7c
+         1D3ytLm88IgvVb1CixmFAMWPCUGjfrd07X7bIExZtuJKr37VFd3iuKTqw/TZY7SIb4jQ
+         WomP0wpRVyhlzDh0BBVFR2IC8ImWckfDIKCgSU2gd/1bW2JhWcrEkU6ScLGV83XMr5Gl
+         NE9P894YD3vW3I271fAUKyy9KsAjYre/okKG9KUMbMALcgGv+0FUO0LkrqAD4UdXDL63
+         pTBQ==
+X-Gm-Message-State: ACgBeo3RFBPYnBvXb2Dnk86YzLKGlXWqTAdZJo+58zulROfLtZhRr8OL
+        aJWe1Awn83dMAXmRTlUmTqc=
+X-Google-Smtp-Source: AA6agR6Vpe2djWfMBmtzdBUcSToVljrstjLkrIWFZqlSqRFxdWww6PrmAhM4uzhM3yLjR7Fw6OqkRQ==
+X-Received: by 2002:a17:903:1c8:b0:171:2ed3:6780 with SMTP id e8-20020a17090301c800b001712ed36780mr11172856plh.30.1661663105841;
+        Sat, 27 Aug 2022 22:05:05 -0700 (PDT)
 Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id g10-20020a17090a67ca00b001fa79c1de15sm4197612pjm.24.2022.08.27.22.05.01
+        by smtp.gmail.com with ESMTPSA id i13-20020a170902c94d00b0015e8d4eb1d5sm2620253pla.31.2022.08.27.22.05.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Aug 2022 22:05:01 -0700 (PDT)
+        Sat, 27 Aug 2022 22:05:05 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
 From:   Tejun Heo <tj@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -57,9 +57,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
         Johannes Weiner <hannes@cmpxchg.org>,
         Imran Khan <imran.f.khan@oracle.com>, kernel-team@fb.com,
         Tejun Heo <tj@kernel.org>
-Subject: [PATCH 6/9] kernfs: Add KERNFS_REMOVING flags
-Date:   Sat, 27 Aug 2022 19:04:37 -1000
-Message-Id: <20220828050440.734579-7-tj@kernel.org>
+Subject: [PATCH 8/9] kernfs: Implement kernfs_show()
+Date:   Sat, 27 Aug 2022 19:04:39 -1000
+Message-Id: <20220828050440.734579-9-tj@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220828050440.734579-1-tj@kernel.org>
 References: <20220828050440.734579-1-tj@kernel.org>
@@ -69,101 +69,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KERNFS_ACTIVATED tracks whether a given node has ever been activated. As a
-node was only deactivated on removal, this was used for
+Currently, kernfs nodes can be created hidden and activated later by calling
+kernfs_activate() to allow creation of multiple nodes to succeed or fail as
+a unit. This is an one-way one-time-only transition. This patch introduces
+kernfs_show() which can toggle visibility dynamically.
 
- 1. Drain optimization (removed by the previous patch).
- 2. To hide !activated nodes
- 3. To avoid double activations
- 4. Reject adding children to a node being removed
- 5. Skip activaing a node which is being removed.
+As the currently proposed use - toggling the cgroup pressure files - only
+requires operating on leaf nodes, for the sake of simplicity, restrict it as
+such for now.
 
-We want to decouple deactivation from removal so that nodes can be
-deactivated and hidden dynamically, which makes KERNFS_ACTIVATED useless for
-all of the above purposes.
-
-#1 is already gone. #2 and #3 can instead test whether the node is currently
-active. A new flag KERNFS_REMOVING is added to explicitly mark nodes which
-are being removed for #4 and #5.
-
-While this leaves KERNFS_ACTIVATED with no users, leave it be as it will be
-used in a following patch.
+Hiding uses the same mechanism as deactivation and likewise guarantees that
+there are no in-flight operations on completion. KERNFS_ACTIVATED and
+KERNFS_HIDDEN are used to manage the interactions between activations and
+show/hide operations. A node is visible iff both activated & !hidden.
 
 Signed-off-by: Tejun Heo <tj@kernel.org>
 Cc: Chengming Zhou <zhouchengming@bytedance.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
 ---
- fs/kernfs/dir.c        | 21 +++++++--------------
- include/linux/kernfs.h |  1 +
- 2 files changed, 8 insertions(+), 14 deletions(-)
+ fs/kernfs/dir.c        | 37 ++++++++++++++++++++++++++++++++++++-
+ include/linux/kernfs.h |  2 ++
+ 2 files changed, 38 insertions(+), 1 deletion(-)
 
 diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-index b3d2018a334d..f8cbd05e9b68 100644
+index c9323956c63c..7fb5a72cc96d 100644
 --- a/fs/kernfs/dir.c
 +++ b/fs/kernfs/dir.c
-@@ -705,13 +705,7 @@ struct kernfs_node *kernfs_find_and_get_node_by_id(struct kernfs_root *root,
- 			goto err_unlock;
- 	}
+@@ -1311,7 +1311,7 @@ static void kernfs_activate_one(struct kernfs_node *kn)
  
--	/*
--	 * ACTIVATED is protected with kernfs_mutex but it was clear when
--	 * @kn was added to idr and we just wanna see it set.  No need to
--	 * grab kernfs_mutex.
--	 */
--	if (unlikely(!(kn->flags & KERNFS_ACTIVATED) ||
--		     !atomic_inc_not_zero(&kn->count)))
-+	if (unlikely(!kernfs_active(kn) || !atomic_inc_not_zero(&kn->count)))
- 		goto err_unlock;
+ 	kn->flags |= KERNFS_ACTIVATED;
  
- 	spin_unlock(&kernfs_idr_lock);
-@@ -753,10 +747,7 @@ int kernfs_add_one(struct kernfs_node *kn)
- 		goto out_unlock;
+-	if (kernfs_active(kn) || (kn->flags & KERNFS_REMOVING))
++	if (kernfs_active(kn) || (kn->flags & (KERNFS_HIDDEN | KERNFS_REMOVING)))
+ 		return;
  
- 	ret = -ENOENT;
--	if (parent->flags & KERNFS_EMPTY_DIR)
--		goto out_unlock;
--
--	if ((parent->flags & KERNFS_ACTIVATED) && !kernfs_active(parent))
-+	if (parent->flags & (KERNFS_REMOVING | KERNFS_EMPTY_DIR))
- 		goto out_unlock;
+ 	WARN_ON_ONCE(kn->parent && RB_EMPTY_NODE(&kn->rb));
+@@ -1347,6 +1347,41 @@ void kernfs_activate(struct kernfs_node *kn)
+ 	up_write(&root->kernfs_rwsem);
+ }
  
- 	kn->hash = kernfs_name_hash(kn->name, kn->ns);
-@@ -1336,7 +1327,7 @@ void kernfs_activate(struct kernfs_node *kn)
- 
- 	pos = NULL;
- 	while ((pos = kernfs_next_descendant_post(pos, kn))) {
--		if (pos->flags & KERNFS_ACTIVATED)
-+		if (kernfs_active(pos) || (pos->flags & KERNFS_REMOVING))
- 			continue;
- 
- 		WARN_ON_ONCE(pos->parent && RB_EMPTY_NODE(&pos->rb));
-@@ -1368,11 +1359,13 @@ static void __kernfs_remove(struct kernfs_node *kn)
- 
- 	pr_debug("kernfs %s: removing\n", kn->name);
- 
--	/* prevent any new usage under @kn by deactivating all nodes */
-+	/* prevent new usage by marking all nodes removing and deactivating */
- 	pos = NULL;
--	while ((pos = kernfs_next_descendant_post(pos, kn)))
-+	while ((pos = kernfs_next_descendant_post(pos, kn))) {
-+		pos->flags |= KERNFS_REMOVING;
- 		if (kernfs_active(pos))
- 			atomic_add(KN_DEACTIVATED_BIAS, &pos->active);
++/**
++ * kernfs_show - show or hide a node
++ * @kn: kernfs_node to show or hide
++ * @show: whether to show or hide
++ *
++ * If @show is %false, @kn is marked hidden and deactivated. A hidden node is
++ * ignored in future activaitons. If %true, the mark is removed and activation
++ * state is restored. This function won't implicitly activate a new node in a
++ * %KERNFS_ROOT_CREATE_DEACTIVATED root which hasn't been activated yet.
++ *
++ * To avoid recursion complexities, directories aren't supported for now.
++ */
++void kernfs_show(struct kernfs_node *kn, bool show)
++{
++	struct kernfs_root *root = kernfs_root(kn);
++
++	if (WARN_ON_ONCE(kernfs_type(kn) == KERNFS_DIR))
++		return;
++
++	down_write(&root->kernfs_rwsem);
++
++	if (show) {
++		kn->flags &= ~KERNFS_HIDDEN;
++		if (kn->flags & KERNFS_ACTIVATED)
++			kernfs_activate_one(kn);
++	} else {
++		kn->flags |= KERNFS_HIDDEN;
++		if (kernfs_active(kn))
++			atomic_add(KN_DEACTIVATED_BIAS, &kn->active);
++		kernfs_drain(kn);
 +	}
- 
- 	/* deactivate and unlink the subtree node-by-node */
- 	do {
++
++	up_write(&root->kernfs_rwsem);
++}
++
+ static void __kernfs_remove(struct kernfs_node *kn)
+ {
+ 	struct kernfs_node *pos;
 diff --git a/include/linux/kernfs.h b/include/linux/kernfs.h
-index 367044d7708c..b77d257c1f7e 100644
+index b77d257c1f7e..73f5c120def8 100644
 --- a/include/linux/kernfs.h
 +++ b/include/linux/kernfs.h
-@@ -112,6 +112,7 @@ enum kernfs_node_flag {
+@@ -108,6 +108,7 @@ enum kernfs_node_flag {
+ 	KERNFS_HAS_SEQ_SHOW	= 0x0040,
+ 	KERNFS_HAS_MMAP		= 0x0080,
+ 	KERNFS_LOCKDEP		= 0x0100,
++	KERNFS_HIDDEN		= 0x0200,
+ 	KERNFS_SUICIDAL		= 0x0400,
  	KERNFS_SUICIDED		= 0x0800,
  	KERNFS_EMPTY_DIR	= 0x1000,
- 	KERNFS_HAS_RELEASE	= 0x2000,
-+	KERNFS_REMOVING		= 0x4000,
- };
- 
- /* @flags for kernfs_create_root() */
+@@ -430,6 +431,7 @@ struct kernfs_node *kernfs_create_link(struct kernfs_node *parent,
+ 				       const char *name,
+ 				       struct kernfs_node *target);
+ void kernfs_activate(struct kernfs_node *kn);
++void kernfs_show(struct kernfs_node *kn, bool show);
+ void kernfs_remove(struct kernfs_node *kn);
+ void kernfs_break_active_protection(struct kernfs_node *kn);
+ void kernfs_unbreak_active_protection(struct kernfs_node *kn);
 -- 
 2.37.2
 
