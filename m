@@ -2,182 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 842EBECAAD5
-	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6591DECAAD2
+	for <linux-kernel@archiver.kernel.org>; Sun, 28 Aug 2022 16:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229896AbiH1QVK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 12:21:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        id S229500AbiH1QVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 12:21:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiH1QVI (ORCPT
+        with ESMTP id S229489AbiH1QVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 12:21:08 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BD865E0
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 09:21:06 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27SBfKWt014197;
-        Sun, 28 Aug 2022 16:20:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : in-reply-to : references : date : message-id : mime-version :
- content-type; s=pp1; bh=Du1m+/CG7EP6EXZbBN33ly9Q3u5BC+2hcziJgxO6tPQ=;
- b=DQNGhJFNl05qcx0o0yM6Xk9K08xHAx4bsDcgO/tnnhoGmt8yDmojGj9gS9A294eA9m2S
- pDAuqL2Vxgf47x8CfUxaY72r9NdIoJIJTIKjQMjSDlvLulFsqWDi8v4/+FrrIqB0Hd+a
- lce9359pFC1NYEVv9XhQ+W1UnnJJ8lN7+BMnRLN/VRwgWsmgGTdSufLxKPeSSpIwDFE6
- 7PL6ybAC3adN8jnM2gNY2tqCgwkFUgCpa9qxt3hXX4VV1TMbnRF9I+PbwQ9lV+z4uMr9
- 40Rm794vuARnoPLCaNtagKq5qLxb5RIFC6hGvIacE2m13YG5T/bIBLM8Chk3Zu5uYHUH wA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j7waqg9t6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 28 Aug 2022 16:20:33 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27SGExJx035811;
-        Sun, 28 Aug 2022 16:20:32 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j7waqg9ss-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 28 Aug 2022 16:20:32 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27SG6pIo012671;
-        Sun, 28 Aug 2022 16:20:31 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma01dal.us.ibm.com with ESMTP id 3j7aw9a8rt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 28 Aug 2022 16:20:31 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27SGKUVa60227886
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 28 Aug 2022 16:20:30 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7D3A0AE063;
-        Sun, 28 Aug 2022 16:20:30 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DEA09AE060;
-        Sun, 28 Aug 2022 16:20:24 +0000 (GMT)
-Received: from skywalker.linux.ibm.com (unknown [9.43.1.229])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Sun, 28 Aug 2022 16:20:24 +0000 (GMT)
-X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     Wei Xu <weixugc@google.com>
-Cc:     "Huang, Ying" <ying.huang@intel.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        Bharata B Rao <bharata@amd.com>
-Subject: Re: [RFC PATCH 1/2] mm/demotion: Expose memory type details via sysfs
-In-Reply-To: <CAAPL-u_d_vozgSum7gX8Ecvh2ZY75KmB0+Z3d0yf7McqsfOU2Q@mail.gmail.com>
-References: <20220825092325.381517-1-aneesh.kumar@linux.ibm.com>
- <877d2v3h8s.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <e2f20ae9-5761-c170-a4e7-121d6b69ebfb@linux.ibm.com>
- <CAAPL-u9TKbHGztAF=r-io3gkX7gorUunS2UfstudCWuihrA=0g@mail.gmail.com>
- <4abb84e8-8035-65aa-941a-98f0d7902c42@linux.ibm.com>
- <CAAPL-u_d_vozgSum7gX8Ecvh2ZY75KmB0+Z3d0yf7McqsfOU2Q@mail.gmail.com>
-Date:   Sun, 28 Aug 2022 21:50:22 +0530
-Message-ID: <87sflgqr09.fsf@linux.ibm.com>
+        Sun, 28 Aug 2022 12:21:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9C41CFFE;
+        Sun, 28 Aug 2022 09:21:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 432FD60B3E;
+        Sun, 28 Aug 2022 16:21:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA299C433D7;
+        Sun, 28 Aug 2022 16:21:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661703690;
+        bh=qYruH8K/GFaVT47Q2Gp0/tqxVZZ0LOn2zgpb+Qy0tMk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LV9FfEsOCa+wpjcTo6584src7EGkGKYdBVjujp7f3pBNuPBKqXz6r6IMc0d6HIUpj
+         B1GbebuZvK6SNN41Za9QHOcnJZ4esq2/REoU3mkqWwGrf/nYrJvjJsutjPKEaZn1II
+         VEvBeaAhMjCNY8LbKFwI01+9KwtA72mCgw48hczTmbday4HA1wwJ2gHpDjImv9BEOE
+         llBLgphQePOuC2ffYZlX9MRr6gYfWd5aXZtANjfm8g/9JQfS6ZkuRESPTOWTXsxXPI
+         jKvYRF/omTJyC96i1+6uD5SqoBvqHoke9FamjSrwZ6+kiHlPHJ8OgFn9o9FSaZBcaA
+         KbxPpfhoyeh8Q==
+Date:   Sun, 28 Aug 2022 16:47:08 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "wsa@kernel.org" <wsa@kernel.org>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+        "jbhayana@google.com" <jbhayana@google.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 0/3] units: complement the set of Hz units
+Message-ID: <20220828164708.017c400d@jic23-huawei>
+In-Reply-To: <20220801143811.14817-1-ddrokosov@sberdevices.ru>
+References: <20220801143811.14817-1-ddrokosov@sberdevices.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: yw6Erhy7x9ajuyn9D16P2LajVMrXQDMm
-X-Proofpoint-GUID: e9w2DCRE0iRPUlmx8jMHf92MQEIddl_Y
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-28_10,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 impostorscore=0 phishscore=0 suspectscore=0
- mlxlogscore=999 adultscore=0 malwarescore=0 bulkscore=0 priorityscore=1501
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208280068
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wei Xu <weixugc@google.com> writes:
+On Mon, 1 Aug 2022 14:37:23 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
->
-> On Fri, Aug 26, 2022 at 1:05 AM Aneesh Kumar K V
-> <aneesh.kumar@linux.ibm.com> wrote:
->>
->> On 8/26/22 1:30 PM, Wei Xu wrote:
->> > On Thu, Aug 25, 2022 at 8:00 PM Aneesh Kumar K V
->> > <aneesh.kumar@linux.ibm.com> wrote:
->> >>
->> >> On 8/26/22 7:20 AM, Huang, Ying wrote:
->> >>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
->> >>>
->> >>>> This patch adds /sys/devices/virtual/memtier/ where all memory tier related
->> >>>> details can be found. All allocated memory types will be listed there as
->> >>>> /sys/devices/virtual/memtier/memtypeN/
->> >>>
->> >>> Another choice is to make memory types and memory tiers system devices.
->> >>> That is,
->> >>>
->> >>> /sys/devices/system/memory_type/memory_typeN
->> >>> /sys/devices/system/memory_tier/memory_tierN
->> >>>
->> >>
->> >> subsys_system_register() documentation says
->> >>
->> >>  * Do not use this interface for anything new, it exists for compatibility
->> >>  * with bad ideas only. New subsystems should use plain subsystems; and
->> >>  * add the subsystem-wide attributes should be added to the subsystem
->> >>  * directory itself and not some create fake root-device placed in
->> >>  * /sys/devices/system/<name>.
->> >>
->> >> memtier being a virtual device, I was under the impression that /sys/devices/virtual
->> >> is the recommended place.
->> >>
->> >>> That looks more natural to me.  Because we already have "node" and
->> >>> "memory" devices there.  Why don't you put memory types and memory tiers
->> >>> there?
->> >>>
->> >>> And, I think we shouldn't put "memory_type" in the "memory_tier"
->> >>> directory.  "memory_type" isn't a part of "memory_tier".
->> >>>
->> >>
->> >> I was looking consolidating both memory tier and memory type into the same sysfs subsystem.
->> >> Your recommendation imply we create two subsystem memory_tier and memtype. I was
->> >> trying to avoid that. May be a generic term like "memory_tiering" can help to
->> >> consolidate all tiering related details there?
->> >>
->> >
->> > A generic term "memory_tiering" sounds good to me.
->> >
->> > Given that this will be a user-facing, stable kernel API, I think we'd
->> > better to only add what is most useful for userspace and don't have to
->> > mirror the kernel internal data structures in this interface.
->> >
->> > My understanding is that we haven't fully settled down on how to
->> > customize memory tiers from userspace.  So we don't have to show
->> > memory_type yet, which is a kernel data structure at this point.
->> >
->> > The userspace does need to know what are the memory tiers and which
->> > NUMA nodes are included in each memory tier.  How about we provide the
->> > "nodelist" interface for each memory tier as in the original proposal?
->> >
->> > The userspace would also like to know which memory tiers/nodes belong
->> > to the top tiers (the promotion targets).  We can provide a "toptiers"
->> > or "toptiers_nodelist" interface to report that.
->> >
->>
->> How about also including abstract distance range of a memory tier?
->> That will be useful to derive the hierarchy.
->
-> With the base abstract distance in the memtier name, do we need to
-> show the abstract distance range if we don't customize memory tiers?
->
+> During msa311 accel IIO driver development
+> 
+> https://lore.kernel.org/linux-iio/20220616104211.9257-1-ddrokosov@sberdevices.ru/
+> 
+> Andy requested to use proper units in the hz->ms calculation. Current
+> units.h header doesn't have milli, micro and nano HZ coefficients, so
+> some drivers (in the IIO subsystem) implement their own copies for that.
+> 
+> The current patchset resolves such a problem and intoduces general
+> MILLIHZ_PER_HZ, MICROHZ_PER_HZ and NANOHZ_PER_HZ definitions in the units.h,
+> and fixes all drivers which duplicate these units.
 
-IMHO it would simpler to let userspace find abstract distance by reading
-a file rather than parsing a file name.
+Ok, I'm just about convinced this is worth doing given the precedence
+of similar cases. Applied to the togreg branch of iio.git and pushed
+out as testing.
 
--aneesh
+Thanks,
+
+Jonathan
+> 
+> Changes:
+> * v2->v3:
+>     - changed UHZ_PER_HZ to MICROHZ_PER_HZ and NHZ_PER_HZ to
+>       NANOHZ_PER_HZ to save name consistency for all new HZ units
+> 
+> * v1->v2:
+>     - changed MHZ_PER_HZ to a different name as Andy suggested
+>       (suppose MILLIHZ_PER_HZ is good enough)
+> 
+> Dmitry Rokosov (3):
+>   units: complement the set of Hz units
+>   iio: accel: adxl345: use HZ macro from units.h
+>   iio: common: scmi_sensors: use HZ macro from units.h
+> 
+>  drivers/iio/accel/adxl345_core.c           | 7 ++++---
+>  drivers/iio/common/scmi_sensors/scmi_iio.c | 8 ++++----
+>  include/linux/units.h                      | 3 +++
+>  3 files changed, 11 insertions(+), 7 deletions(-)
+> 
+
