@@ -2,340 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E20C3DA6B
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:37:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C66ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232827AbiH2LhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49928 "EHLO
+        id S231142AbiH2LhZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231239AbiH2LgO (ORCPT
+        with ESMTP id S232600AbiH2Lg0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:36:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B637E80E;
-        Mon, 29 Aug 2022 04:20:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E667BB80F9B;
-        Mon, 29 Aug 2022 11:08:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260D7C433D6;
-        Mon, 29 Aug 2022 11:08:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771302;
-        bh=s6bdEBD/fwMlnvkpIu3IjK3AXSMcYRP3npUNbsZ+oq8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c/T+qyt5kE39lPZu8Dq9lT4WEtAoN6k/+FHTpBxiz4EPM2Jjyn1g6e+y2P8urebQH
-         VGI199M3thu4ZnkMNx3ebBMy1FSzL2IdUlfi6BrY+8ax5qavrSyn4iAAWtFYOQ1woC
-         VRTn13Gtly2pmQEZCZCDTECONiHnLZyuIc3W0rH8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Hawkins Jiawei <yin31149@gmail.com>,
-        Khalid Masum <khalid.masum.92@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-afs@lists.infradead.org, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 089/136] rxrpc: Fix locking in rxrpcs sendmsg
-Date:   Mon, 29 Aug 2022 12:59:16 +0200
-Message-Id: <20220829105808.312117218@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+        Mon, 29 Aug 2022 07:36:26 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724E76F252;
+        Mon, 29 Aug 2022 04:20:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661772054; x=1693308054;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=K5sJIOtvD9V9mVlGbGtKISIHQn8jlO7+B5XnoT/Tnwo=;
+  b=nI8CaYyy4RBOqZUrouRHhxb1Yi/kg5iR3HapfNwliEUsb+V9WvSbYefL
+   vKoe5QXvGZ1DMrIYyui0gK5UKavxqDmp8D0lQMA/i3cFllV/z5Wm853M5
+   aDZCKhfRBdCCcax7/xpfGRA0cCqwtbBM8KrfvGKXykRrQKxGDhbgPKw6e
+   6lAR12xNdLw7uUSHYxF0VMz/1Mz0FBO1i17SiDiojox/1/L1bC0sxZY8d
+   SctsJC7kV1inweaFkQRwthTlLy0WZNHHn4hEJUMEKP0OkpG/haK+ujWgz
+   wSN+QyZstP8OdMIbALA0mO9SfrG15NL4RXoCbWgshZHDfUlb9jKTzOgTE
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="320989328"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="320989328"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 04:16:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="714828674"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmsmga002.fm.intel.com with ESMTP; 29 Aug 2022 04:16:48 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 29 Aug 2022 04:16:48 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 29 Aug 2022 04:16:47 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Mon, 29 Aug 2022 04:16:47 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Mon, 29 Aug 2022 04:16:47 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=D1VX8nCNh2HXncG8lCKJyrPY1Ev72OqPDZVlVpaBROSyZQONsJJkvSiJDmCWPzisavK4a23+sOAHenpleCHS76lZ7V4+ik/1Kd9qd4g5vAYz8woIOFEvcW+oZbH9+Iu7SsFPVnI9kyIUz/nUJo1AKlrBx2NrCjFAS/qENncDrMNFmYN4YYTZw4gXFW3Iz/d2F54pqHpLK8uDHLUTELZAx3RlabqDaE5MnDMs+/4yt/kz5aBYpk9e+CijhpliE3AnAutLQ/aL6d51n6SvoBDlUYcj6OTzXOUlhXlDMMmeMtvByiVp9rykdag74h5SK4iGo7c34odIU0z7B5a0OnhGBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SLB4s1grG0ju4/QKohsNqpu9Sx1sPYvjc+MBhmNwECk=;
+ b=NjmPLXCbpxol/PV2jV+BKwwR6In9N4QdaoYkEtZxbRRA15CS/gecAvAMrhb7pYp0L58KqvD8HJo7f8MqEn9tpXNdRRRXltwCqzX0lMObJlwC/YKl9KzfFpE+Zi17dI15cexMDaRn5EylEGJg96YsU3jKKZ7Jz6a3kpvnDIGZpflkmhu+3UrZMOVDamBT/qlcPWrkfj2jnjwg1PJLpKhFkkY7sMAcm5eO8HtaLt1crFPTr0CQv+sIzhZLa9O4NPMkZbhR3giysvPcA2AtrY41ogFNJg3sdRgRP30MhubGAe6AnhaSTp3zZhTvjuYhOrFQEqAd+CRd/AaWUhbo3GnH1Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ DM5PR1101MB2330.namprd11.prod.outlook.com (2603:10b6:3:a8::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5566.15; Mon, 29 Aug 2022 11:16:45 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::393a:df83:cb78:1e3c]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::393a:df83:cb78:1e3c%5]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
+ 11:16:45 +0000
+Date:   Mon, 29 Aug 2022 13:16:40 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
+        "Alexander Lobakin" <alexandr.lobakin@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        "Sasha Levin" <sashal@kernel.org>
+Subject: Re: [PATCH 5.15 042/136] ice: xsk: Force rings to be sized to power
+ of 2
+Message-ID: <YwygGA09Qtddbgw6@boxer>
 References: <20220829105804.609007228@linuxfoundation.org>
-User-Agent: quilt/0.67
+ <20220829105806.324347516@linuxfoundation.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220829105806.324347516@linuxfoundation.org>
+X-ClientProxiedBy: AM5PR0602CA0017.eurprd06.prod.outlook.com
+ (2603:10a6:203:a3::27) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 51e30f43-65ec-46a9-f2fe-08da89aff56f
+X-MS-TrafficTypeDiagnostic: DM5PR1101MB2330:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: P50UmyhLEQXIOoT3t0R9EDB1zIfbd0zIHFJJSv0Pt7n27De4v00RwSdhQ5koV7YFy0BLBQt1IVM5nmjN7YszgE2VasdXEj9Qkklny5GLK+8OkQHrD6n9jHBj96FJe2Vgu8onvnOwVwNayFYnjKKp2wsYjzYgM4tjZ3uXJtF2GX0bPLQuY8ZBcpC9J93lMKQ63j4s40nqMO8LIQXbnsMCoNtFFqUERcWod0B7MrmcHNcvZt3UF+BUHeaNvHz7zjJ0d7GD1gCae6u3O5MFOvsoSC8YzV6nuZwuspT1G3z7TkBy45LVUmG/OoGbXnWC/7x4hMf27p6QPQ+fCJbm+nl/ZG16FQEUBXxvoZ7524MdplEEV/06/kUncKjX5E+4pMTe9+LcyIFtXYKX56sZ+PEFfXY8VWWcNBywQmxe5Cvupd7a7jfl/Uzfcx3ME6O/s28m9YWye1jnhPycF9peEqM7MXfdvW91D2Kq9Y5vrhZwMiXLaW+bkdUV/vJySt1oEXSHRpV3mqCuVrjbYEXzpDBKLDqorDNaR7Lw7mQueY+lTAUBbxnphIgt1ofBwzEPSTEvWgdKem0RAj6KRF4w0yF4jD74+vajvMNu3fSFNm1xHaZSQ6+4qS66mwnZlHbJwF7305WUu7LEUZruDPn4YjoycNSV1C+FZ0XyBnN1lfwSFM645yhNje4t2aP8bTiNRdiNPGvRLh74SbflMYr6u9yMTKVA+/e2522qoaV6PqGmPiRAAP1/0ful5myYRY/RL6PvRjTXi3xTq33zPlwyIgMPZf0Y0RGLHjwj9NAsgdTyPZU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(366004)(39860400002)(376002)(396003)(136003)(82960400001)(86362001)(33716001)(6486002)(4326008)(66476007)(66556008)(8676002)(66946007)(41300700001)(5660300002)(966005)(8936002)(478600001)(54906003)(38100700002)(316002)(6916009)(186003)(2906002)(26005)(83380400001)(6506007)(6666004)(6512007)(9686003)(44832011)(309714004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vWeh7uUiCKRSSDdBX+zW7YcMkUocUDTN024zMDdIPywygrHPDAosOVhYn7r2?=
+ =?us-ascii?Q?SZyW2RNK7duojkT9+4OxcvU0TMsdCxfbTbJ2VWP07aG+MZ1HdbFMNfygwsvK?=
+ =?us-ascii?Q?6LP4PgImmxs3XSOHvIeqXkkkqPcLe1hQpTAn/kM8DsmPXbzMiKHNsjozOIAw?=
+ =?us-ascii?Q?EfZtHZMht1ZWXN4fhGTPnyQ2dFK9NIw+DRGzEHIfGIresIOiG0v2N2BsImNt?=
+ =?us-ascii?Q?oLyd44lqjwILbCqn1wMsOvZSOv7CRAmJOaVJ5sYxf3g3Qs+xz7JedjYmrQ03?=
+ =?us-ascii?Q?fQxXdOBUmn3NQ1i84kadXY9IAQnHXkP74aK5GgofvexTkEtby3jeUyVGJ+BC?=
+ =?us-ascii?Q?gG98haY6OReF2OEtHU5ZRB1/SjJJcY8UD4KsLXW4CwKKqYUWRZoCureZheiT?=
+ =?us-ascii?Q?pAmNJpwiYSVr65dVvzc8KeKKQpX2oOYFGXNjt0tI7AGW3Hj+Wf5oNY0+aTTJ?=
+ =?us-ascii?Q?y33UEI5IY05YLDZbJyp+VGHqKk5l3/3eoKF62Q64vpKaSv3cUD3tRoWUdy73?=
+ =?us-ascii?Q?f09fLXXXMqaEC/heOvm7QOaXs7jShm+XyCMvK8gwq+b/XtyYcmoLtwxMn7b0?=
+ =?us-ascii?Q?7o/mwLgzv47S5uendB33urx5aIeCpuQaHt34U/fKs4YOtNU/GBalWWvHckDy?=
+ =?us-ascii?Q?ZLCqDXr1Jev1GQyL0t4GQQFNwrediuufTsdF2TaLaUfNXJl3T79Nql3+9jNY?=
+ =?us-ascii?Q?g+ZV+hpIUco0Dv+KgLTlI3kIDIHeoVwmuGNne3kNUKzReWp0KfJushEaAVcE?=
+ =?us-ascii?Q?zG+JJx47srbfvZLZD3jWr5VRf9DGyFr/OpQrfgmjmj2DLsF2D64z2ATB4sr1?=
+ =?us-ascii?Q?pzdhMQoss1ADdMBl+MSZqKiqwGozw3qJ17LzBO1gQktF7gAB0v6Zs7ttRQA+?=
+ =?us-ascii?Q?q0Iim1aRluxmUmO4dVG7kWmHDXJcHPiQHr9NSa89uTG14tQldRzJL6/LnmGR?=
+ =?us-ascii?Q?40hNParmI0ZUYm//bdI/a52Ow/H+M0jdyKNnIibHpWuLEOqEcfqf04nQ1EhD?=
+ =?us-ascii?Q?8F3P77Lf5wxadPztCGqkmZTBTGO84ouGal7JNdW4aOI3GZbGOxL8CyNFvReL?=
+ =?us-ascii?Q?DBmc5xPAvtrU17+xk/+rIltLks5OK5DpDdHI7Dzr9rHfzj0Q4j7Jlu6b2YB1?=
+ =?us-ascii?Q?ThkgyrHr1J1yd1ftFmyVivgDj3+RSuM/CrD0zec3QaRr6eeTs8eRLtoT80Xn?=
+ =?us-ascii?Q?9E/O2QFzw1Gd/ESo3oc9UT1Q7Wta8ycQgYj7Yx7deYO1uYHCV19d1YhHUB5z?=
+ =?us-ascii?Q?Uhcm+8FU3Ri/vT56ZamXuJWm7u/bLBtbqrjLmtDgK5wU5elHY4AHMd2HVPyi?=
+ =?us-ascii?Q?nRRFrgdwELDVFmQROl7PwD795G7En5hkMmPa8vPuJoEi1813KLYc5B7QVaru?=
+ =?us-ascii?Q?UDpTJhvxF7y/b+qQE7ey1ciRGmXgMbi0UxHl/cAMdw0nNibVe4NUOzZL3fyp?=
+ =?us-ascii?Q?f3J70zAn4O1fWIS0rrpGRaB29M3xLP/OdZj3QjmzKMsdKjc91oFqqUE+5YtM?=
+ =?us-ascii?Q?te2DvKHhS9FPLWaOTkgCU/LkUltkSM3DWSde/KN2nAwC+26Irq5DvWN0OK+V?=
+ =?us-ascii?Q?JCQukZklcwqY4pMOBUCD1iMnLKDGVbmVbshNhLxmvRhq4W2xUbTvLlU81qWE?=
+ =?us-ascii?Q?bQ=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51e30f43-65ec-46a9-f2fe-08da89aff56f
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 11:16:45.7164
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +9n13LTa0iLD1JSXr8ucaoKJmF6yhGj7mxemJaa2Xn9yI+GkSizf9pGNJ131FaFpZXxMO7jJxxc3jJNEbYtkmNSUwQKmmFzNBpcx6iBjBjQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1101MB2330
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+On Mon, Aug 29, 2022 at 12:58:29PM +0200, Greg Kroah-Hartman wrote:
+> From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> 
+> [ Upstream commit 296f13ff3854535009a185aaf8e3603266d39d94 ]
+> 
+> With the upcoming introduction of batching to XSK data path,
+> performance wise it will be the best to have the ring descriptor count
+> to be aligned to power of 2.
+> 
+> Check if ring sizes that user is going to attach the XSK socket fulfill
+> the condition above. For Tx side, although check is being done against
+> the Tx queue and in the end the socket will be attached to the XDP
+> queue, it is fine since XDP queues get the ring->count setting from Tx
+> queues.
 
-[ Upstream commit b0f571ecd7943423c25947439045f0d352ca3dbf ]
+Hi Greg,
 
-Fix three bugs in the rxrpc's sendmsg implementation:
+We had multiple customers reporting that this change makes them unable to
+use max ring size which is 8160 for this particular driver (which is not a
+power of 2 obviously) so we are about to send a patch that will drop this
+limitation.
 
- (1) rxrpc_new_client_call() should release the socket lock when returning
-     an error from rxrpc_get_call_slot().
+To avoid the double work, can you please not proceed with this one?
+The other two:
+ice: xsk: prohibit usage of non-balanced queue id
+ice: xsk: use Rx rings XDP ring when picking NAPI context
 
- (2) rxrpc_wait_for_tx_window_intr() will return without the call mutex
-     held in the event that we're interrupted by a signal whilst waiting
-     for tx space on the socket or relocking the call mutex afterwards.
+are valid and needed.
 
-     Fix this by: (a) moving the unlock/lock of the call mutex up to
-     rxrpc_send_data() such that the lock is not held around all of
-     rxrpc_wait_for_tx_window*() and (b) indicating to higher callers
-     whether we're return with the lock dropped.  Note that this means
-     recvmsg() will not block on this call whilst we're waiting.
+FWIW this was a part of -next patch set, so I suppose you picked this due
+to some dependency?
 
- (3) After dropping and regaining the call mutex, rxrpc_send_data() needs
-     to go and recheck the state of the tx_pending buffer and the
-     tx_total_len check in case we raced with another sendmsg() on the same
-     call.
+Thanks,
+Maciej
 
-Thinking on this some more, it might make sense to have different locks for
-sendmsg() and recvmsg().  There's probably no need to make recvmsg() wait
-for sendmsg().  It does mean that recvmsg() can return MSG_EOR indicating
-that a call is dead before a sendmsg() to that call returns - but that can
-currently happen anyway.
-
-Without fix (2), something like the following can be induced:
-
-	WARNING: bad unlock balance detected!
-	5.16.0-rc6-syzkaller #0 Not tainted
-	-------------------------------------
-	syz-executor011/3597 is trying to release lock (&call->user_mutex) at:
-	[<ffffffff885163a3>] rxrpc_do_sendmsg+0xc13/0x1350 net/rxrpc/sendmsg.c:748
-	but there are no more locks to release!
-
-	other info that might help us debug this:
-	no locks held by syz-executor011/3597.
-	...
-	Call Trace:
-	 <TASK>
-	 __dump_stack lib/dump_stack.c:88 [inline]
-	 dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
-	 print_unlock_imbalance_bug include/trace/events/lock.h:58 [inline]
-	 __lock_release kernel/locking/lockdep.c:5306 [inline]
-	 lock_release.cold+0x49/0x4e kernel/locking/lockdep.c:5657
-	 __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:900
-	 rxrpc_do_sendmsg+0xc13/0x1350 net/rxrpc/sendmsg.c:748
-	 rxrpc_sendmsg+0x420/0x630 net/rxrpc/af_rxrpc.c:561
-	 sock_sendmsg_nosec net/socket.c:704 [inline]
-	 sock_sendmsg+0xcf/0x120 net/socket.c:724
-	 ____sys_sendmsg+0x6e8/0x810 net/socket.c:2409
-	 ___sys_sendmsg+0xf3/0x170 net/socket.c:2463
-	 __sys_sendmsg+0xe5/0x1b0 net/socket.c:2492
-	 do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-	 do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-	 entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-[Thanks to Hawkins Jiawei and Khalid Masum for their attempts to fix this]
-
-Fixes: bc5e3a546d55 ("rxrpc: Use MSG_WAITALL to tell sendmsg() to temporarily ignore signals")
-Reported-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
-Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
-Tested-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
-cc: Hawkins Jiawei <yin31149@gmail.com>
-cc: Khalid Masum <khalid.masum.92@gmail.com>
-cc: Dan Carpenter <dan.carpenter@oracle.com>
-cc: linux-afs@lists.infradead.org
-Link: https://lore.kernel.org/r/166135894583.600315.7170979436768124075.stgit@warthog.procyon.org.uk
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/rxrpc/call_object.c |  4 +-
- net/rxrpc/sendmsg.c     | 92 ++++++++++++++++++++++++-----------------
- 2 files changed, 57 insertions(+), 39 deletions(-)
-
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 25c9a2cbf048c..d674d90e70313 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -285,8 +285,10 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 	_enter("%p,%lx", rx, p->user_call_ID);
- 
- 	limiter = rxrpc_get_call_slot(p, gfp);
--	if (!limiter)
-+	if (!limiter) {
-+		release_sock(&rx->sk);
- 		return ERR_PTR(-ERESTARTSYS);
-+	}
- 
- 	call = rxrpc_alloc_client_call(rx, srx, gfp, debug_id);
- 	if (IS_ERR(call)) {
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 1d38e279e2efa..3c3a626459deb 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -51,10 +51,7 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
- 			return sock_intr_errno(*timeo);
- 
- 		trace_rxrpc_transmit(call, rxrpc_transmit_wait);
--		mutex_unlock(&call->user_mutex);
- 		*timeo = schedule_timeout(*timeo);
--		if (mutex_lock_interruptible(&call->user_mutex) < 0)
--			return sock_intr_errno(*timeo);
- 	}
- }
- 
-@@ -290,37 +287,48 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
- static int rxrpc_send_data(struct rxrpc_sock *rx,
- 			   struct rxrpc_call *call,
- 			   struct msghdr *msg, size_t len,
--			   rxrpc_notify_end_tx_t notify_end_tx)
-+			   rxrpc_notify_end_tx_t notify_end_tx,
-+			   bool *_dropped_lock)
- {
- 	struct rxrpc_skb_priv *sp;
- 	struct sk_buff *skb;
- 	struct sock *sk = &rx->sk;
-+	enum rxrpc_call_state state;
- 	long timeo;
--	bool more;
--	int ret, copied;
-+	bool more = msg->msg_flags & MSG_MORE;
-+	int ret, copied = 0;
- 
- 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
- 
- 	/* this should be in poll */
- 	sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
- 
-+reload:
-+	ret = -EPIPE;
- 	if (sk->sk_shutdown & SEND_SHUTDOWN)
--		return -EPIPE;
--
--	more = msg->msg_flags & MSG_MORE;
--
-+		goto maybe_error;
-+	state = READ_ONCE(call->state);
-+	ret = -ESHUTDOWN;
-+	if (state >= RXRPC_CALL_COMPLETE)
-+		goto maybe_error;
-+	ret = -EPROTO;
-+	if (state != RXRPC_CALL_CLIENT_SEND_REQUEST &&
-+	    state != RXRPC_CALL_SERVER_ACK_REQUEST &&
-+	    state != RXRPC_CALL_SERVER_SEND_REPLY)
-+		goto maybe_error;
-+
-+	ret = -EMSGSIZE;
- 	if (call->tx_total_len != -1) {
--		if (len > call->tx_total_len)
--			return -EMSGSIZE;
--		if (!more && len != call->tx_total_len)
--			return -EMSGSIZE;
-+		if (len - copied > call->tx_total_len)
-+			goto maybe_error;
-+		if (!more && len - copied != call->tx_total_len)
-+			goto maybe_error;
- 	}
- 
- 	skb = call->tx_pending;
- 	call->tx_pending = NULL;
- 	rxrpc_see_skb(skb, rxrpc_skb_seen);
- 
--	copied = 0;
- 	do {
- 		/* Check to see if there's a ping ACK to reply to. */
- 		if (call->ackr_reason == RXRPC_ACK_PING_RESPONSE)
-@@ -331,16 +339,8 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- 
- 			_debug("alloc");
- 
--			if (!rxrpc_check_tx_space(call, NULL)) {
--				ret = -EAGAIN;
--				if (msg->msg_flags & MSG_DONTWAIT)
--					goto maybe_error;
--				ret = rxrpc_wait_for_tx_window(rx, call,
--							       &timeo,
--							       msg->msg_flags & MSG_WAITALL);
--				if (ret < 0)
--					goto maybe_error;
--			}
-+			if (!rxrpc_check_tx_space(call, NULL))
-+				goto wait_for_space;
- 
- 			/* Work out the maximum size of a packet.  Assume that
- 			 * the security header is going to be in the padded
-@@ -468,6 +468,27 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- efault:
- 	ret = -EFAULT;
- 	goto out;
-+
-+wait_for_space:
-+	ret = -EAGAIN;
-+	if (msg->msg_flags & MSG_DONTWAIT)
-+		goto maybe_error;
-+	mutex_unlock(&call->user_mutex);
-+	*_dropped_lock = true;
-+	ret = rxrpc_wait_for_tx_window(rx, call, &timeo,
-+				       msg->msg_flags & MSG_WAITALL);
-+	if (ret < 0)
-+		goto maybe_error;
-+	if (call->interruptibility == RXRPC_INTERRUPTIBLE) {
-+		if (mutex_lock_interruptible(&call->user_mutex) < 0) {
-+			ret = sock_intr_errno(timeo);
-+			goto maybe_error;
-+		}
-+	} else {
-+		mutex_lock(&call->user_mutex);
-+	}
-+	*_dropped_lock = false;
-+	goto reload;
- }
- 
- /*
-@@ -629,6 +650,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 	enum rxrpc_call_state state;
- 	struct rxrpc_call *call;
- 	unsigned long now, j;
-+	bool dropped_lock = false;
- 	int ret;
- 
- 	struct rxrpc_send_params p = {
-@@ -737,21 +759,13 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 			ret = rxrpc_send_abort_packet(call);
- 	} else if (p.command != RXRPC_CMD_SEND_DATA) {
- 		ret = -EINVAL;
--	} else if (rxrpc_is_client_call(call) &&
--		   state != RXRPC_CALL_CLIENT_SEND_REQUEST) {
--		/* request phase complete for this client call */
--		ret = -EPROTO;
--	} else if (rxrpc_is_service_call(call) &&
--		   state != RXRPC_CALL_SERVER_ACK_REQUEST &&
--		   state != RXRPC_CALL_SERVER_SEND_REPLY) {
--		/* Reply phase not begun or not complete for service call. */
--		ret = -EPROTO;
- 	} else {
--		ret = rxrpc_send_data(rx, call, msg, len, NULL);
-+		ret = rxrpc_send_data(rx, call, msg, len, NULL, &dropped_lock);
- 	}
- 
- out_put_unlock:
--	mutex_unlock(&call->user_mutex);
-+	if (!dropped_lock)
-+		mutex_unlock(&call->user_mutex);
- error_put:
- 	rxrpc_put_call(call, rxrpc_call_put);
- 	_leave(" = %d", ret);
-@@ -779,6 +793,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 			   struct msghdr *msg, size_t len,
- 			   rxrpc_notify_end_tx_t notify_end_tx)
- {
-+	bool dropped_lock = false;
- 	int ret;
- 
- 	_enter("{%d,%s},", call->debug_id, rxrpc_call_states[call->state]);
-@@ -796,7 +811,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 	case RXRPC_CALL_SERVER_ACK_REQUEST:
- 	case RXRPC_CALL_SERVER_SEND_REPLY:
- 		ret = rxrpc_send_data(rxrpc_sk(sock->sk), call, msg, len,
--				      notify_end_tx);
-+				      notify_end_tx, &dropped_lock);
- 		break;
- 	case RXRPC_CALL_COMPLETE:
- 		read_lock_bh(&call->state_lock);
-@@ -810,7 +825,8 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 		break;
- 	}
- 
--	mutex_unlock(&call->user_mutex);
-+	if (!dropped_lock)
-+		mutex_unlock(&call->user_mutex);
- 	_leave(" = %d", ret);
- 	return ret;
- }
--- 
-2.35.1
-
-
-
+> 
+> Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> Link: https://lore.kernel.org/bpf/20220125160446.78976-3-maciej.fijalkowski@intel.com
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/net/ethernet/intel/ice/ice_xsk.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> index 5581747947e57..0348cc4265034 100644
+> --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
+> +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
+> @@ -321,6 +321,13 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
+>  	bool if_running, pool_present = !!pool;
+>  	int ret = 0, pool_failure = 0;
+>  
+> +	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
+> +	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
+> +		netdev_err(vsi->netdev, "Please align ring sizes to power of 2\n");
+> +		pool_failure = -EINVAL;
+> +		goto failure;
+> +	}
+> +
+>  	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
+>  
+>  	if (if_running) {
+> @@ -343,6 +350,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
+>  			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
+>  	}
+>  
+> +failure:
+>  	if (pool_failure) {
+>  		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
+>  			   pool_present ? "en" : "dis", pool_failure);
+> -- 
+> 2.35.1
+> 
+> 
+> 
