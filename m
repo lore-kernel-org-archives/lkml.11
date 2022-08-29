@@ -2,83 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB3AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3307ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232083AbiH2MXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49830 "EHLO
+        id S230166AbiH2MXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232070AbiH2MXC (ORCPT
+        with ESMTP id S230136AbiH2MXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:23:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9780B2182A;
-        Mon, 29 Aug 2022 05:07:00 -0700 (PDT)
+        Mon, 29 Aug 2022 08:23:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF871A8301;
+        Mon, 29 Aug 2022 05:07:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45604611E3;
-        Mon, 29 Aug 2022 11:07:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50F21C433C1;
-        Mon, 29 Aug 2022 11:07:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771273;
-        bh=J53EIN/0Zj6j2Iln4Cm7nd/nabx5cBI06UmD41Sku/k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jO3lpaUzEzdPhGD8BIS5rLsh28oSGe49z1R0QJrh3WuET4VBtcEH3FwCN26OS3tTY
-         EC+Y8pBFhxLve+cv0aDtRCYjKJE/B0ZGUjvNC6mB/ulWoLJoAvbdkZ4NKY+9Bw6iIN
-         ZsdKiw9bZO1rB2T2Coc+2iBpy5e2EBJZhxati54s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 086/136] net: Fix a data-race around sysctl_somaxconn.
-Date:   Mon, 29 Aug 2022 12:59:13 +0200
-Message-Id: <20220829105808.176232948@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E749B80DD5;
+        Mon, 29 Aug 2022 12:06:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD369C433D6;
+        Mon, 29 Aug 2022 12:06:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661774808;
+        bh=r910AOmdtzWh1T2nXLlZAY+q5vomdymJKiLIiX4kBxI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sufZFZ5DzLcRGkjvc6sMF8qxrF7bGVWN8CVZrBEX1dOcjQKvBCyfC7tqXEQWKPERV
+         IqQ1/3VxVndXTW5AzIMHYdrmcLxkJboY7iRt7+C7EI2qsj69MtcHNrCv4ekDOfl8gP
+         V2sroHLcenKcyK9NJc2wZgp60mRjpEFxHzHd74ApPiYGxNPgWM73hgfA5DzDmo2VdZ
+         6sNnrYjRNHzCyxloQyU3xiXL1WO3sAt9PLhAgIHjkatSghIOWLguVeg0JuYGxtrkep
+         Nw2CUr3NagEKUnpat68AYXoL2S3tFRL6Emeopu0eg2VqNdPv+ch2T5PvEOEh8gPYtI
+         GU33Rdgbg9LpA==
+Date:   Mon, 29 Aug 2022 15:06:43 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jinpu Wang <jinpu.wang@ionos.com>
+Cc:     jgg@ziepe.ca, linux-rdma@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] RDMA: dma-mapping: Return an unsigned int from
+ ib_dma_map_sg{,_attrs}
+Message-ID: <Ywyr0+b350SZrznw@unreal>
+References: <20220826095615.74328-1-jinpu.wang@ionos.com>
+ <20220826095615.74328-3-jinpu.wang@ionos.com>
+ <YwtM+/nB1F6p1Ey3@unreal>
+ <CAMGffEmffkW0fHrjx84gQ6FnWuwriRUg=HSdwzU4W_sZLdiT7g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMGffEmffkW0fHrjx84gQ6FnWuwriRUg=HSdwzU4W_sZLdiT7g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+On Mon, Aug 29, 2022 at 11:40:40AM +0200, Jinpu Wang wrote:
+> On Sun, Aug 28, 2022 at 1:09 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
+> > On Fri, Aug 26, 2022 at 11:56:15AM +0200, Jack Wang wrote:
+> > > Following 2a047e0662ae ("dma-mapping: return an unsigned int from dma_map_sg{,_attrs}")
+> > > change the return value of ib_dma_map_sg{,attrs} to unsigned int.
+> > >
+> > > Cc: Jason Gunthorpe <jgg@ziepe.ca>
+> > > Cc: Leon Romanovsky <leon@kernel.org>
+> > > Cc: Christoph Hellwig <hch@lst.de>
+> > > Cc: linux-rdma@vger.kernel.org
+> > > Cc: linux-kernel@vger.kernel.org
+> > >
+> > > Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
+> > > ---
+> > >  drivers/infiniband/core/device.c | 2 +-
+> > >  include/rdma/ib_verbs.h          | 6 +++---
+> > >  2 files changed, 4 insertions(+), 4 deletions(-)
+> >
+> > You forgot to change ib_dma_map_sgtable_attrs() and various
+> > ib_dma_map_sg*() callers.
+> No, they are different.
+> ib_dma_map_sgtable_attrs and dma_map_sgtable return negative on errors.
 
-[ Upstream commit 3c9ba81d72047f2e81bb535d42856517b613aba7 ]
+It is not the point. You changed ib_dma_virt_map_sg() to be unsigned,
+so now the following lines are not correct:
 
-While reading sysctl_somaxconn, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+  4138         int nents;
+  4139
+  4140         if (ib_uses_virt_dma(dev)) {
+  4141                 nents = ib_dma_virt_map_sg(dev, sgt->sgl, sgt->orig_nents);
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/socket.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+"int nents" should be changed to "unsigned int".
 
-diff --git a/net/socket.c b/net/socket.c
-index 5053eb0100e48..73666b878f2ce 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -1721,7 +1721,7 @@ int __sys_listen(int fd, int backlog)
- 
- 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
- 	if (sock) {
--		somaxconn = sock_net(sock->sk)->core.sysctl_somaxconn;
-+		somaxconn = READ_ONCE(sock_net(sock->sk)->core.sysctl_somaxconn);
- 		if ((unsigned int)backlog > somaxconn)
- 			backlog = somaxconn;
- 
--- 
-2.35.1
+Thanks
 
-
-
+> >
+> > Thanks
+> Thanks!
