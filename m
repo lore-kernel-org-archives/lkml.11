@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E40BECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:41:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAF9ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231181AbiH2LlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:41:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
+        id S232925AbiH2Llo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229828AbiH2Lk5 (ORCPT
+        with ESMTP id S232908AbiH2LlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:40:57 -0400
+        Mon, 29 Aug 2022 07:41:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BFC1A807;
-        Mon, 29 Aug 2022 04:25:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC215F9B5;
+        Mon, 29 Aug 2022 04:25:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1D741B80FBC;
-        Mon, 29 Aug 2022 11:13:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81813C4314B;
-        Mon, 29 Aug 2022 11:13:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE5F1B80F98;
+        Mon, 29 Aug 2022 11:18:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DF19C433D6;
+        Mon, 29 Aug 2022 11:18:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771593;
-        bh=l5TL+RjQ/+c8aJqbSDWtMBUEKOZ8GAHD9iwp2klwN2k=;
+        s=korg; t=1661771887;
+        bh=o/HNSoSVRYqLb9w4klxap5MlomTwg5zz/toUw3fcwuo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tDM68i9NvAX5tyAswJ2fjGtpitLf8KUjTDiJubJURcMVLrPc/1EUFdEV3QsYWXjpS
-         h8J5YvzkjitHffrKdnyJvHSoQVhhvwgnmidzohGA9XsHh8rDEJgZNsX4pAYYeqhz3Z
-         cZPujc/JfD5sdOeWKgqZUFDETDLYOxAxbKceKHcE=
+        b=c1EMbmsf0qu84nuIEtK4rfkvw6/IszNEG5z8dRKBq5ji7H5uyT2ikyO7Xx/sOhYEW
+         yAuuZcIq/9nU1TqRyEeENgB237Qj00wgfyODPNBOAPEIVk8bpcXFAwN4Wf0A3755xS
+         0s5BGhjH91ZbtZPA3/pFR0qUzD6tbMtFLQzv2Rzs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 54/86] net: Fix a data-race around sysctl_net_busy_poll.
-Date:   Mon, 29 Aug 2022 12:59:20 +0200
-Message-Id: <20220829105758.756537406@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH 5.19 131/158] riscv: dts: microchip: correct L2 cache interrupts
+Date:   Mon, 29 Aug 2022 12:59:41 +0200
+Message-Id: <20220829105814.583123387@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
 
-[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
+commit 34fc9cc3aebe8b9e27d3bc821543dd482dc686ca upstream.
 
-While reading sysctl_net_busy_poll, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+The "PolarFire SoC MSS Technical Reference Manual" documents the
+following PLIC interrupts:
 
-Fixes: 060212928670 ("net: add low latency socket poll")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+1 - L2 Cache Controller Signals when a metadata correction event occurs
+2 - L2 Cache Controller Signals when an uncorrectable metadata event occurs
+3 - L2 Cache Controller Signals when a data correction event occurs
+4 - L2 Cache Controller Signals when an uncorrectable data event occurs
+
+This differs from the SiFive FU540 which only has three L2 cache related
+interrupts.
+
+The sequence in the device tree is defined by an enum:
+
+    enum {
+            DIR_CORR = 0,
+            DATA_CORR,
+            DATA_UNCORR,
+            DIR_UNCORR,
+    };
+
+So the correct sequence of the L2 cache interrupts is
+
+    interrupts = <1>, <3>, <4>, <2>;
+
+[Conor]
+This manifests as an unusable system if the l2-cache driver is enabled,
+as the wrong interrupt gets cleared & the handler prints errors to the
+console ad infinitum.
+
+Fixes: 0fa6107eca41 ("RISC-V: Initial DTS for Microchip ICICLE board")
+CC: stable@vger.kernel.org # 5.15: e35b07a7df9b: riscv: dts: microchip: mpfs: Group tuples in interrupt properties
+Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/busy_poll.h | 2 +-
+ arch/riscv/boot/dts/microchip/mpfs.dtsi |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
-index 716b7c5f6fdd9..36e5e75e71720 100644
---- a/include/net/busy_poll.h
-+++ b/include/net/busy_poll.h
-@@ -31,7 +31,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
+--- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
+@@ -169,7 +169,7 @@
+ 			cache-size = <2097152>;
+ 			cache-unified;
+ 			interrupt-parent = <&plic>;
+-			interrupts = <1>, <2>, <3>;
++			interrupts = <1>, <3>, <4>, <2>;
+ 		};
  
- static inline bool net_busy_loop_on(void)
- {
--	return sysctl_net_busy_poll;
-+	return READ_ONCE(sysctl_net_busy_poll);
- }
- 
- static inline bool sk_can_busy_loop(const struct sock *sk)
--- 
-2.35.1
-
+ 		clint: clint@2000000 {
 
 
