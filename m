@@ -2,86 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E379CC0502E
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:42:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B0E4C64991
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiH2MmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
+        id S229881AbiH2MmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230181AbiH2Ml2 (ORCPT
+        with ESMTP id S229869AbiH2Mlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:41:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5F4AA36D;
-        Mon, 29 Aug 2022 05:25:55 -0700 (PDT)
+        Mon, 29 Aug 2022 08:41:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCE822B14;
+        Mon, 29 Aug 2022 05:26:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9008BB80F9A;
-        Mon, 29 Aug 2022 12:25:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C1B6C433D7;
-        Mon, 29 Aug 2022 12:25:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661775952;
-        bh=3iB3FPdcSvm99iM6SmOB3c5yrDWVJ8azBbcMqlPGahU=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=U9rc4Pl+o0ydfA3ZabupGKgLAeKFGa9VTdEKPzEQfZJGvjz5rf/x1+Pa6RMPxDiBC
-         9jqfx+lScrIMrvPA3riy7bAjy4iXqnOeiQ5RpXRLfKI7wATqiPdDv9jOfTtNr2h+Yq
-         Wa20ghuu2acgEA3aLSs3uLf5wthIZ6qxjVhNb0qvfc8x3Zav6sSokUCAjA+A0+P5de
-         bQNqtx2Zwz2+DaKO6sCI3kLAmL8NA46x3FcuUCCe0t5hFORtboJg0kbLnB+FUuI9EE
-         UulxZQCkL5hNebcDXHpxCKz4XhYLZsSfE1TMqSUpfspvZpiyzGy3XWlxAXXfudtV4Q
-         DnEHl86Tq6WOA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id D087A5C019C; Mon, 29 Aug 2022 05:25:51 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 05:25:51 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Andrea Parri <parri.andrea@gmail.com>
-Cc:     stern@rowland.harvard.edu, will@kernel.org, peterz@infradead.org,
-        boqun.feng@gmail.com, npiggin@gmail.com, dhowells@redhat.com,
-        j.alglave@ucl.ac.uk, luc.maranget@inria.fr, akiyks@gmail.com,
-        dlustig@nvidia.com, joel@joelfernandes.org,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
-Subject: Re: "Verifying and Optimizing Compact NUMA-Aware Locks on Weak
- Memory Models"
-Message-ID: <20220829122551.GL6159@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220826124812.GA3007435@paulmck-ThinkPad-P17-Gen-1>
- <YwwlWMmHxD7OPERD@anparri>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 776F6611E9;
+        Mon, 29 Aug 2022 11:11:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84918C433D7;
+        Mon, 29 Aug 2022 11:11:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771464;
+        bh=dwulq3C42+QL6V1OJqh9EVSXbXuaeZA6njsv2Gq/iEI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FEhnG05vUWcXVj8J/5Qa1QMconexGHPKjWvXNhtRPqEKtr5YhSkJbMj+d22bGJQOQ
+         iATe/4DUfFusyqprn1Ky0gXvXlTKvtwaFX3rIiKpqH4ydmlRXDEhTlVKNviWKYWHtC
+         PS2mJiHijGdt9e62xkd/NvSatoqdysH0JC7LReUA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Quanyang Wang <quanyang.wang@windriver.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Thierry Reding <treding@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 106/136] asm-generic: sections: refactor memory_intersects
+Date:   Mon, 29 Aug 2022 12:59:33 +0200
+Message-Id: <20220829105809.061723960@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YwwlWMmHxD7OPERD@anparri>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 04:33:23AM +0200, Andrea Parri wrote:
-> On Fri, Aug 26, 2022 at 05:48:12AM -0700, Paul E. McKenney wrote:
-> > Hello!
-> > 
-> > I have not yet done more than glance at this one, but figured I should
-> > send it along sooner rather than later.
-> > 
-> > "Verifying and Optimizing Compact NUMA-Aware Locks on Weak
-> > Memory Models", Antonio Paolillo, Hernán Ponce-de-León, Thomas
-> > Haas, Diogo Behrens, Rafael Chehab, Ming Fu, and Roland Meyer.
-> > https://arxiv.org/abs/2111.15240
-> > 
-> > The claim is that the queued spinlocks implementation with CNA violates
-> > LKMM but actually works on all architectures having a formal hardware
-> > memory model.
-> > 
-> > Thoughts?
-> 
-> Section 4 ends with a discussion about certain "spurious" data races.
-> Do we have litmus tests with them?  (I could repro with Dartagnan...)
+From: Quanyang Wang <quanyang.wang@windriver.com>
 
-Their Figure 5 clearly shows a data race, but agreed, their claim is
-that this race is prevented by other code not in this litmus test.
-Me, I currently suspect that the spurious data race might be due to the
-failure to guarantee mutual exclusion, though I have not yet read that
-paper carefully.  That is scheduled for tomorrow morning.
+commit 0c7d7cc2b4fe2e74ef8728f030f0f1674f9f6aee upstream.
 
-							Thanx, Paul
+There are two problems with the current code of memory_intersects:
+
+First, it doesn't check whether the region (begin, end) falls inside the
+region (virt, vend), that is (virt < begin && vend > end).
+
+The second problem is if vend is equal to begin, it will return true but
+this is wrong since vend (virt + size) is not the last address of the
+memory region but (virt + size -1) is.  The wrong determination will
+trigger the misreporting when the function check_for_illegal_area calls
+memory_intersects to check if the dma region intersects with stext region.
+
+The misreporting is as below (stext is at 0x80100000):
+ WARNING: CPU: 0 PID: 77 at kernel/dma/debug.c:1073 check_for_illegal_area+0x130/0x168
+ DMA-API: chipidea-usb2 e0002000.usb: device driver maps memory from kernel text or rodata [addr=800f0000] [len=65536]
+ Modules linked in:
+ CPU: 1 PID: 77 Comm: usb-storage Not tainted 5.19.0-yocto-standard #5
+ Hardware name: Xilinx Zynq Platform
+  unwind_backtrace from show_stack+0x18/0x1c
+  show_stack from dump_stack_lvl+0x58/0x70
+  dump_stack_lvl from __warn+0xb0/0x198
+  __warn from warn_slowpath_fmt+0x80/0xb4
+  warn_slowpath_fmt from check_for_illegal_area+0x130/0x168
+  check_for_illegal_area from debug_dma_map_sg+0x94/0x368
+  debug_dma_map_sg from __dma_map_sg_attrs+0x114/0x128
+  __dma_map_sg_attrs from dma_map_sg_attrs+0x18/0x24
+  dma_map_sg_attrs from usb_hcd_map_urb_for_dma+0x250/0x3b4
+  usb_hcd_map_urb_for_dma from usb_hcd_submit_urb+0x194/0x214
+  usb_hcd_submit_urb from usb_sg_wait+0xa4/0x118
+  usb_sg_wait from usb_stor_bulk_transfer_sglist+0xa0/0xec
+  usb_stor_bulk_transfer_sglist from usb_stor_bulk_srb+0x38/0x70
+  usb_stor_bulk_srb from usb_stor_Bulk_transport+0x150/0x360
+  usb_stor_Bulk_transport from usb_stor_invoke_transport+0x38/0x440
+  usb_stor_invoke_transport from usb_stor_control_thread+0x1e0/0x238
+  usb_stor_control_thread from kthread+0xf8/0x104
+  kthread from ret_from_fork+0x14/0x2c
+
+Refactor memory_intersects to fix the two problems above.
+
+Before the 1d7db834a027e ("dma-debug: use memory_intersects()
+directly"), memory_intersects is called only by printk_late_init:
+
+printk_late_init -> init_section_intersects ->memory_intersects.
+
+There were few places where memory_intersects was called.
+
+When commit 1d7db834a027e ("dma-debug: use memory_intersects()
+directly") was merged and CONFIG_DMA_API_DEBUG is enabled, the DMA
+subsystem uses it to check for an illegal area and the calltrace above
+is triggered.
+
+[akpm@linux-foundation.org: fix nearby comment typo]
+Link: https://lkml.kernel.org/r/20220819081145.948016-1-quanyang.wang@windriver.com
+Fixes: 979559362516 ("asm/sections: add helpers to check for section data")
+Signed-off-by: Quanyang Wang <quanyang.wang@windriver.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Thierry Reding <treding@nvidia.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/asm-generic/sections.h |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+--- a/include/asm-generic/sections.h
++++ b/include/asm-generic/sections.h
+@@ -114,7 +114,7 @@ static inline bool memory_contains(void
+ /**
+  * memory_intersects - checks if the region occupied by an object intersects
+  *                     with another memory region
+- * @begin: virtual address of the beginning of the memory regien
++ * @begin: virtual address of the beginning of the memory region
+  * @end: virtual address of the end of the memory region
+  * @virt: virtual address of the memory object
+  * @size: size of the memory object
+@@ -127,7 +127,10 @@ static inline bool memory_intersects(voi
+ {
+ 	void *vend = virt + size;
+ 
+-	return (virt >= begin && virt < end) || (vend >= begin && vend < end);
++	if (virt < end && vend > begin)
++		return true;
++
++	return false;
+ }
+ 
+ /**
+
+
