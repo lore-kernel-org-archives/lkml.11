@@ -2,103 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78D98ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA92ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229792AbiH2QPa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:15:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37698 "EHLO
+        id S230113AbiH2QPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiH2QP2 (ORCPT
+        with ESMTP id S229973AbiH2QPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:15:28 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F1432BB7;
-        Mon, 29 Aug 2022 09:15:26 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id v5so2255154plo.9;
-        Mon, 29 Aug 2022 09:15:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc;
-        bh=uy4pLblRdQQDS3wAjiWuybD807qoihM26VKA21jhnKA=;
-        b=H51WnfbYaarSmSDLLj1PUjpfIeWe+w2tPOvhrFUCIE+V+UVeCg2GufAJXaawSpYToL
-         ZOt0hOj0TDFOfHSqAht22+Fbiqg5MnNU7sRFi/UKM9Gxbtwbd6ZdH4WIFl9kYPN6mmsh
-         u2tRU9Co/14A21yCrkXOSMwkJJq8xlJSX8Qv+BdAuOj1Un7+ki/2wrMsrSz2IcuTdSIR
-         rlH7cMJPSh7J684JC20xqPe6w7PwGb2wpnrl+zspViqcrvPiXc8srE5S2iwcAIFJHdIA
-         fTZI0ukk8ebA6PT4E85CtE8As2KF41PwwDV/fFRhvFgmmDtRrpxQh02Jnn570cDHEDDy
-         451g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc;
-        bh=uy4pLblRdQQDS3wAjiWuybD807qoihM26VKA21jhnKA=;
-        b=7kN6eDneaTqgZd5LUZJDntS0lBWgOH/xVLLKPJ/wL+2r0+i+/0F+ZyIdrEJvVED6Uf
-         Qp22CuxQ63QSGybmpx58aB2Ac1HfZbbxdNai5b8bPkynJltbI4CNKS+bAf/zdIJV5ZD2
-         YWWyqof/jThmuJ7ju+aA5Yndl1vaHTkligI0V3juyHpvYzgglfJtpVARnf5gauzJ45h2
-         NNwgi/oNJT4TTIe4O4rtFnfT8Fo4YN1xJrWDOYuiwM1U8yJNfZ8p3Apcb9LhLTsVt9JK
-         t/SaLezPa/pVUSSRG+jNF+5T3wU03hEpHjrsznrQ5czPz8b03XpM4tCMki853S+SAvO6
-         IgwA==
-X-Gm-Message-State: ACgBeo0csBXdfI6xPF+E1/mudR/PNqiziGLz9mG07Gi2NdOVsfXRf4Jd
-        LeFa0ixc0S5cjWVvdVDROmw=
-X-Google-Smtp-Source: AA6agR59toqoIdzgGXXc4iiWobVsn1cLhEY8TedcT7inFuxzm1KVsfl2LUZKWdi0N3FM8oMrC75jkA==
-X-Received: by 2002:a17:90b:388f:b0:1f5:7748:9667 with SMTP id mu15-20020a17090b388f00b001f577489667mr19514821pjb.158.1661789726312;
-        Mon, 29 Aug 2022 09:15:26 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id mh3-20020a17090b4ac300b001fdb6ef8e2esm3076064pjb.10.2022.08.29.09.15.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 09:15:25 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <41c4e85d-2468-e23b-4270-0cc39c3c75d5@roeck-us.net>
-Date:   Mon, 29 Aug 2022 09:15:24 -0700
+        Mon, 29 Aug 2022 12:15:39 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58834D147;
+        Mon, 29 Aug 2022 09:15:36 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4MGbBt35PJz9spN;
+        Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id fo9r7bRubnDp; Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4MGbBt1d9bz9smN;
+        Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1FEB18B770;
+        Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id G8xiXSUm_EUb; Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id E17AD8B76E;
+        Mon, 29 Aug 2022 18:15:33 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 27TGFO24988571
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Mon, 29 Aug 2022 18:15:24 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 27TGFMP7988534;
+        Mon, 29 Aug 2022 18:15:22 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Keerthy <j-keerthy@ti.com>, Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
+        linux-doc@vger.kernel.org, x86@kernel.org
+Subject: [PATCH v1 0/8] gpio: Get rid of ARCH_NR_GPIOS (v1)
+Date:   Mon, 29 Aug 2022 18:15:02 +0200
+Message-Id: <cover.1661789204.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/2] watchdog/hpwdt: Include nmi.h only if
- CONFIG_HPWDT_NMI_DECODING
-Content-Language: en-US
-To:     Jerry Hoemann <jerry.hoemann@hpe.com>, wim@linux-watchdog.org
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220820202821.1263837-1-jerry.hoemann@hpe.com>
- <20220820202821.1263837-2-jerry.hoemann@hpe.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220820202821.1263837-2-jerry.hoemann@hpe.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1661789703; l=1865; s=20211009; h=from:subject:message-id; bh=Vl/sfiqqYCKPx5L5pTixiJLacXAAcuoC8yRZdP3eXxA=; b=9IH3swSm3id8KIsons/Q3yxValzSB+wJ/4C4y5L9EbH7Udj/av3v2DSHbVZID5OuRevIwV/lp66p WFgDODeFB04IIwVGsiAsAp4v5VACL5hz6QzPeEZcV1ZfsYRuYz/x
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/20/22 13:28, Jerry Hoemann wrote:
-> Fixes: d48b0e173715 ("x86, nmi, drivers: Fix nmi splitup build bug")
-> 
-> Arm64 does not support NMI and has no <asm/nmi.h>.
-> 
-> Include <asm/nmi.h> only if CONFIG_HPWDT_NMI_DECODING is defined to
-> avoid build failure on non-existent header file on Arm64.
-> 
-> Signed-off-by: Jerry Hoemann <jerry.hoemann@hpe.com>
+Since commit 14e85c0e69d5 ("gpio: remove gpio_descs global array")
+there is no limitation on the number of GPIOs that can be allocated
+in the system since the allocation is fully dynamic.
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+ARCH_NR_GPIOS is today only used in order to provide downwards
+gpiobase allocation from that value, while static allocation is
+performed upwards from 0. However that has the disadvantage of
+limiting the number of GPIOs that can be registered in the system.
 
-> ---
->   drivers/watchdog/hpwdt.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/watchdog/hpwdt.c b/drivers/watchdog/hpwdt.c
-> index a5006a58e0db..f79f932bca14 100644
-> --- a/drivers/watchdog/hpwdt.c
-> +++ b/drivers/watchdog/hpwdt.c
-> @@ -20,7 +20,9 @@
->   #include <linux/pci_ids.h>
->   #include <linux/types.h>
->   #include <linux/watchdog.h>
-> +#ifdef CONFIG_HPWDT_NMI_DECODING
->   #include <asm/nmi.h>
-> +#endif
->   #include <linux/crash_dump.h>
->   
->   #define HPWDT_VERSION			"2.0.4"
+To overcome this limitation without requiring each and every
+platform to provide its 'best-guess' maximum number, rework the
+allocation to allocate from 256 upwards, allowing approx 2 millions
+of GPIOs.
+
+In the meantime, add a warning for drivers how are still doing
+static allocation, so that in the future the static allocation gets
+removed completely and dynamic allocation can start at base 0.
+
+Christophe Leroy (8):
+  gpio: aggregator: Stop using ARCH_NR_GPIOS
+  gpio: davinci: Stop using ARCH_NR_GPIOS
+  gpiolib: Warn on drivers still using static gpiobase allocation
+  gpiolib: Get rid of ARCH_NR_GPIOS
+  Documentation: gpio: Remove text about ARCH_NR_GPIOS
+  x86: Remove CONFIG_ARCH_NR_GPIO
+  arm: Remove CONFIG_ARCH_NR_GPIO
+  arm64: Remove CONFIG_ARCH_NR_GPIO
+
+ Documentation/driver-api/gpio/legacy.rst |  5 ---
+ arch/arm/Kconfig                         | 21 ---------
+ arch/arm/include/asm/gpio.h              |  1 -
+ arch/arm64/Kconfig                       | 12 ------
+ arch/x86/Kconfig                         |  5 ---
+ drivers/gpio/gpio-aggregator.c           |  8 ++--
+ drivers/gpio/gpio-davinci.c              |  3 --
+ drivers/gpio/gpio-sta2x11.c              |  5 +--
+ drivers/gpio/gpiolib.c                   | 13 +++---
+ include/asm-generic/gpio.h               | 55 +++++++++---------------
+ 10 files changed, 36 insertions(+), 92 deletions(-)
+
+-- 
+2.37.1
 
