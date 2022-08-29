@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89709ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DAF6ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231372AbiH2LQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
+        id S231428AbiH2LQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231443AbiH2LNu (ORCPT
+        with ESMTP id S231450AbiH2LNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:13:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7EB6FA01;
-        Mon, 29 Aug 2022 04:09:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09535659D1;
+        Mon, 29 Aug 2022 04:09:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82BDEB80EFE;
-        Mon, 29 Aug 2022 11:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE0F7C433D6;
-        Mon, 29 Aug 2022 11:08:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AB05B80F96;
+        Mon, 29 Aug 2022 11:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C047BC433C1;
+        Mon, 29 Aug 2022 11:09:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771320;
-        bh=wFpjLfV9gBXncn09G3X6TX3DyE8mR+F2aG30Cofdy/s=;
+        s=korg; t=1661771374;
+        bh=t4Ral+eNtw1TmAL9Zj3bBoJmT5H+4wQP/GGzP5O2aOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qs3JKFSl+5I/jYO8lxPUPEZhWTLtA9KGSoKyeMWPyx3+CX2E8P2e1ZpzF+M2TQBTH
-         HMVMNdclqcKuxmljeRp382c/bycDrR2Fd/wELBHGDsuq/BVEN8Lb7R9didpaO5pXK1
-         x7ezXGzwjHASEwhseniNCMo4rcp1MXq7yUDKlIno=
+        b=KWkYV8j82XefMjlyyiyiUdw0LNjelcEmMqvIG3fFmyRRYGiqzntQ6m7TP2y1NIquO
+         ntUxxEmDEa/gRELFB1vQuZE9gyYa6TysmVluBPF1mdqRlq9ZJpi/mo0jDKzdMclKnP
+         Y6JMsyKNYtcsh5cDjWUpsAK56X32FIm43h5BQjOM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Hayes Wang <hayeswang@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/136] ionic: clear broken state on generation change
-Date:   Mon, 29 Aug 2022 12:59:18 +0200
-Message-Id: <20220829105808.400509844@linuxfoundation.org>
+Subject: [PATCH 5.19 024/158] r8152: fix the units of some registers for RTL8156A
+Date:   Mon, 29 Aug 2022 12:57:54 +0200
+Message-Id: <20220829105809.807331767@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shannon Nelson <snelson@pensando.io>
+From: Hayes Wang <hayeswang@realtek.com>
 
-[ Upstream commit 9cb9dadb8f45c67e4310e002c2f221b70312b293 ]
+[ Upstream commit 6dc4df12d741c0fe8f885778a43039e0619b9cd9 ]
 
-There is a case found in heavy testing where a link flap happens just
-before a firmware Recovery event and the driver gets stuck in the
-BROKEN state.  This comes from the driver getting interrupted by a FW
-generation change when coming back up from the link flap, and the call
-to ionic_start_queues() in ionic_link_status_check() fails.  This can be
-addressed by having the fw_up code clear the BROKEN bit if seen, rather
-than waiting for a user to manually force the interface down and then
-back up.
+The units of PLA_RX_FIFO_FULL and PLA_RX_FIFO_EMPTY are 16 bytes.
 
-Fixes: 9e8eaf8427b6 ("ionic: stop watchdog when in broken state")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 195aae321c82 ("r8152: support new chips")
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/usb/r8152.c | 17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index abfb5efc52b86..226867e65625e 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -3016,6 +3016,9 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 0f6efaabaa32b..46c7954d27629 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -6431,21 +6431,8 @@ static void r8156_fc_parameter(struct r8152 *tp)
+ 	u32 pause_on = tp->fc_pause_on ? tp->fc_pause_on : fc_pause_on_auto(tp);
+ 	u32 pause_off = tp->fc_pause_off ? tp->fc_pause_off : fc_pause_off_auto(tp);
  
- 	mutex_lock(&lif->queue_lock);
+-	switch (tp->version) {
+-	case RTL_VER_10:
+-	case RTL_VER_11:
+-		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_FULL, pause_on / 8);
+-		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_EMPTY, pause_off / 8);
+-		break;
+-	case RTL_VER_12:
+-	case RTL_VER_13:
+-	case RTL_VER_15:
+-		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_FULL, pause_on / 16);
+-		ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_EMPTY, pause_off / 16);
+-		break;
+-	default:
+-		break;
+-	}
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_FULL, pause_on / 16);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_EMPTY, pause_off / 16);
+ }
  
-+	if (test_and_clear_bit(IONIC_LIF_F_BROKEN, lif->state))
-+		dev_info(ionic->dev, "FW Up: clearing broken state\n");
-+
- 	err = ionic_qcqs_alloc(lif);
- 	if (err)
- 		goto err_unlock;
+ static void rtl8156_change_mtu(struct r8152 *tp)
 -- 
 2.35.1
 
