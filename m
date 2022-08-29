@@ -2,42 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34F92ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:06:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9431ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229938AbiH2LGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43544 "EHLO
+        id S230224AbiH2LHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230335AbiH2LGH (ORCPT
+        with ESMTP id S229609AbiH2LGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:06:07 -0400
+        Mon, 29 Aug 2022 07:06:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AFE6716A;
-        Mon, 29 Aug 2022 04:04:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2806B5FFD;
+        Mon, 29 Aug 2022 04:04:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1788B80EF1;
-        Mon, 29 Aug 2022 11:04:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CCC6C433C1;
-        Mon, 29 Aug 2022 11:04:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4604FB80F02;
+        Mon, 29 Aug 2022 11:04:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F53BC433C1;
+        Mon, 29 Aug 2022 11:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771069;
-        bh=AXe2rJGHH3gbINqIp92wwAZPzyNJqtalEMvyoHzqLPk=;
+        s=korg; t=1661771087;
+        bh=VN+iYaWb+w8MGsuSajTySD23U8Ko9kaM1QBtPJH+5+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SiZRQw2fJGQmhi/T+9YIVKv2gItFgjsowIbRR4kIM+KDp3Hn0QZMszSzjEuJqHXUH
-         FDVmBW0m/Iv8drd/kn64ClVR3IJx4Kxelk2lWHoB5RQuuISrAedGyIpnT4g6MAXmtT
-         rSovvYchUPwqx93hJ3j0byFmlusT/LDn1xw1ghr0=
+        b=sbgW4wCJPjH0fBqXM7pQ/7K1jylNtPXdXEv8toUk3yTfP2aHhSN1daUvSzXYI4Xju
+         KKn+n7Nu5yL/NUUfQ0oQ+o+tBszyx49d03OKwiABFuCqJ3mVr8PH9kRL4bgYGE3RwY
+         LApBnhAjHz2EZhWzdXN2Da5yGzlG0eSK+jqVdjaw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Peter Xu <peterx@redhat.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Michel Lespinasse <walken@google.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        "Thomas Hellstrm (Intel)" <thomas_os@shipmail.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Wei Yang <richard.weiyang@linux.alibaba.com>,
+        William Kucharski <william.kucharski@oracle.com>,
+        Yang Shi <yang.shi@linux.alibaba.com>,
+        yuleixzhang <yulei.kernel@gmail.com>, Zi Yan <ziy@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 16/86] NFS: Dont allocate nfs_fattr on the stack in __nfs42_ssc_open()
-Date:   Mon, 29 Aug 2022 12:58:42 +0200
-Message-Id: <20220829105757.186805285@linuxfoundation.org>
+Subject: [PATCH 5.10 19/86] mm/huge_memory.c: use helper function migration_entry_to_page()
+Date:   Mon, 29 Aug 2022 12:58:45 +0200
+Message-Id: <20220829105757.304795655@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
 References: <20220829105756.500128871@linuxfoundation.org>
@@ -49,62 +61,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-[ Upstream commit 156cd28562a4e8ca454d11b234d9f634a45d6390 ]
+[ Upstream commit a44f89dc6c5f8ba70240b81a570260d29d04bcb0 ]
 
-The preferred behaviour is always to allocate struct nfs_fattr from the
-slab.
+It's more recommended to use helper function migration_entry_to_page()
+to get the page via migration entry.  We can also enjoy the PageLocked()
+check there.
 
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Link: https://lkml.kernel.org/r/20210318122722.13135-7-linmiaohe@huawei.com
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Michel Lespinasse <walken@google.com>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Cc: Thomas Hellstrm (Intel) <thomas_os@shipmail.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Wei Yang <richard.weiyang@linux.alibaba.com>
+Cc: William Kucharski <william.kucharski@oracle.com>
+Cc: Yang Shi <yang.shi@linux.alibaba.com>
+Cc: yuleixzhang <yulei.kernel@gmail.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4file.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ mm/huge_memory.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
-index 9fdecd9090493..4928eaa0d4c02 100644
---- a/fs/nfs/nfs4file.c
-+++ b/fs/nfs/nfs4file.c
-@@ -321,7 +321,7 @@ static int read_name_gen = 1;
- static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
- 		struct nfs_fh *src_fh, nfs4_stateid *stateid)
- {
--	struct nfs_fattr fattr;
-+	struct nfs_fattr *fattr = nfs_alloc_fattr();
- 	struct file *filep, *res;
- 	struct nfs_server *server;
- 	struct inode *r_ino = NULL;
-@@ -332,9 +332,10 @@ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index 594368f6134f1..cb7b0aead7096 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -1691,7 +1691,7 @@ int zap_huge_pmd(struct mmu_gather *tlb, struct vm_area_struct *vma,
  
- 	server = NFS_SERVER(ss_mnt->mnt_root->d_inode);
+ 			VM_BUG_ON(!is_pmd_migration_entry(orig_pmd));
+ 			entry = pmd_to_swp_entry(orig_pmd);
+-			page = pfn_to_page(swp_offset(entry));
++			page = migration_entry_to_page(entry);
+ 			flush_needed = 0;
+ 		} else
+ 			WARN_ONCE(1, "Non present huge pmd without pmd migration enabled!");
+@@ -2110,7 +2110,7 @@ static void __split_huge_pmd_locked(struct vm_area_struct *vma, pmd_t *pmd,
+ 		swp_entry_t entry;
  
--	nfs_fattr_init(&fattr);
-+	if (!fattr)
-+		return ERR_PTR(-ENOMEM);
- 
--	status = nfs4_proc_getattr(server, src_fh, &fattr, NULL, NULL);
-+	status = nfs4_proc_getattr(server, src_fh, fattr, NULL, NULL);
- 	if (status < 0) {
- 		res = ERR_PTR(status);
- 		goto out;
-@@ -347,7 +348,7 @@ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
- 		goto out;
- 	snprintf(read_name, len, SSC_READ_NAME_BODY, read_name_gen++);
- 
--	r_ino = nfs_fhget(ss_mnt->mnt_root->d_inode->i_sb, src_fh, &fattr,
-+	r_ino = nfs_fhget(ss_mnt->mnt_root->d_inode->i_sb, src_fh, fattr,
- 			NULL);
- 	if (IS_ERR(r_ino)) {
- 		res = ERR_CAST(r_ino);
-@@ -392,6 +393,7 @@ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
- out_free_name:
- 	kfree(read_name);
- out:
-+	nfs_free_fattr(fattr);
- 	return res;
- out_stateowner:
- 	nfs4_put_state_owner(sp);
+ 		entry = pmd_to_swp_entry(old_pmd);
+-		page = pfn_to_page(swp_offset(entry));
++		page = migration_entry_to_page(entry);
+ 		write = is_write_migration_entry(entry);
+ 		young = false;
+ 		soft_dirty = pmd_swp_soft_dirty(old_pmd);
 -- 
 2.35.1
 
