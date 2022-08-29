@@ -2,97 +2,411 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B7EECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC60ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229941AbiH2MwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:52:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
+        id S229939AbiH2Mym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiH2Mv4 (ORCPT
+        with ESMTP id S229572AbiH2MyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:51:56 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 146B612A9C;
-        Mon, 29 Aug 2022 05:40:13 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id m2so7858886pls.4;
-        Mon, 29 Aug 2022 05:40:13 -0700 (PDT)
+        Mon, 29 Aug 2022 08:54:17 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6C88D3FE
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:43:32 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id bv25so3002653wrb.10
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:43:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=U4wTB7v20lr8R8vN/DK0R+bOA2Ehyif+zGIk0zOHfx0=;
-        b=mUW9a9WuxFwjzWd9ArvC0UAnAXe8WIK4jnMELe11pyHPPKuXyL1J0BD4HdYYhFfiiv
-         60ocE3VLbMEQ5FINK30pxWHac4NP/zeNzrHDJw+mfOPH+YXlD66fleA56iFTNEOZqATS
-         qQ78Ft48VWLOxBlkd3f+mwir9VNJ6cT1JDDYS6xu54ixjpHprwimnF52vKMrliY0tc/j
-         1bQQmr8oVWVhPff4l9wbmNsyeDZnbQzygjFW0rY10pZ4eZrJyVSa+ws/WgqbijQWe4jp
-         qZiz7NpZu1b9oB8OAmV7amCMReVX+DXuGTbNZUNMTs3RCEHsC9dxgv+t96hrec1V9+WB
-         jgTw==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:to:from:user-agent
+         :references:from:to:cc;
+        bh=NuDtPSZGsUB4/CSpCp0BYNq4Z61X61IoPrDP4sjDs8g=;
+        b=tVOpcOkvELJfESUge43zatRu60HyutEJwNjPUtTcK0b8tCXDTqoNHJzA+1GeV4GTAL
+         n2Yy22KIjn+ZL600oAvGIjSrYbnKF8r0GgofyQHExGN3EfCkWxgmRD15EzP+/uJRNWvl
+         hTiRvJvFDh+b4/TcaDF3QNmHPNSDMyGLa/mn+6okolljsh5ntht3lTYzZrr7kf399isW
+         8Ht4xRmPqcMZ6FUO0UMd2r1K4GF3bCG13akL+s8+PQWFsbX1gDEm79P9+nFgRpttaZjY
+         /ZLD4VD15lz0zukROxQF6NCkIgJXaQkQqO77sTESyfvICdWdsXDPelMjEQD0Q+z1S6ve
+         nauQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=U4wTB7v20lr8R8vN/DK0R+bOA2Ehyif+zGIk0zOHfx0=;
-        b=npYgZs/HA2DP/djaXdcrhJ0XeapLW+NdeOew5cX4NQIjscgUeqJoDBytCk6t5KdPJQ
-         hTvwkhahm0mvCsJtzRW6WTQRqtUdk40FNMvDHSJgRVv4DiVDhOgU4+KegK/fw/tOK9F0
-         rzaJRDtjGyoAmJI5Lrd1ky/QM4gK5bkHtJwqNJexd+Wm/vGvE6LUqjFucsH/UYBtZK4i
-         355cuVr6CKGr5QOV/YiMfbZXpMgPZ0TtOYCGfhi/zhsCpAO6TqCvPmkU4qhRcKMS/75w
-         TLqILNiVbVT8eEEeb8Hr6xhnY5HiOC1Fz/V39MLT7WGvHPOFbugY/88V5kbXLdbuWflS
-         WjRQ==
-X-Gm-Message-State: ACgBeo2o6ngQHIgLmOgcKNPIttGZWahYD9LCIeIEUkhHY+bgjUPGhtwf
-        zE6La8wISJ0ZyCy2D4A1M1+ClW+jvey68Q==
-X-Google-Smtp-Source: AA6agR62s5v7zx7N35JeijeC8JxoIsW/kNiBDiOhLdy9ERmBr/+5HYU7BCqEN6UQidMuu50r9Uu9mA==
-X-Received: by 2002:a17:902:9a41:b0:171:389a:554f with SMTP id x1-20020a1709029a4100b00171389a554fmr16202440plv.122.1661776812126;
-        Mon, 29 Aug 2022 05:40:12 -0700 (PDT)
-Received: from Negi ([207.151.52.7])
-        by smtp.gmail.com with ESMTPSA id n2-20020a170902e54200b0016d1bee1519sm7491501plf.102.2022.08.29.05.40.11
+        h=mime-version:message-id:in-reply-to:date:subject:to:from:user-agent
+         :references:x-gm-message-state:from:to:cc;
+        bh=NuDtPSZGsUB4/CSpCp0BYNq4Z61X61IoPrDP4sjDs8g=;
+        b=jYj3V5TcPA5gBw5PNOW+QMgruLVbi9y8CNgNYKKNSQYN5dmu8jcHicz0/90cJhxGaa
+         KpnmPiofj5jDYsj400t3L1eUL4TW7GsLOQGiw4OY1R9g/owaXaS2CO5bfgFpg6JCdE3D
+         8/IcVDISOMOBsZ4fh2VRmVMRIMRbJ6/2fQRZYNESyF6At+JDTr084WGIgzE/oUfb6/Mt
+         eFy+v/wf4g+8d+nfVbElHgjsmbKohpjWSRk7e97+P7OwpgDs0kcAATlnrIPCZX0tK0Lj
+         S2O6UsiN7HNU/qbUP3qFvrsVM3OV/6+8xV0kJPGsl4vw1gAANuGmFS1bivKwiGt8fbB6
+         QHgw==
+X-Gm-Message-State: ACgBeo3aZfeh9Zb0bT54dxJas0UK41tn5cVta96+RfwjpF2bx8K6eo1Q
+        qnvRMKOTvmB3GI15htSxR7wU4Q==
+X-Google-Smtp-Source: AA6agR4g54C4i+JaM6ngjD20lfOuvr3Z3k/pbaJDJw1GAipj5i9NLSpSGO14T5zArba6MMO/CWoydw==
+X-Received: by 2002:adf:ce08:0:b0:226:d1ba:3e23 with SMTP id p8-20020adfce08000000b00226d1ba3e23mr5679234wrn.374.1661777010387;
+        Mon, 29 Aug 2022 05:43:30 -0700 (PDT)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id v5-20020a5d59c5000000b002257fd37877sm7320643wry.6.2022.08.29.05.43.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 05:40:11 -0700 (PDT)
-From:   Soumya Negi <soumya.negi97@gmail.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Cc:     Soumya Negi <soumya.negi97@gmail.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Input: Check sanity of endpoint in pegasus_open()
-Date:   Mon, 29 Aug 2022 05:39:59 -0700
-Message-Id: <20220829123959.21298-1-soumya.negi97@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 29 Aug 2022 05:43:29 -0700 (PDT)
+References: <20220805085716.5635-1-yu.tu@amlogic.com>
+ <20220805085716.5635-7-yu.tu@amlogic.com>
+ <1jedxlzxyz.fsf@starbuckisacylon.baylibre.com>
+ <8f40cb49-fdc5-20cd-343b-8ce50e5d6d97@amlogic.com>
+User-agent: mu4e 1.8.7; emacs 28.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Yu Tu <yu.tu@amlogic.com>, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH V3 6/6] clk: meson: s4: add s4 SoC peripheral clock
+ controller driver
+Date:   Mon, 29 Aug 2022 14:19:15 +0200
+In-reply-to: <8f40cb49-fdc5-20cd-343b-8ce50e5d6d97@amlogic.com>
+Message-ID: <1j7d2rte33.fsf@starbuckisacylon.baylibre.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix WARNING in pegasus_open/usb_submit_urb
-Syzbot bug: https://syzkaller.appspot.com/bug?id=bbc107584dcf3262253ce93183e51f3612aaeb13
 
-Add sanity check of endpoint for Pegasus URB in pegasus_open() so that
-transfer requests for bogus URBs are not submitted. If the URB is bogus
-pegasus_open() will fail.
+On Tue 16 Aug 2022 at 20:00, Yu Tu <yu.tu@amlogic.com> wrote:
 
-Reported-by: syzbot+04ee0cb4caccaed12d78@syzkaller.appspotmail.com
-Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
----
- drivers/input/tablet/pegasus_notetaker.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Please trim your replies 
 
-diff --git a/drivers/input/tablet/pegasus_notetaker.c b/drivers/input/tablet/pegasus_notetaker.c
-index c608ac505d1b..5e47882ee4c0 100644
---- a/drivers/input/tablet/pegasus_notetaker.c
-+++ b/drivers/input/tablet/pegasus_notetaker.c
-@@ -225,6 +225,15 @@ static int pegasus_open(struct input_dev *dev)
- 
- 	mutex_lock(&pegasus->pm_mutex);
- 	pegasus->irq->dev = pegasus->usbdev;
-+
-+	/* Sanity check of endpoint in Pegasus URB */
-+	error = usb_urb_ep_type_check(pegasus->irq);
-+	if (error) {
-+		dev_err(&pegasus->usbdev->dev,
-+			"URB failed endpoint sanity check: %d\n", error);
-+		goto err_autopm_put;
-+	}
-+
- 	if (usb_submit_urb(pegasus->irq, GFP_KERNEL)) {
- 		error = -EIO;
- 		goto err_autopm_put;
--- 
-2.17.1
+>>> diff --git a/drivers/clk/meson/Kconfig b/drivers/clk/meson/Kconfig
+>>> index f4244edc7b28..ec6beb9284d3 100644
+>>> --- a/drivers/clk/meson/Kconfig
+>>> +++ b/drivers/clk/meson/Kconfig
+>>> @@ -127,4 +127,17 @@ config COMMON_CLK_S4_PLL
+>>>   	  Support for the pll clock controller on Amlogic S805X2 and S905Y4 devices,
+>>>   	  aka s4. Amlogic S805X2 and S905Y4 devices include AQ222 and AQ229.
+>>>   	  Say Y if you want peripherals and CPU frequency scaling to work.
+>>> +
+>>> +config COMMON_CLK_S4
+>>> +	tristate "S4 SoC Peripherals clock controllers support"
+>>> +	depends on ARM64
+>>> +	default y
+>>> +	select COMMON_CLK_MESON_REGMAP
+>>> +	select COMMON_CLK_MESON_DUALDIV
+>>> +	select COMMON_CLK_MESON_VID_PLL_DIV
+>>> +	select COMMON_CLK_S4_PLL
+>> Do you really this ? your driver does not even include the related
+>> header.
+> If the PLL driver is not turned on in DTS, will it not cause an error?
+>>
 
+I don't get the question.
+Kconfig list compile deps. S4 PLL is not a compile dep of the peripheral
+controller.
+
+If you really want to, you may use 'imply'.
+>> 
+>>> +static const struct clk_parent_data sys_ab_clk_parent_data[] = {
+>>> +	{ .fw_name = "xtal" },
+>>> +	{ .fw_name = "fclk_div2" },
+>>> +	{ .fw_name = "fclk_div3" },
+>>> +	{ .fw_name = "fclk_div4" },
+>>> +	{ .fw_name = "fclk_div5" },
+>>> +	{ .fw_name = "fclk_div7" },
+>>> +	{ .hw = &s4_rtc_clk.hw }
+>>> +};
+>>> +
+>>> +static struct clk_regmap s4_sysclk_b_sel = {
+>>> +	.data = &(struct clk_regmap_mux_data){
+>>> +		.offset = CLKCTRL_SYS_CLK_CTRL0,
+>>> +		.mask = 0x7,
+>>> +		.shift = 26,
+>>> +		.table = mux_table_sys_ab_clk_sel,
+>>> +	},
+>>> +	.hw.init = &(struct clk_init_data){
+>>> +		.name = "sysclk_b_sel",
+>>> +		.ops = &clk_regmap_mux_ro_ops,
+>> Why is this using the RO ops ?
+> Sys_clk is initialized during the Uboot phase and is fixed at
+> 166.666MHz. So I'm going to change it to ro.
+
+That really much depends on the bootloader and is a pretty weak design.
+The bootloader deps should be kept as minimal as possible.
+
+I see no reason for RO. 
+
+You may cut rate propagation on the user if you need to and continue to
+whatever you want in your u-boot
+
+>> 
+>>> +		.parent_data = sys_ab_clk_parent_data,
+>>> +		.num_parents = ARRAY_SIZE(sys_ab_clk_parent_data),
+>>> +	},
+>>> +};
+>>> +
+>>> +static struct clk_regmap s4_sysclk_b_div = {
+>>> +	.data = &(struct clk_regmap_div_data){
+>>> +		.offset = CLKCTRL_SYS_CLK_CTRL0,
+>>> +		.shift = 16,
+>>> +		.width = 10,
+>>> +	},
+>>> +	.hw.init = &(struct clk_init_data){
+>>> +		.name = "sysclk_b_div",
+>>> +		.ops = &clk_regmap_divider_ro_ops,
+>> Same here and for the rest of the sys part
+> Same above.
+
+We can play that game for a while
+
+>>> +
+>>> +/* Video Clocks */
+>>> +static struct clk_regmap s4_vid_pll_div = {
+>>> +	.data = &(struct meson_vid_pll_div_data){
+>>> +		.val = {
+>>> +			.reg_off = CLKCTRL_VID_PLL_CLK_DIV,
+>>> +			.shift   = 0,
+>>> +			.width   = 15,
+>>> +		},
+>>> +		.sel = {
+>>> +			.reg_off = CLKCTRL_VID_PLL_CLK_DIV,
+>>> +			.shift   = 16,
+>>> +			.width   = 2,
+>>> +		},
+>>> +	},
+>>> +	.hw.init = &(struct clk_init_data) {
+>>> +		.name = "vid_pll_div",
+>>> +		.ops = &meson_vid_pll_div_ro_ops,
+>> Why RO ? applies to the rest of the video part.
+> Because vid_pll_div parent is HDMI_PLL, and HDMI_PLL is a fixed
+> frequency. Flags is CLK_SET_RATE_PARENT. So we use RO.
+
+If the HDMI_PLL is fixed somehow, that is not reason for this clock to
+be RO
+
+> Can I remove RO and use CLK_SET_RATE_NO_REPARENT instead, which one do you
+> think is more reasonable?
+
+Neither. CLK_SET_RATE_NO_REPARENT makes no sense, it is not mux
+
+>
+>> 
+>>> +		.parent_data = (const struct clk_parent_data []) {
+>>> +			{ .fw_name = "hdmi_pll", }
+>>> +		},
+>>> +		.num_parents = 1,
+>>> +		.flags = CLK_SET_RATE_PARENT,
+>>> +	},
+>>> +};
+>>> +
+>>> +static struct clk_regmap s4_vid_pll_sel = {
+>>> +	.data = &(struct clk_regmap_mux_data){
+>>> +		.offset = CLKCTRL_VID_PLL_CLK_DIV,
+>>> +		.mask = 0x1,
+>>> +		.shift = 18,
+>>> +	},
+>>> +	.hw.init = &(struct clk_init_data){
+>>> +		.name = "vid_pll_sel",
+>>> +		.ops = &clk_regmap_mux_ops,
+>>> +		/*
+>>> +		 * bit 18 selects from 2 possible parents:
+>>> +		 * vid_pll_div or hdmi_pll
+>>> +		 */
+>>> +		.parent_data = (const struct clk_parent_data []) {
+>>> +			{ .hw = &s4_vid_pll_div.hw },
+>>> +			{ .fw_name = "hdmi_pll", }
+>>> +		},
+>>> +		.num_parents = 2,
+>>> +		.flags = CLK_SET_RATE_NO_REPARENT,
+>> Why ? are you planning to DT assigned clocks to statically set this ?
+> Because vid_pll_sel one parent is HDMI_PLL, and HDMI_PLL is a fixed
+> frequency. To prevent modification, use CLK_SET_RATE_NO_REPARENT.
+
+Again, this makes no sense.
+
+>> 
+>>> +	},
+>>> +};
+>>> +
+>>> +static struct clk_regmap s4_vid_pll = {
+>>> +	.data = &(struct clk_regmap_gate_data){
+>>> +		.offset = CLKCTRL_VID_PLL_CLK_DIV,
+>>> +		.bit_idx = 19,
+>>> +	},
+>>> +	.hw.init = &(struct clk_init_data) {
+>>> +		.name = "vid_pll",
+>>> +		.ops = &clk_regmap_gate_ops,
+>>> +		.parent_hws = (const struct clk_hw *[]) {
+>>> +			&s4_vid_pll_sel.hw
+>>> +		},
+>>> +		.num_parents = 1,
+>>> +		.flags = CLK_SET_RATE_PARENT,
+>>> +	},
+>>> +};
+>>> +
+>>> +static const struct clk_parent_data s4_vclk_parent_data[] = {
+>>> +	{ .hw = &s4_vid_pll.hw },
+>>> +	{ .fw_name = "gp0_pll", },
+>>> +	{ .fw_name = "hifi_pll", },
+>>> +	{ .fw_name = "mpll1", },
+>>> +	{ .fw_name = "fclk_div3", },
+>>> +	{ .fw_name = "fclk_div4", },
+>>> +	{ .fw_name = "fclk_div5", },
+>>> +	{ .fw_name = "fclk_div7", },
+>>> +};
+>>> +
+>>> +static struct clk_regmap s4_vclk_sel = {
+>>> +	.data = &(struct clk_regmap_mux_data){
+>>> +		.offset = CLKCTRL_VID_CLK_CTRL,
+>>> +		.mask = 0x7,
+>>> +		.shift = 16,
+>>> +	},
+>>> +	.hw.init = &(struct clk_init_data){
+>>> +		.name = "vclk_sel",
+>>> +		.ops = &clk_regmap_mux_ops,
+>>> +		.parent_data = s4_vclk_parent_data,
+>>> +		.num_parents = ARRAY_SIZE(s4_vclk_parent_data),
+>>> +		.flags = CLK_SET_RATE_NO_REPARENT,
+>> Same
+> Since fclk_div* is a fixed frequency value, mplL1 and hifi_pll and gp0_pll
+> are used by other specialized modules, vid_pll has CLK_SET_RATE_PARENT. The
+> parent of vid_pll is that vid_pll_sel uses CLK_SET_RATE_NO_REPARENT.
+
+Still not good.
+
+You don't have CLK_SET_RATE, propagation is stopped and parent clock
+will not changed. The best parent will be picked but not changed.
+
+If one parent MUST NOT be picked, just remove it from the list and add a
+explaining why
+
+[...]
+
+>>> +
+>>> +static struct clk_regmap s4_ts_clk_div = {
+>>> +	.data = &(struct clk_regmap_div_data){
+>>> +		.offset = CLKCTRL_TS_CLK_CTRL,
+>>> +		.shift = 0,
+>>> +		.width = 8,
+>>> +	},
+>>> +	.hw.init = &(struct clk_init_data){
+>>> +		.name = "ts_clk_div",
+>>> +		.ops = &clk_regmap_divider_ops,
+>>> +		.parent_data = &(const struct clk_parent_data) {
+>>> +			.fw_name = "xtal",
+>>> +		},
+>>> +		.num_parents = 1,
+>> propagation stopped ?
+> Its parent is xtal, so I should use CLK_SET_RATE_NO_REPARENT.
+
+Still no. You seem to have problem with the meaning of
+CLK_SET_RATE_NO_REPARENT.
+
+* CLK_SET_RATE_NO_REPARENT: means the parent will no be changed, even if
+  selecting another parent would result in a closer rate to the
+  request. It makes sense only if the clock has several parents
+
+* CLK_SET_RATE_PARENT: means rate change may propagate the parent,
+  meaning the rate of the parent may change if it help the child achieve
+  a closer rate to the request
+
+>> 
+>>> +	},
+>>> +};
+>>> +
+>>> +static struct clk_regmap s4_ts_clk_gate = {
+>>> +	.data = &(struct clk_regmap_gate_data){
+>>> +		.offset = CLKCTRL_TS_CLK_CTRL,
+>>> +		.bit_idx = 8,
+>>> +	},
+>>> +	.hw.init = &(struct clk_init_data){
+>>> +		.name = "ts_clk",
+>>> +		.ops = &clk_regmap_gate_ops,
+>>> +		.parent_hws = (const struct clk_hw *[]) {
+>>> +			&s4_ts_clk_div.hw
+>>> +		},
+>>> +		.num_parents = 1,
+>>> +	},
+>> propagation stopped ?
+> I will add CLK_SET_RATE_PARENT.
+
+[...]
+
+>>> +/* EMMC/NAND clock */
+>>> +
+>>> +static const struct clk_parent_data s4_sd_emmc_clk0_parent_data[] = {
+>>> +	{ .fw_name = "xtal", },
+>>> +	{ .fw_name = "fclk_div2", },
+>>> +	{ .fw_name = "fclk_div3", },
+>>> +	{ .fw_name = "hifi_pll", },
+>>> +	{ .fw_name = "fclk_div2p5", },
+>>> +	/*
+>>> +	 * Following these parent clocks, we should also have had mpll2, mpll3
+>>> +	 * and gp0_pll but these clocks are too precious to be used here. All
+>>> +	 * the necessary rates for MMC and NAND operation can be acheived using
+>>> +	 * hifi_pll or fclk_div clocks
+>>> +	 */
+>> You don't want to list mplls but hifi_pll is fine ? seems dangerous.
+> hifi pll is for EMMC and NAND on this SoC.
+
+That deserve a better explanation.
+Why can't it use fdiv2 and xtal like the previous SoCs ?
+
+Which PLLs are you using for Audio then ?
+Typical operation on these SoCs usually require 3 PLLs to acheive all rates
+
+>>
+
+
+>>> +/*
+>>> + * gen clk is designed for debug/monitor some internal clock quality. Some of the
+>>> + * corresponding clock sources are not described in the clock tree, so they are skipped.
+>>> + */
+>> Still feels a bit light, don't you think ? Among all the clocks, can't
+>> you add a bit more parents here ? It would certainly help debug down the road
+> [16:12]	is gen_clk source select.All is:
+> 0: cts_oscin_clk
+> 1:cts_rtc_clk
+> 2:sys_pll_div16 (internal clock)
+> 3:ddr_pll_div32  (internal clock)
+> 4: vid_pll
+> 5: gp0_pll
+> 7: hifi_pll
+> 10:adc_dpll_clk_b3 (internal clock for debug)
+> 11:adc_dpll_intclk (internal clock for debug)
+> 12:clk_msr_src(select from all internal clock except PLLs);
+> 16: no used
+> 17: sys_cpu_clk_div16 (internal clock)
+> 19: fclk_div2
+> 20: fclk_div2p5
+> 21: fclk_div3
+> 22: fclk_div4
+> 23: fclk_div5
+> 24: fclk_div7
+> 25: mpll0
+> 26: mpll1
+> 27: mpll2
+> 28: mpll3
+> So i only added the clocks that will actually be used, and some debugging
+> clock peripherals will not be used.
+
+you may at least add vid_pll
+
+>> 
+>>> +static u32 s4_gen_clk_mux_table[] = { 0, 5, 7, 19, 21, 22,
+>>> +				      23, 24, 25, 26, 27, 28 };
+>>> +static const struct clk_parent_data s4_gen_clk_parent_data[] = {
+>>> +	{ .fw_name = "xtal", },
+>>> +	{ .fw_name = "gp0_pll", },
+>>> +	{ .fw_name = "hifi_pll", },
+>>> +	{ .fw_name = "fclk_div2", },
+>>> +	{ .fw_name = "fclk_div3", },
+>>> +	{ .fw_name = "fclk_div4", },
+>>> +	{ .fw_name = "fclk_div5", },
+>>> +	{ .fw_name = "fclk_div7", },
+>>> +	{ .fw_name = "mpll0", },
+>>> +	{ .fw_name = "mpll1", },
+>>> +	{ .fw_name = "mpll2", },
+>>> +	{ .fw_name = "mpll3", },
+>>> +};
