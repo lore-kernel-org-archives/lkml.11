@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A425ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 489F6ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:37:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232607AbiH2LhI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:37:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
+        id S230128AbiH2LhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:37:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232525AbiH2LgR (ORCPT
+        with ESMTP id S229605AbiH2LgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:36:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09747E81B;
+        Mon, 29 Aug 2022 07:36:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18CC7E81D;
         Mon, 29 Aug 2022 04:20:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F7EBB80EC8;
-        Mon, 29 Aug 2022 11:03:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA87CC433C1;
-        Mon, 29 Aug 2022 11:03:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9C4D611DA;
+        Mon, 29 Aug 2022 11:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AADA3C433C1;
+        Mon, 29 Aug 2022 11:19:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771014;
-        bh=pIo/YRpdwwv55u3HpjvR9WT61eUaluvK+zJdgyrdLXA=;
+        s=korg; t=1661771946;
+        bh=GNnnKDLaV1EeyAGca63gKpCDTI3RHXneSwbgyR9HMPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qjaIsHCXNOhQ6T0czTPjHWAhQtuIop4d97jggF3udycasSb2esuMe8AQtUxMDEmUV
-         7sGTAPl3bGLG3lp2j0FJjE+NfDzigG5U60tQuSyThs0SPBk2RVIxC1I+Gb6zt45NGg
-         MzXLqgc+UhGv5UWQIYxI/AaprDFb3KG/dvtIvQrw=
+        b=HiiVbT6ksRnZ7yam+HqiXM0mzY34w7ykbldSOTdm09AJgetVMKPOfTMq3nLXkXqNg
+         joCHPRkC82JycyFC9KA5jSYu4QaPIOoi2nLDBS99NygRO+69HSd3w3hvzZKXNcdN4k
+         dE8D8vXCwjzKGg8Z/a56jK55K0XGDOu4MQ7IQvJI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 048/136] net: ipa: dont assume SMEM is page-aligned
-Date:   Mon, 29 Aug 2022 12:58:35 +0200
-Message-Id: <20220829105806.593337230@linuxfoundation.org>
+        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.19 148/158] arm64/signal: Flush FPSIMD register state when disabling streaming mode
+Date:   Mon, 29 Aug 2022 12:59:58 +0200
+Message-Id: <20220829105815.304300751@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit b8d4380365c515d8e0351f2f46d371738dd19be1 ]
+commit ea64baacbc36a0d552aec0d87107182f40211131 upstream.
 
-In ipa_smem_init(), a Qualcomm SMEM region is allocated (if needed)
-and then its virtual address is fetched using qcom_smem_get().  The
-physical address associated with that region is also fetched.
+When handling a signal delivered to a context with streaming mode enabled
+we will disable streaming mode for the signal handler, when doing so we
+should also flush the saved FPSIMD register state like exiting streaming
+mode in the hardware would do so that if that state is reloaded we get the
+same behaviour. Without this we will reload whatever the last FPSIMD state
+that was saved for the task was.
 
-The physical address is adjusted so that it is page-aligned, and an
-attempt is made to update the size of the region to compensate for
-any non-zero adjustment.
-
-But that adjustment isn't done properly.  The physical address is
-aligned twice, and as a result the size is never actually adjusted.
-
-Fix this by *not* aligning the "addr" local variable, and instead
-making the "phys" local variable be the adjusted "addr" value.
-
-Fixes: a0036bb413d5b ("net: ipa: define SMEM memory region for IPA")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Link: https://lore.kernel.org/r/20220818134206.567618-1-elder@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 40a8e87bb328 ("arm64/sme: Disable ZA and streaming mode when handling signals")
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/20220817182324.638214-3-broonie@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_mem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/kernel/signal.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-index 4337b0920d3d7..cad0798985a13 100644
---- a/drivers/net/ipa/ipa_mem.c
-+++ b/drivers/net/ipa/ipa_mem.c
-@@ -570,7 +570,7 @@ static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
- 	}
+--- a/arch/arm64/kernel/signal.c
++++ b/arch/arm64/kernel/signal.c
+@@ -922,6 +922,16 @@ static void setup_return(struct pt_regs
  
- 	/* Align the address down and the size up to a page boundary */
--	addr = qcom_smem_virt_to_phys(virt) & PAGE_MASK;
-+	addr = qcom_smem_virt_to_phys(virt);
- 	phys = addr & PAGE_MASK;
- 	size = PAGE_ALIGN(size + addr - phys);
- 	iova = phys;	/* We just want a direct mapping */
--- 
-2.35.1
-
+ 	/* Signal handlers are invoked with ZA and streaming mode disabled */
+ 	if (system_supports_sme()) {
++		/*
++		 * If we were in streaming mode the saved register
++		 * state was SVE but we will exit SM and use the
++		 * FPSIMD register state - flush the saved FPSIMD
++		 * register state in case it gets loaded.
++		 */
++		if (current->thread.svcr & SVCR_SM_MASK)
++			memset(&current->thread.uw.fpsimd_state, 0,
++			       sizeof(current->thread.uw.fpsimd_state));
++
+ 		current->thread.svcr &= ~(SVCR_ZA_MASK |
+ 					  SVCR_SM_MASK);
+ 		sme_smstop();
 
 
