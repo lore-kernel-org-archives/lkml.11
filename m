@@ -2,153 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0035FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 06:53:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C99AEECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 06:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229597AbiH2GxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 02:53:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
+        id S229618AbiH2Gx4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 02:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiH2GxJ (ORCPT
+        with ESMTP id S229459AbiH2Gxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 02:53:09 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E21541D30;
-        Sun, 28 Aug 2022 23:53:08 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id f4so6868235pgc.12;
-        Sun, 28 Aug 2022 23:53:08 -0700 (PDT)
+        Mon, 29 Aug 2022 02:53:54 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4215C422D8
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 23:53:53 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id p18so7073829plr.8
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 23:53:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=NIKx4BlW3poTb1c1nuidDiosjytUPN6DWa0m2PltNEo=;
-        b=QhfKP+iwo5KUARlBf7/r/Nh9jGn/1pOCGSMl1i6kY9F03IYxF1BOHQojLWStKplsx8
-         lwT1q62fDRSrsLoxsKpVHHQ067165VLgCNESmAumZh52aWUpkNWL6kq1F5p3XFEUG9pd
-         p9uk1ix8Gyi7gxynHeEdkaVLqqBLUE7Yt/uWWOJz+BXCj+tz5TBnqmrtJpuhHWgnIeZ0
-         BZDp0owBN/5bnfukACZ+4z+CWzAROUDwmUOU8HsZHn11PZg5PVC6KAci0zAylin69WWR
-         4qbSmZ0MQrjwbNucHeGZQOEHVHpWkQUfZPclYcNKGOEpzloZAV5LUH/F3OBsoYL2HV8l
-         7qsw==
+        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=oNF3DLPEKA26Di+mpF1fWdN9sKEfroJeBJj0DtHKDGY=;
+        b=dkqetvSqnaceCbhc1F0YyhJTZ4pds6WUrC6W87UpV7KTJ0hI4mBsTa1gfvooDAZPiZ
+         clU+xYbSMQdPA21yWdd7/izK/QQ9qQIBuB5uhoT3xPBP9bCGb0Sz6L9hcuJGtzjT+YtW
+         qPzqr67f4an9pfC5Oy+jHh79ZuSaTs6DTWC1JfF31K/xXr5Pj0OZjxXNkQCM1LaAKFyV
+         cgCl6F1Ky7esI5WJvet0wby4O9zDOhFo7pzD5HxbW03nqY2DMyZt65FxnOZa4X0kEDfm
+         19t7wYB8F4KLyRz5UN175PivAb1J5640k8lce3i7RSk5g8qCKIc1fuyAY15cW5Na83p0
+         clZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=NIKx4BlW3poTb1c1nuidDiosjytUPN6DWa0m2PltNEo=;
-        b=xcGPyKUWiO637prqkZeBAAHU+uEHd91QdM6T/UR1ryBY1yHfS1EO3yi1f/uaLQ1lda
-         kHSPFFL2tDywLe3uemOq6V0pt2x7syU2l1DvvI1sYNWZ+vrG7d7BJG5fv403yZJRRSJw
-         X+uUO2S5QyKLZREwm27dWoq7ThxCVyEk5nP40tKLTgp0kft7coz3tcvPL43DKfpn7A4D
-         /i72gLLj/XYcVRiD9ter2S9u675DE7OEVWhc4yvoJh2TcmrC8ctQb4B/J5SeK9jcspf7
-         dH229YmquInjK3Uh8CryGgT92VQfOqcmcQnsuJU6SRzmfyfcvsulquO8i4fv2tSCwz46
-         Sd8w==
-X-Gm-Message-State: ACgBeo0NUK8DnKarEP8zb6ToVdeXcT0HUbZi5XKcUk6lI/s7mcC3h+0L
-        OCw7I59zgaHTUEHo+fc0qCSkkxdVfqspVA==
-X-Google-Smtp-Source: AA6agR5wz6yGGgQirk7c7Z3zvxorsOjoG00036mXjmBX/bKFHcDaf6ZZnVkpmoWmaquIEax6whalAw==
-X-Received: by 2002:a65:6bc4:0:b0:3c2:2f7c:cc74 with SMTP id e4-20020a656bc4000000b003c22f7ccc74mr12625103pgw.307.1661755988083;
-        Sun, 28 Aug 2022 23:53:08 -0700 (PDT)
-Received: from localhost.localdomain ([103.151.209.218])
-        by smtp.gmail.com with ESMTPSA id z15-20020a170902cccf00b0016c0eb202a5sm6574242ple.225.2022.08.28.23.53.04
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=oNF3DLPEKA26Di+mpF1fWdN9sKEfroJeBJj0DtHKDGY=;
+        b=XnuQlhJpUH2IhdPFP2q516zkFWECMeLxlPp1qFRc9cYnP7hn7rJ/Melhmbf7mXZH6z
+         18eznHcHqnl5+bs0DsDI6PiGCzGrWYVy/d2buUZRhsFzBtlXjqC4Wy1rLdHU6cW8FxVT
+         ng/aQJoPCDUGalGugKdd3SCDYdtCd7UNfZztp3zK3ei5zA2NRQ2L1ZBVCD2mJ59lZXlw
+         SrK83p4N9QmDxyvBDGw4SZweYTkzwEjJzg9ti3dsnq7X8HyUU9u12c8fizasyEINr166
+         uo2MU3pUpvhFembTSUdKeyUXUYA1KN0f9pTzRcjM49XdfPwLInEK0FmlINo7pYhjMJi9
+         Fj5Q==
+X-Gm-Message-State: ACgBeo1DFqlzLS62oq8T25yO5cBHXhWfcUJn3JINRy8fa4csfYbuqWXy
+        LIxn8EYpRwxYxE7UxIj6BDS4RA==
+X-Google-Smtp-Source: AA6agR4EYLnKQyPXSeugxtSppIBJwCo/YTsNTMCQBiXve4UMYXufSVevVA8IRSIfdhYj71sFJx2XHg==
+X-Received: by 2002:a17:90b:1b49:b0:1fd:dccc:91f7 with SMTP id nv9-20020a17090b1b4900b001fddccc91f7mr1922381pjb.200.1661756032840;
+        Sun, 28 Aug 2022 23:53:52 -0700 (PDT)
+Received: from archl-hc1b.. ([103.51.72.9])
+        by smtp.gmail.com with ESMTPSA id k3-20020aa79d03000000b00537d4a3aec9sm5687314pfp.104.2022.08.28.23.53.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 23:53:07 -0700 (PDT)
-From:   Akhil Raj <lf32.dev@gmail.com>
-To:     corbet@lwn.net, skhan@linuxfoundation.org
-Cc:     Akhil Raj <lf32.dev@gmail.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Delete duplicate words from kernel docs
-Date:   Mon, 29 Aug 2022 12:22:39 +0530
-Message-Id: <20220829065239.4531-1-lf32.dev@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Sun, 28 Aug 2022 23:53:52 -0700 (PDT)
+From:   Anand Moon <anand@edgeble.ai>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        David Wu <david.wu@rock-chips.com>
+Cc:     Jagan Teki <jagan@edgeble.ai>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: net: rockchip-dwmac: add rv1126 compatible string
+Date:   Mon, 29 Aug 2022 06:50:41 +0000
+Message-Id: <20220829065044.1736-1-anand@edgeble.ai>
+X-Mailer: git-send-email 2.37.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have deleted duplicate words like
+Add compatible string for RV1126 gmac, and constrain it to
+be compatible with Synopsys dwmac 4.20a.
 
-to, guest, trace, when, we
-
-Signed-off-by: Akhil Raj <lf32.dev@gmail.com>
+Signed-off-by: Jagan Teki <jagan@edgeble.ai>
+Signed-off-by: Anand Moon <anand@edgeble.ai>
 ---
- Documentation/RCU/checklist.rst         | 2 +-
- Documentation/RCU/lockdep.rst           | 2 +-
- Documentation/bpf/instruction-set.rst   | 2 +-
- Documentation/trace/histogram.rst       | 2 +-
- Documentation/trace/timerlat-tracer.rst | 2 +-
- Documentation/virt/kvm/x86/mmu.rst      | 2 +-
- 6 files changed, 6 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/net/rockchip-dwmac.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/RCU/checklist.rst b/Documentation/RCU/checklist.rst
-index 42cc5d891bd2..7b1c85a16dc3 100644
---- a/Documentation/RCU/checklist.rst
-+++ b/Documentation/RCU/checklist.rst
-@@ -477,6 +477,6 @@ over a rather long period of time, but improvements are always welcome!
- 	So if you need to wait for both an RCU grace period and for
- 	all pre-existing call_rcu() callbacks, you will need to execute
- 	both rcu_barrier() and synchronize_rcu(), if necessary, using
--	something like workqueues to to execute them concurrently.
-+	something like workqueues to execute them concurrently.
+diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
+index 083623c8d718..346e248a6ba5 100644
+--- a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
++++ b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
+@@ -26,6 +26,7 @@ select:
+           - rockchip,rk3399-gmac
+           - rockchip,rk3568-gmac
+           - rockchip,rv1108-gmac
++          - rockchip,rv1126-gmac
+   required:
+     - compatible
  
- 	See rcubarrier.rst for more information.
-diff --git a/Documentation/RCU/lockdep.rst b/Documentation/RCU/lockdep.rst
-index cc860a0c296b..a94f55991a71 100644
---- a/Documentation/RCU/lockdep.rst
-+++ b/Documentation/RCU/lockdep.rst
-@@ -61,7 +61,7 @@ checking of rcu_dereference() primitives:
- 	rcu_access_pointer(p):
- 		Return the value of the pointer and omit all barriers,
- 		but retain the compiler constraints that prevent duplicating
--		or coalescsing.  This is useful when when testing the
-+		or coalescsing.  This is useful when testing the
- 		value of the pointer itself, for example, against NULL.
- 
- The rcu_dereference_check() check expression can be any boolean
-diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
-index 1b0e6711dec9..0ac7ae40be37 100644
---- a/Documentation/bpf/instruction-set.rst
-+++ b/Documentation/bpf/instruction-set.rst
-@@ -133,7 +133,7 @@ code field of ``BPF_END``.
- The byte swap instructions operate on the destination register
- only and do not use a separate source register or immediate value.
- 
--The 1-bit source operand field in the opcode is used to to select what byte
-+The 1-bit source operand field in the opcode is used to select what byte
- order the operation convert from or to:
- 
-   =========  =====  =================================================
-diff --git a/Documentation/trace/histogram.rst b/Documentation/trace/histogram.rst
-index 859fd1b76c63..c1b685a38f6b 100644
---- a/Documentation/trace/histogram.rst
-+++ b/Documentation/trace/histogram.rst
-@@ -412,7 +412,7 @@ Extended error information
-   Because the default sort key above is 'hitcount', the above shows a
-   the list of call_sites by increasing hitcount, so that at the bottom
-   we see the functions that made the most kmalloc calls during the
--  run.  If instead we we wanted to see the top kmalloc callers in
-+  run.  If instead we wanted to see the top kmalloc callers in
-   terms of the number of bytes requested rather than the number of
-   calls, and we wanted the top caller to appear at the top, we can use
-   the 'sort' parameter, along with the 'descending' modifier::
-diff --git a/Documentation/trace/timerlat-tracer.rst b/Documentation/trace/timerlat-tracer.rst
-index d643c95c01eb..db17df312bc8 100644
---- a/Documentation/trace/timerlat-tracer.rst
-+++ b/Documentation/trace/timerlat-tracer.rst
-@@ -20,7 +20,7 @@ For example::
-         [root@f32 ~]# cd /sys/kernel/tracing/
-         [root@f32 tracing]# echo timerlat > current_tracer
- 
--It is possible to follow the trace by reading the trace trace file::
-+It is possible to follow the trace by reading the trace file::
- 
-   [root@f32 tracing]# cat trace
-   # tracer: timerlat
-diff --git a/Documentation/virt/kvm/x86/mmu.rst b/Documentation/virt/kvm/x86/mmu.rst
-index 8739120f4300..8364afa228ec 100644
---- a/Documentation/virt/kvm/x86/mmu.rst
-+++ b/Documentation/virt/kvm/x86/mmu.rst
-@@ -377,7 +377,7 @@ Emulating cr0.wp
- ================
- 
- If tdp is not enabled, the host must keep cr0.wp=1 so page write protection
--works for the guest kernel, not guest guest userspace.  When the guest
-+works for the guest kernel, not guest userspace.  When the guest
- cr0.wp=1, this does not present a problem.  However when the guest cr0.wp=0,
- we cannot map the permissions for gpte.u=1, gpte.w=0 to any spte (the
- semantics require allowing any guest kernel access plus user read access).
 -- 
-2.17.1
+2.37.2
 
