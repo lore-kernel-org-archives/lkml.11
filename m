@@ -2,151 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A4FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84421ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbiH2OcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58920 "EHLO
+        id S229863AbiH2OcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiH2Ob7 (ORCPT
+        with ESMTP id S229828AbiH2OcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:31:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71E68F964
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:31:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C70CB810A1
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:31:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B28C433C1;
-        Mon, 29 Aug 2022 14:31:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661783515;
-        bh=KXyavkK9jmchKS7BM+QIziwxtNYM2+lbxNBUUd3PHyM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pA/7OOQUY7XbeE1en6O+TKcX7NVXmCgSUo0LFicvnYUdsGNwOxmQyJYCf3dPiZGPq
-         x4Scu4HcCVz/Gsqim3s73gcMswgBBN+ZePPcmKiUd/rjj8Zlz36TpZOjeLNO+yhcVa
-         z5VNUAVpZw6cQkITOzrXbR6az7CHVc1x/IGCgl63fLTbUJ0R9Q1KXjjMoOM9QvesJg
-         43Tewm0guxDD6hw4uI+87G4+Y/MoaIgKizEfB7U2xx952E6nntJyEC6UArWKCTyk/e
-         0RnVCmmOg+D1u0LzKx8dh5pnr4FHFtqLsX3pT0U8Qm9Q5FnMuSRxQjmcN9fDMo7yv7
-         vM9/oezVpYc3Q==
-Date:   Mon, 29 Aug 2022 17:31:37 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Baoquan He <bhe@redhat.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Ard Biesheuvel <ardb@kernel.org>, kexec@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Guanghui Feng <guanghuifeng@linux.alibaba.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Mike Rapoport <mike.rapoport@gmail.com>
-Subject: Re: [PATCH 0/5] arm64/mm: remap crash kernel with base pages even if
- rodata_full disabled
-Message-ID: <YwzNyVH8FB374In5@kernel.org>
-References: <20220819041156.873873-1-rppt@kernel.org>
- <YwcmKAink5XvoaTe@MiWiFi-R3L-srv>
- <YwcpRQvNErbTq1XB@kernel.org>
- <YwspSc83XveXSFnW@MiWiFi-R3L-srv>
+        Mon, 29 Aug 2022 10:32:07 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13E4A9018D
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:32:07 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id i5-20020a17090a2a0500b001fd8708ffdfso5655874pjd.2
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:32:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=VxHvmbc/lBdRfA4ap1J+aJWHAOnddONgv856K5nzXe4=;
+        b=SDTwVfFbyXwNSrRpny1mr9l89IK5bk6lTYXbTHbnX4AqrYfJExtEOYNP4DSZ+HpeeW
+         aMDvxAGFqzQudjkelHF4dJ4ohqDxLZPrmo4x6xstMJOJEe1lUR/0IvhKfuZ9pkCEtqGi
+         YpmmP41eqBmgMh/jnsypoXJ4e7N00sgVFNJ8vNORqJw3dJFpU+Ys8gI4Zulp0V/fhcdw
+         MtGbX9seBRzHHPF8FJt2U9CSIru1y+8oxNpa6fxcBaTYm/J7dX5s1cczjANcpPzYN/BX
+         24BjJPqI2o1al501/6O4p0rVbxYPuR3Mmbf0yn9SIAbtMkaaYoX3xkiA1g5q1wbYuVYF
+         RRZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=VxHvmbc/lBdRfA4ap1J+aJWHAOnddONgv856K5nzXe4=;
+        b=oCNtaeDSeEojooAauuEdqrglDLLW44xYMmQy4LxSGW99OMfY7PDYYMEmO1ABWoZO55
+         HNRKeOsn+bP8UkBXRuClvZ2pPRHXL3kt/C42Mhg4ccwztoggQNDDOfvt9BMLfTXG0awI
+         ANyynl9vpcPQSSYtE35UBxwmI74P68FxpFf81bIZqKYfHAfQnPSua85TPQ9x/u6+JLQ6
+         pi/BzmApIA+I7DB/gCrdSJOiIoAHoPyfVRoJcxuisHQLlEI0+6kVgF7LBLS/ZmSwsiQu
+         Y+WupOQAWY8hlaQ9Lmknj23LylZtLYkx1XnrdLLfbtCohLpJPE9CHtP8WgkLz2UGxoNJ
+         KYJw==
+X-Gm-Message-State: ACgBeo2mnGKNv7wGenrnzzYPBbmZNejRwCNIbZBsZd/sixPw7rzwD+L4
+        eGYkagLuMfBEdf211IDSaZGyZg==
+X-Google-Smtp-Source: AA6agR6KRX0hB7clcZbineaxTaIDvcoWyzk5+jZFBvnvTwoj3q28uzUudWnvIqB4yHOJef3n9ImQOA==
+X-Received: by 2002:a17:902:7c0b:b0:174:abfc:f5 with SMTP id x11-20020a1709027c0b00b00174abfc00f5mr6543887pll.124.1661783526523;
+        Mon, 29 Aug 2022 07:32:06 -0700 (PDT)
+Received: from C02DW0BEMD6R.bytedance.net ([139.177.225.228])
+        by smtp.gmail.com with ESMTPSA id x128-20020a626386000000b0052d200c8040sm7259327pfb.211.2022.08.29.07.32.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 07:32:05 -0700 (PDT)
+From:   Qi Zheng <zhengqi.arch@bytedance.com>
+To:     akpm@linux-foundation.org, willy@infradead.org, vbabka@suse.cz,
+        hannes@cmpxchg.org, minchan@kernel.org, rppt@kernel.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Qi Zheng <zhengqi.arch@bytedance.com>
+Subject: [PATCH 0/7] add common struct mm_slot and use it in THP and KSM
+Date:   Mon, 29 Aug 2022 22:30:48 +0800
+Message-Id: <20220829143055.41201-1-zhengqi.arch@bytedance.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YwspSc83XveXSFnW@MiWiFi-R3L-srv>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 04:37:29PM +0800, Baoquan He wrote:
-> On 08/25/22 at 10:48am, Mike Rapoport wrote:
-> ...... 
-> > > > There were several rounds of discussion how to remap with base pages only
-> > > > the crash kernel area, the latest one here:
-> > > > 
-> > > > https://lore.kernel.org/all/1656777473-73887-1-git-send-email-guanghuifeng@linux.alibaba.com
-> > > > 
-> > > > and this is my attempt to allow having both large pages in the linear map
-> > > > and protection for the crash kernel memory.
-> > > > 
-> > > > For server systems it is important to protect crash kernel memory for
-> > > > post-mortem analysis, and for that protection to work the crash kernel
-> > > > memory should be mapped with base pages in the linear map. 
-> > > > 
-> > > > On the systems with ZONE_DMA/DMA32 enabled, crash kernel reservation
-> > > > happens after the linear map is created and the current code forces using
-> > > > base pages for the entire linear map, which results in performance
-> > > > degradation.
-> > > > 
-> > > > These patches enable remapping of the crash kernel area with base pages
-> > > > while keeping large pages in the rest of the linear map.
-> > > > 
-> > > > The idea is to align crash kernel reservation to PUD boundaries, remap that
-> > > > PUD and then free the extra memory.
-> > > 
-> > > Hi Mike,
-> > > 
-> > > Thanks for the effort to work on this issue. While I have to say this
-> > > isnt's good because it can only be made relying on a prerequisite that
-> > > there's big enough memory. If on a system, say 2G memory, it's not easy
-> > > to succeed on getting one 1G memory. While we only require far smaller
-> > > region than 1G, e.g about 200M which should be easy to get. So the way
-> > > taken in this patchset is too quirky and will cause regression on
-> > > systemswith small memory. This kind of sytems with small memory exists
-> > > widely on virt guest instance.
-> > 
-> > I don't agree there is a regression. If the PUD-aligned allocation fails,
-> > there is a fallback to the allocation of the exact size requested for crash
-> > kernel. This allocation just won't get protected.
-> 
-> Sorry, I misunderstood it. I just went through the log and didn't
-> look into codes.
-> 
-> But honestly, if we accept the fallback which doesn't do the protection,
-> we should be able to take off the protection completely, right?
-> Otherwise, the reservation code is a little complicated.
+Hi all,
 
-We don't do protection of the crash kernel for most architectures
-supporting kexec ;-)
+At present, both THP and KSM module have similar structures mm_slot for
+organizing and recording the information required for scanning mm, and
+each defines the following exactly the same operation functions:
 
-My goal was to allow large systems with ZONE_DMA/DMA32 have block mappings
-in the linear map and crash kernel protection without breaking backward
-compatibility for the existing systems.
+ - alloc_mm_slot
+ - free_mm_slot
+ - get_mm_slot
+ - insert_to_mm_slots_hash
 
-> > Also please note, that the changes are only for the case when user didn't
-> > force base-size pages in the linear map, so anything that works now will
-> > work the same way with this set applied.
-> >  
-> > > The crashkernel reservation happens after linear map because the
-> > > reservation needs to know the dma zone boundary, arm64_dma_phys_limit.
-> > > If we can deduce that before bootmem_init(), the reservation can be
-> > > done before linear map. I will make an attempt on that. If still can't
-> > > be accepted, we would like to take off the crashkernel region protection
-> > > on arm64 for now.
-> > 
-> > I doubt it would be easy because arm64_dma_phys_limit is determined after
-> > parsing of the device tree and there might be memory allocations of
-> > possibly unmapped memory during the parsing.
-> 
-> I have sent out the patches with an attempt, it's pretty straightforward
-> and simple. Because arm64 only has one exception, namely Raspberry Pi 4,
-> on which some peripherals can only address 30bit range. That is a corner
-> case, to be honest. And kdump is a necessary feature on server, but may
-> not be so expected on Raspberry Pi 4, a system for computer education
-> and hobbyists. And kdump only cares whether the dump target devices can
-> address 32bit range, namely storage device or network card on server.
-> If finally confirmed that storage devices can only address 30bit range
-> on Raspberry Pi 4, people still can have crashkernel=xM@yM method to
-> reserve crashkernel regions.
+In order to de-duplicate these codes, this patchset introduces a common
+struct mm_slot, and lets THP and KSM to use it.
 
-I hope you are right and Raspberry Pi 4 is the only system that limits
-DMA'able range to 30 bits. But with diversity of arm64 chips and boards I
-won't be surprised that there are other variants with a similar problem.
- 
-> Thanks
-> Baoquan
-> 
+This series is based on next-20220829.
+
+Comments and suggestions are welcome.
+
+Thanks,
+Qi.
+
+Qi Zheng (7):
+  mm: introduce common struct mm_slot
+  mm: thp: convert to use common struct mm_slot
+  ksm: remove redundant declarations in ksm.h
+  ksm: add the ksm prefix to the names of the ksm private structures
+  ksm: convert ksm_mm_slot.mm_list to ksm_mm_slot.mm_node
+  ksm: convert ksm_mm_slot.link to ksm_mm_slot.hash
+  ksm: convert to use common struct mm_slot
+
+ Documentation/mm/ksm.rst |   2 +-
+ include/linux/ksm.h      |   3 -
+ mm/khugepaged.c          | 121 ++++++---------
+ mm/ksm.c                 | 326 ++++++++++++++++++---------------------
+ mm/mm_slot.h             |  55 +++++++
+ 5 files changed, 260 insertions(+), 247 deletions(-)
+ create mode 100644 mm/mm_slot.h
 
 -- 
-Sincerely yours,
-Mike.
+2.20.1
+
