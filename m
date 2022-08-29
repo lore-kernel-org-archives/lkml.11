@@ -2,105 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EC7ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:09:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C924ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229908AbiH2IJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
+        id S229677AbiH2IJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229883AbiH2IIo (ORCPT
+        with ESMTP id S229893AbiH2IIp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 04:08:44 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A875D52E53
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:08:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=whIFzUNn2x7iARS4Q2Ru0lB06BgW8fnFGxV1bucuo5g=; b=TNp53cZumHIZt7P1mtvKkMpfZP
-        SDra78XTm+4oPzPywZBCkcfr/mM6m4OoCIlsf+DtjV9Hhq3dyUhV4mm/xPhAfot1oMowQohvUr6UJ
-        mrfXQgTnsG1Dx9okgUm/tAvIz9iEtvnwn4zy78F4PZghA5TdQPX83N/URrK6aocuZ7GRtV3Xbcjco
-        34X6+lOkEL9nS4PVGL6FUpXFMmpMsJnFTJVhen2lbRjEyf8jNDpYkuY2ALOD+7X8njsWEd00UylOv
-        +77Noc9ko65aZVrV3z93KcP/ECizrSWV9mzDyyQc0Oaaup5LRFCYVbwQs5rNX3im+EbB/I2yEceQX
-        FKMDdIwg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oSZoe-007RYV-6j; Mon, 29 Aug 2022 08:08:16 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 709CD3002C7;
-        Mon, 29 Aug 2022 10:08:13 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 502E3207FBF75; Mon, 29 Aug 2022 10:08:13 +0200 (CEST)
-Date:   Mon, 29 Aug 2022 10:08:13 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Vincent Donnefort <vdonnefort@google.com>,
-        Quentin Perret <qperret@google.com>,
-        Patrick Bellasi <patrick.bellasi@matbug.net>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Jian-Min <Jian-Min.Liu@mediatek.com>,
-        Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 1/1] sched/pelt: Introduce PELT multiplier
-Message-ID: <Ywxz7cuR+/+1CFMR@hirez.programming.kicks-ass.net>
-References: <20220829055450.1703092-1-dietmar.eggemann@arm.com>
- <20220829055450.1703092-2-dietmar.eggemann@arm.com>
+        Mon, 29 Aug 2022 04:08:45 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D0B52FC0;
+        Mon, 29 Aug 2022 01:08:44 -0700 (PDT)
+X-UUID: 2f12ab7810944ec7ad6248d771e2378d-20220829
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=VAHJFqQzhRn88m6R3tZ7/zsDUdAQj7nWEaWhRpKIxCM=;
+        b=eBt+rjTUl2qnYAJXI76Y04aHoqsZk2EvrZBojYPRdOpjMhTe2LieAGtLk47inWGaXRoaKYjJV7ZanewssW/XC4Qlrgit3k78UIRE4JIL42EGnfbG+P61ce4DrhT7hfDMBAgZ5TNJPWtkC2dVAOBxa3pbj3heqOspxRtAZS9+R28=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.10,REQID:e5eddfcc-2499-4803-85a1-1922dba3fbb8,OB:0,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_
+        Ham,ACTION:release,TS:0
+X-CID-META: VersionHash:84eae18,CLOUDID:58866820-1c20-48a5-82a0-25f9c331906d,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:11|1,File:
+        nil,Bulk:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 2f12ab7810944ec7ad6248d771e2378d-20220829
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <chunfeng.yun@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1576505806; Mon, 29 Aug 2022 16:08:38 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 29 Aug 2022 16:08:36 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 29 Aug 2022 16:08:36 +0800
+From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
+To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
+CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Eddie Hung <eddie.hung@mediatek.com>
+Subject: [PATCH v2 6/7] phy: phy-mtk-tphy: set utmi 0 register in init() ops
+Date:   Mon, 29 Aug 2022 16:08:29 +0800
+Message-ID: <20220829080830.5378-6-chunfeng.yun@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220829080830.5378-1-chunfeng.yun@mediatek.com>
+References: <20220829080830.5378-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829055450.1703092-2-dietmar.eggemann@arm.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 07:54:50AM +0200, Dietmar Eggemann wrote:
-> From: Vincent Donnefort <vincent.donnefort@arm.com>
-> 
-> The new sysctl sched_pelt_multiplier allows a user to set a clock
-> multiplier to x2 or x4 (x1 being the default). This clock multiplier
-> artificially speeds up PELT ramp up/down similarly to use a faster
-> half-life than the default 32ms.
-> 
->   - x1: 32ms half-life
->   - x2: 16ms half-life
->   - x4: 8ms  half-life
-> 
-> Internally, a new clock is created: rq->clock_task_mult. It sits in the
-> clock hierarchy between rq->clock_task and rq->clock_pelt.
-> 
-> Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-> Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+No need repeat to clear utmi 0 register in ->power_on() and
+->power_off(), just do it in ->init()
 
-> +extern unsigned int sched_pelt_lshift;
-> +
-> +/*
-> + * absolute time   |1      |2      |3      |4      |5      |6      |
-> + * @ mult = 1      --------****************--------****************-
-> + * @ mult = 2      --------********----------------********---------
-> + * @ mult = 4      --------****--------------------****-------------
-> + * clock task mult
-> + * @ mult = 2      |   |   |2  |3  |   |   |   |   |5  |6  |   |   |
-> + * @ mult = 4      | | | | |2|3| | | | | | | | | | |5|6| | | | | | |
-> + *
-> + */
-> +static inline void update_rq_clock_task_mult(struct rq *rq, s64 delta)
-> +{
-> +	delta <<= READ_ONCE(sched_pelt_lshift);
-> +
-> +	rq->clock_task_mult += delta;
-> +
-> +	update_rq_clock_pelt(rq, delta);
-> +}
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+---
+v2: no changes
+---
+ drivers/phy/mediatek/phy-mtk-tphy.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Hurmph... I'd almost go write you something like
-static_call()/static_branch() but for immediates.
+diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
+index 79920c066e59..e0f227a0d3cc 100644
+--- a/drivers/phy/mediatek/phy-mtk-tphy.c
++++ b/drivers/phy/mediatek/phy-mtk-tphy.c
+@@ -522,8 +522,8 @@ static void u2_phy_instance_init(struct mtk_tphy *tphy,
+ 	/* switch to USB function, and enable usb pll */
+ 	mtk_phy_clear_bits(com + U3P_U2PHYDTM0, P2C_FORCE_UART_EN | P2C_FORCE_SUSPENDM);
+ 
+-	mtk_phy_update_bits(com + U3P_U2PHYDTM0, P2C_RG_XCVRSEL | P2C_RG_DATAIN,
+-			    P2C_RG_XCVRSEL_VAL(1) | P2C_RG_DATAIN_VAL(0));
++	mtk_phy_clear_bits(com + U3P_U2PHYDTM0,
++			   P2C_RG_XCVRSEL | P2C_RG_DATAIN | P2C_DTM0_PART_MASK);
+ 
+ 	mtk_phy_clear_bits(com + U3P_U2PHYDTM1, P2C_RG_UART_EN);
+ 
+@@ -565,9 +565,6 @@ static void u2_phy_instance_power_on(struct mtk_tphy *tphy,
+ 	void __iomem *com = u2_banks->com;
+ 	u32 index = instance->index;
+ 
+-	mtk_phy_clear_bits(com + U3P_U2PHYDTM0,
+-			   P2C_RG_XCVRSEL | P2C_RG_DATAIN | P2C_DTM0_PART_MASK);
+-
+ 	/* OTG Enable */
+ 	mtk_phy_set_bits(com + U3P_USBPHYACR6, PA6_RG_U2_OTG_VBUSCMP_EN);
+ 
+@@ -590,8 +587,6 @@ static void u2_phy_instance_power_off(struct mtk_tphy *tphy,
+ 	void __iomem *com = u2_banks->com;
+ 	u32 index = instance->index;
+ 
+-	mtk_phy_clear_bits(com + U3P_U2PHYDTM0, P2C_RG_XCVRSEL | P2C_RG_DATAIN);
+-
+ 	/* OTG Disable */
+ 	mtk_phy_clear_bits(com + U3P_USBPHYACR6, PA6_RG_U2_OTG_VBUSCMP_EN);
+ 
+-- 
+2.18.0
 
-That said; given there's only like 3 options, perhaps a few
-static_branch() instances work just fine ?
