@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 867EFECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ED15ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231220AbiH2LMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
+        id S231235AbiH2LMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:12:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230241AbiH2LMH (ORCPT
+        with ESMTP id S231210AbiH2LMJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:12:07 -0400
+        Mon, 29 Aug 2022 07:12:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B85B1F2;
-        Mon, 29 Aug 2022 04:08:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9EA2D1F0;
+        Mon, 29 Aug 2022 04:08:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 097DD611F6;
-        Mon, 29 Aug 2022 11:08:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18EC6C433D6;
-        Mon, 29 Aug 2022 11:08:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44208611AE;
+        Mon, 29 Aug 2022 11:05:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B6FC433D6;
+        Mon, 29 Aug 2022 11:05:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771329;
-        bh=nxFzwG/Su71x1AgWj7cs9KQ+UqjXZBU327nkcS2HGEQ=;
+        s=korg; t=1661771127;
+        bh=5evvKa0ibcXrhe03cHc2iqp6IdeF8JtPIUga+w+ZHoc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dOwk5L6oJz/2mysobMCAgG3Y39EnvIua3kAJ7YUtco7v4e5LSjx/CBScBsYPkGcox
-         7w8hJVQyHbnXqe8dFY86F66Bn4v2z8bXRsBsmfdvNqxWBii9Ql3ZeihvuPjma8zv02
-         klKwZVuWVwbddwXdvn/XBHugHIBje1cRTKt75UXE=
+        b=CwX5uykwp4Q/lmTCMV3lhbrPAIs/uQ+9HzyqXtbfnpTVekiwwY9R79L11N5TOGy1e
+         BzVQywpD7rsQJQcU/crocnXJRACz6datAlnkI58zZyGAK6cypsEjQyAPU9hUg6d/q5
+         OEI/WBBp3VE/oWaSOvcpZXbjrV+m45tGkzwU9f7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        stable@vger.kernel.org,
+        Mark Blakeney <mark.blakeney@bullet-systems.net>,
+        Hayes Wang <hayeswang@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 017/158] fs: require CAP_SYS_ADMIN in target namespace for idmapped mounts
-Date:   Mon, 29 Aug 2022 12:57:47 +0200
-Message-Id: <20220829105809.545246034@linuxfoundation.org>
+Subject: [PATCH 5.15 040/136] r8152: fix the RX FIFO settings when suspending
+Date:   Mon, 29 Aug 2022 12:58:27 +0200
+Message-Id: <20220829105806.244387840@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,49 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Seth Forshee <sforshee@digitalocean.com>
+From: Hayes Wang <hayeswang@realtek.com>
 
-[ Upstream commit bf1ac16edf6770a92bc75cf2373f1f9feea398a4 ]
+[ Upstream commit b75d612014447e04abdf0e37ffb8f2fd8b0b49d6 ]
 
-Idmapped mounts should not allow a user to map file ownsership into a
-range of ids which is not under the control of that user. However, we
-currently don't check whether the mounter is privileged wrt to the
-target user namespace.
+The RX FIFO would be changed when suspending, so the related settings
+have to be modified, too. Otherwise, the flow control would work
+abnormally.
 
-Currently no FS_USERNS_MOUNT filesystems support idmapped mounts, thus
-this is not a problem as only CAP_SYS_ADMIN in init_user_ns is allowed
-to set up idmapped mounts. But this could change in the future, so add a
-check to refuse to create idmapped mounts when the mounter does not have
-CAP_SYS_ADMIN in the target user namespace.
-
-Fixes: bd303368b776 ("fs: support mapped mounts of mapped filesystems")
-Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
-Link: https://lore.kernel.org/r/20220816164752.2595240-1-sforshee@digitalocean.com
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216333
+Reported-by: Mark Blakeney <mark.blakeney@bullet-systems.net>
+Fixes: cdf0b86b250f ("r8152: fix a WOL issue")
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/namespace.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/usb/r8152.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/fs/namespace.c b/fs/namespace.c
-index e6a7e769d25dd..a59f8d645654a 100644
---- a/fs/namespace.c
-+++ b/fs/namespace.c
-@@ -4238,6 +4238,13 @@ static int build_mount_idmapped(const struct mount_attr *attr, size_t usize,
- 		err = -EPERM;
- 		goto out_fput;
- 	}
-+
-+	/* We're not controlling the target namespace. */
-+	if (!ns_capable(mnt_userns, CAP_SYS_ADMIN)) {
-+		err = -EPERM;
-+		goto out_fput;
-+	}
-+
- 	kattr->mnt_userns = get_user_ns(mnt_userns);
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index d18627a8539a4..7e821bed91ce5 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -5904,6 +5904,11 @@ static void r8153_enter_oob(struct r8152 *tp)
+ 	ocp_data &= ~NOW_IS_OOB;
+ 	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_OOB_CTRL, ocp_data);
  
- out_fput:
++	/* RX FIFO settings for OOB */
++	ocp_write_dword(tp, MCU_TYPE_PLA, PLA_RXFIFO_CTRL0, RXFIFO_THR1_OOB);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RXFIFO_CTRL1, RXFIFO_THR2_OOB);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RXFIFO_CTRL2, RXFIFO_THR3_OOB);
++
+ 	rtl_disable(tp);
+ 	rtl_reset_bmu(tp);
+ 
+@@ -6542,6 +6547,11 @@ static void rtl8156_down(struct r8152 *tp)
+ 	ocp_data &= ~NOW_IS_OOB;
+ 	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_OOB_CTRL, ocp_data);
+ 
++	/* RX FIFO settings for OOB */
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RXFIFO_FULL, 64 / 16);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_FULL, 1024 / 16);
++	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RX_FIFO_EMPTY, 4096 / 16);
++
+ 	rtl_disable(tp);
+ 	rtl_reset_bmu(tp);
+ 
 -- 
 2.35.1
 
