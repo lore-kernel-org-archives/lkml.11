@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63269ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C29A2ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232149AbiH2Ldd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58350 "EHLO
+        id S232666AbiH2Ldh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232448AbiH2LbL (ORCPT
+        with ESMTP id S232459AbiH2LbR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:31:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0562CDECB;
-        Mon, 29 Aug 2022 04:18:24 -0700 (PDT)
+        Mon, 29 Aug 2022 07:31:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A7C67C51D;
+        Mon, 29 Aug 2022 04:18:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 748A8B80E4C;
-        Mon, 29 Aug 2022 11:18:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9E53C433D6;
-        Mon, 29 Aug 2022 11:18:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 192426119E;
+        Mon, 29 Aug 2022 11:18:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E8B3C433C1;
+        Mon, 29 Aug 2022 11:18:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771903;
-        bh=zpdNrj2zHCU5PomsNNUW8dpMs4P00W/7ROzjCZuz0As=;
+        s=korg; t=1661771918;
+        bh=3dS8Cl8OdudEu8+bE1purv/USvTN3iusgBurK2pHTfg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kdd3e5uGlGDoQXBnnHWnawnzg64f18RRCKeXZSGFu2PJt5QTVj0xR4bwZE6EqCLd+
-         uxzTH9eSHsIRqNOm6D5lkkVOkTenVn+NfVE7jXLs/dfmxXBqEXYHi91ciuxVu1nAhp
-         P8sQKYJd6FFt8ZYyxlvwQyxvScuLCT0lwhGRdqZM=
+        b=KGYcVOkj6cxbm73RSYQ+euU8a/4zozO2c+Wg817UJoYYGVRXeWqz/H0m2h1eu5rhJ
+         KTq2vSgS7stTb8bi4iOipER3pFarhzKJuUewRgiRpfvUeIjt4PlMrFRPw7m9dbgReS
+         pscRtmjSm0h/Jfx5+d0WKN5hcL0963Kyv2tKZoz8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 5.19 135/158] Revert "md-raid: destroy the bitmap after destroying the thread"
-Date:   Mon, 29 Aug 2022 12:59:45 +0200
-Message-Id: <20220829105814.746029478@linuxfoundation.org>
+        stable@vger.kernel.org, Prike Liang <Prike.Liang@amd.com>,
+        Aaron Liu <aaron.liu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.19 140/158] drm/amdkfd: Fix isa version for the GC 10.3.7
+Date:   Mon, 29 Aug 2022 12:59:50 +0200
+Message-Id: <20220829105814.955906840@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -48,38 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@linux.dev>
+From: Prike Liang <Prike.Liang@amd.com>
 
-commit 1d258758cf06a0734482989911d184dd5837ed4e upstream.
+commit ee8086dbc1585d9f4020a19447388246a5cff5c8 upstream.
 
-This reverts commit e151db8ecfb019b7da31d076130a794574c89f6f. Because it
-obviously breaks clustered raid as noticed by Neil though it fixed KASAN
-issue for dm-raid, let's revert it and fix KASAN issue in next commit.
+Correct the isa version for handling KFD test.
 
-[1]. https://lore.kernel.org/linux-raid/a6657e08-b6a7-358b-2d2a-0ac37d49d23a@linux.dev/T/#m95ac225cab7409f66c295772483d091084a6d470
-
-Fixes: e151db8ecfb0 ("md-raid: destroy the bitmap after destroying the thread")
-Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Song Liu <song@kernel.org>
+Fixes: 7c4f4f197e0c ("drm/amdkfd: Add GC 10.3.6 and 10.3.7 KFD definitions")
+Signed-off-by: Prike Liang <Prike.Liang@amd.com>
+Reviewed-by: Aaron Liu <aaron.liu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_device.c |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -6244,11 +6244,11 @@ static void mddev_detach(struct mddev *m
- static void __md_stop(struct mddev *mddev)
- {
- 	struct md_personality *pers = mddev->pers;
-+	md_bitmap_destroy(mddev);
- 	mddev_detach(mddev);
- 	/* Ensure ->event_work is done */
- 	if (mddev->event_work.func)
- 		flush_workqueue(md_misc_wq);
--	md_bitmap_destroy(mddev);
- 	spin_lock(&mddev->lock);
- 	mddev->pers = NULL;
- 	spin_unlock(&mddev->lock);
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_device.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_device.c
+@@ -377,12 +377,8 @@ struct kfd_dev *kgd2kfd_probe(struct amd
+ 				f2g = &gfx_v10_3_kfd2kgd;
+ 			break;
+ 		case IP_VERSION(10, 3, 6):
+-			gfx_target_version = 100306;
+-			if (!vf)
+-				f2g = &gfx_v10_3_kfd2kgd;
+-			break;
+ 		case IP_VERSION(10, 3, 7):
+-			gfx_target_version = 100307;
++			gfx_target_version = 100306;
+ 			if (!vf)
+ 				f2g = &gfx_v10_3_kfd2kgd;
+ 			break;
 
 
