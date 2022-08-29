@@ -2,137 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0988FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E76AC0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbiH2OXH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:23:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46016 "EHLO
+        id S229903AbiH2OXa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiH2OXE (ORCPT
+        with ESMTP id S229934AbiH2OXX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:23:04 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D80883DA;
-        Mon, 29 Aug 2022 07:23:04 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id d68so6632835iof.11;
-        Mon, 29 Aug 2022 07:23:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=PNt+onL4ClTGcGyv6RZetjSFdA6iAHMD9oHCxPI/soM=;
-        b=MFSqRVGOZAoV890KYUkC2e/s/8COn1XxXCGybEtI0iebrfFUmAA0oYr5EPe6bRn+m8
-         7ObknMAjjAahzsKI0d6HQLI4zf6+RlzyC6sI0vKnhijfqMRpXzZ0fD7eZS5LeDhf+8Go
-         aMjvHz43sLg0EC3d3r17wisMtYGyc9Rrh7EMpYfnvnJlRj+9bvHZfPixktoFbYBxpPHv
-         xkboEAyTkIHKYrAR8iVXiBZT72X74Xl59hy6TiTYZPsJbyJDDiYUdYnZOJnHkCfDlP3F
-         4HAkHDx9vqYLtskKySjPaap6c1qAFfn5+Fb/EbvJwi4xkhFXnNRsQ81KmdvsHnNg/J3y
-         PUlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=PNt+onL4ClTGcGyv6RZetjSFdA6iAHMD9oHCxPI/soM=;
-        b=YI5QTdBSJqN1OWuys6QC9t8Fi+P9+k3DVuDXkmiuFF9Co+5ZJ24v3bI7rRAXmV9FnO
-         iQhze7JWg0jQVVXTajwLx6dSL4gP55WnFEmet3PJFM6SPExo8iT3Z7Le3qvevkmqa715
-         fhMfMtS5Q4oNoX4UOjwPSYUtx6vPSaqSDC3bost9L+YaPulkhZSXIZ288QwUe6LZ+vDU
-         GWFB+TRo9EPzKKKTDHxZOs+P+jvLmdMU22Eyy5D8/nIT1OxBlAEeZ2puIcZDnrGU8ZZS
-         JUZF3m3McKTrLdZFu0nQQc29KIoMDpEuNPWpOh2kg5B4Ac02POIRpCgTDP2BMqa8ezLI
-         nSaw==
-X-Gm-Message-State: ACgBeo1C3PnOLt9UpIYxDefwr0EdMg9IwJ03q/zfOCulVZpyXiZ1Msnq
-        +aDTTIIYGKZuvrJY49lwWEU=
-X-Google-Smtp-Source: AA6agR5uPSHD12ylnxWxiH+y99KcNQPD/2vJtnGDyLZiBtjcNQhYoidJRkpqktfg174/Srnp5I/+hw==
-X-Received: by 2002:a5e:9417:0:b0:689:f25c:6f7d with SMTP id q23-20020a5e9417000000b00689f25c6f7dmr8471097ioj.123.1661782983582;
-        Mon, 29 Aug 2022 07:23:03 -0700 (PDT)
-Received: from [192.168.0.27] ([204.237.49.50])
-        by smtp.gmail.com with ESMTPSA id e7-20020a026d47000000b00349ce27c2c6sm4311534jaf.169.2022.08.29.07.23.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 07:23:03 -0700 (PDT)
-Message-ID: <d4a2c953-90e9-2ea2-ee18-a4f7bd7dae28@gmail.com>
-Date:   Mon, 29 Aug 2022 10:23:01 -0400
+        Mon, 29 Aug 2022 10:23:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A079751F
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:23:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3456D60FB7
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:23:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2903BC433C1;
+        Mon, 29 Aug 2022 14:23:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661783000;
+        bh=j7vGQJvqDnFs0uYLxzOYOWDD/LHImupkpYX+0EhVnw0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=r9k5NNb2ita6InCHdKCQ3uFixTGXAXKFJP3KfK/qewxxyUeGHGRoZjRNNWMd+Ux6R
+         5xQggWLWS8GusNP9L5mEeiLiQxYIf8iGuxvo3rXf/47nV/7Ld11tvFt1zXwrFrwPFo
+         ekoZpSMPQ1rHxB+Ve3KuKbb8UaZSSsCGVvqjpZH5U/mJQbP4Q2pMUfjFyvyqxqu1Wg
+         yRxBsLV2eAXtgcJsIlVq365PzXhREgo6ytvFfs/NvuSlJJXB2XeBBoPXat9g/bgWvH
+         2mJPyN5aY+tNl0wKOYLKco6tRzSzGNAcFj+AwwtCwd93F9vh1ukbN3tv2IMvzTA9Af
+         9XVROmhXSCb1Q==
+Message-ID: <25456937-8034-2742-4a8a-68fb83b37ea2@kernel.org>
+Date:   Mon, 29 Aug 2022 07:23:19 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [RFC v1 2/2] HID: logitech-hidpp: Remove hard-coded "Sw. Id." for
- HID++ 2.0 commands
-Content-Language: en-US
-To:     Bastien Nocera <hadess@hadess.net>, linux-input@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        =?UTF-8?Q?Filipe_La=c3=adns?= <lains@riseup.net>,
-        Nestor Lopez Casado <nlopezcasad@logitech.com>
-References: <20220829134852.312548-1-hadess@hadess.net>
- <20220829134852.312548-2-hadess@hadess.net>
-From:   "Peter F. Patel-Schneider" <pfpschneider@gmail.com>
-In-Reply-To: <20220829134852.312548-2-hadess@hadess.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v3 3/5] x86/microcode: Avoid any chance of MCE's during
+ microcode update
+To:     Ashok Raj <ashok.raj@intel.com>, Borislav Petkov <bp@alien8.de>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        LKML Mailing List <linux-kernel@vger.kernel.org>,
+        X86-kernel <x86@kernel.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jacon Jun Pan <jacob.jun.pan@intel.com>
+References: <20220817051127.3323755-1-ashok.raj@intel.com>
+ <20220817051127.3323755-4-ashok.raj@intel.com> <Yvybq+hYT4tG/yAg@gmail.com>
+ <Yvyfi9XC8bu0cOG+@gmail.com> <YvyiHGMbp2MtV0Vr@zn.tnic>
+ <YvzXsf0mGEcOlZC5@araj-dh-work> <Yvzay5jOu5XBJpWa@zn.tnic>
+ <YvzfebgOWVKYLClJ@araj-dh-work> <Yvz4/ASoX4SiXbhp@zn.tnic>
+ <Yv0D88jxFkXcc18o@araj-dh-work>
+Content-Language: en-MW
+From:   Andy Lutomirski <luto@kernel.org>
+In-Reply-To: <Yv0D88jxFkXcc18o@araj-dh-work>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 8/29/22 09:48, Bastien Nocera wrote:
-> Some HID++ 2.0 commands had correctly set a non-zero software identifier
-> directly as part of their function identifiers, but it's more correct to
-> define the function identifier and the software identifier separately
-> before combined them when the command is sent.
+On 8/17/22 08:06, Ashok Raj wrote:
+> On Wed, Aug 17, 2022 at 04:19:40PM +0200, Borislav Petkov wrote:
+>> On Wed, Aug 17, 2022 at 12:30:49PM +0000, Ashok Raj wrote:
+>>> You will find out when system returns after reboot and hopefully wasn't
+>>> promoted to a cold-boot which will loose MCE banks.
+>> Not good enough!
+> I probably misread your question.. are you suggesting we add some WARN when
+> we initiate late_load? I thought you were asking if the HW must signal
+> something and OS should log when an MCE happens if MCIP=1
 >
-> As this is now done in the previous commit, remove the hard-coded 0x1
-> software identifiers in the function definitions.
 >
-> Signed-off-by: Bastien Nocera <hadess@hadess.net>
-> ---
->   drivers/hid/hid-logitech-hidpp.c | 14 +++++++-------
->   1 file changed, 7 insertions(+), 7 deletions(-)
+>> This should issue a warning in dmesg that a potential MCE while update
+>> is running would cause a lockup. That is if we don't disable MCE around
+>> it.
+>>
+>> If we decide to disable MCE, it should say shutdown.
+> Ok, that clarifies it.. "IF we choose to set MCIP=1, we should tell users
+> that hell can break loose, get under the table" :-)
 >
-> diff --git a/drivers/hid/hid-logitech-hidpp.c b/drivers/hid/hid-logitech-hidpp.c
-> index 02f8c99672c7..46b3e51cb854 100644
-> --- a/drivers/hid/hid-logitech-hidpp.c
-> +++ b/drivers/hid/hid-logitech-hidpp.c
-> @@ -859,8 +859,8 @@ static int hidpp_unifying_init(struct hidpp_device *hidpp)
->   #define HIDPP_PAGE_ROOT					0x0000
->   #define HIDPP_PAGE_ROOT_IDX				0x00
->   
-> -#define CMD_ROOT_GET_FEATURE				0x01
-> -#define CMD_ROOT_GET_PROTOCOL_VERSION			0x11
-> +#define CMD_ROOT_GET_FEATURE				0x00
-> +#define CMD_ROOT_GET_PROTOCOL_VERSION			0x10
->   
->   static int hidpp_root_get_feature(struct hidpp_device *hidpp, u16 feature,
->   	u8 *feature_index, u8 *feature_type)
-> @@ -937,9 +937,9 @@ static int hidpp_root_get_protocol_version(struct hidpp_device *hidpp)
->   
->   #define HIDPP_PAGE_GET_DEVICE_NAME_TYPE			0x0005
->   
-> -#define CMD_GET_DEVICE_NAME_TYPE_GET_COUNT		0x01
-> -#define CMD_GET_DEVICE_NAME_TYPE_GET_DEVICE_NAME	0x11
-> -#define CMD_GET_DEVICE_NAME_TYPE_GET_TYPE		0x21
-> +#define CMD_GET_DEVICE_NAME_TYPE_GET_COUNT		0x00
-> +#define CMD_GET_DEVICE_NAME_TYPE_GET_DEVICE_NAME	0x10
-> +#define CMD_GET_DEVICE_NAME_TYPE_GET_TYPE		0x20
->   
->   static int hidpp_devicenametype_get_count(struct hidpp_device *hidpp,
->   	u8 feature_index, u8 *nameLength)
-> @@ -1969,8 +1969,8 @@ static int hidpp_touchpad_fw_items_set(struct hidpp_device *hidpp,
->   
->   #define HIDPP_PAGE_TOUCHPAD_RAW_XY			0x6100
->   
-> -#define CMD_TOUCHPAD_GET_RAW_INFO			0x01
-> -#define CMD_TOUCHPAD_SET_RAW_REPORT_STATE		0x21
-> +#define CMD_TOUCHPAD_GET_RAW_INFO			0x00
-> +#define CMD_TOUCHPAD_SET_RAW_REPORT_STATE		0x20
->   
->   #define EVENT_TOUCHPAD_RAW_XY				0x00
->   
+>>> Meaning deal with the effect of a really rare MCE. Rather than trying to
+>>> avoid it. Taking the MCE is more important than finishing the update,
+>>> and loosing what the error signaled was trying to convey.
+>> Right now I'm inclined to not do anything and warn of a potential rare
+>> situation.
+> Encouraging.. So I'll drop that patch from the list next time around.
 
 
-
-Looks good to me.
-
-
-peter
+If I followed all this correctly, I agree. If we set MCIP to force a 
+crash if we get MCE, then we are guaranteed to crash.  If we don't, then 
+we might crash.
 
 
+An imperfect alternative would be to set a (percpu?) flag that we're 
+doing a ucode update and then detect that flag early in the MCE handler 
+and warn very loudly.  This seems like it will give us the best chance 
+of getting a useful diagnostic.
