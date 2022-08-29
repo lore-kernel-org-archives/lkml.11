@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 733DDECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A141BECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:43:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbiH2Ll7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
+        id S232916AbiH2LnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232743AbiH2Ll1 (ORCPT
+        with ESMTP id S232881AbiH2Lmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:41:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542326FA30;
-        Mon, 29 Aug 2022 04:25:31 -0700 (PDT)
+        Mon, 29 Aug 2022 07:42:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE30783F13;
+        Mon, 29 Aug 2022 04:26:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BFE5B80F00;
-        Mon, 29 Aug 2022 11:16:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75306C433D7;
-        Mon, 29 Aug 2022 11:16:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B64E61239;
+        Mon, 29 Aug 2022 11:19:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B57C433C1;
+        Mon, 29 Aug 2022 11:19:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771804;
-        bh=kCJJ0zEhqeKzejMCjY23kNjAuEHLY49pqrGAAhrL7AQ=;
+        s=korg; t=1661771976;
+        bh=igaDsgfaPIIrkWz0bd7Wrd2v/jVr1iT8zorHbcK2NPI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nnFD8i+NN4HszMpToMICFTbbtsG3g8NazuP/1iB/qwOt8UzYHS1JK1U5O8vmKVQfx
-         ZgJ3TtdCElh8xQAkJqv9WOwWdZ64ncBKgvAtW6rLUgOGNJDfosDDcQGdIbTx8EuSJf
-         mAxB+rLdqbVxsF6yCAtvI3anoldEpjQpztvkVB/g=
+        b=Z8X0S3jg8OvJ+X1hR5TpftWVAhj2wh1NXT+lpqIrNLA0QSZ1crfjumhct+ibFyY1Z
+         V/be3HPQ4myPdj3+M6mgK5khQpoatI7eg+32qKVywv/Ezwqv2Z4/qpUnGf0BwTDBG3
+         53tLgBC4vh2Zv8P5a447l8xg8TaI2ymrQu999Weg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.19 103/158] perf/x86/lbr: Enable the branch type for the Arch LBR by default
-Date:   Mon, 29 Aug 2022 12:59:13 +0200
-Message-Id: <20220829105813.414117464@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
+        Saurabh Sengar <ssengar@linux.microsoft.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.19 152/158] scsi: storvsc: Remove WQ_MEM_RECLAIM from storvsc_error_wq
+Date:   Mon, 29 Aug 2022 13:00:02 +0200
+Message-Id: <20220829105815.486637627@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,60 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Saurabh Sengar <ssengar@linux.microsoft.com>
 
-commit 32ba156df1b1c8804a4e5be5339616945eafea22 upstream.
+commit d957e7ffb2c72410bcc1a514153a46719255a5da upstream.
 
-On the platform with Arch LBR, the HW raw branch type encoding may leak
-to the perf tool when the SAVE_TYPE option is not set.
+storvsc_error_wq workqueue should not be marked as WQ_MEM_RECLAIM as it
+doesn't need to make forward progress under memory pressure.  Marking this
+workqueue as WQ_MEM_RECLAIM may cause deadlock while flushing a
+non-WQ_MEM_RECLAIM workqueue.  In the current state it causes the following
+warning:
 
-In the intel_pmu_store_lbr(), the HW raw branch type is stored in
-lbr_entries[].type. If the SAVE_TYPE option is set, the
-lbr_entries[].type will be converted into the generic PERF_BR_* type
-in the intel_pmu_lbr_filter() and exposed to the user tools.
-But if the SAVE_TYPE option is NOT set by the user, the current perf
-kernel doesn't clear the field. The HW raw branch type leaks.
+[   14.506347] ------------[ cut here ]------------
+[   14.506354] workqueue: WQ_MEM_RECLAIM storvsc_error_wq_0:storvsc_remove_lun is flushing !WQ_MEM_RECLAIM events_freezable_power_:disk_events_workfn
+[   14.506360] WARNING: CPU: 0 PID: 8 at <-snip->kernel/workqueue.c:2623 check_flush_dependency+0xb5/0x130
+[   14.506390] CPU: 0 PID: 8 Comm: kworker/u4:0 Not tainted 5.4.0-1086-azure #91~18.04.1-Ubuntu
+[   14.506391] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.1 05/09/2022
+[   14.506393] Workqueue: storvsc_error_wq_0 storvsc_remove_lun
+[   14.506395] RIP: 0010:check_flush_dependency+0xb5/0x130
+		<-snip->
+[   14.506408] Call Trace:
+[   14.506412]  __flush_work+0xf1/0x1c0
+[   14.506414]  __cancel_work_timer+0x12f/0x1b0
+[   14.506417]  ? kernfs_put+0xf0/0x190
+[   14.506418]  cancel_delayed_work_sync+0x13/0x20
+[   14.506420]  disk_block_events+0x78/0x80
+[   14.506421]  del_gendisk+0x3d/0x2f0
+[   14.506423]  sr_remove+0x28/0x70
+[   14.506427]  device_release_driver_internal+0xef/0x1c0
+[   14.506428]  device_release_driver+0x12/0x20
+[   14.506429]  bus_remove_device+0xe1/0x150
+[   14.506431]  device_del+0x167/0x380
+[   14.506432]  __scsi_remove_device+0x11d/0x150
+[   14.506433]  scsi_remove_device+0x26/0x40
+[   14.506434]  storvsc_remove_lun+0x40/0x60
+[   14.506436]  process_one_work+0x209/0x400
+[   14.506437]  worker_thread+0x34/0x400
+[   14.506439]  kthread+0x121/0x140
+[   14.506440]  ? process_one_work+0x400/0x400
+[   14.506441]  ? kthread_park+0x90/0x90
+[   14.506443]  ret_from_fork+0x35/0x40
+[   14.506445] ---[ end trace 2d9633159fdc6ee7 ]---
 
-There are two solutions to fix the issue for the Arch LBR.
-One is to clear the field if the SAVE_TYPE option is NOT set.
-The other solution is to unconditionally convert the branch type and
-expose the generic type to the user tools.
-
-The latter is implemented here, because
-- The branch type is valuable information. I don't see a case where
-  you would not benefit from the branch type. (Stephane Eranian)
-- Not having the branch type DOES NOT save any space in the
-  branch record (Stephane Eranian)
-- The Arch LBR HW can retrieve the common branch types from the
-  LBR_INFO. It doesn't require the high overhead SW disassemble.
-
-Fixes: 47125db27e47 ("perf/x86/intel/lbr: Support Architectural LBR")
-Reported-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220816125612.2042397-1-kan.liang@linux.intel.com
+Link: https://lore.kernel.org/r/1659628534-17539-1-git-send-email-ssengar@linux.microsoft.com
+Fixes: 436ad9413353 ("scsi: storvsc: Allow only one remove lun work item to be issued per lun")
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/lbr.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/scsi/storvsc_drv.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -1097,6 +1097,14 @@ static int intel_pmu_setup_hw_lbr_filter
- 
- 	if (static_cpu_has(X86_FEATURE_ARCH_LBR)) {
- 		reg->config = mask;
-+
-+		/*
-+		 * The Arch LBR HW can retrieve the common branch types
-+		 * from the LBR_INFO. It doesn't require the high overhead
-+		 * SW disassemble.
-+		 * Enable the branch type by default for the Arch LBR.
-+		 */
-+		reg->reg |= X86_BR_TYPE_SAVE;
- 		return 0;
- 	}
- 
+--- a/drivers/scsi/storvsc_drv.c
++++ b/drivers/scsi/storvsc_drv.c
+@@ -2012,7 +2012,7 @@ static int storvsc_probe(struct hv_devic
+ 	 */
+ 	host_dev->handle_error_wq =
+ 			alloc_ordered_workqueue("storvsc_error_wq_%d",
+-						WQ_MEM_RECLAIM,
++						0,
+ 						host->host_no);
+ 	if (!host_dev->handle_error_wq) {
+ 		ret = -ENOMEM;
 
 
