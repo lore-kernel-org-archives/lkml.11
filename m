@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B97ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D6CECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230522AbiH2LKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        id S230003AbiH2LK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiH2LJp (ORCPT
+        with ESMTP id S231160AbiH2LJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:09:45 -0400
+        Mon, 29 Aug 2022 07:09:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCA96555;
-        Mon, 29 Aug 2022 04:07:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA8E6B143;
+        Mon, 29 Aug 2022 04:06:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20511611EF;
-        Mon, 29 Aug 2022 11:06:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25415C433C1;
-        Mon, 29 Aug 2022 11:06:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1825B611C2;
+        Mon, 29 Aug 2022 11:05:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20DDEC433D6;
+        Mon, 29 Aug 2022 11:05:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771214;
-        bh=W0WKaihdrChHJR53YjvyX0zHr0mSLFAyR2lY2p2rf28=;
+        s=korg; t=1661771104;
+        bh=VT32sgMQPbgDn4zIVfOGbpa4MOivPnZg/L/3oZ9Rpjo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sO1btMlBwDY4M/W1JnmXF9Rj4QN8bHIzQNBjpWQNRHX/ByOmQd4FjAKDeptA4Z7+h
-         jeg0eB0/AstL8t6q15wr53jcTlH/EeS5MSTVycTUKG408otq13TRCduilpwO1LAHP/
-         TwOAZaaUxukWuWuO0opvS76h4T9jGyCGTpPEibB4=
+        b=dhxwoB+ArjDvOyMVWFUc5HABMqAy0BNZcosEebJYTZO/rLRkYfCwi4kTSA2zirVGt
+         oxN8O49ZZQuVA+sJQxTluHwkjxdj1cyQoZAKOqUomWAWoxaxfWYtL52BW5qaqaIWVz
+         qeD35angL1ePf2ACNvLE3Ydh5BW7+tk4Be8LKsik=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 080/136] tcp: expose the tcp_mark_push() and tcp_skb_entail() helpers
-Date:   Mon, 29 Aug 2022 12:59:07 +0200
-Message-Id: <20220829105807.931727133@linuxfoundation.org>
+Subject: [PATCH 5.15 062/136] netfilter: nf_tables: consolidate rule verdict trace call
+Date:   Mon, 29 Aug 2022 12:58:49 +0200
+Message-Id: <20220829105807.176030865@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -52,81 +48,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 04d8825c30b718781197c8f07b1915a11bfb8685 ]
+[ Upstream commit 4765473fefd4403b5eeca371637065b561522c50 ]
 
-the tcp_skb_entail() helper is actually skb_entail(), renamed
-to provide proper scope.
+Add function to consolidate verdict tracing.
 
-    The two helper will be used by the next patch.
-
-RFC -> v1:
- - rename skb_entail to tcp_skb_entail (Eric)
-
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h | 2 ++
- net/ipv4/tcp.c    | 8 ++++----
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ net/netfilter/nf_tables_core.c | 39 ++++++++++++++++++++++++++++------
+ 1 file changed, 32 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 76b0d7f2b967f..d3646645cb9ec 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -571,6 +571,8 @@ __u32 cookie_v6_init_sequence(const struct sk_buff *skb, __u16 *mss);
- #endif
- /* tcp_output.c */
- 
-+void tcp_skb_entail(struct sock *sk, struct sk_buff *skb);
-+void tcp_mark_push(struct tcp_sock *tp, struct sk_buff *skb);
- void __tcp_push_pending_frames(struct sock *sk, unsigned int cur_mss,
- 			       int nonagle);
- int __tcp_retransmit_skb(struct sock *sk, struct sk_buff *skb, int segs);
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 2097eeaf30a67..52f51717f02f3 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -644,7 +644,7 @@ int tcp_ioctl(struct sock *sk, int cmd, unsigned long arg)
- }
- EXPORT_SYMBOL(tcp_ioctl);
- 
--static inline void tcp_mark_push(struct tcp_sock *tp, struct sk_buff *skb)
-+void tcp_mark_push(struct tcp_sock *tp, struct sk_buff *skb)
- {
- 	TCP_SKB_CB(skb)->tcp_flags |= TCPHDR_PSH;
- 	tp->pushed_seq = tp->write_seq;
-@@ -655,7 +655,7 @@ static inline bool forced_push(const struct tcp_sock *tp)
- 	return after(tp->write_seq, tp->pushed_seq + (tp->max_window >> 1));
+diff --git a/net/netfilter/nf_tables_core.c b/net/netfilter/nf_tables_core.c
+index d4d8f613af512..7defe5a92e47f 100644
+--- a/net/netfilter/nf_tables_core.c
++++ b/net/netfilter/nf_tables_core.c
+@@ -67,6 +67,36 @@ static void nft_cmp_fast_eval(const struct nft_expr *expr,
+ 	regs->verdict.code = NFT_BREAK;
  }
  
--static void skb_entail(struct sock *sk, struct sk_buff *skb)
-+void tcp_skb_entail(struct sock *sk, struct sk_buff *skb)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct tcp_skb_cb *tcb = TCP_SKB_CB(skb);
-@@ -982,7 +982,7 @@ struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
- #ifdef CONFIG_TLS_DEVICE
- 		skb->decrypted = !!(flags & MSG_SENDPAGE_DECRYPTED);
- #endif
--		skb_entail(sk, skb);
-+		tcp_skb_entail(sk, skb);
- 		copy = size_goal;
++static noinline void __nft_trace_verdict(struct nft_traceinfo *info,
++					 const struct nft_chain *chain,
++					 const struct nft_regs *regs)
++{
++	enum nft_trace_types type;
++
++	switch (regs->verdict.code) {
++	case NFT_CONTINUE:
++	case NFT_RETURN:
++		type = NFT_TRACETYPE_RETURN;
++		break;
++	default:
++		type = NFT_TRACETYPE_RULE;
++		break;
++	}
++
++	__nft_trace_packet(info, chain, type);
++}
++
++static inline void nft_trace_verdict(struct nft_traceinfo *info,
++				     const struct nft_chain *chain,
++				     const struct nft_rule *rule,
++				     const struct nft_regs *regs)
++{
++	if (static_branch_unlikely(&nft_trace_enabled)) {
++		info->rule = rule;
++		__nft_trace_verdict(info, chain, regs);
++	}
++}
++
+ static bool nft_payload_fast_eval(const struct nft_expr *expr,
+ 				  struct nft_regs *regs,
+ 				  const struct nft_pktinfo *pkt)
+@@ -207,13 +237,13 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
+ 		break;
  	}
  
-@@ -1312,7 +1312,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 			process_backlog++;
- 			skb->ip_summed = CHECKSUM_PARTIAL;
++	nft_trace_verdict(&info, chain, rule, &regs);
++
+ 	switch (regs.verdict.code & NF_VERDICT_MASK) {
+ 	case NF_ACCEPT:
+ 	case NF_DROP:
+ 	case NF_QUEUE:
+ 	case NF_STOLEN:
+-		nft_trace_packet(&info, chain, rule,
+-				 NFT_TRACETYPE_RULE);
+ 		return regs.verdict.code;
+ 	}
  
--			skb_entail(sk, skb);
-+			tcp_skb_entail(sk, skb);
- 			copy = size_goal;
- 
- 			/* All packets are restored as if they have
+@@ -226,15 +256,10 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
+ 		stackptr++;
+ 		fallthrough;
+ 	case NFT_GOTO:
+-		nft_trace_packet(&info, chain, rule,
+-				 NFT_TRACETYPE_RULE);
+-
+ 		chain = regs.verdict.chain;
+ 		goto do_chain;
+ 	case NFT_CONTINUE:
+ 	case NFT_RETURN:
+-		nft_trace_packet(&info, chain, rule,
+-				 NFT_TRACETYPE_RETURN);
+ 		break;
+ 	default:
+ 		WARN_ON(1);
 -- 
 2.35.1
 
