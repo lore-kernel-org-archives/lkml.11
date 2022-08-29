@@ -2,56 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 454B2ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC82ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:02:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbiH2LBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        id S229901AbiH2LCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229985AbiH2LAk (ORCPT
+        with ESMTP id S229906AbiH2LBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:00:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365913AE52;
-        Mon, 29 Aug 2022 04:00:34 -0700 (PDT)
+        Mon, 29 Aug 2022 07:01:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9E663F1E;
+        Mon, 29 Aug 2022 04:01:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9952EB80EF1;
-        Mon, 29 Aug 2022 11:00:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7848C433D6;
-        Mon, 29 Aug 2022 11:00:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55A7C6119A;
+        Mon, 29 Aug 2022 11:01:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ED60C433C1;
+        Mon, 29 Aug 2022 11:01:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770831;
-        bh=MBx6hOF5luNYQBEjJGxQ2UwBra89IjVOck0JztOT5lU=;
+        s=korg; t=1661770883;
+        bh=CJRQTFu+wUrdMa03M09XgGm0xY+TyLR5hIcc/xMR2wQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yE2vNdfDrhq9FSMDmJ2KHwoAMCLtMutfT2SRiYUFOpzEk42jVeluDpwLK7wKYhhrR
-         JFYeMv+W/XtWWsGgW1c5KzUI3YK3zuYo0rTWmb8oopDlobgFv7dMuZ6kiHn/MfWzv+
-         +s/9L20ZJytxi91DlnC2PL6Gu3Ah17UwiKlTkei8=
+        b=NKnd0bIi7ugSGbsfjM7pvZ7q0rFCMgQOi2zH2nNMx8vpkw/Fkq/S9w21txF2EHogp
+         Vo5EhHP7TjKgRG2LiD8vqBgFYkV6EMjOlIIE/aiC4xoH18cVLmnV5QTteO0Jcnlxlu
+         ceSyo9PRtesGTUUjeABQ51VqierrcNxz/fM7S6c4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Peter Xu <peterx@redhat.com>, Hugh Dickins <hughd@google.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.19 001/158] mm/gup: fix FOLL_FORCE COW security issue and remove FOLL_COW
-Date:   Mon, 29 Aug 2022 12:57:31 +0200
-Message-Id: <20220829105808.886464906@linuxfoundation.org>
+        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
+        Jan Kara <jack@suse.cz>, Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.15 003/136] audit: fix potential double free on error path from fsnotify_add_inode_mark
+Date:   Mon, 29 Aug 2022 12:57:50 +0200
+Message-Id: <20220829105804.767752511@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -59,307 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Hildenbrand <david@redhat.com>
+From: Gaosheng Cui <cuigaosheng1@huawei.com>
 
-commit 5535be3099717646781ce1540cf725965d680e7b upstream.
+commit ad982c3be4e60c7d39c03f782733503cbd88fd2a upstream.
 
-Ever since the Dirty COW (CVE-2016-5195) security issue happened, we know
-that FOLL_FORCE can be possibly dangerous, especially if there are races
-that can be exploited by user space.
+Audit_alloc_mark() assign pathname to audit_mark->path, on error path
+from fsnotify_add_inode_mark(), fsnotify_put_mark will free memory
+of audit_mark->path, but the caller of audit_alloc_mark will free
+the pathname again, so there will be double free problem.
 
-Right now, it would be sufficient to have some code that sets a PTE of a
-R/O-mapped shared page dirty, in order for it to erroneously become
-writable by FOLL_FORCE.  The implications of setting a write-protected PTE
-dirty might not be immediately obvious to everyone.
+Fix this by resetting audit_mark->path to NULL pointer on error path
+from fsnotify_add_inode_mark().
 
-And in fact ever since commit 9ae0f87d009c ("mm/shmem: unconditionally set
-pte dirty in mfill_atomic_install_pte"), we can use UFFDIO_CONTINUE to map
-a shmem page R/O while marking the pte dirty.  This can be used by
-unprivileged user space to modify tmpfs/shmem file content even if the
-user does not have write permissions to the file, and to bypass memfd
-write sealing -- Dirty COW restricted to tmpfs/shmem (CVE-2022-2590).
-
-To fix such security issues for good, the insight is that we really only
-need that fancy retry logic (FOLL_COW) for COW mappings that are not
-writable (!VM_WRITE).  And in a COW mapping, we really only broke COW if
-we have an exclusive anonymous page mapped.  If we have something else
-mapped, or the mapped anonymous page might be shared (!PageAnonExclusive),
-we have to trigger a write fault to break COW.  If we don't find an
-exclusive anonymous page when we retry, we have to trigger COW breaking
-once again because something intervened.
-
-Let's move away from this mandatory-retry + dirty handling and rely on our
-PageAnonExclusive() flag for making a similar decision, to use the same
-COW logic as in other kernel parts here as well.  In case we stumble over
-a PTE in a COW mapping that does not map an exclusive anonymous page, COW
-was not properly broken and we have to trigger a fake write-fault to break
-COW.
-
-Just like we do in can_change_pte_writable() added via commit 64fe24a3e05e
-("mm/mprotect: try avoiding write faults for exclusive anonymous pages
-when changing protection") and commit 76aefad628aa ("mm/mprotect: fix
-soft-dirty check in can_change_pte_writable()"), take care of softdirty
-and uffd-wp manually.
-
-For example, a write() via /proc/self/mem to a uffd-wp-protected range has
-to fail instead of silently granting write access and bypassing the
-userspace fault handler.  Note that FOLL_FORCE is not only used for debug
-access, but also triggered by applications without debug intentions, for
-example, when pinning pages via RDMA.
-
-This fixes CVE-2022-2590. Note that only x86_64 and aarch64 are
-affected, because only those support CONFIG_HAVE_ARCH_USERFAULTFD_MINOR.
-
-Fortunately, FOLL_COW is no longer required to handle FOLL_FORCE. So
-let's just get rid of it.
-
-Thanks to Nadav Amit for pointing out that the pte_dirty() check in
-FOLL_FORCE code is problematic and might be exploitable.
-
-Note 1: We don't check for the PTE being dirty because it doesn't matter
-	for making a "was COWed" decision anymore, and whoever modifies the
-	page has to set the page dirty either way.
-
-Note 2: Kernels before extended uffd-wp support and before
-	PageAnonExclusive (< 5.19) can simply revert the problematic
-	commit instead and be safe regarding UFFDIO_CONTINUE. A backport to
-	v5.19 requires minor adjustments due to lack of
-	vma_soft_dirty_enabled().
-
-Link: https://lkml.kernel.org/r/20220809205640.70916-1-david@redhat.com
-Fixes: 9ae0f87d009c ("mm/shmem: unconditionally set pte dirty in mfill_atomic_install_pte")
-Signed-off-by: David Hildenbrand <david@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: Peter Xu <peterx@redhat.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Cc: <stable@vger.kernel.org>	[5.16]
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: David Hildenbrand <david@redhat.com>
+Cc: stable@vger.kernel.org
+Fixes: 7b1293234084d ("fsnotify: Add group pointer in fsnotify_init_mark()")
+Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/mm.h |    1 
- mm/gup.c           |   69 ++++++++++++++++++++++++++++++++++++-----------------
- mm/huge_memory.c   |   65 +++++++++++++++++++++++++++++++++----------------
- 3 files changed, 91 insertions(+), 44 deletions(-)
+ kernel/audit_fsnotify.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -2939,7 +2939,6 @@ struct page *follow_page(struct vm_area_
- #define FOLL_MIGRATION	0x400	/* wait for page to replace migration entry */
- #define FOLL_TRIED	0x800	/* a retry, previous pass started an IO */
- #define FOLL_REMOTE	0x2000	/* we are working on non-current tsk/mm */
--#define FOLL_COW	0x4000	/* internal GUP flag */
- #define FOLL_ANON	0x8000	/* don't do file mappings */
- #define FOLL_LONGTERM	0x10000	/* mapping lifetime is indefinite: see below */
- #define FOLL_SPLIT_PMD	0x20000	/* split huge pmd before returning */
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -478,14 +478,43 @@ static int follow_pfn_pte(struct vm_area
- 	return -EEXIST;
- }
+--- a/kernel/audit_fsnotify.c
++++ b/kernel/audit_fsnotify.c
+@@ -102,6 +102,7 @@ struct audit_fsnotify_mark *audit_alloc_
  
--/*
-- * FOLL_FORCE can write to even unwritable pte's, but only
-- * after we've gone through a COW cycle and they are dirty.
-- */
--static inline bool can_follow_write_pte(pte_t pte, unsigned int flags)
-+/* FOLL_FORCE can write to even unwritable PTEs in COW mappings. */
-+static inline bool can_follow_write_pte(pte_t pte, struct page *page,
-+					struct vm_area_struct *vma,
-+					unsigned int flags)
- {
--	return pte_write(pte) ||
--		((flags & FOLL_FORCE) && (flags & FOLL_COW) && pte_dirty(pte));
-+	/* If the pte is writable, we can write to the page. */
-+	if (pte_write(pte))
-+		return true;
-+
-+	/* Maybe FOLL_FORCE is set to override it? */
-+	if (!(flags & FOLL_FORCE))
-+		return false;
-+
-+	/* But FOLL_FORCE has no effect on shared mappings */
-+	if (vma->vm_flags & (VM_MAYSHARE | VM_SHARED))
-+		return false;
-+
-+	/* ... or read-only private ones */
-+	if (!(vma->vm_flags & VM_MAYWRITE))
-+		return false;
-+
-+	/* ... or already writable ones that just need to take a write fault */
-+	if (vma->vm_flags & VM_WRITE)
-+		return false;
-+
-+	/*
-+	 * See can_change_pte_writable(): we broke COW and could map the page
-+	 * writable if we have an exclusive anonymous page ...
-+	 */
-+	if (!page || !PageAnon(page) || !PageAnonExclusive(page))
-+		return false;
-+
-+	/* ... and a write-fault isn't required for other reasons. */
-+	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) &&
-+	    !(vma->vm_flags & VM_SOFTDIRTY) && !pte_soft_dirty(pte))
-+		return false;
-+	return !userfaultfd_pte_wp(vma, pte);
- }
- 
- static struct page *follow_page_pte(struct vm_area_struct *vma,
-@@ -528,12 +557,19 @@ retry:
+ 	ret = fsnotify_add_inode_mark(&audit_mark->mark, inode, true);
+ 	if (ret < 0) {
++		audit_mark->path = NULL;
+ 		fsnotify_put_mark(&audit_mark->mark);
+ 		audit_mark = ERR_PTR(ret);
  	}
- 	if ((flags & FOLL_NUMA) && pte_protnone(pte))
- 		goto no_page;
--	if ((flags & FOLL_WRITE) && !can_follow_write_pte(pte, flags)) {
--		pte_unmap_unlock(ptep, ptl);
--		return NULL;
--	}
- 
- 	page = vm_normal_page(vma, address, pte);
-+
-+	/*
-+	 * We only care about anon pages in can_follow_write_pte() and don't
-+	 * have to worry about pte_devmap() because they are never anon.
-+	 */
-+	if ((flags & FOLL_WRITE) &&
-+	    !can_follow_write_pte(pte, page, vma, flags)) {
-+		page = NULL;
-+		goto out;
-+	}
-+
- 	if (!page && pte_devmap(pte) && (flags & (FOLL_GET | FOLL_PIN))) {
- 		/*
- 		 * Only return device mapping pages in the FOLL_GET or FOLL_PIN
-@@ -967,17 +1003,6 @@ static int faultin_page(struct vm_area_s
- 		return -EBUSY;
- 	}
- 
--	/*
--	 * The VM_FAULT_WRITE bit tells us that do_wp_page has broken COW when
--	 * necessary, even if maybe_mkwrite decided not to set pte_write. We
--	 * can thus safely do subsequent page lookups as if they were reads.
--	 * But only do so when looping for pte_write is futile: in some cases
--	 * userspace may also be wanting to write to the gotten user page,
--	 * which a read fault here might prevent (a readonly page might get
--	 * reCOWed by userspace write).
--	 */
--	if ((ret & VM_FAULT_WRITE) && !(vma->vm_flags & VM_WRITE))
--		*flags |= FOLL_COW;
- 	return 0;
- }
- 
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -978,12 +978,6 @@ struct page *follow_devmap_pmd(struct vm
- 
- 	assert_spin_locked(pmd_lockptr(mm, pmd));
- 
--	/*
--	 * When we COW a devmap PMD entry, we split it into PTEs, so we should
--	 * not be in this function with `flags & FOLL_COW` set.
--	 */
--	WARN_ONCE(flags & FOLL_COW, "mm: In follow_devmap_pmd with FOLL_COW set");
--
- 	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
- 	if (WARN_ON_ONCE((flags & (FOLL_PIN | FOLL_GET)) ==
- 			 (FOLL_PIN | FOLL_GET)))
-@@ -1349,14 +1343,43 @@ fallback:
- 	return VM_FAULT_FALLBACK;
- }
- 
--/*
-- * FOLL_FORCE can write to even unwritable pmd's, but only
-- * after we've gone through a COW cycle and they are dirty.
-- */
--static inline bool can_follow_write_pmd(pmd_t pmd, unsigned int flags)
-+/* FOLL_FORCE can write to even unwritable PMDs in COW mappings. */
-+static inline bool can_follow_write_pmd(pmd_t pmd, struct page *page,
-+					struct vm_area_struct *vma,
-+					unsigned int flags)
- {
--	return pmd_write(pmd) ||
--	       ((flags & FOLL_FORCE) && (flags & FOLL_COW) && pmd_dirty(pmd));
-+	/* If the pmd is writable, we can write to the page. */
-+	if (pmd_write(pmd))
-+		return true;
-+
-+	/* Maybe FOLL_FORCE is set to override it? */
-+	if (!(flags & FOLL_FORCE))
-+		return false;
-+
-+	/* But FOLL_FORCE has no effect on shared mappings */
-+	if (vma->vm_flags & (VM_MAYSHARE | VM_SHARED))
-+		return false;
-+
-+	/* ... or read-only private ones */
-+	if (!(vma->vm_flags & VM_MAYWRITE))
-+		return false;
-+
-+	/* ... or already writable ones that just need to take a write fault */
-+	if (vma->vm_flags & VM_WRITE)
-+		return false;
-+
-+	/*
-+	 * See can_change_pte_writable(): we broke COW and could map the page
-+	 * writable if we have an exclusive anonymous page ...
-+	 */
-+	if (!page || !PageAnon(page) || !PageAnonExclusive(page))
-+		return false;
-+
-+	/* ... and a write-fault isn't required for other reasons. */
-+	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) &&
-+	    !(vma->vm_flags & VM_SOFTDIRTY) && !pmd_soft_dirty(pmd))
-+		return false;
-+	return !userfaultfd_huge_pmd_wp(vma, pmd);
- }
- 
- struct page *follow_trans_huge_pmd(struct vm_area_struct *vma,
-@@ -1365,12 +1388,16 @@ struct page *follow_trans_huge_pmd(struc
- 				   unsigned int flags)
- {
- 	struct mm_struct *mm = vma->vm_mm;
--	struct page *page = NULL;
-+	struct page *page;
- 
- 	assert_spin_locked(pmd_lockptr(mm, pmd));
- 
--	if (flags & FOLL_WRITE && !can_follow_write_pmd(*pmd, flags))
--		goto out;
-+	page = pmd_page(*pmd);
-+	VM_BUG_ON_PAGE(!PageHead(page) && !is_zone_device_page(page), page);
-+
-+	if ((flags & FOLL_WRITE) &&
-+	    !can_follow_write_pmd(*pmd, page, vma, flags))
-+		return NULL;
- 
- 	/* Avoid dumping huge zero page */
- 	if ((flags & FOLL_DUMP) && is_huge_zero_pmd(*pmd))
-@@ -1378,10 +1405,7 @@ struct page *follow_trans_huge_pmd(struc
- 
- 	/* Full NUMA hinting faults to serialise migration in fault paths */
- 	if ((flags & FOLL_NUMA) && pmd_protnone(*pmd))
--		goto out;
--
--	page = pmd_page(*pmd);
--	VM_BUG_ON_PAGE(!PageHead(page) && !is_zone_device_page(page), page);
-+		return NULL;
- 
- 	if (!pmd_write(*pmd) && gup_must_unshare(flags, page))
- 		return ERR_PTR(-EMLINK);
-@@ -1398,7 +1422,6 @@ struct page *follow_trans_huge_pmd(struc
- 	page += (addr & ~HPAGE_PMD_MASK) >> PAGE_SHIFT;
- 	VM_BUG_ON_PAGE(!PageCompound(page) && !is_zone_device_page(page), page);
- 
--out:
- 	return page;
- }
- 
 
 
