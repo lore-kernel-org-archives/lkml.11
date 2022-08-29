@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8171BECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:27:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E72ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229958AbiH2V1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 17:27:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
+        id S229967AbiH2V1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 17:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229950AbiH2V0t (ORCPT
+        with ESMTP id S229956AbiH2V0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 17:26:49 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04D474DCB
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:18 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id 36-20020a17090a0fa700b001fd64c962afso3800076pjz.5
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:18 -0700 (PDT)
+        Mon, 29 Aug 2022 17:26:50 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CAE9E888
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:15 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id i25-20020a635859000000b0042bbb74be8bso2624710pgm.5
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=2fd/wGll+ATU6BJRTn7wtpRUT69Ps19K4L9NuJFwTCo=;
-        b=CptXAEbTEIrjcI1hpAhqMGzwstwkcEJJxmfb7we2Tkw33BFQo0d25Vl71IxE1hgwCE
-         +/zdjUxBz/kfwlykJ2mpRLD2ASHh0Jx/8NPF+GvmOj+OIPDuJ9h8tJ0qgl8jIPnA0gyY
-         HL/K18g+JnPGw8ocd38eG5KHL97qZgAE2vHMSq8EmM7kYFzwJqKpJAdVhwHK8rQ0CEUk
-         zlwtiJI41bKlNxlGW7NWWuuvJOTrejKhLXTonY1HBOreH+6SF0a8TMKsBr5d7H138Lnw
-         MYC4Krs42a4eoKPM77oYkjvTzwtNbqixe2Jty6RY0Tg1xXxoDrCaGfCoHKiNRbMG4ac9
-         6NkA==
+        bh=K93TFWAb7JwQdWCvuFbBF/NwLgqzppA/TxAstG/QPvU=;
+        b=f8ZHy6CiTcDXROb3pFMLfetBSV+kFVTeZws7OjDiiohYptMrJjGynWZ4jN+J/j3SJj
+         dCEDPAmPkmnX5B3X46hqeY2mb8ZvMpLB7j64gw3uDHSYMAUM2B6ucp8KKPug6MxLnEu7
+         BmebG6DC6czjsVXnb7ENc9u7p9QGYJElvc7qRNsIMqXvgjewnR2ulhT9EyPiZ2zz1B9D
+         56/cpf1MfCjBxFK5vFsjvAIH2zjjfVoYxcmJWgmvbc3eCKVdp1qhJM+tuigQjNUJJMgZ
+         jrHBPRDF7lp+rxYzH8zskIPXprMRBcWxeh9qo4POOeyeUnThUPILDVIwum49CxVeKLEs
+         T9zA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=2fd/wGll+ATU6BJRTn7wtpRUT69Ps19K4L9NuJFwTCo=;
-        b=HSqoH+9LDmkeOjE5+0qscOIrkwQQdDtmrOd/0Ibs+OSb6voR6T3yUT9R4md7TDZgpc
-         Brn8EP8jIYdKS3b7xZrak0H7vh2vPFNFTtUXyebg4t6uOVesUTeITl9Zf3bJsstqg3/2
-         UnzcDX//LsbKdkGD/79llnmFHn94PVMnL7KOxwbZHtckSuFFPBvzZCY67CJWjxLG3N9l
-         MO0TpDFNLLWKX5mPQSzLVe1ige5h5oCzn7ei7D/4X69JwQDN/7zRkh1eONABiIJxDbDa
-         d/5KsS+xQx+wWXfWCuV/U0/q/VYjKiAj0t18EiFuNk4TPVawzh7wdCR+rDUfjgyRY7oh
-         VNqQ==
-X-Gm-Message-State: ACgBeo3aootgj6cTHOBsoHv74Q6EiVC9mJmAKtj8ztKyrpYmPOMJQ2+P
-        peTNQDQYR/+CbgpAFljQPK7vlrckh+I=
-X-Google-Smtp-Source: AA6agR5QjqhJOQoDiATaLtKSN9vwads3L2SWpCSYlmwHfKycrJZLy9F13OZO0MNqEBq8/z8yofCbHCaZE68=
+        bh=K93TFWAb7JwQdWCvuFbBF/NwLgqzppA/TxAstG/QPvU=;
+        b=yguYos31KDmZgoOyO8nJfP16xaXx0z1lgP88ijLpXJHVPgTHRit6rUC0gMN0a1GM9/
+         Pk63QZUh48bjR1BMHvO5DliukMhHp+CHpr9N2hlxv9RVqDoPeTUilVRcp70yG+26CBf9
+         7i4atw6V8nGbhNOrcQwnFy02upV3gv/Gu/ArIdacVcp8pP09TKoedJuUew1au7AHY2ZA
+         C6r/YHlM6Nh0IEMLRCROJZUM8D9+NdEYprL5f6WFoxyRvC2j0ATpZsVxOT7s3IMLmWcI
+         56ixFtTHqhm0kX2MunIhKf2SbzqdxhIpkpyxBZpJlBRei7y6PQ190fhadaXwgxHleXhK
+         Hhsg==
+X-Gm-Message-State: ACgBeo0okVUtIzeeQKkMM2cxSjbQ+s3Y5jzsZV/Xc3cF4GZeYocaP+uv
+        6QMc8/SvUZz737/Bq1M3OqQVhnwEdN4=
+X-Google-Smtp-Source: AA6agR7nf9+ItGZZ0+7hqrcNY7xNhTop6ny3nOph/OxIOFh5WmAm4Kp1l2Jp+ca/L6EEvcmkimt0snMwAs0=
 X-Received: from surenb-spec.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e30])
- (user=surenb job=sendgmr) by 2002:a17:902:d54b:b0:174:af35:4ba0 with SMTP id
- z11-20020a170902d54b00b00174af354ba0mr7860599plf.74.1661808376452; Mon, 29
- Aug 2022 14:26:16 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 21:25:26 +0000
+ (user=surenb job=sendgmr) by 2002:a17:902:b094:b0:173:12d1:4ece with SMTP id
+ p20-20020a170902b09400b0017312d14ecemr18383730plr.117.1661808370030; Mon, 29
+ Aug 2022 14:26:10 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 21:25:22 +0000
 In-Reply-To: <20220829212531.3184856-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220829212531.3184856-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220829212531.3184856-24-surenb@google.com>
-Subject: [RFC PATCH 23/28] x86/mm: define ARCH_SUPPORTS_PER_VMA_LOCK
+Message-ID: <20220829212531.3184856-20-surenb@google.com>
+Subject: [RFC PATCH 19/28] mm: disallow do_swap_page to handle page faults
+ under VMA lock
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     michel@lespinasse.org, jglisse@google.com, mhocko@suse.com,
@@ -73,26 +74,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set ARCH_SUPPORTS_PER_VMA_LOCK so that the per-VMA lock support can be
-compiled on this architecture.
+Due to the possibility of do_swap_page dropping mmap_lock, abort fault
+handling under VMA lock and retry holding mmap_lock. This can be handled
+more gracefully in the future.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- arch/x86/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ mm/memory.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index f9920f1341c8..ee19de020b27 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -27,6 +27,7 @@ config X86_64
- 	# Options that are inherently 64-bit kernel only:
- 	select ARCH_HAS_GIGANTIC_PAGE
- 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
-+	select ARCH_SUPPORTS_PER_VMA_LOCK
- 	select ARCH_USE_CMPXCHG_LOCKREF
- 	select HAVE_ARCH_SOFT_DIRTY
- 	select MODULES_USE_ELF_RELA
+diff --git a/mm/memory.c b/mm/memory.c
+index 9ac9944e8c62..29d2f49f922a 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3738,6 +3738,11 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
+ 	vm_fault_t ret = 0;
+ 	void *shadow = NULL;
+ 
++	if (vmf->flags & FAULT_FLAG_VMA_LOCK) {
++		ret = VM_FAULT_RETRY;
++		goto out;
++	}
++
+ 	if (!pte_unmap_same(vmf))
+ 		goto out;
+ 
 -- 
 2.37.2.672.g94769d06f0-goog
 
