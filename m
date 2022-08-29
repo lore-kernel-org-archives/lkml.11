@@ -2,113 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E4AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02961ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbiH2Q7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:59:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
+        id S231158AbiH2RAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231226AbiH2Q7S (ORCPT
+        with ESMTP id S231209AbiH2RAJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:59:18 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9765B9A9BE
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:59:17 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id c2so8597811plo.3
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=pNNDtWhRQjr1AbDSAN5+sxqnMgrurCAJQVg6nJa7vfw=;
-        b=X1qDKkSS9TNEmj3bF7vdVkXX21PIwg6DSgGwldzYDeoH3mrqhKbD5dIiG/W/rE/c88
-         hqD+dF0v7EStFR9p/AywuaafIIdLE67ZDf4RdqvUo5u9CrVs2bt2xR6MnsjQ66h/7QNv
-         HQHEZQNcgqFKT6wlRymcQavXXBoN6H40vWOog=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=pNNDtWhRQjr1AbDSAN5+sxqnMgrurCAJQVg6nJa7vfw=;
-        b=Dd9MzJ2rC8kAF62+S9kuq0hxAA2nyl0DfPnmxJV2XursVsS1dxxFtHcWEHl5zbfye/
-         VYkSSRfHdeiqn2ugfn3+d52GJu0YLNfxWgkaaRhR4gXr9qPlYoY+EKJid1qIWs6PN6pF
-         BmCvsVG9YDNzkbGiQkaE2YU/qWTEIR7ljtV0MWstxJSSu/eZbMi4GK0PQGWdFwXal8+b
-         /TsIdLAmpWKesG3oQsUCPpCASroz8SsyHt5IFJyksM7uyKnMdrWUr2cdn960xshtOhBW
-         eQ4aa1ZJ4V7zsCAf23wKRSMKaOgRZ04hiJlQP7UMpvbs2MNPBJxHA8HHjFubLDEAYpu8
-         hMOg==
-X-Gm-Message-State: ACgBeo2tyqIhZl87FyVhuUyJHlv97EbSC6HMSIkRLO9RsBS6SyjzfbVz
-        BL2Ho0/aKEBM98YgJyfinMEF8SuaXP64rnuJ
-X-Google-Smtp-Source: AA6agR5sfws+mCqY/K5lEnwq82XyHLdfD/bjbyZhdtjkJMjSkhiHXuzf/ICFICRCTas1JUIPZAOP2w==
-X-Received: by 2002:a17:903:245:b0:16f:85be:f33b with SMTP id j5-20020a170903024500b0016f85bef33bmr17275867plh.96.1661792356817;
-        Mon, 29 Aug 2022 09:59:16 -0700 (PDT)
-Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com. [209.85.210.178])
-        by smtp.gmail.com with ESMTPSA id nh16-20020a17090b365000b001fd8316db51sm3303267pjb.7.2022.08.29.09.59.16
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 09:59:16 -0700 (PDT)
-Received: by mail-pf1-f178.google.com with SMTP id x19so6914556pfr.1
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:59:16 -0700 (PDT)
-X-Received: by 2002:a05:6e02:16ca:b0:2e9:c225:3f82 with SMTP id
- 10-20020a056e0216ca00b002e9c2253f82mr10397435ilx.254.1661791913591; Mon, 29
- Aug 2022 09:51:53 -0700 (PDT)
+        Mon, 29 Aug 2022 13:00:09 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AF34A811;
+        Mon, 29 Aug 2022 10:00:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661792407; x=1693328407;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6nppHl6aPXqc0co9Epu68ExNtuFi/fpCELicTEOpI80=;
+  b=Qjw3/7BFfbUa9vcgckOXu9Opxf/g/G5pfRyCOf49MTRw1zBbjffsuEjE
+   Qx0C0jFPt2U/W5YCOWqLleRF09DtDymEztDQdn4sZUMcDuGI6ywtnKZ1v
+   NXUV/8yFggHf+SV4e2rv5H4JDd8PA4qLstAfPcZA3pNYnpfauS5xdP8Es
+   pilXT02Xkw8bIedF/AffvpXkp39K3ildMOmEB6F5DGtSWfHpkoOWgqLlp
+   P5hEDPOsDyQi08Dizo1/ACmAe1LfesqMFsiaEvXgi3Ae3vkx/WacqQgc+
+   wOaeoQbod8bXJj9AYGnLJ+hd5NldSckUYCVeVNQhAbbU1s9qNTKbrHQLP
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="295724910"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="295724910"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 10:00:05 -0700
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="562295517"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 10:00:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oSi7F-005c6k-2I;
+        Mon, 29 Aug 2022 20:00:01 +0300
+Date:   Mon, 29 Aug 2022 20:00:01 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc:     Linux ACPI <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH v1] ACPI: property: Use acpi_dev_parent()
+Message-ID: <YwzwkdAZwNTBQ3gh@smile.fi.intel.com>
+References: <4756666.GXAFRqVoOG@kreacher>
 MIME-Version: 1.0
-References: <20220825164205.4060647-1-dianders@chromium.org> <YwhwIX+Ib8epUYWS@hovoldconsulting.com>
-In-Reply-To: <YwhwIX+Ib8epUYWS@hovoldconsulting.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Mon, 29 Aug 2022 09:51:40 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XV2Tjuh+AfaQ3gdnBvy27okb2zgbQ6e+23KGBZo38Y7w@mail.gmail.com>
-Message-ID: <CAD=FV=XV2Tjuh+AfaQ3gdnBvy27okb2zgbQ6e+23KGBZo38Y7w@mail.gmail.com>
-Subject: Re: [PATCH 0/7] arm64: dts: qcom: Fix broken regulator spec on RPMH boards
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andrew Halaney <ahalaney@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4756666.GXAFRqVoOG@kreacher>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Mon, Aug 29, 2022 at 06:12:33PM +0200, Rafael J. Wysocki wrote:
+> From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> 
+> After introducing acpi_dev_parent() in commit 62fcb99bdf10 ("ACPI: Drop
+> parent field from struct acpi_device"), it is better to use it instead
+> of accessing the dev.parent field in struct acpi_device directly.
+> 
+> Modify acpi_node_get_parent() accordingly.
 
-On Fri, Aug 26, 2022 at 12:02 AM Johan Hovold <johan@kernel.org> wrote:
->
-> > Douglas Anderson (7):
-> >   arm64: dts: qcom: sa8155p-adp: Specify which LDO modes are allowed
->
-> >   arm64: dts: qcom: sa8295p-adp: Specify which LDO modes are allowed
-> >   arm64: dts: qcom: sc8280xp-crd: Specify which LDO modes are allowed
->
-> These two should be rebased on
->
->         https://lore.kernel.org/all/20220803121942.30236-1-johan+linaro@kernel.org/
->
-> which disallows mode-switching for all but the UFS regulators (this
-> series addresses the DP PHY LPM regression we've discussed elsewhere).
->
-> >   arm64: dts: qcom: sc8280xp-thinkpad-x13s: Specify which LDO modes are
-> >     allowed
->
-> And this one should not be needed at all with the above series applied.
->
-> >   arm64: dts: qcom: sm8150-xperia-kumano: Specify which LDO modes are
-> >     allowed
-> >   arm64: dts: qcom: sm8250-xperia-edo: Specify which LDO modes are
-> >     allowed
-> >   arm64: dts: qcom: sm8350-hdk: Specify which LDO modes are allowed
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Thanks! v2 has been sent and it's rebased upon your series:
+Thanks!
 
-https://lore.kernel.org/r/20220829164952.2672848-1-dianders@chromium.org
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> ---
+>  drivers/acpi/property.c |    7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> Index: linux-pm/drivers/acpi/property.c
+> ===================================================================
+> --- linux-pm.orig/drivers/acpi/property.c
+> +++ linux-pm/drivers/acpi/property.c
+> @@ -1269,10 +1269,11 @@ acpi_node_get_parent(const struct fwnode
+>  		return to_acpi_data_node(fwnode)->parent;
+>  	}
+>  	if (is_acpi_device_node(fwnode)) {
+> -		struct device *dev = to_acpi_device_node(fwnode)->dev.parent;
+> +		struct acpi_device *parent;
+>  
+> -		if (dev)
+> -			return acpi_fwnode_handle(to_acpi_device(dev));
+> +		parent = acpi_dev_parent(to_acpi_device_node(fwnode));
+> +		if (parent)
+> +			return acpi_fwnode_handle(parent);
+>  	}
+>  
+>  	return NULL;
+> 
+> 
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
