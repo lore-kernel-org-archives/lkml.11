@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 046BEECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8A5ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231311AbiH2LPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
+        id S231314AbiH2LPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:15:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbiH2LNP (ORCPT
+        with ESMTP id S231152AbiH2LNP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:13:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C449367466;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B04642FD;
         Mon, 29 Aug 2022 04:09:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 497EAB80F62;
-        Mon, 29 Aug 2022 11:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABE34C433C1;
-        Mon, 29 Aug 2022 11:06:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA0D2B80F9F;
+        Mon, 29 Aug 2022 11:08:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57A2EC433C1;
+        Mon, 29 Aug 2022 11:08:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771171;
-        bh=s7eF9NwYEnA1jJfoLT91F6RR6BTDDin/ANpzZ0OzDcM=;
+        s=korg; t=1661771305;
+        bh=EhO4c/+cMB6uroShY7lZIz85XgH8vYWIQucjfkDypgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mk/kr0vlrj5V8m4Qfymu3HatyXrPrpQTbNRUAm5CdryKwj5B63jSeHigkMwCwUD6T
-         suvD82EHboSkpYvZiGhaL6/Soo2UEcLjIl11J/ZWk0+VV91dWlNsJ+MZvP4xQ5rKoO
-         m4NurU5czcG98+KleIMlGwhFyIH1oiOsTnC7A1+4=
+        b=xBFq0JX+Y+7yC1sxBz+BiJ/5E9jtbj35m1Om6jJsQo9wK+N4EZOdtVlK8qZAfmX1L
+         1F8g3lBWBE/CyEq41TJSE+PDHF7vCNUhiE1bC2wWqt/oSLheryARCAarAr5sz8qGaU
+         XELLyh25R5Xiql2n3FV1YDnINljzfTKC3hQ6akBY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 075/136] net: Fix data-races around sysctl_optmem_max.
-Date:   Mon, 29 Aug 2022 12:59:02 +0200
-Message-Id: <20220829105807.717718990@linuxfoundation.org>
+Subject: [PATCH 5.10 49/86] net: Fix data-races around netdev_tstamp_prequeue.
+Date:   Mon, 29 Aug 2022 12:59:15 +0200
+Message-Id: <20220829105758.530485638@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,157 +51,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 7de6d09f51917c829af2b835aba8bb5040f8e86a ]
+[ Upstream commit 61adf447e38664447526698872e21c04623afb8e ]
 
-While reading sysctl_optmem_max, it can be changed concurrently.
+While reading netdev_tstamp_prequeue, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 3b098e2d7c69 ("net: Consistent skb timestamping")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/bpf_sk_storage.c | 5 +++--
- net/core/filter.c         | 9 +++++----
- net/core/sock.c           | 8 +++++---
- net/ipv4/ip_sockglue.c    | 6 +++---
- net/ipv6/ipv6_sockglue.c  | 4 ++--
- 5 files changed, 18 insertions(+), 14 deletions(-)
+ net/core/dev.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index d2745c54737e3..910ca41cb9e67 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -305,11 +305,12 @@ BPF_CALL_2(bpf_sk_storage_delete, struct bpf_map *, map, struct sock *, sk)
- static int bpf_sk_storage_charge(struct bpf_local_storage_map *smap,
- 				 void *owner, u32 size)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 215c43aecc67e..1ea75768c5b23 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4795,7 +4795,7 @@ static int netif_rx_internal(struct sk_buff *skb)
  {
-+	int optmem_max = READ_ONCE(sysctl_optmem_max);
- 	struct sock *sk = (struct sock *)owner;
+ 	int ret;
  
- 	/* same check as in sock_kmalloc() */
--	if (size <= sysctl_optmem_max &&
--	    atomic_read(&sk->sk_omem_alloc) + size < sysctl_optmem_max) {
-+	if (size <= optmem_max &&
-+	    atomic_read(&sk->sk_omem_alloc) + size < optmem_max) {
- 		atomic_add(size, &sk->sk_omem_alloc);
- 		return 0;
- 	}
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 2da00f6329e83..fb5b9dbf3bc08 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -1213,10 +1213,11 @@ void sk_filter_uncharge(struct sock *sk, struct sk_filter *fp)
- static bool __sk_filter_charge(struct sock *sk, struct sk_filter *fp)
+-	net_timestamp_check(netdev_tstamp_prequeue, skb);
++	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 
+ 	trace_netif_rx(skb);
+ 
+@@ -5156,7 +5156,7 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+ 	int ret = NET_RX_DROP;
+ 	__be16 type;
+ 
+-	net_timestamp_check(!netdev_tstamp_prequeue, skb);
++	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
+ 
+ 	trace_netif_receive_skb(skb);
+ 
+@@ -5558,7 +5558,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
  {
- 	u32 filter_size = bpf_prog_size(fp->prog->len);
-+	int optmem_max = READ_ONCE(sysctl_optmem_max);
+ 	int ret;
  
- 	/* same check as in sock_kmalloc() */
--	if (filter_size <= sysctl_optmem_max &&
--	    atomic_read(&sk->sk_omem_alloc) + filter_size < sysctl_optmem_max) {
-+	if (filter_size <= optmem_max &&
-+	    atomic_read(&sk->sk_omem_alloc) + filter_size < optmem_max) {
- 		atomic_add(filter_size, &sk->sk_omem_alloc);
- 		return true;
- 	}
-@@ -1548,7 +1549,7 @@ int sk_reuseport_attach_filter(struct sock_fprog *fprog, struct sock *sk)
- 	if (IS_ERR(prog))
- 		return PTR_ERR(prog);
+-	net_timestamp_check(netdev_tstamp_prequeue, skb);
++	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
  
--	if (bpf_prog_size(prog->len) > sysctl_optmem_max)
-+	if (bpf_prog_size(prog->len) > READ_ONCE(sysctl_optmem_max))
- 		err = -ENOMEM;
- 	else
- 		err = reuseport_attach_prog(sk, prog);
-@@ -1615,7 +1616,7 @@ int sk_reuseport_attach_bpf(u32 ufd, struct sock *sk)
- 		}
- 	} else {
- 		/* BPF_PROG_TYPE_SOCKET_FILTER */
--		if (bpf_prog_size(prog->len) > sysctl_optmem_max) {
-+		if (bpf_prog_size(prog->len) > READ_ONCE(sysctl_optmem_max)) {
- 			err = -ENOMEM;
- 			goto err_prog_put;
- 		}
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 62fd486213d2b..5ab7b59cdab83 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -2368,7 +2368,7 @@ struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
+ 	if (skb_defer_rx_timestamp(skb))
+ 		return NET_RX_SUCCESS;
+@@ -5588,7 +5588,7 @@ static void netif_receive_skb_list_internal(struct list_head *head)
  
- 	/* small safe race: SKB_TRUESIZE may differ from final skb->truesize */
- 	if (atomic_read(&sk->sk_omem_alloc) + SKB_TRUESIZE(size) >
--	    sysctl_optmem_max)
-+	    READ_ONCE(sysctl_optmem_max))
- 		return NULL;
- 
- 	skb = alloc_skb(size, priority);
-@@ -2386,8 +2386,10 @@ struct sk_buff *sock_omalloc(struct sock *sk, unsigned long size,
-  */
- void *sock_kmalloc(struct sock *sk, int size, gfp_t priority)
- {
--	if ((unsigned int)size <= sysctl_optmem_max &&
--	    atomic_read(&sk->sk_omem_alloc) + size < sysctl_optmem_max) {
-+	int optmem_max = READ_ONCE(sysctl_optmem_max);
-+
-+	if ((unsigned int)size <= optmem_max &&
-+	    atomic_read(&sk->sk_omem_alloc) + size < optmem_max) {
- 		void *mem;
- 		/* First do the add, to avoid the race if kmalloc
- 		 * might sleep.
-diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index 38f296afb663d..1e2af5f8822df 100644
---- a/net/ipv4/ip_sockglue.c
-+++ b/net/ipv4/ip_sockglue.c
-@@ -772,7 +772,7 @@ static int ip_set_mcast_msfilter(struct sock *sk, sockptr_t optval, int optlen)
- 
- 	if (optlen < GROUP_FILTER_SIZE(0))
- 		return -EINVAL;
--	if (optlen > sysctl_optmem_max)
-+	if (optlen > READ_ONCE(sysctl_optmem_max))
- 		return -ENOBUFS;
- 
- 	gsf = memdup_sockptr(optval, optlen);
-@@ -808,7 +808,7 @@ static int compat_ip_set_mcast_msfilter(struct sock *sk, sockptr_t optval,
- 
- 	if (optlen < size0)
- 		return -EINVAL;
--	if (optlen > sysctl_optmem_max - 4)
-+	if (optlen > READ_ONCE(sysctl_optmem_max) - 4)
- 		return -ENOBUFS;
- 
- 	p = kmalloc(optlen + 4, GFP_KERNEL);
-@@ -1231,7 +1231,7 @@ static int do_ip_setsockopt(struct sock *sk, int level, int optname,
- 
- 		if (optlen < IP_MSFILTER_SIZE(0))
- 			goto e_inval;
--		if (optlen > sysctl_optmem_max) {
-+		if (optlen > READ_ONCE(sysctl_optmem_max)) {
- 			err = -ENOBUFS;
- 			break;
- 		}
-diff --git a/net/ipv6/ipv6_sockglue.c b/net/ipv6/ipv6_sockglue.c
-index e4bdb09c55867..8a1c78f385084 100644
---- a/net/ipv6/ipv6_sockglue.c
-+++ b/net/ipv6/ipv6_sockglue.c
-@@ -208,7 +208,7 @@ static int ipv6_set_mcast_msfilter(struct sock *sk, sockptr_t optval,
- 
- 	if (optlen < GROUP_FILTER_SIZE(0))
- 		return -EINVAL;
--	if (optlen > sysctl_optmem_max)
-+	if (optlen > READ_ONCE(sysctl_optmem_max))
- 		return -ENOBUFS;
- 
- 	gsf = memdup_sockptr(optval, optlen);
-@@ -242,7 +242,7 @@ static int compat_ipv6_set_mcast_msfilter(struct sock *sk, sockptr_t optval,
- 
- 	if (optlen < size0)
- 		return -EINVAL;
--	if (optlen > sysctl_optmem_max - 4)
-+	if (optlen > READ_ONCE(sysctl_optmem_max) - 4)
- 		return -ENOBUFS;
- 
- 	p = kmalloc(optlen + 4, GFP_KERNEL);
+ 	INIT_LIST_HEAD(&sublist);
+ 	list_for_each_entry_safe(skb, next, head, list) {
+-		net_timestamp_check(netdev_tstamp_prequeue, skb);
++		net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 		skb_list_del_init(skb);
+ 		if (!skb_defer_rx_timestamp(skb))
+ 			list_add_tail(&skb->list, &sublist);
 -- 
 2.35.1
 
