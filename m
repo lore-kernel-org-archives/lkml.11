@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49177ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:27:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D280EECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbiH2V1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 17:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
+        id S229863AbiH2V1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 17:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbiH2V0m (ORCPT
+        with ESMTP id S229940AbiH2V0n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 17:26:42 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A886798588
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:02 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id k1-20020a17090a658100b001fb35f86ccdso10084925pjj.9
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:02 -0700 (PDT)
+        Mon, 29 Aug 2022 17:26:43 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A19F9E891
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:15 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id q9-20020a17090aa00900b001fd93514a68so4327603pjp.3
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=J1u/YkZ7r4U6qP3j3HXey3MGQlv66sCtBUAUQwGtkmo=;
-        b=bssUgHF5w47sbr7l7KTrCUB9BNCgN6M5weE9wkVgXyWLQuTUzyGpg0OJvcyz0sW5UD
-         jBcbuP4XXvP/J4pS6AqtYRXplk3ioZfRWOizdHfYubwqdaFV7iqu+wCAfN30wOXuSJR5
-         rOeSjLAnMTV/UMrEb+PillTsGibQBZHi92r8Zd7PRmmwTLk5upCdMt9/ApQU+Kr/zUNy
-         g3HC4+2oFiondWWpmL/CQDHhjiEfoJFEyDpo5hDjW6J9yE1A4zjv6LFdAo5+gh9e4xsA
-         3B8ihRdAo9AsX2EZ1zty6Setu8LqB98WdsMEL3dnRqIhFnd/9nqnY8Jcva4fprwPuNko
-         5pyg==
+        bh=+ZeFgC+onLi5H2Gk/r+wfB2lUIAEpTgiMaISz2j8Yh8=;
+        b=sfdQ+2NyYwxA7WE4W+U26tjnRsGpTwH+W4yCMsULIhDPYOMjHM3COZzPg/S6KTqrLL
+         mCgPnd6W8rrgwvL37XiGeYHG8ArgrFQG0UGf2gLsolv/ME8hJmTyRg7Fg1LBPlsPaNI3
+         te4whtYEHF8c2GeRvQHa/rDrJjk62KSTUlVEPYqGvjKgQGKn8f4Dp8C4KiASRefP1Qh1
+         bQmVBjd8KI32N8+vGT1M5VRcf57cOjajmNaLyJUUpin1ccvlQLSGjkUAJOTaDxWOJrJ5
+         Pk3cN7LOZgsgUwKnowGjucplCuekHbu//K343iXFhb3F2AjszKhuURdvTUr7Fsy7vLjJ
+         fKug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=J1u/YkZ7r4U6qP3j3HXey3MGQlv66sCtBUAUQwGtkmo=;
-        b=chesZP8fpu+lqS1YYS84XLjXNgxOzZ14Jb0YwZ8iRxjSwPVX0adPUfGp86rplQgHDo
-         vvXW7HO6NLGOaB53JTK9EEegCegFEnjdsWMjnrh1vF+XNaged6+cUMN/Es36O7/HAtik
-         oTPV1xlRo7WZPdamDPBEMZggDpSH7eea+RKyrS5pFi08pSikpZtvZIXCT2n3lq5WMUrU
-         PwzMhpsVEGtFEefDzY2CSt0tY+ipzhsEeKGA544B1p2ecRYFTUZE6aGgfGMupp29Fk6q
-         /VPWRIMUWqs+Zei8kQUKgIh90RnJPWp+QwkU9K2E2XUQDL/tDp3k9Jv4pbfnGpu6YuBc
-         cq0w==
-X-Gm-Message-State: ACgBeo2tip4lytpdthssvLFycjYafVVaC9G+hB2P3B2CAzdwHB70GyDx
-        SoZtb1uqFkViVw2fo3RPgAIOdfkuwuA=
-X-Google-Smtp-Source: AA6agR7FrxHuf3ebSGip6Dsrc2j7pCNXLJVmg+GJ9+F6P4LGjbGDMIiC+XxX5XFr/bvFDyLyzfk2y9GLnRc=
+        bh=+ZeFgC+onLi5H2Gk/r+wfB2lUIAEpTgiMaISz2j8Yh8=;
+        b=0WhHNp+Psn1uZcM7tnssYkTXQuKK03hKUOCjWoI3BEFXnigAtIVartwiKm+ZzS8BjU
+         OjUl/sN13/ZIO7hL/OXNN3+peDvajdpysxrfaB8juq0pTADEHWFNEtxjs51KWkMFvhl4
+         YjgCMMyuTG4PodFxqcqBdEhjzHZJztpsp3ulp7PJkfQU9OIsgoMqegwIVy91V59fVfO9
+         r/tlpOe/CrvuanRmqML8+qT/YEvgDihwJs0GO3ZZRshToxT5aMtQpEi60hFb9Ho9HXzm
+         AxF5D8JUpNORXF19ChKDyXf4Svo6RQFZNQnpki2WKEkC+IsQLJfXXYaUoxt5Xh744B4N
+         ivfQ==
+X-Gm-Message-State: ACgBeo3xUpGG5Do3ibkTCxHCYw70BGUOuACDkVIbsmIxlA4A05uFT5ip
+        2GBFo17U4aoFElorfMw5A3CnCfvFz6o=
+X-Google-Smtp-Source: AA6agR60gqv1XJF9S7yhKpnItHkmCdUjQh3CpTVXyWE3xiDHKhNiTBjmbY9F8YGX1B9vpUO9txTmTcIisVc=
 X-Received: from surenb-spec.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e30])
- (user=surenb job=sendgmr) by 2002:a17:903:248:b0:172:7520:db07 with SMTP id
- j8-20020a170903024800b001727520db07mr18052271plh.76.1661808361566; Mon, 29
- Aug 2022 14:26:01 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 21:25:17 +0000
+ (user=surenb job=sendgmr) by 2002:a17:902:6b88:b0:173:c1:691b with SMTP id
+ p8-20020a1709026b8800b0017300c1691bmr18372367plk.18.1661808366708; Mon, 29
+ Aug 2022 14:26:06 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 21:25:20 +0000
 In-Reply-To: <20220829212531.3184856-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220829212531.3184856-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220829212531.3184856-15-surenb@google.com>
-Subject: [RFC PATCH 14/28] mm: mark VMAs as locked before isolating them
+Message-ID: <20220829212531.3184856-18-surenb@google.com>
+Subject: [RFC PATCH 17/28] mm/mmap: prevent pagefault handler from racing with
+ mmu_notifier registration
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     michel@lespinasse.org, jglisse@google.com, mhocko@suse.com,
@@ -73,57 +74,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mark VMAs as locked before isolating them and clear their tree node so
-that isolated VMAs are easily identifiable. In the later patches page
-fault handlers will try locking the found VMA and will check whether
-the VMA was isolated. Locking VMAs before isolating them ensures that
-page fault handlers don't operate on isolated VMAs.
+Pagefault handlers might need to fire MMU notifications while a new
+notifier is being registered. Modify mm_take_all_locks to mark all VMAs
+as locked and prevent this race with fault handlers that would hold VMA
+locks.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- mm/mmap.c  | 2 ++
- mm/nommu.c | 2 ++
- 2 files changed, 4 insertions(+)
+ mm/mmap.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/mm/mmap.c b/mm/mmap.c
-index 094678b4434b..b0d78bdc0de0 100644
+index b31cc97c2803..1edfcd384f5e 100644
 --- a/mm/mmap.c
 +++ b/mm/mmap.c
-@@ -421,12 +421,14 @@ static inline void vma_rb_insert(struct vm_area_struct *vma,
+@@ -3538,6 +3538,7 @@ static void vm_lock_mapping(struct mm_struct *mm, struct address_space *mapping)
+  *     hugetlb mapping);
+  *   - all i_mmap_rwsem locks;
+  *   - all anon_vma->rwseml
++ *   - all vmas marked locked
+  *
+  * We can take all locks within these types randomly because the VM code
+  * doesn't nest them and we protected from parallel mm_take_all_locks() by
+@@ -3579,6 +3580,7 @@ int mm_take_all_locks(struct mm_struct *mm)
+ 		if (vma->anon_vma)
+ 			list_for_each_entry(avc, &vma->anon_vma_chain, same_vma)
+ 				vm_lock_anon_vma(mm, avc->anon_vma);
++		vma_mark_locked(vma);
+ 	}
  
- static void __vma_rb_erase(struct vm_area_struct *vma, struct rb_root *root)
- {
-+	vma_mark_locked(vma);
- 	/*
- 	 * Note rb_erase_augmented is a fairly large inline function,
- 	 * so make sure we instantiate it only once with our desired
- 	 * augmented rbtree callbacks.
- 	 */
- 	rb_erase_augmented(&vma->vm_rb, root, &vma_gap_callbacks);
-+	RB_CLEAR_NODE(&vma->vm_rb);
- }
+ 	return 0;
+@@ -3636,6 +3638,7 @@ void mm_drop_all_locks(struct mm_struct *mm)
+ 	mmap_assert_write_locked(mm);
+ 	BUG_ON(!mutex_is_locked(&mm_all_locks_mutex));
  
- static __always_inline void vma_rb_erase_ignore(struct vm_area_struct *vma,
-diff --git a/mm/nommu.c b/mm/nommu.c
-index e819cbc21b39..ff9933e57501 100644
---- a/mm/nommu.c
-+++ b/mm/nommu.c
-@@ -622,6 +622,7 @@ static void delete_vma_from_mm(struct vm_area_struct *vma)
- 	struct mm_struct *mm = vma->vm_mm;
- 	struct task_struct *curr = current;
- 
-+	vma_mark_locked(vma);
- 	mm->map_count--;
- 	for (i = 0; i < VMACACHE_SIZE; i++) {
- 		/* if the vma is cached, invalidate the entire cache */
-@@ -644,6 +645,7 @@ static void delete_vma_from_mm(struct vm_area_struct *vma)
- 
- 	/* remove from the MM's tree and list */
- 	rb_erase(&vma->vm_rb, &mm->mm_rb);
-+	RB_CLEAR_NODE(&vma->vm_rb);
- 
- 	__vma_unlink_list(mm, vma);
- }
++	vma_mark_unlocked_all(mm);
+ 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
+ 		if (vma->anon_vma)
+ 			list_for_each_entry(avc, &vma->anon_vma_chain, same_vma)
 -- 
 2.37.2.672.g94769d06f0-goog
 
