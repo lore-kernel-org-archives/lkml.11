@@ -2,108 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3479FC0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E379CC0502E
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229801AbiH2MmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
+        id S229624AbiH2MmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:42:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229852AbiH2Mlr (ORCPT
+        with ESMTP id S230181AbiH2Ml2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:41:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A00A475;
-        Mon, 29 Aug 2022 05:26:24 -0700 (PDT)
+        Mon, 29 Aug 2022 08:41:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5F4AA36D;
+        Mon, 29 Aug 2022 05:25:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E07461221;
-        Mon, 29 Aug 2022 11:11:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93248C433C1;
-        Mon, 29 Aug 2022 11:11:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771477;
-        bh=YsXn6jJWmPbxql1irJ9ABDMr3QJ9zrouKG/JnRumW7Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ch3D2fLuzUi7lvroN6022X9LpWa87U2VsHUes0LrXBl4Q8xWcEy9V+RvljogRUCw+
-         kqg00YjeTgaZ2XW7mWaz0nkWZ82QqhGwUky1qg5WmN1DutokSTPzOHIVlhH8dNlr+M
-         k4cieYL1M/vHR7oJhS1G0Xx6Sexp9KuZMJlUSPEM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Siddh Raman Pant <code@siddh.me>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
-Subject: [PATCH 5.10 71/86] loop: Check for overflow while configuring loop
-Date:   Mon, 29 Aug 2022 12:59:37 +0200
-Message-Id: <20220829105759.451337362@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9008BB80F9A;
+        Mon, 29 Aug 2022 12:25:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C1B6C433D7;
+        Mon, 29 Aug 2022 12:25:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661775952;
+        bh=3iB3FPdcSvm99iM6SmOB3c5yrDWVJ8azBbcMqlPGahU=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=U9rc4Pl+o0ydfA3ZabupGKgLAeKFGa9VTdEKPzEQfZJGvjz5rf/x1+Pa6RMPxDiBC
+         9jqfx+lScrIMrvPA3riy7bAjy4iXqnOeiQ5RpXRLfKI7wATqiPdDv9jOfTtNr2h+Yq
+         Wa20ghuu2acgEA3aLSs3uLf5wthIZ6qxjVhNb0qvfc8x3Zav6sSokUCAjA+A0+P5de
+         bQNqtx2Zwz2+DaKO6sCI3kLAmL8NA46x3FcuUCCe0t5hFORtboJg0kbLnB+FUuI9EE
+         UulxZQCkL5hNebcDXHpxCKz4XhYLZsSfE1TMqSUpfspvZpiyzGy3XWlxAXXfudtV4Q
+         DnEHl86Tq6WOA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id D087A5C019C; Mon, 29 Aug 2022 05:25:51 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 05:25:51 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Andrea Parri <parri.andrea@gmail.com>
+Cc:     stern@rowland.harvard.edu, will@kernel.org, peterz@infradead.org,
+        boqun.feng@gmail.com, npiggin@gmail.com, dhowells@redhat.com,
+        j.alglave@ucl.ac.uk, luc.maranget@inria.fr, akiyks@gmail.com,
+        dlustig@nvidia.com, joel@joelfernandes.org,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
+Subject: Re: "Verifying and Optimizing Compact NUMA-Aware Locks on Weak
+ Memory Models"
+Message-ID: <20220829122551.GL6159@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220826124812.GA3007435@paulmck-ThinkPad-P17-Gen-1>
+ <YwwlWMmHxD7OPERD@anparri>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YwwlWMmHxD7OPERD@anparri>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddh Raman Pant <code@siddh.me>
+On Mon, Aug 29, 2022 at 04:33:23AM +0200, Andrea Parri wrote:
+> On Fri, Aug 26, 2022 at 05:48:12AM -0700, Paul E. McKenney wrote:
+> > Hello!
+> > 
+> > I have not yet done more than glance at this one, but figured I should
+> > send it along sooner rather than later.
+> > 
+> > "Verifying and Optimizing Compact NUMA-Aware Locks on Weak
+> > Memory Models", Antonio Paolillo, Hernán Ponce-de-León, Thomas
+> > Haas, Diogo Behrens, Rafael Chehab, Ming Fu, and Roland Meyer.
+> > https://arxiv.org/abs/2111.15240
+> > 
+> > The claim is that the queued spinlocks implementation with CNA violates
+> > LKMM but actually works on all architectures having a formal hardware
+> > memory model.
+> > 
+> > Thoughts?
+> 
+> Section 4 ends with a discussion about certain "spurious" data races.
+> Do we have litmus tests with them?  (I could repro with Dartagnan...)
 
-commit c490a0b5a4f36da3918181a8acdc6991d967c5f3 upstream.
+Their Figure 5 clearly shows a data race, but agreed, their claim is
+that this race is prevented by other code not in this litmus test.
+Me, I currently suspect that the spurious data race might be due to the
+failure to guarantee mutual exclusion, though I have not yet read that
+paper carefully.  That is scheduled for tomorrow morning.
 
-The userspace can configure a loop using an ioctl call, wherein
-a configuration of type loop_config is passed (see lo_ioctl()'s
-case on line 1550 of drivers/block/loop.c). This proceeds to call
-loop_configure() which in turn calls loop_set_status_from_info()
-(see line 1050 of loop.c), passing &config->info which is of type
-loop_info64*. This function then sets the appropriate values, like
-the offset.
-
-loop_device has lo_offset of type loff_t (see line 52 of loop.c),
-which is typdef-chained to long long, whereas loop_info64 has
-lo_offset of type __u64 (see line 56 of include/uapi/linux/loop.h).
-
-The function directly copies offset from info to the device as
-follows (See line 980 of loop.c):
-	lo->lo_offset = info->lo_offset;
-
-This results in an overflow, which triggers a warning in iomap_iter()
-due to a call to iomap_iter_done() which has:
-	WARN_ON_ONCE(iter->iomap.offset > iter->pos);
-
-Thus, check for negative value during loop_set_status_from_info().
-
-Bug report: https://syzkaller.appspot.com/bug?id=c620fe14aac810396d3c3edc9ad73848bf69a29e
-
-Reported-and-tested-by: syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220823160810.181275-1-code@siddh.me
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/block/loop.c |    5 +++++
- 1 file changed, 5 insertions(+)
-
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1031,6 +1031,11 @@ loop_set_status_from_info(struct loop_de
- 
- 	lo->lo_offset = info->lo_offset;
- 	lo->lo_sizelimit = info->lo_sizelimit;
-+
-+	/* loff_t vars have been assigned __u64 */
-+	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
-+		return -EOVERFLOW;
-+
- 	memcpy(lo->lo_file_name, info->lo_file_name, LO_NAME_SIZE);
- 	memcpy(lo->lo_crypt_name, info->lo_crypt_name, LO_NAME_SIZE);
- 	lo->lo_file_name[LO_NAME_SIZE-1] = 0;
-
-
+							Thanx, Paul
