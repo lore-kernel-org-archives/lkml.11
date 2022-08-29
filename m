@@ -2,131 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89227C0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE3EECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230299AbiH2OM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58882 "EHLO
+        id S230336AbiH2OOw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:14:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbiH2OMI (ORCPT
+        with ESMTP id S230144AbiH2OOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:12:08 -0400
-Received: from mail.thorsis.com (mail.thorsis.com [92.198.35.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D07596775;
-        Mon, 29 Aug 2022 07:12:06 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 16:12:00 +0200
-From:   Alexander Dahl <ada@thorsis.com>
-To:     Olliver Schinagl <oliver@schinagl.nl>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Baolin Wang <baolin.wang@linaro.org>,
-        Daniel Mack <daniel@zonque.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Simon Shields <simon@lineageos.org>,
-        Olliver Schinagl <oliver+list@schinagl.nl>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 resend] dt-bindings: leds: Expand LED_COLOR_ID
- definitions
-Message-ID: <YwzJMAaYT/frJLaT@ada.ifak-system.com>
-Mail-Followup-To: Olliver Schinagl <oliver@schinagl.nl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Baolin Wang <baolin.wang@linaro.org>,
-        Daniel Mack <daniel@zonque.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Simon Shields <simon@lineageos.org>,
-        Olliver Schinagl <oliver+list@schinagl.nl>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220819152904.433514-1-oliver@schinagl.nl>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819152904.433514-1-oliver@schinagl.nl>
+        Mon, 29 Aug 2022 10:14:47 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A14AC9;
+        Mon, 29 Aug 2022 07:14:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661782484; x=1693318484;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=n5lFkFMiDHmXDh+teOu5BNnWiyJQmubHjavTDdvL20s=;
+  b=kURI0VAzfXpsQ/fF5XT3thXKBAtp80MKQVQw180a56YM13Twg+E0wHW+
+   cKfu5ca3MmNmxrJJxHyQmvizDOjavhPV7MoWQRPYkAI/heaDqZ5KjevDJ
+   FqQYQioUvm+GzA5WkoEbUB9LklVRB6w+qD6cOL5nF5qiKez3oHXZ6kssM
+   Q2SnugTeUsZaX1cxs2T6tsAFKe7okGGdU1idgzys+l1jRmueynOU1m7pS
+   3QRQSQX5QK1c+8IER3oU1Xnk2U0hUe1bAuaXb1sPOmWnff9lc3jWZnbtO
+   iFM8TZ4hU0adx3cvr1F48Uj8mTrzdcyrBPw/vyIvBU7XrMasUemcrHBR8
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="274651484"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="274651484"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 07:10:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="787089908"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 29 Aug 2022 07:10:50 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 9C19D19D; Mon, 29 Aug 2022 17:11:04 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+Subject: [PATCH v1 1/4] ACPI: platform: Get rid of redundant 'else'
+Date:   Mon, 29 Aug 2022 17:10:57 +0300
+Message-Id: <20220829141100.63934-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hei Olliver,
+In the snippets like the following
 
-Am Fri, Aug 19, 2022 at 05:29:04PM +0200 schrieb Olliver Schinagl:
-> In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
-> Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
-> added. However, there's a little more very common LED colors.
-> 
-> While the documentation states 'add what is missing', engineers tend to
-> be lazy and will just use what currently exists. So this patch will take
-> (a) list from online retailers [0], [1], [2] and use the common LED colors
-> from there, this being reasonable as this is what is currently available to
-> purchase.
-> 
-> Note, that LIME seems to be the modern take to 'Yellow-green' or
-> 'Yellowish-green' from some older datasheets.
+	if (...)
+		return / goto / break / continue ...;
+	else
+		...
 
-Just noticed you did not send this to neither linux-leds mailing list
-nor the LED subsystem maintainer. Maybe you want to do this in v3?
+the 'else' is redundant. Get rid of it.
 
-Greets
-Alex
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/acpi/acpi_platform.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> 
-> [0]: https://www.digikey.com/en/products/filter/led-lighting-color/125
-> [1]: https://eu.mouser.com/c/optoelectronics/led-lighting/led-emitters/standard-leds-smd
-> [2]: https://nl.farnell.com/en-NL/c/optoelectronics-displays/led-products/standard-single-colour-leds-under-75ma
-> 
-> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
-> ---
-> 
-> Changes since v1: Unbreak existing definitions.
-> 
-> 
->  include/dt-bindings/leds/common.h | 28 ++++++++++++++++------------
->  1 file changed, 16 insertions(+), 12 deletions(-)
-> 
-> diff --git a/include/dt-bindings/leds/common.h b/include/dt-bindings/leds/common.h
-> index 3be89a7c20a9..04bf94523ea3 100644
-> --- a/include/dt-bindings/leds/common.h
-> +++ b/include/dt-bindings/leds/common.h
-> @@ -22,18 +22,22 @@
->  #define LEDS_BOOST_FIXED	2
->  
->  /* Standard LED colors */
-> -#define LED_COLOR_ID_WHITE	0
-> -#define LED_COLOR_ID_RED	1
-> -#define LED_COLOR_ID_GREEN	2
-> -#define LED_COLOR_ID_BLUE	3
-> -#define LED_COLOR_ID_AMBER	4
-> -#define LED_COLOR_ID_VIOLET	5
-> -#define LED_COLOR_ID_YELLOW	6
-> -#define LED_COLOR_ID_IR		7
-> -#define LED_COLOR_ID_MULTI	8	/* For multicolor LEDs */
-> -#define LED_COLOR_ID_RGB	9	/* For multicolor LEDs that can do arbitrary color,
-> -					   so this would include RGBW and similar */
-> -#define LED_COLOR_ID_MAX	10
-> +#define LED_COLOR_ID_WHITE      0
-> +#define LED_COLOR_ID_RED        1
-> +#define LED_COLOR_ID_GREEN      2
-> +#define LED_COLOR_ID_BLUE       3
-> +#define LED_COLOR_ID_AMBER      4
-> +#define LED_COLOR_ID_VIOLET     5
-> +#define LED_COLOR_ID_YELLOW     6
-> +#define LED_COLOR_ID_IR         7
-> +#define LED_COLOR_ID_MULTI      8 /* For multicolor LEDs */
-> +#define LED_COLOR_ID_RGB        9 /* For multicolor LEDs that can do arbitrary color, including RGBW etc. */
-> +#define LED_COLOR_ID_PUPRPLE   10
-> +#define LED_COLOR_ID_ORANGE    11
-> +#define LED_COLOR_ID_PINK      12
-> +#define LED_COLOR_ID_CYAN      13
-> +#define LED_COLOR_ID_LIME      14
-> +#define LED_COLOR_ID_MAX       15
->  
->  /* Standard LED functions */
->  /* Keyboard LEDs, usually it would be input4::capslock etc. */
-> -- 
-> 2.37.2
-> 
+diff --git a/drivers/acpi/acpi_platform.c b/drivers/acpi/acpi_platform.c
+index 1a1c78b23fba..75e26528056d 100644
+--- a/drivers/acpi/acpi_platform.c
++++ b/drivers/acpi/acpi_platform.c
+@@ -114,9 +114,9 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
+ 
+ 	INIT_LIST_HEAD(&resource_list);
+ 	count = acpi_dev_get_resources(adev, &resource_list, NULL, NULL);
+-	if (count < 0) {
++	if (count < 0)
+ 		return NULL;
+-	} else if (count > 0) {
++	if (count > 0) {
+ 		resources = kcalloc(count, sizeof(struct resource),
+ 				    GFP_KERNEL);
+ 		if (!resources) {
+-- 
+2.35.1
+
