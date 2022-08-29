@@ -2,172 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D0EC0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE13ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbiH2KE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 06:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
+        id S229602AbiH2KJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 06:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiH2KEw (ORCPT
+        with ESMTP id S229450AbiH2KI4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 06:04:52 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2092.outbound.protection.outlook.com [40.107.215.92])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0415F202;
-        Mon, 29 Aug 2022 03:04:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dZJUcekNh3FSwmxbO1aMoUYNCiStcoDvfwERsUHxLJx9DpcEoSfHVk2z2E6QEHIMgUBS8Uz29vay9YIdE7Ja6U63UQSXn9jaWoR89LIb9Td+mOfA4i1LRKWyTQNGCV4uOwCxh/KzzzzU0zL4oML6Tngt+GWCy3NlFjOeRoHw+znu+NYyGtn82qCwG7g5mbwy6MddtP2RBHwidcrlEyn23BTI/RzP/IFr9egJMC6yFLFsZMujTgYkCq69tGiKeGC3B0zDdYDess+GpYyIbg0Y4w1d9NdE7Vy9P9tuYz2SlZ+kMFG08R5InTibESbikOJlgUIIHCFS6XGfcich17n5lQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/MruPH35v+ZEFQY+FcgVuPIR1IjOkqydZysmM9Oa8po=;
- b=dMoMj89v3WEm7gEeMMI5zPnPm3LfHW8AV1y+nO9ungNEzwMNmuv28egCqBfvIySP06AI6tMZ7ezLaQoAN6ColdqwAl1n7vI0WsKreqARAkTx4mBKeZKAZ8IdimqcRNO63JRqn9DOwJFqOqT1d1dvbXkJuGpg3IQStHpj0hduGJr9vG4ypbYowKOjz6+ZmwN8Vka9/aTUpjm+vB9Kzn8OV4EeiJyKzmRhWneWSvaqa4N3//Ez09Kb/o9OJsUWnmZ6dEeyZ6f7MZUUse2A2E9OrZoJjrr8tnIywUKZNKcO5rh5UaAjNsZm3mn4bc0PNJEzDnZvx9M0mVr5s44iTbJ4xg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
- header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aspeedtech.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/MruPH35v+ZEFQY+FcgVuPIR1IjOkqydZysmM9Oa8po=;
- b=g2SA/b1jydeQmR1xIpMl4Enzlkcvht4YsyBeSgnIZ5PgpbQLoK4rqKvaTerRu7WC7rj4PRCOmuubD3B+UI6S3ALfCP7up7+qhE65FYWKsFlZ7ztwqgLqHunIKkvck+KPS6zDx0AbKAQngMtDD/9OZSW7qBqMi/9HQ29fKy9p1tfTS/0C8xZVZMNUeUSzC60hXLW8ggKOItA++8l1T26tr/Bm8nPJJa7mqOb1mMVAFkhAyFwao+HuG57GjNaK1mZ38Ta28WI3GOnW6cY5LArmNKdm6R+GetnjKAIj4czdfQuBCy3IgfOTCdfcPAOL617DCu5JT51JqrQdTIDArkTB2w==
-Received: from TY2PR06MB3213.apcprd06.prod.outlook.com (2603:1096:404:97::16)
- by SG2PR06MB2683.apcprd06.prod.outlook.com (2603:1096:4:21::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Mon, 29 Aug
- 2022 10:04:33 +0000
-Received: from TY2PR06MB3213.apcprd06.prod.outlook.com
- ([fe80::8dbe:4d03:e911:5a4]) by TY2PR06MB3213.apcprd06.prod.outlook.com
- ([fe80::8dbe:4d03:e911:5a4%5]) with mapi id 15.20.5566.015; Mon, 29 Aug 2022
- 10:04:33 +0000
-From:   Neal Liu <neal_liu@aspeedtech.com>
-To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>,
-        Johnny Huang <johnny_huang@aspeedtech.com>,
-        Dhananjay Phadke <dphadke@linux.microsoft.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>
-Subject: RE: build failure of next-20220829 due to 108713a713c7 ("crypto:
- aspeed - Add HACE hash driver")
-Thread-Topic: build failure of next-20220829 due to 108713a713c7 ("crypto:
- aspeed - Add HACE hash driver")
-Thread-Index: AQHYu443cJFtTT5gb0mr18Wb5C2Sb63FphZg
-Date:   Mon, 29 Aug 2022 10:04:32 +0000
-Message-ID: <TY2PR06MB321356F6EB09D3D59D37B53F80769@TY2PR06MB3213.apcprd06.prod.outlook.com>
-References: <YwyORp72cuDrVYdA@debian>
-In-Reply-To: <YwyORp72cuDrVYdA@debian>
-Accept-Language: en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=aspeedtech.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1cff054c-4153-4d63-1190-08da89a5def7
-x-ms-traffictypediagnostic: SG2PR06MB2683:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: AsaSrL3kzOWSeqQ1FJLRwADhvz+e4MESFp5zwFG+A6Zw4VCHL7j7ytxibLfZJCYR4oJarwRdiJbcGJGYcYlSh3e2gpGUGVDb9Ua3pjKY7OZomGXYN3pG0SY/adfpjZfXvikd3FomKmic6xSN7xw40tcZMcAQ6OShThiMTx+LF4U2Xgi1cm1/wo6Y7i7CWV018FyDfkKtDfyh7U2GUDxBAlF3cSMEzmaiEkAcdaUIw818rjfOcWHDzTJ5z6k4YaEwNUYSRty6IJwWodUQx3IlxM83Cea6/Vkyl7gd34Imj9XvSZCdaCI6PQIXbclsAnnqD8YLivye213dSc5NZLZG57nnXYTrhuBN3zpKPH798zt6azjn3YF/hAuJsuCSUCYkKmSfr8bIQUzTxpRkLBanf9+eVkAzLJgZyL/sFhVPHNTk+hfJ+j8e6BVQ93eV+uzaGOrgzMS0tD0Gigifd1W0r3USb3vPLclO4z6aQQO02AgNeJ9Dl+dHBfT5WPKUuID5mvsvoPMex9V3MGV0K4+pT7WiqEDOVxANi38VYxb6xfaNx2LK4UomNIWjzXB0iBjq/WNH/UeCHDBVqt13T/etSlTAoGjjKMgsOjamIEdlpHLg+y8c0EvdOh2OvMi3EBVdJABRbb7IIzeb1RAPqSyQ/cl4NLR7mN6O99I/fYLuRia8LMHEk11QAZj4j3gYPWS3RAsTyxV/GsNaS22k9wwRUwd5WqvT6z4lHb0+FNZKb0SquAml/eK6a5zhcO45tcuKk5iXPDB8Cwnzqq+tBqZIfmVZoj6h0zwSf6xXVMKvN1U=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TY2PR06MB3213.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(39850400004)(396003)(366004)(136003)(376002)(38070700005)(110136005)(316002)(71200400001)(186003)(38100700002)(86362001)(54906003)(122000001)(66476007)(64756008)(83380400001)(2906002)(53546011)(478600001)(41300700001)(76116006)(66946007)(66556008)(8676002)(4326008)(66446008)(966005)(52536014)(7416002)(9686003)(55016003)(6506007)(7696005)(33656002)(8936002)(5660300002)(26005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?hNJjIZA/suADs25EFAcNCJswPtj13g1UYYOkK/WDn0pOpxw4SuPhEY60W0ks?=
- =?us-ascii?Q?jcg/KvTd5a7oixsgKRp3X0Z4sznqzc8U7H3eWd9wLS3aKZNxqgrsKX5IR6/A?=
- =?us-ascii?Q?rwdpa1kOjvO1LqiHNKZZl1FP97ovkwEjfxvuYkw01TLPq8fgVb8qgvTVoiHJ?=
- =?us-ascii?Q?Mze0985KkOefleVcWASK65kq4mrOUGBLbaPz6Hd6uFzZ1sfYxkKLWQCs/QWo?=
- =?us-ascii?Q?AUA2IwC4LgzmOslTEmoxIRIeJOzDzlyBQYAETZZ9TdlN+hnJN40gHCMuejNJ?=
- =?us-ascii?Q?I3UKUMFkfUpKKKG02Nb2v+FYBxv828LhAjMb3WS5dEZdx7pFtjsp0wjkA/js?=
- =?us-ascii?Q?d7MQnksZWlD9rbpQ8MA3nKIXllVIqeYw0qtBhOqNjFGbNH0LPKcU+x3iIyeO?=
- =?us-ascii?Q?gIIXcHqaQlU203eV3ZoNvCOBq4LfzECyWy8OdxIdn1Q8JIU12Hkz9kMeUJRT?=
- =?us-ascii?Q?/4ZW153n3Vhxr9uNiudBzEFRDfJnS7Y0JmbwTy2vmWIX/RRZ6gNRlx0iF1MP?=
- =?us-ascii?Q?m6OY4JkcH3MgmYejNgvs76EQknH5CrtctsDQvbhvokSC0nskoGDPUBVdHM1U?=
- =?us-ascii?Q?H7KAhFED55Y11I31NNRmnXEAlV56i/dFDmqwqn/jhSSHKc5gCuVUluj6ZDBe?=
- =?us-ascii?Q?59FF+FY6Xb9QzNnAyzRZP8cRAD6sB3/tjAUpQEppHJmjiL0GpUbCBb1cNGmK?=
- =?us-ascii?Q?1gmzWzIF+CpeKIQJQnqWgPQAC0XogNx+gkG7cnUjcYjmQTo5xfjhct75i08d?=
- =?us-ascii?Q?FAABo5PBKPEURGSLOTahLw3w8IuUzf+x3oxcrW45yuAc5KDmycZwnJOppMDI?=
- =?us-ascii?Q?JLHVcQBeBnBTlNKKN+jWUY95tT5BDuWmpAgDVaXcDBcHYBqKJQaUHufnY9vJ?=
- =?us-ascii?Q?gZuWgbliOBv/z7x8zC91lPcsopTHzf5QO+sj3ytCeWYPWxivB8GNCbyoDQpA?=
- =?us-ascii?Q?8fx/BUm1zCLIr03OcJGLFmg3hllhwEA/y154k+5XRq8fClh2v/6DphrOV0ba?=
- =?us-ascii?Q?l+tn0aWOdkemHAC1CHFHXbMx5blqnVoZe6fuIt1Fc5V0ST1GYcRtV7vhPgef?=
- =?us-ascii?Q?H78EZ8XfgoHh3IXMUlC3zGD7LM8RZxfCDTR/ANjuA33sjJ5HqwTKgGVhg2xk?=
- =?us-ascii?Q?S4wqfm9YAHcdXWkJVsxg9dLNLn6L5w1T9I9c/UUzEbM9/AtN48NKUGoYP8gP?=
- =?us-ascii?Q?/CNMrqcwsPhDmAYJmr06KsVgRsgzHKMzWB7kStVW9wSbPpfXi2SBxUxtJRNk?=
- =?us-ascii?Q?qu130w+4eYtGSeQApjYK01kgAiHPDmxifAtq6f4H/Be+ZWSL+EiuCp2MWvvV?=
- =?us-ascii?Q?cG+3uyrInW44lppgldJ4BiPJ72Csw+XvvZ7K2qv24zxE9tOC9P3Oz57qiPkW?=
- =?us-ascii?Q?+d81xHjVcB73CsKmbF3yxc+loBorKJO/DP64fH9xr2k8QxDDMbnybmtksLU0?=
- =?us-ascii?Q?mP6Lz/jK58ew1pyvEmZxVS0iti+dlQWiT5beDg5BYxXVWgbuxKC9TQhXioDw?=
- =?us-ascii?Q?YyfTMSDG5CwlcKKkXYxYpRWQA7qUtMXs3pDbJSGGO9XCffzXLijLjKYU7/ZB?=
- =?us-ascii?Q?J+jXoerBHespoGGtvrJG4MXSHb9Eonl521peOziI?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Mon, 29 Aug 2022 06:08:56 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB445FAD4
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661767735; x=1693303735;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=g3fWelCB9GlHqJ3QYBhk2+nJix61se1jmQC7NvJg4HU=;
+  b=aDjgTUs5esTxiVR9ypqyR2a9UP6ojzNkZ5yM+X9U1N4o0J4aEKtEtGHd
+   sfdkCzhv73AP5VhUBvE21HHmrX4Snv3NwFq5KxyjO3EcLulvOJ9ZjFNqO
+   sKLzWbB0ycWe+GZEloVnOBfYC11mUqZ7J0eHUnjEYw99auxdYZuOhvxVo
+   ch83cAJ/BDSOJisCdBf+bHa1bWI3FJywd1Rrapq9gEB/LzjGVqQsmbWht
+   lQmllBt4l0jWUgmmuT0otoXLj4qaYm+83rvZaAnhwLSfRp9hiwKP6Ww5L
+   NiC7x/J2fpyye+eetPThYg2Eb/+6CHLEVNeJlKGQ8mqdUNl5VY9llbEaZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="295636214"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="295636214"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 03:08:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="640882537"
+Received: from lkp-server01.sh.intel.com (HELO b2bbdd52f619) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 29 Aug 2022 03:08:44 -0700
+Received: from kbuild by b2bbdd52f619 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oSbhD-0000WY-2M;
+        Mon, 29 Aug 2022 10:08:43 +0000
+Date:   Mon, 29 Aug 2022 18:07:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tomi Valkeinen <tomi.valkeinen+renesas@ideasonboard.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Subject: [pinchartl-media:drm/du/next 13/14]
+ drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:614:6: warning: no previous
+ prototype for 'rcar_mipi_dsi_pclk_enable'
+Message-ID: <202208291831.Xfw1ORoE-lkp@intel.com>
 MIME-Version: 1.0
-X-OriginatorOrg: aspeedtech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TY2PR06MB3213.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1cff054c-4153-4d63-1190-08da89a5def7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2022 10:04:32.9064
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NPl12fVdwsvzGZZyOp4FwnNYJer22L0ewHRRUbiPXol1iz/w6Q5G7WbnlYqxsupJElknnaBLUWyP43oXhlUJ7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB2683
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> -----Original Message-----
-> From: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
-> Sent: Monday, August 29, 2022 6:01 PM
-> To: Neal Liu <neal_liu@aspeedtech.com>; Johnny Huang
-> <johnny_huang@aspeedtech.com>; Dhananjay Phadke
-> <dphadke@linux.microsoft.com>; Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: David S. Miller <davem@davemloft.net>; Joel Stanley <joel@jms.id.au>;
-> Andrew Jeffery <andrew@aj.id.au>; linux-aspeed@lists.ozlabs.org;
-> linux-crypto@vger.kernel.org; linux-arm-kernel@lists.infradead.org;
-> linux-kernel@vger.kernel.org; linux-next@vger.kernel.org
-> Subject: build failure of next-20220829 due to 108713a713c7 ("crypto: asp=
-eed
-> - Add HACE hash driver")
->=20
-> Hi All,
->=20
-> The builds of arm allmodconfig have failed to build next-20220829 with th=
-e
-> error:
->=20
-> ERROR: modpost: "aspeed_register_hace_hash_algs"
-> [drivers/crypto/aspeed/aspeed_crypto.ko] undefined!
-> ERROR: modpost: "aspeed_unregister_hace_crypto_algs"
-> [drivers/crypto/aspeed/aspeed_crypto.ko] undefined!
-> ERROR: modpost: "aspeed_register_hace_crypto_algs"
-> [drivers/crypto/aspeed/aspeed_crypto.ko] undefined!
-> ERROR: modpost: "aspeed_unregister_hace_hash_algs"
-> [drivers/crypto/aspeed/aspeed_crypto.ko] undefined!
->=20
->=20
-> git bisect pointed to 108713a713c7 ("crypto: aspeed - Add HACE hash drive=
-r")
->=20
-> I will be happy to test any patch or provide any extra log if needed.
->=20
->=20
-> --
-> Regards
-> Sudip
+tree:   git://linuxtv.org/pinchartl/media.git drm/du/next
+head:   1a1ef49313becc3127e3bd2b6cdb27e5fc54f761
+commit: 81c238208c6accde5592851b101986b8b91ec859 [13/14] drm: rcar-du: Fix DSI enable & disable sequence
+config: arc-randconfig-r043-20220828 (https://download.01.org/0day-ci/archive/20220829/202208291831.Xfw1ORoE-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add pinchartl-media git://linuxtv.org/pinchartl/media.git
+        git fetch --no-tags pinchartl-media drm/du/next
+        git checkout 81c238208c6accde5592851b101986b8b91ec859
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/gpu/drm/rcar-du/
 
-Hi Sudip,
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-I already sent another patch to fix this build error, could you give it a t=
-ry?
-https://lkml.org/lkml/2022/8/29/131
-Thanks
+All warnings (new ones prefixed by >>):
 
-Best Regards,
--Neal
+>> drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:614:6: warning: no previous prototype for 'rcar_mipi_dsi_pclk_enable' [-Wmissing-prototypes]
+     614 | void rcar_mipi_dsi_pclk_enable(struct drm_bridge *bridge,
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c:653:6: warning: no previous prototype for 'rcar_mipi_dsi_pclk_disable' [-Wmissing-prototypes]
+     653 | void rcar_mipi_dsi_pclk_disable(struct drm_bridge *bridge)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/rcar_mipi_dsi_pclk_enable +614 drivers/gpu/drm/rcar-du/rcar_mipi_dsi.c
+
+   613	
+ > 614	void rcar_mipi_dsi_pclk_enable(struct drm_bridge *bridge,
+   615				       struct drm_atomic_state *state)
+   616	{
+   617		struct rcar_mipi_dsi *dsi = bridge_to_rcar_mipi_dsi(bridge);
+   618		const struct drm_display_mode *mode;
+   619		struct drm_connector *connector;
+   620		struct drm_crtc *crtc;
+   621		int ret;
+   622	
+   623		connector = drm_atomic_get_new_connector_for_encoder(state,
+   624								     bridge->encoder);
+   625		crtc = drm_atomic_get_new_connector_state(state, connector)->crtc;
+   626		mode = &drm_atomic_get_new_crtc_state(state, crtc)->adjusted_mode;
+   627	
+   628		ret = rcar_mipi_dsi_clk_enable(dsi);
+   629		if (ret < 0) {
+   630			dev_err(dsi->dev, "failed to enable DSI clocks\n");
+   631			return;
+   632		}
+   633	
+   634		ret = rcar_mipi_dsi_startup(dsi, mode);
+   635		if (ret < 0)
+   636			goto err_dsi_startup;
+   637	
+   638		rcar_mipi_dsi_set_display_timing(dsi, mode);
+   639	
+   640		ret = rcar_mipi_dsi_start_hs_clock(dsi);
+   641		if (ret < 0)
+   642			goto err_dsi_start_hs;
+   643	
+   644		return;
+   645	
+   646	err_dsi_start_hs:
+   647		rcar_mipi_dsi_shutdown(dsi);
+   648	err_dsi_startup:
+   649		rcar_mipi_dsi_clk_disable(dsi);
+   650	}
+   651	EXPORT_SYMBOL_GPL(rcar_mipi_dsi_pclk_enable);
+   652	
+ > 653	void rcar_mipi_dsi_pclk_disable(struct drm_bridge *bridge)
+   654	{
+   655		struct rcar_mipi_dsi *dsi = bridge_to_rcar_mipi_dsi(bridge);
+   656	
+   657		rcar_mipi_dsi_shutdown(dsi);
+   658		rcar_mipi_dsi_clk_disable(dsi);
+   659	}
+   660	EXPORT_SYMBOL_GPL(rcar_mipi_dsi_pclk_disable);
+   661	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
