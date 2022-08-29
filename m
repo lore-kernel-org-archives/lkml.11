@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDE7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6685BECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbiH2LWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:22:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56312 "EHLO
+        id S230487AbiH2LWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:22:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231659AbiH2LUt (ORCPT
+        with ESMTP id S231665AbiH2LUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:20:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 248D16F278;
-        Mon, 29 Aug 2022 04:13:52 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F9AE45;
+        Mon, 29 Aug 2022 04:14:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90ADD6119C;
-        Mon, 29 Aug 2022 11:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B484C433D6;
-        Mon, 29 Aug 2022 11:11:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52BA9B80F9A;
+        Mon, 29 Aug 2022 11:13:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C068EC433C1;
+        Mon, 29 Aug 2022 11:13:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771462;
-        bh=ZOpVESsKOlG8SKi0il5X7/jNZnN0hmU1v9JGkKYh1XY=;
+        s=korg; t=1661771608;
+        bh=tEztEeAd+3oC1OVEuOu1gof6ItxE73qb7AD29HVUUwc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NYyDV6FZBT9Npph5ZYl1joduzhSZneOYEnwa7O7eyvoXu05j7lW7vyNH4UhaRV3b8
-         J0Mfv7pPQq78EimlxttPHk4sX1KNZ+LSLIsu9aQJAgs0R5/flb/Sz+j7ZHUebaREAp
-         GpTPg5Eg6eCqkcZ0nq8qIGIwz/2oX7CYEAj9lBJc=
+        b=LGYTIiBJ646CS3dTeMCS3HHd0xMceTwrtrr0Kjl4QcMWgE2IybYIDEB82UXkcw657
+         SrkuCjZOHc709bdOo6gGsjF9ol0boMLubAmYDUsgY2G7J8z7XS20y7VHbIi7NfYw/C
+         s4vBC8kROTVwkb+b4+r6LxckuYVsTfMypRBkExcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roy Novich <royno@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Florian Westphal <fw@strlen.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 033/158] net/mlx5: Fix cmd error logging for manage pages cmd
-Date:   Mon, 29 Aug 2022 12:58:03 +0200
-Message-Id: <20220829105810.176576667@linuxfoundation.org>
+Subject: [PATCH 5.19 049/158] netfilter: ebtables: reject blobs that dont provide all entry points
+Date:   Mon, 29 Aug 2022 12:58:19 +0200
+Message-Id: <20220829105810.810403818@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -50,60 +51,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roy Novich <royno@nvidia.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 090f3e4f4089ab8041ed7d632c7851c2a42fcc10 ]
+[ Upstream commit 7997eff82828304b780dc0a39707e1946d6f1ebf ]
 
-When the driver unloads, give/reclaim_pages may fail as PF driver in
-teardown flow, current code will lead to the following kernel log print
-'failed reclaiming pages: err 0'.
+Harshit Mogalapalli says:
+ In ebt_do_table() function dereferencing 'private->hook_entry[hook]'
+ can lead to NULL pointer dereference. [..] Kernel panic:
 
-Fix it to get same behavior as before the cited commits,
-by calling mlx5_cmd_check before handling error state.
-mlx5_cmd_check will verify if the returned error is an actual error
-needed to be handled by the driver or not and will return an
-appropriate value.
+general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+[..]
+RIP: 0010:ebt_do_table+0x1dc/0x1ce0
+Code: 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 5c 16 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b 6c df 08 48 8d 7d 2c 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 88
+[..]
+Call Trace:
+ nf_hook_slow+0xb1/0x170
+ __br_forward+0x289/0x730
+ maybe_deliver+0x24b/0x380
+ br_flood+0xc6/0x390
+ br_dev_xmit+0xa2e/0x12c0
 
-Fixes: 8d564292a166 ("net/mlx5: Remove redundant error on reclaim pages")
-Fixes: 4dac2f10ada0 ("net/mlx5: Remove redundant notify fail on give pages")
-Signed-off-by: Roy Novich <royno@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+For some reason ebtables rejects blobs that provide entry points that are
+not supported by the table, but what it should instead reject is the
+opposite: blobs that DO NOT provide an entry point supported by the table.
+
+t->valid_hooks is the bitmask of hooks (input, forward ...) that will see
+packets.  Providing an entry point that is not support is harmless
+(never called/used), but the inverse isn't: it results in a crash
+because the ebtables traverser doesn't expect a NULL blob for a location
+its receiving packets for.
+
+Instead of fixing all the individual checks, do what iptables is doing and
+reject all blobs that differ from the expected hooks.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ include/linux/netfilter_bridge/ebtables.h | 4 ----
+ net/bridge/netfilter/ebtable_broute.c     | 8 --------
+ net/bridge/netfilter/ebtable_filter.c     | 8 --------
+ net/bridge/netfilter/ebtable_nat.c        | 8 --------
+ net/bridge/netfilter/ebtables.c           | 8 +-------
+ 5 files changed, 1 insertion(+), 35 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c b/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
-index ec76a8b1acc1c..60596357bfc7a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pagealloc.c
-@@ -376,8 +376,8 @@ static int give_pages(struct mlx5_core_dev *dev, u16 func_id, int npages,
- 			goto out_dropped;
- 		}
+diff --git a/include/linux/netfilter_bridge/ebtables.h b/include/linux/netfilter_bridge/ebtables.h
+index a13296d6c7ceb..fd533552a062c 100644
+--- a/include/linux/netfilter_bridge/ebtables.h
++++ b/include/linux/netfilter_bridge/ebtables.h
+@@ -94,10 +94,6 @@ struct ebt_table {
+ 	struct ebt_replace_kernel *table;
+ 	unsigned int valid_hooks;
+ 	rwlock_t lock;
+-	/* e.g. could be the table explicitly only allows certain
+-	 * matches, targets, ... 0 == let it in */
+-	int (*check)(const struct ebt_table_info *info,
+-	   unsigned int valid_hooks);
+ 	/* the data used by the kernel */
+ 	struct ebt_table_info *private;
+ 	struct nf_hook_ops *ops;
+diff --git a/net/bridge/netfilter/ebtable_broute.c b/net/bridge/netfilter/ebtable_broute.c
+index 1a11064f99907..8f19253024b0a 100644
+--- a/net/bridge/netfilter/ebtable_broute.c
++++ b/net/bridge/netfilter/ebtable_broute.c
+@@ -36,18 +36,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)&initial_chain,
+ };
+ 
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~(1 << NF_BR_BROUTING))
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table broute_table = {
+ 	.name		= "broute",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= 1 << NF_BR_BROUTING,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
+ 
+diff --git a/net/bridge/netfilter/ebtable_filter.c b/net/bridge/netfilter/ebtable_filter.c
+index cb949436bc0e3..278f324e67524 100644
+--- a/net/bridge/netfilter/ebtable_filter.c
++++ b/net/bridge/netfilter/ebtable_filter.c
+@@ -43,18 +43,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)initial_chains,
+ };
+ 
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~FILTER_VALID_HOOKS)
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table frame_filter = {
+ 	.name		= "filter",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= FILTER_VALID_HOOKS,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
+ 
+diff --git a/net/bridge/netfilter/ebtable_nat.c b/net/bridge/netfilter/ebtable_nat.c
+index 5ee0531ae5061..9066f7f376d57 100644
+--- a/net/bridge/netfilter/ebtable_nat.c
++++ b/net/bridge/netfilter/ebtable_nat.c
+@@ -43,18 +43,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)initial_chains,
+ };
+ 
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~NAT_VALID_HOOKS)
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table frame_nat = {
+ 	.name		= "nat",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= NAT_VALID_HOOKS,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
+ 
+diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
+index f2dbefb61ce83..9a0ae59cdc500 100644
+--- a/net/bridge/netfilter/ebtables.c
++++ b/net/bridge/netfilter/ebtables.c
+@@ -1040,8 +1040,7 @@ static int do_replace_finish(struct net *net, struct ebt_replace *repl,
+ 		goto free_iterate;
  	}
-+	err = mlx5_cmd_check(dev, err, in, out);
- 	if (err) {
--		err = mlx5_cmd_check(dev, err, in, out);
- 		mlx5_core_warn(dev, "func_id 0x%x, npages %d, err %d\n",
- 			       func_id, npages, err);
- 		goto out_dropped;
-@@ -524,10 +524,13 @@ static int reclaim_pages(struct mlx5_core_dev *dev, u16 func_id, int npages,
- 		dev->priv.reclaim_pages_discard += npages;
- 	}
- 	/* if triggered by FW event and failed by FW then ignore */
--	if (event && err == -EREMOTEIO)
-+	if (event && err == -EREMOTEIO) {
- 		err = 0;
-+		goto out_free;
-+	}
-+
-+	err = mlx5_cmd_check(dev, err, in, out);
- 	if (err) {
--		err = mlx5_cmd_check(dev, err, in, out);
- 		mlx5_core_err(dev, "failed reclaiming pages: err %d\n", err);
- 		goto out_free;
- 	}
+ 
+-	/* the table doesn't like it */
+-	if (t->check && (ret = t->check(newinfo, repl->valid_hooks)))
++	if (repl->valid_hooks != t->valid_hooks)
+ 		goto free_unlock;
+ 
+ 	if (repl->num_counters && repl->num_counters != t->private->nentries) {
+@@ -1231,11 +1230,6 @@ int ebt_register_table(struct net *net, const struct ebt_table *input_table,
+ 	if (ret != 0)
+ 		goto free_chainstack;
+ 
+-	if (table->check && table->check(newinfo, table->valid_hooks)) {
+-		ret = -EINVAL;
+-		goto free_chainstack;
+-	}
+-
+ 	table->private = newinfo;
+ 	rwlock_init(&table->lock);
+ 	mutex_lock(&ebt_mutex);
 -- 
 2.35.1
 
