@@ -2,277 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67FCDECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84368ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230040AbiH2KBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 06:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
+        id S229673AbiH2KCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 06:02:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiH2KBH (ORCPT
+        with ESMTP id S229631AbiH2KC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 06:01:07 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813B92AC78;
-        Mon, 29 Aug 2022 03:00:55 -0700 (PDT)
-X-UUID: cf7f36dbf7294ea4b53f654fe2a6086c-20220829
-X-GW-Reason: 13103
-X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
-X-Content-Feature: ica/max.line-size 103
-        audit/email.address 2
-        dict/adv 1
-        dict/contack 1
-        dict/notice 1
-        dict/operate 1
-        meta/cnt.alert 1
-X-UUID: cf7f36dbf7294ea4b53f654fe2a6086c-20220829
-X-User: oushixiong@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by mailgw
-        (envelope-from <oushixiong@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 784702270; Mon, 29 Aug 2022 14:00:07 +0800
-From:   oushixiong <oushixiong@kylinos.cn>
-To:     Dave Airlie <airlied@redhat.com>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
-        oushixiong <oushixiong@kylinos.cn>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH v3] drm/ast: add dmabuf/prime buffer sharing support
-Date:   Mon, 29 Aug 2022 13:59:37 +0800
-Message-Id: <20220829055937.302377-1-oushixiong@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Mon, 29 Aug 2022 06:02:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716C511803
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:02:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661767342;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wkKI/e1ijmRvMdolNAM15YHl9n1m93N5zsRwzW/IjhE=;
+        b=OpynaSou4qPUngFwCiW020OKWYkYOsPUa7zILo/MdJanQetz2Wewzx+XI9rhNVasOVR4bD
+        HyaaGoB4ODYEMFR3eRQXLrn9wuL7OYrKcrnxfsGosGqYPEYyJLtWc2schBGDnGtlDM9Iyi
+        UR7HoborbKTVIsSN9f+50KpKEo2gdiI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-620-gK4hssKFO-elgX9KUB9tkw-1; Mon, 29 Aug 2022 06:02:20 -0400
+X-MC-Unique: gK4hssKFO-elgX9KUB9tkw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5C6A8101AA6A;
+        Mon, 29 Aug 2022 10:02:20 +0000 (UTC)
+Received: from T590 (ovpn-8-18.pek2.redhat.com [10.72.8.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EB6CB4010FCC;
+        Mon, 29 Aug 2022 10:02:10 +0000 (UTC)
+Date:   Mon, 29 Aug 2022 18:02:07 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Ziyang Zhang <ZiyangZhang@linux.alibaba.com>
+Cc:     axboe@kernel.dk, xiaoguang.wang@linux.alibaba.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        joseph.qi@linux.alibaba.com, ming.lei@redhat.com
+Subject: Re: [RFC PATCH 4/9] ublk_drv: refactor __ublk_rq_task_work() and
+ aborting machenism
+Message-ID: <YwyOnybsIm2+muXE@T590>
+References: <20220824054744.77812-1-ZiyangZhang@linux.alibaba.com>
+ <20220824054744.77812-5-ZiyangZhang@linux.alibaba.com>
+ <YwxRVEQlIw3oWmwE@T590>
+ <35dd7300-12ea-62ba-393e-145eae318944@linux.alibaba.com>
+ <Ywx0oUcqvE9JcpnT@T590>
+ <58f89905-b1a5-273b-58a8-ceba8aa7c1a7@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <58f89905-b1a5-273b-58a8-ceba8aa7c1a7@linux.alibaba.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds ast specific codes for DRM prime feature, this is to
-allow for offloading of rending in one direction and outputs in other.
+On Mon, Aug 29, 2022 at 05:09:45PM +0800, Ziyang Zhang wrote:
+> On 2022/8/29 16:11, Ming Lei wrote:
+> > On Mon, Aug 29, 2022 at 02:13:12PM +0800, Ziyang Zhang wrote:
+> >> On 2022/8/29 13:40, Ming Lei wrote:
+> >>> On Wed, Aug 24, 2022 at 01:47:39PM +0800, ZiyangZhang wrote:
+> >>>> If one rq is handled by io_uring_cmd_complete_in_task(), after a crash
+> >>>> this rq is actually handled by an io_uring fallback wq. We have to
+> >>>> end(abort) this rq since this fallback wq is a task other than the
+> >>>> crashed task. However, current code does not call io_uring_cmd_done()
+> >>>> at the same time but do it in ublk_cancel_queue(). With current design,
+> >>>> this does work because ublk_cancel_queue() is called AFTER del_gendisk(),
+> >>>> which waits for the rq ended(aborted) in fallback wq. This implies that
+> >>>> fallback wq on this rq is scheduled BEFORE calling io_uring_cmd_done()
+> >>>> on the corresponding ioucmd in ublk_cancel_queue().
+> >>>
+> >>> Right.
+> 
+> [1]
+> 
+> >>>
+> >>>>
+> >>>> However, while considering recovery feature, we cannot rely on
+> >>>> del_gendisk() or blk_mq_freeze_queue() to wait for completion of all
+> >>>> rqs because we may not want any aborted rq. Besides, io_uring does not
+> >>>> provide "flush fallback" machenism so we cannot trace this ioucmd.
+> >>>
+> >>> Why not?
+> >>>
+> >>> If user recovery is enabled, del_gendisk() can be replaced with
+> >>> blk_mq_quiesce_queue(), then let abort work function do:
+> >>>
+> >>> - cancel all in-flight requests by holding them into requeue list
+> >>>   instead of finishing them as before, and this way is safe because
+> >>>   abort worker does know the ubq daemon is dying
+> >>> - cancel pending commands as before, because the situation is same
+> >>>   with disk deleted or queue frozen
+> >>
+> >> The problem is: we cannot control when fallback wq is scheduled.
+> >> So we are unsafe to call io_uring_cmd_done() in another process.
+> > 
+> > What is the other process?
+> 
+> Hi Ming.
+> 
+> Actually patch 1-5 are all preparations for patch 6-9. So I suggest
+> you may read patch 6-9 at the same time if you are confused on why
+> I say there is a 'problem'. In current ublk_drv we really do not need
+> to consider it(As I have explained in [1] and you replied 'Right').
+> 
+> Answer your question now: in the patchset, it is START_RECOVERY process,
+> which calls ublk_recover_rq(). Please see patch 8.
 
-This patch is designed to solve the problem that the AST is not displayed
-when the server plug in a discrete  graphics card at the same time.
-We call the dirty callback function to copy the rendering results of the
-discrete graphics card to the ast side by dma-buf.
+Why does START_RECOVERY process need to call io_uring_cmd_done()?
 
-v1->v2:
-  - Fix the comment.
-v2->v3:
-  - we remove the gem_prime_import_sg_table callback and use the
-    gem_prime_import callback, because it just map and access the buffer
-    with the CPU. and do not to pin the buffer.
+As I mentioned, clean the old ubq_daemon by ublk_cancel_queue()
+just like before. Then the recovery handling can be simplified a lot.
 
-Signed-off-by: oushixiong <oushixiong@kylinos.cn>
-Reported-by: kernel test robot <lkp@intel.com>
----
- drivers/gpu/drm/ast/ast_drv.c  |  27 +++++++
- drivers/gpu/drm/ast/ast_mode.c | 125 ++++++++++++++++++++++++++++++++-
- 2 files changed, 151 insertions(+), 1 deletion(-)
+> 
+> > 
+> > It can't be fallback wq since any ublk request is aborted at the beginning
+> > of __ublk_rq_task_work().
+> 
+> With recovery feature enabled, we cannot abort the rq, but just let
+> __ublk_rq_task_work() return. We will requeue the rq soon.
 
-diff --git a/drivers/gpu/drm/ast/ast_drv.c b/drivers/gpu/drm/ast/ast_drv.c
-index 7465c4f0156a..fd3c4bad2eb4 100644
---- a/drivers/gpu/drm/ast/ast_drv.c
-+++ b/drivers/gpu/drm/ast/ast_drv.c
-@@ -28,6 +28,7 @@
- 
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/dma-buf.h>
- 
- #include <drm/drm_aperture.h>
- #include <drm/drm_atomic_helper.h>
-@@ -50,6 +51,29 @@ module_param_named(modeset, ast_modeset, int, 0400);
- 
- DEFINE_DRM_GEM_FOPS(ast_fops);
- 
-+static struct drm_gem_object *ast_gem_prime_import(struct drm_device *dev,
-+						struct dma_buf *dma_buf)
-+{
-+	struct drm_gem_vram_object *gbo;
-+
-+	gbo = drm_gem_vram_of_gem(dma_buf->priv);
-+	if (gbo->bo.base.dev == dev) {
-+		/*
-+		 * Importing dmabuf exported from out own gem increases
-+		 * refcount on gem itself instead of f_count of dmabuf.
-+		 */
-+		drm_gem_object_get(&gbo->bo.base);
-+		return &gbo->bo.base;
-+	}
-+
-+	gbo = drm_gem_vram_create(dev, dma_buf->size, 0);
-+	if (IS_ERR(gbo))
-+		return NULL;
-+
-+	get_dma_buf(dma_buf);
-+	return &gbo->bo.base;
-+}
-+
- static const struct drm_driver ast_driver = {
- 	.driver_features = DRIVER_ATOMIC |
- 			   DRIVER_GEM |
-@@ -63,6 +87,9 @@ static const struct drm_driver ast_driver = {
- 	.minor = DRIVER_MINOR,
- 	.patchlevel = DRIVER_PATCHLEVEL,
- 
-+	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
-+	.gem_prime_import = ast_gem_prime_import,
-+
- 	DRM_GEM_VRAM_DRIVER
- };
- 
-diff --git a/drivers/gpu/drm/ast/ast_mode.c b/drivers/gpu/drm/ast/ast_mode.c
-index 45b56b39ad47..65a4342c5622 100644
---- a/drivers/gpu/drm/ast/ast_mode.c
-+++ b/drivers/gpu/drm/ast/ast_mode.c
-@@ -48,6 +48,8 @@
- #include "ast_drv.h"
- #include "ast_tables.h"
- 
-+MODULE_IMPORT_NS(DMA_BUF);
-+
- static inline void ast_load_palette_index(struct ast_private *ast,
- 				     u8 index, u8 red, u8 green,
- 				     u8 blue)
-@@ -1535,8 +1537,129 @@ static const struct drm_mode_config_helper_funcs ast_mode_config_helper_funcs =
- 	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
- };
- 
-+static int ast_handle_damage(struct drm_framebuffer *fb, int x, int y,
-+					int width, int height)
-+{
-+	struct drm_gem_vram_object *dst_bo = NULL;
-+	void *dst = NULL;
-+	int ret = 0, i;
-+	unsigned long offset = 0;
-+	bool unmap = false;
-+	unsigned int bytesPerPixel;
-+	struct iosys_map map;
-+	struct iosys_map dmabuf_map;
-+
-+	bytesPerPixel = fb->format->cpp[0];
-+
-+	if (!fb->obj[0]->dma_buf)
-+		return -EINVAL;
-+
-+	if (!fb->obj[0]->dma_buf->vmap_ptr.vaddr) {
-+		ret = dma_buf_vmap(fb->obj[0]->dma_buf, &dmabuf_map);
-+		if (ret)
-+			return ret;
-+	} else
-+		dmabuf_map.vaddr = fb->obj[0]->dma_buf->vmap_ptr.vaddr;
-+
-+	dst_bo = drm_gem_vram_of_gem(fb->obj[0]);
-+
-+	ret = drm_gem_vram_pin(dst_bo, 0);
-+	if (ret) {
-+		DRM_ERROR("ast_bo_pin failed\n");
-+		return ret;
-+	}
-+
-+	if (!dst_bo->map.vaddr) {
-+		ret = drm_gem_vram_vmap(dst_bo, &map);
-+		if (ret) {
-+			drm_gem_vram_unpin(dst_bo);
-+			DRM_ERROR("failed to vmap fbcon\n");
-+			return ret;
-+		}
-+		unmap = true;
-+	}
-+	dst = dst_bo->map.vaddr;
-+
-+	for (i = y; i < y + height; i++) {
-+		offset = i * fb->pitches[0] + (x * bytesPerPixel);
-+		memcpy_toio(dst + offset, dmabuf_map.vaddr + offset,
-+			width * bytesPerPixel);
-+	}
-+
-+	if (unmap)
-+		drm_gem_vram_vunmap(dst_bo, &map);
-+
-+	drm_gem_vram_unpin(dst_bo);
-+
-+	return 0;
-+}
-+
-+
-+static int ast_user_framebuffer_dirty(struct drm_framebuffer *fb,
-+				struct drm_file *file,
-+				unsigned int flags,
-+				unsigned int color,
-+				struct drm_clip_rect *clips,
-+				unsigned int num_clips)
-+{
-+	int i, ret = 0;
-+
-+	drm_modeset_lock_all(fb->dev);
-+	if (fb->obj[0]->dma_buf) {
-+		ret = dma_buf_begin_cpu_access(fb->obj[0]->dma_buf,
-+				DMA_FROM_DEVICE);
-+		if (ret)
-+			goto unlock;
-+	}
-+
-+	for (i = 0; i < num_clips; i++) {
-+		ret = ast_handle_damage(fb, clips[i].x1, clips[i].y1,
-+				clips[i].x2 - clips[i].x1, clips[i].y2 - clips[i].y1);
-+		if (ret)
-+			break;
-+	}
-+
-+	if (fb->obj[0]->dma_buf) {
-+		dma_buf_end_cpu_access(fb->obj[0]->dma_buf,
-+				DMA_FROM_DEVICE);
-+	}
-+
-+unlock:
-+	drm_modeset_unlock_all(fb->dev);
-+
-+	return ret;
-+}
-+
-+static void ast_user_framebuffer_destroy(struct drm_framebuffer *fb)
-+{
-+	struct iosys_map dmabuf_map;
-+
-+	if (fb->obj[0]->dma_buf) {
-+		dmabuf_map.is_iomem = fb->obj[0]->dma_buf->vmap_ptr.is_iomem;
-+		dmabuf_map.vaddr = fb->obj[0]->dma_buf->vmap_ptr.vaddr;
-+		if (dmabuf_map.vaddr)
-+			dma_buf_vunmap(fb->obj[0]->dma_buf, &dmabuf_map);
-+	}
-+
-+	drm_gem_fb_destroy(fb);
-+}
-+
-+static const struct drm_framebuffer_funcs ast_gem_fb_funcs_dirtyfb = {
-+	.destroy	= ast_user_framebuffer_destroy,
-+	.create_handle	= drm_gem_fb_create_handle,
-+	.dirty		= ast_user_framebuffer_dirty,
-+};
-+
-+static struct drm_framebuffer *
-+ast_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
-+				const struct drm_mode_fb_cmd2 *mode_cmd)
-+{
-+	return drm_gem_fb_create_with_funcs(dev, file, mode_cmd,
-+					&ast_gem_fb_funcs_dirtyfb);
-+}
-+
- static const struct drm_mode_config_funcs ast_mode_config_funcs = {
--	.fb_create = drm_gem_fb_create,
-+	.fb_create = ast_gem_fb_create_with_dirty,
- 	.mode_valid = drm_vram_helper_mode_valid,
- 	.atomic_check = drm_atomic_helper_check,
- 	.atomic_commit = drm_atomic_helper_commit,
--- 
-2.17.1
+Yeah, the request is requeued, and the queue is quiesced during
+aborting in ublk_cancel_queue().
+
+> 
+> > 
+> > It shouldn't be the process calling ublk_cancel_dev(), since it is
+> > safe to call io_uring_cmd_done() if ubq->nr_io_ready > 0.
+> > 
+> > Or others?
+> It is START_RECOVERY process(or the 'abort_work' you proposed).
+> It is whatever that calls io_uring_cmd_done() on the old ioucmd
+> belonging to the dying ubq_daemon.
+> 
+> > 
+> >> Otherwise, there is a UAF, just as
+> >> (5804987b7272f437299011c76b7363b8df6f8515: ublk_drv: do not add a
+> >> re-issued request aborted previously to ioucmd's task_work).
+> > 
+> > As I mentioned, del_gendisk() can be replaced with
+> > blk_mq_quiesce_queue() in case of user recovery, then no any new
+> > request can be queued after blk_mq_quiesce_queue() returns.
+> 
+> For this, +1.
+> 
+> > 
+> >>
+> >> Yeah I know the answer is very simple: flush the fallback wq.
+> >> But here are two more questions:
+> > 
+> > I don't see why we need to flush fallback wq, care to provide some
+> > details?
+> 
+> Anyway, here is a case:
+> 
+> (1) Assume there is only one tag, only one ubq.
+> 
+> (2) The ublk_io is ACTIVE, which means an ioucmd(cmd_1) is sent from ublksrv
+>     and ublk_drv has not completed it yet(no io_uring_cmd_done() is called).
+> 
+> (3) New rq is coming, and ublk_queue_rq() is called.
+> 
+> (4) The ublksrv process crashes(PF_EXITING).
+> 
+> (5) io_uring_cmd_complete_in_task(cmd_1) is called in ublk_queue_rq(), and
+>     cmd_1 is put into a fallback_list.
+> 
+
+What I suggested is to abort ubq daemon in ublk_abort_device() like before,
+but without failing in-flight request, just quiesce queue and requeue all
+in-flight request.
+
+Specifically, you can wait until all in-flight requests are requeued,
+and the similar handling has been used by NVMe for long time, then
+fallback wq can be thought as being flushed here.
+
+There are two kinds of in-flight requests:
+
+1) UBLK_IO_FLAG_ACTIVE is set, that is what ublk_abort_queue() needs to
+wait until req->state becomes IDLE, which can be done via the change at
+the entry of __ublk_rq_task_work():
+
+	if (unlikely(task_exiting)) {
+          if (user_recovery)
+		  	blk_mq_requeue_request(req, false);
+		  else
+		    blk_mq_end_request(req, BLK_STS_IOERR);
+	}
+
+2) UBLK_IO_FLAG_ACTIVE is cleared
+  - no need to wait since io_uring_cmd_done() is called for this
+	request
 
 
-No virus found
-		Checked by Hillstone Network AntiVirus
+> (6) We want to re-attach a new process and assing a new ioucmd(cmd_2) to ublk_io.
+> 
+> (7) We try to complete the old cmd_1 now by io_uring_cmd_done(cmd_1)...
+> 
+> (8) Shortly after (7), io_uring exit work is scheduled and it finds that no
+>     inflight iocumd exists, so it starts to release some resources
+> 
+> (9) Shortly after (8), in fallback wq, a null-deref on cmd_1 or ctx->refs may
+>     happen, just like
+>     (5804987b7272f437299011c76b7363b8df6f8515: ublk_drv: do not add a
+>     re-issued request aborted previously to ioucmd's task_work).
+> 
+> If we flush fallback wq before (7), then everything is OKAY.
+> 
+> Why this happens? The root cause is that we do not ALWAYS complete io_uring cmd
+> in ublk_rq_task_work_cb(). The commit: "ublk_drv: do not add a re-issued request
+> aborted previously to ioucmd's task_work" does fix a problem. But I think we
+> really need to refactor ublk_rq_task_work_cb() which focuses on old ioucmd.
+
+The race is because you drop the existed abort mechanism for user
+recovery. If existed abort is reused for recovery, no above race at all.
+
+> 
+> > 
+> >>
+> >> (1) Should ublk_drv rely on the fallback wq machenism?
+> >>     IMO, ublk_drv should not know detail of io_uring_cmd_complete_in_task()
+> >>     because its implementation may change in the future.
+> >>     BTW, I think current ublk_rq_task_work_cb() is not correct because
+> >>     it does not always call io_uring_cmd_done() before returning.
+> >>     nvme_uring_cmd_end_io() always calls io_uring_cmd_done() for each ioucmd
+> >>     no matter the rq succeeds or fails.
+> >>
+> >> (2) Suppose io_uring does export the symbol 'flush_fallback_work', should we call
+> >>     it before starting a new process(recovery)?
+> >>     What if fallback wq is not scheduled immediately if there are many processes
+> >>     running and the system overhead is heavy. In this case the recovery process
+> >>     may wait for too long. Really we should not depend on fallback wq and please
+> >>     let the fallback wq complete the ioucmd itself.
+> >>
+> >>>
+> >>> With this way, the current abort logic won't be changed much.
+> >>>
+> >>> And user recovery should only be started _after_ ublk device is found
+> >>> as aborted.
+> >>
+> >> START_RECOVERY will check if all ubq_daemons(the process) are PF_EXITING.
+> > 
+> > That is different. If START_RECOVERY is only run on aborted device, the
+> > recovery handler could be simplified.
+> 
+> But stop_dev could become complicated since with recovery enabled, stop_dev
+> has to do different things. Please see patch 5. Really we do not have to
+> do anything after the crash until user sends START_RECOVERY or STOP_DEV.
+
+99% is same, the extra thing to just fail all in-queue requests by unquiesce queue
+before stopping one to-be-recovered device really.
+
+
+Thanks, 
+Ming
+
