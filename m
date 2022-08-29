@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2BFECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26044ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbiH2LVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        id S231697AbiH2LVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231831AbiH2LT0 (ORCPT
+        with ESMTP id S231839AbiH2LT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:19:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B81A1117E;
-        Mon, 29 Aug 2022 04:13:12 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937BC6DAE4;
+        Mon, 29 Aug 2022 04:13:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01ACE61228;
-        Mon, 29 Aug 2022 11:13:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9747C433C1;
-        Mon, 29 Aug 2022 11:13:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E8ABB80F79;
+        Mon, 29 Aug 2022 11:12:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D12BEC433C1;
+        Mon, 29 Aug 2022 11:12:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771582;
-        bh=SnbJ+6NkH4rpT9T12sHrdeFOzjthET33klZwQgtz3mY=;
+        s=korg; t=1661771548;
+        bh=SvzpnSA7V08mLhJ4Mh17TtCBf+nZSutJ+9NaMn4hbe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YFJJ6lAbwZULKLVcc4/vvS7E1oZ47OMLMUrZZdrX9z8OZVj6IhXoKj/rONGxbhff9
-         CJhuzczjTiNj3nVGS77KqGUPm/pOmjYAABZgucTu5c+5mvM0d+VjuVlZhrfM4UpFHB
-         Uc7z62wwfW2fyeyyjpq2V1fJR/xP3f5f+b4rM9B0=
+        b=ViQkvQJCgMmzVkeCiXIi6N3y1kYmzezvFzHhXrRqauWm8MnorfUhdgpTiUupbfeSd
+         LqduQnL69SuAr1fFnhsKcZYc/UqkAQHvRVNvBgvD+8bZhJlbSWwmKEg7LMeK8VQll5
+         0b8WridKUJN9djzR81BX3aK+PPoxJ2NgO4J/Z5wQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
-        Ian Rogers <irogers@google.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.10 82/86] perf python: Fix build when PYTHON_CONFIG is user supplied
-Date:   Mon, 29 Aug 2022 12:59:48 +0200
-Message-Id: <20220829105759.877832785@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.15 115/136] smb3: missing inode locks in punch hole
+Date:   Mon, 29 Aug 2022 12:59:42 +0200
+Message-Id: <20220829105809.420859934@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,53 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Clark <james.clark@arm.com>
+From: David Howells <dhowells@redhat.com>
 
-commit bc9e7fe313d5e56d4d5f34bcc04d1165f94f86fb upstream.
+commit ba0803050d610d5072666be727bca5e03e55b242 upstream.
 
-The previous change to Python autodetection had a small mistake where
-the auto value was used to determine the Python binary, rather than the
-user supplied value. The Python binary is only used for one part of the
-build process, rather than the final linking, so it was producing
-correct builds in most scenarios, especially when the auto detected
-value matched what the user wanted, or the system only had a valid set
-of Pythons.
+smb3 fallocate punch hole was not grabbing the inode or filemap_invalidate
+locks so could have race with pagemap reinstantiating the page.
 
-Change it so that the Python binary path is derived from either the
-PYTHON_CONFIG value or PYTHON value, depending on what is specified by
-the user. This was the original intention.
-
-This error was spotted in a build failure an odd cross compilation
-environment after commit 4c41cb46a732fe82 ("perf python: Prefer
-python3") was merged.
-
-Fixes: 630af16eee495f58 ("perf tools: Use Python devtools for version autodetection rather than runtime")
-Signed-off-by: James Clark <james.clark@arm.com>
-Acked-by: Ian Rogers <irogers@google.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: James Clark <james.clark@arm.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220728093946.1337642-1-james.clark@arm.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/Makefile.config |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/cifs/smb2ops.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/tools/perf/Makefile.config
-+++ b/tools/perf/Makefile.config
-@@ -248,7 +248,7 @@ endif
- # defined. get-executable-or-default fails with an error if the first argument is supplied but
- # doesn't exist.
- override PYTHON_CONFIG := $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO))
--override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_AUTO)))
-+override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_CONFIG)))
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -3599,7 +3599,7 @@ static long smb3_zero_range(struct file
+ static long smb3_punch_hole(struct file *file, struct cifs_tcon *tcon,
+ 			    loff_t offset, loff_t len)
+ {
+-	struct inode *inode;
++	struct inode *inode = file_inode(file);
+ 	struct cifsFileInfo *cfile = file->private_data;
+ 	struct file_zero_data_information fsctl_buf;
+ 	long rc;
+@@ -3608,14 +3608,12 @@ static long smb3_punch_hole(struct file
  
- grep-libs  = $(filter -l%,$(1))
- strip-libs  = $(filter-out -l%,$(1))
+ 	xid = get_xid();
+ 
+-	inode = d_inode(cfile->dentry);
+-
++	inode_lock(inode);
+ 	/* Need to make file sparse, if not already, before freeing range. */
+ 	/* Consider adding equivalent for compressed since it could also work */
+ 	if (!smb2_set_sparse(xid, tcon, cfile, inode, set_sparse)) {
+ 		rc = -EOPNOTSUPP;
+-		free_xid(xid);
+-		return rc;
++		goto out;
+ 	}
+ 
+ 	filemap_invalidate_lock(inode->i_mapping);
+@@ -3635,8 +3633,10 @@ static long smb3_punch_hole(struct file
+ 			true /* is_fctl */, (char *)&fsctl_buf,
+ 			sizeof(struct file_zero_data_information),
+ 			CIFSMaxBufSize, NULL, NULL);
+-	free_xid(xid);
+ 	filemap_invalidate_unlock(inode->i_mapping);
++out:
++	inode_unlock(inode);
++	free_xid(xid);
+ 	return rc;
+ }
+ 
 
 
