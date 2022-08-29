@@ -2,50 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E01FCECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD34DECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232268AbiH2L36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:29:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53874 "EHLO
+        id S232289AbiH2LaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:30:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232319AbiH2L2n (ORCPT
+        with ESMTP id S232341AbiH2L2r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:28:43 -0400
+        Mon, 29 Aug 2022 07:28:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF4AE785B2;
-        Mon, 29 Aug 2022 04:16:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E0A79A6A;
+        Mon, 29 Aug 2022 04:17:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68447611F5;
-        Mon, 29 Aug 2022 11:07:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63435C433C1;
-        Mon, 29 Aug 2022 11:07:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B3E6611D6;
+        Mon, 29 Aug 2022 11:06:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73782C433C1;
+        Mon, 29 Aug 2022 11:06:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771249;
-        bh=M1HsVH01teGvKJUtBfMeSIcUx6dxRJifig7mR5QsiyE=;
+        s=korg; t=1661771173;
+        bh=gwq1OqMwhb/YuVfl7qY3edF58qVgD9W2LIDU7en9DcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v1W/eJcOVRNua28o6C2syy3J41jO2izoSBkRZ3hY5JxzL/LaLYO36OhHO88NeddHg
-         Uz+4L4PTYaZ1mseUXJJG4kXjvGKKCOFLGThInZr+qOATQlTpJX0SXa+KvtRjyZUvQp
-         4i50MYHT+03UkPwZccq/+2mHI3Adm10C10/o7LbA=
+        b=r+duUxt//B01OZ3hoFecCGj42YmU+uRwRlRiUNzxS2CofxLkVl/PHMfrwii770on9
+         mxQmhz+4e5vXDptI+kpH6Crz2Kyyy5RItB8XDxf8kLsEUGviPPfgPW+gDK6PaMzV1n
+         OtPDF24DcdrX2qhO+ST50+5w8hlSbKL+g08oH8xo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Rapoport <rppt@linux.vnet.ibm.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Nadav Amit <nadav.amit@gmail.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.19 009/158] mm/uffd: reset write protection when unregister with wp-mode
-Date:   Mon, 29 Aug 2022 12:57:39 +0200
-Message-Id: <20220829105809.225350063@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 35/86] netfilter: nft_osf: restrict osf to ipv4, ipv6 and inet families
+Date:   Mon, 29 Aug 2022 12:59:01 +0200
+Message-Id: <20220829105757.991970415@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,157 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Xu <peterx@redhat.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit f369b07c861435bd812a9d14493f71b34132ed6f upstream.
+[ Upstream commit 5f3b7aae14a706d0d7da9f9e39def52ff5fc3d39 ]
 
-The motivation of this patch comes from a recent report and patchfix from
-David Hildenbrand on hugetlb shared handling of wr-protected page [1].
+As it was originally intended, restrict extension to supported families.
 
-With the reproducer provided in commit message of [1], one can leverage
-the uffd-wp lazy-reset of ptes to trigger a hugetlb issue which can affect
-not only the attacker process, but also the whole system.
-
-The lazy-reset mechanism of uffd-wp was used to make unregister faster,
-meanwhile it has an assumption that any leftover pgtable entries should
-only affect the process on its own, so not only the user should be aware
-of anything it does, but also it should not affect outside of the process.
-
-But it seems that this is not true, and it can also be utilized to make
-some exploit easier.
-
-So far there's no clue showing that the lazy-reset is important to any
-userfaultfd users because normally the unregister will only happen once
-for a specific range of memory of the lifecycle of the process.
-
-Considering all above, what this patch proposes is to do explicit pte
-resets when unregister an uffd region with wr-protect mode enabled.
-
-It should be the same as calling ioctl(UFFDIO_WRITEPROTECT, wp=false)
-right before ioctl(UFFDIO_UNREGISTER) for the user.  So potentially it'll
-make the unregister slower.  From that pov it's a very slight abi change,
-but hopefully nothing should break with this change either.
-
-Regarding to the change itself - core of uffd write [un]protect operation
-is moved into a separate function (uffd_wp_range()) and it is reused in
-the unregister code path.
-
-Note that the new function will not check for anything, e.g.  ranges or
-memory types, because they should have been checked during the previous
-UFFDIO_REGISTER or it should have failed already.  It also doesn't check
-mmap_changing because we're with mmap write lock held anyway.
-
-I added a Fixes upon introducing of uffd-wp shmem+hugetlbfs because that's
-the only issue reported so far and that's the commit David's reproducer
-will start working (v5.19+).  But the whole idea actually applies to not
-only file memories but also anonymous.  It's just that we don't need to
-fix anonymous prior to v5.19- because there's no known way to exploit.
-
-IOW, this patch can also fix the issue reported in [1] as the patch 2 does.
-
-[1] https://lore.kernel.org/all/20220811103435.188481-3-david@redhat.com/
-
-Link: https://lkml.kernel.org/r/20220811201340.39342-1-peterx@redhat.com
-Fixes: b1f9e876862d ("mm/uffd: enable write protection for shmem & hugetlbfs")
-Signed-off-by: Peter Xu <peterx@redhat.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Mike Rapoport <rppt@linux.vnet.ibm.com>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Nadav Amit <nadav.amit@gmail.com>
-Cc: Axel Rasmussen <axelrasmussen@google.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b96af92d6eaf ("netfilter: nf_tables: implement Passive OS fingerprint module in nft_osf")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/userfaultfd.c              |  4 ++++
- include/linux/userfaultfd_k.h |  2 ++
- mm/userfaultfd.c              | 29 ++++++++++++++++++-----------
- 3 files changed, 24 insertions(+), 11 deletions(-)
+ net/netfilter/nft_osf.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/fs/userfaultfd.c b/fs/userfaultfd.c
-index 1c44bf75f916..175de70e3adf 100644
---- a/fs/userfaultfd.c
-+++ b/fs/userfaultfd.c
-@@ -1601,6 +1601,10 @@ static int userfaultfd_unregister(struct userfaultfd_ctx *ctx,
- 			wake_userfault(vma->vm_userfaultfd_ctx.ctx, &range);
- 		}
- 
-+		/* Reset ptes for the whole vma range if wr-protected */
-+		if (userfaultfd_wp(vma))
-+			uffd_wp_range(mm, vma, start, vma_end - start, false);
+diff --git a/net/netfilter/nft_osf.c b/net/netfilter/nft_osf.c
+index d82677e83400b..720dc9fba6d4f 100644
+--- a/net/netfilter/nft_osf.c
++++ b/net/netfilter/nft_osf.c
+@@ -115,9 +115,21 @@ static int nft_osf_validate(const struct nft_ctx *ctx,
+ 			    const struct nft_expr *expr,
+ 			    const struct nft_data **data)
+ {
+-	return nft_chain_validate_hooks(ctx->chain, (1 << NF_INET_LOCAL_IN) |
+-						    (1 << NF_INET_PRE_ROUTING) |
+-						    (1 << NF_INET_FORWARD));
++	unsigned int hooks;
 +
- 		new_flags = vma->vm_flags & ~__VM_UFFD_FLAGS;
- 		prev = vma_merge(mm, prev, start, vma_end, new_flags,
- 				 vma->anon_vma, vma->vm_file, vma->vm_pgoff,
-diff --git a/include/linux/userfaultfd_k.h b/include/linux/userfaultfd_k.h
-index 732b522bacb7..e1b8a915e9e9 100644
---- a/include/linux/userfaultfd_k.h
-+++ b/include/linux/userfaultfd_k.h
-@@ -73,6 +73,8 @@ extern ssize_t mcopy_continue(struct mm_struct *dst_mm, unsigned long dst_start,
- extern int mwriteprotect_range(struct mm_struct *dst_mm,
- 			       unsigned long start, unsigned long len,
- 			       bool enable_wp, atomic_t *mmap_changing);
-+extern void uffd_wp_range(struct mm_struct *dst_mm, struct vm_area_struct *vma,
-+			  unsigned long start, unsigned long len, bool enable_wp);
- 
- /* mm helpers */
- static inline bool is_mergeable_vm_userfaultfd_ctx(struct vm_area_struct *vma,
-diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
-index 07d3befc80e4..7327b2573f7c 100644
---- a/mm/userfaultfd.c
-+++ b/mm/userfaultfd.c
-@@ -703,14 +703,29 @@ ssize_t mcopy_continue(struct mm_struct *dst_mm, unsigned long start,
- 			      mmap_changing, 0);
++	switch (ctx->family) {
++	case NFPROTO_IPV4:
++	case NFPROTO_IPV6:
++	case NFPROTO_INET:
++		hooks = (1 << NF_INET_LOCAL_IN) |
++			(1 << NF_INET_PRE_ROUTING) |
++			(1 << NF_INET_FORWARD);
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return nft_chain_validate_hooks(ctx->chain, hooks);
  }
  
-+void uffd_wp_range(struct mm_struct *dst_mm, struct vm_area_struct *dst_vma,
-+		   unsigned long start, unsigned long len, bool enable_wp)
-+{
-+	struct mmu_gather tlb;
-+	pgprot_t newprot;
-+
-+	if (enable_wp)
-+		newprot = vm_get_page_prot(dst_vma->vm_flags & ~(VM_WRITE));
-+	else
-+		newprot = vm_get_page_prot(dst_vma->vm_flags);
-+
-+	tlb_gather_mmu(&tlb, dst_mm);
-+	change_protection(&tlb, dst_vma, start, start + len, newprot,
-+			  enable_wp ? MM_CP_UFFD_WP : MM_CP_UFFD_WP_RESOLVE);
-+	tlb_finish_mmu(&tlb);
-+}
-+
- int mwriteprotect_range(struct mm_struct *dst_mm, unsigned long start,
- 			unsigned long len, bool enable_wp,
- 			atomic_t *mmap_changing)
- {
- 	struct vm_area_struct *dst_vma;
- 	unsigned long page_mask;
--	struct mmu_gather tlb;
--	pgprot_t newprot;
- 	int err;
- 
- 	/*
-@@ -750,15 +765,7 @@ int mwriteprotect_range(struct mm_struct *dst_mm, unsigned long start,
- 			goto out_unlock;
- 	}
- 
--	if (enable_wp)
--		newprot = vm_get_page_prot(dst_vma->vm_flags & ~(VM_WRITE));
--	else
--		newprot = vm_get_page_prot(dst_vma->vm_flags);
--
--	tlb_gather_mmu(&tlb, dst_mm);
--	change_protection(&tlb, dst_vma, start, start + len, newprot,
--			  enable_wp ? MM_CP_UFFD_WP : MM_CP_UFFD_WP_RESOLVE);
--	tlb_finish_mmu(&tlb);
-+	uffd_wp_range(dst_mm, dst_vma, start, len, enable_wp);
- 
- 	err = 0;
- out_unlock:
+ static struct nft_expr_type nft_osf_type;
 -- 
-2.37.2
+2.35.1
 
 
 
