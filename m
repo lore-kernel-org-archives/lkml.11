@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 827E4ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B47ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231533AbiH2LR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44590 "EHLO
+        id S231535AbiH2LSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:18:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231408AbiH2LRV (ORCPT
+        with ESMTP id S230075AbiH2LRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:17:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01C96642DB;
-        Mon, 29 Aug 2022 04:11:35 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2F96CD0C;
+        Mon, 29 Aug 2022 04:11:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D635CB80F79;
-        Mon, 29 Aug 2022 11:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 412DCC433C1;
-        Mon, 29 Aug 2022 11:11:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B32FB80F98;
+        Mon, 29 Aug 2022 11:11:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C793BC433C1;
+        Mon, 29 Aug 2022 11:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771485;
-        bh=dwulq3C42+QL6V1OJqh9EVSXbXuaeZA6njsv2Gq/iEI=;
+        s=korg; t=1661771491;
+        bh=5fD5YTwbU+0/XNyGqfiaf0hqk11P2yRg5wws2o/JuTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ibyYRb6zYigPflenIBlq1OYDhT3p+jsZqunJL+/v5qGRRb63Y8Sl7oOyfQhfzrgZB
-         7VNVNuI8Qv6RUoCoL+XslQWJKxHMWGOenmABagjwk5JKWDA2O8WcRC8E1KVf3V/NrT
-         I6ZCcQPDA9+cNdJy+slYyNKmjkhj8fS/O3DGsv50=
+        b=nr5a2VlriWiMhLcR0lwz5uGpKQB3f3hV+0KOddTqoCoCUBQOhuscNjYGo4UtWuV3y
+         KGbCRvpbJajBmwdpXwlKMmcAmzyVHvUlKZK5Chh4QZXHpdGqyOXCGXa93W5IIc7bOW
+         HnpGefKHJ0XZrMNlsCLtZ7vQy7qos4g4XGT9bhdw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Quanyang Wang <quanyang.wang@windriver.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thierry Reding <treding@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.10 72/86] asm-generic: sections: refactor memory_intersects
-Date:   Mon, 29 Aug 2022 12:59:38 +0200
-Message-Id: <20220829105759.484998195@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Konstantin Khlebnikov <khlebnikov@openvz.org>,
+        Huang Ying <ying.huang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 021/158] mm/smaps: dont access young/dirty bit if pte unpresent
+Date:   Mon, 29 Aug 2022 12:57:51 +0200
+Message-Id: <20220829105809.698936822@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,96 +54,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quanyang Wang <quanyang.wang@windriver.com>
+From: Peter Xu <peterx@redhat.com>
 
-commit 0c7d7cc2b4fe2e74ef8728f030f0f1674f9f6aee upstream.
+[ Upstream commit efd4149342db2df41b1bbe68972ead853b30e444 ]
 
-There are two problems with the current code of memory_intersects:
+These bits should only be valid when the ptes are present.  Introducing
+two booleans for it and set it to false when !pte_present() for both pte
+and pmd accountings.
 
-First, it doesn't check whether the region (begin, end) falls inside the
-region (virt, vend), that is (virt < begin && vend > end).
+The bug is found during code reading and no real world issue reported, but
+logically such an error can cause incorrect readings for either smaps or
+smaps_rollup output on quite a few fields.
 
-The second problem is if vend is equal to begin, it will return true but
-this is wrong since vend (virt + size) is not the last address of the
-memory region but (virt + size -1) is.  The wrong determination will
-trigger the misreporting when the function check_for_illegal_area calls
-memory_intersects to check if the dma region intersects with stext region.
+For example, it could cause over-estimate on values like Shared_Dirty,
+Private_Dirty, Referenced.  Or it could also cause under-estimate on
+values like LazyFree, Shared_Clean, Private_Clean.
 
-The misreporting is as below (stext is at 0x80100000):
- WARNING: CPU: 0 PID: 77 at kernel/dma/debug.c:1073 check_for_illegal_area+0x130/0x168
- DMA-API: chipidea-usb2 e0002000.usb: device driver maps memory from kernel text or rodata [addr=800f0000] [len=65536]
- Modules linked in:
- CPU: 1 PID: 77 Comm: usb-storage Not tainted 5.19.0-yocto-standard #5
- Hardware name: Xilinx Zynq Platform
-  unwind_backtrace from show_stack+0x18/0x1c
-  show_stack from dump_stack_lvl+0x58/0x70
-  dump_stack_lvl from __warn+0xb0/0x198
-  __warn from warn_slowpath_fmt+0x80/0xb4
-  warn_slowpath_fmt from check_for_illegal_area+0x130/0x168
-  check_for_illegal_area from debug_dma_map_sg+0x94/0x368
-  debug_dma_map_sg from __dma_map_sg_attrs+0x114/0x128
-  __dma_map_sg_attrs from dma_map_sg_attrs+0x18/0x24
-  dma_map_sg_attrs from usb_hcd_map_urb_for_dma+0x250/0x3b4
-  usb_hcd_map_urb_for_dma from usb_hcd_submit_urb+0x194/0x214
-  usb_hcd_submit_urb from usb_sg_wait+0xa4/0x118
-  usb_sg_wait from usb_stor_bulk_transfer_sglist+0xa0/0xec
-  usb_stor_bulk_transfer_sglist from usb_stor_bulk_srb+0x38/0x70
-  usb_stor_bulk_srb from usb_stor_Bulk_transport+0x150/0x360
-  usb_stor_Bulk_transport from usb_stor_invoke_transport+0x38/0x440
-  usb_stor_invoke_transport from usb_stor_control_thread+0x1e0/0x238
-  usb_stor_control_thread from kthread+0xf8/0x104
-  kthread from ret_from_fork+0x14/0x2c
-
-Refactor memory_intersects to fix the two problems above.
-
-Before the 1d7db834a027e ("dma-debug: use memory_intersects()
-directly"), memory_intersects is called only by printk_late_init:
-
-printk_late_init -> init_section_intersects ->memory_intersects.
-
-There were few places where memory_intersects was called.
-
-When commit 1d7db834a027e ("dma-debug: use memory_intersects()
-directly") was merged and CONFIG_DMA_API_DEBUG is enabled, the DMA
-subsystem uses it to check for an illegal area and the calltrace above
-is triggered.
-
-[akpm@linux-foundation.org: fix nearby comment typo]
-Link: https://lkml.kernel.org/r/20220819081145.948016-1-quanyang.wang@windriver.com
-Fixes: 979559362516 ("asm/sections: add helpers to check for section data")
-Signed-off-by: Quanyang Wang <quanyang.wang@windriver.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Thierry Reding <treding@nvidia.com>
-Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/20220805160003.58929-1-peterx@redhat.com
+Fixes: b1d4d9e0cbd0 ("proc/smaps: carefully handle migration entries")
+Fixes: c94b6923fa0a ("/proc/PID/smaps: Add PMD migration entry parsing")
+Signed-off-by: Peter Xu <peterx@redhat.com>
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Yang Shi <shy828301@gmail.com>
+Cc: Konstantin Khlebnikov <khlebnikov@openvz.org>
+Cc: Huang Ying <ying.huang@intel.com>
 Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/asm-generic/sections.h |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ fs/proc/task_mmu.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/include/asm-generic/sections.h
-+++ b/include/asm-generic/sections.h
-@@ -114,7 +114,7 @@ static inline bool memory_contains(void
- /**
-  * memory_intersects - checks if the region occupied by an object intersects
-  *                     with another memory region
-- * @begin: virtual address of the beginning of the memory regien
-+ * @begin: virtual address of the beginning of the memory region
-  * @end: virtual address of the end of the memory region
-  * @virt: virtual address of the memory object
-  * @size: size of the memory object
-@@ -127,7 +127,10 @@ static inline bool memory_intersects(voi
- {
- 	void *vend = virt + size;
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index 2d04e3470d4cd..313788bc0c307 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -525,10 +525,12 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
+ 	struct vm_area_struct *vma = walk->vma;
+ 	bool locked = !!(vma->vm_flags & VM_LOCKED);
+ 	struct page *page = NULL;
+-	bool migration = false;
++	bool migration = false, young = false, dirty = false;
  
--	return (virt >= begin && virt < end) || (vend >= begin && vend < end);
-+	if (virt < end && vend > begin)
-+		return true;
-+
-+	return false;
+ 	if (pte_present(*pte)) {
+ 		page = vm_normal_page(vma, addr, *pte);
++		young = pte_young(*pte);
++		dirty = pte_dirty(*pte);
+ 	} else if (is_swap_pte(*pte)) {
+ 		swp_entry_t swpent = pte_to_swp_entry(*pte);
+ 
+@@ -558,8 +560,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
+ 	if (!page)
+ 		return;
+ 
+-	smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte),
+-		      locked, migration);
++	smaps_account(mss, page, false, young, dirty, locked, migration);
  }
  
- /**
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+-- 
+2.35.1
+
 
 
