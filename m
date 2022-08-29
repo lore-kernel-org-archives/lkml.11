@@ -2,113 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C562AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:45:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C58ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiH2JpX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 05:45:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
+        id S229870AbiH2Jpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 05:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiH2JpU (ORCPT
+        with ESMTP id S229557AbiH2Jpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 05:45:20 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F2B2B18E
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:45:16 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27T5g85l004126;
-        Mon, 29 Aug 2022 04:45:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=MRh3A4ON0/ZCyZM67h+hhoZTvgjWZJM7VSH6yQSQ1YQ=;
- b=Dk1dd8hrOFdMLDmFmZ+exP6t6QGPuRS42OmQLp8noSC1eN8YGVO8Ha/oaknVwBILvd2f
- VH1nLhLEcLkOOLYVyGmi+kyK3mZCADtMe+gd1ZgV4vlQz4STxh8tCZ4w6+WJ2XNP69Q5
- ELGkMS8lK2OV3+FHkW6R9C+RPIVRaqb+aQ2Gv7tKMctk6t9FodbnJwopbI5cBecAMMeK
- JYVfEICmOKfEw6tVTLWCSVUzArbiqDpsDW0KqdUCiw8xeLrZ1d884bo2/cQDfkrsCXOX
- MNI0yapatetmRp3rQ8xYUMB7a+nikYKBxPz76gL7QXZPHLbr0DxW3BFudfj+4o66Dhy6 ww== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3j7fpp9v2g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 04:45:00 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.12; Mon, 29 Aug
- 2022 04:44:58 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.12 via Frontend
- Transport; Mon, 29 Aug 2022 04:44:58 -0500
-Received: from edi-sw-dsktp-006.ad.cirrus.com (edi-sw-dsktp-006.ad.cirrus.com [198.90.251.95])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id DE62D459;
-        Mon, 29 Aug 2022 09:44:58 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <vkoul@kernel.org>, <yung-chuan.liao@linux.intel.com>,
-        <pierre-louis.bossart@linux.intel.com>, <sanyog.r.kale@intel.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH 1/1] soundwire: bus: Don't re-enumerate before status is UNATTACHED
-Date:   Mon, 29 Aug 2022 10:44:58 +0100
-Message-ID: <20220829094458.1169504-2-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220829094458.1169504-1-rf@opensource.cirrus.com>
-References: <20220829094458.1169504-1-rf@opensource.cirrus.com>
+        Mon, 29 Aug 2022 05:45:34 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34C62D1C2
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:45:28 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 130-20020a1c0288000000b003a84b160addso32234wmc.2
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:45:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:to:from:user-agent:references:from:to:cc;
+        bh=fEw88egTf3n0WTxLSAsw2MCw2Md2Dd4XGwp5wqMSg0E=;
+        b=DwxDMo+IMLmKaXg/GER2cKmuOn7dWteIo52dvOH/RD7vw7Uh7Vz/yGz0pH5Je/yzKk
+         1qal1Nxmkh+wMeSF9lKRyM14qNMjFMtmX1+ZD9lAgoSgetgNt15RTNPjjMH67WQExw5O
+         FJjhHT15HricLe7QIdVxc0JRNsPMapAOoKsAnO3wlKxBlut82KQ7CdT7YxejErHAkII4
+         eb3wMj5H7HYiC0XggRvhqjI0un9eq92+QXG861izN/l8tN8OaWwGiFiJGdXW+mZT+paJ
+         jhD9cD4KTKtMHLrJ0ndcwJztmLJFnr57VZa6aXFXV1HQGGJ1DAsVp/Or9S4hgxeKEGcN
+         quoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
+         :subject:to:from:user-agent:references:x-gm-message-state:from:to:cc;
+        bh=fEw88egTf3n0WTxLSAsw2MCw2Md2Dd4XGwp5wqMSg0E=;
+        b=AKNFEUec5N2FgdMWAkalidQP4aftS9i7AP3FsdJyb2hMU+t+PRPNb79C/5syu6dRzY
+         3V8dEqpbZPXGbmbDsQyjMaj/4ZRgdD01gZVbWLEBX1707n1t508q9HS49Fc9J0lqDyqq
+         UatLa5LY4IGGlCZHJhsuyqrfsWiiZOB3U/kiGUvZ+jjiNjma3Z5HIhgI0Ei8hPYGVHME
+         vCIybNJU3+I7zkNH2uzBo9MW2ELhCGBiozmTMb9ADQcQ3ZnuE3XOLro+aKeUUtS78X8V
+         ynrpK5php/YgRls5XryQyEHIE9mtkYLQl1INo3FHmvsbksh1d/IxqqI1dIBji8a1OyZY
+         /hYw==
+X-Gm-Message-State: ACgBeo0Oo9UUlj7csR6g7LMjRaoKbdu5/wRUpCknHym8PFAgNUzo4SeU
+        SDn7kMrcFuhdMqUhDFOZ/VJfoQ==
+X-Google-Smtp-Source: AA6agR7V29Ev8Tjiea8ZG9KuxzLha718wql0Sq8Ph0UsiqYwTHvcN78mFkUWvyy69pfvCkHGvNHM6w==
+X-Received: by 2002:a05:600c:28c8:b0:3a8:40bb:be4c with SMTP id h8-20020a05600c28c800b003a840bbbe4cmr3795642wmd.28.1661766326649;
+        Mon, 29 Aug 2022 02:45:26 -0700 (PDT)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id q3-20020a1ce903000000b003a61306d79dsm8616834wmc.41.2022.08.29.02.45.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 02:45:26 -0700 (PDT)
+References: <20220805085716.5635-1-yu.tu@amlogic.com>
+ <20220805085716.5635-3-yu.tu@amlogic.com>
+ <19654574-bdc0-9fa5-6465-fc88b20e20c5@linaro.org>
+ <c223a85a-b76e-0e82-9a8c-6b60588dc03a@amlogic.com>
+ <1jmtccz0f4.fsf@starbuckisacylon.baylibre.com>
+ <edc9b0bd-6c69-0562-05ca-db0496897cf1@amlogic.com>
+User-agent: mu4e 1.8.7; emacs 28.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Yu Tu <yu.tu@amlogic.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH V3 2/6] arm64: dts: meson: add S4 Soc PLL clock
+ controller in DT
+Date:   Mon, 29 Aug 2022 11:43:43 +0200
+In-reply-to: <edc9b0bd-6c69-0562-05ca-db0496897cf1@amlogic.com>
+Message-ID: <1j1qszv0wa.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: gDoi_kzPveKJ2u67J1CTVKk8KYUoFZ4d
-X-Proofpoint-ORIG-GUID: gDoi_kzPveKJ2u67J1CTVKk8KYUoFZ4d
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't re-enumerate a peripheral on #0 until we have seen and
-handled an UNATTACHED notification for that peripheral.
 
-Without this, it is possible for the UNATTACHED status to be missed
-and so the slave->status remains at ATTACHED. If slave->status never
-changes to UNATTACHED the child driver will never be notified of the
-UNATTACH, and the code in sdw_handle_slave_status() will skip the
-second part of enumeration because the slave->status has not changed.
+On Mon 15 Aug 2022 at 14:17, Yu Tu <yu.tu@amlogic.com> wrote:
 
-This scenario can happen because PINGs are handled in a workqueue
-function which is working from a snapshot of an old PING, and there
-is no guarantee when this function will run.
+> Hi Jerome=EF=BC=8C
+>
+> On 2022/8/10 21:32, Jerome Brunet wrote:
+>> [ EXTERNAL EMAIL ]
+>> On Fri 05 Aug 2022 at 17:39, Yu Tu <yu.tu@amlogic.com> wrote:
+>>=20
+>>> Hi Krzysztof,
+>>>      Thank you for your reply.
+>>>
+>>> On 2022/8/5 17:16, Krzysztof Kozlowski wrote:
+>>>> [ EXTERNAL EMAIL ]
+>>>> On 05/08/2022 10:57, Yu Tu wrote:
+>>>>> Added information about the S4 SOC PLL Clock controller in DT.
+>>>>>
+>>>>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+>>>>> ---
+>>>>>    arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 8 ++++++++
+>>>>>    1 file changed, 8 insertions(+)
+>>>>>
+>>>>> diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/b=
+oot/dts/amlogic/meson-s4.dtsi
+>>>>> index ff213618a598..a816b1f7694b 100644
+>>>>> --- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+>>>>> +++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
+>>>>> @@ -92,6 +92,14 @@ apb4: apb4@fe000000 {
+>>>>>    			#size-cells =3D <2>;
+>>>>>    			ranges =3D <0x0 0x0 0x0 0xfe000000 0x0 0x480000>;
+>>>>>    +			clkc_pll: pll-clock-controller@8000 {
+>>>> Node names should be generic - clock-controller.
+>>>> https://devicetree-specification.readthedocs.io/en/latest/chapter2-dev=
+icetree-basics.html#generic-names-recommendation
+>>>>
+>>> I will change to clkc_pll: clock-controller@8000, in next version.
+>> Same comment applies to the binding doc.
+> OKay.
+>> Also it would be nice to split this in two series.
+>> Bindings and drivers in one, arm64 dt in the other. These changes goes
+>> in through different trees.
+> At present, Bindings, DTS and drivers are three series. Do you mean to put
+> Bindings and drivers together? If so, checkpatch.pl will report a warning.
 
-A peripheral could report attached in the PING being handled by
-sdw_handle_slave_status(), but has since reverted to device #0 and is
-then found in the loop in sdw_program_device_num(). Previously the
-code would not have updated slave->status to UNATTACHED because it had
-not yet handled a PING where that peripheral had UNATTACHED.
+Yes because patches are not in yet so there is a good reason to ignore
+the warning. Warning will never show up on the actual tree if the
+patches are correctly ordered.
 
-This situation happens fairly frequently with multiple peripherals on
-a bus that are intentionally reset (for example after downloading
-firmware).
-
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
----
- drivers/soundwire/bus.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
-index cb77da84a4f9..a3d3d66b3410 100644
---- a/drivers/soundwire/bus.c
-+++ b/drivers/soundwire/bus.c
-@@ -766,6 +766,13 @@ static int sdw_program_device_num(struct sdw_bus *bus)
- 			if (sdw_compare_devid(slave, id) == 0) {
- 				found = true;
- 
-+				/*
-+				 * Don't re-enumerate a device until we've seen
-+				 * it UNATTACH.
-+				 */
-+				if (slave->status != SDW_SLAVE_UNATTACHED)
-+					break;
-+
- 				/*
- 				 * Assign a new dev_num to this Slave and
- 				 * not mark it present. It will be marked
--- 
-2.30.2
+>
+>>=20
+>>>> Best regards,
+>>>> Krzysztof
+>>>> .
+>> .
 
