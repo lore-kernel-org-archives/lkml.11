@@ -2,83 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF1EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C7DECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231894AbiH2L0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33136 "EHLO
+        id S232091AbiH2L0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232118AbiH2LYV (ORCPT
+        with ESMTP id S232136AbiH2LYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:24:21 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B448C140DB;
-        Mon, 29 Aug 2022 04:15:17 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id x19so5970931pfr.1;
-        Mon, 29 Aug 2022 04:15:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=70BdUBaRMY4+ZzbbYisrz3wEPDHj6PbHPboxTvEf+98=;
-        b=noRuPDId5yIrB9WFaOhym7BrFZzBEEobY4y2Ub8GRr3OGUpeKmPRuyv3HKSpvos9OG
-         lKMHeKWVjU63FNgYQHfaWAgV5vg8slRDghqWpQeOXOfymC7B1ubkLtZrgafVEoLsgDb7
-         NQI98kWQj7zvrLGEH991dzf8uy40mFGuzQoayaK8bHCDroXWZ5NaPtgTU3V9KzHMWWeG
-         XB9SF76ycrQplsXIjH6vLDynPPKDZiX7v+kcdLvnYpRSaLB2sc0e11SRcKLFcTf/cDQ8
-         W/ZEgj82vDPN1dkB74plN1wLx+lyPHPYRm0UoWzRJL5JExBJuLyJNma9HUD/zEUQUfmP
-         sA6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=70BdUBaRMY4+ZzbbYisrz3wEPDHj6PbHPboxTvEf+98=;
-        b=C9i11QY0isP0ggKxtBg+6E6BZrqvwpwCSs0fFIlbXtx2NfG0+JCYcSXbUS2PL77h3t
-         0HjBqFgyklXbTLh8lPHy0FdzRnuImsoKZox2rulsvRMrEthqhN70bkGUcWVjIrefSbzV
-         1UWWj7Clun+3mEPunus/Dp60FQ9TBSjkEHHMzCPpvyochS4vRsbtiQcvu+kEbYNLjDLK
-         uymY6QIQRLwRBIMzeLGk951+5QLTwGNrAaW9dC5jR3QwyxF5XOWGw68ixQznoFXhi7au
-         O0AKTeU2bIceES+G+Dcx5FV7cBRUaon1Pp7rbay4xI5M1NRAJxXJgPEaTAHb4YK6mV1r
-         /lpA==
-X-Gm-Message-State: ACgBeo1r+EdX8RPO0rhNowDUEzPC+wZmsHmuhnbbWjjcdGrsBO8aUrSY
-        z/xuPF1jzM0rPnzE6mn/Lpg=
-X-Google-Smtp-Source: AA6agR4ohOEwnRNkGN7cKiAAV/DQb4k+uG60fgVBOZ648GaOWeRUIKYFzNiUyRNiwtCdhk2gX3wJ1g==
-X-Received: by 2002:a63:ff5a:0:b0:42c:61f:b81 with SMTP id s26-20020a63ff5a000000b0042c061f0b81mr4267479pgk.254.1661771636374;
-        Mon, 29 Aug 2022 04:13:56 -0700 (PDT)
-Received: from sw.. (220-128-98-63.hinet-ip.hinet.net. [220.128.98.63])
-        by smtp.gmail.com with ESMTPSA id h9-20020a170902680900b0015e8d4eb26esm7177973plk.184.2022.08.29.04.13.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 04:13:55 -0700 (PDT)
-From:   Szuying Chen <chensiying21@gmail.com>
-To:     gregkh@linuxfoundation.org, mario.limonciello@amd.com,
-        mika.westerberg@linux.intel.com, andreas.noever@gmail.com,
-        michael.jamet@intel.com, YehezkelShB@gmail.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yd_Tseng@asmedia.com.tw, Chloe_Chen@asmedia.com.tw,
-        Richard_Hsu@asmedia.com.tw
-Subject: [PATCH v7 0/3] thunderbolt: add vendor's NVM formats
-Date:   Mon, 29 Aug 2022 19:10:56 +0800
-Message-Id: <20220829111059.665305-1-chensiying21@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Mon, 29 Aug 2022 07:24:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583F8DFD7;
+        Mon, 29 Aug 2022 04:15:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C26CB80EE6;
+        Mon, 29 Aug 2022 11:06:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A737C433C1;
+        Mon, 29 Aug 2022 11:06:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771190;
+        bh=P/LQ/LiPfXrvovDBXBZ9fnnqsUSFQ6KLiLsbKyi7RZ0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=a1um1TE+lPGsH+wB9b0JEm+nKaurkg6IMa1n+l+2XMFRPcqgwaVYaUecfE+dqf8Xg
+         LNFRSEtIsYkI3u6UE7BM2r8ZrfmtG6+4mK29l0NPlXKK/3s3dGRw3OFtWmHCx/F5sE
+         7rPJ6gHT2Ze9N7r4niJzi0wrZiFwvysvxLgeTvAg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
+        Jan Kara <jack@suse.cz>, Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.19 003/158] audit: fix potential double free on error path from fsnotify_add_inode_mark
+Date:   Mon, 29 Aug 2022 12:57:33 +0200
+Message-Id: <20220829105808.970145922@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Szuying Chen <Chloe_Chen@asmedia.com.tw>
+From: Gaosheng Cui <cuigaosheng1@huawei.com>
 
-The patch series for vendors to extend their NVM format.
+commit ad982c3be4e60c7d39c03f782733503cbd88fd2a upstream.
 
-Szuying Chen (3):
-  thunderbolt: Add vendor's specific operations of NVM
-  thunderbolt: Modify tb_nvm major and minor size.
-  thunderbolt: To extend ASMedia NVM formats.
+Audit_alloc_mark() assign pathname to audit_mark->path, on error path
+from fsnotify_add_inode_mark(), fsnotify_put_mark will free memory
+of audit_mark->path, but the caller of audit_alloc_mark will free
+the pathname again, so there will be double free problem.
 
- drivers/thunderbolt/nvm.c    | 274 +++++++++++++++++++++++++++++++++++
- drivers/thunderbolt/switch.c | 105 +++-----------
- drivers/thunderbolt/tb.h     |  11 +-
- 3 files changed, 303 insertions(+), 87 deletions(-)
+Fix this by resetting audit_mark->path to NULL pointer on error path
+from fsnotify_add_inode_mark().
 
---
-2.34.1
+Cc: stable@vger.kernel.org
+Fixes: 7b1293234084d ("fsnotify: Add group pointer in fsnotify_init_mark()")
+Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ kernel/audit_fsnotify.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- a/kernel/audit_fsnotify.c
++++ b/kernel/audit_fsnotify.c
+@@ -102,6 +102,7 @@ struct audit_fsnotify_mark *audit_alloc_
+ 
+ 	ret = fsnotify_add_inode_mark(&audit_mark->mark, inode, 0);
+ 	if (ret < 0) {
++		audit_mark->path = NULL;
+ 		fsnotify_put_mark(&audit_mark->mark);
+ 		audit_mark = ERR_PTR(ret);
+ 	}
+
 
