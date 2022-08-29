@@ -2,101 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F121ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F23ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiH2JsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 05:48:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
+        id S229635AbiH2Juy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 05:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiH2JsV (ORCPT
+        with ESMTP id S229484AbiH2Juw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 05:48:21 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C852E5E335
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:48:14 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id b16so1823546wru.7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:48:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:to:from:user-agent
-         :references:from:to:cc;
-        bh=yviMMnGD2NIBrfVD3zjnDAjWREiyBqmeaA8vluhbBlM=;
-        b=MYtv7NXErfomVhACj4CvcivN5wiwJFqlN/QkD3Svj6b+WfT5ZQsEZdIQtNq5LdrJFa
-         RMPVkYu7i4Ao/HAeEVdQI/hPwa0SOR7tS0YwhsxrvZMUfdd5jz1tEnycF0VAGFJgXxZt
-         4r2zyWzIvXrnVb4vivTUZvwWkFML9pIjnCB3FoRM9Y8V3Q4X+hXchhnV8fEF+FRyh9kg
-         4sfg6zLbTCqB391xVq4TU4s50ywE5qP/MQb03XMu2ewstmrrh316bKCwTNEJCmLNEYnk
-         T0pV9Gz12E8gxs2Whz60vjZwFASEgdbJ+FM+vYHtNiJgXjTwNesDLcFAzehwL4QQyY1v
-         sAcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:to:from:user-agent
-         :references:x-gm-message-state:from:to:cc;
-        bh=yviMMnGD2NIBrfVD3zjnDAjWREiyBqmeaA8vluhbBlM=;
-        b=fE6TvleUI/uEk6HJz+pcLxW0Q1WrebUxHcYF3OFFQ06vTyQK0/k0KBEB5KoRzBqGLW
-         CqbdUG3pVe74uPDWJM5X/b0S+FjFvwbhy8EObGrZwMcgD/TpjkhvDtrgxCwK+xVNWFMj
-         ndZKSPGfPBBdjM1ec8TBzm4vnlZtwaMdCWP9YCNMZKdecYixw68y//5SXU4Muc2KyzaK
-         bPR0ZvCK3halZgYs90rrdZinhCyBZwzBHUfl7zpLWCr7LvWT59HkZYxWD8Q9HeO8iGDO
-         7TiKCx1jFQ+kKKPglQvNih0cPxLW1AZ2y5V/7a3TzqGMksr08jgGOsA2ANBb93ESSP/o
-         1u9g==
-X-Gm-Message-State: ACgBeo0e30OJimZfbP0Z+1V4kP/nHkhBclO4YUanqEvrT5QwdDJsThIv
-        zPEasjfDoeEn6b/PiUx2A2gjjQ==
-X-Google-Smtp-Source: AA6agR5lYEMVig3bo2NMgSo95EVg/KNxIK82zRJNlw7Kiy2jmOtoTniZzwOoPGDhG5XQe7+GIZSwaA==
-X-Received: by 2002:adf:ea91:0:b0:226:dce6:c344 with SMTP id s17-20020adfea91000000b00226dce6c344mr1354957wrm.3.1661766492719;
-        Mon, 29 Aug 2022 02:48:12 -0700 (PDT)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id bd22-20020a05600c1f1600b003a8436e2a94sm4385979wmb.16.2022.08.29.02.48.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 02:48:12 -0700 (PDT)
-References: <20220805085716.5635-1-yu.tu@amlogic.com>
- <20220805085716.5635-4-yu.tu@amlogic.com>
- <1jiln0yzgj.fsf@starbuckisacylon.baylibre.com>
- <ed4038fb-c230-fc27-800c-c99bd1770a1c@amlogic.com>
-User-agent: mu4e 1.8.7; emacs 28.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V3 3/6] clk: meson: S4: add support for Amlogic S4 SoC
- PLL clock driver
-Date:   Mon, 29 Aug 2022 11:46:20 +0200
-In-reply-to: <ed4038fb-c230-fc27-800c-c99bd1770a1c@amlogic.com>
-Message-ID: <1jwnartm78.fsf@starbuckisacylon.baylibre.com>
+        Mon, 29 Aug 2022 05:50:52 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226BC24BFA
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:50:52 -0700 (PDT)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27T5Kb9I007486;
+        Mon, 29 Aug 2022 04:50:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=PODMain02222019;
+ bh=Ac1E2dHlHNO3x2YovIPvIWmXBzgoM79hvAsvFpx0KBo=;
+ b=Tc08a30i0ip9GJ71TVtXMDIYCV24uqfkO2ABQbCDQW7cAQ1iJ0VKFAyHeQxR/9K10ZX4
+ m3V1LjUdLvU4j3wExX7csAwXiEcRvwnwK70RM7TExLypYzgj2Pb9FDwOVBbXUx+WbcSs
+ ca8IW+TMsnW70E7pqbXMq43c9mp8f9UG090XtUjBy94IKSwkR0uGYrB0BpFcMsJqkRYj
+ mNVn1MoosMQCK0vqYJvEoQ4ymL3jSpUdH3woSvwMSiqa2KiQ0j0i1t0y4x9GQDHeNBk6
+ iXmpZ/fdtbNQ/D64OoLZMKUT+w8TiHnMW74DY+/WffyL1pycMiZ6tefsSOEoW5LGLXc8 NQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3j7gp21u5d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Aug 2022 04:50:37 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.12; Mon, 29 Aug
+ 2022 04:50:35 -0500
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.12 via Frontend
+ Transport; Mon, 29 Aug 2022 04:50:35 -0500
+Received: from [198.90.251.95] (edi-sw-dsktp-006.ad.cirrus.com [198.90.251.95])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id E511F459;
+        Mon, 29 Aug 2022 09:50:34 +0000 (UTC)
+Message-ID: <b163327f-587d-d933-35de-7058cdcd6b9e@opensource.cirrus.com>
+Date:   Mon, 29 Aug 2022 10:50:34 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 3/3] soundwire: bus: Fix lost UNATTACH when re-enumerating
+Content-Language: en-US
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        <vkoul@kernel.org>, <yung-chuan.liao@linux.intel.com>,
+        <sanyog.r.kale@intel.com>
+CC:     <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220825122241.273090-1-rf@opensource.cirrus.com>
+ <20220825122241.273090-4-rf@opensource.cirrus.com>
+ <adfdf06a-e1a3-e47c-a71f-5e5dccef6fd0@linux.intel.com>
+ <e9deb2fb-458a-8136-5ba7-a9e2b0f2d174@opensource.cirrus.com>
+ <01e03c55-1fcf-1e33-78e8-398a50b622ce@linux.intel.com>
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+In-Reply-To: <01e03c55-1fcf-1e33-78e8-398a50b622ce@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-GUID: ykjxJIMpY9jph5RvS6dhUuZyA2n6Im8u
+X-Proofpoint-ORIG-GUID: ykjxJIMpY9jph5RvS6dhUuZyA2n6Im8u
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 26/08/2022 09:06, Pierre-Louis Bossart wrote:
+> 
+<SNIP>
+> 
+> Thanks for the detailed answer, this sequence of events will certainly
+> defeat the Cadence IP and the way sticky bits were handled.
+> 
+> The UNATTACHED case was assumed to be a really rare case of losing sync,
+> i.e. a SOFT_RESET in SoundWire parlance.
+> 
+> If you explicitly do a device reset, that would be a new scenario that
+> was not considered before on any of the existing SoundWire commercial
+> devices. It's however something we need to support, and your work here
+> is much appreciated.
+> 
+> I still think we should re-check the actual status from a PING frame, in
+> order to work with more current data than the sticky bits taken at an
+> earlier time, but that would only be a minor improvement.
+> 
+> I also have a vague feeling that additional work is needed to make sure
+> the DAIs are not used before that second enumeration and all firmware
+> download complete. I did a couple of tests last year where I used the
+> debugfs interface to issue a device reset command while streaming audio,
+> and the detach/reattach was not handled at the ASoC level.
+> 
+> I really don't see any logical flaws in your patch as is, so
+> 
+> Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> 
 
-On Mon 15 Aug 2022 at 14:34, Yu Tu <yu.tu@amlogic.com> wrote:
+I have pushed an alternative fix that waits until it sees an UNATTACHED
+status before reprogramming the device ID.
+https://lore.kernel.org/lkml/20220829094458.1169504-1-rf@opensource.cirrus.com/T/#t
 
-> Hi Jerome,
->
-> On 2022/8/10 21:47, Jerome Brunet wrote:
->> [ EXTERNAL EMAIL ]
->> On Fri 05 Aug 2022 at 16:57, Yu Tu <yu.tu@amlogic.com> wrote:
->> */
+I've tested it with 4 amps on the same bus, all being reset after their
+firmware has been downloaded.
 
-[... ]
-
->>> +#define ANACTRL_FIXPLL_CTRL0                       (0x0010 << 2)
->> I already commented on the "<< 2" . Remove them please.
-> Sorry, maybe I didn't pay attention to this comment earlier. A little bit
-> of a question why is this not okay? I understand isn't it better for the
-> compiler to help with this calculation itself?
-
-Because it is aweful to read
-
-Also please trim your replies.
-It is a bit annoying to search for your comments in the replies
-
-
-
+I leave it to you to choose which fix you prefer. The second fix is
+simpler and I didn't see any problems in testing.
