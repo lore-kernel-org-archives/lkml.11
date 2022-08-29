@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32986ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA6BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbiH2LLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55024 "EHLO
+        id S231153AbiH2LLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbiH2LKI (ORCPT
+        with ESMTP id S230439AbiH2LKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:10:08 -0400
+        Mon, 29 Aug 2022 07:10:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7936BD69;
-        Mon, 29 Aug 2022 04:07:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632845F93;
+        Mon, 29 Aug 2022 04:07:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62FEDB80F2B;
-        Mon, 29 Aug 2022 11:05:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACC08C433C1;
-        Mon, 29 Aug 2022 11:05:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9975BB80F2B;
+        Mon, 29 Aug 2022 11:07:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8B7DC433C1;
+        Mon, 29 Aug 2022 11:07:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771113;
-        bh=+4r3UTh/FQZrfa0D6k8HNCbCbuz+D5Brv71ASRXX8q4=;
+        s=korg; t=1661771238;
+        bh=M+k41fySf9W9qlUWewRVNfAONOL7YWGUa52LoTBbASs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RGnBSUqf+iWByJ7dehRyqkWLimVdSCTMuglcEet7W/GLv6+oW6W2JSRsziOwMwTVz
-         CDBONJjpSXjl7ZmpaQ788L5c62CIu0sMWAF9tP/B5r15Uqin0a9KqoUBkpKThbI3sP
-         7b+WCC5oJGFCsqsi5s5gm4JuGBZefSUS/JGxb1Bs=
+        b=TptvsbQ0xjcBJmvQDlyzpnrgN77+HW1QCM3Ydx/5VplKQ2kYtd+qrUshE9ALnM65C
+         PSfJ9t6gN4JnJGkZ08X1XES14TH1/XLq6y2O9dQGkDtbJ+mbbEZoYFnRgB4+/o6yCS
+         gOlyUyjM0wI9cQaAJuUDf4s1TmtbqgngTHI/vZ4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 23/86] ice: xsk: Force rings to be sized to power of 2
-Date:   Mon, 29 Aug 2022 12:58:49 +0200
-Message-Id: <20220829105757.479967257@linuxfoundation.org>
+Subject: [PATCH 5.10 42/86] netfilter: nf_tables: disallow jump to implicit chain from set element
+Date:   Mon, 29 Aug 2022 12:59:08 +0200
+Message-Id: <20220829105758.265637135@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
 References: <20220829105756.500128871@linuxfoundation.org>
@@ -52,57 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 296f13ff3854535009a185aaf8e3603266d39d94 ]
+[ Upstream commit f323ef3a0d49e147365284bc1f02212e617b7f09 ]
 
-With the upcoming introduction of batching to XSK data path,
-performance wise it will be the best to have the ring descriptor count
-to be aligned to power of 2.
+Extend struct nft_data_desc to add a flag field that specifies
+nft_data_init() is being called for set element data.
 
-Check if ring sizes that user is going to attach the XSK socket fulfill
-the condition above. For Tx side, although check is being done against
-the Tx queue and in the end the socket will be attached to the XDP
-queue, it is fine since XDP queues get the ring->count setting from Tx
-queues.
+Use it to disallow jump to implicit chain from set element, only jump
+to chain via immediate expression is allowed.
 
-Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Link: https://lore.kernel.org/bpf/20220125160446.78976-3-maciej.fijalkowski@intel.com
+Fixes: d0e2c7de92c7 ("netfilter: nf_tables: add NFT_CHAIN_BINDING")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_xsk.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ include/net/netfilter/nf_tables.h | 5 +++++
+ net/netfilter/nf_tables_api.c     | 4 ++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 5733526fa245c..4bb62950d92de 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -371,6 +371,13 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
- 	bool if_running, pool_present = !!pool;
- 	int ret = 0, pool_failure = 0;
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index 6c062b2509b9b..e66fee99ed3ea 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -176,10 +176,15 @@ struct nft_ctx {
+ 	bool				report;
+ };
  
-+	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
-+	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
-+		netdev_err(vsi->netdev, "Please align ring sizes to power of 2\n");
-+		pool_failure = -EINVAL;
-+		goto failure;
-+	}
++enum nft_data_desc_flags {
++	NFT_DATA_DESC_SETELEM	= (1 << 0),
++};
 +
- 	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
+ struct nft_data_desc {
+ 	enum nft_data_types		type;
+ 	unsigned int			size;
+ 	unsigned int			len;
++	unsigned int			flags;
+ };
  
- 	if (if_running) {
-@@ -393,6 +400,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
- 			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
- 	}
+ int nft_data_init(const struct nft_ctx *ctx, struct nft_data *data,
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index df79ea6004a59..b36728cfc5d81 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -4865,6 +4865,7 @@ static int nft_setelem_parse_data(struct nft_ctx *ctx, struct nft_set *set,
+ 	desc->type = dtype;
+ 	desc->size = NFT_DATA_VALUE_MAXLEN;
+ 	desc->len = set->dlen;
++	desc->flags = NFT_DATA_DESC_SETELEM;
  
-+failure:
- 	if (pool_failure) {
- 		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
- 			   pool_present ? "en" : "dis", pool_failure);
+ 	return nft_data_init(ctx, data, desc, attr);
+ }
+@@ -8677,6 +8678,9 @@ static int nft_verdict_init(const struct nft_ctx *ctx, struct nft_data *data,
+ 			return PTR_ERR(chain);
+ 		if (nft_is_base_chain(chain))
+ 			return -EOPNOTSUPP;
++		if (desc->flags & NFT_DATA_DESC_SETELEM &&
++		    chain->flags & NFT_CHAIN_BINDING)
++			return -EINVAL;
+ 
+ 		chain->use++;
+ 		data->verdict.chain = chain;
 -- 
 2.35.1
 
