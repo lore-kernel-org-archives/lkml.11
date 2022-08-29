@@ -2,125 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A790BECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 20:55:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF96ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:00:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229764AbiH2Uz1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 16:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53634 "EHLO
+        id S229550AbiH2VAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 17:00:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiH2UzO (ORCPT
+        with ESMTP id S229478AbiH2VAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 16:55:14 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA091DA75
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 13:55:13 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id r141so7638707iod.4
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 13:55:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=/WpZ2alG1CIoH2ULE/+JUbbWqOiZ8hhsZtBC3ijgmwo=;
-        b=pJlkh9If2amT6Si6KqoPWg6CjHpZMdIU+/ut+dgDT08GDDA6YC4jAvg9OVCnK/Zjod
-         hFYl37in2dJkI15GejgeVPzN98Tger0B0DPotX0rGuLgTeFBssRocoxgE0rBh+2XJCS6
-         rUpnan58ARvUdHzPKDIHnmfa+Y6/gkPaviqYQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=/WpZ2alG1CIoH2ULE/+JUbbWqOiZ8hhsZtBC3ijgmwo=;
-        b=ADsmD0mI90rJlEi1jE9px603UHRpefPBPNZRfbaXsQIMXoGVpQT0HTNREvhy0vFIU7
-         LKPQQX3/RM2VvdyOtsrbzLhUVpP7+fxmRcPHngcrwBmBhctWYrBzyU0ETXCBZa0L0XWX
-         dkNfb27cPH80QYk1DZwsigdFCoJljoEMZsi+rQXKl8fNaAT6+Ym3Sf9MRUEJU7wImN/W
-         CAWseXloUkzF8cXmHsPgm9l6OEiLac9BQPyPdD853X/324itV6VZsB4ZyuFM2ajNjbiT
-         cKEU1xVkd6PlAJqOCT68kQ+qVwN5WDq8ue/wK80ZB6jDPxkh9A47f17282udEN1UYMuB
-         V6HA==
-X-Gm-Message-State: ACgBeo3YPkHhGD0O6HZsX/gNnG//oAKMN/nTpxkWVePDa1wuIpTF7KjO
-        1v41OfPfZ2U0wFncUX3epclEFNOvE30Rq86YtEFZCQ==
-X-Google-Smtp-Source: AA6agR7+DLtTKGZtljenFFZGN/TsTDrf1+ohMTR/lFVEMYQ7Emfj8+dSuxEWx9ak8yEfo4uBY0Ryh7Pth1HL9+bn+ZE=
-X-Received: by 2002:a05:6602:26d5:b0:68a:db5d:2923 with SMTP id
- g21-20020a05660226d500b0068adb5d2923mr9121176ioo.175.1661806512482; Mon, 29
- Aug 2022 13:55:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220819204857.3066329-1-joel@joelfernandes.org>
- <20220829134045.GA54589@lothringen> <1f7dd31b-f4d0-5c1c-ce28-c27f75c17f05@joelfernandes.org>
- <20220829194622.GA58291@lothringen> <20220829203131.GP6159@paulmck-ThinkPad-P17-Gen-1>
-In-Reply-To: <20220829203131.GP6159@paulmck-ThinkPad-P17-Gen-1>
-From:   Joel Fernandes <joel@joelfernandes.org>
-Date:   Mon, 29 Aug 2022 16:54:59 -0400
-Message-ID: <CAEXW_YRay19Dw5W1QVjshoi5b7DWhFb=pzSdF9hs-asH3do2cA@mail.gmail.com>
-Subject: Re: [PATCH v4 00/14] Implement call_rcu_lazy() and miscellaneous fixes
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        rcu <rcu@vger.kernel.org>,
-        Vineeth Pillai <vineeth@bitbyteword.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 29 Aug 2022 17:00:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF57E792FF
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:00:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDD7960F8B
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 21:00:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC5CBC433C1;
+        Mon, 29 Aug 2022 21:00:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1661806832;
+        bh=fqUkC9EH2QbQ4N3nK6D1pL+48iTcPXtlyjw2oH45q/4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YzLdMhsGQzY9Uo73EGzk5SeI3No3H/yNk7jOt1CK79Hn4+GmU34B45BNqijkEgJuy
+         DriWl8f9UKgp7oNKDPPIuAntRS6ijcqsnwH6oySdBkq6g4Jyy707V4a8q6FKC3cq3q
+         fnS4Fpjl6aJzx5MZQELGzEyfnA52DBLv2aHUmlpY=
+Date:   Mon, 29 Aug 2022 14:00:30 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     linux-mm@kvack.org, Wei Xu <weixugc@google.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
+        Bharata B Rao <bharata@amd.com>
+Subject: Re: [PATCH v2] mm/demotion: Expose memory tier details via sysfs
+Message-Id: <20220829140030.692cfd4dfbf7f9a8b282c951@linux-foundation.org>
+In-Reply-To: <20220829060745.287468-1-aneesh.kumar@linux.ibm.com>
+References: <20220829060745.287468-1-aneesh.kumar@linux.ibm.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- On Mon, Aug 29, 2022 at 4:31 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-[...]
-> > > > 3) We are mixing up two very different things in a single list of callbacks:
-> > > >    lazy callbacks and flooding callbacks, as a result we are adding lots of
-> > > >    off-topic corner cases all around:
-> > > >      * a seperate lazy len field to struct rcu_cblist whose purpose is much more
-> > > >        general than just bypass/lazy
-> > > >      * "lazy" specialized parameters to general purpose cblist management
-> > > >        functions
-> > >
-> > > I think just 1 or 2 functions have a new lazy param. It didn't seem too
-> > > intrusive to me.
-> >
-> > What bothers me is that struct cblist has a general purpose and we are adding a field
-> > and a parameter that is relevant to only one specialized user.
+On Mon, 29 Aug 2022 11:37:45 +0530 "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> wrote:
+
+> This patch adds /sys/devices/virtual/memory_tiering/ where all memory tier
+> related details can be found. All allocated memory tiers will be listed
+> there as /sys/devices/virtual/memory_tiering/memory_tierN/
+> 
+> The nodes which are part of a specific memory tier can be listed via
+> /sys/devices/virtual/memory_tiering/memory_tierN/nodes
+> 
+> The abstract distance range value of a specific memory tier can be listed via
+> /sys/devices/virtual/memory_tiering/memory_tierN/abstract_distance
+> 
+> A directory hierarchy looks like
+> :/sys/devices/virtual/memory_tiering$ tree memory_tier4/
+> memory_tier4/
+> ├── abstract_distance
+> ├── nodes
+> ├── subsystem -> ../../../../bus/memory_tiering
+> └── uevent
+> 
+> All toptier nodes are listed via
+> /sys/devices/virtual/memory_tiering/toptier_nodes
+> 
+> :/sys/devices/virtual/memory_tiering$ cat toptier_nodes
+> 0,2
+> :/sys/devices/virtual/memory_tiering$ cat memory_tier4/nodes
+> 0,2
+> :/sys/devices/virtual/memory_tiering$ cat memory_tier4/abstract_distance
+> 512 - 639
+> 
+> ...
 >
-> This does sound like a bad idea, now that you mention it.  Joel, if
-> this is still in place, can it be moved near the rcu_data structure's
-> bypass-related fields?
+> --- a/mm/memory-tiers.c
+> +++ b/mm/memory-tiers.c
+> @@ -19,6 +19,7 @@ struct memory_tier {
+>  	 * adistance_start .. adistance_start + MEMTIER_CHUNK_SIZE
+>  	 */
+>  	int adistance_start;
+> +	struct device dev;
+>  	/* All the nodes that are part of all the lower memory tiers. */
+>  	nodemask_t lower_tier_mask;
+>  };
+> @@ -36,6 +37,13 @@ static DEFINE_MUTEX(memory_tier_lock);
+>  static LIST_HEAD(memory_tiers);
+>  static struct node_memory_type_map node_memory_types[MAX_NUMNODES];
+>  static struct memory_dev_type *default_dram_type;
+> +
+> +#define to_memory_tier(device) container_of(device, struct memory_tier, dev)
 
-Yes, I can certainly do that! Consider it gone *poof* from the
-rcu_cblist structure, and moved into the rcu_data.
+Please, only use a macro when a C function cannot be used.
 
->
-> And by the way, thank you for reviewing this patch series!
+--- a/mm/memory-tiers.c~mm-demotion-expose-memory-tier-details-via-sysfs-fix
++++ a/mm/memory-tiers.c
+@@ -38,7 +38,11 @@ static LIST_HEAD(memory_tiers);
+ static struct node_memory_type_map node_memory_types[MAX_NUMNODES];
+ static struct memory_dev_type *default_dram_type;
+ 
+-#define to_memory_tier(device) container_of(device, struct memory_tier, dev)
++static inline struct memory_tier *to_memory_tier(struct device *device)
++{
++	return container_of(device, struct memory_tier, dev);
++}
++
+ static struct bus_type memory_tier_subsys = {
+ 	.name = "memory_tiering",
+ 	.dev_name = "memory_tier",
 
-And my thanks as well! I am deeply appreciative of y'alls work and
-participation.
-
-> > > > So here is a proposal: how about forgetting NOCB for now and instead add a new
-> > > > RCU_LAZY_TAIL segment in the struct rcu_segcblist right after RCU_NEXT_TAIL?
-> > > > Then ignore that segment until some timer expiry has been met or the CPU is
-> > > > known to be busy? Probably some tiny bits need to be tweaked in segcblist
-> > > > management functions but probably not that much. And also make sure that entrain()
-> > > > queues to RCU_LAZY_TAIL.
-> > > >
-> > > > Then the only difference in the case of NOCB is that we add a new timer to the
-> > > > nocb group leader instead of a local timer in !NOCB.
-> > >
-> > > It sounds reasonable, but I'll go with Paul on the usecase argument - who would
-> > > actually care about lazy CBs outside of power, and would those guys ever use
-> > > !NO_CB if they cared about power / battery?
-> >
-> > _Everybody_ cares about power. Those who don't yet will very soon ;-)
->
-> Apparently not enough to use CONFIG_RCU_FAST_NO_HZ.  Though to be fair,
-> that option had its own performance issues.  And it would not reduce
-> grace periods anywhere near as much as call_rcu_lazy().  But the problem
-> was that last I checked on server workloads, the callbacks were mostly
-> those that could not reasonably be lazy.
-
-I see! FWIW, lazy-RCU does not have a lot of benefit on busy systems
-in our testing (because other non-lazy RCU CBs keep churning grace
-period cycles). So for servers that are mostly busy, the power benefit
-may not be that much IMHO.
-
-Thanks,
-
- - Joel
+If only so it checks the type of `device'.
