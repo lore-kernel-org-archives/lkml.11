@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB80ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B55ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232481AbiH2Lqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40716 "EHLO
+        id S231589AbiH2Ls6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232803AbiH2Lqb (ORCPT
+        with ESMTP id S230470AbiH2Lse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:46:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3D255A7;
-        Mon, 29 Aug 2022 04:29:54 -0700 (PDT)
+        Mon, 29 Aug 2022 07:48:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B49889917;
+        Mon, 29 Aug 2022 04:32:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8747C6124C;
-        Mon, 29 Aug 2022 11:17:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90ACBC433B5;
-        Mon, 29 Aug 2022 11:17:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BB09FB80FAF;
+        Mon, 29 Aug 2022 11:17:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 037ABC433D6;
+        Mon, 29 Aug 2022 11:17:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771836;
-        bh=3ZJ55aFjljXhDNzP5PC35zGb7thw45TdC+48KtP1bZI=;
+        s=korg; t=1661771878;
+        bh=sqwZwaMa4ltO+ZnF2OW0LOrSQsC+7lCx8oJFCuGBDEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N+YdrDVJZ/FQL2QtGzZfMpTUPf2QQmhExb+LbU6s4GVTDIFnq60et9YFLo61WU8lv
-         yi0CdqwTiGml7LSZCRtnnE1Zak6Nj0mGWnKm+PCX8hS5/xcDjq3+hSDhZSbX0+PuXF
-         mtg5iQ5VdFAUyijoAI0oaOgw/c8KVEhdxGj/5LJk=
+        b=Ap5TsoJVg8esKzgaj8QhfERta/RmrVncpaM/J5g9OQr1bQ0BWr6J2P0SPthP++BfY
+         11rZSmxNsZYp4IZcI/NxsdIH9f02/pDv6DjDjz2vTrXUaaIWWnbQMQH8J+0dUHBrjY
+         FLYHgy74qgqPnhWX4FcI12Wg7ZhE7Fu9fODWjmoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 5.19 112/158] audit: move audit_return_fixup before the filters
-Date:   Mon, 29 Aug 2022 12:59:22 +0200
-Message-Id: <20220829105813.797371125@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Rustam Subkhankulov <subkhankulov@ispras.ru>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Subject: [PATCH 5.19 128/158] xen/privcmd: fix error exit of privcmd_ioctl_dm_op()
+Date:   Mon, 29 Aug 2022 12:59:38 +0200
+Message-Id: <20220829105814.449509146@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -48,57 +51,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Richard Guy Briggs <rgb@redhat.com>
+From: Juergen Gross <jgross@suse.com>
 
-commit d4fefa4801a1c2f9c0c7a48fbb0fdf384e89a4ab upstream.
+commit c5deb27895e017a0267de0a20d140ad5fcc55a54 upstream.
 
-The success and return_code are needed by the filters.  Move
-audit_return_fixup() before the filters.  This was causing syscall
-auditing events to be missed.
+The error exit of privcmd_ioctl_dm_op() is calling unlock_pages()
+potentially with pages being NULL, leading to a NULL dereference.
 
-Link: https://github.com/linux-audit/audit-kernel/issues/138
-Cc: stable@vger.kernel.org
-Fixes: 12c5e81d3fd0 ("audit: prepare audit_context for use in calling contexts beyond syscalls")
-Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
-[PM: manual merge required]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Additionally lock_pages() doesn't check for pin_user_pages_fast()
+having been completely successful, resulting in potentially not
+locking all pages into memory. This could result in sporadic failures
+when using the related memory in user mode.
+
+Fix all of that by calling unlock_pages() always with the real number
+of pinned pages, which will be zero in case pages being NULL, and by
+checking the number of pages pinned by pin_user_pages_fast() matching
+the expected number of pages.
+
+Cc: <stable@vger.kernel.org>
+Fixes: ab520be8cd5d ("xen/privcmd: Add IOCTL_PRIVCMD_DM_OP")
+Reported-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Link: https://lore.kernel.org/r/20220825141918.3581-1-jgross@suse.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/auditsc.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/xen/privcmd.c |   21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
---- a/kernel/auditsc.c
-+++ b/kernel/auditsc.c
-@@ -1965,6 +1965,7 @@ void __audit_uring_exit(int success, lon
- 		goto out;
+--- a/drivers/xen/privcmd.c
++++ b/drivers/xen/privcmd.c
+@@ -581,27 +581,30 @@ static int lock_pages(
+ 	struct privcmd_dm_op_buf kbufs[], unsigned int num,
+ 	struct page *pages[], unsigned int nr_pages, unsigned int *pinned)
+ {
+-	unsigned int i;
++	unsigned int i, off = 0;
+ 
+-	for (i = 0; i < num; i++) {
++	for (i = 0; i < num; ) {
+ 		unsigned int requested;
+ 		int page_count;
+ 
+ 		requested = DIV_ROUND_UP(
+ 			offset_in_page(kbufs[i].uptr) + kbufs[i].size,
+-			PAGE_SIZE);
++			PAGE_SIZE) - off;
+ 		if (requested > nr_pages)
+ 			return -ENOSPC;
+ 
+ 		page_count = pin_user_pages_fast(
+-			(unsigned long) kbufs[i].uptr,
++			(unsigned long)kbufs[i].uptr + off * PAGE_SIZE,
+ 			requested, FOLL_WRITE, pages);
+-		if (page_count < 0)
+-			return page_count;
++		if (page_count <= 0)
++			return page_count ? : -EFAULT;
+ 
+ 		*pinned += page_count;
+ 		nr_pages -= page_count;
+ 		pages += page_count;
++
++		off = (requested == page_count) ? 0 : off + page_count;
++		i += !off;
  	}
  
-+	audit_return_fixup(ctx, success, code);
- 	if (ctx->context == AUDIT_CTX_SYSCALL) {
- 		/*
- 		 * NOTE: See the note in __audit_uring_entry() about the case
-@@ -2006,7 +2007,6 @@ void __audit_uring_exit(int success, lon
- 	audit_filter_inodes(current, ctx);
- 	if (ctx->current_state != AUDIT_STATE_RECORD)
+ 	return 0;
+@@ -677,10 +680,8 @@ static long privcmd_ioctl_dm_op(struct f
+ 	}
+ 
+ 	rc = lock_pages(kbufs, kdata.num, pages, nr_pages, &pinned);
+-	if (rc < 0) {
+-		nr_pages = pinned;
++	if (rc < 0)
  		goto out;
--	audit_return_fixup(ctx, success, code);
- 	audit_log_exit();
+-	}
+ 
+ 	for (i = 0; i < kdata.num; i++) {
+ 		set_xen_guest_handle(xbufs[i].h, kbufs[i].uptr);
+@@ -692,7 +693,7 @@ static long privcmd_ioctl_dm_op(struct f
+ 	xen_preemptible_hcall_end();
  
  out:
-@@ -2090,13 +2090,13 @@ void __audit_syscall_exit(int success, l
- 	if (!list_empty(&context->killed_trees))
- 		audit_kill_trees(context);
- 
-+	audit_return_fixup(context, success, return_code);
- 	/* run through both filters to ensure we set the filterkey properly */
- 	audit_filter_syscall(current, context);
- 	audit_filter_inodes(current, context);
- 	if (context->current_state < AUDIT_STATE_RECORD)
- 		goto out;
- 
--	audit_return_fixup(context, success, return_code);
- 	audit_log_exit();
- 
- out:
+-	unlock_pages(pages, nr_pages);
++	unlock_pages(pages, pinned);
+ 	kfree(xbufs);
+ 	kfree(pages);
+ 	kfree(kbufs);
 
 
