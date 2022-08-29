@@ -2,95 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00578ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42BA6C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbiH2IF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:05:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45118 "EHLO
+        id S229795AbiH2IGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbiH2IFW (ORCPT
+        with ESMTP id S229538AbiH2IGq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 04:05:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8721175BA;
-        Mon, 29 Aug 2022 01:05:17 -0700 (PDT)
+        Mon, 29 Aug 2022 04:06:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 721A01FCD9;
+        Mon, 29 Aug 2022 01:06:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C83F60BA7;
-        Mon, 29 Aug 2022 08:05:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2587AC433D7;
-        Mon, 29 Aug 2022 08:05:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661760316;
-        bh=UWECdm7rp3R9ItSrxJKp63Jk1SyourJhkXCk/PaOj50=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OTdSqzydVJwO1IbImYWQtj+c9w8qheBL0PoRsMmsrIk1qgov9rjRLUVDFuPABiw2S
-         zy2BwmWxAYCTj+YNX3E58t2nfL1psp5g2ft/7nuqmF2KyHv+6shcK3PU3nuWJ1xTEi
-         bB8PYAoj6FYmdu01r4NeRa03PohnUQl2RBqJNAzc=
-Date:   Mon, 29 Aug 2022 10:05:13 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
-        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        Linux Stable maillist <stable@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH 5.19 145/365] kbuild: dummy-tools: avoid tmpdir leak in
- dummy gcc
-Message-ID: <YwxzOTljOcasjqfg@kroah.com>
-References: <20220823080118.128342613@linuxfoundation.org>
- <20220823080124.294570326@linuxfoundation.org>
- <9996285f-5a50-e56a-eb1c-645598381a20@kernel.org>
- <CAFqZXNv2OvNu7BctW=csNLevgGWyoT1R81ypH8pGoAeo3vd4=w@mail.gmail.com>
- <71dbe196-a3d4-41f4-a00c-24f8b0222288@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DEA260BFA;
+        Mon, 29 Aug 2022 08:06:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A564C433D6;
+        Mon, 29 Aug 2022 08:06:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661760404;
+        bh=uzRzujJGOciKFu8Gj92NDh4cjfgPZuOyniIH4EBM6L0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NkV1hBnMTtFs31/OoT7nHFXclGoGovwCvc6BJT1RFrmTvsYuc6NfBzL4ijxrKCK3K
+         s2oJhERJvyM/WXLRE7zKpw53jEV0rEvw/eNkvwZGxVm2CeOMlJTbgs3h7w/92i9EP9
+         vNHseRsXpbrgQJpJlDvcmsIZwD9b+Afn055Dms9ljMlGbDJvqXO6nX1x7wkHLX0xrL
+         D861MXn07Ww0K4rrsMQ1yhBahLxr2lVaQIIo+tIM+LijrImxJxJnOb62hjti7smfCs
+         Dt3UsTZD+txsK1jqy3VXWSKvb2ynKENG+i6uILQ6xpl6Nh8uGQKuzMOHd9PSPD9/Wn
+         LQG9x8upXhMXg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1oSZnI-0007jY-6p; Mon, 29 Aug 2022 10:06:52 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Amol Maheshwari <amahesh@qti.qualcomm.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH 3/3] misc: fastrpc: increase maximum session count
+Date:   Mon, 29 Aug 2022 10:05:31 +0200
+Message-Id: <20220829080531.29681-4-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220829080531.29681-1-johan+linaro@kernel.org>
+References: <20220829080531.29681-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <71dbe196-a3d4-41f4-a00c-24f8b0222288@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 09:12:39AM +0200, Jiri Slaby wrote:
-> On 27. 08. 22, 10:34, Ondrej Mosnacek wrote:
-> > On Sat, Aug 27, 2022 at 9:51 AM Jiri Slaby <jirislaby@kernel.org> wrote:
-> > > On 23. 08. 22, 10:00, Greg Kroah-Hartman wrote:
-> > > > From: Ondrej Mosnacek <omosnace@redhat.com>
-> > > > 
-> > > > commit aac289653fa5adf9e9985e4912c1d24a3e8cbab2 upstream.
-> > > > 
-> > > > When passed -print-file-name=plugin, the dummy gcc script creates a
-> > > > temporary directory that is never cleaned up. To avoid cluttering
-> > > > $TMPDIR, instead use a static directory included in the source tree.
-> > > 
-> > > This breaks our (SUSE) use of dummy tools (GCC_PLUGINS became =n). I
-> > > will investigate whether this is stable-only and the root cause later.
-> > 
-> > It looks like both the Greg's generated patch and the final stable
-> > commit (d7e676b7dc6a) are missing the addition of the empty
-> > plugin-version.h file. It appears in the patch's diffstat, but not in
-> > the actual diff. The mainline commit does include the empty file
-> > correctly, so it's likely a bug in the stable cherry pick automation.
-> 
-> Right, this fixed the issue for me:
-> --- a/patches.kernel.org/5.19.4-144-kbuild-dummy-tools-avoid-tmpdir-leak-in-dummy-.patch
-> +++ b/patches.kernel.org/5.19.4-144-kbuild-dummy-tools-avoid-tmpdir-leak-in-dummy-.patch
-> @@ -20,6 +20,8 @@ Signed-off-by: Jiri Slaby <jslaby@suse.cz>
->   scripts/dummy-tools/gcc | 8 ++------
->   1 file changed, 2 insertions(+), 6 deletions(-)
-> 
-> +diff --git a/scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
-> b/scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
-> +new file mode 100644
->  diff --git a/scripts/dummy-tools/gcc b/scripts/dummy-tools/gcc
->  index b2483149bbe5..7db825843435 100755
->  --- a/scripts/dummy-tools/gcc
+The SC8280XP platform uses 14 sessions for the compute DSP so increment
+the maximum session count.
 
-Ick, looks like a bad interaction between git and quilt, and then back
-to git.  I'll manually fix this up and push out a new stable release
-with it.
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ drivers/misc/fastrpc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-thanks for reporting this!
+diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+index 6e312ac85668..5d9e3483b89d 100644
+--- a/drivers/misc/fastrpc.c
++++ b/drivers/misc/fastrpc.c
+@@ -25,7 +25,7 @@
+ #define SDSP_DOMAIN_ID (2)
+ #define CDSP_DOMAIN_ID (3)
+ #define FASTRPC_DEV_MAX		4 /* adsp, mdsp, slpi, cdsp*/
+-#define FASTRPC_MAX_SESSIONS	13 /*12 compute, 1 cpz*/
++#define FASTRPC_MAX_SESSIONS	14
+ #define FASTRPC_MAX_VMIDS	16
+ #define FASTRPC_ALIGN		128
+ #define FASTRPC_MAX_FDLIST	16
+-- 
+2.35.1
 
-greg k-h
