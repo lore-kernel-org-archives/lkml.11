@@ -2,136 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7128ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E4AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:59:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231208AbiH2Q72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
+        id S231229AbiH2Q7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:59:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231202AbiH2Q7J (ORCPT
+        with ESMTP id S231226AbiH2Q7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:59:09 -0400
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD7C9C216;
-        Mon, 29 Aug 2022 09:59:03 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73:8b7:7001:c8aa:b65f])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id B35244B7;
-        Mon, 29 Aug 2022 16:59:02 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net B35244B7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1661792342; bh=KVB/dfI17sai5/pehF9fzhRTupEe9KHezPY2ahrCIbw=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=QwTgRXzdYlLH5j0A2Em9SIf1KJoja/q2AcPXbQqdwS5M6SHBV5RUm6C7UdkGFLDJX
-         ohAMJFbG9mdKOmMOtSjw/JbNNlI3R36d54X6coH4bUZklfobNAXEicoDdW5D3t2vo1
-         ZQQDcWvDmi3aX4Bw/+AaS8LUdskyqRv3KlC+gATKuH96YLy4PTUcBhlg1jMJoScf0c
-         e7uN4dhtLmB+Q3FIpFN54J+jTAKV/SrTwnANoHohsxTBqB+lmQ6ZgJ+Ax/q/c32XiB
-         RQlKber4hPQNkck1dD2FG2oGXf9GxgI7enHtTCfHZtxaSlRm6JeLmUaKWyWdiR4KQY
-         /Y8R4BLBOiPYw==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Akira Yokosawa <akiyks@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     linux-doc@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH v3 1/2] docs/conf.py: Treat mathjax as fallback math
- renderer
-In-Reply-To: <a6a877fc-dc93-2bda-a6d3-37001d99942a@gmail.com>
-References: <9b8ff6d7-e97a-c03f-7d46-4b80ae3cf196@gmail.com>
- <a6a877fc-dc93-2bda-a6d3-37001d99942a@gmail.com>
-Date:   Mon, 29 Aug 2022 10:59:02 -0600
-Message-ID: <87edwzoujt.fsf@meer.lwn.net>
+        Mon, 29 Aug 2022 12:59:18 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9765B9A9BE
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:59:17 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id c2so8597811plo.3
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=pNNDtWhRQjr1AbDSAN5+sxqnMgrurCAJQVg6nJa7vfw=;
+        b=X1qDKkSS9TNEmj3bF7vdVkXX21PIwg6DSgGwldzYDeoH3mrqhKbD5dIiG/W/rE/c88
+         hqD+dF0v7EStFR9p/AywuaafIIdLE67ZDf4RdqvUo5u9CrVs2bt2xR6MnsjQ66h/7QNv
+         HQHEZQNcgqFKT6wlRymcQavXXBoN6H40vWOog=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=pNNDtWhRQjr1AbDSAN5+sxqnMgrurCAJQVg6nJa7vfw=;
+        b=Dd9MzJ2rC8kAF62+S9kuq0hxAA2nyl0DfPnmxJV2XursVsS1dxxFtHcWEHl5zbfye/
+         VYkSSRfHdeiqn2ugfn3+d52GJu0YLNfxWgkaaRhR4gXr9qPlYoY+EKJid1qIWs6PN6pF
+         BmCvsVG9YDNzkbGiQkaE2YU/qWTEIR7ljtV0MWstxJSSu/eZbMi4GK0PQGWdFwXal8+b
+         /TsIdLAmpWKesG3oQsUCPpCASroz8SsyHt5IFJyksM7uyKnMdrWUr2cdn960xshtOhBW
+         eQ4aa1ZJ4V7zsCAf23wKRSMKaOgRZ04hiJlQP7UMpvbs2MNPBJxHA8HHjFubLDEAYpu8
+         hMOg==
+X-Gm-Message-State: ACgBeo2tyqIhZl87FyVhuUyJHlv97EbSC6HMSIkRLO9RsBS6SyjzfbVz
+        BL2Ho0/aKEBM98YgJyfinMEF8SuaXP64rnuJ
+X-Google-Smtp-Source: AA6agR5sfws+mCqY/K5lEnwq82XyHLdfD/bjbyZhdtjkJMjSkhiHXuzf/ICFICRCTas1JUIPZAOP2w==
+X-Received: by 2002:a17:903:245:b0:16f:85be:f33b with SMTP id j5-20020a170903024500b0016f85bef33bmr17275867plh.96.1661792356817;
+        Mon, 29 Aug 2022 09:59:16 -0700 (PDT)
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com. [209.85.210.178])
+        by smtp.gmail.com with ESMTPSA id nh16-20020a17090b365000b001fd8316db51sm3303267pjb.7.2022.08.29.09.59.16
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 09:59:16 -0700 (PDT)
+Received: by mail-pf1-f178.google.com with SMTP id x19so6914556pfr.1
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:59:16 -0700 (PDT)
+X-Received: by 2002:a05:6e02:16ca:b0:2e9:c225:3f82 with SMTP id
+ 10-20020a056e0216ca00b002e9c2253f82mr10397435ilx.254.1661791913591; Mon, 29
+ Aug 2022 09:51:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220825164205.4060647-1-dianders@chromium.org> <YwhwIX+Ib8epUYWS@hovoldconsulting.com>
+In-Reply-To: <YwhwIX+Ib8epUYWS@hovoldconsulting.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 29 Aug 2022 09:51:40 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XV2Tjuh+AfaQ3gdnBvy27okb2zgbQ6e+23KGBZo38Y7w@mail.gmail.com>
+Message-ID: <CAD=FV=XV2Tjuh+AfaQ3gdnBvy27okb2zgbQ6e+23KGBZo38Y7w@mail.gmail.com>
+Subject: Re: [PATCH 0/7] arm64: dts: qcom: Fix broken regulator spec on RPMH boards
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Akira Yokosawa <akiyks@gmail.com> writes:
+Hi,
 
-> Currently, math expressions using the "math::" directive or
-> the ":math:" role of Sphinx need the imgmath extension for proper
-> rendering in html and epub builds.
-> imgmath requires dvipng (and latex).
-> Otherwise, "make htmldocs" will complain of missing commands.
+On Fri, Aug 26, 2022 at 12:02 AM Johan Hovold <johan@kernel.org> wrote:
 >
-> As a matter of fact, the mathjax extension is loaded by default since
-> Sphinx v1.8 and it is good enough for html docs without any dependency
-> on texlive packages.
+> > Douglas Anderson (7):
+> >   arm64: dts: qcom: sa8155p-adp: Specify which LDO modes are allowed
 >
-> Stop loading the imgmath extension for html docs unless requirements
-> for imgmath are met.
+> >   arm64: dts: qcom: sa8295p-adp: Specify which LDO modes are allowed
+> >   arm64: dts: qcom: sc8280xp-crd: Specify which LDO modes are allowed
 >
-> To find out whether required commands are available, add a helper
-> find_command(), which is a wrapper of shutil.which().
+> These two should be rebased on
 >
-> For epub docs, keep the same behavior of always loading imgmath.
+>         https://lore.kernel.org/all/20220803121942.30236-1-johan+linaro@kernel.org/
 >
-> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-> Acked-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> Changes since v2:
->  - Mention find_command() in the changelog.
->  - Simplify find_command() by using shutil.which().
+> which disallows mode-switching for all but the UFS regulators (this
+> series addresses the DP PHY LPM regression we've discussed elsewhere).
 >
-> Changes sinve v1:
->  - Acked-by from Mauro
-> --
->  Documentation/conf.py | 29 ++++++++++++++++++++++++++++-
->  1 file changed, 28 insertions(+), 1 deletion(-)
+> >   arm64: dts: qcom: sc8280xp-thinkpad-x13s: Specify which LDO modes are
+> >     allowed
 >
-> diff --git a/Documentation/conf.py b/Documentation/conf.py
-> index 255384d094bf..c4aaedd96220 100644
-> --- a/Documentation/conf.py
-> +++ b/Documentation/conf.py
-> @@ -15,6 +15,18 @@
->  import sys
->  import os
->  import sphinx
-> +import shutil
-> +
-> +# helper
-> +# ------
-> +
-> +def have_command(cmd):
-> +    """Search ``cmd`` in the ``PATH`` environment.
-> +
-> +    If found, return True.
-> +    If not found, return False.
-> +    """
-> +    return shutil.which(cmd) is not None
->  
->  # Get Sphinx version
->  major, minor, patch = sphinx.version_info[:3]
-> @@ -107,7 +119,22 @@ else:
->  autosectionlabel_prefix_document = True
->  autosectionlabel_maxdepth = 2
->  
-> -extensions.append("sphinx.ext.imgmath")
-> +# Load math renderer:
-> +# For html builder, load imgmath only when its dependencies are met.
-> +# mathjax is the default math renderer since Sphinx 1.8.
-> +have_latex =  have_command('latex')
-> +have_dvipng = have_command('dvipng')
-> +load_imgmath = ((have_latex and have_dvipng)
-> +                or (major == 1 and minor < 8)
-> +                or 'epub' in sys.argv)
-> +
-> +if load_imgmath:
-> +    extensions.append("sphinx.ext.imgmath")
-> +    math_renderer = 'imgmath'
-> +else:
-> +    math_renderer = 'mathjax'
-> +
-> +sys.stderr.write("math_renderer: %s\n" % math_renderer)
+> And this one should not be needed at all with the above series applied.
+>
+> >   arm64: dts: qcom: sm8150-xperia-kumano: Specify which LDO modes are
+> >     allowed
+> >   arm64: dts: qcom: sm8250-xperia-edo: Specify which LDO modes are
+> >     allowed
+> >   arm64: dts: qcom: sm8350-hdk: Specify which LDO modes are allowed
 
-I've taken this line out as I applied the patch.  The docs build is
-verbose enough as it is, and this line isn't really going to add
-anything for most people.  If it needs to be there, I think, it should
-only show up on a V=1 build.
+Thanks! v2 has been sent and it's rebased upon your series:
 
-Thanks,
-
-jon
+https://lore.kernel.org/r/20220829164952.2672848-1-dianders@chromium.org
