@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 924F4ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2056DECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230125AbiH2LDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42222 "EHLO
+        id S229942AbiH2LDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:03:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229459AbiH2LB7 (ORCPT
+        with ESMTP id S229841AbiH2LCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:01:59 -0400
+        Mon, 29 Aug 2022 07:02:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F9232C138;
-        Mon, 29 Aug 2022 04:01:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26D94332F;
+        Mon, 29 Aug 2022 04:02:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 141FAB80EF3;
-        Mon, 29 Aug 2022 11:01:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C03C433D7;
-        Mon, 29 Aug 2022 11:01:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E33EB80EF3;
+        Mon, 29 Aug 2022 11:02:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574A9C433C1;
+        Mon, 29 Aug 2022 11:02:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770916;
-        bh=sdDsgsxCCIfOj2oFA8S1SNI/lYx+hwpEzKpEQYjreF0=;
+        s=korg; t=1661770922;
+        bh=/iy+f312kTj5A6TMMgKiWZt1SOjvo8oZVyIccP7xceY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cF1EqkHhwSCFFgu7h9gt81c6V0hJaCFFu/PYn1nHUiApZXpMbWwLuIsUngfaQCCzR
-         p1KfurndKzn5dEibcxrlNEaaYXh1VgP2SYdq90CerJR4MdN7+w704DgBJNbvjAdtIp
-         u8ZuY1jeKFi0FmK1mqJFtBVPbybP+Dc0sdJYMqvg=
+        b=vrqobNOlSPILhgqmK08LKC4zZhw6StAr1vEbUGc6mknvosL/YB+s1ILOHBtb96zv1
+         aeys4zBHw196j31LZceNInlbPpvIiwc4ku+q/Uh4/OhYKlg+bbwN4piziRsv6Fg13C
+         P8fR4ufATKAnCqqxxT9Qcs7Q6I6yovoAzfbKeapc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jing-Ting Wu <jing-ting.wu@mediatek.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Mukesh Ojha <quic_mojha@quicinc.com>, Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.15 004/136] cgroup: Fix race condition at rebind_subsystems()
-Date:   Mon, 29 Aug 2022 12:57:51 +0200
-Message-Id: <20220829105804.818654067@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 023/136] btrfs: remove unnecessary parameter delalloc_start for writepage_delalloc()
+Date:   Mon, 29 Aug 2022 12:58:10 +0200
+Message-Id: <20220829105805.536233187@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -49,41 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jing-Ting Wu <Jing-Ting.Wu@mediatek.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit 763f4fb76e24959c370cdaa889b2492ba6175580 upstream.
+[ Upstream commit cf3075fb36c6a98ea890f4a50b4419ff2fff9a2f ]
 
-Root cause:
-The rebind_subsystems() is no lock held when move css object from A
-list to B list,then let B's head be treated as css node at
-list_for_each_entry_rcu().
+In function __extent_writepage() we always pass page start to
+@delalloc_start for writepage_delalloc().
 
-Solution:
-Add grace period before invalidating the removed rstat_css_node.
+Thus we don't really need @delalloc_start parameter as we can extract it
+from @page.
 
-Reported-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Suggested-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Tested-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
-Link: https://lore.kernel.org/linux-arm-kernel/d8f0bc5e2fb6ed259f9334c83279b4c011283c41.camel@mediatek.com/T/
-Acked-by: Mukesh Ojha <quic_mojha@quicinc.com>
-Fixes: a7df69b81aac ("cgroup: rstat: support cgroup1")
-Cc: stable@vger.kernel.org # v5.13+
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Remove @delalloc_start parameter and make __extent_writepage() to
+declare @page_start and @page_end as const.
+
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/cgroup/cgroup.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/btrfs/extent_io.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -1810,6 +1810,7 @@ int rebind_subsystems(struct cgroup_root
+diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
+index 41862045b3de3..a72a8d4d4a72e 100644
+--- a/fs/btrfs/extent_io.c
++++ b/fs/btrfs/extent_io.c
+@@ -3780,10 +3780,11 @@ static void update_nr_written(struct writeback_control *wbc,
+  */
+ static noinline_for_stack int writepage_delalloc(struct btrfs_inode *inode,
+ 		struct page *page, struct writeback_control *wbc,
+-		u64 delalloc_start, unsigned long *nr_written)
++		unsigned long *nr_written)
+ {
+-	u64 page_end = delalloc_start + PAGE_SIZE - 1;
++	u64 page_end = page_offset(page) + PAGE_SIZE - 1;
+ 	bool found;
++	u64 delalloc_start = page_offset(page);
+ 	u64 delalloc_to_write = 0;
+ 	u64 delalloc_end = 0;
+ 	int ret;
+@@ -4068,8 +4069,8 @@ static int __extent_writepage(struct page *page, struct writeback_control *wbc,
+ 			      struct extent_page_data *epd)
+ {
+ 	struct inode *inode = page->mapping->host;
+-	u64 start = page_offset(page);
+-	u64 page_end = start + PAGE_SIZE - 1;
++	const u64 page_start = page_offset(page);
++	const u64 page_end = page_start + PAGE_SIZE - 1;
+ 	int ret;
+ 	int nr = 0;
+ 	size_t pg_offset;
+@@ -4104,8 +4105,7 @@ static int __extent_writepage(struct page *page, struct writeback_control *wbc,
+ 	}
  
- 		if (ss->css_rstat_flush) {
- 			list_del_rcu(&css->rstat_css_node);
-+			synchronize_rcu();
- 			list_add_rcu(&css->rstat_css_node,
- 				     &dcgrp->rstat_css_list);
- 		}
+ 	if (!epd->extent_locked) {
+-		ret = writepage_delalloc(BTRFS_I(inode), page, wbc, start,
+-					 &nr_written);
++		ret = writepage_delalloc(BTRFS_I(inode), page, wbc, &nr_written);
+ 		if (ret == 1)
+ 			return 0;
+ 		if (ret)
+@@ -4155,7 +4155,7 @@ static int __extent_writepage(struct page *page, struct writeback_control *wbc,
+ 	 * capable of that.
+ 	 */
+ 	if (PageError(page))
+-		end_extent_writepage(page, ret, start, page_end);
++		end_extent_writepage(page, ret, page_start, page_end);
+ 	unlock_page(page);
+ 	ASSERT(ret <= 0);
+ 	return ret;
+-- 
+2.35.1
+
 
 
