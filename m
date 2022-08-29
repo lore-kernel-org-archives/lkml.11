@@ -2,44 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B4CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D24C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:25:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231919AbiH2LZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        id S231959AbiH2LZI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:25:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231769AbiH2LXD (ORCPT
+        with ESMTP id S231867AbiH2LXK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:23:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2531D5E556;
+        Mon, 29 Aug 2022 07:23:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC345C95D;
         Mon, 29 Aug 2022 04:14:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B437B611B3;
-        Mon, 29 Aug 2022 11:14:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEADFC433C1;
-        Mon, 29 Aug 2022 11:14:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7808B80FA7;
+        Mon, 29 Aug 2022 11:14:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CC98C433D6;
+        Mon, 29 Aug 2022 11:14:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771674;
-        bh=kpTLujtaa5oLLt5urP0XWv1uKUzg65+TA61+jrRpax4=;
+        s=korg; t=1661771659;
+        bh=MaFDrlC2VtmaCzh6Vod92cDJBAkryZgJvboxsy9HS+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SB+Hcjh2FiicngGW7xILYFBXLD6MqjxjBPV7UAkVvKWx6byv7dpSO3T9CKXEb75gM
-         /RWGzwuJ/Pi0FX6rN0GGOcO1zavpccxJ+YlDaDpwfH0EIMi4NoqxMKEHPa8EGYNZgu
-         DFs42BSOabJBdKevi958DoS8r0odO5kjjGLWKQu8=
+        b=DQyv+w7YriT67OC2jOjs1uJJX6K9z/hvwsvdTDbur4t5SxPP/9ES66+tAqHLbB2UF
+         bniKC1U0ueoukWJ1W2ZxlaPpeHOkrLTRlaqIxzDDkxfEW8aC9vwCS9SPXa76IrH1WH
+         tYTAXtOkmokB1jRqzPaOR3P9DBl4bqMskUL6d1jc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Wei Hung <hsinweih@uci.edu>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 136/136] bpf: Dont use tnum_range on array range checking for poke descriptors
-Date:   Mon, 29 Aug 2022 13:00:03 +0200
-Message-Id: <20220829105810.255238956@linuxfoundation.org>
+        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Feiner <pfeiner@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Cyrill Gorcunov <gorcunov@openvz.org>,
+        Pavel Emelyanov <xemul@parallels.com>,
+        Jamie Liu <jamieliu@google.com>,
+        Hugh Dickins <hughd@google.com>,
+        Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Xu <peterx@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 121/136] mm/hugetlb: fix hugetlb not supporting softdirty tracking
+Date:   Mon, 29 Aug 2022 12:59:48 +0200
+Message-Id: <20220829105809.643780113@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -51,107 +59,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+From: David Hildenbrand <david@redhat.com>
 
-commit a657182a5c5150cdfacb6640aad1d2712571a409 upstream.
+commit f96f7a40874d7c746680c0b9f57cef2262ae551f upstream.
 
-Hsin-Wei reported a KASAN splat triggered by their BPF runtime fuzzer which
-is based on a customized syzkaller:
+Patch series "mm/hugetlb: fix write-fault handling for shared mappings", v2.
 
-  BUG: KASAN: slab-out-of-bounds in bpf_int_jit_compile+0x1257/0x13f0
-  Read of size 8 at addr ffff888004e90b58 by task syz-executor.0/1489
-  CPU: 1 PID: 1489 Comm: syz-executor.0 Not tainted 5.19.0 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-  1.13.0-1ubuntu1.1 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x9c/0xc9
-   print_address_description.constprop.0+0x1f/0x1f0
-   ? bpf_int_jit_compile+0x1257/0x13f0
-   kasan_report.cold+0xeb/0x197
-   ? kvmalloc_node+0x170/0x200
-   ? bpf_int_jit_compile+0x1257/0x13f0
-   bpf_int_jit_compile+0x1257/0x13f0
-   ? arch_prepare_bpf_dispatcher+0xd0/0xd0
-   ? rcu_read_lock_sched_held+0x43/0x70
-   bpf_prog_select_runtime+0x3e8/0x640
-   ? bpf_obj_name_cpy+0x149/0x1b0
-   bpf_prog_load+0x102f/0x2220
-   ? __bpf_prog_put.constprop.0+0x220/0x220
-   ? find_held_lock+0x2c/0x110
-   ? __might_fault+0xd6/0x180
-   ? lock_downgrade+0x6e0/0x6e0
-   ? lock_is_held_type+0xa6/0x120
-   ? __might_fault+0x147/0x180
-   __sys_bpf+0x137b/0x6070
-   ? bpf_perf_link_attach+0x530/0x530
-   ? new_sync_read+0x600/0x600
-   ? __fget_files+0x255/0x450
-   ? lock_downgrade+0x6e0/0x6e0
-   ? fput+0x30/0x1a0
-   ? ksys_write+0x1a8/0x260
-   __x64_sys_bpf+0x7a/0xc0
-   ? syscall_enter_from_user_mode+0x21/0x70
-   do_syscall_64+0x3b/0x90
-   entry_SYSCALL_64_after_hwframe+0x63/0xcd
-  RIP: 0033:0x7f917c4e2c2d
+I observed that hugetlb does not support/expect write-faults in shared
+mappings that would have to map the R/O-mapped page writable -- and I
+found two case where we could currently get such faults and would
+erroneously map an anon page into a shared mapping.
 
-The problem here is that a range of tnum_range(0, map->max_entries - 1) has
-limited ability to represent the concrete tight range with the tnum as the
-set of resulting states from value + mask can result in a superset of the
-actual intended range, and as such a tnum_in(range, reg->var_off) check may
-yield true when it shouldn't, for example tnum_range(0, 2) would result in
-00XX -> v = 0000, m = 0011 such that the intended set of {0, 1, 2} is here
-represented by a less precise superset of {0, 1, 2, 3}. As the register is
-known const scalar, really just use the concrete reg->var_off.value for the
-upper index check.
+Reproducers part of the patches.
 
-Fixes: d2e4c1e6c294 ("bpf: Constant map key tracking for prog array pokes")
-Reported-by: Hsin-Wei Hung <hsinweih@uci.edu>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Shung-Hsi Yu <shung-hsi.yu@suse.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/r/984b37f9fdf7ac36831d2137415a4a915744c1b6.1661462653.git.daniel@iogearbox.net
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+I propose to backport both fixes to stable trees.  The first fix needs a
+small adjustment.
+
+
+This patch (of 2):
+
+Staring at hugetlb_wp(), one might wonder where all the logic for shared
+mappings is when stumbling over a write-protected page in a shared
+mapping.  In fact, there is none, and so far we thought we could get away
+with that because e.g., mprotect() should always do the right thing and
+map all pages directly writable.
+
+Looks like we were wrong:
+
+--------------------------------------------------------------------------
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <errno.h>
+ #include <sys/mman.h>
+
+ #define HUGETLB_SIZE (2 * 1024 * 1024u)
+
+ static void clear_softdirty(void)
+ {
+         int fd = open("/proc/self/clear_refs", O_WRONLY);
+         const char *ctrl = "4";
+         int ret;
+
+         if (fd < 0) {
+                 fprintf(stderr, "open(clear_refs) failed\n");
+                 exit(1);
+         }
+         ret = write(fd, ctrl, strlen(ctrl));
+         if (ret != strlen(ctrl)) {
+                 fprintf(stderr, "write(clear_refs) failed\n");
+                 exit(1);
+         }
+         close(fd);
+ }
+
+ int main(int argc, char **argv)
+ {
+         char *map;
+         int fd;
+
+         fd = open("/dev/hugepages/tmp", O_RDWR | O_CREAT);
+         if (!fd) {
+                 fprintf(stderr, "open() failed\n");
+                 return -errno;
+         }
+         if (ftruncate(fd, HUGETLB_SIZE)) {
+                 fprintf(stderr, "ftruncate() failed\n");
+                 return -errno;
+         }
+
+         map = mmap(NULL, HUGETLB_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+         if (map == MAP_FAILED) {
+                 fprintf(stderr, "mmap() failed\n");
+                 return -errno;
+         }
+
+         *map = 0;
+
+         if (mprotect(map, HUGETLB_SIZE, PROT_READ)) {
+                 fprintf(stderr, "mmprotect() failed\n");
+                 return -errno;
+         }
+
+         clear_softdirty();
+
+         if (mprotect(map, HUGETLB_SIZE, PROT_READ|PROT_WRITE)) {
+                 fprintf(stderr, "mmprotect() failed\n");
+                 return -errno;
+         }
+
+         *map = 0;
+
+         return 0;
+ }
+--------------------------------------------------------------------------
+
+Above test fails with SIGBUS when there is only a single free hugetlb page.
+ # echo 1 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+ # ./test
+ Bus error (core dumped)
+
+And worse, with sufficient free hugetlb pages it will map an anonymous page
+into a shared mapping, for example, messing up accounting during unmap
+and breaking MAP_SHARED semantics:
+ # echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+ # ./test
+ # cat /proc/meminfo | grep HugePages_
+ HugePages_Total:       2
+ HugePages_Free:        1
+ HugePages_Rsvd:    18446744073709551615
+ HugePages_Surp:        0
+
+Reason in this particular case is that vma_wants_writenotify() will
+return "true", removing VM_SHARED in vma_set_page_prot() to map pages
+write-protected. Let's teach vma_wants_writenotify() that hugetlb does not
+support softdirty tracking.
+
+Link: https://lkml.kernel.org/r/20220811103435.188481-1-david@redhat.com
+Link: https://lkml.kernel.org/r/20220811103435.188481-2-david@redhat.com
+Fixes: 64e455079e1b ("mm: softdirty: enable write notifications on VMAs after VM_SOFTDIRTY cleared")
+Signed-off-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Peter Feiner <pfeiner@google.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Cyrill Gorcunov <gorcunov@openvz.org>
+Cc: Pavel Emelyanov <xemul@parallels.com>
+Cc: Jamie Liu <jamieliu@google.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Muchun Song <songmuchun@bytedance.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: <stable@vger.kernel.org>	[3.18+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: David Hildenbrand <david@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ mm/mmap.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -6096,8 +6096,7 @@ record_func_key(struct bpf_verifier_env
- 	struct bpf_insn_aux_data *aux = &env->insn_aux_data[insn_idx];
- 	struct bpf_reg_state *regs = cur_regs(env), *reg;
- 	struct bpf_map *map = meta->map_ptr;
--	struct tnum range;
--	u64 val;
-+	u64 val, max;
- 	int err;
- 
- 	if (func_id != BPF_FUNC_tail_call)
-@@ -6107,10 +6106,11 @@ record_func_key(struct bpf_verifier_env
- 		return -EINVAL;
- 	}
- 
--	range = tnum_range(0, map->max_entries - 1);
- 	reg = &regs[BPF_REG_3];
-+	val = reg->var_off.value;
-+	max = map->max_entries;
- 
--	if (!register_is_const(reg) || !tnum_in(range, reg->var_off)) {
-+	if (!(register_is_const(reg) && val < max)) {
- 		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1684,8 +1684,12 @@ int vma_wants_writenotify(struct vm_area
+ 	    pgprot_val(vm_pgprot_modify(vm_page_prot, vm_flags)))
  		return 0;
- 	}
-@@ -6118,8 +6118,6 @@ record_func_key(struct bpf_verifier_env
- 	err = mark_chain_precision(env, BPF_REG_3);
- 	if (err)
- 		return err;
--
--	val = reg->var_off.value;
- 	if (bpf_map_key_unseen(aux))
- 		bpf_map_key_store(aux, val);
- 	else if (!bpf_map_key_poisoned(aux) &&
+ 
+-	/* Do we need to track softdirty? */
+-	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) && !(vm_flags & VM_SOFTDIRTY))
++	/*
++	 * Do we need to track softdirty? hugetlb does not support softdirty
++	 * tracking yet.
++	 */
++	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) && !(vm_flags & VM_SOFTDIRTY) &&
++	    !is_vm_hugetlb_page(vma))
+ 		return 1;
+ 
+ 	/* Specialty mapping? */
 
 
