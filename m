@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFA97ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5029CECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbiH2L0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
+        id S232014AbiH2L0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232216AbiH2LYc (ORCPT
+        with ESMTP id S232195AbiH2LYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:24:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E65130F68;
-        Mon, 29 Aug 2022 04:15:43 -0700 (PDT)
+        Mon, 29 Aug 2022 07:24:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D4F6527A;
+        Mon, 29 Aug 2022 04:15:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44A1FB80F01;
-        Mon, 29 Aug 2022 11:13:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A951EC43142;
-        Mon, 29 Aug 2022 11:13:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AD566122B;
+        Mon, 29 Aug 2022 11:14:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44F8AC433C1;
+        Mon, 29 Aug 2022 11:14:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771591;
-        bh=bszJK+xsM2ct+CjjbxZn664cxsjOOWBnSDfF/kCyq6A=;
+        s=korg; t=1661771656;
+        bh=weqIPM4w2R7i+ut6+CsVGklhQR7rTe/r0eAyyVTjtBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VbnObiIJw3fpxMZCrtZKmmUVPKHrmx+ekciFVu/d6xuv5SAHar0ldrGsvdJkxVk2E
-         TQRdi/Tleu9KCVNZsKazEkU8oExbRNtYiZQV8TPNbtEy+aiWNxInSjMtGD/BNC3263
-         sTIOTfcUvnQ3vwz9RKnU5S/gAXkH6d31tPi6mx5E=
+        b=yOi/wrqc81C0RQS/KxngIU4eamgSgaDAmaqLdLMReTM8BVV+60ZCUWmP1MOcgZVpo
+         XILiCXMfVbjQ2kyo4lww6oN6UaCoCRgV7RRL9gGGX+T747zm26rFFwCh2JhjDHQxVi
+         OM0tSBRnZsZ3migoFVyIeFbUdZVOa1TudLc1RmgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 59/86] net: Fix data-races around sysctl_devconf_inherit_init_net.
-Date:   Mon, 29 Aug 2022 12:59:25 +0200
-Message-Id: <20220829105758.970231758@linuxfoundation.org>
+Subject: [PATCH 5.19 057/158] netfilter: nft_payload: report ERANGE for too long offset and length
+Date:   Mon, 29 Aug 2022 12:58:27 +0200
+Message-Id: <20220829105811.118155593@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,97 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit a5612ca10d1aa05624ebe72633e0c8c792970833 ]
+[ Upstream commit 94254f990c07e9ddf1634e0b727fab821c3b5bf9 ]
 
-While reading sysctl_devconf_inherit_init_net, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+Instead of offset and length are truncation to u8, report ERANGE.
 
-Fixes: 856c395cfa63 ("net: introduce a knob to control whether to inherit devconf config")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 96518518cc41 ("netfilter: add nftables")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/netdevice.h |  9 +++++++++
- net/ipv4/devinet.c        | 16 ++++++++++------
- net/ipv6/addrconf.c       |  5 ++---
- 3 files changed, 21 insertions(+), 9 deletions(-)
+ net/netfilter/nft_payload.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index c05701f89d6dd..6564fb4ac49e1 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -643,6 +643,15 @@ static inline bool net_has_fallback_tunnels(const struct net *net)
- #endif
- }
- 
-+static inline int net_inherit_devconf(void)
-+{
-+#if IS_ENABLED(CONFIG_SYSCTL)
-+	return READ_ONCE(sysctl_devconf_inherit_init_net);
-+#else
-+	return 0;
-+#endif
-+}
-+
- static inline int netdev_queue_numa_node_read(const struct netdev_queue *q)
+diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
+index 2e7ac007cb30f..4fee67abfe2c5 100644
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -833,6 +833,7 @@ nft_payload_select_ops(const struct nft_ctx *ctx,
  {
- #if defined(CONFIG_XPS) && defined(CONFIG_NUMA)
-diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-index 148ef484a66ce..8f17538755507 100644
---- a/net/ipv4/devinet.c
-+++ b/net/ipv4/devinet.c
-@@ -2668,23 +2668,27 @@ static __net_init int devinet_init_net(struct net *net)
- #endif
+ 	enum nft_payload_bases base;
+ 	unsigned int offset, len;
++	int err;
  
- 	if (!net_eq(net, &init_net)) {
--		if (IS_ENABLED(CONFIG_SYSCTL) &&
--		    sysctl_devconf_inherit_init_net == 3) {
-+		switch (net_inherit_devconf()) {
-+		case 3:
- 			/* copy from the current netns */
- 			memcpy(all, current->nsproxy->net_ns->ipv4.devconf_all,
- 			       sizeof(ipv4_devconf));
- 			memcpy(dflt,
- 			       current->nsproxy->net_ns->ipv4.devconf_dflt,
- 			       sizeof(ipv4_devconf_dflt));
--		} else if (!IS_ENABLED(CONFIG_SYSCTL) ||
--			   sysctl_devconf_inherit_init_net != 2) {
--			/* inherit == 0 or 1: copy from init_net */
-+			break;
-+		case 0:
-+		case 1:
-+			/* copy from init_net */
- 			memcpy(all, init_net.ipv4.devconf_all,
- 			       sizeof(ipv4_devconf));
- 			memcpy(dflt, init_net.ipv4.devconf_dflt,
- 			       sizeof(ipv4_devconf_dflt));
-+			break;
-+		case 2:
-+			/* use compiled values */
-+			break;
- 		}
--		/* else inherit == 2: use compiled values */
- 	}
+ 	if (tb[NFTA_PAYLOAD_BASE] == NULL ||
+ 	    tb[NFTA_PAYLOAD_OFFSET] == NULL ||
+@@ -859,8 +860,13 @@ nft_payload_select_ops(const struct nft_ctx *ctx,
+ 	if (tb[NFTA_PAYLOAD_DREG] == NULL)
+ 		return ERR_PTR(-EINVAL);
  
- #ifdef CONFIG_SYSCTL
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 05317e6f48f8a..ed1e5bfc97b31 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -7042,9 +7042,8 @@ static int __net_init addrconf_init_net(struct net *net)
- 	if (!dflt)
- 		goto err_alloc_dflt;
+-	offset = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
+-	len    = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_LEN]));
++	err = nft_parse_u32_check(tb[NFTA_PAYLOAD_OFFSET], U8_MAX, &offset);
++	if (err < 0)
++		return ERR_PTR(err);
++
++	err = nft_parse_u32_check(tb[NFTA_PAYLOAD_LEN], U8_MAX, &len);
++	if (err < 0)
++		return ERR_PTR(err);
  
--	if (IS_ENABLED(CONFIG_SYSCTL) &&
--	    !net_eq(net, &init_net)) {
--		switch (sysctl_devconf_inherit_init_net) {
-+	if (!net_eq(net, &init_net)) {
-+		switch (net_inherit_devconf()) {
- 		case 1:  /* copy from init_net */
- 			memcpy(all, init_net.ipv6.devconf_all,
- 			       sizeof(ipv6_devconf));
+ 	if (len <= 4 && is_power_of_2(len) && IS_ALIGNED(offset, len) &&
+ 	    base != NFT_PAYLOAD_LL_HEADER && base != NFT_PAYLOAD_INNER_HEADER)
 -- 
 2.35.1
 
