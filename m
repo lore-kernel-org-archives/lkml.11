@@ -2,54 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2108EECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB1AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231719AbiH2LVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
+        id S231612AbiH2LVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230132AbiH2LTc (ORCPT
+        with ESMTP id S231286AbiH2LTg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:19:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B1275CC9;
-        Mon, 29 Aug 2022 04:13:32 -0700 (PDT)
+        Mon, 29 Aug 2022 07:19:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE856C12C;
+        Mon, 29 Aug 2022 04:12:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA6CD61242;
-        Mon, 29 Aug 2022 11:13:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84A57C433D6;
-        Mon, 29 Aug 2022 11:13:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EB9B61212;
+        Mon, 29 Aug 2022 11:12:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3023C433D6;
+        Mon, 29 Aug 2022 11:12:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771611;
-        bh=lbbo5zIz7LBHyIKQSGFYcidE8T1e9xUIFuGqFczWtjQ=;
+        s=korg; t=1661771570;
+        bh=YJt4NxBD+NcoXprsbu4ayUDQDeGzuAoSY2VYAF4I89c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kcO+/oBeAG4cL3PJdGf1mxz/gfYZ88oHIIMLBBmdAmQ4NpA0j/7gv8aVNDwQSTYZM
-         QiekmG9ohj/3YEnYdqE73BLcTT2hGqx1siG8hfi8+0oJwdRdSKYMl9MzG3pntmj7XW
-         Xqw1jBQcSOeCBI3Y6bFuhPRw8I4EYwTXxgICSMTI=
+        b=rPsdv9VGLyffxJfebAtS0hvGgF+DANJvHLng7oftdcIMpfzlotP3jumTqcdO9nrdw
+         DOVFRD3bqkOJPIsLfZt4ufRA5Oxl9Mj3Tkc4rRabHD++UCw7LcOivxP9Bnp8M7Dfon
+         tLRHStm4jxHp6pEkNhtceXg+yUgORhdGnq4Aez/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Ondrej Mosnacek <omosnace@redhat.com>,
-        syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com,
-        Carlos Llamas <cmllamas@google.com>,
-        Minchan Kim <minchan@kernel.org>,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
-        Hridya Valsaraju <hridya@google.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Martijn Coenen <maco@android.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Todd Kjos <tkjos@android.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 126/136] binder_alloc: add missing mmap_lock calls when using the VMA
-Date:   Mon, 29 Aug 2022 12:59:53 +0200
-Message-Id: <20220829105809.855177179@linuxfoundation.org>
+        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 117/136] riscv: traps: add missing prototype
+Date:   Mon, 29 Aug 2022 12:59:44 +0200
+Message-Id: <20220829105809.490319703@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -61,93 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liam Howlett <liam.howlett@oracle.com>
+From: Conor Dooley <conor.dooley@microchip.com>
 
-commit 44e602b4e52f70f04620bbbf4fe46ecb40170bde upstream.
+commit d951b20b9def73dcc39a5379831525d0d2a537e9 upstream.
 
-Take the mmap_read_lock() when using the VMA in binder_alloc_print_pages()
-and when checking for a VMA in binder_alloc_new_buf_locked().
+Sparse complains:
+arch/riscv/kernel/traps.c:213:6: warning: symbol 'shadow_stack' was not declared. Should it be static?
 
-It is worth noting binder_alloc_new_buf_locked() drops the VMA read lock
-after it verifies a VMA exists, but may be taken again deeper in the call
-stack, if necessary.
+The variable is used in entry.S, so declare shadow_stack there
+alongside SHADOW_OVERFLOW_STACK_SIZE.
 
-Link: https://lkml.kernel.org/r/20220810160209.1630707-1-Liam.Howlett@oracle.com
-Fixes: a43cfc87caaf (android: binder: stop saving a pointer to the VMA)
-Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
-Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
-Reported-by: <syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com>
-Acked-by: Carlos Llamas <cmllamas@google.com>
-Tested-by: Ondrej Mosnacek <omosnace@redhat.com>
-Cc: Minchan Kim <minchan@kernel.org>
-Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Hridya Valsaraju <hridya@google.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Martijn Coenen <maco@android.com>
-Cc: Suren Baghdasaryan <surenb@google.com>
-Cc: Todd Kjos <tkjos@android.com>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: "Arve Hjønnevåg" <arve@android.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 31da94c25aea ("riscv: add VMAP_STACK overflow detection")
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220814141237.493457-5-mail@conchuod.ie
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/android/binder_alloc.c |   31 +++++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 10 deletions(-)
+ arch/riscv/include/asm/thread_info.h |    2 ++
+ arch/riscv/kernel/traps.c            |    3 ++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/android/binder_alloc.c
-+++ b/drivers/android/binder_alloc.c
-@@ -395,12 +395,15 @@ static struct binder_buffer *binder_allo
- 	size_t size, data_offsets_size;
- 	int ret;
+--- a/arch/riscv/include/asm/thread_info.h
++++ b/arch/riscv/include/asm/thread_info.h
+@@ -42,6 +42,8 @@
  
-+	mmap_read_lock(alloc->vma_vm_mm);
- 	if (!binder_alloc_get_vma(alloc)) {
-+		mmap_read_unlock(alloc->vma_vm_mm);
- 		binder_alloc_debug(BINDER_DEBUG_USER_ERROR,
- 				   "%d: binder_alloc_buf, no vma\n",
- 				   alloc->pid);
- 		return ERR_PTR(-ESRCH);
- 	}
-+	mmap_read_unlock(alloc->vma_vm_mm);
+ #ifndef __ASSEMBLY__
  
- 	data_offsets_size = ALIGN(data_size, sizeof(void *)) +
- 		ALIGN(offsets_size, sizeof(void *));
-@@ -922,17 +925,25 @@ void binder_alloc_print_pages(struct seq
- 	 * Make sure the binder_alloc is fully initialized, otherwise we might
- 	 * read inconsistent state.
- 	 */
--	if (binder_alloc_get_vma(alloc) != NULL) {
--		for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
--			page = &alloc->pages[i];
--			if (!page->page_ptr)
--				free++;
--			else if (list_empty(&page->lru))
--				active++;
--			else
--				lru++;
--		}
++extern long shadow_stack[SHADOW_OVERFLOW_STACK_SIZE / sizeof(long)];
 +
-+	mmap_read_lock(alloc->vma_vm_mm);
-+	if (binder_alloc_get_vma(alloc) == NULL) {
-+		mmap_read_unlock(alloc->vma_vm_mm);
-+		goto uninitialized;
-+	}
-+
-+	mmap_read_unlock(alloc->vma_vm_mm);
-+	for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
-+		page = &alloc->pages[i];
-+		if (!page->page_ptr)
-+			free++;
-+		else if (list_empty(&page->lru))
-+			active++;
-+		else
-+			lru++;
- 	}
-+
-+uninitialized:
- 	mutex_unlock(&alloc->mutex);
- 	seq_printf(m, "  pages: %d:%d:%d\n", active, lru, free);
- 	seq_printf(m, "  pages high watermark: %zu\n", alloc->pages_high);
+ #include <asm/processor.h>
+ #include <asm/csr.h>
+ 
+--- a/arch/riscv/kernel/traps.c
++++ b/arch/riscv/kernel/traps.c
+@@ -20,9 +20,10 @@
+ 
+ #include <asm/asm-prototypes.h>
+ #include <asm/bug.h>
++#include <asm/csr.h>
+ #include <asm/processor.h>
+ #include <asm/ptrace.h>
+-#include <asm/csr.h>
++#include <asm/thread_info.h>
+ 
+ int show_unhandled_signals = 1;
+ 
 
 
