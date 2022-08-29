@@ -2,143 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65980ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 623FAECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiH2KL6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 06:11:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
+        id S230054AbiH2KMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 06:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbiH2KL2 (ORCPT
+        with ESMTP id S229932AbiH2KLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 06:11:28 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2044.outbound.protection.outlook.com [40.107.237.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60CA40542;
-        Mon, 29 Aug 2022 03:11:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n+3Usslqqc8a8iOCIM5fKAcos7DD/Y4SERfUt62Ht2Ha8xxvcv96Jbf8RWdNHcSfbIp0Ffl63T0aErocMLmvvKt1wg1CvR7Xqm9iTP4AlxuTADNPqgRnyF166oRu/xQAitVo+mjIHRv0gJuoget1to00+2kdQ7hTGmTyatUDz5MEutnPaSG70msAcI+Ci6Wp9paoVru/ePfkWkEP3EETVI2+ae8NvUkywU2KtTvLuUcTihJNhKBqSwwGH7DjQBQfj9veSk21qniRNkiUne1ZAP/UO39ziiwaa2qPq42fWH5+9Utm5zw0+igjn3z9WRNdCfOtSYQ7p4+rVwVGo69Wuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4xbR2snkxD9XJ0q1wpI7kLCfpKJrBJZjTVBPRAUibyw=;
- b=kem26Q7+fA1ufSEfDpSx1UhLbfpnM81cRgQbLV8nV1nfbkslzRY3Iz8jD2V3CZPhjZnEUaJuuiPaK4vRiyoF3UWB0neK6r0ARNgU/QAVnE+biFBEbLqcCqI6cijyr4Zzc0idnUAtOyIhC59eM9F3I68F61LFW8vfojjEBYpptEGmfQTqeSmVXuFn6kyHrc/00hIaqONKCD801JyvQMXJikWPaWyy7m2eZDKBPaTeEyT1ANaMXU131cG/jCty1/CUYXDT+KTB3u0PkuKk+f6+ltIldlZpWjltYWJi+WDLd5d+nKFRGMnGu4aN10WoQCJqghkuKtVTDTVmkS9swGBzOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4xbR2snkxD9XJ0q1wpI7kLCfpKJrBJZjTVBPRAUibyw=;
- b=qBtJLGW5vPt/nkMdHMSTWyvuWbnrrou6boNh/JI9OJHc+p7cu3su+ri0F4yNGNpRdNabq5d1ajXAYtb1a67DjJPRKC9eJWBAAcIR8cKkEC92u1zkJDwNjNSxnlNrvvxKf+g0skOz5Cq6kiNLr/uMfIgZcvKtwykxWJorA/7mxVw=
-Received: from MW4PR03CA0198.namprd03.prod.outlook.com (2603:10b6:303:b8::23)
- by DM5PR12MB2342.namprd12.prod.outlook.com (2603:10b6:4:ba::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Mon, 29 Aug
- 2022 10:11:21 +0000
-Received: from CO1PEPF00001A5D.namprd05.prod.outlook.com (2603:10b6:303:b8::4)
- by MW4PR03CA0198.outlook.office365.com (2603:10b6:303:b8::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5566.15 via Frontend Transport; Mon, 29 Aug 2022 10:11:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1PEPF00001A5D.mail.protection.outlook.com (10.167.241.4) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5588.7 via Frontend Transport; Mon, 29 Aug 2022 10:11:20 +0000
-Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 29 Aug
- 2022 05:11:15 -0500
-From:   Santosh Shukla <santosh.shukla@amd.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-CC:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <santosh.shukla@amd.com>,
-        <mlevitsk@redhat.com>, <mail@maciej.szmigiero.name>
-Subject: [PATCHv4 5/8] KVM: SVM: Add VNMI support in inject_nmi
-Date:   Mon, 29 Aug 2022 15:38:47 +0530
-Message-ID: <20220829100850.1474-6-santosh.shukla@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220829100850.1474-1-santosh.shukla@amd.com>
-References: <20220829100850.1474-1-santosh.shukla@amd.com>
+        Mon, 29 Aug 2022 06:11:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED8B4E636
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:11:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661767891;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uiDEAc36fw1oVBz2RndBdLuRw9KgMIJyJTG6rMfsFiE=;
+        b=PzU2TQVvFPvSO9HNXEL/ln2rwSzIV6jfN0MhjQiIiiEJDy8XwOzSk+b4VYW3kKWpM8u7nz
+        gD07736G64Q+Fgwq9YT5e9YnzqFVfqdIHwXCcuUtEufadkx0lh6sOhfE9G4sAum+tf07/+
+        q7TONg9U0qhPziMUhI4tz42BU8/dARQ=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-590-1TV9i-VUOP2pUPoIQKPDyA-1; Mon, 29 Aug 2022 06:11:30 -0400
+X-MC-Unique: 1TV9i-VUOP2pUPoIQKPDyA-1
+Received: by mail-ej1-f71.google.com with SMTP id hr32-20020a1709073fa000b00730a39f36ddso2067905ejc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:11:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=uiDEAc36fw1oVBz2RndBdLuRw9KgMIJyJTG6rMfsFiE=;
+        b=UpMu3W35BEmhtqs4zYuMHSu/QqkOHZV40O3ipg2cAhD1sm+U1A1jA3Yucoo+r8V4Oj
+         l6C8DncBjdT/Qz02rfF0SFF/ZCG4sabMGbtCY8CXYxT/UK4mb0eWKufNWRqqMvTwD8gM
+         U8IIQS+wY9CEWROqQLMqNCrubkDkao/yMp0jcpDEok4J3MclNhXcwalvZYL7BaBXE2JJ
+         rKpzsMJBN/h+UZOJPj+7J50CaUKx5w9YVlck0O4EKCOCz45NnZwshdWlrRYeL9rbzI55
+         HIeTl9hV7ya+XvthxznybchbziYM58HCeGlVuCQUA9O15F71/pmKvebVGcgXNVUgnpkJ
+         jGcg==
+X-Gm-Message-State: ACgBeo06tRcJ4a9OtiqWaWy+Nx1/UC0Bf89m9DaTOd5eYUN3pMyOkkqY
+        MUrCQehkOz/UTmDlhhWil0ixSKAgYSSgK6KYVApGRJr5GZzZAgtDcVrf/SzqRz8o3Z/Z/3+lCXk
+        V/FPYwxjlKuuycKEgJe2O8Ihh
+X-Received: by 2002:a17:906:2245:b0:715:7c81:e39d with SMTP id 5-20020a170906224500b007157c81e39dmr13664981ejr.262.1661767888267;
+        Mon, 29 Aug 2022 03:11:28 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7M4/S/C3JxMIdV9wlV0VL4SAYsK3Ou30eFFHKFVgyE7NH7Ngn2CoK/Tp7ioWQhcY8xIdoyxw==
+X-Received: by 2002:a17:906:2245:b0:715:7c81:e39d with SMTP id 5-20020a170906224500b007157c81e39dmr13664973ejr.262.1661767888059;
+        Mon, 29 Aug 2022 03:11:28 -0700 (PDT)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id ec14-20020a0564020d4e00b004483a543794sm3054189edb.96.2022.08.29.03.11.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 03:11:27 -0700 (PDT)
+Message-ID: <ad157199-5127-ba77-e127-61b5de88fb60@redhat.com>
+Date:   Mon, 29 Aug 2022 12:11:27 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: 6.0 tty regression, NULL pointer deref in flush_to_ldisc
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux regressions mailing list <regressions@lists.linux.dev>
+References: <4b4bba5d-d291-d9fa-8382-cdc197b7ed35@redhat.com>
+ <e8d67c78-751e-2c44-edff-e7e441c3302d@linux.intel.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <e8d67c78-751e-2c44-edff-e7e441c3302d@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1b004503-0ec5-4428-6f8d-08da89a6d22c
-X-MS-TrafficTypeDiagnostic: DM5PR12MB2342:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fUrPyb8Eyu+b3BWNk3rrx/9JdEyMLV+Xqgvgg3WG5+9nt/aZdPtsGT56yt0KxI0UlNoVQjgyvAaHphkBXlL7Lcpmiz2x0+BI2pWU4c/6EAdKZ9hSECOBNkGHV1AJ73/c2gtH1FGfLdsAyrtvVXhhp115zIKMczFANeI2koGg9hWTgWNKUUKJbqlZZFGMtNBgQ6yJ9R2AXf6f8cdYmEmXAzoBgVp/TYuUcGIB+pbuI0OgQfdDYo2A7r8jKBhzC6qHf73iKgfktjyJaxXf0zw7P8Lpt03V3UjPsYasRFba4AaUamepA/b0JsbHZw9gvHVsGcLHcNiunTw9SbLooz999Vh+78dICQRn58oGAO8a19u7pJ1pRfPOOeIHnBJd9+o3Bj38TsuzGN+qQ7w2ukxY+O+ZJ36gY1Hh4Wfx21yUC4vid59h4z/pojOtfltMOLYEHdK1OkEZMsLhUMJT68cV2erwNZ+kuSaausIzGWiui2Nd8uAoOBukaUiCzUj38+cglAZ2jW2fsHML5BUdgLwjzBwlCiByEcSYdQc6/MwTJ698a1vi274T3h2+lPglwuZig3EZ0oIpSGoXzrH+pPRcQRA1hL/Vu+RTb5lpEgz/OE+ezEsZ6TsHf3wttIGIgvoy9jPX8HeXRsB4TZvNWOO8TbBNMx5tgQczMwJapNBFjPsi5afWUcWF4LQmfcEoGM7kKtasK7dKBVG7Frfqten474oVWWn7t1qmuhGGsLkti3RpZglEv/E/ViFK4Tzw94x6TzfTJ2OXOeI2BWquerdAKcMs+HAQ+B9RrSqTv6dxstRSMwDvmkA9U4ShURqjkwYn5WB1CY+xNWbu78w8Iy0sCg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(376002)(346002)(396003)(40470700004)(46966006)(36840700001)(8676002)(4326008)(316002)(6916009)(966005)(70206006)(70586007)(36756003)(86362001)(5660300002)(8936002)(54906003)(478600001)(41300700001)(81166007)(356005)(26005)(82310400005)(2616005)(2906002)(44832011)(6666004)(82740400003)(36860700001)(47076005)(40460700003)(336012)(16526019)(40480700001)(7696005)(426003)(186003)(1076003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 10:11:20.8175
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1b004503-0ec5-4428-6f8d-08da89a6d22c
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF00001A5D.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2342
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inject the NMI by setting V_NMI in the VMCB interrupt control. processor
-will clear V_NMI to acknowledge processing has started and will keep the
-V_NMI_MASK set until the processor is done with processing the NMI event.
+Hi,
 
-Also, handle the nmi_l1_to_l2 case such that when it is true then
-NMI to be injected originally comes from L1's VMCB12 EVENTINJ field.
-So adding a check for that case.
+On 8/29/22 11:36, Ilpo Järvinen wrote:
+> On Mon, 29 Aug 2022, Hans de Goede wrote:
+> 
+>> Hi All,
+>>
+>> This weekend I noticed that on various Bay Trail based systems which have
+>> their bluetooth HCI connected over an uart (using hci_uart driver /
+>> using the drivers/tty/serial bus) there is a NULL pointer deref in
+>> flush_to_ldisc, see below for the full backtrace.
+>>
+>> I *suspect* that this is caused by commit 6bb6fa6908eb
+>> ("tty: Implement lookahead to process XON/XOFF timely").
+>>
+>> I can cleanly revert this by reverting the following commits:
+>>
+>> ab24a01b2765 ("tty: Add closing marker into comment in tty_ldisc.h")
+>> 65534736d9a5 ("tty: Use flow-control char function on closing path")
+>> 6bb6fa6908eb ("tty: Implement lookahead to process XON/XOFF timely")
+>>
+>> ATM I don't have one of the affected systems handy. I will give
+>> a 6.0-rc3 kernel with these 3 commits reverted a try tonight (CEST)
+>> and I'll let you know the results.
+>>
+>> Note I can NOT confirm yet that these reverts fix things, so please
+>> don't revert anything yet. I just wanted to give people a headsup
+>> about this issue.
+>>
+>> Also maybe we can fix the new lookahead code instead of reverting.
+>> I would be happy to add a patch adding some debugging prints the
+>> systems run fine after the backtrace as long as I don't suspend them
+>> so gathering logs is easy.
+> 
+> I guess this will help:
+> 
+> https://lore.kernel.org/linux-kernel/20220818115026.2237893-1-vincent.whitchurch@axis.com/
 
-Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
----
-v4:
-- Added `nmi_l1_to_l2` check, discussion thread
-https://lore.kernel.org/all/bf9e8a9c-5172-b61a-be6e-87a919442fbd@maciej.szmigiero.name/
+Ah, yes that indeed looks like it should help. I'll give that a try tonight
+and report back the result.
 
-v3:
-- Removed WARN_ON check.
+Regards,
 
-v2:
-- Added WARN_ON check for vnmi pending.
-- use `get_vnmi_vmcb` to get correct vmcb so to inject vnmi.
- arch/x86/kvm/svm/svm.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 810b93774a95..4aa7606a9aa2 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3479,7 +3479,14 @@ static void pre_svm_run(struct kvm_vcpu *vcpu)
- static void svm_inject_nmi(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-+	struct vmcb *vmcb = NULL;
- 
-+	if (is_vnmi_enabled(svm) && !svm->nmi_l1_to_l2) {
-+		vmcb = get_vnmi_vmcb(svm);
-+		vmcb->control.int_ctl |= V_NMI_PENDING;
-+		++vcpu->stat.nmi_injections;
-+		return;
-+	}
- 	svm->vmcb->control.event_inj = SVM_EVTINJ_VALID | SVM_EVTINJ_TYPE_NMI;
- 
- 	if (svm->nmi_l1_to_l2)
--- 
-2.25.1
+Hans
 
