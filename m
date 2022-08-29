@@ -2,54 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 633E5ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 23:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA26C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 23:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229487AbiH2Xsg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 19:48:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
+        id S230094AbiH2Xsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 19:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229892AbiH2Xrn (ORCPT
+        with ESMTP id S229895AbiH2Xro (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 19:47:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149C1A6ADC;
-        Mon, 29 Aug 2022 16:46:57 -0700 (PDT)
+        Mon, 29 Aug 2022 19:47:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FEEFA5986;
+        Mon, 29 Aug 2022 16:47:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1AC99CE16AA;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF3BE61405;
+        Mon, 29 Aug 2022 23:46:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94363C4347C;
         Mon, 29 Aug 2022 23:46:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B024C43149;
-        Mon, 29 Aug 2022 23:46:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661816803;
-        bh=4CeSxgNNAqD4J8I2xDVasWksrY8dmv4iPF35HZ2Vs9c=;
+        s=k20201202; t=1661816806;
+        bh=Qd3AMfyY4tk6Q+pRvCfhQZF3G+wUidbn6BTwGgEO0uw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b+bIjLnAdz8YUnSAzi6vDFyEOd2FM55SLqtjwThWDGdUc56R/Sf2ZKhGhTYLjrpBt
-         dV4D4jR78zKI/YHpMnw/mSGa0+TeMxCJhIeEvFgjU8S6Fb+s31HWTTtVU4YQgnDQeY
-         Yq9HguLgDfOQT5moth4uhu5RyFOBLZlh7t+wo71eQBCR4TUZGOpIWKW8zZTFqD4971
-         qYizzeR1OhQjHN54UW8LnYtS/f/O4gyNDcDddGMU5gMfD6xnpZ5dIYYKVPAmDYM9W6
-         vnTtQ1/k8IURZusQu4937FV7QU4tb0KqxNdu1Cs3rOGsqCjIzuy/EuBpJaILYeJwj0
-         3N0UE+4BSbqDw==
+        b=Dd+4xUqNIb31qpwyr3HEZqWaWRrdrMK1mwCfbuVKDRSrWHqiJdfB+naHLU3EqofoD
+         QmeiVcSRYdbMqN4g2eCazDzoa+UG91hE6rUVgPZXmMoYkDTwiCxRCBge2oVR/WxPQP
+         SBrVANT7MzErL+D7ZAiLJYMUSffZ8FpPH1t4AUTiVOwWqDXZ/2+7K2NSzIP1oPn4+c
+         8XYRiVr8Vyvel+Q5jsQX8hwAEz/Han0sEsLM0TmZSHTg0GQFkVoAq08ZrKGWQka80c
+         /8RgFgaexgM91PRfuVZ2PMYXT0SlQ3CaDMdTzKkoDNHQRmNl6+QvRLfJwzhGHiE7EQ
+         Dxx6ba6iEd23A==
 From:   Bjorn Andersson <andersson@kernel.org>
-To:     Marijn Suijten <marijn.suijten@somainline.org>,
-        phone-devel@vger.kernel.org
-Cc:     tdas@codeaurora.org,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        mturquette@baylibre.com, ~postmarketos/upstreaming@lists.sr.ht,
-        jami.kettunen@somainline.org, linux-kernel@vger.kernel.org,
-        konrad.dybcio@somainline.org, robh@kernel.org,
-        Martin Botka <martin.botka@somainline.org>,
-        ctatlor97@gmail.com, agross@kernel.org, sboyd@kernel.org
-Subject: Re: [PATCH] clk: qcom: gcc-sdm660: Use floor ops for SDCC1 clock
-Date:   Mon, 29 Aug 2022 18:46:05 -0500
-Message-Id: <166181675962.322065.7577270067001229984.b4-ty@kernel.org>
+To:     quic_c_skakit@quicinc.com, Bjorn Andersson <andersson@kernel.org>,
+        robh@kernel.org
+Cc:     dianders@chromium.org, linux-arm-msm@vger.kernel.org,
+        swboyd@chromium.org, linux-kernel@vger.kernel.org,
+        quic_tdas@quicinc.com, devicetree@vger.kernel.org,
+        agross@kernel.org
+Subject: Re: [RESEND PATCH V4 0/3] Add DT support for audio clock gating resets for SC7280
+Date:   Mon, 29 Aug 2022 18:46:08 -0500
+Message-Id: <166181675979.322065.8110343540812445012.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220714203822.186448-1-marijn.suijten@somainline.org>
-References: <20220714203822.186448-1-marijn.suijten@somainline.org>
+In-Reply-To: <1660107909-27947-1-git-send-email-quic_c_skakit@quicinc.com>
+References: <1660107909-27947-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -57,23 +52,25 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Jul 2022 22:38:22 +0200, Marijn Suijten wrote:
-> In commit 3f905469c8ce ("clk: qcom: gcc: Use floor ops for SDCC clocks")
-> floor ops were applied to SDCC2 only, but flooring is also required on
-> the SDCC1 apps clock which is used by the eMMC card on Sony's Nile
-> platform, and otherwise result in the typicial "Card appears
-> overclocked" warnings observed on many other platforms before:
+On Wed, 10 Aug 2022 10:35:06 +0530, Satya Priya wrote:
+> This series depends on [1], which adds the dt-binding changes.
 > 
->     mmc0: Card appears overclocked; req 52000000 Hz, actual 100000000 Hz
->     mmc0: Card appears overclocked; req 52000000 Hz, actual 100000000 Hz
->     mmc0: Card appears overclocked; req 104000000 Hz, actual 192000000 Hz
+> [1] https://patchwork.kernel.org/project/linux-arm-msm/list/?series=663372
+> 
+> Satya Priya (2):
+>   arm64: dts: qcom: sc7280: Cleanup the lpasscc node
+>   arm64: dts: qcom: sc7280: Update lpasscore node
 > 
 > [...]
 
 Applied, thanks!
 
-[1/1] clk: qcom: gcc-sdm660: Use floor ops for SDCC1 clock
-      commit: 6956c18f4ad9200aa945f7ea37d65a05afc49d51
+[1/3] arm64: dts: qcom: sc7280: Cleanup the lpasscc node
+      commit: 8c7ebabd2e3f33ef24378d3cac00d3e59886cecb
+[2/3] arm64: dts: qcom: sc7280: Update lpassaudio clock controller for resets
+      commit: e02a16c23410a118e5497601871a2f8c3ea9bfd0
+[3/3] arm64: dts: qcom: sc7280: Update lpasscore node
+      commit: d9a1e922730389afc425f2250de361b7f07acdbc
 
 Best regards,
 -- 
