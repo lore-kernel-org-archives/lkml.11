@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92ECCECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 867EFECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:12:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbiH2LMo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58480 "EHLO
+        id S231220AbiH2LMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:12:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231126AbiH2LMG (ORCPT
+        with ESMTP id S230241AbiH2LMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:12:06 -0400
+        Mon, 29 Aug 2022 07:12:07 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF1C6D9EB;
-        Mon, 29 Aug 2022 04:08:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B85B1F2;
+        Mon, 29 Aug 2022 04:08:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E299611EC;
-        Mon, 29 Aug 2022 11:08:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B05A3C433C1;
-        Mon, 29 Aug 2022 11:08:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 097DD611F6;
+        Mon, 29 Aug 2022 11:08:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18EC6C433D6;
+        Mon, 29 Aug 2022 11:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771288;
-        bh=TBjtV9FpKqMGGDrQSU+Sz62KcXiZgemeCZ7STnM27b4=;
+        s=korg; t=1661771329;
+        bh=nxFzwG/Su71x1AgWj7cs9KQ+UqjXZBU327nkcS2HGEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xgIo2evLCzLirhCJbm2utz8e8sK1ehtweW3hEQpwWDyxGaOHRC0hEhxO0bm7KZ4Pj
-         Ip3LLJOGOaJFeOPB3+JTnpOukHmUNA4mHroyTa0QkjBQXCkci6Q38ZXFHfOqWArR7i
-         UNuaA1G8BgQiqa698muArUn8PHr54+MZIXqPhx+s=
+        b=dOwk5L6oJz/2mysobMCAgG3Y39EnvIua3kAJ7YUtco7v4e5LSjx/CBScBsYPkGcox
+         7w8hJVQyHbnXqe8dFY86F66Bn4v2z8bXRsBsmfdvNqxWBii9Ql3ZeihvuPjma8zv02
+         klKwZVuWVwbddwXdvn/XBHugHIBje1cRTKt75UXE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Seth Forshee <sforshee@digitalocean.com>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 013/158] Revert "xfrm: update SA curlft.use_time"
-Date:   Mon, 29 Aug 2022 12:57:43 +0200
-Message-Id: <20220829105809.378522886@linuxfoundation.org>
+Subject: [PATCH 5.19 017/158] fs: require CAP_SYS_ADMIN in target namespace for idmapped mounts
+Date:   Mon, 29 Aug 2022 12:57:47 +0200
+Message-Id: <20220829105809.545246034@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,56 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Seth Forshee <sforshee@digitalocean.com>
 
-[ Upstream commit 717ada9f10f2de8c4f4d72ad045f3b67a7ced715 ]
+[ Upstream commit bf1ac16edf6770a92bc75cf2373f1f9feea398a4 ]
 
-This reverts commit af734a26a1a95a9fda51f2abb0c22a7efcafd5ca.
+Idmapped mounts should not allow a user to map file ownsership into a
+range of ids which is not under the control of that user. However, we
+currently don't check whether the mounter is privileged wrt to the
+target user namespace.
 
-The abvoce commit is a regression according RFC 2367. A better fix would be
-use x->lastused. Which will be propsed later.
+Currently no FS_USERNS_MOUNT filesystems support idmapped mounts, thus
+this is not a problem as only CAP_SYS_ADMIN in init_user_ns is allowed
+to set up idmapped mounts. But this could change in the future, so add a
+check to refuse to create idmapped mounts when the mounter does not have
+CAP_SYS_ADMIN in the target user namespace.
 
-according to RFC 2367 use_time == sadb_lifetime_usetime.
-
-"sadb_lifetime_usetime
-                   For CURRENT, the time, in seconds, when association
-                   was first used. For HARD and SOFT, the number of
-                   seconds after the first use of the association until
-                   it expires."
-
-Fixes: af734a26a1a9 ("xfrm: update SA curlft.use_time")
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: bd303368b776 ("fs: support mapped mounts of mapped filesystems")
+Signed-off-by: Seth Forshee <sforshee@digitalocean.com>
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Link: https://lore.kernel.org/r/20220816164752.2595240-1-sforshee@digitalocean.com
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_input.c  | 1 -
- net/xfrm/xfrm_output.c | 1 -
- 2 files changed, 2 deletions(-)
+ fs/namespace.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 144238a50f3d4..70a8c36f0ba6e 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -669,7 +669,6 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+diff --git a/fs/namespace.c b/fs/namespace.c
+index e6a7e769d25dd..a59f8d645654a 100644
+--- a/fs/namespace.c
++++ b/fs/namespace.c
+@@ -4238,6 +4238,13 @@ static int build_mount_idmapped(const struct mount_attr *attr, size_t usize,
+ 		err = -EPERM;
+ 		goto out_fput;
+ 	}
++
++	/* We're not controlling the target namespace. */
++	if (!ns_capable(mnt_userns, CAP_SYS_ADMIN)) {
++		err = -EPERM;
++		goto out_fput;
++	}
++
+ 	kattr->mnt_userns = get_user_ns(mnt_userns);
  
- 		x->curlft.bytes += skb->len;
- 		x->curlft.packets++;
--		x->curlft.use_time = ktime_get_real_seconds();
- 
- 		spin_unlock(&x->lock);
- 
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index 555ab35cd119a..9a5e79a38c679 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -534,7 +534,6 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
- 
- 		x->curlft.bytes += skb->len;
- 		x->curlft.packets++;
--		x->curlft.use_time = ktime_get_real_seconds();
- 
- 		spin_unlock_bh(&x->lock);
- 
+ out_fput:
 -- 
 2.35.1
 
