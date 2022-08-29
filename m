@@ -2,129 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4456ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F0BECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230161AbiH2N1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
+        id S229651AbiH2N1e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229707AbiH2N0t (ORCPT
+        with ESMTP id S229620AbiH2N1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:26:49 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF29E4A816
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:25:18 -0700 (PDT)
-Received: from localhost.localdomain (unknown [95.31.169.23])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 84E1040737B8;
-        Mon, 29 Aug 2022 13:17:22 +0000 (UTC)
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org, Hillf Danton <hdanton@sina.com>
-Subject: [PATCH v4 1/2] tty: n_gsm: replace kicktimer with delayed_work
-Date:   Mon, 29 Aug 2022 16:16:39 +0300
-Message-Id: <20220829131640.69254-2-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220829131640.69254-1-pchelkin@ispras.ru>
-References: <20220829131640.69254-1-pchelkin@ispras.ru>
+        Mon, 29 Aug 2022 09:27:05 -0400
+Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44A574BB7
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:25:48 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id 602492B0607B;
+        Mon, 29 Aug 2022 09:15:21 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 29 Aug 2022 09:15:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1661778920; x=
+        1661786120; bh=20eH8m8Xvl9FZJWw0WkzB+p4KU7I79tJhWItQe47inA=; b=k
+        uxqj0ih+aOHhSP5Qm4mEZ5kfSow3hCD8Cs/dIsXVPHzOsgig7eGPxjog2FhvJbIk
+        wHYYg6e4IIAMfrPos+4EDR3S/iXdcI9EfGN7EPb6dzCGn3QXksGTi1oDPgB0HqV8
+        tL+thL6C6yrkiA7WmenAZ/ZIvxudRvdcSVtoyho++rr5PKB85ABIwC2OYhb/u+mf
+        tX+BhjZe10WgfKnZCUCf2MWfuG9Wl+7TRsvxJBZa3R0aZmyvcDwQYiOnSfe+FqJW
+        k0GcfVir9gFg/ytgx+3R/Uc96ChQUgcRSdCEEw+AG0/fqlihOhMAzJGvCeEsOr+a
+        XPd2JOwy9S0bcuO58djXQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661778920; x=
+        1661786120; bh=20eH8m8Xvl9FZJWw0WkzB+p4KU7I79tJhWItQe47inA=; b=L
+        qMQBH/6NfHLUBDZl4Y4xpC1Y5S4l3DStw0gU4ojS/iWXfPa1tfCdeQr/d5jaHlTW
+        BIdMskj/lMe5Om8gDO9oOX6E8kG3ucp544bRhF//STt0Y34qEDgPkU77MSKI2JOa
+        Mj8dn4MvXEa0Hb96Y6NIf4GFd5uJFw7Mzedy+PdQeVrQKXwd44D5Wy/VURR9Y1Q+
+        mMdlfEpz7Bul0qcHi+0YX4ShsB9M6n5EKr90dL/b5htxQgJ69iH9IKya0yz0PNfx
+        zdTtRhLvANn1ZZJVuPqdWHPNTvbL408Qw+RiUx5vTlOoro1AEidK3+q6APQCq45r
+        ytk26sfRTVurHg9ljAggw==
+X-ME-Sender: <xms:57sMY4bHNnu1Zlw2culDTQ05LxcnZrgXAe2SLYVq5Ofz2GXg9RY99A>
+    <xme:57sMYzZ0ExllqKohomUoHhMLDVnemxzjzMscYU4V9mU3N_K8KiGjsIwV-7-Enn1su
+    5-j1ZoxTQ-p6ysgWEg>
+X-ME-Received: <xmr:57sMYy9X2RSDV6SB6Rrq_vSJP691GNHC_CWgBMA50K8w_s3ozjv8ORza3-1F>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddgieegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgjfhggtgfogfesthhqredtredtjeenucfhrhhomhepofgr
+    gihimhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtf
+    frrghtthgvrhhnpeefiedvfefggffgffehveejieffuddtgffhjefggeetieduvdeileet
+    lefgveegtdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:57sMYyrFFYuZt2EoiviNUS7xDZ5JpJckSYeAOPTFeH9P8FmPhhtclw>
+    <xmx:57sMYzpzZDLYN8YYHxprBnHgiwLlvI-WLUE0ZAWD947hJ5AY1K_1rg>
+    <xmx:57sMYwTIqbqJ2pxIeFUjbgfxbYf89LgMzCu_0_IuRFkzau-uCAkF0Q>
+    <xmx:6LsMY7AQ5Gi3WUbn8JoZmX7f1_xjJiKBWP6zpE-35jw4blSgQQYWOAruHFI>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 29 Aug 2022 09:15:18 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Maxime Ripard <mripard@kernel.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        intel-gfx@lists.freedesktop.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        dri-devel@lists.freedesktop.org, Dom Cobley <dom@raspberrypi.com>,
+        linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        linux-sunxi@lists.linux.dev,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2 30/41] drm/vc4: vec: Fix definition of PAL-M mode
+Date:   Mon, 29 Aug 2022 15:11:44 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v2-30-459522d653a7@cerno.tech>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.10.0-dev-65ba7
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1296; i=maxime@cerno.tech; h=from:subject:message-id; bh=tPg6Z+QHYzTZRNoX2QE1L9br4U069DFxWgKf5hS1TGY=; b=owGbwMvMwCX2+D1vfrpE4FHG02pJDMk8uxT+77r4asW9+0GuAtr263ZO8uXXLH4hEPO6r75P7OyT vVEPO0pZGMS4GGTFFFlihM2XxJ2a9bqTjW8ezBxWJpAhDFycAjCR+e4M/wyO82mumsTl7F17UOHbl9 9CvrYss4W6q3yCzrIE/T3bVMHI8MkgcH2syNyr/v4zrs1YnirDKHpjafUmHmb54Ae6h5i5uAA=
+X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A kick_timer timer_list is replaced with kick_timeout delayed_work to be
-able to synchronize with mutexes as a prerequisite for the introduction
-of tx_mutex.
-
-Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-
-Fixes: c568f7086c6e ("tty: n_gsm: fix missing timer to handle stalled links")
-Suggested-by: Hillf Danton <hdanton@sina.com>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
----
-v1->v2: sorry, now adapted patch from 5.10 to upstream
-v2->v3: replaced a kick_timer with a delayed_work
-v3->v4: separated kick_timer and tx_mutex into different patches
-
- drivers/tty/n_gsm.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index caa5c14ed57f..c4164c85ffd4 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -256,7 +256,7 @@ struct gsm_mux {
- 	struct list_head tx_data_list;	/* Pending data packets */
- 
- 	/* Control messages */
--	struct timer_list kick_timer;	/* Kick TX queuing on timeout */
-+	struct delayed_work kick_timeout;	/* Kick TX queuing on timeout */
- 	struct timer_list t2_timer;	/* Retransmit timer for commands */
- 	int cretries;			/* Command retry counter */
- 	struct gsm_control *pending_cmd;/* Our current pending command */
-@@ -1009,7 +1009,7 @@ static void __gsm_data_queue(struct gsm_dlci *dlci, struct gsm_msg *msg)
- 	gsm->tx_bytes += msg->len;
- 
- 	gsmld_write_trigger(gsm);
--	mod_timer(&gsm->kick_timer, jiffies + 10 * gsm->t1 * HZ / 100);
-+	schedule_delayed_work(&gsm->kick_timeout, 10 * gsm->t1 * HZ / 100);
- }
- 
- /**
-@@ -1984,16 +1984,16 @@ static void gsm_dlci_command(struct gsm_dlci *dlci, const u8 *data, int len)
- }
- 
- /**
-- *	gsm_kick_timer	-	transmit if possible
-- *	@t: timer contained in our gsm object
-+ *	gsm_kick_timeout	-	transmit if possible
-+ *	@work: work contained in our gsm object
-  *
-  *	Transmit data from DLCIs if the queue is empty. We can't rely on
-  *	a tty wakeup except when we filled the pipe so we need to fire off
-  *	new data ourselves in other cases.
-  */
--static void gsm_kick_timer(struct timer_list *t)
-+static void gsm_kick_timeout(struct work_struct *work)
- {
--	struct gsm_mux *gsm = from_timer(gsm, t, kick_timer);
-+	struct gsm_mux *gsm = container_of(work, struct gsm_mux, kick_timeout.work);
- 	unsigned long flags;
- 	int sent = 0;
- 
-@@ -2458,7 +2458,7 @@ static void gsm_cleanup_mux(struct gsm_mux *gsm, bool disc)
- 	}
- 
- 	/* Finish outstanding timers, making sure they are done */
--	del_timer_sync(&gsm->kick_timer);
-+	cancel_delayed_work_sync(&gsm->kick_timeout);
- 	del_timer_sync(&gsm->t2_timer);
- 
- 	/* Finish writing to ldisc */
-@@ -2501,7 +2501,7 @@ static int gsm_activate_mux(struct gsm_mux *gsm)
- 	if (dlci == NULL)
- 		return -ENOMEM;
- 
--	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
-+	INIT_DELAYED_WORK(&gsm->kick_timeout, gsm_kick_timeout);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	INIT_WORK(&gsm->tx_work, gsmld_write_task);
- 	init_waitqueue_head(&gsm->event);
-@@ -2946,7 +2946,7 @@ static int gsmld_open(struct tty_struct *tty)
- 
- 	gsmld_attach_gsm(tty, gsm);
- 
--	timer_setup(&gsm->kick_timer, gsm_kick_timer, 0);
-+	INIT_DELAYED_WORK(&gsm->kick_timeout, gsm_kick_timeout);
- 	timer_setup(&gsm->t2_timer, gsm_control_retransmit, 0);
- 	INIT_WORK(&gsm->tx_work, gsmld_write_task);
- 
--- 
-2.25.1
-
+From: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>=0D
+=0D
+PAL-M is a Brazilian analog TV standard that uses a PAL-style chroma=0D
+subcarrier at 3.575611[888111] MHz on top of 525-line (480i60) timings.=0D
+This commit makes the driver actually use the proper VEC preset for this=0D
+mode instead of just changing PAL subcarrier frequency.=0D
+=0D
+Signed-off-by: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>=0D
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>=0D
+=0D
+diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c=
+=0D
+index 63e4e617e321..fa85dd260742 100644=0D
+--- a/drivers/gpu/drm/vc4/vc4_vec.c=0D
++++ b/drivers/gpu/drm/vc4/vc4_vec.c=0D
+@@ -69,6 +69,7 @@=0D
+ #define VEC_CONFIG0_STD_MASK		GENMASK(1, 0)=0D
+ #define VEC_CONFIG0_NTSC_STD		0=0D
+ #define VEC_CONFIG0_PAL_BDGHI_STD	1=0D
++#define VEC_CONFIG0_PAL_M_STD		2=0D
+ #define VEC_CONFIG0_PAL_N_STD		3=0D
+ =0D
+ #define VEC_SCHPH			0x108=0D
+@@ -241,10 +242,9 @@ static const struct vc4_vec_tv_mode vc4_vec_tv_modes[]=
+ =3D {=0D
+ 		.config1 =3D VEC_CONFIG1_C_CVBS_CVBS,=0D
+ 	},=0D
+ 	[VC4_VEC_TV_MODE_PAL_M] =3D {=0D
+-		.mode =3D &drm_mode_576i,=0D
+-		.config0 =3D VEC_CONFIG0_PAL_BDGHI_STD,=0D
+-		.config1 =3D VEC_CONFIG1_C_CVBS_CVBS | VEC_CONFIG1_CUSTOM_FREQ,=0D
+-		.custom_freq =3D 0x223b61d1,=0D
++		.mode =3D &drm_mode_480i,=0D
++		.config0 =3D VEC_CONFIG0_PAL_M_STD,=0D
++		.config1 =3D VEC_CONFIG1_C_CVBS_CVBS,=0D
+ 	},=0D
+ };=0D
+ =0D
+=0D
+-- =0D
+b4 0.10.0-dev-65ba7=0D
