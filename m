@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5685FECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69153ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231270AbiH2LKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
+        id S231229AbiH2LK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbiH2LJM (ORCPT
+        with ESMTP id S230521AbiH2LJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:09:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2960A6B15C;
-        Mon, 29 Aug 2022 04:06:23 -0700 (PDT)
+        Mon, 29 Aug 2022 07:09:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C9C6AA2E;
+        Mon, 29 Aug 2022 04:06:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3F07611B8;
-        Mon, 29 Aug 2022 11:06:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9A1FC433C1;
-        Mon, 29 Aug 2022 11:06:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB93FB80F1A;
+        Mon, 29 Aug 2022 11:04:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E25C433C1;
+        Mon, 29 Aug 2022 11:04:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771182;
-        bh=YlnfQbV4ZasJ5+pYHMjHHupkiCta5PQLbbUdF/59zA4=;
+        s=korg; t=1661771098;
+        bh=4nTNHl5S3HL6mEb67F8Y4yfxVRIqeK9Bw4AkzmLu8OU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xXtPM+FyEq1wd+nd9vOQ/DIx4ZFMuHpEJgJYfhsNGprOy1cvHrcaeouOL6z4Uri9i
-         Vo3WkCK0vjIrdZlBx0IOxmRiIcyqRSzNQ2rRRaZtTEofwUSVQkGz9911vmEamWRfML
-         hKsVLzEK6qC3VjVOLVQbUlk2DLd7lMbEmzYzBG/E=
+        b=HjxYE71mC9yhTfgYMZP56TLhe5nwhy79Qt3hnbNIklnEkg0FrsNxu1P1JQZUfbKGh
+         cPhiVIi6Gro8ZFKVCQvJrT/4foow/ucPvXNrWS6KURI+GCja2VsKbS/ZCVvLX0fuhi
+         GMy0D5MTeJg+sHmJzh6Cc/JUUAWM7yW71UCd2jok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>
-Subject: [PATCH 5.19 002/158] NFS: Fix another fsync() issue after a server reboot
-Date:   Mon, 29 Aug 2022 12:57:32 +0200
-Message-Id: <20220829105808.934230208@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Xu <peterx@redhat.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        David Hildenbrand <david@redhat.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Konstantin Khlebnikov <khlebnikov@openvz.org>,
+        Huang Ying <ying.huang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 036/136] mm/smaps: dont access young/dirty bit if pte unpresent
+Date:   Mon, 29 Aug 2022 12:58:23 +0200
+Message-Id: <20220829105806.078883223@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,114 +54,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Peter Xu <peterx@redhat.com>
 
-commit 67f4b5dc49913abcdb5cc736e73674e2f352f81d upstream.
+[ Upstream commit efd4149342db2df41b1bbe68972ead853b30e444 ]
 
-Currently, when the writeback code detects a server reboot, it redirties
-any pages that were not committed to disk, and it sets the flag
-NFS_CONTEXT_RESEND_WRITES in the nfs_open_context of the file descriptor
-that dirtied the file. While this allows the file descriptor in question
-to redrive its own writes, it violates the fsync() requirement that we
-should be synchronising all writes to disk.
-While the problem is infrequent, we do see corner cases where an
-untimely server reboot causes the fsync() call to abandon its attempt to
-sync data to disk and causing data corruption issues due to missed error
-conditions or similar.
+These bits should only be valid when the ptes are present.  Introducing
+two booleans for it and set it to false when !pte_present() for both pte
+and pmd accountings.
 
-In order to tighted up the client's ability to deal with this situation
-without introducing livelocks, add a counter that records the number of
-times pages are redirtied due to a server reboot-like condition, and use
-that in fsync() to redrive the sync to disk.
+The bug is found during code reading and no real world issue reported, but
+logically such an error can cause incorrect readings for either smaps or
+smaps_rollup output on quite a few fields.
 
-Fixes: 2197e9b06c22 ("NFS: Fix up fsync() when the server rebooted")
-Cc: stable@vger.kernel.org
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For example, it could cause over-estimate on values like Shared_Dirty,
+Private_Dirty, Referenced.  Or it could also cause under-estimate on
+values like LazyFree, Shared_Clean, Private_Clean.
+
+Link: https://lkml.kernel.org/r/20220805160003.58929-1-peterx@redhat.com
+Fixes: b1d4d9e0cbd0 ("proc/smaps: carefully handle migration entries")
+Fixes: c94b6923fa0a ("/proc/PID/smaps: Add PMD migration entry parsing")
+Signed-off-by: Peter Xu <peterx@redhat.com>
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Yang Shi <shy828301@gmail.com>
+Cc: Konstantin Khlebnikov <khlebnikov@openvz.org>
+Cc: Huang Ying <ying.huang@intel.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/file.c          |   15 ++++++---------
- fs/nfs/inode.c         |    1 +
- fs/nfs/write.c         |    6 ++++--
- include/linux/nfs_fs.h |    1 +
- 4 files changed, 12 insertions(+), 11 deletions(-)
+ fs/proc/task_mmu.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/fs/nfs/file.c
-+++ b/fs/nfs/file.c
-@@ -221,8 +221,10 @@ nfs_file_fsync_commit(struct file *file,
- int
- nfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
- {
--	struct nfs_open_context *ctx = nfs_file_open_context(file);
- 	struct inode *inode = file_inode(file);
-+	struct nfs_inode *nfsi = NFS_I(inode);
-+	long save_nredirtied = atomic_long_read(&nfsi->redirtied_pages);
-+	long nredirtied;
- 	int ret;
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index 79ca4d69dfd6b..d9c07eecd7872 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -503,10 +503,12 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
+ 	struct vm_area_struct *vma = walk->vma;
+ 	bool locked = !!(vma->vm_flags & VM_LOCKED);
+ 	struct page *page = NULL;
+-	bool migration = false;
++	bool migration = false, young = false, dirty = false;
  
- 	trace_nfs_fsync_enter(inode);
-@@ -237,15 +239,10 @@ nfs_file_fsync(struct file *file, loff_t
- 		ret = pnfs_sync_inode(inode, !!datasync);
- 		if (ret != 0)
- 			break;
--		if (!test_and_clear_bit(NFS_CONTEXT_RESEND_WRITES, &ctx->flags))
-+		nredirtied = atomic_long_read(&nfsi->redirtied_pages);
-+		if (nredirtied == save_nredirtied)
- 			break;
--		/*
--		 * If nfs_file_fsync_commit detected a server reboot, then
--		 * resend all dirty pages that might have been covered by
--		 * the NFS_CONTEXT_RESEND_WRITES flag
--		 */
--		start = 0;
--		end = LLONG_MAX;
-+		save_nredirtied = nredirtied;
- 	}
+ 	if (pte_present(*pte)) {
+ 		page = vm_normal_page(vma, addr, *pte);
++		young = pte_young(*pte);
++		dirty = pte_dirty(*pte);
+ 	} else if (is_swap_pte(*pte)) {
+ 		swp_entry_t swpent = pte_to_swp_entry(*pte);
  
- 	trace_nfs_fsync_exit(inode, ret);
---- a/fs/nfs/inode.c
-+++ b/fs/nfs/inode.c
-@@ -426,6 +426,7 @@ nfs_ilookup(struct super_block *sb, stru
- static void nfs_inode_init_regular(struct nfs_inode *nfsi)
- {
- 	atomic_long_set(&nfsi->nrequests, 0);
-+	atomic_long_set(&nfsi->redirtied_pages, 0);
- 	INIT_LIST_HEAD(&nfsi->commit_info.list);
- 	atomic_long_set(&nfsi->commit_info.ncommit, 0);
- 	atomic_set(&nfsi->commit_info.rpcs_out, 0);
---- a/fs/nfs/write.c
-+++ b/fs/nfs/write.c
-@@ -1419,10 +1419,12 @@ static void nfs_initiate_write(struct nf
-  */
- static void nfs_redirty_request(struct nfs_page *req)
- {
-+	struct nfs_inode *nfsi = NFS_I(page_file_mapping(req->wb_page)->host);
-+
- 	/* Bump the transmission count */
- 	req->wb_nio++;
- 	nfs_mark_request_dirty(req);
--	set_bit(NFS_CONTEXT_RESEND_WRITES, &nfs_req_openctx(req)->flags);
-+	atomic_long_inc(&nfsi->redirtied_pages);
- 	nfs_end_page_writeback(req);
- 	nfs_release_request(req);
+@@ -540,8 +542,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
+ 	if (!page)
+ 		return;
+ 
+-	smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte),
+-		      locked, migration);
++	smaps_account(mss, page, false, young, dirty, locked, migration);
  }
-@@ -1892,7 +1894,7 @@ static void nfs_commit_release_pages(str
- 		/* We have a mismatch. Write the page again */
- 		dprintk_cont(" mismatch\n");
- 		nfs_mark_request_dirty(req);
--		set_bit(NFS_CONTEXT_RESEND_WRITES, &nfs_req_openctx(req)->flags);
-+		atomic_long_inc(&NFS_I(data->inode)->redirtied_pages);
- 	next:
- 		nfs_unlock_and_release_request(req);
- 		/* Latency breaker */
---- a/include/linux/nfs_fs.h
-+++ b/include/linux/nfs_fs.h
-@@ -182,6 +182,7 @@ struct nfs_inode {
- 		/* Regular file */
- 		struct {
- 			atomic_long_t	nrequests;
-+			atomic_long_t	redirtied_pages;
- 			struct nfs_mds_commit_info commit_info;
- 			struct mutex	commit_mutex;
- 		};
+ 
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+-- 
+2.35.1
+
 
 
