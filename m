@@ -2,235 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E99BECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 06:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E13ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 06:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbiH2GyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 02:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
+        id S229575AbiH2GzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 02:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbiH2GyK (ORCPT
+        with ESMTP id S229493AbiH2GzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 02:54:10 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009E046D92
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 23:54:01 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id v4so6874538pgi.10
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 23:54:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=u6R40n8MPoARVm3Mtks2apAeDMP4MZtDTuXM3b5bDPA=;
-        b=eWHaczqLrzgoEHImGmPZ94RG4Z6HNHjYySRyrtbvt+VMSj9GgY04Dxl3peOnUMbERM
-         T0wxrzo2EvmsBZmntKsbHO/63kZHcX4rpqsUn9G8neYsYGMct3J3ZO3lp6v5WspmCJFV
-         iD6CVqTySLQKsoHLzKglTu1dJKce/Jf7/baFS/3t+o1l3siQjN3AjG+dPZAaOfHGwS9V
-         E+Zxmy57ACr0LBFW1d2+WUw+CX0eo2CMWE3avHdyWM1+bPrqGX9PDJR/IxYGS3ZlsOY6
-         3NgVEEtXpguVkaN4/e8aii685vpB/rr5zZdaGprhqMQU/Z2n3gS81+htckrizvEXgTsa
-         4jpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=u6R40n8MPoARVm3Mtks2apAeDMP4MZtDTuXM3b5bDPA=;
-        b=GcYj6ALL2aBySx0JOYc3+cV7Sz9mi8sGCtD7KlEOAV86aeS3UABDTIrbior3S6SusI
-         HSNZJqcHrpFBcmYsW0q3oWVzzN9qK0SJ7YCIA+L4trfg1952QnxxH+i1LyM4wE/ORKwe
-         i96ZJ45u82eSJu/aLDp14aW/lpsvwocR2NlnRCCC4HoFTlOAOGeT5vRvgAFaaQqxE176
-         0h31DRMw8eU/3bKUvYfPEPr/aXmWhG1phNGX3SVX/qeoyv1Ctea63Yt/cMrcpRNraqzF
-         Tf1YNAKsVFur+H3BtQJK/VDqQQoB0/HoOKdLgtbBtVXMHur3Fk06Rw7ZLniX1W/tb8ix
-         W4pA==
-X-Gm-Message-State: ACgBeo2L5dgTsKZ+48c7ILDSB7GTGNLsTAzst5z/hsFowtf8JVso9v0D
-        Q3DVXpKhUSXo+LUsq1uxnDZDOw==
-X-Google-Smtp-Source: AA6agR50cryByjgHlJMx73H+k8NWoxtPwbincNgW2C4keQjTpRA+15aCO/PZwkF3DzqNIeBhukYV9g==
-X-Received: by 2002:a63:d00a:0:b0:42a:3d80:10a with SMTP id z10-20020a63d00a000000b0042a3d80010amr12459203pgf.288.1661756040268;
-        Sun, 28 Aug 2022 23:54:00 -0700 (PDT)
-Received: from archl-hc1b.. ([103.51.72.9])
-        by smtp.gmail.com with ESMTPSA id k3-20020aa79d03000000b00537d4a3aec9sm5687314pfp.104.2022.08.28.23.53.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 23:54:00 -0700 (PDT)
-From:   Anand Moon <anand@edgeble.ai>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     Sugar Zhang <sugar.zhang@rock-chips.com>,
-        David Wu <david.wu@rock-chips.com>,
-        Jagan Teki <jagan@edgeble.ai>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net: ethernet: stmicro: stmmac: dwmac-rk: Add rv1126 support
-Date:   Mon, 29 Aug 2022 06:50:42 +0000
-Message-Id: <20220829065044.1736-2-anand@edgeble.ai>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829065044.1736-1-anand@edgeble.ai>
-References: <20220829065044.1736-1-anand@edgeble.ai>
+        Mon, 29 Aug 2022 02:55:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 184C31EEDD;
+        Sun, 28 Aug 2022 23:55:20 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BB0DD23A;
+        Sun, 28 Aug 2022 23:55:26 -0700 (PDT)
+Received: from a077893.blr.arm.com (unknown [10.162.40.15])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 313C43F766;
+        Sun, 28 Aug 2022 23:55:46 -0700 (PDT)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        peterz@infradead.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: [PATCH 0/3] perf/core: Assert PERF_EVENT_FLAG_ARCH is followed
+Date:   Mon, 29 Aug 2022 12:25:04 +0530
+Message-Id: <20220829065507.177781-1-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
-via RGMII and RMII interfaces are configured via M0 and M1 pinmux.
+This series ensures that PERF_EVENT_FLAG_ARCH mask is followed correctly,
+while defining all the platform specific hardware event flags. But after
+adding these checks, there are couple of build failures on x86 platform
+like the following.
 
-This patch adds rv1126 support by adding delay lines of M0 and M1
-simultaneously.
+BUILD_BUG_ON(~PERF_EVENT_FLAG_ARCH & PERF_X86_EVENT_AMD_BRS)
+BUILD_BUG_ON(~PERF_EVENT_FLAG_ARCH & PERF_X86_EVENT_PEBS_LAT_HYBRID)
 
-Signed-off-by: Sugar Zhang <sugar.zhang@rock-chips.com>
-Signed-off-by: David Wu <david.wu@rock-chips.com>
-Signed-off-by: Anand Moon <anand@edgeble.ai>
-Signed-off-by: Jagan Teki <jagan@edgeble.ai>
----
- .../net/ethernet/stmicro/stmmac/dwmac-rk.c    | 125 ++++++++++++++++++
- 1 file changed, 125 insertions(+)
+This happens because both these flags PERF_X86_EVENT_AMD_BRS (0x10000) and
+PERF_X86_EVENT_PEBS_LAT_HYBRID (0x20000) falls outside PERF_EVENT_FLAG_ARCH
+(0x0000ffff). Given that x86 platform is already using up all available bit
+positions, should this platform flags mask be extended to (0x000fffff) ?
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-index c469abc91fa1..93be3efb5fff 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.c
-@@ -1153,6 +1153,130 @@ static const struct rk_gmac_ops rv1108_ops = {
- 	.set_rmii_speed = rv1108_set_rmii_speed,
- };
- 
-+#define RV1126_GRF_GMAC_CON0		0X0070
-+#define RV1126_GRF_GMAC_CON1		0X0074
-+#define RV1126_GRF_GMAC_CON2		0X0078
-+
-+/* RV1126_GRF_GMAC_CON0 */
-+#define RV1126_GMAC_PHY_INTF_SEL_RGMII	\
-+		(GRF_BIT(4) | GRF_CLR_BIT(5) | GRF_CLR_BIT(6))
-+#define RV1126_GMAC_PHY_INTF_SEL_RMII	\
-+		(GRF_CLR_BIT(4) | GRF_CLR_BIT(5) | GRF_BIT(6))
-+#define RV1126_GMAC_FLOW_CTRL			GRF_BIT(7)
-+#define RV1126_GMAC_FLOW_CTRL_CLR		GRF_CLR_BIT(7)
-+#define RV1126_GMAC_M0_RXCLK_DLY_ENABLE		GRF_BIT(1)
-+#define RV1126_GMAC_M0_RXCLK_DLY_DISABLE	GRF_CLR_BIT(1)
-+#define RV1126_GMAC_M0_TXCLK_DLY_ENABLE		GRF_BIT(0)
-+#define RV1126_GMAC_M0_TXCLK_DLY_DISABLE	GRF_CLR_BIT(0)
-+#define RV1126_GMAC_M1_RXCLK_DLY_ENABLE		GRF_BIT(3)
-+#define RV1126_GMAC_M1_RXCLK_DLY_DISABLE	GRF_CLR_BIT(3)
-+#define RV1126_GMAC_M1_TXCLK_DLY_ENABLE		GRF_BIT(2)
-+#define RV1126_GMAC_M1_TXCLK_DLY_DISABLE	GRF_CLR_BIT(2)
-+
-+/* RV1126_GRF_GMAC_CON1 */
-+#define RV1126_GMAC_M0_CLK_RX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 8)
-+#define RV1126_GMAC_M0_CLK_TX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 0)
-+/* RV1126_GRF_GMAC_CON2 */
-+#define RV1126_GMAC_M1_CLK_RX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 8)
-+#define RV1126_GMAC_M1_CLK_TX_DL_CFG(val)	HIWORD_UPDATE(val, 0x7F, 0)
-+
-+static void rv1126_set_to_rgmii(struct rk_priv_data *bsp_priv,
-+				int tx_delay, int rx_delay)
-+{
-+	struct device *dev = &bsp_priv->pdev->dev;
-+
-+	if (IS_ERR(bsp_priv->grf)) {
-+		dev_err(dev, "Missing rockchip,grf property\n");
-+		return;
-+	}
-+
-+	regmap_write(bsp_priv->grf, RV1126_GRF_GMAC_CON0,
-+		     RV1126_GMAC_PHY_INTF_SEL_RGMII |
-+		     RV1126_GMAC_M0_RXCLK_DLY_ENABLE |
-+		     RV1126_GMAC_M0_TXCLK_DLY_ENABLE |
-+		     RV1126_GMAC_M1_RXCLK_DLY_ENABLE |
-+		     RV1126_GMAC_M1_TXCLK_DLY_ENABLE);
-+
-+	regmap_write(bsp_priv->grf, RV1126_GRF_GMAC_CON1,
-+		     RV1126_GMAC_M0_CLK_RX_DL_CFG(rx_delay) |
-+		     RV1126_GMAC_M0_CLK_TX_DL_CFG(tx_delay));
-+
-+	regmap_write(bsp_priv->grf, RV1126_GRF_GMAC_CON2,
-+		     RV1126_GMAC_M1_CLK_RX_DL_CFG(rx_delay) |
-+		     RV1126_GMAC_M1_CLK_TX_DL_CFG(tx_delay));
-+}
-+
-+static void rv1126_set_to_rmii(struct rk_priv_data *bsp_priv)
-+{
-+	struct device *dev = &bsp_priv->pdev->dev;
-+
-+	if (IS_ERR(bsp_priv->grf)) {
-+		dev_err(dev, "%s: Missing rockchip,grf property\n", __func__);
-+		return;
-+	}
-+
-+	regmap_write(bsp_priv->grf, RV1126_GRF_GMAC_CON0,
-+		     RV1126_GMAC_PHY_INTF_SEL_RMII);
-+}
-+
-+static void rv1126_set_rgmii_speed(struct rk_priv_data *bsp_priv, int speed)
-+{
-+	struct device *dev = &bsp_priv->pdev->dev;
-+	unsigned long rate;
-+	int ret;
-+
-+	switch (speed) {
-+	case 10:
-+		rate = 2500000;
-+		break;
-+	case 100:
-+		rate = 25000000;
-+		break;
-+	case 1000:
-+		rate = 125000000;
-+		break;
-+	default:
-+		dev_err(dev, "unknown speed value for RGMII speed=%d", speed);
-+		return;
-+	}
-+
-+	ret = clk_set_rate(bsp_priv->clk_mac_speed, rate);
-+	if (ret)
-+		dev_err(dev, "%s: set clk_mac_speed rate %ld failed %d\n",
-+			__func__, rate, ret);
-+}
-+
-+static void rv1126_set_rmii_speed(struct rk_priv_data *bsp_priv, int speed)
-+{
-+	struct device *dev = &bsp_priv->pdev->dev;
-+	unsigned long rate;
-+	int ret;
-+
-+	switch (speed) {
-+	case 10:
-+		rate = 2500000;
-+		break;
-+	case 100:
-+		rate = 25000000;
-+		break;
-+	default:
-+		dev_err(dev, "unknown speed value for RGMII speed=%d", speed);
-+		return;
-+	}
-+
-+	ret = clk_set_rate(bsp_priv->clk_mac_speed, rate);
-+	if (ret)
-+		dev_err(dev, "%s: set clk_mac_speed rate %ld failed %d\n",
-+			__func__, rate, ret);
-+}
-+
-+static const struct rk_gmac_ops rv1126_ops = {
-+	.set_to_rgmii = rv1126_set_to_rgmii,
-+	.set_to_rmii = rv1126_set_to_rmii,
-+	.set_rgmii_speed = rv1126_set_rgmii_speed,
-+	.set_rmii_speed = rv1126_set_rmii_speed,
-+};
-+
- #define RK_GRF_MACPHY_CON0		0xb00
- #define RK_GRF_MACPHY_CON1		0xb04
- #define RK_GRF_MACPHY_CON2		0xb08
-@@ -1681,6 +1805,7 @@ static const struct of_device_id rk_gmac_dwmac_match[] = {
- 	{ .compatible = "rockchip,rk3399-gmac", .data = &rk3399_ops },
- 	{ .compatible = "rockchip,rk3568-gmac", .data = &rk3568_ops },
- 	{ .compatible = "rockchip,rv1108-gmac", .data = &rv1108_ops },
-+	{ .compatible = "rockchip,rv1126-gmac", .data = &rv1126_ops },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, rk_gmac_dwmac_match);
+This seires applies on v6.0-rc3.
+
+Anshuman Khandual (3):
+  perf/core: Assert PERF_EVENT_FLAG_ARCH does not overlap with generic flags
+  arm64/perf: Assert all platform event flags are within PERF_EVENT_FLAG_ARCH
+  x86/perf: Assert all platform event flags are within PERF_EVENT_FLAG_ARCH
+
+ arch/arm64/kernel/perf_event.c  |  1 +
+ arch/x86/events/amd/core.c      |  2 ++
+ arch/x86/events/core.c          | 16 ++++++++++++++++
+ drivers/perf/apple_m1_cpu_pmu.c |  1 +
+ drivers/perf/arm_spe_pmu.c      |  1 +
+ kernel/events/core.c            |  1 +
+ 6 files changed, 22 insertions(+)
+
 -- 
-2.37.2
+2.25.1
 
