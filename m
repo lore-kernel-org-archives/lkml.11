@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48497ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C38B5C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231615AbiH2LUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55074 "EHLO
+        id S230228AbiH2LUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:20:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231621AbiH2LSw (ORCPT
+        with ESMTP id S231642AbiH2LSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:18:52 -0400
+        Mon, 29 Aug 2022 07:18:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3542E10FE3;
-        Mon, 29 Aug 2022 04:12:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A276BCE5;
+        Mon, 29 Aug 2022 04:12:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22A1D6122D;
-        Mon, 29 Aug 2022 11:12:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31CAFC433C1;
-        Mon, 29 Aug 2022 11:12:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E723161212;
+        Mon, 29 Aug 2022 11:11:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 054B3C433C1;
+        Mon, 29 Aug 2022 11:11:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771533;
-        bh=Gzqy99RAUTU08sK5XGOmICQ9ne5up2T8DJBSaBHVxPc=;
+        s=korg; t=1661771502;
+        bh=qkwOKJi5gsnAyH0eidBUxLUMppPsZof6v77fr4sDNdg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kQ1yTuHJdzAj/tGDyJPTNwjjintTJmIkZMgjjPNYj8zK4lMj5BEIVHtBqAHFu770B
-         0pFaPhrB1Jnbd1iUjRAfggjjXPHlNQFfTvDlVJatDbbzFcdbiXGY84INd4JSw4f80q
-         Q8L5ybL2jkc14WzDLwG+oZiq7I8TnTkFB9c/Gdys=
+        b=zTSK11GvJ9WSU48V6M9Mj5dhb6bgIWNbw1ncT7fWMg7fs6F91VBxeA6nM8ywdd2NJ
+         nmb4ofOnZSkYtCia6UHoQDHN3LAYUvbLrMFRsi0yEGoaY2LNq3ZBRZJFm58bblkfB4
+         4cWYEYBhhWgHv4nahXzftN1hx4gRdl9tHa4r5JtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 5.10 77/86] Revert "md-raid: destroy the bitmap after destroying the thread"
-Date:   Mon, 29 Aug 2022 12:59:43 +0200
-Message-Id: <20220829105759.666602652@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.15 110/136] s390: fix double free of GS and RI CBs on fork() failure
+Date:   Mon, 29 Aug 2022 12:59:37 +0200
+Message-Id: <20220829105809.224470741@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@linux.dev>
+From: Brian Foster <bfoster@redhat.com>
 
-commit 1d258758cf06a0734482989911d184dd5837ed4e upstream.
+commit 13cccafe0edcd03bf1c841de8ab8a1c8e34f77d9 upstream.
 
-This reverts commit e151db8ecfb019b7da31d076130a794574c89f6f. Because it
-obviously breaks clustered raid as noticed by Neil though it fixed KASAN
-issue for dm-raid, let's revert it and fix KASAN issue in next commit.
+The pointers for guarded storage and runtime instrumentation control
+blocks are stored in the thread_struct of the associated task. These
+pointers are initially copied on fork() via arch_dup_task_struct()
+and then cleared via copy_thread() before fork() returns. If fork()
+happens to fail after the initial task dup and before copy_thread(),
+the newly allocated task and associated thread_struct memory are
+freed via free_task() -> arch_release_task_struct(). This results in
+a double free of the guarded storage and runtime info structs
+because the fields in the failed task still refer to memory
+associated with the source task.
 
-[1]. https://lore.kernel.org/linux-raid/a6657e08-b6a7-358b-2d2a-0ac37d49d23a@linux.dev/T/#m95ac225cab7409f66c295772483d091084a6d470
+This problem can manifest as a BUG_ON() in set_freepointer() (with
+CONFIG_SLAB_FREELIST_HARDENED enabled) or KASAN splat (if enabled)
+when running trinity syscall fuzz tests on s390x. To avoid this
+problem, clear the associated pointer fields in
+arch_dup_task_struct() immediately after the new task is copied.
+Note that the RI flag is still cleared in copy_thread() because it
+resides in thread stack memory and that is where stack info is
+copied.
 
-Fixes: e151db8ecfb0 ("md-raid: destroy the bitmap after destroying the thread")
-Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Fixes: 8d9047f8b967c ("s390/runtime instrumentation: simplify task exit handling")
+Fixes: 7b83c6297d2fc ("s390/guarded storage: simplify task exit handling")
+Cc: <stable@vger.kernel.org> # 4.15
+Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220816155407.537372-1-bfoster@redhat.com
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/kernel/process.c |   22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -6278,11 +6278,11 @@ static void mddev_detach(struct mddev *m
- static void __md_stop(struct mddev *mddev)
- {
- 	struct md_personality *pers = mddev->pers;
-+	md_bitmap_destroy(mddev);
- 	mddev_detach(mddev);
- 	/* Ensure ->event_work is done */
- 	if (mddev->event_work.func)
- 		flush_workqueue(md_misc_wq);
--	md_bitmap_destroy(mddev);
- 	spin_lock(&mddev->lock);
- 	mddev->pers = NULL;
- 	spin_unlock(&mddev->lock);
+--- a/arch/s390/kernel/process.c
++++ b/arch/s390/kernel/process.c
+@@ -91,6 +91,18 @@ int arch_dup_task_struct(struct task_str
+ 
+ 	memcpy(dst, src, arch_task_struct_size);
+ 	dst->thread.fpu.regs = dst->thread.fpu.fprs;
++
++	/*
++	 * Don't transfer over the runtime instrumentation or the guarded
++	 * storage control block pointers. These fields are cleared here instead
++	 * of in copy_thread() to avoid premature freeing of associated memory
++	 * on fork() failure. Wait to clear the RI flag because ->stack still
++	 * refers to the source thread.
++	 */
++	dst->thread.ri_cb = NULL;
++	dst->thread.gs_cb = NULL;
++	dst->thread.gs_bc_cb = NULL;
++
+ 	return 0;
+ }
+ 
+@@ -149,13 +161,11 @@ int copy_thread(unsigned long clone_flag
+ 	frame->childregs.flags = 0;
+ 	if (new_stackp)
+ 		frame->childregs.gprs[15] = new_stackp;
+-
+-	/* Don't copy runtime instrumentation info */
+-	p->thread.ri_cb = NULL;
++	/*
++	 * Clear the runtime instrumentation flag after the above childregs
++	 * copy. The CB pointer was already cleared in arch_dup_task_struct().
++	 */
+ 	frame->childregs.psw.mask &= ~PSW_MASK_RI;
+-	/* Don't copy guarded storage control block */
+-	p->thread.gs_cb = NULL;
+-	p->thread.gs_bc_cb = NULL;
+ 
+ 	/* Set a new TLS ?  */
+ 	if (clone_flags & CLONE_SETTLS) {
 
 
