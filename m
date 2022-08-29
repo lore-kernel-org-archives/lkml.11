@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31708ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA888ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229917AbiH2JX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 05:23:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
+        id S229531AbiH2JXd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 05:23:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiH2JXF (ORCPT
+        with ESMTP id S229849AbiH2JXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 05:23:05 -0400
+        Mon, 29 Aug 2022 05:23:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4E15AC45
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:23:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E6D95A8AB
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:23:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 237CB60FA6
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:23:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7053C433D6;
-        Mon, 29 Aug 2022 09:23:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F185560F9E
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:23:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81115C433D6;
+        Mon, 29 Aug 2022 09:23:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661764982;
-        bh=i+TyAJcdH1xZxAk1Jhglvj9cFowqOJEpcp1jx3o52pM=;
+        s=k20201202; t=1661764985;
+        bh=3IJumO9VnNtaTpGxXYYQba7A8+do7X/gIE6+XfMnLiY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dvWiaJgvo9W5H06bfBC4s3dAnWrSm8Qtv2WR2g/UbpwfRP9VipgyU9Sb8V7ZvgCed
-         amDh+c9SBerMcmQjyJ110s4grO/60sqjYmWyk+8OTjv4dyBZmIOgwAl7/Fstscolyt
-         1IlJ/vr1rIXgfTgL7+65EwU4a4TybLQ8HHvjBHJ87Ah3PdD2LXX0c4U0CnYp44Sc6a
-         j/xSOaT1JDX85N5+HVPm3uyCZaebGuH04NpNQMWquFilc1MLgim0gA14cZFumjhKr+
-         neFTsZ+xuciqHm9NMAK+NFhR8HK4XJDr3yGRd66N8BQLXKnI5d4aRHt04JlQRg9QxS
-         kRRENNvcJhYqQ==
+        b=bLR3usUKj19KPV6pAq55LQjhMdgaL2YxoeHPWJq5IjCX3VbTeFqekNoiw39laK1li
+         wz3zrIyrmgHrzswBIJZhBxe17hDSJFU/Qnstecea2fFz+FPpML3bp9Cj5nypZDQsUa
+         NyvEoYWQKmcCnEzLpqZ1Yq+WN18F++YqgjrmFMerDmDhSolzc9EEufk6Q5H+OHKeRL
+         4xdmg09Y5NX/5QqJQgef5v+FLseS/tLkGQS9D7R+TCHtWDVZGwJKq6z7qAWizgUdyD
+         R9DAS0PChMc31Qj1whLZwKLRtSjaYigOYOgwWsZosWZw5WNUiQsf/bPnKq4mvw6JWt
+         GRyto/YNp9UtA==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ofir Bitton <obitton@habana.ai>
-Subject: [PATCH 3/7] habanalabs: ignore EEPROM errors during boot
-Date:   Mon, 29 Aug 2022 12:22:50 +0300
-Message-Id: <20220829092254.930753-3-ogabbay@kernel.org>
+Subject: [PATCH 5/7] habanalabs: allow control device open during reset
+Date:   Mon, 29 Aug 2022 12:22:52 +0300
+Message-Id: <20220829092254.930753-5-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220829092254.930753-1-ogabbay@kernel.org>
 References: <20220829092254.930753-1-ogabbay@kernel.org>
@@ -49,67 +49,81 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ofir Bitton <obitton@habana.ai>
 
-EEPROM errors reported by firmware are basically warnings and
-should not fail the boot process.
+Monitoring apps would like to query device state at any time so we
+should allow it also during reset because it doesn't involve
+accessing the h/w.
 
 Signed-off-by: Ofir Bitton <obitton@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/firmware_if.c        | 9 +++++++++
- drivers/misc/habanalabs/include/common/hl_boot_if.h | 5 +++++
- 2 files changed, 14 insertions(+)
+ drivers/misc/habanalabs/common/device.c       | 22 +++++++++++++++++++
+ drivers/misc/habanalabs/common/habanalabs.h   |  2 ++
+ .../misc/habanalabs/common/habanalabs_drv.c   |  4 ++--
+ 3 files changed, 26 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/firmware_if.c b/drivers/misc/habanalabs/common/firmware_if.c
-index 12d0f18c1f6c..4ede4bb03e8e 100644
---- a/drivers/misc/habanalabs/common/firmware_if.c
-+++ b/drivers/misc/habanalabs/common/firmware_if.c
-@@ -573,6 +573,15 @@ static bool fw_report_boot_dev0(struct hl_device *hdev, u32 err_val,
- 		dev_dbg(hdev->dev, "Device status0 %#x\n", sts_val);
+diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
+index 230b7eeef962..ea6238e614f1 100644
+--- a/drivers/misc/habanalabs/common/device.c
++++ b/drivers/misc/habanalabs/common/device.c
+@@ -352,6 +352,28 @@ bool hl_device_operational(struct hl_device *hdev,
+ 	}
+ }
  
- 	/* All warnings should go here in order not to reach the unknown error validation */
-+	if (err_val & CPU_BOOT_ERR0_EEPROM_FAIL) {
-+		dev_warn(hdev->dev,
-+			"Device boot warning - EEPROM failure detected, default settings applied\n");
-+		/* This is a warning so we don't want it to disable the
-+		 * device
-+		 */
-+		err_val &= ~CPU_BOOT_ERR0_EEPROM_FAIL;
-+	}
++bool hl_ctrl_device_operational(struct hl_device *hdev,
++		enum hl_device_status *status)
++{
++	enum hl_device_status current_status;
 +
- 	if (err_val & CPU_BOOT_ERR0_DRAM_SKIPPED) {
- 		dev_warn(hdev->dev,
- 			"Device boot warning - Skipped DRAM initialization\n");
-diff --git a/drivers/misc/habanalabs/include/common/hl_boot_if.h b/drivers/misc/habanalabs/include/common/hl_boot_if.h
-index f2f6488de625..2e45be5de4fe 100644
---- a/drivers/misc/habanalabs/include/common/hl_boot_if.h
-+++ b/drivers/misc/habanalabs/include/common/hl_boot_if.h
-@@ -34,6 +34,7 @@ enum cpu_boot_err {
- 	CPU_BOOT_ERR_BINNING_FAIL = 19,
- 	CPU_BOOT_ERR_TPM_FAIL = 20,
- 	CPU_BOOT_ERR_TMP_THRESH_INIT_FAIL = 21,
-+	CPU_BOOT_ERR_EEPROM_FAIL = 22,
- 	CPU_BOOT_ERR_ENABLED = 31,
- 	CPU_BOOT_ERR_SCND_EN = 63,
- 	CPU_BOOT_ERR_LAST = 64 /* we have 2 registers of 32 bits */
-@@ -115,6 +116,9 @@ enum cpu_boot_err {
-  * CPU_BOOT_ERR0_TMP_THRESH_INIT_FAIL	Failed to set threshold for tmperature
-  *					sensor.
-  *
-+ * CPU_BOOT_ERR_EEPROM_FAIL		Failed reading EEPROM data. Defaults
-+ *					are used.
-+ *
-  * CPU_BOOT_ERR0_ENABLED		Error registers enabled.
-  *					This is a main indication that the
-  *					running FW populates the error
-@@ -139,6 +143,7 @@ enum cpu_boot_err {
- #define CPU_BOOT_ERR0_BINNING_FAIL		(1 << CPU_BOOT_ERR_BINNING_FAIL)
- #define CPU_BOOT_ERR0_TPM_FAIL			(1 << CPU_BOOT_ERR_TPM_FAIL)
- #define CPU_BOOT_ERR0_TMP_THRESH_INIT_FAIL	(1 << CPU_BOOT_ERR_TMP_THRESH_INIT_FAIL)
-+#define CPU_BOOT_ERR0_EEPROM_FAIL		(1 << CPU_BOOT_ERR_EEPROM_FAIL)
- #define CPU_BOOT_ERR0_ENABLED			(1 << CPU_BOOT_ERR_ENABLED)
- #define CPU_BOOT_ERR1_ENABLED			(1 << CPU_BOOT_ERR_ENABLED)
++	current_status = hl_device_status(hdev);
++	if (status)
++		*status = current_status;
++
++	switch (current_status) {
++	case HL_DEVICE_STATUS_MALFUNCTION:
++		return false;
++	case HL_DEVICE_STATUS_IN_RESET:
++	case HL_DEVICE_STATUS_IN_RESET_AFTER_DEVICE_RELEASE:
++	case HL_DEVICE_STATUS_NEEDS_RESET:
++	case HL_DEVICE_STATUS_OPERATIONAL:
++	case HL_DEVICE_STATUS_IN_DEVICE_CREATION:
++	default:
++		return true;
++	}
++}
++
+ static void hpriv_release(struct kref *ref)
+ {
+ 	u64 idle_mask[HL_BUSY_ENGINES_MASK_EXT_SIZE] = {0};
+diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
+index 33c6476b60a9..cf9cbbd09063 100644
+--- a/drivers/misc/habanalabs/common/habanalabs.h
++++ b/drivers/misc/habanalabs/common/habanalabs.h
+@@ -3486,6 +3486,8 @@ int hl_device_open(struct inode *inode, struct file *filp);
+ int hl_device_open_ctrl(struct inode *inode, struct file *filp);
+ bool hl_device_operational(struct hl_device *hdev,
+ 		enum hl_device_status *status);
++bool hl_ctrl_device_operational(struct hl_device *hdev,
++		enum hl_device_status *status);
+ enum hl_device_status hl_device_status(struct hl_device *hdev);
+ int hl_device_set_debug_mode(struct hl_device *hdev, struct hl_ctx *ctx, bool enable);
+ int hl_hw_queues_create(struct hl_device *hdev);
+diff --git a/drivers/misc/habanalabs/common/habanalabs_drv.c b/drivers/misc/habanalabs/common/habanalabs_drv.c
+index e12148428731..7bf0dc245d39 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_drv.c
++++ b/drivers/misc/habanalabs/common/habanalabs_drv.c
+@@ -268,9 +268,9 @@ int hl_device_open_ctrl(struct inode *inode, struct file *filp)
  
+ 	mutex_lock(&hdev->fpriv_ctrl_list_lock);
+ 
+-	if (!hl_device_operational(hdev, NULL)) {
++	if (!hl_ctrl_device_operational(hdev, NULL)) {
+ 		dev_err_ratelimited(hdev->dev_ctrl,
+-			"Can't open %s because it is disabled or in reset\n",
++			"Can't open %s because it is disabled\n",
+ 			dev_name(hdev->dev_ctrl));
+ 		rc = -EPERM;
+ 		goto out_err;
 -- 
 2.25.1
 
