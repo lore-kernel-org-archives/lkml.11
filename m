@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C5EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F5DAECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231462AbiH2LQr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:16:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
+        id S229690AbiH2LQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231715AbiH2LOe (ORCPT
+        with ESMTP id S229594AbiH2LOu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:14:34 -0400
+        Mon, 29 Aug 2022 07:14:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437A47170B;
-        Mon, 29 Aug 2022 04:10:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47F0F7268C;
+        Mon, 29 Aug 2022 04:10:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC12C611C2;
-        Mon, 29 Aug 2022 11:10:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05AE0C433C1;
-        Mon, 29 Aug 2022 11:10:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A16B761219;
+        Mon, 29 Aug 2022 11:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF553C433C1;
+        Mon, 29 Aug 2022 11:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771424;
-        bh=qFK76spxIt4x7SAUI6DDuXZzVtD1mAdezOrHSxPPNRM=;
+        s=korg; t=1661771433;
+        bh=tbTXONZcIDODaTeJjGsqkCOrLmAzAOl33LNzXwtVO4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oTAcHzp/nlKXEL4/lx5Y0SrH5klQy9CdUUhH1FDnGCV2D4mSaQwII+oH7T/8Cn73/
-         o2dbzR1diXDzTMm8K1avrJ9pJRisKzvNF0MV0YI6DKR6/Mny2TmQaj2cd7KuIlKSva
-         6Xcze28e8QMwGvp8o7XW31HbptZ3zmQsgoleY2nY=
+        b=LJkQAZpWe6Dc8+sF9839iAT1UYB8XC3TbJXChkbiPRMAo6K6wvZoRvntOAzIL0sfy
+         4tNzojD+oIJ+Tl2HmztPVLbF23s4MdeWIJAATfesSg8CAnaSdnjObVb9dG91UrDYMb
+         Uc2x4rjDoEu1EAwaAr6VnJ0R5MtVHVUd1w6VZo8w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 102/136] x86/bugs: Add "unknown" reporting for MMIO Stale Data
-Date:   Mon, 29 Aug 2022 12:59:29 +0200
-Message-Id: <20220829105808.891212885@linuxfoundation.org>
+        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 030/158] net/mlx5: LAG, fix logic over MLX5_LAG_FLAG_NDEVS_READY
+Date:   Mon, 29 Aug 2022 12:58:00 +0200
+Message-Id: <20220829105810.050918798@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,209 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Eli Cohen <elic@nvidia.com>
 
-commit 7df548840c496b0141fb2404b889c346380c2b22 upstream.
+[ Upstream commit a6e675a66175869b7d87c0e1dd0ddf93e04f8098 ]
 
-Older Intel CPUs that are not in the affected processor list for MMIO
-Stale Data vulnerabilities currently report "Not affected" in sysfs,
-which may not be correct. Vulnerability status for these older CPUs is
-unknown.
+Only set MLX5_LAG_FLAG_NDEVS_READY if both netdevices are registered.
+Doing so guarantees that both ldev->pf[MLX5_LAG_P0].dev and
+ldev->pf[MLX5_LAG_P1].dev have valid pointers when
+MLX5_LAG_FLAG_NDEVS_READY is set.
 
-Add known-not-affected CPUs to the whitelist. Report "unknown"
-mitigation status for CPUs that are not in blacklist, whitelist and also
-don't enumerate MSR ARCH_CAPABILITIES bits that reflect hardware
-immunity to MMIO Stale Data vulnerabilities.
+The core issue is asymmetry in setting MLX5_LAG_FLAG_NDEVS_READY and
+clearing it. Setting it is done wrongly when both
+ldev->pf[MLX5_LAG_P0].dev and ldev->pf[MLX5_LAG_P1].dev are set;
+clearing it is done right when either of ldev->pf[i].netdev is cleared.
 
-Mitigation is not deployed when the status is unknown.
+Consider the following scenario:
+1. PF0 loads and sets ldev->pf[MLX5_LAG_P0].dev to a valid pointer
+2. PF1 loads and sets both ldev->pf[MLX5_LAG_P1].dev and
+   ldev->pf[MLX5_LAG_P1].netdev with valid pointers. This results in
+   MLX5_LAG_FLAG_NDEVS_READY is set.
+3. PF0 is unloaded before setting dev->pf[MLX5_LAG_P0].netdev.
+   MLX5_LAG_FLAG_NDEVS_READY remains set.
 
-  [ bp: Massage, fixup. ]
+Further execution of mlx5_do_bond() will result in null pointer
+dereference when calling mlx5_lag_is_multipath()
 
-Fixes: 8d50cdf8b834 ("x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data")
-Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
-Suggested-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/a932c154772f2121794a5f2eded1a11013114711.1657846269.git.pawan.kumar.gupta@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch fixes the following call trace actually encountered:
+
+[ 1293.475195] BUG: kernel NULL pointer dereference, address: 00000000000009a8
+[ 1293.478756] #PF: supervisor read access in kernel mode
+[ 1293.481320] #PF: error_code(0x0000) - not-present page
+[ 1293.483686] PGD 0 P4D 0
+[ 1293.484434] Oops: 0000 [#1] SMP PTI
+[ 1293.485377] CPU: 1 PID: 23690 Comm: kworker/u16:2 Not tainted 5.18.0-rc5_for_upstream_min_debug_2022_05_05_10_13 #1
+[ 1293.488039] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[ 1293.490836] Workqueue: mlx5_lag mlx5_do_bond_work [mlx5_core]
+[ 1293.492448] RIP: 0010:mlx5_lag_is_multipath+0x5/0x50 [mlx5_core]
+[ 1293.494044] Code: e8 70 40 ff e0 48 8b 14 24 48 83 05 5c 1a 1b 00 01 e9 19 ff ff ff 48 83 05 47 1a 1b 00 01 eb d7 0f 1f 44 00 00 0f 1f 44 00 00 <48> 8b 87 a8 09 00 00 48 85 c0 74 26 48 83 05 a7 1b 1b 00 01 41 b8
+[ 1293.498673] RSP: 0018:ffff88811b2fbe40 EFLAGS: 00010202
+[ 1293.500152] RAX: ffff88818a94e1c0 RBX: ffff888165eca6c0 RCX: 0000000000000000
+[ 1293.501841] RDX: 0000000000000001 RSI: ffff88818a94e1c0 RDI: 0000000000000000
+[ 1293.503585] RBP: 0000000000000000 R08: ffff888119886740 R09: ffff888165eca73c
+[ 1293.505286] R10: 0000000000000018 R11: 0000000000000018 R12: ffff88818a94e1c0
+[ 1293.506979] R13: ffff888112729800 R14: 0000000000000000 R15: ffff888112729858
+[ 1293.508753] FS:  0000000000000000(0000) GS:ffff88852cc40000(0000) knlGS:0000000000000000
+[ 1293.510782] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1293.512265] CR2: 00000000000009a8 CR3: 00000001032d4002 CR4: 0000000000370ea0
+[ 1293.514001] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[ 1293.515806] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+Fixes: 8a66e4585979 ("net/mlx5: Change ownership model for lag")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst |   14 +++
- arch/x86/include/asm/cpufeatures.h                              |    5 -
- arch/x86/kernel/cpu/bugs.c                                      |   14 ++-
- arch/x86/kernel/cpu/common.c                                    |   42 ++++++----
- 4 files changed, 56 insertions(+), 19 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
-+++ b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
-@@ -230,6 +230,20 @@ The possible values in this file are:
-      * - 'Mitigation: Clear CPU buffers'
-        - The processor is vulnerable and the CPU buffer clearing mitigation is
-          enabled.
-+     * - 'Unknown: No mitigations'
-+       - The processor vulnerability status is unknown because it is
-+	 out of Servicing period. Mitigation is not attempted.
-+
-+Definitions:
-+------------
-+
-+Servicing period: The process of providing functional and security updates to
-+Intel processors or platforms, utilizing the Intel Platform Update (IPU)
-+process or other similar mechanisms.
-+
-+End of Servicing Updates (ESU): ESU is the date at which Intel will no
-+longer provide Servicing, such as through IPU or other similar update
-+processes. ESU dates will typically be aligned to end of quarter.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+index 5d41e19378e09..c520edb942ca5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+@@ -1234,7 +1234,7 @@ void mlx5_lag_add_netdev(struct mlx5_core_dev *dev,
+ 	mlx5_ldev_add_netdev(ldev, dev, netdev);
  
- If the processor is vulnerable then the following information is appended to
- the above information:
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -446,7 +446,8 @@
- #define X86_BUG_ITLB_MULTIHIT		X86_BUG(23) /* CPU may incur MCE during certain page attribute changes */
- #define X86_BUG_SRBDS			X86_BUG(24) /* CPU may leak RNG bits if not mitigated */
- #define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
--#define X86_BUG_RETBLEED		X86_BUG(26) /* CPU is affected by RETBleed */
--#define X86_BUG_EIBRS_PBRSB		X86_BUG(27) /* EIBRS is vulnerable to Post Barrier RSB Predictions */
-+#define X86_BUG_MMIO_UNKNOWN		X86_BUG(26) /* CPU is too old and its MMIO Stale Data status is unknown */
-+#define X86_BUG_RETBLEED		X86_BUG(27) /* CPU is affected by RETBleed */
-+#define X86_BUG_EIBRS_PBRSB		X86_BUG(28) /* EIBRS is vulnerable to Post Barrier RSB Predictions */
+ 	for (i = 0; i < ldev->ports; i++)
+-		if (!ldev->pf[i].dev)
++		if (!ldev->pf[i].netdev)
+ 			break;
  
- #endif /* _ASM_X86_CPUFEATURES_H */
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -433,7 +433,8 @@ static void __init mmio_select_mitigatio
- 	u64 ia32_cap;
- 
- 	if (!boot_cpu_has_bug(X86_BUG_MMIO_STALE_DATA) ||
--	    cpu_mitigations_off()) {
-+	     boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN) ||
-+	     cpu_mitigations_off()) {
- 		mmio_mitigation = MMIO_MITIGATION_OFF;
- 		return;
- 	}
-@@ -538,6 +539,8 @@ out:
- 		pr_info("TAA: %s\n", taa_strings[taa_mitigation]);
- 	if (boot_cpu_has_bug(X86_BUG_MMIO_STALE_DATA))
- 		pr_info("MMIO Stale Data: %s\n", mmio_strings[mmio_mitigation]);
-+	else if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
-+		pr_info("MMIO Stale Data: Unknown: No mitigations\n");
- }
- 
- static void __init md_clear_select_mitigation(void)
-@@ -2268,6 +2271,9 @@ static ssize_t tsx_async_abort_show_stat
- 
- static ssize_t mmio_stale_data_show_state(char *buf)
- {
-+	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
-+		return sysfs_emit(buf, "Unknown: No mitigations\n");
-+
- 	if (mmio_mitigation == MMIO_MITIGATION_OFF)
- 		return sysfs_emit(buf, "%s\n", mmio_strings[mmio_mitigation]);
- 
-@@ -2414,6 +2420,7 @@ static ssize_t cpu_show_common(struct de
- 		return srbds_show_state(buf);
- 
- 	case X86_BUG_MMIO_STALE_DATA:
-+	case X86_BUG_MMIO_UNKNOWN:
- 		return mmio_stale_data_show_state(buf);
- 
- 	case X86_BUG_RETBLEED:
-@@ -2473,7 +2480,10 @@ ssize_t cpu_show_srbds(struct device *de
- 
- ssize_t cpu_show_mmio_stale_data(struct device *dev, struct device_attribute *attr, char *buf)
- {
--	return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
-+	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
-+		return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_UNKNOWN);
-+	else
-+		return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
- }
- 
- ssize_t cpu_show_retbleed(struct device *dev, struct device_attribute *attr, char *buf)
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -1027,7 +1027,8 @@ static void identify_cpu_without_cpuid(s
- #define NO_SWAPGS		BIT(6)
- #define NO_ITLB_MULTIHIT	BIT(7)
- #define NO_SPECTRE_V2		BIT(8)
--#define NO_EIBRS_PBRSB		BIT(9)
-+#define NO_MMIO			BIT(9)
-+#define NO_EIBRS_PBRSB		BIT(10)
- 
- #define VULNWL(vendor, family, model, whitelist)	\
- 	X86_MATCH_VENDOR_FAM_MODEL(vendor, family, model, whitelist)
-@@ -1048,6 +1049,11 @@ static const __initconst struct x86_cpu_
- 	VULNWL(NSC,	5, X86_MODEL_ANY,	NO_SPECULATION),
- 
- 	/* Intel Family 6 */
-+	VULNWL_INTEL(TIGERLAKE,			NO_MMIO),
-+	VULNWL_INTEL(TIGERLAKE_L,		NO_MMIO),
-+	VULNWL_INTEL(ALDERLAKE,			NO_MMIO),
-+	VULNWL_INTEL(ALDERLAKE_L,		NO_MMIO),
-+
- 	VULNWL_INTEL(ATOM_SALTWELL,		NO_SPECULATION | NO_ITLB_MULTIHIT),
- 	VULNWL_INTEL(ATOM_SALTWELL_TABLET,	NO_SPECULATION | NO_ITLB_MULTIHIT),
- 	VULNWL_INTEL(ATOM_SALTWELL_MID,		NO_SPECULATION | NO_ITLB_MULTIHIT),
-@@ -1066,9 +1072,9 @@ static const __initconst struct x86_cpu_
- 	VULNWL_INTEL(ATOM_AIRMONT_MID,		NO_L1TF | MSBDS_ONLY | NO_SWAPGS | NO_ITLB_MULTIHIT),
- 	VULNWL_INTEL(ATOM_AIRMONT_NP,		NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
- 
--	VULNWL_INTEL(ATOM_GOLDMONT,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_INTEL(ATOM_GOLDMONT_D,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_INTEL(ATOM_GOLDMONT_PLUS,	NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_EIBRS_PBRSB),
-+	VULNWL_INTEL(ATOM_GOLDMONT,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_INTEL(ATOM_GOLDMONT_D,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_INTEL(ATOM_GOLDMONT_PLUS,	NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO | NO_EIBRS_PBRSB),
- 
- 	/*
- 	 * Technically, swapgs isn't serializing on AMD (despite it previously
-@@ -1083,18 +1089,18 @@ static const __initconst struct x86_cpu_
- 	VULNWL_INTEL(ATOM_TREMONT_D,		NO_ITLB_MULTIHIT | NO_EIBRS_PBRSB),
- 
- 	/* AMD Family 0xf - 0x12 */
--	VULNWL_AMD(0x0f,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_AMD(0x10,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_AMD(0x11,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_AMD(0x12,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
-+	VULNWL_AMD(0x0f,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_AMD(0x10,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_AMD(0x11,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_AMD(0x12,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
- 
- 	/* FAMILY_ANY must be last, otherwise 0x0f - 0x12 matches won't work */
--	VULNWL_AMD(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_HYGON(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
-+	VULNWL_AMD(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_HYGON(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
- 
- 	/* Zhaoxin Family 7 */
--	VULNWL(CENTAUR,	7, X86_MODEL_ANY,	NO_SPECTRE_V2 | NO_SWAPGS),
--	VULNWL(ZHAOXIN,	7, X86_MODEL_ANY,	NO_SPECTRE_V2 | NO_SWAPGS),
-+	VULNWL(CENTAUR,	7, X86_MODEL_ANY,	NO_SPECTRE_V2 | NO_SWAPGS | NO_MMIO),
-+	VULNWL(ZHAOXIN,	7, X86_MODEL_ANY,	NO_SPECTRE_V2 | NO_SWAPGS | NO_MMIO),
- 	{}
- };
- 
-@@ -1248,10 +1254,16 @@ static void __init cpu_set_bug_bits(stru
- 	 * Affected CPU list is generally enough to enumerate the vulnerability,
- 	 * but for virtualization case check for ARCH_CAP MSR bits also, VMM may
- 	 * not want the guest to enumerate the bug.
-+	 *
-+	 * Set X86_BUG_MMIO_UNKNOWN for CPUs that are neither in the blacklist,
-+	 * nor in the whitelist and also don't enumerate MSR ARCH_CAP MMIO bits.
- 	 */
--	if (cpu_matches(cpu_vuln_blacklist, MMIO) &&
--	    !arch_cap_mmio_immune(ia32_cap))
--		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
-+	if (!arch_cap_mmio_immune(ia32_cap)) {
-+		if (cpu_matches(cpu_vuln_blacklist, MMIO))
-+			setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
-+		else if (!cpu_matches(cpu_vuln_whitelist, NO_MMIO))
-+			setup_force_cpu_bug(X86_BUG_MMIO_UNKNOWN);
-+	}
- 
- 	if (!cpu_has(c, X86_FEATURE_BTC_NO)) {
- 		if (cpu_matches(cpu_vuln_blacklist, RETBLEED) || (ia32_cap & ARCH_CAP_RSBA))
+ 	if (i >= ldev->ports)
+-- 
+2.35.1
+
 
 
