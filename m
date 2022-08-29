@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91A9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:11:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD66ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:11:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbiH2MLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
+        id S231174AbiH2MLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:11:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230025AbiH2MLF (ORCPT
+        with ESMTP id S229450AbiH2MLG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:11:05 -0400
+        Mon, 29 Aug 2022 08:11:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FC73C8C4;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A609410B;
         Mon, 29 Aug 2022 04:56:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 40076B80FC9;
-        Mon, 29 Aug 2022 11:19:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 930A6C4347C;
-        Mon, 29 Aug 2022 11:19:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D05CCB80FA7;
+        Mon, 29 Aug 2022 11:18:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28D5EC433D6;
+        Mon, 29 Aug 2022 11:18:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771989;
-        bh=kpJKTLGLS6xwjykrV2lzZsKYJBC6S+RI4goYTasTOE0=;
+        s=korg; t=1661771924;
+        bh=0OQtm6rkpc4cY5rw8LYv1/UD5ttx5nhgrijG2qWkUBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=puNqiy6thjykf9+KSnNq2yZE+Il66UO8FsW/yWP921H32mzUxDU4q7RgEmSxWXdMG
-         OjUWp6KCmlQYDbGJTF3mrNekvitO8BzhgaAoNjV7TWR9gMZTuug4sU8ZVagcO/ma0V
-         1bzoUuouAl6WmVoiqpTCQ5o7c3hLMP7pLS7Q61TY=
+        b=ydkK0+kbRBryEgHMllYavm+KuaGgv7Xjg11JxyeMbiP54Ck0AdvF+8XUQDBjQE2Tl
+         M9aib6I34x0Lam1bQj9aYxx54Csj5Rs7H6jXj049pqbUS9FOEMA8+IcpmiPiXuVl/z
+         eb97pO87LONaYmojFGg0bKwGzUGJcLCCOe1yWPSo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH 5.19 156/158] riscv: dts: microchip: mpfs: remove bogus card-detect-delay
-Date:   Mon, 29 Aug 2022 13:00:06 +0200
-Message-Id: <20220829105815.675496328@linuxfoundation.org>
+        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.19 142/158] blk-mq: fix io hung due to missing commit_rqs
+Date:   Mon, 29 Aug 2022 12:59:52 +0200
+Message-Id: <20220829105815.052283659@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -47,56 +48,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Yu Kuai <yukuai3@huawei.com>
 
-commit 2b55915d27dcaa35f54bad7925af0a76001079bc upstream.
+commit 65fac0d54f374625b43a9d6ad1f2c212bd41f518 upstream.
 
-Recent versions of dt-schema warn about a previously undetected
-undocumented property:
-arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dtb: mmc@20008000: Unevaluated properties are not allowed ('card-detect-delay' was unexpected)
-        From schema: Documentation/devicetree/bindings/mmc/cdns,sdhci.yaml
+Currently, in virtio_scsi, if 'bd->last' is not set to true while
+dispatching request, such io will stay in driver's queue, and driver
+will wait for block layer to dispatch more rqs. However, if block
+layer failed to dispatch more rq, it should trigger commit_rqs to
+inform driver.
 
-There are no GPIOs connected to MSSIO6B4 pin K3 so adding the common
-cd-debounce-delay-ms property makes no sense. The Cadence IP has a
-register that sets the card detect delay as "DP * tclk". On MPFS, this
-clock frequency is not configurable (it must be 200 MHz) & the FPGA
-comes out of reset with this register already set.
+There is a problem in blk_mq_try_issue_list_directly() that commit_rqs
+won't be called:
 
-Fixes: bc47b2217f24 ("riscv: dts: microchip: add the sundance polarberry")
-Fixes: 0fa6107eca41 ("RISC-V: Initial DTS for Microchip ICICLE board")
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+// assume that queue_depth is set to 1, list contains two rq
+blk_mq_try_issue_list_directly
+ blk_mq_request_issue_directly
+ // dispatch first rq
+ // last is false
+  __blk_mq_try_issue_directly
+   blk_mq_get_dispatch_budget
+   // succeed to get first budget
+   __blk_mq_issue_directly
+    scsi_queue_rq
+     cmd->flags |= SCMD_LAST
+      virtscsi_queuecommand
+       kick = (sc->flags & SCMD_LAST) != 0
+       // kick is false, first rq won't issue to disk
+ queued++
+
+ blk_mq_request_issue_directly
+ // dispatch second rq
+  __blk_mq_try_issue_directly
+   blk_mq_get_dispatch_budget
+   // failed to get second budget
+ ret == BLK_STS_RESOURCE
+  blk_mq_request_bypass_insert
+ // errors is still 0
+
+ if (!list_empty(list) || errors && ...)
+  // won't pass, commit_rqs won't be called
+
+In this situation, first rq relied on second rq to dispatch, while
+second rq relied on first rq to complete, thus they will both hung.
+
+Fix the problem by also treat 'BLK_STS_*RESOURCE' as 'errors' since
+it means that request is not queued successfully.
+
+Same problem exists in blk_mq_dispatch_rq_list(), 'BLK_STS_*RESOURCE'
+can't be treated as 'errors' here, fix the problem by calling
+commit_rqs if queue_rq return 'BLK_STS_*RESOURCE'.
+
+Fixes: d666ba98f849 ("blk-mq: add mq_ops->commit_rqs()")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20220726122224.1790882-1-yukuai1@huaweicloud.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts | 1 -
- arch/riscv/boot/dts/microchip/mpfs-polarberry.dts | 1 -
- 2 files changed, 2 deletions(-)
+ block/blk-mq.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-index ee548ab61a2a..f3f87ed2007f 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-@@ -100,7 +100,6 @@ &mmc {
- 	disable-wp;
- 	cap-sd-highspeed;
- 	cap-mmc-highspeed;
--	card-detect-delay = <200>;
- 	mmc-ddr-1_8v;
- 	mmc-hs200-1_8v;
- 	sd-uhs-sdr12;
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts b/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-index dc11bb8fc833..c87cc2d8fe29 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-+++ b/arch/riscv/boot/dts/microchip/mpfs-polarberry.dts
-@@ -70,7 +70,6 @@ &mmc {
- 	disable-wp;
- 	cap-sd-highspeed;
- 	cap-mmc-highspeed;
--	card-detect-delay = <200>;
- 	mmc-ddr-1_8v;
- 	mmc-hs200-1_8v;
- 	sd-uhs-sdr12;
--- 
-2.37.2
-
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -1925,7 +1925,8 @@ out:
+ 	/* If we didn't flush the entire list, we could have told the driver
+ 	 * there was more coming, but that turned out to be a lie.
+ 	 */
+-	if ((!list_empty(list) || errors) && q->mq_ops->commit_rqs && queued)
++	if ((!list_empty(list) || errors || needs_resource ||
++	     ret == BLK_STS_DEV_RESOURCE) && q->mq_ops->commit_rqs && queued)
+ 		q->mq_ops->commit_rqs(hctx);
+ 	/*
+ 	 * Any items that need requeuing? Stuff them into hctx->dispatch,
+@@ -2678,6 +2679,7 @@ void blk_mq_try_issue_list_directly(stru
+ 		list_del_init(&rq->queuelist);
+ 		ret = blk_mq_request_issue_directly(rq, list_empty(list));
+ 		if (ret != BLK_STS_OK) {
++			errors++;
+ 			if (ret == BLK_STS_RESOURCE ||
+ 					ret == BLK_STS_DEV_RESOURCE) {
+ 				blk_mq_request_bypass_insert(rq, false,
+@@ -2685,7 +2687,6 @@ void blk_mq_try_issue_list_directly(stru
+ 				break;
+ 			}
+ 			blk_mq_end_request(rq, ret);
+-			errors++;
+ 		} else
+ 			queued++;
+ 	}
 
 
