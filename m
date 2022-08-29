@@ -2,108 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43AACECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB64ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230335AbiH2OKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55428 "EHLO
+        id S229961AbiH2OLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbiH2OKi (ORCPT
+        with ESMTP id S230297AbiH2OLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:10:38 -0400
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9AF6BD69;
-        Mon, 29 Aug 2022 07:10:31 -0700 (PDT)
-Received: by mail-ot1-f51.google.com with SMTP id z22-20020a056830129600b0063711f456ceso5963602otp.7;
-        Mon, 29 Aug 2022 07:10:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=opbj1lT2rqww+Ko38iiUdytadU+k9CoQLS7KnrXSbyY=;
-        b=wbQbQl9+s2rVlBIofj2GiXT37b2zWTDhTmTcchKG7EIJvuRm4V0C23ExIvweNk/P5v
-         NM9DTrkW1fu7MSET6QkwIVaZfN06z5GYxSpAttJSoADwTaOH+vdNooBI4ZWNiUTAXCRe
-         T39xcUx0wox8tT+ggOuSHwuitD5C5kyPEF1rapK0qA+BssbcQc6rall9CN/lmDAZVG5S
-         QeCR0ZF4nGangKBkzpMi4rXLy93NWcrSLtdy/Rr5eJGqBRsjHLaifLpYf/zUZeQsWbQc
-         Z+raDVLMimDok94WonC107/7hGE4zgy+vXHXy+0Rt6+D8Lah7YKqmncpkIWtrx1Bh5Hg
-         Q2qA==
-X-Gm-Message-State: ACgBeo1gj1GxFjI8RC8StcDpqA7BjlP2Wvh0pAKmMX6PYlVNMOVkmsu/
-        i0jit8CUl1MsRFLozi+BQw==
-X-Google-Smtp-Source: AA6agR7WIHe/AiLYD102e5d5uKFjLIhVyxUpACShz6LmoyBGjUcs44MJ20snIPOKxNFUVwlVnmhpXw==
-X-Received: by 2002:a05:6830:3914:b0:638:f80c:e964 with SMTP id br20-20020a056830391400b00638f80ce964mr6530478otb.220.1661782231113;
-        Mon, 29 Aug 2022 07:10:31 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y5-20020a056830070500b0063b2875246dsm2805095ots.49.2022.08.29.07.10.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 07:10:30 -0700 (PDT)
-Received: (nullmailer pid 1485236 invoked by uid 1000);
-        Mon, 29 Aug 2022 14:10:29 -0000
-Date:   Mon, 29 Aug 2022 09:10:29 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] dt-bindings: iio: Add missing
- (unevaluated|additional)Properties on child nodes
-Message-ID: <20220829141029.GA1470207-robh@kernel.org>
-References: <20220823145649.3118479-2-robh@kernel.org>
- <99dfcc39-ab1b-1b24-c6b2-67de5509f5ac@linaro.org>
- <20220828180050.51c3e857@jic23-huawei>
+        Mon, 29 Aug 2022 10:11:02 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA4ED83F32;
+        Mon, 29 Aug 2022 07:10:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661782252; x=1693318252;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=5mdqMNR2eL5FmZvRmeIyMK1iB5FOZvG+sogI99gXKfM=;
+  b=TNKK4Ry2hkCAks+Sl4B/UP3RilBgx9jyY90pwM97I7gFSRwLhetnMz1r
+   aTIVhgKe1unINThYjxU/5+Ff/lbdys6OZMkNdwsxH7Tj0xkPcdVDiP4cB
+   9XPzToRddtNkYuSO5lVmM2arDOw6ZnnvU9EQw98tLLOF+tqJ3q6iB8puB
+   FBSNQizEiCLvHN0ODUgDsHRNrPKVbBju9NQCj3lRbXHxmWgnPTtqXggVp
+   Hq+40FKYlvJIpHY9O7YAoh1VoEs2ySDG+NlMdnCXSWCHsy9B0F75i2Esg
+   JXCYK4nWM+zj/QpRNWxe/b1ydHtV2beJSWyu6bU1CQYF2YgngTD7ddIcJ
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="358865159"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="358865159"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 07:10:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="614227836"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 29 Aug 2022 07:10:50 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id A949BAD; Mon, 29 Aug 2022 17:11:04 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>
+Subject: [PATCH v1 2/4] ACPI: platform: Remove redundant print on ENOMEM
+Date:   Mon, 29 Aug 2022 17:10:58 +0300
+Message-Id: <20220829141100.63934-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220829141100.63934-1-andriy.shevchenko@linux.intel.com>
+References: <20220829141100.63934-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220828180050.51c3e857@jic23-huawei>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 06:01:41PM +0100, Jonathan Cameron wrote:
-> On Thu, 25 Aug 2022 15:04:33 +0300
-> Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> 
-> > On 23/08/2022 17:56, Rob Herring wrote:
-> > > In order to ensure only documented properties are present, node schemas
-> > > must have unevaluatedProperties or additionalProperties set to false
-> > > (typically).
-> > >   
-> > 
-> > 
-> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> Applied to the togreg branch of iio.git and pushed out as testing for 0-day
-> to poke at it before I push out as togreg for linux-next to pick up.
+We rely on somebody else to print enough information on failures.
+So remove the log in acpi_create_platform_device() when return
+-ENOMEM.
 
-Thanks.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/acpi/acpi_platform.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-> Side note. Some odd entries in your cc list...  alsa-devel?
+diff --git a/drivers/acpi/acpi_platform.c b/drivers/acpi/acpi_platform.c
+index 75e26528056d..042f80588c18 100644
+--- a/drivers/acpi/acpi_platform.c
++++ b/drivers/acpi/acpi_platform.c
+@@ -120,7 +120,6 @@ struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
+ 		resources = kcalloc(count, sizeof(struct resource),
+ 				    GFP_KERNEL);
+ 		if (!resources) {
+-			dev_err(&adev->dev, "No memory for resources\n");
+ 			acpi_dev_free_resource_list(&resource_list);
+ 			return ERR_PTR(-ENOMEM);
+ 		}
+-- 
+2.35.1
 
-Blame MAINTAINERS:
-
-STM32 AUDIO (ASoC) DRIVERS
-M:      Olivier Moysan <olivier.moysan@foss.st.com>
-M:      Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-L:      alsa-devel@alsa-project.org (moderated for non-subscribers)
-S:      Maintained
-F:      Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
-F:      Documentation/devicetree/bindings/sound/st,stm32-*.yaml
-F:      sound/soc/stm/
