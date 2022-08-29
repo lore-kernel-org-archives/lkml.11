@@ -2,193 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 462A0ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0C8ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230031AbiH2IlG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
+        id S229675AbiH2InH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:43:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbiH2Ik5 (ORCPT
+        with ESMTP id S229521AbiH2InE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 04:40:57 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D7C558B5A
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:40:51 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id z25so10163103lfr.2
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:40:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=urj00kIYa+B8ezfb71MD/Cc6TzQ7WWNtN3ZjlvZ1ObM=;
-        b=KOP4VcjFaefTv2+kUQRPBBtpJXA+bI6F3Ko4FfkH9viTYTk7tFxEq/3C2WZGHxBG26
-         RSi2bWS1cX7+2Q/v2sAGeDN33gOga7FzMKF1MeJxZvtdxr6chaEeGRoHHN09ECAeyj8A
-         StEJbmAWiehuWuzGQZ1WIGj2wnD/pbNuXvVKabmpRpiyj7GAHuX/cawb9uH89/zCgF99
-         lyznl9ejiG7JS27tcQqBhW+8x7NANMGfF3l1Y1/TksGrBs/cislSWio5RZQRAGMJZHQi
-         QU3LA8dEpXYHplXHw+5UZBpm0xsN2xc3UViB4MkPEm4lt8rdNrI6p7n11FKx8N0V5M6U
-         0HaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=urj00kIYa+B8ezfb71MD/Cc6TzQ7WWNtN3ZjlvZ1ObM=;
-        b=XzfpRt5W+royYzUobSMduIiCmbV1YWemGmp8gsAtMTajR1WvsTuvXakPTsjZXKdt2v
-         zV8k4D45W0TKaKQW+NY/e7Y0RnYsKMP4MMItdbGEwf2OvAmi6I6mOHBHFb+f6Y8IzOlW
-         baHwrdKWTx9RXctU+mb2U266RJlpOaopShTgfczs2SFexqnfYNyuuSf9lx9hZ4VqGOk8
-         h3PyGgAyjgp4V6oKlii4Q1xVM+T7a79957vkaHLA+abU74qPQUF0MwRs4ei0CrLXeEC2
-         yqrqE8mFjJKuRxxFmL62K2Imz0C8pgZnzac9BgadhkmkOfzeFdfcURsSRaxoel/DHseq
-         C45A==
-X-Gm-Message-State: ACgBeo2Uy8/E8dSXbJFvd8QEkR/sudzgOS+Z7FJrPWNxQkJvbH6zM2+4
-        lT2lsdfYzdk4/hKllt3brX3LnSJl9+f/3Ja1t3PQCg==
-X-Google-Smtp-Source: AA6agR7aArtXQO3Q+wX6yM7SOu1Q9GzgrzY5iw1Au0UhM/iP5JOv1rFez/qG9UhIFoBMPBWlMuVYSHQVgfUujtzLigM=
-X-Received: by 2002:ac2:4c4f:0:b0:48b:1358:67e3 with SMTP id
- o15-20020ac24c4f000000b0048b135867e3mr5703843lfk.441.1661762449195; Mon, 29
- Aug 2022 01:40:49 -0700 (PDT)
+        Mon, 29 Aug 2022 04:43:04 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2373158B5C
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:43:02 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.2.9.158])
+        by localhost.localdomain (Coremail) with SMTP id AQAAf8DxvmsQfAxjg8cLAA--.40214S2;
+        Mon, 29 Aug 2022 16:42:56 +0800 (CST)
+From:   Mao Bibo <maobibo@loongson.cn>
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     WANG Xuerui <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        loongarch@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] LoongArch: Add safer signal handler for TLS access
+Date:   Mon, 29 Aug 2022 16:42:56 +0800
+Message-Id: <20220829084256.3453391-1-maobibo@loongson.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <20220829062202.3287-1-zong.li@sifive.com> <20220829062202.3287-3-zong.li@sifive.com>
- <1a0da77e-8b26-a6aa-4af2-bf852470230a@microchip.com>
-In-Reply-To: <1a0da77e-8b26-a6aa-4af2-bf852470230a@microchip.com>
-From:   Zong Li <zong.li@sifive.com>
-Date:   Mon, 29 Aug 2022 16:40:36 +0800
-Message-ID: <CANXhq0rHnsRP=Djin53Nc5n3aYY-=ALu7=F-1Y+-U3_L_ehG6g@mail.gmail.com>
-Subject: Re: [PATCH 2/3] soc: sifive: l2 cache: Rename SiFive L2 cache to
- composible cache.
-To:     Conor Dooley <Conor.Dooley@microchip.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf8DxvmsQfAxjg8cLAA--.40214S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxCryxKFW5Xw1fZryfGr4xCrg_yoWrXrWDpF
+        9rAw1DJrWUWr1kZryqva4DurykJ3s7Cw429ayaka4fAa1Iq3WrXr1vqFyDZF1Yya1kGFW0
+        qasYg3sxta1jqaUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkjb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4
+        vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
+        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r
+        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE-syl42xK82IY
+        c2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s
+        026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF
+        0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0x
+        vE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv
+        6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x07beJ5wUUUUU=
+X-CM-SenderInfo: xpdruxter6z05rqj20fqof0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 3:05 PM <Conor.Dooley@microchip.com> wrote:
->
-> Hey Zong,
->
-> On 29/08/2022 07:22, Zong Li wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >
-> > From: Greentime Hu <greentime.hu@sifive.com>
-> >
-> > Since composible cache may be L3 cache if pL2 cache exists, we should use
-> > its original name composible cache to prevent confusion.
-> >
-> > Signed-off-by: Greentime Hu <greentime.hu@sifive.com>
-> > Signed-off-by: Zong Li <zong.li@sifive.com>
-> > ---
-> >   drivers/soc/sifive/Kconfig           |   7 +-
-> >   drivers/soc/sifive/Makefile          |   2 +-
-> >   drivers/soc/sifive/sifive_ccache.c   | 221 +++++++++++++++++++++++++
-> >   drivers/soc/sifive/sifive_l2_cache.c | 237 ---------------------------
->
-> Where did the 16 lines go? Could you please split renames off from any
-> other changes so that it is easier to see what has changed?
+LoongArch uses general purpose register R2 as thread pointer(TP)
+register, signal hanlder also uses TP register to access variables
+in TLS area, such as errno and variable in TLS.
 
-As your suggestion, we should separate the difference from this patch
+If GPR R2 is modified with wrong value, signal handler still uses
+the wrong TP register, so signal hanlder is insafe to access TLS
+variable.
 
->
-> >   include/soc/sifive/sifive_ccache.h   |  16 ++
-> >   include/soc/sifive/sifive_l2_cache.h |  16 --
-> >   6 files changed, 242 insertions(+), 257 deletions(-)
-> >   create mode 100644 drivers/soc/sifive/sifive_ccache.c
-> >   delete mode 100644 drivers/soc/sifive/sifive_l2_cache.c
-> >   create mode 100644 include/soc/sifive/sifive_ccache.h
-> >   delete mode 100644 include/soc/sifive/sifive_l2_cache.h
-> >
-> > diff --git a/drivers/soc/sifive/Kconfig b/drivers/soc/sifive/Kconfig
-> > index 58cf8c40d08d..3d65d2771f9a 100644
-> > --- a/drivers/soc/sifive/Kconfig
-> > +++ b/drivers/soc/sifive/Kconfig
-> > @@ -2,9 +2,10 @@
-> >
-> >   if SOC_SIFIVE
-> >
-> > -config SIFIVE_L2
-> > -       bool "Sifive L2 Cache controller"
-> > +config SIFIVE_CCACHE
-> > +       bool "Sifive composable Cache controller"
-> > +       default y
->
-> Changing this to default on is not a rename of the file..
-> This should be in a different patch.
+This patch adds one arch specific syscall set_thread_area, and
+restore previoud TP value before signal handler, so that signal
+handler is safe to access TLS variable.
 
-Okay, let me separate it to another patch, but I guess we could remove
-it, and enable it by user. What is your perspective on it?
+Signed-off-by: Mao Bibo <maobibo@loongson.cn>
+---
+ arch/loongarch/include/asm/unistd.h      |  1 +
+ arch/loongarch/include/uapi/asm/unistd.h |  2 ++
+ arch/loongarch/kernel/process.c          |  5 ++++-
+ arch/loongarch/kernel/signal.c           |  2 ++
+ arch/loongarch/kernel/syscall.c          | 10 ++++++++++
+ 5 files changed, 19 insertions(+), 1 deletion(-)
 
->
-> >          help
-> > -         Support for the L2 cache controller on SiFive platforms.
-> > +         Support for the composable cache controller on SiFive platforms.
-> >
-> >   endif
-> > diff --git a/drivers/soc/sifive/Makefile b/drivers/soc/sifive/Makefile
-> > index b5caff77938f..1f5dc339bf82 100644
-> > --- a/drivers/soc/sifive/Makefile
-> > +++ b/drivers/soc/sifive/Makefile
-> > @@ -1,3 +1,3 @@
-> >   # SPDX-License-Identifier: GPL-2.0
-> >
-> > -obj-$(CONFIG_SIFIVE_L2)        += sifive_l2_cache.o
-> > +obj-$(CONFIG_SIFIVE_CCACHE)    += sifive_ccache.o
-> > diff --git a/drivers/soc/sifive/sifive_ccache.c b/drivers/soc/sifive/sifive_ccache.c
-> > new file mode 100644
-> > index 000000000000..46ce33db7d30
-> > --- /dev/null
-> > +++ b/drivers/soc/sifive/sifive_ccache.c
-> > @@ -0,0 +1,221 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * SiFive composable cache controller Driver
-> > + *
-> > + * Copyright (C) 2018-2019 SiFive, Inc.
-> > + *
-> > + */
-> > +#include <linux/debugfs.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/of_irq.h>
-> > +#include <linux/of_address.h>
-> > +#include <linux/device.h>
-> > +#include <asm/cacheinfo.h>
-> > +#include <soc/sifive/sifive_ccache.h>
-> > +
-> > +#define SIFIVE_CCACHE_DIRECCFIX_LOW 0x100
-> > +#define SIFIVE_CCACHE_DIRECCFIX_HIGH 0x104
-> > +#define SIFIVE_CCACHE_DIRECCFIX_COUNT 0x108
-> > +
-> > +#define SIFIVE_CCACHE_DATECCFIX_LOW 0x140
-> > +#define SIFIVE_CCACHE_DATECCFIX_HIGH 0x144
-> > +#define SIFIVE_CCACHE_DATECCFIX_COUNT 0x148
-> > +
-> > +#define SIFIVE_CCACHE_DATECCFAIL_LOW 0x160
-> > +#define SIFIVE_CCACHE_DATECCFAIL_HIGH 0x164
-> > +#define SIFIVE_CCACHE_DATECCFAIL_COUNT 0x168
-> > +
-> > +#define SIFIVE_CCACHE_CONFIG 0x00
-> > +#define SIFIVE_CCACHE_WAYENABLE 0x08
-> > +#define SIFIVE_CCACHE_ECCINJECTERR 0x40
->
->  From what I can see, you've also changed these around too?
-> Please generate the patch's diff so that the rename is detected & the
-> diff shows only what changed in the file. The -M option is what you
-> are looking for.
->
-> I have a couple other comments to make about what's changed here other,
-> thatn the rename but I will do so against a v2 where the diff is usable.
->
+diff --git a/arch/loongarch/include/asm/unistd.h b/arch/loongarch/include/asm/unistd.h
+index cfddb0116a8c..1581624f0115 100644
+--- a/arch/loongarch/include/asm/unistd.h
++++ b/arch/loongarch/include/asm/unistd.h
+@@ -9,3 +9,4 @@
+ #include <uapi/asm/unistd.h>
+ 
+ #define NR_syscalls (__NR_syscalls)
++__SYSCALL(__NR_set_thread_area, sys_set_thread_area)
+diff --git a/arch/loongarch/include/uapi/asm/unistd.h b/arch/loongarch/include/uapi/asm/unistd.h
+index fcb668984f03..b47f26b5307b 100644
+--- a/arch/loongarch/include/uapi/asm/unistd.h
++++ b/arch/loongarch/include/uapi/asm/unistd.h
+@@ -3,3 +3,5 @@
+ #define __ARCH_WANT_SYS_CLONE3
+ 
+ #include <asm-generic/unistd.h>
++
++#define __NR_set_thread_area	(__NR_arch_specific_syscall + 0)
+diff --git a/arch/loongarch/kernel/process.c b/arch/loongarch/kernel/process.c
+index 660492f064e7..9f512c91320e 100644
+--- a/arch/loongarch/kernel/process.c
++++ b/arch/loongarch/kernel/process.c
+@@ -88,6 +88,7 @@ void start_thread(struct pt_regs *regs, unsigned long pc, unsigned long sp)
+ 	clear_used_math();
+ 	regs->csr_era = pc;
+ 	regs->regs[3] = sp;
++	task_thread_info(current)->tp_value = 0;
+ }
+ 
+ void exit_thread(struct task_struct *tsk)
+@@ -176,8 +177,10 @@ int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
+ 	clear_tsk_thread_flag(p, TIF_LSX_CTX_LIVE);
+ 	clear_tsk_thread_flag(p, TIF_LASX_CTX_LIVE);
+ 
+-	if (clone_flags & CLONE_SETTLS)
++	if (clone_flags & CLONE_SETTLS) {
+ 		childregs->regs[2] = tls;
++		task_thread_info(p)->tp_value = tls;
++	}
+ 
+ 	return 0;
+ }
+diff --git a/arch/loongarch/kernel/signal.c b/arch/loongarch/kernel/signal.c
+index 7f4889df4a17..2eca555fd4a6 100644
+--- a/arch/loongarch/kernel/signal.c
++++ b/arch/loongarch/kernel/signal.c
+@@ -487,6 +487,8 @@ static int setup_rt_frame(void *sig_return, struct ksignal *ksig,
+ 	regs->regs[3] = (unsigned long) frame;
+ 	regs->regs[1] = (unsigned long) sig_return;
+ 	regs->csr_era = (unsigned long) ksig->ka.sa.sa_handler;
++	if (task_thread_info(current)->tp_value)
++		regs->regs[2] = task_thread_info(current)->tp_value;
+ 
+ 	DEBUGP("SIG deliver (%s:%d): sp=0x%p pc=0x%lx ra=0x%lx\n",
+ 	       current->comm, current->pid,
+diff --git a/arch/loongarch/kernel/syscall.c b/arch/loongarch/kernel/syscall.c
+index 3fc4211db989..b62560d8fe24 100644
+--- a/arch/loongarch/kernel/syscall.c
++++ b/arch/loongarch/kernel/syscall.c
+@@ -29,6 +29,16 @@ SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len, unsigned long,
+ 	return ksys_mmap_pgoff(addr, len, prot, flags, fd, offset >> PAGE_SHIFT);
+ }
+ 
++SYSCALL_DEFINE1(set_thread_area, unsigned long, addr)
++{
++	struct thread_info *ti   = task_thread_info(current);
++	struct pt_regs     *regs = current_pt_regs();
++
++	regs->regs[2] = addr;
++	ti->tp_value  = addr;
++	return 0;
++}
++
+ void *sys_call_table[__NR_syscalls] = {
+ 	[0 ... __NR_syscalls - 1] = sys_ni_syscall,
+ #include <asm/unistd.h>
+-- 
+2.27.0
 
-Let me sent the v2 patch, and separate the rename and diff part
-
-> Thanks,
-> Conor.
->
-> > +
-> > +#define SIFIVE_CCACHE_MAX_ECCINTR 3
