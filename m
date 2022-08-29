@@ -2,69 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 879C9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C43ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbiH2IK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55678 "EHLO
+        id S229945AbiH2ILi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiH2IKw (ORCPT
+        with ESMTP id S229935AbiH2ILV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 04:10:52 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88069543DB;
-        Mon, 29 Aug 2022 01:10:38 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id B5A022059C;
-        Mon, 29 Aug 2022 10:09:44 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id eZo_ZvLRGrG9; Mon, 29 Aug 2022 10:09:44 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 4364720590;
-        Mon, 29 Aug 2022 10:09:44 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 33F2080004A;
-        Mon, 29 Aug 2022 10:09:44 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 29 Aug 2022 10:09:44 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Mon, 29 Aug
- 2022 10:09:43 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 5A91D3182ABC; Mon, 29 Aug 2022 10:09:43 +0200 (CEST)
-Date:   Mon, 29 Aug 2022 10:09:43 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Hongbin Wang <wh_bin@126.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] xfrm: Drop unused argument
-Message-ID: <20220829080943.GN566407@gauss3.secunet.de>
-References: <20220822034147.2284570-1-wh_bin@126.com>
+        Mon, 29 Aug 2022 04:11:21 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14BC50729;
+        Mon, 29 Aug 2022 01:11:13 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 08:11:09 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661760670;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FNkj2Cwu39FkpzSR+XX6CPYsrzYX8zE8OPeMOPRN6zk=;
+        b=EbWhfMiz+xN1kQjsKbPWHLcYMupeeVHRinv36mP8dUEzRhJyOtbq9O9YfuAYgMQp3skCE/
+        gkozx3Cc+Pb736/c37e/LE8Q3LQ2brYuRY4ga22nIMvGRC7xe/klI1cBuS74Z3IzUhn7Sq
+        bszLUJLUljPOtpXvgANEOMa06zdKHnMiIUF0QlOlFq6KVZ/7W98b3W2aOEr0U9mMKxVL5f
+        MqoXnPYowDJy3cga5NMH1uVwyfCZrmcuK5hSgp1b86AvxoywaW9idTKtsSNmJ5gdTY7bPw
+        TlJe6rPcxcjUo4YK6A0nZTQ3jnz5DfCFy0lGwY1NIoXFmPjslB2aalPXOPELTw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661760670;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FNkj2Cwu39FkpzSR+XX6CPYsrzYX8zE8OPeMOPRN6zk=;
+        b=4XTY+mnl7rG9LZI8CwixYx8SKUsNiesE+lDMolP65RxOjM2ePy3xlkAC5Wjbk20yJ53/AV
+        36TpDURbG8txy0Cw==
+From:   "tip-bot2 for Jane Chu" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: ras/core] x86/mce: Retrieve poison range from hardware
+Cc:     Jane Chu <jane.chu@oracle.com>, Borislav Petkov <bp@suse.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Ingo Molnar <mingo@kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <7ed50fd8-521e-cade-77b1-738b8bfb8502@oracle.com>
+References: <7ed50fd8-521e-cade-77b1-738b8bfb8502@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220822034147.2284570-1-wh_bin@126.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Message-ID: <166176066946.401.17043823201433426666.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 11:41:47PM -0400, Hongbin Wang wrote:
-> Drop unused argument from xfrm_policy_match,
-> __xfrm_policy_eval_candidates and xfrm_policy_eval_candidates.
-> No functional changes intended.
-> 
-> Signed-off-by: Hongbin Wang <wh_bin@126.com>
+The following commit has been merged into the ras/core branch of tip:
 
-Applied to ipsec-next, thanks!
+Commit-ID:     f9781bb18ed828e7b83b7bac4a4ad7cd497ee7d7
+Gitweb:        https://git.kernel.org/tip/f9781bb18ed828e7b83b7bac4a4ad7cd497ee7d7
+Author:        Jane Chu <jane.chu@oracle.com>
+AuthorDate:    Fri, 26 Aug 2022 17:38:51 -06:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 29 Aug 2022 09:33:42 +02:00
+
+x86/mce: Retrieve poison range from hardware
+
+When memory poison consumption machine checks fire, MCE notifier
+handlers like nfit_handle_mce() record the impacted physical address
+range which is reported by the hardware in the MCi_MISC MSR. The error
+information includes data about blast radius, i.e. how many cachelines
+did the hardware determine are impacted. A recent change
+
+  7917f9cdb503 ("acpi/nfit: rely on mce->misc to determine poison granularity")
+
+updated nfit_handle_mce() to stop hard coding the blast radius value of
+1 cacheline, and instead rely on the blast radius reported in 'struct
+mce' which can be up to 4K (64 cachelines).
+
+It turns out that apei_mce_report_mem_error() had a similar problem in
+that it hard coded a blast radius of 4K rather than reading the blast
+radius from the error information. Fix apei_mce_report_mem_error() to
+convey the proper poison granularity.
+
+Signed-off-by: Jane Chu <jane.chu@oracle.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Reviewed-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/7ed50fd8-521e-cade-77b1-738b8bfb8502@oracle.com
+Link: https://lore.kernel.org/r/20220826233851.1319100-1-jane.chu@oracle.com
+---
+ arch/x86/kernel/cpu/mce/apei.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/cpu/mce/apei.c b/arch/x86/kernel/cpu/mce/apei.c
+index 7171929..8ed3417 100644
+--- a/arch/x86/kernel/cpu/mce/apei.c
++++ b/arch/x86/kernel/cpu/mce/apei.c
+@@ -29,15 +29,26 @@
+ void apei_mce_report_mem_error(int severity, struct cper_sec_mem_err *mem_err)
+ {
+ 	struct mce m;
++	int lsb;
+ 
+ 	if (!(mem_err->validation_bits & CPER_MEM_VALID_PA))
+ 		return;
+ 
++	/*
++	 * Even if the ->validation_bits are set for address mask,
++	 * to be extra safe, check and reject an error radius '0',
++	 * and fall back to the default page size.
++	 */
++	if (mem_err->validation_bits & CPER_MEM_VALID_PA_MASK)
++		lsb = find_first_bit((void *)&mem_err->physical_addr_mask, PAGE_SHIFT);
++	else
++		lsb = PAGE_SHIFT;
++
+ 	mce_setup(&m);
+ 	m.bank = -1;
+ 	/* Fake a memory read error with unknown channel */
+ 	m.status = MCI_STATUS_VAL | MCI_STATUS_EN | MCI_STATUS_ADDRV | MCI_STATUS_MISCV | 0x9f;
+-	m.misc = (MCI_MISC_ADDR_PHYS << 6) | PAGE_SHIFT;
++	m.misc = (MCI_MISC_ADDR_PHYS << 6) | lsb;
+ 
+ 	if (severity >= GHES_SEV_RECOVERABLE)
+ 		m.status |= MCI_STATUS_UC;
