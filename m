@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E372ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41903ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230507AbiH2MNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
+        id S231482AbiH2MNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230059AbiH2MMw (ORCPT
+        with ESMTP id S229498AbiH2MMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:12:52 -0400
+        Mon, 29 Aug 2022 08:12:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE119E884;
-        Mon, 29 Aug 2022 04:57:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763A79E891;
+        Mon, 29 Aug 2022 04:57:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8891961228;
-        Mon, 29 Aug 2022 11:16:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8274FC433C1;
-        Mon, 29 Aug 2022 11:16:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E45466123C;
+        Mon, 29 Aug 2022 11:18:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED292C433D6;
+        Mon, 29 Aug 2022 11:18:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771774;
-        bh=R4T94vtZ3ZRvYbtdw32BSmh5FI54ZGJj12qgQnW53Xw=;
+        s=korg; t=1661771909;
+        bh=k099SGT6cbJNMFaxVYzbiadsUxeStwCwgm8jejTEimg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XYRBgnPw8NHC4+qn6A6RGO81KzkGGUd0YVpi1oNueziN4AFkpk9e7ezsTOjx+wvdP
-         KbTIg/KWNXdgkIwRAy5ktniW0N5/OxXoNwS8GcKgQvZVqoajvTon17hVi6nTY2UnUr
-         YLNMv9xH14++OXnJUuXF5o5vNubxVa8h5DUquO50=
+        b=B/BnkPiBaxwpntXM3nhaXGZKXy8sKGuwrt8NEHa4OSz5fp2lHQh32JDPPkrXU/z/j
+         nhbLGccnlJgEl7y/UigruufWlw7cmyworKINUySM9R31N2d/3GyP2aCqJPJH5UOu5o
+         6kvyFJ20TuhVPfLG72KKA2+h96+TE6VRY2fPf/l4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.19 094/158] btrfs: fix silent failure when deleting root reference
-Date:   Mon, 29 Aug 2022 12:59:04 +0200
-Message-Id: <20220829105813.001422562@linuxfoundation.org>
+        stable@vger.kernel.org, Shreyas K K <quic_shrekk@quicinc.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
+Subject: [PATCH 5.19 137/158] arm64: Fix match_list for erratum 1286807 on Arm Cortex-A76
+Date:   Mon, 29 Aug 2022 12:59:47 +0200
+Message-Id: <20220829105814.824211263@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,43 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Zenghui Yu <yuzenghui@huawei.com>
 
-commit 47bf225a8d2cccb15f7e8d4a1ed9b757dd86afd7 upstream.
+commit 5e1e087457c94ad7fafbe1cf6f774c6999ee29d4 upstream.
 
-At btrfs_del_root_ref(), if btrfs_search_slot() returns an error, we end
-up returning from the function with a value of 0 (success). This happens
-because the function returns the value stored in the variable 'err',
-which is 0, while the error value we got from btrfs_search_slot() is
-stored in the 'ret' variable.
+Since commit 51f559d66527 ("arm64: Enable repeat tlbi workaround on KRYO4XX
+gold CPUs"), we failed to detect erratum 1286807 on Cortex-A76 because its
+entry in arm64_repeat_tlbi_list[] was accidently corrupted by this commit.
 
-So fix it by setting 'err' with the error value.
+Fix this issue by creating a separate entry for Kryo4xx Gold.
 
-Fixes: 8289ed9f93bef2 ("btrfs: replace the BUG_ON in btrfs_del_root_ref with proper error handling")
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 51f559d66527 ("arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs")
+Cc: Shreyas K K <quic_shrekk@quicinc.com>
+Signed-off-by: Zenghui Yu <yuzenghui@huawei.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220809043848.969-1-yuzenghui@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/root-tree.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/arm64/kernel/cpu_errata.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/btrfs/root-tree.c
-+++ b/fs/btrfs/root-tree.c
-@@ -349,9 +349,10 @@ int btrfs_del_root_ref(struct btrfs_tran
- 	key.offset = ref_id;
- again:
- 	ret = btrfs_search_slot(trans, tree_root, &key, path, -1, 1);
--	if (ret < 0)
-+	if (ret < 0) {
-+		err = ret;
- 		goto out;
--	if (ret == 0) {
-+	} else if (ret == 0) {
- 		leaf = path->nodes[0];
- 		ref = btrfs_item_ptr(leaf, path->slots[0],
- 				     struct btrfs_root_ref);
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -208,6 +208,8 @@ static const struct arm64_cpu_capabiliti
+ #ifdef CONFIG_ARM64_ERRATUM_1286807
+ 	{
+ 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
++	},
++	{
+ 		/* Kryo4xx Gold (rcpe to rfpe) => (r0p0 to r3p0) */
+ 		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
+ 	},
 
 
