@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C890ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83168ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbiH2L20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:28:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40842 "EHLO
+        id S232078AbiH2L2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:28:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232038AbiH2L0x (ORCPT
+        with ESMTP id S232210AbiH2L1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:26:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6DA78591;
-        Mon, 29 Aug 2022 04:16:33 -0700 (PDT)
+        Mon, 29 Aug 2022 07:27:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2C2792D0;
+        Mon, 29 Aug 2022 04:16:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8F04611D7;
-        Mon, 29 Aug 2022 11:15:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB11BC433C1;
-        Mon, 29 Aug 2022 11:15:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A604B80F1A;
+        Mon, 29 Aug 2022 11:16:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E5D6C433D7;
+        Mon, 29 Aug 2022 11:16:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771704;
-        bh=Rtv0W/RxDptni++jUiUdRolbugDTJsRA+DiimTN3q/w=;
+        s=korg; t=1661771789;
+        bh=rFVOy60Ssxsd9xCHOb/9NOIGTIKPDZteDKKp7l8ln3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H0+4tscDltwC33hEtLsg29hj2SRkSGZf9GWgJg3JcQrWo7WFqryjiLqVEsU3HysA9
-         uW4KVRLPDoqvQJRhVALzQxXweoKbqOl+hqFcqxUOnNXCjFBAxYNbQ0I4mobpTEXqfY
-         2PQ8bxPDGQOD9virhF1dSqxTwY1RoBIpLemyZIq4=
+        b=aMjlZlVGbgfPGmTSDdMfZOhDb/mvYN3kQdAdw4wxjANni64FeNfSn3z6Uzri4OAH8
+         oi02MDLQk8EiGROBMdLkZcOV9haKZt0pUSh1VXByzQT1hrnM6VMpjCWljJ4z6O7tHy
+         6EfYZqxwm0uMmmow2A62wcfFLwmPkkxeXgI/Rl2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 068/158] net: Fix data-races around netdev_tstamp_prequeue.
-Date:   Mon, 29 Aug 2022 12:58:38 +0200
-Message-Id: <20220829105811.838301381@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.19 098/158] btrfs: check if root is readonly while setting security xattr
+Date:   Mon, 29 Aug 2022 12:59:08 +0200
+Message-Id: <20220829105813.198259823@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,63 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Goldwyn Rodrigues <rgoldwyn@suse.de>
 
-[ Upstream commit 61adf447e38664447526698872e21c04623afb8e ]
+commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
 
-While reading netdev_tstamp_prequeue, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+For a filesystem which has btrfs read-only property set to true, all
+write operations including xattr should be denied. However, security
+xattr can still be changed even if btrfs ro property is true.
 
-Fixes: 3b098e2d7c69 ("net: Consistent skb timestamping")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This happens because xattr_permission() does not have any restrictions
+on security.*, system.*  and in some cases trusted.* from VFS and
+the decision is left to the underlying filesystem. See comments in
+xattr_permission() for more details.
+
+This patch checks if the root is read-only before performing the set
+xattr operation.
+
+Testcase:
+
+  DEV=/dev/vdb
+  MNT=/mnt
+
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
+  echo "file one" > $MNT/f1
+
+  setfattr -n "security.one" -v 2 $MNT/f1
+  btrfs property set /mnt ro true
+
+  setfattr -n "security.one" -v 1 $MNT/f1
+
+  umount $MNT
+
+CC: stable@vger.kernel.org # 4.9+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/dev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/btrfs/xattr.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index e1496e626a532..34282b93c3f60 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4927,7 +4927,7 @@ static int netif_rx_internal(struct sk_buff *skb)
+--- a/fs/btrfs/xattr.c
++++ b/fs/btrfs/xattr.c
+@@ -371,6 +371,9 @@ static int btrfs_xattr_handler_set(const
+ 				   const char *name, const void *buffer,
+ 				   size_t size, int flags)
  {
- 	int ret;
- 
--	net_timestamp_check(netdev_tstamp_prequeue, skb);
-+	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
- 
- 	trace_netif_rx(skb);
- 
-@@ -5280,7 +5280,7 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
- 	int ret = NET_RX_DROP;
- 	__be16 type;
- 
--	net_timestamp_check(!netdev_tstamp_prequeue, skb);
-+	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
- 
- 	trace_netif_receive_skb(skb);
- 
-@@ -5663,7 +5663,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
- {
- 	int ret;
- 
--	net_timestamp_check(netdev_tstamp_prequeue, skb);
-+	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
- 
- 	if (skb_defer_rx_timestamp(skb))
- 		return NET_RX_SUCCESS;
-@@ -5693,7 +5693,7 @@ void netif_receive_skb_list_internal(struct list_head *head)
- 
- 	INIT_LIST_HEAD(&sublist);
- 	list_for_each_entry_safe(skb, next, head, list) {
--		net_timestamp_check(netdev_tstamp_prequeue, skb);
-+		net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
- 		skb_list_del_init(skb);
- 		if (!skb_defer_rx_timestamp(skb))
- 			list_add_tail(&skb->list, &sublist);
--- 
-2.35.1
-
++	if (btrfs_root_readonly(BTRFS_I(inode)->root))
++		return -EROFS;
++
+ 	name = xattr_full_name(handler, name);
+ 	return btrfs_setxattr_trans(inode, name, buffer, size, flags);
+ }
 
 
