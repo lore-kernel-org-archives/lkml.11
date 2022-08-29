@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA796ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B64BAECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:07:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230417AbiH2LH0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
+        id S230433AbiH2LHg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:07:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229557AbiH2LGv (ORCPT
+        with ESMTP id S230384AbiH2LGx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:06:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F218AE75;
-        Mon, 29 Aug 2022 04:04:54 -0700 (PDT)
+        Mon, 29 Aug 2022 07:06:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 750D011177;
+        Mon, 29 Aug 2022 04:04:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 883566119E;
-        Mon, 29 Aug 2022 11:04:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 926D8C433D7;
-        Mon, 29 Aug 2022 11:04:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C349611BD;
+        Mon, 29 Aug 2022 11:03:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BB4FC433C1;
+        Mon, 29 Aug 2022 11:03:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771090;
-        bh=gwq1OqMwhb/YuVfl7qY3edF58qVgD9W2LIDU7en9DcE=;
+        s=korg; t=1661770997;
+        bh=mJwK8c6C68zneecaNx23HbUHfdyLR1wIDgrBIkJKT3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vBNfYcR8PBs3fMOe/BJsNM2FGNLmSG4htLNx0hGZS0502vEAzSw72NJhV5u/9MiSt
-         8xvdwokHm4BZrUwA3JZg0/JVh7i3BDZuUX4cmg8389gka5RQ7WopveyRxQZCoN6m7+
-         GCPdZ6KeMJWJSa4Icg5JYhM0bs+mcqoYliC/+l24=
+        b=q2sJF/PwmQV9Gr6ooXOEGNgxpFtQ2HzYZuAtvxYuaWg08T5FWFJ1Qvw+4SeBRx5EY
+         JTpICqDbWUtoM1lGCv7Pm3pS3SXY5DRXzwA9/KMCoyQtsbBJVlvaariQP66EDDCL5z
+         lrw72fGkh/6xeOEenTOlSuWoIRFtd5H2gaUeo3Yk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 060/136] netfilter: nft_osf: restrict osf to ipv4, ipv6 and inet families
-Date:   Mon, 29 Aug 2022 12:58:47 +0200
-Message-Id: <20220829105807.084811764@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 05/86] xfs: prevent a WARN_ONCE() in xfs_ioc_attr_list()
+Date:   Mon, 29 Aug 2022 12:58:31 +0200
+Message-Id: <20220829105756.743714196@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,50 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 5f3b7aae14a706d0d7da9f9e39def52ff5fc3d39 ]
+commit 6ed6356b07714e0198be3bc3ecccc8b40a212de4 upstream.
 
-As it was originally intended, restrict extension to supported families.
+The "bufsize" comes from the root user.  If "bufsize" is negative then,
+because of type promotion, neither of the validation checks at the start
+of the function are able to catch it:
 
-Fixes: b96af92d6eaf ("netfilter: nf_tables: implement Passive OS fingerprint module in nft_osf")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+	if (bufsize < sizeof(struct xfs_attrlist) ||
+	    bufsize > XFS_XATTR_LIST_MAX)
+		return -EINVAL;
+
+This means "bufsize" will trigger (WARN_ON_ONCE(size > INT_MAX)) in
+kvmalloc_node().  Fix this by changing the type from int to size_t.
+
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_osf.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ fs/xfs/xfs_ioctl.c |    2 +-
+ fs/xfs/xfs_ioctl.h |    5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/netfilter/nft_osf.c b/net/netfilter/nft_osf.c
-index d82677e83400b..720dc9fba6d4f 100644
---- a/net/netfilter/nft_osf.c
-+++ b/net/netfilter/nft_osf.c
-@@ -115,9 +115,21 @@ static int nft_osf_validate(const struct nft_ctx *ctx,
- 			    const struct nft_expr *expr,
- 			    const struct nft_data **data)
+--- a/fs/xfs/xfs_ioctl.c
++++ b/fs/xfs/xfs_ioctl.c
+@@ -371,7 +371,7 @@ int
+ xfs_ioc_attr_list(
+ 	struct xfs_inode		*dp,
+ 	void __user			*ubuf,
+-	int				bufsize,
++	size_t				bufsize,
+ 	int				flags,
+ 	struct xfs_attrlist_cursor __user *ucursor)
  {
--	return nft_chain_validate_hooks(ctx->chain, (1 << NF_INET_LOCAL_IN) |
--						    (1 << NF_INET_PRE_ROUTING) |
--						    (1 << NF_INET_FORWARD));
-+	unsigned int hooks;
-+
-+	switch (ctx->family) {
-+	case NFPROTO_IPV4:
-+	case NFPROTO_IPV6:
-+	case NFPROTO_INET:
-+		hooks = (1 << NF_INET_LOCAL_IN) |
-+			(1 << NF_INET_PRE_ROUTING) |
-+			(1 << NF_INET_FORWARD);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return nft_chain_validate_hooks(ctx->chain, hooks);
- }
+--- a/fs/xfs/xfs_ioctl.h
++++ b/fs/xfs/xfs_ioctl.h
+@@ -38,8 +38,9 @@ xfs_readlink_by_handle(
+ int xfs_ioc_attrmulti_one(struct file *parfilp, struct inode *inode,
+ 		uint32_t opcode, void __user *uname, void __user *value,
+ 		uint32_t *len, uint32_t flags);
+-int xfs_ioc_attr_list(struct xfs_inode *dp, void __user *ubuf, int bufsize,
+-	int flags, struct xfs_attrlist_cursor __user *ucursor);
++int xfs_ioc_attr_list(struct xfs_inode *dp, void __user *ubuf,
++		      size_t bufsize, int flags,
++		      struct xfs_attrlist_cursor __user *ucursor);
  
- static struct nft_expr_type nft_osf_type;
--- 
-2.35.1
-
+ extern struct dentry *
+ xfs_handle_to_dentry(
 
 
