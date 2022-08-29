@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BC8ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E391ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232597AbiH2Lco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:32:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
+        id S232406AbiH2Lcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232727AbiH2L3q (ORCPT
+        with ESMTP id S232734AbiH2L3r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:29:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B087B287;
-        Mon, 29 Aug 2022 04:18:17 -0700 (PDT)
+        Mon, 29 Aug 2022 07:29:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC30F7C191;
+        Mon, 29 Aug 2022 04:18:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D03F6B80E4C;
-        Mon, 29 Aug 2022 11:18:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155EBC433C1;
-        Mon, 29 Aug 2022 11:18:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E052361214;
+        Mon, 29 Aug 2022 11:17:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D512BC433C1;
+        Mon, 29 Aug 2022 11:17:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771881;
-        bh=+V/D1GHL9qP5qXMTVQSMo8g0Czk/LRtjnEWZXR0z0IM=;
+        s=korg; t=1661771872;
+        bh=7++Nr++HgOMxjyxbs3OmthF94zfoso/08sA2ksR5Zkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DZQNn3w+NctsR+esguj4zA3BCm8eOK5QltKJF0TgDqY4deftZT1/LO6Fn5sGgqFV+
-         cDneZqKseAgAITTtTqSnMDUOZwFRHLic1jsSQFCiXY+adW37pZeORvQmi8SKFsIVmP
-         Z+WDMOINMLPVinGsGF6JZNC9ds+dmIN6vY802Fd8=
+        b=cDvaxdlwGLzXhKy3lha5D9enoFlDL7iFnjtiDmcAbcdo6jKscG7iRJUuj3TkWb9aH
+         BR/2K/TNpe/VZpQwH0iNQbf2IvddqvkMYYrjgtvH5fU6PraCxKfpB5bSFcYLrm6OPR
+         54rkKqhNjIWLI9j0RFzvbkFJt6gg3UrB9pKyssTQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 129/158] riscv: signal: fix missing prototype warning
-Date:   Mon, 29 Aug 2022 12:59:39 +0200
-Message-Id: <20220829105814.497687057@linuxfoundation.org>
+        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.19 126/158] smb3: missing inode locks in punch hole
+Date:   Mon, 29 Aug 2022 12:59:36 +0200
+Message-Id: <20220829105814.385048397@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -48,54 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: David Howells <dhowells@redhat.com>
 
-commit b5c3aca86d2698c4850b6ee8b341938025d2780c upstream.
+commit ba0803050d610d5072666be727bca5e03e55b242 upstream.
 
-Fix the warning:
-arch/riscv/kernel/signal.c:316:27: warning: no previous prototype for function 'do_notify_resume' [-Wmissing-prototypes]
-asmlinkage __visible void do_notify_resume(struct pt_regs *regs,
+smb3 fallocate punch hole was not grabbing the inode or filemap_invalidate
+locks so could have race with pagemap reinstantiating the page.
 
-All other functions in the file are static & none of the existing
-headers stood out as an obvious location. Create signal.h to hold the
-declaration.
-
-Fixes: e2c0cdfba7f6 ("RISC-V: User-facing API")
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220814141237.493457-4-mail@conchuod.ie
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/signal.h |   12 ++++++++++++
- arch/riscv/kernel/signal.c      |    1 +
- 2 files changed, 13 insertions(+)
- create mode 100644 arch/riscv/include/asm/signal.h
+ fs/cifs/smb2ops.c |   12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- /dev/null
-+++ b/arch/riscv/include/asm/signal.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+
-+#ifndef __ASM_SIGNAL_H
-+#define __ASM_SIGNAL_H
-+
-+#include <uapi/asm/signal.h>
-+#include <uapi/asm/ptrace.h>
-+
-+asmlinkage __visible
-+void do_notify_resume(struct pt_regs *regs, unsigned long thread_info_flags);
-+
-+#endif
---- a/arch/riscv/kernel/signal.c
-+++ b/arch/riscv/kernel/signal.c
-@@ -15,6 +15,7 @@
+--- a/fs/cifs/smb2ops.c
++++ b/fs/cifs/smb2ops.c
+@@ -3671,7 +3671,7 @@ static long smb3_zero_range(struct file
+ static long smb3_punch_hole(struct file *file, struct cifs_tcon *tcon,
+ 			    loff_t offset, loff_t len)
+ {
+-	struct inode *inode;
++	struct inode *inode = file_inode(file);
+ 	struct cifsFileInfo *cfile = file->private_data;
+ 	struct file_zero_data_information fsctl_buf;
+ 	long rc;
+@@ -3680,14 +3680,12 @@ static long smb3_punch_hole(struct file
  
- #include <asm/ucontext.h>
- #include <asm/vdso.h>
-+#include <asm/signal.h>
- #include <asm/signal32.h>
- #include <asm/switch_to.h>
- #include <asm/csr.h>
+ 	xid = get_xid();
+ 
+-	inode = d_inode(cfile->dentry);
+-
++	inode_lock(inode);
+ 	/* Need to make file sparse, if not already, before freeing range. */
+ 	/* Consider adding equivalent for compressed since it could also work */
+ 	if (!smb2_set_sparse(xid, tcon, cfile, inode, set_sparse)) {
+ 		rc = -EOPNOTSUPP;
+-		free_xid(xid);
+-		return rc;
++		goto out;
+ 	}
+ 
+ 	filemap_invalidate_lock(inode->i_mapping);
+@@ -3707,8 +3705,10 @@ static long smb3_punch_hole(struct file
+ 			true /* is_fctl */, (char *)&fsctl_buf,
+ 			sizeof(struct file_zero_data_information),
+ 			CIFSMaxBufSize, NULL, NULL);
+-	free_xid(xid);
+ 	filemap_invalidate_unlock(inode->i_mapping);
++out:
++	inode_unlock(inode);
++	free_xid(xid);
+ 	return rc;
+ }
+ 
 
 
