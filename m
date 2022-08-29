@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67158ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:11:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B94ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:11:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbiH2LLC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58948 "EHLO
+        id S230382AbiH2LLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:11:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230218AbiH2LJr (ORCPT
+        with ESMTP id S231157AbiH2LJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:09:47 -0400
+        Mon, 29 Aug 2022 07:09:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7ABFF38;
-        Mon, 29 Aug 2022 04:07:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97BA46B8D0;
+        Mon, 29 Aug 2022 04:06:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 349D3611B8;
-        Mon, 29 Aug 2022 11:06:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 437F5C433C1;
-        Mon, 29 Aug 2022 11:06:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 613646119C;
+        Mon, 29 Aug 2022 11:06:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FD97C433D6;
+        Mon, 29 Aug 2022 11:06:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771211;
-        bh=NYCwG859uJIhAtdvy/+qVTFDXKYZDN79rU5MqeTeFxs=;
+        s=korg; t=1661771193;
+        bh=YvQTDZ2LaFckt1CYRqE5G5/auWDjJFOYRMGfOcY4TCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gLKZVxQQXLf1SSDYBnDpD2gX4Bbj6e75gFi5GvJQ5TaeyzwRsnhLRON3d1MVpuc/O
-         a2k1gBHGPaHTJWbqBNVP0px00cBTKmBYhHSEY5ydRKtJfNmSmGmEzT779k8cA14e/8
-         s5Y6FR1vEBazZpoGe+FJA6w3SzXhvd34sf8hC3nM=
+        b=ZZ1475ycfQ7LaaOHdqGi3BPK1QdLxpzT50tkasHaqiXPfPSKcrxO/Klk3xDoip3Hl
+         lpOUTnn6JQ9XuyW2DcPb7TcY0hdCPOu+4CjoqRUeOtJYTiUgiDR3To5bKIaluQRo9D
+         i2MxHaN24fjSjk6OSWYB/NzyJdUK471Pi6jXfLtQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masahiro Yamada <masahiroy@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH 5.19 005/158] parisc: Make CONFIG_64BIT available for ARCH=parisc64 only
-Date:   Mon, 29 Aug 2022 12:57:35 +0200
-Message-Id: <20220829105809.054969488@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 078/136] net: Fix a data-race around sysctl_net_busy_read.
+Date:   Mon, 29 Aug 2022 12:59:05 +0200
+Message-Id: <20220829105807.831443739@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,89 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 3dcfb729b5f4a0c9b50742865cd5e6c4dbcc80dc upstream.
+[ Upstream commit e59ef36f0795696ab229569c153936bfd068d21c ]
 
-With this patch the ARCH= parameter decides if the
-CONFIG_64BIT option will be set or not. This means, the
-ARCH= parameter will give:
+While reading sysctl_net_busy_read, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-	ARCH=parisc	-> 32-bit kernel
-	ARCH=parisc64	-> 64-bit kernel
-
-This simplifies the usage of the other config options like
-randconfig, allmodconfig and allyesconfig a lot and produces
-the output which is expected for parisc64 (64-bit) vs. parisc (32-bit).
-
-Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Tested-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: <stable@vger.kernel.org> # 5.15+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2d48d67fa8cd ("net: poll/select low latency socket support")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/Kconfig |   21 ++++++---------------
- 1 file changed, 6 insertions(+), 15 deletions(-)
+ net/core/sock.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/parisc/Kconfig
-+++ b/arch/parisc/Kconfig
-@@ -147,10 +147,10 @@ menu "Processor type and features"
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 5ab7b59cdab83..9bcffe1d5332a 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3182,7 +3182,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
  
- choice
- 	prompt "Processor type"
--	default PA7000
-+	default PA7000 if "$(ARCH)" = "parisc"
+ #ifdef CONFIG_NET_RX_BUSY_POLL
+ 	sk->sk_napi_id		=	0;
+-	sk->sk_ll_usec		=	sysctl_net_busy_read;
++	sk->sk_ll_usec		=	READ_ONCE(sysctl_net_busy_read);
+ #endif
  
- config PA7000
--	bool "PA7000/PA7100"
-+	bool "PA7000/PA7100" if "$(ARCH)" = "parisc"
- 	help
- 	  This is the processor type of your CPU.  This information is
- 	  used for optimizing purposes.  In order to compile a kernel
-@@ -161,21 +161,21 @@ config PA7000
- 	  which is required on some machines.
- 
- config PA7100LC
--	bool "PA7100LC"
-+	bool "PA7100LC" if "$(ARCH)" = "parisc"
- 	help
- 	  Select this option for the PCX-L processor, as used in the
- 	  712, 715/64, 715/80, 715/100, 715/100XC, 725/100, 743, 748,
- 	  D200, D210, D300, D310 and E-class
- 
- config PA7200
--	bool "PA7200"
-+	bool "PA7200" if "$(ARCH)" = "parisc"
- 	help
- 	  Select this option for the PCX-T' processor, as used in the
- 	  C100, C110, J100, J110, J210XC, D250, D260, D350, D360,
- 	  K100, K200, K210, K220, K400, K410 and K420
- 
- config PA7300LC
--	bool "PA7300LC"
-+	bool "PA7300LC" if "$(ARCH)" = "parisc"
- 	help
- 	  Select this option for the PCX-L2 processor, as used in the
- 	  744, A180, B132L, B160L, B180L, C132L, C160L, C180L,
-@@ -225,17 +225,8 @@ config MLONGCALLS
- 	  Enabling this option will probably slow down your kernel.
- 
- config 64BIT
--	bool "64-bit kernel"
-+	def_bool "$(ARCH)" = "parisc64"
- 	depends on PA8X00
--	help
--	  Enable this if you want to support 64bit kernel on PA-RISC platform.
--
--	  At the moment, only people willing to use more than 2GB of RAM,
--	  or having a 64bit-only capable PA-RISC machine should say Y here.
--
--	  Since there is no 64bit userland on PA-RISC, there is no point to
--	  enable this option otherwise. The 64bit kernel is significantly bigger
--	  and slower than the 32bit one.
- 
- choice
- 	prompt "Kernel page size"
+ 	sk->sk_max_pacing_rate = ~0UL;
+-- 
+2.35.1
+
 
 
