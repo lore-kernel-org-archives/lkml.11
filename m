@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF5CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6440ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:25:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231923AbiH2LZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40790 "EHLO
+        id S232009AbiH2LZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:25:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231899AbiH2LXj (ORCPT
+        with ESMTP id S231933AbiH2LXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:23:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2051D21B0;
-        Mon, 29 Aug 2022 04:14:50 -0700 (PDT)
+        Mon, 29 Aug 2022 07:23:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A403B7ED;
+        Mon, 29 Aug 2022 04:14:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C66BB80FAF;
-        Mon, 29 Aug 2022 11:14:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71E3EC433D6;
-        Mon, 29 Aug 2022 11:14:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D322F611B5;
+        Mon, 29 Aug 2022 11:12:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D05FEC433C1;
+        Mon, 29 Aug 2022 11:12:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771685;
-        bh=DB3AT2IlIwSAIYhJM/lAlW92OBQo093rsc1IbSXg7mY=;
+        s=korg; t=1661771576;
+        bh=nt+DbUpqklbw1Xto9ufSTnWDjmG3ka9/cgJeFua0RZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D4zo4AzbNvO0XdmzT/M9rsMYoWs7Nu9iPb5iKzlSsd88lazycSH/gNeVNbtYNtN03
-         3kI6tp6hkbZhIiukkabZkNvmKhm5BLervgek2h1J5n+ejeaScbHeKenEhr8KKtti3A
-         FmQGDrPoLhxu0zwkJRzQkWO7CO0wTbPXv6pNB5lU=
+        b=S+9akYbDILkhxku6bn9ce33WUzrsER2jXgfaLI8Po7GQUSDi4HthXjib/5+Lg3u14
+         ErfJo9pJ3o7Ea4KqGdzDHw+DkyClIZQu2AppOpRzySHUUUb5cNdffpZ21Qikx5FSMX
+         5Nn/4TjORdbIX03ZIOL2rkR/F/j7rrzKlG9qO16M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Xiaolei Wang <xiaolei.wang@windriver.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 063/158] netfilter: flowtable: add function to invoke garbage collection immediately
-Date:   Mon, 29 Aug 2022 12:58:33 +0200
-Message-Id: <20220829105811.360293628@linuxfoundation.org>
+Subject: [PATCH 5.19 045/158] net: phy: Dont WARN for PHY_READY state in mdio_bus_phy_resume()
+Date:   Mon, 29 Aug 2022 12:58:15 +0200
+Message-Id: <20220829105810.658040829@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -48,69 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Xiaolei Wang <xiaolei.wang@windriver.com>
 
-[ Upstream commit 759eebbcfafcefa23b59e912396306543764bd3c ]
+[ Upstream commit 6dbe852c379ff032a70a6b13a91914918c82cb07 ]
 
-Expose nf_flow_table_gc_run() to force a garbage collector run from the
-offload infrastructure.
+For some MAC drivers, they set the mac_managed_pm to true in its
+->ndo_open() callback. So before the mac_managed_pm is set to true,
+we still want to leverage the mdio_bus_phy_suspend()/resume() for
+the phy device suspend and resume. In this case, the phy device is
+in PHY_READY, and we shouldn't warn about this. It also seems that
+the check of mac_managed_pm in WARN_ON is redundant since we already
+check this in the entry of mdio_bus_phy_resume(), so drop it.
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 744d23c71af3 ("net: phy: Warn about incorrect mdio_bus_phy_resume() state")
+Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220819082451.1992102-1-xiaolei.wang@windriver.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netfilter/nf_flow_table.h |  1 +
- net/netfilter/nf_flow_table_core.c    | 12 +++++++++---
- 2 files changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/phy/phy_device.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index 64daafd1fc41c..32c25122ab184 100644
---- a/include/net/netfilter/nf_flow_table.h
-+++ b/include/net/netfilter/nf_flow_table.h
-@@ -270,6 +270,7 @@ void flow_offload_refresh(struct nf_flowtable *flow_table,
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 608de5a94165f..f90a21781d8d6 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -316,11 +316,11 @@ static __maybe_unused int mdio_bus_phy_resume(struct device *dev)
  
- struct flow_offload_tuple_rhash *flow_offload_lookup(struct nf_flowtable *flow_table,
- 						     struct flow_offload_tuple *tuple);
-+void nf_flow_table_gc_run(struct nf_flowtable *flow_table);
- void nf_flow_table_gc_cleanup(struct nf_flowtable *flowtable,
- 			      struct net_device *dev);
- void nf_flow_table_cleanup(struct net_device *dev);
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index f2def06d10709..18453fa25199c 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -442,12 +442,17 @@ static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
- 	}
- }
+ 	phydev->suspended_by_mdio_bus = 0;
  
-+void nf_flow_table_gc_run(struct nf_flowtable *flow_table)
-+{
-+	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
-+}
-+
- static void nf_flow_offload_work_gc(struct work_struct *work)
- {
- 	struct nf_flowtable *flow_table;
+-	/* If we managed to get here with the PHY state machine in a state other
+-	 * than PHY_HALTED this is an indication that something went wrong and
+-	 * we should most likely be using MAC managed PM and we are not.
++	/* If we manged to get here with the PHY state machine in a state neither
++	 * PHY_HALTED nor PHY_READY this is an indication that something went wrong
++	 * and we should most likely be using MAC managed PM and we are not.
+ 	 */
+-	WARN_ON(phydev->state != PHY_HALTED && !phydev->mac_managed_pm);
++	WARN_ON(phydev->state != PHY_HALTED && phydev->state != PHY_READY);
  
- 	flow_table = container_of(work, struct nf_flowtable, gc_work.work);
--	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
-+	nf_flow_table_gc_run(flow_table);
- 	queue_delayed_work(system_power_efficient_wq, &flow_table->gc_work, HZ);
- }
- 
-@@ -606,10 +611,11 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
- 
- 	cancel_delayed_work_sync(&flow_table->gc_work);
- 	nf_flow_table_iterate(flow_table, nf_flow_table_do_cleanup, NULL);
--	nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
-+	nf_flow_table_gc_run(flow_table);
- 	nf_flow_table_offload_flush(flow_table);
- 	if (nf_flowtable_hw_offload(flow_table))
--		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step, NULL);
-+		nf_flow_table_gc_run(flow_table);
-+
- 	rhashtable_destroy(&flow_table->rhashtable);
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_free);
+ 	ret = phy_init_hw(phydev);
+ 	if (ret < 0)
 -- 
 2.35.1
 
