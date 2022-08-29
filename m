@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A141BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C319ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232916AbiH2LnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
+        id S231893AbiH2LnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232881AbiH2Lmk (ORCPT
+        with ESMTP id S232981AbiH2Lmq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:42:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE30783F13;
-        Mon, 29 Aug 2022 04:26:19 -0700 (PDT)
+        Mon, 29 Aug 2022 07:42:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82369857E7;
+        Mon, 29 Aug 2022 04:26:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B64E61239;
-        Mon, 29 Aug 2022 11:19:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01B57C433C1;
-        Mon, 29 Aug 2022 11:19:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 918ACB80F91;
+        Mon, 29 Aug 2022 11:16:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3CE6C433D7;
+        Mon, 29 Aug 2022 11:16:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771976;
-        bh=igaDsgfaPIIrkWz0bd7Wrd2v/jVr1iT8zorHbcK2NPI=;
+        s=korg; t=1661771811;
+        bh=/YP6VvDcJ9DScd+mjxxX5q2txVxjWzz7n9jvS0JRzxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8X0S3jg8OvJ+X1hR5TpftWVAhj2wh1NXT+lpqIrNLA0QSZ1crfjumhct+ibFyY1Z
-         V/be3HPQ4myPdj3+M6mgK5khQpoatI7eg+32qKVywv/Ezwqv2Z4/qpUnGf0BwTDBG3
-         53tLgBC4vh2Zv8P5a447l8xg8TaI2ymrQu999Weg=
+        b=pUp+HUrh71p2WPM9A41uIAJvCvl1epVsj4JCGTOyqbD6/cbPGZX6ZBIH4txk/PokX
+         HMNw+kWNlhVJz44vj3KE/znr0f9xHv2MPAQuniKtqODBlkfMa8sIEjaFnYuhRHcTqD
+         w7vlQBYQ1dMZkHHkXsJ85x98FsKHOyEpLx52YB8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Saurabh Sengar <ssengar@linux.microsoft.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 152/158] scsi: storvsc: Remove WQ_MEM_RECLAIM from storvsc_error_wq
-Date:   Mon, 29 Aug 2022 13:00:02 +0200
-Message-Id: <20220829105815.486637627@linuxfoundation.org>
+        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.19 105/158] x86/unwind/orc: Unwind ftrace trampolines with correct ORC entry
+Date:   Mon, 29 Aug 2022 12:59:15 +0200
+Message-Id: <20220829105813.509251432@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,67 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurabh Sengar <ssengar@linux.microsoft.com>
+From: Chen Zhongjin <chenzhongjin@huawei.com>
 
-commit d957e7ffb2c72410bcc1a514153a46719255a5da upstream.
+commit fc2e426b1161761561624ebd43ce8c8d2fa058da upstream.
 
-storvsc_error_wq workqueue should not be marked as WQ_MEM_RECLAIM as it
-doesn't need to make forward progress under memory pressure.  Marking this
-workqueue as WQ_MEM_RECLAIM may cause deadlock while flushing a
-non-WQ_MEM_RECLAIM workqueue.  In the current state it causes the following
-warning:
+When meeting ftrace trampolines in ORC unwinding, unwinder uses address
+of ftrace_{regs_}call address to find the ORC entry, which gets next frame at
+sp+176.
 
-[   14.506347] ------------[ cut here ]------------
-[   14.506354] workqueue: WQ_MEM_RECLAIM storvsc_error_wq_0:storvsc_remove_lun is flushing !WQ_MEM_RECLAIM events_freezable_power_:disk_events_workfn
-[   14.506360] WARNING: CPU: 0 PID: 8 at <-snip->kernel/workqueue.c:2623 check_flush_dependency+0xb5/0x130
-[   14.506390] CPU: 0 PID: 8 Comm: kworker/u4:0 Not tainted 5.4.0-1086-azure #91~18.04.1-Ubuntu
-[   14.506391] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.1 05/09/2022
-[   14.506393] Workqueue: storvsc_error_wq_0 storvsc_remove_lun
-[   14.506395] RIP: 0010:check_flush_dependency+0xb5/0x130
-		<-snip->
-[   14.506408] Call Trace:
-[   14.506412]  __flush_work+0xf1/0x1c0
-[   14.506414]  __cancel_work_timer+0x12f/0x1b0
-[   14.506417]  ? kernfs_put+0xf0/0x190
-[   14.506418]  cancel_delayed_work_sync+0x13/0x20
-[   14.506420]  disk_block_events+0x78/0x80
-[   14.506421]  del_gendisk+0x3d/0x2f0
-[   14.506423]  sr_remove+0x28/0x70
-[   14.506427]  device_release_driver_internal+0xef/0x1c0
-[   14.506428]  device_release_driver+0x12/0x20
-[   14.506429]  bus_remove_device+0xe1/0x150
-[   14.506431]  device_del+0x167/0x380
-[   14.506432]  __scsi_remove_device+0x11d/0x150
-[   14.506433]  scsi_remove_device+0x26/0x40
-[   14.506434]  storvsc_remove_lun+0x40/0x60
-[   14.506436]  process_one_work+0x209/0x400
-[   14.506437]  worker_thread+0x34/0x400
-[   14.506439]  kthread+0x121/0x140
-[   14.506440]  ? process_one_work+0x400/0x400
-[   14.506441]  ? kthread_park+0x90/0x90
-[   14.506443]  ret_from_fork+0x35/0x40
-[   14.506445] ---[ end trace 2d9633159fdc6ee7 ]---
+If there is an IRQ hitting at sub $0xa8,%rsp, the next frame should be
+sp+8 instead of 176. It makes unwinder skip correct frame and throw
+warnings such as "wrong direction" or "can't access registers", etc,
+depending on the content of the incorrect frame address.
 
-Link: https://lore.kernel.org/r/1659628534-17539-1-git-send-email-ssengar@linux.microsoft.com
-Fixes: 436ad9413353 ("scsi: storvsc: Allow only one remove lun work item to be issued per lun")
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+By adding the base address ftrace_{regs_}caller with the offset
+*ip - ops->trampoline*, we can get the correct address to find the ORC entry.
+
+Also change "caller" to "tramp_addr" to make variable name conform to
+its content.
+
+[ mingo: Clarified the changelog a bit. ]
+
+Fixes: 6be7fa3c74d1 ("ftrace, orc, x86: Handle ftrace dynamically allocated trampolines")
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220819084334.244016-1-chenzhongjin@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/storvsc_drv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/unwind_orc.c |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -2012,7 +2012,7 @@ static int storvsc_probe(struct hv_devic
- 	 */
- 	host_dev->handle_error_wq =
- 			alloc_ordered_workqueue("storvsc_error_wq_%d",
--						WQ_MEM_RECLAIM,
-+						0,
- 						host->host_no);
- 	if (!host_dev->handle_error_wq) {
- 		ret = -ENOMEM;
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -93,22 +93,27 @@ static struct orc_entry *orc_find(unsign
+ static struct orc_entry *orc_ftrace_find(unsigned long ip)
+ {
+ 	struct ftrace_ops *ops;
+-	unsigned long caller;
++	unsigned long tramp_addr, offset;
+ 
+ 	ops = ftrace_ops_trampoline(ip);
+ 	if (!ops)
+ 		return NULL;
+ 
++	/* Set tramp_addr to the start of the code copied by the trampoline */
+ 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS)
+-		caller = (unsigned long)ftrace_regs_call;
++		tramp_addr = (unsigned long)ftrace_regs_caller;
+ 	else
+-		caller = (unsigned long)ftrace_call;
++		tramp_addr = (unsigned long)ftrace_caller;
++
++	/* Now place tramp_addr to the location within the trampoline ip is at */
++	offset = ip - ops->trampoline;
++	tramp_addr += offset;
+ 
+ 	/* Prevent unlikely recursion */
+-	if (ip == caller)
++	if (ip == tramp_addr)
+ 		return NULL;
+ 
+-	return orc_find(caller);
++	return orc_find(tramp_addr);
+ }
+ #else
+ static struct orc_entry *orc_ftrace_find(unsigned long ip)
 
 
