@@ -2,89 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29061ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B368ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbiH2MPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
+        id S230108AbiH2MPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231382AbiH2MPT (ORCPT
+        with ESMTP id S229977AbiH2MPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:15:19 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCB9AA00F4
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 04:59:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=B7n71/NkrtHYvF9gedtNk1oY9cS74shjCaQIwnnXV8Y=; b=fEUXVBk/2raflvOiZZ7QVgwExz
-        c6ElBLPEwxKEIBI2MKcCrp/8vlJRLsO2azx5vf2xEBCBRSE0PMqp1IrbCuQ1DfhD8t17Y8Jnb16xy
-        O0hccUeNwgUmT8u2EVeeR+guhFly0wsDlhJVVeyS5Hv85dBMoiFPJJ306VR4MzJ20HY9DyY+Csr5Q
-        BgzbajkgVVzQ3iETJpzajYNx+GF73DangpXA8midaIGww8iaQCTBEU9nRbQIZm/Klh9aYtd0NyrV0
-        CkyvxdkZOzkJjdQ1h/9maLPgq7vDMyOMl3x95PoNjkFBg2B3q6t0QZgGHZAQEtVDAFaKvpqj+QQd7
-        J7AZEePg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oSdPT-007U95-6Z; Mon, 29 Aug 2022 11:58:32 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id AB506300137;
-        Mon, 29 Aug 2022 13:58:29 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 9452D2083F6F4; Mon, 29 Aug 2022 13:58:29 +0200 (CEST)
-Date:   Mon, 29 Aug 2022 13:58:29 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Ravi Bangoria <ravi.bangoria@amd.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, namhyung@kernel.org, songliubraving@fb.com,
-        eranian@google.com, alexey.budankov@linux.intel.com,
-        ak@linux.intel.com, mark.rutland@arm.com, megha.dey@intel.com,
-        frederic@kernel.org, maddy@linux.ibm.com, irogers@google.com,
-        kim.phillips@amd.com, linux-kernel@vger.kernel.org,
-        santosh.shukla@amd.com
-Subject: Re: [RFC v2] perf: Rewrite core context handling
-Message-ID: <Ywyp5XmDTJxmmKlN@hirez.programming.kicks-ass.net>
-References: <20220113134743.1292-1-ravi.bangoria@amd.com>
- <YqdLH+ZU/sf4n0pa@hirez.programming.kicks-ass.net>
- <YqdL8LsOvxNqhz/v@hirez.programming.kicks-ass.net>
- <f994d403-df7b-d88e-8324-c29d0ef2034e@amd.com>
- <YwOgxhfS99Rquwct@worktop.programming.kicks-ass.net>
- <YwOkFqqxONtoGImZ@worktop.programming.kicks-ass.net>
- <fb28c31f-c531-4be3-e9c9-d324451d79d5@amd.com>
- <8d91528b-e830-6ad0-8a92-621ce9f944ca@amd.com>
+        Mon, 29 Aug 2022 08:15:30 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5134C832DF;
+        Mon, 29 Aug 2022 04:59:23 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id C4E821E80D90;
+        Mon, 29 Aug 2022 19:26:48 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id M6hgVIKQLa_j; Mon, 29 Aug 2022 19:26:46 +0800 (CST)
+Received: from [172.30.38.131] (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 8AB451E80D59;
+        Mon, 29 Aug 2022 19:26:44 +0800 (CST)
+Subject: Re: [PATCH] wifi: cfg80211: add error code in
+ brcmf_notify_sched_scan_results()
+To:     Arend Van Spriel <aspriel@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yu Zhe <yuzhe@nfschina.com>
+References: <20220829065831.14023-1-liqiong@nfschina.com>
+ <a054ffb1-527b-836c-f43e-9f76058cc9ed@gmail.com>
+From:   liqiong <liqiong@nfschina.com>
+Message-ID: <6b8c94c3-2c8d-a222-67ec-4461615185e1@nfschina.com>
+Date:   Mon, 29 Aug 2022 19:31:25 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8d91528b-e830-6ad0-8a92-621ce9f944ca@amd.com>
+In-Reply-To: <a054ffb1-527b-836c-f43e-9f76058cc9ed@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 09:30:50AM +0530, Ravi Bangoria wrote:
-> > With this, I can run 'perf test' and perf_event_tests without any error in
-> > dmesg. I'll run perf fuzzer over night and see if it reports any issue.
-> 
-> I also ran fuzzer on Intel machine over the weekend. I see only one WARN_ON()
-> hit. Otherwise system is running normal. FWIW, I was running fuzzer as normal
-> user with perf_event_paranoid=0.
-> 
->   WARNING: CPU: 3 PID: 2840537 at arch/x86/events/core.c:1606 x86_pmu_stop+0xd0/0x100
 
-That's the WARN about PERF_HES_STOPPED already being set.
 
->   Call Trace:
->    <TASK>
->    x86_pmu_del+0x8e/0x2d0
->    ? debug_smp_processor_id+0x17/0x20
->    event_sched_out+0x10b/0x2b0
->    ? x86_pmu_del+0x5c/0x2d0
->    merge_sched_in+0x39f/0x410
+在 2022年08月29日 16:51, Arend Van Spriel 写道:
+> On 8/29/2022 8:58 AM, Li Qiong wrote:
+>> The err code is 0 at the first two "out_err" paths, add error code
+>> '-EINVAL' for these error paths.
+>
+> There is no added value provided in this change. There is an error message, but it is otherwise silently ignored as there is no additional fault handling required.
+It should be better to fix the return code, and It seems that the code has been checked, eg:
+if (ifp->drvr->fweh.evt_handler[i]) {
+.....
+}
 
-And this callchain suggests this is the group_error path.
 
-I can't immediately spot a fail there, but I'll try and stare at it
-some.
+>
+> Regards,
+> Arend
+>
+>> Signed-off-by: Li Qiong <liqiong@nfschina.com>
+>> ---
+>>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 ++
+>>   1 file changed, 2 insertions(+)
+
