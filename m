@@ -2,108 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20B8ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:20:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECE0ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230062AbiH2PUo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:20:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45614 "EHLO
+        id S230092AbiH2PU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:20:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbiH2PUe (ORCPT
+        with ESMTP id S229921AbiH2PU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:20:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C84C654C8C
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:20:32 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1oSgYf-00077I-3W; Mon, 29 Aug 2022 17:20:13 +0200
-Message-ID: <c668fff254b9f56b699a2714bb8c016e3b0cc5b5.camel@pengutronix.de>
-Subject: Re: [PATCH v4 0/6] Add iMX8MP PCIe support
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, p.zabel@pengutronix.de,
-        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        shawnguo@kernel.org, vkoul@kernel.org,
-        alexander.stein@ew.tq-group.com, marex@denx.de,
-        richard.leitner@linux.dev
-Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Date:   Mon, 29 Aug 2022 17:20:11 +0200
-In-Reply-To: <1661760917-9558-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1661760917-9558-1-git-send-email-hongxing.zhu@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Mon, 29 Aug 2022 11:20:56 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875D5647D3;
+        Mon, 29 Aug 2022 08:20:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661786455; x=1693322455;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=uxJC5RyIvqRPTFaq8u3zwzY6+WnQHFd6VU87M4w9eys=;
+  b=Q8cENqbX5xpldMsAIOqW7/SkUTTvxk6Smfu4SLoeSyq00N+Qoi1OZa5H
+   J99VmjOOAn9tHL0MoVPcDvzpkZKWlSJ8Sj0u2pm4K6k8XO2HdaktZcPfR
+   yThsocjUvxNw2eW6ra6O98xusooPLdrqDuGsITZwHp23MKfxfCwDbtdEa
+   J5KfWOKGVaWwAd3sIRj9btH1HbahmciWoSZlcr+/AFREkV8eKUon3YtUC
+   ptGUOlbfexJlT3WWfFmB0ceveGSDgmVpD0Hqhm1RyfGStlP6NUgWnfamK
+   FTNz7JS3HK+VVMCyMX7kzSPgXvJ89FM57TJ4QnZf90QQu3CUCJ8kuuH5O
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="295697971"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="295697971"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 08:20:49 -0700
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="562255775"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 08:20:47 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oSgX4-005aCL-0G;
+        Mon, 29 Aug 2022 18:18:34 +0300
+Date:   Mon, 29 Aug 2022 18:18:29 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH v1 4/4] ACPI: platform: Keep list of ACPI IDs sorted
+Message-ID: <YwzYxTam0TLox11+@smile.fi.intel.com>
+References: <20220829141100.63934-1-andriy.shevchenko@linux.intel.com>
+ <20220829141100.63934-4-andriy.shevchenko@linux.intel.com>
+ <CAJZ5v0jtk0SBz6X3cwpKbckhGdmGE39Ynd94M5C8c4RvqVWQ=A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0jtk0SBz6X3cwpKbckhGdmGE39Ynd94M5C8c4RvqVWQ=A@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Richard,
+On Mon, Aug 29, 2022 at 04:28:23PM +0200, Rafael J. Wysocki wrote:
+> On Mon, Aug 29, 2022 at 4:10 PM Andy Shevchenko
+> <andriy.shevchenko@linux.intel.com> wrote:
+> >
+> > For better maintenance keep list of the ACPI IDs sorted.
+> > While at it, replace terminator with more standard '{ }'.
+> >
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> Subject: ACPI: platform: Sort forbidden_id_list[] in ascending order
+> 
+> Changelog:
+> 
+> "For easier maintenance, sort the forbidden_id_list[] table rows in
+> ascending order with respect to the device ID field.
+> 
+> While at it, use an empty row as the list terminator, which is more
+> usual in the kernel."
+> 
+> Pretty please.
 
-instead of review comments I sent you a two patches to rework things
-more to my liking. Hope you agree with the approach.
+Sure, thanks for the corrections, will embed them in v2.
 
-One question, though: did you test this with devices with Gen2/3
-speeds? The Marvell WiFi module on my EVK board only links with Gen1,
-while it claims Gen2 speed in the LnkCap register. However, it does
-seem to come up with Gen1 as the target link speed in LnkCtl2, so maybe
-the device is at fault here.
-
-Regards,
-Lucas
- 
-Am Montag, dem 29.08.2022 um 16:15 +0800 schrieb Richard Zhu:
-> Based on the 6.0-rc1 of the pci/next branch. 
-> This series adds the i.MX8MP PCIe support and tested on i.MX8MP
-> EVK board when one PCIe NVME device is used.
-> 
-> - i.MX8MP PCIe has reversed initial PERST bit value refer to i.MX8MQ/i.MX8MM.
->   Add the PHY PERST explicitly for i.MX8MP PCIe PHY.
-> - Add the i.MX8MP PCIe PHY support in the i.MX8M PCIe PHY driver.
->   And share as much as possible codes with i.MX8MM PCIe PHY.
-> - Add the i.MX8MP PCIe support in binding document, DTS files, and PCIe
->   driver.
-> 
-> Main changes v3-->v4:
-> - Regarding Phillip's suggestions, add fix tag into the first commit.
-> - Add Reviewed and Tested tags.
-> 
-> Main changes v2-->v3:
-> - Fix the schema checking error in the PHY dt-binding patch.
-> - Inspired by Lucas, the PLL configurations might not required when
->   external OSC is used as PCIe referrence clock. It's true. Remove all
->   the HSIO PLL bit manipulations, and PCIe works fine on i.MX8MP EVK board
->   with one NVME device is used.
-> - Drop the #4 patch of v2, since it had been applied by Rob.
-> 
-> Main changes v1-->v2:
-> - It's my fault forget including Vinod, re-send v2 after include Vinod
->   and linux-phy@lists.infradead.org.
-> - List the basements of this patch-set. The branch, codes changes and so on.
-> - Clean up some useless register and bit definitions in #3 patch.
-> 
-> Documentation/devicetree/bindings/phy/fsl,imx8-pcie-phy.yaml |  16 +++++++--
-> arch/arm64/boot/dts/freescale/imx8mp-evk.dts                 |  53 +++++++++++++++++++++++++++++
-> arch/arm64/boot/dts/freescale/imx8mp.dtsi                    |  46 ++++++++++++++++++++++++-
-> drivers/pci/controller/dwc/pci-imx6.c                        |  17 +++++++++-
-> drivers/phy/freescale/phy-fsl-imx8m-pcie.c                   | 150 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------
-> drivers/reset/reset-imx7.c                                   |   1 +
-> 6 files changed, 232 insertions(+), 51 deletions(-)
-> 
-> [PATCH v4 1/6] reset: imx7: Fix the iMX8MP PCIe PHY PERST support
-> [PATCH v4 2/6] dt-binding: phy: Add iMX8MP PCIe PHY binding
-> [PATCH v4 3/6] phy: freescale: imx8m-pcie: Add iMX8MP PCIe PHY
-> [PATCH v4 4/6] arm64: dts: imx8mp: Add iMX8MP PCIe support
-> [PATCH v4 5/6] arm64: dts: imx8mp-evk: Add PCIe support
-> [PATCH v4 6/6] PCI: imx6: Add iMX8MP PCIe support
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
