@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A13ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FE9ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230033AbiH2M2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        id S230520AbiH2M2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiH2M1w (ORCPT
+        with ESMTP id S229818AbiH2M1w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 08:27:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DCEAE207;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5A7ADCFF;
         Mon, 29 Aug 2022 05:11:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D81761245;
-        Mon, 29 Aug 2022 11:16:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66BFCC433D6;
-        Mon, 29 Aug 2022 11:16:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE39561199;
+        Mon, 29 Aug 2022 11:04:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B47C433D6;
+        Mon, 29 Aug 2022 11:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771768;
-        bh=JHEcHOHuYKv5fpWgw5Eb1DRF51P3IYRI0HKX1wpe9Js=;
+        s=korg; t=1661771084;
+        bh=rFzMF7sdG+pDEMuyG9RCAEK/LYblMveUadnbsf2Sj0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GLFPljBTBqyLDkb0uC8Uk8Q84pS9q8+nAQsxR3eJXAWktuygKYMmIAdPJ3Zvw2EcT
-         0w1K3QNSEMtqO7l93912NvVCYKTcartL8DykjbeQMPCPeZEz1utF5KRQ1UsHHZxqa/
-         ZkRFbCqD4+BmiD3biyEECoUaq7v4Ydhc5UBXtNTM=
+        b=NNhDjJkgaqSvNOdkqY2r1KeauNpxRSPf8cztP39bECGwDVdfkJJsKHj0k2x20UPuO
+         XggnBNd1tsGfz+S3gysGLD6JurgTxsuGc7TjN/7G9wVesnyPEi2ZKAZnROMGIy2MAG
+         Vsoz0guBNugRirLYSksiduKavw+2BM1GQpl9FNR4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aleksander Jan Bajkowski <olek2@wp.pl>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 092/158] net: lantiq_xrx200: fix lock under memory pressure
-Date:   Mon, 29 Aug 2022 12:59:02 +0200
-Message-Id: <20220829105812.921874621@linuxfoundation.org>
+Subject: [PATCH 5.15 059/136] netfilter: nf_tables: do not leave chain stats enabled on error
+Date:   Mon, 29 Aug 2022 12:58:46 +0200
+Message-Id: <20220829105807.039857957@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aleksander Jan Bajkowski <olek2@wp.pl>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit c4b6e9341f930e4dd089231c0414758f5f1f9dbd ]
+[ Upstream commit 43eb8949cfdffa764b92bc6c54b87cbe5b0003fe ]
 
-When the xrx200_hw_receive() function returns -ENOMEM, the NAPI poll
-function immediately returns an error.
-This is incorrect for two reasons:
-* the function terminates without enabling interrupts or scheduling NAPI,
-* the error code (-ENOMEM) is returned instead of the number of received
-packets.
+Error might occur later in the nf_tables_addchain() codepath, enable
+static key only after transaction has been created.
 
-After the first memory allocation failure occurs, packet reception is
-locked due to disabled interrupts from DMA..
-
-Fixes: fe1a56420cf2 ("net: lantiq: Add Lantiq / Intel VRX200 Ethernet driver")
-Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9f08ea848117 ("netfilter: nf_tables: keep chain counters away from hot path")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/lantiq_xrx200.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_tables_api.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
-index 89314b645c822..25adce7f0c7c0 100644
---- a/drivers/net/ethernet/lantiq_xrx200.c
-+++ b/drivers/net/ethernet/lantiq_xrx200.c
-@@ -294,7 +294,7 @@ static int xrx200_poll_rx(struct napi_struct *napi, int budget)
- 			if (ret == XRX200_DMA_PACKET_IN_PROGRESS)
- 				continue;
- 			if (ret != XRX200_DMA_PACKET_COMPLETE)
--				return ret;
-+				break;
- 			rx++;
- 		} else {
- 			break;
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 96903c72ebb45..b4d38656d98fa 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2101,9 +2101,9 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 			      struct netlink_ext_ack *extack)
+ {
+ 	const struct nlattr * const *nla = ctx->nla;
++	struct nft_stats __percpu *stats = NULL;
+ 	struct nft_table *table = ctx->table;
+ 	struct nft_base_chain *basechain;
+-	struct nft_stats __percpu *stats;
+ 	struct net *net = ctx->net;
+ 	char name[NFT_NAME_MAXLEN];
+ 	struct nft_trans *trans;
+@@ -2140,7 +2140,6 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 				return PTR_ERR(stats);
+ 			}
+ 			rcu_assign_pointer(basechain->stats, stats);
+-			static_branch_inc(&nft_counters_enabled);
+ 		}
+ 
+ 		err = nft_basechain_init(basechain, family, &hook, flags);
+@@ -2223,6 +2222,9 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
+ 		goto err_unregister_hook;
+ 	}
+ 
++	if (stats)
++		static_branch_inc(&nft_counters_enabled);
++
+ 	table->use++;
+ 
+ 	return 0;
 -- 
 2.35.1
 
