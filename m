@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADB8ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D676ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230362AbiH2LHx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44726 "EHLO
+        id S230463AbiH2LIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiH2LHC (ORCPT
+        with ESMTP id S230404AbiH2LHI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:07:02 -0400
+        Mon, 29 Aug 2022 07:07:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279F813CFC;
-        Mon, 29 Aug 2022 04:05:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539FD10FE3;
+        Mon, 29 Aug 2022 04:04:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84709B80EF9;
-        Mon, 29 Aug 2022 11:03:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D00A7C433D6;
-        Mon, 29 Aug 2022 11:03:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2137B80EF3;
+        Mon, 29 Aug 2022 11:04:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53300C433C1;
+        Mon, 29 Aug 2022 11:04:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771035;
-        bh=PnvFFVqJdEGEJU/TTxfEwS6N1Nj0Pz8GMnRy0JYkjWI=;
+        s=korg; t=1661771095;
+        bh=0ueb1dFP4tHhZS/U5agUHIjvYCKjpIfxMbvS/5u0iLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lSug8SLShNaRKIK2qR7JK55/gpyUf+xIsqId1cOzuuam1S0Rz8Sm+RryV4i1wHwaC
-         SXqykL07UL+ttTjbRqYXoO9mg2hs5GeufxAXjHDsvkrTwgciN/wmH50ScFprxzTHgp
-         3oOdURXC3MYB8uVZMraTa08wHz9eS3RD3OPaLDZ8=
+        b=h4w/eZH0y0bppUllspDDfzMIiUamzK/ZjS7cTlb8a14fOcCUw9fmvcH5ADBNXr/gq
+         N8sBnm9dOnCjTLZgRMM9ojHoQEKMHM3l1S9a5YY/GBicKZOluU5qsr81HzWOza6r9P
+         8GNMoO/iRFeUP6MM7V/kNst8KwXhyCElGwfKAS/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Olga Kornievskaia <kolga@netapp.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 034/136] NFSv4.2 fix problems with __nfs42_ssc_open
-Date:   Mon, 29 Aug 2022 12:58:21 +0200
-Message-Id: <20220829105805.992182113@linuxfoundation.org>
+Subject: [PATCH 5.15 061/136] netfilter: nft_tunnel: restrict it to netdev family
+Date:   Mon, 29 Aug 2022 12:58:48 +0200
+Message-Id: <20220829105807.133212941@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -50,49 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Olga Kornievskaia <kolga@netapp.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit fcfc8be1e9cf2f12b50dce8b579b3ae54443a014 ]
+[ Upstream commit 01e4092d53bc4fe122a6e4b6d664adbd57528ca3 ]
 
-A destination server while doing a COPY shouldn't accept using the
-passed in filehandle if its not a regular filehandle.
+Only allow to use this expression from NFPROTO_NETDEV family.
 
-If alloc_file_pseudo() has failed, we need to decrement a reference
-on the newly created inode, otherwise it leaks.
-
-Reported-by: Al Viro <viro@zeniv.linux.org.uk>
-Fixes: ec4b092508982 ("NFS: inter ssc open")
-Signed-off-by: Olga Kornievskaia <kolga@netapp.com>
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: af308b94a2a4 ("netfilter: nf_tables: add tunnel support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/nfs/nfs4file.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/netfilter/nft_tunnel.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
-index 61ee03c8bcd2d..14f2efdecc2f8 100644
---- a/fs/nfs/nfs4file.c
-+++ b/fs/nfs/nfs4file.c
-@@ -339,6 +339,11 @@ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
- 		goto out;
- 	}
+diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+index 3b27926d5382c..2ee50996da8cc 100644
+--- a/net/netfilter/nft_tunnel.c
++++ b/net/netfilter/nft_tunnel.c
+@@ -133,6 +133,7 @@ static const struct nft_expr_ops nft_tunnel_get_ops = {
  
-+	if (!S_ISREG(fattr->mode)) {
-+		res = ERR_PTR(-EBADF);
-+		goto out;
-+	}
-+
- 	res = ERR_PTR(-ENOMEM);
- 	len = strlen(SSC_READ_NAME_BODY) + 16;
- 	read_name = kzalloc(len, GFP_NOFS);
-@@ -357,6 +362,7 @@ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
- 				     r_ino->i_fop);
- 	if (IS_ERR(filep)) {
- 		res = ERR_CAST(filep);
-+		iput(r_ino);
- 		goto out_free_name;
- 	}
- 	filep->f_mode |= FMODE_READ;
+ static struct nft_expr_type nft_tunnel_type __read_mostly = {
+ 	.name		= "tunnel",
++	.family		= NFPROTO_NETDEV,
+ 	.ops		= &nft_tunnel_get_ops,
+ 	.policy		= nft_tunnel_policy,
+ 	.maxattr	= NFTA_TUNNEL_MAX,
 -- 
 2.35.1
 
