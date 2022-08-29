@@ -2,175 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4160EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 996C9ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229607AbiH2MCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:02:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56866 "EHLO
+        id S229707AbiH2MDO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiH2MC1 (ORCPT
+        with ESMTP id S230381AbiH2MCr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:02:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8A94F1B3
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 04:47:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661773512;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/+ol45wcaykEdTNetUJWIBi1LCbfsk01RK0NNg2LzGI=;
-        b=MITaWDNOlKDyXq46BIo20QIes2EJjRw5XaAW0L/UzYY6JOvJV/sb4+T4vq1Ekha1S8n6W6
-        PNkixgGw+OYIsk+DWMMz1k6RMJw0hlK2g/AZnwZpSjqBvVL26cQZxtPvSDkOrPPqe/YIEx
-        Je71Eerd0kBAXoIlxYVTXuSF6BnkqDI=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-395-zcYQtRv7M1mfrvp45FmuNg-1; Mon, 29 Aug 2022 07:45:11 -0400
-X-MC-Unique: zcYQtRv7M1mfrvp45FmuNg-1
-Received: by mail-ej1-f71.google.com with SMTP id ga33-20020a1709070c2100b0074084f48b12so2126304ejc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 04:45:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=/+ol45wcaykEdTNetUJWIBi1LCbfsk01RK0NNg2LzGI=;
-        b=pK0YSKDluEoGb0wAwFm8YbFR1QeEMtaezZTv2kulpC4ukTWnAeAE3BXPI/p0b7cTlI
-         IXg+UTy5qYxaDs+Y01dEgu/hr8UqgmPau5YTnKSC3IW0QLUCkYICXHrsUivEjaiizHIz
-         MidmPYHV4QDPeQkF5rZ2NPsRRdW73rFKxO5UMTydBdyADLesUXO8TuISpSMB3ErhlQ/A
-         TQC1Rr5q61gUynwIDL+BfQ1RrG1lmM/VSFMQIR3Xyklx48a90mn068TAsJM5eBfnxJuU
-         x+3dzDXvUHBvQL7M43BT3iKVnooDwM3eAd5pmS+TGlhnwBm8e1r16S0/YW2Ylcfvxvbu
-         D1PA==
-X-Gm-Message-State: ACgBeo1aDTILA7W7Usi2yqJZu2gn990tfsK46SBrdsajQtSog0ytKFuL
-        bQEYLDk0uPeXe2Wii8dO6ZDWhaqEPDoxWDjg4M9LbKM1/8csxo6kKrhbTCvRxIuj0kCQf4CxC/X
-        NWGtyYn+Ka2flfLqmy6zJg8/A
-X-Received: by 2002:aa7:cb06:0:b0:446:7668:2969 with SMTP id s6-20020aa7cb06000000b0044676682969mr16077830edt.206.1661773509847;
-        Mon, 29 Aug 2022 04:45:09 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5XXFYyq+Wc/2lY2uJUxzelUZ0ulUoBxQrTUQ0Y3wQ5QIKfuYa30lKSflrHf9tyAuMTb45U8A==
-X-Received: by 2002:aa7:cb06:0:b0:446:7668:2969 with SMTP id s6-20020aa7cb06000000b0044676682969mr16077817edt.206.1661773509660;
-        Mon, 29 Aug 2022 04:45:09 -0700 (PDT)
-Received: from [10.40.98.142] ([78.108.130.194])
-        by smtp.gmail.com with ESMTPSA id z14-20020a1709060ace00b0073d6d6e698bsm4345840ejf.187.2022.08.29.04.45.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 04:45:08 -0700 (PDT)
-Message-ID: <a547f88a-7ab2-e665-aa6d-d80ef74f4fd4@redhat.com>
-Date:   Mon, 29 Aug 2022 13:45:08 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] platform/x86: wmi: Lower verbosity of some duplicate GUID
- messages
-Content-Language: en-US
-To:     Mario Limonciello <mario.limonciello@amd.com>,
-        Mark Gross <markgross@kernel.org>
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220826170053.2124-1-mario.limonciello@amd.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220826170053.2124-1-mario.limonciello@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Mon, 29 Aug 2022 08:02:47 -0400
+X-Greylist: delayed 500 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 Aug 2022 04:47:53 PDT
+Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CEDA86B5F
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 04:47:53 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id 1527F2B05EEF;
+        Mon, 29 Aug 2022 07:37:20 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute3.internal (MEProxy); Mon, 29 Aug 2022 07:37:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1661773040; x=1661773640; bh=OMyRTkiqC7
+        19sf4sZbkRI86tZB1Sd8j4wBhlvt4F4SI=; b=djdXAjrf2FDh2lMocp0uzSwn0k
+        vv3WIr66kctkK7I7YsnCXg6NOqSPzcesj+fUCR3kqqYLYL/8HSThBQyOCvdc6TX8
+        8tfLuqAzcAiSXp6LbcfSAga8AbLg/bemzQHVa4OZj50GmrlYuxY78WfShJhhB6KO
+        vOMIkcHLgkye10U16kGHKQz5XlSu1pNyiQaaXfxzlpwpvJQ/SDH0CV9/Bb+PuqF5
+        frVdyDON+pNT7ibK1HpQGlogkMeqeDD+ph1k+JYy4u8o/IzVmQ06Gz5GZG/3TV++
+        d1uKtQLnMpWgGVusqGpScyRwF/pcHMtTJ+mrNmCHydrlmxVsMZ5UhwDvX8Mg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        i56a14606.fm1; t=1661773040; x=1661773640; bh=OMyRTkiqC719sf4sZb
+        kRI86tZB1Sd8j4wBhlvt4F4SI=; b=MQ5q7kZKw3xR/ZW2MdtR7eRZrpjpkg6c6g
+        28o85Nsq9TApie72c9Xg6wIKg7nloQcEZ+flto5/fPgvYxqOYkyaw1yMjVLzIviV
+        tpOU1QT4tcRStfoz8nRI+YySPVmdTARUyxioWiV6c7sqcNhUTRxh5xTN1mvRwmGW
+        2z3gc7V4nm6X9c4dKynDg9W8g7dHf7gTfsfOz8e6qX2bd/QAXqBrHhjOZZGDdQCa
+        Xmj7X3HrWuc53diaNlgVqXQ6PmO6qb1eaKq7T+y0aFeCqLCIWTLX0nlvGFgal1ph
+        w1rH7ibX2eyUB7c+sWaC8hTxvg7EkwFQBszW5e5fd/HZhGyo/3Dw==
+X-ME-Sender: <xms:76QMY_8UN2lz6HwJX2osTRGAXHDbk5a-zdlpsrjX0f96BYRNlW-PHA>
+    <xme:76QMY7smWw76c8GN_2-yCOizQDZV5oUtItIw7Relnw8wMSYSONOwc9PZ2ziXZmMS1
+    iuVIIyg7N7WQKHwKF8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddggeegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:76QMY9DXX9cvJVzlbq0mfgO3T6oE4ZtURNNIG_wrBLI0RDUPO3A3ww>
+    <xmx:76QMY7cvV2jvn17Xe8f8PH-SU-HaHgtzOF4onBmDGvwISWN5sROfxg>
+    <xmx:76QMY0N_9aycWLGk7WV_lZBCDZxow1cCBSKERH-DT5DLpMETZyXBNg>
+    <xmx:8KQMY9YRKoRFNz8MWv5d5vLjqVkKEGRxT4pLEGlBALtESjMHd2h0oSlgHKGmw9l4>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 45828B60083; Mon, 29 Aug 2022 07:37:19 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
+Mime-Version: 1.0
+Message-Id: <d1a52fa2-380a-421b-8c46-5150a39be484@www.fastmail.com>
+In-Reply-To: <1661766931-7277-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1661766931-7277-1-git-send-email-yangtiezhu@loongson.cn>
+Date:   Mon, 29 Aug 2022 13:36:46 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Tiezhu Yang" <yangtiezhu@loongson.cn>,
+        "Huacai Chen" <chenhuacai@kernel.org>,
+        "WANG Xuerui" <kernel@xen0n.name>
+Cc:     loongarch@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] LoongArch: Fix warning: #warning syscall fstat not implemented
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mario,
+On Mon, Aug 29, 2022, at 11:55 AM, Tiezhu Yang wrote:
 
-On 8/26/22 19:00, Mario Limonciello wrote:
-> The WMI subsystem in the kernel currently tracks WMI devices by
-> a GUID string not by ACPI device.  The GUID used by the `wmi-bmof`
-> module however is available from many devices on nearly every machine.
-> 
-> This originally was though to be a bug, but as it happens on most
-> machines it is a design mistake.  As there isn't an active need to
-> get the binary from each of the `wmi-bmof` device, special case it
-> and lower the message to debugging.  This will help to identify if
-> there are other duplicate GUIDs in the wild.
-> 
-> If there are and the information contained in them is desirable it
-> may be worth considering a design change to the WMI subsystem to
-> access those.
-> 
-> Link: https://lkml.org/lkml/2017/12/8/913
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>   CALL    scripts/checksyscalls.sh
+> <stdin>:569:2: warning: #warning syscall fstat not implemented [-Wcpp]
 
-I am a bit surprised by this patch. I though that there was
-consensus that the right thing to do here is actually create
-wmi-bus devices for the duplicate WMI-ids adding a numbered
-postfix to the extra devices (lets not add the postfix
-to the first device for each WMI GUID as some userspace
-code / scripts may depend on the sysfs paths not changing).
+> @@ -1,4 +1,5 @@
+> /* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+> +#define __ARCH_WANT_NEW_STAT
+> #define __ARCH_WANT_SYS_CLONE
+> #define __ARCH_WANT_SYS_CLONE3
 
-IMHO registering wmi-bus devices for all the WMI devices
-in the ACPI table would be the right thing to do ?
+The correct fix is to change scripts/checksyscalls.sh,
+making it always define __IGNORE_fstat
 
-Regards,
-
-Hans
-
-
-
-
-> ---
->  drivers/platform/x86/wmi-bmof.c |  2 --
->  drivers/platform/x86/wmi.c      | 10 ++++++++--
->  include/linux/wmi.h             |  2 ++
->  3 files changed, 10 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/platform/x86/wmi-bmof.c b/drivers/platform/x86/wmi-bmof.c
-> index 80137afb9753..af46e9e03376 100644
-> --- a/drivers/platform/x86/wmi-bmof.c
-> +++ b/drivers/platform/x86/wmi-bmof.c
-> @@ -18,8 +18,6 @@
->  #include <linux/types.h>
->  #include <linux/wmi.h>
->  
-> -#define WMI_BMOF_GUID "05901221-D566-11D1-B2F0-00A0C9062910"
-> -
->  struct bmof_priv {
->  	union acpi_object *bmofdata;
->  	struct bin_attribute bmof_bin_attr;
-> diff --git a/drivers/platform/x86/wmi.c b/drivers/platform/x86/wmi.c
-> index aed293b5af81..d7a1f4bf443b 100644
-> --- a/drivers/platform/x86/wmi.c
-> +++ b/drivers/platform/x86/wmi.c
-> @@ -1157,6 +1157,9 @@ static void wmi_free_devices(struct acpi_device *device)
->  static bool guid_already_parsed(struct acpi_device *device, const guid_t *guid)
->  {
->  	struct wmi_block *wblock;
-> +	guid_t guid_wmi_bmof;
-> +
-> +	guid_parse(WMI_BMOF_GUID, &guid_wmi_bmof);
->  
->  	list_for_each_entry(wblock, &wmi_block_list, list) {
->  		if (guid_equal(&wblock->gblock.guid, guid)) {
-> @@ -1166,8 +1169,11 @@ static bool guid_already_parsed(struct acpi_device *device, const guid_t *guid)
->  			 * we need to suppress GUIDs that are unique on a
->  			 * given node but duplicated across nodes.
->  			 */
-> -			dev_warn(&device->dev, "duplicate WMI GUID %pUL (first instance was on %s)\n",
-> -				 guid, dev_name(&wblock->acpi_device->dev));
-> +			if (guid_equal(guid, &guid_wmi_bmof))
-> +				dev_dbg(&device->dev, "duplicate WMI-BMOF GUID found\n");
-> +			else
-> +				dev_warn(&device->dev, "duplicate WMI GUID %pUL (first instance was on %s)\n",
-> +					 guid, dev_name(&wblock->acpi_device->dev));
->  			return true;
->  		}
->  	}
-> diff --git a/include/linux/wmi.h b/include/linux/wmi.h
-> index b88d7b58e61e..59acdceb4411 100644
-> --- a/include/linux/wmi.h
-> +++ b/include/linux/wmi.h
-> @@ -13,6 +13,8 @@
->  #include <linux/mod_devicetable.h>
->  #include <uapi/linux/wmi.h>
->  
-> +#define WMI_BMOF_GUID "05901221-D566-11D1-B2F0-00A0C9062910"
-> +
->  struct wmi_device {
->  	struct device dev;
->  
-
+        Arnd
