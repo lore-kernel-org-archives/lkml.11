@@ -2,113 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A81AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 507E6ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:19:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229851AbiH2MS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:18:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
+        id S231166AbiH2MTH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231171AbiH2MR5 (ORCPT
+        with ESMTP id S229726AbiH2MSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:17:57 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466E114D25;
-        Mon, 29 Aug 2022 05:01:19 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id w19so4827952ljj.7;
-        Mon, 29 Aug 2022 05:01:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=6Y6slmLiEStk3SAV5P2VBUiGfRCGd21AEadH/l3GXUg=;
-        b=KLBfc+M/JLXURCR3AOZ3shzI4eXZOAoneqUu0gAJca1EcbP7U3snYwCyrFyj8zZ9Vs
-         Z0q6ZvRwX76HwYowuMtf0QzxuAuxRE9d2nkGXLVO/x6jwhELI9bJTihTTvk+GM4CQ7pt
-         q5NEJrQluBi6i7tpAgjVtYaSuafdrA3UJUZ47ZUnKivtkpxs3q7orVa7IJLfA6k0BCdG
-         lGVsuX7uH1A1LWoiSMuMVfgbaWBX59//A4ryyxMnlCqZUdPXyhnadwx1dWhV8+yH3FKL
-         14Tc3a2ob2TlXSwXAEVulvBTN6b8pbwrJYYcZNSUUL/1uNqs3xxDE9X3keYdMOMmeb65
-         vytQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=6Y6slmLiEStk3SAV5P2VBUiGfRCGd21AEadH/l3GXUg=;
-        b=QSlvFhykn9TBy6ZaZwhzSHgxq9/IN0euPsS4wCxHaWyYInfXs7Jut7NYFrbywgN2Q4
-         CEec6YHWqrkTyvLrzoMmK1MI3WOuA8blT3dr74IsdpXUY26k5VHsXhEth7gAymUoWJjT
-         qfZ5nPgo5Vh8llaPx8yg4djOCsjk42hqi3mabZ3HSmRuBfyXbA1WgY6NKcweSnF3DV1T
-         ygL+PusifJ8AuieL6iPZqyndReqlk69ndgiG4kxMdojCU+AJ4b5aWIj0hG0Wyuzt5bcO
-         2Ym7QyyuAFDpqP9CqpMEkYTpE53w7y7UdYPTb3SV/cX7e9IAwV799UjnvLqQnsgmgZ9a
-         MICg==
-X-Gm-Message-State: ACgBeo0LqDmPIv/E5INaiLO9MfQY3gjMrxH3NbOaG4GWsYUn6bOXD2Gs
-        7KwPmr3hC+DElDwaff/YOuFeqZrYmt0=
-X-Google-Smtp-Source: AA6agR7wUOBv831RR9vPXNVN1xlDyiMTFsmanmANwV+5egTSjVEgQmKduYuE3lZVG+8ZkGMeNnGbZQ==
-X-Received: by 2002:adf:ed50:0:b0:225:4c37:5346 with SMTP id u16-20020adfed50000000b002254c375346mr6030765wro.207.1661771919256;
-        Mon, 29 Aug 2022 04:18:39 -0700 (PDT)
-Received: from [192.168.0.30] ([47.62.125.55])
-        by smtp.gmail.com with ESMTPSA id j18-20020a05600c191200b003a5c1e916c8sm30268815wmq.1.2022.08.29.04.18.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 04:18:38 -0700 (PDT)
-Message-ID: <a8c87417-f37e-7c7a-a4a4-c5a01118e7a8@gmail.com>
-Date:   Mon, 29 Aug 2022 13:18:37 +0200
+        Mon, 29 Aug 2022 08:18:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D308FA2630;
+        Mon, 29 Aug 2022 05:01:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93E93611D4;
+        Mon, 29 Aug 2022 11:09:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A01E3C433C1;
+        Mon, 29 Aug 2022 11:09:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771398;
+        bh=CcvhuDNw5qbcHmwy2zshWRqK1xATh0A24rhR35OQhk4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KH5AvRmm/iUSOvg8F+o0BWhcqUhNpP98VhvX2yPQgP/L5bnK4naXoeTC3Oe15VIww
+         8cK2kYAr3vv0BEQ5RN/+qPgCkRUDVCGPtZe3q/WrLJjkg5XZbBhMiyl8KxjLn+9ff2
+         vxcX9G1C6SUP81KqUhRdFBO6W31IOsZj7QCfR0Lw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
+        Boris Burkov <boris@bur.io>, Zixuan Fu <r33s3n6@gmail.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 099/136] btrfs: fix possible memory leak in btrfs_get_dev_args_from_path()
+Date:   Mon, 29 Aug 2022 12:59:26 +0200
+Message-Id: <20220829105808.735329576@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH 4/4] spi: mt7621: Remove 'clk' from 'struct mt7621_spi'
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        broonie@kernel.org, gregkh@linuxfoundation.org, neil@brown.name,
-        blogic@openwrt.org
-Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <cover.1661599671.git.christophe.jaillet@wanadoo.fr>
- <76ed0ef91479498b9a2d5ef539f80851cffdb4ea.1661599671.git.christophe.jaillet@wanadoo.fr>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <76ed0ef91479498b9a2d5ef539f80851cffdb4ea.1661599671.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Zixuan Fu <r33s3n6@gmail.com>
+
+commit 9ea0106a7a3d8116860712e3f17cd52ce99f6707 upstream.
+
+In btrfs_get_dev_args_from_path(), btrfs_get_bdev_and_sb() can fail if
+the path is invalid. In this case, btrfs_get_dev_args_from_path()
+returns directly without freeing args->uuid and args->fsid allocated
+before, which causes memory leak.
+
+To fix these possible leaks, when btrfs_get_bdev_and_sb() fails,
+btrfs_put_dev_args_from_path() is called to clean up the memory.
+
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Fixes: faa775c41d655 ("btrfs: add a btrfs_get_dev_args_from_path helper")
+CC: stable@vger.kernel.org # 5.16
+Reviewed-by: Boris Burkov <boris@bur.io>
+Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/btrfs/volumes.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -2392,8 +2392,11 @@ int btrfs_get_dev_args_from_path(struct
+ 
+ 	ret = btrfs_get_bdev_and_sb(path, FMODE_READ, fs_info->bdev_holder, 0,
+ 				    &bdev, &disk_super);
+-	if (ret)
++	if (ret) {
++		btrfs_put_dev_args_from_path(args);
+ 		return ret;
++	}
++
+ 	args->devid = btrfs_stack_device_id(&disk_super->dev_item);
+ 	memcpy(args->uuid, disk_super->dev_item.uuid, BTRFS_UUID_SIZE);
+ 	if (btrfs_fs_incompat(fs_info, METADATA_UUID))
 
 
-On 27/08/2022 13:42, Christophe JAILLET wrote:
-> The 'clk' field in 'struct mt7621_spi' is useless, remove it.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-
-IMHO should be part of patch 2/4.
-
-Regards,
-Matthias
-
-> ---
->   drivers/spi/spi-mt7621.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/spi/spi-mt7621.c b/drivers/spi/spi-mt7621.c
-> index 114f98dcae5e..c4cc8e2f85e2 100644
-> --- a/drivers/spi/spi-mt7621.c
-> +++ b/drivers/spi/spi-mt7621.c
-> @@ -55,7 +55,6 @@ struct mt7621_spi {
->   	void __iomem		*base;
->   	unsigned int		sys_freq;
->   	unsigned int		speed;
-> -	struct clk		*clk;
->   	int			pending_write;
->   };
->   
-> @@ -361,9 +360,8 @@ static int mt7621_spi_probe(struct platform_device *pdev)
->   
->   	rs = spi_controller_get_devdata(master);
->   	rs->base = base;
-> -	rs->clk = clk;
->   	rs->master = master;
-> -	rs->sys_freq = clk_get_rate(rs->clk);
-> +	rs->sys_freq = clk_get_rate(clk);
->   	rs->pending_write = 0;
->   	dev_info(&pdev->dev, "sys_freq: %u\n", rs->sys_freq);
->   
