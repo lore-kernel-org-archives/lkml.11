@@ -2,249 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2F32ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EACC6FA82
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231311AbiH2RK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:10:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52172 "EHLO
+        id S231320AbiH2RLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiH2RKz (ORCPT
+        with ESMTP id S231298AbiH2RKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 13:10:55 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FFE11142
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:10:52 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id k3-20020a170902c40300b001743aafd6c6so6562348plk.20
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:10:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=d7ZiMUB7LT41+2/O/fscI6FlTx2h5Za4q8M0Amcc3B4=;
-        b=ZhI8GIrMnTkdrvVsyH9Db+OCesFOtjP3YC959CITathFqifVfvqSQbd5FM76Olwvsb
-         QIZ63/MpVM7Ygz3srB8Iu4f/q5RR+l4/IzBQBcGb9y0jIMHyS16Q3uZv63EWIGjtP0Ut
-         Up5yfbY/kEQsT14gbcfxP0gcGUPtqOBs51u/bSKOUqgxmJfUAggczWvk/MdVhF8sZmCJ
-         dRpCsG5+mGiILKF/BDKHyt08ehXh3fO6IwGSkpR3dn92CFwk6QK/0iN0d17XLHKlHlE3
-         171TwZaVopJP2hReB2DS9Qbf+JRFzc0MzPHzGvqZx/kz0vIy6ysBYkb8p8UVm5YmAt9A
-         npWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=d7ZiMUB7LT41+2/O/fscI6FlTx2h5Za4q8M0Amcc3B4=;
-        b=XwnfzrSObiFz/9SHsdT2phcbYVXaSSO2Q2RPyWaTYwhCJ43lPaNZGCKKJNlE04tNdG
-         PqtvtGjTZVJ5/db8u9Gq1Tm6z1vyg+F+fPTz54NVJTJmhtgEWvgBUBK8Ymv0/d1PleI7
-         sYesrjI9zBXFmB3MKuenFqqSJqtUKCKGliVoTATlCJHUHKVa9njEypl18QDaQq7wJ59i
-         kQXAQS6DVL5udervXcHVZa6VGHnPLhwHCKBNIOyZS9SDqluomjGzdgaMr0ZJlkBo5c6j
-         OPAPlNFI9SkDQHmjUUrWHfVYYdSbL1M86MxgtPnp4LcIZReyf5xaKNSr5zW+jSIcLSC3
-         ufhA==
-X-Gm-Message-State: ACgBeo3795YyWfyBY8q7SyHEYDtVeoIJhu4mmAhy5SjaNL+Eu1uF3buU
-        51KCrFbOFc46PNRJ1jEf1z+Qarwa5iw=
-X-Google-Smtp-Source: AA6agR61sjj8KgjJQ7+tGZSdi+MrfGFJVVy/DwyyXR3ptKKf3tFUJkU3TWwbxGMaGS/oKDXM2GYG6uI3gTo=
-X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:cddb:77a7:c55e:a7a2])
- (user=pgonda job=sendgmr) by 2002:a17:90b:4a01:b0:1fb:5583:578a with SMTP id
- kk1-20020a17090b4a0100b001fb5583578amr19849612pjb.216.1661793052405; Mon, 29
- Aug 2022 10:10:52 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 10:10:14 -0700
-In-Reply-To: <20220829171021.701198-1-pgonda@google.com>
-Message-Id: <20220829171021.701198-2-pgonda@google.com>
-Mime-Version: 1.0
-References: <20220829171021.701198-1-pgonda@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Subject: [V4 1/8] KVM: selftests: move vm_phy_pages_alloc() earlier in file
-From:   Peter Gonda <pgonda@google.com>
-To:     kvm@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, marcorr@google.com,
-        seanjc@google.com, michael.roth@amd.com, thomas.lendacky@amd.com,
-        joro@8bytes.org, mizhang@google.com, pbonzini@redhat.com,
-        andrew.jones@linux.dev, Peter Gonda <pgonda@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2095C9DF;
+        Mon, 29 Aug 2022 10:10:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661793054; x=1693329054;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=aDl2jIwOy7f6Y1iRFsQn+FvrMY2h4rkOmf4n9lzlNB8=;
+  b=cX5IlnaaF/YbTU5iW9npA2OW6/8PN2A4XqoZi0zOFgi6KL9t8pjj9ldn
+   M+zCyViApk/Hf4rXf6liTiGePfjawbDRUCgsWGT80ZRIH30XZnlv/7jhP
+   ljs6chIQ1CsyGaEmJQ7VO8aR79lIoxD0psoI1eiXSs0Isj+RvRkasNpz7
+   huUO1eN+7kPP1AmPG8tLAsywEUCT4UubEEC7t2uziX+0mpyb3RQL7Obfv
+   jicq8E6N4tF4A1jZ7CUasxYmCVjmC9nQuDYXPqJ4o5vRlVogA047facQi
+   8cP25PLVhdS87Mvr4IsT5lsZKQ9GYi0Pse26nmszx9L6j2YEIVL6W6Eoe
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="281921806"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="281921806"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 10:10:53 -0700
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="614285463"
+Received: from aschofie-mobl2.amr.corp.intel.com (HELO localhost) ([10.251.3.205])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 10:10:51 -0700
+From:   alison.schofield@intel.com
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Alison Schofield <alison.schofield@intel.com>,
+        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
+        Ira Weiny <ira.weiny@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        David Gow <davidgow@google.com>
+Subject: [PATCH v2] tracepoint: Allow trace events in modules with TAINT_TEST
+Date:   Mon, 29 Aug 2022 10:10:48 -0700
+Message-Id: <20220829171048.263065-1-alison.schofield@intel.com>
+X-Mailer: git-send-email 2.37.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Roth <michael.roth@amd.com>
+From: Alison Schofield <alison.schofield@intel.com>
 
-Subsequent patches will break some of this code out into file-local
-helper functions, which will be used by functions like vm_vaddr_alloc(),
-which currently are defined earlier in the file, so a forward
-declaration would be needed.
+Commit 2852ca7fba9f ("panic: Taint kernel if tests are run")
+introduced a new taint type, TAINT_TEST, to signal that an
+in-kernel test module has been loaded.
 
-Instead, move it earlier in the file, just above vm_vaddr_alloc() and
-and friends, which are the main users.
+TAINT_TEST taint type defaults into a 'bad_taint' list for
+kernel tracing and blocks the creation of trace events. This
+causes a problem for CXL testing where loading the cxl_test
+module makes all CXL modules out-of-tree, blocking any trace
+events.
 
-Reviewed-by: Mingwei Zhang <mizhang@google.com>
-Reviewed-by: Andrew Jones <andrew.jones@linux.dev>
-Signed-off-by: Michael Roth <michael.roth@amd.com>
-Signed-off-by: Peter Gonda <pgonda@google.com>
+Trace events are in development for CXL at the moment and this
+issue was found in test with v6.0-rc1.
+
+Reported-by: Ira Weiny <ira.weiny@intel.com>
+Suggested-by: Dan Williams <dan.j.williams@intel.com>
+Tested-by: Ira Weiny <ira.weiny@intel.com>
+Reviewed-by: David Gow <davidgow@google.com>
+Signed-off-by: Alison Schofield <alison.schofield@intel.com>
 ---
- tools/testing/selftests/kvm/lib/kvm_util.c | 145 ++++++++++-----------
- 1 file changed, 72 insertions(+), 73 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 846f9f6c5a17..06559994711e 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -1100,6 +1100,78 @@ struct kvm_vcpu *__vm_vcpu_add(struct kvm_vm *vm, uint32_t vcpu_id)
- 	return vcpu;
+Changes in v2:
+- Update comment in tracepoint_module_coming()  (DavidG)
+- Commit log: s/test has been run/test module has been loaded (DaveJ)
+
+ kernel/tracepoint.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
+index 64ea283f2f86..ef42c1a11920 100644
+--- a/kernel/tracepoint.c
++++ b/kernel/tracepoint.c
+@@ -571,7 +571,8 @@ static void for_each_tracepoint_range(
+ bool trace_module_has_bad_taint(struct module *mod)
+ {
+ 	return mod->taints & ~((1 << TAINT_OOT_MODULE) | (1 << TAINT_CRAP) |
+-			       (1 << TAINT_UNSIGNED_MODULE));
++			       (1 << TAINT_UNSIGNED_MODULE) |
++			       (1 << TAINT_TEST));
  }
  
-+/*
-+ * Physical Contiguous Page Allocator
-+ *
-+ * Input Args:
-+ *   vm - Virtual Machine
-+ *   num - number of pages
-+ *   paddr_min - Physical address minimum
-+ *   memslot - Memory region to allocate page from
-+ *
-+ * Output Args: None
-+ *
-+ * Return:
-+ *   Starting physical address
-+ *
-+ * Within the VM specified by vm, locates a range of available physical
-+ * pages at or above paddr_min. If found, the pages are marked as in use
-+ * and their base address is returned. A TEST_ASSERT failure occurs if
-+ * not enough pages are available at or above paddr_min.
-+ */
-+vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
-+			      vm_paddr_t paddr_min, uint32_t memslot)
-+{
-+	struct userspace_mem_region *region;
-+	sparsebit_idx_t pg, base;
-+
-+	TEST_ASSERT(num > 0, "Must allocate at least one page");
-+
-+	TEST_ASSERT((paddr_min % vm->page_size) == 0,
-+		"Min physical address not divisible by page size.\n paddr_min: 0x%lx page_size: 0x%x",
-+		paddr_min, vm->page_size);
-+
-+	region = memslot2region(vm, memslot);
-+	base = pg = paddr_min >> vm->page_shift;
-+
-+	do {
-+		for (; pg < base + num; ++pg) {
-+			if (!sparsebit_is_set(region->unused_phy_pages, pg)) {
-+				base = pg = sparsebit_next_set(region->unused_phy_pages, pg);
-+				break;
-+			}
-+		}
-+	} while (pg && pg != base + num);
-+
-+	if (pg == 0) {
-+		fprintf(stderr,
-+			"No guest physical page available, paddr_min: 0x%lx page_size: 0x%x memslot: %u\n",
-+			paddr_min, vm->page_size, memslot);
-+		fputs("---- vm dump ----\n", stderr);
-+		vm_dump(stderr, vm, 2);
-+		abort();
-+	}
-+
-+	for (pg = base; pg < base + num; ++pg)
-+		sparsebit_clear(region->unused_phy_pages, pg);
-+
-+	return base * vm->page_size;
-+}
-+
-+vm_paddr_t vm_phy_page_alloc(struct kvm_vm *vm, vm_paddr_t paddr_min,
-+			     uint32_t memslot)
-+{
-+	return vm_phy_pages_alloc(vm, 1, paddr_min, memslot);
-+}
-+
-+/* Arbitrary minimum physical address used for virtual translation tables. */
-+#define KVM_GUEST_PAGE_TABLE_MIN_PADDR 0x180000
-+
-+vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm)
-+{
-+	return vm_phy_page_alloc(vm, KVM_GUEST_PAGE_TABLE_MIN_PADDR, 0);
-+}
-+
- /*
-  * VM Virtual Address Unused Gap
-  *
-@@ -1746,79 +1818,6 @@ const char *exit_reason_str(unsigned int exit_reason)
- 	return "Unknown";
- }
- 
--/*
-- * Physical Contiguous Page Allocator
-- *
-- * Input Args:
-- *   vm - Virtual Machine
-- *   num - number of pages
-- *   paddr_min - Physical address minimum
-- *   memslot - Memory region to allocate page from
-- *
-- * Output Args: None
-- *
-- * Return:
-- *   Starting physical address
-- *
-- * Within the VM specified by vm, locates a range of available physical
-- * pages at or above paddr_min. If found, the pages are marked as in use
-- * and their base address is returned. A TEST_ASSERT failure occurs if
-- * not enough pages are available at or above paddr_min.
-- */
--vm_paddr_t vm_phy_pages_alloc(struct kvm_vm *vm, size_t num,
--			      vm_paddr_t paddr_min, uint32_t memslot)
--{
--	struct userspace_mem_region *region;
--	sparsebit_idx_t pg, base;
--
--	TEST_ASSERT(num > 0, "Must allocate at least one page");
--
--	TEST_ASSERT((paddr_min % vm->page_size) == 0, "Min physical address "
--		"not divisible by page size.\n"
--		"  paddr_min: 0x%lx page_size: 0x%x",
--		paddr_min, vm->page_size);
--
--	region = memslot2region(vm, memslot);
--	base = pg = paddr_min >> vm->page_shift;
--
--	do {
--		for (; pg < base + num; ++pg) {
--			if (!sparsebit_is_set(region->unused_phy_pages, pg)) {
--				base = pg = sparsebit_next_set(region->unused_phy_pages, pg);
--				break;
--			}
--		}
--	} while (pg && pg != base + num);
--
--	if (pg == 0) {
--		fprintf(stderr, "No guest physical page available, "
--			"paddr_min: 0x%lx page_size: 0x%x memslot: %u\n",
--			paddr_min, vm->page_size, memslot);
--		fputs("---- vm dump ----\n", stderr);
--		vm_dump(stderr, vm, 2);
--		abort();
--	}
--
--	for (pg = base; pg < base + num; ++pg)
--		sparsebit_clear(region->unused_phy_pages, pg);
--
--	return base * vm->page_size;
--}
--
--vm_paddr_t vm_phy_page_alloc(struct kvm_vm *vm, vm_paddr_t paddr_min,
--			     uint32_t memslot)
--{
--	return vm_phy_pages_alloc(vm, 1, paddr_min, memslot);
--}
--
--/* Arbitrary minimum physical address used for virtual translation tables. */
--#define KVM_GUEST_PAGE_TABLE_MIN_PADDR 0x180000
--
--vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm)
--{
--	return vm_phy_page_alloc(vm, KVM_GUEST_PAGE_TABLE_MIN_PADDR, 0);
--}
--
- /*
-  * Address Guest Virtual to Host Virtual
-  *
+ static BLOCKING_NOTIFIER_HEAD(tracepoint_notify_list);
+@@ -647,7 +648,7 @@ static int tracepoint_module_coming(struct module *mod)
+ 	/*
+ 	 * We skip modules that taint the kernel, especially those with different
+ 	 * module headers (for forced load), to make sure we don't cause a crash.
+-	 * Staging, out-of-tree, and unsigned GPL modules are fine.
++	 * Staging, out-of-tree, unsigned GPL, and test modules are fine.
+ 	 */
+ 	if (trace_module_has_bad_taint(mod))
+ 		return 0;
+
+base-commit: 4c612826bec1441214816827979b62f84a097e91
 -- 
-2.37.2.672.g94769d06f0-goog
+2.31.1
 
