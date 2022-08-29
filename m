@@ -2,177 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E4CC0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF7E6ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230280AbiH2QiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
+        id S230514AbiH2QiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230256AbiH2Qh6 (ORCPT
+        with ESMTP id S229798AbiH2QiE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:37:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0329972FE0;
-        Mon, 29 Aug 2022 09:37:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B32E3B81163;
-        Mon, 29 Aug 2022 16:37:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53127C433D6;
-        Mon, 29 Aug 2022 16:37:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661791074;
-        bh=eibLJ3CUrG9hNqELWlk54EEgp0CwfpUXbipAy8OJ/Rc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hjTi3NWRZRKarMRukkPrPlrfbczzHlJrlbZ0wlwbgd4zthARraC2jsoROA+OQCSkZ
-         539PvLT0rdKRHveV6Cr3+/OaCGsWNeois6d/TPW26i3sSXQdmPNS7L1dMR/fVYng5R
-         x0W/aPsZSr1pzRX8WIzZYDgHBVopO9Y+TQri4btlOf5zK2lDMqnJswu1AeOZ6ZL00w
-         24xdvflP/FnBKkkSzzmcAy2z/P3UXqw12Egr08Y/WsW12429mu1fx99T+7XmV0nbWH
-         YRClY1cF40LvtNtc5VJGWpy6VcqFdwzhmsJAmw+0IHlu3sAmGdexg6lIusy9oWrjGN
-         wlj6nVOk5+GKw==
-Date:   Mon, 29 Aug 2022 17:03:34 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Regus, Ciprian" <Ciprian.Regus@analog.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] drivers: iio: adc: Rename the LTC249x iio device
-Message-ID: <20220829170334.70dbebdc@jic23-huawei>
-In-Reply-To: <c76a746e0a6448b2a39a4ce7e5baa285@analog.com>
-References: <20220822125106.1106798-1-ciprian.regus@analog.com>
-        <20220822125106.1106798-4-ciprian.regus@analog.com>
-        <0f778952-1909-1038-8f9a-3a7d7f12d6e1@metafoo.de>
-        <c76a746e0a6448b2a39a4ce7e5baa285@analog.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Mon, 29 Aug 2022 12:38:04 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A6972FE0;
+        Mon, 29 Aug 2022 09:38:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661791082; x=1693327082;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=ojePtwk4DKFWlMS7jqKVqTyPcBJTssA2BelkXh7kDvA=;
+  b=TODmqxL+ugZzu/9Hj1Kb16QMKfbUmiMnxgxJR/lzs8HOeh5wiQ0jSoDs
+   ew5gaspK3Sg8oRa+hfN79dMFW6EXBGHio0cHIxfO7sgBATppvFw3rtMO1
+   IKiL0ewzTJ5KjFcPtQ10fS674TDXk3lM21EHGB0EzGI1K5D+TS6xXD2yC
+   8BDxqdzYuSdj9HIeKlHCD3KN3FSQhjr2OH2IkTSGdPJjWBgs9YXx9rAEc
+   sNgIEVNw3Np+LeiSIU/JYy5+ZcxUY71gUwrXqsnB5x76EfWnjrt7GbYbM
+   UJ9DlZJ8FKNyem4MZ7PQ83y1nPFQ9VAkZJKnBDVjbnRzFwwFzJ63myDXY
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="292501808"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="292501808"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 08:23:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="640972615"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by orsmga008.jf.intel.com with ESMTP; 29 Aug 2022 08:23:11 -0700
+Date:   Mon, 29 Aug 2022 23:18:30 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Fuad Tabba <tabba@google.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
+Message-ID: <20220829151830.GC1586678@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
+ <CA+EHjTzRcEQcZRJixBa=fBXd4=-oZK=unmBLwBAFVixCPfY-dQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+EHjTzRcEQcZRJixBa=fBXd4=-oZK=unmBLwBAFVixCPfY-dQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 29 Aug 2022 06:13:52 +0000
-"Regus, Ciprian" <Ciprian.Regus@analog.com> wrote:
-
-> Hi Lars,
+On Fri, Aug 26, 2022 at 04:19:32PM +0100, Fuad Tabba wrote:
+> Hi Chao,
 > 
-> Thanks for the review. I have one question before going further
-> with this patch.
+> On Wed, Jul 6, 2022 at 9:25 AM Chao Peng <chao.p.peng@linux.intel.com> wrote:
+> >
+> > Normally, a write to unallocated space of a file or the hole of a sparse
+> > file automatically causes space allocation, for memfd, this equals to
+> > memory allocation. This new seal prevents such automatically allocating,
+> > either this is from a direct write() or a write on the previously
+> > mmap-ed area. The seal does not prevent fallocate() so an explicit
+> > fallocate() can still cause allocating and can be used to reserve
+> > memory.
+> >
+> > This is used to prevent unintentional allocation from userspace on a
+> > stray or careless write and any intentional allocation should use an
+> > explicit fallocate(). One of the main usecases is to avoid memory double
+> > allocation for confidential computing usage where we use two memfds to
+> > back guest memory and at a single point only one memfd is alive and we
+> > want to prevent memory allocation for the other memfd which may have
+> > been mmap-ed previously. More discussion can be found at:
+> >
+> >   https://lkml.org/lkml/2022/6/14/1255
+> >
+> > Suggested-by: Sean Christopherson <seanjc@google.com>
+> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> > ---
+> >  include/uapi/linux/fcntl.h |  1 +
+> >  mm/memfd.c                 |  3 ++-
+> >  mm/shmem.c                 | 16 ++++++++++++++--
+> >  3 files changed, 17 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
+> > index 2f86b2ad6d7e..98bdabc8e309 100644
+> > --- a/include/uapi/linux/fcntl.h
+> > +++ b/include/uapi/linux/fcntl.h
+> > @@ -43,6 +43,7 @@
+> >  #define F_SEAL_GROW    0x0004  /* prevent file from growing */
+> >  #define F_SEAL_WRITE   0x0008  /* prevent writes */
+> >  #define F_SEAL_FUTURE_WRITE    0x0010  /* prevent future writes while mapped */
+> > +#define F_SEAL_AUTO_ALLOCATE   0x0020  /* prevent allocation for writes */
 > 
-> > On 8/22/22 14:51, Ciprian Regus wrote:  
-> > > Set the iio device's name based on the chip used.  
-> > 
-> > While the change is correct it breaks the ABI. This needs a bit of a
-> > better explanation what is being done, why, what are the potential
-> > problems, why do we want to do it anyway.  
+> I think this should also be added to tools/include/uapi/linux/fcntl.h
+
+Yes, thanks.
+
+Chao
 > 
-> The reason for this change is to make it easier to identify the device
-> (by having a generic name) when using an IIO client. The current name is
-> based on the i2c_client's kobj name, which has the format
-> "i2c_instance -i2c_address " (e.g. 1-0076). So, the renaming would allow
-> for interacting with the device without knowing which bus it's connected
-> to.
+> Cheers,
+> /fuad
 > 
-> Also, as far as I can see, the IIO ABI states that the device's name is
-> "Typically a part number".
 > 
-> For the reason given, would this change be considered an
-> improvement, or is the ABI breaking too much of a drawback?
-> (in which case I'll just drop this patch)
-
-Hi Ciprian
-
-There are a set of drivers that do it similarly to this (amongst other
-things because I wasn't paying attention a few years back).
-
-Generally we've considered them unfixable unfortunately because it's
-common to use name to find the device - so userspace breakage is
-very likely.
-
-If we are introducing new device support thought here can't be a platform
-already relying on the old naming.  So weird though it seems, can you fix
-this just for the newly supported models and leave the old ones 'broken'?
-(with a big note on why!)  Perhaps do that by leaving .name = NULL for the
-older parts and doing a check on that to select behaviour.
-
-Thanks,
-
-Jonathan
-
-> 
-> Thanks,
-> Ciprian
-> >   
-> > >
-> > > Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>
-> > > ---
-> > >   drivers/iio/adc/ltc2496.c      | 1 +
-> > >   drivers/iio/adc/ltc2497-core.c | 2 +-
-> > >   drivers/iio/adc/ltc2497.c      | 2 ++
-> > >   drivers/iio/adc/ltc2497.h      | 1 +
-> > >   4 files changed, 5 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/iio/adc/ltc2496.c b/drivers/iio/adc/ltc2496.c
-> > > index 98338104c24a..86470f49e8ca 100644
-> > > --- a/drivers/iio/adc/ltc2496.c
-> > > +++ b/drivers/iio/adc/ltc2496.c
-> > > @@ -89,6 +89,7 @@ static void ltc2496_remove(struct spi_device *spi)
-> > >
-> > >   static struct chip_info ltc2496_info = {
-> > >   	.resolution = 16,
-> > > +	.name = "ltc2496"
-> > >   };
-> > >
-> > >   static const struct of_device_id ltc2496_of_match[] = {
-> > > diff --git a/drivers/iio/adc/ltc2497-core.c b/drivers/iio/adc/ltc2497-core.c
-> > > index b2752399402c..6dd9ab601904 100644
-> > > --- a/drivers/iio/adc/ltc2497-core.c
-> > > +++ b/drivers/iio/adc/ltc2497-core.c
-> > > @@ -169,7 +169,7 @@ int ltc2497core_probe(struct device *dev, struct  
-> > iio_dev *indio_dev)  
-> > >   	struct ltc2497core_driverdata *ddata = iio_priv(indio_dev);
-> > >   	int ret;
-> > >
-> > > -	indio_dev->name = dev_name(dev);
-> > > +	indio_dev->name = ddata->chip_info->name;
-> > >   	indio_dev->info = &ltc2497core_info;
-> > >   	indio_dev->modes = INDIO_DIRECT_MODE;
-> > >   	indio_dev->channels = ltc2497core_channel;
-> > > diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-> > > index bb5e0d4301e2..a0aad71c8130 100644
-> > > --- a/drivers/iio/adc/ltc2497.c
-> > > +++ b/drivers/iio/adc/ltc2497.c
-> > > @@ -99,9 +99,11 @@ static int ltc2497_remove(struct i2c_client *client)
-> > >   static struct chip_info ltc2497_info[] = {
-> > >   	[TYPE_LTC2497] = {
-> > >   		.resolution = 16,
-> > > +		.name = "ltc2497"
-> > >   	},
-> > >   	[TYPE_LTC2499] = {
-> > >   		.resolution = 24,
-> > > +		.name = "ltc2499"
-> > >   	}
-> > >   };
-> > >
-> > > diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
-> > > index f4d939cfd48b..0e86e38248ee 100644
-> > > --- a/drivers/iio/adc/ltc2497.h
-> > > +++ b/drivers/iio/adc/ltc2497.h
-> > > @@ -12,6 +12,7 @@ enum chip_type {
-> > >
-> > >   struct chip_info {
-> > >   	u32 resolution;
-> > > +	char *name;
-> > >   };
-> > >
-> > >   struct ltc2497core_driverdata {  
-> >   
-> 
-
+> >  /* (1U << 31) is reserved for signed error codes */
+> >
+> >  /*
+> > diff --git a/mm/memfd.c b/mm/memfd.c
+> > index 08f5f8304746..2afd898798e4 100644
+> > --- a/mm/memfd.c
+> > +++ b/mm/memfd.c
+> > @@ -150,7 +150,8 @@ static unsigned int *memfd_file_seals_ptr(struct file *file)
+> >                      F_SEAL_SHRINK | \
+> >                      F_SEAL_GROW | \
+> >                      F_SEAL_WRITE | \
+> > -                    F_SEAL_FUTURE_WRITE)
+> > +                    F_SEAL_FUTURE_WRITE | \
+> > +                    F_SEAL_AUTO_ALLOCATE)
+> >
+> >  static int memfd_add_seals(struct file *file, unsigned int seals)
+> >  {
+> > diff --git a/mm/shmem.c b/mm/shmem.c
+> > index a6f565308133..6c8aef15a17d 100644
+> > --- a/mm/shmem.c
+> > +++ b/mm/shmem.c
+> > @@ -2051,6 +2051,8 @@ static vm_fault_t shmem_fault(struct vm_fault *vmf)
+> >         struct vm_area_struct *vma = vmf->vma;
+> >         struct inode *inode = file_inode(vma->vm_file);
+> >         gfp_t gfp = mapping_gfp_mask(inode->i_mapping);
+> > +       struct shmem_inode_info *info = SHMEM_I(inode);
+> > +       enum sgp_type sgp;
+> >         int err;
+> >         vm_fault_t ret = VM_FAULT_LOCKED;
+> >
+> > @@ -2113,7 +2115,12 @@ static vm_fault_t shmem_fault(struct vm_fault *vmf)
+> >                 spin_unlock(&inode->i_lock);
+> >         }
+> >
+> > -       err = shmem_getpage_gfp(inode, vmf->pgoff, &vmf->page, SGP_CACHE,
+> > +       if (unlikely(info->seals & F_SEAL_AUTO_ALLOCATE))
+> > +               sgp = SGP_NOALLOC;
+> > +       else
+> > +               sgp = SGP_CACHE;
+> > +
+> > +       err = shmem_getpage_gfp(inode, vmf->pgoff, &vmf->page, sgp,
+> >                                   gfp, vma, vmf, &ret);
+> >         if (err)
+> >                 return vmf_error(err);
+> > @@ -2459,6 +2466,7 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
+> >         struct inode *inode = mapping->host;
+> >         struct shmem_inode_info *info = SHMEM_I(inode);
+> >         pgoff_t index = pos >> PAGE_SHIFT;
+> > +       enum sgp_type sgp;
+> >         int ret = 0;
+> >
+> >         /* i_rwsem is held by caller */
+> > @@ -2470,7 +2478,11 @@ shmem_write_begin(struct file *file, struct address_space *mapping,
+> >                         return -EPERM;
+> >         }
+> >
+> > -       ret = shmem_getpage(inode, index, pagep, SGP_WRITE);
+> > +       if (unlikely(info->seals & F_SEAL_AUTO_ALLOCATE))
+> > +               sgp = SGP_NOALLOC;
+> > +       else
+> > +               sgp = SGP_WRITE;
+> > +       ret = shmem_getpage(inode, index, pagep, sgp);
+> >
+> >         if (ret)
+> >                 return ret;
+> > --
+> > 2.25.1
+> >
