@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E82ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC14AECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232623AbiH2Lc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:32:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
+        id S232630AbiH2LdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:33:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231991AbiH2L3w (ORCPT
+        with ESMTP id S231237AbiH2LaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:29:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344D679606;
-        Mon, 29 Aug 2022 04:17:49 -0700 (PDT)
+        Mon, 29 Aug 2022 07:30:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0C46BCEE;
+        Mon, 29 Aug 2022 04:18:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B4AC6122E;
-        Mon, 29 Aug 2022 11:16:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96EB5C433C1;
-        Mon, 29 Aug 2022 11:16:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A945361128;
+        Mon, 29 Aug 2022 11:17:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6285C433C1;
+        Mon, 29 Aug 2022 11:17:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771802;
-        bh=DvKoNBXZQ3lSMZDV8guVSXKw8UBkl1O4MYqLwlKmqCo=;
+        s=korg; t=1661771863;
+        bh=9GGEEK+29rkGbgMDUIJYkfa5qhQ5CwqP81QP7W3+6jc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FRp+CzJXHV8zYKSBRlJdC8n2AUHDVjPoW6348Y9kB1iE4unt1ZIXyH9L7AvLcVtlf
-         pezWNi6JncCnLfI0w7+a7uI3aQsaFz52aAYOPVTnsQ8EHCxsuCrlQ6bHJ13s/N2juJ
-         m65RK+fiQSJoHxuzRA7nTQDL6asqIj4k0SL/GMQU=
+        b=jxfnSXOWwSB0yoI5ESkNciXrdC8oTQRWLc5ifir9Nfak0wNR3jYNO/isGkOIQKBPV
+         5/fV3v3Q+DIjkZK2EhBQTht+DtauK3ALJfny6+8LqMQI4uBqehhSPH4sspSMe9fYqT
+         6/X0rk+on0tRtXWJJv/s9Ujn1kNuG8YF6zTMQCww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ammy Yi <ammy.yi@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.19 102/158] perf/x86/intel: Fix pebs event constraints for ADL
-Date:   Mon, 29 Aug 2022 12:59:12 +0200
-Message-Id: <20220829105813.372152512@linuxfoundation.org>
+        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.19 115/158] s390/mm: do not trigger write fault when vma does not allow VM_WRITE
+Date:   Mon, 29 Aug 2022 12:59:25 +0200
+Message-Id: <20220829105813.924839469@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,36 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
 
-commit cde643ff75bc20c538dfae787ca3b587bab16b50 upstream.
+commit 41ac42f137080bc230b5882e3c88c392ab7f2d32 upstream.
 
-According to the latest event list, the LOAD_LATENCY PEBS event only
-works on the GP counter 0 and 1 for ADL and RPL.
+For non-protection pXd_none() page faults in do_dat_exception(), we
+call do_exception() with access == (VM_READ | VM_WRITE | VM_EXEC).
+In do_exception(), vma->vm_flags is checked against that before
+calling handle_mm_fault().
 
-Update the pebs event constraints table.
+Since commit 92f842eac7ee3 ("[S390] store indication fault optimization"),
+we call handle_mm_fault() with FAULT_FLAG_WRITE, when recognizing that
+it was a write access. However, the vma flags check is still only
+checking against (VM_READ | VM_WRITE | VM_EXEC), and therefore also
+calling handle_mm_fault() with FAULT_FLAG_WRITE in cases where the vma
+does not allow VM_WRITE.
 
-Fixes: f83d2f91d259 ("perf/x86/intel: Add Alder Lake Hybrid support")
-Reported-by: Ammy Yi <ammy.yi@intel.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220818184429.2355857-1-kan.liang@linux.intel.com
+Fix this by changing access check in do_exception() to VM_WRITE only,
+when recognizing write access.
+
+Link: https://lkml.kernel.org/r/20220811103435.188481-3-david@redhat.com
+Fixes: 92f842eac7ee3 ("[S390] store indication fault optimization")
+Cc: <stable@vger.kernel.org>
+Reported-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/ds.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/mm/fault.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/x86/events/intel/ds.c
-+++ b/arch/x86/events/intel/ds.c
-@@ -822,7 +822,7 @@ struct event_constraint intel_glm_pebs_e
+--- a/arch/s390/mm/fault.c
++++ b/arch/s390/mm/fault.c
+@@ -379,7 +379,9 @@ static inline vm_fault_t do_exception(st
+ 	flags = FAULT_FLAG_DEFAULT;
+ 	if (user_mode(regs))
+ 		flags |= FAULT_FLAG_USER;
+-	if (access == VM_WRITE || is_write)
++	if (is_write)
++		access = VM_WRITE;
++	if (access == VM_WRITE)
+ 		flags |= FAULT_FLAG_WRITE;
+ 	mmap_read_lock(mm);
  
- struct event_constraint intel_grt_pebs_event_constraints[] = {
- 	/* Allow all events as PEBS with no flags */
--	INTEL_HYBRID_LAT_CONSTRAINT(0x5d0, 0xf),
-+	INTEL_HYBRID_LAT_CONSTRAINT(0x5d0, 0x3),
- 	INTEL_HYBRID_LAT_CONSTRAINT(0x6d0, 0xf),
- 	EVENT_CONSTRAINT_END
- };
 
 
