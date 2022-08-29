@@ -2,41 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B931CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BACECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbiH2NVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51872 "EHLO
+        id S229838AbiH2NXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbiH2NVT (ORCPT
+        with ESMTP id S230204AbiH2NW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:21:19 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27752124B
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:18:37 -0700 (PDT)
-Received: from localhost.localdomain (unknown [95.31.169.23])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 6D10D40D403E;
-        Mon, 29 Aug 2022 13:17:14 +0000 (UTC)
-From:   Fedor Pchelkin <pchelkin@ispras.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Fedor Pchelkin <pchelkin@ispras.ru>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org, Hillf Danton <hdanton@sina.com>
-Subject: [PATCH v4 0/2] tty: n_gsm: avoid call of sleeping functions from atomic context
-Date:   Mon, 29 Aug 2022 16:16:38 +0300
-Message-Id: <20220829131640.69254-1-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <7f8d878b-ca7b-9bc0-6962-1c7de28c2c7b@kernel.org>
-References: 
+        Mon, 29 Aug 2022 09:22:58 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 486B015A1A
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:20:00 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MGSgp4WfNznTrQ;
+        Mon, 29 Aug 2022 19:21:42 +0800 (CST)
+Received: from kwepemm600008.china.huawei.com (7.193.23.88) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 19:24:07 +0800
+Received: from huawei.com (10.175.100.227) by kwepemm600008.china.huawei.com
+ (7.193.23.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 29 Aug
+ 2022 19:24:05 +0800
+From:   Shang XiaoJing <shangxiaojing@huawei.com>
+To:     <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <bsegall@google.com>, <mgorman@suse.de>, <bristot@redhat.com>,
+        <vschneid@redhat.com>, <linux-kernel@vger.kernel.org>
+CC:     <shangxiaojing@huawei.com>
+Subject: [PATCH v2] sched/deadline: Skip meaningless bw updates in dl_task_offline_migration
+Date:   Mon, 29 Aug 2022 19:59:04 +0800
+Message-ID: <20220829115904.28560-1-shangxiaojing@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.100.227]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600008.china.huawei.com (7.193.23.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzkaller reports calling of sleeping functions from atomic context. This
-is fixed by the following patch series. 1/2 is a needed prerequisite patch
-for the fixes made in 2/2 to be integrated.
+Skip meaningless bw updates on root domain if task still stay in same rd
+while calling dl_task_offline_migration.
+
+Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
+---
+changes in v2:
+- fix subject and comment message
+---
+ kernel/sched/deadline.c | 28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
+
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 8e14dc21d829..9660e166c8ec 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -714,20 +714,22 @@ static struct rq *dl_task_offline_migration(struct rq *rq, struct task_struct *p
+ 		add_rq_bw(&p->dl, &later_rq->dl);
+ 	}
+ 
+-	/*
+-	 * And we finally need to fixup root_domain(s) bandwidth accounting,
+-	 * since p is still hanging out in the old (now moved to default) root
+-	 * domain.
+-	 */
+-	dl_b = &rq->rd->dl_bw;
+-	raw_spin_lock(&dl_b->lock);
+-	__dl_sub(dl_b, p->dl.dl_bw, cpumask_weight(rq->rd->span));
+-	raw_spin_unlock(&dl_b->lock);
++	if (&rq->rd != &later_rq->rd) {
++		/*
++		 * And we finally need to fixup root_domain(s) bandwidth accounting,
++		 * since p is still hanging out in the old (now moved to default) root
++		 * domain.
++		 */
++		dl_b = &rq->rd->dl_bw;
++		raw_spin_lock(&dl_b->lock);
++		__dl_sub(dl_b, p->dl.dl_bw, cpumask_weight(rq->rd->span));
++		raw_spin_unlock(&dl_b->lock);
+ 
+-	dl_b = &later_rq->rd->dl_bw;
+-	raw_spin_lock(&dl_b->lock);
+-	__dl_add(dl_b, p->dl.dl_bw, cpumask_weight(later_rq->rd->span));
+-	raw_spin_unlock(&dl_b->lock);
++		dl_b = &later_rq->rd->dl_bw;
++		raw_spin_lock(&dl_b->lock);
++		__dl_add(dl_b, p->dl.dl_bw, cpumask_weight(later_rq->rd->span));
++		raw_spin_unlock(&dl_b->lock);
++	}
+ 
+ 	set_task_cpu(p, later_rq->cpu);
+ 	double_unlock_balance(later_rq, rq);
+-- 
+2.17.1
+
