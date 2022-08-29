@@ -2,223 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D5BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE695ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229924AbiH2PEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47376 "EHLO
+        id S229906AbiH2PHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:07:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229906AbiH2PEd (ORCPT
+        with ESMTP id S229611AbiH2PHB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:04:33 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451458D3D8
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:04:31 -0700 (PDT)
-Received: from [192.168.42.144] (mtl.collabora.ca [66.171.169.34])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Mon, 29 Aug 2022 11:07:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1DD86B54
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:07:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: padovan)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8A4BC660036C;
-        Mon, 29 Aug 2022 16:04:29 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661785470;
-        bh=zQrJBqu8D8yQ6EMK5HMuX9D6RuD9Hr5OLic3O4LfX+E=;
-        h=Date:Subject:From:To:Cc:Reply-To:References:In-Reply-To:From;
-        b=AE0JegUBQW9as0diIv4K376AHI9UFKcIKpZR5xdphx5y6Vahi+m7w4rFd2c6rSeKC
-         6TqmdsUPDMfwfsMGf+XgJWl2uFi3pcQNKWtHX4YOxN8BIpvjEKgdX9aBuH7SKfcTO+
-         6K79H58UApaw6K1Zkokk15dKQD9Tf7yfkWr+Pa/Ffqdh+wgWto9KeeQNoRSc3wXca3
-         a0BVpMbgVqxvEMpgbnwaPwqZpUZOt+zLcXJCaukMlNUMUZUEL5kEugbGpVlwO9FXjC
-         ZxXKV5i7NsDjQjKEKJeK4k0JNBCjy4G2+8/aB8w4g0DzT6cbxQ6QLonUtSeTheC4yj
-         xKyTDLqv5RCOA==
-Message-ID: <ce17e20b-b60d-baaf-15af-1e3c8157df7b@collabora.com>
-Date:   Mon, 29 Aug 2022 11:04:26 -0400
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F62AB810A8
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:06:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 954FDC433C1;
+        Mon, 29 Aug 2022 15:06:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661785618;
+        bh=K2Sqs5g2tp+43xxFZspN1D8v3qOT6RryXTyaXO3QnJY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YYXlnOUgStpRCiFT6xNptSzJyFRT4JucbhZeoUfkRrgmPajuUSeKoR2RX375IVAwW
+         fWUicxuedS/yJYoXbHl4oSA/B2FW4Hz1VP9bGfUEJlbJX8b/18ozyR5dvuBNk65C/1
+         0qtiP53v9e830gxaaZCnzYMnKam3CbPRjQ4nOKmzqo5F3Jj+l1hxIot9mlt3Y0BGiL
+         fKvlG2pZGtIPoSDEMmqaV1Mh/qCP9u7wSb8asYue/vJJuJQ8Lc0UToDR4WpIVVJLP9
+         Ew2MdR07uCX8N1dG2rJ8pMmJIueJ2b/CS8S5qxyNZBtoIJx5RjYNRLyepRzDAfq1Qb
+         SMTZRKKlK8L/g==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v3] riscv: enable THP_SWAP for RV64
+Date:   Mon, 29 Aug 2022 22:57:42 +0800
+Message-Id: <20220829145742.3139-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [kernelci-members] KernelCI working group: Web Dashboard
-Content-Language: en-US
-From:   Gustavo Padovan <gustavo.padovan@collabora.com>
-To:     kernelci-members@groups.io,
-        "kernelci@groups.io" <kernelci@groups.io>
-Cc:     automated-testing@lists.yoctoproject.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernelci-tsc@groups.io" <kernelci-tsc@groups.io>,
-        Simon Xiao <sixiao@microsoft.com>,
-        Carlos Cardenas <Carlos.Cardenas@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Sharath George John <sgeorgejohn@microsoft.com>,
-        "Alain Gefflaut (HE/HIM)" <agefflaut@microsoft.com>,
-        Johnson George <Johnson.George@microsoft.com>
-Reply-To: kernelci-members@groups.io
-References: <f3874e7d-ccfe-4a2d-d054-9b7bf9e8b44d@collabora.com>
- <16F4479F76A8C807.11895@groups.io> <16F65ECD601264EC.15470@groups.io>
- <1706557437ACCB9C.25939@groups.io>
-In-Reply-To: <1706557437ACCB9C.25939@groups.io>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+I have a Sipeed Lichee RV dock board which only has 512MB DDR, so
+memory optimizations such as swap on zram are helpful. As is seen
+in commit d0637c505f8a ("arm64: enable THP_SWAP for arm64") and
+commit bd4c82c22c367e ("mm, THP, swap: delay splitting THP after
+swapped out"), THP_SWAP can improve the swap throughput significantly.
 
-The previous tentative below didn't work due to vacation season. Here's 
-a new pool with dates from 1st to 8th of September. Please answer it 
-until this Wednesday August 31th.
+Enable THP_SWAP for RV64, testing the micro-benchmark which is
+introduced by commit d0637c505f8a ("arm64: enable THP_SWAP for arm64")
+shows below numbers on the Lichee RV dock board:
 
-https://doodle.com/meeting/participate/id/dG5v423a
+swp out bandwidth w/o patch: 66908 bytes/ms (mean of 10 tests)
+swp out bandwidth w/ patch: 322638 bytes/ms (mean of 10 tests)
 
-See the email below for meetings notes and current User Stories document.
+Improved by 382%!
 
-Regards,
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+---
+Since v2:
+ - correct reviewed-by tag
+ - update commit msg
 
-Gustavo
+Since v1:
+ - collect reviewed-by tag
+ - make ARCH_WANTS_THP_SWAP rely on HAVE_ARCH_TRANSPARENT_HUGEPAGE
+   instead
 
-On 7/18/22 10:17, Gustavo Padovan wrote:
-> Hi everyone,
->
-> In our last Web Dashboard meeting[1] where we reviewed the User 
-> Stories document[2]. Then, after that we worked offline to incorporate 
-> the feedback on doc, so it is time for our next meeting to further 
-> discuss. Please answer the poll with your time availability on the 
-> link below. I added dates from 21th to 28th of July.
->
-> https://doodle.com/meeting/participate/id/eX6vyY5b
->
-> Thank you,
->
-> Gus
-> —
-> [1]https://docs.google.com/document/d/1yp-2L54tnrwkZ--59t2GeXuq1gt5dDnsFy08odizl1Y/edit#bookmark=id.6ok0ufne9shj 
->
-> [2]https://docs.google.com/document/d/1_rfMpas4n_gw2GvUTRU63vIXk95VotJuittalX7trP8/edit#heading=h.wjoxi4s5pxzl 
->
->
-> On 6/7/22 10:46, Gustavo Padovan wrote:
->>
->> Hello,
->>
->> Our next meeting has been scheduled for this Thursday at 3pm UTC. 
->> Invite was sent to the kernelci-members list, but here goes the 
->> instructions to join as well:
->>
->> This event has a video call.
->> Join: https://meet.google.com/yyz-jzjy-yfu
->> (US) +1 254-227-6870 PIN: 188509910#
->> View more phone numbers: 
->> https://tel.meet/yyz-jzjy-yfu?pin=5882595078642&hs=7
->>
->> Regards,
->>
->> Gustavo
->>
->> Le 31/05/2022 à 15:34, Gustavo Padovan a écrit :
->>>
->>> Hello everyone,
->>>
->>> **
->>>
->>> *From our first meeting back in October[1], we took the action of 
->>> organizing our user stories that you were spread as a comments in 
->>> the the github issue{2} and, converting them into User Stories 
->>> document[3].*
->>>
->>> *
->>>
->>> In the next meeting, we want to study the current User Stories and 
->>> start discussions to progress on development. The proposed slots are 
->>> for next week. Please answer the doodle by the end of this week:
->>>
->>> https://doodle.com/meeting/participate/id/egJ12A9d
->>>
->>> Best regards,
->>>
->>> Gustavo
->>>
->>> [1] 
->>> https://docs.google.com/document/d/1yp-2L54tnrwkZ--59t2GeXuq1gt5dDnsFy08odizl1Y/edit# 
->>> <https://docs.google.com/document/d/1yp-2L54tnrwkZ--59t2GeXuq1gt5dDnsFy08odizl1Y/edit#> 
->>>
->>>
->>> [2] https://github.com/kernelci/kernelci-project/discussions/28 
->>> <https://github.com/kernelci/kernelci-project/discussions/28>
->>>
->>> {3} 
->>> https://docs.google.com/document/d/1_rfMpas4n_gw2GvUTRU63vIXk95VotJuittalX7trP8/edit 
->>> <https://docs.google.com/document/d/1_rfMpas4n_gw2GvUTRU63vIXk95VotJuittalX7trP8/edit>* 
->>>
->>> Le 27/07/2021 à 11:54, Guillaume Tucker a écrit :
->>>> Last year's KernelCI Community Survey[1] showed the importance of
->>>> having a good web dashboard.  About 70% of respondents would use
->>>> one if it provided the information they needed efficiently.
->>>> While other things are arguably even more important, such as
->>>> testing patches from mailing lists, replying to stable reviews
->>>> and sending email reports directly to contributors in a "natural"
->>>> workflow, the web dashboard has been a sticking point for a
->>>> while.
->>>>
->>>> There have been several attempts at solving this problem, using
->>>> Elastic Stack and Grafana among other things, but there isn't a
->>>> single framework able to directly provide an off-the-shelf
->>>> solution to the community's needs.  In fact, the first issue is
->>>> the lack of understanding of these needs: who wants to use the
->>>> web dashboard, and how?  Then, how does one translate those needs
->>>> into a user interface?  Doing this requires skills that engineers
->>>> who regularly contribute to KernelCI typically don't have. As
->>>> such, a dedicated working group is being created in order to fill
->>>> this gap.
->>>>
->>>> The aim is to coordinate efforts and try to follow best practices
->>>> to make steady progress and avoid repeating the same mistakes.
->>>> Most likely, we will need some help from proper web developers
->>>> who aren't part of the usual KernelCI community.  This may be
->>>> facilitated by the KernelCI LF project budget if approved by the
->>>> governing board.
->>>>
->>>> In order to get started, we would need to have maybe 3 to 5
->>>> people available to focus on this.  It doesn't necessarily mean a
->>>> lot of hours spent but actions to be carried out on a daily or
->>>> weekly basis.  So far we have Gustavo Padovan as our new KernelCI
->>>> Project Manager and a few people have expressed interest but we
->>>> still need formal confirmation.
->>>>
->>>>
->>>> Here's a GitHub project dedicated to the new web dashboard:
->>>>
->>>>    https://github.com/orgs/kernelci/projects/4
->>>>
->>>> I've created a couple of issues to get started about user
->>>> stories, and some initial milestones as a basic skeleton:
->>>>
->>>>    https://github.com/kernelci/kernelci-project/milestones
->>>>
->>>>
->>>> This is ultimately a community-driven effort to address the needs
->>>> of the kernel community.  Please share any thoughts you may have
->>>> on this, whether you want to add some user stories, share some
->>>> expertise, be officially in the working group or take part in
->>>> this effort in any other way.
->>>>
->>>> Best wishes,
->>>> Guillaume
->>>>
->>>> [1]https://foundation.kernelci.org/blog/2020/07/09/kernelci-community-survey-report/ 
->>>>
->>>>
->>>>
->>>>
->>>>
->>>>
->>
->
+ arch/riscv/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index ed66c31e4655..79e52441e18b 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -45,6 +45,7 @@ config RISCV
+ 	select ARCH_WANT_FRAME_POINTERS
+ 	select ARCH_WANT_GENERAL_HUGETLB
+ 	select ARCH_WANT_HUGE_PMD_SHARE if 64BIT
++	select ARCH_WANTS_THP_SWAP if HAVE_ARCH_TRANSPARENT_HUGEPAGE
+ 	select BINFMT_FLAT_NO_DATA_START_OFFSET if !MMU
+ 	select BUILDTIME_TABLE_SORT if MMU
+ 	select CLONE_BACKWARDS
 -- 
-Gustavo Padovan
-
-Collabora Ltd.
-Platinum Building, St John's Innovation Park
-Cambridge CB4 0DS, UK
-Registered in England & Wales, no. 5513718
+2.34.1
 
