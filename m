@@ -2,109 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0034ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:58:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF233ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbiH2N6J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39176 "EHLO
+        id S229935AbiH2N7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiH2N6A (ORCPT
+        with ESMTP id S229477AbiH2N67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:58:00 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616F380F49;
-        Mon, 29 Aug 2022 06:58:00 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id l3so8060516plb.10;
-        Mon, 29 Aug 2022 06:58:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :from:to:cc;
-        bh=uyREE3fVUfVLXJ9trWcxM2jpkfj4wawfjqxKtCQdtxA=;
-        b=K3orChyEl1A6UE9Ly+Y03qPb6XOUUe2qzgKr5pkBRS7CFcpc9FR/pvhxIU/aGBN16c
-         +kyygQgxUaxZTp+iQg0x3lhZM33wG5SMyJRh0es4VL9r4YwOAokMDxCs79ANmtF8i1nV
-         c84bo1fXAJFE8Egir1R1/kSDfEpGd9cLOGV1LbQ6nNX1Dp9/PZnBHHnH05zbabvp+UxI
-         lXBL8JfU6UvAYQLHSfyvNdVT8gRPQCTQC1DGXlg/raAnerBoNTgRfVr68F6wMs2X/6mV
-         J0wOTl/PK7kfWLBlLEkZA7xLlGr3tDHiSPB6cMmvN3eRKqXdras4zkYTR2mODqWElY0L
-         Jgzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :x-gm-message-state:from:to:cc;
-        bh=uyREE3fVUfVLXJ9trWcxM2jpkfj4wawfjqxKtCQdtxA=;
-        b=2Setj6vFXkmR3zuZkG901GUtRUMCmOBh031TTTULHEeGn/YjEpregE5YRUBz5vOBQW
-         m75lQabZzPXj+UABfLjp2HQIL51kNa/F5MyBlRmNznzpPTJOaPdH+NqFJWgz1KspnS2T
-         QOdDFzZmLSmamClhqpfYC2TLlKLkSgiOsApWUgOWvMy4HjiWptpBLMi6DGMhdcfuyj3B
-         LM1/gFe1sscjG6YPS5APFP1COPom2DXfiUbvxTnMJsaIDZRWOJcDDSLzl0IFh7zXIGHT
-         RrGSZYGpL5KHvLNSQ2spYgte8b7p6w8Cwi0Mkl/b4DSoRysslQG+34CSi2WBrnfFzaKu
-         7s5g==
-X-Gm-Message-State: ACgBeo1molrpGh4DKcEjUQR+rmuLOe48rAOs1EIT9NIyS5fkpc8I2arz
-        78j6Zqvb8hGA/o+byqADdZ0=
-X-Google-Smtp-Source: AA6agR6Q6YpWQ51FcZTGOpVW7g4gq/cMS0zb6rHM4EA4LQpOVbKe9Cxnq3Onm2eCPPb2IREyOn8H2w==
-X-Received: by 2002:a17:90b:3003:b0:1fd:f876:72f4 with SMTP id hg3-20020a17090b300300b001fdf87672f4mr717140pjb.145.1661781479939;
-        Mon, 29 Aug 2022 06:57:59 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id b202-20020a621bd3000000b005377c854b50sm7252719pfb.1.2022.08.29.06.57.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 06:57:59 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 29 Aug 2022 06:57:58 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Jean Delvare <jdelvare@suse.com>
-Subject: Re: [PATCH v2 1/3] hwmon: (pwm-fan) Replace OF specific call to PWM
- by plain one
-Message-ID: <20220829135758.GA306130@roeck-us.net>
-References: <20220826172642.16404-1-andriy.shevchenko@linux.intel.com>
+        Mon, 29 Aug 2022 09:58:59 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CE97E004;
+        Mon, 29 Aug 2022 06:58:57 -0700 (PDT)
+Received: from [192.168.0.6] (ip5f5aec76.dynamic.kabel-deutschland.de [95.90.236.118])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 75D2861EA192D;
+        Mon, 29 Aug 2022 15:58:54 +0200 (CEST)
+Message-ID: <70172016-8ae5-92b8-2a43-8f0d4a2f6668@molgen.mpg.de>
+Date:   Mon, 29 Aug 2022 15:58:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220826172642.16404-1-andriy.shevchenko@linux.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH -next 0/3] md/raid10: reduce lock contention for io
+To:     Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     song@kernel.org, linux-raid@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yi.zhang@huawei.com
+References: <20220829131502.165356-1-yukuai1@huaweicloud.com>
+Content-Language: en-US
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220829131502.165356-1-yukuai1@huaweicloud.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 08:26:40PM +0300, Andy Shevchenko wrote:
-> There is no need to call OF specific devm_of_pwm_get() since
-> the device node parameter duplicates in the device parameter.
-> Hence we may safely replace it by plain devm_pwm_get() call.
-> 
-> This allows to drop devm_of_pwm_get() as no more users will be.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Dear Yu,
 
-I am going to apply the series to hwmon-next.
-Uwe, please holler if that is not ok.
 
-Thanks,
-Guenter
+Thank you for your patches.
 
-> ---
-> v2: added tag (Uwe), left only one-liner change (Uwe, Guenter)
->  drivers/hwmon/pwm-fan.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+Am 29.08.22 um 15:14 schrieb Yu Kuai:
+> From: Yu Kuai <yukuai3@huawei.com>
 > 
-> diff --git a/drivers/hwmon/pwm-fan.c b/drivers/hwmon/pwm-fan.c
-> index 6c08551d8d14..06fd1d75101d 100644
-> --- a/drivers/hwmon/pwm-fan.c
-> +++ b/drivers/hwmon/pwm-fan.c
-> @@ -302,7 +302,7 @@ static int pwm_fan_probe(struct platform_device *pdev)
->  
->  	mutex_init(&ctx->lock);
->  
-> -	ctx->pwm = devm_of_pwm_get(dev, dev->of_node, NULL);
-> +	ctx->pwm = devm_pwm_get(dev, NULL);
->  	if (IS_ERR(ctx->pwm))
->  		return dev_err_probe(dev, PTR_ERR(ctx->pwm), "Could not get PWM\n");
->  
+> patch 1 is a small problem found by code review.
+> patch 2 avoid holding resync_lock in fast path.
+> patch 3 avoid holding lock in wake_up() in fast path.
+> 
+> Test environment:
+> 
+> Architecture: aarch64
+> Cpu: Huawei KUNPENG 920, there are four numa nodes
+> 
+> Raid10 initialize:
+> mdadm --create /dev/md0 --level 10 --bitmap none --raid-devices 4 /dev/nvme0n1 /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1
+> 
+> Test cmd:
+> fio -name=0 -ioengine=libaio -direct=1 -group_reporting=1 -randseed=2022 -rwmixread=70 -refill_buffers -filename=/dev/md0 -numjobs=16 -runtime=60s -bs=4k -iodepth=256 -rw=randread
+> 
+> Test result:
+> before this patchset:	2.9 GiB/s
+> after this patchset:	6.6 Gib/s
+
+Could you please give more details about the test setup, like the drives 
+used?
+
+Did you use some tools like ftrace to figure out the bottleneck?
+
+> Please noted that in kunpeng-920, memory access latency is very bad
+> accross nodes compare to local node, and in other architecture
+> performance improvement might not be significant.
+> 
+> Yu Kuai (3):
+>    md/raid10: fix improper BUG_ON() in raise_barrier()
+>    md/raid10: convert resync_lock to use seqlock
+>    md/raid10: prevent unnecessary calls to wake_up() in fast path
+> 
+>   drivers/md/raid10.c | 88 +++++++++++++++++++++++++++++----------------
+>   drivers/md/raid10.h |  2 +-
+>   2 files changed, 59 insertions(+), 31 deletions(-)
+
+
+Kind regards,
+
+Paul
