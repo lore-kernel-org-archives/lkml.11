@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C87E3ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D19D5ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231886AbiH2LXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
+        id S231730AbiH2LXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:23:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbiH2LWh (ORCPT
+        with ESMTP id S231715AbiH2LWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:22:37 -0400
+        Mon, 29 Aug 2022 07:22:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9892675;
-        Mon, 29 Aug 2022 04:14:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5257760F2;
+        Mon, 29 Aug 2022 04:14:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E70806119C;
-        Mon, 29 Aug 2022 11:14:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01AB0C433C1;
-        Mon, 29 Aug 2022 11:14:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D8561611DA;
+        Mon, 29 Aug 2022 11:11:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7AD6C433D6;
+        Mon, 29 Aug 2022 11:11:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771662;
-        bh=FOptRiXQdzM1zXDzZPRq7CACFeGGFFSwyIQIjjxXEHQ=;
+        s=korg; t=1661771505;
+        bh=4V9Ya8StPCisj3e5YG0S3LF8fSowUKxzSMCoiLeOgx0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d2W8s2jVxqFyxJZfPzRPbu6bCFqHeNrXLMTbD+ZKQ2g40lC+9v9iTy/3PVBiC3fTB
-         575532tPD1yNOZZrznPGVTGY8UfXdrQ+hfk4vhFdM4DT48IR7x51xn3aq7EUmuewQQ
-         idpAno1BeCxvY4FKFq7oGZnerWgCUKajFJro4gZg=
+        b=F+DlT4OPbhOyzk/39W8dCz6ZpqUZixdRxo3mwzFImeRLg4gGDADGbad4hAmVfoWq4
+         1fw075kgXEmIEGqTOM4xWz1zCrUkmvW5cS4zEfZGgKa1gTPKyrGAYj8oaUeUBuoJ2Z
+         msRhBt8yzFluo5adgxEbcQOHDEVvzSwT+coLZt4M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 134/136] scsi: ufs: core: Enable link lost interrupt
-Date:   Mon, 29 Aug 2022 13:00:01 +0200
-Message-Id: <20220829105810.182175679@linuxfoundation.org>
+        stable@vger.kernel.org, Jeremy Linton <Jeremy.Linton@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Riwen Lu <luriwen@kylinos.cn>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 74/86] ACPI: processor: Remove freq Qos request for all CPUs
+Date:   Mon, 29 Aug 2022 12:59:40 +0200
+Message-Id: <20220829105759.544146749@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kiwoong Kim <kwmad.kim@samsung.com>
+From: Riwen Lu <luriwen@kylinos.cn>
 
-commit 6d17a112e9a63ff6a5edffd1676b99e0ffbcd269 upstream.
+commit 36527b9d882362567ceb4eea8666813280f30e6f upstream.
 
-Link lost is treated as fatal error with commit c99b9b230149 ("scsi: ufs:
-Treat link loss as fatal error"), but the event isn't registered as
-interrupt source. Enable it.
+The freq Qos request would be removed repeatedly if the cpufreq policy
+relates to more than one CPU. Then, it would cause the "called for unknown
+object" warning.
 
-Link: https://lore.kernel.org/r/1659404551-160958-1-git-send-email-kwmad.kim@samsung.com
-Fixes: c99b9b230149 ("scsi: ufs: Treat link loss as fatal error")
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Remove the freq Qos request for each CPU relates to the cpufreq policy,
+instead of removing repeatedly for the last CPU of it.
+
+Fixes: a1bb46c36ce3 ("ACPI: processor: Add QoS requests for all CPUs")
+Reported-by: Jeremy Linton <Jeremy.Linton@arm.com>
+Tested-by: Jeremy Linton <jeremy.linton@arm.com>
+Signed-off-by: Riwen Lu <luriwen@kylinos.cn>
+Cc: 5.4+ <stable@vger.kernel.org> # 5.4+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/ufs/ufshci.h |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/acpi/processor_thermal.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/ufs/ufshci.h
-+++ b/drivers/scsi/ufs/ufshci.h
-@@ -133,11 +133,7 @@ static inline u32 ufshci_version(u32 maj
+--- a/drivers/acpi/processor_thermal.c
++++ b/drivers/acpi/processor_thermal.c
+@@ -148,7 +148,7 @@ void acpi_thermal_cpufreq_exit(struct cp
+ 	unsigned int cpu;
  
- #define UFSHCD_UIC_MASK		(UIC_COMMAND_COMPL | UFSHCD_UIC_PWR_MASK)
+ 	for_each_cpu(cpu, policy->related_cpus) {
+-		struct acpi_processor *pr = per_cpu(processors, policy->cpu);
++		struct acpi_processor *pr = per_cpu(processors, cpu);
  
--#define UFSHCD_ERROR_MASK	(UIC_ERROR |\
--				DEVICE_FATAL_ERROR |\
--				CONTROLLER_FATAL_ERROR |\
--				SYSTEM_BUS_FATAL_ERROR |\
--				CRYPTO_ENGINE_FATAL_ERROR)
-+#define UFSHCD_ERROR_MASK	(UIC_ERROR | INT_FATAL_ERRORS)
- 
- #define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
- 				CONTROLLER_FATAL_ERROR |\
+ 		if (pr)
+ 			freq_qos_remove_request(&pr->thermal_req);
 
 
