@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C0BECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3AAECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbiH2V1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 17:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33278 "EHLO
+        id S230002AbiH2V11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 17:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbiH2V0q (ORCPT
+        with ESMTP id S229800AbiH2V0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 17:26:46 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E634D985A4
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:16 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id m34-20020a634c62000000b0042aff6dff12so4547542pgl.14
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:16 -0700 (PDT)
+        Mon, 29 Aug 2022 17:26:48 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BC49E2D7
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:12 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id q14-20020a6557ce000000b0041da9c3c244so4589013pgr.22
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=bUksEMWzQ2sQtj6CAseSDP7Wnd3Y9YWuXlHuoAiHS/w=;
-        b=R4f3AmhYQvfrJmCukv/e3Nij13PuVUa8k8O646df0PoObwBnO/xDcemk6+SqKXvVGr
-         hJkm2649shhdYcclI4xYPbiKHXEe7XEvjq6ebwkp6YZFsZtQX3MH5xTV757BPS7Zeyib
-         IALyiqYSG4f0kCJDHQ3+fMXa5F0OzkQKlh2EgahzIDAp6HMSPtfd8qN17COdyNthUkyK
-         vH/w1n6XgnYHxRHIzAjyfQH31twkRddq+jpJViGP9dMWFd2ba2cwGPVTVH8mdAvdjCY4
-         84OD9xZ4r8HlzIfM65gveSjGxaILhsxn9vJXDz/VODVoOMzJt9RI4cwlcbKnFfX3PjSN
-         BY7A==
+        bh=KQbM9RENeAKpMamE0B+V4MUsqhzbhGXDlXXjmQQUA6A=;
+        b=B9JYMkX5xydBJOgcGzuYw+brQarCWmRWS+0/Aqinb/OY26MbR1xT5axtOfpYrKlmA6
+         qGVi7LP6LaJMDcQJmEECw3J6IqaSMiez5M7VUbq2lZEZKkVSQHjZtuqy9g7s10YpHljB
+         L9LJY/vXV43u8aIw7/j+LcG51+Bdx5jgIt7f2hLczg1JgYzlwTyYBe/lmm+nmwMuVZWc
+         thodE+2BI084oTXFC0MD73T0ggmHuAL+ik6FuitgxrIkPY+yM+/axTrbJYGoWGabXb1/
+         atpqGKZe5bOiVGcNY/fR8gQx2/9qiwRjzQjgpRwLojxFdTcGDVT+d94c/I/T/XPhcGEF
+         rEbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=bUksEMWzQ2sQtj6CAseSDP7Wnd3Y9YWuXlHuoAiHS/w=;
-        b=l/Y0aMF0B+iVY2xu5dVlCbcxy2dr5pCTArjwe9X0x3iaUN47Mi05RvDrVKwoN+9TcE
-         pbJ0QoWJgbtvg13goGjeunHxUIXGY5Ai04qsYX8CCBh2l/Jx5FrFdpin4pkkNkfNBAcX
-         ctKOiDhLjKWm22m+zkv9gIwS4WwFlXk9CjNDk5lxv3PbBnrZPEYhQjFqjX+IKW0wkaOw
-         4iVj16gulpQ1ygTGZpg0r+LsSFDIrJ3r68jzf6XLJMXcpz4AByGWcOxYulT3JV9kp9tZ
-         Qibs6W6LiXClY2LFNscbCVsSo6T2WgB57UtR09eKFlWTWqWjh8MYaA2ltwKKenad2QX6
-         cuTA==
-X-Gm-Message-State: ACgBeo32bGo42XvCuDgrDzWFKlpuiuEtVQ1NuXP2YxmYVuu+ij1VMZ4E
-        uDEItCgs1RNsru8zRn74UWN09dTwY58=
-X-Google-Smtp-Source: AA6agR4CSgZfYughTw1oP2TGtJ/Gx4qpWPKVumSGbjZh4UG9V5skHPeijnTVviS5CargVPsvloUs2cN/SRk=
+        bh=KQbM9RENeAKpMamE0B+V4MUsqhzbhGXDlXXjmQQUA6A=;
+        b=RfwsNpyC3LqPhSXyAshMhZDi4oprDbnC90X+B8ciWreFBIwzFr+0vElvtUBl0la/9o
+         BjiFSdQc5ti8mt1NbmMa9XyctMt3zlh+6iUOnJfkNcGDkrnizi6xhtiVCErRk6pqEcao
+         wX0JcYTSHTi4Ihk+sQPfK9L59UPshNUA2BIcXfpU7kZpkA2hiNfccJn4OboZHHfEzmhQ
+         eh8h4GcokCImGl53P8gl0ESl0rVcnTHfv3Yn3l/yqIstz63M3yTIdN9pNiE9mN8PBP+W
+         yhbb8yg9Z8sN/bctryQ6uNxvKnRxFVPkvhGuD5TbILnuRcEhtLSecPy77+v12txyPwB3
+         QE+Q==
+X-Gm-Message-State: ACgBeo28Gq0uxKLao158logo/5iAqadwRQy2l4rb9dCepQkq9qwvAu3k
+        jc0dfOELacaKs9+7cVTwJDgpJdIS1NY=
+X-Google-Smtp-Source: AA6agR7f4s+E2TUUdzlInwBIWNCTTjaS2dHpmImL6O3kfzXJ6rCAm5H+xn8nFf0AEemGeSJLYPdhv1d/+n8=
 X-Received: from surenb-spec.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e30])
- (user=surenb job=sendgmr) by 2002:a17:90b:2c11:b0:1fd:e56c:79de with SMTP id
- rv17-20020a17090b2c1100b001fde56c79demr4481996pjb.201.1661808371494; Mon, 29
- Aug 2022 14:26:11 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 21:25:23 +0000
+ (user=surenb job=sendgmr) by 2002:a05:6a00:b8a:b0:537:f81:203a with SMTP id
+ g10-20020a056a000b8a00b005370f81203amr18341111pfj.80.1661808363176; Mon, 29
+ Aug 2022 14:26:03 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 21:25:18 +0000
 In-Reply-To: <20220829212531.3184856-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220829212531.3184856-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220829212531.3184856-21-surenb@google.com>
-Subject: [RFC PATCH 20/28] mm: introduce per-VMA lock statistics
+Message-ID: <20220829212531.3184856-16-surenb@google.com>
+Subject: [RFC PATCH 15/28] mm/mmap: mark adjacent VMAs as locked if they can
+ grow into unmapped area
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     michel@lespinasse.org, jglisse@google.com, mhocko@suse.com,
@@ -73,84 +74,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new CONFIG_PER_VMA_LOCK_STATS config option to dump extra
-statistics about handling page fault under VMA lock.
+While unmapping VMAs, adjacent VMAs might be able to grow into the area
+being unmapped. In such cases mark adjacent VMAs as locked to prevent
+this growth.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/vm_event_item.h | 6 ++++++
- include/linux/vmstat.h        | 6 ++++++
- mm/Kconfig.debug              | 8 ++++++++
- mm/vmstat.c                   | 6 ++++++
- 4 files changed, 26 insertions(+)
+ mm/mmap.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/vm_event_item.h b/include/linux/vm_event_item.h
-index f3fc36cd2276..a325783ed05d 100644
---- a/include/linux/vm_event_item.h
-+++ b/include/linux/vm_event_item.h
-@@ -150,6 +150,12 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
- #ifdef CONFIG_X86
- 		DIRECT_MAP_LEVEL2_SPLIT,
- 		DIRECT_MAP_LEVEL3_SPLIT,
-+#endif
-+#ifdef CONFIG_PER_VMA_LOCK_STATS
-+		VMA_LOCK_SUCCESS,
-+		VMA_LOCK_ABORT,
-+		VMA_LOCK_RETRY,
-+		VMA_LOCK_MISS,
- #endif
- 		NR_VM_EVENT_ITEMS
- };
-diff --git a/include/linux/vmstat.h b/include/linux/vmstat.h
-index bfe38869498d..0c2611899cfc 100644
---- a/include/linux/vmstat.h
-+++ b/include/linux/vmstat.h
-@@ -131,6 +131,12 @@ static inline void vm_events_fold_cpu(int cpu)
- #define count_vm_vmacache_event(x) do {} while (0)
- #endif
+diff --git a/mm/mmap.c b/mm/mmap.c
+index b0d78bdc0de0..b31cc97c2803 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2680,10 +2680,14 @@ detach_vmas_to_be_unmapped(struct mm_struct *mm, struct vm_area_struct *vma,
+ 	 * VM_GROWSUP VMA. Such VMAs can change their size under
+ 	 * down_read(mmap_lock) and collide with the VMA we are about to unmap.
+ 	 */
+-	if (vma && (vma->vm_flags & VM_GROWSDOWN))
++	if (vma && (vma->vm_flags & VM_GROWSDOWN)) {
++		vma_mark_locked(vma);
+ 		return false;
+-	if (prev && (prev->vm_flags & VM_GROWSUP))
++	}
++	if (prev && (prev->vm_flags & VM_GROWSUP)) {
++		vma_mark_locked(prev);
+ 		return false;
++	}
+ 	return true;
+ }
  
-+#ifdef CONFIG_PER_VMA_LOCK_STATS
-+#define count_vm_vma_lock_event(x) count_vm_event(x)
-+#else
-+#define count_vm_vma_lock_event(x) do {} while (0)
-+#endif
-+
- #define __count_zid_vm_events(item, zid, delta) \
- 	__count_vm_events(item##_NORMAL - ZONE_NORMAL + zid, delta)
- 
-diff --git a/mm/Kconfig.debug b/mm/Kconfig.debug
-index ce8dded36de9..075642763a03 100644
---- a/mm/Kconfig.debug
-+++ b/mm/Kconfig.debug
-@@ -207,3 +207,11 @@ config PTDUMP_DEBUGFS
- 	  kernel.
- 
- 	  If in doubt, say N.
-+
-+
-+config PER_VMA_LOCK_STATS
-+	bool "Statistics for per-vma locks"
-+	depends on PER_VMA_LOCK
-+	help
-+	  Statistics for per-vma locks.
-+	  If in doubt, say N.
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 90af9a8572f5..3f3804c846a6 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -1411,6 +1411,12 @@ const char * const vmstat_text[] = {
- 	"direct_map_level2_splits",
- 	"direct_map_level3_splits",
- #endif
-+#ifdef CONFIG_PER_VMA_LOCK_STATS
-+	"vma_lock_success",
-+	"vma_lock_abort",
-+	"vma_lock_retry",
-+	"vma_lock_miss",
-+#endif
- #endif /* CONFIG_VM_EVENT_COUNTERS || CONFIG_MEMCG */
- };
- #endif /* CONFIG_PROC_FS || CONFIG_SYSFS || CONFIG_NUMA || CONFIG_MEMCG */
 -- 
 2.37.2.672.g94769d06f0-goog
 
