@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89988ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C87E3ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231879AbiH2LXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33402 "EHLO
+        id S231886AbiH2LXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231814AbiH2LWg (ORCPT
+        with ESMTP id S231817AbiH2LWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:22:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E34175FD1;
-        Mon, 29 Aug 2022 04:14:20 -0700 (PDT)
+        Mon, 29 Aug 2022 07:22:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E9892675;
+        Mon, 29 Aug 2022 04:14:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BBA69B80F93;
-        Mon, 29 Aug 2022 11:11:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23DB7C433D7;
-        Mon, 29 Aug 2022 11:11:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E70806119C;
+        Mon, 29 Aug 2022 11:14:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01AB0C433C1;
+        Mon, 29 Aug 2022 11:14:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771516;
-        bh=d3JNQipKIVdMRMQCi6Ms0j33x+78SPG5tZ2w5RRVZ9c=;
+        s=korg; t=1661771662;
+        bh=FOptRiXQdzM1zXDzZPRq7CACFeGGFFSwyIQIjjxXEHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kkv2o+zVfDa0InnPmXaGAOFZ7HDe3UZsDW399I4TE4jkKj1UuBLqxFOy9zYSiP6gU
-         fQ9JobOUf2La4sptybEA53/AftrHRjyls4DcNbhzApMbbe6A3fep/wU5UPQmQ56Jnm
-         B4mBGGviXP6nWRGPaiYZfrax0jzUVTg9v193RtSw=
+        b=d2W8s2jVxqFyxJZfPzRPbu6bCFqHeNrXLMTbD+ZKQ2g40lC+9v9iTy/3PVBiC3fTB
+         575532tPD1yNOZZrznPGVTGY8UfXdrQ+hfk4vhFdM4DT48IR7x51xn3aq7EUmuewQQ
+         idpAno1BeCxvY4FKFq7oGZnerWgCUKajFJro4gZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 039/158] net: dsa: microchip: move tag_protocol to ksz_common
-Date:   Mon, 29 Aug 2022 12:58:09 +0200
-Message-Id: <20220829105810.422227660@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 134/136] scsi: ufs: core: Enable link lost interrupt
+Date:   Mon, 29 Aug 2022 13:00:01 +0200
+Message-Id: <20220829105810.182175679@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,136 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Ramadoss <arun.ramadoss@microchip.com>
+From: Kiwoong Kim <kwmad.kim@samsung.com>
 
-[ Upstream commit 534a0431e9e68959e2c0d71c141d5b911d66ad7c ]
+commit 6d17a112e9a63ff6a5edffd1676b99e0ffbcd269 upstream.
 
-This patch move the dsa hook get_tag_protocol to ksz_common file. And
-the tag_protocol is returned based on the dev->chip_id.
+Link lost is treated as fatal error with commit c99b9b230149 ("scsi: ufs:
+Treat link loss as fatal error"), but the event isn't registered as
+interrupt source. Enable it.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/1659404551-160958-1-git-send-email-kwmad.kim@samsung.com
+Fixes: c99b9b230149 ("scsi: ufs: Treat link loss as fatal error")
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 13 +------------
- drivers/net/dsa/microchip/ksz9477.c    | 14 +-------------
- drivers/net/dsa/microchip/ksz_common.c | 24 ++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h |  2 ++
- 4 files changed, 28 insertions(+), 25 deletions(-)
+ drivers/scsi/ufs/ufshci.h |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 3cc51ee5fb6cc..041956e3c7b1a 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -898,17 +898,6 @@ static void ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 	}
- }
+--- a/drivers/scsi/ufs/ufshci.h
++++ b/drivers/scsi/ufs/ufshci.h
+@@ -133,11 +133,7 @@ static inline u32 ufshci_version(u32 maj
  
--static enum dsa_tag_protocol ksz8_get_tag_protocol(struct dsa_switch *ds,
--						   int port,
--						   enum dsa_tag_protocol mp)
--{
--	struct ksz_device *dev = ds->priv;
--
--	/* ksz88x3 uses the same tag schema as KSZ9893 */
--	return ksz_is_ksz88x3(dev) ?
--		DSA_TAG_PROTO_KSZ9893 : DSA_TAG_PROTO_KSZ8795;
--}
--
- static u32 ksz8_sw_get_phy_flags(struct dsa_switch *ds, int port)
- {
- 	/* Silicon Errata Sheet (DS80000830A):
-@@ -1394,7 +1383,7 @@ static void ksz8_get_caps(struct dsa_switch *ds, int port,
- }
+ #define UFSHCD_UIC_MASK		(UIC_COMMAND_COMPL | UFSHCD_UIC_PWR_MASK)
  
- static const struct dsa_switch_ops ksz8_switch_ops = {
--	.get_tag_protocol	= ksz8_get_tag_protocol,
-+	.get_tag_protocol	= ksz_get_tag_protocol,
- 	.get_phy_flags		= ksz8_sw_get_phy_flags,
- 	.setup			= ksz8_setup,
- 	.phy_read		= ksz_phy_read16,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index bcfdd505ca79a..31be767027feb 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -276,18 +276,6 @@ static void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
- 	mutex_unlock(&mib->cnt_mutex);
- }
+-#define UFSHCD_ERROR_MASK	(UIC_ERROR |\
+-				DEVICE_FATAL_ERROR |\
+-				CONTROLLER_FATAL_ERROR |\
+-				SYSTEM_BUS_FATAL_ERROR |\
+-				CRYPTO_ENGINE_FATAL_ERROR)
++#define UFSHCD_ERROR_MASK	(UIC_ERROR | INT_FATAL_ERRORS)
  
--static enum dsa_tag_protocol ksz9477_get_tag_protocol(struct dsa_switch *ds,
--						      int port,
--						      enum dsa_tag_protocol mp)
--{
--	enum dsa_tag_protocol proto = DSA_TAG_PROTO_KSZ9477;
--	struct ksz_device *dev = ds->priv;
--
--	if (dev->features & IS_9893)
--		proto = DSA_TAG_PROTO_KSZ9893;
--	return proto;
--}
--
- static int ksz9477_phy_read16(struct dsa_switch *ds, int addr, int reg)
- {
- 	struct ksz_device *dev = ds->priv;
-@@ -1329,7 +1317,7 @@ static int ksz9477_setup(struct dsa_switch *ds)
- }
- 
- static const struct dsa_switch_ops ksz9477_switch_ops = {
--	.get_tag_protocol	= ksz9477_get_tag_protocol,
-+	.get_tag_protocol	= ksz_get_tag_protocol,
- 	.setup			= ksz9477_setup,
- 	.phy_read		= ksz9477_phy_read16,
- 	.phy_write		= ksz9477_phy_write16,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 4511e99823f57..0713a40685fa9 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -930,6 +930,30 @@ void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(ksz_port_stp_state_set);
- 
-+enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
-+					   int port, enum dsa_tag_protocol mp)
-+{
-+	struct ksz_device *dev = ds->priv;
-+	enum dsa_tag_protocol proto = DSA_TAG_PROTO_NONE;
-+
-+	if (dev->chip_id == KSZ8795_CHIP_ID ||
-+	    dev->chip_id == KSZ8794_CHIP_ID ||
-+	    dev->chip_id == KSZ8765_CHIP_ID)
-+		proto = DSA_TAG_PROTO_KSZ8795;
-+
-+	if (dev->chip_id == KSZ8830_CHIP_ID ||
-+	    dev->chip_id == KSZ9893_CHIP_ID)
-+		proto = DSA_TAG_PROTO_KSZ9893;
-+
-+	if (dev->chip_id == KSZ9477_CHIP_ID ||
-+	    dev->chip_id == KSZ9897_CHIP_ID ||
-+	    dev->chip_id == KSZ9567_CHIP_ID)
-+		proto = DSA_TAG_PROTO_KSZ9477;
-+
-+	return proto;
-+}
-+EXPORT_SYMBOL_GPL(ksz_get_tag_protocol);
-+
- static int ksz_switch_detect(struct ksz_device *dev)
- {
- 	u8 id1, id2;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index e6bc5fb2b1303..21db6f79035fa 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -231,6 +231,8 @@ int ksz_port_mdb_del(struct dsa_switch *ds, int port,
- int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy);
- void ksz_get_strings(struct dsa_switch *ds, int port,
- 		     u32 stringset, uint8_t *buf);
-+enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
-+					   int port, enum dsa_tag_protocol mp);
- 
- /* Common register access functions */
- 
--- 
-2.35.1
-
+ #define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
+ 				CONTROLLER_FATAL_ERROR |\
 
 
