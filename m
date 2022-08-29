@@ -2,140 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1011ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A65AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229843AbiH2PQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39208 "EHLO
+        id S229765AbiH2PRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:17:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiH2PQo (ORCPT
+        with ESMTP id S229491AbiH2PRt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:16:44 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 906A97B1F1
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:16:43 -0700 (PDT)
-Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1oSgUz-0006bl-QP; Mon, 29 Aug 2022 17:16:25 +0200
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     p.zabel@pengutronix.de, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, robh@kernel.org, shawnguo@kernel.org,
-        vkoul@kernel.org, alexander.stein@ew.tq-group.com, marex@denx.de,
-        richard.leitner@linux.dev, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH 2/2] fixup! phy: freescale: imx8m-pcie: Add iMX8MP PCIe PHY support
-Date:   Mon, 29 Aug 2022 17:16:23 +0200
-Message-Id: <20220829151623.808344-2-l.stach@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220829151623.808344-1-l.stach@pengutronix.de>
-References: <1661760917-9558-1-git-send-email-hongxing.zhu@nxp.com>
- <20220829151623.808344-1-l.stach@pengutronix.de>
+        Mon, 29 Aug 2022 11:17:49 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16D287A51B
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:17:49 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-11c5505dba2so10703286fac.13
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:17:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=zR5b6bKWNfwu6igeVhleFnuDNx79NhHyc/5OQ//e33o=;
+        b=Zm+KThV9k9P+rrZ2djLzW1iuGExqNRFC89/UpvUGBT/V1FEbo2h6FV79ttDOITYzzI
+         2j7RPd/siRu6FMUA3f+5wjbcf8HItpWXUoMujaGF3zByls1IRTxJgasut2+0NjJPaZGh
+         h+m7DuTzWPNod5TNbN0SskcvCYrkS1O13/eM0oa1o6z3eU2lNcx2J+M8Qd6wClE++Ksx
+         bvBZ2nhgTlOHN8eOGOJYGII3m1rTLzewGMnEKw8qzmssQCYBMD4DPqYZWrpCK9bBq3h4
+         Sd8fddYeAm/pfTouGYDY5tIhbrc0awFwMVPme3vodlfou9lM44uh8X6EbQTT6Pcdr2oe
+         goNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=zR5b6bKWNfwu6igeVhleFnuDNx79NhHyc/5OQ//e33o=;
+        b=afQ7YAGspdRPzZcyllFQW2HLNJuxpneRlRDFvRX3n54rRKm0ulUCz8LOsjcmvBfvYI
+         fYm4HsygyPxBuDXPsqghKm0oLMOrJ7IBV8pwbp6orP4An9G5Vpwp6qZm83S1w+vGq3qZ
+         rPSDySvN2y41c6/mvKFmzSAe2RuG8tUqctcsPGp+dsPSUBIeeM37J4gutJevnTlAu7zO
+         UVKXSLV5yKVdIOp6couM2umm0BUey/lkVqu7Qk+7/BIMmcj4Pblj/0ylAfo+18AV8scr
+         n1xnGP9F+OOrlrgUc15thSezmq2djjHekdXTJQdoi48b/dDTswG7Yqyv2zylT+w2bIln
+         2Q1g==
+X-Gm-Message-State: ACgBeo2CZCCZkUKOKYwoNgsnnsvq1tEeSnNCcQdCoyZ4sexcVat+i+j8
+        g74pbK9whVDhTjIPE5J6SQWjCg==
+X-Google-Smtp-Source: AA6agR59u70qR1mZlWa6IsS7A8WgFmvFPsp80VJs8HNwUTkXfD+d0Je+aBTD4w0ckB7v4CihwvN9Yg==
+X-Received: by 2002:a05:6870:6107:b0:11c:2344:e050 with SMTP id s7-20020a056870610700b0011c2344e050mr8277549oae.267.1661786268419;
+        Mon, 29 Aug 2022 08:17:48 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id z14-20020a056830128e00b006389650374dsm5771320otp.54.2022.08.29.08.17.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 08:17:48 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, mranostay@ti.com,
+        jpanis@baylibre.com, fabien.lahoudere@collabora.com,
+        gwendal@chromium.org, enric.balletbo@collabora.com,
+        bleung@chromium.org, groeck@chromium.org, jic23@kernel.org,
+        david@lechnology.com, robertcnelson@gmail.com,
+        William Breathitt Gray <william.gray@linaro.org>
+Subject: [RFC PATCH 0/2] Add support for Counter array components
+Date:   Mon, 29 Aug 2022 11:17:29 -0400
+Message-Id: <cover.1661785438.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::28
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
----
- drivers/phy/freescale/phy-fsl-imx8m-pcie.c | 31 +++-------------------
- 1 file changed, 3 insertions(+), 28 deletions(-)
+The COUNTER_COMP_ARRAY_U64 Counter component type is introduced to
+enable support for Counter array components. With Counter array
+components, exposure for buffers on counter devices can be defined via
+new Counter array component macros. This should simplify code for driver
+authors who would otherwise need to define individual Counter components
+for each array element.
 
-diff --git a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-index 3463b4299f2f..f714f419b91f 100644
---- a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-+++ b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-@@ -13,6 +13,7 @@
- #include <linux/module.h>
- #include <linux/of_address.h>
- #include <linux/of_device.h>
-+#include <linux/of_device.h>
- #include <linux/phy/phy.h>
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
-@@ -47,10 +48,6 @@
- #define IMX8MM_GPR_PCIE_SSC_EN		BIT(16)
- #define IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE	BIT(9)
- 
--#define IMX8MP_GPR_REG0			0x0
--#define IMX8MP_GPR_PHY_APB_RST		BIT(4)
--#define IMX8MP_GPR_PHY_INIT_RST		BIT(5)
--
- enum imx8_pcie_phy_type {
- 	IMX8MM,
- 	IMX8MP,
-@@ -58,10 +55,8 @@ enum imx8_pcie_phy_type {
- 
- struct imx8_pcie_phy {
- 	void __iomem		*base;
--	struct device		*dev;
- 	struct clk		*clk;
- 	struct phy		*phy;
--	struct regmap		*hsio_blk_ctrl;
- 	struct regmap		*iomuxc_gpr;
- 	struct reset_control	*reset;
- 	struct reset_control	*perst;
-@@ -93,13 +88,6 @@ static int imx8_pcie_phy_init(struct phy *phy)
- 		break;
- 	case IMX8MP:
- 		reset_control_assert(imx8_phy->perst);
--
--		/* release pcie_phy_apb_reset and pcie_phy_init_resetn */
--		regmap_update_bits(imx8_phy->hsio_blk_ctrl, IMX8MP_GPR_REG0,
--				   IMX8MP_GPR_PHY_APB_RST |
--				   IMX8MP_GPR_PHY_INIT_RST,
--				   IMX8MP_GPR_PHY_APB_RST |
--				   IMX8MP_GPR_PHY_INIT_RST);
- 		break;
- 	}
- 
-@@ -204,21 +192,16 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
- {
- 	struct phy_provider *phy_provider;
- 	struct device *dev = &pdev->dev;
--	const struct of_device_id *of_id;
- 	struct device_node *np = dev->of_node;
- 	struct imx8_pcie_phy *imx8_phy;
- 	struct resource *res;
- 
--	of_id = of_match_device(imx8_pcie_phy_of_match, dev);
--	if (!of_id)
--		return -EINVAL;
--
- 	imx8_phy = devm_kzalloc(dev, sizeof(*imx8_phy), GFP_KERNEL);
- 	if (!imx8_phy)
- 		return -ENOMEM;
- 
--	imx8_phy->dev = dev;
--	imx8_phy->variant = (enum imx8_pcie_phy_type)of_id->data;
-+	imx8_phy->variant =
-+		(enum imx8_pcie_phy_type)of_device_get_match_data(dev);
- 
- 	/* get PHY refclk pad mode */
- 	of_property_read_u32(np, "fsl,refclk-pad-mode",
-@@ -257,14 +240,6 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
- 		return PTR_ERR(imx8_phy->reset);
- 	}
- 	if (imx8_phy->variant == IMX8MP) {
--		/* Grab HSIO MIX config register range */
--		imx8_phy->hsio_blk_ctrl =
--			 syscon_regmap_lookup_by_compatible("fsl,imx8mp-hsio-blk-ctrl");
--		if (IS_ERR(imx8_phy->hsio_blk_ctrl)) {
--			dev_err(dev, "Unable to find HSIO MIX registers\n");
--			return PTR_ERR(imx8_phy->hsio_blk_ctrl);
--		}
--
- 		imx8_phy->perst =
- 			devm_reset_control_get_exclusive(dev, "perst");
- 		if (IS_ERR(imx8_phy->perst)) {
+For example, suppose a driver wants to expose a Count's read-only
+capture buffer of four elements using a callback `foobar_read()`::
+
+        COUNTER_COMP_COUNT_ARRAY_U64("capture", foobar_read, NULL, 4)
+
+Respective sysfs attributes for each array element would appear for the
+respective Count:
+
+* /sys/bus/counter/devices/counterX/countY/capture0
+* /sys/bus/counter/devices/counterX/countY/capture1
+* /sys/bus/counter/devices/counterX/countY/capture2
+* /sys/bus/counter/devices/counterX/countY/capture3
+
+If a user tries to read _capture2_ for example, `idx` will be `2` when
+passed to the `foobar_read()` callback, and thus the driver knows which
+array element to handle.
+
+Currently, only u64 arrays are supported. One thing to consider is
+whether it would make sense to support arrays of other types. This would
+allow support for arrays that don't necessarily correlate to a buffer on
+the device, but rather serve as logical groupings of components.
+
+For example, if a Signal has four polarity modes, a driver author can
+define a Counter array component to handle the exposure of all four
+together rather than defining individual components for each one. This
+is the reason I've chosen the more generic "array" terminology for this
+feature rather than "buffer".
+
+William Breathitt Gray (2):
+  counter: Consolidate Counter extension sysfs attribute creation
+  counter: Introduce the COUNTER_COMP_ARRAY_U64 component type
+
+ drivers/counter/counter-sysfs.c | 210 ++++++++++++++++++++++++--------
+ include/linux/counter.h         |  78 ++++++++++++
+ 2 files changed, 239 insertions(+), 49 deletions(-)
+
+
+base-commit: a12224997bec72d231a8dd642876e6364decdc45
 -- 
-2.30.2
+2.37.2
 
