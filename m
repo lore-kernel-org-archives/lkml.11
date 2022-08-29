@@ -2,50 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50444ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF75ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231868AbiH2LXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:23:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
+        id S231203AbiH2LXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231680AbiH2LWY (ORCPT
+        with ESMTP id S231807AbiH2LWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:22:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E19E2DC1;
-        Mon, 29 Aug 2022 04:14:30 -0700 (PDT)
+        Mon, 29 Aug 2022 07:22:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9625754AD;
+        Mon, 29 Aug 2022 04:14:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EAC5B80F96;
-        Mon, 29 Aug 2022 11:14:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56205C433D6;
-        Mon, 29 Aug 2022 11:14:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C1CF61217;
+        Mon, 29 Aug 2022 11:11:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C4DDC43144;
+        Mon, 29 Aug 2022 11:11:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771653;
-        bh=7cmEhpS7VRIaJaXNYOdVtNF7dkvQur5wm7hrDNvC0zo=;
+        s=korg; t=1661771482;
+        bh=r51+u6an3oKKChUsgfhRzTeSUQc+ZUtamsxVvRpcQ9w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KXKUfTCE+E4tFXvQzCe+0I6kLAwOaF+3yijcfvBxB8b2cYoj+EnSh5oA4TgwURPHK
-         JZdzAXVFXSTpWLE7hJbbVShuaSz2OhTnFhDda56xsPNzUbHzHWj3qmyzqry/VHg/ll
-         nMDbMQQMwpQkCpsA5wJ3ySsAU4ncozwQRCT8yy9Q=
+        b=PbwX3cPtczkuVkfGmsieTE3XXPlnfUK4GZqM/FN5iujANPzA5m8Jtp1sFaKlKf0+N
+         dLHQqDjRTjMtHJcSTRGTJAZ1Pe6cblg2YaSap4rTEBoj8bM7MgBB56XW/crrhXUhXz
+         FKd/N4B/cSFEGVKjsI5z7wLDLE6G8RPCTyq/WxcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>
-Subject: [PATCH 5.15 133/136] perf stat: Clear evsel->reset_group for each stat run
-Date:   Mon, 29 Aug 2022 13:00:00 +0200
-Message-Id: <20220829105810.144338082@linuxfoundation.org>
+        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Subject: [PATCH 5.15 108/136] s390/mm: do not trigger write fault when vma does not allow VM_WRITE
+Date:   Mon, 29 Aug 2022 12:59:35 +0200
+Message-Id: <20220829105809.149091174@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -57,50 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
 
-commit bf515f024e4c0ca46a1b08c4f31860c01781d8a5 upstream.
+commit 41ac42f137080bc230b5882e3c88c392ab7f2d32 upstream.
 
-If a weak group is broken then the reset_group flag remains set for
-the next run. Having reset_group set means the counter isn't created
-and ultimately a segfault.
+For non-protection pXd_none() page faults in do_dat_exception(), we
+call do_exception() with access == (VM_READ | VM_WRITE | VM_EXEC).
+In do_exception(), vma->vm_flags is checked against that before
+calling handle_mm_fault().
 
-A simple reproduction of this is:
+Since commit 92f842eac7ee3 ("[S390] store indication fault optimization"),
+we call handle_mm_fault() with FAULT_FLAG_WRITE, when recognizing that
+it was a write access. However, the vma flags check is still only
+checking against (VM_READ | VM_WRITE | VM_EXEC), and therefore also
+calling handle_mm_fault() with FAULT_FLAG_WRITE in cases where the vma
+does not allow VM_WRITE.
 
-  # perf stat -r2 -e '{cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles}:W
+Fix this by changing access check in do_exception() to VM_WRITE only,
+when recognizing write access.
 
-which will be added as a test in the next patch.
-
-Fixes: 4804e0111662d7d8 ("perf stat: Use affinity for opening events")
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
-Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Tested-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Link: https://lore.kernel.org/r/20220822213352.75721-1-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Link: https://lkml.kernel.org/r/20220811103435.188481-3-david@redhat.com
+Fixes: 92f842eac7ee3 ("[S390] store indication fault optimization")
+Cc: <stable@vger.kernel.org>
+Reported-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/builtin-stat.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/s390/mm/fault.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -807,6 +807,7 @@ static int __run_perf_stat(int argc, con
- 		return -1;
+--- a/arch/s390/mm/fault.c
++++ b/arch/s390/mm/fault.c
+@@ -397,7 +397,9 @@ static inline vm_fault_t do_exception(st
+ 	flags = FAULT_FLAG_DEFAULT;
+ 	if (user_mode(regs))
+ 		flags |= FAULT_FLAG_USER;
+-	if (access == VM_WRITE || is_write)
++	if (is_write)
++		access = VM_WRITE;
++	if (access == VM_WRITE)
+ 		flags |= FAULT_FLAG_WRITE;
+ 	mmap_read_lock(mm);
  
- 	evlist__for_each_entry(evsel_list, counter) {
-+		counter->reset_group = false;
- 		if (bpf_counter__load(counter, &target))
- 			return -1;
- 		if (!evsel__is_bpf(counter))
 
 
