@@ -2,159 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5028C0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4160EECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230367AbiH2MBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59050 "EHLO
+        id S229607AbiH2MCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbiH2MBK (ORCPT
+        with ESMTP id S229567AbiH2MC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:01:10 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5D6868A1;
-        Mon, 29 Aug 2022 04:46:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SmnmTzI7AG6YQvm8VQCIDRCy1SEpF6iSAvjmPHG5x9TdMindComGr45xtn2AnOQWAbe7E1ZCJOE0ycrygyZDM9TyNAFkPhXNkrDrK2h3e/q+MJIXoQPxDv/1wdZsgCdHqk4H1iafgXd0BXURiTLP4dpSJn+0cg/PVetwDKQL922nRQdt5s499vDxxJA4OxUNns9dXacLlKqaxbnSAcFGyE6uKKOufMR63X1ebVwIVj1iNVwetyJ6qsAU7F/0uVUmtW8yftDohrn3DHaE0PtUuQkF2JxWEaLo/UHBvV7DltD3FdxiGAOkkBSjtbS0jpdP7i/z5kiUmw5KVhiclUpVIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3hukz6m3n05GKuFyVlXApm5zN5Ep7/LtvcalZKIcrC8=;
- b=dPZi9YKQKBnWsrKFLjgNGQsAWUJiMMBjJPoJ81OqYvwMMxS7TY6HTtK7ZLFbmMlCmxfwdmAnYzydLliZojBnpJSWxzdQZKPXXyJaASrFZcenQwae/Pp+CVHtDb+utrnOgw+ZtPE9F4yNIom4jHhU2ldgRNpLI7LhI+7uvsdkbBa/sfL0mQpNXYvO8OX9y6HNwhdSfppB03/LxZ9q2+vmCUdjPledRbKxi7BMBMh5SrCug8BsXRSZN9sBJMOQPxMyFTVGxs9o2vVJ9F65ulcNIfhaYnFob7HlL0vCbkDbPVmgh4PcsYjV+qj+6gtytQT/vJFI9b9+db6iDzA9KYANug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3hukz6m3n05GKuFyVlXApm5zN5Ep7/LtvcalZKIcrC8=;
- b=rs6aKrWABZUp6g1X8XB7/4Y6PFJcPZ2oKxTZ+PiWhX1OUOE15c8XxyNVIA6zRDQwTKaehHrSbEKBzvBCx3YFK0d2s8wpPrtXyQtSqEW/+bVHiXTAPUcFYVx4VzXXWb5qDIrpn2YEo8krvjfHUNlphiQhwv9H8+Y75D+baR5/r21Eu9OEmG/4+0+7Uc9k/f3jD9YjxiSY0Uo9ws5mq3ksW8cWoPEyXl8/JADmG95+0l3Qthw/N1nkAU87NypIe4zRoqYtXdOlWuoP6CXDKDvO5Lf7LnL9RKT2JkMhj9b1X0QYdJmqXRJsKv2wx9c/gKv/CaBFX7ph24TGoDwAYjrAXw==
-Received: from DM5PR12MB1628.namprd12.prod.outlook.com (2603:10b6:4:7::13) by
- BY5PR12MB3905.namprd12.prod.outlook.com (2603:10b6:a03:194::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Mon, 29 Aug
- 2022 11:44:24 +0000
-Received: from DM5PR12MB1628.namprd12.prod.outlook.com
- ([fe80::c509:a193:93c7:e525]) by DM5PR12MB1628.namprd12.prod.outlook.com
- ([fe80::c509:a193:93c7:e525%5]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
- 11:44:24 +0000
-From:   Sandipan Patra <spatra@nvidia.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Bibek Basu <bbasu@nvidia.com>,
-        Krishna Yarlagadda <kyarlagadda@nvidia.com>
-Subject: RE: [PATCH 2/2] arm64: tegra: Add user PWM support on Jetson Orin
-Thread-Topic: [PATCH 2/2] arm64: tegra: Add user PWM support on Jetson Orin
-Thread-Index: AQHYuUXr+xSdwS0t+ke3FPjrDb5ubK3BceuAgARUJfA=
-Date:   Mon, 29 Aug 2022 11:44:23 +0000
-Message-ID: <DM5PR12MB162825333C0ED3A87D886165AD769@DM5PR12MB1628.namprd12.prod.outlook.com>
-References: <20220826121746.32003-1-spatra@nvidia.com>
- <20220826121746.32003-2-spatra@nvidia.com>
- <eebef02c-e9b9-2ab0-5178-7996cb62a116@linaro.org>
-In-Reply-To: <eebef02c-e9b9-2ab0-5178-7996cb62a116@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 90404f20-3022-47eb-17f3-08da89b3d1f5
-x-ms-traffictypediagnostic: BY5PR12MB3905:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3J3ZkpAuuelEFywv8VaRSXwfQn2YRE+Re/dk6CqoEEhSE7SzNziKXmCeXIfkLsgZzFZ/+2oL+MkHVDzIxGuptZHXdomkc48aFQBGXVZBIANTnvEd3ZYjf9oNfHfDdHbJB9kDF2YZD9kpA9CRbkCj3ZGFJtnY4Ob8fW4qgSu/mLOkLIxlcm1iTyyp/n5R7/q+/tLxy95JuUKsqc0DC4TZ15sUsxHJ3TR/i4kLByT3r3TsN2f7stiLxbeMh0rqXP2Eh1BixUfR9aX0rzSbGccmDDru4xZL6eMQyAyErrl4oDsax7Oe9RcWsTLNCYZk+PldI+rG2On0nQA3qvY2VHr0p7Dib641DDGoP19k0twqM1lnNKOw/VDFWbMa2Oq/T7T0sNf/AVnKCrWmJd7Ik0od98AgkQIU00h3IPGgb1GrcRg4he8grjhTgxL8QCQilFhbvWjeDtJ02jJoE2ceBvW3kJzEE6Ql/j+kjEqIn9EdWgkFMOMJRJR6q1ebSJeYRsxpp3hAt22MOQTWDr0JH4OH5Tp/RGUBQwQ+o40/NOK00l2O4Jt3jA/D5bZ0Jg2Qqw9Fq0QUrdrkPIDq765HXpYskw6D8X0dxQm1t7RmmqnvaE9Gdkg1GezAztrdIVUiMAz6hdLs6oz00mJ9TeVyDORC6UQErP4RoNbwD3SgxVoehRaWboNL3hP+2W9fAwC8kT/fVRlMsjGpcfPplPUC3gkKOakGpxM29q1AymGqA8yQ0Nwjd3o0WarUF8V1dnnA2XYrIBLoyRKXAKh0knFibjVhPw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1628.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(366004)(376002)(346002)(396003)(64756008)(8676002)(110136005)(66946007)(66556008)(66476007)(66446008)(4326008)(54906003)(71200400001)(316002)(76116006)(8936002)(86362001)(5660300002)(478600001)(52536014)(41300700001)(38070700005)(9686003)(6506007)(53546011)(122000001)(2906002)(26005)(107886003)(38100700002)(83380400001)(7696005)(55016003)(186003)(33656002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?K0UvQ28wV1hEUkRmWHZzUVFKY2IyQlFWbXdvRDVqdjJqWm5GbDZkL3p1bnNi?=
- =?utf-8?B?QU5oeFdPYUFYdGJEYTdMUVBPSkxHdEdxendLVnNKTit0cTBJS1hFWmJTTDhX?=
- =?utf-8?B?eUl3TEpPZTJycHRvMEFadE1WVktYQ1pSYXg2WUV2dXVwdldvZlpqREJ1T2ox?=
- =?utf-8?B?VE8wK2lrZFZKa0ZXWWpLbjdqTkN4andSSFlUZXp2SGs3TU1hYXRTM29iUTJp?=
- =?utf-8?B?Vk1ySHNxcUliTXlsTGFSMGJWWEgwRmNYN0FHdWs4Um1nUkJOY3RUckVnZUZk?=
- =?utf-8?B?QnhhMGdtQ1pKUzVnczZrSHl2cnpRY2ZWQlRQcXdGeW5uR0JycXZYRVlKR0dZ?=
- =?utf-8?B?UlpPbk5pOW90eHpRTUNuQ0JUOHFKUzFGaXM4UmVrMXJUQnQ4TnVaNnVVaDVH?=
- =?utf-8?B?ZENrVXBad2xyK1gzQmUwNE9OYjJIRS82VUZNUXNlWlFhUGROSlhEVlc3dFg2?=
- =?utf-8?B?TTJxOEhneXlESSt3bjAvRGx2ZThtN21YTjgzRnprRHFhSjBBS1ZXMDB4VXg0?=
- =?utf-8?B?UHJKRC82clRQT0dTYmJvaG1ET3BCT1NkR1YzQTkxTkp1S0tnVmRNU2M0OWJx?=
- =?utf-8?B?SmxsQmplVVZ2aVhkOHBORE5YdXNQU1R5YTlCbDNzYWRlYytQUGVjK1JJYWRv?=
- =?utf-8?B?WGZnT3FxdWdrRkEzQkt1YzJHamxLZUhzZVVJdE55VFJKUTlEcXg1NVU3T2RG?=
- =?utf-8?B?Mzk3N0hhRjNrb2hhZmlLamFjekFVQjlWN01kK2x6SGFGd0FOMVdUZm1Yc0dx?=
- =?utf-8?B?SjFJZDNuWmw5eWNoZFNoblJkdENFSG1xOEdoc0Y4V0xJdTI0Y0ZjalBPV21n?=
- =?utf-8?B?YVkyemFuSnpvc1pXOG8yZzBYdU5jVUgxUFBzMU1oNDJTMFcrNEJ3TE9iemRL?=
- =?utf-8?B?ZTNzT09uZ0t3KzV2RzgwWURGRk8rOW5ZbG9oTEl3alIvTnM2WVpvK3Y2bGpx?=
- =?utf-8?B?dDcxSEVaMTRGQjRWU1JaSVBaK0NVTVdvdDRFZlNlZU9TWWxOT2MxY3RJaDRw?=
- =?utf-8?B?M3I2Z0IzcXpUK3lobGpZRUgwK0kvY2IxRktCWHFmKzVNVUpSVlJDMlhXYXlL?=
- =?utf-8?B?MnlUWDFFTGd1c1ZSeHNJTTUrNytIbC9xU0JLV2daLzNlejdpdG9FNWN0SzB2?=
- =?utf-8?B?MkVTUUVIaTV5b0N3S3dDTWlGVXVzKzNwREk0cmFiTUM2dnlPMzh5aWZpcjd5?=
- =?utf-8?B?dk9Ca0s5eFhHc21qekk4Zm1FWUdPMjRvemJWWVFiUXRZamEzdzNhZEE4MDI1?=
- =?utf-8?B?bkgyZ25pNzNNanozSlY3NHViVlVHL3FpUFIrWnN5dVNMR2gwZVM1L3ZKcE4z?=
- =?utf-8?B?KzJKZEIvMXp3dmF0VENnQmtNWUlFenJtUFpSMnYvVWplc3BUZ05vbituSEdK?=
- =?utf-8?B?TG1BSEVteXdNNUdYNG9vSEJ4bUFQM2xOMFNyZEhObGxZOXVMeWtnQlhkNVZC?=
- =?utf-8?B?WGtRYkdXdlZhcEJSZENTM28wazFSN3RnbXRyR0NDRCs3SzB6dmRmaGkyZDFo?=
- =?utf-8?B?VUZUWksrYjc5Rzh2M0t2cHF3QlYyMi93ZGxJY0tXZlA4VVRnV3ZxcHdkODVN?=
- =?utf-8?B?S2QxdTh3eTk2TFNxSkVTc3JROEVaRDF3d0RIeVk3Nk9uVW9sNE5KWm1XQlUz?=
- =?utf-8?B?ejUwUTdVVUc3eU9qS3R1OXVBUHJQYWQzcGt4em0yT0RGdXhWS2xXZmFPTjdY?=
- =?utf-8?B?NGZtbXlMMHQxd1pZWjN5eDdQSmJGeWZ6NEsyMS9EdUQwRWo5RE8vbTNZbVJ5?=
- =?utf-8?B?eGNBL2ttUDB3V084SVpWS3hkNkVSWW92TENHeEt4bUVFbzljSnB0RW85WnBV?=
- =?utf-8?B?NTM1SDFOcWpGWFJWeUxNdnVzeWtRME9SeXVUT3NRanhSUzB3TERmODZGb3Y3?=
- =?utf-8?B?a3ZiWHlXYUF6QnBweHpjaG4wVlFrV0trZktFL0E4R3R4QmljcXNjRDdyNnZY?=
- =?utf-8?B?TmcwMk9OUHF5N2VUVXFLTXVJa0Z3VGZabG0yMldVTkFQdCt2UkQ2NmRWYWRD?=
- =?utf-8?B?aWlTdUJPRlZsZ2RLdS9KYmV1cHVQZ280d2R5NjBpWjFuTk1pUTJmK1dJekRD?=
- =?utf-8?B?WTAzWmtFY2lmMEdWdE0xZFdGYlVxR255bElHNXg4dFFKTkx1YTdtZ043Tzla?=
- =?utf-8?Q?mnQ4=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Mon, 29 Aug 2022 08:02:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8A94F1B3
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 04:47:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661773512;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/+ol45wcaykEdTNetUJWIBi1LCbfsk01RK0NNg2LzGI=;
+        b=MITaWDNOlKDyXq46BIo20QIes2EJjRw5XaAW0L/UzYY6JOvJV/sb4+T4vq1Ekha1S8n6W6
+        PNkixgGw+OYIsk+DWMMz1k6RMJw0hlK2g/AZnwZpSjqBvVL26cQZxtPvSDkOrPPqe/YIEx
+        Je71Eerd0kBAXoIlxYVTXuSF6BnkqDI=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-395-zcYQtRv7M1mfrvp45FmuNg-1; Mon, 29 Aug 2022 07:45:11 -0400
+X-MC-Unique: zcYQtRv7M1mfrvp45FmuNg-1
+Received: by mail-ej1-f71.google.com with SMTP id ga33-20020a1709070c2100b0074084f48b12so2126304ejc.7
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 04:45:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=/+ol45wcaykEdTNetUJWIBi1LCbfsk01RK0NNg2LzGI=;
+        b=pK0YSKDluEoGb0wAwFm8YbFR1QeEMtaezZTv2kulpC4ukTWnAeAE3BXPI/p0b7cTlI
+         IXg+UTy5qYxaDs+Y01dEgu/hr8UqgmPau5YTnKSC3IW0QLUCkYICXHrsUivEjaiizHIz
+         MidmPYHV4QDPeQkF5rZ2NPsRRdW73rFKxO5UMTydBdyADLesUXO8TuISpSMB3ErhlQ/A
+         TQC1Rr5q61gUynwIDL+BfQ1RrG1lmM/VSFMQIR3Xyklx48a90mn068TAsJM5eBfnxJuU
+         x+3dzDXvUHBvQL7M43BT3iKVnooDwM3eAd5pmS+TGlhnwBm8e1r16S0/YW2Ylcfvxvbu
+         D1PA==
+X-Gm-Message-State: ACgBeo1aDTILA7W7Usi2yqJZu2gn990tfsK46SBrdsajQtSog0ytKFuL
+        bQEYLDk0uPeXe2Wii8dO6ZDWhaqEPDoxWDjg4M9LbKM1/8csxo6kKrhbTCvRxIuj0kCQf4CxC/X
+        NWGtyYn+Ka2flfLqmy6zJg8/A
+X-Received: by 2002:aa7:cb06:0:b0:446:7668:2969 with SMTP id s6-20020aa7cb06000000b0044676682969mr16077830edt.206.1661773509847;
+        Mon, 29 Aug 2022 04:45:09 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5XXFYyq+Wc/2lY2uJUxzelUZ0ulUoBxQrTUQ0Y3wQ5QIKfuYa30lKSflrHf9tyAuMTb45U8A==
+X-Received: by 2002:aa7:cb06:0:b0:446:7668:2969 with SMTP id s6-20020aa7cb06000000b0044676682969mr16077817edt.206.1661773509660;
+        Mon, 29 Aug 2022 04:45:09 -0700 (PDT)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id z14-20020a1709060ace00b0073d6d6e698bsm4345840ejf.187.2022.08.29.04.45.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 04:45:08 -0700 (PDT)
+Message-ID: <a547f88a-7ab2-e665-aa6d-d80ef74f4fd4@redhat.com>
+Date:   Mon, 29 Aug 2022 13:45:08 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1628.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90404f20-3022-47eb-17f3-08da89b3d1f5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2022 11:44:24.0373
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /ydWvOfqHu86lnmUxvm2r9Yt0k/VtL5TLDWRzNurcrFhbKej9XwPLkB/CD+1RuljA/d9OSImSj6j4IPm4A2xtQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3905
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] platform/x86: wmi: Lower verbosity of some duplicate GUID
+ messages
+Content-Language: en-US
+To:     Mario Limonciello <mario.limonciello@amd.com>,
+        Mark Gross <markgross@kernel.org>
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220826170053.2124-1-mario.limonciello@amd.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220826170053.2124-1-mario.limonciello@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogS3J6eXN6dG9mIEtvemxv
-d3NraSA8a3J6eXN6dG9mLmtvemxvd3NraUBsaW5hcm8ub3JnPg0KPiBTZW50OiBGcmlkYXksIEF1
-Z3VzdCAyNiwgMjAyMiAxMTowNSBQTQ0KPiBUbzogU2FuZGlwYW4gUGF0cmEgPHNwYXRyYUBudmlk
-aWEuY29tPjsgdGhpZXJyeS5yZWRpbmdAZ21haWwuY29tOw0KPiBKb25hdGhhbiBIdW50ZXIgPGpv
-bmF0aGFuaEBudmlkaWEuY29tPjsgcm9iaCtkdEBrZXJuZWwub3JnOw0KPiBrcnp5c3p0b2Yua296
-bG93c2tpK2R0QGxpbmFyby5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51eC0N
-Cj4gdGVncmFAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+
-IENjOiBCaWJlayBCYXN1IDxiYmFzdUBudmlkaWEuY29tPjsgS3Jpc2huYSBZYXJsYWdhZGRhDQo+
-IDxreWFybGFnYWRkYUBudmlkaWEuY29tPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIDIvMl0gYXJt
-NjQ6IHRlZ3JhOiBBZGQgdXNlciBQV00gc3VwcG9ydCBvbiBKZXRzb24NCj4gT3Jpbg0KPiANCj4g
-RXh0ZXJuYWwgZW1haWw6IFVzZSBjYXV0aW9uIG9wZW5pbmcgbGlua3Mgb3IgYXR0YWNobWVudHMN
-Cj4gDQo+IA0KPiBPbiAyNi8wOC8yMDIyIDE1OjE3LCBTYW5kaXBhbiBQYXRyYSB3cm90ZToNCj4g
-PiBFbmFibGUgaW4gZGV2aWNlIHRyZWUgYW5kIHVzZSBpdCB0byBkcml2ZSB0aGUgUFdNIGNvbnRy
-b2xsZXJzIG9uDQo+ID4gNDAgcGluIGhlYWRlciBvZiBPcmluIGRldi1raXQuDQo+ID4NCj4gPiBT
-aWduZWQtb2ZmLWJ5OiBTYW5kaXBhbiBQYXRyYSA8c3BhdHJhQG52aWRpYS5jb20+DQo+ID4gLS0t
-DQo+ID4gIC4uLi9hcm02NC9ib290L2R0cy9udmlkaWEvdGVncmEyMzQtcDM3MzctMDAwMC5kdHNp
-IHwgMTQgKysrKysrKysrKysrKysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDE0IGluc2VydGlvbnMo
-KykNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9hcmNoL2FybTY0L2Jvb3QvZHRzL252aWRpYS90ZWdy
-YTIzNC1wMzczNy0wMDAwLmR0c2kNCj4gYi9hcmNoL2FybTY0L2Jvb3QvZHRzL252aWRpYS90ZWdy
-YTIzNC1wMzczNy0wMDAwLmR0c2kNCj4gPiBpbmRleCBhODU5OTNjODVlNDUuLmU3Njg5NDU3NGQz
-MiAxMDA2NDQNCj4gPiAtLS0gYS9hcmNoL2FybTY0L2Jvb3QvZHRzL252aWRpYS90ZWdyYTIzNC1w
-MzczNy0wMDAwLmR0c2kNCj4gPiArKysgYi9hcmNoL2FybTY0L2Jvb3QvZHRzL252aWRpYS90ZWdy
-YTIzNC1wMzczNy0wMDAwLmR0c2kNCj4gPiBAQCAtMiw0ICsyLDE4IEBADQo+ID4NCj4gPiAgLyB7
-DQo+ID4gICAgICAgY29tcGF0aWJsZSA9ICJudmlkaWEscDM3MzctMDAwMCI7DQo+ID4gKw0KPiA+
-ICsgICAgIGJ1c0AwIHsNCj4gPiArICAgICAgICAgICAgIHB3bUAzMjgwMDAwIHsNCj4gPiArICAg
-ICAgICAgICAgICAgICAgICAgc3RhdHVzID0gIm9rYXkiOw0KPiA+ICsgICAgICAgICAgICAgfTsN
-Cj4gDQo+IE92ZXJyaWRpbmcgYnkgbm9kZSBwYXRoIGlzIGVycm9yLXByb25lLiBZb3Ugc2hvdWxk
-IG92ZXJyaWRlIGJ5IGxhYmVsLg0KQUNLLg0KDQpUaGFua3MgJiBSZWdhcmRzLA0KU2FuZGlwYW4N
-Cg0KPiANCj4gQmVzdCByZWdhcmRzLA0KPiBLcnp5c3p0b2YNCg==
+Hi Mario,
+
+On 8/26/22 19:00, Mario Limonciello wrote:
+> The WMI subsystem in the kernel currently tracks WMI devices by
+> a GUID string not by ACPI device.  The GUID used by the `wmi-bmof`
+> module however is available from many devices on nearly every machine.
+> 
+> This originally was though to be a bug, but as it happens on most
+> machines it is a design mistake.  As there isn't an active need to
+> get the binary from each of the `wmi-bmof` device, special case it
+> and lower the message to debugging.  This will help to identify if
+> there are other duplicate GUIDs in the wild.
+> 
+> If there are and the information contained in them is desirable it
+> may be worth considering a design change to the WMI subsystem to
+> access those.
+> 
+> Link: https://lkml.org/lkml/2017/12/8/913
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+
+I am a bit surprised by this patch. I though that there was
+consensus that the right thing to do here is actually create
+wmi-bus devices for the duplicate WMI-ids adding a numbered
+postfix to the extra devices (lets not add the postfix
+to the first device for each WMI GUID as some userspace
+code / scripts may depend on the sysfs paths not changing).
+
+IMHO registering wmi-bus devices for all the WMI devices
+in the ACPI table would be the right thing to do ?
+
+Regards,
+
+Hans
+
+
+
+
+> ---
+>  drivers/platform/x86/wmi-bmof.c |  2 --
+>  drivers/platform/x86/wmi.c      | 10 ++++++++--
+>  include/linux/wmi.h             |  2 ++
+>  3 files changed, 10 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/platform/x86/wmi-bmof.c b/drivers/platform/x86/wmi-bmof.c
+> index 80137afb9753..af46e9e03376 100644
+> --- a/drivers/platform/x86/wmi-bmof.c
+> +++ b/drivers/platform/x86/wmi-bmof.c
+> @@ -18,8 +18,6 @@
+>  #include <linux/types.h>
+>  #include <linux/wmi.h>
+>  
+> -#define WMI_BMOF_GUID "05901221-D566-11D1-B2F0-00A0C9062910"
+> -
+>  struct bmof_priv {
+>  	union acpi_object *bmofdata;
+>  	struct bin_attribute bmof_bin_attr;
+> diff --git a/drivers/platform/x86/wmi.c b/drivers/platform/x86/wmi.c
+> index aed293b5af81..d7a1f4bf443b 100644
+> --- a/drivers/platform/x86/wmi.c
+> +++ b/drivers/platform/x86/wmi.c
+> @@ -1157,6 +1157,9 @@ static void wmi_free_devices(struct acpi_device *device)
+>  static bool guid_already_parsed(struct acpi_device *device, const guid_t *guid)
+>  {
+>  	struct wmi_block *wblock;
+> +	guid_t guid_wmi_bmof;
+> +
+> +	guid_parse(WMI_BMOF_GUID, &guid_wmi_bmof);
+>  
+>  	list_for_each_entry(wblock, &wmi_block_list, list) {
+>  		if (guid_equal(&wblock->gblock.guid, guid)) {
+> @@ -1166,8 +1169,11 @@ static bool guid_already_parsed(struct acpi_device *device, const guid_t *guid)
+>  			 * we need to suppress GUIDs that are unique on a
+>  			 * given node but duplicated across nodes.
+>  			 */
+> -			dev_warn(&device->dev, "duplicate WMI GUID %pUL (first instance was on %s)\n",
+> -				 guid, dev_name(&wblock->acpi_device->dev));
+> +			if (guid_equal(guid, &guid_wmi_bmof))
+> +				dev_dbg(&device->dev, "duplicate WMI-BMOF GUID found\n");
+> +			else
+> +				dev_warn(&device->dev, "duplicate WMI GUID %pUL (first instance was on %s)\n",
+> +					 guid, dev_name(&wblock->acpi_device->dev));
+>  			return true;
+>  		}
+>  	}
+> diff --git a/include/linux/wmi.h b/include/linux/wmi.h
+> index b88d7b58e61e..59acdceb4411 100644
+> --- a/include/linux/wmi.h
+> +++ b/include/linux/wmi.h
+> @@ -13,6 +13,8 @@
+>  #include <linux/mod_devicetable.h>
+>  #include <uapi/linux/wmi.h>
+>  
+> +#define WMI_BMOF_GUID "05901221-D566-11D1-B2F0-00A0C9062910"
+> +
+>  struct wmi_device {
+>  	struct device dev;
+>  
+
