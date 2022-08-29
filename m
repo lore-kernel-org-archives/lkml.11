@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1EE7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC0CECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232773AbiH2Lf6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:35:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41764 "EHLO
+        id S232797AbiH2LgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233027AbiH2LeU (ORCPT
+        with ESMTP id S233050AbiH2Le0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:34:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 647604BD15;
-        Mon, 29 Aug 2022 04:20:18 -0700 (PDT)
+        Mon, 29 Aug 2022 07:34:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F6366119;
+        Mon, 29 Aug 2022 04:20:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5EF0B80F52;
-        Mon, 29 Aug 2022 11:11:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0979AC433D6;
-        Mon, 29 Aug 2022 11:11:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C87CB6125C;
+        Mon, 29 Aug 2022 11:19:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B64F9C433D6;
+        Mon, 29 Aug 2022 11:19:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771488;
-        bh=K4RxJmbMgaFU6tPeX52e9w/cMTCP4240/24suTnHgEY=;
+        s=korg; t=1661771995;
+        bh=iUKIcguMV7W0XpnW0ZTi2WsxbvEz6OR62XO4fdkU0L0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZOf5Rp6HvhwuVNX5q5uz3fsI8FdXF6LpaZfQhCecdh+9fKc1Yyr9t8EiDo42JIaJo
-         aiau0/+Oj8gXwZGjyL2VNfLIkanVDZUX0d4TLw6YYV9VLAR1Rr07e6vt5JYqGldzt3
-         4mhc1QQpessPbK2hmqqPpRwMMx7tUCclc0kIEFa8=
+        b=F/zmgqCa5WuO14Qrq3IL1NukClK/cJr+DKMwsGnd9lzBbGrcA3hMuULspH49fYl3n
+         ginyjAnBJM7hHWgo2cmTCMUwxrOihF+LF84dn4DK9E7oq/1lr04K8EsXBNE69ueRcU
+         FBSeHIfBaPvsQLPzshsJF+I0SmYwcaGmPwy84t5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 036/158] net/mlx5e: Fix wrong tc flag used when set hw-tc-offload off
-Date:   Mon, 29 Aug 2022 12:58:06 +0200
-Message-Id: <20220829105810.310022748@linuxfoundation.org>
+        stable@vger.kernel.org, Hsin-Wei Hung <hsinweih@uci.edu>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.19 158/158] bpf: Dont use tnum_range on array range checking for poke descriptors
+Date:   Mon, 29 Aug 2022 13:00:08 +0200
+Message-Id: <20220829105815.762896642@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,43 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-[ Upstream commit 550f96432e6f6770efdaee0e65239d61431062a1 ]
+commit a657182a5c5150cdfacb6640aad1d2712571a409 upstream.
 
-The cited commit reintroduced the ability to set hw-tc-offload
-in switchdev mode by reusing NIC mode calls without modifying it
-to support both modes, this can cause an illegal memory access
-when trying to turn hw-tc-offload off.
+Hsin-Wei reported a KASAN splat triggered by their BPF runtime fuzzer which
+is based on a customized syzkaller:
 
-Fix this by using the right TC_FLAG when checking if tc rules
-are installed while disabling hw-tc-offload.
+  BUG: KASAN: slab-out-of-bounds in bpf_int_jit_compile+0x1257/0x13f0
+  Read of size 8 at addr ffff888004e90b58 by task syz-executor.0/1489
+  CPU: 1 PID: 1489 Comm: syz-executor.0 Not tainted 5.19.0 #1
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+  1.13.0-1ubuntu1.1 04/01/2014
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x9c/0xc9
+   print_address_description.constprop.0+0x1f/0x1f0
+   ? bpf_int_jit_compile+0x1257/0x13f0
+   kasan_report.cold+0xeb/0x197
+   ? kvmalloc_node+0x170/0x200
+   ? bpf_int_jit_compile+0x1257/0x13f0
+   bpf_int_jit_compile+0x1257/0x13f0
+   ? arch_prepare_bpf_dispatcher+0xd0/0xd0
+   ? rcu_read_lock_sched_held+0x43/0x70
+   bpf_prog_select_runtime+0x3e8/0x640
+   ? bpf_obj_name_cpy+0x149/0x1b0
+   bpf_prog_load+0x102f/0x2220
+   ? __bpf_prog_put.constprop.0+0x220/0x220
+   ? find_held_lock+0x2c/0x110
+   ? __might_fault+0xd6/0x180
+   ? lock_downgrade+0x6e0/0x6e0
+   ? lock_is_held_type+0xa6/0x120
+   ? __might_fault+0x147/0x180
+   __sys_bpf+0x137b/0x6070
+   ? bpf_perf_link_attach+0x530/0x530
+   ? new_sync_read+0x600/0x600
+   ? __fget_files+0x255/0x450
+   ? lock_downgrade+0x6e0/0x6e0
+   ? fput+0x30/0x1a0
+   ? ksys_write+0x1a8/0x260
+   __x64_sys_bpf+0x7a/0xc0
+   ? syscall_enter_from_user_mode+0x21/0x70
+   do_syscall_64+0x3b/0x90
+   entry_SYSCALL_64_after_hwframe+0x63/0xcd
+  RIP: 0033:0x7f917c4e2c2d
 
-Fixes: d3cbd4254df8 ("net/mlx5e: Add ndo_set_feature for uplink representor")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The problem here is that a range of tnum_range(0, map->max_entries - 1) has
+limited ability to represent the concrete tight range with the tnum as the
+set of resulting states from value + mask can result in a superset of the
+actual intended range, and as such a tnum_in(range, reg->var_off) check may
+yield true when it shouldn't, for example tnum_range(0, 2) would result in
+00XX -> v = 0000, m = 0011 such that the intended set of {0, 1, 2} is here
+represented by a less precise superset of {0, 1, 2, 3}. As the register is
+known const scalar, really just use the concrete reg->var_off.value for the
+upper index check.
+
+Fixes: d2e4c1e6c294 ("bpf: Constant map key tracking for prog array pokes")
+Reported-by: Hsin-Wei Hung <hsinweih@uci.edu>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Shung-Hsi Yu <shung-hsi.yu@suse.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/r/984b37f9fdf7ac36831d2137415a4a915744c1b6.1661462653.git.daniel@iogearbox.net
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/bpf/verifier.c |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 62aab20025345..9e6db779b6efa 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3678,7 +3678,9 @@ static int set_feature_hw_tc(struct net_device *netdev, bool enable)
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -6999,8 +6999,7 @@ record_func_key(struct bpf_verifier_env
+ 	struct bpf_insn_aux_data *aux = &env->insn_aux_data[insn_idx];
+ 	struct bpf_reg_state *regs = cur_regs(env), *reg;
+ 	struct bpf_map *map = meta->map_ptr;
+-	struct tnum range;
+-	u64 val;
++	u64 val, max;
+ 	int err;
  
- #if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
--	if (!enable && mlx5e_tc_num_filters(priv, MLX5_TC_FLAG(NIC_OFFLOAD))) {
-+	int tc_flag = mlx5e_is_uplink_rep(priv) ? MLX5_TC_FLAG(ESW_OFFLOAD) :
-+						  MLX5_TC_FLAG(NIC_OFFLOAD);
-+	if (!enable && mlx5e_tc_num_filters(priv, tc_flag)) {
- 		netdev_err(netdev,
- 			   "Active offloaded tc filters, can't turn hw_tc_offload off\n");
+ 	if (func_id != BPF_FUNC_tail_call)
+@@ -7010,10 +7009,11 @@ record_func_key(struct bpf_verifier_env
  		return -EINVAL;
--- 
-2.35.1
-
+ 	}
+ 
+-	range = tnum_range(0, map->max_entries - 1);
+ 	reg = &regs[BPF_REG_3];
++	val = reg->var_off.value;
++	max = map->max_entries;
+ 
+-	if (!register_is_const(reg) || !tnum_in(range, reg->var_off)) {
++	if (!(register_is_const(reg) && val < max)) {
+ 		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
+ 		return 0;
+ 	}
+@@ -7021,8 +7021,6 @@ record_func_key(struct bpf_verifier_env
+ 	err = mark_chain_precision(env, BPF_REG_3);
+ 	if (err)
+ 		return err;
+-
+-	val = reg->var_off.value;
+ 	if (bpf_map_key_unseen(aux))
+ 		bpf_map_key_store(aux, val);
+ 	else if (!bpf_map_key_poisoned(aux) &&
 
 
