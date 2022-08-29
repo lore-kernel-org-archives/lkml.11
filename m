@@ -2,112 +2,357 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EACC6FA82
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:11:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B138ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231320AbiH2RLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
+        id S231386AbiH2RLH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:11:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231298AbiH2RKz (ORCPT
+        with ESMTP id S231315AbiH2RK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:10:55 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2095C9DF;
-        Mon, 29 Aug 2022 10:10:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661793054; x=1693329054;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=aDl2jIwOy7f6Y1iRFsQn+FvrMY2h4rkOmf4n9lzlNB8=;
-  b=cX5IlnaaF/YbTU5iW9npA2OW6/8PN2A4XqoZi0zOFgi6KL9t8pjj9ldn
-   M+zCyViApk/Hf4rXf6liTiGePfjawbDRUCgsWGT80ZRIH30XZnlv/7jhP
-   ljs6chIQ1CsyGaEmJQ7VO8aR79lIoxD0psoI1eiXSs0Isj+RvRkasNpz7
-   huUO1eN+7kPP1AmPG8tLAsywEUCT4UubEEC7t2uziX+0mpyb3RQL7Obfv
-   jicq8E6N4tF4A1jZ7CUasxYmCVjmC9nQuDYXPqJ4o5vRlVogA047facQi
-   8cP25PLVhdS87Mvr4IsT5lsZKQ9GYi0Pse26nmszx9L6j2YEIVL6W6Eoe
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="281921806"
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="281921806"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 10:10:53 -0700
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="614285463"
-Received: from aschofie-mobl2.amr.corp.intel.com (HELO localhost) ([10.251.3.205])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 10:10:51 -0700
-From:   alison.schofield@intel.com
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Alison Schofield <alison.schofield@intel.com>,
-        linux-kernel@vger.kernel.org, linux-cxl@vger.kernel.org,
-        Ira Weiny <ira.weiny@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        David Gow <davidgow@google.com>
-Subject: [PATCH v2] tracepoint: Allow trace events in modules with TAINT_TEST
-Date:   Mon, 29 Aug 2022 10:10:48 -0700
-Message-Id: <20220829171048.263065-1-alison.schofield@intel.com>
-X-Mailer: git-send-email 2.37.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 29 Aug 2022 13:10:58 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A6861DB3
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:10:55 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id z14-20020a170903018e00b00174fff57d17so680970plg.14
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:10:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:from:to:cc;
+        bh=dX0fGQyKMWqvamPUwIryEe5C9G06tiwNTIrRunhoG64=;
+        b=hd1sCVNIo+5ajxCodOuRhJbGYJXWTf0x/fRkJgF7jA4do+8jVV4WfgOIWfx5ZE5xSW
+         1vRq9hfdFK0+1uYHgDWI43f94WS7BYDrsf0W/yV08znHqi+YCbitVeABurNu+7ytNTWn
+         JFiqXzjTBT4GbE5HsB/JgOVoewL0YWE+l9S4srFj6HEZFVyKykujdUBhYK//4aqdm/v8
+         bfiqw2/QOTM5gYuEm3xGJ3Mzd6ykK8VxichismUdcbHINIuIyoXsR9xprnoTPFgX5f88
+         NVEHpxtO+hPVJKoAuoPQKYVexPx2pMFNlMOpH1lDPOBePNNoiUx/WNkaEBCKteFPZpWu
+         LAyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=dX0fGQyKMWqvamPUwIryEe5C9G06tiwNTIrRunhoG64=;
+        b=NvOYJgW+ow1VVJuhxnfkzYKxx+XYo6CEspvbXwhhmJvLCu5vKJBIdnfRgKjXHQ01kY
+         3/4QN09gOkWJ89yE7SwUCQQvCnaC5FKyP5+0MHmq0t98tTDBGMxEocf7hEieUL0F991+
+         QMxYaRUpgkeJB3P/zpAHKkSAKMwK3Z2D9yXaDBnqrO6Zw7kEvNXbMs/8fn8Ll/i53maS
+         49VN2456bmVxdPDDr9ZxNNyhAR4n6sqUZduc/QQd/cLn9JTzf9I9VtACfRCADi//AKB/
+         gYMj4Zo5ioIZHgYqrBW8uJWScXxyM5BhqKhk55a5Y9kArFXBtYHJt+QwZvU/3g/91NMl
+         JWbA==
+X-Gm-Message-State: ACgBeo0O3agO31uobKhA5XyBPtfBVM7jkKiZ3yJQ7R4SXEYY+e3ZaguK
+        3IkyLatk03Bj69UWJ7MgGBWOJgHpxS8=
+X-Google-Smtp-Source: AA6agR6sFii+PJbaxcIB2SvAF0BiUh6nSC9bu6R6U3r4Owe3/QiE+IwxlunoIX+KpqilkUvUYT9M5Z1xuFc=
+X-Received: from pgonda1.kir.corp.google.com ([2620:15c:29:203:cddb:77a7:c55e:a7a2])
+ (user=pgonda job=sendgmr) by 2002:a17:902:bd49:b0:170:953d:c489 with SMTP id
+ b9-20020a170902bd4900b00170953dc489mr17422831plx.96.1661793054376; Mon, 29
+ Aug 2022 10:10:54 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 10:10:15 -0700
+In-Reply-To: <20220829171021.701198-1-pgonda@google.com>
+Message-Id: <20220829171021.701198-3-pgonda@google.com>
+Mime-Version: 1.0
+References: <20220829171021.701198-1-pgonda@google.com>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Subject: [V4 2/8] KVM: selftests: sparsebit: add const where appropriate
+From:   Peter Gonda <pgonda@google.com>
+To:     kvm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, marcorr@google.com,
+        seanjc@google.com, michael.roth@amd.com, thomas.lendacky@amd.com,
+        joro@8bytes.org, mizhang@google.com, pbonzini@redhat.com,
+        andrew.jones@linux.dev, Peter Gonda <pgonda@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alison Schofield <alison.schofield@intel.com>
+From: Michael Roth <michael.roth@amd.com>
 
-Commit 2852ca7fba9f ("panic: Taint kernel if tests are run")
-introduced a new taint type, TAINT_TEST, to signal that an
-in-kernel test module has been loaded.
+Subsequent patches will introduce an encryption bitmap in kvm_util that
+would be useful to allow tests to access in read-only fashion. This
+will be done via a const sparsebit*. To avoid warnings or the need to
+add casts everywhere, add const to the various sparsebit functions that
+are applicable for read-only usage of sparsebit.
 
-TAINT_TEST taint type defaults into a 'bad_taint' list for
-kernel tracing and blocks the creation of trace events. This
-causes a problem for CXL testing where loading the cxl_test
-module makes all CXL modules out-of-tree, blocking any trace
-events.
-
-Trace events are in development for CXL at the moment and this
-issue was found in test with v6.0-rc1.
-
-Reported-by: Ira Weiny <ira.weiny@intel.com>
-Suggested-by: Dan Williams <dan.j.williams@intel.com>
-Tested-by: Ira Weiny <ira.weiny@intel.com>
-Reviewed-by: David Gow <davidgow@google.com>
-Signed-off-by: Alison Schofield <alison.schofield@intel.com>
+Reviewed-by: Andrew Jones <andrew.jones@linux.dev>
+Signed-off-by: Michael Roth <michael.roth@amd.com>
+Signed-off-by: Peter Gonda <pgonda@google.com>
 ---
+ .../testing/selftests/kvm/include/sparsebit.h | 36 +++++++-------
+ tools/testing/selftests/kvm/lib/sparsebit.c   | 48 +++++++++----------
+ 2 files changed, 42 insertions(+), 42 deletions(-)
 
-Changes in v2:
-- Update comment in tracepoint_module_coming()  (DavidG)
-- Commit log: s/test has been run/test module has been loaded (DaveJ)
-
- kernel/tracepoint.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
-index 64ea283f2f86..ef42c1a11920 100644
---- a/kernel/tracepoint.c
-+++ b/kernel/tracepoint.c
-@@ -571,7 +571,8 @@ static void for_each_tracepoint_range(
- bool trace_module_has_bad_taint(struct module *mod)
+diff --git a/tools/testing/selftests/kvm/include/sparsebit.h b/tools/testing/selftests/kvm/include/sparsebit.h
+index 12a9a4b9cead..fb5170d57fcb 100644
+--- a/tools/testing/selftests/kvm/include/sparsebit.h
++++ b/tools/testing/selftests/kvm/include/sparsebit.h
+@@ -30,26 +30,26 @@ typedef uint64_t sparsebit_num_t;
+ 
+ struct sparsebit *sparsebit_alloc(void);
+ void sparsebit_free(struct sparsebit **sbitp);
+-void sparsebit_copy(struct sparsebit *dstp, struct sparsebit *src);
++void sparsebit_copy(struct sparsebit *dstp, const struct sparsebit *src);
+ 
+-bool sparsebit_is_set(struct sparsebit *sbit, sparsebit_idx_t idx);
+-bool sparsebit_is_set_num(struct sparsebit *sbit,
++bool sparsebit_is_set(const struct sparsebit *sbit, sparsebit_idx_t idx);
++bool sparsebit_is_set_num(const struct sparsebit *sbit,
+ 			  sparsebit_idx_t idx, sparsebit_num_t num);
+-bool sparsebit_is_clear(struct sparsebit *sbit, sparsebit_idx_t idx);
+-bool sparsebit_is_clear_num(struct sparsebit *sbit,
++bool sparsebit_is_clear(const struct sparsebit *sbit, sparsebit_idx_t idx);
++bool sparsebit_is_clear_num(const struct sparsebit *sbit,
+ 			    sparsebit_idx_t idx, sparsebit_num_t num);
+-sparsebit_num_t sparsebit_num_set(struct sparsebit *sbit);
+-bool sparsebit_any_set(struct sparsebit *sbit);
+-bool sparsebit_any_clear(struct sparsebit *sbit);
+-bool sparsebit_all_set(struct sparsebit *sbit);
+-bool sparsebit_all_clear(struct sparsebit *sbit);
+-sparsebit_idx_t sparsebit_first_set(struct sparsebit *sbit);
+-sparsebit_idx_t sparsebit_first_clear(struct sparsebit *sbit);
+-sparsebit_idx_t sparsebit_next_set(struct sparsebit *sbit, sparsebit_idx_t prev);
+-sparsebit_idx_t sparsebit_next_clear(struct sparsebit *sbit, sparsebit_idx_t prev);
+-sparsebit_idx_t sparsebit_next_set_num(struct sparsebit *sbit,
++sparsebit_num_t sparsebit_num_set(const struct sparsebit *sbit);
++bool sparsebit_any_set(const struct sparsebit *sbit);
++bool sparsebit_any_clear(const struct sparsebit *sbit);
++bool sparsebit_all_set(const struct sparsebit *sbit);
++bool sparsebit_all_clear(const struct sparsebit *sbit);
++sparsebit_idx_t sparsebit_first_set(const struct sparsebit *sbit);
++sparsebit_idx_t sparsebit_first_clear(const struct sparsebit *sbit);
++sparsebit_idx_t sparsebit_next_set(const struct sparsebit *sbit, sparsebit_idx_t prev);
++sparsebit_idx_t sparsebit_next_clear(const struct sparsebit *sbit, sparsebit_idx_t prev);
++sparsebit_idx_t sparsebit_next_set_num(const struct sparsebit *sbit,
+ 				       sparsebit_idx_t start, sparsebit_num_t num);
+-sparsebit_idx_t sparsebit_next_clear_num(struct sparsebit *sbit,
++sparsebit_idx_t sparsebit_next_clear_num(const struct sparsebit *sbit,
+ 					 sparsebit_idx_t start, sparsebit_num_t num);
+ 
+ void sparsebit_set(struct sparsebit *sbitp, sparsebit_idx_t idx);
+@@ -62,9 +62,9 @@ void sparsebit_clear_num(struct sparsebit *sbitp,
+ 			 sparsebit_idx_t start, sparsebit_num_t num);
+ void sparsebit_clear_all(struct sparsebit *sbitp);
+ 
+-void sparsebit_dump(FILE *stream, struct sparsebit *sbit,
++void sparsebit_dump(FILE *stream, const struct sparsebit *sbit,
+ 		    unsigned int indent);
+-void sparsebit_validate_internal(struct sparsebit *sbit);
++void sparsebit_validate_internal(const struct sparsebit *sbit);
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/tools/testing/selftests/kvm/lib/sparsebit.c b/tools/testing/selftests/kvm/lib/sparsebit.c
+index 50e0cf41a7dd..6777a5b1fbd2 100644
+--- a/tools/testing/selftests/kvm/lib/sparsebit.c
++++ b/tools/testing/selftests/kvm/lib/sparsebit.c
+@@ -202,7 +202,7 @@ static sparsebit_num_t node_num_set(struct node *nodep)
+ /* Returns a pointer to the node that describes the
+  * lowest bit index.
+  */
+-static struct node *node_first(struct sparsebit *s)
++static struct node *node_first(const struct sparsebit *s)
  {
- 	return mod->taints & ~((1 << TAINT_OOT_MODULE) | (1 << TAINT_CRAP) |
--			       (1 << TAINT_UNSIGNED_MODULE));
-+			       (1 << TAINT_UNSIGNED_MODULE) |
-+			       (1 << TAINT_TEST));
+ 	struct node *nodep;
+ 
+@@ -216,7 +216,7 @@ static struct node *node_first(struct sparsebit *s)
+  * lowest bit index > the index of the node pointed to by np.
+  * Returns NULL if no node with a higher index exists.
+  */
+-static struct node *node_next(struct sparsebit *s, struct node *np)
++static struct node *node_next(const struct sparsebit *s, struct node *np)
+ {
+ 	struct node *nodep = np;
+ 
+@@ -244,7 +244,7 @@ static struct node *node_next(struct sparsebit *s, struct node *np)
+  * highest index < the index of the node pointed to by np.
+  * Returns NULL if no node with a lower index exists.
+  */
+-static struct node *node_prev(struct sparsebit *s, struct node *np)
++static struct node *node_prev(const struct sparsebit *s, struct node *np)
+ {
+ 	struct node *nodep = np;
+ 
+@@ -273,7 +273,7 @@ static struct node *node_prev(struct sparsebit *s, struct node *np)
+  * subtree and duplicates the bit settings to the newly allocated nodes.
+  * Returns the newly allocated copy of subtree.
+  */
+-static struct node *node_copy_subtree(struct node *subtree)
++static struct node *node_copy_subtree(const struct node *subtree)
+ {
+ 	struct node *root;
+ 
+@@ -307,7 +307,7 @@ static struct node *node_copy_subtree(struct node *subtree)
+  * index is within the bits described by the mask bits or the number of
+  * contiguous bits set after the mask.  Returns NULL if there is no such node.
+  */
+-static struct node *node_find(struct sparsebit *s, sparsebit_idx_t idx)
++static struct node *node_find(const struct sparsebit *s, sparsebit_idx_t idx)
+ {
+ 	struct node *nodep;
+ 
+@@ -393,7 +393,7 @@ static struct node *node_add(struct sparsebit *s, sparsebit_idx_t idx)
  }
  
- static BLOCKING_NOTIFIER_HEAD(tracepoint_notify_list);
-@@ -647,7 +648,7 @@ static int tracepoint_module_coming(struct module *mod)
+ /* Returns whether all the bits in the sparsebit array are set.  */
+-bool sparsebit_all_set(struct sparsebit *s)
++bool sparsebit_all_set(const struct sparsebit *s)
+ {
  	/*
- 	 * We skip modules that taint the kernel, especially those with different
- 	 * module headers (for forced load), to make sure we don't cause a crash.
--	 * Staging, out-of-tree, and unsigned GPL modules are fine.
-+	 * Staging, out-of-tree, unsigned GPL, and test modules are fine.
- 	 */
- 	if (trace_module_has_bad_taint(mod))
- 		return 0;
-
-base-commit: 4c612826bec1441214816827979b62f84a097e91
+ 	 * If any nodes there must be at least one bit set.  Only case
+@@ -776,7 +776,7 @@ static void node_reduce(struct sparsebit *s, struct node *nodep)
+ /* Returns whether the bit at the index given by idx, within the
+  * sparsebit array is set or not.
+  */
+-bool sparsebit_is_set(struct sparsebit *s, sparsebit_idx_t idx)
++bool sparsebit_is_set(const struct sparsebit *s, sparsebit_idx_t idx)
+ {
+ 	struct node *nodep;
+ 
+@@ -922,7 +922,7 @@ static inline sparsebit_idx_t node_first_clear(struct node *nodep, int start)
+  * used by test cases after they detect an unexpected condition, as a means
+  * to capture diagnostic information.
+  */
+-static void sparsebit_dump_internal(FILE *stream, struct sparsebit *s,
++static void sparsebit_dump_internal(FILE *stream, const struct sparsebit *s,
+ 	unsigned int indent)
+ {
+ 	/* Dump the contents of s */
+@@ -970,7 +970,7 @@ void sparsebit_free(struct sparsebit **sbitp)
+  * sparsebit_alloc().  It can though already have bits set, which
+  * if different from src will be cleared.
+  */
+-void sparsebit_copy(struct sparsebit *d, struct sparsebit *s)
++void sparsebit_copy(struct sparsebit *d, const struct sparsebit *s)
+ {
+ 	/* First clear any bits already set in the destination */
+ 	sparsebit_clear_all(d);
+@@ -982,7 +982,7 @@ void sparsebit_copy(struct sparsebit *d, struct sparsebit *s)
+ }
+ 
+ /* Returns whether num consecutive bits starting at idx are all set.  */
+-bool sparsebit_is_set_num(struct sparsebit *s,
++bool sparsebit_is_set_num(const struct sparsebit *s,
+ 	sparsebit_idx_t idx, sparsebit_num_t num)
+ {
+ 	sparsebit_idx_t next_cleared;
+@@ -1006,14 +1006,14 @@ bool sparsebit_is_set_num(struct sparsebit *s,
+ }
+ 
+ /* Returns whether the bit at the index given by idx.  */
+-bool sparsebit_is_clear(struct sparsebit *s,
++bool sparsebit_is_clear(const struct sparsebit *s,
+ 	sparsebit_idx_t idx)
+ {
+ 	return !sparsebit_is_set(s, idx);
+ }
+ 
+ /* Returns whether num consecutive bits starting at idx are all cleared.  */
+-bool sparsebit_is_clear_num(struct sparsebit *s,
++bool sparsebit_is_clear_num(const struct sparsebit *s,
+ 	sparsebit_idx_t idx, sparsebit_num_t num)
+ {
+ 	sparsebit_idx_t next_set;
+@@ -1042,13 +1042,13 @@ bool sparsebit_is_clear_num(struct sparsebit *s,
+  * value.  Use sparsebit_any_set(), instead of sparsebit_num_set() > 0,
+  * to determine if the sparsebit array has any bits set.
+  */
+-sparsebit_num_t sparsebit_num_set(struct sparsebit *s)
++sparsebit_num_t sparsebit_num_set(const struct sparsebit *s)
+ {
+ 	return s->num_set;
+ }
+ 
+ /* Returns whether any bit is set in the sparsebit array.  */
+-bool sparsebit_any_set(struct sparsebit *s)
++bool sparsebit_any_set(const struct sparsebit *s)
+ {
+ 	/*
+ 	 * Nodes only describe set bits.  If any nodes then there
+@@ -1071,20 +1071,20 @@ bool sparsebit_any_set(struct sparsebit *s)
+ }
+ 
+ /* Returns whether all the bits in the sparsebit array are cleared.  */
+-bool sparsebit_all_clear(struct sparsebit *s)
++bool sparsebit_all_clear(const struct sparsebit *s)
+ {
+ 	return !sparsebit_any_set(s);
+ }
+ 
+ /* Returns whether all the bits in the sparsebit array are set.  */
+-bool sparsebit_any_clear(struct sparsebit *s)
++bool sparsebit_any_clear(const struct sparsebit *s)
+ {
+ 	return !sparsebit_all_set(s);
+ }
+ 
+ /* Returns the index of the first set bit.  Abort if no bits are set.
+  */
+-sparsebit_idx_t sparsebit_first_set(struct sparsebit *s)
++sparsebit_idx_t sparsebit_first_set(const struct sparsebit *s)
+ {
+ 	struct node *nodep;
+ 
+@@ -1098,7 +1098,7 @@ sparsebit_idx_t sparsebit_first_set(struct sparsebit *s)
+ /* Returns the index of the first cleared bit.  Abort if
+  * no bits are cleared.
+  */
+-sparsebit_idx_t sparsebit_first_clear(struct sparsebit *s)
++sparsebit_idx_t sparsebit_first_clear(const struct sparsebit *s)
+ {
+ 	struct node *nodep1, *nodep2;
+ 
+@@ -1152,7 +1152,7 @@ sparsebit_idx_t sparsebit_first_clear(struct sparsebit *s)
+ /* Returns index of next bit set within s after the index given by prev.
+  * Returns 0 if there are no bits after prev that are set.
+  */
+-sparsebit_idx_t sparsebit_next_set(struct sparsebit *s,
++sparsebit_idx_t sparsebit_next_set(const struct sparsebit *s,
+ 	sparsebit_idx_t prev)
+ {
+ 	sparsebit_idx_t lowest_possible = prev + 1;
+@@ -1245,7 +1245,7 @@ sparsebit_idx_t sparsebit_next_set(struct sparsebit *s,
+ /* Returns index of next bit cleared within s after the index given by prev.
+  * Returns 0 if there are no bits after prev that are cleared.
+  */
+-sparsebit_idx_t sparsebit_next_clear(struct sparsebit *s,
++sparsebit_idx_t sparsebit_next_clear(const struct sparsebit *s,
+ 	sparsebit_idx_t prev)
+ {
+ 	sparsebit_idx_t lowest_possible = prev + 1;
+@@ -1301,7 +1301,7 @@ sparsebit_idx_t sparsebit_next_clear(struct sparsebit *s,
+  * and returns the index of the first sequence of num consecutively set
+  * bits.  Returns a value of 0 of no such sequence exists.
+  */
+-sparsebit_idx_t sparsebit_next_set_num(struct sparsebit *s,
++sparsebit_idx_t sparsebit_next_set_num(const struct sparsebit *s,
+ 	sparsebit_idx_t start, sparsebit_num_t num)
+ {
+ 	sparsebit_idx_t idx;
+@@ -1336,7 +1336,7 @@ sparsebit_idx_t sparsebit_next_set_num(struct sparsebit *s,
+  * and returns the index of the first sequence of num consecutively cleared
+  * bits.  Returns a value of 0 of no such sequence exists.
+  */
+-sparsebit_idx_t sparsebit_next_clear_num(struct sparsebit *s,
++sparsebit_idx_t sparsebit_next_clear_num(const struct sparsebit *s,
+ 	sparsebit_idx_t start, sparsebit_num_t num)
+ {
+ 	sparsebit_idx_t idx;
+@@ -1584,7 +1584,7 @@ static size_t display_range(FILE *stream, sparsebit_idx_t low,
+  * contiguous bits.  This is done because '-' is used to specify command-line
+  * options, and sometimes ranges are specified as command-line arguments.
+  */
+-void sparsebit_dump(FILE *stream, struct sparsebit *s,
++void sparsebit_dump(FILE *stream, const struct sparsebit *s,
+ 	unsigned int indent)
+ {
+ 	size_t current_line_len = 0;
+@@ -1682,7 +1682,7 @@ void sparsebit_dump(FILE *stream, struct sparsebit *s,
+  * s.  On error, diagnostic information is printed to stderr and
+  * abort is called.
+  */
+-void sparsebit_validate_internal(struct sparsebit *s)
++void sparsebit_validate_internal(const struct sparsebit *s)
+ {
+ 	bool error_detected = false;
+ 	struct node *nodep, *prev = NULL;
 -- 
-2.31.1
+2.37.2.672.g94769d06f0-goog
 
