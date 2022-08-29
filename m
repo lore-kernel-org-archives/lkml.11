@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D401ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6047DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232055AbiH2MWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:22:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58408 "EHLO
+        id S232199AbiH2MXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231390AbiH2MWR (ORCPT
+        with ESMTP id S230136AbiH2MW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:22:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D88122294;
-        Mon, 29 Aug 2022 05:06:23 -0700 (PDT)
+        Mon, 29 Aug 2022 08:22:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82EB9C8D7;
+        Mon, 29 Aug 2022 05:06:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 089F2611F6;
-        Mon, 29 Aug 2022 11:12:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7A4C433C1;
-        Mon, 29 Aug 2022 11:12:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3EAC611ED;
+        Mon, 29 Aug 2022 11:09:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C75CCC433D7;
+        Mon, 29 Aug 2022 11:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771573;
-        bh=SH08MzezpF/Zg+tRuUKHJwyHIYGzp/ppDqqIHHHtB74=;
+        s=korg; t=1661771341;
+        bh=IGnlxDUDKMqRhl/JRvtiJCglMh05mzZby+XGhIRY5+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xa4M6Xz1Vbn8rsle9PjxJghpkDa+3Nx5y5f88YW1rW1J/5hbupfGgTRoelvRa+C/t
-         u71YuqipVzdAmD+f+N2mF5efecY6nsdyRINR8JSGPXH7H9u5WCEF/s/Z6Xa67DwkQO
-         Zr7CgySokUbSKlGbhFz12Av+46SuvvKhWqZJsiSU=
+        b=0RB/art4ok9xIjDApjiBqvWtvqd+IRPMQNPvUtaX7wUTN1aYjuUUumTOTdz+4gi+Q
+         eBCt1YFwdRFIHXVEAtfwo5etytHYJLlOkhoPKGO9qj5LrJhXM7ijvJkGvFUu2x1bC0
+         DvSJAz7eRt8GCUFFAZ2acAkxSxckxpcAoIKgI7vc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 81/86] blk-mq: fix io hung due to missing commit_rqs
-Date:   Mon, 29 Aug 2022 12:59:47 +0200
-Message-Id: <20220829105759.830224093@linuxfoundation.org>
+        stable@vger.kernel.org, R Mohamed Shah <mohamed@pensando.io>,
+        Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 093/136] ionic: VF initial random MAC address if no assigned mac
+Date:   Mon, 29 Aug 2022 12:59:20 +0200
+Message-Id: <20220829105808.485419919@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,94 +50,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: R Mohamed Shah <mohamed@pensando.io>
 
-commit 65fac0d54f374625b43a9d6ad1f2c212bd41f518 upstream.
+[ Upstream commit 19058be7c48ceb3e60fa3948e24da1059bd68ee4 ]
 
-Currently, in virtio_scsi, if 'bd->last' is not set to true while
-dispatching request, such io will stay in driver's queue, and driver
-will wait for block layer to dispatch more rqs. However, if block
-layer failed to dispatch more rq, it should trigger commit_rqs to
-inform driver.
+Assign a random mac address to the VF interface station
+address if it boots with a zero mac address in order to match
+similar behavior seen in other VF drivers.  Handle the errors
+where the older firmware does not allow the VF to set its own
+station address.
 
-There is a problem in blk_mq_try_issue_list_directly() that commit_rqs
-won't be called:
+Newer firmware will allow the VF to set the station mac address
+if it hasn't already been set administratively through the PF.
+Setting it will also be allowed if the VF has trust.
 
-// assume that queue_depth is set to 1, list contains two rq
-blk_mq_try_issue_list_directly
- blk_mq_request_issue_directly
- // dispatch first rq
- // last is false
-  __blk_mq_try_issue_directly
-   blk_mq_get_dispatch_budget
-   // succeed to get first budget
-   __blk_mq_issue_directly
-    scsi_queue_rq
-     cmd->flags |= SCMD_LAST
-      virtscsi_queuecommand
-       kick = (sc->flags & SCMD_LAST) != 0
-       // kick is false, first rq won't issue to disk
- queued++
-
- blk_mq_request_issue_directly
- // dispatch second rq
-  __blk_mq_try_issue_directly
-   blk_mq_get_dispatch_budget
-   // failed to get second budget
- ret == BLK_STS_RESOURCE
-  blk_mq_request_bypass_insert
- // errors is still 0
-
- if (!list_empty(list) || errors && ...)
-  // won't pass, commit_rqs won't be called
-
-In this situation, first rq relied on second rq to dispatch, while
-second rq relied on first rq to complete, thus they will both hung.
-
-Fix the problem by also treat 'BLK_STS_*RESOURCE' as 'errors' since
-it means that request is not queued successfully.
-
-Same problem exists in blk_mq_dispatch_rq_list(), 'BLK_STS_*RESOURCE'
-can't be treated as 'errors' here, fix the problem by calling
-commit_rqs if queue_rq return 'BLK_STS_*RESOURCE'.
-
-Fixes: d666ba98f849 ("blk-mq: add mq_ops->commit_rqs()")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220726122224.1790882-1-yukuai1@huaweicloud.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fbb39807e9ae ("ionic: support sr-iov operations")
+Signed-off-by: R Mohamed Shah <mohamed@pensando.io>
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 92 ++++++++++++++++++-
+ 1 file changed, 87 insertions(+), 5 deletions(-)
 
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -1402,7 +1402,8 @@ out:
- 	/* If we didn't flush the entire list, we could have told the driver
- 	 * there was more coming, but that turned out to be a lie.
- 	 */
--	if ((!list_empty(list) || errors) && q->mq_ops->commit_rqs && queued)
-+	if ((!list_empty(list) || errors || needs_resource ||
-+	     ret == BLK_STS_DEV_RESOURCE) && q->mq_ops->commit_rqs && queued)
- 		q->mq_ops->commit_rqs(hctx);
- 	/*
- 	 * Any items that need requeuing? Stuff them into hctx->dispatch,
-@@ -2080,6 +2081,7 @@ void blk_mq_try_issue_list_directly(stru
- 		list_del_init(&rq->queuelist);
- 		ret = blk_mq_request_issue_directly(rq, list_empty(list));
- 		if (ret != BLK_STS_OK) {
-+			errors++;
- 			if (ret == BLK_STS_RESOURCE ||
- 					ret == BLK_STS_DEV_RESOURCE) {
- 				blk_mq_request_bypass_insert(rq, false,
-@@ -2087,7 +2089,6 @@ void blk_mq_try_issue_list_directly(stru
- 				break;
- 			}
- 			blk_mq_end_request(rq, ret);
--			errors++;
- 		} else
- 			queued++;
- 	}
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index 226867e65625e..c713a3ee6571b 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -1692,8 +1692,67 @@ static int ionic_set_features(struct net_device *netdev,
+ 	return err;
+ }
+ 
++static int ionic_set_attr_mac(struct ionic_lif *lif, u8 *mac)
++{
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.lif_setattr = {
++			.opcode = IONIC_CMD_LIF_SETATTR,
++			.index = cpu_to_le16(lif->index),
++			.attr = IONIC_LIF_ATTR_MAC,
++		},
++	};
++
++	ether_addr_copy(ctx.cmd.lif_setattr.mac, mac);
++	return ionic_adminq_post_wait(lif, &ctx);
++}
++
++static int ionic_get_attr_mac(struct ionic_lif *lif, u8 *mac_addr)
++{
++	struct ionic_admin_ctx ctx = {
++		.work = COMPLETION_INITIALIZER_ONSTACK(ctx.work),
++		.cmd.lif_getattr = {
++			.opcode = IONIC_CMD_LIF_GETATTR,
++			.index = cpu_to_le16(lif->index),
++			.attr = IONIC_LIF_ATTR_MAC,
++		},
++	};
++	int err;
++
++	err = ionic_adminq_post_wait(lif, &ctx);
++	if (err)
++		return err;
++
++	ether_addr_copy(mac_addr, ctx.comp.lif_getattr.mac);
++	return 0;
++}
++
++static int ionic_program_mac(struct ionic_lif *lif, u8 *mac)
++{
++	u8  get_mac[ETH_ALEN];
++	int err;
++
++	err = ionic_set_attr_mac(lif, mac);
++	if (err)
++		return err;
++
++	err = ionic_get_attr_mac(lif, get_mac);
++	if (err)
++		return err;
++
++	/* To deal with older firmware that silently ignores the set attr mac:
++	 * doesn't actually change the mac and doesn't return an error, so we
++	 * do the get attr to verify whether or not the set actually happened
++	 */
++	if (!ether_addr_equal(get_mac, mac))
++		return 1;
++
++	return 0;
++}
++
+ static int ionic_set_mac_address(struct net_device *netdev, void *sa)
+ {
++	struct ionic_lif *lif = netdev_priv(netdev);
+ 	struct sockaddr *addr = sa;
+ 	u8 *mac;
+ 	int err;
+@@ -1702,6 +1761,14 @@ static int ionic_set_mac_address(struct net_device *netdev, void *sa)
+ 	if (ether_addr_equal(netdev->dev_addr, mac))
+ 		return 0;
+ 
++	err = ionic_program_mac(lif, mac);
++	if (err < 0)
++		return err;
++
++	if (err > 0)
++		netdev_dbg(netdev, "%s: SET and GET ATTR Mac are not equal-due to old FW running\n",
++			   __func__);
++
+ 	err = eth_prepare_mac_addr_change(netdev, addr);
+ 	if (err)
+ 		return err;
+@@ -3226,6 +3293,7 @@ static int ionic_station_set(struct ionic_lif *lif)
+ 			.attr = IONIC_LIF_ATTR_MAC,
+ 		},
+ 	};
++	u8 mac_address[ETH_ALEN];
+ 	struct sockaddr addr;
+ 	int err;
+ 
+@@ -3234,8 +3302,23 @@ static int ionic_station_set(struct ionic_lif *lif)
+ 		return err;
+ 	netdev_dbg(lif->netdev, "found initial MAC addr %pM\n",
+ 		   ctx.comp.lif_getattr.mac);
+-	if (is_zero_ether_addr(ctx.comp.lif_getattr.mac))
+-		return 0;
++	ether_addr_copy(mac_address, ctx.comp.lif_getattr.mac);
++
++	if (is_zero_ether_addr(mac_address)) {
++		eth_hw_addr_random(netdev);
++		netdev_dbg(netdev, "Random Mac generated: %pM\n", netdev->dev_addr);
++		ether_addr_copy(mac_address, netdev->dev_addr);
++
++		err = ionic_program_mac(lif, mac_address);
++		if (err < 0)
++			return err;
++
++		if (err > 0) {
++			netdev_dbg(netdev, "%s:SET/GET ATTR Mac are not same-due to old FW running\n",
++				   __func__);
++			return 0;
++		}
++	}
+ 
+ 	if (!is_zero_ether_addr(netdev->dev_addr)) {
+ 		/* If the netdev mac is non-zero and doesn't match the default
+@@ -3243,12 +3326,11 @@ static int ionic_station_set(struct ionic_lif *lif)
+ 		 * likely here again after a fw-upgrade reset.  We need to be
+ 		 * sure the netdev mac is in our filter list.
+ 		 */
+-		if (!ether_addr_equal(ctx.comp.lif_getattr.mac,
+-				      netdev->dev_addr))
++		if (!ether_addr_equal(mac_address, netdev->dev_addr))
+ 			ionic_lif_addr_add(lif, netdev->dev_addr);
+ 	} else {
+ 		/* Update the netdev mac with the device's mac */
+-		memcpy(addr.sa_data, ctx.comp.lif_getattr.mac, netdev->addr_len);
++		ether_addr_copy(addr.sa_data, mac_address);
+ 		addr.sa_family = AF_INET;
+ 		err = eth_prepare_mac_addr_change(netdev, &addr);
+ 		if (err) {
+-- 
+2.35.1
+
 
 
