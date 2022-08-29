@@ -2,159 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C30ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FEFBECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbiH2QrG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:47:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36412 "EHLO
+        id S229508AbiH2QuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:50:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiH2QrE (ORCPT
+        with ESMTP id S229579AbiH2QuR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:47:04 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3923A7FE7A;
-        Mon, 29 Aug 2022 09:47:04 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id e28so6589615qts.1;
-        Mon, 29 Aug 2022 09:47:04 -0700 (PDT)
+        Mon, 29 Aug 2022 12:50:17 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB20D4E623
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:50:15 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id u9-20020a17090a1f0900b001fde6477464so2143463pja.4
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:50:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=mg3yPVsPGOhfl9KMQx8tsgwQDpIzz9xWYJXonPMJUFs=;
-        b=o6TmM7CHCBSDjCcnKBG4eTEjzl9WVs4/ZzwhpaLRdsaO/STEKItW+KoP+rvl6S3Fds
-         s6T4QM5w33Ds50owu6eyxbC0sdAYvBj1Tw3T+5OWJ6arRJ+wXD8pdMhg3NoEhOKBB7za
-         pllnYaCJSwwHUjIJAYrTy4TxPeRh7ckYiKp+kNjrAMuLizjHzt2W0mc1W0WTMjz8aFfJ
-         SkZ4lpZScSiamdQx0wYszmChvMEfdbr33ZpmqTzJ3EgbBBUt+HX7wHqt8+iQC0Rv8xJn
-         g2iIn/8buX2AXWxEdB3Ep8bbwj/Or8I6puvWOuKcQMXJGsxZCToPjO33KvSOBqx14Z1a
-         cnAA==
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=WdT08CN76zbi8+HJMBir9MGBrfnlLBceDmXsuG7Luf4=;
+        b=EMjaz9gf/N0gQmFFKxu/k4K51Yv5rhEtOECIFUfnOwlSFz//c1if/lWbGti1g++PgF
+         vovlJeXhMuV/Kg32YDwUDEF2qq5gzLr1/Low3JTovpnfvOOJn17fKdur0SaqG1lfllLQ
+         sahRUUv5AtWW0Bfnm4cchhFM6e1XsIB9U7LBI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=mg3yPVsPGOhfl9KMQx8tsgwQDpIzz9xWYJXonPMJUFs=;
-        b=WlcH7IREeBR90DFEMqLS81Fn3kY+FpEJYXJvq0IAVN8Tyb/QQHZymRxv9pdXj9avDw
-         p/K+iSjaXWh5muk7CI4badqQgZA38BpnnqtklP/GNPlFnjvXAmTb8zPLYLIEFzZYkA/l
-         XDozkCuejiBtC9GTLAzThHJ6+R6YMe8uWjB3FTmpfLdSn1liO5pkkgCYW2aRwgWJUZst
-         1YtNk+nEElmmWPDp2U8AF8fQzSNUVc+sDyW0m5ELVqGTIn1xgVBTEeArIwpsy+UvgxBU
-         0KXQcttLXfe4vyKakfcEn9m75w6dlO69QGoeBmwXcpYAn3sZsSmHd5YTauyVe01KYUNs
-         /ICQ==
-X-Gm-Message-State: ACgBeo02Jng6CPo3wcNFkU5815dy8G5P1bQg/XzoZtlrJeCIWzVlCQAZ
-        KwAQa7qbRdeROPh0GSBONK1tq+fDuEw=
-X-Google-Smtp-Source: AA6agR59SHEDezFzi8GE2jq6kZcQxO/Y370HQYjuJl5dH8YcX2/gMY9qp8J6bQkCKQ8zq+wjjjcbzg==
-X-Received: by 2002:ac8:5a01:0:b0:344:6aef:9a8d with SMTP id n1-20020ac85a01000000b003446aef9a8dmr10903344qta.131.1661791623337;
-        Mon, 29 Aug 2022 09:47:03 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:8fb6:8017:fac7:922b])
-        by smtp.gmail.com with ESMTPSA id bj15-20020a05620a190f00b006bbc3724affsm5881045qkb.45.2022.08.29.09.47.02
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=WdT08CN76zbi8+HJMBir9MGBrfnlLBceDmXsuG7Luf4=;
+        b=mVifPjDBd4cQKSh8lggxRRseuB92v+JChzOXp04u6Sd9FdJ8cXcPUWKgOQFyMGRyxO
+         ISH+yLSu2tOyu5SYLKWVzDiQF1bVZ+6yKBTcjk975ZfT8xkYW0MIg2L0EB8BrRR7x83u
+         oXnjL5EhsAbldAKrRzkAvjf/xTbdyOKDAvY6LQpfYtReHyfdx3xuJWOMxH3TTLApgjKc
+         yq+6PvlhCFqvL/3RHLiKQqQxjtgzltXKozCkAgfZabbc81osvXA5T/PMTbOYOEkCehQG
+         VQsF3n+GgMRMu8vYcb4gxRNi+6hmKTTnIHHrXxI63uFxFQ3AfPOwpnQLsV97E1YhpEGe
+         neSQ==
+X-Gm-Message-State: ACgBeo3xowvP7/5jQ8pW3YTpRO9IEy7lpeq2zMxa8qKtlBWLvgKwFeAc
+        v6QDIu6SOU8gT/TBu/RJT7oBcw==
+X-Google-Smtp-Source: AA6agR5ONM0EJ0ckVKXOoExo0SlM47RX05dxXydyqejOpni7qbFt3KJIbwDyhyRMfhnfw1mtUBmLUA==
+X-Received: by 2002:a17:902:f684:b0:172:d54d:6f9e with SMTP id l4-20020a170902f68400b00172d54d6f9emr17386370plg.174.1661791815325;
+        Mon, 29 Aug 2022 09:50:15 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:3a97:5017:7e33:8964])
+        by smtp.gmail.com with ESMTPSA id l1-20020a170902f68100b001729db603bcsm7864238plg.126.2022.08.29.09.50.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 09:47:02 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 09:47:00 -0700
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Dave Taht <dave.taht@gmail.com>
-Subject: Re: [PATCH RFC v2 net-next 0/5] net: Qdisc backpressure
- infrastructure
-Message-ID: <YwzthDleRuvyEsXC@pop-os.localdomain>
-References: <cover.1651800598.git.peilin.ye@bytedance.com>
- <cover.1661158173.git.peilin.ye@bytedance.com>
- <CANn89iJsOHK1qgudpfFW9poC4NRBZiob-ynTOuRBkuJTw6FaJw@mail.gmail.com>
+        Mon, 29 Aug 2022 09:50:14 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/6] arm64: dts: qcom: Fix broken regulator spec on RPMH boards
+Date:   Mon, 29 Aug 2022 09:49:46 -0700
+Message-Id: <20220829164952.2672848-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89iJsOHK1qgudpfFW9poC4NRBZiob-ynTOuRBkuJTw6FaJw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 09:22:39AM -0700, Eric Dumazet wrote:
-> On Mon, Aug 22, 2022 at 2:10 AM Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> >
-> > From: Peilin Ye <peilin.ye@bytedance.com>
-> >
-> > Hi all,
-> >
-> > Currently sockets (especially UDP ones) can drop a lot of packets at TC
-> > egress when rate limited by shaper Qdiscs like HTB.  This patchset series
-> > tries to solve this by introducing a Qdisc backpressure mechanism.
-> >
-> > RFC v1 [1] used a throttle & unthrottle approach, which introduced several
-> > issues, including a thundering herd problem and a socket reference count
-> > issue [2].  This RFC v2 uses a different approach to avoid those issues:
-> >
-> >   1. When a shaper Qdisc drops a packet that belongs to a local socket due
-> >      to TC egress congestion, we make part of the socket's sndbuf
-> >      temporarily unavailable, so it sends slower.
-> >
-> >   2. Later, when TC egress becomes idle again, we gradually recover the
-> >      socket's sndbuf back to normal.  Patch 2 implements this step using a
-> >      timer for UDP sockets.
-> >
-> > The thundering herd problem is avoided, since we no longer wake up all
-> > throttled sockets at the same time in qdisc_watchdog().  The socket
-> > reference count issue is also avoided, since we no longer maintain socket
-> > list on Qdisc.
-> >
-> > Performance is better than RFC v1.  There is one concern about fairness
-> > between flows for TBF Qdisc, which could be solved by using a SFQ inner
-> > Qdisc.
-> >
-> > Please see the individual patches for details and numbers.  Any comments,
-> > suggestions would be much appreciated.  Thanks!
-> >
-> > [1] https://lore.kernel.org/netdev/cover.1651800598.git.peilin.ye@bytedance.com/
-> > [2] https://lore.kernel.org/netdev/20220506133111.1d4bebf3@hermes.local/
-> >
-> > Peilin Ye (5):
-> >   net: Introduce Qdisc backpressure infrastructure
-> >   net/udp: Implement Qdisc backpressure algorithm
-> >   net/sched: sch_tbf: Use Qdisc backpressure infrastructure
-> >   net/sched: sch_htb: Use Qdisc backpressure infrastructure
-> >   net/sched: sch_cbq: Use Qdisc backpressure infrastructure
-> >
-> 
-> I think the whole idea is wrong.
-> 
+Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
+get_optimum_mode(), not set_load()") several boards were able to
+change their regulator mode even though they had nothing listed in
+"regulator-allowed-modes". After that commit (and fixes [1]) we'll be
+stuck at the initial mode. Discussion of this (again, see [1]) has
+resulted in the decision that the old dts files were wrong and should
+be fixed to fully restore old functionality.
 
-Be more specific?
+This series attempts to fix everyone. I've kept each board in a
+separate patch to make stable / backports work easier.
 
-> Packet schedulers can be remote (offloaded, or on another box)
+Affected boards were found with:
+  rpmh_users=$(git grep -l -i rpmh -- arch/arm*/boot/dts/qcom)
+  set_modes=$(grep -l regulator-allow-set-load ${rpmh_users})
+  but_no_allowed_modes=$(grep -l -v regulator-allowed-modes ${set_modes})
 
-This is not the case we are dealing with (yet).
+Fix was applied with:
+  for f in ${but_no_allowed_modes}; do
+    sed -i~ -e \
+      's/^\(\s*\)regulator-allow-set-load;/\1regulator-allow-set-load;\n\1regulator-allowed-modes =\n\1    <RPMH_REGULATOR_MODE_LPM\n\1     RPMH_REGULATOR_MODE_HPM>;/'\
+      $f
+  done
 
-> 
-> The idea of going back to socket level from a packet scheduler should
-> really be a last resort.
+Then results were manually inspected. In one board I removed a
+"regulator-allow-set-load" from a fixed regulator since that was
+clearly wrong.
 
-I think it should be the first resort, as we should backpressure to the
-source, rather than anything in the middle.
+v2 of this series adds tags and also rebases atop Johan's series [2]
+as requested [3]. This ends up turning the series into a 6-part series
+instead of a 7-part one.
 
-> 
-> Issue of having UDP sockets being able to flood a network is tough, I
-> am not sure the core networking stack
-> should pretend it can solve the issue.
+It should also be noted that as of the v2 posting that the related
+regulator fixes have all landed in the regulator tree.
 
-It seems you misunderstand it here, we are not dealing with UDP on the
-network, just on an end host. The backpressure we are dealing with is
-from Qdisc to socket on _TX side_ and on one single host.
+[1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
+[2] https://lore.kernel.org/r/20220803121942.30236-1-johan+linaro@kernel.org/
+[3] https://lore.kernel.org/r/YwhwIX+Ib8epUYWS@hovoldconsulting.com/
 
-> 
-> Note that FQ based packet schedulers can also help already.
+Changes in v2:
+- Added note about removing regulator-allow-set-load from vreg_s4a_1p8
+- Rebased atop ("...: sa8295p-adp: disallow regulator mode switches")
+- Rebased atop ("...: sc8280xp-crd: disallow regulator mode switches")
 
-It only helps TCP pacing.
+Douglas Anderson (6):
+  arm64: dts: qcom: sa8155p-adp: Specify which LDO modes are allowed
+  arm64: dts: qcom: sa8295p-adp: Specify which LDO modes are allowed
+  arm64: dts: qcom: sc8280xp-crd: Specify which LDO modes are allowed
+  arm64: dts: qcom: sm8150-xperia-kumano: Specify which LDO modes are
+    allowed
+  arm64: dts: qcom: sm8250-xperia-edo: Specify which LDO modes are
+    allowed
+  arm64: dts: qcom: sm8350-hdk: Specify which LDO modes are allowed
 
-Thanks.
+ arch/arm64/boot/dts/qcom/sa8155p-adp.dts            | 13 ++++++++++++-
+ arch/arm64/boot/dts/qcom/sa8295p-adp.dts            | 12 ++++++++++++
+ arch/arm64/boot/dts/qcom/sc8280xp-crd.dts           |  6 ++++++
+ .../boot/dts/qcom/sm8150-sony-xperia-kumano.dtsi    |  6 ++++++
+ .../arm64/boot/dts/qcom/sm8250-sony-xperia-edo.dtsi |  6 ++++++
+ arch/arm64/boot/dts/qcom/sm8350-hdk.dts             | 12 ++++++++++++
+ 6 files changed, 54 insertions(+), 1 deletion(-)
+
+-- 
+2.37.2.672.g94769d06f0-goog
+
