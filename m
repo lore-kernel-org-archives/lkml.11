@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B22FECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:13:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 315B7ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229456AbiH2LN2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:13:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43070 "EHLO
+        id S231346AbiH2LNb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiH2LMk (ORCPT
+        with ESMTP id S231213AbiH2LMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:12:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A3BB13D3C;
-        Mon, 29 Aug 2022 04:09:02 -0700 (PDT)
+        Mon, 29 Aug 2022 07:12:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532B16554A;
+        Mon, 29 Aug 2022 04:09:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9A24B80F6F;
-        Mon, 29 Aug 2022 11:08:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D5B8C433C1;
-        Mon, 29 Aug 2022 11:07:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3DE9611F4;
+        Mon, 29 Aug 2022 11:09:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C86C4C433C1;
+        Mon, 29 Aug 2022 11:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771279;
-        bh=ZZk1bdH8q/wSbASFPHSIEor5OOkftaIAa+kl9zir3vo=;
+        s=korg; t=1661771344;
+        bh=e6jU/oDtwcagn6dm5aEppzvyyz5CM20HP0DYHvgaJ9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CJVHeiJIIZSf4qC+xSlHCq2B0krOcCgiWoYFl0Rx1zl63KgJpMJbQBcaYY6TOdrzX
-         aruYC1XUIcbvIku4OCOok56NRI/me/TJQmLkeV4dbR3MEUeKCcKHqrer2vw/x1jmeU
-         vM1dKQ32iomh9s7WUpOcF7LIz0rwWZfkkFmghZXM=
+        b=wIxUk7ndpFVlODfJrkWZQnI1WvF2Ro4DE59/5/Kk54gOfta1BjY0b6EEamrIIn6w2
+         Sik9mpHmf3tZ9w8aHJaT1wGn+DeramaNkSCGteLL0W5HSNCqI/ZkGjT+n6DZg3O+SH
+         Rb42IpAmXFXzysD85HVCmMC6kgBEF7NVq4OjlnXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 012/158] xfrm: fix refcount leak in __xfrm_policy_check()
-Date:   Mon, 29 Aug 2022 12:57:42 +0200
-Message-Id: <20220829105809.342400964@linuxfoundation.org>
+Subject: [PATCH 5.10 53/86] net: Fix a data-race around sysctl_tstamp_allow_data.
+Date:   Mon, 29 Aug 2022 12:59:19 +0200
+Message-Id: <20220829105758.708346127@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 9c9cb23e00ddf45679b21b4dacc11d1ae7961ebe ]
+[ Upstream commit d2154b0afa73c0159b2856f875c6b4fe7cf6a95e ]
 
-The issue happens on an error path in __xfrm_policy_check(). When the
-fetching process of the object `pols[1]` fails, the function simply
-returns 0, forgetting to decrement the reference count of `pols[0]`,
-which is incremented earlier by either xfrm_sk_policy_lookup() or
-xfrm_policy_lookup(). This may result in memory leaks.
+While reading sysctl_tstamp_allow_data, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fix it by decreasing the reference count of `pols[0]` in that path.
-
-Fixes: 134b0fc544ba ("IPsec: propagate security module errors up from flow_cache_lookup")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: b245be1f4db1 ("net-timestamp: no-payload only sysctl")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_policy.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/skbuff.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index f1a0bab920a55..4f8bbb825abcb 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3599,6 +3599,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 		if (pols[1]) {
- 			if (IS_ERR(pols[1])) {
- 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLERROR);
-+				xfrm_pol_put(pols[0]);
- 				return 0;
- 			}
- 			pols[1]->curlft.use_time = ktime_get_real_seconds();
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 48b6438f2a3d9..635cabcf8794f 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4691,7 +4691,7 @@ static bool skb_may_tx_timestamp(struct sock *sk, bool tsonly)
+ {
+ 	bool ret;
+ 
+-	if (likely(sysctl_tstamp_allow_data || tsonly))
++	if (likely(READ_ONCE(sysctl_tstamp_allow_data) || tsonly))
+ 		return true;
+ 
+ 	read_lock_bh(&sk->sk_callback_lock);
 -- 
 2.35.1
 
