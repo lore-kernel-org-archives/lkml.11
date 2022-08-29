@@ -2,71 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42169ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0AA6ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbiH2IZS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54344 "EHLO
+        id S229536AbiH2I2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiH2IZQ (ORCPT
+        with ESMTP id S229455AbiH2I2S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 04:25:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D491C126
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:25:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6300160DF8
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:25:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1B9EC433D6;
-        Mon, 29 Aug 2022 08:25:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661761510;
-        bh=hHALztWivQBNH4N4zzMDPUp5mHUfdWji+XMB1erl5G8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GlT+KGX8bp6SKLvI26qUDpHQAzdxTDNmnyx44XM/wkF9Vn/REfOGnDPnv5kO150Hj
-         ak9KEGjqJRuTIaU1tSll5KYaBjCgFJlS7Ugd/ZV4i9fACmloDO8lRT46fOjJRls7Kd
-         NzdIE5M0G0se8V+k+kDnWEea6XNApuqBw6tZvDMV0PWlvhriuU6ZQVBiywmdvz1sf0
-         t6G3kYkTIO3Z1lyKHu+pyFeGGSFkU1hZ9/F6rGC4psAqaoIS4tF22lbQ+2AqvM7JY9
-         hq5+aSq1gcwar8R1moAf9JkwL+jfk7xedTP2pv1DFGttT4KUE6A1zE+d0FYhDPaELu
-         Qam41bd2GMDAQ==
-Date:   Mon, 29 Aug 2022 11:24:56 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Song Chen <chensong_2000@189.cn>
-Cc:     karolinadrobnik@gmail.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH 2/2] tools/testing/memblock: define pr_warn_ratelimited
-Message-ID: <Ywx32C4/kE2WgR75@kernel.org>
-References: <1661755140-3331-1-git-send-email-chensong_2000@189.cn>
+        Mon, 29 Aug 2022 04:28:18 -0400
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8126192BE
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:28:16 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 21EDF58024B;
+        Mon, 29 Aug 2022 04:28:14 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 29 Aug 2022 04:28:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1661761694; x=1661768894; bh=WyDZXkUvNq
+        q4D0ys6jWjIG48RlHKq49MwSu6MMSlx50=; b=pcgQG1ej6+y0m7r6DiMBbYPc08
+        6Tg1eOTSepyvQmZxCSlULRt2iHE7knKMWeZvGrun29ZniyukW65rq740Ny8rdnvP
+        wM7up1mWPM7KSoF6ECLVmizsIegz9xc/3oShVa7yGTzcvTEfmg1LB5nJ91Farpn8
+        3kFvaC7hRprWxqGT+KZ8O8GUqQ86LD9ibCIDHuETLiH3hSJ/8JnRXXjyI7DCtIH2
+        FoFhHwd9AXJgrSiTL2p02R6D1YFV57MTMuPsJ6+zmaDVCCUAnNajGLNiNIMwdYxs
+        dDCFrPrA2MBCLvSLE6NMrO0JbjKA0WyyP8lAnwG7k/NOxiDCExp3VO4Jhduw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1661761694; x=1661768894; bh=WyDZXkUvNqq4D0ys6jWjIG48RlHK
+        q49MwSu6MMSlx50=; b=yH9L3dwU+BM7jqIUnUji3NTnNFQu0SshB8oh4lGV1/Qq
+        TDI1OhLZmFpTFW4X2DxH8tC66akwDO5+mf9GGIR0IWNq5I7WxVqQZd3U9dGOjAdH
+        yJS3gZzds7K6AtpJERpzRWG0sQ23BHyLauPzMWQAOCbe2zGYH/xuEjhQnZfT3HJ0
+        iIMOrzwHC06X83sO/b3RCOe4IUpL4Mvg82/gepUIdTIUad/Qxb0GBGu6XWNqC7gx
+        O2Lv5T/wRIFI+GKRoA6vDHl6NHbbHbgelR/zOXHNAnWBllu8ncLeb4rcIIMAmNgM
+        8jxbkr2jq+nGf7vAOyWZT6oIz90oHLSMSvzQ7CQHXg==
+X-ME-Sender: <xms:nHgMYxY2A4ykQGvsFzJnc35gPBn6FxisToBs3EdyCOE55OekURZCtA>
+    <xme:nHgMY4bnM7gY496bdnurVGht7a5AxE477IKpHVSnWAxEY1bX-xnPK2fm8BkaKzgD3
+    u2e2YG1Gi40zeacoXg>
+X-ME-Received: <xmr:nHgMYz9QBKsNgPrdI7VDRmqaBrhSGpHSbUXasZ593l-Zquaj1QqsLnn1F1ir>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddgtdehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpeeljeeugfegveetleevkeetffegudevieetieeugeeugeeivddtjeejvdef
+    feetgfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
+    hh
+X-ME-Proxy: <xmx:nHgMY_ow5pHV0rSxiGc4MvEbrbiAc7aHw8xiJIUsZYCUkUWxmjh7tw>
+    <xmx:nHgMY8o6vx0u6-toU5HvO0BEQdVthR3WUvyc3QiQ_VtSdoWUEeC1Kw>
+    <xmx:nHgMY1QgXFj6sK1CpnQpdrPeODRxNP79qhr4DjFjqrVAt20ECAiE_A>
+    <xmx:nngMY1YTK8jVd5f_LplnVCWLcQMSRvqd2B2zxST_G1IQeJWOpau9XQ>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 29 Aug 2022 04:28:11 -0400 (EDT)
+Date:   Mon, 29 Aug 2022 10:28:09 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>
+Cc:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: Re: [PATCH v1 05/35] drm/connector: Add TV standard property
+Message-ID: <20220829082809.6xhd4zzs7ootax2z@houat>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
+ <37a76651-a457-e50d-9a05-00ca9ed5d729@tronnes.org>
+ <20220825134408.dioj2lbycl7jm3ld@houat>
+ <863beb42-1012-b38a-0c3d-89b7e035aa82@tronnes.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="75abns6ys2rry5o6"
 Content-Disposition: inline
-In-Reply-To: <1661755140-3331-1-git-send-email-chensong_2000@189.cn>
+In-Reply-To: <863beb42-1012-b38a-0c3d-89b7e035aa82@tronnes.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 02:39:00PM +0800, Song Chen wrote:
-> Commit 14d9a675fd0d("mm: Ratelimited mirrored memory related warning
-> messages") introduced pr_warn_ratelimited in memblock.c, which breaks
-> tools/test/memblock, below is the message:
-> 
-> /usr/bin/ld: memblock.o: in function `memblock_find_in_range.constprop.0':
-> memblock.c:(.text+0x4603): undefined reference to `pr_warn_ratelimited'
-> /usr/bin/ld: memblock.o: in function `memblock_alloc_range_nid':
-> memblock.c:(.text+0x786a): undefined reference to `pr_warn_ratelimited'
-> collect2: error: ld returned 1 exit status
-> 
-> A fake pr_warn_ratelimited needs to be defined in printk.h like other
-> prink functions.
 
-This is fixed by commit 0a7e91528202 ("memblock tests: fix compilation errors")
- 
-> Signed-off-by: Song Chen <chensong_2000@189.cn>
-> ---
+--75abns6ys2rry5o6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Sincerely yours,
-Mike.
+On Thu, Aug 25, 2022 at 05:13:29PM +0200, Noralf Tr=F8nnes wrote:
+>=20
+>=20
+> Den 25.08.2022 15.44, skrev Maxime Ripard:
+> > Hi,
+> >=20
+> > On Sat, Aug 20, 2022 at 10:12:46PM +0200, Noralf Tr=F8nnes wrote:
+> >>> diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
+> >>> index 1e9996b33cc8..78275e68ff66 100644
+> >>> --- a/include/drm/drm_connector.h
+> >>> +++ b/include/drm/drm_connector.h
+> >>> @@ -143,6 +143,32 @@ enum subpixel_order {
+> >>> =20
+> >>>  };
+> >>> =20
+> >>> +#define DRM_MODE_TV_NORM_NTSC_443	(1 << 0)
+> >>> +#define DRM_MODE_TV_NORM_NTSC_J		(1 << 1)
+> >>> +#define DRM_MODE_TV_NORM_NTSC_M		(1 << 2)
+> >>> +#define DRM_MODE_TV_NORM_PAL_60		(1 << 3)
+> >>> +#define DRM_MODE_TV_NORM_PAL_B		(1 << 4)
+> >>> +#define DRM_MODE_TV_NORM_PAL_D		(1 << 5)
+> >>> +#define DRM_MODE_TV_NORM_PAL_G		(1 << 6)
+> >>> +#define DRM_MODE_TV_NORM_PAL_H		(1 << 7)
+> >>> +#define DRM_MODE_TV_NORM_PAL_I		(1 << 8)
+> >>> +#define DRM_MODE_TV_NORM_PAL_M		(1 << 9)
+> >>> +#define DRM_MODE_TV_NORM_PAL_N		(1 << 10)
+> >>> +#define DRM_MODE_TV_NORM_PAL_NC		(1 << 11)
+> >>> +#define DRM_MODE_TV_NORM_SECAM_60	(1 << 12)
+> >>> +#define DRM_MODE_TV_NORM_SECAM_B	(1 << 13)
+> >>> +#define DRM_MODE_TV_NORM_SECAM_D	(1 << 14)
+> >>> +#define DRM_MODE_TV_NORM_SECAM_G	(1 << 15)
+> >>> +#define DRM_MODE_TV_NORM_SECAM_K	(1 << 16)
+> >>> +#define DRM_MODE_TV_NORM_SECAM_K1	(1 << 17)
+> >>> +#define DRM_MODE_TV_NORM_SECAM_L	(1 << 18)
+> >>> +#define DRM_MODE_TV_NORM_HD480I		(1 << 19)
+> >>> +#define DRM_MODE_TV_NORM_HD480P		(1 << 20)
+> >>> +#define DRM_MODE_TV_NORM_HD576I		(1 << 21)
+> >>> +#define DRM_MODE_TV_NORM_HD576P		(1 << 22)
+> >>> +#define DRM_MODE_TV_NORM_HD720P		(1 << 23)
+> >>> +#define DRM_MODE_TV_NORM_HD1080I	(1 << 24)
+> >>> +
+> >>
+> >> This is an area where DRM overlaps with v4l2, see:
+> >> - include/dt-bindings/display/sdtv-standards.h
+> >> - v4l2_norm_to_name()
+> >>
+> >> Maybe we should follow suit, but if we do our own thing please mention
+> >> why in the commit message.
+> >=20
+> > Are you suggesting that we'd share that definition with v4l2?
+> >=20
+>=20
+> If possible, yes.
+>=20
+> > I've tried to share some code in the past between v4l2 and DRM, and it
+> > got completely shut down so it's not something I'd like to try again, if
+> > possible.
+> >=20
+>=20
+> But that is a good enough reason not to do so. I just got the impression
+> from some of Laurent's emails a while back that there was some
+> cooperativ atmosphere, but I might be mistaken in my reading/understandin=
+g.
+
+Here's the original thread:
+https://lore.kernel.org/lkml/cover.8ec406bf8f4f097e9dc909d5aac466556822f592=
+=2E1555487650.git-series.maxime.ripard@bootlin.com/
+
+It ended up stalling completely, without any will from either DRM or
+v4l2 to get this through. So I will not work on anything like that until
+both maintainership teams have expressed that it's something they
+actually want.
+
+> It is ofc possible to just copy the values from sdtv-standards.h, but I
+> see that hd* is missing from that list, so not sure if there's much
+> point if it has to be extended without changing the source.
+
+HD formats were dropped, so it's not a big deal. However, we are missing
+a few formats, but that were never used by either nouveau, i915 or any
+other driver. I'm not sure it's worth adding at that point, and we can
+always extend it later.
+
+Maxime
+
+--75abns6ys2rry5o6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYwx4mQAKCRDj7w1vZxhR
+xYZDAQCtPJtDdO69aAVR+V32mB49Ic+bSm58hf0Ef9S43x8CQQEA6046rKs4GgON
+IjqfdYygrMMKGLb9fH70LvlsWbizSgA=
+=ydq5
+-----END PGP SIGNATURE-----
+
+--75abns6ys2rry5o6--
