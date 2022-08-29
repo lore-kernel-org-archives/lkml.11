@@ -2,363 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAA7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C47ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbiH2Vhh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 17:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
+        id S229784AbiH2VjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 17:39:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiH2Vhg (ORCPT
+        with ESMTP id S229899AbiH2VjE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 17:37:36 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E32280F50;
-        Mon, 29 Aug 2022 14:37:34 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 9F8EB8211EE;
-        Mon, 29 Aug 2022 21:29:22 +0000 (UTC)
-Received: from pdx1-sub0-mail-a210 (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 1830E8214F4;
-        Mon, 29 Aug 2022 21:29:22 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661808562; a=rsa-sha256;
-        cv=none;
-        b=889wU+ypFOzUxMo8tE7wsNg3AIyIc/z3cecJyw1ISG+NPwtjl+h/wTnEd5K2TzIi0NMf5a
-        B3OnPpWSdDJsv8NGNvKvgsjALhGxAdwJtoXP2pkRTPmZZpxTKB/1MbtMb+hNnViynGXU1a
-        FhZG3r1VNOeQEvplpdBV53hf5Ak9tS7fvqEARbZMSk3UHCXNFTgGrnvz6L4/8/DjL9UQfG
-        U+TVlYpfFHU96osU991mXYk2xQSC0yu0wkFJTqRfkjZ0BQW9V1OkjrCQg/5C7b6P4zXxVr
-        cItJfpBehRIE+hmPetg1eWyH/C4AtxZOpf6OPa7InPlouRnp3aFlIpT4pSJC4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661808562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:dkim-signature;
-        bh=wPrGN55jL4h8TZE8TdRCRKUBj7LPUTZEAsucC9jQbN4=;
-        b=fHIx0ajVzaapgHX+wHAy9i3SSOOpjYSGaygTwB1lTiPccD0mI/aSoFb49HaJxbSX/j1ISg
-        V1/rvlDaEZvUnFRxs2yB9+gkc4ylnB5uk3Tz5zANwIzCyrkjSbeqQY0EXYL1i6GBYBwcit
-        GFXQ8kdR8pyuZ1LxShT2ILU95KNjLN1mJVGjedzVaRmUg5YaycMchDtaEFUYbpR1FmkwVm
-        7BQ1ulyvigt4GoHxBoKAMN66oedQaegs6reEa1C89qBIbEez6jgsHyKgyTEzc3YhC6C+ey
-        /Us23SboeeHKM8d/LsCrNUf22DL7tPZmLVQdyJh8uPf0Cuztdn0Ns7b4Tq/NAQ==
-ARC-Authentication-Results: i=1;
-        rspamd-75b4464bd-sv695;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Descriptive-Arithmetic: 79cfb0b32f60848c_1661808562489_673253421
-X-MC-Loop-Signature: 1661808562489:2375646447
-X-MC-Ingress-Time: 1661808562489
-Received: from pdx1-sub0-mail-a210 (pop.dreamhost.com [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.123.39.217 (trex/6.7.1);
-        Mon, 29 Aug 2022 21:29:22 +0000
-Received: from offworld.. (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 29 Aug 2022 17:39:04 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8AF84ED8;
+        Mon, 29 Aug 2022 14:38:58 -0700 (PDT)
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27TKWKeE001503;
+        Mon, 29 Aug 2022 21:38:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pps0720;
+ bh=CpVq0+cJCMFWSpE7UL4+jVLdlAXZ330ylvMcas2YE3M=;
+ b=jab1VVvtCX2Vs7rpOu6gXztYgls2jsTk+baSwCJVwkvKVJrkme/XamBdFw000Bnaqj8R
+ RWZeV9k2oF/MedLCS2cFk6iSop2gZ8tpOuUhiFGPUL2AU2SmFk1qf3EUOaPDuEgZ9TqY
+ VW24crzZlzhCBqP+6o2aq9Ev6GMNbEDfnsFqrvNu0Qknh5hR6BGs853kG6haPfX/LWBA
+ BQYAdRVufcTdQjsKoUKgM1m5/affVCystrWEhZSdxMI4KGoiCnxTfwyupmwAYEidj5Uf
+ OR3O9WhPofNwkWkUPTrMRSr/veXdDnvkJuXZPYmnBh0IfQQGrK9Yl21aN00jZ4sL6o5W bg== 
+Received: from p1lg14878.it.hpe.com (p1lg14878.it.hpe.com [16.230.97.204])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3j940hrnem-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Aug 2022 21:38:07 +0000
+Received: from p1wg14923.americas.hpqcorp.net (unknown [10.119.18.111])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a210 (Postfix) with ESMTPSA id 4MGk8x0m25zPZ;
-        Mon, 29 Aug 2022 14:29:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661808561;
-        bh=wPrGN55jL4h8TZE8TdRCRKUBj7LPUTZEAsucC9jQbN4=;
-        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
-        b=VrOY05yZROs1ioLx4CRmSRE9GcO9LhV1i39YKM/9L2L7CgMCeigurV/Za/8wK+sF1
-         gD/yJ7XqCeqQ8ao12sQa9O4nfu7CVsCIR7Yjgo9kVQC0lAv5YRClls7fEjsO6lu7QH
-         K64O2ulQfuRhkMaN314IyQII0OfEgrQkzODS6h8wtc8CobKDrdZwrKMKak95QI7ixc
-         o7caov7A0AVGadItP313BMl75g2keZxcPYDElQJWus2X55LE3hHGI0fW0ATZkoCR1e
-         qb8Uk/uewGrNKhNrLQoGi2jC4+YX/qtepWMwRXcY9Y7d53Rt7qh9YMLiQ2gug5Im9X
-         7IysfS+wHKuPw==
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     dan.j.williams@intel.com
-Cc:     x86@kernel.org, nvdimm@lists.linux.dev, linux-cxl@vger.kernel.org,
-        peterz@infradead.org, bp@alien8.de, akpm@linux-foundation.org,
-        dave.jiang@intel.com, Jonathan.Cameron@huawei.com,
-        vishal.l.verma@intel.com, ira.weiny@intel.com,
-        a.manzanares@samsung.com, linux-kernel@vger.kernel.org,
-        dave@stgolabs.net
-Subject: [PATCH -next] memregion: Add arch_flush_memregion() interface
-Date:   Mon, 29 Aug 2022 14:29:18 -0700
-Message-Id: <20220829212918.4039240-1-dave@stgolabs.net>
-X-Mailer: git-send-email 2.37.2
+        by p1lg14878.it.hpe.com (Postfix) with ESMTPS id 0254ED283;
+        Mon, 29 Aug 2022 21:38:04 +0000 (UTC)
+Received: from p1wg14926.americas.hpqcorp.net (10.119.18.115) by
+ p1wg14923.americas.hpqcorp.net (10.119.18.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 29 Aug 2022 09:38:03 -1200
+Received: from P1WG14918.americas.hpqcorp.net (16.230.19.121) by
+ p1wg14926.americas.hpqcorp.net (10.119.18.115) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15
+ via Frontend Transport; Mon, 29 Aug 2022 09:38:03 -1200
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (192.58.206.38)
+ by edge.it.hpe.com (16.230.19.121) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 29 Aug 2022 21:38:03 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V5YUPvW2K1JstUzLHqsbiQ2IqvVLKPlPD7CaujK/W1eMMJLG0vbuYAAB7QQHcjgX+Ol/g38kuN2HNcJLUA36vsOsgq+KJCAW+HwYYF04tSBXd/aHzX4jVik8phQGjG7U/q4aphzLH+axkcM8anF5A0tQCXqt130Q6BuEvERaVQqb49Ky47md2QwZ+YzZhnZlZIadNtSWUfzW7FWkLBS2H2OysXTFZFkI6Xf21iCcd1C8C2Mlfa/TMVJPg4Z8KPza+KkaexoG5G7S3pgwEYnBTkyIoMvG+IX1UQeGjLeiwTMHbBOGRom1jL5hoBCMfw/lKp2S7qBPUUnHHcm69cEdFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CpVq0+cJCMFWSpE7UL4+jVLdlAXZ330ylvMcas2YE3M=;
+ b=VJGaeeqqwINQEuaiiOuhLqTdonUAOuF4N8SoQVcoRyiQY8Z3gAGivmdYOYyuB985s9fyeKc9X7NSP4SSAzK3kALXQtgeKXjxMqh76us7cO9QeMRhTbM/iUlptUQMWo5nPt9GFIPeOJdXLVjrMMYv7ZgyV6E60KH5Jxo3ZKfg5TWkavjsHHGhK1dqBoD8vAbFF6wUUG3f0L0nGqhmLy/wsZZiDX7caf3cbqmAAzfpvJVEBEQc+h7XOh6/4hq6bGY4qhs8c7SRPOHE1LsOqWI3qLremEWGaLpRwdQWIucGo9Kks6Y99xqEtnLKopFYPzRcyLnTXpyNcM7IFJJ6urTn7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
+ header.d=hpe.com; arc=none
+Received: from PH7SPRMB0012.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:510:12d::13)
+ by SA1PR84MB3142.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:806:251::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Mon, 29 Aug
+ 2022 21:37:56 +0000
+Received: from PH7SPRMB0012.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::65ee:f14a:a73a:f231]) by PH7SPRMB0012.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::65ee:f14a:a73a:f231%7]) with mapi id 15.20.5566.015; Mon, 29 Aug 2022
+ 21:37:56 +0000
+From:   "Kani, Toshi" <toshi.kani@hpe.com>
+To:     Borislav Petkov <bp@alien8.de>,
+        Yazen Ghannam <yazen.ghannam@amd.com>,
+        "Elliott, Robert (Servers)" <elliott@hpe.com>
+CC:     Jia He <justin.he@arm.com>, Len Brown <lenb@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Robert Moore <robert.moore@intel.com>,
+        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jan Luebbe <jlu@pengutronix.de>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
+        "devel@acpica.org" <devel@acpica.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Shuai Xue <xueshuai@linux.alibaba.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        "nd@arm.com" <nd@arm.com>, "Paul E. McKenney" <paulmck@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "stable@kernel.org" <stable@kernel.org>
+Subject: RE: [RESEND PATCH v3 3/9] EDAC/ghes: Make ghes_edac a proper module
+ to remove the dependency on ghes
+Thread-Topic: [RESEND PATCH v3 3/9] EDAC/ghes: Make ghes_edac a proper module
+ to remove the dependency on ghes
+Thread-Index: AQHYtj5tQS6+//pDoEmz8BwtIUrts63Bza6AgABv7ACAA9aLAIAATjaAgAAId/A=
+Date:   Mon, 29 Aug 2022 21:37:56 +0000
+Message-ID: <PH7SPRMB0012094F02A587B859AEFDF282769@PH7SPRMB0012.NAMPRD84.PROD.OUTLOOK.COM>
+References: <20220822154048.188253-1-justin.he@arm.com>
+ <20220822154048.188253-4-justin.he@arm.com>
+ <MW5PR84MB1842F7107770654C46CB0311AB759@MW5PR84MB1842.NAMPRD84.PROD.OUTLOOK.COM>
+ <YwmqKPaYtgTS4xYT@zn.tnic> <YwziYFGWyEe2/kIp@yaz-fattaah>
+ <Yw0j+5tSZXGW0gDy@nazgul.tnic>
+In-Reply-To: <Yw0j+5tSZXGW0gDy@nazgul.tnic>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e711ea25-ecbf-4203-625e-08da8a06bca3
+x-ms-traffictypediagnostic: SA1PR84MB3142:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: pozN23hq83uqEbxYmCBQIg06XW9Exj/R37P1knUOPZD3wmSu1TPZQW5QiCmX83RKPal8GKN76MQ/szwytlh7/yyOZwLSCvkSIkzJVEa0BDqW9mkrd/z2uT3fuIP3/ZGVoaCynR04ShkgIFKE2QdS6Tw8yiPGPFOobeH0/b33xKfEFRQI6D9rb956i7AgpaZLY4cSLW0HMNgeAvuDvcTqQPi1F5OpkfZn9999vJ+1SWps1O31PK/hrcHwz6mNA80t9fiaoIuPvGJtp4SxYnIphcWkbNwUe52m3+/2HKR4MRwr5rbv5AA7pbPvFWL3Z7SsRM0tMggSBQztaZ5ucoa7rJkCjEOOT7j5h+uG1xYv+YSMTzkCJNXfle55Tut4o/cYsIv0Tanw4Uur9oIE0oDY+R5cKzkHaJmdXX38a1YI9KjqeL5EvPTzoqGTwDU6hAlY3c9UuM6QRJuCCFTUiShd3xfLjuWMvUFWjhev/msUJS2Smv93/d7RiyjTnQFwGlRMvPwEiSqv8CI90bbSzjdchOwEdcjgEdcF0hnaia3rkLgiFlAF0DCRHIrl+8HGCbY/BDX5XDFpe+cD2oEfAzpvZN17DOseuszinxhd6X4aGR+43R4JLhB3Zr93RhIYf2BNx6y/dDnoxOCzBXOLFjYvPlKVsSO0BXF9Sr6ez27My5D1jn3iaN3hjx7Hxf48bv9XZv1CwGqJcV9YVxnq6TcKXZCqjPDoMB8SMdonmNAvMULWBf4asoJC3TXf3ottPZMll9oMP6+6GRrYaipw/XXmqg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7SPRMB0012.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(136003)(366004)(376002)(346002)(396003)(38070700005)(8676002)(4326008)(316002)(66946007)(66556008)(66476007)(66446008)(41300700001)(71200400001)(64756008)(110136005)(76116006)(6636002)(54906003)(8936002)(86362001)(478600001)(5660300002)(52536014)(7416002)(7406005)(82960400001)(7696005)(6506007)(53546011)(122000001)(2906002)(9686003)(26005)(38100700002)(55016003)(83380400001)(33656002)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?OWJrbjBObWR4dUlRZEpBeVgvQm5XMWJqYkQ3UXl1b0lFdEtraDdXVjB3eFlz?=
+ =?utf-8?B?NkpyU1Y5MVpvdWw4ZDlQQy9wbDhxamFtSktLMmtrVG8wbmRLUHhNR2dsVVd5?=
+ =?utf-8?B?aGhqa3pkV1dCZDZQNlRxcWREa0dpc2J6UTd2OTRQanN2TzllWDlDQWswNEJn?=
+ =?utf-8?B?YXAzeU54ZVBEY0prVGZwelFmaTdsaFFCZGlHZ0U2em55UjFlMlV2ZnJ6OG5X?=
+ =?utf-8?B?L2xONStQWStSbFYvZmJmZnNTRXBGY3ZIZWJZd2RqYVcrY2RaRUQwM0ROdGpr?=
+ =?utf-8?B?VHcrSThjTlpodDVNOTMxM1BNTE1IbXRqUEhxMmhta1UvYUZJN0FCYjF5d2RN?=
+ =?utf-8?B?ZW9XNi8xMUdpRnNvcmQ4ZWN3RzZ1azMrSlNOYjd2eVpwV3R2SEVyVkRreHpv?=
+ =?utf-8?B?K2l3QmNtZEpXeWQyZUNzRmxueDc0RVhjUWl2ZDhlTHYweWRhQUdVV2dySVF0?=
+ =?utf-8?B?Z0puV0g2b05VaFRqK2xmSmJGcUR1ZklKTjFQMWpXNnlWZkxxT2VSRFFrZ2tJ?=
+ =?utf-8?B?aU5FV1cvdmUrK1NLRDUzNEkrRERncWxrMm5HaVozSVUzUjhObjFCVzhMRW1i?=
+ =?utf-8?B?WTk0Q3RwUW5ycHh0RHZJMTNvUVYxZHQ5YTkwbXcvUGpoOTR6ei9sOVVMS0tQ?=
+ =?utf-8?B?TzBUMzZ6MzYvdnNVbG1HTW92MFpGZ29TMndxblBPSVVIMU1kZC94ZmNWUHRD?=
+ =?utf-8?B?T0QvOGNvQzVTb0hZRHFWdDg0b04vVUpNUnNYTXJwaktNNUlHb0lEMjlGUk5K?=
+ =?utf-8?B?bzdCaXVuc0FuZDk4Q0ZZMlNHeWJzdTFIei9UM3ZwWXRkdE5yQnNSbllTQjk5?=
+ =?utf-8?B?YjVta0NGL3NseVBYWG5hZGZGek1HOGhLNjc2U1QxMm5zVHRjblAxTUJyYVNP?=
+ =?utf-8?B?YzBMY0ZyMTlQREV6cmNSRnhKMWI2QnJkZHlaUmIrUFFicU9sWnRoVGVOamNj?=
+ =?utf-8?B?OVRKQkR4MVBOLzJ4cXpLKzE5UGdDcDVwZ1pQTnBNQWIwbS9oUEltNm9ZOERq?=
+ =?utf-8?B?eTdhRC9KL1dsVDZhdTVTQkVmcDBSK2p1OFpObmh0cnd0VHFBcnBGNWppS3ZK?=
+ =?utf-8?B?NDVmSTEyRUlUOE1JTlNRYTJIUVJMbEtib0xueVUzV2s2MDVXMzFIY3NsUlZq?=
+ =?utf-8?B?Z1NzSm1mYUtudUlGbkZYUG5uS3pGbUNtZG9RQ25XbytGQVc4UzVZRy94azMr?=
+ =?utf-8?B?YTU1b1Z4NEh5dXNZSmIvRnFvQWovZzhhNldOT2duV2ZFc3RhTVJsVEdsVmJL?=
+ =?utf-8?B?RUtPaXk2WkVLckx1K3BlRTVrZnFwbGpRZy9SZ1FETnM0anN2ZGt6VVRNY1ZT?=
+ =?utf-8?B?bk9WZWtjSTJnY0JEL3hsSSsyYTBoMFN1V3RpZzFYNGZ6SW9NVjgyTkFhdEIy?=
+ =?utf-8?B?bW0wcEN3OU4yMmJ1ZGZ5TXBBTlJ5RDZ6aVRabGZDTmlTbjNVRFQzdjdnZ0Nk?=
+ =?utf-8?B?NTRNWitpSXp3ZVNRYkJwUDNUekdQbi9Xd0xFUDZxS1VaZ1ZGK2RiZE9QcjVj?=
+ =?utf-8?B?dzN6WnZOcVBGWHRyRHdZbXlOWE1vMEN1ckZJZzczaFIyOWRBU1hkbXNGbEV0?=
+ =?utf-8?B?TGt5MktzM3hxUUdub2tNR1lPNzhSWlIvTjVBZU0zOVRYZVBIcEdWQVhDNU1r?=
+ =?utf-8?B?MGNNWS9XdWZKbGRUTERUcDJ5V2twY3JMdnBzcXcvZHEwZkwxOE1aVXBmVTla?=
+ =?utf-8?B?UmNkaElKU0s5QUMwNElvV1hidnVYTGN4VWpFR05uMDNtY2l5Q1N0cGQ3VXE1?=
+ =?utf-8?B?WUwxa05hK05lR3JYYitTaXhrbDAyQmJRTEJWc3dnelhZa0RNTGUwRFJ5VnU4?=
+ =?utf-8?B?bmhhSDFZakhYZktqRTFIMHNaTkhPanR3Z1hQUHJRVW8rMTVIQUJaeXF0b3Jk?=
+ =?utf-8?B?MGRzc1diRzVLaTlERFNrNzA1Uys5MUhFeEZaK3labHN6UlBSN2hJdWdNUEc0?=
+ =?utf-8?B?Y1U5cGVTdnhsZUpWQjVhd3RFZU5oemlveTdkNzdid2tqaHE2K21KUm9kT1VB?=
+ =?utf-8?B?SzZWR0RpZkZtNzlKVXV1QmxGbkJSc04yY1pFRGJTVlQyMWszc3c2VWxNNTZQ?=
+ =?utf-8?B?VFRPWTZ2Wk5zOTE5SmFVSjZsVUpxMnBzVjRxTlJoY2Vyck5hNjZGT1EyOGR5?=
+ =?utf-8?Q?XcR7llixS8Sf8thfOntvUaEYe?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7SPRMB0012.NAMPRD84.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: e711ea25-ecbf-4203-625e-08da8a06bca3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2022 21:37:56.5295
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cWJIBCrSlVSs/frFzqbCCb9P6q0s9uVS4sb1Yaz0cujTZwOWERglKL61LOqX9YC5ZeLkM73O4eDbrCJTMSyHtw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR84MB3142
+X-OriginatorOrg: hpe.com
+X-Proofpoint-GUID: 9eagZLlx0nQ1_ErQURwyYX78KBhceJR_
+X-Proofpoint-ORIG-GUID: 9eagZLlx0nQ1_ErQURwyYX78KBhceJR_
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-29_11,2022-08-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ priorityscore=1501 spamscore=0 malwarescore=0 clxscore=1015
+ mlxlogscore=600 impostorscore=0 mlxscore=0 adultscore=0 lowpriorityscore=0
+ suspectscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208290095
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With CXL security features, global CPU cache flushing nvdimm requirements
-are no longer specific to that subsystem, even beyond the scope of
-security_ops. CXL will need such semantics for features not necessarily
-limited to persistent memory.
-
-The functionality this is enabling is to be able to instantaneously
-secure erase potentially terabytes of memory at once and the kernel
-needs to be sure that none of the data from before the secure is still
-present in the cache. It is also used when unlocking a memory device
-where speculative reads and firmware accesses could have cached poison
-from before the device was unlocked.
-
-This capability is typically only used once per-boot (for unlock), or
-once per bare metal provisioning event (secure erase), like when handing
-off the system to another tenant or decommissioning a device.
-
-Users must first call arch_has_flush_memregion() to know whether this
-functionality is available on the architecture. Only enable it on x86-64
-via the wbinvd() hammer.
-
-Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
----
-
-Changes from v2 (https://lore.kernel.org/all/20220819171024.1766857-1-dave@stgolabs.net/):
-- Redid to use memregion based interfaces + VMM check on x86 (Dan)
-- Restricted the flushing to x86-64.
-
-Note: Since we still are dealing with a physical "range" at this level,
-added the spa range for nfit even though this is unused.
-
- arch/x86/Kconfig             |  1 +
- arch/x86/mm/pat/set_memory.c | 14 +++++++++++
- drivers/acpi/nfit/intel.c    | 45 ++++++++++++++++++------------------
- include/linux/memregion.h    | 25 ++++++++++++++++++++
- lib/Kconfig                  |  3 +++
- 5 files changed, 65 insertions(+), 23 deletions(-)
-
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index f9920f1341c8..594e6b6a4925 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -81,6 +81,7 @@ config X86
- 	select ARCH_HAS_KCOV			if X86_64
- 	select ARCH_HAS_MEM_ENCRYPT
- 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
-+	select ARCH_HAS_MEMREGION_INVALIDATE    if X86_64
- 	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
- 	select ARCH_HAS_PMEM_API		if X86_64
- 	select ARCH_HAS_PTE_DEVMAP		if X86_64
-diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-index 1abd5438f126..18463cb704fb 100644
---- a/arch/x86/mm/pat/set_memory.c
-+++ b/arch/x86/mm/pat/set_memory.c
-@@ -330,6 +330,20 @@ void arch_invalidate_pmem(void *addr, size_t size)
- EXPORT_SYMBOL_GPL(arch_invalidate_pmem);
- #endif
- 
-+#ifdef CONFIG_ARCH_HAS_MEMREGION_INVALIDATE
-+bool arch_has_flush_memregion(void)
-+{
-+	return !cpu_feature_enabled(X86_FEATURE_HYPERVISOR);
-+}
-+EXPORT_SYMBOL(arch_has_flush_memregion);
-+
-+void arch_flush_memregion(phys_addr_t phys, resource_size_t size)
-+{
-+	wbinvd_on_all_cpus();
-+}
-+EXPORT_SYMBOL(arch_flush_memregion);
-+#endif
-+
- static void __cpa_flush_all(void *arg)
- {
- 	unsigned long cache = (unsigned long)arg;
-diff --git a/drivers/acpi/nfit/intel.c b/drivers/acpi/nfit/intel.c
-index 8dd792a55730..32e622f51cde 100644
---- a/drivers/acpi/nfit/intel.c
-+++ b/drivers/acpi/nfit/intel.c
-@@ -3,6 +3,7 @@
- #include <linux/libnvdimm.h>
- #include <linux/ndctl.h>
- #include <linux/acpi.h>
-+#include <linux/memregion.h>
- #include <asm/smp.h>
- #include "intel.h"
- #include "nfit.h"
-@@ -190,12 +191,11 @@ static int intel_security_change_key(struct nvdimm *nvdimm,
- 	}
- }
- 
--static void nvdimm_invalidate_cache(void);
--
- static int __maybe_unused intel_security_unlock(struct nvdimm *nvdimm,
- 		const struct nvdimm_key_data *key_data)
- {
- 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
-+	struct acpi_nfit_system_address *spa = nfit_mem->spa_dcr;
- 	struct {
- 		struct nd_cmd_pkg pkg;
- 		struct nd_intel_unlock_unit cmd;
-@@ -213,6 +213,9 @@ static int __maybe_unused intel_security_unlock(struct nvdimm *nvdimm,
- 	if (!test_bit(NVDIMM_INTEL_UNLOCK_UNIT, &nfit_mem->dsm_mask))
- 		return -ENOTTY;
- 
-+	if (!arch_has_flush_memregion())
-+		return -EINVAL;
-+
- 	memcpy(nd_cmd.cmd.passphrase, key_data->data,
- 			sizeof(nd_cmd.cmd.passphrase));
- 	rc = nvdimm_ctl(nvdimm, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd), NULL);
-@@ -228,7 +231,7 @@ static int __maybe_unused intel_security_unlock(struct nvdimm *nvdimm,
- 	}
- 
- 	/* DIMM unlocked, invalidate all CPU caches before we read it */
--	nvdimm_invalidate_cache();
-+	arch_flush_memregion(spa->address, spa->length);
- 
- 	return 0;
- }
-@@ -279,6 +282,7 @@ static int __maybe_unused intel_security_erase(struct nvdimm *nvdimm,
- {
- 	int rc;
- 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
-+	struct acpi_nfit_system_address *spa = nfit_mem->spa_dcr;
- 	unsigned int cmd = ptype == NVDIMM_MASTER ?
- 		NVDIMM_INTEL_MASTER_SECURE_ERASE : NVDIMM_INTEL_SECURE_ERASE;
- 	struct {
-@@ -297,8 +301,11 @@ static int __maybe_unused intel_security_erase(struct nvdimm *nvdimm,
- 	if (!test_bit(cmd, &nfit_mem->dsm_mask))
- 		return -ENOTTY;
- 
-+	if (!arch_has_flush_memregion())
-+		return -EINVAL;
-+
- 	/* flush all cache before we erase DIMM */
--	nvdimm_invalidate_cache();
-+	arch_flush_memregion(spa->address, spa->length);
- 	memcpy(nd_cmd.cmd.passphrase, key->data,
- 			sizeof(nd_cmd.cmd.passphrase));
- 	rc = nvdimm_ctl(nvdimm, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd), NULL);
-@@ -318,7 +325,7 @@ static int __maybe_unused intel_security_erase(struct nvdimm *nvdimm,
- 	}
- 
- 	/* DIMM erased, invalidate all CPU caches before we read it */
--	nvdimm_invalidate_cache();
-+	arch_flush_memregion(spa->address, spa->length);
- 	return 0;
- }
- 
-@@ -326,6 +333,7 @@ static int __maybe_unused intel_security_query_overwrite(struct nvdimm *nvdimm)
- {
- 	int rc;
- 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
-+	struct acpi_nfit_system_address *spa = nfit_mem->spa_dcr;
- 	struct {
- 		struct nd_cmd_pkg pkg;
- 		struct nd_intel_query_overwrite cmd;
-@@ -341,6 +349,9 @@ static int __maybe_unused intel_security_query_overwrite(struct nvdimm *nvdimm)
- 	if (!test_bit(NVDIMM_INTEL_QUERY_OVERWRITE, &nfit_mem->dsm_mask))
- 		return -ENOTTY;
- 
-+	if (!arch_has_flush_memregion())
-+		return -EINVAL;
-+
- 	rc = nvdimm_ctl(nvdimm, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd), NULL);
- 	if (rc < 0)
- 		return rc;
-@@ -355,7 +366,7 @@ static int __maybe_unused intel_security_query_overwrite(struct nvdimm *nvdimm)
- 	}
- 
- 	/* flush all cache before we make the nvdimms available */
--	nvdimm_invalidate_cache();
-+	arch_flush_memregion(spa->address, spa->length);
- 	return 0;
- }
- 
-@@ -364,6 +375,7 @@ static int __maybe_unused intel_security_overwrite(struct nvdimm *nvdimm,
- {
- 	int rc;
- 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
-+	struct acpi_nfit_system_address *spa = nfit_mem->spa_dcr;
- 	struct {
- 		struct nd_cmd_pkg pkg;
- 		struct nd_intel_overwrite cmd;
-@@ -380,8 +392,11 @@ static int __maybe_unused intel_security_overwrite(struct nvdimm *nvdimm,
- 	if (!test_bit(NVDIMM_INTEL_OVERWRITE, &nfit_mem->dsm_mask))
- 		return -ENOTTY;
- 
-+	if (!arch_has_flush_memregion())
-+		return -EINVAL;
-+
- 	/* flush all cache before we erase DIMM */
--	nvdimm_invalidate_cache();
-+	arch_flush_memregion(spa->address, spa->length);
- 	memcpy(nd_cmd.cmd.passphrase, nkey->data,
- 			sizeof(nd_cmd.cmd.passphrase));
- 	rc = nvdimm_ctl(nvdimm, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd), NULL);
-@@ -401,22 +416,6 @@ static int __maybe_unused intel_security_overwrite(struct nvdimm *nvdimm,
- 	}
- }
- 
--/*
-- * TODO: define a cross arch wbinvd equivalent when/if
-- * NVDIMM_FAMILY_INTEL command support arrives on another arch.
-- */
--#ifdef CONFIG_X86
--static void nvdimm_invalidate_cache(void)
--{
--	wbinvd_on_all_cpus();
--}
--#else
--static void nvdimm_invalidate_cache(void)
--{
--	WARN_ON_ONCE("cache invalidation required after unlock\n");
--}
--#endif
--
- static const struct nvdimm_security_ops __intel_security_ops = {
- 	.get_flags = intel_security_flags,
- 	.freeze = intel_security_freeze,
-diff --git a/include/linux/memregion.h b/include/linux/memregion.h
-index c04c4fd2e209..c35201c0696f 100644
---- a/include/linux/memregion.h
-+++ b/include/linux/memregion.h
-@@ -20,4 +20,29 @@ static inline void memregion_free(int id)
- {
- }
- #endif
-+
-+/*
-+ * Device memory technologies like NVDIMM and CXL have events like
-+ * secure erase and dynamic region provision that can invalidate an
-+ * entire physical memory address range at once. Limit that
-+ * functionality to architectures that have an efficient way to
-+ * writeback and invalidate potentially terabytes of memory at once.
-+ *
-+ * To ensure this, users must first call arch_has_flush_memregion()
-+ * before anything, to verify the operation is feasible.
-+ */
-+#ifdef CONFIG_ARCH_HAS_MEMREGION_INVALIDATE
-+void arch_flush_memregion(phys_addr_t phys, resource_size_t size);
-+bool arch_has_flush_memregion(void);
-+#else
-+static inline bool arch_has_flush_memregion(void)
-+{
-+       return false;
-+}
-+static inline void arch_flush_memregion(phys_addr_t phys, resource_size_t size)
-+{
-+	WARN_ON_ONCE("cache invalidation required");
-+}
-+#endif
-+
- #endif /* _MEMREGION_H_ */
-diff --git a/lib/Kconfig b/lib/Kconfig
-index dc1ab2ed1dc6..8319e7731e7b 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -662,6 +662,9 @@ config ARCH_HAS_PMEM_API
- config MEMREGION
- 	bool
- 
-+config ARCH_HAS_MEMREGION_INVALIDATE
-+       bool
-+
- config ARCH_HAS_MEMREMAP_COMPAT_ALIGN
- 	bool
- 
--- 
-2.37.2
-
+T24gTW9uZGF5LCBBdWd1c3QgMjksIDIwMjIgMjozOSBQTSwgQm9yaXNsYXYgUGV0a292IHdyb3Rl
+Og0KPiBPbiBNb24sIEF1ZyAyOSwgMjAyMiBhdCAwMzo1OToyOFBNICswMDAwLCBZYXplbiBHaGFu
+bmFtIHdyb3RlOg0KPiA+IEdIRVMgY2FuIGJlIHVzZWQgZm9yIG1vcmUgdGhhbiBqdXN0IG1lbW9y
+eSBlcnJvcnMuIFRoZXJlIGFyZSBwbGF0Zm9ybXMgd2hlcmUNCj4gPiBtZW1vcnkgZXJyb3JzIGFy
+ZSBoYW5kbGVkIHRocm91Z2ggdGhlIE9TIE1DQSwgYW5kIFBDSWUgQUVSIGVycm9ycyBhcmUgaGFu
+ZGxlZA0KPiA+IHRocm91Z2ggdGhlIEZXLCBmb3IgZXhhbXBsZS4NCj4gPg0KPiA+IElzIHRoZSBI
+UEUgU2VydmVyIHBsYXRmb3JtIGd1YXJhbnRlZWQgdG8gYWx3YXlzIHByb3ZpZGUgbWVtb3J5IGVy
+cm9ycyB0aHJvdWdoDQo+ID4gR0hFUyByZWdhcmRsZXNzIG9mIENQVSB2ZW5kb3IvYXJjaGl0ZWN0
+dXJlPw0KPiANCj4gL21lIGxvb2tzIGluIHRoZSBkaXJlY3Rpb24gb2YgSFBFIGZvbGtzLi4uDQoN
+ClRoZSBIUEUgcGxhdGZvcm1zIGVuYWJsZWQgYnkgdGhlIHBsYXRmb3JtIGNoZWNrIGFyZSBndWFy
+YW50ZWVkIHRvIGJlIG9wZXJhdGluZw0KaW4gRlcgRmlyc3QgbW9kZSwgd2hpY2ggRlcgZGVjaWRl
+cyB3aGljaCBlcnJvciB0byByZXBvcnQgdG8gdGhlIE9TIHZpYSBHSEVTIG9yIA0Kb3RoZXIgbWVh
+bnMuICBUaGlzIG1heSBpbmNsdWRlIG11bHRpcGxlIENQVSB2ZW5kb3JzL2FyY2hpdGVjdHVyZS4N
+Ck9uIHN1Y2ggcGxhdGZvcm1zLCBmb3IgaW5zdGFuY2UsIEZXIGRvZXMgbm90IHJlcG9ydCBjb3Jy
+ZWN0ZWQgZXJyb3JzIHRvIHRoZSBPUyANCnNpbmNlIEZXIG1hbmFnZXMgdGhlIHRocmVzaG9sZCAm
+IEZSVSBub3RpZmljYXRpb24uICBDaGlwc2V0LXNwZWNpZmljIGVkYWMgZHJpdmVycywNCmRlc2ln
+bmVkIGZvciBPUyBGaXJzdCBtb2RlLCBpcyBub3QgbmVjZXNzYXJ5IG9uIHN1Y2ggcGxhdGZvcm1z
+LiAgRGlzYWJsaW5nIHN1Y2ggT1MNCkZpcnN0IGVkYWMgZHJpdmVyIGlzIGFjaGlldmVkIGJ5IGVu
+YWJsaW5nIGdoZXNfZWRhYyBhcyB3ZWxsLg0KDQpPUyBNQ0EgaXMgc3RpbGwgdXNlZCBmb3IgdW5j
+b3JyZWN0ZWQgZXJyb3JzLCBzdWNoIGFzIFNSQVIgKHNvZnR3YXJlIHJlY292ZXJhYmxlDQphY3Rp
+b24gcmVxdWlyZWQpIHdoaWNoIHJlcXVpcmVzIHJlY292ZXJ5IGFjdGlvbiBzeW5jaHJvbm91cyB0
+byB0aGUgZXhlY3V0aW9uIHZpYQ0KTUNFIHNpZ25hbGxpbmcuDQoNClRvc2hpIA0K
