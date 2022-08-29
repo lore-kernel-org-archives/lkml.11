@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B852ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C769ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:34:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232647AbiH2Lep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:34:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
+        id S232663AbiH2Les (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232588AbiH2Lck (ORCPT
+        with ESMTP id S232557AbiH2Ld1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:32:40 -0400
+        Mon, 29 Aug 2022 07:33:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AB36D9EC;
-        Mon, 29 Aug 2022 04:19:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AEB17C762;
+        Mon, 29 Aug 2022 04:19:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8307B80FAB;
-        Mon, 29 Aug 2022 11:18:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 432DBC433C1;
-        Mon, 29 Aug 2022 11:18:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56F9EB80FA8;
+        Mon, 29 Aug 2022 11:19:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA606C433C1;
+        Mon, 29 Aug 2022 11:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771936;
-        bh=yT8I2W7hVd5VWJwSU0eAde5EYlxeabIKbfgthzQcvL8=;
+        s=korg; t=1661771955;
+        bh=Jxix6kCwkiFkX3V8J1xFG7Lljl6Yd+X7PX6y7zWZUOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BrmYiMBNLrt5678ibNBDx8iE/old+9jGZT0wqX0MEXr9Yw/Yc+hLOBnn3y2r5GrKv
-         07ZI6046Uhk7Bj9Hc7nrrPCpkkwIHkmoQvUzZhQu04IrePA5OEHChVkxaj2uzoyrs6
-         oY5YD9RnFzBppXYKrqCmNGuGVUr1RzA79PrTpIZA=
+        b=Fe2XzlJOHf6bVlXSosts/2DtRh81YEceL0sOJcyH0hbIVScLtkcXiw0wJnIJa0rKA
+         uCr36vmOipVTjsWJ8xnrkAc4HBrX/AxUHoblQyVv2MzypCZt0kySqeg6kgSYz4OtZk
+         AVGo14rCetyxEZhmS+/he4kJUNCnEbsa9FH1yzj8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.19 145/158] perf/x86/intel/ds: Fix precise store latency handling
-Date:   Mon, 29 Aug 2022 12:59:55 +0200
-Message-Id: <20220829105815.183935667@linuxfoundation.org>
+        stable@vger.kernel.org, "Paulo Alcantara (SUSE)" <pc@cjr.nz>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.19 119/158] cifs: skip extra NULL byte in filenames
+Date:   Mon, 29 Aug 2022 12:59:29 +0200
+Message-Id: <20220829105814.102356825@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -48,52 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+From: Paulo Alcantara <pc@cjr.nz>
 
-commit d4bdb0bebc5ba3299d74f123c782d99cd4e25c49 upstream.
+commit a1d2eb51f0a33c28f5399a1610e66b3fbd24e884 upstream.
 
-With the existing code in store_latency_data(), the memory operation (mem_op)
-returned to the user is always OP_LOAD where in fact, it should be OP_STORE.
-This comes from the fact that the function is simply grabbing the information
-from a data source map which covers only load accesses. Intel 12th gen CPU
-offers precise store sampling that captures both the data source and latency.
-Therefore it can use the data source mapping table but must override the
-memory operation to reflect stores instead of loads.
+Since commit:
+ cifs: alloc_path_with_tree_prefix: do not append sep. if the path is empty
+alloc_path_with_tree_prefix() function was no longer including the
+trailing separator when @path is empty, although @out_len was still
+assuming a path separator thus adding an extra byte to the final
+filename.
 
-Fixes: 61b985e3e775 ("perf/x86/intel: Add perf core PMU support for Sapphire Rapids")
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220818054613.1548130-1-eranian@google.com
+This has caused mount issues in some Synology servers due to the extra
+NULL byte in filenames when sending SMB2_CREATE requests with
+SMB2_FLAGS_DFS_OPERATIONS set.
+
+Fix this by checking if @path is not empty and then add extra byte for
+separator.  Also, do not include any trailing NULL bytes in filename
+as MS-SMB2 requires it to be 8-byte aligned and not NULL terminated.
+
+Cc: stable@vger.kernel.org
+Fixes: 7eacba3b00a3 ("cifs: alloc_path_with_tree_prefix: do not append sep. if the path is empty")
+Signed-off-by: Paulo Alcantara (SUSE) <pc@cjr.nz>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/ds.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ fs/cifs/smb2pdu.c |   16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
---- a/arch/x86/events/intel/ds.c
-+++ b/arch/x86/events/intel/ds.c
-@@ -291,6 +291,7 @@ static u64 load_latency_data(struct perf
- static u64 store_latency_data(struct perf_event *event, u64 status)
- {
- 	union intel_x86_pebs_dse dse;
-+	union perf_mem_data_src src;
- 	u64 val;
+--- a/fs/cifs/smb2pdu.c
++++ b/fs/cifs/smb2pdu.c
+@@ -2571,19 +2571,15 @@ alloc_path_with_tree_prefix(__le16 **out
  
- 	dse.val = status;
-@@ -304,7 +305,14 @@ static u64 store_latency_data(struct per
+ 	path_len = UniStrnlen((wchar_t *)path, PATH_MAX);
  
- 	val |= P(BLK, NA);
+-	/*
+-	 * make room for one path separator between the treename and
+-	 * path
+-	 */
+-	*out_len = treename_len + 1 + path_len;
++	/* make room for one path separator only if @path isn't empty */
++	*out_len = treename_len + (path[0] ? 1 : 0) + path_len;
  
--	return val;
-+	/*
-+	 * the pebs_data_source table is only for loads
-+	 * so override the mem_op to say STORE instead
-+	 */
-+	src.val = val;
-+	src.mem_op = P(OP,STORE);
-+
-+	return src.val;
- }
+ 	/*
+-	 * final path needs to be null-terminated UTF16 with a
+-	 * size aligned to 8
++	 * final path needs to be 8-byte aligned as specified in
++	 * MS-SMB2 2.2.13 SMB2 CREATE Request.
+ 	 */
+-
+-	*out_size = roundup((*out_len+1)*2, 8);
+-	*out_path = kzalloc(*out_size, GFP_KERNEL);
++	*out_size = roundup(*out_len * sizeof(__le16), 8);
++	*out_path = kzalloc(*out_size + sizeof(__le16) /* null */, GFP_KERNEL);
+ 	if (!*out_path)
+ 		return -ENOMEM;
  
- struct pebs_record_core {
 
 
