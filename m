@@ -2,142 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A62ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 03:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF61BC0502E
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 03:16:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229884AbiH2DPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 23:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51750 "EHLO
+        id S229866AbiH2DQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 23:16:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbiH2DPC (ORCPT
+        with ESMTP id S229839AbiH2DQA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 23:15:02 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C068C60DF
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 20:14:56 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y3so13146158ejc.1
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 20:14:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=czsEz3uMSDGtuN3iX+1gBJ3GgnTp4SI1Njv08bLGbUU=;
-        b=cPVVHSrIrAu2fehaiXFO0NP7AV/D8IKrlaMiQe+6eE9t8kVdLLqit3Ns43ao5yryMU
-         bM3fOL+yiO5KsBC9cVh11Rmxm0oDVgV9e8FV3PDtt1F3rBjNB5Hi9jvvZ95lMWPmJgHo
-         BzpLC+c2RDhxf774/fKbqWzoqlAZzsnK+vWK4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=czsEz3uMSDGtuN3iX+1gBJ3GgnTp4SI1Njv08bLGbUU=;
-        b=maR2v60X1gJaDH57Bk0FbZT2AMgnBNtEl71yvuW3Tesol1eju+5dGWYuyafOzS7ALq
-         IJzR7oZwfyEiO3b37yhhCGkeu7dTACnFJXks824SDdraG8YdoddEAvLsuGTGZ63HggJS
-         mMMSQAUjdtq7l9xoKel6VjRu5D+d8ng4M6JZf8fZxCNlX3y3GgzNEOI6NMXcceivl66u
-         wxzQGKt71rIOwbpzurRE7QcUUis8NZWg6BcNA2UuGYhW3t2l8kkoLsN2XOdAZIbzHhT0
-         Uvgvgc9Ih1eUx1J482lC3IcveQ6xt79DREPh/cOpDd4Mk8tIHD8dsRx/Gzg4R873FEHl
-         xkOA==
-X-Gm-Message-State: ACgBeo09jhDa99Tq9tEVC3ADierte06JNmx9MrVbySnmlQvT1UEuVDuE
-        ZLWHd6r8URQmI0J0VcEcA3N+HMeAIdLma+Zg
-X-Google-Smtp-Source: AA6agR7WCpZwUOM6oX3Kp9NLDW/LGhbW4btFDKyE4oW3uBRZbL+FYq4a3FjnY1A3oJ9AwjgLjK/2cA==
-X-Received: by 2002:a17:907:2e19:b0:730:acf0:4921 with SMTP id ig25-20020a1709072e1900b00730acf04921mr11505230ejc.416.1661742895071;
-        Sun, 28 Aug 2022 20:14:55 -0700 (PDT)
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
-        by smtp.gmail.com with ESMTPSA id s14-20020a1709067b8e00b0073dc60271b2sm3957678ejo.32.2022.08.28.20.14.54
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Aug 2022 20:14:54 -0700 (PDT)
-Received: by mail-wm1-f45.google.com with SMTP id v7-20020a1cac07000000b003a6062a4f81so7467780wme.1
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 20:14:54 -0700 (PDT)
-X-Received: by 2002:a7b:c399:0:b0:3a5:f3fb:85e0 with SMTP id
- s25-20020a7bc399000000b003a5f3fb85e0mr5607006wmj.38.1661742495614; Sun, 28
- Aug 2022 20:08:15 -0700 (PDT)
+        Sun, 28 Aug 2022 23:16:00 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C0217E0D;
+        Sun, 28 Aug 2022 20:15:59 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 347CC3375C;
+        Mon, 29 Aug 2022 03:15:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661742958; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tBBKmXPZz0d24U2B8Ubl7UW8mvxOKfSvEgiuL0CK338=;
+        b=0oJkLg4Nrt9d2wio0Olr2XkavG7NvjmNYIas8bCPG97ZpoqWvbjIZx9U+UVlyvE1hBpF0r
+        +eqoCmq2pSKWaQFkDTbm+CbbmOFwIDjmR8viS0uUwPVMXJZp63GJu1LZ/l2SmU7gm7rcc2
+        BUFZxB9Lo/V0d8on+gDO1wzZT5YIc34=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661742958;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tBBKmXPZz0d24U2B8Ubl7UW8mvxOKfSvEgiuL0CK338=;
+        b=tno6QRbZJDTSXLrCSGOiNlz0HGCByoVPljOzZbN6a6xOnbQ0/k3wih7Ww2XWL5n7zByj7b
+        eB/lCufqFM/LExDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A51DF133A6;
+        Mon, 29 Aug 2022 03:15:55 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id FcQpGGsvDGNrIQAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 29 Aug 2022 03:15:55 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-References: <20220824163100.224449-1-david@redhat.com> <20220824163100.224449-2-david@redhat.com>
- <0db131cf-013e-6f0e-c90b-5c1e840d869c@nvidia.com> <ea380cf0-acda-aaba-fb63-2834da91b66b@redhat.com>
- <CALu+AoThhou7z+JCyv44AxGWDLDt2b7h0W6wcKRsJyLvSR1iQA@mail.gmail.com>
- <fe7aee66-d9f7-e472-a13f-e4c5aa176cca@redhat.com> <CALu+AoRwVfr=9KabOLUQigWwCtP5RLQ1YaKbG75ZVM9E-bW2ZQ@mail.gmail.com>
-In-Reply-To: <CALu+AoRwVfr=9KabOLUQigWwCtP5RLQ1YaKbG75ZVM9E-bW2ZQ@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 28 Aug 2022 20:07:59 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wit-DmhMfQErY29JSPjFgebx_Ld+pnerc4J2Ag990WwAA@mail.gmail.com>
-Message-ID: <CAHk-=wit-DmhMfQErY29JSPjFgebx_Ld+pnerc4J2Ag990WwAA@mail.gmail.com>
-Subject: Re: [PATCH RFC 1/2] coding-style.rst: document BUG() and WARN() rules
- ("do not crash the kernel")
-To:     Dave Young <dyoung@redhat.com>
-Cc:     David Hildenbrand <david@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-doc@vger.kernel.org, kexec@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        David Laight <David.Laight@aculab.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andy Whitcroft <apw@canonical.com>,
-        Joe Perches <joe@perches.com>,
-        Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Stephen Johnston <sjohnsto@redhat.com>,
-        Prarit Bhargava <prarit@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+From:   "NeilBrown" <neilb@suse.de>
+To:     "Al Viro" <viro@zeniv.linux.org.uk>
+Cc:     "Linus Torvalds" <torvalds@linux-foundation.org>,
+        "Daire Byrne" <daire@dneg.com>,
+        "Trond Myklebust" <trond.myklebust@hammerspace.com>,
+        "Chuck Lever" <chuck.lever@oracle.com>,
+        "Linux NFS Mailing List" <linux-nfs@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        "LKML" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 09/10] VFS: add LOOKUP_SILLY_RENAME
+In-reply-to: <YwlxiCt3TvzdEhUl@ZenIV>
+References: <166147828344.25420.13834885828450967910.stgit@noble.brown>,
+ <166147984377.25420.5747334898411663007.stgit@noble.brown>,
+ <YwlxiCt3TvzdEhUl@ZenIV>
+Date:   Mon, 29 Aug 2022 13:15:52 +1000
+Message-id: <166174295243.27490.1036858614514220411@noble.neil.brown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 6:56 PM Dave Young <dyoung@redhat.com> wrote:
->
-> > John mentioned PANIC_ON().
->
-> I would vote for PANIC_ON(), it sounds like a good idea, because
-> BUG_ON() is not obvious and, PANIC_ON() can alert the code author that
-> this will cause a kernel panic and one will be more careful before
-> using it.
+On Sat, 27 Aug 2022, Al Viro wrote:
+> On Fri, Aug 26, 2022 at 12:10:43PM +1000, NeilBrown wrote:
+> > When performing a "silly rename" to avoid removing a file that is still
+> > open, we need to perform a lookup in a directory that is already locked.
+> > 
+> > In order to allow common functions to be used for this lookup, introduce
+> > LOOKUP_SILLY_RENAME which affirms that the directory is already locked
+> > and that the vfsmnt is already writable.
+> > 
+> > When LOOKUP_SILLY_RENAME is set, path->mnt can be NULL.  As
+> > i_op->rename() doesn't make the vfsmnt available, this is unavoidable.
+> > So we ensure that a NULL ->mnt isn't fatal.
+> 
+> This one is really disgusting.  Flag-dependent locking is a pretty much
+> guaranteed source of PITA and "magical" struct path is, again, asking for
+> trouble.
+> 
+> You seem to be trying for simpler call graph and you end up paying with
+> control flow that is much harder to reason about.
+> 
+It was mostly about avoiding code duplication.
+I'll see if I can find a cleaner way.
 
-People, NO.
-
-We're trying to get rid of BUG_ON() because it kills the machine.
-
-Not replace it with another bogus thing that kills a machine.
-
-So no PANIC_ON(). We used to have "panic()" many many years ago, we
-got rid of it. We're not re-introducing it.
-
-People who want to panic on warnings can do so. WARN_ON() _becomes_
-PANIC for those people. But those people are the "we have a million
-machines, we want to just fail things on any sign of trouble, and we
-have MIS people who can look at the logs".
-
-And it's not like we need to get rid of _all_ BUG_ON() cases. If you
-have a "this is major internal corruption, there's no way we can
-continue", then BUG_ON() is appropriate. It will try to kill that
-process and try to keep the machine running, and again, the kind of
-people who don't care about one machine (because - again - they have
-millions of them) can just turn that into a panic-and-reboot
-situation.
-
-But the kind of people for whom the machine they are on IS THEIR ONLY
-MACHINE - whether it be a workstation, a laptop, or a cellphone -
-there is absolutely zero situation where "let's just kill the machine"
-is *EVER* approproate. Even a BUG_ON() will try to continue as well as
-it can after killing the current thread, but it's going to be iffy,
-because locking etc.
-
-So WARN_ON_ONCE() is the thing to aim for. BUG_ON() is the thing for
-"oops, I really don't know what to do, and I physically *cannot*
-continue" (and that is *not* "I'm too lazy to do error handling").
-
-There is no room for PANIC. None. Ever.
-
-The only thing there is are "I don't care about this machine because
-I've got 999,999 other machines, so I'd rather take one machine
-offline for analysis".
-
-Understand? The "should I panic and reboot" is fundamentally not about
-the code, and it's not a choice that the kernel code gets to make.
-It's purely about the choice of the person maintaining the machine.
-
-As a kernel developer, you do not EVER get to say "panic" or "kill the machine".
-
-End of story.
-
-                 Linus
+Thanks,
+NeilBrown
