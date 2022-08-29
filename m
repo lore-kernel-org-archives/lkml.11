@@ -2,92 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3307ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B69ABECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:24:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbiH2MXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35750 "EHLO
+        id S231428AbiH2MYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:24:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230136AbiH2MXO (ORCPT
+        with ESMTP id S230222AbiH2MXv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:23:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF871A8301;
-        Mon, 29 Aug 2022 05:07:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E749B80DD5;
-        Mon, 29 Aug 2022 12:06:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD369C433D6;
-        Mon, 29 Aug 2022 12:06:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661774808;
-        bh=r910AOmdtzWh1T2nXLlZAY+q5vomdymJKiLIiX4kBxI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sufZFZ5DzLcRGkjvc6sMF8qxrF7bGVWN8CVZrBEX1dOcjQKvBCyfC7tqXEQWKPERV
-         IqQ1/3VxVndXTW5AzIMHYdrmcLxkJboY7iRt7+C7EI2qsj69MtcHNrCv4ekDOfl8gP
-         V2sroHLcenKcyK9NJc2wZgp60mRjpEFxHzHd74ApPiYGxNPgWM73hgfA5DzDmo2VdZ
-         6sNnrYjRNHzCyxloQyU3xiXL1WO3sAt9PLhAgIHjkatSghIOWLguVeg0JuYGxtrkep
-         Nw2CUr3NagEKUnpat68AYXoL2S3tFRL6Emeopu0eg2VqNdPv+ch2T5PvEOEh8gPYtI
-         GU33Rdgbg9LpA==
-Date:   Mon, 29 Aug 2022 15:06:43 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jinpu Wang <jinpu.wang@ionos.com>
-Cc:     jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] RDMA: dma-mapping: Return an unsigned int from
- ib_dma_map_sg{,_attrs}
-Message-ID: <Ywyr0+b350SZrznw@unreal>
-References: <20220826095615.74328-1-jinpu.wang@ionos.com>
- <20220826095615.74328-3-jinpu.wang@ionos.com>
- <YwtM+/nB1F6p1Ey3@unreal>
- <CAMGffEmffkW0fHrjx84gQ6FnWuwriRUg=HSdwzU4W_sZLdiT7g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMGffEmffkW0fHrjx84gQ6FnWuwriRUg=HSdwzU4W_sZLdiT7g@mail.gmail.com>
+        Mon, 29 Aug 2022 08:23:51 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06318A7AB4;
+        Mon, 29 Aug 2022 05:08:19 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 9CBAE1E80D5E;
+        Mon, 29 Aug 2022 19:09:05 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id baIy2p6apqZl; Mon, 29 Aug 2022 19:09:02 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 0D4FF1E80D59;
+        Mon, 29 Aug 2022 19:09:02 +0800 (CST)
+From:   Li Qiong <liqiong@nfschina.com>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yu Zhe <yuzhe@nfschina.com>,
+        Li Qiong <liqiong@nfschina.com>
+Subject: [PATCH v2] wifi: brcmfmac: add error code in brcmf_notify_sched_scan_results()
+Date:   Mon, 29 Aug 2022 19:12:56 +0800
+Message-Id: <20220829111256.21923-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20220829065831.14023-1-liqiong@nfschina.com>
+References: <20220829065831.14023-1-liqiong@nfschina.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 11:40:40AM +0200, Jinpu Wang wrote:
-> On Sun, Aug 28, 2022 at 1:09 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Fri, Aug 26, 2022 at 11:56:15AM +0200, Jack Wang wrote:
-> > > Following 2a047e0662ae ("dma-mapping: return an unsigned int from dma_map_sg{,_attrs}")
-> > > change the return value of ib_dma_map_sg{,attrs} to unsigned int.
-> > >
-> > > Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> > > Cc: Leon Romanovsky <leon@kernel.org>
-> > > Cc: Christoph Hellwig <hch@lst.de>
-> > > Cc: linux-rdma@vger.kernel.org
-> > > Cc: linux-kernel@vger.kernel.org
-> > >
-> > > Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
-> > > ---
-> > >  drivers/infiniband/core/device.c | 2 +-
-> > >  include/rdma/ib_verbs.h          | 6 +++---
-> > >  2 files changed, 4 insertions(+), 4 deletions(-)
-> >
-> > You forgot to change ib_dma_map_sgtable_attrs() and various
-> > ib_dma_map_sg*() callers.
-> No, they are different.
-> ib_dma_map_sgtable_attrs and dma_map_sgtable return negative on errors.
+The err code is 0 at the first two "out_err" paths, add error code
+'-EINVAL' for these error paths.
 
-It is not the point. You changed ib_dma_virt_map_sg() to be unsigned,
-so now the following lines are not correct:
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+---
+v1->v2:
+- Modify subject.
+- Resend patch and CC to linux-wireless.
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-  4138         int nents;
-  4139
-  4140         if (ib_uses_virt_dma(dev)) {
-  4141                 nents = ib_dma_virt_map_sg(dev, sgt->sgl, sgt->orig_nents);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index db45da33adfd..b965649bb0e4 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -3553,6 +3553,7 @@ brcmf_notify_sched_scan_results(struct brcmf_if *ifp,
+ 	WARN_ON(status != BRCMF_PNO_SCAN_COMPLETE);
+ 	brcmf_dbg(SCAN, "PFN NET FOUND event. count: %d\n", result_count);
+ 	if (!result_count) {
++		err = -EINVAL;
+ 		bphy_err(drvr, "FALSE PNO Event. (pfn_count == 0)\n");
+ 		goto out_err;
+ 	}
+@@ -3560,6 +3561,7 @@ brcmf_notify_sched_scan_results(struct brcmf_if *ifp,
+ 	netinfo_start = brcmf_get_netinfo_array(pfn_result);
+ 	datalen = e->datalen - ((void *)netinfo_start - (void *)pfn_result);
+ 	if (datalen < result_count * sizeof(*netinfo)) {
++		err = -EINVAL;
+ 		bphy_err(drvr, "insufficient event data\n");
+ 		goto out_err;
+ 	}
+-- 
+2.11.0
 
-"int nents" should be changed to "unsigned int".
-
-Thanks
-
-> >
-> > Thanks
-> Thanks!
