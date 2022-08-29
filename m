@@ -2,74 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7535ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A62EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbiH2O0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51664 "EHLO
+        id S229597AbiH2O0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:26:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiH2O0L (ORCPT
+        with ESMTP id S229530AbiH2O0i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:26:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8403C7EFCB;
-        Mon, 29 Aug 2022 07:26:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4F5AB810A1;
-        Mon, 29 Aug 2022 14:26:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61C11C433D6;
-        Mon, 29 Aug 2022 14:26:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661783162;
-        bh=9eUkVvrgSAAseCe5J1s4E5xEhEYSsVSGWWJ+TQD8XI0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fnbghB92BQX5Z6taA4jfSnowberbx9YEDGfWynLF2rlwKdzG02MJ7UVVH0y8Qy2Et
-         G+As1QyMIDpxhPHoN9Fk4c9CdcX4U4ULcTBUH4BqAOMwsNm6ecmZsBppojc59ATuBl
-         6QQ5pWBULvEHuspMe4AXD6bwlbQUX7eSoCJgtQR8l/GI6ZLjpjOZeGhemGpADOun9z
-         Bj5Cp/WJJEtci+a7jRWXzDgucHkD3SWIxDf0RaTZz/SvTDF1UFtk94v1gJciaT1QnB
-         H3FrqB6AXIVOuQNhZ0izi6dSff0rkeSlrp1bGaPNfz0pl5iDpQnpns04r5ZOV8bhqM
-         pdKsUMn8+HnNg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oSfiM-00079t-LG; Mon, 29 Aug 2022 16:26:10 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Radisson97@web.de, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH] USB: serial: cp210x: add Decagon UCA device id
-Date:   Mon, 29 Aug 2022 16:25:50 +0200
-Message-Id: <20220829142550.27505-1-johan@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Mon, 29 Aug 2022 10:26:38 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2D68000C;
+        Mon, 29 Aug 2022 07:26:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661783197; x=1693319197;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FyvJKZ/FWxFaZvEWDEmNEu+M3JS/Cae8gERyT2MCqIY=;
+  b=N5yb8Z85DEF0u3951mrfp5fvjPOAECwfjaN+J0VuS2gJ3Xo52tmIxGMz
+   mSBC8u1Gsly5LIm5b0QJQsdv5R5h4kCSHJ2nV3ABJ5WP3IODIFCreQ/2n
+   jEaD6zhdTHbjp2ZuVcWJ8GjFx5bmzf+f6rEQPa2b8c/GuEMnSdqllsXaz
+   WZ6Hk86gEf4qgzgEvkN2cRBY73/EgQomwgn0VVjg/6RTJ3viBNKGQKN25
+   1/9GcdG2Mz1SiPACloIuLFn3IHAq9z1hyquEaWuuhIQEoojBlpTGK6ech
+   DDGH8Zux2TQrFdqO8DOphMKOf6NbffZDvdloCRIGepVijZJMCu1EWOxn1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="358868116"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="358868116"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 07:24:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="753644690"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 29 Aug 2022 07:24:14 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 29 Aug 2022 17:24:13 +0300
+Date:   Mon, 29 Aug 2022 17:24:13 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     cgel.zte@gmail.com
+Cc:     linux@roeck-us.net, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xupanda <xu.panda@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH linux-next v3] usb: typec: tcpm: tcpci: Remove the
+ unneeded result variable
+Message-ID: <YwzMDdzfo58hufmd@kuha.fi.intel.com>
+References: <20220829030442.264695-1-xu.panda@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829030442.264695-1-xu.panda@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the device id for Decagon Devices USB Cable Adapter.
+Hi,
 
-Link: https://lore.kernel.org/r/trinity-819f9db2-d3e1-40e9-a669-9c245817c046-1661523546680@msvc-mesg-web108
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/usb/serial/cp210x.c | 1 +
- 1 file changed, 1 insertion(+)
+On Mon, Aug 29, 2022 at 03:04:43AM +0000, cgel.zte@gmail.com wrote:
+> From: xupanda <xu.panda@zte.com.cn>
 
-diff --git a/drivers/usb/serial/cp210x.c b/drivers/usb/serial/cp210x.c
-index c374620a486f..a34957c4b64c 100644
---- a/drivers/usb/serial/cp210x.c
-+++ b/drivers/usb/serial/cp210x.c
-@@ -130,6 +130,7 @@ static const struct usb_device_id id_table[] = {
- 	{ USB_DEVICE(0x10C4, 0x83AA) }, /* Mark-10 Digital Force Gauge */
- 	{ USB_DEVICE(0x10C4, 0x83D8) }, /* DekTec DTA Plus VHF/UHF Booster/Attenuator */
- 	{ USB_DEVICE(0x10C4, 0x8411) }, /* Kyocera GPS Module */
-+	{ USB_DEVICE(0x10C4, 0x8414) }, /* Decagon USB Cable Adapter */
- 	{ USB_DEVICE(0x10C4, 0x8418) }, /* IRZ Automation Teleport SG-10 GSM/GPRS Modem */
- 	{ USB_DEVICE(0x10C4, 0x846E) }, /* BEI USB Sensor Interface (VCP) */
- 	{ USB_DEVICE(0x10C4, 0x8470) }, /* Juniper Networks BX Series System Console */
+I think that's a pseudonym. Is the name "Xu Panda" (so not
+"xupanda")? Please use full real names.
+
+> Return the value regmap_update_bits() directly instead of
+> storing it in another redundant variable.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: xupanda <xu.panda@zte.com.cn>
+
+I just realised that this is version 3, and this is the third time you
+are being asked to check that. You really have to use full real names
+here.
+
+Please read this section completely and fix those lines:
+https://docs.kernel.org/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin
+
+thanks,
+
+> ---
+> chang for v3
+>  - re-align continuation line alignment
+> ---
+>  drivers/usb/typec/tcpm/tcpci.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
+> index b2bfcebe218f..cd243530264b 100644
+> --- a/drivers/usb/typec/tcpm/tcpci.c
+> +++ b/drivers/usb/typec/tcpm/tcpci.c
+> @@ -328,11 +328,9 @@ static int tcpci_set_vconn(struct tcpc_dev *tcpc, bool enable)
+>  static int tcpci_enable_auto_vbus_discharge(struct tcpc_dev *dev, bool enable)
+>  {
+>  	struct tcpci *tcpci = tcpc_to_tcpci(dev);
+> -	int ret;
+>  
+> -	ret = regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
+> -				 enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
+> -	return ret;
+> +	return regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
+> +			enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
+>  }
+>  
+>  static int tcpci_set_auto_vbus_discharge_threshold(struct tcpc_dev *dev, enum typec_pwr_opmode mode,
+> -- 
+> 2.25.1
+
 -- 
-2.35.1
-
+heikki
