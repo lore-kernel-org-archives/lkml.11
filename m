@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD34DECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 502F5C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232289AbiH2LaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:30:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
+        id S232315AbiH2LaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:30:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232341AbiH2L2r (ORCPT
+        with ESMTP id S232389AbiH2L2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:28:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E0A79A6A;
-        Mon, 29 Aug 2022 04:17:16 -0700 (PDT)
+        Mon, 29 Aug 2022 07:28:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03557A514;
+        Mon, 29 Aug 2022 04:17:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B3E6611D6;
-        Mon, 29 Aug 2022 11:06:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73782C433C1;
-        Mon, 29 Aug 2022 11:06:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5782AB80EFA;
+        Mon, 29 Aug 2022 11:04:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F8B3C433C1;
+        Mon, 29 Aug 2022 11:04:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771173;
-        bh=gwq1OqMwhb/YuVfl7qY3edF58qVgD9W2LIDU7en9DcE=;
+        s=korg; t=1661771052;
+        bh=3NhdeY8HFeNZCiXqEDGDabYJL1Sk+THfGbYM30UYW0w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r+duUxt//B01OZ3hoFecCGj42YmU+uRwRlRiUNzxS2CofxLkVl/PHMfrwii770on9
-         mxQmhz+4e5vXDptI+kpH6Crz2Kyyy5RItB8XDxf8kLsEUGviPPfgPW+gDK6PaMzV1n
-         OtPDF24DcdrX2qhO+ST50+5w8hlSbKL+g08oH8xo=
+        b=AphdjpFGfw9cwRX6lPPc+VbMKr66aR9cuHDmEHSfRO0wmonM7GyxTm1wSCtBrGgfS
+         v7Utsw1M8ORk629vPL1YE3tdyGPCPaNnOMTmqo6hqE6tOdgiVhKjROOWnaqePmRQEj
+         FPkqlh7UfxgQVtDS7q0f8iYWFa/SpNoYJbf9dQK8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 35/86] netfilter: nft_osf: restrict osf to ipv4, ipv6 and inet families
-Date:   Mon, 29 Aug 2022 12:59:01 +0200
-Message-Id: <20220829105757.991970415@linuxfoundation.org>
+Subject: [PATCH 5.15 054/136] bnxt_en: fix NQ resource accounting during vf creation on 57500 chips
+Date:   Mon, 29 Aug 2022 12:58:41 +0200
+Message-Id: <20220829105806.849052586@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,48 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-[ Upstream commit 5f3b7aae14a706d0d7da9f9e39def52ff5fc3d39 ]
+[ Upstream commit 09a89cc59ad67794a11e1d3dd13c5b3172adcc51 ]
 
-As it was originally intended, restrict extension to supported families.
+There are 2 issues:
 
-Fixes: b96af92d6eaf ("netfilter: nf_tables: implement Passive OS fingerprint module in nft_osf")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+1. We should decrement hw_resc->max_nqs instead of hw_resc->max_irqs
+   with the number of NQs assigned to the VFs.  The IRQs are fixed
+   on each function and cannot be re-assigned.  Only the NQs are being
+   assigned to the VFs.
+
+2. vf_msix is the total number of NQs to be assigned to the VFs.  So
+   we should decrement vf_msix from hw_resc->max_nqs.
+
+Fixes: b16b68918674 ("bnxt_en: Add SR-IOV support for 57500 chips.")
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_osf.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nft_osf.c b/net/netfilter/nft_osf.c
-index d82677e83400b..720dc9fba6d4f 100644
---- a/net/netfilter/nft_osf.c
-+++ b/net/netfilter/nft_osf.c
-@@ -115,9 +115,21 @@ static int nft_osf_validate(const struct nft_ctx *ctx,
- 			    const struct nft_expr *expr,
- 			    const struct nft_data **data)
- {
--	return nft_chain_validate_hooks(ctx->chain, (1 << NF_INET_LOCAL_IN) |
--						    (1 << NF_INET_PRE_ROUTING) |
--						    (1 << NF_INET_FORWARD));
-+	unsigned int hooks;
-+
-+	switch (ctx->family) {
-+	case NFPROTO_IPV4:
-+	case NFPROTO_IPV6:
-+	case NFPROTO_INET:
-+		hooks = (1 << NF_INET_LOCAL_IN) |
-+			(1 << NF_INET_PRE_ROUTING) |
-+			(1 << NF_INET_FORWARD);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return nft_chain_validate_hooks(ctx->chain, hooks);
- }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index 70d8ca3039dcb..78763f5027d10 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -623,7 +623,7 @@ static int bnxt_hwrm_func_vf_resc_cfg(struct bnxt *bp, int num_vfs, bool reset)
+ 		hw_resc->max_stat_ctxs -= le16_to_cpu(req->min_stat_ctx) * n;
+ 		hw_resc->max_vnics -= le16_to_cpu(req->min_vnics) * n;
+ 		if (bp->flags & BNXT_FLAG_CHIP_P5)
+-			hw_resc->max_irqs -= vf_msix * n;
++			hw_resc->max_nqs -= vf_msix;
  
- static struct nft_expr_type nft_osf_type;
+ 		rc = pf->active_vfs;
+ 	}
 -- 
 2.35.1
 
