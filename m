@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A23FCECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E40BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbiH2LlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:41:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56440 "EHLO
+        id S231181AbiH2LlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:41:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232941AbiH2Lkz (ORCPT
+        with ESMTP id S229828AbiH2Lk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:40:55 -0400
+        Mon, 29 Aug 2022 07:40:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1AC1580C;
-        Mon, 29 Aug 2022 04:25:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BFC1A807;
+        Mon, 29 Aug 2022 04:25:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7586B80EF9;
-        Mon, 29 Aug 2022 11:18:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06258C433D7;
-        Mon, 29 Aug 2022 11:18:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D741B80FBC;
+        Mon, 29 Aug 2022 11:13:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81813C4314B;
+        Mon, 29 Aug 2022 11:13:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771921;
-        bh=iWgbc10WgRoYFt9Hy0C8s2nFStLP7XnQe67FEXV9k3E=;
+        s=korg; t=1661771593;
+        bh=l5TL+RjQ/+c8aJqbSDWtMBUEKOZ8GAHD9iwp2klwN2k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kpFNmLjLhy/jReo2vmZVuXq6ez/mLDEpdxQyrZrPFSZ8Q/+nQUofqGizq4HHHonWx
-         22Ltiqo9UfNHrI7wiqMlGZduWNc7gW5ce9o4Hp/e1oEeQs9sRr8zocaiYNNrxq9/QH
-         mHYK/GycQMmzZH1B4wCkrWLNJN+bToT00FjeoU0U=
+        b=tDM68i9NvAX5tyAswJ2fjGtpitLf8KUjTDiJubJURcMVLrPc/1EUFdEV3QsYWXjpS
+         h8J5YvzkjitHffrKdnyJvHSoQVhhvwgnmidzohGA9XsHh8rDEJgZNsX4pAYYeqhz3Z
+         cZPujc/JfD5sdOeWKgqZUFDETDLYOxAxbKceKHcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Salvatore Bonaccorso <carnil@debian.org>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.19 141/158] Documentation/ABI: Mention retbleed vulnerability info file for sysfs
-Date:   Mon, 29 Aug 2022 12:59:51 +0200
-Message-Id: <20220829105815.003163707@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 54/86] net: Fix a data-race around sysctl_net_busy_poll.
+Date:   Mon, 29 Aug 2022 12:59:20 +0200
+Message-Id: <20220829105758.756537406@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,35 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Salvatore Bonaccorso <carnil@debian.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 00da0cb385d05a89226e150a102eb49d8abb0359 upstream.
+[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
 
-While reporting for the AMD retbleed vulnerability was added in
+While reading sysctl_net_busy_poll, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-  6b80b59b3555 ("x86/bugs: Report AMD retbleed vulnerability")
-
-the new sysfs file was not mentioned so far in the ABI documentation for
-sysfs-devices-system-cpu. Fix that.
-
-Fixes: 6b80b59b3555 ("x86/bugs: Report AMD retbleed vulnerability")
-Signed-off-by: Salvatore Bonaccorso <carnil@debian.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220801091529.325327-1-carnil@debian.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 060212928670 ("net: add low latency socket poll")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/ABI/testing/sysfs-devices-system-cpu |    1 +
- 1 file changed, 1 insertion(+)
+ include/net/busy_poll.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/ABI/testing/sysfs-devices-system-cpu
-+++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
-@@ -527,6 +527,7 @@ What:		/sys/devices/system/cpu/vulnerabi
- 		/sys/devices/system/cpu/vulnerabilities/tsx_async_abort
- 		/sys/devices/system/cpu/vulnerabilities/itlb_multihit
- 		/sys/devices/system/cpu/vulnerabilities/mmio_stale_data
-+		/sys/devices/system/cpu/vulnerabilities/retbleed
- Date:		January 2018
- Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
- Description:	Information about CPU vulnerabilities
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index 716b7c5f6fdd9..36e5e75e71720 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -31,7 +31,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
+ 
+ static inline bool net_busy_loop_on(void)
+ {
+-	return sysctl_net_busy_poll;
++	return READ_ONCE(sysctl_net_busy_poll);
+ }
+ 
+ static inline bool sk_can_busy_loop(const struct sock *sk)
+-- 
+2.35.1
+
 
 
