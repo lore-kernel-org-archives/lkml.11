@@ -2,80 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14D57ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3479BECAAD8
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbiH2Txc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 15:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52196 "EHLO
+        id S229890AbiH2TyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 15:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiH2Txa (ORCPT
+        with ESMTP id S229523AbiH2TyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 15:53:30 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913737FE56
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 12:53:28 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id m1so11521006edb.7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 12:53:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=purestorage.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=wGECd8qA2RkmX9DUfs/SFtBdSKgbGgulG6ur/Hs/iUk=;
-        b=Zmpu1nebw8q0dcKAYgbYOGB98Ujq44adRJiI6eia3u4qwyHqZ+caQlJeRFEwp3dZ7S
-         yQEzNM541f62JJcVPwwEVUNnf/U7RSR+NcKSKLCMmk9T2UHXjfXucJXdQUoOHbca1QGK
-         DRZ78+wJvCMsu2pK8fBky4HLC7BT2NMb1eh6Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=wGECd8qA2RkmX9DUfs/SFtBdSKgbGgulG6ur/Hs/iUk=;
-        b=EYfWYlUpK1S32cXHDUwtVXm6y0n5IWG8acLQB1ynEuFfaJtdDAJQ4Ia4G+qaNaYsmX
-         DASr5oxhUwJ6TCVExnCo3mSfwo05QPkuiIYsPqOdndetHB9XEi7PpdRfwzLzTIznPu2K
-         5QxdQWIQ0OfiBKGZHPgvmn8Ek3rqUcgSxaLfWJJBFZ//pr6NgMQmXdnFEd0rdEb5FrzM
-         0NSix5KzheSsEQYFgHVTiX+OIqkDe6PzK8VDIzxPLMFI5ke9TX+pyHYSn3ajPQGEOj7i
-         aB4eSx2LAXjV9WTXHzUysgorXFpVino0OanHrs+0cTfTg5urClvuPCtyqKgdS0kOS8H4
-         DadA==
-X-Gm-Message-State: ACgBeo3TUGdMZMjFwINFLxJWc3Zl8D8UBHO0GWTG07274IHdKDQBjElP
-        KQKI2J1LC4+fb081RS1GTWYwXcE0Emd7yt8vjcL0sa3ZfF2v3g==
-X-Google-Smtp-Source: AA6agR4IFnG81zntzVELOxJweXuAGAArzxxUdF1u/q34z6MCI8p1T90p/XlskewwDa5Q5BLxkcQsi40bL0xY7I29X5s=
-X-Received: by 2002:a05:6402:2b91:b0:445:dfdb:778b with SMTP id
- fj17-20020a0564022b9100b00445dfdb778bmr18125839edb.367.1661802807026; Mon, 29
- Aug 2022 12:53:27 -0700 (PDT)
+        Mon, 29 Aug 2022 15:54:00 -0400
+Received: from mail.stoffel.org (li1843-175.members.linode.com [172.104.24.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E4E80524;
+        Mon, 29 Aug 2022 12:53:59 -0700 (PDT)
+Received: from quad.stoffel.org (068-116-170-226.res.spectrum.com [68.116.170.226])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.stoffel.org (Postfix) with ESMTPSA id 85A4E2172C;
+        Mon, 29 Aug 2022 15:53:58 -0400 (EDT)
+Received: by quad.stoffel.org (Postfix, from userid 1000)
+        id A805FA7E37; Mon, 29 Aug 2022 15:53:57 -0400 (EDT)
 MIME-Version: 1.0
-References: <20220829030521.3373516-1-ammar.faizi@intel.com> <20220829030521.3373516-2-ammar.faizi@intel.com>
-In-Reply-To: <20220829030521.3373516-2-ammar.faizi@intel.com>
-From:   Caleb Sander <csander@purestorage.com>
-Date:   Mon, 29 Aug 2022 12:53:16 -0700
-Message-ID: <CADUfDZr0mPn_REb24aEPa477T+CYeoV5hcbURqX9kazCUqRp4A@mail.gmail.com>
-Subject: Re: [RFC PATCH liburing v1 1/4] syscall: Add io_uring syscall functions
-To:     Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Cc:     Jens Axboe <axboe@kernel.dk>, Muhammad Rizki <kiizuha@gnuweeb.org>,
-        Kanna Scarlet <knscarlet@gnuweeb.org>,
-        io-uring Mailing List <io-uring@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "GNU/Weeb Mailing List" <gwml@vger.gnuweeb.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Message-ID: <25357.6485.659159.476926@quad.stoffel.home>
+Date:   Mon, 29 Aug 2022 15:53:57 -0400
+From:   "John Stoffel" <john@stoffel.org>
+To:     Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     song@kernel.org, linux-raid@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH -next 1/3] md/raid10: fix improper BUG_ON() in raise_barrier()
+In-Reply-To: <20220829131502.165356-2-yukuai1@huaweicloud.com>
+References: <20220829131502.165356-1-yukuai1@huaweicloud.com>
+        <20220829131502.165356-2-yukuai1@huaweicloud.com>
+X-Mailer: VM 8.2.0b under 27.1 (x86_64-pc-linux-gnu)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 8:07 PM Ammar Faizi <ammarfaizi2@gnuweeb.org> wrote:
->
-> --- a/src/include/liburing.h
-> +++ b/src/include/liburing.h
-> @@ -202,6 +202,14 @@ int io_uring_register_file_alloc_range(struct io_uring *ring,
->  int io_uring_register_notifications(struct io_uring *ring, unsigned nr,
->                                     struct io_uring_notification_slot *slots);
->  int io_uring_unregister_notifications(struct io_uring *ring);
-> +int io_uring_enter(unsigned int fd, unsigned int to_submit,
-> +                  unsigned int min_complete, unsigned int flags,
-> +                  sigset_t *sig);
-> +int io_uring_enter2(int fd, unsigned to_submit, unsigned min_complete,
-> +                   unsigned flags, sigset_t *sig, int sz);
+>>>>> "Yu" == Yu Kuai <yukuai1@huaweicloud.com> writes:
 
-Also, from the io_uring_enter() man page, it appears that "void *"
-would be a more appropriate type for the pointer argument in
-io_uring_enter2(). And "size_t" for sz.
+Yu> From: Yu Kuai <yukuai3@huawei.com>
+Yu> 'conf->barrier' is protected by 'conf->resync_lock', reading
+Yu> 'conf->barrier' without holding the lock is wrong.
 
---Caleb
+Yu> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Yu> ---
+Yu>  drivers/md/raid10.c | 2 +-
+Yu>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Yu> diff --git a/drivers/md/raid10.c b/drivers/md/raid10.c
+Yu> index 9117fcdee1be..b70c207f7932 100644
+Yu> --- a/drivers/md/raid10.c
+Yu> +++ b/drivers/md/raid10.c
+Yu> @@ -930,8 +930,8 @@ static void flush_pending_writes(struct r10conf *conf)
+ 
+Yu>  static void raise_barrier(struct r10conf *conf, int force)
+Yu>  {
+Yu> -	BUG_ON(force && !conf->barrier);
+Yu>  	spin_lock_irq(&conf->resync_lock);
+Yu> +	BUG_ON(force && !conf->barrier);
+
+I don't like this BUG_ON() at all, why are you crashing the system
+here instead of just doing a simple WARN_ONCE() instead?  Is there
+anything the user can do to get into this situation on their own, or
+does it really signify a logic error in the code?  If so, why are you
+killing the system?
+
+
+ 
+Yu>  	/* Wait until no block IO is waiting (unless 'force') */
+Yu>  	wait_event_lock_irq(conf->wait_barrier, force || !conf->nr_waiting,
+Yu> -- 
+Yu> 2.31.1
+
