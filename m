@@ -2,159 +2,556 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57AEECAAA4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:29:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517DAECAAA4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230325AbiH2R3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52902 "EHLO
+        id S230311AbiH2R3x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:29:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiH2R3R (ORCPT
+        with ESMTP id S229957AbiH2R3u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:29:17 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39EC88E472;
-        Mon, 29 Aug 2022 10:29:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V++QBO5/soMn5kDBaAbeb/NlTrEeQ/hLR/uT4b4VrwBTa8LikOOf9UNIG3shlctT8fwiW5C9tkw44ZM9wi//dqiHqWTMT1TIZmRzyEEIHyrnlIkPH/g6oR4ji5gm4Ti3IPh0R0DRXpWDsY+5i1XIQhwSZoN/pGmmAphWsVYvSuXBQCwP7iDyDfrYUUC/MS1Yi+6ZYe3DOdZvlSU2+mJRQ64zkthnxBsv6vh7LvmvJVmAfUT4DATzVv8swkypGLHwFrThf9Clo87URUktjT/HkDNbvP/uO5Edj02gunsptm1RC5+NMlXELvIekPP20XgUumTadzuDPz1Wsh3E3gvaXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=M7y/CsujlvdgL19Mcl/0xjOOdLIMMaL0RwjVt2Ekn5U=;
- b=EhZxbzWU7uPUuqOvkOkASMTGI21g2Ckx7iqkNmuFvepp6ZCyeVWImCW3M1sBnrCtinW0G7KGHGF5sgu6lFC4Q4N0m0nOgZhb9HBG1i6u1QH6SaoK8MicDaJkMZkqftB0EaVDv8LpeBL8KGQ3A4JkLVygd6DhfUAlWUcQWkVNPpoaChfbNKLK4S7UbC7PDBQ9eeST0ZMO74B+q2jP/iq3p2/agQyMXdIb2TF5hgZVBoxReB8zFLm8D/tXx6o/HXoxJ+YomwY3JkirWCrrHJo+dxP7HBkWljp/BawoAgmAdbVQyfQwJ4SV58opxQHO9CWTFON94ftWt54JZ/ZIdiGbUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=M7y/CsujlvdgL19Mcl/0xjOOdLIMMaL0RwjVt2Ekn5U=;
- b=ZaD/iGoNDNBFnlbQdSkPr90bfEklzZONZDKMNs2QcyDt7CPlpBr4haW7qnZ2Myg1D/y2hB+a2yGn2OOKBqkdNQrsyuBiSxBTsNrQ4iTF7u4/eeaim38UtVOgUZaf7n2IRorZBPJw5oDF5H3W48WDrv+NhYgEzp3uaBN1NY45acTFc/AqdjP4/vs3FGDwnDw73j4FtuNBlxRwSUZMGYwGzaTSKhLW8R3ZE9ioL8asv3fSF2o3Ow2az/pP199TWX3F4EcbBp0IlClQkMevSCYv0gfNkzzBWCGZaWRD+mORIZsGw9hYgYne8XEi0NHtH1sBjSfDv8iR1qzKBUMM9YeJ9A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DS0PR12MB7653.namprd12.prod.outlook.com (2603:10b6:8:13e::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Mon, 29 Aug
- 2022 17:29:14 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::462:7fe:f04f:d0d5%8]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
- 17:29:14 +0000
-Date:   Mon, 29 Aug 2022 14:29:13 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Baolu Lu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v12 12/17] arm-smmu-v3/sva: Add SVA domain support
-Message-ID: <Ywz3aQ57PthSYycN@nvidia.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-13-baolu.lu@linux.intel.com>
- <YwjfKsvKyXLdCJ/Z@nvidia.com>
- <fe5c459e-9992-73b6-35b4-59ef815f1f9a@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fe5c459e-9992-73b6-35b4-59ef815f1f9a@linux.intel.com>
-X-ClientProxiedBy: BL1P222CA0007.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:208:2c7::12) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Mon, 29 Aug 2022 13:29:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD6ABFF;
+        Mon, 29 Aug 2022 10:29:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3497961176;
+        Mon, 29 Aug 2022 17:29:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DBC6C433D6;
+        Mon, 29 Aug 2022 17:29:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661794184;
+        bh=IkdNXswtdBDXH+dEtOrD7iE26Q2ZJTucuGkIXV0FAwk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ndCi25px5o2DO15zy4tkqxkTvvSb8KorxZPDCzaC3FVbCYj3p/WUoyvCwqDd9cwQp
+         xz/GdXUbhBnS9OpVJtuIf7GQNDdAIUGpND8wiOY2TH4K1e8fd1itROHFNvCG17pOzc
+         3GMlJbnkhNLJDV9MbqXW5f1K9vSlDXlRPSq5qE1f4sYE2tL9+vFmoyENro0brY4IDr
+         3xEeD5JuyI3+TDbxlkJjskcImqqi5EE6bL1G9J69ttGZilJrR7J6pNSFYlVuErjt0G
+         48YPQeNfYCy6Je/u+NVRHZw4NGnfRzozD74rVf8Ttz8BIGPuHLIha7/oB4wlHXOJwv
+         KkPFEHD6vasow==
+Date:   Mon, 29 Aug 2022 17:55:24 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     andy.shevchenko@gmail.com, hadess@hadess.net, hdegoede@redhat.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] iio: accel: bma400: Add support for single and
+ double tap events
+Message-ID: <20220829175524.15df5e21@jic23-huawei>
+In-Reply-To: <20220825194604.15645-3-jagathjog1996@gmail.com>
+References: <20220825194604.15645-1-jagathjog1996@gmail.com>
+        <20220825194604.15645-3-jagathjog1996@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3aab0213-456d-42ca-7ed2-08da89e3fe63
-X-MS-TrafficTypeDiagnostic: DS0PR12MB7653:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /sf0895wcKNUgwlyHLqfugY9gfjOp0jxOjsIzEXJV24kfVK6YEwIkSHH2nRnOYBw8loKZ57D0TB0FF6+y4gdOE1sMjzZ4tg8UcFAtq1VTppycdrcTT832b0BRILGiIYTEvWIQ8boMHgGln7OE36g6gzj/msvEL+iNbTAxY5RH0BLht06ziV7vOOfnE+aaNyiAARN/z/2qBVpvANjkcIqHoS2zia8V7PBHHw0MgL36+5a4QJoxA85v/GkwAjqiIJh63I7euylAbdIIhTyBvpfIiTJYfq0dAzCOd4CfYm3RylRKQv6hzRpfID31p93oKhz07yq0dTSX+0kq8RdguZW6DjKVqnULc+/F97pjDOGjJzqmTKFTtB2kIDSUvTTPg3xfEig0K4kHdflXQQQvLtUrbz1BnaqBIbl75JHlpyhOXb7t4kth5YCcWy0CjQ3BtyOxUy0ruEQhPZSpmuvxHT1HfmTja8d9YUB0Z4vbPEV7vghePFd4+8130MzBHkf0wFk0qctqyS1D0nJ4Y8Chzz2WONqNRpd9Ph9IDb7SRULTI+tbaBdPRDNhrAlAB2LYmXq4gybeNzmevskxk+N2ZdnVw7d7HvxgnuCzp/GjDs4PJH3Dv7Y0vcoITiNHkW4/vZEM5yIppDnoJH0XoIy959Jz0w0A7D9CAiOP9BgylON9ic3ZIZy0F8+sABCYIYdD2ZElfE09xcAhlXm2nX10DXprA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(346002)(376002)(136003)(39860400002)(316002)(6916009)(54906003)(478600001)(36756003)(6486002)(66946007)(66556008)(38100700002)(4326008)(66476007)(8676002)(41300700001)(8936002)(7416002)(5660300002)(26005)(2906002)(53546011)(6506007)(186003)(2616005)(6512007)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?D4OlJqgms+Jo7SPlFHieoR6dT/X7OjZbB/AqaO4oETBapMfdfKB5XAnpXAX0?=
- =?us-ascii?Q?L5+/NavDf+4kKVF8HzcHQyJQ3j8Wbs4fUD12puuw8hmAGhCFvdaPoUT0cIUr?=
- =?us-ascii?Q?rji85GBSDXm1IgbsQ3A1LXcyZe+NwzLOom8uvVAd8luvG8FATLV9BrncJcTu?=
- =?us-ascii?Q?eStIbVfTJScFYyJZ7EfnuNkGlQVGfSTINUznPunN1tznKD4bOykAZUSlXjqV?=
- =?us-ascii?Q?Sog2JxOPlhqO2cNocPX5R3A9cdDRnowdX4oJhPZD0wCXxWqDWZAoE8BoNJ7d?=
- =?us-ascii?Q?VLLiwl6cqWNi3nPWTpKDQvCtsKy9kVUvUUXP8zFSCXikC4qyrKvHnNoou3uF?=
- =?us-ascii?Q?jNn4KkdRtF9jK7H648Wx1O7wFC+d6YwIEml5dDYb+q2gs0NdMvkeRzdem7vJ?=
- =?us-ascii?Q?1lcFDoTfEr5Xqrbbtifh5BlVv5Q55Omx6RBsSy+a3uPUBRVh3xY7SuM33m+s?=
- =?us-ascii?Q?GoPV76XwBkwohbWjD6GrUYhlFrosuqmwdwd3nGPstQ5d6bLCxj0OrNud8u8O?=
- =?us-ascii?Q?K/Fbpoi862RdgZ/XMPGc6J2UCiTR3h4ThKDMZeVDrXn30RrY4r6wHUoliHL7?=
- =?us-ascii?Q?nl4SCVojpaqCeE1G1QPwUpVKeKo5pwecXbgM3otKTPNruXh+prQkIC67f+v+?=
- =?us-ascii?Q?Bti/hIcTqeTLJZoMdlCUqOm7DHAlfg0WQ9sgSgnkYhjnZ3sl911tapsUCrS2?=
- =?us-ascii?Q?QCjB55RJCO/DoYEL3vNohaFlesjCdy2IgRNnom0SrIxfwwysttFTdOlkv1ot?=
- =?us-ascii?Q?JDpdDk7QFoSjmpW1S1ERz7wpZqnIP9WhyYmXMEqXPz1HsG3eWkUvZI0SucOt?=
- =?us-ascii?Q?F7sgDwxRM0+eyWohSsjG0dkN7+0FVdc15r3C9EhOF/6WtYlmyU1zUaAmTZ05?=
- =?us-ascii?Q?TKKlvdGpyvqaXhxbjyBwuPYaOFcvT14Db4mToJ6gbeFs2g5IiEFbDeUm9OL4?=
- =?us-ascii?Q?mxfff2JC3rpMHunjisM8qHVYOY+/dcJEdtoFl//R3L5xhc7eNIk/ACx0eNnb?=
- =?us-ascii?Q?IZ3r3Fd/e0/unuft2b7uG0HJ62aRH5+V5UK4JckVM04R9cYFV1/Tc5IqHAjb?=
- =?us-ascii?Q?U5MU2JbHCQn0BAhSbO4g0Y6q2hM4p5qi7+6z7ETiZEWDgzDmC95PvitIFiB9?=
- =?us-ascii?Q?H2kcw/+kJw0o4yUqu1CXVHVZOYcklMWEJS7XgBqofRGu1fvtpvDwvBhWh3CO?=
- =?us-ascii?Q?7XN5bpZd3gnNEBJU0jsPqKEnig1vQCv6U80sQIdzauB+252MZakv2Dld2pnR?=
- =?us-ascii?Q?QU6DX/W8d5P82JOL5YzWum6Baoe1toZVx/ulCiTDnovR2UajdbQw2OvEm/7x?=
- =?us-ascii?Q?oBzkbK03AJYEzOhRwHT5tj0JK08zZfcLkQOp+JTjwVTRzq9N5rWoUJKGOpQo?=
- =?us-ascii?Q?B5FiBU72xB9K9q9PAVhpEQCbARfu6rSpCEI9bqydt6ggfgDnN0eWVlVKvvpZ?=
- =?us-ascii?Q?y+xXh5HqJg8T29FuoZjtmDjrSomMTEMZzdCsaeFEoxTNZw9dBEqCrlqnAVno?=
- =?us-ascii?Q?5N5AlhEBCmGJFJ8MwR+GctRGXpN6tJ4zZkyKuZLOGhDumcJUom6AdFNG8qjD?=
- =?us-ascii?Q?c2KVtI3YGRwQizjZyjC7T1It4QA7oIIKJ3Ek8E8S?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3aab0213-456d-42ca-7ed2-08da89e3fe63
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 17:29:14.6423
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2BavCGO4+KXNt7o/QKp85YJXrgIioczlgCVNi82Qm243Ow7Ort4qx6K6JQAtL6bY
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7653
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 09:57:21PM +0800, Baolu Lu wrote:
-> On 2022/8/26 22:56, Jason Gunthorpe wrote:
-> > On Fri, Aug 26, 2022 at 08:11:36PM +0800, Lu Baolu wrote:
-> > 
-> > > +static const struct iommu_domain_ops arm_smmu_sva_domain_ops = {
-> > > +	.set_dev_pasid		= arm_smmu_sva_set_dev_pasid,
-> > Do we want to permit drivers to not allow a SVA domain to be set on a
-> > RID?
-> > 
-> > It seems like a weird restriction to me
+On Fri, 26 Aug 2022 01:16:04 +0530
+Jagath Jog J <jagathjog1996@gmail.com> wrote:
+
+> Add support for single and double tap events based on the tap threshold
+> value, minimum quiet time before and after the tap and minimum time
+> between the taps in the double tap. The INT1 pin is used to interrupt
+> and the event is pushed to userspace.
 > 
-> Conceptually as long as the page table is compatible and user pages are
-> pinned (or I/O page fault is supported), the device drivers are valid to
-> set SVA domain to a RID. But I don't see a real use case as far as I can
-> see.
+> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
 
-It may be interesting for something like DPDK type applications where
-having the entire process address space mapped SVA to the device could
-be quite nice.
+Nothing to add from me.  I'll take a final look at v4 but assuming I've
+not been missing anything until now should all be good to go once those
+bits Andy raised are resolved subject to anyone else taking a look at
+the ABI docs.  Whilst I'd like review there, if we don't get it we can't
+let that block this for ever so I aim to pick this up this cycle even
+if we don't get input on that from anyone.
 
-You, currently, give up interrupts, but perhaps that is solvable in some
-way.
+Thanks,
 
-So, IDK.. I wouldn't dismiss it entirely but I wouldn't do a bunch of
-work to support it either.
+Jonathan
 
-> A reasonable use case is sharing EPT between KVM and IOMMU. That demands
-> a new type of domain and implements its own .set_dev for page table
-> attachment.
+> ---
+>  drivers/iio/accel/bma400.h      |  13 ++
+>  drivers/iio/accel/bma400_core.c | 343 +++++++++++++++++++++++++++++++-
+>  2 files changed, 346 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+> index e8f802a82300..d9e8eccb524b 100644
+> --- a/drivers/iio/accel/bma400.h
+> +++ b/drivers/iio/accel/bma400.h
+> @@ -40,6 +40,7 @@
+>  #define BMA400_INT_STAT1_REG        0x0f
+>  #define BMA400_INT_STAT2_REG        0x10
+>  #define BMA400_INT12_MAP_REG        0x23
+> +#define BMA400_INT_ENG_OVRUN_MSK    BIT(4)
+>  
+>  /* Temperature register */
+>  #define BMA400_TEMP_DATA_REG        0x11
+> @@ -105,6 +106,18 @@
+>  #define BMA400_INT_GEN2_MSK         BIT(3)
+>  #define BMA400_GEN_HYST_MSK         GENMASK(1, 0)
+>  
+> +/* TAP config registers */
+> +#define BMA400_TAP_CONFIG           0x57
+> +#define BMA400_TAP_CONFIG1          0x58
+> +#define BMA400_S_TAP_MSK            BIT(2)
+> +#define BMA400_D_TAP_MSK            BIT(3)
+> +#define BMA400_INT_S_TAP_MSK        BIT(10)
+> +#define BMA400_INT_D_TAP_MSK        BIT(11)
+> +#define BMA400_TAP_SEN_MSK          GENMASK(2, 0)
+> +#define BMA400_TAP_TICSTH_MSK       GENMASK(1, 0)
+> +#define BMA400_TAP_QUIET_MSK        GENMASK(3, 2)
+> +#define BMA400_TAP_QUIETDT_MSK      GENMASK(5, 4)
+> +
+>  /*
+>   * BMA400_SCALE_MIN macro value represents m/s^2 for 1 LSB before
+>   * converting to micro values for +-2g range.
+> diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
+> index c31bdd9b168e..1150778bda3a 100644
+> --- a/drivers/iio/accel/bma400_core.c
+> +++ b/drivers/iio/accel/bma400_core.c
+> @@ -26,6 +26,7 @@
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/events.h>
+> +#include <linux/iio/sysfs.h>
+>  #include <linux/iio/trigger.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+> @@ -47,6 +48,27 @@ static int bma400_sample_freqs[14];
+>  
+>  static const int bma400_osr_range[] = { 0, 1, 3 };
+>  
+> +static int tap_reset_timeout[] = {
+> +	300000,
+> +	400000,
+> +	500000,
+> +	600000
+> +};
+> +
+> +static int tap_max2min_time[] = {
+> +	30000,
+> +	45000,
+> +	60000,
+> +	90000
+> +};
+> +
+> +static int double_tap2_min_delay[] = {
+> +	20000,
+> +	40000,
+> +	60000,
+> +	80000
+> +};
+> +
+>  /* See the ACC_CONFIG0 section of the datasheet */
+>  enum bma400_power_mode {
+>  	POWER_MODE_SLEEP   = 0x00,
+> @@ -88,6 +110,7 @@ struct bma400_data {
+>  	bool step_event_en;
+>  	bool activity_event_en;
+>  	unsigned int generic_event_en;
+> +	unsigned int tap_event_en_bitmask;
+>  	/* Correct time stamp alignment */
+>  	struct {
+>  		__le16 buff[3];
+> @@ -216,6 +239,115 @@ static const struct iio_event_spec bma400_accel_event[] = {
+>  				       BIT(IIO_EV_INFO_HYSTERESIS) |
+>  				       BIT(IIO_EV_INFO_ENABLE),
+>  	},
+> +	{
+> +		.type = IIO_EV_TYPE_GESTURE,
+> +		.dir = IIO_EV_DIR_SINGLETAP,
+> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+> +				       BIT(IIO_EV_INFO_ENABLE) |
+> +				       BIT(IIO_EV_INFO_RESET_TIMEOUT),
+> +	},
+> +	{
+> +		.type = IIO_EV_TYPE_GESTURE,
+> +		.dir = IIO_EV_DIR_DOUBLETAP,
+> +		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE) |
+> +				       BIT(IIO_EV_INFO_ENABLE) |
+> +				       BIT(IIO_EV_INFO_RESET_TIMEOUT) |
+> +				       BIT(IIO_EV_INFO_TAP2_MIN_DELAY),
+> +	},
+> +};
+> +
+> +static int usec_to_tapreg_raw(int usec, const int *time_list)
+> +{
+> +	int index;
+> +
+> +	for (index = 0; index < 4; index++) {
+> +		if (usec == time_list[index])
+> +			return index;
+> +	}
+> +	return -EINVAL;
+> +}
+> +
+> +static ssize_t in_accel_gesture_tap_maxtomin_time_show(struct device *dev,
+> +						       struct device_attribute *attr,
+> +						       char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct bma400_data *data = iio_priv(indio_dev);
+> +	int ret, reg_val, raw, vals[2];
+> +
+> +	ret = regmap_read(data->regmap, BMA400_TAP_CONFIG1, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	raw = FIELD_GET(BMA400_TAP_TICSTH_MSK, reg_val);
+> +	vals[0] = 0;
+> +	vals[1] = tap_max2min_time[raw];
+> +
+> +	return iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, vals);
+> +}
+> +
+> +static ssize_t in_accel_gesture_tap_maxtomin_time_store(struct device *dev,
+> +							struct device_attribute *attr,
+> +							const char *buf, size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct bma400_data *data = iio_priv(indio_dev);
+> +	int ret, val_int, val_fract, raw;
+> +
+> +	ret = iio_str_to_fixpoint(buf, 100000, &val_int, &val_fract);
+> +	if (ret)
+> +		return ret;
+> +
+> +	raw = usec_to_tapreg_raw(val_fract, tap_max2min_time);
+> +	if (raw < 0)
+> +		return -EINVAL;
+> +
+> +	ret = regmap_update_bits(data->regmap, BMA400_TAP_CONFIG1,
+> +				 BMA400_TAP_TICSTH_MSK,
+> +				 FIELD_PREP(BMA400_TAP_TICSTH_MSK, raw));
+> +	if (ret)
+> +		return ret;
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEVICE_ATTR_RW(in_accel_gesture_tap_maxtomin_time, 0);
+> +
+> +/*
+> + * Tap interrupts works with 200 Hz input data rate and the time based tap
+> + * controls are in the terms of data samples so the below calculation is
+> + * used to convert the configuration values into seconds.
+> + * e.g.:
+> + * 60 data samples * 0.005 ms = 0.3 seconds.
+> + * 80 data samples * 0.005 ms = 0.4 seconds.
+> + */
+> +
+> +/* quiet configuration values in seconds */
+> +static IIO_CONST_ATTR(in_accel_gesture_tap_reset_timeout_available,
+> +		      "0.3 0.4 0.5 0.6");
+> +
+> +/* tics_th configuration values in seconds */
+> +static IIO_CONST_ATTR(in_accel_gesture_tap_maxtomin_time_available,
+> +		      "0.03 0.045 0.06 0.09");
+> +
+> +/* quiet_dt configuration values in seconds */
+> +static IIO_CONST_ATTR(in_accel_gesture_doubletap_tap2_min_delay_available,
+> +		      "0.02 0.04 0.06 0.08");
+> +
+> +/* List of sensitivity values available to configure tap interrupts */
+> +static IIO_CONST_ATTR(in_accel_gesture_tap_value_available, "0 1 2 3 4 5 6 7");
+> +
+> +static struct attribute *bma400_event_attributes[] = {
+> +	&iio_const_attr_in_accel_gesture_tap_value_available.dev_attr.attr,
+> +	&iio_const_attr_in_accel_gesture_tap_reset_timeout_available.dev_attr.attr,
+> +	&iio_const_attr_in_accel_gesture_tap_maxtomin_time_available.dev_attr.attr,
+> +	&iio_const_attr_in_accel_gesture_doubletap_tap2_min_delay_available.dev_attr.attr,
+> +	&iio_dev_attr_in_accel_gesture_tap_maxtomin_time.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group bma400_event_attribute_group = {
+> +	.attrs = bma400_event_attributes,
+>  };
+>  
+>  #define BMA400_ACC_CHANNEL(_index, _axis) { \
+> @@ -1012,6 +1144,12 @@ static int bma400_read_event_config(struct iio_dev *indio_dev,
+>  		case IIO_EV_DIR_FALLING:
+>  			return FIELD_GET(BMA400_INT_GEN2_MSK,
+>  					 data->generic_event_en);
+> +		case IIO_EV_DIR_SINGLETAP:
+> +			return FIELD_GET(BMA400_S_TAP_MSK,
+> +					 data->tap_event_en_bitmask);
+> +		case IIO_EV_DIR_DOUBLETAP:
+> +			return FIELD_GET(BMA400_D_TAP_MSK,
+> +					 data->tap_event_en_bitmask);
+>  		default:
+>  			return -EINVAL;
+>  		}
+> @@ -1101,6 +1239,80 @@ static int bma400_activity_event_en(struct bma400_data *data,
+>  	return 0;
+>  }
+>  
+> +static int bma400_tap_event_en(struct bma400_data *data,
+> +			       enum iio_event_direction dir, int state)
+> +{
+> +	int ret;
+> +	unsigned int mask, field_value;
+> +
+> +	/*
+> +	 * Tap interrupts can be configured only in normal mode.
+> +	 * See table in section 4.3 "Power modes - performance modes" of
+> +	 * datasheet v1.2.
+> +	 */
+> +	if (data->power_mode != POWER_MODE_NORMAL)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * Tap interrupts are operating with the data rate of 200Hz.
+> +	 * See section 4.7 "Tap sensing interrupt" in datasheet v1.2.
+> +	 */
+> +	if (data->sample_freq.hz != 200 && state) {
+> +		dev_err(data->dev, "Invalid data rate for tap interrupts.\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = regmap_update_bits(data->regmap, BMA400_INT12_MAP_REG,
+> +				 BMA400_S_TAP_MSK,
+> +				 FIELD_PREP(BMA400_S_TAP_MSK, state));
+> +	if (ret)
+> +		return ret;
+> +
+> +	switch (dir) {
+> +	case IIO_EV_DIR_SINGLETAP:
+> +		mask = BMA400_S_TAP_MSK;
+> +		set_mask_bits(&field_value, BMA400_S_TAP_MSK,
+> +			      FIELD_PREP(BMA400_S_TAP_MSK, state));
+> +		break;
+> +	case IIO_EV_DIR_DOUBLETAP:
+> +		mask = BMA400_D_TAP_MSK;
+> +		set_mask_bits(&field_value, BMA400_D_TAP_MSK,
+> +			      FIELD_PREP(BMA400_D_TAP_MSK, state));
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG1_REG, mask,
+> +				 field_value);
+> +	if (ret)
+> +		return ret;
+> +
+> +	set_mask_bits(&data->tap_event_en_bitmask, mask, field_value);
+> +
+> +	return 0;
+> +}
+> +
+> +static int bma400_disable_adv_interrupt(struct bma400_data *data)
+> +{
+> +	int ret;
+> +
+> +	ret = regmap_write(data->regmap, BMA400_INT_CONFIG0_REG, 0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(data->regmap, BMA400_INT_CONFIG1_REG, 0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	data->tap_event_en_bitmask = 0;
+> +	data->generic_event_en = 0;
+> +	data->step_event_en = false;
+> +	data->activity_event_en = false;
+> +
+> +	return 0;
+> +}
+> +
+>  static int bma400_write_event_config(struct iio_dev *indio_dev,
+>  				     const struct iio_chan_spec *chan,
+>  				     enum iio_event_type type,
+> @@ -1111,10 +1323,20 @@ static int bma400_write_event_config(struct iio_dev *indio_dev,
+>  
+>  	switch (chan->type) {
+>  	case IIO_ACCEL:
+> -		mutex_lock(&data->mutex);
+> -		ret = bma400_activity_event_en(data, dir, state);
+> -		mutex_unlock(&data->mutex);
+> -		return ret;
+> +		switch (type) {
+> +		case IIO_EV_TYPE_MAG:
+> +			mutex_lock(&data->mutex);
+> +			ret = bma400_activity_event_en(data, dir, state);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		case IIO_EV_TYPE_GESTURE:
+> +			mutex_lock(&data->mutex);
+> +			ret = bma400_tap_event_en(data, dir, state);
+> +			mutex_unlock(&data->mutex);
+> +			return ret;
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	case IIO_STEPS:
+>  		mutex_lock(&data->mutex);
+>  		ret = bma400_steps_event_enable(data, state);
+> @@ -1157,10 +1379,13 @@ static int bma400_read_event_value(struct iio_dev *indio_dev,
+>  				   int *val, int *val2)
+>  {
+>  	struct bma400_data *data = iio_priv(indio_dev);
+> -	int ret, reg;
+> +	int ret, reg, reg_val, raw;
+>  
+> -	switch (chan->type) {
+> -	case IIO_ACCEL:
+> +	if (chan->type != IIO_ACCEL)
+> +		return -EINVAL;
+> +
+> +	switch (type) {
+> +	case IIO_EV_TYPE_MAG:
+>  		reg = get_gen_config_reg(dir);
+>  		if (reg < 0)
+>  			return -EINVAL;
+> @@ -1196,6 +1421,39 @@ static int bma400_read_event_value(struct iio_dev *indio_dev,
+>  		default:
+>  			return -EINVAL;
+>  		}
+> +	case IIO_EV_TYPE_GESTURE:
+> +		switch (info) {
+> +		case IIO_EV_INFO_VALUE:
+> +			ret = regmap_read(data->regmap, BMA400_TAP_CONFIG,
+> +					  &reg_val);
+> +			if (ret)
+> +				return ret;
+> +
+> +			*val = FIELD_GET(BMA400_TAP_SEN_MSK, reg_val);
+> +			return IIO_VAL_INT;
+> +		case IIO_EV_INFO_RESET_TIMEOUT:
+> +			ret = regmap_read(data->regmap, BMA400_TAP_CONFIG1,
+> +					  &reg_val);
+> +			if (ret)
+> +				return ret;
+> +
+> +			raw = FIELD_GET(BMA400_TAP_QUIET_MSK, reg_val);
+> +			*val = 0;
+> +			*val2 = tap_reset_timeout[raw];
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		case IIO_EV_INFO_TAP2_MIN_DELAY:
+> +			ret = regmap_read(data->regmap, BMA400_TAP_CONFIG1,
+> +					  &reg_val);
+> +			if (ret)
+> +				return ret;
+> +
+> +			raw = FIELD_GET(BMA400_TAP_QUIETDT_MSK, reg_val);
+> +			*val = 0;
+> +			*val2 = double_tap2_min_delay[raw];
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -1209,10 +1467,13 @@ static int bma400_write_event_value(struct iio_dev *indio_dev,
+>  				    int val, int val2)
+>  {
+>  	struct bma400_data *data = iio_priv(indio_dev);
+> -	int reg, ret;
+> +	int reg, ret, raw;
+>  
+> -	switch (chan->type) {
+> -	case IIO_ACCEL:
+> +	if (chan->type != IIO_ACCEL)
+> +		return -EINVAL;
+> +
+> +	switch (type) {
+> +	case IIO_EV_TYPE_MAG:
+>  		reg = get_gen_config_reg(dir);
+>  		if (reg < 0)
+>  			return -EINVAL;
+> @@ -1248,6 +1509,40 @@ static int bma400_write_event_value(struct iio_dev *indio_dev,
+>  		default:
+>  			return -EINVAL;
+>  		}
+> +	case IIO_EV_TYPE_GESTURE:
+> +		switch (info) {
+> +		case IIO_EV_INFO_VALUE:
+> +			if (val < 0 || val > 7)
+> +				return -EINVAL;
+> +
+> +			return regmap_update_bits(data->regmap,
+> +						  BMA400_TAP_CONFIG,
+> +						  BMA400_TAP_SEN_MSK,
+> +						  FIELD_PREP(BMA400_TAP_SEN_MSK,
+> +							     val));
+> +		case IIO_EV_INFO_RESET_TIMEOUT:
+> +			raw = usec_to_tapreg_raw(val2, tap_reset_timeout);
+> +			if (raw < 0)
+> +				return -EINVAL;
+> +
+> +			return regmap_update_bits(data->regmap,
+> +						  BMA400_TAP_CONFIG1,
+> +						  BMA400_TAP_QUIET_MSK,
+> +						  FIELD_PREP(BMA400_TAP_QUIET_MSK,
+> +							     raw));
+> +		case IIO_EV_INFO_TAP2_MIN_DELAY:
+> +			raw = usec_to_tapreg_raw(val2, double_tap2_min_delay);
+> +			if (raw < 0)
+> +				return -EINVAL;
+> +
+> +			return regmap_update_bits(data->regmap,
+> +						  BMA400_TAP_CONFIG1,
+> +						  BMA400_TAP_QUIETDT_MSK,
+> +						  FIELD_PREP(BMA400_TAP_QUIETDT_MSK,
+> +							     raw));
+> +		default:
+> +			return -EINVAL;
+> +		}
+>  	default:
+>  		return -EINVAL;
+>  	}
+> @@ -1287,6 +1582,7 @@ static const struct iio_info bma400_info = {
+>  	.write_event_config = bma400_write_event_config,
+>  	.write_event_value = bma400_write_event_value,
+>  	.read_event_value = bma400_read_event_value,
+> +	.event_attrs = &bma400_event_attribute_group,
+>  };
+>  
+>  static const struct iio_trigger_ops bma400_trigger_ops = {
+> @@ -1350,6 +1646,32 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+>  	if (ret || !data->status)
+>  		goto unlock_err;
+>  
+> +	/*
+> +	 * Disable all advance interrupts if interrupt engine overrun occurs.
+> +	 * See section 4.7 "Interrupt engine overrun" in datasheet v1.2.
+> +	 */
+> +	if (FIELD_GET(BMA400_INT_ENG_OVRUN_MSK, le16_to_cpu(data->status))) {
+> +		bma400_disable_adv_interrupt(data);
+> +		dev_err(data->dev, "Interrupt engine overrun\n");
+> +		goto unlock_err;
+> +	}
+> +
+> +	if (FIELD_GET(BMA400_INT_S_TAP_MSK, le16_to_cpu(data->status)))
+> +		iio_push_event(indio_dev,
+> +			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
+> +						  IIO_MOD_X_OR_Y_OR_Z,
+> +						  IIO_EV_TYPE_GESTURE,
+> +						  IIO_EV_DIR_SINGLETAP),
+> +			       timestamp);
+> +
+> +	if (FIELD_GET(BMA400_INT_D_TAP_MSK, le16_to_cpu(data->status)))
+> +		iio_push_event(indio_dev,
+> +			       IIO_MOD_EVENT_CODE(IIO_ACCEL, 0,
+> +						  IIO_MOD_X_OR_Y_OR_Z,
+> +						  IIO_EV_TYPE_GESTURE,
+> +						  IIO_EV_DIR_DOUBLETAP),
+> +			       timestamp);
+> +
+>  	if (FIELD_GET(BMA400_INT_GEN1_MSK, le16_to_cpu(data->status)))
+>  		ev_dir = IIO_EV_DIR_RISING;
+>  
+> @@ -1467,5 +1789,6 @@ int bma400_probe(struct device *dev, struct regmap *regmap, int irq,
+>  EXPORT_SYMBOL_NS(bma400_probe, IIO_BMA400);
+>  
+>  MODULE_AUTHOR("Dan Robertson <dan@dlrobertson.com>");
+> +MODULE_AUTHOR("Jagath Jog J <jagathjog1996@gmail.com>");
+>  MODULE_DESCRIPTION("Bosch BMA400 triaxial acceleration sensor core");
+>  MODULE_LICENSE("GPL");
 
-Not everything is virtualization :)
-
-Jason
