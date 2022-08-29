@@ -2,421 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B78C0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E4CC0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbiH2Qhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
+        id S230280AbiH2QiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbiH2Qho (ORCPT
+        with ESMTP id S230256AbiH2Qh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:37:44 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C3E677E9F;
-        Mon, 29 Aug 2022 09:37:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661791062; x=1693327062;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version;
-  bh=7NF1IiosrU5djm/OVO0V5dnopZzsCi5IGSId+/mJZVw=;
-  b=fLrz1c7JCbTXH9fHW4c1MdyEz+fsZ/quTCdAfGnCGLSGvUKzwm1+Z3hn
-   9TVDG7s0lPnXswUygXmm1zbuzR1NrW9dTW1ccf49BNXeOH7o5x54fJI2t
-   LShMED8f9KVqZJO5tS2YnekCCCTeekqAY5dtqjFQfqSvFBMH9xAtLWh+O
-   St1KP5g1XLsIm/S0R1lUn6eXhTUNP+u1YhGdBoqU/78C5WsiQSutIM37b
-   IMkuT3C7ASOEKypIliZzXyVO0JVC4fUqOlyi4CjgvS1xbknbM4boCm1IA
-   Qb7eGPtfTEo1baO/UOciRbTQphKN0K8p0mm8/dNWB3t+tMsbd/sgobk5o
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="188504602"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Aug 2022 09:37:41 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 29 Aug 2022 09:37:31 -0700
-Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 29 Aug 2022 09:37:30 -0700
-From:   Jerry Ray <jerry.ray@microchip.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <MPUSWLinux@microchip.com>,
-        Jerry Ray <jerry.ray@microchip.com>
-Subject: [PATCH v4 2/2] dts: arm: at91: Add SAMA5D3-EDS Board
-Date:   Mon, 29 Aug 2022 11:37:27 -0500
-Message-ID: <20220829163727.29841-2-jerry.ray@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220829163727.29841-1-jerry.ray@microchip.com>
-References: <20220829163727.29841-1-jerry.ray@microchip.com>
+        Mon, 29 Aug 2022 12:37:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0329972FE0;
+        Mon, 29 Aug 2022 09:37:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B32E3B81163;
+        Mon, 29 Aug 2022 16:37:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53127C433D6;
+        Mon, 29 Aug 2022 16:37:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661791074;
+        bh=eibLJ3CUrG9hNqELWlk54EEgp0CwfpUXbipAy8OJ/Rc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hjTi3NWRZRKarMRukkPrPlrfbczzHlJrlbZ0wlwbgd4zthARraC2jsoROA+OQCSkZ
+         539PvLT0rdKRHveV6Cr3+/OaCGsWNeois6d/TPW26i3sSXQdmPNS7L1dMR/fVYng5R
+         x0W/aPsZSr1pzRX8WIzZYDgHBVopO9Y+TQri4btlOf5zK2lDMqnJswu1AeOZ6ZL00w
+         24xdvflP/FnBKkkSzzmcAy2z/P3UXqw12Egr08Y/WsW12429mu1fx99T+7XmV0nbWH
+         YRClY1cF40LvtNtc5VJGWpy6VcqFdwzhmsJAmw+0IHlu3sAmGdexg6lIusy9oWrjGN
+         wlj6nVOk5+GKw==
+Date:   Mon, 29 Aug 2022 17:03:34 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Regus, Ciprian" <Ciprian.Regus@analog.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        "u.kleine-koenig@pengutronix.de" <u.kleine-koenig@pengutronix.de>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/3] drivers: iio: adc: Rename the LTC249x iio device
+Message-ID: <20220829170334.70dbebdc@jic23-huawei>
+In-Reply-To: <c76a746e0a6448b2a39a4ce7e5baa285@analog.com>
+References: <20220822125106.1106798-1-ciprian.regus@analog.com>
+        <20220822125106.1106798-4-ciprian.regus@analog.com>
+        <0f778952-1909-1038-8f9a-3a7d7f12d6e1@metafoo.de>
+        <c76a746e0a6448b2a39a4ce7e5baa285@analog.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The SAMA5D3-EDS board is an Ethernet Development Platform allowing for
-evaluating many Microchip ethernet switch and PHY products.  Various
-daughter cards can connect up via an RGMII connector or an RMII connector.
+On Mon, 29 Aug 2022 06:13:52 +0000
+"Regus, Ciprian" <Ciprian.Regus@analog.com> wrote:
 
-The EDS board is not intended for stand-alone use and has no ethernet
-capabilities when no daughter board is connected.  As such, this device
-tree is intended to be used with a DT overlay defining the add-on board.
-To better ensure consistency, some items are defined here as a form of
-documentation so that all add-on overlays will use the same terms.
+> Hi Lars,
+> 
+> Thanks for the review. I have one question before going further
+> with this patch.
+> 
+> > On 8/22/22 14:51, Ciprian Regus wrote:  
+> > > Set the iio device's name based on the chip used.  
+> > 
+> > While the change is correct it breaks the ABI. This needs a bit of a
+> > better explanation what is being done, why, what are the potential
+> > problems, why do we want to do it anyway.  
+> 
+> The reason for this change is to make it easier to identify the device
+> (by having a generic name) when using an IIO client. The current name is
+> based on the i2c_client's kobj name, which has the format
+> "i2c_instance -i2c_address " (e.g. 1-0076). So, the renaming would allow
+> for interacting with the device without knowing which bus it's connected
+> to.
+> 
+> Also, as far as I can see, the IIO ABI states that the device's name is
+> "Typically a part number".
+> 
+> For the reason given, would this change be considered an
+> improvement, or is the ABI breaking too much of a drawback?
+> (in which case I'll just drop this patch)
 
-Google search keywords: "Microchip SAMA5D3-EDS"
+Hi Ciprian
 
-Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
----
-v3->v4:
- - Fixed regulators as necessary to get the board to boot from SD Card.
-v2->v3:
- - Alphabetized pinctrl entries.
- - cleaned up a warning in the regulators section.
- - License tweaked to 'OR MIT'
- - Included Makefile change
-v1->v2:
- - Modified the compatible field in the device tree to reflect Microchip
-   Ethernet Development System Board.
----
- arch/arm/boot/dts/Makefile             |   1 +
- arch/arm/boot/dts/at91-sama5d3_eds.dts | 309 +++++++++++++++++++++++++
- 2 files changed, 310 insertions(+)
- create mode 100644 arch/arm/boot/dts/at91-sama5d3_eds.dts
+There are a set of drivers that do it similarly to this (amongst other
+things because I wasn't paying attention a few years back).
 
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 112931c17a40..29defb067123 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
-@@ -61,6 +61,7 @@ dtb-$(CONFIG_SOC_SAM_V7) += \
- 	at91-sama5d2_icp.dtb \
- 	at91-sama5d2_ptc_ek.dtb \
- 	at91-sama5d2_xplained.dtb \
-+	at91-sama5d3_eds.dtb \
- 	at91-sama5d3_xplained.dtb \
- 	at91-dvk_som60.dtb \
- 	at91-gatwick.dtb \
-diff --git a/arch/arm/boot/dts/at91-sama5d3_eds.dts b/arch/arm/boot/dts/at91-sama5d3_eds.dts
-new file mode 100644
-index 000000000000..2e6d94b30916
---- /dev/null
-+++ b/arch/arm/boot/dts/at91-sama5d3_eds.dts
-@@ -0,0 +1,309 @@
-+// SPDX-License-Identifier: GPL-2.0+ OR MIT
-+/*
-+ * at91-sama5d3_eds.dts - Device Tree file for the SAMA5D3 Ethernet
-+ *    Development System board.
-+ *
-+ *  Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries
-+ *		  2022 Jerry Ray <jerry.ray@microchip.com>
-+ */
-+/dts-v1/;
-+#include "sama5d36.dtsi"
-+
-+/ {
-+	model = "SAMA5D3 Ethernet Development System";
-+	compatible = "microchip,sama5d3-eds", "atmel,sama5d3",
-+		     "atmel,sama5";
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	clocks {
-+		slow_xtal {
-+			clock-frequency = <32768>;
-+		};
-+
-+		main_xtal {
-+			clock-frequency = <12000000>;
-+		};
-+	};
-+
-+	gpio_keys {
-+		compatible = "gpio-keys";
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_key_gpio>;
-+
-+		button-3 {
-+			label = "PB_USER";
-+			gpios = <&pioE 29 GPIO_ACTIVE_LOW>;
-+			linux,code = <0x104>;
-+			wakeup-source;
-+		};
-+	};
-+
-+	memory@20000000 {
-+		reg = <0x20000000 0x10000000>;
-+	};
-+
-+	vcc_3v3_reg: BUCK_REG1 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "VCC_3V3";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-always-on;
-+	};
-+
-+	vcc_2v5_reg: LDO_REG2 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "VCC_2V5";
-+		regulator-min-microvolt = <2500000>;
-+		regulator-max-microvolt = <2500000>;
-+		regulator-always-on;
-+		vin-supply = <&vcc_3v3_reg>;
-+	};
-+
-+	vcc_1v8_reg: LDO_REG3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "VCC_1V8";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		regulator-always-on;
-+		vin-supply = <&vcc_3v3_reg>;
-+	};
-+
-+	vcc_1v2_reg: BUCK_REG4 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "VCC_1V2";
-+		regulator-min-microvolt = <1200000>;
-+		regulator-max-microvolt = <1200000>;
-+		regulator-always-on;
-+	};
-+
-+	vcc_mmc0_reg: fixedregulator_mmc0 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "mmc0-card-supply";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-always-on;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_vcc_mmc0_reg_gpio>;
-+		gpio = <&pioE 2 GPIO_ACTIVE_LOW>;
-+	};
-+};
-+
-+&can0 {
-+	status = "okay";
-+};
-+
-+&dbgu {
-+	status = "okay";
-+};
-+
-+&ebi {
-+	pinctrl-0 = <&pinctrl_ebi_nand_addr>;
-+	pinctrl-names = "default";
-+	status = "okay";
-+
-+	nand_controller: nand-controller {
-+		status = "okay";
-+
-+		nand@3 {
-+			reg = <0x3 0x0 0x2>;
-+			atmel,rb = <0>;
-+			nand-bus-width = <8>;
-+			nand-ecc-mode = "hw";
-+			nand-ecc-strength = <4>;
-+			nand-ecc-step-size = <512>;
-+			nand-on-flash-bbt;
-+			label = "atmel_nand";
-+
-+			partitions {
-+				compatible = "fixed-partitions";
-+				#address-cells = <1>;
-+				#size-cells = <1>;
-+
-+				at91bootstrap@0 {
-+					label = "at91bootstrap";
-+					reg = <0x0 0x40000>;
-+				};
-+
-+				bootloader@40000 {
-+					label = "bootloader";
-+					reg = <0x40000 0xc0000>;
-+				};
-+
-+				bootloaderenvred@100000 {
-+					label = "bootloader env redundant";
-+					reg = <0x100000 0x40000>;
-+				};
-+
-+				bootloaderenv@140000 {
-+					label = "bootloader env";
-+					reg = <0x140000 0x40000>;
-+				};
-+
-+				dtb@180000 {
-+					label = "device tree";
-+					reg = <0x180000 0x80000>;
-+				};
-+
-+				kernel@200000 {
-+					label = "kernel";
-+					reg = <0x200000 0x600000>;
-+				};
-+
-+				rootfs@800000 {
-+					label = "rootfs";
-+					reg = <0x800000 0x0f800000>;
-+				};
-+			};
-+		};
-+	};
-+};
-+
-+&i2c0 {
-+	pinctrl-0 = <&pinctrl_i2c0_pu>;
-+	status = "okay";
-+};
-+
-+&i2c1 {
-+	status = "okay";
-+};
-+
-+&i2c2 {
-+	dmas = <0>, <0>;	/* Do not use DMA for i2c2 */
-+	pinctrl-0 = <&pinctrl_i2c2_pu>;
-+	status = "okay";
-+};
-+
-+&mmc0 {
-+	pinctrl-0 = <&pinctrl_mmc0_clk_cmd_dat0 &pinctrl_mmc0_dat1_3
-+		     &pinctrl_mmc0_dat4_7 &pinctrl_mmc0_cd>;
-+	vmmc-supply = <&vcc_mmc0_reg>;
-+	vqmmc-supply = <&vcc_3v3_reg>;
-+	status = "okay";
-+	slot@0 {
-+		reg = <0>;
-+		bus-width = <8>;
-+		cd-gpios = <&pioE 0 GPIO_ACTIVE_LOW>;
-+	};
-+};
-+
-+&pinctrl {
-+	board {
-+		pinctrl_i2c0_pu: i2c0_pu {
-+			atmel,pins =
-+				<AT91_PIOA 30 AT91_PERIPH_A AT91_PINCTRL_PULL_UP>,
-+				<AT91_PIOA 31 AT91_PERIPH_A AT91_PINCTRL_PULL_UP>;
-+		};
-+
-+		pinctrl_i2c2_pu: i2c2_pu {
-+			atmel,pins =
-+				<AT91_PIOA 18 AT91_PERIPH_B AT91_PINCTRL_PULL_UP>,
-+				<AT91_PIOA 19 AT91_PERIPH_B AT91_PINCTRL_PULL_UP>;
-+		};
-+
-+		pinctrl_key_gpio: key_gpio_0 {
-+			atmel,pins =
-+				<AT91_PIOE 29 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
-+		};
-+
-+		pinctrl_mmc0_cd: mmc0_cd {
-+			atmel,pins =
-+				<AT91_PIOE 0 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
-+		};
-+
-+		/* Reserved for reset signal to the RGMII connector. */
-+		pinctrl_rgmii_rstn: rgmii_rstn {
-+			atmel,pins =
-+				<AT91_PIOD 18 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP_DEGLITCH>;
-+		};
-+
-+		/* Reserved for an interrupt line from the RMII and RGMII connectors. */
-+		pinctrl_spi_irqn: spi_irqn {
-+			atmel,pins =
-+				<AT91_PIOB 28 AT91_PERIPH_GPIO AT91_PINCTRL_DEGLITCH>;
-+		};
-+
-+		pinctrl_spi0_cs: spi0_cs_default {
-+			atmel,pins =
-+				<AT91_PIOD 13 AT91_PERIPH_GPIO AT91_PINCTRL_NONE
-+				 AT91_PIOD 16 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
-+		};
-+
-+		pinctrl_spi1_cs: spi1_cs_default {
-+			atmel,pins = <AT91_PIOC 25 AT91_PERIPH_GPIO AT91_PINCTRL_NONE
-+				      AT91_PIOC 28 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
-+		};
-+
-+		pinctrl_usba_vbus: usba_vbus {
-+			atmel,pins =
-+				<AT91_PIOE 9 AT91_PERIPH_GPIO AT91_PINCTRL_DEGLITCH>;
-+		};
-+
-+		pinctrl_usb_default: usb_default {
-+			atmel,pins =
-+				<AT91_PIOE 3 AT91_PERIPH_GPIO AT91_PINCTRL_NONE
-+				 AT91_PIOE 4 AT91_PERIPH_GPIO AT91_PINCTRL_NONE>;
-+		};
-+
-+		/* Reserved for VBUS fault interrupt. */
-+		pinctrl_vbusfault_irqn: vbusfault_irqn {
-+			atmel,pins =
-+				<AT91_PIOE 5 AT91_PERIPH_GPIO AT91_PINCTRL_DEGLITCH>;
-+		};
-+
-+		pinctrl_vcc_mmc0_reg_gpio: vcc_mmc0_reg_gpio_default {
-+			atmel,pins = <AT91_PIOE 2 AT91_PERIPH_GPIO AT91_PINCTRL_PULL_UP>;
-+		};
-+	};
-+};
-+
-+&spi0 {
-+	pinctrl-names = "default", "cs";
-+	pinctrl-1 = <&pinctrl_spi0_cs>;
-+	cs-gpios = <&pioD 13 0>, <0>, <0>, <&pioD 16 0>;
-+	status = "okay";
-+};
-+
-+&spi1 {
-+	pinctrl-names = "default", "cs";
-+	pinctrl-1 = <&pinctrl_spi1_cs>;
-+	cs-gpios = <&pioC 25 0>, <0>, <0>, <&pioC 28 0>;
-+	status = "okay";
-+};
-+
-+&tcb0 {
-+	timer0: timer@0 {
-+		compatible = "atmel,tcb-timer";
-+		reg = <0>;
-+	};
-+
-+	timer1: timer@1 {
-+		compatible = "atmel,tcb-timer";
-+		reg = <1>;
-+	};
-+};
-+
-+&usb0 {
-+	atmel,vbus-gpio = <&pioE 9 GPIO_ACTIVE_HIGH>;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_usba_vbus>;
-+	status = "okay";
-+};
-+
-+&usb1 {
-+	atmel,vbus-gpio = <0
-+			   &pioE 3 GPIO_ACTIVE_HIGH
-+			   &pioE 4 GPIO_ACTIVE_HIGH
-+			  >;
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_usb_default>;
-+	num-ports = <3>;
-+	status = "okay";
-+};
-+
-+&usb2 {
-+	status = "okay";
-+};
--- 
-2.17.1
+Generally we've considered them unfixable unfortunately because it's
+common to use name to find the device - so userspace breakage is
+very likely.
+
+If we are introducing new device support thought here can't be a platform
+already relying on the old naming.  So weird though it seems, can you fix
+this just for the newly supported models and leave the old ones 'broken'?
+(with a big note on why!)  Perhaps do that by leaving .name = NULL for the
+older parts and doing a check on that to select behaviour.
+
+Thanks,
+
+Jonathan
+
+> 
+> Thanks,
+> Ciprian
+> >   
+> > >
+> > > Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>
+> > > ---
+> > >   drivers/iio/adc/ltc2496.c      | 1 +
+> > >   drivers/iio/adc/ltc2497-core.c | 2 +-
+> > >   drivers/iio/adc/ltc2497.c      | 2 ++
+> > >   drivers/iio/adc/ltc2497.h      | 1 +
+> > >   4 files changed, 5 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/iio/adc/ltc2496.c b/drivers/iio/adc/ltc2496.c
+> > > index 98338104c24a..86470f49e8ca 100644
+> > > --- a/drivers/iio/adc/ltc2496.c
+> > > +++ b/drivers/iio/adc/ltc2496.c
+> > > @@ -89,6 +89,7 @@ static void ltc2496_remove(struct spi_device *spi)
+> > >
+> > >   static struct chip_info ltc2496_info = {
+> > >   	.resolution = 16,
+> > > +	.name = "ltc2496"
+> > >   };
+> > >
+> > >   static const struct of_device_id ltc2496_of_match[] = {
+> > > diff --git a/drivers/iio/adc/ltc2497-core.c b/drivers/iio/adc/ltc2497-core.c
+> > > index b2752399402c..6dd9ab601904 100644
+> > > --- a/drivers/iio/adc/ltc2497-core.c
+> > > +++ b/drivers/iio/adc/ltc2497-core.c
+> > > @@ -169,7 +169,7 @@ int ltc2497core_probe(struct device *dev, struct  
+> > iio_dev *indio_dev)  
+> > >   	struct ltc2497core_driverdata *ddata = iio_priv(indio_dev);
+> > >   	int ret;
+> > >
+> > > -	indio_dev->name = dev_name(dev);
+> > > +	indio_dev->name = ddata->chip_info->name;
+> > >   	indio_dev->info = &ltc2497core_info;
+> > >   	indio_dev->modes = INDIO_DIRECT_MODE;
+> > >   	indio_dev->channels = ltc2497core_channel;
+> > > diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
+> > > index bb5e0d4301e2..a0aad71c8130 100644
+> > > --- a/drivers/iio/adc/ltc2497.c
+> > > +++ b/drivers/iio/adc/ltc2497.c
+> > > @@ -99,9 +99,11 @@ static int ltc2497_remove(struct i2c_client *client)
+> > >   static struct chip_info ltc2497_info[] = {
+> > >   	[TYPE_LTC2497] = {
+> > >   		.resolution = 16,
+> > > +		.name = "ltc2497"
+> > >   	},
+> > >   	[TYPE_LTC2499] = {
+> > >   		.resolution = 24,
+> > > +		.name = "ltc2499"
+> > >   	}
+> > >   };
+> > >
+> > > diff --git a/drivers/iio/adc/ltc2497.h b/drivers/iio/adc/ltc2497.h
+> > > index f4d939cfd48b..0e86e38248ee 100644
+> > > --- a/drivers/iio/adc/ltc2497.h
+> > > +++ b/drivers/iio/adc/ltc2497.h
+> > > @@ -12,6 +12,7 @@ enum chip_type {
+> > >
+> > >   struct chip_info {
+> > >   	u32 resolution;
+> > > +	char *name;
+> > >   };
+> > >
+> > >   struct ltc2497core_driverdata {  
+> >   
+> 
 
