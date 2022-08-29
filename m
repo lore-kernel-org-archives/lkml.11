@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B63EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC3CECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231382AbiH2LQO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:16:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40568 "EHLO
+        id S229527AbiH2LQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231517AbiH2LN6 (ORCPT
+        with ESMTP id S231563AbiH2LOG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:13:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 808173341A;
-        Mon, 29 Aug 2022 04:10:08 -0700 (PDT)
+        Mon, 29 Aug 2022 07:14:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BDAC63F15;
+        Mon, 29 Aug 2022 04:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 136E7B80F2B;
-        Mon, 29 Aug 2022 11:07:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CEC9C433D6;
-        Mon, 29 Aug 2022 11:07:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E6EC611C2;
+        Mon, 29 Aug 2022 11:07:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9730CC433D6;
+        Mon, 29 Aug 2022 11:07:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771255;
-        bh=WBJLOiKgmCJhSoNPFPHvzfExi2tX4P6FT9wYsvgQ9M4=;
+        s=korg; t=1661771270;
+        bh=2jqoQJ423K4tztFRdNO+0o7cvRFn3+7ghfhrBOmWg9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pyJT+D+Zvgln8GbW1772Kg9Oz3YuLmkAx9LFN240+hmE6TGLXUMdAEJnwu6oD7DHx
-         BF8gRxusAJMeEcbDrnq21ck60j/vwCMQiQcYLs4skTHnvN2Gf/xa8Md8sFgCgPkrBr
-         +t5d0zJ9l4yF2Pxl/F6quJW5p0DlKa3sfCIEuyQM=
+        b=xqM/g+uRClzJasfOMljJ/2Mw+i7OrU9qHSLaQccXejkmzRcutZZdEi2PO3z2FdWUJ
+         rEfnkvnPFT5ZWVwHwSg2z0A1NYOK+M6EjwCSwlg/B6irjTqPVi/GgK9Eh8feT8FM4r
+         bGmqYmp0JO5h0yUrwPCfiT00xpEe7hjuSxboA+tI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 44/86] tcp: tweak len/truesize ratio for coalesce candidates
-Date:   Mon, 29 Aug 2022 12:59:10 +0200
-Message-Id: <20220829105758.337074804@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Deren Wu <deren.wu@mediatek.com>, Felix Fietkau <nbd@nbd.name>
+Subject: [PATCH 5.19 011/158] mt76: mt7921: fix command timeout in AP stop period
+Date:   Mon, 29 Aug 2022 12:57:41 +0200
+Message-Id: <20220829105809.301913190@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,147 +48,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Deren Wu <deren.wu@mediatek.com>
 
-[ Upstream commit 240bfd134c592791fdceba1ce7fc3f973c33df2d ]
+commit 9d958b60ebc2434f2b7eae83d77849e22d1059eb upstream.
 
-tcp_grow_window() is using skb->len/skb->truesize to increase tp->rcv_ssthresh
-which has a direct impact on advertized window sizes.
+Due to AP stop improperly, mt7921 driver would face random command timeout
+by chip fw problem. Migrate AP start/stop process to .start_ap/.stop_ap and
+congiure BSS network settings in both hooks.
 
-We added TCP coalescing in linux-3.4 & linux-3.5:
+The new flow is shown below.
+* AP start
+    .start_ap()
+      configure BSS network resource
+      set BSS to connected state
+    .bss_info_changed()
+      enable fw beacon offload
 
-Instead of storing skbs with one or two MSS in receive queue (or OFO queue),
-we try to append segments together to reduce memory overhead.
+* AP stop
+    .bss_info_changed()
+      disable fw beacon offload (skip this command)
+    .stop_ap()
+      set BSS to disconnected state (beacon offload disabled automatically)
+      destroy BSS network resource
 
-High performance network drivers tend to cook skb with 3 parts :
-
-1) sk_buff structure (256 bytes)
-2) skb->head contains room to copy headers as needed, and skb_shared_info
-3) page fragment(s) containing the ~1514 bytes frame (or more depending on MTU)
-
-Once coalesced into a previous skb, 1) and 2) are freed.
-
-We can therefore tweak the way we compute len/truesize ratio knowing
-that skb->truesize is inflated by 1) and 2) soon to be freed.
-
-This is done only for in-order skb, or skb coalesced into OFO queue.
-
-The result is that low rate flows no longer pay the memory price of having
-low GRO aggregation factor. Same result for drivers not using GRO.
-
-This is critical to allow a big enough receiver window,
-typically tcp_rmem[2] / 2.
-
-We have been using this at Google for about 5 years, it is due time
-to make it upstream.
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Soheil Hassas Yeganeh <soheil@google.com>
-Cc: Neal Cardwell <ncardwell@google.com>
-Cc: Yuchung Cheng <ycheng@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 116c69603b01 ("mt76: mt7921: Add AP mode support")
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Deren Wu <deren.wu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_input.c | 38 ++++++++++++++++++++++++++++++--------
- 1 file changed, 30 insertions(+), 8 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c |    2 
+ drivers/net/wireless/mediatek/mt76/mt7921/main.c     |   47 +++++++++++++++----
+ drivers/net/wireless/mediatek/mt76/mt7921/mcu.c      |    5 --
+ drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h   |    2 
+ 4 files changed, 43 insertions(+), 13 deletions(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index d35e88b5ffcbe..33a3fb04ac4df 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -454,11 +454,12 @@ static void tcp_sndbuf_expand(struct sock *sk)
-  */
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+@@ -1403,6 +1403,8 @@ int mt76_connac_mcu_uni_add_bss(struct m
+ 		else
+ 			conn_type = CONNECTION_INFRA_AP;
+ 		basic_req.basic.conn_type = cpu_to_le32(conn_type);
++		/* Fully active/deactivate BSS network in AP mode only */
++		basic_req.basic.active = enable;
+ 		break;
+ 	case NL80211_IFTYPE_STATION:
+ 		if (vif->p2p)
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -653,15 +653,6 @@ static void mt7921_bss_info_changed(stru
+ 		}
+ 	}
  
- /* Slow part of check#2. */
--static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
-+static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb,
-+			     unsigned int skbtruesize)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	/* Optimize this! */
--	int truesize = tcp_win_from_space(sk, skb->truesize) >> 1;
-+	int truesize = tcp_win_from_space(sk, skbtruesize) >> 1;
- 	int window = tcp_win_from_space(sk, sock_net(sk)->ipv4.sysctl_tcp_rmem[2]) >> 1;
- 
- 	while (tp->rcv_ssthresh <= window) {
-@@ -471,7 +472,27 @@ static int __tcp_grow_window(const struct sock *sk, const struct sk_buff *skb)
- 	return 0;
+-	if (changed & BSS_CHANGED_BEACON_ENABLED && info->enable_beacon) {
+-		struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
+-
+-		mt76_connac_mcu_uni_add_bss(phy->mt76, vif, &mvif->sta.wcid,
+-					    true);
+-		mt7921_mcu_sta_update(dev, NULL, vif, true,
+-				      MT76_STA_INFO_STATE_NONE);
+-	}
+-
+ 	if (changed & (BSS_CHANGED_BEACON |
+ 		       BSS_CHANGED_BEACON_ENABLED))
+ 		mt7921_mcu_uni_add_beacon_offload(dev, hw, vif,
+@@ -1500,6 +1491,42 @@ mt7921_channel_switch_beacon(struct ieee
+ 	mt7921_mutex_release(dev);
  }
  
--static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
-+/* Even if skb appears to have a bad len/truesize ratio, TCP coalescing
-+ * can play nice with us, as sk_buff and skb->head might be either
-+ * freed or shared with up to MAX_SKB_FRAGS segments.
-+ * Only give a boost to drivers using page frag(s) to hold the frame(s),
-+ * and if no payload was pulled in skb->head before reaching us.
-+ */
-+static u32 truesize_adjust(bool adjust, const struct sk_buff *skb)
++static int
++mt7921_start_ap(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
 +{
-+	u32 truesize = skb->truesize;
++	struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
++	struct mt7921_phy *phy = mt7921_hw_phy(hw);
++	struct mt7921_dev *dev = mt7921_hw_dev(hw);
++	int err;
 +
-+	if (adjust && !skb_headlen(skb)) {
-+		truesize -= SKB_TRUESIZE(skb_end_offset(skb));
-+		/* paranoid check, some drivers might be buggy */
-+		if (unlikely((int)truesize < (int)skb->len))
-+			truesize = skb->truesize;
-+	}
-+	return truesize;
++	err = mt76_connac_mcu_uni_add_bss(phy->mt76, vif, &mvif->sta.wcid,
++					  true);
++	if (err)
++		return err;
++
++	err = mt7921_mcu_set_bss_pm(dev, vif, true);
++	if (err)
++		return err;
++
++	return mt7921_mcu_sta_update(dev, NULL, vif, true,
++				     MT76_STA_INFO_STATE_NONE);
 +}
 +
-+static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb,
-+			    bool adjust)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	int room;
-@@ -480,15 +501,16 @@ static void tcp_grow_window(struct sock *sk, const struct sk_buff *skb)
- 
- 	/* Check #1 */
- 	if (room > 0 && !tcp_under_memory_pressure(sk)) {
-+		unsigned int truesize = truesize_adjust(adjust, skb);
- 		int incr;
- 
- 		/* Check #2. Increase window, if skb with such overhead
- 		 * will fit to rcvbuf in future.
- 		 */
--		if (tcp_win_from_space(sk, skb->truesize) <= skb->len)
-+		if (tcp_win_from_space(sk, truesize) <= skb->len)
- 			incr = 2 * tp->advmss;
- 		else
--			incr = __tcp_grow_window(sk, skb);
-+			incr = __tcp_grow_window(sk, skb, truesize);
- 
- 		if (incr) {
- 			incr = max_t(int, incr, 2 * skb->len);
-@@ -782,7 +804,7 @@ static void tcp_event_data_recv(struct sock *sk, struct sk_buff *skb)
- 	tcp_ecn_check_ce(sk, skb);
- 
- 	if (skb->len >= 128)
--		tcp_grow_window(sk, skb);
-+		tcp_grow_window(sk, skb, true);
++static void
++mt7921_stop_ap(struct ieee80211_hw *hw, struct ieee80211_vif *vif)
++{
++	struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
++	struct mt7921_phy *phy = mt7921_hw_phy(hw);
++	struct mt7921_dev *dev = mt7921_hw_dev(hw);
++	int err;
++
++	err = mt7921_mcu_set_bss_pm(dev, vif, false);
++	if (err)
++		return;
++
++	mt76_connac_mcu_uni_add_bss(phy->mt76, vif, &mvif->sta.wcid, false);
++}
++
+ const struct ieee80211_ops mt7921_ops = {
+ 	.tx = mt7921_tx,
+ 	.start = mt7921_start,
+@@ -1510,6 +1537,8 @@ const struct ieee80211_ops mt7921_ops =
+ 	.conf_tx = mt7921_conf_tx,
+ 	.configure_filter = mt7921_configure_filter,
+ 	.bss_info_changed = mt7921_bss_info_changed,
++	.start_ap = mt7921_start_ap,
++	.stop_ap = mt7921_stop_ap,
+ 	.sta_state = mt7921_sta_state,
+ 	.sta_pre_rcu_remove = mt76_sta_pre_rcu_remove,
+ 	.set_key = mt7921_set_key,
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+@@ -1020,7 +1020,7 @@ mt7921_mcu_uni_bss_bcnft(struct mt7921_d
+ 				 &bcnft_req, sizeof(bcnft_req), true);
  }
  
- /* Called to compute a smoothed rtt estimate. The data fed to this
-@@ -4761,7 +4783,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		 * and trigger fast retransmit.
- 		 */
- 		if (tcp_is_sack(tp))
--			tcp_grow_window(sk, skb);
-+			tcp_grow_window(sk, skb, true);
- 		kfree_skb_partial(skb, fragstolen);
- 		skb = NULL;
- 		goto add_sack;
-@@ -4849,7 +4871,7 @@ static void tcp_data_queue_ofo(struct sock *sk, struct sk_buff *skb)
- 		 * and trigger fast retransmit.
- 		 */
- 		if (tcp_is_sack(tp))
--			tcp_grow_window(sk, skb);
-+			tcp_grow_window(sk, skb, false);
- 		skb_condense(skb);
- 		skb_set_owner_r(skb, sk);
- 	}
--- 
-2.35.1
-
+-static int
++int
+ mt7921_mcu_set_bss_pm(struct mt7921_dev *dev, struct ieee80211_vif *vif,
+ 		      bool enable)
+ {
+@@ -1049,9 +1049,6 @@ mt7921_mcu_set_bss_pm(struct mt7921_dev
+ 	};
+ 	int err;
+ 
+-	if (vif->type != NL80211_IFTYPE_STATION)
+-		return 0;
+-
+ 	err = mt76_mcu_send_msg(&dev->mt76, MCU_CE_CMD(SET_BSS_ABORT),
+ 				&req_hdr, sizeof(req_hdr), false);
+ 	if (err < 0 || !enable)
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
+@@ -280,6 +280,8 @@ int mt7921_wpdma_reset(struct mt7921_dev
+ int mt7921_wpdma_reinit_cond(struct mt7921_dev *dev);
+ void mt7921_dma_cleanup(struct mt7921_dev *dev);
+ int mt7921_run_firmware(struct mt7921_dev *dev);
++int mt7921_mcu_set_bss_pm(struct mt7921_dev *dev, struct ieee80211_vif *vif,
++			  bool enable);
+ int mt7921_mcu_sta_update(struct mt7921_dev *dev, struct ieee80211_sta *sta,
+ 			  struct ieee80211_vif *vif, bool enable,
+ 			  enum mt76_sta_info_state state);
 
 
