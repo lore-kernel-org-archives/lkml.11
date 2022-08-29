@@ -2,82 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEA3ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:17:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD352ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:20:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbiH2TRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 15:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
+        id S229761AbiH2TUq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 15:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbiH2TR3 (ORCPT
+        with ESMTP id S229453AbiH2TUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 15:17:29 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65A24861CC
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 12:17:29 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id 142so9134605pfu.10
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 12:17:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=LqiSQtiYuVL1ecXee8OUOZdp37JPK7bP8P9AZBcEbkg=;
-        b=gmykxVysfm0PCJsyeiiVv8HQmm2DfyR3whf2iTrx8/Wefg2dJYJH070OT4pxr7poye
-         YZ7afeUPoDrO0ifShSYLo9rWHAolwFW3284rKb8kqr0DEyXxdp/g+ZDlk8fHjqvGSeQ/
-         m0KyyxXSDA3ZbvJMXXZwlvRAvFtn+ZTM5TSMA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=LqiSQtiYuVL1ecXee8OUOZdp37JPK7bP8P9AZBcEbkg=;
-        b=HbCsQR4VXfdfAFzE4y8QSlzFbW+K0jShYEJ3qtsUtwrUzCVoYGnzdcpuxMg/Q4iQ8C
-         3gGK6iRxDgaDGPqe32gYRrt6YTf9v5iR/IZDYwSNXvb0KVu8epdCde4SGLe3Ma4/vqSn
-         29zSprUW/KFAFIgoKFKP2CJE9CQ28VM+ky2fwBEuLzl8+KUc2KbmIItEUhCiURdohJSM
-         PrztGD4v5rMCWgt6sSEFpTX3H2Juni74hCC97pxe2Erdv4Cui4E6l6HK6JAhilU69337
-         ngofLMN+rdfMuQWTTJCZe4GthFeqla3PfYlhCviQWd82xg0mjVsMxyRxYinIc3jCNf/i
-         ZYow==
-X-Gm-Message-State: ACgBeo3qt2E6fP11riFJy1T0OBz6iaVY3k/dDnrY4IBL2lkHWBRMKg6o
-        3Ujnm4hLd5b8yDuVdNrdjcIsMQ==
-X-Google-Smtp-Source: AA6agR55WB9B1KbGgkrObbUtotJ4LSnqj4D9RgZOumlYEm9jEzQBP2J3CSEiQYdmCFNnwTQI1SkJkg==
-X-Received: by 2002:a63:e401:0:b0:42b:6394:f72 with SMTP id a1-20020a63e401000000b0042b63940f72mr15521402pgi.572.1661800648965;
-        Mon, 29 Aug 2022 12:17:28 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id mi6-20020a17090b4b4600b001f1acb6c3ebsm7140643pjb.34.2022.08.29.12.17.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 12:17:27 -0700 (PDT)
-From:   Kees Cook <keescook@chromium.org>
-To:     luto@amacapital.net, kuniyu@amazon.com, wad@chromium.org
-Cc:     Kees Cook <keescook@chromium.org>, linux-kernel@vger.kernel.org,
-        ayudutta@amazon.com, brauner@kernel.org, kuni1840@gmail.com,
-        syzbot+ab17848fe269b573eb71@syzkaller.appspotmail.com
-Subject: Re: [PATCH v3] seccomp: Move copy_seccomp() to no failure path.
-Date:   Mon, 29 Aug 2022 12:17:19 -0700
-Message-Id: <166180063676.3312920.11804502368990110703.b4-ty@chromium.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220823154532.82913-1-kuniyu@amazon.com>
-References: <20220823154532.82913-1-kuniyu@amazon.com>
+        Mon, 29 Aug 2022 15:20:44 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2156E2CA;
+        Mon, 29 Aug 2022 12:20:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=pc0wLZlozQihEHAnbmXgpg/tgBsnYovxYc8EA7xIwkY=; b=Dbys/SM9U3H1kdLBaiRbBxOZpN
+        /yxlUeV67c+OSKGxd4fXR9kByDvWq5gzTu+oKKS1HinnxiEFCvh87kr0wamnbsh2SIDA9FMy4KKPD
+        iBWB69vytO3qlfyMVhGN9ec+JAxA1XJGeuM+TND0Px/jvqJsk+Ua1wbqEjOlCTA/uD8w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oSkJB-00EzsU-Sl; Mon, 29 Aug 2022 21:20:29 +0200
+Date:   Mon, 29 Aug 2022 21:20:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jerry Ray <jerry.ray@microchip.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH 2/2] net: dsa: LAN9303: Add basic support for LAN9354
+Message-ID: <Yw0RfRXGZKl+ZwOi@lunn.ch>
+References: <20220829180037.31078-1-jerry.ray@microchip.com>
+ <20220829180037.31078-2-jerry.ray@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829180037.31078-2-jerry.ray@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 23 Aug 2022 08:45:32 -0700, Kuniyuki Iwashima wrote:
-> Our syzbot instance reported memory leaks in do_seccomp() [0], similar
-> to the report [1].  It shows that we miss freeing struct seccomp_filter
-> and some objects included in it.
-> 
-> We can reproduce the issue with the program below [2] which calls one
-> seccomp() and two clone() syscalls.
-> 
-> [...]
+> -	if ((reg >> 16) != LAN9303_CHIP_ID) {
+> -		dev_err(chip->dev, "expecting LAN9303 chip, but found: %X\n",
+> +	if (((reg >> 16) != LAN9303_CHIP_ID) &&
+> +	    ((reg >> 16) != LAN9354_CHIP_ID)) {
+> +		dev_err(chip->dev, "unexpected device found: LAN%4.4X\n",
+>  			reg >> 16);
+>  		return -ENODEV;
+>  	}
+> @@ -884,7 +889,7 @@ static int lan9303_check_device(struct lan9303 *chip)
+>  	if (ret)
+>  		dev_warn(chip->dev, "failed to disable switching %d\n", ret);
+>  
+> -	dev_info(chip->dev, "Found LAN9303 rev. %u\n", reg & 0xffff);
+> +	dev_info(chip->dev, "Found LAN%4.4X rev. %u\n", (reg >> 16), reg & 0xffff);
+>  
+>  	ret = lan9303_detect_phy_setup(chip);
+>  	if (ret) {
+> diff --git a/drivers/net/dsa/lan9303_mdio.c b/drivers/net/dsa/lan9303_mdio.c
+> index bbb7032409ba..d12c55fdc811 100644
+> --- a/drivers/net/dsa/lan9303_mdio.c
+> +++ b/drivers/net/dsa/lan9303_mdio.c
+> @@ -158,6 +158,7 @@ static void lan9303_mdio_shutdown(struct mdio_device *mdiodev)
+>  
+>  static const struct of_device_id lan9303_mdio_of_match[] = {
+>  	{ .compatible = "smsc,lan9303-mdio" },
+> +	{ .compatible = "microchip,lan9354-mdio" },
 
-Applied to for-linus/seccomp, thanks!
+Please validate that what you find on the board actually is what the
+compatible says it should be. If you don't validate it, there will be
+some DT blobs that have the wrong value, but probe fine. But then you
+cannot actually make use of the compatible string in the driver to do
+something different between the 9303 and the 9354 because some boards
+have the wrong compatible....
 
-[1/1] seccomp: Move copy_seccomp() to no failure path.
-      https://git.kernel.org/kees/c/6d17452707ca
-
--- 
-Kees Cook
-
+     Andrew
