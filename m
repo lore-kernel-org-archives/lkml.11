@@ -2,79 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92552ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:12:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F289ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiH2BM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 21:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
+        id S229637AbiH2BPn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 21:15:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiH2BMz (ORCPT
+        with ESMTP id S229580AbiH2BPl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 21:12:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D2D4220FA;
-        Sun, 28 Aug 2022 18:12:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7D7160EC3;
-        Mon, 29 Aug 2022 01:12:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D01C433D6;
-        Mon, 29 Aug 2022 01:12:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661735574;
-        bh=zFqjuwqIWouk+2CU9A+4UkGZ/bu8uW65TiM98RFbFJo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=LziecWemS/NQiruZfoaLBNXhnZ+rRBS9CwwJQnwFEyZYACssk0C6duY8jgQZDkVmI
-         afIF1VqOrCyYf4uqB1dgqw/+V9c1wkrfnruMVYOcF9swSlRIK5eFKlWn9nhO5tpojt
-         D4NIOtzc40MBVpPBNhv5/lY8r6w9rzMZFOZcA+D9o6rupnontXZiscq3M6fmP34x1A
-         Oy9Zns4uw+/1B62ODqKWiVrHP91lnWqUk6i52w+5X8oZdEkJHNt98MsoenvT5mkUse
-         DzTfjwS9EcDxwnhdq8JUsTZhAOX2tmZC89Nbo2Tf+s0SD2pstVgBm0qvvK+E7fHEEp
-         c5igHTdQlxOrg==
-Received: by mail-vk1-f182.google.com with SMTP id 134so3098110vkz.11;
-        Sun, 28 Aug 2022 18:12:54 -0700 (PDT)
-X-Gm-Message-State: ACgBeo329AZnfuPeKyfeimDJsLIUKPrLjUoR6zqh6XKLcK778lXGdGqz
-        M9PdhNPJ29zOFNhgUqsBMJf/KD7kKQ9sQXKDSQ==
-X-Google-Smtp-Source: AA6agR5oS9oQQOdGApVtuYwt0XsdrLxayRvoV8H9X3o1gYde808KCwua7rcGgBSHbiJpO1EjXbMbseD1+AvGadM/wa4=
-X-Received: by 2002:a05:6122:d86:b0:37d:3fe:df43 with SMTP id
- bc6-20020a0561220d8600b0037d03fedf43mr2496106vkb.15.1661735573306; Sun, 28
- Aug 2022 18:12:53 -0700 (PDT)
+        Sun, 28 Aug 2022 21:15:41 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B378D21275;
+        Sun, 28 Aug 2022 18:15:40 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MGC8L38RZzkWhr;
+        Mon, 29 Aug 2022 09:12:02 +0800 (CST)
+Received: from [10.174.178.165] (10.174.178.165) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 09:15:37 +0800
+Subject: Re: [PATCH -next] gpio: mockup: remove gpio debugfs when remove
+ device
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+CC:     Bamvor Jian Zhang <bamv2005@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220816145225.84283-1-weiyongjun1@huawei.com>
+ <CAMRc=McG5Pf4b5HymV1iaFAGqMMEtyYSQi23z9LmjvzmbF4rYg@mail.gmail.com>
+ <7d1b0bb8-838e-1a1e-886f-507b75066df1@huawei.com>
+ <CAMRc=McDo2MbebGGueqacEbs11r8c_MHr8WaTktGzkVWZD2K4A@mail.gmail.com>
+From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
+Message-ID: <81de4aa6-a207-2be8-00c3-7bed0f0b82e4@huawei.com>
+Date:   Mon, 29 Aug 2022 09:15:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20220826220017.188066-1-marek.bykowski@gmail.com>
-In-Reply-To: <20220826220017.188066-1-marek.bykowski@gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Sun, 28 Aug 2022 20:12:41 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKGgZOSdWQ2ithipvrRAYwt-vOL1z9-RM++-_h6pA=C_Q@mail.gmail.com>
-Message-ID: <CAL_JsqKGgZOSdWQ2ithipvrRAYwt-vOL1z9-RM++-_h6pA=C_Q@mail.gmail.com>
-Subject: Re: [PATCH] of/fdt: Don't calculate initrd_start from the DT if
- 'linux,initrd-end' is 0
-To:     Marek Bykowski <marek.bykowski@gmail.com>
-Cc:     Frank Rowand <frowand.list@gmail.com>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAMRc=McDo2MbebGGueqacEbs11r8c_MHr8WaTktGzkVWZD2K4A@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.165]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 5:00 PM Marek Bykowski <marek.bykowski@gmail.com> wrote:
->
-> If the 'linux,initrd-end' property is 0 and 'linux,initrd-start' property
-> is other than 0, then phys_initrd_size calculated from 'linux,initrd-end'
-> - 'linux,initrd-start' is negative, that subsequently gets converted to
-> a high positive value as being u64.
->
-> For example if 'linux,initrd-start' is 8800_0000, 'linux,initrd-end' is 0,
-> then the phys_initrd_size calculated is ffff_ffff_7800_0000 (= 0 -
-> 8800_0000 = -8800_0000 + ULLONG_MAX + 1). On my system, FVP ARM64,
-> the intird memory region with the (wrong) size is added to the bootmem and
-> then attempted to being paged in paging_init() that results in the kernel
-> oops as shown below.
+Hi Bart,
 
-Shouldn't we just check that start < end?
+On 2022/8/28 22:00, Bartosz Golaszewski wrote:
+> On Mon, Aug 22, 2022 at 3:27 PM weiyongjun (A) <weiyongjun1@huawei.com> wrote:
+>>
+>> Hi Bart,
+>>
+>> On 2022/8/19 20:49, Bartosz Golaszewski wrote:
+>>> On Tue, Aug 16, 2022 at 4:34 PM Wei Yongjun <weiyongjun1@huawei.com> wrote:
+>>>>
+>>>> GPIO mockup debugfs is created in gpio_mockup_probe() but
+>>>> forgot to remove when remove device. This patch add a devm
+>>>> managed callback for removing them.
+>>>>
+>>>
+>>> The tag -next is for patches that address issues that are in next but
+>>> not yet in master.
+>>>>
+>>
+>>
+>>>
+>>> This isn't very relevant as the module needs to be unloaded anyway in
+>>> order to reconfigure the simulated device but I'll apply it as it's
+>>> technically correct. Did you see we have a new one - gpio-sim - that
+>>> uses configfs?
+>>>
+>>> Bart
+>>>
+>>
+>>
+>> I am using gpio-mockup as a interrupt-controller with the change[1],
+>> it works will with overfs dts[2], and can success mockup device and
+>> trigger the irq. But when switch to gpio-sim, device can not be created
+>> by dts[3]. Not sure what's wrong with it. Any suggestion?
+>>
+> 
+> I see you submitted a patch series for gpio-sim - does it fix this issue?
 
-Can we check this somewhere not DT specific (and also not arch
-specific)? Then we don't have to worry if any other method of setting
-initrd could have the same error.
 
-Rob
+Yes, after that patch series, gpio-sim works well in my use case.
+
+Thanks,
+Wei Yongjun
