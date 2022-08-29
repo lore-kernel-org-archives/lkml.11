@@ -2,123 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9070BECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C074DECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiH2IcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35280 "EHLO
+        id S229794AbiH2Icy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229787AbiH2Ib4 (ORCPT
+        with ESMTP id S229684AbiH2Icw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 04:31:56 -0400
-X-Greylist: delayed 152617 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 Aug 2022 01:31:54 PDT
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F19A578A2;
-        Mon, 29 Aug 2022 01:31:54 -0700 (PDT)
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 27T8VQAf031749;
-        Mon, 29 Aug 2022 17:31:26 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 27T8VQAf031749
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1661761886;
-        bh=jM2GfWj0FdGrXTHGuEWcFJbYLhnDvtm2N6670C3hXuo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=z/rQq1fGXv/Wkc/66aeZM3GS06eTxP6v+3RwdXeNvpdyyFlwPdYcsg4yVq1wKIV36
-         U20bz5d3JYXVBcwShBsUoJsrhqB8n0xrDdDStzHVmRaCzBJ7nQNiblVY+CE7IEzpSK
-         Ua7IZiMsdGHOVTRegjb7j4Cv7/0lAghMN4imoNrILUhWuFmcZf4GaWWNmFqmP7Tnhv
-         rib9geJcQmtvRKqp3JenlMbxQ3NZD3n1UxE8MXNtycljQvGwyRO+AhLfE+bKUjRvBB
-         YKWRb+C8Rn4X3XVyvc0KbRy58tm4J//fxh5igSji8zQDWcTQ0zzkKlL6ZM3IeSLyJ7
-         VJD8iFYIomTQg==
-X-Nifty-SrcIP: [209.85.210.43]
-Received: by mail-ot1-f43.google.com with SMTP id v2-20020a056830090200b006397457afecso4753728ott.13;
-        Mon, 29 Aug 2022 01:31:26 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2mUMHDhDOhXQJKIPzyETdpbyaT+mKTPubmZxCdpUsIc7xTWTZZ
-        Ugymz09LqwBWohjssKIP5hC5rwM1dnU9bBHG99I=
-X-Google-Smtp-Source: AA6agR4Jk7pSX33ZfGLaJm23afhMJutz94PMIODqagwuZ5cSLveuwlw9UpXXXDz/3Hmv1zZA7JSjvkKHg2htYx6/8Fc=
-X-Received: by 2002:a9d:4806:0:b0:637:cdca:f8d3 with SMTP id
- c6-20020a9d4806000000b00637cdcaf8d3mr6254060otf.225.1661761885384; Mon, 29
- Aug 2022 01:31:25 -0700 (PDT)
+        Mon, 29 Aug 2022 04:32:52 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0582757257
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:32:50 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.43:56878.266017777
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-123.150.8.42 (unknown [10.64.8.43])
+        by 189.cn (HERMES) with SMTP id F26B61001F8;
+        Mon, 29 Aug 2022 16:32:48 +0800 (CST)
+Received: from  ([123.150.8.42])
+        by gateway-153622-dep-84fc4d489d-2xtjd with ESMTP id cfadb1fba75e4e5c839080c542a553f1 for rppt@kernel.org;
+        Mon, 29 Aug 2022 16:32:49 CST
+X-Transaction-ID: cfadb1fba75e4e5c839080c542a553f1
+X-Real-From: chensong_2000@189.cn
+X-Receive-IP: 123.150.8.42
+X-MEDUSA-Status: 0
+Sender: chensong_2000@189.cn
+Message-ID: <520fb512-8d2f-15e1-fd00-a7343e136d1c@189.cn>
+Date:   Mon, 29 Aug 2022 16:32:47 +0800
 MIME-Version: 1.0
-References: <20220825091517.30842-1-lukas.bulwahn@gmail.com>
- <CAKwvOdkY=ye4PKi8KwP-ux73pwZs+J_Oq3wR7ep8S81=aCWtqA@mail.gmail.com> <384c1908-6602-1a07-875f-0b2e56a06707@kernel.org>
-In-Reply-To: <384c1908-6602-1a07-875f-0b2e56a06707@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 29 Aug 2022 17:30:32 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQSYHseN5n-WYKtBYHJCUJUquSbkq34WnuUO9q1geEDYQ@mail.gmail.com>
-Message-ID: <CAK7LNAQSYHseN5n-WYKtBYHJCUJUquSbkq34WnuUO9q1geEDYQ@mail.gmail.com>
-Subject: Re: [PATCH] scripts: remove obsolete gcc-ld script
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "H . Peter Anvin" <hpa@linux.intel.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        kernel-janitors@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Martin Liska <martin.liska@suse.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 2/2] tools/testing/memblock: define pr_warn_ratelimited
+Content-Language: en-US
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     karolinadrobnik@gmail.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org
+References: <1661755140-3331-1-git-send-email-chensong_2000@189.cn>
+ <Ywx32C4/kE2WgR75@kernel.org>
+From:   Song Chen <chensong_2000@189.cn>
+In-Reply-To: <Ywx32C4/kE2WgR75@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 4:08 PM Jiri Slaby <jirislaby@kernel.org> wrote:
->
-> On 25. 08. 22, 19:19, Nick Desaulniers wrote:
-> > + Jiri in case this needs to be carried downstream.
->
-> Thanks.
->
-> > On Thu, Aug 25, 2022 at 2:15 AM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
-> >>
-> >> Since commit 8564ed2b3888 ("Kbuild, lto: Add a gcc-ld script to let run gcc
-> >> as ld") in 2014, there was not specific work on this the gcc-ld script
-> >> other than treewide clean-ups.
-> >>
-> >> There are no users within the kernel tree, and probably no out-of-tree
-> >> users either, and there is no dedicated maintainer in MAINTAINERS.
->
-> There are out-of-tree users.
->
-> >> Delete this obsolete gcc-ld script.
-> >>
-> >> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> >
-> > No callers in-tree; happy to bring it back though should there later
-> > be. Thanks for the patch.
->
-> I agree to have this downstream-only for the time being. We have updates
-> for it queued, so we'd only start tracking the full content now...
->
-> BTW the script is not nice at all. How do the clang people cope with the
-> issue? (Running gcc-ld instead of ld with proper arguments when linking
-> using (full) LTO. For example "-z now" -> "-Wl,-z,now".)
+Hi,
 
 
+在 2022/8/29 16:24, Mike Rapoport 写道:
+> On Mon, Aug 29, 2022 at 02:39:00PM +0800, Song Chen wrote:
+>> Commit 14d9a675fd0d("mm: Ratelimited mirrored memory related warning
+>> messages") introduced pr_warn_ratelimited in memblock.c, which breaks
+>> tools/test/memblock, below is the message:
+>>
+>> /usr/bin/ld: memblock.o: in function `memblock_find_in_range.constprop.0':
+>> memblock.c:(.text+0x4603): undefined reference to `pr_warn_ratelimited'
+>> /usr/bin/ld: memblock.o: in function `memblock_alloc_range_nid':
+>> memblock.c:(.text+0x786a): undefined reference to `pr_warn_ratelimited'
+>> collect2: error: ld returned 1 exit status
+>>
+>> A fake pr_warn_ratelimited needs to be defined in printk.h like other
+>> prink functions.
+> 
+> This is fixed by commit 0a7e91528202 ("memblock tests: fix compilation errors")
 
-This comes from the difference in which layer LTO is implemented.
+Is there a commit taking care of 902c2d91582c(mirrored_kernelcore) ? it 
+brakes memblock test too. If not, i have fixed it and will send a patch 
+soon.
 
+Song
 
-
-GCC LTO is a feature of the GCC compiler.
-GNU binutils is agnostic about LTO.
-So, you need to use $(CC) as the linker driver.
-scripts/gcc-ld adds the '-Wl,' prefix to linker options.
-
-
-
-
-Clang LTO works in cooperation with the LLD linker.
-So, the direct use of $(LD) works.
-scripts/gcc-ld is unneeded.
-
-
-
-
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+>   
+>> Signed-off-by: Song Chen <chensong_2000@189.cn>
+>> ---
+> 
