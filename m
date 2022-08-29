@@ -2,101 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 817AEECAAA5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5772FECAAA1
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230196AbiH2R1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50968 "EHLO
+        id S230479AbiH2R1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:27:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiH2R1K (ORCPT
+        with ESMTP id S229513AbiH2R1S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:27:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B78B8E0FA;
-        Mon, 29 Aug 2022 10:27:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF263B8119C;
-        Mon, 29 Aug 2022 17:27:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C3FC433C1;
-        Mon, 29 Aug 2022 17:27:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661794026;
-        bh=LngYf8P+LI6UrANiDYF1odyCTinChzauYVwqE9jZYEk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JnRPX5hGG/m2kiEPTmqWQY6QvgVVXyPU+eqjZ5agyPQQsKK/io9g7B/AvQtz+lCWz
-         WVq2GV+8lgaASRcL9+bJx3+eLbPu577683lRTJblVXNFKm5HMT3ClCSrLxO8bSsMg/
-         qZ4enOxWahqgcMobW+Wg1Q6JelWe1Fc+bsUMKPC8ikwv4y7RMdAW0cS7gBxVQivfLd
-         TkBudKMcPDibwIOgu0m2d6ccR8x3vxTuTvTWhJjpCqpiI+qDh+/6VfzGzdtUJEjXDq
-         yz4Et2enr5+rLrzo8WH75UqHVmRGgebfu9NXqI+JYY0zBMnYLXtYkVgzbB1PowQSbe
-         yKAdGB86SAeCQ==
-Date:   Mon, 29 Aug 2022 22:56:54 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     Qiang Yu <quic_qianyu@quicinc.com>, quic_hemantk@quicinc.com,
-        loic.poulain@linaro.org, quic_jhugo@quicinc.com,
-        mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_cang@quicinc.com,
-        ath11k@lists.infradead.org
-Subject: Re: [PATCH v3 1/1] bus: mhi: host: Fix up null pointer access in
- mhi_irq_handler
-Message-ID: <20220829172654.GA84762@thinkpad>
-References: <1658459838-30802-1-git-send-email-quic_qianyu@quicinc.com>
- <20220726080636.GE5522@workstation>
- <87czdrrc95.fsf@kernel.org>
- <20220729142221.GA9937@thinkpad>
- <87h71vc98l.fsf@kernel.org>
+        Mon, 29 Aug 2022 13:27:18 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F59910B0
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:27:17 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id u6so11016760eda.12
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=gXzsOE1CShzICjrF5qGy2ierXGFwu1QBu0gbN37zalE=;
+        b=Ut/Yn1l3ZfKq3kllusnwCW49U1+1e9wmphOxJZL9GkGYiMI92RHLiKlBhN3oEZvanI
+         7JYgCGOtlhsspYwQS7VYStSwZpo7WvkVcklDEeY8RpOVreWefdxEoXKv29L7rmxzpHKR
+         /hWDL1eQgn7kgPaex1M/knUHaYiw/VvWxr2uY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=gXzsOE1CShzICjrF5qGy2ierXGFwu1QBu0gbN37zalE=;
+        b=Yb0wPY9PeESp9XCNtrx+m1KwumOlWYZNM/+DzgZ4VSIueg2Igm0nL0wcoRt8SocoTv
+         CDzynexlN1P+BZ5u7mejwyUOR0RtlSpe4BuegY0I+zm8aWgotkuscnDQiZWObyHXNGNU
+         MswMa0sZdd4U7Uz02pnoUW//aCuDc/BXZbM1K9yYURrl5apA7z6FpHC7fW7YW05BsNS2
+         PKznclbab3086g49ygzZINSogMFhnqtBvGKDdDmA9/T54h8JigShfNVZ87wKxW2a4Apo
+         xAGLxGryyLejwOrUnjz9g/aucIFKjiELHTtdpuw4E9hxl1xA+ud5FK4O3opBKgVRTiVL
+         k8ww==
+X-Gm-Message-State: ACgBeo36S3VBXGe13stGrIaBM3PN6eti6ZRx/wCoqj1ceoeDa9gWXM9U
+        WYINhOOGV6sVVE8fLB9cmnoumZvWp6O+D0x8
+X-Google-Smtp-Source: AA6agR7CvGwLGGhWqCkjjZ6UGbKWWmygPl8QCPqZSUh4Pmv1F4pPgBPFXS1yYiJaAlR8NEKFNJ1oVg==
+X-Received: by 2002:a05:6402:1290:b0:448:181c:37ec with SMTP id w16-20020a056402129000b00448181c37ecmr10055644edv.191.1661794035541;
+        Mon, 29 Aug 2022 10:27:15 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
+        by smtp.gmail.com with ESMTPSA id b2-20020a1709063ca200b007413360a48fsm4287679ejh.50.2022.08.29.10.27.15
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 10:27:15 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id bd26-20020a05600c1f1a00b003a5e82a6474so4790683wmb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:27:15 -0700 (PDT)
+X-Received: by 2002:a05:600c:657:b0:3a5:e4e6:ee24 with SMTP id
+ p23-20020a05600c065700b003a5e4e6ee24mr7189742wmm.68.1661793592665; Mon, 29
+ Aug 2022 10:19:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87h71vc98l.fsf@kernel.org>
+References: <20220824163100.224449-1-david@redhat.com> <20220824163100.224449-2-david@redhat.com>
+ <0db131cf-013e-6f0e-c90b-5c1e840d869c@nvidia.com> <ea380cf0-acda-aaba-fb63-2834da91b66b@redhat.com>
+ <CALu+AoThhou7z+JCyv44AxGWDLDt2b7h0W6wcKRsJyLvSR1iQA@mail.gmail.com>
+ <fe7aee66-d9f7-e472-a13f-e4c5aa176cca@redhat.com> <CALu+AoRwVfr=9KabOLUQigWwCtP5RLQ1YaKbG75ZVM9E-bW2ZQ@mail.gmail.com>
+ <CAHk-=wit-DmhMfQErY29JSPjFgebx_Ld+pnerc4J2Ag990WwAA@mail.gmail.com> <29fb251b-4622-4eb6-538d-bab6ac6a76f6@nvidia.com>
+In-Reply-To: <29fb251b-4622-4eb6-538d-bab6ac6a76f6@nvidia.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 29 Aug 2022 10:19:36 -0700
+X-Gmail-Original-Message-ID: <CAHk-=whScqgJaP71QBBS9ik0kUrZBDLw+ZvzF4AxEo7eviGwaw@mail.gmail.com>
+Message-ID: <CAHk-=whScqgJaP71QBBS9ik0kUrZBDLw+ZvzF4AxEo7eviGwaw@mail.gmail.com>
+Subject: Re: [PATCH RFC 1/2] coding-style.rst: document BUG() and WARN() rules
+ ("do not crash the kernel")
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Dave Young <dyoung@redhat.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-doc@vger.kernel.org, kexec@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        David Laight <David.Laight@aculab.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andy Whitcroft <apw@canonical.com>,
+        Joe Perches <joe@perches.com>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        Stephen Johnston <sjohnsto@redhat.com>,
+        Prarit Bhargava <prarit@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 07:20:10PM +0300, Kalle Valo wrote:
-> Manivannan Sadhasivam <mani@kernel.org> writes:
-> 
-> > On Tue, Jul 26, 2022 at 08:53:58PM +0300, Kalle Valo wrote:
-> >> Manivannan Sadhasivam <mani@kernel.org> writes:
-> >> 
-> >> > +ath11k, Kalle
-> >> >
-> >> > On Fri, Jul 22, 2022 at 11:17:18AM +0800, Qiang Yu wrote:
-> >> >> The irq handler for a shared IRQ ought to be prepared for running
-> >> >> even now it's being freed. So let's check the pointer used by
-> >> >> mhi_irq_handler to avoid null pointer access since it is probably
-> >> >> released before freeing IRQ.
-> >> >> 
-> >> >> Signed-off-by: Qiang Yu <quic_qianyu@quicinc.com>
-> >> >
-> >> > Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-> >> 
-> >> This fixes the crash and my regression tests pass now, thanks. But
-> >> please see my question below.
-> >> 
-> >> Tested-by: Kalle Valo <kvalo@kernel.org>
-> >> 
-> >
-> > Thanks Kalle!
-> 
-> I just tested v6.0-rc3 and it's still crashing. What's the plan to get
-> this fix to Linus?
+On Sun, Aug 28, 2022 at 9:49 PM John Hubbard <jhubbard@nvidia.com> wrote:
+>
+> ...here. I count ~1000 calls to panic() in today's kernel, to a
+> function in kernel/panic.c that shows no hint of being removed, nor
+> even deprecated.
 
-Sorry for the delay. Just sent the PR to Greg for including it as a fix for
-v6.0.
+Heh. I guess we never finished the panic() removal.
 
-Thanks,
-Mani
+It's been decades, I suspect we ended up deciding that the bootup
+failures might as well continue to panic.
 
-> 
-> -- 
-> https://patchwork.kernel.org/project/linux-wireless/list/
-> 
-> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Anyway, please don't use it. It's one of those things that should
+never ever trigger, and mainly for something like "oops, I ran out of
+memory during boot" etc.
 
--- 
-மணிவண்ணன் சதாசிவம்
+Oh, I'm sure it's crept into other places too, but that doesn't make it ok.
+
+                 Linus
