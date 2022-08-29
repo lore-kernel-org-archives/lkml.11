@@ -2,71 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D21ABC0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19372ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:05:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiH2ODb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:03:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45672 "EHLO
+        id S229512AbiH2OFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiH2OD3 (ORCPT
+        with ESMTP id S229596AbiH2OFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:03:29 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5D9832C8;
-        Mon, 29 Aug 2022 07:03:26 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1oSfMG-0000t9-Ln; Mon, 29 Aug 2022 16:03:20 +0200
-Date:   Mon, 29 Aug 2022 16:03:20 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     john.p.donnelly@oracle.com
-Cc:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org,
-        syzkaller@googlegroups.com, george.kennedy@oracle.com,
-        vegard.nossum@oracle.com, bridge@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: Re: [PATCH nf] netfilter: ebtables: reject blobs that don't provide
- all entry points
-Message-ID: <20220829140320.GB27814@breakpoint.cc>
-References: <20220820070331.48817-1-harshit.m.mogalapalli@oracle.com>
- <20220820173555.131326-1-fw@strlen.de>
- <93eca5ab-46ee-241a-b01c-a6131b28ba29@oracle.com>
+        Mon, 29 Aug 2022 10:05:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A14D12774;
+        Mon, 29 Aug 2022 07:05:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 988FA60EFF;
+        Mon, 29 Aug 2022 14:05:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88248C433D6;
+        Mon, 29 Aug 2022 14:05:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661781905;
+        bh=cwGcbZqZdPxg0smFd+twhvuBiWgn2+zCOBNbQ5ivJG4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Z2lGtrVQjiHKIC8t1Pf7QpN0PZXlSRlDSt3cuUJnxG3KwzApk3h7O+J9BUN2bIkFs
+         nBrv4RTv/KY/0fYG8VbRo10l9QeMPYKWLL0cy46ihZyy8k7wz1CqmKLAEqSGYqC2Vo
+         lH45AbZ8qfI+/HiIm58Ydo2rTvpj9gMrbOKk1SlC4QN8N6m3TxqzMOcCC/xxCdkK2b
+         o0a00YkvbdeZpKcV4QxZC7sodEA9K46Rv8dWQxFII0sVDnaEbAPnxBne+Oo2IE805y
+         iuG30VXxw3H+XYisfQt8OOM4XsH6GWUY+Q6tGu5Ht+R/d7GNAaSg9PYsdDyECJd+mR
+         FxyXyGt57F5sA==
+Date:   Mon, 29 Aug 2022 16:05:00 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Jules Maselbas <jmaselbas@kalray.eu>,
+        David Howells <dhowells@redhat.com>,
+        linux-afs@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH] fs/afs: Fix repeated word in comments
+Message-ID: <20220829140500.muhtvecw5e3jwmez@wittgenstein>
+References: <20220826100052.22945-8-jmaselbas@kalray.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <93eca5ab-46ee-241a-b01c-a6131b28ba29@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220826100052.22945-8-jmaselbas@kalray.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-john.p.donnelly@oracle.com <john.p.donnelly@oracle.com> wrote:
-> On 8/20/22 12:35 PM, Florian Westphal wrote:
-> > For some reason ebtables reject blobs that provide entry points that are
-> > not supported by the table.
-> > 
-> > What it should instead reject is the opposite, i.e. rulesets that
-> > DO NOT provide an entry point that is supported by the table.
-> > 
-> > t->valid_hooks is the bitmask of hooks (input, forward ...) that will
-> > see packets.  So, providing an entry point that is not support is
-> > harmless (never called/used), but the reverse is NOT, this will cause
-> > crash because the ebtables traverser doesn't expect a NULL blob for
-> > a location its receiving packets for.
-> > 
-> > Instead of fixing all the individual checks, do what iptables is doing and
-> > reject all blobs that doesn't provide the expected hooks.
-> > 
-> > Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> > Reported-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> > Signed-off-by: Florian Westphal <fw@strlen.de>
-> 
-> Hi,
-> 
->  Could you please add the panic stack mentioned above  and syzkaller
-> reproducer ID to the commit text ?
+[Cc afs development list + maintainer]
 
-I did not see a reproducer ID.  What ended up in the tree is this:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7997eff82828304b780dc0a39707e1946d6f1ebf
+On Fri, Aug 26, 2022 at 12:00:36PM +0200, Jules Maselbas wrote:
+> Remove redundant word `the`.
+> 
+> CC: linux-fsdevel@vger.kernel.org
+> Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
+> ---
+>  fs/afs/flock.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/afs/flock.c b/fs/afs/flock.c
+> index c4210a3964d8..801fe305878f 100644
+> --- a/fs/afs/flock.c
+> +++ b/fs/afs/flock.c
+> @@ -152,7 +152,7 @@ static void afs_next_locker(struct afs_vnode *vnode, int error)
+>  }
+>  
+>  /*
+> - * Kill off all waiters in the the pending lock queue due to the vnode being
+> + * Kill off all waiters in the pending lock queue due to the vnode being
+>   * deleted.
+>   */
+>  static void afs_kill_lockers_enoent(struct afs_vnode *vnode)
+> -- 
+> 2.17.1
+> 
