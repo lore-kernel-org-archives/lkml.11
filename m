@@ -2,101 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDB4ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E75B1ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbiH2OVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44286 "EHLO
+        id S230218AbiH2OVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229544AbiH2OVl (ORCPT
+        with ESMTP id S229703AbiH2OVl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 10:21:41 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DD078769E
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82591883DA
         for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:21:38 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1oSfdw-0008Vp-3l; Mon, 29 Aug 2022 16:21:36 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1oSfdv-00060Y-Gz; Mon, 29 Aug 2022 16:21:35 +0200
-Date:   Mon, 29 Aug 2022 16:21:35 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Marco Felsch <m.felsch@pengutronix.de>
-Cc:     linux-gpio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: Re: [PATCH 1/2] gpio: Add gpio latch driver
-Message-ID: <20220829142135.GB24324@pengutronix.de>
-References: <20220825094132.1268174-1-s.hauer@pengutronix.de>
- <20220825094132.1268174-2-s.hauer@pengutronix.de>
- <20220826055306.tdsmdambl6fjoiop@pengutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661782898; x=1693318898;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=NUz1jJcbJ1/Hsp5cNd+z53+9gjXd6c9c4lg/Ll6+Nvk=;
+  b=EH/SoiKjBdB6sTf8ySgGoGsJ46kJ8akN63IiwJhGpNViVYIsuSmiL6/G
+   VXaoFmDcQj1LVX37sdwJf0Yph4VdnysSvIrlcEeSxGRYmcjeklKAvS9ag
+   /Pnd9kRg4zTtnGb/fib8liJVbntTCuVPTvWd+2xDvFWLvHypgzF8PMFET
+   /IRUhX+Fzmb8xzVeyiMHYC+Bik4wAvaBjdSJLY27S9S4A8bBaKLwFDrbJ
+   l2uKHLgrNzT1JwBDFPmC838l5NEgx+JAkPfrwpBSLwgOWGtEKo/6757uY
+   ovQzzyDDWgB0aKQKZhXF48pDZzoGLbbDgCYmeESOIJMzwR4NznKm8eAjY
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="294911013"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="294911013"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 07:17:25 -0700
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="679637633"
+Received: from idecesar-mobl1.ger.corp.intel.com (HELO localhost) ([10.252.53.198])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 07:17:23 -0700
+From:   Jani Nikula <jani.nikula@linux.intel.com>
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>, airlied@linux.ie,
+        daniel@ffwll.ch
+Cc:     intel-gfx@lists.freedesktop.org, Jilin Yuan <yuanjilin@cdjrlc.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: Re: [PATCH] drm/i915: fix repeated words in comments
+In-Reply-To: <20220823123044.24593-1-yuanjilin@cdjrlc.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20220823123044.24593-1-yuanjilin@cdjrlc.com>
+Date:   Mon, 29 Aug 2022 17:17:16 +0300
+Message-ID: <87v8qbdthv.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220826055306.tdsmdambl6fjoiop@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marco,
+On Tue, 23 Aug 2022, Jilin Yuan <yuanjilin@cdjrlc.com> wrote:
+>  Delete the redundant word 'other'.
+>  Delete the redundant word 'the'.
+>  Delete the redundant word 'will'.
+>
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 
-On Fri, Aug 26, 2022 at 07:53:07AM +0200, Marco Felsch wrote:
-> Hi Sascha,
-> 
-> nice patche, please see inline.
-> 
-> On 22-08-25, Sascha Hauer wrote:
-> > This driver implements a GPIO multiplexer based on latches connected to
-> > other GPIOs. A set of data GPIOs is connected to the data input of
-> > multiple latches. The clock input of each latch is driven by another
-> > set of GPIOs. With two 8-bit latches 10 GPIOs can be multiplexed into
-> > 16 GPIOs. GPOs might be a better term as in fact the multiplexed pins
-> > are output only.
-> > 
+Doesn't apply because some of the hunks were already fixed by other
+commits.
 
-[snip]
+BR,
+Jani.
 
-> > +
-> > +static void __gpio_latch_set(struct gpio_latch_priv *priv, unsigned int offset, int val)
-> > +{
-> > +	int latch = offset / priv->n_pins;
-> > +	int i;
-> > +
-> > +	if (val)
-> > +		priv->shadow[latch] |= BIT(offset % priv->n_pins);
-> > +	else
-> > +		priv->shadow[latch] &= ~BIT(offset % priv->n_pins);
-> > +
-> > +	for (i = 0; i < priv->n_pins; i++)
-> > +		gpiod_set_value(priv->data_gpios->desc[i], priv->shadow[latch] & BIT(i));
-> > +
-> > +	gpiod_set_value(priv->clk_gpios->desc[latch], 1);
-> > +	gpiod_set_value(priv->clk_gpios->desc[latch], 0);
-> 
-> Your have two access function for _can_sleep and "can not sleep" but
-> here you don't resepect it.
 
-I thought the gpio framework would pick the right implementation
-automatically. Apparently it doesn't. Will fix in v2.
-
-Sascha
+> ---
+>  drivers/gpu/drm/i915/i915_gem_evict.c | 2 +-
+>  drivers/gpu/drm/i915/i915_irq.c       | 4 ++--
+>  drivers/gpu/drm/i915/i915_memcpy.h    | 2 +-
+>  3 files changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/i915/i915_gem_evict.c b/drivers/gpu/drm/i915/i915_gem_evict.c
+> index f025ee4fa526..028e509e1628 100644
+> --- a/drivers/gpu/drm/i915/i915_gem_evict.c
+> +++ b/drivers/gpu/drm/i915/i915_gem_evict.c
+> @@ -256,7 +256,7 @@ i915_gem_evict_something(struct i915_address_space *vm,
+>  	goto search_again;
+>  
+>  found:
+> -	/* drm_mm doesn't allow any other other operations while
+> +	/* drm_mm doesn't allow any other operations while
+>  	 * scanning, therefore store to-be-evicted objects on a
+>  	 * temporary list and take a reference for all before
+>  	 * calling unbind (which may remove the active reference
+> diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
+> index 73cebc6aa650..1e4a705bc5cc 100644
+> --- a/drivers/gpu/drm/i915/i915_irq.c
+> +++ b/drivers/gpu/drm/i915/i915_irq.c
+> @@ -65,7 +65,7 @@
+>  
+>  /*
+>   * Interrupt statistic for PMU. Increments the counter only if the
+> - * interrupt originated from the the GPU so interrupts from a device which
+> + * interrupt originated from the GPU so interrupts from a device which
+>   * shares the interrupt line are not accounted.
+>   */
+>  static inline void pmu_irq_stats(struct drm_i915_private *i915,
+> @@ -2175,7 +2175,7 @@ static irqreturn_t ilk_irq_handler(int irq, void *arg)
+>  	raw_reg_write(regs, DEIER, de_ier & ~DE_MASTER_IRQ_CONTROL);
+>  
+>  	/* Disable south interrupts. We'll only write to SDEIIR once, so further
+> -	 * interrupts will will be stored on its back queue, and then we'll be
+> +	 * interrupts will be stored on its back queue, and then we'll be
+>  	 * able to process them after we restore SDEIER (as soon as we restore
+>  	 * it, we'll get an interrupt if SDEIIR still has something to process
+>  	 * due to its back queue). */
+> diff --git a/drivers/gpu/drm/i915/i915_memcpy.h b/drivers/gpu/drm/i915/i915_memcpy.h
+> index 3df063a3293b..126dfb4352f0 100644
+> --- a/drivers/gpu/drm/i915/i915_memcpy.h
+> +++ b/drivers/gpu/drm/i915/i915_memcpy.h
+> @@ -18,7 +18,7 @@ void i915_unaligned_memcpy_from_wc(void *dst, const void *src, unsigned long len
+>  /* The movntdqa instructions used for memcpy-from-wc require 16-byte alignment,
+>   * as well as SSE4.1 support. i915_memcpy_from_wc() will report if it cannot
+>   * perform the operation. To check beforehand, pass in the parameters to
+> - * to i915_can_memcpy_from_wc() - since we only care about the low 4 bits,
+> + * i915_can_memcpy_from_wc() - since we only care about the low 4 bits,
+>   * you only need to pass in the minor offsets, page-aligned pointers are
+>   * always valid.
+>   *
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Jani Nikula, Intel Open Source Graphics Center
