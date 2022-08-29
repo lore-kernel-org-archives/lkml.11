@@ -2,361 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBDAC6FA69
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A44C6FA81
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231452AbiH2RVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42448 "EHLO
+        id S229549AbiH2RWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiH2RVL (ORCPT
+        with ESMTP id S229682AbiH2RWA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:21:11 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7055D6F271
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:21:05 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id c24so8256638pgg.11
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:21:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=N8v9XiNinBwgapG6G2g4Lw1ZeaB/KtBqvxLAMxYhJZ0=;
-        b=NfRnBVW89tj7Au3HywW16OEWiHNb4GaSjmEwi+NAYqoi4cwMah/XZ+pxiE6BS8poL0
-         UdYe4SvnI/d5a6fn/U641J7UGrFUDWekiE8WvIqGr3l7yoGjhl7gm72dVy6sdoRFh94q
-         f4HkXyu6iAPgnszZSoF+rlGzgjNO9e1M+Ibx53ObMMOboc3gEbUNQgvsg3JHyXuPgZyn
-         zJMFCtgsQcBDAxXnjn8bhI7UZnooOFoaMWgwsZ0IWOUTSEnRV2f6OFgerv4vtIFcn7L2
-         81VRdZ6M5MiDiQm6AgkLwtFaUIGoHu0cB47KIiWYfnZX4bDFK36L82NehZYsgO/aOq/M
-         YA8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=N8v9XiNinBwgapG6G2g4Lw1ZeaB/KtBqvxLAMxYhJZ0=;
-        b=BOY2EvcqZZUtRf/VomrWN/hs34AX68aJ3Uc5AypRmVmRxtgNd75uOe1mSWI+BZRxwS
-         gX7cRyqCamBdnLvbBbcSVjTUhvyq13SzLknjkLQYnab/JxA1AoFhcTWeuFs6JnKElTwC
-         unw6+Cs54gPTlsyTAnJU/OfbXlU9GWFAOg1HU2wPHMh8AyH5z7k8rSTRvSEu+zAqYD4Z
-         7syQWaAGWnZz8ACii7bAxOHV1vnHXnB+UfR4oGvM1/DTWSAtJQraFg7O3DaKb0zRR7OW
-         cfJmrpb3ypUvs7JYLBZhHuqRCZ2u6DEz68JF6sVYgqcQwsyjTuSkwlIvwiPx69XQoqVl
-         pLAw==
-X-Gm-Message-State: ACgBeo3jD1+i4sF8Y3Dx5MTWdBH0g0WA6HPdIP1ntp9BsYgjtoj3xXy5
-        bbHAiDdbtOcMXyDAgBrFSpEm/Q==
-X-Google-Smtp-Source: AA6agR7JVkZEqiHBQMT3/HK53IbqnS0HPUadhw2Pc+wlqYBU/5llkrjsnpQV1BRpTuK0X2jptbEaPQ==
-X-Received: by 2002:a05:6a00:21c2:b0:52b:ff44:6680 with SMTP id t2-20020a056a0021c200b0052bff446680mr17655948pfj.57.1661793664751;
-        Mon, 29 Aug 2022 10:21:04 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id b4-20020a170902d50400b00175111a277dsm136685plg.185.2022.08.29.10.21.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 10:21:04 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 17:21:00 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Oliver Upton <oupton@google.com>,
-        Jim Mattson <jmattson@google.com>
-Subject: Re: [PATCH v2 4/4] KVM: selftests: Test if posted interrupt delivery
- race with migration
-Message-ID: <Ywz1fJlkuhY/vMEU@google.com>
-References: <20220828222544.1964917-1-mizhang@google.com>
- <20220828222544.1964917-5-mizhang@google.com>
+        Mon, 29 Aug 2022 13:22:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F0274DF8;
+        Mon, 29 Aug 2022 10:21:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93E07B80B8C;
+        Mon, 29 Aug 2022 17:21:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38600C433C1;
+        Mon, 29 Aug 2022 17:21:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661793715;
+        bh=XrplDPQ8UTAXX6VsmmOcv63Bxz1cFoVo/yyz+x0kx0c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ogjAob9zUvKKOvxWfsX3D3DSadfpRqW1j6s6iRdf1LoQZhBHkzsrRQ80z6wMjUIJd
+         sBiBf0RKTrjUlVaG0CjJ+TRMQIqfGyPY5gaE0J+2+JO7pnXInZDlCiGGsJVrVrYTw6
+         4aOAezpv5hb7Iz9DGmj4+Z2KENj6K8LHFfWmEYC273TCu/SMT4aN7kzL0LHAdWoRhB
+         W1woaUUUzCZXjPfBxKrLo/eNP03ZxXgmqo+OXwWWNUVjNu83qjSMud5IGYDEtCKtox
+         SNVT+wRnkVxH4NVEIoCiVVtY85NA90nZFBw0gbSXoc7F2EMgM+aLiHD46TOWS5SRt+
+         iJkHXBM1W+vkw==
+Date:   Mon, 29 Aug 2022 17:47:37 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Regus, Ciprian" <Ciprian.Regus@analog.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>
+Subject: Re: [PATCH 2/3] drivers: iio: adc: LTC2499 support
+Message-ID: <20220829174737.3192f5a7@jic23-huawei>
+In-Reply-To: <e13827526235412585f8b7d60257c5a2@analog.com>
+References: <20220822125106.1106798-1-ciprian.regus@analog.com>
+        <20220822125106.1106798-3-ciprian.regus@analog.com>
+        <20220822203731.29c4c33b@jic23-huawei>
+        <CAHp75Vft2pvXtxZcpvyV38cR9gOdDxDfCae8g5Uf2q6npWpb+Q@mail.gmail.com>
+        <e13827526235412585f8b7d60257c5a2@analog.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220828222544.1964917-5-mizhang@google.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022, Mingwei Zhang wrote:
-> From: Jim Mattson <jmattson@google.com>
+On Mon, 29 Aug 2022 06:30:52 +0000
+"Regus, Ciprian" <Ciprian.Regus@analog.com> wrote:
+
+> In reply to one of Andy's questions.
 > 
-> Test if posted interrupt delivery race with migration. Add a selftest
-> to demonstrate a race condition between migration and posted
-> interrupt for a nested VM. The consequence of this race condition causes
-> the loss of a posted interrupt for a nested vCPU after migration and
-> triggers a warning for unpatched kernel.
+> > On Mon, Aug 22, 2022 at 11:13 PM Jonathan Cameron <jic23@kernel.org>
+> > wrote:  
+> > > On Mon, 22 Aug 2022 15:51:05 +0300
+> > > Ciprian Regus <ciprian.regus@analog.com> wrote:  
+> > 
+> > In reply to Jonathan's comments to answer his question and add more
+> > comments from me.
+> > 
+> > ...
+> >   
+> > > > Datasheet: https://www.analog.com/media/en/technical-  
+> > documentation/data-sheets/2499fe.pdf  
+> > > >
+> > > > Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>  
+> > 
+> > Tag block mustn't have the blank line(s).
+> > 
+> > ...
+> >   
+> > > >  #include <linux/iio/iio.h>
+> > > >  #include <linux/iio/driver.h>
+> > > >  #include <linux/module.h>
+> > > > +#include <linux/property.h>  
+> > > why?  
+> > 
+> > device_get_match_data() requires it.
+> > 
+> > But why not sort them?
+> >   
+> > > >  #include <linux/mod_devicetable.h>  
+> > 
+> > ...
+> >   
+> > > > -             *val = (be32_to_cpu(st->buf) >> 14) - (1 << 17);  
+> > >
+> > > Old code here is less than ideal, should be reading into 3 bytes then using
+> > > the be24 accesors. Please fix whilst here.  You will need multiple paths here
+> > > depending on size.
+> > >  
+> > > > +             *val = (be32_to_cpu(st->buf) >> st->sub_lsb) -
+> > > > +                     BIT(ddata->chip_info->resolution + 1);  
+> > 
+> > Shouldn't this use some kind of sign_extend()?  
+> The BIT(ddata->chip_info->resolution + 1) subtraction part is already doing the sign extension,
+> since that bit (which is the most significant one) will be 0 if the result is < 0, and 1 otherwise.
+
+This wins the award for one of the strangest formats I've yet seen.
+The format is normal 2s complement 24 bit, but with a bonus upper bit to allow representation of
+ever so slightly more than 24 bits.  Specifically on the postive side the out of range value.
+0x7fffff + 1 = 0x800000 (which would normally be considered wrapped around to most negative value.
+
+and on the negative side as well
+0x800000 - 1 = 0x7fffff (normally most positive value).
+It does this by throwing in an additional bit for sign which only tells us something useful
+if in these two edge conditions (which are really an out of range error).
+That bit corresponds int his case to
+0x1000000 and is set for postive values only.
+
+Thus our VS+ value becomes 0x01800000
+and VS- value becomes      0x007fffff 
+(extended to 32 bits for reasons that will become clear)
+Applying 2's complement subtraction of the magic value above.
+
+0x01800000 - 0x01000000 = 0x00800000   (2^23)
+0x007fffff - 0x01000000 = 0xff7fffff   (-(2^23 + 1))
+
+So it is indeed sign extended by the above.
+
+Perhaps a few comments to set people off along the right path to what is
+going on here would be useful?
+
+Jonathan
+
+
 > 
-> The selftest demonstrates that if a L2 vCPU is in halted state before
-> migration, then after migration, it is not able to receive a posted
-> interrupt from another vCPU within the same VM.
+> Regards,
+> Ciprian
+> >
+> > Also with a temporary variable for chip info this line can be single.
+> > 
+> >    struct ... *ci = ddata->chip_info;
+> > 
+> >    ...BIT(ci->resolution + 1)
+> > 
+> > ...
+> >   
+> > > > +     u32 resolution;  
+> > 
+> > Keep this in a way that the "longer lines go first".
+> > 
+> > ...
+> >   
+> > > > +     resolution = st->common_ddata.chip_info->resolution;
+> > > > +     st->sub_lsb = 31 - (resolution + 1);
+> > > > +     st->recv_size = resolution / BITS_PER_BYTE + 1;  
+> > 
+> > BITS_TO_BYTES()
+> > 
+> > ...
+> >   
+> > > >  static const struct i2c_device_id ltc2497_id[] = {
+> > > > -     { "ltc2497", 0 },
+> > > > +     { "ltc2497", TYPE_LTC2497 },
+> > > > +     { "ltc2499", TYPE_LTC2499 },  
+> > 
+> > Use pointers here like you have done for the OF table.
+> >   
+> > > >       { }
+> > > >  };  
+> > 
+> > ...
+> >   
+> > > > +enum chip_type {
+> > > > +     TYPE_LTC2496,
+> > > > +     TYPE_LTC2497,
+> > > > +     TYPE_LTC2499  
+> > 
+> > Keep trailing comma.
+> >   
+> > > > +};  
+> > 
+> > --
+> > With Best Regards,
+> > Andy Shevchenko  
 
-For tests, try to phrase the changelog in terms of what architectural behavior is
-being tested, as opposed to stating what exact KVM bug is being targeted.  It's
-definitely helpful to call out the KVM bug, but do that _after_ explaining the
-test itself.  The problem with talking about a specific KVM bug is that 
-
-IIUC, this can be:
-
-  Add a test to verify that a posted interrupt wakes the target vCPU from
-  a halted state if the VM is migrated while the vCPU is halted.
-
-and then something like this to call out the known KVM bug
-
-  This test exposes a bug where KVM checks the vAPIC page before loading
-  nested pages when the vCPU is blocking.
-
-> The fundamental problem is deeply buried in the kernel logic where
-> vcpu_block() will directly check vmcs12 related mappings before having a
-> valid vmcs12 ready.  Because of that, it fails to process the posted
-> interrupt and triggers the warning in vmx_guest_apic_has_interrupt()
-> 
-> static bool vmx_guest_apic_has_interrupt(struct kvm_vcpu *vcpu)
-> {
-> 	...
-> 	if (WARN_ON_ONCE(!is_guest_mode(vcpu)) ||
-> 		!nested_cpu_has_vid(get_vmcs12(vcpu)) ||
-> 		WARN_ON_ONCE(!vmx->nested.virtual_apic_map.gfn)) <= HERE
-> 		return false;
-> 	...
-> }
-> +static void vcpu0_ipi_handler(struct ex_regs *regs)
-
-This needs to clarify that it's an L2 handler, that info is _extremely_ important
-to understanding this sequence.  And even if that info were superfluous, it's still
-a good habit to use consistent namespacing.
-
-> +{
-> +	 asm volatile("inb %%dx, %%al"
-> +		      : : [port] "d" (PORT_L0_EXIT) : "rax");
-
-Can't this use GUEST_SYNC()?
-
-> +	asm volatile("vmcall");
-
-A comment would be helpful, but not as necessary if this is vcpu0_l2_ipi_handler().
-
-> +}
-> +
-> +static void l2_vcpu0_guest_code(void)
-
-I have a slight preference for
-
-	vcpu0_l2_ipi_handler()
-	vcpu0_l2_guest_code()
-
-	vcpu1_l1_guest_code()
-
-because the "vcpu0 vs. vcpu1" is the broader scope, and then "l1 vs. l2" further
-clarifies the exact scope of the function.
-
-> +{
-> +	asm volatile("cli");
-> +	asm volatile("sti; nop; hlt");
-
-What is this code trying to do?  Assuming the intent is to ensure the posted IRQ
-arrives after "hlt", this needs to be:
-
-	GUEST_ASSERT(!irqs_enabled());
-	asm volatile("sti; hlt");
-
-because if interrupts are enabled when l2_vcpu0_guest_code() starts running, then
-the IRQ can arrive before CLI.  And the "nop" needs to go because the nop will
-consume the STI shadow, i.e. the IRQ can arrive before the "hlt".  irqs_enabled()
-needs to be defined, but it's fairly straightfoward; something like this:
-
-static __always_inline bool irqs_enabled(void)
-{
-	unsigned long flags;
-
-	asm volatile("pushf ; pop %0"
-		     : "=rm" (flags)
-		     :
-		     : "memory");
-
-	return flags & X86_EFLAGS_IF;
-}
-
-If my assuming is wrong, then this needs a very verbose comment.
-
-> +static void post_intr(u8 vector, void *pi_desc)
-> +{
-> +       set_bit(vector, pi_desc);
-> +       set_bit(PI_ON_BIT, pi_desc);
-> +}
-> +
-> +static void l1_vcpu1_guest_code(void *vcpu0_pi_desc)
-> +{
-> +       post_intr(L2_INTR, vcpu0_pi_desc);
-
-Open code post_intr() here.  I would expect a "post_intr()" helper to actually do
-the notification.  Separating the two things confused me.
-
-> +       x2apic_enable();
-
-Why take a dependency on x2APIC?  Either way, enable x2APIC, then post the
-interrupt.  Again, it's weird splitting "set info in PI descriptor" from the
-notification.
-
-> +       x2apic_write_reg(APIC_ICR, ((u64)VCPU_ID0 << 32) |
-> +                        APIC_DEST_PHYSICAL | APIC_DM_FIXED | PI_NV);
-> +       GUEST_DONE();
-> +}
-
-...
-
-> +void *create_and_run_vcpu1(void *arg)
-> +{
-> +	struct ucall uc;
-> +	struct kvm_run *run;
-> +	struct kvm_mp_state vcpu0_mp_state;
-> +
-> +	pthread_cpu1 = pthread_self();
-> +
-> +	/* Keep trying to kick out vcpu0 until it is in halted state. */
-> +	for (;;) {
-> +		WRITE_ONCE(vcpu0_can_run, true);
-> +		sleep(1);
-> +		WRITE_ONCE(vcpu0_can_run, false);
-> +		pthread_kill(pthread_cpu0, SIGUSR1);
-> +		printf("vcpu1: Sent SIGUSR1 to vcpu0\n");
-
-Use pr_debug(), this has the potential to spam the console.  And then probably use
-pr_info() for the other printfs so that they can be turned off via QUIET.
-
-> +
-> +		while (READ_ONCE(vcpu0_running))
-> +			;
-
-vcpu0_running is unnecessary.  KVM needs to acquire vcpu->mutex to do KVM_GET_MP_STATE,
-i.e. vcpu_mp_state_get() will block until KVM_RUN completes.  Nothing guarantees
-vcpu0_running will be set from main() before this gets to the while-loop, so
-vcpu_mp_state_get() racing with KVM_RUN is already possible.
-
-> +
-> +		vcpu_mp_state_get(vcpu0, &vcpu0_mp_state);
-> +		if (vcpu0_mp_state.mp_state == KVM_MP_STATE_HALTED)
-> +			break;
-> +	}
-> +
-> +	printf("vcpu1: Kicked out vcpu0 and ensure vcpu0 is halted\n");
-> +
-> +	/* Use save_restore_vm() to simulate a VM migration. */
-> +	save_restore_vm(vm);
-> +
-> +	printf("vcpu1: Finished save and restore vm.\n");
-
-Uber nit, be consistent on whether or not the test uses punctionation.
-
-> +	vcpu1 = vm_vcpu_add(vm, VCPU_ID1, l1_vcpu1_guest_code);
-> +	vcpu_args_set(vcpu1, 1, vmx->posted_intr_desc);
-> +
-> +	/* Start an L1 in vcpu1 and send a posted interrupt to halted L2 in vcpu0. */
-> +	for (;;) {
-> +		run = vcpu1->run;
-> +		vcpu_run(vcpu1);
-> +
-> +		TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
-> +			    "vcpu1: Got exit_reason other than KVM_EXIT_IO: %u (%s)\n",
-> +			    run->exit_reason,
-> +			    exit_reason_str(run->exit_reason));
-> +
-> +		switch (get_ucall(vcpu1, &uc)) {
-> +		case UCALL_ABORT:
-> +			TEST_FAIL("%s", (const char *)uc.args[0]);
-> +			/* NOT REACHED */
-
-			REPORT_GUEST_ASSERT(...)
-
-> +		case UCALL_DONE:
-> +			printf("vcpu1: Successfully send a posted interrupt to vcpu0\n");
-> +			goto done;
-> +		default:
-> +			TEST_FAIL("vcpu1: Unknown ucall %lu", uc.cmd);
-> +		}
-> +	}
-> +
-> +done:
-> +	/*
-> +	 * Allow vcpu0 resume execution from L0 userspace and check if the
-> +	 * posted interrupt get executed.
-> +	 */
-> +	WRITE_ONCE(vcpu0_can_run, true);
-> +	sleep(1);
-
-What guarantees that sleep(1) is sufficient for vCPU to get back into the guest?
-This might be a good candidate for a sempahore?
-
-> +	TEST_ASSERT(READ_ONCE(pi_executed),
-> +		    "vcpu0 did not execute the posted interrupt.\n");
-> +
-> +	return NULL;
-> +}
-
-...
-
-> +       TEST_REQUIRE(kvm_has_cap(KVM_CAP_NESTED_STATE));
-> +       TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_VMX));
-
-This also requires APICv / posted interrupts, and x2APIC if that hardcoded behavior
-is kept.
-
-> +	for (;;) {
-> +		struct kvm_run *run = vcpu0->run;
-> +		struct ucall uc;
-> +		int rc;
-> +
-> +		while (!READ_ONCE(vcpu0_can_run))
-> +			;
-> +
-> +		WRITE_ONCE(vcpu0_running, true);
-> +
-> +		rc = __vcpu_run(vcpu0);
-> +
-> +		vcpu0->run->immediate_exit = 0;
-
-Why?  vcpu_run_complete_io() is the only thing that sets immediate_exit, and it
-clears the flag after doing __vcpu_run().
-
-> +
-> +		/*
-> +		 * When vCPU is kicked out by a signal, ensure a consistent vCPU
-> +		 * state to prepare for migration before setting the
-> +		 * vcpu_running flag to false.
-> +		 */
-> +		if (rc == -1 && run->exit_reason == KVM_EXIT_INTR) {
-> +			vcpu_run_complete_io(vcpu0);
-> +
-> +			WRITE_ONCE(vcpu0_running, false);
-> +
-> +			continue;
-> +		}
-> +
-> +		WRITE_ONCE(vcpu0_running, false);
-> +
-> +		if (run->io.port == PORT_L0_EXIT) {
-
-One of the motivations for using GUEST_SYNC() instead of PORT_L0_EXIT is that
-this test could (very theoretically) get a false pass if GUEST_DONE() is reached
-before PORT_L0_EXIT is encountered.
-
-> +			printf("vcpu0: Executed the posted interrupt\n");
-> +			WRITE_ONCE(pi_executed, true);
-> +			continue;
-> +		}
-> +
-> +		switch (get_ucall(vcpu0, &uc)) {
-> +		case UCALL_ABORT:
-> +			TEST_FAIL("%s", (const char *)uc.args[0]);
-
-			REPORT_GUEST_ASSERT(...)
-
-> +			/* NOT REACHED */
-> +		case UCALL_DONE:
-> +			goto done;
-
-Just break?
-
-> +		default:
-> +			TEST_FAIL("vcpu0: Unknown ucall %lu", uc.cmd);
-> +		}
-> +	}
-> +
-> +done:
-> +	kvm_vm_free(vm);
-> +	return 0;
-> +}
-> -- 
-> 2.37.2.672.g94769d06f0-goog
-> 
