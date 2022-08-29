@@ -2,55 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9C2ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 04:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B46EBECAAA2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 04:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229646AbiH2Efe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 00:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38002 "EHLO
+        id S229657AbiH2EhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 00:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiH2Efc (ORCPT
+        with ESMTP id S229447AbiH2EhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 00:35:32 -0400
-Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABED9205D0;
-        Sun, 28 Aug 2022 21:35:28 -0700 (PDT)
-Received: from [10.28.39.83] (10.28.39.83) by mail-sz.amlogic.com (10.28.11.5)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.6; Mon, 29 Aug
- 2022 12:35:26 +0800
-From:   Huqiang Qin <huqiang.qin@amlogic.com>
-Subject: Re: [PATCH v2] arm64: dts: meson-s4: include meson-s4-gpio.h
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <narmstrong@baylibre.com>, <khilman@baylibre.com>,
-        <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Message-ID: <e0f479d3-744c-9eae-e1fb-1a617c806890@amlogic.com>
-Date:   Mon, 29 Aug 2022 12:35:26 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.28.39.83]
-X-ClientProxiedBy: mail-sz.amlogic.com (10.28.11.5) To mail-sz.amlogic.com
- (10.28.11.5)
+        Mon, 29 Aug 2022 00:37:17 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 468E63ECF9
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 21:37:16 -0700 (PDT)
+Received: from bogon.localdomain (unknown [113.200.148.30])
+        by localhost.localdomain (Coremail) with SMTP id AQAAf8DxvmtvQgxjO6YLAA--.39821S5;
+        Mon, 29 Aug 2022 12:37:08 +0800 (CST)
+From:   Youling Tang <tangyouling@loongson.cn>
+To:     Huacai Chen <chenhuacai@kernel.org>, Baoquan He <bhe@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>
+Cc:     WANG Xuerui <kernel@xen0n.name>, Vivek Goyal <vgoyal@redhat.com>,
+        Dave Young <dyoung@redhat.com>, Guo Ren <guoren@kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        kexec@lists.infradead.org, loongarch@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] LoongArch: Enable CONFIG_KEXEC
+Date:   Mon, 29 Aug 2022 12:37:03 +0800
+Message-Id: <1661747823-23745-4-git-send-email-tangyouling@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1661747823-23745-1-git-send-email-tangyouling@loongson.cn>
+References: <1661747823-23745-1-git-send-email-tangyouling@loongson.cn>
+X-CM-TRANSID: AQAAf8DxvmtvQgxjO6YLAA--.39821S5
+X-Coremail-Antispam: 1UD129KBjvdXoWrZF48WFWUJr1xAw4rXr1fJFb_yoWxCFg_JF
+        y7Gw4Dur48ta97uw4xXw1rWwsrA3W7ZF1FkF17Ar1xX3Wagr13tw4qq3W3C3ZYg3yUWrs3
+        ZaykAF9Fkr10yjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbg8YjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Wr0E3s1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
+        IE14v26r1rM28IrcIa0xkI8VCY1x0267AKxVW5JVCq3wA2ocxC64kIII0Yj41l84x0c7CE
+        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6x
+        kF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv
+        6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c
+        02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE
+        4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2
+        xSY4AK67AK6r45MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E
+        5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtV
+        W8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY
+        1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI
+        0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7I
+        U8G-e7UUUUU==
+X-CM-SenderInfo: 5wdqw5prxox03j6o00pqjv00gofq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+Defaults enable CONFIG_KEXEC to convenient kexec operations.
 
-On 2022/8/27 1:40, Krzysztof Kozlowski wrote:
-> Then the header should be added when the need is implemented. Do not add
-> unused headers to files.
+Signed-off-by: Youling Tang <tangyouling@loongson.cn>
+---
+ arch/loongarch/configs/loongson3_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-I understand, thank you very much.
-
-Best regards,
-Huqiang
+diff --git a/arch/loongarch/configs/loongson3_defconfig b/arch/loongarch/configs/loongson3_defconfig
+index 68c9609670d4..52db7a3a79f3 100644
+--- a/arch/loongarch/configs/loongson3_defconfig
++++ b/arch/loongarch/configs/loongson3_defconfig
+@@ -45,6 +45,7 @@ CONFIG_SMP=y
+ CONFIG_HOTPLUG_CPU=y
+ CONFIG_NR_CPUS=64
+ CONFIG_NUMA=y
++CONFIG_KEXEC=y
+ CONFIG_PAGE_SIZE_16KB=y
+ CONFIG_HZ_250=y
+ CONFIG_ACPI=y
+-- 
+2.36.0
 
