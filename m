@@ -2,122 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5791BECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81114ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230041AbiH2Lp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
+        id S231754AbiH2LqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233390AbiH2Loe (ORCPT
+        with ESMTP id S232993AbiH2Lpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:44:34 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F03DFC3;
-        Mon, 29 Aug 2022 04:28:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661772522; x=1693308522;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=RMIzbw3S0NjAnyKRGZ1yrKelR3otHClPHqNHMk9KieA=;
-  b=NrFJZ7b+66GeuKfsLn8qUwjYzDyGZTF9/KOgYdbS0jBX3yAPZxfkp0nJ
-   8FBgbWZWtNo9UrMY46kH3S7SKZnyNRIq0Qs0EnD8DkGj+FbR7g5TLAGN8
-   wMKXqp4W4LkD7uj1d/YXxW49r+WvlA14m7Vkd/XTw8nzztdMVVylTqrSP
-   V5umwFieUrtVHyqYVu7Dcx4ywHD29ocq/cHzfAhcAorVcxXhr1VHcASi/
-   m2WjUWnf8d08y6Z3NUzRPRVAkPUYrYXgCLOpmo1cvAxtSYRaxc5KKM46i
-   LLMglk9vwia/K7+mw4Bk3VmQoEKCd+wHl1r6FK1+SxBylycjCkwq5U5A2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="275273872"
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="275273872"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 04:23:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="714830573"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 29 Aug 2022 04:23:55 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7F0BA174; Mon, 29 Aug 2022 14:24:10 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jakob Hauser <jahau@rocketmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 4/4] iio: magnetometer: yamaha-yas530: Use dev_err_probe()
-Date:   Mon, 29 Aug 2022 14:24:07 +0300
-Message-Id: <20220829112407.74917-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
-References: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
+        Mon, 29 Aug 2022 07:45:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 086858605E;
+        Mon, 29 Aug 2022 04:29:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73B206122E;
+        Mon, 29 Aug 2022 11:19:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C07CC433C1;
+        Mon, 29 Aug 2022 11:19:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771963;
+        bh=PzW5OzWOz9p821aITep6E6NYhopT2BIaxkYgtQcogvU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=B5Bk2qgKmPyq3MXrhPl0gwLdphnP3wjlEiSvdqfHcKy//lemQEtW0eYAwj8log51J
+         IJQcHRisZfNwyHg0ea+dk1vu1y3Zd+b8KEO8fqqRMaSOfnuCqoUkxsABuO0dZz7WF2
+         FuS6QlDQIkVDk2pAqGi1FFSyijZJH+YMSk5y+f64=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shakeel Butt <shakeelb@google.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        David Hildenbrand <david@redhat.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.19 122/158] Revert "memcg: cleanup racy sum avoidance code"
+Date:   Mon, 29 Aug 2022 12:59:32 +0200
+Message-Id: <20220829105814.236082185@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unify error message format by using dev_err_probe().
+From: Shakeel Butt <shakeelb@google.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+commit dbb16df6443c59e8a1ef21c2272fcf387d600ddf upstream.
+
+This reverts commit 96e51ccf1af33e82f429a0d6baebba29c6448d0f.
+
+Recently we started running the kernel with rstat infrastructure on
+production traffic and begin to see negative memcg stats values.
+Particularly the 'sock' stat is the one which we observed having negative
+value.
+
+$ grep "sock " /mnt/memory/job/memory.stat
+sock 253952
+total_sock 18446744073708724224
+
+Re-run after couple of seconds
+
+$ grep "sock " /mnt/memory/job/memory.stat
+sock 253952
+total_sock 53248
+
+For now we are only seeing this issue on large machines (256 CPUs) and
+only with 'sock' stat.  I think the networking stack increase the stat on
+one cpu and decrease it on another cpu much more often.  So, this negative
+sock is due to rstat flusher flushing the stats on the CPU that has seen
+the decrement of sock but missed the CPU that has increments.  A typical
+race condition.
+
+For easy stable backport, revert is the most simple solution.  For long
+term solution, I am thinking of two directions.  First is just reduce the
+race window by optimizing the rstat flusher.  Second is if the reader sees
+a negative stat value, force flush and restart the stat collection.
+Basically retry but limited.
+
+Link: https://lkml.kernel.org/r/20220817172139.3141101-1-shakeelb@google.com
+Fixes: 96e51ccf1af33e8 ("memcg: cleanup racy sum avoidance code")
+Signed-off-by: Shakeel Butt <shakeelb@google.com>
+Cc: "Michal Koutný" <mkoutny@suse.com>
+Cc: Johannes Weiner <hannes@cmpxchg.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Cc: Muchun Song <songmuchun@bytedance.com>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: Yosry Ahmed <yosryahmed@google.com>
+Cc: Greg Thelen <gthelen@google.com>
+Cc: <stable@vger.kernel.org>	[5.15]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/magnetometer/yamaha-yas530.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ include/linux/memcontrol.h |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index bacd2b783113..63bb743dc4f6 100644
---- a/drivers/iio/magnetometer/yamaha-yas530.c
-+++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -1420,10 +1420,8 @@ static int yas5xx_probe(struct i2c_client *i2c)
- 		return dev_err_probe(dev, ret, "cannot get regulators\n");
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -978,19 +978,30 @@ static inline void mod_memcg_page_state(
  
- 	ret = regulator_bulk_enable(ARRAY_SIZE(yas5xx->regs), yas5xx->regs);
--	if (ret) {
--		dev_err(dev, "cannot enable regulators\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "cannot enable regulators\n");
+ static inline unsigned long memcg_page_state(struct mem_cgroup *memcg, int idx)
+ {
+-	return READ_ONCE(memcg->vmstats.state[idx]);
++	long x = READ_ONCE(memcg->vmstats.state[idx]);
++#ifdef CONFIG_SMP
++	if (x < 0)
++		x = 0;
++#endif
++	return x;
+ }
  
- 	/* See comment in runtime resume callback */
- 	usleep_range(31000, 40000);
-@@ -1431,15 +1429,13 @@ static int yas5xx_probe(struct i2c_client *i2c)
- 	/* This will take the device out of reset if need be */
- 	yas5xx->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
- 	if (IS_ERR(yas5xx->reset)) {
--		ret = dev_err_probe(dev, PTR_ERR(yas5xx->reset),
--				    "failed to get reset line\n");
-+		ret = dev_err_probe(dev, PTR_ERR(yas5xx->reset), "failed to get reset line\n");
- 		goto reg_off;
- 	}
+ static inline unsigned long lruvec_page_state(struct lruvec *lruvec,
+ 					      enum node_stat_item idx)
+ {
+ 	struct mem_cgroup_per_node *pn;
++	long x;
  
- 	yas5xx->map = devm_regmap_init_i2c(i2c, &yas5xx_regmap_config);
- 	if (IS_ERR(yas5xx->map)) {
--		dev_err(dev, "failed to allocate register map\n");
--		ret = PTR_ERR(yas5xx->map);
-+		ret = dev_err_probe(dev, PTR_ERR(yas5xx->map), "failed to allocate register map\n");
- 		goto assert_reset;
- 	}
+ 	if (mem_cgroup_disabled())
+ 		return node_page_state(lruvec_pgdat(lruvec), idx);
  
-@@ -1487,13 +1483,13 @@ static int yas5xx_probe(struct i2c_client *i2c)
- 					 yas5xx_handle_trigger,
- 					 NULL);
- 	if (ret) {
--		dev_err(dev, "triggered buffer setup failed\n");
-+		dev_err_probe(dev, ret, "triggered buffer setup failed\n");
- 		goto assert_reset;
- 	}
+ 	pn = container_of(lruvec, struct mem_cgroup_per_node, lruvec);
+-	return READ_ONCE(pn->lruvec_stats.state[idx]);
++	x = READ_ONCE(pn->lruvec_stats.state[idx]);
++#ifdef CONFIG_SMP
++	if (x < 0)
++		x = 0;
++#endif
++	return x;
+ }
  
- 	ret = iio_device_register(indio_dev);
- 	if (ret) {
--		dev_err(dev, "device register failed\n");
-+		dev_err_probe(dev, ret, "device register failed\n");
- 		goto cleanup_buffer;
- 	}
- 
--- 
-2.35.1
+ static inline unsigned long lruvec_page_state_local(struct lruvec *lruvec,
+
 
