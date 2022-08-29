@@ -2,113 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02187ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA179C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbiH2QZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:25:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
+        id S230414AbiH2Q0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229882AbiH2QZ2 (ORCPT
+        with ESMTP id S230435AbiH2Q0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:25:28 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AEB24D242;
-        Mon, 29 Aug 2022 09:25:27 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id r69so8151976pgr.2;
-        Mon, 29 Aug 2022 09:25:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc;
-        bh=N7QVKkCoxmnLAtwrPlVqx/FgL+niCKLf5680NZMbdLA=;
-        b=qrcT5w/1qiEJfEfGWDzW4K+tV91ZIy6hlVTKC3SG2TLJX0Flm0Kg07x7pLl1pugYSt
-         rwlsmW4mMv7AYeFqNFFv0SwOS/3aMNQETQ0bbS6jZloErD0u/zDBAAAD7saFg4xBgQrS
-         wQ/5oBpnhGn2CvH3R+fB7I9PC5VNiRVCxp4uYXZBV6JkQn7iCpByrFrgv6CokTvQsrgs
-         FO7PTd2ZSZYeiIfaHcTyrk5q1Yvsxc6qKVrGEn+9R3AuA2O79X3zRQ8lVDhqVAsyibED
-         21dGJDu3kvjTYSReDf5hC7rUF6qrJBGotQaz53Z7FVGpb++l1mdwDxuSXmu46h/w+YcU
-         q7qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc;
-        bh=N7QVKkCoxmnLAtwrPlVqx/FgL+niCKLf5680NZMbdLA=;
-        b=NcxYcOOUCqZv1kfRsRmmJpgQYQNZth8jBBtQuEeOeNUtN2I8Eq1I4/oP/EGS5HYD6w
-         19lndZc9I6tJF8dfrpJuFPr25YB1Zyy7qjefbweXduXyZYjpb1oS17Cj0lLX93JjqrMj
-         HrNvUd4NDwvN+zlP68LtAkRi3/6OEA8mt/y9s+S5IwiFTg25fy5LnoO8sAe5iPU9IIqe
-         4prIReAkNRDe7tXVnllha7xWvPrgLYYtU5Nxe9iRlsIeTZvind1bvG0Pp9bHbBCePqW2
-         jh9GQ8rRWDpkbORGiS2zytzDE+9ZbAO0glTHNIj5Qcz8haODz9PDhf8jLG9HETcbxEV0
-         H+5Q==
-X-Gm-Message-State: ACgBeo0yuivSmOc+BcazU0HrXUk+4xUlWcAN/kN7C2xQKRzJkPrQBpHP
-        jJGqzYsd87Mv/Rgms9gd+xxnsLzLvzCilA==
-X-Google-Smtp-Source: AA6agR7zfby9gULboJrR9nPHz55kXyMMziuEa9ZvK5JD/u7hDHqvKElaE4pflbhAnf6lK1T9a08poA==
-X-Received: by 2002:a05:6a00:2282:b0:536:72d0:d01 with SMTP id f2-20020a056a00228200b0053672d00d01mr17097465pfe.79.1661790326745;
-        Mon, 29 Aug 2022 09:25:26 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id k3-20020aa79d03000000b00537d4a3aec9sm6768579pfp.104.2022.08.29.09.25.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 09:25:25 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <6015717f-baea-7baf-e834-bb087f34819a@roeck-us.net>
-Date:   Mon, 29 Aug 2022 09:25:24 -0700
+        Mon, 29 Aug 2022 12:26:13 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7567C1D9;
+        Mon, 29 Aug 2022 09:26:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661790371; x=1693326371;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=k1Bydfd+WyOURaZCkIr7Wq133wz3qjLUnS9McjzhzJY=;
+  b=KhDSx0LbgD4w16GLVGrsvItZ1EQg7hGfDcG948YJ8Xz8d9J/Gf9aFaYc
+   gXHmDAPgty/hkwS11QbKJIZd+pDub9fSKfeF8CxVfxZgBpgRIW45jVXB/
+   14cKQNoWvSwGzb3bY1yJyKrPmoK+KEqxf2mp4Dq2IIcsTo6GJ0Dse1E8q
+   16SGsBn5ToVjXzAA3D0qgIhQg7ZrQvl8zf/vpcX7JDRigy18+UWEX0tx6
+   MubULz0q7ImuA9VVYNN6+A2Q/45qBVx1ijUQg33tFIywWsgmyzNOHGaFG
+   HKwa4815ecdMBoNyECDagszi/9wVojgPKiU7kj26oCfrxc6LEDHf3SMGi
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="295714034"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="295714034"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 09:19:31 -0700
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="611342635"
+Received: from rlacadex-mobl.amr.corp.intel.com (HELO [10.209.116.122]) ([10.209.116.122])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 09:19:30 -0700
+Message-ID: <984e07ed-914f-93ca-a141-3fc8677878e0@intel.com>
+Date:   Mon, 29 Aug 2022 09:19:27 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH] hwmon: (nct6775) Add Asus PRIME Z390-A to WMI monitoring
- list
+Subject: Re: [PATCHv7 02/14] mm: Add support for unaccepted memory
 Content-Language: en-US
-To:     Matti Kurkela <Matti.Kurkela@iki.fi>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <9f3cef03-6efd-138e-8552-e3078ed9b4f7@iki.fi>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <9f3cef03-6efd-138e-8552-e3078ed9b4f7@iki.fi>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Dionna Amalie Glaze <dionnaglaze@google.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     Mel Gorman <mgorman@techsingularity.net>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        David Hildenbrand <david@redhat.com>,
+        Marcelo Cerri <marcelo.cerri@canonical.com>,
+        tim.gardner@canonical.com,
+        Khalid ElMously <khalid.elmously@canonical.com>,
+        philip.cox@canonical.com,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Mike Rapoport <rppt@linux.ibm.com>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
+ <8cf143e7-2b62-1a1e-de84-e3dcc6c027a4@suse.cz>
+ <20220810141959.ictqchz7josyd7pt@techsingularity.net>
+ <CAAH4kHa6s3sBRySNu-TZG_6vOaN4KheVy4kvxG5s=wOTDGy2=Q@mail.gmail.com>
+ <2981e25e-9cda-518a-9750-b8694f2356b5@amd.com>
+ <CAAH4kHbcfnVWNQHf6Mrg__bSFT6196Sx4kno6o0Zo7hsgOgnNw@mail.gmail.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <CAAH4kHbcfnVWNQHf6Mrg__bSFT6196Sx4kno6o0Zo7hsgOgnNw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/28/22 07:43, Matti Kurkela wrote:
-> Asus PRIME Z390-A (and presumably other Asus Z390 motherboard versions) also requires the nct6775 chip to be accessed by the WMI method. Add it to the asus_wmi_boards list.
+On 8/29/22 09:02, Dionna Amalie Glaze wrote:
+>>> The stack track is in mm/page_alloc.c. I've done a little
+>>> investigation, but I can't account for why there's a hard cutoff of
+>>> correctness at 256GB
+>>>
+>>> [    0.065563] RIP: 0010:memmap_init_range+0x108/0x173
+>>> [    0.066309] Code: 77 16 f6 42 10 02 74 10 48 03 42 08 48 c1 e8 0c
+>>> 48 89 c3 e9 3a ff ff ff 48 89 df 48 c1 e7 06 48 03 3d d9 a2 66 ff 48
+>>> 8d 47 08 <c7> 47 34 01 00 00 00 48 c7 47 38 00 00 00 00 c7 47 30 ff ff
+>>> ff ff
+>>> [    0.069108] RSP: 0000:ffffffffad603dc8 EFLAGS: 00010082 ORIG_RAX:
+>>> 0000000000000404
+>>> [    0.070193] RAX: ffffdba740000048 RBX: 0000000000000001 RCX: 0000000000000000
+>>> [    0.071170] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffdba740000040
+>>> [    0.072224] RBP: 0000000000000000 R08: 0000000000001000 R09: 0000000000000000
+>>> [    0.073283] R10: 0000000000000001 R11: ffffffffad645c60 R12: 0000000000000000
+>>> [    0.074304] R13: 00000000000000a0 R14: 0000000000000000 R15: 0000000000000000
+>>> [    0.075285] FS:  0000000000000000(0000) GS:ffffffffadd6c000(0000)
+>>> knlGS:0000000000000000
+>>> [    0.076365] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>> [    0.077194] CR2: ffffdba740000074 CR3: 0008001ee3a0c000 CR4: 00000000000606b0
+>>> [    0.078209] Call Trace:
+>>> [    0.078524]  <TASK>
+>>> [    0.078887]  ? free_area_init+0x5c1/0x66c
+>>> [    0.079417]  ? zone_sizes_init+0x52/0x6c
+>>> [    0.079934]  ? setup_arch+0xa55/0xb6d
+>>> [    0.080417]  ? start_kernel+0x64/0x65a
+>>> [    0.080897]  ? secondary_startup_64_no_verify+0xd6/0xdb
+>>> [    0.081620]  </TASK>
+>> Note that there is a bug in Brijesh's version of the patch and it will
+>> almost exclusively use the MSR protocol. Please try the version of the
+>> patch that I recently sent up based on the current unaccepted memory tree
+>> from Kirill.
+>>
+> I've now tested this patch set with Tom's new patch set, and it
+> appears to be that the problem with 256GB is more likely to be due to
+> this unaccepted memory patch set rather than something AMD-specific.
 > 
-> Tested-by: Matti Kurkela <Matti.Kurkela@iki.fi>
-> Signed-off-by: Matti Kurkela <Matti.Kurkela@iki.fi>
+> Kirill, do you see any problems with 256GB on TDX? It seems there is
+> some unaccepted memory getting touched in memmap_init_range when the
+> VM's memory size is at least 256GB
 
-This is your patch. You should have tested it; that is implied in Signed-off-by:.
-Tested-by: is not appropriate.
+It really helps this kind of stuff if you can post the *actual* error.
+I assume this was a page fault, so there should have been some other
+stuff before the RIP:...
 
-> ---
-> Should apply to any kernel version that includes the commit c3963bc0a0cf9ecb205a9d4976eb92b6df2fa3fd
-> (hwmon: (nct6775) Split core and platform driver).
+Another thing that's really nice is to do the disassembly of the "Code:"
+or share disassembly of memmap_init_range.  Even nicer would be to give
+an faddr2line of the RIP value and track down which C code was actually
+at fault.
 
-This is irrelevant; it is a functional change and will be applied
-to linux-next.
-> 
-> --- linux-5.19.4/drivers/hwmon/nct6775-platform.c.orig  2022-08-25 12:45:54.000000000 +0300
-> +++ linux-5.19.4/drivers/hwmon/nct6775-platform.c       2022-08-28 16:28:09.531738685 +0300
-> @@ -1054,6 +1054,7 @@ static const char * const asus_wmi_board
->          "PRIME H410M-R",
->          "PRIME X570-P",
->          "PRIME X570-PRO",
-> +       "PRIME Z390-A",
-
-checkpatch says:
-
-WARNING: please, no spaces at the start of a line
-#77: FILE: drivers/hwmon/nct6775-platform.c:1057:
-+       "PRIME Z390-A",$
-
-
-Please fix.
-
-Thanks,
-Guenter
-
->          "ROG CROSSHAIR VIII DARK HERO",
->          "ROG CROSSHAIR VIII FORMULA",
->          "ROG CROSSHAIR VIII HERO",
-> 
-> 
-
+It's *possible* to look into these things from what you posted, but it's
+just slow.  I'm sure Kirill will appreciate the help.
