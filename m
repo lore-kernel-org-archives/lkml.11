@@ -2,266 +2,363 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D421CECAAD8
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAA7ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:37:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbiH2VgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 17:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52842 "EHLO
+        id S229715AbiH2Vhh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 17:37:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiH2VgQ (ORCPT
+        with ESMTP id S229512AbiH2Vhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 17:36:16 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45887AC2F
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:36:13 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-3321c2a8d4cso228750857b3.5
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:36:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=vpffA/2S0lCQZw66EqBoxIo3Ki9fW37f7ma72RIaoVo=;
-        b=fPOWJgin7A9WJPjvyh9KPuTG1cGCJk7IRkmGyozbbf3odnMP/FbwsuqtSI40BqYj0J
-         zdjIu/MhD+m+LFigVMkwK9DTv0foMYbzwbEJI1GLT94m3lnmfLfNXlzL5d4JBQvYrMTG
-         mRM31FoU3WyTq8t0qawC/+sDk+T4Ok5g466c+XnZ7K00aSTa7P1fWxm5ZVCoDeDzLVZo
-         DKHJQW64bNa30w1WEiIkJyLFOI4+xoZ74zVFw5MDGwJqUNoF+orW1lqJ7Cp4VIeE7C9a
-         UnmbTpE19YdWHno6Xyv0AZXl0cn+iIORtpZoppTedziFPPA8SpxgSAG/BqJXCb0/t3nS
-         iq0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=vpffA/2S0lCQZw66EqBoxIo3Ki9fW37f7ma72RIaoVo=;
-        b=OvxXJlyEbZU6cVvfGzmU+GdAZM+5uM1IIdOBP0DBbcvN5Os1MUQHqNbtLX8+tJVrtO
-         o4bpFS2Doi2JpsXGsNC2fCmyunPlMzUFMcMkfcvnYa/N18+cB/IcJV/NupwL0mw3+woz
-         PlqKqubhxBsI4TezKGhbax3y5d0B3NJUXQbDuFuN0dJHsXg4KcpfLnIiHK8fhiV/KUye
-         mLqL3Mr7s6d3CiMciPnotOYBytHzFMy6xLagk1W8cTSGOmrV4N9XHNr6UlGDh89dXn0B
-         Ixid9EwHXSRe8eZJ/GM8CzNeccUFsOV5bkhx/wwrx95Qi0+uxjkkeGXZs2Dl5doYsXoe
-         09/w==
-X-Gm-Message-State: ACgBeo0FKeUt94kSr1deqoz26UNH9S6RT45cJ+LpOuqnjmqlODY4Iv80
-        SdQl6zUo+THZxYYK2/SobX04LVQ0lfXTvRrbg/ViiQ==
-X-Google-Smtp-Source: AA6agR6KiVAPo56RwAYqMbS0k4dcCSNfKfh8YkQ+rSQc7JpUMkx11m9a9cDwzeWiscF1REUu2fH50aLLNSBpETtwewc=
-X-Received: by 2002:a81:4e8e:0:b0:340:b324:8920 with SMTP id
- c136-20020a814e8e000000b00340b3248920mr10338324ywb.218.1661808972683; Mon, 29
- Aug 2022 14:36:12 -0700 (PDT)
+        Mon, 29 Aug 2022 17:37:36 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E32280F50;
+        Mon, 29 Aug 2022 14:37:34 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 9F8EB8211EE;
+        Mon, 29 Aug 2022 21:29:22 +0000 (UTC)
+Received: from pdx1-sub0-mail-a210 (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 1830E8214F4;
+        Mon, 29 Aug 2022 21:29:22 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661808562; a=rsa-sha256;
+        cv=none;
+        b=889wU+ypFOzUxMo8tE7wsNg3AIyIc/z3cecJyw1ISG+NPwtjl+h/wTnEd5K2TzIi0NMf5a
+        B3OnPpWSdDJsv8NGNvKvgsjALhGxAdwJtoXP2pkRTPmZZpxTKB/1MbtMb+hNnViynGXU1a
+        FhZG3r1VNOeQEvplpdBV53hf5Ak9tS7fvqEARbZMSk3UHCXNFTgGrnvz6L4/8/DjL9UQfG
+        U+TVlYpfFHU96osU991mXYk2xQSC0yu0wkFJTqRfkjZ0BQW9V1OkjrCQg/5C7b6P4zXxVr
+        cItJfpBehRIE+hmPetg1eWyH/C4AtxZOpf6OPa7InPlouRnp3aFlIpT4pSJC4w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661808562;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:dkim-signature;
+        bh=wPrGN55jL4h8TZE8TdRCRKUBj7LPUTZEAsucC9jQbN4=;
+        b=fHIx0ajVzaapgHX+wHAy9i3SSOOpjYSGaygTwB1lTiPccD0mI/aSoFb49HaJxbSX/j1ISg
+        V1/rvlDaEZvUnFRxs2yB9+gkc4ylnB5uk3Tz5zANwIzCyrkjSbeqQY0EXYL1i6GBYBwcit
+        GFXQ8kdR8pyuZ1LxShT2ILU95KNjLN1mJVGjedzVaRmUg5YaycMchDtaEFUYbpR1FmkwVm
+        7BQ1ulyvigt4GoHxBoKAMN66oedQaegs6reEa1C89qBIbEez6jgsHyKgyTEzc3YhC6C+ey
+        /Us23SboeeHKM8d/LsCrNUf22DL7tPZmLVQdyJh8uPf0Cuztdn0Ns7b4Tq/NAQ==
+ARC-Authentication-Results: i=1;
+        rspamd-75b4464bd-sv695;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Descriptive-Arithmetic: 79cfb0b32f60848c_1661808562489_673253421
+X-MC-Loop-Signature: 1661808562489:2375646447
+X-MC-Ingress-Time: 1661808562489
+Received: from pdx1-sub0-mail-a210 (pop.dreamhost.com [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.123.39.217 (trex/6.7.1);
+        Mon, 29 Aug 2022 21:29:22 +0000
+Received: from offworld.. (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a210 (Postfix) with ESMTPSA id 4MGk8x0m25zPZ;
+        Mon, 29 Aug 2022 14:29:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661808561;
+        bh=wPrGN55jL4h8TZE8TdRCRKUBj7LPUTZEAsucC9jQbN4=;
+        h=From:To:Cc:Subject:Date:Content-Transfer-Encoding;
+        b=VrOY05yZROs1ioLx4CRmSRE9GcO9LhV1i39YKM/9L2L7CgMCeigurV/Za/8wK+sF1
+         gD/yJ7XqCeqQ8ao12sQa9O4nfu7CVsCIR7Yjgo9kVQC0lAv5YRClls7fEjsO6lu7QH
+         K64O2ulQfuRhkMaN314IyQII0OfEgrQkzODS6h8wtc8CobKDrdZwrKMKak95QI7ixc
+         o7caov7A0AVGadItP313BMl75g2keZxcPYDElQJWus2X55LE3hHGI0fW0ATZkoCR1e
+         qb8Uk/uewGrNKhNrLQoGi2jC4+YX/qtepWMwRXcY9Y7d53Rt7qh9YMLiQ2gug5Im9X
+         7IysfS+wHKuPw==
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     dan.j.williams@intel.com
+Cc:     x86@kernel.org, nvdimm@lists.linux.dev, linux-cxl@vger.kernel.org,
+        peterz@infradead.org, bp@alien8.de, akpm@linux-foundation.org,
+        dave.jiang@intel.com, Jonathan.Cameron@huawei.com,
+        vishal.l.verma@intel.com, ira.weiny@intel.com,
+        a.manzanares@samsung.com, linux-kernel@vger.kernel.org,
+        dave@stgolabs.net
+Subject: [PATCH -next] memregion: Add arch_flush_memregion() interface
+Date:   Mon, 29 Aug 2022 14:29:18 -0700
+Message-Id: <20220829212918.4039240-1-dave@stgolabs.net>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <29a5c3e3-a590-01dd-1a2b-8415cae4a292@leemhuis.info>
- <9d431289-085b-5619-00f8-95d692183e28@foss.st.com> <99355482-960a-4669-19b5-926a7cd76c65@foss.st.com>
-In-Reply-To: <99355482-960a-4669-19b5-926a7cd76c65@foss.st.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Mon, 29 Aug 2022 14:35:36 -0700
-Message-ID: <CAGETcx9YvpYFf1mxHi1iA--sE5G2MZLS1x8vHnTu6Wj30ScaOA@mail.gmail.com>
-Subject: Re: [Regression] Bug 216420 - Unable to handle kernel NULL pointer
- dereference at virtual address 00000008
-To:     Yann Gautier <yann.gautier@foss.st.com>
-Cc:     Thorsten Leemhuis <regressions@leemhuis.info>,
-        Russell King <linux@armlinux.org.uk>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-mmc@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        frc.gabriel@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 6:54 AM Yann Gautier <yann.gautier@foss.st.com> wrote:
->
-> On 8/29/22 13:50, Yann Gautier wrote:
-> > On 8/28/22 13:44, Thorsten Leemhuis wrote:
-> >> Hi, this is your Linux kernel regression tracker speaking.
-> >>
-> >> I noticed a regression report in bugzilla.kernel.org. As many (most?)
-> >> kernel developer don't keep an eye on it, I decided to forward it (I
-> >> hope I picked the right recipients for this mail):
-> >>
-> >>>   frc.gabriel@gmail.com 2022-08-27 09:36:06 UTC
-> >>>
-> >>> Created attachment 301682 [details]
-> >>> full dmesg output
-> >>>
-> >>> Hi, good morning!
-> >>>
-> >>> my device is currently crashing during boot with kernel 6.0.0-rc2. I
-> >>> also tried next-20220826 and the outcome is the same.
-> >>>
-> >>> The full dmesg log can be found attached on crash-boot.txt file.
-> >>>
-> >>> Thank you and have a good day,
-> >>> Gabriel Francisco
-> >>
-> >>  From that dmesg:
-> >>
-> >>> [    2.279556] 8<--- cut here ---
-> >>> [    2.279734] s4: Bringing 0uV into 815000-815000uV
-> >>> [    2.284139] Unable to handle kernel NULL pointer dereference at
-> >>> virtual address 00000008
-> >>> [    2.288082] s1: Bringing 0uV into 1300000-1300000uV
-> >>> [    2.292017] [00000008] *pgd=00000000
-> >>> [    2.300784] s2: Bringing 0uV into 2150000-2150000uV
-> >>> [    2.304801] Internal error: Oops: 5 [#1] SMP ARM
-> >>> [    2.309033] s3: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.313196] Modules linked in:
-> >>> [    2.313208] CPU: 2 PID: 7 Comm: kworker/u8:0 Not tainted 6.0.0-rc2
-> >>> #325
-> >>> [    2.313221] Hardware name: Generic DT based system
-> >>> [    2.318516] l1: Bringing 0uV into 1225000-1225000uV
-> >>> [    2.322655] Workqueue: events_unbound deferred_probe_work_func
-> >>> [    2.326162] l2: Bringing 0uV into 1200000-1200000uV
-> >>> [    2.332290] PC is at mmci_probe+0x10/0x9b0
-> >>> [    2.332308] LR is at amba_probe+0xf0/0x174
-> >>> [    2.337399] l3: Bringing 0uV into 1225000-1225000uV
-> >>> [    2.341927] pc : [<c0b14e10>]    lr : [<c089036c>]    psr: 80000013
-> >>> [    2.348097] l4: Bringing 0uV into 1225000-1225000uV
-> >>> [    2.352601] sp : f0839dd0  ip : fffffff8  fp : c1903248
-> >>> [    2.352609] r10: c1448b9c  r9 : fffffdfb  r8 : 00000000
-> >>> [    2.352616] r7 : c1903000  r6 : eefe45bc  r5 : 00000000  r4 :
-> >>> c1903100
-> >>> [    2.357020] l5: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.360849] r3 : c0b14e00  r2 : 00000000  r1 : 00000000  r0 :
-> >>> c1903000
-> >>> [    2.365896] l6: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.371873] Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM
-> >>> Segment none
-> >>> [    2.377217] l7: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.381944] Control: 10c5787d  Table: 0020406a  DAC: 00000051
-> >>> [    2.387543] l8: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.393749] Register r0 information: slab kmalloc-1k start
-> >>> c1903000 pointer offset 0 size 1024
-> >>> [    2.398766] l9: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.405119]
-> >>> [    2.405124] Register r1 information: NULL pointer
-> >>> [    2.405137] Register r2 information:
-> >>> [    2.410141] l10: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.417186]  NULL pointer
-> >>> [    2.417193] Register r3 information: non-slab/vmalloc memory
-> >>> [    2.417205] Register r4 information:
-> >>> [    2.422124] l11: Bringing 0uV into 1300000-1300000uV
-> >>> [    2.427776]  slab kmalloc-1k start c1903000 pointer offset 256
-> >>> size 1024
-> >>> [    2.432756] l12: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.441145]
-> >>> [    2.446335] l13: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.447655] Register r5 information:
-> >>> [    2.452735] l14: Bringing 0uV into 1800000-1800000uV
-> >>> [    2.455902]  NULL pointer
-> >>> [    2.461123] l15: Bringing 0uV into 2050000-2050000uV
-> >>> [    2.463368] Register r6 information: non-slab/vmalloc memory
-> >>> [    2.463380] Register r7 information: slab kmalloc-1k start c1903000
-> >>> [    2.469373] l16: Bringing 0uV into 2700000-2700000uV
-> >>> [    2.472656]  pointer offset 0 size 1024
-> >>> [    2.472671] Register r8 information:
-> >>> [    2.477868] l17: Bringing 0uV into 2850000-2850000uV
-> >>> [    2.484288]  NULL pointer
-> >>> [    2.484294] Register r9 information: non-paged memory
-> >>> [    2.484305] Register r10 information:
-> >>> [    2.489490] l18: Bringing 0uV into 2850000-2850000uV
-> >>> [    2.490712]  non-slab/vmalloc memory
-> >>> [    2.495937] l19: Bringing 0uV into 3000000-3000000uV
-> >>> [    2.499217] Register r11 information:
-> >>> [    2.504461] l20: Bringing 0uV into 2950000-2950000uV
-> >>> [    2.506683]  slab kmalloc-1k
-> >>> [    2.512149] l21: Bringing 0uV into 2950000-2950000uV
-> >>> [    2.517361]  start c1903000 pointer offset 584 size 1024
-> >>> [    2.517382] Register r12 information:
-> >>> [    2.523805] l22: Bringing 0uV into 3000000-3000000uV
-> >>> [    2.528556]  non-paged memory
-> >>> [    2.532414] l23: Bringing 0uV into 3000000-3000000uV
-> >>> [    2.535937] Process kworker/u8:0 (pid: 7, stack limit = 0x(ptrval))
-> >>> [    2.541160] l24: Bringing 0uV into 3075000-3075000uV
-> >>> [    2.543402] Stack: (0xf0839dd0 to 0xf083a000)
-> >>> [    2.543413] 9dc0:                                     c1903000
-> >>> c1903000 00000000 7ff15a00
-> >>> [    2.543425] 9de0: 60172703 00000000 c1903000 c1903000 20000013
-> >>> c1903084 c1903000 c1903100
-> >>> [    2.627929] 9e00: 00000000 eefe45bc c1903000 00000000 fffffdfb
-> >>> c1448b9c c1903248 c089036c
-> >>> [    2.635613] 9e20: c089027c 00000000 c1903000 c1448b9c c147a260
-> >>> 00000000 c14672a0 c180f00d
-> >>> [    2.643773] 9e40: c18db480 c0940584 c1903000 00000000 c1903000
-> >>> c147a260 c1448b9c 0000000d
-> >>> [    2.651933] 9e60: 00000000 c0940950 c29b4380 c33d7380 c14c1fe4
-> >>> c1448b9c c1903000 00000000
-> >>> [    2.660092] 9e80: c14672a0 c180f00d c18db480 c0940ae4 fffffdfb
-> >>> c1448b9c f0839ee4 c1903000
-> >>> [    2.668252] 9ea0: 00000000 c0941190 00000000 f0839ee4 c09410ec
-> >>> c147a260 00000000 c093e658
-> >>> [    2.676412] 9ec0: c14672a0 c19dab6c c1b44fb8 cb719486 c1903000
-> >>> c1903044 00000001 c0940d9c
-> >>> [    2.684572] 9ee0: c147a260 c1903000 00000001 cb719486 c1903000
-> >>> c1903000 c13f37dc c093f7a0
-> >>> [    2.692731] 9f00: c1903000 c142aeec c142af00 c093fc94 c142af1c
-> >>> c1803780 c1806800 c180f000
-> >>> [    2.700890] 9f20: 00000000 c033dc60 c1803780 c18db480 c1806800
-> >>> c1806800 c180681c c1803780
-> >>> [    2.709050] 9f40: c1806800 c1803798 c180681c c1303d40 c18db480
-> >>> 00000088 c1806800 c033e148
-> >>> [    2.717211] 9f60: c1803780 c1303d40 f0821ea0 c18b7040 c18db480
-> >>> c033df2c c1803780 c18b7400
-> >>> [    2.725369] 9f80: f0821ea0 00000000 00000000 c03458ac c18b7040
-> >>> c03457dc 00000000 00000000
-> >>> [    2.733529] 9fa0: 00000000 00000000 00000000 c0300148 00000000
-> >>> 00000000 00000000 00000000
-> >>> [    2.741688] 9fc0: 00000000 00000000 00000000 00000000 00000000
-> >>> 00000000 00000000 00000000
-> >>> [    2.749850] 9fe0: 00000000 00000000 00000000 00000000 00000013
-> >>> 00000000 00000000 00000000
-> >>> [    2.758012]  mmci_probe from amba_probe+0xf0/0x174
-> >>> [    2.766161]  amba_probe from really_probe+0xe0/0x40c
-> >>> [    2.770847]  really_probe from __driver_probe_device+0xa0/0x204
-> >>> [    2.775971]  __driver_probe_device from driver_probe_device+0x30/0xc0
-> >>> [    2.781612]  driver_probe_device from
-> >>> __device_attach_driver+0xa4/0x11c
-> >>> [    2.788209]  __device_attach_driver from bus_for_each_drv+0x80/0xcc
-> >>> [    2.794633]  bus_for_each_drv from __device_attach+0xa8/0x1f0
-> >>> [    2.800881]  __device_attach from bus_probe_device+0x84/0x8c
-> >>> [    2.806784]  bus_probe_device from deferred_probe_work_func+0x8c/0xd4
-> >>> [    2.812515]  deferred_probe_work_func from
-> >>> process_one_work+0x1fc/0x4c8
-> >>> [    2.818854]  process_one_work from worker_thread+0x21c/0x540
-> >>> [    2.825275]  worker_thread from kthread+0xd0/0xec
-> >>> [    2.831177]  kthread from ret_from_fork+0x14/0x2c
-> >>> [    2.835775] Exception stack(0xf0839fb0 to 0xf0839ff8)
-> >>> [    2.840465] 9fa0:                                     00000000
-> >>> 00000000 00000000 00000000
-> >>> [    2.845509] 9fc0: 00000000 00000000 00000000 00000000 00000000
-> >>> 00000000 00000000 00000000
-> >>> [    2.853668] 9fe0: 00000000 00000000 00000000 00000000 00000013
-> >>> 00000000
-> >>> [    2.861826] Code: e92d4ff0 e590803c e24dd02c e59061a0 (e5917008)
-> >>> [    2.868280] ---[ end trace 0000000000000000 ]---
-> >>
-> >> See the ticket for more details.
-> >>
-> >> I'd also like to add the report to the list of tracked regressions to
-> >> ensure it's doesn't fall through the cracks in the end:
-> >>
-> >> #regzbot introduced: v5.19..v6.0-rc2
-> >> https://bugzilla.kernel.org/show_bug.cgi?id=216420
-> >> #regzbot ignore-activity
-> >>
-> >> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-> >>
-> >> P.S.: As the Linux kernel's regression tracker I deal with a lot of
-> >> reports and sometimes miss something important when writing mails like
-> >> this. If that's the case here, don't hesitate to tell me in a public
-> >> reply, it's in everyone's interest to set the public record straight.
-> >
-> > Hi,
-> >
-> > If I'm not wrong, the mmci driver shouldn't be probed for this platform.
-> > So either there is something wrong with the device tree, or with the
-> > AMBA bus driver.
-> >
-> >
-> > Best regards,
-> > Yann
->
-> Maybe this is related (corrected?) with this patch:
-> https://lkml.org/lkml/2022/8/27/164
+With CXL security features, global CPU cache flushing nvdimm requirements
+are no longer specific to that subsystem, even beyond the scope of
+security_ops. CXL will need such semantics for features not necessarily
+limited to persistent memory.
 
-This fix is probably this one:
-https://lore.kernel.org/lkml/20220818172852.3548-1-isaacmanjarres@google.com/
+The functionality this is enabling is to be able to instantaneously
+secure erase potentially terabytes of memory at once and the kernel
+needs to be sure that none of the data from before the secure is still
+present in the cache. It is also used when unlocking a memory device
+where speculative reads and firmware accesses could have cached poison
+from before the device was unlocked.
 
--Saravana
+This capability is typically only used once per-boot (for unlock), or
+once per bare metal provisioning event (secure erase), like when handing
+off the system to another tenant or decommissioning a device.
+
+Users must first call arch_has_flush_memregion() to know whether this
+functionality is available on the architecture. Only enable it on x86-64
+via the wbinvd() hammer.
+
+Signed-off-by: Davidlohr Bueso <dave@stgolabs.net>
+---
+
+Changes from v2 (https://lore.kernel.org/all/20220819171024.1766857-1-dave@stgolabs.net/):
+- Redid to use memregion based interfaces + VMM check on x86 (Dan)
+- Restricted the flushing to x86-64.
+
+Note: Since we still are dealing with a physical "range" at this level,
+added the spa range for nfit even though this is unused.
+
+ arch/x86/Kconfig             |  1 +
+ arch/x86/mm/pat/set_memory.c | 14 +++++++++++
+ drivers/acpi/nfit/intel.c    | 45 ++++++++++++++++++------------------
+ include/linux/memregion.h    | 25 ++++++++++++++++++++
+ lib/Kconfig                  |  3 +++
+ 5 files changed, 65 insertions(+), 23 deletions(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index f9920f1341c8..594e6b6a4925 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -81,6 +81,7 @@ config X86
+ 	select ARCH_HAS_KCOV			if X86_64
+ 	select ARCH_HAS_MEM_ENCRYPT
+ 	select ARCH_HAS_MEMBARRIER_SYNC_CORE
++	select ARCH_HAS_MEMREGION_INVALIDATE    if X86_64
+ 	select ARCH_HAS_NON_OVERLAPPING_ADDRESS_SPACE
+ 	select ARCH_HAS_PMEM_API		if X86_64
+ 	select ARCH_HAS_PTE_DEVMAP		if X86_64
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 1abd5438f126..18463cb704fb 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -330,6 +330,20 @@ void arch_invalidate_pmem(void *addr, size_t size)
+ EXPORT_SYMBOL_GPL(arch_invalidate_pmem);
+ #endif
+ 
++#ifdef CONFIG_ARCH_HAS_MEMREGION_INVALIDATE
++bool arch_has_flush_memregion(void)
++{
++	return !cpu_feature_enabled(X86_FEATURE_HYPERVISOR);
++}
++EXPORT_SYMBOL(arch_has_flush_memregion);
++
++void arch_flush_memregion(phys_addr_t phys, resource_size_t size)
++{
++	wbinvd_on_all_cpus();
++}
++EXPORT_SYMBOL(arch_flush_memregion);
++#endif
++
+ static void __cpa_flush_all(void *arg)
+ {
+ 	unsigned long cache = (unsigned long)arg;
+diff --git a/drivers/acpi/nfit/intel.c b/drivers/acpi/nfit/intel.c
+index 8dd792a55730..32e622f51cde 100644
+--- a/drivers/acpi/nfit/intel.c
++++ b/drivers/acpi/nfit/intel.c
+@@ -3,6 +3,7 @@
+ #include <linux/libnvdimm.h>
+ #include <linux/ndctl.h>
+ #include <linux/acpi.h>
++#include <linux/memregion.h>
+ #include <asm/smp.h>
+ #include "intel.h"
+ #include "nfit.h"
+@@ -190,12 +191,11 @@ static int intel_security_change_key(struct nvdimm *nvdimm,
+ 	}
+ }
+ 
+-static void nvdimm_invalidate_cache(void);
+-
+ static int __maybe_unused intel_security_unlock(struct nvdimm *nvdimm,
+ 		const struct nvdimm_key_data *key_data)
+ {
+ 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
++	struct acpi_nfit_system_address *spa = nfit_mem->spa_dcr;
+ 	struct {
+ 		struct nd_cmd_pkg pkg;
+ 		struct nd_intel_unlock_unit cmd;
+@@ -213,6 +213,9 @@ static int __maybe_unused intel_security_unlock(struct nvdimm *nvdimm,
+ 	if (!test_bit(NVDIMM_INTEL_UNLOCK_UNIT, &nfit_mem->dsm_mask))
+ 		return -ENOTTY;
+ 
++	if (!arch_has_flush_memregion())
++		return -EINVAL;
++
+ 	memcpy(nd_cmd.cmd.passphrase, key_data->data,
+ 			sizeof(nd_cmd.cmd.passphrase));
+ 	rc = nvdimm_ctl(nvdimm, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd), NULL);
+@@ -228,7 +231,7 @@ static int __maybe_unused intel_security_unlock(struct nvdimm *nvdimm,
+ 	}
+ 
+ 	/* DIMM unlocked, invalidate all CPU caches before we read it */
+-	nvdimm_invalidate_cache();
++	arch_flush_memregion(spa->address, spa->length);
+ 
+ 	return 0;
+ }
+@@ -279,6 +282,7 @@ static int __maybe_unused intel_security_erase(struct nvdimm *nvdimm,
+ {
+ 	int rc;
+ 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
++	struct acpi_nfit_system_address *spa = nfit_mem->spa_dcr;
+ 	unsigned int cmd = ptype == NVDIMM_MASTER ?
+ 		NVDIMM_INTEL_MASTER_SECURE_ERASE : NVDIMM_INTEL_SECURE_ERASE;
+ 	struct {
+@@ -297,8 +301,11 @@ static int __maybe_unused intel_security_erase(struct nvdimm *nvdimm,
+ 	if (!test_bit(cmd, &nfit_mem->dsm_mask))
+ 		return -ENOTTY;
+ 
++	if (!arch_has_flush_memregion())
++		return -EINVAL;
++
+ 	/* flush all cache before we erase DIMM */
+-	nvdimm_invalidate_cache();
++	arch_flush_memregion(spa->address, spa->length);
+ 	memcpy(nd_cmd.cmd.passphrase, key->data,
+ 			sizeof(nd_cmd.cmd.passphrase));
+ 	rc = nvdimm_ctl(nvdimm, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd), NULL);
+@@ -318,7 +325,7 @@ static int __maybe_unused intel_security_erase(struct nvdimm *nvdimm,
+ 	}
+ 
+ 	/* DIMM erased, invalidate all CPU caches before we read it */
+-	nvdimm_invalidate_cache();
++	arch_flush_memregion(spa->address, spa->length);
+ 	return 0;
+ }
+ 
+@@ -326,6 +333,7 @@ static int __maybe_unused intel_security_query_overwrite(struct nvdimm *nvdimm)
+ {
+ 	int rc;
+ 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
++	struct acpi_nfit_system_address *spa = nfit_mem->spa_dcr;
+ 	struct {
+ 		struct nd_cmd_pkg pkg;
+ 		struct nd_intel_query_overwrite cmd;
+@@ -341,6 +349,9 @@ static int __maybe_unused intel_security_query_overwrite(struct nvdimm *nvdimm)
+ 	if (!test_bit(NVDIMM_INTEL_QUERY_OVERWRITE, &nfit_mem->dsm_mask))
+ 		return -ENOTTY;
+ 
++	if (!arch_has_flush_memregion())
++		return -EINVAL;
++
+ 	rc = nvdimm_ctl(nvdimm, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd), NULL);
+ 	if (rc < 0)
+ 		return rc;
+@@ -355,7 +366,7 @@ static int __maybe_unused intel_security_query_overwrite(struct nvdimm *nvdimm)
+ 	}
+ 
+ 	/* flush all cache before we make the nvdimms available */
+-	nvdimm_invalidate_cache();
++	arch_flush_memregion(spa->address, spa->length);
+ 	return 0;
+ }
+ 
+@@ -364,6 +375,7 @@ static int __maybe_unused intel_security_overwrite(struct nvdimm *nvdimm,
+ {
+ 	int rc;
+ 	struct nfit_mem *nfit_mem = nvdimm_provider_data(nvdimm);
++	struct acpi_nfit_system_address *spa = nfit_mem->spa_dcr;
+ 	struct {
+ 		struct nd_cmd_pkg pkg;
+ 		struct nd_intel_overwrite cmd;
+@@ -380,8 +392,11 @@ static int __maybe_unused intel_security_overwrite(struct nvdimm *nvdimm,
+ 	if (!test_bit(NVDIMM_INTEL_OVERWRITE, &nfit_mem->dsm_mask))
+ 		return -ENOTTY;
+ 
++	if (!arch_has_flush_memregion())
++		return -EINVAL;
++
+ 	/* flush all cache before we erase DIMM */
+-	nvdimm_invalidate_cache();
++	arch_flush_memregion(spa->address, spa->length);
+ 	memcpy(nd_cmd.cmd.passphrase, nkey->data,
+ 			sizeof(nd_cmd.cmd.passphrase));
+ 	rc = nvdimm_ctl(nvdimm, ND_CMD_CALL, &nd_cmd, sizeof(nd_cmd), NULL);
+@@ -401,22 +416,6 @@ static int __maybe_unused intel_security_overwrite(struct nvdimm *nvdimm,
+ 	}
+ }
+ 
+-/*
+- * TODO: define a cross arch wbinvd equivalent when/if
+- * NVDIMM_FAMILY_INTEL command support arrives on another arch.
+- */
+-#ifdef CONFIG_X86
+-static void nvdimm_invalidate_cache(void)
+-{
+-	wbinvd_on_all_cpus();
+-}
+-#else
+-static void nvdimm_invalidate_cache(void)
+-{
+-	WARN_ON_ONCE("cache invalidation required after unlock\n");
+-}
+-#endif
+-
+ static const struct nvdimm_security_ops __intel_security_ops = {
+ 	.get_flags = intel_security_flags,
+ 	.freeze = intel_security_freeze,
+diff --git a/include/linux/memregion.h b/include/linux/memregion.h
+index c04c4fd2e209..c35201c0696f 100644
+--- a/include/linux/memregion.h
++++ b/include/linux/memregion.h
+@@ -20,4 +20,29 @@ static inline void memregion_free(int id)
+ {
+ }
+ #endif
++
++/*
++ * Device memory technologies like NVDIMM and CXL have events like
++ * secure erase and dynamic region provision that can invalidate an
++ * entire physical memory address range at once. Limit that
++ * functionality to architectures that have an efficient way to
++ * writeback and invalidate potentially terabytes of memory at once.
++ *
++ * To ensure this, users must first call arch_has_flush_memregion()
++ * before anything, to verify the operation is feasible.
++ */
++#ifdef CONFIG_ARCH_HAS_MEMREGION_INVALIDATE
++void arch_flush_memregion(phys_addr_t phys, resource_size_t size);
++bool arch_has_flush_memregion(void);
++#else
++static inline bool arch_has_flush_memregion(void)
++{
++       return false;
++}
++static inline void arch_flush_memregion(phys_addr_t phys, resource_size_t size)
++{
++	WARN_ON_ONCE("cache invalidation required");
++}
++#endif
++
+ #endif /* _MEMREGION_H_ */
+diff --git a/lib/Kconfig b/lib/Kconfig
+index dc1ab2ed1dc6..8319e7731e7b 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -662,6 +662,9 @@ config ARCH_HAS_PMEM_API
+ config MEMREGION
+ 	bool
+ 
++config ARCH_HAS_MEMREGION_INVALIDATE
++       bool
++
+ config ARCH_HAS_MEMREMAP_COMPAT_ALIGN
+ 	bool
+ 
+-- 
+2.37.2
+
