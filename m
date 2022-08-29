@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E664ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:15:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D67ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229890AbiH2KPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 06:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43694 "EHLO
+        id S229994AbiH2KPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 06:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiH2KPC (ORCPT
+        with ESMTP id S229879AbiH2KPC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 06:15:02 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37C2765F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38D37661
         for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:14:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=OQAAMSjRHuYgCLVl5R9t0nt04B2gvVrpsDsjFaKL1VI=; b=GoW94x/AMI1g98fioJPJuyHJF1
-        KdxLLlUDJNiygWcb/xx2+hyr/PLqQ3xsiFpfbmK9R7ThxZTqfcRXrRdieG7DuaHAiUk0j0F9uus7E
-        vGvIhj0nksX3GdH9NQeJUiTzaOlq+xvTt0f1yi1KKoKSIjGh0WMER0bdwAmpxiQ3htRkz30vyXxX4
-        Bekf/iMdZh7hE7f8VuxvTJcm5UrNn32qKmkCx0LHWnxTuCCDIRZFQg3dWtYH784xuqFpQuEjXGEjB
-        HQVQ/qLIqgyObVExFXCnOVxIkkt/vlv3POQBrMEZMawZ4haAI/fCaDXFQ+3EwhJMgc+Et+J3/S4wt
-        YP6tW28w==;
+        bh=Ey8THXCja1PgogTYIuBjl5F4YUuf3vH3bpgVEwluBX0=; b=BTsvGSUHQqUgRy5roqdQfDuzvl
+        xbJVFkW6W7CZ5tcLhphOzYzPDg1YOzQkz8wuEflVRhpOP3bXfCAk8Joiqe1ThbPeGfWQmwdsPV8qT
+        TeoJ7A33joiFEbPdwQzVZ0xTn6z/3qf8hzMCm0fR1np9Msczz7kzyEEiwJXG2wwIvQgwchOau+7RP
+        sf07hbVDxV6CKIY5vxNEMHvIngRgTUjRUbw7hdxFYNS8si5FZOXHTvIAs8Digv/kN1mcao8jLovrH
+        kvwMtVr92zg5c04kTkHD8j1sFofrlqbvX9cdCe3Uwss1I88+p01nWqI5BoqyH1b71pyMDreMr4zzY
+        JkyqqVUQ==;
 Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oSbn1-007SzK-J5; Mon, 29 Aug 2022 10:14:44 +0000
+        id 1oSbn1-007SzL-Ic; Mon, 29 Aug 2022 10:14:44 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D504B3006C4;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D5187300859;
         Mon, 29 Aug 2022 12:14:41 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id A48CD207F7FB4; Mon, 29 Aug 2022 12:14:41 +0200 (CEST)
-Message-ID: <20220829101321.971473694@infradead.org>
+        id 8103F2008A3F5; Mon, 29 Aug 2022 12:14:41 +0200 (CEST)
+Message-ID: <20220829101321.706354189@infradead.org>
 User-Agent: quilt/0.66
-Date:   Mon, 29 Aug 2022 12:10:08 +0200
+Date:   Mon, 29 Aug 2022 12:10:04 +0200
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, kan.liang@linux.intel.com, eranian@google.com,
         ravi.bangoria@amd.com
@@ -46,7 +46,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         acme@kernel.org, mark.rutland@arm.com,
         alexander.shishkin@linux.intel.com, jolsa@kernel.org,
         namhyung@kernel.org
-Subject: [PATCH v2 9/9] perf/x86/intel: Optimize short PEBS counters
+Subject: [PATCH v2 5/9] perf/x86/intel: Remove x86_pmu::set_topdown_event_period
 References: <20220829100959.917169441@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,158 +54,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-XXX: crazy idea; really not sure this is worth the extra complexity
-
-It is possible to have the counter programmed to a value smaller than
-the sampling period. In that case, the code suppresses the sample,
-recalculates the remaining events and reprograms the counter.
-
-This should also work for PEBS counters (and it does); however
-triggering a full PEBS assist and parsing the event from the DS is
-more overhead than is required.
-
-As such, detect this case and temporarily suppress PEBS. This will
-then trigger a regular PMI for the counter which will reprogram the
-event and re-enable PEBS once the target period is in reach.
+Now that it is all internal to the intel driver, remove
+x86_pmu::set_topdown_event_period.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/events/intel/core.c |   80 ++++++++++++++++++++++++++++++++++++++-----
- arch/x86/events/perf_event.h |    9 ++++
- 2 files changed, 81 insertions(+), 8 deletions(-)
+ arch/x86/events/intel/core.c |   16 ++++++++++------
+ arch/x86/events/perf_event.h |    1 -
+ 2 files changed, 10 insertions(+), 7 deletions(-)
 
 --- a/arch/x86/events/intel/core.c
 +++ b/arch/x86/events/intel/core.c
-@@ -2722,12 +2722,7 @@ static void intel_pmu_enable_fixed(struc
- 
- 	intel_set_masks(event, idx);
- 
--	/*
--	 * Enable IRQ generation (0x8), if not PEBS,
--	 * and enable ring-3 counting (0x2) and ring-0 counting (0x1)
--	 * if requested:
--	 */
--	if (!event->attr.precise_ip)
-+	if (hwc->config & ARCH_PERFMON_EVENTSEL_INT)
- 		bits |= 0x8;
- 	if (hwc->config & ARCH_PERFMON_EVENTSEL_USR)
- 		bits |= 0x2;
-@@ -2816,12 +2811,75 @@ int intel_pmu_save_and_restart(struct pe
- 	return static_call(x86_pmu_set_period)(event);
+@@ -2520,6 +2520,8 @@ static int adl_set_topdown_event_period(
+ 	return icl_set_topdown_event_period(event);
  }
  
-+static void intel_pmu_update_config(struct perf_event *event)
-+{
-+	struct hw_perf_event *hwc = &event->hw;
-+	u64 config = hwc->config;
++DEFINE_STATIC_CALL(intel_pmu_set_topdown_event_period, x86_perf_event_set_period);
 +
-+	if (hwc->idx >= INTEL_PMC_IDX_FIXED) { /* PEBS is limited to real PMCs */
-+		u64 mask = 0xf, bits = 0;
-+
-+		if (config & ARCH_PERFMON_EVENTSEL_INT)
-+			bits |= 0x8;
-+		if (config & ARCH_PERFMON_EVENTSEL_USR)
-+			bits |= 0x2;
-+		if (config & ARCH_PERFMON_EVENTSEL_OS)
-+			bits |= 0x1;
-+
-+		bits <<= (hwc->idx * 4);
-+		mask <<= (hwc->idx * 4);
-+
-+		config = this_cpu_read(intel_fixed_ctrl);
-+		config &= ~mask;
-+		config |= bits;
-+		this_cpu_write(intel_fixed_ctrl, config);
-+	}
-+
-+	wrmsrl(hwc->config_base, config);
-+}
-+
-+static void intel_pmu_handle_short_pebs(struct perf_event *event)
-+{
-+	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
-+	struct hw_perf_event *hwc = &event->hw;
-+
-+	/* if the event is not enabled; intel_pmu_pebs_enable() DTRT */
-+	if (!test_bit(hwc->idx, cpuc->active_mask))
-+		return;
-+
-+	WARN_ON_ONCE(cpuc->enabled);
-+
-+	if (intel_pmu_is_short_pebs(event)) {
-+
-+		/* stripped down intel_pmu_pebs_disable() */
-+		cpuc->pebs_enabled &= ~(1ULL << hwc->idx);
-+		hwc->config |= ARCH_PERFMON_EVENTSEL_INT;
-+
-+		intel_pmu_update_config(event);
-+
-+	} else if (!(cpuc->pebs_enabled & (1ULL << hwc->idx))) {
-+
-+		/* stripped down intel_pmu_pebs_enable() */
-+		hwc->config &= ~ARCH_PERFMON_EVENTSEL_INT;
-+		cpuc->pebs_enabled |= (1ULL << hwc->idx);
-+
-+		intel_pmu_update_config(event);
-+	}
-+}
-+
+ static inline u64 icl_get_metrics_event_value(u64 metric, u64 slots, int idx)
+ {
+ 	u32 val;
+@@ -2810,9 +2812,8 @@ int intel_pmu_save_and_restart(struct pe
+ 
  static int intel_pmu_set_period(struct perf_event *event)
  {
-+	int ret;
-+
- 	if (unlikely(is_topdown_count(event)))
- 		return static_call(intel_pmu_set_topdown_event_period)(event);
+-	if (unlikely(is_topdown_count(event)) &&
+-	    x86_pmu.set_topdown_event_period)
+-		return x86_pmu.set_topdown_event_period(event);
++	if (unlikely(is_topdown_count(event)))
++		return static_call(intel_pmu_set_topdown_event_period)(event);
  
--	return x86_perf_event_set_period(event);
-+	ret = x86_perf_event_set_period(event);
-+
-+	if (event->attr.precise_ip)
-+		intel_pmu_handle_short_pebs(event);
-+
-+	return ret;
+ 	return x86_perf_event_set_period(event);
  }
+@@ -6191,7 +6192,8 @@ __init int intel_pmu_init(void)
+ 		intel_pmu_pebs_data_source_skl(pmem);
+ 		x86_pmu.num_topdown_events = 4;
+ 		x86_pmu.update_topdown_event = icl_update_topdown_event;
+-		x86_pmu.set_topdown_event_period = icl_set_topdown_event_period;
++		static_call_update(intel_pmu_set_topdown_event_period,
++				   &icl_set_topdown_event_period);
+ 		pr_cont("Icelake events, ");
+ 		name = "icelake";
+ 		break;
+@@ -6228,7 +6230,8 @@ __init int intel_pmu_init(void)
+ 		intel_pmu_pebs_data_source_skl(pmem);
+ 		x86_pmu.num_topdown_events = 8;
+ 		x86_pmu.update_topdown_event = icl_update_topdown_event;
+-		x86_pmu.set_topdown_event_period = icl_set_topdown_event_period;
++		static_call_update(intel_pmu_set_topdown_event_period,
++				   &icl_set_topdown_event_period);
+ 		pr_cont("Sapphire Rapids events, ");
+ 		name = "sapphire_rapids";
+ 		break;
+@@ -6264,7 +6267,8 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.pebs_latency_data = adl_latency_data_small;
+ 		x86_pmu.num_topdown_events = 8;
+ 		x86_pmu.update_topdown_event = adl_update_topdown_event;
+-		x86_pmu.set_topdown_event_period = adl_set_topdown_event_period;
++		static_call_update(intel_pmu_set_topdown_event_period,
++				   &adl_set_topdown_event_period);
  
- static u64 intel_pmu_update(struct perf_event *event)
-@@ -2975,6 +3033,9 @@ static int handle_pmi_common(struct pt_r
- 		 * MSR_IA32_PEBS_ENABLE is not updated. Because the
- 		 * cpuc->enabled has been forced to 0 in PMI.
- 		 * Update the MSR if pebs_enabled is changed.
-+		 *
-+		 * Also; short counters temporarily disable PEBS, see
-+		 * intel_pmu_set_period().
- 		 */
- 		if (pebs_enabled != cpuc->pebs_enabled)
- 			wrmsrl(MSR_IA32_PEBS_ENABLE, cpuc->pebs_enabled);
-@@ -3856,7 +3917,10 @@ static int intel_pmu_hw_config(struct pe
- 		if ((event->attr.config & INTEL_ARCH_EVENT_MASK) == INTEL_FIXED_VLBR_EVENT)
- 			return -EINVAL;
- 
--		if (!(event->attr.freq || (event->attr.wakeup_events && !event->attr.watermark))) {
-+		if (!(event->attr.freq ||
-+		      (event->attr.wakeup_events && !event->attr.watermark) ||
-+		      event->attr.sample_period > x86_pmu.max_period)) {
-+
- 			event->hw.flags |= PERF_X86_EVENT_AUTO_RELOAD;
- 			if (!(event->attr.sample_type &
- 			      ~intel_pmu_large_pebs_flags(event))) {
+ 		x86_pmu.filter_match = intel_pmu_filter_match;
+ 		x86_pmu.get_event_constraints = adl_get_event_constraints;
 --- a/arch/x86/events/perf_event.h
 +++ b/arch/x86/events/perf_event.h
-@@ -1063,6 +1063,15 @@ static inline bool x86_pmu_has_lbr_calls
- DECLARE_PER_CPU(struct cpu_hw_events, cpu_hw_events);
- DECLARE_PER_CPU(u64 [X86_PMC_IDX_MAX], pmc_prev_left);
+@@ -890,7 +890,6 @@ struct x86_pmu {
+ 	 */
+ 	int		num_topdown_events;
+ 	u64		(*update_topdown_event)(struct perf_event *event);
+-	int		(*set_topdown_event_period)(struct perf_event *event);
  
-+static inline bool intel_pmu_is_short_pebs(struct perf_event *event)
-+{
-+	struct hw_perf_event *hwc = &event->hw;
-+	s64 counter = this_cpu_read(pmc_prev_left[hwc->idx]);
-+	s64 left = local64_read(&hwc->period_left);
-+
-+	return counter < left;
-+}
-+
- int x86_perf_event_set_period(struct perf_event *event);
- 
- /*
+ 	/*
+ 	 * perf task context (i.e. struct perf_event_context::task_ctx_data)
 
 
