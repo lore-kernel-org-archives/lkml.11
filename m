@@ -2,134 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46CA6ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7A7ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiH2PL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
+        id S229723AbiH2PNO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229731AbiH2PLx (ORCPT
+        with ESMTP id S229628AbiH2PNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:11:53 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DCD7FE67;
-        Mon, 29 Aug 2022 08:11:50 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 9217B3200910;
-        Mon, 29 Aug 2022 11:11:45 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 29 Aug 2022 11:11:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1661785905; x=1661872305; bh=6czT/Mr/tB
-        NII304BwOJWEFTmduamBRB/vYIYcaFWLM=; b=qapDGo5tcLVEKwppV3GTP6EJnZ
-        gHmNPPR7sQ1DR35PRGuSnxkoYc3bv+j1b+ie4fbxwRQmf7IongiXEgf23B9k2q6Y
-        SbvMaSyjOuLwujmuWugu4bZQ7AAHZRkMPm7Zp1GUYwc1FK9fzhcwz8gt18pzSPia
-        IYFweSWcONYHRAZ1vaxHPIWgsbnV20rx89rSt+7vTFMY1lMt13s2nHJVQZ/77AZ4
-        wavzxFURF0C/MgxM5y4ewzgVjKruwf6KYR4o5b+Izc7tmQrNapJt+3cg+Fs9mJFR
-        8vhfuogPeTckHcXRwz+cJtdSN7oPiQlUdGTuLp3MWBD54jG3pY/hmEo18vFg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1661785905; x=1661872305; bh=6czT/Mr/tBNII304BwOJWEFTmdua
-        mBRB/vYIYcaFWLM=; b=rvGLYeTjHIwCfhZSdGXvYnzOBJZXciZk0i9i2lc4xLQl
-        OMQxGc1kZrb7PQ7zyvdyRlaRdn/qpS8cZhFuGlSR7SW8FgTyW7gfzjWJsqcGf65v
-        asZmgcxybeKVE1SJ9fqZoxl7BDCIi94NfW2TOz8pNL3jg/OMJ6nCsHIPx+ZAsTEG
-        u0LzdJzuecFinO/cOX5Zau1XravGpjlCNVsKm46XHBvEaAaDcaPOOT6g0AYfTfk0
-        PZF5ZevXkl15rjUFeDFKxEEm9GcuWGc1MXoV12ed4Zm9rhhApbr0O/N9+Sm8s0BE
-        gntFDDxbMbh2ZTXErW5y4Uuo5DfY/XVBIDl5ceFJ9w==
-X-ME-Sender: <xms:MNcMY-oRFbsI2adoHwD29LDYENeXQqfHithXrfilhcnd_nE83tjZgw>
-    <xme:MNcMY8r4vk1gfZit61cCwxkmWeYshRDp5drYvaODatPBAdbO5G_tzg4-ycRT8bImu
-    QwPpgly5xtX9UufdY0>
-X-ME-Received: <xmr:MNcMYzPCbSuPplAsvs9r5M1MNud3sDnXWtOpDC6jGqhKYb13RMX4UyQ6qgH5>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddgkeejucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpedtleekjeeiudefvdfhieffteelhfeivdeliefgieeugffhvdelieffjeei
-    geetjeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
-    hh
-X-ME-Proxy: <xmx:MNcMY97tHKDVtpRPU9oyDXhNuUeIOfh7tsX0P_preM8t3zTTvbO2cg>
-    <xmx:MNcMY95_8jKcnlfyBoBgTZ9Rl_waMmQcJ7L2J6tH2U3lwNiUoRM4dQ>
-    <xmx:MNcMY9iBsHUlxvSd20CfSbC6e0vp2ulQ9PNonVPVvXfQyjZCU1162Q>
-    <xmx:MdcMY8JYAaBKq3ThYEoUTyiL9btvPk3zcJWW88Afsv0EDEVwrZKiPQ>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 29 Aug 2022 11:11:43 -0400 (EDT)
-Date:   Mon, 29 Aug 2022 17:11:41 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Scott Branden <sbranden@broadcom.com>,
-        Emma Anholt <emma@anholt.net>, Ray Jui <rjui@broadcom.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-rpi-kernel@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, Dom Cobley <popcornmix@gmail.com>,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 0/7] drm/vc4: Fix the core clock behaviour
-Message-ID: <20220829151141.jomryjqvn7i7a3jr@houat>
-References: <20220815-rpi-fix-4k-60-v1-0-c52bd642f7c6@cerno.tech>
+        Mon, 29 Aug 2022 11:13:11 -0400
+X-Greylist: delayed 718 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 Aug 2022 08:13:08 PDT
+Received: from corp-front10-corp.i.nease.net (corp-front11-corp.i.nease.net [42.186.62.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F0737A752;
+        Mon, 29 Aug 2022 08:13:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
+        Date:Message-Id:MIME-Version:Content-Transfer-Encoding; bh=GhG/D
+        lSa7OO/qQZrD16bsLuYRkHDvBnWIEG78IaL2eI=; b=fJPsJqbwbQACg8HiQDBR5
+        stoiegPZZFYTS8uFZjGdL00FRQCROnSlvdCQAspQvaiITEUA+jmKOFlAOjjxjutY
+        tXu10sWTTKIUutIVXyHcjQun9YDqlfhzEusPYHagIVU3n/dwvjjuU6YCdlHEw4+6
+        Kal3xs/6jv7otp7yqykjuE=
+Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
+        by corp-front11-corp.i.nease.net (Coremail) with SMTP id aYG_CgBHWzQD0wxj7g8gAA--.36033S2;
+        Mon, 29 Aug 2022 22:53:55 +0800 (HKT)
+From:   liuyacan@corp.netease.com
+To:     kgraul@linux.ibm.com, davem@davemloft.net, wenjia@linux.ibm.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, liuyacan <liuyacan@corp.netease.com>
+Subject: [PATCH net] net/smc: Remove redundant refcount increase
+Date:   Mon, 29 Aug 2022 22:53:29 +0800
+Message-Id: <20220829145329.2751578-1-liuyacan@corp.netease.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dmvoqxtqdjvru6cj"
-Content-Disposition: inline
-In-Reply-To: <20220815-rpi-fix-4k-60-v1-0-c52bd642f7c6@cerno.tech>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: aYG_CgBHWzQD0wxj7g8gAA--.36033S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZw4xGw15Xr1kAr4fAr4xZwb_yoW3Xwb_Ka
+        47GF9rGa1YyFWSy3yfC3yfuan2qwn5Gr48XFn5ArZ0y3Wqqw4UArs8Zrn8uw1UCw1UAF13
+        JrsIqrZYgw12yjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbtkYjxAI6xCIbckI1I0E57IF64kEYxAxM7AC8VAFwI0_Gr0_Xr1l
+        1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0I
+        I2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0
+        Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84
+        ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC6x9vy-n0Xa0_Xr1Utr1k
+        JwI_Jr4ln4vE4IxY62xKV4CY8xCE548m6r4UJryUGwAS0I0E0xvYzxvE52x082IY62kv04
+        87Mc804VCqF7xvr2I5Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
+        JVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
+        AKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwAKzVCY
+        07xG64k0F24l7I0Y64k_MxkI7II2jI8vz4vEwIxGrwCF04k20xvY0x0EwIxGrwCF72vEw2
+        IIxxk0rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7vE0wC20s026c02F40E14v26r1j6r18
+        MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr4
+        1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1l
+        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
+        A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7sRiE_M7UUUUU==
+X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQANCVt77wtWlgACsH
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: liuyacan <liuyacan@corp.netease.com>
 
---dmvoqxtqdjvru6cj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+For passive connections, the refcount increment has been done in
+smc_clcsock_accept()-->smc_sock_alloc().
 
-Hi Stephen, Mike,
+Fixes: 3b2dec2603d5("net/smc: restructure client and server code in af_smc")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+---
+ net/smc/af_smc.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-On Mon, Aug 15, 2022 at 05:31:22PM +0200, Maxime Ripard wrote:
-> Those patches used to be part of a larger clock fixes series:
-> https://lore.kernel.org/linux-clk/20220715160014.2623107-1-maxime@cerno.t=
-ech/
->=20
-> However, that series doesn't seem to be getting anywhere, so I've split o=
-ut
-> these patches that fix a regression that has been there since 5.18 and th=
-at
-> prevents the 4k output from working on the RaspberryPi4.
->=20
-> Hopefully, we will be able to merge those patches through the DRM tree to=
- avoid
-> any further disruption.
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 79c1318af..0939cc3b9 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1855,7 +1855,6 @@ static void smc_listen_out_connected(struct smc_sock *new_smc)
+ {
+ 	struct sock *newsmcsk = &new_smc->sk;
+ 
+-	sk_refcnt_debug_inc(newsmcsk);
+ 	if (newsmcsk->sk_state == SMC_INIT)
+ 		newsmcsk->sk_state = SMC_ACTIVE;
+ 
+-- 
+2.20.1
 
-I've ping'd Stephen privately on IRC multiple times, and it's basically
-a resend of the previous clock series linked above that has been around
-since almost a month and a half.
-
-Can you Ack the first three patches so we can merge those patches
-through the DRM tree and close this regression?
-
-Maxime
-
---dmvoqxtqdjvru6cj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYwzXLQAKCRDj7w1vZxhR
-xcvRAQC49KThyWL6K2eQpUaeK1sR8DbrsEuq4KorK0kwbmehxQEAtHKGmyKmHqVH
-spWXuwujJHmnrDGzoeUfncXXu6ybtwk=
-=aWzc
------END PGP SIGNATURE-----
-
---dmvoqxtqdjvru6cj--
