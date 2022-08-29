@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2056DECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7656AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229942AbiH2LDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
+        id S229616AbiH2LDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229841AbiH2LCG (ORCPT
+        with ESMTP id S229975AbiH2LCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:02:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26D94332F;
-        Mon, 29 Aug 2022 04:02:05 -0700 (PDT)
+        Mon, 29 Aug 2022 07:02:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A9812629;
+        Mon, 29 Aug 2022 04:02:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E33EB80EF3;
-        Mon, 29 Aug 2022 11:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 574A9C433C1;
-        Mon, 29 Aug 2022 11:02:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 414B9B80EF3;
+        Mon, 29 Aug 2022 11:02:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F3BAC433D6;
+        Mon, 29 Aug 2022 11:02:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770922;
-        bh=/iy+f312kTj5A6TMMgKiWZt1SOjvo8oZVyIccP7xceY=;
+        s=korg; t=1661770925;
+        bh=Xbum2y2w9I//FEatEVKCLlgTgDxwECszg8Je8VtlIRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vrqobNOlSPILhgqmK08LKC4zZhw6StAr1vEbUGc6mknvosL/YB+s1ILOHBtb96zv1
-         aeys4zBHw196j31LZceNInlbPpvIiwc4ku+q/Uh4/OhYKlg+bbwN4piziRsv6Fg13C
-         P8fR4ufATKAnCqqxxT9Qcs7Q6I6yovoAzfbKeapc=
+        b=JBmppjzBZhBPYDQERxotmmxr0E+mZvMNE+G0UXjFBn4ASH8Up6pqHSgDgA5cDujtx
+         SYuMcWuQC97dtBMtTuPhqs/SQFd1726FQLRPW5c6rPG2YkWwgtFYjnSdLtHsm8aSLh
+         MsiUdaurJSY+jkLWR6nhPG/6ZjjJA2fG6kjGx7bc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 023/136] btrfs: remove unnecessary parameter delalloc_start for writepage_delalloc()
-Date:   Mon, 29 Aug 2022 12:58:10 +0200
-Message-Id: <20220829105805.536233187@linuxfoundation.org>
+Subject: [PATCH 5.15 024/136] riscv: lib: uaccess: fold fixups into body
+Date:   Mon, 29 Aug 2022 12:58:11 +0200
+Message-Id: <20220829105805.566116022@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -49,74 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Jisheng Zhang <jszhang@kernel.org>
 
-[ Upstream commit cf3075fb36c6a98ea890f4a50b4419ff2fff9a2f ]
+[ Upstream commit 9d504f9aa5c1b76673018da9503e76b351a24b8c ]
 
-In function __extent_writepage() we always pass page start to
-@delalloc_start for writepage_delalloc().
+uaccess functions such __asm_copy_to_user(),  __arch_copy_from_user()
+and __clear_user() place their exception fixups in the `.fixup` section
+without any clear association with themselves. If we backtrace the
+fixup code, it will be symbolized as an offset from the nearest prior
+symbol.
 
-Thus we don't really need @delalloc_start parameter as we can extract it
-from @page.
+Similar as arm64 does, we must move fixups into the body of the
+functions themselves, after the usual fast-path returns.
 
-Remove @delalloc_start parameter and make __extent_writepage() to
-declare @page_start and @page_end as const.
-
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/extent_io.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ arch/riscv/lib/uaccess.S | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/fs/btrfs/extent_io.c b/fs/btrfs/extent_io.c
-index 41862045b3de3..a72a8d4d4a72e 100644
---- a/fs/btrfs/extent_io.c
-+++ b/fs/btrfs/extent_io.c
-@@ -3780,10 +3780,11 @@ static void update_nr_written(struct writeback_control *wbc,
-  */
- static noinline_for_stack int writepage_delalloc(struct btrfs_inode *inode,
- 		struct page *page, struct writeback_control *wbc,
--		u64 delalloc_start, unsigned long *nr_written)
-+		unsigned long *nr_written)
- {
--	u64 page_end = delalloc_start + PAGE_SIZE - 1;
-+	u64 page_end = page_offset(page) + PAGE_SIZE - 1;
- 	bool found;
-+	u64 delalloc_start = page_offset(page);
- 	u64 delalloc_to_write = 0;
- 	u64 delalloc_end = 0;
- 	int ret;
-@@ -4068,8 +4069,8 @@ static int __extent_writepage(struct page *page, struct writeback_control *wbc,
- 			      struct extent_page_data *epd)
- {
- 	struct inode *inode = page->mapping->host;
--	u64 start = page_offset(page);
--	u64 page_end = start + PAGE_SIZE - 1;
-+	const u64 page_start = page_offset(page);
-+	const u64 page_end = page_start + PAGE_SIZE - 1;
- 	int ret;
- 	int nr = 0;
- 	size_t pg_offset;
-@@ -4104,8 +4105,7 @@ static int __extent_writepage(struct page *page, struct writeback_control *wbc,
- 	}
+diff --git a/arch/riscv/lib/uaccess.S b/arch/riscv/lib/uaccess.S
+index 63bc691cff91b..ac34f0026adcd 100644
+--- a/arch/riscv/lib/uaccess.S
++++ b/arch/riscv/lib/uaccess.S
+@@ -173,6 +173,13 @@ ENTRY(__asm_copy_from_user)
+ 	csrc CSR_STATUS, t6
+ 	li	a0, 0
+ 	ret
++
++	/* Exception fixup code */
++10:
++	/* Disable access to user memory */
++	csrs CSR_STATUS, t6
++	mv a0, t5
++	ret
+ ENDPROC(__asm_copy_to_user)
+ ENDPROC(__asm_copy_from_user)
+ EXPORT_SYMBOL(__asm_copy_to_user)
+@@ -218,19 +225,12 @@ ENTRY(__clear_user)
+ 	addi a0, a0, 1
+ 	bltu a0, a3, 5b
+ 	j 3b
+-ENDPROC(__clear_user)
+-EXPORT_SYMBOL(__clear_user)
  
- 	if (!epd->extent_locked) {
--		ret = writepage_delalloc(BTRFS_I(inode), page, wbc, start,
--					 &nr_written);
-+		ret = writepage_delalloc(BTRFS_I(inode), page, wbc, &nr_written);
- 		if (ret == 1)
- 			return 0;
- 		if (ret)
-@@ -4155,7 +4155,7 @@ static int __extent_writepage(struct page *page, struct writeback_control *wbc,
- 	 * capable of that.
- 	 */
- 	if (PageError(page))
--		end_extent_writepage(page, ret, start, page_end);
-+		end_extent_writepage(page, ret, page_start, page_end);
- 	unlock_page(page);
- 	ASSERT(ret <= 0);
- 	return ret;
+-	.section .fixup,"ax"
+-	.balign 4
+-	/* Fixup code for __copy_user(10) and __clear_user(11) */
+-10:
+-	/* Disable access to user memory */
+-	csrs CSR_STATUS, t6
+-	mv a0, t5
+-	ret
++	/* Exception fixup code */
+ 11:
++	/* Disable access to user memory */
+ 	csrs CSR_STATUS, t6
+ 	mv a0, a1
+ 	ret
+-	.previous
++ENDPROC(__clear_user)
++EXPORT_SYMBOL(__clear_user)
 -- 
 2.35.1
 
