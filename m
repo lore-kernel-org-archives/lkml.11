@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB53C3DA6B
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39725C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230089AbiH2LTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
+        id S231134AbiH2LTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231526AbiH2LRu (ORCPT
+        with ESMTP id S231430AbiH2LSM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:17:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1F26CD07;
-        Mon, 29 Aug 2022 04:11:58 -0700 (PDT)
+        Mon, 29 Aug 2022 07:18:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3F0A71737;
+        Mon, 29 Aug 2022 04:11:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B41D611F6;
-        Mon, 29 Aug 2022 11:10:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85F0CC433B5;
-        Mon, 29 Aug 2022 11:10:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72DBA6120B;
+        Mon, 29 Aug 2022 11:11:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8030AC433D6;
+        Mon, 29 Aug 2022 11:11:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771410;
-        bh=7UuEqefdwYEn11rNs3iQTPMDUVdZcXGP+H423jBrBT4=;
+        s=korg; t=1661771479;
+        bh=1a3nIOVY8zJS/Dvwl230croADpNtrzVnGD4Z+FJSfws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xt1a9xSrRTaCMAMMsg2/KyTWWP59nFhbsD1HiFhIQClrcn5vUbO/Fm+0oNV18IBVy
-         4N0ui6ntMN5Sk1RiNUfhXR0msrRPXtPN52ztUfxq+5nCRmlAeJjYQ6d4QI8B0+w7eg
-         Hf6imUoiQHJ2CXyd504hFogOvtGwZOp+TGMJAVHY=
+        b=C2v1sq/2XUMEVBsM0cUV+61RjjKPyNbu54WUJSLtp4h6MzRLeBeETkdB1aBpwY2Kk
+         /F6iH9ROdtpaOnN+I1DpBTfFLJbNtjX/15gBOHuj4bHxJtBa0sPrlvPaNramNVka1K
+         81QkD/FeoOOmoypSiHVZUFi9OriyAnXvhGGb94B8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 64/86] btrfs: fix silent failure when deleting root reference
-Date:   Mon, 29 Aug 2022 12:59:30 +0200
-Message-Id: <20220829105759.164105549@linuxfoundation.org>
+        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 035/158] net/mlx5e: Fix wrong application of the LRO state
+Date:   Mon, 29 Aug 2022 12:58:05 +0200
+Message-Id: <20220829105810.263164318@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,43 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Aya Levin <ayal@nvidia.com>
 
-commit 47bf225a8d2cccb15f7e8d4a1ed9b757dd86afd7 upstream.
+[ Upstream commit 7b3707fc79044871ab8f3d5fa5e9603155bb5577 ]
 
-At btrfs_del_root_ref(), if btrfs_search_slot() returns an error, we end
-up returning from the function with a value of 0 (success). This happens
-because the function returns the value stored in the variable 'err',
-which is 0, while the error value we got from btrfs_search_slot() is
-stored in the 'ret' variable.
+Driver caches packet merge type in mlx5e_params instance which must be
+in perfect sync with the netdev_feature's bit.
+Prior to this patch, in certain conditions (*) LRO state was set in
+mlx5e_params, while netdev_feature's bit was off. Causing the LRO to
+be applied on the RQs (HW level).
 
-So fix it by setting 'err' with the error value.
+(*) This can happen only on profile init (mlx5e_build_nic_params()),
+when RQ expect non-linear SKB and PCI is fast enough in comparison to
+link width.
 
-Fixes: 8289ed9f93bef2 ("btrfs: replace the BUG_ON in btrfs_del_root_ref with proper error handling")
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Solution: remove setting of packet merge type from
+mlx5e_build_nic_params() as netdev features are not updated.
+
+Fixes: 619a8f2a42f1 ("net/mlx5e: Use linear SKB in Striding RQ")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/root-tree.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
---- a/fs/btrfs/root-tree.c
-+++ b/fs/btrfs/root-tree.c
-@@ -336,9 +336,10 @@ int btrfs_del_root_ref(struct btrfs_tran
- 	key.offset = ref_id;
- again:
- 	ret = btrfs_search_slot(trans, tree_root, &key, path, -1, 1);
--	if (ret < 0)
-+	if (ret < 0) {
-+		err = ret;
- 		goto out;
--	if (ret == 0) {
-+	} else if (ret == 0) {
- 		leaf = path->nodes[0];
- 		ref = btrfs_item_ptr(leaf, path->slots[0],
- 				     struct btrfs_root_ref);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 087952b84ccb0..62aab20025345 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4733,14 +4733,6 @@ void mlx5e_build_nic_params(struct mlx5e_priv *priv, struct mlx5e_xsk *xsk, u16
+ 	/* RQ */
+ 	mlx5e_build_rq_params(mdev, params);
+ 
+-	/* HW LRO */
+-	if (MLX5_CAP_ETH(mdev, lro_cap) &&
+-	    params->rq_wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
+-		/* No XSK params: checking the availability of striding RQ in general. */
+-		if (!mlx5e_rx_mpwqe_is_linear_skb(mdev, params, NULL))
+-			params->packet_merge.type = slow_pci_heuristic(mdev) ?
+-				MLX5E_PACKET_MERGE_NONE : MLX5E_PACKET_MERGE_LRO;
+-	}
+ 	params->packet_merge.timeout = mlx5e_choose_lro_timeout(mdev, MLX5E_DEFAULT_LRO_TIMEOUT);
+ 
+ 	/* CQ moderation params */
+-- 
+2.35.1
+
 
 
