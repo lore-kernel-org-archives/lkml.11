@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D49BECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 491D9ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232159AbiH2L04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
+        id S232170AbiH2L07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232255AbiH2LYh (ORCPT
+        with ESMTP id S232265AbiH2LYi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:24:37 -0400
+        Mon, 29 Aug 2022 07:24:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A58575FFD;
-        Mon, 29 Aug 2022 04:15:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEA2760E4;
+        Mon, 29 Aug 2022 04:15:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A30F7B80F98;
-        Mon, 29 Aug 2022 11:12:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A1AEC433C1;
-        Mon, 29 Aug 2022 11:12:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65475B80FA8;
+        Mon, 29 Aug 2022 11:15:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1010C433C1;
+        Mon, 29 Aug 2022 11:15:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771551;
-        bh=X9U2/3KqXtmjDQ1ulpPrzFgXziBLoh8h4RwfWfCJ8tk=;
+        s=korg; t=1661771707;
+        bh=FufMUVUaQh+PDh29tlw9bNgetLwgT2UPVsGlg+Vo9Jk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PT+ixdsnAiIW3mWGlwNWIJBzL+gDG/rUc6F8R8v9EGxcFL+SUGNC39XMJMxYsOFNA
-         O0rMWA9PSyL6cQjTBFWZN33hWjAtq6DwWaws3ijNi3sC3pJSfCufl+zIR06fTchol5
-         GpJK9LG0y8ReIlMPR/RB4GFpVnMnxAfya2QYao1I=
+        b=EvIB9YLIzRbN+blTGnOVN4y+73RoKREYjubQ2c1k2x9Jg8vbuPAUHgQK4S4KP5UO/
+         +MHrrDqZRDFNXXE516VhZAYbCQHx/V4NEWTOJE8EPBYjx4byfopT432dUsQpJXMgMP
+         B7HRsRdc4qoE3iZOUL1zlp088MNbJl4P4hUgKyyw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shreyas K K <quic_shrekk@quicinc.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
-Subject: [PATCH 5.10 79/86] arm64: Fix match_list for erratum 1286807 on Arm Cortex-A76
-Date:   Mon, 29 Aug 2022 12:59:45 +0200
-Message-Id: <20220829105759.753156152@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 069/158] ratelimit: Fix data-races in ___ratelimit().
+Date:   Mon, 29 Aug 2022 12:58:39 +0200
+Message-Id: <20220829105811.888810970@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,37 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zenghui Yu <yuzenghui@huawei.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 5e1e087457c94ad7fafbe1cf6f774c6999ee29d4 upstream.
+[ Upstream commit 6bae8ceb90ba76cdba39496db936164fa672b9be ]
 
-Since commit 51f559d66527 ("arm64: Enable repeat tlbi workaround on KRYO4XX
-gold CPUs"), we failed to detect erratum 1286807 on Cortex-A76 because its
-entry in arm64_repeat_tlbi_list[] was accidently corrupted by this commit.
+While reading rs->interval and rs->burst, they can be changed
+concurrently via sysctl (e.g. net_ratelimit_state).  Thus, we
+need to add READ_ONCE() to their readers.
 
-Fix this issue by creating a separate entry for Kryo4xx Gold.
-
-Fixes: 51f559d66527 ("arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs")
-Cc: Shreyas K K <quic_shrekk@quicinc.com>
-Signed-off-by: Zenghui Yu <yuzenghui@huawei.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220809043848.969-1-yuzenghui@huawei.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/cpu_errata.c |    2 ++
- 1 file changed, 2 insertions(+)
+ lib/ratelimit.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -220,6 +220,8 @@ static const struct arm64_cpu_capabiliti
- #ifdef CONFIG_ARM64_ERRATUM_1286807
- 	{
- 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
-+	},
-+	{
- 		/* Kryo4xx Gold (rcpe to rfpe) => (r0p0 to r3p0) */
- 		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
- 	},
+diff --git a/lib/ratelimit.c b/lib/ratelimit.c
+index e01a93f46f833..ce945c17980b9 100644
+--- a/lib/ratelimit.c
++++ b/lib/ratelimit.c
+@@ -26,10 +26,16 @@
+  */
+ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ {
++	/* Paired with WRITE_ONCE() in .proc_handler().
++	 * Changing two values seperately could be inconsistent
++	 * and some message could be lost.  (See: net_ratelimit_state).
++	 */
++	int interval = READ_ONCE(rs->interval);
++	int burst = READ_ONCE(rs->burst);
+ 	unsigned long flags;
+ 	int ret;
+ 
+-	if (!rs->interval)
++	if (!interval)
+ 		return 1;
+ 
+ 	/*
+@@ -44,7 +50,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 	if (!rs->begin)
+ 		rs->begin = jiffies;
+ 
+-	if (time_is_before_jiffies(rs->begin + rs->interval)) {
++	if (time_is_before_jiffies(rs->begin + interval)) {
+ 		if (rs->missed) {
+ 			if (!(rs->flags & RATELIMIT_MSG_ON_RELEASE)) {
+ 				printk_deferred(KERN_WARNING
+@@ -56,7 +62,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
+ 		rs->begin   = jiffies;
+ 		rs->printed = 0;
+ 	}
+-	if (rs->burst && rs->burst > rs->printed) {
++	if (burst && burst > rs->printed) {
+ 		rs->printed++;
+ 		ret = 1;
+ 	} else {
+-- 
+2.35.1
+
 
 
