@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FE9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC3AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230520AbiH2M2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        id S229576AbiH2M2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229818AbiH2M1w (ORCPT
+        with ESMTP id S229871AbiH2M1w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 08:27:52 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5A7ADCFF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C02AE205;
         Mon, 29 Aug 2022 05:11:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE39561199;
-        Mon, 29 Aug 2022 11:04:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5B47C433D6;
-        Mon, 29 Aug 2022 11:04:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2F8A6123D;
+        Mon, 29 Aug 2022 11:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E6FC433D7;
+        Mon, 29 Aug 2022 11:17:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771084;
-        bh=rFzMF7sdG+pDEMuyG9RCAEK/LYblMveUadnbsf2Sj0w=;
+        s=korg; t=1661771827;
+        bh=gcZSMS/DK5coU0N9vP5BKXdPmMcCP9sZHKX5Iz1YpP4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NNhDjJkgaqSvNOdkqY2r1KeauNpxRSPf8cztP39bECGwDVdfkJJsKHj0k2x20UPuO
-         XggnBNd1tsGfz+S3gysGLD6JurgTxsuGc7TjN/7G9wVesnyPEi2ZKAZnROMGIy2MAG
-         Vsoz0guBNugRirLYSksiduKavw+2BM1GQpl9FNR4=
+        b=ujXWigU00y44mI2pEXTx2I0J+gH1regmgD+lP/imqFtAWjnCQER7n3n/uUUsj4zF0
+         9XymOfqBCL3DZyNmiBa2szuUXpWjr42vHqkdof2R8kqh8lA3CBS8je5FEYVAYJ6lO2
+         HKSDCKNnpfgd/XvzANJIvcav+oDkkGhscVXyGlwE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 059/136] netfilter: nf_tables: do not leave chain stats enabled on error
-Date:   Mon, 29 Aug 2022 12:58:46 +0200
-Message-Id: <20220829105807.039857957@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Beulich <jbeulich@suse.com>,
+        Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>
+Subject: [PATCH 5.19 109/158] x86/PAT: Have pat_enabled() properly reflect state when running on Xen
+Date:   Mon, 29 Aug 2022 12:59:19 +0200
+Message-Id: <20220829105813.685677959@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,55 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Jan Beulich <jbeulich@suse.com>
 
-[ Upstream commit 43eb8949cfdffa764b92bc6c54b87cbe5b0003fe ]
+commit 72cbc8f04fe2fa93443c0fcccb7ad91dfea3d9ce upstream.
 
-Error might occur later in the nf_tables_addchain() codepath, enable
-static key only after transaction has been created.
+After commit ID in the Fixes: tag, pat_enabled() returns false (because
+of PAT initialization being suppressed in the absence of MTRRs being
+announced to be available).
 
-Fixes: 9f08ea848117 ("netfilter: nf_tables: keep chain counters away from hot path")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This has become a problem: the i915 driver now fails to initialize when
+running PV on Xen (i915_gem_object_pin_map() is where I located the
+induced failure), and its error handling is flaky enough to (at least
+sometimes) result in a hung system.
+
+Yet even beyond that problem the keying of the use of WC mappings to
+pat_enabled() (see arch_can_pci_mmap_wc()) means that in particular
+graphics frame buffer accesses would have been quite a bit less optimal
+than possible.
+
+Arrange for the function to return true in such environments, without
+undermining the rest of PAT MSR management logic considering PAT to be
+disabled: specifically, no writes to the PAT MSR should occur.
+
+For the new boolean to live in .init.data, init_cache_modes() also needs
+moving to .init.text (where it could/should have lived already before).
+
+  [ bp: This is the "small fix" variant for stable. It'll get replaced
+    with a proper PAT and MTRR detection split upstream but that is too
+    involved for a stable backport.
+    - additional touchups to commit msg. Use cpu_feature_enabled(). ]
+
+Fixes: bdd8b6c98239 ("drm/i915: replace X86_FEATURE_PAT with pat_enabled()")
+Signed-off-by: Jan Beulich <jbeulich@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: <stable@vger.kernel.org>
+Cc: Juergen Gross <jgross@suse.com>
+Cc: Lucas De Marchi <lucas.demarchi@intel.com>
+Link: https://lore.kernel.org/r/9385fa60-fa5d-f559-a137-6608408f88b0@suse.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ arch/x86/mm/pat/memtype.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 96903c72ebb45..b4d38656d98fa 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -2101,9 +2101,9 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
- 			      struct netlink_ext_ack *extack)
- {
- 	const struct nlattr * const *nla = ctx->nla;
-+	struct nft_stats __percpu *stats = NULL;
- 	struct nft_table *table = ctx->table;
- 	struct nft_base_chain *basechain;
--	struct nft_stats __percpu *stats;
- 	struct net *net = ctx->net;
- 	char name[NFT_NAME_MAXLEN];
- 	struct nft_trans *trans;
-@@ -2140,7 +2140,6 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
- 				return PTR_ERR(stats);
- 			}
- 			rcu_assign_pointer(basechain->stats, stats);
--			static_branch_inc(&nft_counters_enabled);
- 		}
+--- a/arch/x86/mm/pat/memtype.c
++++ b/arch/x86/mm/pat/memtype.c
+@@ -62,6 +62,7 @@
  
- 		err = nft_basechain_init(basechain, family, &hook, flags);
-@@ -2223,6 +2222,9 @@ static int nf_tables_addchain(struct nft_ctx *ctx, u8 family, u8 genmask,
- 		goto err_unregister_hook;
+ static bool __read_mostly pat_bp_initialized;
+ static bool __read_mostly pat_disabled = !IS_ENABLED(CONFIG_X86_PAT);
++static bool __initdata pat_force_disabled = !IS_ENABLED(CONFIG_X86_PAT);
+ static bool __read_mostly pat_bp_enabled;
+ static bool __read_mostly pat_cm_initialized;
+ 
+@@ -86,6 +87,7 @@ void pat_disable(const char *msg_reason)
+ static int __init nopat(char *str)
+ {
+ 	pat_disable("PAT support disabled via boot option.");
++	pat_force_disabled = true;
+ 	return 0;
+ }
+ early_param("nopat", nopat);
+@@ -272,7 +274,7 @@ static void pat_ap_init(u64 pat)
+ 	wrmsrl(MSR_IA32_CR_PAT, pat);
+ }
+ 
+-void init_cache_modes(void)
++void __init init_cache_modes(void)
+ {
+ 	u64 pat = 0;
+ 
+@@ -313,6 +315,12 @@ void init_cache_modes(void)
+ 		 */
+ 		pat = PAT(0, WB) | PAT(1, WT) | PAT(2, UC_MINUS) | PAT(3, UC) |
+ 		      PAT(4, WB) | PAT(5, WT) | PAT(6, UC_MINUS) | PAT(7, UC);
++	} else if (!pat_force_disabled && cpu_feature_enabled(X86_FEATURE_HYPERVISOR)) {
++		/*
++		 * Clearly PAT is enabled underneath. Allow pat_enabled() to
++		 * reflect this.
++		 */
++		pat_bp_enabled = true;
  	}
  
-+	if (stats)
-+		static_branch_inc(&nft_counters_enabled);
-+
- 	table->use++;
- 
- 	return 0;
--- 
-2.35.1
-
+ 	__init_cache_modes(pat);
 
 
