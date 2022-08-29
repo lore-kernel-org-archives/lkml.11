@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF10ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84046ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbiH2LFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
+        id S230289AbiH2LF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230150AbiH2LEp (ORCPT
+        with ESMTP id S230247AbiH2LEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:04:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A920965561;
-        Mon, 29 Aug 2022 04:03:14 -0700 (PDT)
+        Mon, 29 Aug 2022 07:04:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F816527E;
+        Mon, 29 Aug 2022 04:03:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE9F4611B3;
-        Mon, 29 Aug 2022 11:02:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF349C433D7;
-        Mon, 29 Aug 2022 11:02:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 05B3CB80EFA;
+        Mon, 29 Aug 2022 11:03:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E3EFC433C1;
+        Mon, 29 Aug 2022 11:03:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770976;
-        bh=ppS9l44tHEoQsdyx5V2kZGJrCq/NhHjcBSKkEb2/fGA=;
+        s=korg; t=1661770999;
+        bh=jhb7aOIEiskUjh6w4LldF/Qs++mSvVac9e5Tc76y//0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=efeLh3CbivcPjfBbY8KNgGgYblie5JlGh48m4/KMyDMblL0NYyOmZqa0CEG2qUQ8c
-         +//4RlqoIbcCd+0MZzqYAxYjbvbdBPjgMmsQhgXzl4BknSgxVblev0Qx9SJQQeDxRv
-         XwX646G2OzogcUuONa+UIKboDadbL1skRo1PUaKk=
+        b=No5mKV9vDhz1QVDtUAreChpTXzp9krhOrngYzyZWoq/bZX99th6yU+wSSBZCvrQmq
+         iSrwivaTGBpL+X32ZZHVnUOAZsrSrz17HyiXQvYQWDLRFqU8VU0ZqD4+RiyrwQst2q
+         3fx7yb/n4vb2SNwa2mq6P6LuVgBuU9yph+9C9Ba8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
+        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 042/136] ice: xsk: Force rings to be sized to power of 2
-Date:   Mon, 29 Aug 2022 12:58:29 +0200
-Message-Id: <20220829105806.324347516@linuxfoundation.org>
+Subject: [PATCH 5.15 046/136] net/mlx5e: Fix wrong application of the LRO state
+Date:   Mon, 29 Aug 2022 12:58:33 +0200
+Message-Id: <20220829105806.499981507@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -52,57 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+From: Aya Levin <ayal@nvidia.com>
 
-[ Upstream commit 296f13ff3854535009a185aaf8e3603266d39d94 ]
+[ Upstream commit 7b3707fc79044871ab8f3d5fa5e9603155bb5577 ]
 
-With the upcoming introduction of batching to XSK data path,
-performance wise it will be the best to have the ring descriptor count
-to be aligned to power of 2.
+Driver caches packet merge type in mlx5e_params instance which must be
+in perfect sync with the netdev_feature's bit.
+Prior to this patch, in certain conditions (*) LRO state was set in
+mlx5e_params, while netdev_feature's bit was off. Causing the LRO to
+be applied on the RQs (HW level).
 
-Check if ring sizes that user is going to attach the XSK socket fulfill
-the condition above. For Tx side, although check is being done against
-the Tx queue and in the end the socket will be attached to the XDP
-queue, it is fine since XDP queues get the ring->count setting from Tx
-queues.
+(*) This can happen only on profile init (mlx5e_build_nic_params()),
+when RQ expect non-linear SKB and PCI is fast enough in comparison to
+link width.
 
-Suggested-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Link: https://lore.kernel.org/bpf/20220125160446.78976-3-maciej.fijalkowski@intel.com
+Solution: remove setting of packet merge type from
+mlx5e_build_nic_params() as netdev features are not updated.
+
+Fixes: 619a8f2a42f1 ("net/mlx5e: Use linear SKB in Striding RQ")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ice/ice_xsk.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 5581747947e57..0348cc4265034 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.c
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -321,6 +321,13 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
- 	bool if_running, pool_present = !!pool;
- 	int ret = 0, pool_failure = 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index e00648094fc2a..fdf8d9866042c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -4350,14 +4350,6 @@ void mlx5e_build_nic_params(struct mlx5e_priv *priv, struct mlx5e_xsk *xsk, u16
+ 	/* RQ */
+ 	mlx5e_build_rq_params(mdev, params);
  
-+	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
-+	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
-+		netdev_err(vsi->netdev, "Please align ring sizes to power of 2\n");
-+		pool_failure = -EINVAL;
-+		goto failure;
-+	}
-+
- 	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
+-	/* HW LRO */
+-	if (MLX5_CAP_ETH(mdev, lro_cap) &&
+-	    params->rq_wq_type == MLX5_WQ_TYPE_LINKED_LIST_STRIDING_RQ) {
+-		/* No XSK params: checking the availability of striding RQ in general. */
+-		if (!mlx5e_rx_mpwqe_is_linear_skb(mdev, params, NULL))
+-			params->packet_merge.type = slow_pci_heuristic(mdev) ?
+-				MLX5E_PACKET_MERGE_NONE : MLX5E_PACKET_MERGE_LRO;
+-	}
+ 	params->packet_merge.timeout = mlx5e_choose_lro_timeout(mdev, MLX5E_DEFAULT_LRO_TIMEOUT);
  
- 	if (if_running) {
-@@ -343,6 +350,7 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
- 			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
- 	}
- 
-+failure:
- 	if (pool_failure) {
- 		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
- 			   pool_present ? "en" : "dis", pool_failure);
+ 	/* CQ moderation params */
 -- 
 2.35.1
 
