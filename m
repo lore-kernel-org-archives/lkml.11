@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0AF9ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:25:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B606ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232043AbiH2LZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:25:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
+        id S231588AbiH2LZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231960AbiH2LXq (ORCPT
+        with ESMTP id S231989AbiH2LXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:23:46 -0400
+        Mon, 29 Aug 2022 07:23:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DEF21260A;
-        Mon, 29 Aug 2022 04:14:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE811260D;
+        Mon, 29 Aug 2022 04:15:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89770B80EF8;
-        Mon, 29 Aug 2022 11:07:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7A17C433C1;
-        Mon, 29 Aug 2022 11:06:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5642B80F03;
+        Mon, 29 Aug 2022 11:04:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4AAC433C1;
+        Mon, 29 Aug 2022 11:04:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771220;
-        bh=ovzaeclTwx3JGQ15R2yV043ygdNtkNJfgphs9BmP63I=;
+        s=korg; t=1661771081;
+        bh=/2TgZp9/QnELkEnYvXdcofmDRuWGi0Sg490D9xcwBWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EL9Xm222Ck8hOwlYs/T59xKFs573DkLD8tm/E5OzRp5/wj8r43+AQ6xgUaSE6G8ne
-         TdUrJJocpZ7N4uE4CGAVFqdjy8kQkyeI1X6vzEPDovEXsizDF6GoNVn7nnsvQNUwcT
-         97Z1Tu6ii7LcW8pHuf+r0B0mSb/qELJboRHfSHFE=
+        b=AdYMmUww0Kg/LyiS6AslzoMbp2EpywNReTzrZyK3qPcQKGkpBrY/rVSfszJKjlMjI
+         5wAcLsFGzUjrcNgOtrnh3u6BkcHf7lLIbIV9fAqkFEJ2/YDRRoui2+pSx0lbPDov4S
+         SQaWKt2oa0ZyQ8T8+w+jz0tn8gB9Tmc19M1BZtu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.19 006/158] parisc: Fix exception handler for fldw and fstw instructions
-Date:   Mon, 29 Aug 2022 12:57:36 +0200
-Message-Id: <20220829105809.105780974@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 18/86] SUNRPC: RPC level errors should set task->tk_rpc_status
+Date:   Mon, 29 Aug 2022 12:58:44 +0200
+Message-Id: <20220829105757.266541903@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,49 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 7ae1f5508d9a33fd58ed3059bd2d569961e3b8bd upstream.
+[ Upstream commit ed06fce0b034b2e25bd93430f5c4cbb28036cc1a ]
 
-The exception handler is broken for unaligned memory acceses with fldw
-and fstw instructions, because it trashes or uses randomly some other
-floating point register than the one specified in the instruction word
-on loads and stores.
+Fix up a case in call_encode() where we're failing to set
+task->tk_rpc_status when an RPC level error occurred.
 
-The instruction "fldw 0(addr),%fr22L" (and the other fldw/fstw
-instructions) encode the target register (%fr22) in the rightmost 5 bits
-of the instruction word. The 7th rightmost bit of the instruction word
-defines if the left or right half of %fr22 should be used.
-
-While processing unaligned address accesses, the FR3() define is used to
-extract the offset into the local floating-point register set.  But the
-calculation in FR3() was buggy, so that for example instead of %fr22,
-register %fr12 [((22 * 2) & 0x1f) = 12] was used.
-
-This bug has been since forever in the parisc kernel and I wonder why it
-wasn't detected earlier. Interestingly I noticed this bug just because
-the libime debian package failed to build on *native* hardware, while it
-successfully built in qemu.
-
-This patch corrects the bitshift and masking calculation in FR3().
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9c5948c24869 ("SUNRPC: task should be exit if encode return EKEYEXPIRED more times")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/unaligned.c |    2 +-
+ net/sunrpc/clnt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/parisc/kernel/unaligned.c
-+++ b/arch/parisc/kernel/unaligned.c
-@@ -93,7 +93,7 @@
- #define R1(i) (((i)>>21)&0x1f)
- #define R2(i) (((i)>>16)&0x1f)
- #define R3(i) ((i)&0x1f)
--#define FR3(i) ((((i)<<1)&0x1f)|(((i)>>6)&1))
-+#define FR3(i) ((((i)&0x1f)<<1)|(((i)>>6)&1))
- #define IM(i,n) (((i)>>1&((1<<(n-1))-1))|((i)&1?((0-1L)<<(n-1)):0))
- #define IM5_2(i) IM((i)>>16,5)
- #define IM5_3(i) IM((i),5)
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index c5af31312e0cf..78c6648af7827 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -1867,7 +1867,7 @@ call_encode(struct rpc_task *task)
+ 			break;
+ 		case -EKEYEXPIRED:
+ 			if (!task->tk_cred_retry) {
+-				rpc_exit(task, task->tk_status);
++				rpc_call_rpcerror(task, task->tk_status);
+ 			} else {
+ 				task->tk_action = call_refresh;
+ 				task->tk_cred_retry--;
+-- 
+2.35.1
+
 
 
