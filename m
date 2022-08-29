@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C79A2ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89709ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231347AbiH2LP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40570 "EHLO
+        id S231372AbiH2LQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:16:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231401AbiH2LNp (ORCPT
+        with ESMTP id S231443AbiH2LNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:13:45 -0400
+        Mon, 29 Aug 2022 07:13:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ACBBCE9;
-        Mon, 29 Aug 2022 04:09:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7EB6FA01;
+        Mon, 29 Aug 2022 04:09:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 324FBB80F62;
-        Mon, 29 Aug 2022 11:09:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A657C433C1;
-        Mon, 29 Aug 2022 11:09:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82BDEB80EFE;
+        Mon, 29 Aug 2022 11:08:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE0F7C433D6;
+        Mon, 29 Aug 2022 11:08:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771379;
-        bh=gBmHTu+XUIVyLNMbw+bHCNgzeBSfN5SUL26tkuaQ/xM=;
+        s=korg; t=1661771320;
+        bh=wFpjLfV9gBXncn09G3X6TX3DyE8mR+F2aG30Cofdy/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WN87R6918HcReekOn+bVM7VqSMaksYlci/KN511iF/z+nTG2pPaqOfNaf3eVU0myE
-         a0XzavPzKRfjgv2S38RuWrZz013RabGz3Z7NxJcG6e0iKpfAdXvr3rAsS0Aj54m9QW
-         V8f79ycykEK0NewstpTko4reZRehkva518YlE0Lw=
+        b=qs3JKFSl+5I/jYO8lxPUPEZhWTLtA9KGSoKyeMWPyx3+CX2E8P2e1ZpzF+M2TQBTH
+         HMVMNdclqcKuxmljeRp382c/bycDrR2Fd/wELBHGDsuq/BVEN8Lb7R9didpaO5pXK1
+         x7ezXGzwjHASEwhseniNCMo4rcp1MXq7yUDKlIno=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steve Payne <spayne@aurora.tech>,
-        Ilya Evenbach <ievenbach@aurora.tech>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.10 61/86] ixgbe: stop resetting SYSTIME in ixgbe_ptp_start_cyclecounter
-Date:   Mon, 29 Aug 2022 12:59:27 +0200
-Message-Id: <20220829105759.058644482@linuxfoundation.org>
+        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 091/136] ionic: clear broken state on generation change
+Date:   Mon, 29 Aug 2022 12:59:18 +0200
+Message-Id: <20220829105808.400509844@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,135 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Shannon Nelson <snelson@pensando.io>
 
-[ Upstream commit 25d7a5f5a6bb15a2dae0a3f39ea5dda215024726 ]
+[ Upstream commit 9cb9dadb8f45c67e4310e002c2f221b70312b293 ]
 
-The ixgbe_ptp_start_cyclecounter is intended to be called whenever the
-cyclecounter parameters need to be changed.
+There is a case found in heavy testing where a link flap happens just
+before a firmware Recovery event and the driver gets stuck in the
+BROKEN state.  This comes from the driver getting interrupted by a FW
+generation change when coming back up from the link flap, and the call
+to ionic_start_queues() in ionic_link_status_check() fails.  This can be
+addressed by having the fw_up code clear the BROKEN bit if seen, rather
+than waiting for a user to manually force the interface down and then
+back up.
 
-Since commit a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x
-devices"), this function has cleared the SYSTIME registers and reset the
-TSAUXC DISABLE_SYSTIME bit.
-
-While these need to be cleared during ixgbe_ptp_reset, it is wrong to clear
-them during ixgbe_ptp_start_cyclecounter. This function may be called
-during both reset and link status change. When link changes, the SYSTIME
-counter is still operating normally, but the cyclecounter should be updated
-to account for the possibly changed parameters.
-
-Clearing SYSTIME when link changes causes the timecounter to jump because
-the cycle counter now reads zero.
-
-Extract the SYSTIME initialization out to a new function and call this
-during ixgbe_ptp_reset. This prevents the timecounter adjustment and avoids
-an unnecessary reset of the current time.
-
-This also restores the original SYSTIME clearing that occurred during
-ixgbe_ptp_reset before the commit above.
-
-Reported-by: Steve Payne <spayne@aurora.tech>
-Reported-by: Ilya Evenbach <ievenbach@aurora.tech>
-Fixes: a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x devices")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 9e8eaf8427b6 ("ionic: stop watchdog when in broken state")
+Signed-off-by: Shannon Nelson <snelson@pensando.io>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 59 +++++++++++++++-----
- 1 file changed, 46 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-index 22a874eee2e84..8b7f300355710 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-@@ -1211,7 +1211,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	struct cyclecounter cc;
- 	unsigned long flags;
- 	u32 incval = 0;
--	u32 tsauxc = 0;
- 	u32 fuse0 = 0;
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+index abfb5efc52b86..226867e65625e 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
+@@ -3016,6 +3016,9 @@ static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
  
- 	/* For some of the boards below this mask is technically incorrect.
-@@ -1246,18 +1245,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	case ixgbe_mac_x550em_a:
- 	case ixgbe_mac_X550:
- 		cc.read = ixgbe_ptp_read_X550;
--
--		/* enable SYSTIME counter */
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
--		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
--		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
--				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
--		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
--		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
--
--		IXGBE_WRITE_FLUSH(hw);
- 		break;
- 	case ixgbe_mac_X540:
- 		cc.read = ixgbe_ptp_read_82599;
-@@ -1289,6 +1276,50 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
- }
+ 	mutex_lock(&lif->queue_lock);
  
-+/**
-+ * ixgbe_ptp_init_systime - Initialize SYSTIME registers
-+ * @adapter: the ixgbe private board structure
-+ *
-+ * Initialize and start the SYSTIME registers.
-+ */
-+static void ixgbe_ptp_init_systime(struct ixgbe_adapter *adapter)
-+{
-+	struct ixgbe_hw *hw = &adapter->hw;
-+	u32 tsauxc;
++	if (test_and_clear_bit(IONIC_LIF_F_BROKEN, lif->state))
++		dev_info(ionic->dev, "FW Up: clearing broken state\n");
 +
-+	switch (hw->mac.type) {
-+	case ixgbe_mac_X550EM_x:
-+	case ixgbe_mac_x550em_a:
-+	case ixgbe_mac_X550:
-+		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
-+
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+
-+		/* Reset interrupt settings */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
-+		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
-+
-+		/* Activate the SYSTIME counter */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
-+				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
-+		break;
-+	case ixgbe_mac_X540:
-+	case ixgbe_mac_82599EB:
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+		break;
-+	default:
-+		/* Other devices aren't supported */
-+		return;
-+	};
-+
-+	IXGBE_WRITE_FLUSH(hw);
-+}
-+
- /**
-  * ixgbe_ptp_reset
-  * @adapter: the ixgbe private board structure
-@@ -1315,6 +1346,8 @@ void ixgbe_ptp_reset(struct ixgbe_adapter *adapter)
- 
- 	ixgbe_ptp_start_cyclecounter(adapter);
- 
-+	ixgbe_ptp_init_systime(adapter);
-+
- 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
- 	timecounter_init(&adapter->hw_tc, &adapter->hw_cc,
- 			 ktime_to_ns(ktime_get_real()));
+ 	err = ionic_qcqs_alloc(lif);
+ 	if (err)
+ 		goto err_unlock;
 -- 
 2.35.1
 
