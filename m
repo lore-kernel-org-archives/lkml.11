@@ -2,214 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D87ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4191FECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230189AbiH2Psn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
+        id S230143AbiH2Pst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230245AbiH2PsQ (ORCPT
+        with ESMTP id S230102AbiH2Ps1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:48:16 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D3096FD3;
-        Mon, 29 Aug 2022 08:48:13 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27TCGPk3011168;
-        Mon, 29 Aug 2022 17:48:01 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=lv/3vnqZ8jwV794amFy0wMNry6vdf7xH+N6oCNtSneI=;
- b=Tl0VP+XH6BpIRtBr/O4c8/141b7sC9ytsCVX1cCTvKY+LlfOi9MQv2ceBNSkE9NIdyyE
- r6Br0jNkJKi+qspsWtltMfBRuoo9wCNFEVA0YkuPp2f/8lMpkc+Vb3aH3AXZSbg5Q5QW
- TWLjkRgSWPZTwutGwHWqKPBPgwhFXMtY22eX6vfRZQ+HE6TtWHPQgNXQOeqC+DdDR1EG
- kgCMoO7W/pVBt0qDC/qCn6g5LqiEyOInZn9dqlZDC+ryddTHdGFKVWB5fguLKEZ3KYd9
- sZRYCLtXmHbOu/nz702YP4+VyalAXYslicxXS6cqgkQsDu08ffPeNiBifAVc3FcawRkX Lg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j7a5htn9x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 17:48:01 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id EAFAD100034;
-        Mon, 29 Aug 2022 17:48:00 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E5847236935;
-        Mon, 29 Aug 2022 17:48:00 +0200 (CEST)
-Received: from localhost (10.75.127.118) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.7; Mon, 29 Aug
- 2022 17:48:00 +0200
-From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
-To:     Jonathan Corbet <corbet@lwn.net>, Vinod Koul <vkoul@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-doc@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>
-Subject: [RESEND PATCH v3 5/6] dmaengine: stm32-dma: add support to trigger STM32 MDMA
-Date:   Mon, 29 Aug 2022 17:46:45 +0200
-Message-ID: <20220829154646.29867-6-amelie.delaunay@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220829154646.29867-1-amelie.delaunay@foss.st.com>
-References: <20220829154646.29867-1-amelie.delaunay@foss.st.com>
+        Mon, 29 Aug 2022 11:48:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205E58E4EA
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661788105;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=GIxYeJVZ3AuDfEsQOkmwkGW18m9HV0rDJe5mYfX2jec=;
+        b=IVF+0Hbl3YfH0jmlPvN2upCjEe9+RpokBxse/Cz0/tj62zRoN93e0hcK8YteslsyMgrHwd
+        ENNbRPP97A7P9hs0aK4Em8iuLn2xG3/wl6V9Ko6CqRHWB23qgUqGDPGujqwAb5BFp4EzpA
+        6mM6/ccqNIg96Q9w7lHG/d4HSNHAZRc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-331-D1Qn4vfKMD67meAw8x86Pw-1; Mon, 29 Aug 2022 11:48:24 -0400
+X-MC-Unique: D1Qn4vfKMD67meAw8x86Pw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2E92D8A520E;
+        Mon, 29 Aug 2022 15:48:08 +0000 (UTC)
+Received: from raketa.redhat.com (unknown [10.40.192.88])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B3F3492CAE;
+        Mon, 29 Aug 2022 15:48:05 +0000 (UTC)
+From:   Maurizio Lombardi <mlombard@redhat.com>
+To:     vbabka@suse.cz
+Cc:     linux-mm@kvack.org, rientjes@google.com, penberg@kernel.org,
+        iamjoonsoo.kim@lge.com, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org, bigeasy@linutronix.de
+Subject: [PATCH RFC] mm: slub: fix flush_cpu_slab()/__free_slab() invocations in task context.
+Date:   Mon, 29 Aug 2022 17:48:05 +0200
+Message-Id: <20220829154805.1205507-1-mlombard@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.118]
-X-ClientProxiedBy: GPXDAG2NODE4.st.com (10.75.127.68) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-29_07,2022-08-25_01,2022-06-22_01
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-STM32 MDMA can be triggered by STM32 DMA channels transfer complete.
-The "request line number" triggering STM32 MDMA is the STM32 DMAMUX channel
-id set by stm32-dmamux driver in dma_spec->args[3].
+Commit 5a836bf6b09f ("mm: slub: move flush_cpu_slab() invocations
+__free_slab() invocations out of IRQ context") moved all flush_cpu_slab()
+invocations to the global workqueue to avoid a problem related
+with deactivate_slab()/__free_slab() being called from an IRQ context
+on PREEMPT_RT kernels.
 
-stm32-dma driver fills the struct stm32_dma_mdma_config used to configure
-the MDMA with struct dma_slave_config .peripheral_config/.peripheral_size.
+When the flush_all_cpu_locked() function is called from a task context
+the flush_cpu_slab() function should be called directly, without deferring
+it to the global workqueue, otherwise a workqueue with the WQ_MEM_RECLAIM
+bit set could end up flushing a workqueue without the aforementioned bit,
+triggering a dependency issue.
 
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+ workqueue: WQ_MEM_RECLAIM nvme-delete-wq:nvme_delete_ctrl_work [nvme_core]
+   is flushing !WQ_MEM_RECLAIM events:flush_cpu_slab
+ WARNING: CPU: 37 PID: 410 at kernel/workqueue.c:2637
+   check_flush_dependency+0x10a/0x120
+ Workqueue: nvme-delete-wq nvme_delete_ctrl_work [nvme_core]
+ RIP: 0010:check_flush_dependency+0x10a/0x120[  453.262125] Call Trace:
+ __flush_work.isra.0+0xbf/0x220
+ ? __queue_work+0x1dc/0x420
+ flush_all_cpus_locked+0xfb/0x120
+ __kmem_cache_shutdown+0x2b/0x320
+ kmem_cache_destroy+0x49/0x100
+ bioset_exit+0x143/0x190
+ blk_release_queue+0xb9/0x100
+ kobject_cleanup+0x37/0x130
+ nvme_fc_ctrl_free+0xc6/0x150 [nvme_fc]
+ nvme_free_ctrl+0x1ac/0x2b0 [nvme_core]
+
+Fixes: 5a836bf6b09f ("mm: slub: move flush_cpu_slab()
+invocations __free_slab() invocations out of IRQ context")
+
+Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
 ---
- drivers/dma/stm32-dma.c | 47 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 46 insertions(+), 1 deletion(-)
+ mm/slub.c | 34 ++++++++++++++++++++++------------
+ 1 file changed, 22 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/dma/stm32-dma.c b/drivers/dma/stm32-dma.c
-index 6aa281561f38..4891a1767e5a 100644
---- a/drivers/dma/stm32-dma.c
-+++ b/drivers/dma/stm32-dma.c
-@@ -140,6 +140,7 @@
- #define STM32_DMA_THRESHOLD_FTR_MASK	GENMASK(1, 0)
- #define STM32_DMA_DIRECT_MODE_MASK	BIT(2)
- #define STM32_DMA_ALT_ACK_MODE_MASK	BIT(4)
-+#define STM32_DMA_MDMA_STREAM_ID_MASK	GENMASK(19, 16)
- 
- enum stm32_dma_width {
- 	STM32_DMA_BYTE,
-@@ -193,6 +194,19 @@ struct stm32_dma_desc {
- 	struct stm32_dma_sg_req sg_req[];
+diff --git a/mm/slub.c b/mm/slub.c
+index 862dbd9af4f5..d46ee90651d2 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -2681,30 +2681,34 @@ struct slub_flush_work {
+ 	bool skip;
  };
  
-+/**
-+ * struct stm32_dma_mdma_config - STM32 DMA MDMA configuration
-+ * @stream_id: DMA request to trigger STM32 MDMA transfer
-+ * @ifcr: DMA interrupt flag clear register address,
-+ *        used by STM32 MDMA to clear DMA Transfer Complete flag
-+ * @tcf: DMA Transfer Complete flag
-+ */
-+struct stm32_dma_mdma_config {
-+	u32 stream_id;
-+	u32 ifcr;
-+	u32 tcf;
-+};
++static void flush_cpu_slab(void *d)
++{
++	struct kmem_cache *s = d;
++	struct kmem_cache_cpu *c = this_cpu_ptr(s->cpu_slab);
 +
- struct stm32_dma_chan {
- 	struct virt_dma_chan vchan;
- 	bool config_init;
-@@ -207,6 +221,8 @@ struct stm32_dma_chan {
- 	u32 mem_burst;
- 	u32 mem_width;
- 	enum dma_status status;
-+	bool trig_mdma;
-+	struct stm32_dma_mdma_config mdma_config;
- };
- 
- struct stm32_dma_device {
-@@ -386,6 +402,13 @@ static int stm32_dma_slave_config(struct dma_chan *c,
- 
- 	memcpy(&chan->dma_sconfig, config, sizeof(*config));
- 
-+	/* Check if user is requesting DMA to trigger STM32 MDMA */
-+	if (config->peripheral_size) {
-+		config->peripheral_config = &chan->mdma_config;
-+		config->peripheral_size = sizeof(chan->mdma_config);
-+		chan->trig_mdma = true;
-+	}
++	if (c->slab)
++		flush_slab(s, c);
 +
- 	chan->config_init = true;
- 
- 	return 0;
-@@ -561,6 +584,10 @@ static void stm32_dma_start_transfer(struct stm32_dma_chan *chan)
- 	sg_req = &chan->desc->sg_req[chan->next_sg];
- 	reg = &sg_req->chan_reg;
- 
-+	/* When DMA triggers STM32 MDMA, DMA Transfer Complete is managed by STM32 MDMA */
-+	if (chan->trig_mdma && chan->dma_sconfig.direction != DMA_MEM_TO_DEV)
-+		reg->dma_scr &= ~STM32_DMA_SCR_TCIE;
++	unfreeze_partials(s);
++}
 +
- 	reg->dma_scr &= ~STM32_DMA_SCR_EN;
- 	stm32_dma_write(dmadev, STM32_DMA_SCR(chan->id), reg->dma_scr);
- 	stm32_dma_write(dmadev, STM32_DMA_SPAR(chan->id), reg->dma_spar);
-@@ -710,6 +737,8 @@ static void stm32_dma_handle_chan_done(struct stm32_dma_chan *chan, u32 scr)
+ /*
+  * Flush cpu slab.
+  *
+  * Called from CPU work handler with migration disabled.
+  */
+-static void flush_cpu_slab(struct work_struct *w)
++static void flush_cpu_slab_work(struct work_struct *w)
+ {
+-	struct kmem_cache *s;
+-	struct kmem_cache_cpu *c;
+ 	struct slub_flush_work *sfw;
  
- 	if (chan->desc->cyclic) {
- 		vchan_cyclic_callback(&chan->desc->vdesc);
-+		if (chan->trig_mdma)
-+			return;
- 		stm32_dma_sg_inc(chan);
- 		/* cyclic while CIRC/DBM disable => post resume reconfiguration needed */
- 		if (!(scr & (STM32_DMA_SCR_CIRC | STM32_DMA_SCR_DBM)))
-@@ -1085,6 +1114,10 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_slave_sg(
- 	else
- 		chan->chan_reg.dma_scr &= ~STM32_DMA_SCR_PFCTRL;
+ 	sfw = container_of(w, struct slub_flush_work, work);
  
-+	/* Activate Double Buffer Mode if DMA triggers STM32 MDMA and more than 1 sg */
-+	if (chan->trig_mdma && sg_len > 1)
-+		chan->chan_reg.dma_scr |= STM32_DMA_SCR_DBM;
-+
- 	for_each_sg(sgl, sg, sg_len, i) {
- 		ret = stm32_dma_set_xfer_param(chan, direction, &buswidth,
- 					       sg_dma_len(sg),
-@@ -1106,6 +1139,8 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_slave_sg(
- 		desc->sg_req[i].chan_reg.dma_spar = chan->chan_reg.dma_spar;
- 		desc->sg_req[i].chan_reg.dma_sm0ar = sg_dma_address(sg);
- 		desc->sg_req[i].chan_reg.dma_sm1ar = sg_dma_address(sg);
-+		if (chan->trig_mdma)
-+			desc->sg_req[i].chan_reg.dma_sm1ar += sg_dma_len(sg);
- 		desc->sg_req[i].chan_reg.dma_sndtr = nb_data_items;
- 	}
- 
-@@ -1193,8 +1228,11 @@ static struct dma_async_tx_descriptor *stm32_dma_prep_dma_cyclic(
- 		desc->sg_req[i].chan_reg.dma_spar = chan->chan_reg.dma_spar;
- 		desc->sg_req[i].chan_reg.dma_sm0ar = buf_addr;
- 		desc->sg_req[i].chan_reg.dma_sm1ar = buf_addr;
-+		if (chan->trig_mdma)
-+			desc->sg_req[i].chan_reg.dma_sm1ar += period_len;
- 		desc->sg_req[i].chan_reg.dma_sndtr = nb_data_items;
--		buf_addr += period_len;
-+		if (!chan->trig_mdma)
-+			buf_addr += period_len;
- 	}
- 
- 	desc->num_sgs = num_periods;
-@@ -1476,6 +1514,7 @@ static void stm32_dma_set_config(struct stm32_dma_chan *chan,
- 		chan->threshold = STM32_DMA_FIFO_THRESHOLD_NONE;
- 	if (FIELD_GET(STM32_DMA_ALT_ACK_MODE_MASK, cfg->features))
- 		chan->chan_reg.dma_scr |= STM32_DMA_SCR_TRBUFF;
-+	chan->mdma_config.stream_id = FIELD_GET(STM32_DMA_MDMA_STREAM_ID_MASK, cfg->features);
+-	s = sfw->s;
+-	c = this_cpu_ptr(s->cpu_slab);
+-
+-	if (c->slab)
+-		flush_slab(s, c);
+-
+-	unfreeze_partials(s);
++	flush_cpu_slab(sfw->s);
  }
  
- static struct dma_chan *stm32_dma_of_xlate(struct of_phandle_args *dma_spec,
-@@ -1615,6 +1654,12 @@ static int stm32_dma_probe(struct platform_device *pdev)
- 		chan->id = i;
- 		chan->vchan.desc_free = stm32_dma_desc_free;
- 		vchan_init(&chan->vchan, dd);
+-static bool has_cpu_slab(int cpu, struct kmem_cache *s)
++static bool has_cpu_slab(int cpu, void *info)
+ {
++	struct kmem_cache *s = info;
+ 	struct kmem_cache_cpu *c = per_cpu_ptr(s->cpu_slab, cpu);
+ 
+ 	return c->slab || slub_percpu_partial(c);
+@@ -2721,13 +2725,18 @@ static void flush_all_cpus_locked(struct kmem_cache *s)
+ 	lockdep_assert_cpus_held();
+ 	mutex_lock(&flush_lock);
+ 
++	if (in_task()) {
++		on_each_cpu_cond(has_cpu_slab, flush_cpu_slab, s, 1);
++		goto unlock_exit;
++	}
 +
-+		chan->mdma_config.ifcr = res->start;
-+		chan->mdma_config.ifcr += STM32_DMA_IFCR(chan->id);
-+
-+		chan->mdma_config.tcf = STM32_DMA_TCI;
-+		chan->mdma_config.tcf <<= STM32_DMA_FLAGS_SHIFT(chan->id);
+ 	for_each_online_cpu(cpu) {
+ 		sfw = &per_cpu(slub_flush, cpu);
+ 		if (!has_cpu_slab(cpu, s)) {
+ 			sfw->skip = true;
+ 			continue;
+ 		}
+-		INIT_WORK(&sfw->work, flush_cpu_slab);
++		INIT_WORK(&sfw->work, flush_cpu_slab_work);
+ 		sfw->skip = false;
+ 		sfw->s = s;
+ 		schedule_work_on(cpu, &sfw->work);
+@@ -2740,6 +2749,7 @@ static void flush_all_cpus_locked(struct kmem_cache *s)
+ 		flush_work(&sfw->work);
  	}
  
- 	ret = dma_async_device_register(dd);
++unlock_exit:
+ 	mutex_unlock(&flush_lock);
+ }
+ 
 -- 
-2.25.1
+2.31.1
 
