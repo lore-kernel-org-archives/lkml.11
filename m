@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0369ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 23:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E18B2ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 23:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiH2Xsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 19:48:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
+        id S230030AbiH2Xsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 19:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbiH2Xrp (ORCPT
+        with ESMTP id S230004AbiH2Xrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 19:47:45 -0400
+        Mon, 29 Aug 2022 19:47:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5415AA6C6C;
-        Mon, 29 Aug 2022 16:46:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB06A74D8;
+        Mon, 29 Aug 2022 16:47:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9884DB815E2;
-        Mon, 29 Aug 2022 23:46:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3246C43155;
-        Mon, 29 Aug 2022 23:46:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E2C9B815E0;
+        Mon, 29 Aug 2022 23:46:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FB81C43143;
+        Mon, 29 Aug 2022 23:46:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661816799;
-        bh=EVU5NmsfBTMH8Ihcr+TbZu9oO7irjNeV+Eh3Zx85vdw=;
+        s=k20201202; t=1661816811;
+        bh=KahG2xDxCoetzNW8Gajuh3YY+vG3D5HNu1BmVl41zG8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GRqUe1/RVZbQ5Q+kSv2PsqNeAgwLUpCbQKy8vpv3dafEwUcMhQF5DqrY3Zgqif6UK
-         pU0hcJa66a/YlV23TXIMH0ZypAlNOcRjU0f5yxLkMW8DrOhsljVmuSVzxjpdf0qpO9
-         +y9NsYMr1QkuyO9/KxjXhjU/qF6WChyv2sif6XMLgUFuNAWz6JPeI5dqSL0keBcRZi
-         r4MOWYFUYbpyy4LHJAxNujlZdQTgeJYsB595HPj1WUV75YASdk7oBp73ijdGdj/xJm
-         zQH4aW4NtJEVtaQccotNoTp7GP2ewuQFH+cdVTzPwFp1w2PqwKixaDktHdu5advhev
-         sTA9nsIz3yqlA==
+        b=QuYMnycXgxXjN/B7vb8RZh4qYzhBtESW6p3EtevAvLNO8SptT0UziIMPdKROgT7KQ
+         JQ1Lff/iLFlqwd+Bz/UG6z/e1cokexrPWtb2hVTZkHl4oSSaX7SZ2zg5b+Vix3ENLM
+         WJSOAEWQ1wsyt8UI1cevBBlSDhFp2T2/8Bw0LTdb67Cb+TzB2H30bn/COMKWWRdOUt
+         frLUI+gFRZaLy9FGEhwv077pvEl5abanHKw0C8d6glaiZ2USb2n+ZvNMqzNdyB4d/K
+         UN9c0RekjpDTnxZvHhDm6tU3/ZThNlV8oBxNcwMlslqefv7cDDX0HFKjL1tAe9YTk5
+         C11RZeIEgWdTg==
 From:   Bjorn Andersson <andersson@kernel.org>
-To:     linux-arm-msm@vger.kernel.org, luca.weiss@fairphone.com
-Cc:     vkoul@kernel.org, dmaengine@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        linux-kernel@vger.kernel.org, konrad.dybcio@somainline.org,
-        phone-devel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: (subset) [PATCH 0/3] Add GPI DMA support for SM6350
-Date:   Mon, 29 Aug 2022 18:46:01 -0500
-Message-Id: <166181675978.322065.10581898444404760964.b4-ty@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        yunlong.jia@ecs.corp-partner.google.com
+Cc:     dianders@chromium.org, linux-arm-msm@vger.kernel.org,
+        robh+dt@kernel.org, konrad.dybcio@somainline.org,
+        moragues@chromium.org, henrysun@google.com,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        agross@kernel.org
+Subject: Re: (subset) [PATCH v3 1/2] arm64: dts: qcom: Add SKU6 for sc7180-trogdor-pazquel-lte-parade
+Date:   Mon, 29 Aug 2022 18:46:14 -0500
+Message-Id: <166181675965.322065.1296946255841771215.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220812082721.1125759-1-luca.weiss@fairphone.com>
-References: <20220812082721.1125759-1-luca.weiss@fairphone.com>
+In-Reply-To: <20220721033918.v3.1.I10519ca1bf88233702a90e296088808d18cdc7b1@changeid>
+References: <20220721033918.v3.1.I10519ca1bf88233702a90e296088808d18cdc7b1@changeid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -51,22 +53,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 12 Aug 2022 10:27:18 +0200, Luca Weiss wrote:
-> This series hooks up GPI DMA support for the SM6350 I2C.
+On Thu, 21 Jul 2022 03:58:42 +0000, Yunlong Jia wrote:
+> SKU6 is LTE(w/o eSIM)+WIFI+Parade
 > 
-> It has been tested using himax,hxcommon driver that I forward-ported
-> from the original vendor kernel on fairphone-fp4 - previously I have
-> used i2c-gpio bitbang in my tree.
 > 
-> This also requires the fix from Robin[0] that has already been
-> accepted into linux-next, otherwise I2C communication fails to work.
-> 
-> [...]
 
 Applied, thanks!
 
-[3/3] arm64: dts: qcom: sm6350: Add GPI DMA nodes
-      commit: 9f0149caf0dc1c1261a612b0653d31d998f80596
+[1/2] arm64: dts: qcom: Add SKU6 for sc7180-trogdor-pazquel-lte-parade
+      commit: 030a7bfb365fd19714e25e9547764bff690cb227
+[2/2] dt-bindings: arm: qcom: Document additional sku6 for sc7180 pazquel
+      commit: 07603a1c17cf9eec5c963b470daba780cd7b9981
 
 Best regards,
 -- 
