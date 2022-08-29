@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB9D7ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD13CECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232361AbiH2LaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46500 "EHLO
+        id S232370AbiH2La2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:30:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232419AbiH2L24 (ORCPT
+        with ESMTP id S232440AbiH2L3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:28:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F1472EEF;
-        Mon, 29 Aug 2022 04:17:19 -0700 (PDT)
+        Mon, 29 Aug 2022 07:29:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066C97A745;
+        Mon, 29 Aug 2022 04:17:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4228761202;
-        Mon, 29 Aug 2022 11:09:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43461C433C1;
-        Mon, 29 Aug 2022 11:09:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7F58B80F10;
+        Mon, 29 Aug 2022 11:07:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1DFC433C1;
+        Mon, 29 Aug 2022 11:07:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771367;
-        bh=U/ohPyKzMC5biUBBcQAdl0use6FTjPDXkyxBV1VQ5NY=;
+        s=korg; t=1661771235;
+        bh=yjoZOiEcvdnTyVB/vFAkaEAvDwwad/7SbJUYxTfTwBQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=duFAUbYweamS9J+Y3lIVd3/bfzdeX6UKLhxzbsz6/qU5DP7AbPXluzcb9yHBF+D46
-         j9hjT7i9Pvu3mS0HC+q9cLZwCrNpkc+5OVZF981Zt3jEQv02BdNWoQWdrlihw5DT1t
-         ucTOBCETXYGe/U3WUK9LXp/VW0FoR7HNKktouXSs=
+        b=coHuRp3gXTLNNKa/hLQLyUuHvXBEF5rcxbjPRiuQGiXxZYtYmureWJGiOA59oo/F4
+         ZnhK4CdJK3XlkRXNl/H4J+jXtH9/7mfpdLkR6sjidbMxyywppaOQlMPkuJJN3ZpxOb
+         4+XXoRXw4+F4M6B909wesUyNbXPbaZjK1ZSC+lv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anand Jain <anand.jain@oracle.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 096/136] btrfs: replace: drop assert for suspended replace
-Date:   Mon, 29 Aug 2022 12:59:23 +0200
-Message-Id: <20220829105808.603626030@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 082/136] net: Fix data-races around sysctl_max_skb_frags.
+Date:   Mon, 29 Aug 2022 12:59:09 +0200
+Message-Id: <20220829105808.008903886@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -48,55 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anand Jain <anand.jain@oracle.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 59a3991984dbc1fc47e5651a265c5200bd85464e upstream.
+[ Upstream commit 657b991afb89d25fe6c4783b1b75a8ad4563670d ]
 
-If the filesystem mounts with the replace-operation in a suspended state
-and try to cancel the suspended replace-operation, we hit the assert. The
-assert came from the commit fe97e2e173af ("btrfs: dev-replace: replace's
-scrub must not be running in suspended state") that was actually not
-required. So just remove it.
+While reading sysctl_max_skb_frags, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
- $ mount /dev/sda5 /btrfs
-
-    BTRFS info (device sda5): cannot continue dev_replace, tgtdev is missing
-    BTRFS info (device sda5): you may cancel the operation after 'mount -o degraded'
-
- $ mount -o degraded /dev/sda5 /btrfs <-- success.
-
- $ btrfs replace cancel /btrfs
-
-    kernel: assertion failed: ret != -ENOTCONN, in fs/btrfs/dev-replace.c:1131
-    kernel: ------------[ cut here ]------------
-    kernel: kernel BUG at fs/btrfs/ctree.h:3750!
-
-After the patch:
-
- $ btrfs replace cancel /btrfs
-
-    BTRFS info (device sda5): suspended dev_replace from /dev/sda5 (devid 1) to <missing disk> canceled
-
-Fixes: fe97e2e173af ("btrfs: dev-replace: replace's scrub must not be running in suspended state")
-CC: stable@vger.kernel.org # 5.0+
-Signed-off-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5f74f82ea34c ("net:Add sysctl_max_skb_frags")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/dev-replace.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/ipv4/tcp.c       | 4 ++--
+ net/mptcp/protocol.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---- a/fs/btrfs/dev-replace.c
-+++ b/fs/btrfs/dev-replace.c
-@@ -1151,8 +1151,7 @@ int btrfs_dev_replace_cancel(struct btrf
- 		up_write(&dev_replace->rwsem);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 52f51717f02f3..0ebef2a5950cd 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -991,7 +991,7 @@ struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
  
- 		/* Scrub for replace must not be running in suspended state */
--		ret = btrfs_scrub_cancel(fs_info);
--		ASSERT(ret != -ENOTCONN);
-+		btrfs_scrub_cancel(fs_info);
+ 	i = skb_shinfo(skb)->nr_frags;
+ 	can_coalesce = skb_can_coalesce(skb, i, page, offset);
+-	if (!can_coalesce && i >= sysctl_max_skb_frags) {
++	if (!can_coalesce && i >= READ_ONCE(sysctl_max_skb_frags)) {
+ 		tcp_mark_push(tp, skb);
+ 		goto new_segment;
+ 	}
+@@ -1344,7 +1344,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
  
- 		trans = btrfs_start_transaction(root, 0);
- 		if (IS_ERR(trans)) {
+ 			if (!skb_can_coalesce(skb, i, pfrag->page,
+ 					      pfrag->offset)) {
+-				if (i >= sysctl_max_skb_frags) {
++				if (i >= READ_ONCE(sysctl_max_skb_frags)) {
+ 					tcp_mark_push(tp, skb);
+ 					goto new_segment;
+ 				}
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index a089791414bfb..5df60a4b09304 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1317,7 +1317,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 
+ 		i = skb_shinfo(skb)->nr_frags;
+ 		can_coalesce = skb_can_coalesce(skb, i, dfrag->page, offset);
+-		if (!can_coalesce && i >= sysctl_max_skb_frags) {
++		if (!can_coalesce && i >= READ_ONCE(sysctl_max_skb_frags)) {
+ 			tcp_mark_push(tcp_sk(ssk), skb);
+ 			goto alloc_skb;
+ 		}
+-- 
+2.35.1
+
 
 
