@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3AAECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8171BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbiH2V11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 17:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
+        id S229958AbiH2V1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 17:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbiH2V0s (ORCPT
+        with ESMTP id S229950AbiH2V0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 17:26:48 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BC49E2D7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:12 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id q14-20020a6557ce000000b0041da9c3c244so4589013pgr.22
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:12 -0700 (PDT)
+        Mon, 29 Aug 2022 17:26:49 -0400
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04D474DCB
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:18 -0700 (PDT)
+Received: by mail-pj1-x104a.google.com with SMTP id 36-20020a17090a0fa700b001fd64c962afso3800076pjz.5
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=KQbM9RENeAKpMamE0B+V4MUsqhzbhGXDlXXjmQQUA6A=;
-        b=B9JYMkX5xydBJOgcGzuYw+brQarCWmRWS+0/Aqinb/OY26MbR1xT5axtOfpYrKlmA6
-         qGVi7LP6LaJMDcQJmEECw3J6IqaSMiez5M7VUbq2lZEZKkVSQHjZtuqy9g7s10YpHljB
-         L9LJY/vXV43u8aIw7/j+LcG51+Bdx5jgIt7f2hLczg1JgYzlwTyYBe/lmm+nmwMuVZWc
-         thodE+2BI084oTXFC0MD73T0ggmHuAL+ik6FuitgxrIkPY+yM+/axTrbJYGoWGabXb1/
-         atpqGKZe5bOiVGcNY/fR8gQx2/9qiwRjzQjgpRwLojxFdTcGDVT+d94c/I/T/XPhcGEF
-         rEbQ==
+        bh=2fd/wGll+ATU6BJRTn7wtpRUT69Ps19K4L9NuJFwTCo=;
+        b=CptXAEbTEIrjcI1hpAhqMGzwstwkcEJJxmfb7we2Tkw33BFQo0d25Vl71IxE1hgwCE
+         +/zdjUxBz/kfwlykJ2mpRLD2ASHh0Jx/8NPF+GvmOj+OIPDuJ9h8tJ0qgl8jIPnA0gyY
+         HL/K18g+JnPGw8ocd38eG5KHL97qZgAE2vHMSq8EmM7kYFzwJqKpJAdVhwHK8rQ0CEUk
+         zlwtiJI41bKlNxlGW7NWWuuvJOTrejKhLXTonY1HBOreH+6SF0a8TMKsBr5d7H138Lnw
+         MYC4Krs42a4eoKPM77oYkjvTzwtNbqixe2Jty6RY0Tg1xXxoDrCaGfCoHKiNRbMG4ac9
+         6NkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=KQbM9RENeAKpMamE0B+V4MUsqhzbhGXDlXXjmQQUA6A=;
-        b=RfwsNpyC3LqPhSXyAshMhZDi4oprDbnC90X+B8ciWreFBIwzFr+0vElvtUBl0la/9o
-         BjiFSdQc5ti8mt1NbmMa9XyctMt3zlh+6iUOnJfkNcGDkrnizi6xhtiVCErRk6pqEcao
-         wX0JcYTSHTi4Ihk+sQPfK9L59UPshNUA2BIcXfpU7kZpkA2hiNfccJn4OboZHHfEzmhQ
-         eh8h4GcokCImGl53P8gl0ESl0rVcnTHfv3Yn3l/yqIstz63M3yTIdN9pNiE9mN8PBP+W
-         yhbb8yg9Z8sN/bctryQ6uNxvKnRxFVPkvhGuD5TbILnuRcEhtLSecPy77+v12txyPwB3
-         QE+Q==
-X-Gm-Message-State: ACgBeo28Gq0uxKLao158logo/5iAqadwRQy2l4rb9dCepQkq9qwvAu3k
-        jc0dfOELacaKs9+7cVTwJDgpJdIS1NY=
-X-Google-Smtp-Source: AA6agR7f4s+E2TUUdzlInwBIWNCTTjaS2dHpmImL6O3kfzXJ6rCAm5H+xn8nFf0AEemGeSJLYPdhv1d/+n8=
+        bh=2fd/wGll+ATU6BJRTn7wtpRUT69Ps19K4L9NuJFwTCo=;
+        b=HSqoH+9LDmkeOjE5+0qscOIrkwQQdDtmrOd/0Ibs+OSb6voR6T3yUT9R4md7TDZgpc
+         Brn8EP8jIYdKS3b7xZrak0H7vh2vPFNFTtUXyebg4t6uOVesUTeITl9Zf3bJsstqg3/2
+         UnzcDX//LsbKdkGD/79llnmFHn94PVMnL7KOxwbZHtckSuFFPBvzZCY67CJWjxLG3N9l
+         MO0TpDFNLLWKX5mPQSzLVe1ige5h5oCzn7ei7D/4X69JwQDN/7zRkh1eONABiIJxDbDa
+         d/5KsS+xQx+wWXfWCuV/U0/q/VYjKiAj0t18EiFuNk4TPVawzh7wdCR+rDUfjgyRY7oh
+         VNqQ==
+X-Gm-Message-State: ACgBeo3aootgj6cTHOBsoHv74Q6EiVC9mJmAKtj8ztKyrpYmPOMJQ2+P
+        peTNQDQYR/+CbgpAFljQPK7vlrckh+I=
+X-Google-Smtp-Source: AA6agR5QjqhJOQoDiATaLtKSN9vwads3L2SWpCSYlmwHfKycrJZLy9F13OZO0MNqEBq8/z8yofCbHCaZE68=
 X-Received: from surenb-spec.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e30])
- (user=surenb job=sendgmr) by 2002:a05:6a00:b8a:b0:537:f81:203a with SMTP id
- g10-20020a056a000b8a00b005370f81203amr18341111pfj.80.1661808363176; Mon, 29
- Aug 2022 14:26:03 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 21:25:18 +0000
+ (user=surenb job=sendgmr) by 2002:a17:902:d54b:b0:174:af35:4ba0 with SMTP id
+ z11-20020a170902d54b00b00174af354ba0mr7860599plf.74.1661808376452; Mon, 29
+ Aug 2022 14:26:16 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 21:25:26 +0000
 In-Reply-To: <20220829212531.3184856-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220829212531.3184856-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220829212531.3184856-16-surenb@google.com>
-Subject: [RFC PATCH 15/28] mm/mmap: mark adjacent VMAs as locked if they can
- grow into unmapped area
+Message-ID: <20220829212531.3184856-24-surenb@google.com>
+Subject: [RFC PATCH 23/28] x86/mm: define ARCH_SUPPORTS_PER_VMA_LOCK
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     michel@lespinasse.org, jglisse@google.com, mhocko@suse.com,
@@ -74,36 +73,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While unmapping VMAs, adjacent VMAs might be able to grow into the area
-being unmapped. In such cases mark adjacent VMAs as locked to prevent
-this growth.
+Set ARCH_SUPPORTS_PER_VMA_LOCK so that the per-VMA lock support can be
+compiled on this architecture.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- mm/mmap.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/mm/mmap.c b/mm/mmap.c
-index b0d78bdc0de0..b31cc97c2803 100644
---- a/mm/mmap.c
-+++ b/mm/mmap.c
-@@ -2680,10 +2680,14 @@ detach_vmas_to_be_unmapped(struct mm_struct *mm, struct vm_area_struct *vma,
- 	 * VM_GROWSUP VMA. Such VMAs can change their size under
- 	 * down_read(mmap_lock) and collide with the VMA we are about to unmap.
- 	 */
--	if (vma && (vma->vm_flags & VM_GROWSDOWN))
-+	if (vma && (vma->vm_flags & VM_GROWSDOWN)) {
-+		vma_mark_locked(vma);
- 		return false;
--	if (prev && (prev->vm_flags & VM_GROWSUP))
-+	}
-+	if (prev && (prev->vm_flags & VM_GROWSUP)) {
-+		vma_mark_locked(prev);
- 		return false;
-+	}
- 	return true;
- }
- 
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index f9920f1341c8..ee19de020b27 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -27,6 +27,7 @@ config X86_64
+ 	# Options that are inherently 64-bit kernel only:
+ 	select ARCH_HAS_GIGANTIC_PAGE
+ 	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128
++	select ARCH_SUPPORTS_PER_VMA_LOCK
+ 	select ARCH_USE_CMPXCHG_LOCKREF
+ 	select HAVE_ARCH_SOFT_DIRTY
+ 	select MODULES_USE_ELF_RELA
 -- 
 2.37.2.672.g94769d06f0-goog
 
