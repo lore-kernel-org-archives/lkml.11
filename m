@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3161ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:36:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 925B2C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232814AbiH2LgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:36:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
+        id S232634AbiH2LgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233068AbiH2Le1 (ORCPT
+        with ESMTP id S232600AbiH2Leh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:34:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB509101E9;
-        Mon, 29 Aug 2022 04:20:28 -0700 (PDT)
+        Mon, 29 Aug 2022 07:34:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11AB2754B1;
+        Mon, 29 Aug 2022 04:20:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57415B80F92;
-        Mon, 29 Aug 2022 11:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF29C433D6;
-        Mon, 29 Aug 2022 11:17:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD18EB80FA6;
+        Mon, 29 Aug 2022 11:12:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED38C433C1;
+        Mon, 29 Aug 2022 11:12:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771830;
-        bh=OO0la5LJzIAMzZqhWPOrFSwER2Kaqw02nahsFFOjM/E=;
+        s=korg; t=1661771554;
+        bh=EMpyuFnfJZNwh01gEQaqLMq8asSMxYR+wXn4bSwXpk4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ljTlipDpfpBUK0q3p+SGt1fjjMwa5Pes9NReL6ue1BWi2TKfVXDKPCQRwDltTuY+p
-         /tSjs00zza8chdLOxcCK2gtPcQgbse4ub/n6MtHZLQMmk0KZ2D+qoVro8R53tCs7l0
-         tM1X2Yu18BvEqmIQ3jx0T2+T/XxHorG+fTXHB/sk=
+        b=EhtVjwJGGqC8KcK8iP3dRg2RCNJWp005BiQTjW3TdLHVe2qBqFzKx1vN53ssHj6Cr
+         6Nx7Pdfte7IEACLauDfeliIkADclFFBGcbvgnfbPRtVQPKSJZsHdS8cDMnXaKFe90f
+         tAMY7ZhheEvJBsZqBqUmtoyEWlhIHjRJhi7NS/dQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Siddh Raman Pant <code@siddh.me>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
-Subject: [PATCH 5.19 110/158] loop: Check for overflow while configuring loop
-Date:   Mon, 29 Aug 2022 12:59:20 +0200
-Message-Id: <20220829105813.721388114@linuxfoundation.org>
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        ntfs3@lists.linux.dev,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 022/158] ntfs: fix acl handling
+Date:   Mon, 29 Aug 2022 12:57:52 +0200
+Message-Id: <20220829105809.739916483@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -51,59 +51,109 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siddh Raman Pant <code@siddh.me>
+From: Christian Brauner <brauner@kernel.org>
 
-commit c490a0b5a4f36da3918181a8acdc6991d967c5f3 upstream.
+[ Upstream commit 0c3bc7899e6dfb52df1c46118a5a670ae619645f ]
 
-The userspace can configure a loop using an ioctl call, wherein
-a configuration of type loop_config is passed (see lo_ioctl()'s
-case on line 1550 of drivers/block/loop.c). This proceeds to call
-loop_configure() which in turn calls loop_set_status_from_info()
-(see line 1050 of loop.c), passing &config->info which is of type
-loop_info64*. This function then sets the appropriate values, like
-the offset.
+While looking at our current POSIX ACL handling in the context of some
+overlayfs work I went through a range of other filesystems checking how they
+handle them currently and encountered ntfs3.
 
-loop_device has lo_offset of type loff_t (see line 52 of loop.c),
-which is typdef-chained to long long, whereas loop_info64 has
-lo_offset of type __u64 (see line 56 of include/uapi/linux/loop.h).
+The posic_acl_{from,to}_xattr() helpers always need to operate on the
+filesystem idmapping. Since ntfs3 can only be mounted in the initial user
+namespace the relevant idmapping is init_user_ns.
 
-The function directly copies offset from info to the device as
-follows (See line 980 of loop.c):
-	lo->lo_offset = info->lo_offset;
+The posix_acl_{from,to}_xattr() helpers are concerned with translating between
+the kernel internal struct posix_acl{_entry} and the uapi struct
+posix_acl_xattr_{header,entry} and the kernel internal data structure is cached
+filesystem wide.
 
-This results in an overflow, which triggers a warning in iomap_iter()
-due to a call to iomap_iter_done() which has:
-	WARN_ON_ONCE(iter->iomap.offset > iter->pos);
+Additional idmappings such as the caller's idmapping or the mount's idmapping
+are handled higher up in the VFS. Individual filesystems usually do not need to
+concern themselves with these.
 
-Thus, check for negative value during loop_set_status_from_info().
+The posix_acl_valid() helper is concerned with checking whether the values in
+the kernel internal struct posix_acl can be represented in the filesystem's
+idmapping. IOW, if they can be written to disk. So this helper too needs to
+take the filesystem's idmapping.
 
-Bug report: https://syzkaller.appspot.com/bug?id=c620fe14aac810396d3c3edc9ad73848bf69a29e
-
-Reported-and-tested-by: syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20220823160810.181275-1-code@siddh.me
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
+Cc: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
+Cc: ntfs3@lists.linux.dev
+Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/loop.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ fs/ntfs3/xattr.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
---- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -979,6 +979,11 @@ loop_set_status_from_info(struct loop_de
+diff --git a/fs/ntfs3/xattr.c b/fs/ntfs3/xattr.c
+index 1b8c89dbf6684..3629049decac1 100644
+--- a/fs/ntfs3/xattr.c
++++ b/fs/ntfs3/xattr.c
+@@ -478,8 +478,7 @@ static noinline int ntfs_set_ea(struct inode *inode, const char *name,
+ }
  
- 	lo->lo_offset = info->lo_offset;
- 	lo->lo_sizelimit = info->lo_sizelimit;
-+
-+	/* loff_t vars have been assigned __u64 */
-+	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
-+		return -EOVERFLOW;
-+
- 	memcpy(lo->lo_file_name, info->lo_file_name, LO_NAME_SIZE);
- 	lo->lo_file_name[LO_NAME_SIZE-1] = 0;
- 	lo->lo_flags = info->lo_flags;
+ #ifdef CONFIG_NTFS3_FS_POSIX_ACL
+-static struct posix_acl *ntfs_get_acl_ex(struct user_namespace *mnt_userns,
+-					 struct inode *inode, int type,
++static struct posix_acl *ntfs_get_acl_ex(struct inode *inode, int type,
+ 					 int locked)
+ {
+ 	struct ntfs_inode *ni = ntfs_i(inode);
+@@ -514,7 +513,7 @@ static struct posix_acl *ntfs_get_acl_ex(struct user_namespace *mnt_userns,
+ 
+ 	/* Translate extended attribute to acl. */
+ 	if (err >= 0) {
+-		acl = posix_acl_from_xattr(mnt_userns, buf, err);
++		acl = posix_acl_from_xattr(&init_user_ns, buf, err);
+ 	} else if (err == -ENODATA) {
+ 		acl = NULL;
+ 	} else {
+@@ -537,8 +536,7 @@ struct posix_acl *ntfs_get_acl(struct inode *inode, int type, bool rcu)
+ 	if (rcu)
+ 		return ERR_PTR(-ECHILD);
+ 
+-	/* TODO: init_user_ns? */
+-	return ntfs_get_acl_ex(&init_user_ns, inode, type, 0);
++	return ntfs_get_acl_ex(inode, type, 0);
+ }
+ 
+ static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
+@@ -590,7 +588,7 @@ static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
+ 		value = kmalloc(size, GFP_NOFS);
+ 		if (!value)
+ 			return -ENOMEM;
+-		err = posix_acl_to_xattr(mnt_userns, acl, value, size);
++		err = posix_acl_to_xattr(&init_user_ns, acl, value, size);
+ 		if (err < 0)
+ 			goto out;
+ 		flags = 0;
+@@ -641,7 +639,7 @@ static int ntfs_xattr_get_acl(struct user_namespace *mnt_userns,
+ 	if (!acl)
+ 		return -ENODATA;
+ 
+-	err = posix_acl_to_xattr(mnt_userns, acl, buffer, size);
++	err = posix_acl_to_xattr(&init_user_ns, acl, buffer, size);
+ 	posix_acl_release(acl);
+ 
+ 	return err;
+@@ -665,12 +663,12 @@ static int ntfs_xattr_set_acl(struct user_namespace *mnt_userns,
+ 	if (!value) {
+ 		acl = NULL;
+ 	} else {
+-		acl = posix_acl_from_xattr(mnt_userns, value, size);
++		acl = posix_acl_from_xattr(&init_user_ns, value, size);
+ 		if (IS_ERR(acl))
+ 			return PTR_ERR(acl);
+ 
+ 		if (acl) {
+-			err = posix_acl_valid(mnt_userns, acl);
++			err = posix_acl_valid(&init_user_ns, acl);
+ 			if (err)
+ 				goto release_and_out;
+ 		}
+-- 
+2.35.1
+
 
 
