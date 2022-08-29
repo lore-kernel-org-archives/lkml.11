@@ -2,150 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D95ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 06:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DEF7ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 06:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiH2G2C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 02:28:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36472 "EHLO
+        id S229648AbiH2G2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 02:28:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiH2G15 (ORCPT
+        with ESMTP id S229507AbiH2G2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 02:27:57 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 814414B0F6;
-        Sun, 28 Aug 2022 23:27:56 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27T5xJul017631;
-        Mon, 29 Aug 2022 06:27:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=qcppdkim1;
- bh=l+tIFk905R+cdNRGRHG3he8TeMJjuNU1aF1sos3nHJw=;
- b=F5REKwhNLzKp8o5jtBzM5O45VpIT9KCMIa9AkD7SjraRix+ge+OURaMwRt6S4Gu2+xpK
- STQtAp4Ut7fPNZ52eSCq+G9ingTGPGgKzZi/NLrEYZ9vf5//RR34unKgiLeLppNpbip2
- F643wKNc2QNBUuVyNXGZzZq7qz1b+NJhrFhhvIGKJpMAf9pWWG8Gz026B0nxrCy85UNG
- 0lSqbj1tRHB8jOfGd08SsC6G19npumOuuycf7J7Nw9a9pui4o+dytXG2IeZqmGDhDQx2
- 479Sxr3/M7L2AialkxcNV43TCi5lw1DRLNijxj7izzPLV7KIzYMC00rBQVa46iWat/cD kQ== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j7ceu3g8w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 06:27:53 +0000
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27T6Mqhs031435
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 06:22:52 GMT
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Sun, 28 Aug 2022 23:22:48 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_tdas@quicinc.com>, <quic_c_skakit@quicinc.com>,
-        <linux-clk@vger.kernel.org>
-Subject: [PATCH V8 1/5] dt-bindings: clock: Add "qcom,adsp-pil-mode" property
-Date:   Mon, 29 Aug 2022 11:52:29 +0530
-Message-ID: <1661754153-14813-2-git-send-email-quic_c_skakit@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1661754153-14813-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1661754153-14813-1-git-send-email-quic_c_skakit@quicinc.com>
+        Mon, 29 Aug 2022 02:28:53 -0400
+Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73A74B0FA;
+        Sun, 28 Aug 2022 23:28:52 -0700 (PDT)
+Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-11f0fa892aeso1024415fac.7;
+        Sun, 28 Aug 2022 23:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=dHQJKSyHKH/RlxhxZ4Q/EKqTBZjMDarnF1XaHz0S2gU=;
+        b=XCdQxL63SAkWPhdSckr1KRYpMwuInjqA5hL6NqW7+L3ZU8SIYVCPCWIexWqvjsVnvt
+         Iw1hAANity4bXp7k2QT87/LpO5kWHKdqU4KLWmIt+f06LpNg2IW3BW2vlS7mAFYQv7XZ
+         oH8gSg6WccFk+ohOGZP5VXV9W7QBvGKkLu3SW88JpVcqOgcdOh1acG2M+9AN+ElLgnxd
+         4JC8o/Km51u5OeJWbEUeZEj65ca58ZuB7buySpzk9l+biB7HOimLrxOubfm20bMV5WQc
+         Go0cS7YfjPPH70E5EsVrZmaAHXPJjTQ6kfxiwvZoPWxGc+5zX/ffwpBLkBZJ5LeC0bLa
+         ccqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=dHQJKSyHKH/RlxhxZ4Q/EKqTBZjMDarnF1XaHz0S2gU=;
+        b=jd4woTRFtvXxjeBBFUCLO+kcZE+d1TaIkglz+zPxUYeHMAQk54VFohITVVfIQpbvPQ
+         yDg8PhAM4Qh703LVyIWFvDlw7vF1WctBHPKnhRdwHGZr7zc6ObX7Wk7h07nA3KLqrfOf
+         J6qIUMxXSEbyl5FsyeXaXmqhfOQH2KlWm9jNVQxLVXeJNctkdQq0rLTdiNpnYqRxlIuQ
+         Dm3DK6FxOz0+bMwCFZsm7+iVf5WEQAK6TPRevUfAySNePz/oNa12zaZBpdah6dox146X
+         haUC5ANbQqQLiNodRLytSWJOXGWaXTBOTwQi3HklE0HVjO5zbBWS0llyfuqSQ276LV9m
+         Ry/w==
+X-Gm-Message-State: ACgBeo3tzHo7w42/4p43viqjwnWP/mZjGvr9u8Lh7/ee0MVuxM4wBYfd
+        +lgqsQb5g1/jiZYYnxKIogto/du20O/LfxrLyh4=
+X-Google-Smtp-Source: AA6agR6QWzfrwtXmIwOND+BLUkGH9SQkq7gxiFCylMZ1UEuJJq+j0L10LQlJsHA29k0GcUzIkiAGwcJYBvz7BtMTv94=
+X-Received: by 2002:a05:6870:64a1:b0:11c:5ca9:e519 with SMTP id
+ cz33-20020a05687064a100b0011c5ca9e519mr7385632oab.4.1661754532245; Sun, 28
+ Aug 2022 23:28:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: 6CsfLkQPMSmGjfexTC3_fEkg-IoIIBc7
-X-Proofpoint-ORIG-GUID: 6CsfLkQPMSmGjfexTC3_fEkg-IoIIBc7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-29_03,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
- phishscore=0 adultscore=0 mlxlogscore=999 impostorscore=0 malwarescore=0
- spamscore=0 lowpriorityscore=0 mlxscore=0 priorityscore=1501 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208290031
+References: <20220825114018.1715-1-xuewen.yan@unisoc.com>
+In-Reply-To: <20220825114018.1715-1-xuewen.yan@unisoc.com>
+From:   Xuewen Yan <xuewen.yan94@gmail.com>
+Date:   Mon, 29 Aug 2022 14:28:41 +0800
+Message-ID: <CAB8ipk-su6DRo0DsgaY38Vf2AuxBuvG0GQ0xA22se7Wx5eH0Pg@mail.gmail.com>
+Subject: Re: [PATCH] thermal: Check the policy first in cpufreq_cooling_register
+To:     Xuewen Yan <xuewen.yan@unisoc.com>
+Cc:     viresh.kumar@linaro.org, lukasz.luba@arm.com,
+        amit.kachhap@gmail.com, daniel.lezcano@linaro.org,
+        rafael@kernel.org, amitk@kernel.org, rui.zhang@intel.com,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        di.shen@unisoc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When this property is set, the remoteproc is used to boot the
-LPASS and therefore lpass_q6ss_ahbm_clk and lpass_q6ss_ahbs_clk
-clocks would be used to bring LPASS out of reset and the rest of
-the lpass clocks would be controlled directly by the remoteproc.
+Hi all,
 
-This is a cleanup done to handle overlap of regmap of
-lpasscc and lpass_aon blocks.
+Any comments?
 
-Signed-off-by: Satya Priya <quic_c_skakit@quicinc.com>
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
----
- Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml   | 6 ++----
- .../devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml         | 7 +++++++
- 2 files changed, 9 insertions(+), 4 deletions(-)
+On Thu, Aug 25, 2022 at 7:42 PM Xuewen Yan <xuewen.yan@unisoc.com> wrote:
+>
+> Since the policy needs to be accessed first when obtaining cpu devices,
+> first check whether the policy is legal before this.
+>
+> Signed-off-by: Xuewen Yan <xuewen.yan@unisoc.com>
+> ---
+>  drivers/thermal/cpufreq_cooling.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/thermal/cpufreq_cooling.c b/drivers/thermal/cpufreq_cooling.c
+> index b76293cc989c..7838b6e2dba5 100644
+> --- a/drivers/thermal/cpufreq_cooling.c
+> +++ b/drivers/thermal/cpufreq_cooling.c
+> @@ -501,17 +501,17 @@ __cpufreq_cooling_register(struct device_node *np,
+>         struct thermal_cooling_device_ops *cooling_ops;
+>         char *name;
+>
+> +       if (IS_ERR_OR_NULL(policy)) {
+> +               pr_err("%s: cpufreq policy isn't valid: %p\n", __func__, policy);
+> +               return ERR_PTR(-EINVAL);
+> +       }
+> +
+>         dev = get_cpu_device(policy->cpu);
+>         if (unlikely(!dev)) {
+>                 pr_warn("No cpu device for cpu %d\n", policy->cpu);
+>                 return ERR_PTR(-ENODEV);
+>         }
+>
+> -       if (IS_ERR_OR_NULL(policy)) {
+> -               pr_err("%s: cpufreq policy isn't valid: %p\n", __func__, policy);
+> -               return ERR_PTR(-EINVAL);
+> -       }
+> -
+>         i = cpufreq_table_count_valid_entries(policy);
+>         if (!i) {
+>                 pr_debug("%s: CPUFreq table not found or has no valid entries\n",
+> --
+> 2.25.1
+>
 
-diff --git a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-index 47028d7..633887d 100644
---- a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscc.yaml
-@@ -36,13 +36,11 @@ properties:
-     items:
-       - description: LPASS qdsp6ss register
-       - description: LPASS top-cc register
--      - description: LPASS cc register
- 
-   reg-names:
-     items:
-       - const: qdsp6ss
-       - const: top_cc
--      - const: cc
- 
- required:
-   - compatible
-@@ -59,8 +57,8 @@ examples:
-     #include <dt-bindings/clock/qcom,lpass-sc7280.h>
-     clock-controller@3000000 {
-       compatible = "qcom,sc7280-lpasscc";
--      reg = <0x03000000 0x40>, <0x03c04000 0x4>, <0x03389000 0x24>;
--      reg-names = "qdsp6ss", "top_cc", "cc";
-+      reg = <0x03000000 0x40>, <0x03c04000 0x4>;
-+      reg-names = "qdsp6ss", "top_cc";
-       clocks = <&gcc GCC_CFG_NOC_LPASS_CLK>;
-       clock-names = "iface";
-       #clock-cells = <1>;
-diff --git a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-index bad9135..5ccfb24 100644
---- a/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-+++ b/Documentation/devicetree/bindings/clock/qcom,sc7280-lpasscorecc.yaml
-@@ -41,6 +41,12 @@ properties:
-   reg:
-     maxItems: 1
- 
-+  qcom,adsp-pil-mode:
-+    description:
-+      Indicates if the LPASS would be brought out of reset using
-+      peripheral loader.
-+    type: boolean
-+
- required:
-   - compatible
-   - reg
-@@ -165,6 +171,7 @@ examples:
-       clocks = <&rpmhcc RPMH_CXO_CLK>, <&rpmhcc RPMH_CXO_CLK_A>,
-                <&lpasscore LPASS_CORE_CC_CORE_CLK>;
-       clock-names = "bi_tcxo", "bi_tcxo_ao","iface";
-+      qcom,adsp-pil-mode;
-       #clock-cells = <1>;
-       #power-domain-cells = <1>;
-     };
--- 
-2.7.4
-
+THanks!
