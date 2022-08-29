@@ -2,98 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61444ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A4FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:32:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbiH2O2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
+        id S229774AbiH2OcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229942AbiH2O2g (ORCPT
+        with ESMTP id S229536AbiH2Ob7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:28:36 -0400
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4732580506;
-        Mon, 29 Aug 2022 07:28:35 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-33dba2693d0so199252067b3.12;
-        Mon, 29 Aug 2022 07:28:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=ovyPCToe6BVA5wXFC3JUJSrlO9UUVb1qRsKDJHgKKqE=;
-        b=6kh/AVjxxdJTmUFsbxpfVSpW61bXhJpjNAbuDFFJTZMMD7cYzj9nbQWUTmkV66Y9J/
-         19T80WoHSe8OFM7aINMyTl7IMvyo8td/OVPi3dj23OK0924DDujQm2vITNgFFLh9eNjx
-         Tlh9zRv7Tl1CIGPuhIC474/+vI6QukgXTDUUok3Aidk3MLijer7GCnPTnXlRL+2DdQzj
-         rMyx3olRUwG8bmdbesfpP8U/nHtRxF9iRhlBc8q1ubavQCW15BvZ16f111/nYVWyc0mu
-         hjX+yek9XyHNGJqh+o55IlQhgT2m9gVRyeYR6jEhUNweB7nsH0yFkccq2kJisk4ATl5A
-         nqew==
-X-Gm-Message-State: ACgBeo35oPTVq7oj0EZ9BWfiVM45edM6DDyoe5s6nngRT112MjopQsuP
-        eqXty8RueZ9uZc8NMyoEKmY7OEeXjH1cwurXNyo=
-X-Google-Smtp-Source: AA6agR7zGiWHBCQf7pqrdzWTLjt4WSzzJAkMRrjSA4V53lEUhjr73CQ04lwxNHcthHySeAujiMshtqi15GVgfvtgoVc=
-X-Received: by 2002:a25:8d84:0:b0:695:836a:fcaf with SMTP id
- o4-20020a258d84000000b00695836afcafmr8479720ybl.633.1661783314497; Mon, 29
- Aug 2022 07:28:34 -0700 (PDT)
+        Mon, 29 Aug 2022 10:31:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71E68F964
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:31:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C70CB810A1
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:31:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B28C433C1;
+        Mon, 29 Aug 2022 14:31:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661783515;
+        bh=KXyavkK9jmchKS7BM+QIziwxtNYM2+lbxNBUUd3PHyM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pA/7OOQUY7XbeE1en6O+TKcX7NVXmCgSUo0LFicvnYUdsGNwOxmQyJYCf3dPiZGPq
+         x4Scu4HcCVz/Gsqim3s73gcMswgBBN+ZePPcmKiUd/rjj8Zlz36TpZOjeLNO+yhcVa
+         z5VNUAVpZw6cQkITOzrXbR6az7CHVc1x/IGCgl63fLTbUJ0R9Q1KXjjMoOM9QvesJg
+         43Tewm0guxDD6hw4uI+87G4+Y/MoaIgKizEfB7U2xx952E6nntJyEC6UArWKCTyk/e
+         0RnVCmmOg+D1u0LzKx8dh5pnr4FHFtqLsX3pT0U8Qm9Q5FnMuSRxQjmcN9fDMo7yv7
+         vM9/oezVpYc3Q==
+Date:   Mon, 29 Aug 2022 17:31:37 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Ard Biesheuvel <ardb@kernel.org>, kexec@lists.infradead.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Guanghui Feng <guanghuifeng@linux.alibaba.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, Mike Rapoport <mike.rapoport@gmail.com>
+Subject: Re: [PATCH 0/5] arm64/mm: remap crash kernel with base pages even if
+ rodata_full disabled
+Message-ID: <YwzNyVH8FB374In5@kernel.org>
+References: <20220819041156.873873-1-rppt@kernel.org>
+ <YwcmKAink5XvoaTe@MiWiFi-R3L-srv>
+ <YwcpRQvNErbTq1XB@kernel.org>
+ <YwspSc83XveXSFnW@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-References: <20220829141100.63934-1-andriy.shevchenko@linux.intel.com> <20220829141100.63934-4-andriy.shevchenko@linux.intel.com>
-In-Reply-To: <20220829141100.63934-4-andriy.shevchenko@linux.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 29 Aug 2022 16:28:23 +0200
-Message-ID: <CAJZ5v0jtk0SBz6X3cwpKbckhGdmGE39Ynd94M5C8c4RvqVWQ=A@mail.gmail.com>
-Subject: Re: [PATCH v1 4/4] ACPI: platform: Keep list of ACPI IDs sorted
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwspSc83XveXSFnW@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 4:10 PM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> For better maintenance keep list of the ACPI IDs sorted.
-> While at it, replace terminator with more standard '{ }'.
->
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Sun, Aug 28, 2022 at 04:37:29PM +0800, Baoquan He wrote:
+> On 08/25/22 at 10:48am, Mike Rapoport wrote:
+> ...... 
+> > > > There were several rounds of discussion how to remap with base pages only
+> > > > the crash kernel area, the latest one here:
+> > > > 
+> > > > https://lore.kernel.org/all/1656777473-73887-1-git-send-email-guanghuifeng@linux.alibaba.com
+> > > > 
+> > > > and this is my attempt to allow having both large pages in the linear map
+> > > > and protection for the crash kernel memory.
+> > > > 
+> > > > For server systems it is important to protect crash kernel memory for
+> > > > post-mortem analysis, and for that protection to work the crash kernel
+> > > > memory should be mapped with base pages in the linear map. 
+> > > > 
+> > > > On the systems with ZONE_DMA/DMA32 enabled, crash kernel reservation
+> > > > happens after the linear map is created and the current code forces using
+> > > > base pages for the entire linear map, which results in performance
+> > > > degradation.
+> > > > 
+> > > > These patches enable remapping of the crash kernel area with base pages
+> > > > while keeping large pages in the rest of the linear map.
+> > > > 
+> > > > The idea is to align crash kernel reservation to PUD boundaries, remap that
+> > > > PUD and then free the extra memory.
+> > > 
+> > > Hi Mike,
+> > > 
+> > > Thanks for the effort to work on this issue. While I have to say this
+> > > isnt's good because it can only be made relying on a prerequisite that
+> > > there's big enough memory. If on a system, say 2G memory, it's not easy
+> > > to succeed on getting one 1G memory. While we only require far smaller
+> > > region than 1G, e.g about 200M which should be easy to get. So the way
+> > > taken in this patchset is too quirky and will cause regression on
+> > > systemswith small memory. This kind of sytems with small memory exists
+> > > widely on virt guest instance.
+> > 
+> > I don't agree there is a regression. If the PUD-aligned allocation fails,
+> > there is a fallback to the allocation of the exact size requested for crash
+> > kernel. This allocation just won't get protected.
+> 
+> Sorry, I misunderstood it. I just went through the log and didn't
+> look into codes.
+> 
+> But honestly, if we accept the fallback which doesn't do the protection,
+> we should be able to take off the protection completely, right?
+> Otherwise, the reservation code is a little complicated.
 
-Subject: ACPI: platform: Sort forbidden_id_list[] in ascending order
+We don't do protection of the crash kernel for most architectures
+supporting kexec ;-)
 
-Changelog:
+My goal was to allow large systems with ZONE_DMA/DMA32 have block mappings
+in the linear map and crash kernel protection without breaking backward
+compatibility for the existing systems.
 
-"For easier maintenance, sort the forbidden_id_list[] table rows in
-ascending order with respect to the device ID field.
+> > Also please note, that the changes are only for the case when user didn't
+> > force base-size pages in the linear map, so anything that works now will
+> > work the same way with this set applied.
+> >  
+> > > The crashkernel reservation happens after linear map because the
+> > > reservation needs to know the dma zone boundary, arm64_dma_phys_limit.
+> > > If we can deduce that before bootmem_init(), the reservation can be
+> > > done before linear map. I will make an attempt on that. If still can't
+> > > be accepted, we would like to take off the crashkernel region protection
+> > > on arm64 for now.
+> > 
+> > I doubt it would be easy because arm64_dma_phys_limit is determined after
+> > parsing of the device tree and there might be memory allocations of
+> > possibly unmapped memory during the parsing.
+> 
+> I have sent out the patches with an attempt, it's pretty straightforward
+> and simple. Because arm64 only has one exception, namely Raspberry Pi 4,
+> on which some peripherals can only address 30bit range. That is a corner
+> case, to be honest. And kdump is a necessary feature on server, but may
+> not be so expected on Raspberry Pi 4, a system for computer education
+> and hobbyists. And kdump only cares whether the dump target devices can
+> address 32bit range, namely storage device or network card on server.
+> If finally confirmed that storage devices can only address 30bit range
+> on Raspberry Pi 4, people still can have crashkernel=xM@yM method to
+> reserve crashkernel regions.
 
-While at it, use an empty row as the list terminator, which is more
-usual in the kernel."
+I hope you are right and Raspberry Pi 4 is the only system that limits
+DMA'able range to 30 bits. But with diversity of arm64 chips and boards I
+won't be surprised that there are other variants with a similar problem.
+ 
+> Thanks
+> Baoquan
+> 
 
-Pretty please.
-
-> ---
->  drivers/acpi/acpi_platform.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/acpi/acpi_platform.c b/drivers/acpi/acpi_platform.c
-> index 0d812fe248d4..f13409583cd9 100644
-> --- a/drivers/acpi/acpi_platform.c
-> +++ b/drivers/acpi/acpi_platform.c
-> @@ -20,13 +20,13 @@
->  #include "internal.h"
->
->  static const struct acpi_device_id forbidden_id_list[] = {
-> +       {"ACPI0009", 0},        /* IOxAPIC */
-> +       {"ACPI000A", 0},        /* IOAPIC */
->         {"PNP0000",  0},        /* PIC */
->         {"PNP0100",  0},        /* Timer */
->         {"PNP0200",  0},        /* AT DMA Controller */
-> -       {"ACPI0009", 0},        /* IOxAPIC */
-> -       {"ACPI000A", 0},        /* IOAPIC */
->         {"SMB0001",  0},        /* ACPI SMBUS virtual device */
-> -       {"", 0},
-> +       { }
->  };
->
->  static struct platform_device *acpi_platform_device_find_by_companion(struct acpi_device *adev)
-> --
+-- 
+Sincerely yours,
+Mike.
