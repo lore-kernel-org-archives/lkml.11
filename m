@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FC7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0674ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232083AbiH2L1e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:27:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46528 "EHLO
+        id S232099AbiH2L1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:27:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231947AbiH2LZH (ORCPT
+        with ESMTP id S231996AbiH2LZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:25:07 -0400
+        Mon, 29 Aug 2022 07:25:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF92576950;
-        Mon, 29 Aug 2022 04:15:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94CA776960;
+        Mon, 29 Aug 2022 04:15:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E920CB80EF1;
-        Mon, 29 Aug 2022 11:15:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47C80C433C1;
-        Mon, 29 Aug 2022 11:15:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 044F1B80F92;
+        Mon, 29 Aug 2022 11:15:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F29C433D6;
+        Mon, 29 Aug 2022 11:15:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771734;
-        bh=3AoSf6ze2PGTgdoZLGXS/+OPIkz73Qm/06jeIGaf8KA=;
+        s=korg; t=1661771740;
+        bh=MSbtcP4DVTBwTKfXt/XLBcPj7KhlA006+k6U4WaCZTc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0DrbJ4NThLI75xdFEpLos3QCa1uTOgG8js8renNGswc6rcUqje4+q4bGPLsWsw2dt
-         kWojplIW+wX9XDyWxQmWPjDJaRglqAICIc39DKD8tbwChTsltk4VBfu/DXHX9lOUDq
-         wyT2IvgPOfXXqhjccWEsZM3WRIIToCh5C1NIXBS4=
+        b=cAk2zwprJyvy/KgIc8UR4eBgpmF8RDZaS/LgnzQuQOxE9ThXVl4dE0JdNAiD41d2l
+         qu8WGm4GtENRew9LhsGH9j7kdzLbED2JaOxy1BLwWxmQlSnQqpTRJQidrxATNqU6FD
+         Vk5XVLpfBg+ocH1lxEuwnTq8IHk8+ZGHOVyDxJfs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Saurabh Sengar <ssengar@linux.microsoft.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 85/86] scsi: storvsc: Remove WQ_MEM_RECLAIM from storvsc_error_wq
-Date:   Mon, 29 Aug 2022 12:59:51 +0200
-Message-Id: <20220829105800.005902500@linuxfoundation.org>
+        stable@vger.kernel.org, Jonathan Toppins <jtoppins@redhat.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 047/158] bonding: 802.3ad: fix no transmission of LACPDUs
+Date:   Mon, 29 Aug 2022 12:58:17 +0200
+Message-Id: <20220829105810.727094410@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,67 +50,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurabh Sengar <ssengar@linux.microsoft.com>
+From: Jonathan Toppins <jtoppins@redhat.com>
 
-commit d957e7ffb2c72410bcc1a514153a46719255a5da upstream.
+[ Upstream commit d745b5062ad2b5da90a5e728d7ca884fc07315fd ]
 
-storvsc_error_wq workqueue should not be marked as WQ_MEM_RECLAIM as it
-doesn't need to make forward progress under memory pressure.  Marking this
-workqueue as WQ_MEM_RECLAIM may cause deadlock while flushing a
-non-WQ_MEM_RECLAIM workqueue.  In the current state it causes the following
-warning:
+This is caused by the global variable ad_ticks_per_sec being zero as
+demonstrated by the reproducer script discussed below. This causes
+all timer values in __ad_timer_to_ticks to be zero, resulting
+in the periodic timer to never fire.
 
-[   14.506347] ------------[ cut here ]------------
-[   14.506354] workqueue: WQ_MEM_RECLAIM storvsc_error_wq_0:storvsc_remove_lun is flushing !WQ_MEM_RECLAIM events_freezable_power_:disk_events_workfn
-[   14.506360] WARNING: CPU: 0 PID: 8 at <-snip->kernel/workqueue.c:2623 check_flush_dependency+0xb5/0x130
-[   14.506390] CPU: 0 PID: 8 Comm: kworker/u4:0 Not tainted 5.4.0-1086-azure #91~18.04.1-Ubuntu
-[   14.506391] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.1 05/09/2022
-[   14.506393] Workqueue: storvsc_error_wq_0 storvsc_remove_lun
-[   14.506395] RIP: 0010:check_flush_dependency+0xb5/0x130
-		<-snip->
-[   14.506408] Call Trace:
-[   14.506412]  __flush_work+0xf1/0x1c0
-[   14.506414]  __cancel_work_timer+0x12f/0x1b0
-[   14.506417]  ? kernfs_put+0xf0/0x190
-[   14.506418]  cancel_delayed_work_sync+0x13/0x20
-[   14.506420]  disk_block_events+0x78/0x80
-[   14.506421]  del_gendisk+0x3d/0x2f0
-[   14.506423]  sr_remove+0x28/0x70
-[   14.506427]  device_release_driver_internal+0xef/0x1c0
-[   14.506428]  device_release_driver+0x12/0x20
-[   14.506429]  bus_remove_device+0xe1/0x150
-[   14.506431]  device_del+0x167/0x380
-[   14.506432]  __scsi_remove_device+0x11d/0x150
-[   14.506433]  scsi_remove_device+0x26/0x40
-[   14.506434]  storvsc_remove_lun+0x40/0x60
-[   14.506436]  process_one_work+0x209/0x400
-[   14.506437]  worker_thread+0x34/0x400
-[   14.506439]  kthread+0x121/0x140
-[   14.506440]  ? process_one_work+0x400/0x400
-[   14.506441]  ? kthread_park+0x90/0x90
-[   14.506443]  ret_from_fork+0x35/0x40
-[   14.506445] ---[ end trace 2d9633159fdc6ee7 ]---
+To reproduce:
+Run the script in
+`tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh` which
+puts bonding into a state where it never transmits LACPDUs.
 
-Link: https://lore.kernel.org/r/1659628534-17539-1-git-send-email-ssengar@linux.microsoft.com
-Fixes: 436ad9413353 ("scsi: storvsc: Allow only one remove lun work item to be issued per lun")
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+line 44: ip link add fbond type bond mode 4 miimon 200 \
+            xmit_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
+setting bond param: ad_actor_sys_prio
+given:
+    params.ad_actor_system = 0
+call stack:
+    bond_option_ad_actor_sys_prio()
+    -> bond_3ad_update_ad_actor_settings()
+       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
+       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
+            params.ad_actor_system == 0
+results:
+     ad.system.sys_mac_addr = bond->dev->dev_addr
+
+line 48: ip link set fbond address 52:54:00:3B:7C:A6
+setting bond MAC addr
+call stack:
+    bond->dev->dev_addr = new_mac
+
+line 52: ip link set fbond type bond ad_actor_sys_prio 65535
+setting bond param: ad_actor_sys_prio
+given:
+    params.ad_actor_system = 0
+call stack:
+    bond_option_ad_actor_sys_prio()
+    -> bond_3ad_update_ad_actor_settings()
+       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
+       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
+            params.ad_actor_system == 0
+results:
+     ad.system.sys_mac_addr = bond->dev->dev_addr
+
+line 60: ip link set veth1-bond down master fbond
+given:
+    params.ad_actor_system = 0
+    params.mode = BOND_MODE_8023AD
+    ad.system.sys_mac_addr == bond->dev->dev_addr
+call stack:
+    bond_enslave
+    -> bond_3ad_initialize(); because first slave
+       -> if ad.system.sys_mac_addr != bond->dev->dev_addr
+          return
+results:
+     Nothing is run in bond_3ad_initialize() because dev_addr equals
+     sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
+     never initialized anywhere else.
+
+The if check around the contents of bond_3ad_initialize() is no longer
+needed due to commit 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings
+changes immediately") which sets ad.system.sys_mac_addr if any one of
+the bonding parameters whos set function calls
+bond_3ad_update_ad_actor_settings(). This is because if
+ad.system.sys_mac_addr is zero it will be set to the current bond mac
+address, this causes the if check to never be true.
+
+Fixes: 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings changes immediately")
+Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/storvsc_drv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/bonding/bond_3ad.c | 38 ++++++++++++++--------------------
+ 1 file changed, 16 insertions(+), 22 deletions(-)
 
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -1997,7 +1997,7 @@ static int storvsc_probe(struct hv_devic
- 	 */
- 	host_dev->handle_error_wq =
- 			alloc_ordered_workqueue("storvsc_error_wq_%d",
--						WQ_MEM_RECLAIM,
-+						0,
- 						host->host_no);
- 	if (!host_dev->handle_error_wq) {
- 		ret = -ENOMEM;
+diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
+index d7fb33c078e81..1f0120cbe9e80 100644
+--- a/drivers/net/bonding/bond_3ad.c
++++ b/drivers/net/bonding/bond_3ad.c
+@@ -2007,30 +2007,24 @@ void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
+  */
+ void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
+ {
+-	/* check that the bond is not initialized yet */
+-	if (!MAC_ADDRESS_EQUAL(&(BOND_AD_INFO(bond).system.sys_mac_addr),
+-				bond->dev->dev_addr)) {
+-
+-		BOND_AD_INFO(bond).aggregator_identifier = 0;
+-
+-		BOND_AD_INFO(bond).system.sys_priority =
+-			bond->params.ad_actor_sys_prio;
+-		if (is_zero_ether_addr(bond->params.ad_actor_system))
+-			BOND_AD_INFO(bond).system.sys_mac_addr =
+-			    *((struct mac_addr *)bond->dev->dev_addr);
+-		else
+-			BOND_AD_INFO(bond).system.sys_mac_addr =
+-			    *((struct mac_addr *)bond->params.ad_actor_system);
++	BOND_AD_INFO(bond).aggregator_identifier = 0;
++	BOND_AD_INFO(bond).system.sys_priority =
++		bond->params.ad_actor_sys_prio;
++	if (is_zero_ether_addr(bond->params.ad_actor_system))
++		BOND_AD_INFO(bond).system.sys_mac_addr =
++		    *((struct mac_addr *)bond->dev->dev_addr);
++	else
++		BOND_AD_INFO(bond).system.sys_mac_addr =
++		    *((struct mac_addr *)bond->params.ad_actor_system);
+ 
+-		/* initialize how many times this module is called in one
+-		 * second (should be about every 100ms)
+-		 */
+-		ad_ticks_per_sec = tick_resolution;
++	/* initialize how many times this module is called in one
++	 * second (should be about every 100ms)
++	 */
++	ad_ticks_per_sec = tick_resolution;
+ 
+-		bond_3ad_initiate_agg_selection(bond,
+-						AD_AGGREGATOR_SELECTION_TIMER *
+-						ad_ticks_per_sec);
+-	}
++	bond_3ad_initiate_agg_selection(bond,
++					AD_AGGREGATOR_SELECTION_TIMER *
++					ad_ticks_per_sec);
+ }
+ 
+ /**
+-- 
+2.35.1
+
 
 
