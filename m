@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F40ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0373ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230520AbiH2LR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47422 "EHLO
+        id S231384AbiH2LRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbiH2LQe (ORCPT
+        with ESMTP id S231162AbiH2LRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:16:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B15B572B57;
-        Mon, 29 Aug 2022 04:11:06 -0700 (PDT)
+        Mon, 29 Aug 2022 07:17:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD7673927;
+        Mon, 29 Aug 2022 04:11:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7467EB80EFB;
-        Mon, 29 Aug 2022 11:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1302C433C1;
-        Mon, 29 Aug 2022 11:10:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8BBD611F1;
+        Mon, 29 Aug 2022 11:09:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5E91C433C1;
+        Mon, 29 Aug 2022 11:09:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771430;
-        bh=ehXn63Qz8dlTFUnAF41WJpQpbqYXcv2pN+MKa43bwdU=;
+        s=korg; t=1661771350;
+        bh=V9jVGqk7lz1UgihqpJfWjn5UtbbfwutqK2q9IUj0wAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1+a8iRUt+O64u6ydTQ9PKlgPAqL49V3v385+wlOeuVOVhoDgV2kBwdOjwLe89PiDP
-         0Z6PrTI3EeI6/KRI5FvzVgAbtKxSkfJJDiE0lx3AmSe7r/gMjHjyQ17a7459syVNpj
-         lk6rQP3IwR7aPg8Q3OUoaoqbuOITGn+bYKTv/3lA=
+        b=q9GSHAhTGytasI5CrrHQsyQrE41tZaiWx0dvXudvDZU6m8fo40HYTrP4lE2XGydpV
+         mH3LYKt7pZAMyjdP68111yLHBLbGmnf0qRpjM0M5rKQS5IHaJ7kNq7XFRwMTtbPbuS
+         h5XKZ4h7JOJIc1dnacGzfz4zx7ML6Rc7IrLTB+No=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Samuel Greiner <samuel@balkonien.org>,
-        Anand Jain <anand.jain@oracle.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 66/86] btrfs: add info when mount fails due to stale replace target
-Date:   Mon, 29 Aug 2022 12:59:32 +0200
-Message-Id: <20220829105759.250837128@linuxfoundation.org>
+        stable@vger.kernel.org, Qi Duan <qi.duan@amlogic.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 094/136] net: stmmac: work around sporadic tx issue on link-up
+Date:   Mon, 29 Aug 2022 12:59:21 +0200
+Message-Id: <20220829105808.525512557@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,47 +51,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anand Jain <anand.jain@oracle.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-commit f2c3bec215694fb8bc0ef5010f2a758d1906fc2d upstream.
+[ Upstream commit a3a57bf07de23fe1ff779e0fdf710aa581c3ff73 ]
 
-If the replace target device reappears after the suspended replace is
-cancelled, it blocks the mount operation as it can't find the matching
-replace-item in the metadata. As shown below,
+This is a follow-up to the discussion in [0]. It seems to me that
+at least the IP version used on Amlogic SoC's sometimes has a problem
+if register MAC_CTRL_REG is written whilst the chip is still processing
+a previous write. But that's just a guess.
+Adding a delay between two writes to this register helps, but we can
+also simply omit the offending second write. This patch uses the second
+approach and is based on a suggestion from Qi Duan.
+Benefit of this approach is that we can save few register writes, also
+on not affected chip versions.
 
-   BTRFS error (device sda5): replace devid present without an active replace item
+[0] https://www.spinics.net/lists/netdev/msg831526.html
 
-To overcome this situation, the user can run the command
-
-   btrfs device scan --forget <replace target device>
-
-and try the mount command again. And also, to avoid repeating the issue,
-superblock on the devid=0 must be wiped.
-
-   wipefs -a device-path-to-devid=0.
-
-This patch adds some info when this situation occurs.
-
-Reported-by: Samuel Greiner <samuel@balkonien.org>
-Link: https://lore.kernel.org/linux-btrfs/b4f62b10-b295-26ea-71f9-9a5c9299d42c@balkonien.org/T/
-CC: stable@vger.kernel.org # 5.0+
-Signed-off-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bfab27a146ed ("stmmac: add the experimental PCI support")
+Suggested-by: Qi Duan <qi.duan@amlogic.com>
+Suggested-by: Jerome Brunet <jbrunet@baylibre.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Link: https://lore.kernel.org/r/e99857ce-bd90-5093-ca8c-8cd480b5a0a2@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/dev-replace.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c   | 8 ++++++--
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 9 +++++----
+ 2 files changed, 11 insertions(+), 6 deletions(-)
 
---- a/fs/btrfs/dev-replace.c
-+++ b/fs/btrfs/dev-replace.c
-@@ -161,7 +161,7 @@ no_valid_dev_replace_entry_found:
- 		if (btrfs_find_device(fs_info->fs_devices,
- 				      BTRFS_DEV_REPLACE_DEVID, NULL, NULL, false)) {
- 			btrfs_err(fs_info,
--			"replace devid present without an active replace item");
-+"replace without active item, run 'device scan --forget' on the target device");
- 			ret = -EUCLEAN;
- 		} else {
- 			dev_replace->srcdev = NULL;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
+index d1c31200bb911..01d0a14f67520 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
+@@ -258,14 +258,18 @@ EXPORT_SYMBOL_GPL(stmmac_set_mac_addr);
+ /* Enable disable MAC RX/TX */
+ void stmmac_set_mac(void __iomem *ioaddr, bool enable)
+ {
+-	u32 value = readl(ioaddr + MAC_CTRL_REG);
++	u32 old_val, value;
++
++	old_val = readl(ioaddr + MAC_CTRL_REG);
++	value = old_val;
+ 
+ 	if (enable)
+ 		value |= MAC_ENABLE_RX | MAC_ENABLE_TX;
+ 	else
+ 		value &= ~(MAC_ENABLE_TX | MAC_ENABLE_RX);
+ 
+-	writel(value, ioaddr + MAC_CTRL_REG);
++	if (value != old_val)
++		writel(value, ioaddr + MAC_CTRL_REG);
+ }
+ 
+ void stmmac_get_mac_addr(void __iomem *ioaddr, unsigned char *addr,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index b4f83c8655684..2569673559df3 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1083,10 +1083,10 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+ 			       bool tx_pause, bool rx_pause)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+-	u32 ctrl;
++	u32 old_ctrl, ctrl;
+ 
+-	ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
+-	ctrl &= ~priv->hw->link.speed_mask;
++	old_ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
++	ctrl = old_ctrl & ~priv->hw->link.speed_mask;
+ 
+ 	if (interface == PHY_INTERFACE_MODE_USXGMII) {
+ 		switch (speed) {
+@@ -1161,7 +1161,8 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+ 	if (tx_pause && rx_pause)
+ 		stmmac_mac_flow_ctrl(priv, duplex);
+ 
+-	writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
++	if (ctrl != old_ctrl)
++		writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
+ 
+ 	stmmac_mac_set(priv, priv->ioaddr, true);
+ 	if (phy && priv->dma_cap.eee) {
+-- 
+2.35.1
+
 
 
