@@ -2,104 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F00ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75293ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:51:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbiH2LuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
+        id S232991AbiH2LvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbiH2Ltq (ORCPT
+        with ESMTP id S232909AbiH2Luj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:49:46 -0400
-Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323478B2D1;
-        Mon, 29 Aug 2022 04:32:54 -0700 (PDT)
-Received: by mail-pf1-f172.google.com with SMTP id x19so6007856pfr.1;
-        Mon, 29 Aug 2022 04:32:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=pBLLGEGYnktZSeTxTWcGt32QrgAx7yVlLK4MjY1qqhI=;
-        b=ne5d51L9xjEKs7DdRagSRjMWmJdrKnT4+ZCYielLT7zYOqPWHqnyekjpB+s8YssnmY
-         nAkKS48j/zv4Ymbxp2jhiIrh923qqStFaklqrv+MZWXqJIJcGaPKYarg7bScG8de5dXu
-         9TURein/V2qkWEFJzd0rnLAv57JzEC0TaQ0VivabE22ARFpvA9egnaEEcnV2ipBdQsJX
-         ccSx5kMENmqFAGzvXpLCXkYe0tkLPiYtt523YpFL6cnIVTpy58tkOpyEeE8PB9k9JDOZ
-         0rzb+Qbl2zSz5RgKVinchg5gSPsJDejG3W4aAEvbvZV9sBmovj7MAX2UkWsjQILkLQ7E
-         AMyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=pBLLGEGYnktZSeTxTWcGt32QrgAx7yVlLK4MjY1qqhI=;
-        b=GX17oIs3EWn6ieruM3Cm2DS59AhHLKBF0lYDf8WODV1VwjpJ6CMBU7k2DqYUnu6HrP
-         S8nC72snQP6j688eIgvvBNXhI1bAbIRHjJMixuNEh0dqdECaFm8HL8knnDEjPMgAKa0g
-         c0DtspcHz1ao5dyXT7rCyAr/Ij5xyoQXde3b+w8IEau4r+TfZ25iTJhqoQZ4XV8n2Sz+
-         6uiu7hshm93DDC/d+kR3eL7oG537vdDXHZZyP4BYQgtv3HLbjT4y3lVrUgBOzEtU02MS
-         adrJgeLqYn5htHpSeCGj6B5wzuJLi393XmhRVbVp5YUoFQzCLYbfobIUAjs3E8FUfu8u
-         aO6g==
-X-Gm-Message-State: ACgBeo0MD3xy4mWYvKQUvGO5XbCbXVM00b14dsBe8ujjfIf4+B+JbmVV
-        fTNKsFgqs/mR0nmA+ci0ZN5wbE5RwMc=
-X-Google-Smtp-Source: AA6agR5XQyCzNY1WzDhZvKkWUGQF1sEJ7Yb1v2dBNb+sMJjEBq1+LrTNZhd/G+OU17ymO/VRwgp30g==
-X-Received: by 2002:a63:f747:0:b0:429:f993:da06 with SMTP id f7-20020a63f747000000b00429f993da06mr13633553pgk.291.1661772623684;
-        Mon, 29 Aug 2022 04:30:23 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id 126-20020a620484000000b0053617cbe2d2sm6983286pfe.168.2022.08.29.04.30.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 04:30:23 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: cui.jinpeng2@zte.com.cn
-To:     johannes@sipsolutions.net, davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] wifi: nl80211: remove redundant err variable
-Date:   Mon, 29 Aug 2022 11:29:53 +0000
-Message-Id: <20220829112953.267100-1-cui.jinpeng2@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Mon, 29 Aug 2022 07:50:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B5C6DAFF;
+        Mon, 29 Aug 2022 04:33:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5CB861203;
+        Mon, 29 Aug 2022 11:09:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C94BC433C1;
+        Mon, 29 Aug 2022 11:09:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771395;
+        bh=gME/78e9hQfrVHYhlRezufF0jhw1X1/K8CozhJYSbQo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FfvkTe8GiDebE/5VwWHvbAZehIIRipxsjmBeIzyuM9vxns4DBjVH18ZZbPxrM7sQA
+         j1dvbgmGLS/Hno7n/JUeRimN92QsdrWNQpDe70WekhmqksbCki48da6x+wx4FAWsHr
+         xp6VLSo0Wvzxm/l23Z8dzPbpCkn9r7jxmrr2jgDk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 56/86] net: Fix a data-race around netdev_budget.
+Date:   Mon, 29 Aug 2022 12:59:22 +0200
+Message-Id: <20220829105758.836431771@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Return value from rdev_set_mcast_rate() directly instead of
-taking this in another redundant variable.
+[ Upstream commit 2e0c42374ee32e72948559d2ae2f7ba3dc6b977c ]
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+While reading netdev_budget, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
+
+Fixes: 51b0bdedb8e7 ("[NET]: Separate two usages of netdev_max_backlog.")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/nl80211.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index dad88d231d56..4f5e5b763a15 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -11279,7 +11279,6 @@ static int nl80211_set_mcast_rate(struct sk_buff *skb, struct genl_info *info)
- 	struct net_device *dev = info->user_ptr[1];
- 	int mcast_rate[NUM_NL80211_BANDS];
- 	u32 nla_rate;
--	int err;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1ea75768c5b23..c4eb1b666a21c 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6880,7 +6880,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+ 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+ 	unsigned long time_limit = jiffies +
+ 		usecs_to_jiffies(netdev_budget_usecs);
+-	int budget = netdev_budget;
++	int budget = READ_ONCE(netdev_budget);
+ 	LIST_HEAD(list);
+ 	LIST_HEAD(repoll);
  
- 	if (dev->ieee80211_ptr->iftype != NL80211_IFTYPE_ADHOC &&
- 	    dev->ieee80211_ptr->iftype != NL80211_IFTYPE_MESH_POINT &&
-@@ -11298,9 +11297,7 @@ static int nl80211_set_mcast_rate(struct sk_buff *skb, struct genl_info *info)
- 	if (!nl80211_parse_mcast_rate(rdev, mcast_rate, nla_rate))
- 		return -EINVAL;
- 
--	err = rdev_set_mcast_rate(rdev, dev, mcast_rate);
--
--	return err;
-+	return rdev_set_mcast_rate(rdev, dev, mcast_rate);
- }
- 
- static struct sk_buff *
 -- 
-2.25.1
+2.35.1
+
+
 
