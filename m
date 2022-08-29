@@ -2,212 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6892BECAAA2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:37:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C90AAC0502E
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiH2Bh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 21:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S229572AbiH2Bhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 21:37:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiH2BhV (ORCPT
+        with ESMTP id S229574AbiH2Bhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 21:37:21 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4522DABF;
-        Sun, 28 Aug 2022 18:37:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661737040; x=1693273040;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=4/FjezoaiXHprcEjMc9+twx5LJUrFxPWG3o0/MuhRrI=;
-  b=GQaLCqpS+rGFIRdbJmURVqvZ2pmPM57Gsu6xkIdgCXvnZEI6HlUUHu7m
-   GmoQrb0PcIK6pkhgLcXKMR2qGiFNv6eEnVit8nNyjwxxr/jq4VTIrhm2h
-   xWFZEXyIxcKbY3fWA/rtJJPBh3v7THh8XKxQSCZA1VgiERTSAW0rtlqip
-   E25bR/LKytdDEj3tBeXBIcAQwDynabIJTjc5Ca1EoYhK14AfpScDBMGIN
-   nmx7bddGuGHvbQb1hGjqn4b7JSdcosyhZYs1ZdWnN2q/1uQuJ5AppjAtV
-   5MvkRXx7AIjAd6U2f4D6CpzVCte6uCGaJuJjCraJyz58H6QfJyzsyv+tP
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="293530604"
-X-IronPort-AV: E=Sophos;i="5.93,271,1654585200"; 
-   d="scan'208";a="293530604"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 18:37:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,271,1654585200"; 
-   d="scan'208";a="856560441"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga006.fm.intel.com with ESMTP; 28 Aug 2022 18:37:09 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sun, 28 Aug 2022 18:36:56 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sun, 28 Aug 2022 18:36:56 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Sun, 28 Aug 2022 18:36:56 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Sun, 28 Aug 2022 18:36:56 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TFphGBAMLL8ezfEfFEpHq8d1iWtYq/zrY22rKr4561YpMq+bigo442cQwHwwTjPuObL3Bs9YMDGmGYHTOpFrgn6pL5OLc9Lena3k+eFoCsIv+ojBZ1BcmKikaL7EKYnEskZVuouPIkEYSQcAEbT20SQQ6QziWMLMKOyTtvN46wdIMgaPP0NgZJJAti8q9WMT50aFvde74Yi7slf3wmzo13WwPhaAGfU3brVGMPioXrlwMyuZ5OSahy7Y72ZQAnkVJNoeGzYTTYBb/iVL4hZJ/VzzoxKc/fNoLN0mqfOgt22/YPrfh8k9dCCLsg8LA0BUH0VdySu7hVX5QyTor6z5wg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4/FjezoaiXHprcEjMc9+twx5LJUrFxPWG3o0/MuhRrI=;
- b=Ocefg/1VgdGUUX08sFUd0QSEYZtfY97yjxdApGrlCvqP3RGi8H7c+s6oNGlPGbyYtQf2DoadLTX+w/WKW23gFmSGvF31EJSYnx7qizCIhDT7pYPzZ5pvZVUhl6rpl/HQEYHw6rPw0y7J4q39NZ2KMXUzzsr5uohkrC0ym91tSl/lN/NYVJ4PbreK1mYAg/qqPSQrriAuIbfT7tTswhFun7ADQ7QlzXdh4oPg9o5YZkJpaZRjWpPQSYBm2+sQktCnd3z4Vz4PtiybNh5mW7F1HhvibYfPQOCkcvtZuwUK930gCmTnzzptjK5hJC8yqNs5QwxZ6uYQ3/g3NsETnll2Hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BL1PR11MB5978.namprd11.prod.outlook.com (2603:10b6:208:385::18)
- by MWHPR1101MB2335.namprd11.prod.outlook.com (2603:10b6:300:73::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.19; Mon, 29 Aug
- 2022 01:36:53 +0000
-Received: from BL1PR11MB5978.namprd11.prod.outlook.com
- ([fe80::fce1:b229:d351:a708]) by BL1PR11MB5978.namprd11.prod.outlook.com
- ([fe80::fce1:b229:d351:a708%9]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
- 01:36:53 +0000
-From:   "Huang, Kai" <kai.huang@intel.com>
-To:     "jarkko@kernel.org" <jarkko@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>
-CC:     "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "haitao.huang@linux.intel.com" <haitao.huang@linux.intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>
-Subject: Re: [PATCH v2] x86/sgx: Allow exposing EDECCSSA user leaf function to
- KVM guest
-Thread-Topic: [PATCH v2] x86/sgx: Allow exposing EDECCSSA user leaf function
- to KVM guest
-Thread-Index: AQHYsqvDhJ5ikbiH/kmiVdBjKSRam62+/3eAgADHRoCABWOMAA==
-Date:   Mon, 29 Aug 2022 01:36:53 +0000
-Message-ID: <6d6c25b24cd49dfa5901f37f24df854e9125cd16.camel@intel.com>
-References: <20220818023829.1250080-1-kai.huang@intel.com>
-         <YwbrywL9S+XlPzaX@kernel.org> <YweS9QRqaOgH7pNW@google.com>
-In-Reply-To: <YweS9QRqaOgH7pNW@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.44.4 (3.44.4-1.fc36) 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8649fcfd-18b0-4ef3-3c87-08da895ef3b1
-x-ms-traffictypediagnostic: MWHPR1101MB2335:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: dy6qzq6BSdCc+GFVLQ+WLPsZAat2JiHESi11WjrapZ7ph20IqnenTU7A2A3baoC4Ww3g3otTVYaAE2kJzTxzVs9i8/kvZZUwqodtPSXe6L59skIMZ675wzpMTs6o3fZSoFsrcwvwoB7SD2KHG418LwcTdtCV/y1pb9lGDjOdgxcCsfRw1cUF4TLbUdcsrVXnLKZmcZNQiYiJSsbWBOTqppH5zkDmupkEEJ0CoESIdqLsxon27ORqDQlg9YYTAGaMPDYn4E8lCPBy6oWwfWrVSxR2iF+vgA3XFZHUIhEHtfYW1H++vryhzSKpKP+1MdTlxgGOjSuXLTkzAGgk0Oh1nmvqzecrnqVnJwdzG2HXRCvOnYWpZFGUknPMSqvsZWuwQ7Y4fTtDcvzFDCh8VrTV/2DhxBlHot+dLrBsICRL3TZF3GwxTqILsXtOhlZIjNLy0W+vC7sDMLbFFXOT4KLEKQpObIpo4EURS6kX/At3eOgPdrhryzTxWiBxTKjnCuvE1m0VwhJnxj7zWMcXduqFcet15FIqaQBBHNniDh8bpMDrt+eBwv0aqsM6w3BC5GcYqzZkEM4+dcB5Q7X5msTKmF6LeFydLAshnQrlkaIpNQSKi5qEduIAtrk/XwYeVZFcioTlhlBLekaplpImjg9UYQn3l2ZKBuyxzYwkYfMS2Z7cIB4TQMGYqVlSYjDA0/qDNjFiuKGurVG/3F9OrJhuvmKPSychriARsdqjivcQdoEYnQI9kx0LVPvObgu098qjojAVBUkFN/XDHhJKdyd8lQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR11MB5978.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(376002)(39860400002)(346002)(366004)(396003)(86362001)(6512007)(26005)(6486002)(71200400001)(478600001)(6506007)(41300700001)(186003)(122000001)(38100700002)(82960400001)(38070700005)(83380400001)(2616005)(66476007)(66446008)(64756008)(110136005)(66946007)(5660300002)(66556008)(8676002)(8936002)(4326008)(36756003)(316002)(54906003)(2906002)(91956017)(76116006);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?MlE5YTRCZktjVjYwN1gyTzhXVy9FWEVYTmpMMVltUlRWdXJPY01LM2RXWVpj?=
- =?utf-8?B?Y2RRZnZEVis0Z3d1cCsva2d3RXppaHpVaFhCSDh3eGdud0RjN1NTU1hOL2Js?=
- =?utf-8?B?a0I0TWRXSnk3WVc3V0lLZWEwZFpwVHFLSmRuQ1dhS1BIblp0a0VXNU9OV2ZX?=
- =?utf-8?B?cEdnY2tIVDR1Y1RBSGlMdWhLRXk4MDQrZzhFdmx2OTIzWTRIK3pmTUdrYVFM?=
- =?utf-8?B?eGM4QlE1YVNjQVFDMFFsMTcrUTdDYVNnaENrRUFsWlJkZnFyc2E4WTBCVWVm?=
- =?utf-8?B?QVFzVS81NFdkL2ovN2trU05CWlNQcy81eHZlb1RSd1UxdDcyaWxIZVY2YXI2?=
- =?utf-8?B?R3ZXRHJ3T1FhZFQzMElTWHBFSG9zVzVNSE1jNWpMVm1nQkFiTHNoSUVwWGZZ?=
- =?utf-8?B?aVFxclR3cmlYZXduVGNZTUsweHNmNzhSQ2k3aytFVHFlNEhDZ0YrNW9YaHVo?=
- =?utf-8?B?L0dHVjdKK1V1ZDkrZnRHb3dlOWxvU0R4S1hQTFlyU0h6NllSbHRrUTZGSjd0?=
- =?utf-8?B?MFJoZDhHNXhQRUFoU0huNEJHcEhKdDR2UEZ4WVBaTGRsSm5jTFFLTmgyQmVa?=
- =?utf-8?B?cmREVkR5bk0rcklqbjE5VlNYNXBXcjdmT0hrenV3d24rV1lBNGpoSGpDWk9T?=
- =?utf-8?B?ZzJHaE5zeVppSmZ1aDhBekxIcFJIcDQ2RitiSVYwd2JJdFpidmJzc21IbU1G?=
- =?utf-8?B?K0RFMXp6emhRbk5FVkZIMksvbnZwejJSV3VvMVF1djZxMFhTRE43V25Gb05z?=
- =?utf-8?B?eDRSTDBmMVJONCtJTEdBQU1LRC96R1ZPZWMvejRNazBaY2FkQjNWYjhxeGlt?=
- =?utf-8?B?Zytpdkh0RVk2eUdMcTIwTkZ6WGx1bWFuVkNaTlYyR25HYmMyYkZtUnFDTlVD?=
- =?utf-8?B?NzVuN2VNRDB0UGpOMW41Wko4Yjh1dmNDdURWWVBlVFZXR050UGd5QkhYSGFh?=
- =?utf-8?B?YUdCa05rYWdZYkw4VHVkSk5rWk0vdllnOHNDbms4NjRvalFOV3BDMnExU2NC?=
- =?utf-8?B?K09lUjRndVljUVIvY1Y0d2t6aGVsYVkraVFqMnBPR0JKY2kwWmlqdnUzcm1k?=
- =?utf-8?B?VGhIQTQ2M0ZyY1Vka3VFN284UHhaUGE4UkVJbWcyY2NKK2ZTL1FsMHF4TEVL?=
- =?utf-8?B?OWZVY09nMzFWMXhCcmdxY2Q3Vmd0MG94VkIyays3QjdhUlRxbnBTR2pWQlBm?=
- =?utf-8?B?dUlUV3ZtYmFoNW1USnhqdXhhU2dMRklZYkhNZXB0Mys0aFBCV2NXbmxQamlo?=
- =?utf-8?B?UXl5S3FrZ2tzT1dxaG52Y1pFQ0prOE8rOE9VTDgyd3U0Q0hITW1KZ1lDbzlm?=
- =?utf-8?B?Z1JIUUlQWG1rMk5KMzBpU2Z3T3g5ZVVQNGFXM2k0NGxHSzFSSGYvVGFKWnpY?=
- =?utf-8?B?NGFRMzFXZWN0NlNPMkhqRC9vTnJvNjRsRFZkOUdlVlgrR3ZLOU00djlOck5D?=
- =?utf-8?B?VGxLWktCMVJ1RVZJLzZjaGhNWVYxRjNqd0QraEVUa05oVnkwcUtra1lEd1BQ?=
- =?utf-8?B?QktEMDI5VDJDbVdna0xHYitRd3l3WXlLdTROaXg2eG8xeGNBZkp4WVB4WHN4?=
- =?utf-8?B?UmVleUErSStUR0lrOVRMRm9lRStMcWpacEVFSkJzM3hKZE4wampSMlpTekk3?=
- =?utf-8?B?U0o3MU85aVRVV0l3dndFa2FlbWM0YzUxV2VBekkwc09jc0VzNlJvSWFuWTJN?=
- =?utf-8?B?M2U2amNJNE16NzZsRFBGRzJBUHdPbDc4d0tmcmVaTmFmTU90NkFNdTV1OXpU?=
- =?utf-8?B?WFJzTkx4dkFxakc0VTFUcFcwd3NpQU9nWEQyOFlYTmFZdEF5TDBPMUdWbm04?=
- =?utf-8?B?YzVubVRaTnA2d293b3V2bVBPU1FnL3JPRnNCbURFSHdNaFFUeGVsaEFqSWRV?=
- =?utf-8?B?cWFrS2VCNUxMQVRuY0l5V3UxcnYrMjRRd0NqZUljeE1yRmJNa3pJOWJCNnN3?=
- =?utf-8?B?MlVZTDRmdmpKb1FuN3ZyMTJlRHhhNHBTNUNSNEU5QkMyTkhhTkdaaHljNlBX?=
- =?utf-8?B?Y0R3THhuN25wenAyb0ZBckdXTEpMK1E4TkpHU1gyb0p5d1o2T2V4cVBORHdj?=
- =?utf-8?B?RmJiOFA5QXBMdi9hMW1DcjUydURISmxSTTJ3enh3YUVEWEdFVkVLdlVxUzNS?=
- =?utf-8?Q?Jvt1C/rwB7a24Th9MMYPQTkuc?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F19474022CE3714095729557797734CB@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Sun, 28 Aug 2022 21:37:46 -0400
+Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9023E3A4AF;
+        Sun, 28 Aug 2022 18:37:36 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.143])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4MGCgv61xxz6S2jS;
+        Mon, 29 Aug 2022 09:35:55 +0800 (CST)
+Received: from [10.174.176.73] (unknown [10.174.176.73])
+        by APP2 (Coremail) with SMTP id Syh0CgBHmnNbGAxjMj9JAA--.47899S3;
+        Mon, 29 Aug 2022 09:37:33 +0800 (CST)
+Subject: Re: WARNING in md_alloc
+To:     Jiacheng Xu <578001344xu@gmail.com>, linux-kernel@vger.kernel.org,
+        axboe@kernel.dk, martin.petersen@oracle.com, mcgrof@kernel.org
+Cc:     linux-block@vger.kernel.org, "yukuai (C)" <yukuai3@huawei.com>
+References: <CAO4S-meHv6Z-Wr1ZLz6j=i7fWkhPijv0CxE5JOFDWJOFH=C_3w@mail.gmail.com>
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+Message-ID: <cfe10872-1ca5-ff3b-4b9a-d21036c3ebe8@huaweicloud.com>
+Date:   Mon, 29 Aug 2022 09:37:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL1PR11MB5978.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8649fcfd-18b0-4ef3-3c87-08da895ef3b1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2022 01:36:53.4131
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ho6MO7dibVeKz0RwGsXOxbZm6QJglta4h5+lYSXuCJD89cmOwyth1FqJsveqbtjS3sgMBljb/aFrtMWYPEmYsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2335
-X-OriginatorOrg: intel.com
+In-Reply-To: <CAO4S-meHv6Z-Wr1ZLz6j=i7fWkhPijv0CxE5JOFDWJOFH=C_3w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: Syh0CgBHmnNbGAxjMj9JAA--.47899S3
+X-Coremail-Antispam: 1UD129KBjvJXoW3WF1UJr13ZF17Cw15KF1UGFg_yoW3uFy7pr
+        90qrZxCr48tFyUJF48AF1UGF1UJ3y5A3W7Xr1xWr18Z3Wjkw1DGry8Kr4UXrWDGrWDZry2
+        qF1Dt3y0qw1UGaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyEb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+        0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+        Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4CEbIxvr21l42xK82IYc2Ij
+        64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
+        8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE
+        2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42
+        xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
+        c7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU1zuWJUUUUU==
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gVGh1LCAyMDIyLTA4LTI1IGF0IDE1OjE5ICswMDAwLCBTZWFuIENocmlzdG9waGVyc29uIHdy
-b3RlOg0KPiBPbiBUaHUsIEF1ZyAyNSwgMjAyMiwgSmFya2tvIFNha2tpbmVuIHdyb3RlOg0KPiA+
-IE5pdDogc2hvdWxkbid0IGJlIHRoaXMgYmUgeDg2L2t2bT8NCj4gDQo+IEhlaCwgbm8sIGJlY2F1
-c2UgeDg2L2t2bSBpcyB0aGUgc2NvcGUgZm9yIExpbnV4IHJ1bm5pbmcgYXMgYSBLVk0gZ3Vlc3Qs
-IGkuZS4gZm9yDQo+IGNoYW5nZXMgdG8gYXJjaC94ODYva2VybmVsL2t2bS5jLg0KPiANCj4gQnV0
-IHllYWgsICJLVk06IHg4NjoiIG9yIG1heWJlIGV2ZW4gIktWTTogVk1YOiIgd291bGQgYmUgcHJl
-ZmVyYWJsZSBnaXZlbiB0aGF0IGFsbA0KPiBvZiB0aGUgbWVhbmluZ2Z1bCBjaGFuZ2VzIGFyZSBL
-Vk0gc3BlY2lmaWMuDQo+IA0KPiA+IE9uIFRodSwgQXVnIDE4LCAyMDIyIGF0IDAyOjM4OjI5UE0g
-KzEyMDAsIEthaSBIdWFuZyB3cm90ZToNCj4gPiA+IFRoZSBuZXcgQXN5bmNocm9ub3VzIEV4aXQg
-KEFFWCkgbm90aWZpY2F0aW9uIG1lY2hhbmlzbSAoQUVYLW5vdGlmeSkNCj4gPiA+IGFsbG93cyBv
-bmUgZW5jbGF2ZSB0byByZWNlaXZlIGEgbm90aWZpY2F0aW9uIGluIHRoZSBFUkVTVU1FIGFmdGVy
-IHRoZQ0KPiA+ID4gZW5jbGF2ZSBleGl0IGR1ZSB0byBhbiBBRVguICBFREVDQ1NTQSBpcyBhIG5l
-dyBTR1ggdXNlciBsZWFmIGZ1bmN0aW9uDQo+ID4gPiAoRU5DTFVbRURFQ0NTU0FdKSB0byBmYWNp
-bGl0YXRlIHRoZSBBRVggbm90aWZpY2F0aW9uIGhhbmRsaW5nLiAgVGhlIG5ldw0KPiA+ID4gRURF
-Q0NTU0EgaXMgZW51bWVyYXRlZCB2aWEgQ1BVSUQoRUFYPTB4MTIsRUNYPTB4MCk6RUFYWzExXS4N
-Cj4gPiA+IA0KPiA+ID4gQmVzaWRlcyBBbGxvd2luZyByZXBvcnRpbmcgdGhlIG5ldyBBRVgtbm90
-aWZ5IGF0dHJpYnV0ZSB0byBLVk0gZ3Vlc3RzLA0KPiA+ID4gYWxzbyBhbGxvdyByZXBvcnRpbmcg
-dGhlIG5ldyBFREVDQ1NTQSB1c2VyIGxlYWYgZnVuY3Rpb24gdG8gS1ZNIGd1ZXN0cw0KPiA+ID4g
-c28gdGhlIGd1ZXN0IGNhbiBmdWxseSB1dGlsaXplIHRoZSBBRVgtbm90aWZ5IG1lY2hhbmlzbS4N
-Cj4gPiA+IA0KPiA+ID4gU2ltaWxhciB0byBleGlzdGluZyBYODZfRkVBVFVSRV9TR1gxIGFuZCBY
-ODZfRkVBVFVSRV9TR1gyLCBpbnRyb2R1Y2UgYQ0KPiA+ID4gbmV3IHNjYXR0ZXJlZCBYODZfRkVB
-VFVSRV9TR1hfRURFQ0NTU0EgYml0IGZvciB0aGUgbmV3IEVERUNDU1NBLCBhbmQNCj4gPiA+IHJl
-cG9ydCBpdCBpbiBLVk0ncyBzdXBwb3J0ZWQgQ1BVSURzIHNvIHRoZSB1c2Vyc3BhY2UgaHlwZXJ2
-aXNvciAoaS5lLg0KPiA+ID4gUWVtdSkgY2FuIGVuYWJsZSBpdCBmb3IgdGhlIGd1ZXN0Lg0KPiAN
-Cj4gU2lsbHkgbml0LCBidXQgSSdkIHByZWZlciB0byBsZWF2ZSBvZmYgdGhlICJzbyB0aGUgdXNl
-cnNwYWNlIGh5cGVydmlzb3IgLi4uIGNhbg0KPiBlbmFibGUgaXQgZm9yIHRoZSBndWVzdCIuICBV
-c2Vyc3BhY2UgZG9lc24ndCBhY3R1YWxseSBuZWVkIHRvIHdhaXQgZm9yIEtWTSBlbmFibGluZy4N
-Cj4gQXMgbm90ZWQgYmVsb3csIEtWTSBkb2Vzbid0IG5lZWQgdG8gZG8gYW55dGhpbmcgZXh0cmEs
-IGFuZCBLVk0gX2Nhbid0XyBwcmV2ZW50IHRoZQ0KPiBndWVzdCBmcm9tIHVzaW5nIEVERUNDU1NB
-Lg0KDQpJbmRlZWQgS1ZNIGNhbm5vdCBwcmV2ZW50Lg0KDQo+IA0KPiA+ID4gTm90ZSB0aGVyZSdz
-IG5vIGFkZGl0aW9uYWwgZW5hYmxpbmcgd29yayByZXF1aXJlZCB0byBhbGxvdyBndWVzdCB0byB1
-c2UNCj4gPiA+IHRoZSBuZXcgRURFQ0NTU0EuICBLVk0gaXMgbm90IGFibGUgdG8gdHJhcCBFTkNM
-VSBhbnl3YXkuDQo+IA0KPiBBbmQgbWF5YmUgY2FsbCBvdXQgdGhhdCB0aGUgS1ZNICJlbmFibGlu
-ZyIgaXMgbm90IHN0cmljdGx5IG5lY2Vzc2FyeT8gIEFuZCBub3RlDQo+IHRoYXQgdGhlcmUncyBh
-IHZpcnR1YWxpemF0aW9uIGhvbGU/ICBFLmcuDQo+IA0KPiAgIE5vdGUsIG5vIGFkZGl0aW9uYWwg
-S1ZNIGVuYWJsaW5nIGlzIHJlcXVpcmVkIHRvIGFsbG93IHRoZSBndWVzdCB0byB1c2UNCj4gICBF
-REVDQ1NTQSwgaXQncyBpbXBvc3NpYmxlIHRvIHRyYXAgRU5DTFUgKHdpdGhvdXQgY29tcGxldGVs
-eSBwcmV2ZW50aW5nIHRoZQ0KPiAgIGd1ZXN0IGZyb20gdXNpbmcgU0dYKS4gIEFkdmVydGlzZSBF
-REVDQ1NTQSBhcyBzdXBwb3J0ZWQgcHVyZWx5IHNvIHRoYXQNCj4gICB1c2Vyc3BhY2UgZG9lc24n
-dCBuZWVkIHRvIHNwZWNpYWwgY2FzZSBFREVDQ1NTQSwgaS5lLiBkb2Vzbid0IG5lZWQgdG8NCj4g
-ICBtYW51YWxseSBjaGVjayBob3N0IENQVUlELg0KPiANCj4gICBUaGUgaW5hYmlsaXR5IHRvIHRy
-YXAgRU5DTFUgYWxzbyBtZWFucyB0aGF0IEtWTSBjYW4ndCBwcmV2ZW50IHRoZSBndWVzdA0KPiAg
-IGZyb20gdXNpbmcgRURFQ0NTU0EsIGJ1dCB0aGF0IHZpcnR1YWxpemF0aW9uIGhvbGUgaXMgYmVu
-aWduIGFzIGZhciBhcyBLVk0NCj4gICBpcyBjb25jZXJuZWQuICBFREVDQ1NTQSBpcyBzaW1wbHkg
-YSBmYW5jeSB3YXkgdG8gbW9kaWZ5IGludGVybmFsIGVuY2xhdmUNCj4gICBzdGF0ZS4NCg0KVGhh
-bmtzLiAgV2lsbCB1c2UgYWJvdmUuDQoNCg0KLS0gDQpUaGFua3MsDQotS2FpDQoNCg0K
+
+
+在 2022/08/28 22:34, Jiacheng Xu 写道:
+> Hello,
+> 
+> When using modified Syzkaller to fuzz the Linux kernel-5.15.58, the
+> following crash was triggered.
+> 
+> HEAD commit: 568035b01cfb Linux-5.15.58
+> git tree: upstream
+> 
+> console output:
+> https://drive.google.com/file/d/1FU_URJHWwRs2KtNZ26WzxlSGE95DWBxe/view?usp=sharing
+> kernel config: https://drive.google.com/file/d/1wgIUDwP5ho29AM-K7HhysSTfWFpfXYkG/view?usp=sharing
+> syz repro: https://drive.google.com/file/d/1RYMFWOThdDCrjoFgRZrzfzXJP2AjHOLW/view?usp=sharing
+> C reproducer: https://drive.google.com/file/d/1ODU9zL9mWsfjlQJzz4WjS8IfDlvt_68F/view?usp=sharing
+> 
+> Environment:
+> Ubuntu 20.04 on Linux 5.4.0
+> QEMU 4.2.1:
+> qemu-system-x86_64 \
+>    -m 2G \
+>    -smp 2 \
+>    -kernel /home/workdir/bzImage \
+>    -append "console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
+>    -drive file=/home/workdir/stretch.img,format=raw \
+>    -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
+>    -net nic,model=e1000 \
+>    -enable-kvm \
+>    -nographic \
+>    -pidfile vm.pid \
+>    2>&1 | tee vm.log
+> 
+> If you fix this issue, please add the following tag to the commit:
+> Reported-by:  Jiacheng Xu<stitch@zju.edu.cn>
+> 
+> ==========================================================
+> loop7: detected capacity change from 0 to 96
+> NILFS (loop7): broken superblock, retrying with spare superblock
+> (blocksize = 1024)
+> NILFS (loop7): broken superblock, retrying with spare superblock
+> (blocksize = 2048)
+> NILFS (loop7): mounting unchecked fs
+> NILFS (loop7): recovery complete
+> sp0: Synchronizing with TNC
+> FAULT_INJECTION: forcing a failure.
+> name failslab, interval 1, probability 0, space 0, times 1
+> CPU: 2 PID: 7259 Comm: syz-executor Not tainted 5.15.58 #2
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> 1.13.0-1ubuntu1.1 04/01/2014
+> Call Trace:
+>   <TASK>
+>   __dump_stack lib/dump_stack.c:88 [inline]
+>   dump_stack_lvl+0x8b/0xb3 lib/dump_stack.c:106
+>   fail_dump lib/fault-inject.c:52 [inline]
+>   should_fail.cold+0x5/0xa lib/fault-inject.c:146
+>   should_failslab+0x5/0x10 mm/slab_common.c:1337
+>   slab_pre_alloc_hook mm/slab.h:494 [inline]
+>   slab_alloc_node mm/slub.c:3129 [inline]
+>   slab_alloc mm/slub.c:3223 [inline]
+>   kmem_cache_alloc+0x4e/0x820 mm/slub.c:3228
+>   kmem_cache_zalloc include/linux/slab.h:711 [inline]
+>   __kernfs_new_node+0xd4/0x8b0 fs/kernfs/dir.c:593
+>   kernfs_new_node+0x93/0x120 fs/kernfs/dir.c:655
+>   __kernfs_create_file+0x51/0x350 fs/kernfs/file.c:985
+>   sysfs_add_file_mode_ns+0x226/0x540 fs/sysfs/file.c:317
+>   sysfs_create_file_ns+0x131/0x1c0 fs/sysfs/file.c:343
+>   sysfs_create_file include/linux/sysfs.h:607 [inline]
+>   device_create_file+0xe6/0x1d0 drivers/base/core.c:2762
+>   device_add+0x5b0/0x1d40 drivers/base/core.c:3338
+>   device_add_disk+0x2fd/0xf90 block/genhd.c:446
+>   add_disk include/linux/genhd.h:212 [inline]
+>   md_alloc+0x947/0x11c0 drivers/md/md.c:5714
+>   md_probe+0x69/0x70 drivers/md/md.c:5744
+>   blk_request_module+0x111/0x1d0 block/genhd.c:681
+>   blkdev_get_no_open+0x178/0x1e0 block/bdev.c:740
+>   blkdev_get_by_dev block/bdev.c:804 [inline]
+>   blkdev_get_by_dev+0x73/0x900 block/bdev.c:790
+>   swsusp_check+0x97/0x2f0 kernel/power/swap.c:1526
+>   software_resume kernel/power/hibernate.c:977 [inline]
+>   software_resume+0x124/0x230 kernel/power/hibernate.c:912
+>   resume_store+0xf1/0x130 kernel/power/hibernate.c:1179
+>   kobj_attr_store+0x50/0x80 lib/kobject.c:856
+>   sysfs_kf_write+0x110/0x160 fs/sysfs/file.c:139
+>   kernfs_fop_write_iter+0x337/0x500 fs/kernfs/file.c:296
+>   call_write_iter include/linux/fs.h:2087 [inline]
+>   new_sync_write+0x432/0x660 fs/read_write.c:507
+>   vfs_write+0x67a/0xae0 fs/read_write.c:594
+>   ksys_write+0x12d/0x250 fs/read_write.c:647
+>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>   entry_SYSCALL_64_after_hwframe+0x61/0xcb
+> RIP: 0033:0x7f85eaf61dfd
+> Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
+> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+> 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f85e84c9c58 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 00007f85eb0880a0 RCX: 00007f85eaf61dfd
+> RDX: 000000000000fdef RSI: 0000000020002500 RDI: 000000000000000d
+> RBP: 00007f85e84c9c90 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000001a
+> R13: 00007ffe899206df R14: 00007ffe89920880 R15: 00007f85e84c9dc0
+>   </TASK>
+> ------------[ cut here ]------------
+> WARNING: CPU: 2 PID: 7259 at block/genhd.c:544
+> device_add_disk+0x383/0xf90 block/genhd.c:544
+> Modules linked in:
+> CPU: 2 PID: 7259 Comm: syz-executor Not tainted 5.15.58 #2
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> 1.13.0-1ubuntu1.1 04/01/2014
+> RIP: 0010:device_add_disk+0x383/0xf90 block/genhd.c:544
+> Code: 74 08 3c 03 0f 8e 02 0a 00 00 8b 5d 00 bf 03 01 00 00 89 de e8
+> 1e 2b a6 fd 81 fb 03 01 00 00 0f 84 3b 02 00 00 e8 ad 29 a6 fd <0f> 0b
+> 41 bc 01 00 00 00 e8 a0 29 a6 fd 44 89 e0 48 83 c4 38 5b 5d
+> RSP: 0018:ffffc9000826fa08 EFLAGS: 00010246
+> RAX: 0000000000040000 RBX: 0000000000000009 RCX: 0000000000040000
+> RDX: ffffc900018d1000 RSI: ffff888108590000 RDI: 0000000000000002
+> RBP: ffff888104e6e000 R08: ffffffff83d022a3 R09: 0000000000000103
+> R10: 0000000000000005 R11: ffffed1021112187 R12: 00000000fffffff4
+> R13: ffff888108890c00 R14: ffff888104e6e004 R15: ffff888104e6e080
+> FS:  00007f85e84ca700(0000) GS:ffff888063f00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 0000560a42f27150 CR3: 0000000016364000 CR4: 00000000003506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>   <TASK>
+>   add_disk include/linux/genhd.h:212 [inline]
+>   md_alloc+0x947/0x11c0 drivers/md/md.c:5714
+>   md_probe+0x69/0x70 drivers/md/md.c:5744
+>   blk_request_module+0x111/0x1d0 block/genhd.c:681
+>   blkdev_get_no_open+0x178/0x1e0 block/bdev.c:740
+>   blkdev_get_by_dev block/bdev.c:804 [inline]
+>   blkdev_get_by_dev+0x73/0x900 block/bdev.c:790
+>   swsusp_check+0x97/0x2f0 kernel/power/swap.c:1526
+>   software_resume kernel/power/hibernate.c:977 [inline]
+>   software_resume+0x124/0x230 kernel/power/hibernate.c:912
+>   resume_store+0xf1/0x130 kernel/power/hibernate.c:1179
+>   kobj_attr_store+0x50/0x80 lib/kobject.c:856
+>   sysfs_kf_write+0x110/0x160 fs/sysfs/file.c:139
+>   kernfs_fop_write_iter+0x337/0x500 fs/kernfs/file.c:296
+>   call_write_iter include/linux/fs.h:2087 [inline]
+>   new_sync_write+0x432/0x660 fs/read_write.c:507
+>   vfs_write+0x67a/0xae0 fs/read_write.c:594
+>   ksys_write+0x12d/0x250 fs/read_write.c:647
+>   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>   entry_SYSCALL_64_after_hwframe+0x61/0xcb
+> RIP: 0033:0x7f85eaf61dfd
+> Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
+> 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+> 01 f0 ff ff 73 01 c3 48 c7 c1 bc ff ff ff f7 d8 64 89 01 48
+> RSP: 002b:00007f85e84c9c58 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 00007f85eb0880a0 RCX: 00007f85eaf61dfd
+> RDX: 000000000000fdef RSI: 0000000020002500 RDI: 000000000000000d
+> RBP: 00007f85e84c9c90 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000001a
+> R13: 00007ffe899206df R14: 00007ffe89920880 R15: 00007f85e84c9dc0
+>   </TASK>
+> .
+> 
+
+This is just a WARN_ON() that is triggered because memory alloc failure
+is injected. And this is not a problem now that add_disk() has
+appropriate error handling.
+
+Thanks,
+Kuai
+
