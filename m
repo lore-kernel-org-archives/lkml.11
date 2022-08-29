@@ -2,105 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F007AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FDDC0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbiH2Q00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33108 "EHLO
+        id S230207AbiH2Q0v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230431AbiH2Q0R (ORCPT
+        with ESMTP id S229985AbiH2Q0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:26:17 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF1E7CB78
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:26:15 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso15208269pjk.0
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:26:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=sCQOXjIRhx098eyDLNjkm2xdki3mFdMs6DS03OL+UzQ=;
-        b=T7vI8ltKs6VHkcjxGMChvB0qz4gQxcghfiSNIA+cFuVwoLtYAWh6b8UobIkdoA4YDc
-         Zf5a0bQ10JmB8WcLMPTzViqzzQqJro28/TS0rcUdb+k8ijmK4ifk2eSg2ZbvYkybVdal
-         13r160mDvh01BPA8iT5xkP1BcEJT0wfQIPEd+PeRJ97DOViRhqtcbNIeVBh+1OxT9N56
-         H+InE9/40xoewLd7EloYTEl1CJttijMj1QDJ94QwKc6cbJbPoedNB0YokudzHhQyjPRw
-         h/Y6HgZRLPTnIRCR1aEPXe3WjGuQQuAd2f5muIad9Iob7e5qdN1TH3/5XJN1oxkZgdB3
-         3bbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=sCQOXjIRhx098eyDLNjkm2xdki3mFdMs6DS03OL+UzQ=;
-        b=QyCuVfBpbz+DHrD9/IducUaVbfSYawd9n60UZXL3CPzYjv4b89SENEJoLbMqEWt7Gj
-         6gy+71wiiwOReDokgLpou1G0udDzATOlLpT2fiBNdKFKEW31MjNYxcNM9ju5YPXj1BPC
-         w6H2OG55lm1rSjF8yIizzakPyDkXFVIHZ+ytuHRNiimOdGZin8GNOP94OQA3XZvaJIYi
-         DA0Vfwl9uV8l4aNzcEvO1ohRfdCfaq7gEHsix+HVO7YscqIWd7ZpIAB/NREdp2be+BDw
-         rQ/KOGk3hlNG0w54fflYzeCiJV+S3soQu1ZiWfS7SfFY80iCQu43JxjVXR2Nu9jSWzi0
-         yj2g==
-X-Gm-Message-State: ACgBeo3ssj/2J9JQ++IJ/ywIOYnKKSwBoR/662AN0CKXWCD1+zwZskjW
-        ctZCJ3oulvFIVXxVYV0PqJIULozDf7Y=
-X-Google-Smtp-Source: AA6agR4i3guSKlTbUhr4lF4mL1CrpYMiQD+HjyyN8n9KfAi+HUSlAcVEwgfDn4X1JTy68OkE2vbMGQ==
-X-Received: by 2002:a17:902:7582:b0:172:db9d:99de with SMTP id j2-20020a170902758200b00172db9d99demr17305618pll.125.1661790375160;
-        Mon, 29 Aug 2022 09:26:15 -0700 (PDT)
-Received: from localhost.localdomain ([139.177.225.237])
-        by smtp.gmail.com with ESMTPSA id l9-20020a170903244900b0016dbdf7b97bsm7813008pls.266.2022.08.29.09.26.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 09:26:14 -0700 (PDT)
-From:   wuchi <wuchi.zero@gmail.com>
-To:     paul@paul-moore.com, eparis@redhat.com, rgb@redhat.com
-Cc:     linux-audit@redhat.com, linux-kernel@vger.kernel.org
-Subject: [PATCH] audit: use time_after to compare time
-Date:   Tue, 30 Aug 2022 00:26:09 +0800
-Message-Id: <20220829162609.25105-1-wuchi.zero@gmail.com>
-X-Mailer: git-send-email 2.32.1 (Apple Git-133)
+        Mon, 29 Aug 2022 12:26:49 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960C679A7F;
+        Mon, 29 Aug 2022 09:26:43 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id C6634188488E;
+        Mon, 29 Aug 2022 16:26:41 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id BD87425032B7;
+        Mon, 29 Aug 2022 16:26:41 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id B1D6C9EC0002; Mon, 29 Aug 2022 16:26:41 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date:   Mon, 29 Aug 2022 18:26:41 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Nikolay Aleksandrov <razor@blackwall.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
+ extend locked port feature
+In-Reply-To: <Ywzlfzns/vDDiKB1@shredder>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
+ <20220826114538.705433-2-netdev@kapio-technology.com>
+ <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
+ <972663825881d135d19f9e391b2b7587@kapio-technology.com>
+ <Ywzlfzns/vDDiKB1@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <1bfb557cbae4a640b7e042d202c677cb@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using time_{*} macro to compare time is better
+On 2022-08-29 18:12, Ido Schimmel wrote:
+> On Mon, Aug 29, 2022 at 04:02:46PM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-08-27 13:30, Nikolay Aleksandrov wrote:
+>> > On 26/08/2022 14:45, Hans Schultz wrote:
+>> >
+>> > Hi,
+>> > Please add the blackhole flag in a separate patch.
+>> > A few more comments and questions below..
+>> >
+>> 
+>> Hi,
+>> if userspace is to set this flag I think I need to change stuff in
+>> rtnetlink.c, as I will need to extent struct ndmsg with a new u32 
+>> entry as
+>> the old u8 flags is full.
+> 
+> You cannot extend 'struct ndmsg'. That's why 'NDA_FLAGS_EXT' was
+> introduced. See:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2c611ad97a82b51221bb0920cc6cac0b1d4c0e52
+> 
+> 'NTF_EXT_BLACKHOLE' belongs in 'NDA_FLAGS_EXT' like you have it now, 
+> but
+> the kernel should not reject it in br_fdb_add().
+> 
+>> Maybe this is straight forward, but I am not so sure as I don't know 
+>> that
+>> code too well. Maybe someone can give me a hint...?
 
-Signed-off-by: wuchi <wuchi.zero@gmail.com>
----
- kernel/audit.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/audit.c b/kernel/audit.c
-index a75978ae38ad..9bc0b0301198 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -321,7 +321,6 @@ static inline int audit_rate_check(void)
- 	static DEFINE_SPINLOCK(lock);
- 	unsigned long		flags;
- 	unsigned long		now;
--	unsigned long		elapsed;
- 	int			retval	   = 0;
- 
- 	if (!audit_rate_limit) return 1;
-@@ -330,9 +329,8 @@ static inline int audit_rate_check(void)
- 	if (++messages < audit_rate_limit) {
- 		retval = 1;
- 	} else {
--		now     = jiffies;
--		elapsed = now - last_check;
--		if (elapsed > HZ) {
-+		now = jiffies;
-+		if (time_after(now, last_check + HZ)) {
- 			last_check = now;
- 			messages   = 0;
- 			retval     = 1;
-@@ -366,7 +364,7 @@ void audit_log_lost(const char *message)
- 	if (!print) {
- 		spin_lock_irqsave(&lock, flags);
- 		now = jiffies;
--		if (now - last_msg > HZ) {
-+		if (time_after(now, last_msg + HZ)) {
- 			print = 1;
- 			last_msg = now;
- 		}
--- 
-2.20.1
-
+Thanks! I see that I was in trouble there... :D
