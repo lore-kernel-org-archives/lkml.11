@@ -2,94 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B37FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A87ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:08:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbiH2NHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:07:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50796 "EHLO
+        id S230297AbiH2NIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:08:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbiH2NHC (ORCPT
+        with ESMTP id S229978AbiH2NI3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:07:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D004C61F;
-        Mon, 29 Aug 2022 06:01:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 084E2B80EF6;
-        Mon, 29 Aug 2022 13:01:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FC81C433D6;
-        Mon, 29 Aug 2022 13:01:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661778090;
-        bh=IUObhVFnf/go+94ySU+KIag1gPU/B7fwiAeLJv8bfJo=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=L7PjN3FIQuaNrBaUppvluN925RztPoHIcY9oEOZZbgbQdZ7O46Zk2RuLgzJ/WilIw
-         lA777NCE/Vo1gNEmSo4chtrtHkaLvkCSu9SG+1024tt1XJfg18qz4fRLRUSBuRxURc
-         pFTtUB+MnP5nZ4ph7MoRZ9M0g8FoKdnFjwxmI+pG1xy7bL67tOLwpIArS+so7xpNgv
-         Tsn3Z7Tpi9rYShk76i8RyhGHYwOsFJhR/dqi/gfZYqsNZURYGZc/7DV2lFoq3+BkMC
-         I3HdwCrvK5V858lOwkToEs55jvxBMq5jXbaVfvAehgo7aXlN9Td0/jh/NMt4JNet6q
-         IwzATXw2zNfcg==
-From:   Mark Brown <broonie@kernel.org>
-To:     xiangsheng.hou@mediatek.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     robh@kernel.org, linux-kernel@vger.kernel.org,
-        benliang.zhao@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        matthias.bgg@gmail.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org,
-        angelogioacchino.delregno@collabora.com,
-        linux-arm-kernel@lists.infradead.org, bin.zhang@mediatek.com
-In-Reply-To: <20220725120204.10834-1-xiangsheng.hou@mediatek.com>
-References: <20220725120204.10834-1-xiangsheng.hou@mediatek.com>
-Subject: Re: [PATCH V5] dt-bindings: mediatek: Add axi clock in mt8173 dts example
-Message-Id: <166177808821.741330.7788732938491967815.b4-ty@kernel.org>
-Date:   Mon, 29 Aug 2022 14:01:28 +0100
+        Mon, 29 Aug 2022 09:08:29 -0400
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E68A95588;
+        Mon, 29 Aug 2022 06:03:43 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.169])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MGVvZ0KrHzKGDK;
+        Mon, 29 Aug 2022 21:02:02 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP4 (Coremail) with SMTP id gCh0CgB3PY0ruQxjk7hcAA--.5381S4;
+        Mon, 29 Aug 2022 21:03:41 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     song@kernel.org
+Cc:     linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH -next 0/3] md/raid10: reduce lock contention for io
+Date:   Mon, 29 Aug 2022 21:14:59 +0800
+Message-Id: <20220829131502.165356-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: gCh0CgB3PY0ruQxjk7hcAA--.5381S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7GFy3ArW3Xr45Wryxtr1DZFb_yoW8JrWDpa
+        1fGF43ZrsrAw1xZrZxtr4UC3W5J3W0q39xC347G34rAFW5ZFWxXw18JFZ5WFWUXF9aqr17
+        X3WUGr4rGa4UZ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
+        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+        vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IY
+        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
+        xKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
+        67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Jul 2022 20:02:05 +0800, Xiangsheng Hou wrote:
-> For mt8173, it is needed to add the axi clock for dma mode.
-> 
-> Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
-> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> Acked-by: Rob Herring <robh@kernel.org>
->  ---
->  Changes from v4:
->  - none
-> 
-> [...]
+From: Yu Kuai <yukuai3@huawei.com>
 
-Applied to
+patch 1 is a small problem found by code review.
+patch 2 avoid holding resync_lock in fast path.
+patch 3 avoid holding lock in wake_up() in fast path.
 
-   broonie/sound.git for-next
+Test environment:
 
-Thanks!
+Architecture: aarch64
+Cpu: Huawei KUNPENG 920, there are four numa nodes
 
-[1/1] dt-bindings: mediatek: Add axi clock in mt8173 dts example
-      commit: b9320f545e2c91caf2a15f67537ef538928ca6af
+Raid10 initialize:
+mdadm --create /dev/md0 --level 10 --bitmap none --raid-devices 4 /dev/nvme0n1 /dev/nvme1n1 /dev/nvme2n1 /dev/nvme3n1
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+Test cmd:
+fio -name=0 -ioengine=libaio -direct=1 -group_reporting=1 -randseed=2022 -rwmixread=70 -refill_buffers -filename=/dev/md0 -numjobs=16 -runtime=60s -bs=4k -iodepth=256 -rw=randread
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+Test result:
+before this patchset:	2.9 GiB/s
+after this patchset:	6.6 Gib/s
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+Please noted that in kunpeng-920, memory access latency is very bad
+accross nodes compare to local node, and in other architecture
+performance improvement might not be significant.
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+Yu Kuai (3):
+  md/raid10: fix improper BUG_ON() in raise_barrier()
+  md/raid10: convert resync_lock to use seqlock
+  md/raid10: prevent unnecessary calls to wake_up() in fast path
 
-Thanks,
-Mark
+ drivers/md/raid10.c | 88 +++++++++++++++++++++++++++++----------------
+ drivers/md/raid10.h |  2 +-
+ 2 files changed, 59 insertions(+), 31 deletions(-)
+
+-- 
+2.31.1
+
