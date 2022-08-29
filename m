@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 757B4ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 23:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0369ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 23:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229869AbiH2Xsn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 19:48:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
+        id S230012AbiH2Xsq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 19:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229905AbiH2Xrp (ORCPT
+        with ESMTP id S229989AbiH2Xrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 19:47:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61086A722A;
-        Mon, 29 Aug 2022 16:47:01 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5415AA6C6C;
+        Mon, 29 Aug 2022 16:46:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76EA561414;
-        Mon, 29 Aug 2022 23:46:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 467A3C433C1;
-        Mon, 29 Aug 2022 23:46:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9884DB815E2;
+        Mon, 29 Aug 2022 23:46:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3246C43155;
+        Mon, 29 Aug 2022 23:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661816807;
-        bh=QYMLga9CqiAFWS9re24LJM8iwKIx2i4jrQzFcMgOlfM=;
+        s=k20201202; t=1661816799;
+        bh=EVU5NmsfBTMH8Ihcr+TbZu9oO7irjNeV+Eh3Zx85vdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K5F7lfo3mRqFU4of21qbfrfstESkCPU9JxV+BTnJ3NnJZjraNPrnjjvqPbX24hOnZ
-         3a0BIKytZzG1Z3eqZFGaV+ba54R4q9l2zFHPdGqjeTz5q09fGng+F5xQpyK6GU95Qx
-         7S/V7/4bnH8i3kk5EsmdqIPBEd1hLWUyaQf1npRSooR3rfIky+L9YMXbgSd4NdFyW/
-         SxEii5+9TvyPJgIupi4PVTGM2jmIMEFo8S2pmcHRkfUIqHUaTWZglJlNLPvkN4xzYI
-         0YVvtJmaXGZfvqyqriyQGk0QWH9ZnQEAYaIJP3/8MsPpJFI0Vs+UjcWFO6sPqKKPVh
-         0VI7ALuVA7tZw==
+        b=GRqUe1/RVZbQ5Q+kSv2PsqNeAgwLUpCbQKy8vpv3dafEwUcMhQF5DqrY3Zgqif6UK
+         pU0hcJa66a/YlV23TXIMH0ZypAlNOcRjU0f5yxLkMW8DrOhsljVmuSVzxjpdf0qpO9
+         +y9NsYMr1QkuyO9/KxjXhjU/qF6WChyv2sif6XMLgUFuNAWz6JPeI5dqSL0keBcRZi
+         r4MOWYFUYbpyy4LHJAxNujlZdQTgeJYsB595HPj1WUV75YASdk7oBp73ijdGdj/xJm
+         zQH4aW4NtJEVtaQccotNoTp7GP2ewuQFH+cdVTzPwFp1w2PqwKixaDktHdu5advhev
+         sTA9nsIz3yqlA==
 From:   Bjorn Andersson <andersson@kernel.org>
-To:     steev@kali.org
-Cc:     robh+dt@kernel.org, linux-arm-msm@vger.kernel.org,
+To:     linux-arm-msm@vger.kernel.org, luca.weiss@fairphone.com
+Cc:     vkoul@kernel.org, dmaengine@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
         linux-kernel@vger.kernel.org, konrad.dybcio@somainline.org,
-        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        agross@kernel.org
-Subject: Re: [PATCH] arm64: dts: qcom: thinkpad-x13s: Fix firmware location
-Date:   Mon, 29 Aug 2022 18:46:10 -0500
-Message-Id: <166181675971.322065.15985449789465456864.b4-ty@kernel.org>
+        phone-devel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: (subset) [PATCH 0/3] Add GPI DMA support for SM6350
+Date:   Mon, 29 Aug 2022 18:46:01 -0500
+Message-Id: <166181675978.322065.10581898444404760964.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220817231236.3971-1-steev@kali.org>
-References: <20220817231236.3971-1-steev@kali.org>
+In-Reply-To: <20220812082721.1125759-1-luca.weiss@fairphone.com>
+References: <20220812082721.1125759-1-luca.weiss@fairphone.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -51,16 +51,22 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 18:12:36 -0500, Steev Klimaszewski wrote:
-> The firmware for the Lenovo Thinkpad X13s has been submitted, accepted
-> and merged upstream, so update to the correct path.
+On Fri, 12 Aug 2022 10:27:18 +0200, Luca Weiss wrote:
+> This series hooks up GPI DMA support for the SM6350 I2C.
 > 
+> It has been tested using himax,hxcommon driver that I forward-ported
+> from the original vendor kernel on fairphone-fp4 - previously I have
+> used i2c-gpio bitbang in my tree.
 > 
+> This also requires the fix from Robin[0] that has already been
+> accepted into linux-next, otherwise I2C communication fails to work.
+> 
+> [...]
 
 Applied, thanks!
 
-[1/1] arm64: dts: qcom: thinkpad-x13s: Fix firmware location
-      commit: b6a6535b339776d32fa515a18a93b1b317e9b063
+[3/3] arm64: dts: qcom: sm6350: Add GPI DMA nodes
+      commit: 9f0149caf0dc1c1261a612b0653d31d998f80596
 
 Best regards,
 -- 
