@@ -2,83 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D2AAECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EAC5ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiH2Jd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 05:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
+        id S229917AbiH2Jd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 05:33:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229679AbiH2Jd0 (ORCPT
+        with ESMTP id S229679AbiH2Jdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 05:33:26 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6065A806
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:33:25 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Mon, 29 Aug 2022 05:33:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407775C94C;
+        Mon, 29 Aug 2022 02:33:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5BA496601DB2;
-        Mon, 29 Aug 2022 10:33:23 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661765603;
-        bh=TeeiT3sOJD7ti95kUOVN+hHl62A13KKzEUX5gr7qxoY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=bYFXlHfCvVW3d8M5OyGw5U34C40yYrQTineqrlNQhResTqgK8x1QOy66hNAkKka+I
-         Ce4pEa8FljcExBpHQlu0UzWag8PIgelGaquxFPg+ubuTAMptCH2oQYDnv2gPWI9ukt
-         qxDk+jlDmCaIIG8Glg4lWUJfB6oXSYl/un/ZM6vNRp76veV6Bg5ElmQ81PoUP9V97W
-         w8+tQt6OjwFY0VGjaegF6b1yKIp64dxfp3yNHRKtzyIOQORh3/VmZIQbGg8DY02MT8
-         dQxXc6cTH5aUc7hpQnKyqEbsDUaWLWlUZxQ1f6gQ/WrpnJr8ieMIQA2O0J+5cwcJCd
-         JB8bSI7w73KyA==
-Message-ID: <5ef83611-1649-c86b-abd8-dff617993580@collabora.com>
-Date:   Mon, 29 Aug 2022 11:33:20 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC37B60FC6;
+        Mon, 29 Aug 2022 09:33:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9350BC433C1;
+        Mon, 29 Aug 2022 09:33:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661765632;
+        bh=lT0Gv6sCfp7Xa8kCHxUOI7Yq9QfRd2TNlO/WqA0gGLk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OUKJCmW4/I+GLUy1XFmCpQh8lII1juX35mwZ+5ttPVDgD70Ie4Xo6rUYqpGZhZvHh
+         orS7Bnm+NSLdNJMPN2Onn2EEhvdScPiWgVwlI1RlR8TbGIQCl67TtA+TgjUMqdyQ2u
+         nt2fGjIl0Lvob4E7wvH6UIfupSM4E1bWQmI0cgtc=
+Date:   Mon, 29 Aug 2022 11:33:48 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Ondrej Mosnacek <omosnace@redhat.com>,
+        Linux kernel mailing list <linux-kernel@vger.kernel.org>,
+        Linux Stable maillist <stable@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: Re: [PATCH 5.19 145/365] kbuild: dummy-tools: avoid tmpdir leak in
+ dummy gcc
+Message-ID: <YwyH/M+PO8CyRvpM@kroah.com>
+References: <20220823080118.128342613@linuxfoundation.org>
+ <20220823080124.294570326@linuxfoundation.org>
+ <9996285f-5a50-e56a-eb1c-645598381a20@kernel.org>
+ <CAFqZXNv2OvNu7BctW=csNLevgGWyoT1R81ypH8pGoAeo3vd4=w@mail.gmail.com>
+ <71dbe196-a3d4-41f4-a00c-24f8b0222288@kernel.org>
+ <YwxzOTljOcasjqfg@kroah.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 6/6] soc: mediatek: mtk-svs: Use bitfield access macros
- where possible
-Content-Language: en-US
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     roger.lu@mediatek.com, khilman@baylibre.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        nfraprado@collabora.com, kernel@collabora.com
-References: <20220726141653.177948-1-angelogioacchino.delregno@collabora.com>
- <20220726141653.177948-7-angelogioacchino.delregno@collabora.com>
- <fa5f9bc8-f087-02c6-dd31-efa33244bf1b@gmail.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <fa5f9bc8-f087-02c6-dd31-efa33244bf1b@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwxzOTljOcasjqfg@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 25/08/22 15:29, Matthias Brugger ha scritto:
+On Mon, Aug 29, 2022 at 10:05:13AM +0200, Greg Kroah-Hartman wrote:
+> On Mon, Aug 29, 2022 at 09:12:39AM +0200, Jiri Slaby wrote:
+> > On 27. 08. 22, 10:34, Ondrej Mosnacek wrote:
+> > > On Sat, Aug 27, 2022 at 9:51 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> > > > On 23. 08. 22, 10:00, Greg Kroah-Hartman wrote:
+> > > > > From: Ondrej Mosnacek <omosnace@redhat.com>
+> > > > > 
+> > > > > commit aac289653fa5adf9e9985e4912c1d24a3e8cbab2 upstream.
+> > > > > 
+> > > > > When passed -print-file-name=plugin, the dummy gcc script creates a
+> > > > > temporary directory that is never cleaned up. To avoid cluttering
+> > > > > $TMPDIR, instead use a static directory included in the source tree.
+> > > > 
+> > > > This breaks our (SUSE) use of dummy tools (GCC_PLUGINS became =n). I
+> > > > will investigate whether this is stable-only and the root cause later.
+> > > 
+> > > It looks like both the Greg's generated patch and the final stable
+> > > commit (d7e676b7dc6a) are missing the addition of the empty
+> > > plugin-version.h file. It appears in the patch's diffstat, but not in
+> > > the actual diff. The mainline commit does include the empty file
+> > > correctly, so it's likely a bug in the stable cherry pick automation.
+> > 
+> > Right, this fixed the issue for me:
+> > --- a/patches.kernel.org/5.19.4-144-kbuild-dummy-tools-avoid-tmpdir-leak-in-dummy-.patch
+> > +++ b/patches.kernel.org/5.19.4-144-kbuild-dummy-tools-avoid-tmpdir-leak-in-dummy-.patch
+> > @@ -20,6 +20,8 @@ Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> >   scripts/dummy-tools/gcc | 8 ++------
+> >   1 file changed, 2 insertions(+), 6 deletions(-)
+> > 
+> > +diff --git a/scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
+> > b/scripts/dummy-tools/dummy-plugin-dir/include/plugin-version.h
+> > +new file mode 100644
+> >  diff --git a/scripts/dummy-tools/gcc b/scripts/dummy-tools/gcc
+> >  index b2483149bbe5..7db825843435 100755
+> >  --- a/scripts/dummy-tools/gcc
 > 
-> 
-> On 26/07/2022 16:16, AngeloGioacchino Del Regno wrote:
->> In order to enhance readability and safety during registers setup
->> and value retrieval, redefine a few register related macros and
->> convert all open-coded instances of bitfield setting/retrieval
->> to use the FIELD_PREP() and FIELD_GET() macros.
->> While at it, some macros were renamed to further enhance readability.
->>
->> This commit brings no functional changes.
->>
->> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> 
-> Does not apply, would you mind to resend together with 1/6? Thanks!
-> 
+> Ick, looks like a bad interaction between git and quilt, and then back
+> to git.  I'll manually fix this up and push out a new stable release
+> with it.
 
-Hey Matthias,
+Odd, 5.15.y worked just fine, but 5.10.y and 5.19.y did not.
 
-thanks for picking the ones that applied cleanly in the meanwhile.
+I've done a new 5.10 and 5.19 release with this fixed up.  If there are
+still any issues here, please let me know.
 
-I'll rebase this and 1/6 as soon as I can!
+thanks,
 
-Cheers,
-Angelo
+greg k-h
