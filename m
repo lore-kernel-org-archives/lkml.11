@@ -2,172 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7830C54EE9
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:02:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B072AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbiH2LCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
+        id S229969AbiH2LCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230050AbiH2LBz (ORCPT
+        with ESMTP id S230049AbiH2LBz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:01:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7E73DF1D;
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510D42AC5C;
         Mon, 29 Aug 2022 04:01:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70484B80EF1;
-        Mon, 29 Aug 2022 11:01:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB23BC433D6;
-        Mon, 29 Aug 2022 11:01:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770901;
-        bh=7foF926lnwBI6NihxGIkytHW0nt49QkNV+JJmQKSCuo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1/39oh0L5CuId8L3Z8OO81qC8NT4ZUJe3DuAZ/NiismfWpsGRI5zobOVodou4lFMc
-         gMJOQucuqAm1UTq2tCk8ukCzGbgRvC+9n53Vy4PxLSA98hBLGB9l+miRIg0iNtZVBk
-         Yud3E4WiPokF+ckiRVmYCc8M9j2QLNVNdvDxWDQg=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 017/136] Input: i8042 - add additional TUXEDO devices to i8042 quirk tables
-Date:   Mon, 29 Aug 2022 12:58:04 +0200
-Message-Id: <20220829105805.328579631@linuxfoundation.org>
+Received: by mail-pg1-x52b.google.com with SMTP id r69so7388538pgr.2;
+        Mon, 29 Aug 2022 04:01:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=TioeFYjE8HcT3g2Vj0iS9lMouj/gwWFHnvZzq/SpV4U=;
+        b=W89wPTlzGFwuGEyclAjs+gkVcw3yIia/nuLfg8kCAgPcKngXeWGp/LoSHesALiDklj
+         3tWCqPgUq8XJAG+mMPhLGEDVAnX8WYYRruBsPNs/7mmJ46o8IUHBAiIogsFsX1R19jU7
+         iw5YjHKJZPLRcB93p59ppAp2S6oGFL7j7oSquPFUierVItlo9Omif5oisB1YBGPn2Uuk
+         0moPy9A4xsfGVRjH3osJpvJTRtchmm0Ai2rpX2V6+U1HT0kge5Do7nBB2pI9exVObAwZ
+         h18K/bQ8ed7t2kK9U+GcD/IaHR9FdGpYF2nTXVX+GBgIuX8cEXJgiF6L1j5BpkPjEnWr
+         HO6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=TioeFYjE8HcT3g2Vj0iS9lMouj/gwWFHnvZzq/SpV4U=;
+        b=pG4LMvaP5peZggKbrY+vJw/OoiPEmhfxSXdyondIJrnl8pY7dgSqYLFZbiS96UFoio
+         uT69nRzi1qMSnLgLE7GAqL1Ml6FHCVT1V0O6JRw3+51PhWzHaiRPbXZWggfLn4qSM4DA
+         7f4lB8g1GKibA+zeecAgB/iOI9gFOftzJUP58nkaKzmj6j+CETKnFDWXldFNItiyhnB1
+         fpN6Mxl8u6k0jWJZjXhwWzirISidr1L5ZKKmw5X/zk0dKfL+0wgVb6NKi067vBF4mewX
+         Sbbswf6Ximiqri2ziez2Zn5MrYyRCJMKkevdnx1fWd/tALZIdJ8nc+5hO9eW/1H4cJs+
+         sPEA==
+X-Gm-Message-State: ACgBeo1kiMfiH+l3AcFPhTwFJXHUGQxVXoKqy8hxO+Zc26Onj6uX11n0
+        e0F5G/NAQOY6TVIUpFgUT6g=
+X-Google-Smtp-Source: AA6agR5UdxPs77+zOqXyVnTbr4j64rU9PoGQmXpUq5i9KUoe+KNFlsNOrC+Dj/Jimt3EjeF3/hfZwg==
+X-Received: by 2002:a63:2a49:0:b0:41d:95d8:3d3d with SMTP id q70-20020a632a49000000b0041d95d83d3dmr13365765pgq.43.1661770902812;
+        Mon, 29 Aug 2022 04:01:42 -0700 (PDT)
+Received: from fanta-arch.localdomain ([2406:da14:61c:6101:4112:4d1:fe7:5105])
+        by smtp.gmail.com with ESMTPSA id x187-20020a6263c4000000b0052dc12cded3sm6834387pfb.196.2022.08.29.04.01.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 04:01:42 -0700 (PDT)
+From:   Letu Ren <fantasquex@gmail.com>
+To:     aradford@gmail.com, jejb@linux.ibm.com, martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Letu Ren <fantasquex@gmail.com>, Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] scsi/3w-9xxx: Avoid disabling device if failing to enable it
+Date:   Mon, 29 Aug 2022 19:01:15 +0800
+Message-Id: <20220829110115.38789-1-fantasquex@gmail.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
-User-Agent: quilt/0.67
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+The original code will goto out_disable_device and `pci_disable_device`
+if `pci_enable_device` fails. Kernel will generate a warning message
+"3w-9xxx 0000:00:05.0: disabling already-disabled device". We shouldn't
+disable a failed to enable device. A simple return is fine.
 
-[ Upstream commit 436d219069628f0f0ed27f606224d4ee02a0ca17 ]
-
-A lot of modern Clevo barebones have touchpad and/or keyboard issues after
-suspend fixable with nomux + reset + noloop + nopnp. Luckily, none of them
-have an external PS/2 port so this can safely be set for all of them.
-
-I'm not entirely sure if every device listed really needs all four quirks,
-but after testing and production use. No negative effects could be
-observed when setting all four.
-
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220708161005.1251929-2-wse@tuxedocomputers.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Letu Ren <fantasquex@gmail.com>
 ---
- drivers/input/serio/i8042-x86ia64io.h | 76 ++++++++++++++++++++++++---
- 1 file changed, 68 insertions(+), 8 deletions(-)
+ drivers/scsi/3w-9xxx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
-index 184d7c30f732f..4b0201cf71f5e 100644
---- a/drivers/input/serio/i8042-x86ia64io.h
-+++ b/drivers/input/serio/i8042-x86ia64io.h
-@@ -900,14 +900,6 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
- 		},
- 		.driver_data = (void *)(SERIO_QUIRK_NOMUX)
- 	},
--	{
--		/* Clevo P650RS, 650RP6, Sager NP8152-S, and others */
--		.matches = {
--			DMI_MATCH(DMI_SYS_VENDOR, "Notebook"),
--			DMI_MATCH(DMI_PRODUCT_NAME, "P65xRP"),
--		},
--		.driver_data = (void *)(SERIO_QUIRK_RESET_ALWAYS)
--	},
- 	{
- 		/* OQO Model 01 */
- 		.matches = {
-@@ -1162,6 +1154,74 @@ static const struct dmi_system_id i8042_dmi_quirk_table[] __initconst = {
- 		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
- 					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
- 	},
-+	{
-+		/*
-+		 * This is only a partial board_name and might be followed by
-+		 * another letter or number. DMI_MATCH however does do partial
-+		 * matching.
-+		 */
-+		.matches = {
-+			DMI_MATCH(DMI_PRODUCT_NAME, "P65xH"),
-+		},
-+		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
-+					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
-+	},
-+	{
-+		/* Clevo P650RS, 650RP6, Sager NP8152-S, and others */
-+		.matches = {
-+			DMI_MATCH(DMI_PRODUCT_NAME, "P65xRP"),
-+		},
-+		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
-+					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
-+	},
-+	{
-+		/*
-+		 * This is only a partial board_name and might be followed by
-+		 * another letter or number. DMI_MATCH however does do partial
-+		 * matching.
-+		 */
-+		.matches = {
-+			DMI_MATCH(DMI_PRODUCT_NAME, "P65_P67H"),
-+		},
-+		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
-+					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
-+	},
-+	{
-+		/*
-+		 * This is only a partial board_name and might be followed by
-+		 * another letter or number. DMI_MATCH however does do partial
-+		 * matching.
-+		 */
-+		.matches = {
-+			DMI_MATCH(DMI_PRODUCT_NAME, "P65_67RP"),
-+		},
-+		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
-+					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
-+	},
-+	{
-+		/*
-+		 * This is only a partial board_name and might be followed by
-+		 * another letter or number. DMI_MATCH however does do partial
-+		 * matching.
-+		 */
-+		.matches = {
-+			DMI_MATCH(DMI_PRODUCT_NAME, "P65_67RS"),
-+		},
-+		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
-+					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
-+	},
-+	{
-+		/*
-+		 * This is only a partial board_name and might be followed by
-+		 * another letter or number. DMI_MATCH however does do partial
-+		 * matching.
-+		 */
-+		.matches = {
-+			DMI_MATCH(DMI_PRODUCT_NAME, "P67xRP"),
-+		},
-+		.driver_data = (void *)(SERIO_QUIRK_NOMUX | SERIO_QUIRK_RESET_ALWAYS |
-+					SERIO_QUIRK_NOLOOP | SERIO_QUIRK_NOPNP)
-+	},
- 	{
- 		.matches = {
- 			DMI_MATCH(DMI_BOARD_NAME, "PB50_70DFx,DDx"),
+diff --git a/drivers/scsi/3w-9xxx.c b/drivers/scsi/3w-9xxx.c
+index cd823ff5deab..6cb9cca9565b 100644
+--- a/drivers/scsi/3w-9xxx.c
++++ b/drivers/scsi/3w-9xxx.c
+@@ -2006,7 +2006,7 @@ static int twa_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
+ 	retval = pci_enable_device(pdev);
+ 	if (retval) {
+ 		TW_PRINTK(host, TW_DRIVER, 0x34, "Failed to enable pci device");
+-		goto out_disable_device;
++		return -ENODEV;
+ 	}
+ 
+ 	pci_set_master(pdev);
 -- 
-2.35.1
-
-
+2.37.2
 
