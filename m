@@ -2,312 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 667D0ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 05:55:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17030ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 05:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229829AbiH2Fzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 01:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
+        id S229868AbiH2F4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 01:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229818AbiH2Fyp (ORCPT
+        with ESMTP id S229846AbiH2Fz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 01:54:45 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BBE48CAD
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 22:54:18 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27T4rTAT022905;
-        Mon, 29 Aug 2022 05:53:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=Ha8EuSzPK2oeG4nS7D/9MJJJ7KXaejCkYhmoD4RYDzs=;
- b=h9aGL3SXNabMPWjjMoRbDv6bVCqtxoipU6+iPnTxjSU9TJOY/UPv/XcwNgManmyHz8C0
- /Wdr6WJdmA4HcplBvlQDP8mwskZVHqCbUtjT6Q+bu+6aNPW8Ty38btnsCoxjTmEc3I/b
- ROZ0/ZxGvsPWWreCuICDEY3/RvH+RCnGHn9bPXTd+UeoD8K05Fp2nqcLKRBS6HyEfDxl
- bqTAHrCO7EusvkdE4VIFdKWSqhTFpMiTIX5vC020fr364khmSZcPaUdN4QMQy7d5sb5L
- 9wFsl4WWx9I5O2A+MMhEO7Y8QOuYtx2zTo7gZv4MJNXrjzZwswA/md1PjKsJiejdFYTZ XA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3j8pu09atg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 05:53:55 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27T5kR7Z002081;
-        Mon, 29 Aug 2022 05:53:55 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3j8pu09asx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 05:53:55 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27T5qLPo008118;
-        Mon, 29 Aug 2022 05:53:53 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma04ams.nl.ibm.com with ESMTP id 3j7aw8sv7d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 05:53:53 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27T5rp4q37814584
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 29 Aug 2022 05:53:51 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E9AC44C046;
-        Mon, 29 Aug 2022 05:53:50 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8AE3A4C040;
-        Mon, 29 Aug 2022 05:53:47 +0000 (GMT)
-Received: from li-c3569c4c-1ef8-11b2-a85c-ee139cda3133.ibm.com.com (unknown [9.43.67.34])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 29 Aug 2022 05:53:47 +0000 (GMT)
-From:   Sathvika Vasireddy <sv@linux.ibm.com>
-To:     linuxppc-dev@lists.ozlabs.org
-Cc:     jpoimboe@redhat.com, peterz@infradead.org,
-        linux-kernel@vger.kernel.org, aik@ozlabs.ru, mpe@ellerman.id.au,
-        mingo@redhat.com, christophe.leroy@csgroup.eu, rostedt@goodmis.org,
-        mbenes@suse.cz, npiggin@gmail.com, chenzhongjin@huawei.com,
-        naveen.n.rao@linux.vnet.ibm.com, sv@linux.ibm.com
-Subject: [PATCH v2 15/16] objtool/powerpc: Enable objtool to be built on ppc
-Date:   Mon, 29 Aug 2022 11:22:22 +0530
-Message-Id: <20220829055223.24767-16-sv@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220829055223.24767-1-sv@linux.ibm.com>
-References: <20220829055223.24767-1-sv@linux.ibm.com>
+        Mon, 29 Aug 2022 01:55:57 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7EBD23162
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 22:55:17 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2E42723A;
+        Sun, 28 Aug 2022 22:55:23 -0700 (PDT)
+Received: from e125579.fritz.box (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BB97C3F766;
+        Sun, 28 Aug 2022 22:55:43 -0700 (PDT)
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+To:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Vincent Donnefort <vdonnefort@google.com>
+Cc:     Quentin Perret <qperret@google.com>,
+        Patrick Bellasi <patrick.bellasi@matbug.net>,
+        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
+        Jian-Min <Jian-Min.Liu@mediatek.com>,
+        Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH 0/1] sched/pelt: Change PELT halflife at runtime
+Date:   Mon, 29 Aug 2022 07:54:49 +0200
+Message-Id: <20220829055450.1703092-1-dietmar.eggemann@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 6FrB6wgoEpQRrPXrCsIzcI-rZfYFMFqw
-X-Proofpoint-ORIG-GUID: gQt7kL1XJ_WmsITEZB5P5zPZrNB-KfWG
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-29_02,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- suspectscore=0 clxscore=1015 lowpriorityscore=0 adultscore=0
- impostorscore=0 spamscore=0 bulkscore=0 mlxscore=0 phishscore=0
- malwarescore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208290026
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds [stub] implementations for required
-functions, inorder to enable objtool build on powerpc.
+Many of the Android devices still prefer to run PELT with a shorter
+halflife than the hardcoded value of 32ms in mainline.
 
-Signed-off-by: Sathvika Vasireddy <sv@linux.ibm.com>
-[Christophe Leroy: powerpc: Add missing asm/asm.h for objtool]
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+The Android folks claim better response time of display pipeline tasks
+(higher min and avg fps for 60, 90 or 120Hz refresh rate). Some of the
+benchmarks like PCmark web-browsing show higher scores when running
+with 16ms or 8ms PELT halflife. The gain in response time and
+performance is considered to outweigh the increase of energy
+consumption in these cases.
+
+The original idea of introducing a PELT halflife compile time option
+for 32, 16, 8ms from Patrick Bellasi in 2018
+https://lkml.kernel.org/r/20180409165134.707-1-patrick.bellasi@arm.com
+wasn't integrated into mainline mainly because of breaking the PELT
+stability requirement (see (1) below).
+
+We have been experimenting with a new idea from Morten Rasmussen to
+instead introduce an additional clock between task and pelt clock. This
+way the effect of a shorter PELT halflife of 8ms or 16ms can be
+achieved by left-shifting the elapsed time. This is similar to the use
+of time shifting of the pelt clock to achieve scale invariance in PELT.
+The implementation is from Vincent Donnefort with some minor
+modifications to align with current tip sched/core.
+
 ---
- arch/powerpc/Kconfig                          |  1 +
- arch/powerpc/include/asm/asm.h                |  7 ++
- tools/objtool/arch/powerpc/Build              |  2 +
- tools/objtool/arch/powerpc/decode.c           | 74 +++++++++++++++++++
- .../arch/powerpc/include/arch/cfi_regs.h      | 11 +++
- tools/objtool/arch/powerpc/include/arch/elf.h |  8 ++
- .../arch/powerpc/include/arch/special.h       | 21 ++++++
- tools/objtool/arch/powerpc/special.c          | 19 +++++
- 8 files changed, 143 insertions(+)
- create mode 100644 arch/powerpc/include/asm/asm.h
- create mode 100644 tools/objtool/arch/powerpc/Build
- create mode 100644 tools/objtool/arch/powerpc/decode.c
- create mode 100644 tools/objtool/arch/powerpc/include/arch/cfi_regs.h
- create mode 100644 tools/objtool/arch/powerpc/include/arch/elf.h
- create mode 100644 tools/objtool/arch/powerpc/include/arch/special.h
- create mode 100644 tools/objtool/arch/powerpc/special.c
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 4c466acdc70d..dc05cd23c233 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -237,6 +237,7 @@ config PPC
- 	select HAVE_MOD_ARCH_SPECIFIC
- 	select HAVE_NMI				if PERF_EVENTS || (PPC64 && PPC_BOOK3S)
- 	select HAVE_OPTPROBES
-+	select HAVE_OBJTOOL			if PPC32 || MPROFILE_KERNEL
- 	select HAVE_PERF_EVENTS
- 	select HAVE_PERF_EVENTS_NMI		if PPC64
- 	select HAVE_PERF_REGS
-diff --git a/arch/powerpc/include/asm/asm.h b/arch/powerpc/include/asm/asm.h
-new file mode 100644
-index 000000000000..86f46b604e9a
---- /dev/null
-+++ b/arch/powerpc/include/asm/asm.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_POWERPC_ASM_H
-+#define _ASM_POWERPC_ASM_H
-+
-+#define _ASM_PTR	" .long "
-+
-+#endif /* _ASM_POWERPC_ASM_H */
-diff --git a/tools/objtool/arch/powerpc/Build b/tools/objtool/arch/powerpc/Build
-new file mode 100644
-index 000000000000..d24d5636a5b8
---- /dev/null
-+++ b/tools/objtool/arch/powerpc/Build
-@@ -0,0 +1,2 @@
-+objtool-y += decode.o
-+objtool-y += special.o
-diff --git a/tools/objtool/arch/powerpc/decode.c b/tools/objtool/arch/powerpc/decode.c
-new file mode 100644
-index 000000000000..8b6a14680da7
---- /dev/null
-+++ b/tools/objtool/arch/powerpc/decode.c
-@@ -0,0 +1,74 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <objtool/check.h>
-+#include <objtool/elf.h>
-+#include <objtool/arch.h>
-+#include <objtool/warn.h>
-+#include <objtool/builtin.h>
-+#include <objtool/endianness.h>
-+
-+unsigned long arch_dest_reloc_offset(int addend)
-+{
-+	return addend;
-+}
-+
-+bool arch_callee_saved_reg(unsigned char reg)
-+{
-+	return false;
-+}
-+
-+int arch_decode_hint_reg(u8 sp_reg, int *base)
-+{
-+	exit(-1);
-+}
-+
-+const char *arch_nop_insn(int len)
-+{
-+	exit(-1);
-+}
-+
-+const char *arch_ret_insn(int len)
-+{
-+	exit(-1);
-+}
-+
-+int arch_decode_instruction(struct objtool_file *file, const struct section *sec,
-+			    unsigned long offset, unsigned int maxlen,
-+			    unsigned int *len, enum insn_type *type,
-+			    unsigned long *immediate,
-+			    struct list_head *ops_list)
-+{
-+	u32 insn;
-+
-+	*immediate = 0;
-+	insn = bswap_if_needed(file->elf, *(u32 *)(sec->data->d_buf + offset));
-+	*len = 4;
-+	*type = INSN_OTHER;
-+
-+	return 0;
-+}
-+
-+unsigned long arch_jump_destination(struct instruction *insn)
-+{
-+	return insn->offset +  insn->immediate;
-+}
-+
-+void arch_initial_func_cfi_state(struct cfi_init_state *state)
-+{
-+	int i;
-+
-+	for (i = 0; i < CFI_NUM_REGS; i++) {
-+		state->regs[i].base = CFI_UNDEFINED;
-+		state->regs[i].offset = 0;
-+	}
-+
-+	/* initial CFA (call frame address) */
-+	state->cfa.base = CFI_SP;
-+	state->cfa.offset = 0;
-+
-+	/* initial LR (return address) */
-+	state->regs[CFI_RA].base = CFI_CFA;
-+	state->regs[CFI_RA].offset = 0;
-+}
-diff --git a/tools/objtool/arch/powerpc/include/arch/cfi_regs.h b/tools/objtool/arch/powerpc/include/arch/cfi_regs.h
-new file mode 100644
-index 000000000000..59638ebeafc8
---- /dev/null
-+++ b/tools/objtool/arch/powerpc/include/arch/cfi_regs.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+
-+#ifndef _OBJTOOL_CFI_REGS_H
-+#define _OBJTOOL_CFI_REGS_H
-+
-+#define CFI_BP 1
-+#define CFI_SP CFI_BP
-+#define CFI_RA 32
-+#define CFI_NUM_REGS 33
-+
-+#endif
-diff --git a/tools/objtool/arch/powerpc/include/arch/elf.h b/tools/objtool/arch/powerpc/include/arch/elf.h
-new file mode 100644
-index 000000000000..3c8ebb7d2a6b
---- /dev/null
-+++ b/tools/objtool/arch/powerpc/include/arch/elf.h
-@@ -0,0 +1,8 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+
-+#ifndef _OBJTOOL_ARCH_ELF
-+#define _OBJTOOL_ARCH_ELF
-+
-+#define R_NONE R_PPC_NONE
-+
-+#endif /* _OBJTOOL_ARCH_ELF */
-diff --git a/tools/objtool/arch/powerpc/include/arch/special.h b/tools/objtool/arch/powerpc/include/arch/special.h
-new file mode 100644
-index 000000000000..ffef9ada7133
---- /dev/null
-+++ b/tools/objtool/arch/powerpc/include/arch/special.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+#ifndef _PPC_ARCH_SPECIAL_H
-+#define _PPC_ARCH_SPECIAL_H
-+
-+#define EX_ENTRY_SIZE 8
-+#define EX_ORIG_OFFSET 0
-+#define EX_NEW_OFFSET 4
-+
-+#define JUMP_ENTRY_SIZE 16
-+#define JUMP_ORIG_OFFSET 0
-+#define JUMP_NEW_OFFSET 4
-+#define JUMP_KEY_OFFSET 8
-+
-+#define ALT_ENTRY_SIZE 12
-+#define ALT_ORIG_OFFSET 0
-+#define ALT_NEW_OFFSET 4
-+#define ALT_FEATURE_OFFSET 8
-+#define ALT_ORIG_LEN_OFFSET 10
-+#define ALT_NEW_LEN_OFFSET 11
-+
-+#endif /* _PPC_ARCH_SPECIAL_H */
-diff --git a/tools/objtool/arch/powerpc/special.c b/tools/objtool/arch/powerpc/special.c
-new file mode 100644
-index 000000000000..d33868147196
---- /dev/null
-+++ b/tools/objtool/arch/powerpc/special.c
-@@ -0,0 +1,19 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+#include <string.h>
-+#include <stdlib.h>
-+#include <objtool/special.h>
-+#include <objtool/builtin.h>
-+
-+
-+bool arch_support_alt_relocation(struct special_alt *special_alt,
-+				 struct instruction *insn,
-+				 struct reloc *reloc)
-+{
-+	exit(-1);
-+}
-+
-+struct reloc *arch_find_switch_table(struct objtool_file *file,
-+				    struct instruction *insn)
-+{
-+	exit(-1);
-+}
+Known potential issues:
+
+(1) PELT stability requirement
+
+PELT halflife has to be larger than or equal to the scheduling period.
+
+The sched_period (sysctl_sched_latency) of a typical mobile device with
+8 CPUs with the default logarithmical tuning is 24ms so only the 32 ms
+PELT halflife met this. Shorter halflife of 16ms or even 8ms would break
+this.
+
+It looks like that this problem might not exist anymore because of the
+PELT rewrite in 2015, i.e. with commit 9d89c257dfb9
+("sched/fair: Rewrite runnable load and utilization average tracking").
+Since then sched entities (task & task groups) and cfs_rq's are
+independently maintained rather than each entity update maintains the
+cfs_rq at the same time.
+
+This seems to mitigate the issue that the cfs_rq signal is not correct
+when there are not all runnable entities able ot do a self update during
+a PELT halflife window.
+
+That said, I'm not entirely sure whether the entity-cfs_rq
+synchronization is the only issue behind this PELT stability requirement.
+
+
+(2) PELT utilization versus util_est (estimated utilization)
+
+The PELT signal of a periodic task oscillates with higher peak amplitude
+when using smaller halflife. For a typical periodic task of the display
+pipeline with a runtime/period of 8ms/16ms the peak amplitude is at ~40
+for 32ms, at ~80 for 16ms and at ~160 for 8ms. Util_est stores the
+util_avg peak as util_est.enqueued per task.
+
+With an additional exponential weighted moving average (ewma) to smooth
+task utilization decreases, util_est values of the runnable tasks are
+aggregated on the root cfs_rq.
+CPU and task utilization for CPU frequency selection and task placement
+is the max value out of util_est and util_avg. 
+I.e. because of how util_est is implemented higher CPU Operating
+Performance Points and more capable CPUs are already chosen when using
+smaller PELT halflife.
+
+
+(3) Wrong PELT history when switching PELT multiplier
+
+The PELT history becomes stale the moment the PELT multiplier is changed
+during runtime. So all decisions based on PELT are skewed for the time
+interval to produce LOAD_MAX_AVG (the sum of the infinite geometric
+series) which value is ~345ms for halflife=32ms (smaller for 8ms or
+16ms).
+
+Rate limiting the PELT multiplier change to this value is not solving
+the issue here. So the user would have to live with possible incorrect
+discussions during these PELT multiplier transition times.
+
+---
+
+It looks like that individual task boosting e.g. via uclamp_min,
+possibly abstracted by middleware frameworks like Android Dynamic
+Performance Framework (ADPF) would be the way to go here but until this
+is fully available and adopted some Android folks will still prefer the
+overall system boosting they achieve by running with a shorter PELT
+halflife.
+
+Vincent Donnefort (1):
+  sched/pelt: Introduce PELT multiplier
+
+ kernel/sched/core.c  |  2 +-
+ kernel/sched/pelt.c  | 60 ++++++++++++++++++++++++++++++++++++++++++++
+ kernel/sched/pelt.h  | 42 ++++++++++++++++++++++++++++---
+ kernel/sched/sched.h |  1 +
+ 4 files changed, 100 insertions(+), 5 deletions(-)
+
 -- 
-2.31.1
+2.25.1
 
