@@ -2,152 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37F5BECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 07:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F11DCECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 07:50:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229747AbiH2Hua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 03:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        id S229538AbiH2Huj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 03:50:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiH2HuJ (ORCPT
+        with ESMTP id S229737AbiH2HuV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 03:50:09 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A02B7C1;
-        Mon, 29 Aug 2022 00:50:04 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 07:50:01 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661759402;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cxYcNG93g26r3LfjfXOU0Wfjer1pZazRkJ3e0LkQmmA=;
-        b=qWj5UrDdY4gknEg+KvbhpMGWBygdSLlMvID6LRCVgK5nLwN+tNl6gqYdOJNNpBKMshpxyF
-        jH5dVF1jaCnhMHEX4F7CgDET+8Tg8kiS3+xpsCiV08owbVTKs29pAb+s97zXpC1bUj1VMb
-        3N0JNK684TpXapvn8kj9UXqaA/Vgpf8SDTK1sNqoD9t3gAoB46eeGKjK9ASGyhDAhtKbiY
-        CU4u3udMRovnZDI+52aYUacTfU79U9ueQ87KG1oKqIcITImz6i3saRputT1tAWNWruROtV
-        YDJGuLEujdMsB3Ap0EyCONiKe6XyfT2dHdtfMlK96voXOSc3Nlk2AfUwAWCGCQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661759402;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cxYcNG93g26r3LfjfXOU0Wfjer1pZazRkJ3e0LkQmmA=;
-        b=z+V1Sn8qW/EhZah9e4hv1WxFRo8FXr5XQxancijHqcYNEUOrYmLEKjgmXGaYYql8wxlYpX
-        3hy5U5afuekIbtDg==
-From:   "tip-bot2 for Anshuman Khandual" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: perf/core] perf: Extend branch type classification
-Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        James Clark <james.clark@arm.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220824044822.70230-3-anshuman.khandual@arm.com>
-References: <20220824044822.70230-3-anshuman.khandual@arm.com>
+        Mon, 29 Aug 2022 03:50:21 -0400
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C718311C36;
+        Mon, 29 Aug 2022 00:50:19 -0700 (PDT)
+Received: by mail-ed1-f47.google.com with SMTP id z8so223695edb.6;
+        Mon, 29 Aug 2022 00:50:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=j67PODyFLlaaryt3BHX3uk5uByxDeNuc4UP3AQpoax4=;
+        b=V9jlZbmN9PHlVZv1MoyETdBHr3pV2jfBP4+Vx5zshVD7p5/bUKJ/FPLoJiH+SBWfP8
+         zFcWCTR5wWXb2iS2aGkFAB6HjsoAXzSCWsCWaPsPCi5ZIbXa/jrLv213B6UDAdtxkeiS
+         v8Tw1Hz6+U5dmeGTKbMuNS7P8rH9UeKxkRQxW4Nl0bhfBru68FUm1fSKbuxqs5giYdD/
+         H6mQ3YMXnRVQ3TBw1Vtnm1RTpDr4QiGpxsjiHENozFQF3C4zwvU7qLNPUcj28b3MOokc
+         gdlMv/wBXdfLQx9ddwF9wOFJzn9pUGZCsldsDlig7PjWjpiTxGuW0+7tIdO46IUVLWVd
+         HBCw==
+X-Gm-Message-State: ACgBeo0UvEDxIoab4sF/Cy59ISPKyyuzv5OTuOQGq0qbazqx0A4PWGSc
+        pqdkkvYBjBoNXo9UgPUy077fHF51B7U=
+X-Google-Smtp-Source: AA6agR5QvDBUAineIbR1x9mFpzPnEI+mSsDy9Qs3EIwFIxudk7l1+VzTgQzEctuV9pHtvMXmoD/3ag==
+X-Received: by 2002:a05:6402:2753:b0:43a:d6f2:9839 with SMTP id z19-20020a056402275300b0043ad6f29839mr15026151edd.73.1661759418208;
+        Mon, 29 Aug 2022 00:50:18 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id kw2-20020a170907770200b0073872f367cesm4173874ejc.112.2022.08.29.00.50.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 00:50:17 -0700 (PDT)
+Message-ID: <1a05800e-a3c2-12f3-135e-b81a283d71a2@kernel.org>
+Date:   Mon, 29 Aug 2022 09:50:16 +0200
 MIME-Version: 1.0
-Message-ID: <166175940134.401.14721659707205439903.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH 0/3] serial: Add uart_xmit_advance() + fixes part (of a
+ larger patch series)
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220825091707.8112-1-ilpo.jarvinen@linux.intel.com>
+ <ac383256-65f2-e4ee-0142-65bdb9dd9dae@kernel.org>
+ <55cf3faf-2616-09c-57c3-35e7b11e55@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <55cf3faf-2616-09c-57c3-35e7b11e55@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the perf/core branch of tip:
+On 29. 08. 22, 9:41, Ilpo Järvinen wrote:> Looking into your patches, 
+they also seemed to lack that> icount.tx++ thing.
 
-Commit-ID:     b190bc4ac9e6d9763b61654c5a0c085ff77d7a09
-Gitweb:        https://git.kernel.org/tip/b190bc4ac9e6d9763b61654c5a0c085ff77d7a09
-Author:        Anshuman Khandual <anshuman.khandual@arm.com>
-AuthorDate:    Wed, 24 Aug 2022 10:18:16 +05:30
-Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Mon, 29 Aug 2022 09:42:42 +02:00
+Perhaps, you only overlooked it?
 
-perf: Extend branch type classification
++	for (; (for_test) && (!tx_ready || tx_ready(port));
++			(for_post), port->icount.tx++) {		
 
-branch_entry.type now has ran out of space to accommodate more branch types
-classification. This will prevent perf branch stack implementation on arm64
-(via BRBE) to capture all available branch types. Extending this bit field
-i.e branch_entry.type [4 bits] is not an option as it will break user space
-ABI both for little and big endian perf tools.
+thanks,
+-- 
+js
+suse labs
 
-Extend branch classification with a new field branch_entry.new_type via a
-new branch type PERF_BR_EXTEND_ABI in branch_entry.type. Perf tools which
-could decode PERF_BR_EXTEND_ABI, will then parse branch_entry.new_type as
-well.
-
-branch_entry.new_type is a 4 bit field which can hold upto 16 branch types.
-The first three branch types will hold various generic page faults followed
-by five architecture specific branch types, which can be overridden by the
-platform for specific use cases. These architecture specific branch types
-gets overridden on arm64 platform for BRBE implementation.
-
-New generic branch types
-
- - PERF_BR_NEW_FAULT_ALGN
- - PERF_BR_NEW_FAULT_DATA
- - PERF_BR_NEW_FAULT_INST
-
-New arch specific branch types
-
- - PERF_BR_NEW_ARCH_1
- - PERF_BR_NEW_ARCH_2
- - PERF_BR_NEW_ARCH_3
- - PERF_BR_NEW_ARCH_4
- - PERF_BR_NEW_ARCH_5
-
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: James Clark <james.clark@arm.com>
-Link: https://lkml.kernel.org/r/20220824044822.70230-3-anshuman.khandual@arm.com
----
- include/uapi/linux/perf_event.h | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
-index a79cc0e..fed60e6 100644
---- a/include/uapi/linux/perf_event.h
-+++ b/include/uapi/linux/perf_event.h
-@@ -255,6 +255,7 @@ enum {
- 	PERF_BR_IRQ		= 12,	/* irq */
- 	PERF_BR_SERROR		= 13,	/* system error */
- 	PERF_BR_NO_TX		= 14,	/* not in transaction */
-+	PERF_BR_EXTEND_ABI	= 15,	/* extend ABI */
- 	PERF_BR_MAX,
- };
- 
-@@ -269,6 +270,18 @@ enum {
- 	PERF_BR_SPEC_MAX,
- };
- 
-+enum {
-+	PERF_BR_NEW_FAULT_ALGN		= 0,    /* Alignment fault */
-+	PERF_BR_NEW_FAULT_DATA		= 1,    /* Data fault */
-+	PERF_BR_NEW_FAULT_INST		= 2,    /* Inst fault */
-+	PERF_BR_NEW_ARCH_1		= 3,    /* Architecture specific */
-+	PERF_BR_NEW_ARCH_2		= 4,    /* Architecture specific */
-+	PERF_BR_NEW_ARCH_3		= 5,    /* Architecture specific */
-+	PERF_BR_NEW_ARCH_4		= 6,    /* Architecture specific */
-+	PERF_BR_NEW_ARCH_5		= 7,    /* Architecture specific */
-+	PERF_BR_NEW_MAX,
-+};
-+
- #define PERF_SAMPLE_BRANCH_PLM_ALL \
- 	(PERF_SAMPLE_BRANCH_USER|\
- 	 PERF_SAMPLE_BRANCH_KERNEL|\
-@@ -1388,7 +1401,8 @@ struct perf_branch_entry {
- 		cycles:16,  /* cycle count to last branch */
- 		type:4,     /* branch type */
- 		spec:2,     /* branch speculation info */
--		reserved:38;
-+		new_type:4, /* additional branch type */
-+		reserved:34;
- };
- 
- union perf_sample_weight {
