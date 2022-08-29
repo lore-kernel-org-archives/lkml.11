@@ -2,82 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69564ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEB1ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:19:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbiH2NTG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:19:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34986 "EHLO
+        id S230086AbiH2NTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:19:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230202AbiH2NR1 (ORCPT
+        with ESMTP id S230207AbiH2NRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:17:27 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5B182874
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:17:01 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id u9so15637307ejy.5
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:17:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=vVQxBaqAvfBUo0jF6nOEtYokrrVyilYpVxh0Js2+9fs=;
-        b=kIp78QeZFdDc8fYDYCfMel6sFbSqiMSu9beQEWHduoxLtumSsNHaYaVLFjRly192kl
-         C3gLP+taR6PMhjL5tnETj8QzgrYB1JAb/DL/b72j8LZVI0zgE65WwSe82aEy9bwRJRua
-         tMnQ0iz6KmFZjCDK/ocPWS57rBqSm4KsVjXG/GY0RdRTmh3JidyTyUqMHzt92uM0AAqh
-         mrwN9ccxyMdmzHmN1SkpFtdcrKRUJadz4uXiR74Sc4aok8ULU+CYDeAuYHE5aMQVjfhB
-         Gg32Mv0qmOgHaqihnEOdZOY0OO4kP8sd1thP+a22GZZ/szUzD5wSg8+bq0kmteAM6ie4
-         yiog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=vVQxBaqAvfBUo0jF6nOEtYokrrVyilYpVxh0Js2+9fs=;
-        b=GMoBfAvQXSJz+5ZjLryLM7xzgJ3UHdhvMQqmzVeZoxFu+ibE5duR4I8po7y4PYabpV
-         MPWZ5vtawHz45TDt5MOeUm6ce9sqiKsWl0YOxtnpKklvQWayKqxp9H/ZMJ9X31bM2DPv
-         Hhc8Q4J3DrVk1S3bNqu3E7xpGEOt7t5dgoxLmw5p5dFlSQHHqIg7smuvePgtTW7Or7ho
-         VyaiPsmQJIIaTeqyWJHbaB0Mq0YvvE9bNa1hEei1i4pr84AwhwJ8Z3UB/FmDa3te6RW4
-         8aw0aYUgjFr7I7Pqfp+48aqqAs1MMGcc1BUCrqj5Oj8iBKeQS6aQchD58r416bXqZUCl
-         Eo9w==
-X-Gm-Message-State: ACgBeo0XUo7TRU+4PJJiX6ZnaSRJat2M3AqzwQ3mL1SMslvmBmxSd2EO
-        TgStOv0IYzTspitsyHQI2Emt/lcJkBAWmcojOoWYDw==
-X-Google-Smtp-Source: AA6agR4Bd3dRcihqGaqU6XKuYDw5NSctB/SiD1k8COWJyZJLXcTsNztWKAP4rGk/zDsw3itA5PRoFRIl+Dz7CM450WY=
-X-Received: by 2002:a17:906:cc5a:b0:741:5240:d91a with SMTP id
- mm26-20020a170906cc5a00b007415240d91amr6624584ejb.500.1661778974724; Mon, 29
- Aug 2022 06:16:14 -0700 (PDT)
+        Mon, 29 Aug 2022 09:17:21 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174692124B;
+        Mon, 29 Aug 2022 06:16:52 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27TD8wYW028717;
+        Mon, 29 Aug 2022 09:15:10 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j7g673ce9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Aug 2022 09:15:10 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 27TDF8rH019113
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 29 Aug 2022 09:15:08 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 29 Aug 2022 09:15:08 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 29 Aug 2022 09:15:07 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 29 Aug 2022 09:15:07 -0400
+Received: from nsa.ad.analog.com ([10.44.3.68])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27TDEeiP026449;
+        Mon, 29 Aug 2022 09:14:59 -0400
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-input@vger.kernel.org>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v4 05/10] dt-bindings: input: adp5588: add bindings
+Date:   Mon, 29 Aug 2022 15:15:48 +0200
+Message-ID: <20220829131553.690063-6-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829131553.690063-1-nuno.sa@analog.com>
+References: <20220829131553.690063-1-nuno.sa@analog.com>
 MIME-Version: 1.0
-References: <20220519212943.778610-1-linus.walleij@linaro.org>
-In-Reply-To: <20220519212943.778610-1-linus.walleij@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 29 Aug 2022 15:16:03 +0200
-Message-ID: <CACRpkdamFTCuCTYX-Y_-HHM_WBQgwDbiud1pA_Xn3V2zm2zj_w@mail.gmail.com>
-Subject: Re: [PATCH] HSI: cmt_speech: Pass a pointer to virt_to_page()
-To:     Sebastian Reichel <sre@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Pavel Machek <pavel@ucw.cz>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: paDACxd9Y1f158bgu4NRb_2kUAdp8qDu
+X-Proofpoint-GUID: paDACxd9Y1f158bgu4NRb_2kUAdp8qDu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-29_07,2022-08-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 spamscore=0 phishscore=0 mlxlogscore=999 malwarescore=0
+ impostorscore=0 mlxscore=0 adultscore=0 bulkscore=0 suspectscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208290061
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, May 19, 2022 at 11:31 PM Linus Walleij <linus.walleij@linaro.org> wrote:
+Add device tree bindings for the adp5588-keys driver.
 
-> A pointer into virtual memory is represented by a (void *)
-> not an u32, so the compiler warns:
->
-> drivers/hsi/clients/cmt_speech.c:1092:35: warning: passing argument
->   1 of 'virt_to_pfn' makes pointer from integer without a cast
->   [-Wint-conversion]
->
-> Fix this with an explicit cast.
->
-> Cc: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-> Cc: Aaro Koskinen <aaro.koskinen@iki.fi>
-> Cc: Pavel Machek <pavel@ucw.cz>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../bindings/input/adi,adp5588.yaml           | 111 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 2 files changed, 112 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/adi,adp5588.yaml
 
-Sebastian can you apply this patch to the HSI tree please?
+diff --git a/Documentation/devicetree/bindings/input/adi,adp5588.yaml b/Documentation/devicetree/bindings/input/adi,adp5588.yaml
+new file mode 100644
+index 000000000000..26ea66834ae2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/adi,adp5588.yaml
+@@ -0,0 +1,111 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/input/adi,adp5588.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADP5588 Keypad Controller
++
++maintainers:
++  - Nuno Sá <nuno.sa@analog.com>
++
++description: |
++  Analog Devices Mobile I/O Expander and QWERTY Keypad Controller
++  https://www.analog.com/media/en/technical-documentation/data-sheets/ADP5588.pdf
++
++allOf:
++  - $ref: matrix-keymap.yaml#
++  - $ref: input.yaml#
++
++properties:
++  compatible:
++    enum:
++      - adi,adp5587
++      - adi,adp5588
++
++  reg:
++    maxItems: 1
++
++  vcc-supply:
++    description: Supply Voltage Input
++
++  reset-gpios:
++    description:
++      If specified, it will be asserted during driver probe. As the line is
++      active low, it should be marked GPIO_ACTIVE_LOW.
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  gpio-controller:
++    description:
++      This property applies if either keypad,num-rows lower than 8 or
++      keypad,num-columns lower than 10.
++
++  '#gpio-cells':
++    const: 2
++
++  interrupt-controller:
++    description:
++      This property applies if either keypad,num-rows lower than 8 or
++      keypad,num-columns lower than 10.
++
++  '#interrupt-cells':
++    const: 2
++
++  adi,unlock-keys:
++    description:
++      Specifies a maximum of 2 keys that can be used to unlock the keypad.
++      If this property is set, the keyboard will be locked and only unlocked
++      after these keys are pressed. If only one key is set, a double click is
++      needed to unlock the keypad. The value of this property cannot be bigger
++      or equal than keypad,num-rows * keypad,num-columns.
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    minItems: 1
++    maxItems: 2
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - keypad,num-rows
++  - keypad,num-columns
++  - linux,keymap
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/input/input.h>
++    #include <dt-bindings/gpio/gpio.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        keys@34 {
++            compatible = "adi,adp5588";
++            reg = <0x34>;
++
++            vcc-supply = <&vcc>;
++            interrupts = <21 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-parent = <&gpio>;
++            reset-gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
++
++            keypad,num-rows = <1>;
++            keypad,num-columns = <9>;
++            linux,keymap = <
++                MATRIX_KEY(0x00, 0x00, KEY_1)
++                MATRIX_KEY(0x00, 0x01, KEY_2)
++                MATRIX_KEY(0x00, 0x02, KEY_3)
++                MATRIX_KEY(0x00, 0x03, KEY_4)
++                MATRIX_KEY(0x00, 0x04, KEY_5)
++                MATRIX_KEY(0x00, 0x05, KEY_6)
++                MATRIX_KEY(0x00, 0x06, KEY_7)
++                MATRIX_KEY(0x00, 0x07, KEY_8)
++                MATRIX_KEY(0x00, 0x08, KEY_9)
++            >;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8404c18e6bcf..aa71df8b699b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -556,6 +556,7 @@ M:	Michael Hennerich <michael.hennerich@analog.com>
+ S:	Supported
+ W:	http://wiki.analog.com/ADP5588
+ W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/input/adi,adp5588.yaml
+ F:	drivers/input/keyboard/adp5588-keys.c
+ 
+ ADP8860 BACKLIGHT DRIVER (ADP8860/ADP8861/ADP8863)
+-- 
+2.37.2
 
-Yours,
-Linus Walleij
