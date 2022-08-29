@@ -2,220 +2,443 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEEB1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57599ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiH2NTL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33770 "EHLO
+        id S230019AbiH2NTR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:19:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230207AbiH2NRV (ORCPT
+        with ESMTP id S229821AbiH2NRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:17:21 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174692124B;
-        Mon, 29 Aug 2022 06:16:52 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27TD8wYW028717;
-        Mon, 29 Aug 2022 09:15:10 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j7g673ce9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 09:15:10 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 27TDF8rH019113
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 29 Aug 2022 09:15:08 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 29 Aug 2022 09:15:08 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 29 Aug 2022 09:15:07 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 29 Aug 2022 09:15:07 -0400
-Received: from nsa.ad.analog.com ([10.44.3.68])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27TDEeiP026449;
-        Mon, 29 Aug 2022 09:14:59 -0400
-From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-To:     <linux-kernel@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <linux-input@vger.kernel.org>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 05/10] dt-bindings: input: adp5588: add bindings
-Date:   Mon, 29 Aug 2022 15:15:48 +0200
-Message-ID: <20220829131553.690063-6-nuno.sa@analog.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829131553.690063-1-nuno.sa@analog.com>
-References: <20220829131553.690063-1-nuno.sa@analog.com>
+        Mon, 29 Aug 2022 09:17:25 -0400
+Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EA67F258
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:16:52 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.west.internal (Postfix) with ESMTP id 12B562B0607E;
+        Mon, 29 Aug 2022 09:15:34 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 29 Aug 2022 09:15:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1661778934; x=
+        1661786134; bh=d74tP5iKS7wtiPkK9wp1T9Mx2zT0b5CzIXUZcq4F8kI=; b=h
+        hmqCHmZ05R8wz+RuLpvYze/OuKbUQBZI6ODYaQ2icBRLaWjy9ut20laMImXzxxZ4
+        gR8SbG8q9Wnl34FzAYNXpuEZq8XTJBFFDwdTfd+PJRzyfSjtIZZoYyTRBbsgST0u
+        WGSM1qYclKIyaI0JV5GhFcgEnxJ/wWcQQhstysIk5bTZeCndv3a11DpSU6zg3mfF
+        vLYMXK7f/o34Qf8ZnlfBHkZPKqxplN1J1X6KJDlpEZberhgnRFjqrZ2nfp+vvIjG
+        x2xauzJqL4TZSk+zIPKzkUCvqDY+0cf7FmQHqkbTM4B0lFmtUEHRipFEYABLEk/N
+        tSpBeOCVzRNhCt8xV7jfg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661778934; x=
+        1661786134; bh=d74tP5iKS7wtiPkK9wp1T9Mx2zT0b5CzIXUZcq4F8kI=; b=m
+        iM7JFVLOyjTjTvHinPsieIVJaGVBDCJy42PVT9KM+0KUBAkqAazD5tBHJOYXx6jq
+        QhPYYSrffDJ1FhpJvJs5u4AOlB03mPNM4YKnGREKhG1qFmSalR78a8aM0YtDcs/c
+        Bg/oqPDjwfS9UBGT8lUQBtTaktQS4yEtfmXLwUlLwo2sGm6kECR3Gny9Pev5vokX
+        bo/cM1C6qg1rOciX6Ef9whhvkRpJoaIYZkj2uELz9lpXV7KvBr6Igea8MOz46lOB
+        BRj7aaDc11RmsqSytkSauWpLQRbkS6KEUBlol/yJuaqYS9mL9ZQP2Z+oqQraCIGa
+        1gL9ol+cLeNKaH/iPQfYw==
+X-ME-Sender: <xms:9bsMY8DLxmtp_42mde9u9rbN82flXIzChr1NPPRdQghJTMVvKP-nyg>
+    <xme:9bsMY-hcqRvB6FKdoVN9hOC2jVnjEuf1KD1ckuyL91uU3CzVj_lY9eURK3rJJQVsy
+    pfkBrVCz_3e7uE9OC4>
+X-ME-Received: <xmr:9bsMY_lW1b0QxD506iSxtc_wdRAqU6VdJ7BnZijOJEnmTJhWfR-FuhB5kXNf>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddgieefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgjfhggtgfogfesthhqredtredtjeenucfhrhhomhepofgr
+    gihimhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtf
+    frrghtthgvrhhnpeefiedvfefggffgffehveejieffuddtgffhjefggeetieduvdeileet
+    lefgveegtdenucevlhhushhtvghrufhiiigvpeehnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:9bsMYywqaeB7pjA7eH1_iA9Rz73T6PP44iQ-YVKxOm78nJSxNlN5rA>
+    <xmx:9bsMYxRBfk3VNuKh2_iWxQH2f66iSDiF2-xFKvjkBnBY4hqdR2QdzQ>
+    <xmx:9bsMY9ZJkES3OG-Foczuiy-8-lD1J3r1_Hk99-3TnWVILEySq1n9Sg>
+    <xmx:9rsMY9K8c7Yp3qVne7X4c8etFVVzRtqBZYzyMWfoHdkzjqiYK_PgvjGkMdY>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 29 Aug 2022 09:15:32 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Maxime Ripard <mripard@kernel.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        intel-gfx@lists.freedesktop.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        dri-devel@lists.freedesktop.org, Dom Cobley <dom@raspberrypi.com>,
+        linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        linux-sunxi@lists.linux.dev,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2 32/41] drm/vc4: vec: Convert to the new TV mode property
+Date:   Mon, 29 Aug 2022 15:11:46 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v2-32-459522d653a7@cerno.tech>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: paDACxd9Y1f158bgu4NRb_2kUAdp8qDu
-X-Proofpoint-GUID: paDACxd9Y1f158bgu4NRb_2kUAdp8qDu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-29_07,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 spamscore=0 phishscore=0 mlxlogscore=999 malwarescore=0
- impostorscore=0 mlxscore=0 adultscore=0 bulkscore=0 suspectscore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208290061
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.10.0-dev-65ba7
+X-Developer-Signature: v=1; a=openpgp-sha256; l=9147; i=maxime@cerno.tech; h=from:subject:message-id; bh=lcNmN9CzcnK3ui/H7KmOX4lEfytOWT0LrcJRB2J9u68=; b=owGbwMvMwCX2+D1vfrpE4FHG02pJDMk8uxTCUu9d4nvW1XSQx+qrpzdD6v0fTlN3fph7xXrHTucb X2bldZSyMIhxMciKKbLECJsviTs163UnG988mDmsTCBDGLg4BWAie2Yw/E9k+ZLc/SlU+PSVj51eXu ZNlkrHOQwVA9+d4XiZcGHJgVhGhr//uV81tiXNFDscaOMbuHL1hMg+a/5n178/X+9rK1YwhxUA
+X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the adp5588-keys driver.
-
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../bindings/input/adi,adp5588.yaml           | 111 ++++++++++++++++++
- MAINTAINERS                                   |   1 +
- 2 files changed, 112 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/adi,adp5588.yaml
-
-diff --git a/Documentation/devicetree/bindings/input/adi,adp5588.yaml b/Documentation/devicetree/bindings/input/adi,adp5588.yaml
-new file mode 100644
-index 000000000000..26ea66834ae2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/input/adi,adp5588.yaml
-@@ -0,0 +1,111 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/input/adi,adp5588.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices ADP5588 Keypad Controller
-+
-+maintainers:
-+  - Nuno Sá <nuno.sa@analog.com>
-+
-+description: |
-+  Analog Devices Mobile I/O Expander and QWERTY Keypad Controller
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/ADP5588.pdf
-+
-+allOf:
-+  - $ref: matrix-keymap.yaml#
-+  - $ref: input.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adp5587
-+      - adi,adp5588
-+
-+  reg:
-+    maxItems: 1
-+
-+  vcc-supply:
-+    description: Supply Voltage Input
-+
-+  reset-gpios:
-+    description:
-+      If specified, it will be asserted during driver probe. As the line is
-+      active low, it should be marked GPIO_ACTIVE_LOW.
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  gpio-controller:
-+    description:
-+      This property applies if either keypad,num-rows lower than 8 or
-+      keypad,num-columns lower than 10.
-+
-+  '#gpio-cells':
-+    const: 2
-+
-+  interrupt-controller:
-+    description:
-+      This property applies if either keypad,num-rows lower than 8 or
-+      keypad,num-columns lower than 10.
-+
-+  '#interrupt-cells':
-+    const: 2
-+
-+  adi,unlock-keys:
-+    description:
-+      Specifies a maximum of 2 keys that can be used to unlock the keypad.
-+      If this property is set, the keyboard will be locked and only unlocked
-+      after these keys are pressed. If only one key is set, a double click is
-+      needed to unlock the keypad. The value of this property cannot be bigger
-+      or equal than keypad,num-rows * keypad,num-columns.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    minItems: 1
-+    maxItems: 2
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - keypad,num-rows
-+  - keypad,num-columns
-+  - linux,keymap
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/input/input.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        keys@34 {
-+            compatible = "adi,adp5588";
-+            reg = <0x34>;
-+
-+            vcc-supply = <&vcc>;
-+            interrupts = <21 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-parent = <&gpio>;
-+            reset-gpios = <&gpio 20 GPIO_ACTIVE_LOW>;
-+
-+            keypad,num-rows = <1>;
-+            keypad,num-columns = <9>;
-+            linux,keymap = <
-+                MATRIX_KEY(0x00, 0x00, KEY_1)
-+                MATRIX_KEY(0x00, 0x01, KEY_2)
-+                MATRIX_KEY(0x00, 0x02, KEY_3)
-+                MATRIX_KEY(0x00, 0x03, KEY_4)
-+                MATRIX_KEY(0x00, 0x04, KEY_5)
-+                MATRIX_KEY(0x00, 0x05, KEY_6)
-+                MATRIX_KEY(0x00, 0x06, KEY_7)
-+                MATRIX_KEY(0x00, 0x07, KEY_8)
-+                MATRIX_KEY(0x00, 0x08, KEY_9)
-+            >;
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8404c18e6bcf..aa71df8b699b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -556,6 +556,7 @@ M:	Michael Hennerich <michael.hennerich@analog.com>
- S:	Supported
- W:	http://wiki.analog.com/ADP5588
- W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/input/adi,adp5588.yaml
- F:	drivers/input/keyboard/adp5588-keys.c
- 
- ADP8860 BACKLIGHT DRIVER (ADP8860/ADP8861/ADP8863)
--- 
-2.37.2
-
+Now that the core can deal fine with analog TV modes, let's convert the vc4=
+=0D
+VEC driver to leverage those new features.=0D
+=0D
+We've added some backward compatibility to support the old TV mode property=
+=0D
+and translate it into the new TV norm property.=0D
+=0D
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>=0D
+=0D
+diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c=
+=0D
+index ba6f81908923..58286acf4b9e 100644=0D
+--- a/drivers/gpu/drm/vc4/vc4_vec.c=0D
++++ b/drivers/gpu/drm/vc4/vc4_vec.c=0D
+@@ -172,6 +172,8 @@ struct vc4_vec {=0D
+ =0D
+ 	struct clk *clock;=0D
+ =0D
++	struct drm_property *legacy_tv_mode_property;=0D
++=0D
+ 	struct debugfs_regset32 regset;=0D
+ };=0D
+ =0D
+@@ -184,6 +186,12 @@ encoder_to_vc4_vec(struct drm_encoder *encoder)=0D
+ 	return container_of(encoder, struct vc4_vec, encoder.base);=0D
+ }=0D
+ =0D
++static inline struct vc4_vec *=0D
++connector_to_vc4_vec(struct drm_connector *connector)=0D
++{=0D
++	return container_of(connector, struct vc4_vec, connector);=0D
++}=0D
++=0D
+ enum vc4_vec_tv_mode_id {=0D
+ 	VC4_VEC_TV_MODE_NTSC,=0D
+ 	VC4_VEC_TV_MODE_NTSC_J,=0D
+@@ -192,7 +200,7 @@ enum vc4_vec_tv_mode_id {=0D
+ };=0D
+ =0D
+ struct vc4_vec_tv_mode {=0D
+-	const struct drm_display_mode *mode;=0D
++	unsigned int mode;=0D
+ 	u32 config0;=0D
+ 	u32 config1;=0D
+ 	u32 custom_freq;=0D
+@@ -226,28 +234,50 @@ static const struct debugfs_reg32 vec_regs[] =3D {=0D
+ };=0D
+ =0D
+ static const struct vc4_vec_tv_mode vc4_vec_tv_modes[] =3D {=0D
+-	[VC4_VEC_TV_MODE_NTSC] =3D {=0D
+-		.mode =3D &drm_mode_480i,=0D
++	{=0D
++		.mode =3D DRM_MODE_TV_MODE_NTSC_M,=0D
+ 		.config0 =3D VEC_CONFIG0_NTSC_STD | VEC_CONFIG0_PDEN,=0D
+ 		.config1 =3D VEC_CONFIG1_C_CVBS_CVBS,=0D
+ 	},=0D
+-	[VC4_VEC_TV_MODE_NTSC_J] =3D {=0D
+-		.mode =3D &drm_mode_480i,=0D
++	{=0D
++		.mode =3D DRM_MODE_TV_MODE_NTSC_J,=0D
+ 		.config0 =3D VEC_CONFIG0_NTSC_STD,=0D
+ 		.config1 =3D VEC_CONFIG1_C_CVBS_CVBS,=0D
+ 	},=0D
+-	[VC4_VEC_TV_MODE_PAL] =3D {=0D
+-		.mode =3D &drm_mode_576i,=0D
++	{=0D
++		.mode =3D DRM_MODE_TV_MODE_PAL_B,=0D
+ 		.config0 =3D VEC_CONFIG0_PAL_BDGHI_STD,=0D
+ 		.config1 =3D VEC_CONFIG1_C_CVBS_CVBS,=0D
+ 	},=0D
+-	[VC4_VEC_TV_MODE_PAL_M] =3D {=0D
+-		.mode =3D &drm_mode_480i,=0D
++	{=0D
++		.mode =3D DRM_MODE_TV_MODE_PAL_M,=0D
+ 		.config0 =3D VEC_CONFIG0_PAL_M_STD,=0D
+ 		.config1 =3D VEC_CONFIG1_C_CVBS_CVBS,=0D
+ 	},=0D
+ };=0D
+ =0D
++static inline const struct vc4_vec_tv_mode *=0D
++vc4_vec_tv_mode_lookup(unsigned int mode)=0D
++{=0D
++	unsigned int i;=0D
++=0D
++	for (i =3D 0; i < ARRAY_SIZE(vc4_vec_tv_modes); i++) {=0D
++		const struct vc4_vec_tv_mode *tv_mode =3D &vc4_vec_tv_modes[i];=0D
++=0D
++		if (tv_mode->mode =3D=3D mode)=0D
++			return tv_mode;=0D
++	}=0D
++=0D
++	return NULL;=0D
++}=0D
++=0D
++static const struct drm_prop_enum_list tv_mode_names[] =3D {=0D
++	{ VC4_VEC_TV_MODE_NTSC, "NTSC", },=0D
++	{ VC4_VEC_TV_MODE_NTSC_J, "NTSC-J", },=0D
++	{ VC4_VEC_TV_MODE_PAL, "PAL", },=0D
++	{ VC4_VEC_TV_MODE_PAL_M, "PAL-M", },=0D
++};=0D
++=0D
+ static enum drm_connector_status=0D
+ vc4_vec_connector_detect(struct drm_connector *connector, bool force)=0D
+ {=0D
+@@ -262,19 +292,98 @@ static void vc4_vec_connector_reset(struct drm_connec=
+tor *connector)=0D
+ =0D
+ static int vc4_vec_connector_get_modes(struct drm_connector *connector)=0D
+ {=0D
+-	struct drm_connector_state *state =3D connector->state;=0D
+ 	struct drm_display_mode *mode;=0D
++	int count =3D 0;=0D
+ =0D
+-	mode =3D drm_mode_duplicate(connector->dev,=0D
+-				  vc4_vec_tv_modes[state->tv.mode].mode);=0D
++	mode =3D drm_mode_analog_ntsc_480i(connector->dev);=0D
+ 	if (!mode) {=0D
+ 		DRM_ERROR("Failed to create a new display mode\n");=0D
+ 		return -ENOMEM;=0D
+ 	}=0D
+ =0D
+ 	drm_mode_probed_add(connector, mode);=0D
++	count +=3D 1;=0D
+ =0D
+-	return 1;=0D
++	mode =3D drm_mode_analog_pal_576i(connector->dev);=0D
++	if (!mode) {=0D
++		DRM_ERROR("Failed to create a new display mode\n");=0D
++		return -ENOMEM;=0D
++	}=0D
++=0D
++	drm_mode_probed_add(connector, mode);=0D
++	count +=3D 1;=0D
++=0D
++	return count;=0D
++}=0D
++=0D
++static int=0D
++vc4_vec_connector_set_property(struct drm_connector *connector,=0D
++			       struct drm_connector_state *state,=0D
++			       struct drm_property *property,=0D
++			       uint64_t val)=0D
++{=0D
++	struct vc4_vec *vec =3D connector_to_vc4_vec(connector);=0D
++=0D
++	if (property !=3D vec->legacy_tv_mode_property)=0D
++		return -EINVAL;=0D
++=0D
++	switch (val) {=0D
++	case VC4_VEC_TV_MODE_NTSC:=0D
++		state->tv.mode =3D DRM_MODE_TV_MODE_NTSC_M;=0D
++		break;=0D
++=0D
++	case VC4_VEC_TV_MODE_NTSC_J:=0D
++		state->tv.mode =3D DRM_MODE_TV_MODE_NTSC_J;=0D
++		break;=0D
++=0D
++	case VC4_VEC_TV_MODE_PAL:=0D
++		state->tv.mode =3D DRM_MODE_TV_MODE_PAL_B;=0D
++		break;=0D
++=0D
++	case VC4_VEC_TV_MODE_PAL_M:=0D
++		state->tv.mode =3D DRM_MODE_TV_MODE_PAL_M;=0D
++		break;=0D
++=0D
++	default:=0D
++		return -EINVAL;=0D
++	}=0D
++=0D
++	return 0;=0D
++}=0D
++=0D
++static int=0D
++vc4_vec_connector_get_property(struct drm_connector *connector,=0D
++			       const struct drm_connector_state *state,=0D
++			       struct drm_property *property,=0D
++			       uint64_t *val)=0D
++{=0D
++	struct vc4_vec *vec =3D connector_to_vc4_vec(connector);=0D
++=0D
++	if (property !=3D vec->legacy_tv_mode_property)=0D
++		return -EINVAL;=0D
++=0D
++	switch (state->tv.mode) {=0D
++	case DRM_MODE_TV_MODE_NTSC_J:=0D
++		*val =3D VC4_VEC_TV_MODE_NTSC_J;=0D
++		break;=0D
++=0D
++	case DRM_MODE_TV_MODE_NTSC_M:=0D
++		*val =3D VC4_VEC_TV_MODE_NTSC;=0D
++		break;=0D
++=0D
++	case DRM_MODE_TV_MODE_PAL_B:=0D
++		*val =3D VC4_VEC_TV_MODE_PAL;=0D
++		break;=0D
++=0D
++	case DRM_MODE_TV_MODE_PAL_M:=0D
++		*val =3D VC4_VEC_TV_MODE_PAL_M;=0D
++		break;=0D
++=0D
++	default:=0D
++		return -EINVAL;=0D
++	}=0D
++=0D
++	return 0;=0D
+ }=0D
+ =0D
+ static const struct drm_connector_funcs vc4_vec_connector_funcs =3D {=0D
+@@ -283,15 +392,19 @@ static const struct drm_connector_funcs vc4_vec_conne=
+ctor_funcs =3D {=0D
+ 	.reset =3D vc4_vec_connector_reset,=0D
+ 	.atomic_duplicate_state =3D drm_atomic_helper_connector_duplicate_state,=
+=0D
+ 	.atomic_destroy_state =3D drm_atomic_helper_connector_destroy_state,=0D
++	.atomic_get_property =3D vc4_vec_connector_get_property,=0D
++	.atomic_set_property =3D vc4_vec_connector_set_property,=0D
+ };=0D
+ =0D
+ static const struct drm_connector_helper_funcs vc4_vec_connector_helper_fu=
+ncs =3D {=0D
++	.atomic_check =3D drm_atomic_helper_connector_tv_check,=0D
+ 	.get_modes =3D vc4_vec_connector_get_modes,=0D
+ };=0D
+ =0D
+ static int vc4_vec_connector_init(struct drm_device *dev, struct vc4_vec *=
+vec)=0D
+ {=0D
+ 	struct drm_connector *connector =3D &vec->connector;=0D
++	struct drm_property *prop;=0D
+ 	int ret;=0D
+ =0D
+ 	connector->interlace_allowed =3D true;=0D
+@@ -304,8 +417,16 @@ static int vc4_vec_connector_init(struct drm_device *d=
+ev, struct vc4_vec *vec)=0D
+ 	drm_connector_helper_add(connector, &vc4_vec_connector_helper_funcs);=0D
+ =0D
+ 	drm_object_attach_property(&connector->base,=0D
+-				   dev->mode_config.legacy_tv_mode_property,=0D
+-				   VC4_VEC_TV_MODE_NTSC);=0D
++				   dev->mode_config.tv_mode_property,=0D
++				   DRM_MODE_TV_MODE_NTSC_M);=0D
++=0D
++	prop =3D drm_property_create_enum(dev, 0, "mode",=0D
++					tv_mode_names, ARRAY_SIZE(tv_mode_names));=0D
++	if (!prop)=0D
++		return -ENOMEM;=0D
++	vec->legacy_tv_mode_property =3D prop;=0D
++=0D
++	drm_object_attach_property(&connector->base, prop, VC4_VEC_TV_MODE_NTSC);=
+=0D
+ =0D
+ 	drm_connector_attach_encoder(connector, &vec->encoder.base);=0D
+ =0D
+@@ -352,13 +473,16 @@ static void vc4_vec_encoder_enable(struct drm_encoder=
+ *encoder,=0D
+ 	struct drm_connector *connector =3D &vec->connector;=0D
+ 	struct drm_connector_state *conn_state =3D=0D
+ 		drm_atomic_get_new_connector_state(state, connector);=0D
+-	const struct vc4_vec_tv_mode *tv_mode =3D=0D
+-		&vc4_vec_tv_modes[conn_state->tv.mode];=0D
++	const struct vc4_vec_tv_mode *tv_mode;=0D
+ 	int idx, ret;=0D
+ =0D
+ 	if (!drm_dev_enter(drm, &idx))=0D
+ 		return;=0D
+ =0D
++	tv_mode =3D vc4_vec_tv_mode_lookup(conn_state->tv.mode);=0D
++	if (!tv_mode)=0D
++		goto err_dev_exit;=0D
++=0D
+ 	ret =3D pm_runtime_get_sync(&vec->pdev->dev);=0D
+ 	if (ret < 0) {=0D
+ 		DRM_ERROR("Failed to retain power domain: %d\n", ret);=0D
+@@ -435,23 +559,7 @@ static void vc4_vec_encoder_enable(struct drm_encoder =
+*encoder,=0D
+ 	drm_dev_exit(idx);=0D
+ }=0D
+ =0D
+-static int vc4_vec_encoder_atomic_check(struct drm_encoder *encoder,=0D
+-					struct drm_crtc_state *crtc_state,=0D
+-					struct drm_connector_state *conn_state)=0D
+-{=0D
+-	const struct vc4_vec_tv_mode *vec_mode;=0D
+-=0D
+-	vec_mode =3D &vc4_vec_tv_modes[conn_state->tv.mode];=0D
+-=0D
+-	if (conn_state->crtc &&=0D
+-	    !drm_mode_equal(vec_mode->mode, &crtc_state->adjusted_mode))=0D
+-		return -EINVAL;=0D
+-=0D
+-	return 0;=0D
+-}=0D
+-=0D
+ static const struct drm_encoder_helper_funcs vc4_vec_encoder_helper_funcs =
+=3D {=0D
+-	.atomic_check =3D vc4_vec_encoder_atomic_check,=0D
+ 	.atomic_disable =3D vc4_vec_encoder_disable,=0D
+ 	.atomic_enable =3D vc4_vec_encoder_enable,=0D
+ };=0D
+@@ -492,13 +600,6 @@ static const struct of_device_id vc4_vec_dt_match[] =
+=3D {=0D
+ 	{ /* sentinel */ },=0D
+ };=0D
+ =0D
+-static const char * const tv_mode_names[] =3D {=0D
+-	[VC4_VEC_TV_MODE_NTSC] =3D "NTSC",=0D
+-	[VC4_VEC_TV_MODE_NTSC_J] =3D "NTSC-J",=0D
+-	[VC4_VEC_TV_MODE_PAL] =3D "PAL",=0D
+-	[VC4_VEC_TV_MODE_PAL_M] =3D "PAL-M",=0D
+-};=0D
+-=0D
+ static int vc4_vec_bind(struct device *dev, struct device *master, void *d=
+ata)=0D
+ {=0D
+ 	struct platform_device *pdev =3D to_platform_device(dev);=0D
+@@ -506,9 +607,11 @@ static int vc4_vec_bind(struct device *dev, struct dev=
+ice *master, void *data)=0D
+ 	struct vc4_vec *vec;=0D
+ 	int ret;=0D
+ =0D
+-	ret =3D drm_mode_create_tv_properties_legacy(drm,=0D
+-						   ARRAY_SIZE(tv_mode_names),=0D
+-						   tv_mode_names);=0D
++	ret =3D drm_mode_create_tv_properties(drm,=0D
++					    BIT(DRM_MODE_TV_MODE_NTSC_J) |=0D
++					    BIT(DRM_MODE_TV_MODE_NTSC_M) |=0D
++					    BIT(DRM_MODE_TV_MODE_PAL_B) |=0D
++					    BIT(DRM_MODE_TV_MODE_PAL_M));=0D
+ 	if (ret)=0D
+ 		return ret;=0D
+ =0D
+=0D
+-- =0D
+b4 0.10.0-dev-65ba7=0D
