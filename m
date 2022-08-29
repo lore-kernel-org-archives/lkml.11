@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934A4ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 631A7ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231810AbiH2LW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53896 "EHLO
+        id S231825AbiH2LWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:22:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbiH2LU5 (ORCPT
+        with ESMTP id S231724AbiH2LVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:20:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24C0975495;
-        Mon, 29 Aug 2022 04:13:52 -0700 (PDT)
+        Mon, 29 Aug 2022 07:21:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7EDF6334;
+        Mon, 29 Aug 2022 04:14:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD8DE61211;
-        Mon, 29 Aug 2022 11:13:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCE63C433D6;
-        Mon, 29 Aug 2022 11:13:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E55D2B80FD4;
+        Mon, 29 Aug 2022 11:13:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5325BC433C1;
+        Mon, 29 Aug 2022 11:13:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771631;
-        bh=thEZZoC+rG7e+f2dd8Ys+Qa+9APUgQYy76CqHlo4o10=;
+        s=korg; t=1661771596;
+        bh=8tugZhuC6oRf8RJpwUQ9Xb2AB7C4/+bU00sZcnURoTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xJyA+6ZBZQpayNUvM+1ZX1jdXYOh+RBFqk73/r1+E6S4r9fuz27ooy4P6+eBh+udi
-         qv7bwGH5ZfRHqfIrC5xlXcmWs8q7m6S8wtZNjIu2ni9SSJPH1nwAVI/dXdjPtDpxdn
-         k9Xb10nBplhFl/qJhkq19jFt0eYPfqCrn4TGf+jI=
+        b=CeF9HXywnbmnDIPVq/cYyRu/PKyXCtGWgZKgU+kANo9AW88Efc82UOG7hSCVNp2cK
+         78hnaHN+XM9vUy6+OfxhKPMuny0z/NTJJdC7ZecTKz+CsV3csObjj8YLVBQdVN2+wc
+         Iz3XARQQHrjXF2dVSNGRtIw3T3RL7o27gx5IKCQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 129/136] blk-mq: fix io hung due to missing commit_rqs
-Date:   Mon, 29 Aug 2022 12:59:56 +0200
-Message-Id: <20220829105809.989544642@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Andre Edich <andre.edich@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 120/136] Revert "usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid polling"
+Date:   Mon, 29 Aug 2022 12:59:47 +0200
+Message-Id: <20220829105809.603695465@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -48,94 +52,262 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-commit 65fac0d54f374625b43a9d6ad1f2c212bd41f518 upstream.
+This reverts commit eaf3a094d8924ecb0baacf6df62ae1c6a96083cf which is
+upstream commit 1ce8b37241ed291af56f7a49bbdbf20c08728e88.
 
-Currently, in virtio_scsi, if 'bd->last' is not set to true while
-dispatching request, such io will stay in driver's queue, and driver
-will wait for block layer to dispatch more rqs. However, if block
-layer failed to dispatch more rq, it should trigger commit_rqs to
-inform driver.
+It is reported to cause problems, so drop it from the 5.15.y tree until
+the root cause can be determined.
 
-There is a problem in blk_mq_try_issue_list_directly() that commit_rqs
-won't be called:
-
-// assume that queue_depth is set to 1, list contains two rq
-blk_mq_try_issue_list_directly
- blk_mq_request_issue_directly
- // dispatch first rq
- // last is false
-  __blk_mq_try_issue_directly
-   blk_mq_get_dispatch_budget
-   // succeed to get first budget
-   __blk_mq_issue_directly
-    scsi_queue_rq
-     cmd->flags |= SCMD_LAST
-      virtscsi_queuecommand
-       kick = (sc->flags & SCMD_LAST) != 0
-       // kick is false, first rq won't issue to disk
- queued++
-
- blk_mq_request_issue_directly
- // dispatch second rq
-  __blk_mq_try_issue_directly
-   blk_mq_get_dispatch_budget
-   // failed to get second budget
- ret == BLK_STS_RESOURCE
-  blk_mq_request_bypass_insert
- // errors is still 0
-
- if (!list_empty(list) || errors && ...)
-  // won't pass, commit_rqs won't be called
-
-In this situation, first rq relied on second rq to dispatch, while
-second rq relied on first rq to complete, thus they will both hung.
-
-Fix the problem by also treat 'BLK_STS_*RESOURCE' as 'errors' since
-it means that request is not queued successfully.
-
-Same problem exists in blk_mq_dispatch_rq_list(), 'BLK_STS_*RESOURCE'
-can't be treated as 'errors' here, fix the problem by calling
-commit_rqs if queue_rq return 'BLK_STS_*RESOURCE'.
-
-Fixes: d666ba98f849 ("blk-mq: add mq_ops->commit_rqs()")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220726122224.1790882-1-yukuai1@huaweicloud.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Reported-by: Lukas Wunner <lukas@wunner.de>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Ferry Toth <fntoth@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Andre Edich <andre.edich@microchip.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220826132137.GA24932@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/blk-mq.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/usb/smsc95xx.c |  113 ++++++++++++++++++++-------------------------
+ 1 file changed, 52 insertions(+), 61 deletions(-)
 
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -1400,7 +1400,8 @@ out:
- 	/* If we didn't flush the entire list, we could have told the driver
- 	 * there was more coming, but that turned out to be a lie.
- 	 */
--	if ((!list_empty(list) || errors) && q->mq_ops->commit_rqs && queued)
-+	if ((!list_empty(list) || errors || needs_resource ||
-+	     ret == BLK_STS_DEV_RESOURCE) && q->mq_ops->commit_rqs && queued)
- 		q->mq_ops->commit_rqs(hctx);
- 	/*
- 	 * Any items that need requeuing? Stuff them into hctx->dispatch,
-@@ -2111,6 +2112,7 @@ void blk_mq_try_issue_list_directly(stru
- 		list_del_init(&rq->queuelist);
- 		ret = blk_mq_request_issue_directly(rq, list_empty(list));
- 		if (ret != BLK_STS_OK) {
-+			errors++;
- 			if (ret == BLK_STS_RESOURCE ||
- 					ret == BLK_STS_DEV_RESOURCE) {
- 				blk_mq_request_bypass_insert(rq, false,
-@@ -2118,7 +2120,6 @@ void blk_mq_try_issue_list_directly(stru
- 				break;
- 			}
- 			blk_mq_end_request(rq, ret);
--			errors++;
- 		} else
- 			queued++;
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -18,8 +18,6 @@
+ #include <linux/usb/usbnet.h>
+ #include <linux/slab.h>
+ #include <linux/of_net.h>
+-#include <linux/irq.h>
+-#include <linux/irqdomain.h>
+ #include <linux/mdio.h>
+ #include <linux/phy.h>
+ #include "smsc95xx.h"
+@@ -53,9 +51,6 @@
+ #define SUSPEND_ALLMODES		(SUSPEND_SUSPEND0 | SUSPEND_SUSPEND1 | \
+ 					 SUSPEND_SUSPEND2 | SUSPEND_SUSPEND3)
+ 
+-#define SMSC95XX_NR_IRQS		(1) /* raise to 12 for GPIOs */
+-#define PHY_HWIRQ			(SMSC95XX_NR_IRQS - 1)
+-
+ struct smsc95xx_priv {
+ 	u32 mac_cr;
+ 	u32 hash_hi;
+@@ -64,9 +59,6 @@ struct smsc95xx_priv {
+ 	spinlock_t mac_cr_lock;
+ 	u8 features;
+ 	u8 suspend_flags;
+-	struct irq_chip irqchip;
+-	struct irq_domain *irqdomain;
+-	struct fwnode_handle *irqfwnode;
+ 	struct mii_bus *mdiobus;
+ 	struct phy_device *phydev;
+ };
+@@ -603,8 +595,6 @@ static void smsc95xx_mac_update_fulldupl
+ 
+ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+ {
+-	struct smsc95xx_priv *pdata = dev->driver_priv;
+-	unsigned long flags;
+ 	u32 intdata;
+ 
+ 	if (urb->actual_length != 4) {
+@@ -616,15 +606,11 @@ static void smsc95xx_status(struct usbne
+ 	intdata = get_unaligned_le32(urb->transfer_buffer);
+ 	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
+ 
+-	local_irq_save(flags);
+-
+ 	if (intdata & INT_ENP_PHY_INT_)
+-		generic_handle_domain_irq(pdata->irqdomain, PHY_HWIRQ);
++		;
+ 	else
+ 		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
+ 			    intdata);
+-
+-	local_irq_restore(flags);
+ }
+ 
+ /* Enable or disable Tx & Rx checksum offload engines */
+@@ -1086,9 +1072,8 @@ static int smsc95xx_bind(struct usbnet *
+ {
+ 	struct smsc95xx_priv *pdata;
+ 	bool is_internal_phy;
+-	char usb_path[64];
+-	int ret, phy_irq;
+ 	u32 val;
++	int ret;
+ 
+ 	printk(KERN_INFO SMSC_CHIPNAME " v" SMSC_DRIVER_VERSION "\n");
+ 
+@@ -1128,38 +1113,10 @@ static int smsc95xx_bind(struct usbnet *
+ 	if (ret)
+ 		goto free_pdata;
+ 
+-	/* create irq domain for use by PHY driver and GPIO consumers */
+-	usb_make_path(dev->udev, usb_path, sizeof(usb_path));
+-	pdata->irqfwnode = irq_domain_alloc_named_fwnode(usb_path);
+-	if (!pdata->irqfwnode) {
+-		ret = -ENOMEM;
+-		goto free_pdata;
+-	}
+-
+-	pdata->irqdomain = irq_domain_create_linear(pdata->irqfwnode,
+-						    SMSC95XX_NR_IRQS,
+-						    &irq_domain_simple_ops,
+-						    pdata);
+-	if (!pdata->irqdomain) {
+-		ret = -ENOMEM;
+-		goto free_irqfwnode;
+-	}
+-
+-	phy_irq = irq_create_mapping(pdata->irqdomain, PHY_HWIRQ);
+-	if (!phy_irq) {
+-		ret = -ENOENT;
+-		goto remove_irqdomain;
+-	}
+-
+-	pdata->irqchip = dummy_irq_chip;
+-	pdata->irqchip.name = SMSC_CHIPNAME;
+-	irq_set_chip_and_handler_name(phy_irq, &pdata->irqchip,
+-				      handle_simple_irq, "phy");
+-
+ 	pdata->mdiobus = mdiobus_alloc();
+ 	if (!pdata->mdiobus) {
+ 		ret = -ENOMEM;
+-		goto dispose_irq;
++		goto free_pdata;
  	}
+ 
+ 	ret = smsc95xx_read_reg(dev, HW_CFG, &val);
+@@ -1192,7 +1149,6 @@ static int smsc95xx_bind(struct usbnet *
+ 		goto unregister_mdio;
+ 	}
+ 
+-	pdata->phydev->irq = phy_irq;
+ 	pdata->phydev->is_internal = is_internal_phy;
+ 
+ 	/* detect device revision as different features may be available */
+@@ -1235,15 +1191,6 @@ unregister_mdio:
+ free_mdio:
+ 	mdiobus_free(pdata->mdiobus);
+ 
+-dispose_irq:
+-	irq_dispose_mapping(phy_irq);
+-
+-remove_irqdomain:
+-	irq_domain_remove(pdata->irqdomain);
+-
+-free_irqfwnode:
+-	irq_domain_free_fwnode(pdata->irqfwnode);
+-
+ free_pdata:
+ 	kfree(pdata);
+ 	return ret;
+@@ -1256,9 +1203,6 @@ static void smsc95xx_unbind(struct usbne
+ 	phy_disconnect(dev->net->phydev);
+ 	mdiobus_unregister(pdata->mdiobus);
+ 	mdiobus_free(pdata->mdiobus);
+-	irq_dispose_mapping(irq_find_mapping(pdata->irqdomain, PHY_HWIRQ));
+-	irq_domain_remove(pdata->irqdomain);
+-	irq_domain_free_fwnode(pdata->irqfwnode);
+ 	netif_dbg(dev, ifdown, dev->net, "free pdata\n");
+ 	kfree(pdata);
+ }
+@@ -1283,6 +1227,29 @@ static u32 smsc_crc(const u8 *buffer, si
+ 	return crc << ((filter % 2) * 16);
+ }
+ 
++static int smsc95xx_enable_phy_wakeup_interrupts(struct usbnet *dev, u16 mask)
++{
++	int ret;
++
++	netdev_dbg(dev->net, "enabling PHY wakeup interrupts\n");
++
++	/* read to clear */
++	ret = smsc95xx_mdio_read_nopm(dev, PHY_INT_SRC);
++	if (ret < 0)
++		return ret;
++
++	/* enable interrupt source */
++	ret = smsc95xx_mdio_read_nopm(dev, PHY_INT_MASK);
++	if (ret < 0)
++		return ret;
++
++	ret |= mask;
++
++	smsc95xx_mdio_write_nopm(dev, PHY_INT_MASK, ret);
++
++	return 0;
++}
++
+ static int smsc95xx_link_ok_nopm(struct usbnet *dev)
+ {
+ 	int ret;
+@@ -1449,6 +1416,7 @@ static int smsc95xx_enter_suspend3(struc
+ static int smsc95xx_autosuspend(struct usbnet *dev, u32 link_up)
+ {
+ 	struct smsc95xx_priv *pdata = dev->driver_priv;
++	int ret;
+ 
+ 	if (!netif_running(dev->net)) {
+ 		/* interface is ifconfig down so fully power down hw */
+@@ -1467,10 +1435,27 @@ static int smsc95xx_autosuspend(struct u
+ 		}
+ 
+ 		netdev_dbg(dev->net, "autosuspend entering SUSPEND1\n");
++
++		/* enable PHY wakeup events for if cable is attached */
++		ret = smsc95xx_enable_phy_wakeup_interrupts(dev,
++			PHY_INT_MASK_ANEG_COMP_);
++		if (ret < 0) {
++			netdev_warn(dev->net, "error enabling PHY wakeup ints\n");
++			return ret;
++		}
++
+ 		netdev_info(dev->net, "entering SUSPEND1 mode\n");
+ 		return smsc95xx_enter_suspend1(dev);
+ 	}
+ 
++	/* enable PHY wakeup events so we remote wakeup if cable is pulled */
++	ret = smsc95xx_enable_phy_wakeup_interrupts(dev,
++		PHY_INT_MASK_LINK_DOWN_);
++	if (ret < 0) {
++		netdev_warn(dev->net, "error enabling PHY wakeup ints\n");
++		return ret;
++	}
++
+ 	netdev_dbg(dev->net, "autosuspend entering SUSPEND3\n");
+ 	return smsc95xx_enter_suspend3(dev);
+ }
+@@ -1536,6 +1521,13 @@ static int smsc95xx_suspend(struct usb_i
+ 	}
+ 
+ 	if (pdata->wolopts & WAKE_PHY) {
++		ret = smsc95xx_enable_phy_wakeup_interrupts(dev,
++			(PHY_INT_MASK_ANEG_COMP_ | PHY_INT_MASK_LINK_DOWN_));
++		if (ret < 0) {
++			netdev_warn(dev->net, "error enabling PHY wakeup ints\n");
++			goto done;
++		}
++
+ 		/* if link is down then configure EDPD and enter SUSPEND1,
+ 		 * otherwise enter SUSPEND0 below
+ 		 */
+@@ -1769,12 +1761,11 @@ static int smsc95xx_resume(struct usb_in
+ 			return ret;
+ 	}
+ 
+-	phy_init_hw(pdata->phydev);
+-
+ 	ret = usbnet_resume(intf);
+ 	if (ret < 0)
+ 		netdev_warn(dev->net, "usbnet_resume error\n");
+ 
++	phy_init_hw(pdata->phydev);
+ 	return ret;
+ }
+ 
 
 
