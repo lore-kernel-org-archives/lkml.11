@@ -2,98 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBAA6ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 03:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F2BECAAA2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 03:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229472AbiH2Dkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 23:40:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
+        id S229486AbiH2Dnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 23:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiH2Dke (ORCPT
+        with ESMTP id S229462AbiH2Dna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 23:40:34 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18DC525E83;
-        Sun, 28 Aug 2022 20:40:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661744434; x=1693280434;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Oya5Hnsy4mm0/87tApeZ1XDEJ4Ant4xomrwmja1Ayxw=;
-  b=BaiPprdCwpJzSQwrPMkVoX57Ja0QkwdvBAksmUSaWqz6VdoiMImfWt3i
-   7p90/j6Gf/qZRWqdjTuD0yRPuCCp2BBrMlSBAKRkWC5PgzY3PYmi8KWiK
-   b8kDZWwJGqAlR8eZ2TgiFTU+5S4+4jowKFzCR7hF3WgAU2uKgSzwT0N2H
-   MkrXYEPom2YQEj2/tdiBY5kL9bKlpOmVhMpariNdy7KszouK3ciy15Jdv
-   AdNFJ4xLZIQg28ERtgbqa9PLCr9MO+sSQYVlXMHc7yK/QzL9RDy7aokJX
-   6x+np27kQb7l6Dp/OZ9io2m+n8grCQn4TZgCv2EUSkIAUd96K2+uqbCXJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="274549902"
-X-IronPort-AV: E=Sophos;i="5.93,271,1654585200"; 
-   d="scan'208";a="274549902"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 20:40:33 -0700
-X-IronPort-AV: E=Sophos;i="5.93,271,1654585200"; 
-   d="scan'208";a="644276121"
-Received: from lizhipe2-mobl.ccr.corp.intel.com (HELO [10.254.210.26]) ([10.254.210.26])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2022 20:40:26 -0700
-Message-ID: <316f6575-59ea-08e3-aaaf-bc1e4f42a574@linux.intel.com>
-Date:   Mon, 29 Aug 2022 11:40:24 +0800
+        Sun, 28 Aug 2022 23:43:30 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9CC2B610
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 20:43:28 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id z2so8581294edc.1
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 20:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=morsemicro-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Nwpbs0K4MoaHLEivXoiUzT3Zh8lHJPxRGl3AaGXaDhg=;
+        b=jTZDkb4QuQpgB1nU+yGNrKoXT/GguRdiMt77lLsVdyDpGMO/SlCpLakTWk9cxxCpkY
+         2vBzy4ad2oyywSET0uKuDFVXkTrcCfuM1eOOoJQGiO//lVnttHDcxiz54gHgQiPN6Vvn
+         nKi11JoGkZi6i5lQqs9Lq67m8k0f9/HaV2F4nltJ2BGDPp4takwYauvEmBGrN96dY/ba
+         hQgvEcHUG57/viKyZm+Lpfq9/b9OfGDlbmcSWazjKBowrdnnh52pIHimYN9ltfCeJ95g
+         dV09Vm43XhRVM7+f5vCghu3n1adnn0XauBL0uLTBg/hBQJ8JgTxpIzvBW0ZWY89GzuyO
+         d/ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Nwpbs0K4MoaHLEivXoiUzT3Zh8lHJPxRGl3AaGXaDhg=;
+        b=HJijMjZ/ApB4fXwChQogq6TRe158MUSEodB+SERFlwyeRriefzIqCdIjt/hndiS/72
+         dLESIKjBBweznMSfr42sgxWcGxzE6pFn5ejVD3jCtwqTUwSGj8C9jY23jVfeoJkKHF3o
+         n2eFDxobA8Wyk2j5aEJufCWi9d9xCYB8lp5rVqKleswON38NpQTKii/1JSmD3HoxBSiI
+         3PXIr7SQqLrWkLn6nF+YzjGDmoX7DHUe+4bVOrvo5oaqfL2OERS6kI6FmWmxsfY/e4Ag
+         E7gjB4k8ZZoE+ZBTWdtzVv34XlzLdUolEP0vB0/yj7IOBHMiLDAURuWkvihTeKVOSEmK
+         MhTA==
+X-Gm-Message-State: ACgBeo34ffYCgg0x/AIxx8Fy44ZfvQmap9VQWGWvIzSAdc+/3Vjll/1e
+        Fibbkp7Rd5Sh0pXM0eq6qeLQZldokJIfFdYYAD+Vlw==
+X-Google-Smtp-Source: AA6agR4ZIgZ2j+dIc72VoA09K5TXz8V4lttQDeN00DtTTplOg8FfS3G6hbr8lzbqlfLQqdVb1JK06WDmU6noNjcw+XA=
+X-Received: by 2002:a05:6402:24a4:b0:440:8c0c:8d2b with SMTP id
+ q36-20020a05640224a400b004408c0c8d2bmr14446911eda.311.1661744607092; Sun, 28
+ Aug 2022 20:43:27 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v12 07/17] iommu: Try to allocate blocking domain when
- probing device
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-8-baolu.lu@linux.intel.com>
- <YwjeL2SVmdRpoWb6@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <YwjeL2SVmdRpoWb6@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220810224804.2137240-1-gilad.itzkovitch@morsemicro.com> <f97efe8ff5f466ce938f38dc26cb76c7abcc5a71.camel@sipsolutions.net>
+In-Reply-To: <f97efe8ff5f466ce938f38dc26cb76c7abcc5a71.camel@sipsolutions.net>
+From:   Gilad Itzkovitch <gilad.itzkovitch@morsemicro.com>
+Date:   Mon, 29 Aug 2022 15:43:16 +1200
+Message-ID: <CAG_xHGO1GvSy0pC=xNfBGyAin9b58k+b78+7gWv1YoOuQ9OAHQ@mail.gmail.com>
+Subject: Re: [PATCH] wifi: ieee80211: Fix for fragmented action frames
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/26 22:52, Jason Gunthorpe wrote:
-> On Fri, Aug 26, 2022 at 08:11:31PM +0800, Lu Baolu wrote:
->> Allocate the blocking domain when probing devices if the driver supports
->> blocking domain allocation. Otherwise, revert to the previous behavior,
->> that is, use UNMANAGED domain instead when the blocking domain is needed.
->>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> Tested-by: Zhangfei Gao<zhangfei.gao@linaro.org>
->> Tested-by: Tony Zhu<tony.zhu@intel.com>
->> ---
->>   drivers/iommu/iommu.c | 29 +++++++++++++++++------------
->>   1 file changed, 17 insertions(+), 12 deletions(-)
-> This seems like a lot of overhead to allocate these things for every
-> group?
-> 
-> Why not add a simple refcount on the blocking domain instead and
-> allocate the domain on the pasid attach like we do for ownership?
+Hi Johannes,
 
-I am working towards implementing static instance of blocking domain for
-each IOMMU driver, and then, there's no much overhead to allocate it in
-the probing device path.
+On Thu, Aug 25, 2022 at 8:08 PM Johannes Berg <johannes@sipsolutions.net> wrote:
+>
+> On Thu, 2022-08-11 at 10:48 +1200, Gilad Itzkovitch wrote:
+> > The robust management frame check ensures a station exists for
+> > the frame before proceeding, but there are some action frame
+> > categories which don't require an existing station, and so the
+> > _ieee80211_is_robust_mgmt_frame function peeks into the
+> > action frame's payload to identify the category and filter them out.
+> >
+> > In some scenarios, e.g. DPP at S1G data rates, action frames
+> > can get fragmented. This commit adds an extra check to ensure
+> > we don't peek into the payload of fragmented frames beyond the
+> > first fragment.
+> >
+> > Signed-off-by: Gilad Itzkovitch <gilad.itzkovitch@morsemicro.com>
+> > ---
+> >  include/linux/ieee80211.h | 12 ++++++++++++
+> >  1 file changed, 12 insertions(+)
+> >
+> > diff --git a/include/linux/ieee80211.h b/include/linux/ieee80211.h
+> > index 55e6f4ad0ca6..5da9608fdce3 100644
+> > --- a/include/linux/ieee80211.h
+> > +++ b/include/linux/ieee80211.h
+> > @@ -4124,6 +4124,7 @@ static inline bool _ieee80211_is_robust_mgmt_frame(struct ieee80211_hdr *hdr)
+> >
+> >       if (ieee80211_is_action(hdr->frame_control)) {
+> >               u8 *category;
+> > +             u16 sc;
+> >
+> >               /*
+> >                * Action frames, excluding Public Action frames, are Robust
+> > @@ -4134,6 +4135,17 @@ static inline bool _ieee80211_is_robust_mgmt_frame(struct ieee80211_hdr *hdr)
+> >                */
+> >               if (ieee80211_has_protected(hdr->frame_control))
+> >                       return true;
+> > +
+> > +             /*
+> > +              * Some action frames do not have a STA associated with them,
+> > +              * so we rule them out from the robust management frame check.
+> > +              * The category is within the payload, so we only proceed if
+> > +              * we're checking the first fragment.
+> > +              */
+> > +             sc = le16_to_cpu(hdr->seq_ctrl);
+> > +             if (sc & IEEE80211_SCTL_FRAG)
+> > +                     return false;
+> >
+>
+>
+> This doesn't make much sense to me - why would it be allowed or
+> necessary to call this function on a frame that wasn't yet defragmented?
+>
+> johannes
 
-Best regards,
-baolu
+That was partially our understanding. But, the fragmented action frame is
+being dropped by this function as it is part of the provisioning DPP process
+(fragmented due to S1G low rates).
+Trying to avoid a big change here for this specific action category.
+As defragmentation will occur later on in the process there should be a
+safe way to avoid dropping the frame beforehand.
+
+Gilad
