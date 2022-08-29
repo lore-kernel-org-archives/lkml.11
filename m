@@ -2,205 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C61CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 049BEECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbiH2MDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58006 "EHLO
+        id S230167AbiH2MEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiH2MC6 (ORCPT
+        with ESMTP id S229509AbiH2MDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:02:58 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2085.outbound.protection.outlook.com [40.107.94.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7D286B79;
-        Mon, 29 Aug 2022 04:47:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TixmucmKBRYiphwCd+ixc2JRASB+E4ERxPRB4P+7F1K8RWdag8BvwWRhfR3D4b4Vm3MBtdSuFoF0eUsiHkL64VMIKaqZ1ARQP1wwIIfJCeY5spHHWM6Qpl5VOFYlNMQ3xCHD0rRh94lPAQIWNNhON8CGTua3NEjlPgrX2N1Gn+BpC3aV/KtJ6b5ARKWhFMO5CxNA8wJRhkI+9o0a+WSiRjSMRp90bECIA10k8lDNnSiDaFS+xUTNoyz0PYeoxOIQaRhyfklX0Nb41PGz/yNLSJdCvtBMFR+es1oHbowWX+3xPbHnI0aeUBVaNHpg3cQPnhq9tnkQUVfVhILJJ47duw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I6UKajqs/S/laLntuOMFWN+aKmwPPb05+IjUjthsek4=;
- b=m/qc+4s/ZWEuvWYOdx01woMJDavbnnANxA/lqqNXpn7yZAvhwiKlJQ9djqrz7znm2j6tZp+Lo5rlDC++MmfKN7Ky1yGWlY7sZijjbd1mGWCiDJ8semh1A44WS1lCv1lNLjb00hD4VBrR6SMbeMcAcsbD9s+SwmtLEHUYnkxeFkimrlNymBUtc9lhDCN411zQmXq+2Uk+2ia8D/IyvChX/1bks9whti7gPv/Z/Aqr2lWnGHx6qBM5SjL7aVSWnxVrascqrXZP8021QLa4UEsYkZgNFMa9dQ0CYm+q0nZ/kMBE3/xXMkHI3RcAEvQPuF6CXu05nCtpnIudhv/z3zMYxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I6UKajqs/S/laLntuOMFWN+aKmwPPb05+IjUjthsek4=;
- b=pKDLD5LNfvq+t1KqaXnOmHUA+OJ81j96KJt5TsjjkE3KhB39sDoxP09PWYZdMoiEliDvSx1nQLOM1UM6mltNw1axu8UotdvVHkCLVDs25p+LmX4sQHqy3vbmql05okxXsYG3R3x6prtfPx67s+swCxqXfpLhkMK7ceANlGsdOH6Uajk1A7nsSJlxlHQ3uSPON/fyMEcTNuL1iYvii3WPioyTrUBV0MZLEdaNUJzGQOGkbem2IVdoAZtvudyZLw3iFFtOQzNsVhuDl1w6x3efE357ePWLbCfqFCKZf5AMnTwLhgmoZFrzP9qa8V1hSb2mvAIs2Tn6XRLuji2trok2BQ==
-Received: from DM6PR04CA0027.namprd04.prod.outlook.com (2603:10b6:5:334::32)
- by BY5PR12MB3649.namprd12.prod.outlook.com (2603:10b6:a03:1ad::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Mon, 29 Aug
- 2022 11:44:39 +0000
-Received: from DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:334:cafe::ad) by DM6PR04CA0027.outlook.office365.com
- (2603:10b6:5:334::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
- Transport; Mon, 29 Aug 2022 11:44:39 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- DM6NAM11FT048.mail.protection.outlook.com (10.13.173.114) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5566.15 via Frontend Transport; Mon, 29 Aug 2022 11:44:39 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
- 15.0.1497.38; Mon, 29 Aug 2022 11:44:38 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Mon, 29 Aug 2022 04:44:37 -0700
-Received: from sandipan-pc.nvidia.com (10.127.8.12) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Mon, 29 Aug 2022 04:44:35 -0700
-From:   Sandipan Patra <spatra@nvidia.com>
-To:     <thierry.reding@gmail.com>, <jonathanh@nvidia.com>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <bbasu@nvidia.com>, <kyarlagadda@nvidia.com>,
-        Sandipan Patra <spatra@nvidia.com>
-Subject: [PATCH 1/2] arm64: tegra: Add PWM controllers on Tegra234
-Date:   Mon, 29 Aug 2022 17:14:31 +0530
-Message-ID: <20220829114432.19566-1-spatra@nvidia.com>
-X-Mailer: git-send-email 2.17.1
-X-NVConfidentiality: public
+        Mon, 29 Aug 2022 08:03:48 -0400
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C1ED89810;
+        Mon, 29 Aug 2022 04:48:54 -0700 (PDT)
+Received: by mail-wr1-f49.google.com with SMTP id az27so9831033wrb.6;
+        Mon, 29 Aug 2022 04:48:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:content-disposition:mime-version:message-id:subject:to
+         :from:date:from:to:cc;
+        bh=/Di7lkoE4PMDXxx+KkgEBZLTyvjkUh6iLYQL6rsJ/+4=;
+        b=kaLiTO3uz69oCN4+obPyA7IvFEwMUQt4ZXB/gpCbSytpTKaDsW0nIRGyUJlrfFsdvE
+         mTMdi/Z4w215r5xJBREm+A9DCZWdKMDh9eP4c8/x3R5xGY1Hj6pf8n0K/p2+vM2pyS5q
+         EH0TfHmeSyxe2CLjCBzM+P4TTrUSlSTU/5kLYioLrW6im0+coy5EfOhPV1wi9aFRYsKQ
+         hdcV+CcTtuR2pH8q0XIYhRZxh8JLh0rNtGd2NdQ2X3bDN1rkv3ZahAOHeRI+AXcweHvy
+         isZDOgf8r2OYCTu57efimyUr2retjmscs1Oo6dcHFsHyruJqIe81Jp4UvEJuyYovbuz2
+         4y9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:content-disposition:mime-version:message-id:subject:to
+         :from:date:x-gm-message-state:from:to:cc;
+        bh=/Di7lkoE4PMDXxx+KkgEBZLTyvjkUh6iLYQL6rsJ/+4=;
+        b=chtjH6W5gh6gGEp5VMHs68GGc3Nr+S0YFlEU2je8FdMhdQbHelfiKvHhH8GKOikjVf
+         QU7XLyuDHXLZUzPfNrSvWqlA6Vl6IZelO2BkJdTn4DQYry147GqCAbAh67vV5fEPdRqN
+         PJuaI/LH96yullbCgk6yYc2CY+cWL0IEMV658D6lia+VWJLuqLmIXC4Sx92UgXI86a0D
+         XksO4wJotQ5LsO2e0hdE/w62dUOm4IpufRH/ktdfyz/jSl/mE/ju+WAMRB+PDYetTXn2
+         LqG3JLyDH9NXsIc+SHIYedpPGSaMucumE2FB4K+OJdvEquQMnLBtT3k6ZswgGiSNQRi3
+         W6nQ==
+X-Gm-Message-State: ACgBeo2dGpJAmrz/DzEbvpwZVbkqKsImg1/+K8tQS117HBZBW6F+e7TU
+        Ooj9Jfufj9PjSWk5LeAOOEE=
+X-Google-Smtp-Source: AA6agR6Q8pcDSR2sGpo6Z+/Xk8vC5hvOIOH6YppdFlNOZIdRGVsL+2Mi1+jD+E1YNRyMMa7NoROLsA==
+X-Received: by 2002:a5d:64e9:0:b0:220:7dd7:63eb with SMTP id g9-20020a5d64e9000000b002207dd763ebmr6085539wri.590.1661773583790;
+        Mon, 29 Aug 2022 04:46:23 -0700 (PDT)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id i13-20020a05600c354d00b003a5f4fccd4asm8896858wmq.35.2022.08.29.04.46.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 04:46:23 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 13:44:35 +0200
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, corbet@lwn.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, alex.aring@gmail.com,
+        stefan@datenfreihafen.org, pablo@netfilter.org,
+        kadlec@netfilter.org, fw@strlen.de, kafai@fb.com,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH 0/4] net-next: frags: add adaptive per-peer timeout under load
+Message-ID: <20220829114427.GA2311@debian>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 86ec5f4c-06ef-4eba-a779-08da89b3db17
-X-MS-TrafficTypeDiagnostic: BY5PR12MB3649:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bl74q31oWeyfgOsiZcKRQ37Vtek1kNi4JKUPvQUiX2qeabL4uIxqg3M8ffZX1DtWcZIe/pbUdRR63SmrgiZQP3lA2LUWWMjYjr2osV6KMxRFMBDK6szzPxiE4FUNXfmn6e3D46oVLvI0j+qQrMkUD5JBKIxRQ2nA5+O+IpL1+3DTwKtYntgQKIjbqZRdjwIti+BtnuDwlJq4x5wLDiU9CRdqE4adZdkfIsj+mq80BaPtkRAo9B193F4CDIOUeDbmBW+/C3NpTEq17MYssKk3Q2k4YxaRYpLU2guIKJKK/UDj34Uta5qaAES1n3gfhxWWcwpEGMYTFsUwVl8FDdHhc5E5RrBgVnZ2UV/QJAovmI98i/GjW6KfiK95pvPGr57nBTVafsdW+kOO2luJR8HzEPnTiAOp6rQ3ZV78294XtO8Hi6KahGm+BE+BUd4yD+6sl05aoSDUbkQbv3UuRIZqoj/bKGoPgF+yX7KP7QCvt1ZOmUlm4VSLMDAJhjx0xiZW/0ESMAFS8pmpYteD+9rjX47dvtliFTCaBDzPsSjRVsd55cCXPJb1p87xbbC0qrrT5zhgqhYPoEJLo33HimK5Xx9loF0aFQAyyHNmSgyM0AUQD8TNTw4T91tzr9/2BRLhbBNM5+8YkSGx5PAbfLkiECzOqQg/lqHlUoldP+HSCPJ2U78AUXJ1d3KdRyrbhWQZRZRfjV7fGlJxn4fK9Tn3jgwrXHCxtjP6znjanaBfUhCB3Hr3H0KhRxwmrHg8RUF6qT2uLFNbmi8NC/ARIe5Ex96q4lH+S45rbn+LBfKf/b3jjwzjwIZVl8OSOs21hMw8QWsI+SJjwD78e8sv+UgGZA==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(376002)(136003)(396003)(36840700001)(46966006)(40470700004)(70206006)(6666004)(70586007)(107886003)(2906002)(41300700001)(7696005)(8676002)(8936002)(40460700003)(336012)(4326008)(2616005)(40480700001)(36860700001)(186003)(83380400001)(426003)(478600001)(47076005)(5660300002)(86362001)(1076003)(81166007)(356005)(26005)(82310400005)(82740400003)(36756003)(110136005)(316002)(54906003)(36900700001)(16060500005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 11:44:39.3008
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86ec5f4c-06ef-4eba-a779-08da89b3db17
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT048.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3649
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tegra234 has eight single-channel PWM controllers, one of them in the
-AON block.
+This patch series introduces an optimization of fragment queues under
+load.
 
-Signed-off-by: Sandipan Patra <spatra@nvidia.com>
----
- arch/arm64/boot/dts/nvidia/tegra234.dtsi | 84 ++++++++++++++++++++++++
- 1 file changed, 84 insertions(+)
+The goal is to improve upon the current approach of static timeouts
+(frag_timeout, 30 seconds by default) by implementing Eric's
+suggestion of reducing timeouts under load [1], with additional
+considerations for peer-specific load.
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra234.dtsi b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-index 81a0f599685f..c2dc651f0842 100644
---- a/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra234.dtsi
-@@ -840,6 +840,90 @@
- 			#pwm-cells = <2>;
- 		};
- 
-+		pwm2: pwm@3290000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x3290000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM2>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM2>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm3: pwm@32a0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32a0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM3>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM3>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm4: pwm@c340000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0xc340000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM4>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM4>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm5: pwm@32c0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32c0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM5>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM5>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm6: pwm@32d0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32d0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM6>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM6>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm7: pwm@32e0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32e0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM7>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM7>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
-+		pwm8: pwm@32f0000 {
-+			compatible = "nvidia,tegra194-pwm",
-+				     "nvidia,tegra186-pwm";
-+			reg = <0x32f0000 0x10000>;
-+			clocks = <&bpmp TEGRA234_CLK_PWM8>;
-+			clock-names = "pwm";
-+			resets = <&bpmp TEGRA234_RESET_PWM8>;
-+			reset-names = "pwm";
-+			status = "disabled";
-+			#pwm-cells = <2>;
-+		};
-+
- 		spi@3300000 {
- 			compatible = "nvidia,tegra234-qspi";
- 			reg = <0x3300000 0x1000>;
+The timeout reduction is done dynamically per peer, based on both
+global and peer-specific load. low_thresh is reintroduced and now acts 
+as a knob for adjusting per-peer memory limits.
+
+A comparison of netperf results before and after applying the patch:
+
+Before:
+    [vm1 ~]# ./super_netperf.sh 10 -H 172.16.43.3 -l 60 -t UDP_STREAM
+    103.23
+
+After:
+    [vm1 ~]# ./super_netperf.sh 10 -H 172.16.43.3 -l 60 -t UDP_STREAM
+    576.17
+
+And another benchmark of a more specific use case.
+One high-bandwidth memory-hogging peer (vm1), and another "average"
+client (vm2), attempting to communicate with the same server:
+
+Before:
+    [vm1 ~]# ./super_netperf.sh 10 -H 172.16.43.3 -l 60 -t UDP_STREAM
+	42.57
+	[vm2 ~]# ./super_netperf.sh 1 -H 172.16.43.3 -l 60 -t UDP_STREAM
+	50.93
+
+After:
+    [vm1 ~]# ./super_netperf.sh 10 -H 172.16.43.3 -l 60 -t UDP_STREAM
+	420.65
+	[vm2 ~]# ./super_netperf.sh 1 -H 172.16.43.3 -l 60 -t UDP_STREAM
+	624.79
+
+
+These benchmarks were done using the following configuration:
+
+[vm3 ~]# grep . /proc/sys/net/ipv4/ipfrag_*
+/proc/sys/net/ipv4/ipfrag_high_thresh:104857600
+/proc/sys/net/ipv4/ipfrag_low_thresh:78643200
+/proc/sys/net/ipv4/ipfrag_max_dist:64
+/proc/sys/net/ipv4/ipfrag_secret_interval:0
+/proc/sys/net/ipv4/ipfrag_time:30
+
+Regards,
+Richard
+
+[1] https://www.mail-archive.com/netdev@vger.kernel.org/msg242228.html
+
+Richard Gobert (4):
+  net-next: frags: move inetpeer from ip4 to inet
+  net-next: ip6: fetch inetpeer in ip6frag_init
+  net-next: frags: add inetpeer frag_mem tracking
+  net-next: frags: dynamic timeout under load
+
+ Documentation/networking/ip-sysctl.rst  |  3 +
+ include/net/inet_frag.h                 | 13 ++---
+ include/net/inetpeer.h                  |  1 +
+ include/net/ipv6_frag.h                 |  3 +
+ net/ieee802154/6lowpan/reassembly.c     |  2 +-
+ net/ipv4/inet_fragment.c                | 77 ++++++++++++++++++++++---
+ net/ipv4/inetpeer.c                     |  1 +
+ net/ipv4/ip_fragment.c                  | 25 ++------
+ net/ipv6/netfilter/nf_conntrack_reasm.c |  2 +-
+ net/ipv6/reassembly.c                   |  2 +-
+ 10 files changed, 89 insertions(+), 40 deletions(-)
+
 -- 
-2.17.1
+2.36.1
 
