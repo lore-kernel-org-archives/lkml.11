@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED844ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:28:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB17ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 21:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230011AbiH2V15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 17:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        id S230073AbiH2V2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 17:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229600AbiH2V1I (ORCPT
+        with ESMTP id S229977AbiH2V1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 17:27:08 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143D8979F0
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:18 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id t13-20020a170902e84d00b00174b03be629so3066595plg.16
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:18 -0700 (PDT)
+        Mon, 29 Aug 2022 17:27:10 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695F59F1B5
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:23 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id k62-20020a638441000000b0042b66a99b6aso4565641pgd.18
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 14:26:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=plnLK4otWaGxR+W8sd3fBxFm06LW87+WFj6YX7JmKJI=;
-        b=O7Fq7HWZ7z8n2j/HcxIFYSMFkVCbPksq++2+VIS66vXRQwbI7dU8JTklRI8MPiby2e
-         edzsUySG6IImo6mrh8ENCQ2+wxA6BfMFPfkVn5AwXOsZupGcnzhGGSKXttVqFe7CqMCi
-         1h3acQOuI10/ig3PP8xkKsm4NtzNbHGpaQpLwoGjKN2BSoc/HFLvkEbHUIkKXG5J3g9z
-         9q6Jpb0Ph5QlVq/4hF27NyIuM3/V2/KAkuHoouSJodEv2dWsfVfE58VeJPPY/+QOUQfz
-         r+QwUf2vpfx2TV1s2fbWWB8eIKopRLMSEdWWEDiBiVoTpxt/dnwqSCw7tnlmHUsJj3fT
-         5A2Q==
+        bh=o1aoXsAZRKWKp3E60vO3aTfa7LhhJu+wloCiW42SL3o=;
+        b=hVadOQBIf7hIcCCPF4k/V8ishbMycFmV23IYK2/L+oJFUn4snhEXCB8nhiJ0XvBmGq
+         IPVx7m/qpumur19aTHX425elTvPhBwnAWLq2eu14tCxMYLfyVDPtnXMD7eRtBYdE8ib6
+         g6FY2QFmIprsXVeiDN0/TJA6z8yPl6Ga6H+AU+5BAz5wvK9q2eG8K6M5/G5IT26iqvDR
+         sF5KQOom085C4/LO0v/IjmuRTEiouanpvkUJ/WwC7Eqe/f3fgCYq7VPZ9r9nrS+kR+CY
+         ydqosByt6O340qUe8wv/4Yn0djwvN5x2tceHdnG95lN+D/X9zA9TkMcItH0K4FkMtDqG
+         cLTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=plnLK4otWaGxR+W8sd3fBxFm06LW87+WFj6YX7JmKJI=;
-        b=An68qMb3BQkaDFoaTCxxaamXw5oAoZjEZ7URrhoAlVLhpPPeIod/NjRIeZ/XAJELtP
-         SdGjfhkagpI+4ovYHYfoh0wHCiouDbkhANyMYodmk0cGBhsLdPWXs/5aPwHYd3afAgaY
-         0L8TekAY3mwVPvfb8uyAIpm9+E5T2Cn8658i28tbHqjQyPyzGNqlkYvay1fVTBV/gxWT
-         TEUEycUn29XF8BshCGVVxbGfqJmNLiDxs/Zl6VLMe2hYtMQlco6srBdoi8B5umRZfSks
-         /FIKwo7LY2PSn61X5Smh3RNo7PsvmoKSDpL+idWeY7NCj6PgOiPkZTG7/MbEtUmqW0lw
-         UwmQ==
-X-Gm-Message-State: ACgBeo2EsFHSUIqvf1DUgRM5kcCBycJEV/nx+1wFHuzeZIFIEHnQjKAU
-        O99mch1GH+nLfRxtKzykcdvKqt1VyDM=
-X-Google-Smtp-Source: AA6agR6koDuvaTUSC7OU/WlAja75jS99jSayBh5syt6ErVM0PHA+biyxUvs5Ar838YXdhWnvkXm6gonES4M=
+        bh=o1aoXsAZRKWKp3E60vO3aTfa7LhhJu+wloCiW42SL3o=;
+        b=v6A9chmvQp+ELHi2dDyqGF4FtldW0N0uyu1UnHDbGszi390jX54OufIbIfhbff+/bT
+         2irXbMdwo8OrusGu5hFXsWkgHhdRa0TW272BNHsBdmD6uarIOfOLZqloCotWaZ0Iowjh
+         H8Y/C5AiUZqZkF//lkR052QjnStLuGj51usJiGlp22c6V7aIPLsdWFPqyX+GMjtc2r1z
+         sq6c1wMn/FoAkKrPj3ZIxRAo2qejpC5hzVuKVWq4/NRaqxREkG/MP8gwp8AxqQRC/hGz
+         e2n8SlJ9//QqQ7M8/BRpTEg8qdrcEGet81tJzrA7vUdCw+H+Vpy/kDPfdbNyAtaxG8OC
+         5HhA==
+X-Gm-Message-State: ACgBeo2FLzFSSQOOzZU998cKoRkBBWkHpwfjssHVFm6PIPsXFLUll5a1
+        1EmmkxT65bdfMOFAaz9YQkfKZTr+x0o=
+X-Google-Smtp-Source: AA6agR5CaUs6YJBbyF56NgpgIgB6cgapfFaHPRJdugast+FKzlkUBYXObPd4n8zhAA8UFAnqt1i7b7mpRsg=
 X-Received: from surenb-spec.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e30])
- (user=surenb job=sendgmr) by 2002:a05:6a00:14c7:b0:52e:efb7:bd05 with SMTP id
- w7-20020a056a0014c700b0052eefb7bd05mr17908102pfu.24.1661808374985; Mon, 29
- Aug 2022 14:26:14 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 21:25:25 +0000
+ (user=surenb job=sendgmr) by 2002:a17:903:41c6:b0:174:3acf:8294 with SMTP id
+ u6-20020a17090341c600b001743acf8294mr17683670ple.118.1661808381376; Mon, 29
+ Aug 2022 14:26:21 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 21:25:29 +0000
 In-Reply-To: <20220829212531.3184856-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220829212531.3184856-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220829212531.3184856-23-surenb@google.com>
-Subject: [RFC PATCH 22/28] x86/mm: try VMA lock-based page fault handling first
+Message-ID: <20220829212531.3184856-27-surenb@google.com>
+Subject: [RFC PATCH 26/28] powerc/mm: try VMA lock-based page fault handling first
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     michel@lespinasse.org, jglisse@google.com, mhocko@suse.com,
@@ -73,29 +73,24 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Laurent Dufour <ldufour@linux.ibm.com>
+
 Attempt VMA lock-based page fault handling first, and fall back to the
 existing mmap_lock-based handling if that fails.
+Copied from "x86/mm: try VMA lock-based page fault handling first"
 
-Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
 ---
- arch/x86/mm/fault.c | 36 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ arch/powerpc/mm/fault.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
 
-diff --git a/arch/x86/mm/fault.c b/arch/x86/mm/fault.c
-index fa71a5d12e87..35e74e3dc2c1 100644
---- a/arch/x86/mm/fault.c
-+++ b/arch/x86/mm/fault.c
-@@ -19,6 +19,7 @@
- #include <linux/uaccess.h>		/* faulthandler_disabled()	*/
- #include <linux/efi.h>			/* efi_crash_gracefully_on_page_fault()*/
- #include <linux/mm_types.h>
-+#include <linux/mm.h>			/* find_and_lock_vma() */
- 
- #include <asm/cpufeature.h>		/* boot_cpu_has, ...		*/
- #include <asm/traps.h>			/* dotraplinkage, ...		*/
-@@ -1323,6 +1324,38 @@ void do_user_addr_fault(struct pt_regs *regs,
- 	}
- #endif
+diff --git a/arch/powerpc/mm/fault.c b/arch/powerpc/mm/fault.c
+index 014005428687..c92bdfcd1796 100644
+--- a/arch/powerpc/mm/fault.c
++++ b/arch/powerpc/mm/fault.c
+@@ -450,6 +450,44 @@ static int ___do_page_fault(struct pt_regs *regs, unsigned long address,
+ 	if (is_exec)
+ 		flags |= FAULT_FLAG_INSTRUCTION;
  
 +#ifdef CONFIG_PER_VMA_LOCK
 +	if (!(flags & FAULT_FLAG_USER) || atomic_read(&mm->mm_users) == 1)
@@ -105,10 +100,21 @@ index fa71a5d12e87..35e74e3dc2c1 100644
 +	if (!vma)
 +		goto lock_mmap;
 +
-+	if (unlikely(access_error(error_code, vma))) {
++	if (unlikely(access_pkey_error(is_write, is_exec,
++				       (error_code & DSISR_KEYFAULT), vma))) {
++		int rc = bad_access_pkey(regs, address, vma);
++
 +		vma_read_unlock(vma);
-+		goto lock_mmap;
++		return rc;
 +	}
++
++	if (unlikely(access_error(is_write, is_exec, vma))) {
++		int rc = bad_access(regs, address);
++
++		vma_read_unlock(vma);
++		return rc;
++	}
++
 +	fault = handle_mm_fault(vma, address, flags | FAULT_FLAG_VMA_LOCK, regs);
 +	vma_read_unlock(vma);
 +
@@ -118,29 +124,24 @@ index fa71a5d12e87..35e74e3dc2c1 100644
 +	}
 +	count_vm_vma_lock_event(VMA_LOCK_RETRY);
 +
-+	/* Quick path to respond to signals */
-+	if (fault_signal_pending(fault, regs)) {
-+		if (!user_mode(regs))
-+			kernelmode_fixup_or_oops(regs, error_code, address,
-+						 SIGBUS, BUS_ADRERR,
-+						 ARCH_DEFAULT_PKEY);
-+		return;
-+	}
++	if (fault_signal_pending(fault, regs))
++		return user_mode(regs) ? 0 : SIGBUS;
++
 +lock_mmap:
 +#endif /* CONFIG_PER_VMA_LOCK */
 +
- 	/*
- 	 * Kernel-mode access to the user address space should only occur
- 	 * on well-defined single instructions listed in the exception
-@@ -1423,6 +1456,9 @@ void do_user_addr_fault(struct pt_regs *regs,
- 	}
+ 	/* When running in the kernel we expect faults to occur only to
+ 	 * addresses in user space.  All other faults represent errors in the
+ 	 * kernel and should generate an OOPS.  Unfortunately, in the case of an
+@@ -526,6 +564,9 @@ static int ___do_page_fault(struct pt_regs *regs, unsigned long address,
  
- 	mmap_read_unlock(mm);
+ 	mmap_read_unlock(current->mm);
+ 
 +#ifdef CONFIG_PER_VMA_LOCK
 +done:
 +#endif
- 	if (likely(!(fault & VM_FAULT_ERROR)))
- 		return;
+ 	if (unlikely(fault & VM_FAULT_ERROR))
+ 		return mm_fault_error(regs, address, fault);
  
 -- 
 2.37.2.672.g94769d06f0-goog
