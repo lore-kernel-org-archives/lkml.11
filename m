@@ -2,106 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28CECECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D9D5ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230026AbiH2Mtn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
+        id S229459AbiH2MuW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbiH2MsX (ORCPT
+        with ESMTP id S230140AbiH2MuD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:48:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72AB829C87;
-        Mon, 29 Aug 2022 05:33:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71332B80EF3;
-        Mon, 29 Aug 2022 12:33:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E524C433D7;
-        Mon, 29 Aug 2022 12:33:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661776423;
-        bh=BVx7YbyPMDfrYRtpBOz6+GKhJ46zqHQZiBFkpP2hkz4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=W5uumRxhoH24u+dxOE5PNQTXrfWOPCpXPp+ngZXWVHgFu2b67Ylpp9CB+nRe/3YBf
-         TUBkgCelx4d2fAo4Q74WyvGM43PpeZdKktdwXbQkwCoceJlc+tZnov1wPtznqzGNMQ
-         xiKV9SnGt0gOlj3HQrgx3vlYItWCRrYAuAWcybqBVUWVlOjCwQJO5qSZq4s3x/CBg1
-         ENSSVnwg/ToTp8H1Zi9maNgrcPoU0qyOpvci5nodSdsRSpQ0w9bN2Y6AadQojgQmbo
-         8dkVhnGnS3YvvWz8hmHY87/o616yHrBMKbhd0juM0AFqRGVZxFOHhTHRw+tsOPYKFF
-         GXjqzfKRIEqdw==
-Date:   Mon, 29 Aug 2022 15:33:34 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Roberto Sassu <roberto.sassu@huaweicloud.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
-        corbet@lwn.net, dhowells@redhat.com, rostedt@goodmis.org,
-        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
-        serge@hallyn.com, shuah@kernel.org, bpf@vger.kernel.org,
-        linux-doc@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        deso@posteo.net, Roberto Sassu <roberto.sassu@huawei.com>
-Subject: Re: [PATCH v14 04/10] KEYS: Move KEY_LOOKUP_ to include/linux/key.h
- and add flags check function
-Message-ID: <YwyyHr0udrOIy7IX@kernel.org>
-References: <acae432697e854748d9a44c732ec8cab807d9d46.camel@huaweicloud.com>
- <20220826091228.1701185-1-roberto.sassu@huaweicloud.com>
- <6d85d7b1f0c2341698e88bad025bd6e0b34c7666.camel@huaweicloud.com>
- <YwroKjo7IkQDepp5@kernel.org>
- <YwrpL9b3NXtjnPru@kernel.org>
- <cead9f6ad77a66425324a880bd1df389fe258d40.camel@huaweicloud.com>
+        Mon, 29 Aug 2022 08:50:03 -0400
+Received: from outbound-smtp18.blacknight.com (outbound-smtp18.blacknight.com [46.22.139.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35622861CB
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:36:17 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail02.blacknight.ie [81.17.254.11])
+        by outbound-smtp18.blacknight.com (Postfix) with ESMTPS id 4E44C1C3A74
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 13:36:16 +0100 (IST)
+Received: (qmail 8212 invoked from network); 29 Aug 2022 12:36:16 -0000
+Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 29 Aug 2022 12:36:16 -0000
+Date:   Mon, 29 Aug 2022 13:36:10 +0100
+From:   Mel Gorman <mgorman@techsingularity.net>
+To:     Abel Wu <wuyun.abel@bytedance.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/5] sched/fair: default to false in test_idle_cores
+Message-ID: <20220829123610.iooaxujglh2l43x6@techsingularity.net>
+References: <20220712082036.5130-1-wuyun.abel@bytedance.com>
+ <20220712082036.5130-3-wuyun.abel@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <cead9f6ad77a66425324a880bd1df389fe258d40.camel@huaweicloud.com>
+In-Reply-To: <20220712082036.5130-3-wuyun.abel@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 09:25:05AM +0200, Roberto Sassu wrote:
-> On Sun, 2022-08-28 at 07:03 +0300, Jarkko Sakkinen wrote:
-> > On Sun, Aug 28, 2022 at 06:59:41AM +0300, Jarkko Sakkinen wrote:
-> > > On Fri, Aug 26, 2022 at 11:22:54AM +0200, Roberto Sassu wrote:
-> > > > On Fri, 2022-08-26 at 11:12 +0200, Roberto Sassu wrote:
-> > > > > From: Roberto Sassu <roberto.sassu@huawei.com>
-> > > > > 
-> > > > > In preparation for the patch that introduces the
-> > > > > bpf_lookup_user_key() eBPF
-> > > > > kfunc, move KEY_LOOKUP_ definitions to include/linux/key.h, to
-> > > > > be
-> > > > > able to
-> > > > > validate the kfunc parameters.
-> > > > > 
-> > > > > Also, introduce key_lookup_flags_valid() to check if the caller
-> > > > > set
-> > > > > in the
-> > > > > argument only defined flags. Introduce it directly in
-> > > > > include/linux/key.h,
-> > > > > to reduce the risk that the check is not in sync with currently
-> > > > > defined
-> > > > > flags.
-> > > > > 
-> > > > > Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
-> > > > > Reviewed-by: KP Singh <kpsingh@kernel.org>
-> > > > 
-> > > > Jarkko, could you please ack it if it is fine?
-> > > 
-> > > So, as said I'm not really confident that a function is
-> > > even needed in the first place. It's fine if there are
-> > > enough call sites to make it legit.
-> > 
-> > And *if* a named constant is enough, you could probably
-> > then just squash to the same patch that uses it, right?
+On Tue, Jul 12, 2022 at 04:20:33PM +0800, Abel Wu wrote:
+> It's uncertain whether idle cores exist or not if shared sched-
+> domains are not ready, so returning "no idle cores" usually
+> makes sense.
 > 
-> Yes, the constant seems better. Maybe, I would add in the same patch
-> that exports the lookup flags, since we have that.
+> While __update_idle_core() is an exception, it checks status
+> of this core and set to shared sched-domain if necessary. So
+> the whole logic depends on the existence of sds, and can bail
+> out early if !sds.
+> 
+> It's somehow a little tricky, and as Josh suggested that it
+> should be transient while the domain isn't ready. So remove
+> the self-defined default value to make things more clearer,
+> while introduce little overhead in idle path.
+> 
+> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+> Reviewed-by: Josh Don <joshdon@google.com>
 
-Yeah, then it would be probably easier to review too
-since it is "in the context".
+Acked-by: Mel Gorman <mgorman@techsingularity.net>
 
-BR, Jarkko
+-- 
+Mel Gorman
+SUSE Labs
