@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537F3ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D47AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230474AbiH2LIL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
+        id S230410AbiH2LIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230059AbiH2LHR (ORCPT
+        with ESMTP id S230357AbiH2LHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:07:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFA93B95A;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF79D3B97B;
         Mon, 29 Aug 2022 04:05:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28378611B2;
-        Mon, 29 Aug 2022 11:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFA2C433C1;
-        Mon, 29 Aug 2022 11:03:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 302C2B80EF9;
+        Mon, 29 Aug 2022 11:05:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93EBFC433C1;
+        Mon, 29 Aug 2022 11:05:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771008;
-        bh=SYgJSW96kZotwCCYKH6JZ1z3AKWck1OSNhjo4yZ/WZs=;
+        s=korg; t=1661771116;
+        bh=CUlCn9VQFgTQ/9wOrPWdNUeDKrblzrGrdFxsFdpSrlk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2v8KCbLmAAi96T6OSMDtt1kevXbvalVfcCjTdt9b64jahvl4KFrg1248Gku5k4hzr
-         v5NdQv9Ve5bu0IN5KgqH7xvOUUFwtl1klAVMTufgSoUxlnsS3DUy9R0TcbMi7kUhSW
-         Q0+y2uarJocFsIsCu5uxlzI1+KE+7dWaLvDLiPJs=
+        b=0qpiC8ZNqUL286ADrEPNAy89aYuh0r6pxqrzOZo7qTLbVbb1vnJqeRCLO/dZIVGCJ
+         wCV9vgF7eYu0T34v3c6GxizItuf/6Oq397AbeLohY3d/mr/yubxisp6m1teJL5YVPm
+         tga1PfsJ0D1I+e7mf/eYHpEKBpsyl05dHo5rV/nI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Jeremy Sowden <jeremy@azazel.net>,
+        Florian Westphal <fw@strlen.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 047/136] net/mlx5e: Fix wrong tc flag used when set hw-tc-offload off
-Date:   Mon, 29 Aug 2022 12:58:34 +0200
-Message-Id: <20220829105806.547269593@linuxfoundation.org>
+Subject: [PATCH 5.15 064/136] netfilter: bitwise: improve error goto labels
+Date:   Mon, 29 Aug 2022 12:58:51 +0200
+Message-Id: <20220829105807.259730311@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -49,41 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Jeremy Sowden <jeremy@azazel.net>
 
-[ Upstream commit 550f96432e6f6770efdaee0e65239d61431062a1 ]
+[ Upstream commit 00bd435208e5201eb935d273052930bd3b272b6f ]
 
-The cited commit reintroduced the ability to set hw-tc-offload
-in switchdev mode by reusing NIC mode calls without modifying it
-to support both modes, this can cause an illegal memory access
-when trying to turn hw-tc-offload off.
+Replace two labels (`err1` and `err2`) with more informative ones.
 
-Fix this by using the right TC_FLAG when checking if tc rules
-are installed while disabling hw-tc-offload.
-
-Fixes: d3cbd4254df8 ("net/mlx5e: Add ndo_set_feature for uplink representor")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/netfilter/nft_bitwise.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index fdf8d9866042c..c1c4f380803a1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3325,7 +3325,9 @@ static int set_feature_hw_tc(struct net_device *netdev, bool enable)
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
+diff --git a/net/netfilter/nft_bitwise.c b/net/netfilter/nft_bitwise.c
+index 47b0dba95054f..d0c648b64cd40 100644
+--- a/net/netfilter/nft_bitwise.c
++++ b/net/netfilter/nft_bitwise.c
+@@ -109,22 +109,23 @@ static int nft_bitwise_init_bool(struct nft_bitwise *priv,
+ 		return err;
+ 	if (mask.type != NFT_DATA_VALUE || mask.len != priv->len) {
+ 		err = -EINVAL;
+-		goto err1;
++		goto err_mask_release;
+ 	}
  
- #if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
--	if (!enable && mlx5e_tc_num_filters(priv, MLX5_TC_FLAG(NIC_OFFLOAD))) {
-+	int tc_flag = mlx5e_is_uplink_rep(priv) ? MLX5_TC_FLAG(ESW_OFFLOAD) :
-+						  MLX5_TC_FLAG(NIC_OFFLOAD);
-+	if (!enable && mlx5e_tc_num_filters(priv, tc_flag)) {
- 		netdev_err(netdev,
- 			   "Active offloaded tc filters, can't turn hw_tc_offload off\n");
- 		return -EINVAL;
+ 	err = nft_data_init(NULL, &priv->xor, sizeof(priv->xor), &xor,
+ 			    tb[NFTA_BITWISE_XOR]);
+ 	if (err < 0)
+-		goto err1;
++		goto err_mask_release;
+ 	if (xor.type != NFT_DATA_VALUE || xor.len != priv->len) {
+ 		err = -EINVAL;
+-		goto err2;
++		goto err_xor_release;
+ 	}
+ 
+ 	return 0;
+-err2:
++
++err_xor_release:
+ 	nft_data_release(&priv->xor, xor.type);
+-err1:
++err_mask_release:
+ 	nft_data_release(&priv->mask, mask.type);
+ 	return err;
+ }
 -- 
 2.35.1
 
