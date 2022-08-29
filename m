@@ -2,167 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A90FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8E8ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230120AbiH2RZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46826 "EHLO
+        id S229487AbiH2RZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:25:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiH2RY5 (ORCPT
+        with ESMTP id S229808AbiH2RZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:24:57 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 368A3A1A4
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:24:53 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id bv25so4036046wrb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:24:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=JHEoFDBYkf+wx8UJlazL9iiOjkp5vY9J/9mubKGK77U=;
-        b=ddU2FvjbjGLKBhjwXR22Ss4a19qcGqXzLI6UAaaamdUNn19uKUVvETZSXaviXhx2JT
-         yr7atnCbEvKkbQRMDTKXJBxWr0zN82CPE7TkUy+Iv7qwgvO6lBV0sW/r3o+wZDf2yFFp
-         rZFHh6FqMczphAJ2L+FtYkGQqxaqMs5qlcUQFq17/Mms/e+r3zN7iVjiBBOGjuNmu1eP
-         2BPQ767jqZTJt4tea81cRG6KG4mDD1+x0ZGmBZSoQZQbjjdXgga447u+IpmBqjPeTca6
-         6dRZD0I7JYyMBfWsoM0aiogMgfKD18NTkmTZAMTA7uAtm/6jLLq9u7VwBi6tudDXpLK5
-         6Klw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=JHEoFDBYkf+wx8UJlazL9iiOjkp5vY9J/9mubKGK77U=;
-        b=rdhYqIooihsU1n8tYhxx+OvTeioWHqZ3Av2VYDW+pGew5TIh3rXPS6CAQZ6Si6TtIc
-         acP2138yenMX+BLMN7nHayI7p6zJTIHO+0stjKXi455D/YaXwLN5fHO4XF8UkkzeJTDi
-         B9hoecnl0LBBDnqJ2LTzmewDNYl9yOtvDVMgNHaJJF25ZNtZPUzB6LHXFnAc3WQZ/xe2
-         /kw5l34onq+XvQ1+0vgzgwOOxNEOSmIuK6zFQ538J/DRENwJc99zuu2mpVmeLA15oPah
-         1Nu3w9fLjF+JuV99R5KLmrTplpFEZ3jUlvtZ0/RzCniWaqXEB5hjyNbaNKdWnKXJVBw2
-         TrOQ==
-X-Gm-Message-State: ACgBeo2UfLrTzigp3qS+HNcurfXUeoxRZHilMyjF23M6ZuFiguCYJ+8a
-        xsWbYybARFv6LZ/xZC1Hmro88KeioJDHHUwJGbbdTg==
-X-Google-Smtp-Source: AA6agR4RF/cRQWbRPZWLxBSY+YwtXh6Rf4LW59Ah0otUmTd/0uS8zjk3pR01RTPPb4e0kuBkgo5GHSZl8k3PPVRxxak=
-X-Received: by 2002:a5d:6d0c:0:b0:225:4ff9:7e67 with SMTP id
- e12-20020a5d6d0c000000b002254ff97e67mr7022846wrq.534.1661793891577; Mon, 29
- Aug 2022 10:24:51 -0700 (PDT)
+        Mon, 29 Aug 2022 13:25:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DEAD4C608;
+        Mon, 29 Aug 2022 10:25:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7FA8B8119D;
+        Mon, 29 Aug 2022 17:25:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB40BC433C1;
+        Mon, 29 Aug 2022 17:25:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661793929;
+        bh=9OEgeUDCfTi9FzYK0R6gTerji4mpgeD8bhEZsF5KzR8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=afDem3itAZHSy7KJzrY90B4UEoilNN1Lctj4Zaur3HrwS2OLzyWjBIt2tsylnVhFZ
+         8QLmkL4dNJ4h4xbsS7tOMe5VRpMcMt31J4PkN53EqaLNNmftKgPqeBXA9XsqvsPpLC
+         xH6+R61FfqyhRwRNJ7ALvFFYoN7C3wY2wQ7iuXjnUOrPGKck0Wa/kGUEGhodRRTP48
+         vmMbZ5klkGXBQhJTWKLwhAOzplrYTIy9f/eObujF3P4xZvG7H1Wews8Xv528HbBcz1
+         Juq1teDCxB89eHFPy8wIngG3+MGJ0HRZZhds5tqsfaEhv/3qVDjs434l412tjjqEIk
+         LTRKpAt1ryj3Q==
+Date:   Mon, 29 Aug 2022 17:51:09 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jagath Jog J <jagathjog1996@gmail.com>
+Cc:     andy.shevchenko@gmail.com, hadess@hadess.net, hdegoede@redhat.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] iio: Add new event type gesture and use
+ direction for single and double tap
+Message-ID: <20220829175109.7e0544ee@jic23-huawei>
+In-Reply-To: <20220825194604.15645-2-jagathjog1996@gmail.com>
+References: <20220825194604.15645-1-jagathjog1996@gmail.com>
+        <20220825194604.15645-2-jagathjog1996@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220826230639.1249436-1-yosryahmed@google.com> <CACYkzJ4=YCZ-rwBdjm59zff-M9q103m6yTnm7da1znbAGX2Ojw@mail.gmail.com>
-In-Reply-To: <CACYkzJ4=YCZ-rwBdjm59zff-M9q103m6yTnm7da1znbAGX2Ojw@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Mon, 29 Aug 2022 10:24:15 -0700
-Message-ID: <CAJD7tkZtUk8jmtEk559_njcPstyJ5td1xSKPGsqrbggnB6wADg@mail.gmail.com>
-Subject: Re: [PATCH] selftests/bpf: simplify cgroup_hierarchical_stats selftest
-To:     KP Singh <kpsingh@kernel.org>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Mykola Lysenko <mykolal@fb.com>, Song Liu <song@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 3:48 PM KP Singh <kpsingh@kernel.org> wrote:
->
-> On Sat, Aug 27, 2022 at 1:06 AM Yosry Ahmed <yosryahmed@google.com> wrote:
-> >
-> > The cgroup_hierarchical_stats selftest is complicated. It has to be,
-> > because it tests an entire workflow of recording, aggregating, and
-> > dumping cgroup stats. However, some of the complexity is unnecessary.
-> > The test now enables the memory controller in a cgroup hierarchy, invokes
-> > reclaim, measure reclaim time, THEN uses that reclaim time to test the
-> > stats collection and aggregation. We don't need to use such a
-> > complicated stat, as the context in which the stat is collected is
-> > orthogonal.
-> >
-> > Simplify the test by using a simple stat instead of reclaim time, the
-> > total number of times a process has ever entered a cgroup. This makes
-> > the test simpler and removes the dependency on the memory controller and
-> > the memory reclaim interface.
-> >
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
->
-> Acked-by: KP Singh <kpsingh@kernel.org>
->
-> > ---
-> >
-> > When the test failed on Alexei's setup because the memory controller was
-> > not enabled I realized this is an unnecessary dependency for the test,
-> > which inspired this patch :) I am not sure if this prompt a Fixes tag as
-> > the test wasn't broken.
->
-> yeah, this is an improvement, I don't think a fixes tag is needed here.
->
-> >
-> > ---
-> >  .../prog_tests/cgroup_hierarchical_stats.c    | 157 ++++++---------
-> >  .../bpf/progs/cgroup_hierarchical_stats.c     | 181 ++++++------------
-> >  2 files changed, 118 insertions(+), 220 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c b/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-> > index bed1661596f7..12a6d4ddbd77 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
-> > @@ -1,6 +1,9 @@
-> >  // SPDX-License-Identifier: GPL-2.0-only
-> >  /*
-> > - * Functions to manage eBPF programs attached to cgroup subsystems
-> > + * This test runs a BPF program that keeps a stat of the number of processes
-> > + * that ever attached to a cgroup, and makes sure that BPF integrates well with
-> > + * the rstat framework to efficiently collect those stat percpu to avoid
-> > + * locking, and to efficiently aggregate the stat across the hierarchy.
-> >   *
-> >   * Copyright 2022 Google LLC.
-> >   */
-> > @@ -21,8 +24,10 @@
-> >  #define PAGE_SIZE 4096
-> >  #define MB(x) (x << 20)
-> >
-> > +#define PROCESSES_PER_CGROUP 3
-> > +
-> >  #define BPFFS_ROOT "/sys/fs/bpf/"
-> > -#define BPFFS_VMSCAN BPFFS_ROOT"vmscan/"
-> > +#define BPFFS_ATTACH_COUNTERS BPFFS_ROOT"attach_counters/"
->
-> minor nit: Is there a missing space here?
-> i.e
->
-> #define BPFFS_ATTACH_COUNTERS BPFFS_ROOT "attach_counters/"
->
-> (this was a case in the line you changed so I am not sure if it's intentional)
->
+On Fri, 26 Aug 2022 01:16:03 +0530
+Jagath Jog J <jagathjog1996@gmail.com> wrote:
 
-Thanks for taking a look! Yeah I forgot that even if I added a space
-there C will still concatenate those strings without adding any
-spaces, so I guess it is better with that space.
+> Add new event type for tap called gesture and the direction can be used
+> to differentiate single and double tap. This may be used by accelerometer
+> sensors to express single and double tap events. For directional tap,
+> modifiers like IIO_MOD_(X/Y/Z) can be used along with singletap and
+> doubletap direction.
+> 
+> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
+LGTM though I'm still keen for more review on this, particularly with an
+eye on generality.
 
-> The rest looks good to me, so  maintainers could, potentially, push it
-> with the minor edit if needed?
+J
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 69 +++++++++++++++++++++++++
+>  drivers/iio/industrialio-event.c        |  7 ++-
+>  include/linux/iio/types.h               |  2 +
+>  include/uapi/linux/iio/types.h          |  3 ++
+>  tools/iio/iio_event_monitor.c           |  8 ++-
+>  5 files changed, 87 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index e81ba6f5e1c8..4035173030b7 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -2038,3 +2038,72 @@ Description:
+>  		Available range for the forced calibration value, expressed as:
+>  
+>  		- a range specified as "[min step max]"
+> +
+> +What:		/sys/.../events/in_accel_gesture_singletap_en
+> +What:		/sys/.../events/in_accel_gesture_doubletap_en
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Device generates an event on a single or double tap.
+> +
+> +What:		/sys/.../events/in_accel_gesture_singletap_value
+> +What:		/sys/.../events/in_accel_gesture_doubletap_value
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Specifies the threshold value that the device is comparing
+> +		against to generate the tap gesture event. The lower
+> +		threshold value increases the sensitivity of tap detection.
+> +		Units and the exact meaning of value are device-specific.
+> +
+> +What:		/sys/.../events/in_accel_gesture_tap_value_available
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Lists all available threshold values which can be used to
+> +		modify the sensitivity of the tap detection.
+> +
+> +What:		/sys/.../events/in_accel_gesture_singletap_reset_timeout
+> +What:		/sys/.../events/in_accel_gesture_doubletap_reset_timeout
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Specifies the timeout value in seconds for the tap detector
+> +		to not to look for another tap event after the event as
+> +		occurred. Basically the minimum quiet time between the two
+> +		single-tap's or two double-tap's.
+> +
+> +What:		/sys/.../events/in_accel_gesture_tap_reset_timeout_available
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Lists all available tap reset timeout values. Units in seconds.
+> +
+> +What:		/sys/.../events/in_accel_gesture_doubletap_tap2_min_delay
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Specifies the minimum quiet time in seconds between the two
+> +		taps of a double tap.
+> +
+> +What:		/sys/.../events/in_accel_gesture_doubletap_tap2_min_delay_available
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Lists all available delay values between two taps in the double
+> +		tap. Units in seconds.
+> +
+> +What:		/sys/.../events/in_accel_gesture_tap_maxtomin_time
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Specifies the maximum time difference allowed between upper
+> +		and lower peak of tap to consider it as the valid tap event.
+> +		Units in seconds.
+> +
+> +What:		/sys/.../events/in_accel_gesture_tap_maxtomin_time_available
+> +KernelVersion:	6.1
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Lists all available time values between upper peak to lower
+> +		peak. Units in seconds.
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index b5e059e15b0a..65ef0fc3be23 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -231,12 +231,15 @@ static const char * const iio_ev_type_text[] = {
+>  	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
+>  	[IIO_EV_TYPE_CHANGE] = "change",
+>  	[IIO_EV_TYPE_MAG_REFERENCED] = "mag_referenced",
+> +	[IIO_EV_TYPE_GESTURE] = "gesture",
+>  };
+>  
+>  static const char * const iio_ev_dir_text[] = {
+>  	[IIO_EV_DIR_EITHER] = "either",
+>  	[IIO_EV_DIR_RISING] = "rising",
+> -	[IIO_EV_DIR_FALLING] = "falling"
+> +	[IIO_EV_DIR_FALLING] = "falling",
+> +	[IIO_EV_DIR_SINGLETAP] = "singletap",
+> +	[IIO_EV_DIR_DOUBLETAP] = "doubletap",
+>  };
+>  
+>  static const char * const iio_ev_info_text[] = {
+> @@ -247,6 +250,8 @@ static const char * const iio_ev_info_text[] = {
+>  	[IIO_EV_INFO_HIGH_PASS_FILTER_3DB] = "high_pass_filter_3db",
+>  	[IIO_EV_INFO_LOW_PASS_FILTER_3DB] = "low_pass_filter_3db",
+>  	[IIO_EV_INFO_TIMEOUT] = "timeout",
+> +	[IIO_EV_INFO_RESET_TIMEOUT] = "reset_timeout",
+> +	[IIO_EV_INFO_TAP2_MIN_DELAY] = "tap2_min_delay",
+>  };
+>  
+>  static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index a7aa91f3a8dc..4716a4b3d614 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -17,6 +17,8 @@ enum iio_event_info {
+>  	IIO_EV_INFO_HIGH_PASS_FILTER_3DB,
+>  	IIO_EV_INFO_LOW_PASS_FILTER_3DB,
+>  	IIO_EV_INFO_TIMEOUT,
+> +	IIO_EV_INFO_RESET_TIMEOUT,
+> +	IIO_EV_INFO_TAP2_MIN_DELAY,
+>  };
+>  
+>  #define IIO_VAL_INT 1
+> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+> index 472cead10d8d..913864221ac4 100644
+> --- a/include/uapi/linux/iio/types.h
+> +++ b/include/uapi/linux/iio/types.h
+> @@ -105,6 +105,7 @@ enum iio_event_type {
+>  	IIO_EV_TYPE_MAG_ADAPTIVE,
+>  	IIO_EV_TYPE_CHANGE,
+>  	IIO_EV_TYPE_MAG_REFERENCED,
+> +	IIO_EV_TYPE_GESTURE,
+>  };
+>  
+>  enum iio_event_direction {
+> @@ -112,6 +113,8 @@ enum iio_event_direction {
+>  	IIO_EV_DIR_RISING,
+>  	IIO_EV_DIR_FALLING,
+>  	IIO_EV_DIR_NONE,
+> +	IIO_EV_DIR_SINGLETAP,
+> +	IIO_EV_DIR_DOUBLETAP,
+>  };
+>  
+>  #endif /* _UAPI_IIO_TYPES_H_ */
+> diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+> index 2f4581658859..b3b3ea399f67 100644
+> --- a/tools/iio/iio_event_monitor.c
+> +++ b/tools/iio/iio_event_monitor.c
+> @@ -69,12 +69,15 @@ static const char * const iio_ev_type_text[] = {
+>  	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
+>  	[IIO_EV_TYPE_CHANGE] = "change",
+>  	[IIO_EV_TYPE_MAG_REFERENCED] = "mag_referenced",
+> +	[IIO_EV_TYPE_GESTURE] = "gesture",
+>  };
+>  
+>  static const char * const iio_ev_dir_text[] = {
+>  	[IIO_EV_DIR_EITHER] = "either",
+>  	[IIO_EV_DIR_RISING] = "rising",
+> -	[IIO_EV_DIR_FALLING] = "falling"
+> +	[IIO_EV_DIR_FALLING] = "falling",
+> +	[IIO_EV_DIR_SINGLETAP] = "singletap",
+> +	[IIO_EV_DIR_DOUBLETAP] = "doubletap",
+>  };
+>  
+>  static const char * const iio_modifier_names[] = {
+> @@ -227,6 +230,7 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_EV_TYPE_THRESH_ADAPTIVE:
+>  	case IIO_EV_TYPE_MAG_ADAPTIVE:
+>  	case IIO_EV_TYPE_CHANGE:
+> +	case IIO_EV_TYPE_GESTURE:
+>  		break;
+>  	default:
+>  		return false;
+> @@ -236,6 +240,8 @@ static bool event_is_known(struct iio_event_data *event)
+>  	case IIO_EV_DIR_EITHER:
+>  	case IIO_EV_DIR_RISING:
+>  	case IIO_EV_DIR_FALLING:
+> +	case IIO_EV_DIR_SINGLETAP:
+> +	case IIO_EV_DIR_DOUBLETAP:
+>  	case IIO_EV_DIR_NONE:
+>  		break;
+>  	default:
 
-Yeah if that space can be added that would be great. Otherwise I can send a v2.
-
->
->
-> >
-> >  #define CG_ROOT_NAME "root"
-> >  #define CG_ROOT_ID 1
-> > @@ -79,7 +84,7 @@ static int setup_bpffs(void)
-> >                 return err;
-> >
-> >
->
-> [...]
->
-> > -       return 1;
-> > +       return 0;
-> >  }
-> > --
-> > 2.37.2.672.g94769d06f0-goog
-> >
