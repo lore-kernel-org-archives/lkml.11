@@ -2,53 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E474ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C84DECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232869AbiH2LiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
+        id S232800AbiH2Li2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232877AbiH2LhN (ORCPT
+        with ESMTP id S232884AbiH2LhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:37:13 -0400
+        Mon, 29 Aug 2022 07:37:15 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A77575CC5;
-        Mon, 29 Aug 2022 04:21:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769AF7F103;
+        Mon, 29 Aug 2022 04:21:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49C036119E;
-        Mon, 29 Aug 2022 11:19:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12405C433C1;
-        Mon, 29 Aug 2022 11:18:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30966611E6;
+        Mon, 29 Aug 2022 11:06:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 325C2C433C1;
+        Mon, 29 Aug 2022 11:06:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771939;
-        bh=GFQv9vkR482Mkq74XKiTv2cwC/MfcG8EE0eFatIffww=;
+        s=korg; t=1661771208;
+        bh=Q+vobX/NAMoT0GCjK148OqmpXMiEdYAi2VVk1VY3ZmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IEBJB+AX/9s7y5/avodcBExsmrtrPiNO2aQ6kB+Nia6BpsCu5XY9uGruTD9b4x+5D
-         fFuowpbm8QRqDTQTdiZN6sEU9tu2vRoG+VQZDIlkHBJQodJzBgMQDPdjBk/mpI5XFd
-         rSxUIQKf+s7PABwOMh9SBGWKGhv8MNqqMGAMeKys=
+        b=J+eumKiu0xx12o0SCZuK91nafKSuGzPRvMzC857Z2wwuoo6CdWi2cBO2jzDeU5Gpt
+         ygGBUNj/GCNIqljVttnzj30wXjDMkNkIUM6R2077t0qa1yTT0qbaAgpQcT0oys6c7g
+         AZMghbJFux8uu8bXEX7FSvea0bMnw65+yOl2vnq0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Stephane Eranian <eranian@google.com>
-Subject: [PATCH 5.19 146/158] perf stat: Clear evsel->reset_group for each stat run
-Date:   Mon, 29 Aug 2022 12:59:56 +0200
-Message-Id: <20220829105815.221622515@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 39/86] netfilter: nft_cmp: optimize comparison for 16-bytes
+Date:   Mon, 29 Aug 2022 12:59:05 +0200
+Message-Id: <20220829105758.165428382@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -57,50 +48,213 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ian Rogers <irogers@google.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit bf515f024e4c0ca46a1b08c4f31860c01781d8a5 upstream.
+[ Upstream commit 23f68d462984bfda47c7bf663dca347e8e3df549 ]
 
-If a weak group is broken then the reset_group flag remains set for
-the next run. Having reset_group set means the counter isn't created
-and ultimately a segfault.
+Allow up to 16-byte comparisons with a new cmp fast version. Use two
+64-bit words and calculate the mask representing the bits to be
+compared. Make sure the comparison is 64-bit aligned and avoid
+out-of-bound memory access on registers.
 
-A simple reproduction of this is:
-
-  # perf stat -r2 -e '{cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles}:W
-
-which will be added as a test in the next patch.
-
-Fixes: 4804e0111662d7d8 ("perf stat: Use affinity for opening events")
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
-Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Tested-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Kan Liang <kan.liang@linux.intel.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Stephane Eranian <eranian@google.com>
-Link: https://lore.kernel.org/r/20220822213352.75721-1-irogers@google.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/builtin-stat.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/net/netfilter/nf_tables_core.h |   9 +++
+ net/netfilter/nf_tables_core.c         |  16 ++++
+ net/netfilter/nft_cmp.c                | 102 ++++++++++++++++++++++++-
+ 3 files changed, 125 insertions(+), 2 deletions(-)
 
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -826,6 +826,7 @@ static int __run_perf_stat(int argc, con
- 	}
+diff --git a/include/net/netfilter/nf_tables_core.h b/include/net/netfilter/nf_tables_core.h
+index fd10a7862fdc6..ce75121782bf7 100644
+--- a/include/net/netfilter/nf_tables_core.h
++++ b/include/net/netfilter/nf_tables_core.h
+@@ -38,6 +38,14 @@ struct nft_cmp_fast_expr {
+ 	bool			inv;
+ };
  
- 	evlist__for_each_entry(evsel_list, counter) {
-+		counter->reset_group = false;
- 		if (bpf_counter__load(counter, &target))
- 			return -1;
- 		if (!evsel__is_bpf(counter))
++struct nft_cmp16_fast_expr {
++	struct nft_data		data;
++	struct nft_data		mask;
++	u8			sreg;
++	u8			len;
++	bool			inv;
++};
++
+ struct nft_immediate_expr {
+ 	struct nft_data		data;
+ 	u8			dreg;
+@@ -55,6 +63,7 @@ static inline u32 nft_cmp_fast_mask(unsigned int len)
+ }
+ 
+ extern const struct nft_expr_ops nft_cmp_fast_ops;
++extern const struct nft_expr_ops nft_cmp16_fast_ops;
+ 
+ struct nft_payload {
+ 	enum nft_payload_bases	base:8;
+diff --git a/net/netfilter/nf_tables_core.c b/net/netfilter/nf_tables_core.c
+index 6dd27c8cd4253..9dc18429ed875 100644
+--- a/net/netfilter/nf_tables_core.c
++++ b/net/netfilter/nf_tables_core.c
+@@ -67,6 +67,20 @@ static void nft_cmp_fast_eval(const struct nft_expr *expr,
+ 	regs->verdict.code = NFT_BREAK;
+ }
+ 
++static void nft_cmp16_fast_eval(const struct nft_expr *expr,
++				struct nft_regs *regs)
++{
++	const struct nft_cmp16_fast_expr *priv = nft_expr_priv(expr);
++	const u64 *reg_data = (const u64 *)&regs->data[priv->sreg];
++	const u64 *mask = (const u64 *)&priv->mask;
++	const u64 *data = (const u64 *)&priv->data;
++
++	if (((reg_data[0] & mask[0]) == data[0] &&
++	    ((reg_data[1] & mask[1]) == data[1])) ^ priv->inv)
++		return;
++	regs->verdict.code = NFT_BREAK;
++}
++
+ static noinline void __nft_trace_verdict(struct nft_traceinfo *info,
+ 					 const struct nft_chain *chain,
+ 					 const struct nft_regs *regs)
+@@ -215,6 +229,8 @@ nft_do_chain(struct nft_pktinfo *pkt, void *priv)
+ 		nft_rule_for_each_expr(expr, last, rule) {
+ 			if (expr->ops == &nft_cmp_fast_ops)
+ 				nft_cmp_fast_eval(expr, &regs);
++			else if (expr->ops == &nft_cmp16_fast_ops)
++				nft_cmp16_fast_eval(expr, &regs);
+ 			else if (expr->ops == &nft_bitwise_fast_ops)
+ 				nft_bitwise_fast_eval(expr, &regs);
+ 			else if (expr->ops != &nft_payload_fast_ops ||
+diff --git a/net/netfilter/nft_cmp.c b/net/netfilter/nft_cmp.c
+index 47b6d05f1ae69..917072af09df9 100644
+--- a/net/netfilter/nft_cmp.c
++++ b/net/netfilter/nft_cmp.c
+@@ -272,12 +272,103 @@ const struct nft_expr_ops nft_cmp_fast_ops = {
+ 	.offload	= nft_cmp_fast_offload,
+ };
+ 
++static u32 nft_cmp_mask(u32 bitlen)
++{
++	return (__force u32)cpu_to_le32(~0U >> (sizeof(u32) * BITS_PER_BYTE - bitlen));
++}
++
++static void nft_cmp16_fast_mask(struct nft_data *data, unsigned int bitlen)
++{
++	int len = bitlen / BITS_PER_BYTE;
++	int i, words = len / sizeof(u32);
++
++	for (i = 0; i < words; i++) {
++		data->data[i] = 0xffffffff;
++		bitlen -= sizeof(u32) * BITS_PER_BYTE;
++	}
++
++	if (len % sizeof(u32))
++		data->data[i++] = nft_cmp_mask(bitlen);
++
++	for (; i < 4; i++)
++		data->data[i] = 0;
++}
++
++static int nft_cmp16_fast_init(const struct nft_ctx *ctx,
++			       const struct nft_expr *expr,
++			       const struct nlattr * const tb[])
++{
++	struct nft_cmp16_fast_expr *priv = nft_expr_priv(expr);
++	struct nft_data_desc desc;
++	int err;
++
++	err = nft_data_init(NULL, &priv->data, sizeof(priv->data), &desc,
++			    tb[NFTA_CMP_DATA]);
++	if (err < 0)
++		return err;
++
++	err = nft_parse_register_load(tb[NFTA_CMP_SREG], &priv->sreg, desc.len);
++	if (err < 0)
++		return err;
++
++	nft_cmp16_fast_mask(&priv->mask, desc.len * BITS_PER_BYTE);
++	priv->inv = ntohl(nla_get_be32(tb[NFTA_CMP_OP])) != NFT_CMP_EQ;
++	priv->len = desc.len;
++
++	return 0;
++}
++
++static int nft_cmp16_fast_offload(struct nft_offload_ctx *ctx,
++				  struct nft_flow_rule *flow,
++				  const struct nft_expr *expr)
++{
++	const struct nft_cmp16_fast_expr *priv = nft_expr_priv(expr);
++	struct nft_cmp_expr cmp = {
++		.data	= priv->data,
++		.sreg	= priv->sreg,
++		.len	= priv->len,
++		.op	= priv->inv ? NFT_CMP_NEQ : NFT_CMP_EQ,
++	};
++
++	return __nft_cmp_offload(ctx, flow, &cmp);
++}
++
++static int nft_cmp16_fast_dump(struct sk_buff *skb, const struct nft_expr *expr)
++{
++	const struct nft_cmp16_fast_expr *priv = nft_expr_priv(expr);
++	enum nft_cmp_ops op = priv->inv ? NFT_CMP_NEQ : NFT_CMP_EQ;
++
++	if (nft_dump_register(skb, NFTA_CMP_SREG, priv->sreg))
++		goto nla_put_failure;
++	if (nla_put_be32(skb, NFTA_CMP_OP, htonl(op)))
++		goto nla_put_failure;
++
++	if (nft_data_dump(skb, NFTA_CMP_DATA, &priv->data,
++			  NFT_DATA_VALUE, priv->len) < 0)
++		goto nla_put_failure;
++	return 0;
++
++nla_put_failure:
++	return -1;
++}
++
++
++const struct nft_expr_ops nft_cmp16_fast_ops = {
++	.type		= &nft_cmp_type,
++	.size		= NFT_EXPR_SIZE(sizeof(struct nft_cmp16_fast_expr)),
++	.eval		= NULL,	/* inlined */
++	.init		= nft_cmp16_fast_init,
++	.dump		= nft_cmp16_fast_dump,
++	.offload	= nft_cmp16_fast_offload,
++};
++
+ static const struct nft_expr_ops *
+ nft_cmp_select_ops(const struct nft_ctx *ctx, const struct nlattr * const tb[])
+ {
+ 	struct nft_data_desc desc;
+ 	struct nft_data data;
+ 	enum nft_cmp_ops op;
++	u8 sreg;
+ 	int err;
+ 
+ 	if (tb[NFTA_CMP_SREG] == NULL ||
+@@ -306,9 +397,16 @@ nft_cmp_select_ops(const struct nft_ctx *ctx, const struct nlattr * const tb[])
+ 	if (desc.type != NFT_DATA_VALUE)
+ 		goto err1;
+ 
+-	if (desc.len <= sizeof(u32) && (op == NFT_CMP_EQ || op == NFT_CMP_NEQ))
+-		return &nft_cmp_fast_ops;
++	sreg = ntohl(nla_get_be32(tb[NFTA_CMP_SREG]));
+ 
++	if (op == NFT_CMP_EQ || op == NFT_CMP_NEQ) {
++		if (desc.len <= sizeof(u32))
++			return &nft_cmp_fast_ops;
++		else if (desc.len <= sizeof(data) &&
++			 ((sreg >= NFT_REG_1 && sreg <= NFT_REG_4) ||
++			  (sreg >= NFT_REG32_00 && sreg <= NFT_REG32_12 && sreg % 2 == 0)))
++			return &nft_cmp16_fast_ops;
++	}
+ 	return &nft_cmp_ops;
+ err1:
+ 	nft_data_release(&data, desc.type);
+-- 
+2.35.1
+
 
 
