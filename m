@@ -2,88 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4A4ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:50:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBE2C0502F
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbiH2Qus (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
+        id S229956AbiH2Quz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:50:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbiH2QuV (ORCPT
+        with ESMTP id S229802AbiH2QuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:50:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C5D1564EB;
+        Mon, 29 Aug 2022 12:50:23 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6BA61D5C
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:50:20 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id 72so8744900pfx.9
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=19oJyst1cXhX6ExrR+4lzX9FM+Aou98SW9ohKM60LiE=;
+        b=FdwePFKjyhAG2YJEV2p+eSvD9wAlfIXs+xt3A2gYuxH8ASej4TPnhf2V5z3S7jXTNY
+         ymKKBFCJV+4lva7k6btjMrpOpWfBY+osD1B7gWEfaRXUKPjDRrX9E+A+5n/QmmJltPtJ
+         dnFJrESa/htd5+ntnX+GgIVsuCWMi1ltmFcmU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=19oJyst1cXhX6ExrR+4lzX9FM+Aou98SW9ohKM60LiE=;
+        b=fCaiVtb3baW1uEbcvIM6jChFAzyB3m308Cpr3AqtkwyTA0DPmVReGSaorR43UAR+TW
+         m6Yg6p1N1EGaZVac157fP7fKc3vz3cEEL4YVrY4shx9QVAocJLZSitDXEQtm1x6jYAgC
+         +swh9lGTmNb2JJoZY/ld+V21bga48LK0+crchCbmtcswkO/bNLHpAXArTyCzlAWCeeJ7
+         O4wEJtFybvxhOdJMqX5dsvzkoLR2XzpXpiMRz2bkYRuILPUgmyeiPNZn2mzsAdiV7Quj
+         QYWwvsya56ZIjG0GSFDsrAyD4b1qV2/wGL1tAibDznNktA7RylIHaIqFNBuz8XFiEtX+
+         vEtA==
+X-Gm-Message-State: ACgBeo1hs1YFDfK+So1NspQX4jR5+t9kFs19QYLcm64xTAb7BfAxL7PL
+        8b6fDqRP9clSjWs7qn2FlBdhBg==
+X-Google-Smtp-Source: AA6agR7wP/U/djs4TOG4BcQegSxHOfMHn/NiIKogfPKTanFruFSM5vbVqZ4vop+1Fm/kzKbn+eW8Ww==
+X-Received: by 2002:a63:40e:0:b0:42b:890d:594e with SMTP id 14-20020a63040e000000b0042b890d594emr11792368pge.331.1661791820217;
         Mon, 29 Aug 2022 09:50:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9350161277;
-        Mon, 29 Aug 2022 16:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 232C1C43140;
-        Mon, 29 Aug 2022 16:50:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661791819;
-        bh=t4wMul9vxfMvuUg8UI41DbmTAkYSK1yPK94NKJG8a+4=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=AOkVqZMNHdQziyPJMVzg7Yp67/LOAN0l6Z4abhJmwpvjIcKMX8ClVYkDUW5c4KLbR
-         t3Kkv4AfYhJ7jOea8Ho8NL6Wgcveo5xmBjHYV2wgH58ZkTw+rCb1lol2rOxxv74kZr
-         dMf/bZi9PlEdFnCTU+K2ktiIzrghD+YJoYLptFB2g1YeGrnpJc7iZwfDcgllEByka4
-         YhlV4TkuZVxkEm+t678KidmkOoB4SpDXbS9rTAI7R+cCRt4JY9KMSLnTATharY486r
-         iRzY1qDSy8C6vVP67eY6KKYSwpyaEE06VpuKGq68dt7i3xMwFCxgKKlEWt9vbD+ro4
-         iHKU0zF8+FDIA==
-From:   Mark Brown <broonie@kernel.org>
-To:     patrice.chotard@foss.st.com
-Cc:     linux-kernel@vger.kernel.org, christophe.kerello@foss.st.com,
-        linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-In-Reply-To: <20220829123250.2170562-1-patrice.chotard@foss.st.com>
-References: <20220829123250.2170562-1-patrice.chotard@foss.st.com>
-Subject: Re: [PATCH] spi: stm32-qspi: Fix pm_runtime management in stm32_qspi_transfer_one_message()
-Message-Id: <166179181682.898839.326483296605925659.b4-ty@kernel.org>
-Date:   Mon, 29 Aug 2022 17:50:16 +0100
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:3a97:5017:7e33:8964])
+        by smtp.gmail.com with ESMTPSA id l1-20020a170902f68100b001729db603bcsm7864238plg.126.2022.08.29.09.50.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 09:50:19 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/6] arm64: dts: qcom: sc8280xp-crd: Specify which LDO modes are allowed
+Date:   Mon, 29 Aug 2022 09:49:49 -0700
+Message-Id: <20220829094903.v2.3.Ie7d2c50d2b42ef2d364f3a0c8e300e5ce1875b79@changeid>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+In-Reply-To: <20220829164952.2672848-1-dianders@chromium.org>
+References: <20220829164952.2672848-1-dianders@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-65ba7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 29 Aug 2022 14:32:50 +0200, patrice.chotard@foss.st.com wrote:
-> From: Patrice Chotard <patrice.chotard@foss.st.com>
-> 
-> ctrl->auto_runtime_pm was wrongly set to true when adding
-> transfer_one_message() callback.
-> As explained in commit 6e6ccb3d4cdc ("spi: stm32-qspi: Add pm_runtime support")
-> the expected behavior is to prevent runtime suspends between each transfer.
-> 
-> [...]
+This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
+but doesn't specify any modes with "regulator-allowed-modes".
 
-Applied to
+Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
+get_optimum_mode(), not set_load()") the above meant that we were able
+to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
+be stuck at the initial mode. Discussion of this has resulted in the
+decision that the old dts files were wrong and should be fixed to
+fully restore old functionality.
 
-   broonie/spi.git for-next
+Let's re-enable the old functionality by fixing the dts.
 
-Thanks!
+[1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
 
-[1/1] spi: stm32-qspi: Fix pm_runtime management in stm32_qspi_transfer_one_message()
-      commit: 47c32b2b7fcfa97f7224df222f439fc0ccf94ffe
+Fixes: ccd3517faf18 ("arm64: dts: qcom: sc8280xp: Add reference device")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+---
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+Changes in v2:
+- Rebased atop ("...: sc8280xp-crd: disallow regulator mode switches")
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+ arch/arm64/boot/dts/qcom/sc8280xp-crd.dts | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+index fea7d8273ccd..5e30349efd20 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc8280xp-crd.dts
+@@ -124,6 +124,9 @@ vreg_l7c: ldo7 {
+ 			regulator-max-microvolt = <2504000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 
+ 		vreg_l13c: ldo13 {
+@@ -146,6 +149,9 @@ vreg_l3d: ldo3 {
+ 			regulator-max-microvolt = <1200000>;
+ 			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+ 			regulator-allow-set-load;
++			regulator-allowed-modes =
++			    <RPMH_REGULATOR_MODE_LPM
++			     RPMH_REGULATOR_MODE_HPM>;
+ 		};
+ 
+ 		vreg_l4d: ldo4 {
+-- 
+2.37.2.672.g94769d06f0-goog
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
