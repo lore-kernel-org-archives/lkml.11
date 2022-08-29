@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ABD1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B673AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbiH2LEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44574 "EHLO
+        id S230140AbiH2LEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiH2LDv (ORCPT
+        with ESMTP id S230136AbiH2LEF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:03:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BB9642F8;
-        Mon, 29 Aug 2022 04:02:39 -0700 (PDT)
+        Mon, 29 Aug 2022 07:04:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8ED6647C5;
+        Mon, 29 Aug 2022 04:02:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BB63B80EF1;
-        Mon, 29 Aug 2022 11:02:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC19FC433D7;
-        Mon, 29 Aug 2022 11:02:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 234E6611B7;
+        Mon, 29 Aug 2022 11:02:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC22C433C1;
+        Mon, 29 Aug 2022 11:02:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770955;
-        bh=uro6sn39/nlGYKDCpLWgCRVO+1kpnI9YO9HvkKBO8QU=;
+        s=korg; t=1661770964;
+        bh=+KSLGZMqraHzaO39F9PVyiWap5Yit+9u0ukvMcYgJjE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pka4C2nF9KMcXn5ZtUocx5316dsUzEXPhG2MTH/UsENoZ7hb8B7iYwQVp9BPNRS3I
-         yyN3Tai3IupPHADyX6nRXTFKMUKjfd8+obxArjJQeOCu7FrkbdW2vZZNIxqZBRB4T5
-         nR2ovZ03Eai5DQwREq/V0OzIRb8UTeCB1hGmCA+s=
+        b=kDRK0Gj2FjB8GHAIsiC3LQ3cJjX6ToffDteNbs5AU7W1sGU2gug5TLrM9+n19V9YL
+         rxNiM+axp7KxsPRd+AJ160P6vjSuXMFc8ltVN/6PDlvgb6Y7y/TRvVVkcMhR8of7Zd
+         YsTv7YsM7tz+2zkENV2uw25CyA7qT7vPf56VrNa0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.15 008/136] x86/entry: Move CLD to the start of the idtentry macro
-Date:   Mon, 29 Aug 2022 12:57:55 +0200
-Message-Id: <20220829105804.988641394@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 011/136] btrfs: zoned: revive max_zone_append_bytes
+Date:   Mon, 29 Aug 2022 12:57:58 +0200
+Message-Id: <20220829105805.113201981@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -49,87 +50,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-commit c64cc2802a784ecfd25d39945e57e7a147854a5b upstream.
+commit c2ae7b772ef4e86c5ddf3fd47bf59045ae96a414 upstream
 
-Move it after CLAC.
+This patch is basically a revert of commit 5a80d1c6a270 ("btrfs: zoned:
+remove max_zone_append_size logic"), but without unnecessary ASSERT and
+check. The max_zone_append_size will be used as a hint to estimate the
+number of extents to cover delalloc/writeback region in the later commits.
 
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220503032107.680190-5-jiangshanlai@gmail.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
+The size of a ZONE APPEND bio is also limited by queue_max_segments(), so
+this commit considers it to calculate max_zone_append_size. Technically, a
+bio can be larger than queue_max_segments() * PAGE_SIZE if the pages are
+contiguous. But, it is safe to consider "queue_max_segments() * PAGE_SIZE"
+as an upper limit of an extent size to calculate the number of extents
+needed to write data.
+
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/btrfs/ctree.h |    2 ++
+ fs/btrfs/zoned.c |   17 +++++++++++++++++
+ fs/btrfs/zoned.h |    1 +
+ 3 files changed, 20 insertions(+)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -373,6 +373,7 @@ SYM_CODE_END(xen_error_entry)
- SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS offset=\has_error_code*8
- 	ASM_CLAC
-+	cld
+--- a/fs/btrfs/ctree.h
++++ b/fs/btrfs/ctree.h
+@@ -1017,6 +1017,8 @@ struct btrfs_fs_info {
+ 		u64 zoned;
+ 	};
  
- 	.if \has_error_code == 0
- 		pushq	$-1			/* ORIG_RAX: no syscall to restart */
-@@ -440,6 +441,7 @@ SYM_CODE_END(\asmsym)
- SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS
- 	ASM_CLAC
-+	cld
++	/* Max size to emit ZONE_APPEND write command */
++	u64 max_zone_append_size;
+ 	struct mutex zoned_meta_io_lock;
+ 	spinlock_t treelog_bg_lock;
+ 	u64 treelog_bg;
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -386,6 +386,16 @@ int btrfs_get_dev_zone_info(struct btrfs
+ 	nr_sectors = bdev_nr_sectors(bdev);
+ 	zone_info->zone_size_shift = ilog2(zone_info->zone_size);
+ 	zone_info->nr_zones = nr_sectors >> ilog2(zone_sectors);
++	/*
++	 * We limit max_zone_append_size also by max_segments *
++	 * PAGE_SIZE. Technically, we can have multiple pages per segment. But,
++	 * since btrfs adds the pages one by one to a bio, and btrfs cannot
++	 * increase the metadata reservation even if it increases the number of
++	 * extents, it is safe to stick with the limit.
++	 */
++	zone_info->max_zone_append_size =
++		min_t(u64, (u64)bdev_max_zone_append_sectors(bdev) << SECTOR_SHIFT,
++		      (u64)bdev_max_segments(bdev) << PAGE_SHIFT);
+ 	if (!IS_ALIGNED(nr_sectors, zone_sectors))
+ 		zone_info->nr_zones++;
  
- 	pushq	$-1			/* ORIG_RAX: no syscall to restart */
+@@ -570,6 +580,7 @@ int btrfs_check_zoned_mode(struct btrfs_
+ 	u64 zoned_devices = 0;
+ 	u64 nr_devices = 0;
+ 	u64 zone_size = 0;
++	u64 max_zone_append_size = 0;
+ 	const bool incompat_zoned = btrfs_fs_incompat(fs_info, ZONED);
+ 	int ret = 0;
  
-@@ -495,6 +497,7 @@ SYM_CODE_END(\asmsym)
- SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS
- 	ASM_CLAC
-+	cld
+@@ -605,6 +616,11 @@ int btrfs_check_zoned_mode(struct btrfs_
+ 				ret = -EINVAL;
+ 				goto out;
+ 			}
++			if (!max_zone_append_size ||
++			    (zone_info->max_zone_append_size &&
++			     zone_info->max_zone_append_size < max_zone_append_size))
++				max_zone_append_size =
++					zone_info->max_zone_append_size;
+ 		}
+ 		nr_devices++;
+ 	}
+@@ -654,6 +670,7 @@ int btrfs_check_zoned_mode(struct btrfs_
+ 	}
+ 
+ 	fs_info->zone_size = zone_size;
++	fs_info->max_zone_append_size = max_zone_append_size;
+ 	fs_info->fs_devices->chunk_alloc_policy = BTRFS_CHUNK_ALLOC_ZONED;
  
  	/*
- 	 * If the entry is from userspace, switch stacks and treat it as
-@@ -557,6 +560,7 @@ SYM_CODE_END(\asmsym)
- SYM_CODE_START(\asmsym)
- 	UNWIND_HINT_IRET_REGS offset=8
- 	ASM_CLAC
-+	cld
- 
- 	/* paranoid_entry returns GS information for paranoid_exit in EBX. */
- 	call	paranoid_entry
-@@ -876,7 +880,6 @@ SYM_CODE_END(xen_failsafe_callback)
-  */
- SYM_CODE_START_LOCAL(paranoid_entry)
- 	UNWIND_HINT_FUNC
--	cld
- 	PUSH_AND_CLEAR_REGS save_ret=1
- 	ENCODE_FRAME_POINTER 8
- 
-@@ -1012,7 +1015,6 @@ SYM_CODE_END(paranoid_exit)
-  */
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
--	cld
- 
- 	PUSH_AND_CLEAR_REGS save_ret=1
- 	ENCODE_FRAME_POINTER 8
-@@ -1155,6 +1157,7 @@ SYM_CODE_START(asm_exc_nmi)
+--- a/fs/btrfs/zoned.h
++++ b/fs/btrfs/zoned.h
+@@ -23,6 +23,7 @@ struct btrfs_zoned_device_info {
  	 */
- 
- 	ASM_CLAC
-+	cld
- 
- 	/* Use %rdx as our temp variable throughout */
- 	pushq	%rdx
-@@ -1174,7 +1177,6 @@ SYM_CODE_START(asm_exc_nmi)
- 	 */
- 
- 	swapgs
--	cld
- 	FENCE_SWAPGS_USER_ENTRY
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rdx
- 	movq	%rsp, %rdx
+ 	u64 zone_size;
+ 	u8  zone_size_shift;
++	u64 max_zone_append_size;
+ 	u32 nr_zones;
+ 	unsigned long *seq_zones;
+ 	unsigned long *empty_zones;
 
 
