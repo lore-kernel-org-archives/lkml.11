@@ -2,144 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA179C0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:26:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A014C0502E
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbiH2Q0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33070 "EHLO
+        id S230437AbiH2Q0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230435AbiH2Q0N (ORCPT
+        with ESMTP id S230438AbiH2Q0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:26:13 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7567C1D9;
-        Mon, 29 Aug 2022 09:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661790371; x=1693326371;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=k1Bydfd+WyOURaZCkIr7Wq133wz3qjLUnS9McjzhzJY=;
-  b=KhDSx0LbgD4w16GLVGrsvItZ1EQg7hGfDcG948YJ8Xz8d9J/Gf9aFaYc
-   gXHmDAPgty/hkwS11QbKJIZd+pDub9fSKfeF8CxVfxZgBpgRIW45jVXB/
-   14cKQNoWvSwGzb3bY1yJyKrPmoK+KEqxf2mp4Dq2IIcsTo6GJ0Dse1E8q
-   16SGsBn5ToVjXzAA3D0qgIhQg7ZrQvl8zf/vpcX7JDRigy18+UWEX0tx6
-   MubULz0q7ImuA9VVYNN6+A2Q/45qBVx1ijUQg33tFIywWsgmyzNOHGaFG
-   HKwa4815ecdMBoNyECDagszi/9wVojgPKiU7kj26oCfrxc6LEDHf3SMGi
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="295714034"
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="295714034"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 09:19:31 -0700
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="611342635"
-Received: from rlacadex-mobl.amr.corp.intel.com (HELO [10.209.116.122]) ([10.209.116.122])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 09:19:30 -0700
-Message-ID: <984e07ed-914f-93ca-a141-3fc8677878e0@intel.com>
-Date:   Mon, 29 Aug 2022 09:19:27 -0700
+        Mon, 29 Aug 2022 12:26:17 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C1D7DF5A
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:26:16 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id 72so8679813pfx.9
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:26:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=GZn8dsR0SbA0LLgWvk778Eamu3Zg1IxsU3hRYJ60c7M=;
+        b=aS17D91EapqzI7ABckllr6kGJmh53zKm8Ab/RLyCrQ2T6m60LjWajmatv2MqT+ogbm
+         nDctr/DZ5AzdO6GGwIRsA5FqrLIFE546oMGi+hW69AiT8RmFQuqczTEZxYvQjIxvXTGy
+         ajPhqS0GiGY82FoBGb8Nyk6ryTN9eb36x3Bpc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=GZn8dsR0SbA0LLgWvk778Eamu3Zg1IxsU3hRYJ60c7M=;
+        b=rSkDhJPYHGZEnQ3mBOo6wLMB/f0OWb+HdT5OVKLcO/9etTsH1Sv9g/y7+J5JpZqrBC
+         EZ3fMR7JCtOMWD/53+MUjYoDh0RB3UoDcSylOKGfNvYJWTdPkU5q2CZe3+ZfrXEZaGCE
+         iQ0tyanvd0G9F2YPUeT0wIbKnE6wmNo047UC+c2x3Bua+vfxIV3U6PriZMRcev5e1PYe
+         5b8lnVEUafjEYZJnkZ7puryMY0b0+FWoJ7KFRffeUix0VRrQqLVV6bxRKwS4qBUlF91L
+         o+ZLUq9quF5MHTET1JrFLLga6A6LY8+hprhomqQddjbmdfkFAIgi2miP5YozHqXb2y2a
+         iYSQ==
+X-Gm-Message-State: ACgBeo0xNglEpfsRtw3Rj7MfXq4FX86SgeG6SBcg2eN+WhQUXUX3b250
+        9/Ba5XZkiPd3woyT4XO5nMBZ7w==
+X-Google-Smtp-Source: AA6agR5OfdZX/Iwy3uNY6EY8EZTIaYP6u/ZP6JC8pbO1oWB01yejMfZT11uQYFJhzLe9LSpYsAr7aA==
+X-Received: by 2002:a63:8a43:0:b0:42b:347d:4ad7 with SMTP id y64-20020a638a43000000b0042b347d4ad7mr14171354pgd.188.1661790375765;
+        Mon, 29 Aug 2022 09:26:15 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:49ac:6e1:90a2:a0e0])
+        by smtp.gmail.com with UTF8SMTPSA id m2-20020a170902db0200b0016bf9437766sm7843322plx.261.2022.08.29.09.26.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 09:26:15 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 09:26:12 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH] arm64: dts: qcom: sc7180-trogdor: Keep pm6150_adc
+ enabled for TZ
+Message-ID: <YwzopMkUBfLfFtc8@google.com>
+References: <20220827004901.511543-1-swboyd@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCHv7 02/14] mm: Add support for unaccepted memory
-Content-Language: en-US
-To:     Dionna Amalie Glaze <dionnaglaze@google.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Cc:     Mel Gorman <mgorman@techsingularity.net>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Marcelo Cerri <marcelo.cerri@canonical.com>,
-        tim.gardner@canonical.com,
-        Khalid ElMously <khalid.elmously@canonical.com>,
-        philip.cox@canonical.com,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-coco@lists.linux.dev, linux-efi <linux-efi@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
- <8cf143e7-2b62-1a1e-de84-e3dcc6c027a4@suse.cz>
- <20220810141959.ictqchz7josyd7pt@techsingularity.net>
- <CAAH4kHa6s3sBRySNu-TZG_6vOaN4KheVy4kvxG5s=wOTDGy2=Q@mail.gmail.com>
- <2981e25e-9cda-518a-9750-b8694f2356b5@amd.com>
- <CAAH4kHbcfnVWNQHf6Mrg__bSFT6196Sx4kno6o0Zo7hsgOgnNw@mail.gmail.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <CAAH4kHbcfnVWNQHf6Mrg__bSFT6196Sx4kno6o0Zo7hsgOgnNw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220827004901.511543-1-swboyd@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/29/22 09:02, Dionna Amalie Glaze wrote:
->>> The stack track is in mm/page_alloc.c. I've done a little
->>> investigation, but I can't account for why there's a hard cutoff of
->>> correctness at 256GB
->>>
->>> [    0.065563] RIP: 0010:memmap_init_range+0x108/0x173
->>> [    0.066309] Code: 77 16 f6 42 10 02 74 10 48 03 42 08 48 c1 e8 0c
->>> 48 89 c3 e9 3a ff ff ff 48 89 df 48 c1 e7 06 48 03 3d d9 a2 66 ff 48
->>> 8d 47 08 <c7> 47 34 01 00 00 00 48 c7 47 38 00 00 00 00 c7 47 30 ff ff
->>> ff ff
->>> [    0.069108] RSP: 0000:ffffffffad603dc8 EFLAGS: 00010082 ORIG_RAX:
->>> 0000000000000404
->>> [    0.070193] RAX: ffffdba740000048 RBX: 0000000000000001 RCX: 0000000000000000
->>> [    0.071170] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffdba740000040
->>> [    0.072224] RBP: 0000000000000000 R08: 0000000000001000 R09: 0000000000000000
->>> [    0.073283] R10: 0000000000000001 R11: ffffffffad645c60 R12: 0000000000000000
->>> [    0.074304] R13: 00000000000000a0 R14: 0000000000000000 R15: 0000000000000000
->>> [    0.075285] FS:  0000000000000000(0000) GS:ffffffffadd6c000(0000)
->>> knlGS:0000000000000000
->>> [    0.076365] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>> [    0.077194] CR2: ffffdba740000074 CR3: 0008001ee3a0c000 CR4: 00000000000606b0
->>> [    0.078209] Call Trace:
->>> [    0.078524]  <TASK>
->>> [    0.078887]  ? free_area_init+0x5c1/0x66c
->>> [    0.079417]  ? zone_sizes_init+0x52/0x6c
->>> [    0.079934]  ? setup_arch+0xa55/0xb6d
->>> [    0.080417]  ? start_kernel+0x64/0x65a
->>> [    0.080897]  ? secondary_startup_64_no_verify+0xd6/0xdb
->>> [    0.081620]  </TASK>
->> Note that there is a bug in Brijesh's version of the patch and it will
->> almost exclusively use the MSR protocol. Please try the version of the
->> patch that I recently sent up based on the current unaccepted memory tree
->> from Kirill.
->>
-> I've now tested this patch set with Tom's new patch set, and it
-> appears to be that the problem with 256GB is more likely to be due to
-> this unaccepted memory patch set rather than something AMD-specific.
+On Fri, Aug 26, 2022 at 05:49:00PM -0700, Stephen Boyd wrote:
+> There's still a thermal zone using pm6150_adc in the pm6150.dtsi file,
+> pm6150_thermal. It's not super obvious because it indirectly uses the
+> adc through an iio channel in pm6150_temp. Let's keep this enabled on
+> lazor and coachz so that reading the temperature of the pm6150_thermal
+> zone continues to work. Otherwise we get -EINVAL when reading the zone,
+> and I suspect the PMIC temperature trip doesn't work properly so we
+> don't shutdown when the PMIC overheats.
 > 
-> Kirill, do you see any problems with 256GB on TDX? It seems there is
-> some unaccepted memory getting touched in memmap_init_range when the
-> VM's memory size is at least 256GB
+> Cc: Matthias Kaehlcke <mka@chromium.org>
+> Fixes: b8d1e3d33487 ("arm64: dts: qcom: sc7180-trogdor: Delete ADC config for unused thermistors")
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 
-It really helps this kind of stuff if you can post the *actual* error.
-I assume this was a page fault, so there should have been some other
-stuff before the RIP:...
-
-Another thing that's really nice is to do the disassembly of the "Code:"
-or share disassembly of memmap_init_range.  Even nicer would be to give
-an faddr2line of the RIP value and track down which C code was actually
-at fault.
-
-It's *possible* to look into these things from what you posted, but it's
-just slow.  I'm sure Kirill will appreciate the help.
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
