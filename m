@@ -2,84 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C1AECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 436AAECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbiH2T0L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 15:26:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51026 "EHLO
+        id S229681AbiH2T0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 15:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiH2T0G (ORCPT
+        with ESMTP id S229845AbiH2T0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 15:26:06 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDBA8B2C9;
-        Mon, 29 Aug 2022 12:26:01 -0700 (PDT)
-Received: from rustam-GF63-Thin-9RCX.. (unknown [93.175.1.130])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 52C7B40D403E;
-        Mon, 29 Aug 2022 19:25:58 +0000 (UTC)
-From:   Rustam Subkhankulov <subkhankulov@ispras.ru>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>
-Cc:     Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-Subject: [PATCH v2] fs/inode.c: change the order of initialization in inode_init_always()
-Date:   Mon, 29 Aug 2022 22:25:21 +0300
-Message-Id: <20220829192521.694631-1-subkhankulov@ispras.ru>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220829141517.bcjbdk5zb74mrhgu@wittgenstein>
-References: 
+        Mon, 29 Aug 2022 15:26:07 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B9D88A7C6;
+        Mon, 29 Aug 2022 12:26:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661801166; x=1693337166;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PtLKBNgjh+ULawwAW9/eSjnSKuCcdBTI5zbDgdybVL4=;
+  b=lqteU+jaYYacIoIikUCDnhdreq2m1h5Vevv0u3m0XGa6Ul+FtCgCvDDt
+   eVircrwFHwPorE4xZ+Dgtu/iUZSy6XXB2By/BvxXavHL/IlYq7LltmE4p
+   t0J0rUXguHwQtlire/kUoWrEydRnVZjEXwWXRQoZT12dorFT02ZLRLT1W
+   5fW/QfLaJKodDpsYi3AsZ8U7vW8g6HjDdHZlKmmzTS1zdOolH/TCZn+W2
+   +60uLlg6kkTpJzwi19L1szhIx7h+JaMBm02tYC560EoD2ZdV58LCm3Dnf
+   X1x2/XHcz2zmtK/NK+9pr6hmtpxDfKSzAON+cysl9sWkE4YDfweR/CKqV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="292558633"
+X-IronPort-AV: E=Sophos;i="5.93,273,1654585200"; 
+   d="scan'208";a="292558633"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 12:26:06 -0700
+X-IronPort-AV: E=Sophos;i="5.93,273,1654585200"; 
+   d="scan'208";a="679742081"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 12:26:04 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oSkOW-005ep2-2a;
+        Mon, 29 Aug 2022 22:26:00 +0300
+Date:   Mon, 29 Aug 2022 22:26:00 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2] gpiolib: acpi: Add support to ignore programming
+ an interrupt
+Message-ID: <Yw0SyH9nwpk6Ymsw@smile.fi.intel.com>
+References: <20220803042501.515-1-mario.limonciello@amd.com>
+ <efb83a0c-7617-894e-a34d-37280238d5aa@redhat.com>
+ <YwkDd+mAhyoSwVeq@smile.fi.intel.com>
+ <MN0PR12MB610137D56D08C873C7647A9CE2769@MN0PR12MB6101.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MN0PR12MB610137D56D08C873C7647A9CE2769@MN0PR12MB6101.namprd12.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If function security_inode_alloc() returns a nonzero value due to an
-error (e.g. fail to allocate memory), then some of the fields, including
-'i_private', will not be initialized.
+On Mon, Aug 29, 2022 at 06:16:45PM +0000, Limonciello, Mario wrote:
+> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Sent: Friday, August 26, 2022 12:32
+> > On Wed, Aug 03, 2022 at 05:07:15PM +0200, Hans de Goede wrote:
+> > > On 8/3/22 06:24, Mario Limonciello wrote:
 
-After that, if the fs-specfic free_inode function is called in
-i_callback(), the nonzero value of 'i_private' field can be interpreted
-as initialized. As a result, this can cause dereferencing of random
-value pointer (e.g. nilfs2).
+...
 
-In earlier versions, a similar situation could occur with the 'u' union
-in 'inode' structure.
+> > > Thanks, patch looks good to me:
+> > >
+> > > Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+> > 
+> > Pushed to my review and testing queue, thanks!
 
-Found by Linux Verification Center (linuxtesting.org) with syzkaller.
+> Just to double check, you meant you took both patches, not just the first right?
 
-Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
----
- fs/inode.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Yes, I took 2 patches. To reduce a confusion I highly recommend to send a
+series with a cover letter, so the answer to it will definitely be equal to
+"yes, I have took all of them" if nothing else specified.
 
-diff --git a/fs/inode.c b/fs/inode.c
-index ba1de23c13c1..a2892d85993d 100644
---- a/fs/inode.c
-+++ b/fs/inode.c
-@@ -192,8 +192,6 @@ int inode_init_always(struct super_block *sb, struct inode *inode)
- 	inode->i_wb_frn_history = 0;
- #endif
- 
--	if (security_inode_alloc(inode))
--		goto out;
- 	spin_lock_init(&inode->i_lock);
- 	lockdep_set_class(&inode->i_lock, &sb->s_type->i_lock_key);
- 
-@@ -228,6 +226,10 @@ int inode_init_always(struct super_block *sb, struct inode *inode)
- 	inode->i_fsnotify_mask = 0;
- #endif
- 	inode->i_flctx = NULL;
-+
-+	if (security_inode_alloc(inode))
-+		goto out;
-+
- 	this_cpu_inc(nr_inodes);
- 
- 	return 0;
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
