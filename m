@@ -2,184 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B83BECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE139ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:02:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiH2O6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
+        id S229632AbiH2PCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiH2O6K (ORCPT
+        with ESMTP id S229484AbiH2PC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:58:10 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1B883F21
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:58:09 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-324ec5a9e97so201906047b3.7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:58:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=/oXossRp5gmk91oxr3O2OqpJJYrYzHF/cnO4ugwp7xo=;
-        b=nGGmFoI9UliEJbzlc2zbQNhXBHme0qkBgWGshv+bWBaLHZpUeQMOVvvUrGWdOdsv2s
-         z5Ehp7oMbRTdg+fVQRiSMK/zovc/4PZxJygGY6fYt1LZQrfMxU72O1YtezQhX/fnxzkC
-         hmwVjlv/xKQo9DHfnd32ZDWEPqc152dFOYaB2PyLHyNyMJety1bDK/EIVt0/JqQbR5XV
-         qdFEYni5N+tQ2+b3v0Dx5IVr02NabMS/3gg+JSkAURNZ9r88RywUcuZzF+eHthf3Q0XR
-         67tO7fg4mTyO+KE7/f/lfZsV8urY1AIDELRGlFKb052EpzQj6KOeJMaWZfchAtOzoL5W
-         H8jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=/oXossRp5gmk91oxr3O2OqpJJYrYzHF/cnO4ugwp7xo=;
-        b=eoEp6+yoTzXQxuM9j0lDg1i7jJfcAXY4y70KOJ+wPR0FF1n9fG93z6WJfaE3m2A3vJ
-         7eqhBPf0Ur9jM6oznJjfuNzfkKF9mfUwkEYD4qnQ01mPcULQ3jNMKnIJOIb2yqu+OB7w
-         xJY1JgEZGqKlAMGes55Sm1oDq03OaGCo65qIa/Ewx9vMTOYTgvAMrHxXOPaAEGihB4PI
-         EbGjsBdEOYdbVHqx474Yrbv5MHUeFILj2JSLICbwcvDts74IKdwhOpeTmHD6cV8LRS1F
-         k/2Clq70sTOrO4updxUUnizkmIKIlwGMJWH3Sx8qb7ygPuaQqKaujGWnfJyNNrGiTKur
-         RLWg==
-X-Gm-Message-State: ACgBeo1SoFE7jvRprAyHo/30KJD2RtrfryyrUFEeW4eksTIhO/TE7LTB
-        6RmuvhgcT+XPbvlIWrrrAZFg3thGvcR81FpPAYKDrQ==
-X-Google-Smtp-Source: AA6agR5mmCyZc+bx/GJcaJ2M15hFLmoQSQdVojOAReBVIxBPIuK06EfnXzBQa/1JVFnFAiIHR+JBBUgib19jDvUn/E8=
-X-Received: by 2002:a25:bc3:0:b0:673:bc78:c095 with SMTP id
- 186-20020a250bc3000000b00673bc78c095mr8579874ybl.376.1661785088326; Mon, 29
- Aug 2022 07:58:08 -0700 (PDT)
+        Mon, 29 Aug 2022 11:02:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65634D823
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:02:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C5ACB810E0
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:02:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33987C43470
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:02:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661785346;
+        bh=kJG/7aTj0oZ7inQXeN+vvAWhGoNLtuV0VgGx9YK/F1Q=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=qwTedLpcbtX68HpODlOI9Th47SBtQnTT70x/e372jq+zQR9P9AnHKmR18dALyIy+2
+         ZuJ7R4LKB+Pgz1hyzS38KjpPlxG2ZWYXvNC49g4D8Nr2puPL03FQtaPBD4LQ36J4oq
+         5zRFN/ns5fYnBJW0+r28LRqVtUA3lSwqPx74wYIyyTJVo1Z26dho7lM1W+tyrTdpbz
+         5RMrfB4dm4rdfjk3OjV89miz/00JAoMQUySC4sgRv6MnsrUNPxnEY1YdOcGqKP6lMh
+         a68ihoSITk5UOam5YOTvCOkegpyX9In+DZ3p+SglF1dkUVvPoiTG9DJyi/YEqMj19J
+         GV5/tBu7zSnyg==
+Received: by mail-vs1-f47.google.com with SMTP id n125so8593861vsc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:02:26 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3nXHrekg7BxkIqyDw3NHZJS6geDwrPMkR6q2rYXxeKSJf1TmnG
+        5Up4BgbKYDBbpi7Emj2r9FyD2uFG8JqZfjHzlSQ=
+X-Google-Smtp-Source: AA6agR69vhjFtQy6s4ccKzcNJx4rM1utGHj6QpZNEsBqhjefXI0muh6lrLxvTxmBL1N12wUD3p3MaXcuVA8PbMHL+J4=
+X-Received: by 2002:a67:d582:0:b0:390:d6dd:5612 with SMTP id
+ m2-20020a67d582000000b00390d6dd5612mr2189677vsj.78.1661785345136; Mon, 29 Aug
+ 2022 08:02:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220826150807.723137-1-glider@google.com> <20220826150807.723137-5-glider@google.com>
- <20220826211729.e65d52e7919fee5c34d22efc@linux-foundation.org>
-In-Reply-To: <20220826211729.e65d52e7919fee5c34d22efc@linux-foundation.org>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Mon, 29 Aug 2022 16:57:31 +0200
-Message-ID: <CAG_fn=Xpva_yx8oG-xi7jqJyM2YLcjNda+8ZyQPGBMV411XgMQ@mail.gmail.com>
-Subject: Re: [PATCH v5 04/44] x86: asm: instrument usercopy in get_user() and put_user()
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220829133146.15236-1-xry111@xry111.site> <e0629567084ae5c1bab880b34b417256ea23f604.camel@xry111.site>
+In-Reply-To: <e0629567084ae5c1bab880b34b417256ea23f604.camel@xry111.site>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Mon, 29 Aug 2022 23:02:11 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H67C=Cv8ok6oGe=YMS=U39N7ZKfdsSmGPc2gGpxbmU+cw@mail.gmail.com>
+Message-ID: <CAAhV-H67C=Cv8ok6oGe=YMS=U39N7ZKfdsSmGPc2gGpxbmU+cw@mail.gmail.com>
+Subject: Re: [PATCH v6 0/6] LoongArch: Support toolchain with new relocation types
+To:     Xi Ruoyao <xry111@xry111.site>
+Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 27, 2022 at 6:17 AM Andrew Morton <akpm@linux-foundation.org> w=
-rote:
->
-> On Fri, 26 Aug 2022 17:07:27 +0200 Alexander Potapenko <glider@google.com=
-> wrote:
->
-> > Use hooks from instrumented.h to notify bug detection tools about
-> > usercopy events in variations of get_user() and put_user().
->
-> And this one blows up x86_64 allmodconfig builds.
+Hi, Ruoyao,
 
-How do I reproduce this?
-I tried running `make mrproper; make allmodconfig; make -j64` (or
-allyesconfig, allnoconfig) on both KMSAN tree
-(https://github.com/google/kmsan/commit/ac3859c02d7f40f59992737d63afcacda0a=
-972ec,
-which is Linux v6.0-rc2 plus the 44 KMSAN patches) and
-linux-mm/mm-stable @ec6624452e36158d0813758d837f7a2263a4109d with
-KMSAN patches applied on top of it.
-All builds were successful.
+This version looks good to me, only some small issues. Thank you very much.
 
-I then tried to cherry-pick just the first 4 commits to mm-stable and
-see if allmodconfig works - it resulted in numerous "implicit
-declaration of function =E2=80=98instrument_get_user=E2=80=99" errors (quit=
-e silly of
-me), but nothing looking like the errors you posted.
-I'll try to build-test every patch in the series after fixing the
-missing declarations, but so far I don't see other problems.
+Huacai
 
-Could you share the mmotm commit id which resulted in the failures?
-
-
-> > --- a/arch/x86/include/asm/uaccess.h
-> > +++ b/arch/x86/include/asm/uaccess.h
-> > @@ -5,6 +5,7 @@
-> >   * User space memory access functions
-> >   */
-> >  #include <linux/compiler.h>
-> > +#include <linux/instrumented.h>
-> >  #include <linux/kasan-checks.h>
-> >  #include <linux/string.h>
-> >  #include <asm/asm.h>
+On Mon, Aug 29, 2022 at 10:57 PM Xi Ruoyao <xry111@xry111.site> wrote:
 >
-> instrumented.h looks like a higher-level thing than uaccess.h, so this
-> inclusion is an inappropriate layering.  Or maybe not.
+> On Mon, 2022-08-29 at 21:31 +0800, Xi Ruoyao wrote:
 >
-> In file included from ./include/linux/kernel.h:22,
->                  from ./arch/x86/include/asm/percpu.h:27,
->                  from ./arch/x86/include/asm/nospec-branch.h:14,
->                  from ./arch/x86/include/asm/paravirt_types.h:40,
->                  from ./arch/x86/include/asm/ptrace.h:97,
->                  from ./arch/x86/include/asm/math_emu.h:5,
->                  from ./arch/x86/include/asm/processor.h:13,
->                  from ./arch/x86/include/asm/timex.h:5,
->                  from ./include/linux/timex.h:67,
->                  from ./include/linux/time32.h:13,
->                  from ./include/linux/time.h:60,
->                  from ./include/linux/stat.h:19,
->                  from ./include/linux/module.h:13,
->                  from init/do_mounts.c:2:
-> ./include/linux/page-flags.h: In function 'page_fixed_fake_head':
-> ./include/linux/page-flags.h:226:36: error: invalid use of undefined type=
- 'const struct page'
->   226 |             test_bit(PG_head, &page->flags)) {
->       |                                    ^~
+> > Changes from v5 to v6:
+> >
+> > - Restore version number.
+> > - Rename CONFIG_CC_HAS_EXPLICIT_RELOCS to
+> > CONFIG_AS_HAS_EXPLICIT_RELOCS.
+> >   It now only checks assembler.
+> > - No longer support "old GCC with new Binutils", so R_LARCH_ABS* is
+> >   dropped.
+> >   - "Old GCC with old Binutils" is still supported until Arnd ack.
 >
-> [25000 lines snipped]
+> >     longer support it.
+> ^^^^
+> This line should be removed :(.
 >
+> >   - "New GCC with old Binutils" is still supported as it does not
+> >     require additional code.
+> > - Remove "cc-option" around "-mexplicit-relocs".  For unsupported
+> >   "old GCC with new Binutils" combination, forcing -mexplicit-relocs
+> >   makes assembling fail, instead of silently producing unloadable
+> >   modules.
+> > - Move the error report for "lacking model attribute" into Makefile.
+> > - Squash the two patches for R_LARCH_B26 and R_LARCH_PCALA* into one.
 >
-> And kmsan-add-kmsan-runtime-core.patch introduces additional build
-> errors with x86_64 allmodconfig.
->
-> This is all with CONFIG_KMSAN=3Dn
->
-> I'll disable the patch series.  Please do much more compilation testing
-> - multiple architectures, allnoconfig, allmodconfig, allyesconfig,
-> defconfig, randconfig, etc.  Good luck, it looks ugly :(
->
-
-
---
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+> --
+> Xi Ruoyao <xry111@xry111.site>
+> School of Aerospace Science and Technology, Xidian University
