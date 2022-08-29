@@ -2,234 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CF17ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:46:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D03ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:47:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbiH2PqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:46:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47294 "EHLO
+        id S229919AbiH2PrY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:47:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229721AbiH2PqN (ORCPT
+        with ESMTP id S229631AbiH2PrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:46:13 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630068000E
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:46:11 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id m7so2804544lfq.8
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:46:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=3meqtXbTYxJmns+VU1IFRu37s6xoAgQHZSDijK61tz4=;
-        b=edhns5+ibpza5cnoclqkhsHKueRr/cmtpIZAuHlzyb0bTfEPRNDvcq1R0JoAuRP+Ih
-         UHSq2t/76VsG03kG/rB5gmkylLs+o/oK2XvRfDxCy95HXznVf66+oXxb1i7Qg7xuAKnu
-         pNlTHuHu3A5RUH/S9xbLGuEEIONxCptjG63O0lvw00zRpEBznDf53OlNDuqcsQIW4U78
-         oacpH1SB8cS/WY+eYRYzcNqWiF4a30TfvRGzbJHt+sZ+8lPZnlPbansa/C0fsCBtgRna
-         LroemF3STxBRf0lJZ3QjAOSbhDY6kDYhXCxjGTpP8mhqW7bbnBkcufA7cADzQSMRwQHI
-         gSPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=3meqtXbTYxJmns+VU1IFRu37s6xoAgQHZSDijK61tz4=;
-        b=EC8QkU/tU/Pg2iNXjD0/eDR8e1uDmOAccu6CqORUc8jGQnZlwmN1afYfJtOCfxjj+D
-         5ZtLDJdSaTqleFQm96QZ7vMkx5ao8PPV95P4PTL8XsICoDdvBjAbKsdUYkaFvF008/eX
-         +31GghCsPmLWx+83SfMaRT8a7JdL3H3+BKHKyyj7DVUXyLFaVDCUt32HihA9HchEfxMf
-         a+6IyWDU03CblRyaTtlcZZOaw3AHqmowF0YPjXlUcRquZFKJHURpNX88IqCLl8SwAtXI
-         3hziUnYGrKhx1YPBY68QUkmufTLBAm1771HjlWd8M4Cvzy8SrSVaqoOFDruHqBMuI0GP
-         p+Bg==
-X-Gm-Message-State: ACgBeo0HC+eea8x+C6+KID0p6cVsESsxWNjmnEn1+Mqqx+CwExgx/UTi
-        q73FeUxp0nehWiXe+oEvWvSmxkevETRM2sQs8C9Wiw==
-X-Google-Smtp-Source: AA6agR77LJ+xzS/LIsRxYhg7g023PHZpA7hzN92OnEVBaA0dIpVIYD9T30FIiBpgS9sf7+CTU8GDiTPD7K+NBjJrMTI=
-X-Received: by 2002:a05:6512:2525:b0:494:7562:dd54 with SMTP id
- be37-20020a056512252500b004947562dd54mr539627lfb.70.1661787969495; Mon, 29
- Aug 2022 08:46:09 -0700 (PDT)
+        Mon, 29 Aug 2022 11:47:21 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17C4188DE6;
+        Mon, 29 Aug 2022 08:47:19 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27TCsCdh017555;
+        Mon, 29 Aug 2022 17:47:01 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=RdEwrkIquuRU3qsHgDtPW7Zm8iWX7XLfjhLyYDrAEXE=;
+ b=h/tRsjnSsDIgUejgmJSGoRvD3HBvz04p/OPEXxj/qpTHh6Ip576fJFSMiShQLY9t0Hwq
+ DwIxw5P5wXW9NjgLkPqNYfcPQR6quGFVUPtugYpfFOC5wTwC6KvHaL7KdxbcULWIav/z
+ kf/kGyaKEAteH4PSRbBiXBWwUVzitOmJofFkF7nbCBym1zCMqrOWSpTRYf5G89cx0gab
+ Zdj84FRdlyl865+4YBMGEedS182x0KNlezWbDu61af8zlNRVcMkzcuCYhx2SZF/nUS2w
+ 5rCXyk4Mf7mc7BXYpeo2DZ5S6p6S+QI8hoWn9VNuuYJYvY31meEwNzZeo+s5QLr/P6zF Nw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j7a5htmxd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Aug 2022 17:47:01 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5C231100040;
+        Mon, 29 Aug 2022 17:47:00 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 57E4A236927;
+        Mon, 29 Aug 2022 17:47:00 +0200 (CEST)
+Received: from localhost (10.75.127.44) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.7; Mon, 29 Aug
+ 2022 17:46:59 +0200
+From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
+To:     Jonathan Corbet <corbet@lwn.net>, Vinod Koul <vkoul@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <linux-doc@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>
+Subject: [RESEND PATCH v3 4/6] dmaengine: stm32-dmamux: set dmamux channel id in dma features bitfield
+Date:   Mon, 29 Aug 2022 17:46:44 +0200
+Message-ID: <20220829154646.29867-5-amelie.delaunay@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220829154646.29867-1-amelie.delaunay@foss.st.com>
+References: <20220829154646.29867-1-amelie.delaunay@foss.st.com>
 MIME-Version: 1.0
-References: <20220810152033.946942-1-pgonda@google.com> <20220810152033.946942-9-pgonda@google.com>
- <Yv2I48GqFpc9PHIy@google.com>
-In-Reply-To: <Yv2I48GqFpc9PHIy@google.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Mon, 29 Aug 2022 09:45:57 -0600
-Message-ID: <CAMkAt6oGtMukLM223x5Lj3A1DpQ=4ZxZ8U8L72=eKuPcjZKSbQ@mail.gmail.com>
-Subject: Re: [V3 08/11] KVM: selftests: add library for creating/interacting
- with SEV guests
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Marc Orr <marcorr@google.com>,
-        Michael Roth <michael.roth@amd.com>,
-        "Lendacky, Thomas" <thomas.lendacky@amd.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Mingwei Zhang <mizhang@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Jones <andrew.jones@linux.dev>,
-        Vishal Annapurve <vannapurve@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-29_07,2022-08-25_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 6:33 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Wed, Aug 10, 2022, Peter Gonda wrote:
-> > +enum {
-> > +       SEV_GSTATE_UNINIT = 0,
-> > +       SEV_GSTATE_LUPDATE,
-> > +       SEV_GSTATE_LSECRET,
-> > +       SEV_GSTATE_RUNNING,
-> > +};
-> > +
->
-> Name the enum, e.g. enum sev_guest_state?
+STM32 DMAMUX is used with STM32 DMA1 and DMA2:
+- DMAMUX channels 0 to 7 are connected to DMA1 channels 0 to 7
+- DMAMUX channels 8 to 15 are connected to DMA2 channels 0 to 7
 
-Done
+STM32 MDMA can be triggered by DMA1 and DMA2 channels transfer complete,
+and the "request line number" is the DMAMUX channel id (e.g. DMA2 channel 0
+triggers MDMA with request line 8).
 
->
-> And s/GSTATE/GUEST?  Ugh, AMD's documentation uses GSTATE.
->
-> But looking at the docs, I only see GSTATE_LAUNCH?  Or does SEV have different
-> status codes than -ES and/or -SNP?
+To well configure MDMA, set DMAMUX channel id in DMA features bitfield,
+so that DMA can update struct dma_slave_config peripheral_config properly.
 
-SEV and SEV-ES have the same states, SNP has a different set.
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+---
+ drivers/dma/stm32-dmamux.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-See "Table 43. GSTATE Finite State Machine":
-https://www.amd.com/system/files/TechDocs/55766_SEV-KM_API_Specification.pdf
+diff --git a/drivers/dma/stm32-dmamux.c b/drivers/dma/stm32-dmamux.c
+index eee0c5aa5fb5..b431f9da9206 100644
+--- a/drivers/dma/stm32-dmamux.c
++++ b/drivers/dma/stm32-dmamux.c
+@@ -147,7 +147,7 @@ static void *stm32_dmamux_route_allocate(struct of_phandle_args *dma_spec,
+ 	mux->request = dma_spec->args[0];
+ 
+ 	/*  craft DMA spec */
+-	dma_spec->args[3] = dma_spec->args[2];
++	dma_spec->args[3] = dma_spec->args[2] | mux->chan_id << 16;
+ 	dma_spec->args[2] = dma_spec->args[1];
+ 	dma_spec->args[1] = 0;
+ 	dma_spec->args[0] = mux->chan_id - min;
+-- 
+2.25.1
 
->
-> > +struct kvm_vm *sev_get_vm(struct sev_vm *sev)
-> > +{
-> > +     return sev->vm;
->
-> Why bother with a wrapper?
->
-> > +}
-> > +
-> > +uint8_t sev_get_enc_bit(struct sev_vm *sev)
-> > +{
->
-> Same here, IMO it just obfuscates code with no real benefit.  ANd it's inconsistent,
-> e.g. why have a wrapper for enc_bit but not sev->fd?
->
-
-Removed.
-
-> > +     return sev->enc_bit;
-> > +}
-> > +
-> > +void sev_ioctl(int sev_fd, int cmd, void *data)
-> > +{
-> > +     int ret;
-> > +     struct sev_issue_cmd arg;
-> > +
-> > +     arg.cmd = cmd;
-> > +     arg.data = (unsigned long)data;
-> > +     ret = ioctl(sev_fd, SEV_ISSUE_CMD, &arg);
-> > +     TEST_ASSERT(ret == 0,
-> > +                 "SEV ioctl %d failed, error: %d, fw_error: %d",
-> > +                 cmd, ret, arg.error);
-> > +}
-> > +
-> > +void kvm_sev_ioctl(struct sev_vm *sev, int cmd, void *data)
-> > +{
-> > +     struct kvm_sev_cmd arg = {0};
-> > +     int ret;
-> > +
-> > +     arg.id = cmd;
-> > +     arg.sev_fd = sev->fd;
-> > +     arg.data = (__u64)data;
-> > +
-> > +     ret = ioctl(sev->vm->fd, KVM_MEMORY_ENCRYPT_OP, &arg);
-> > +     TEST_ASSERT(ret == 0,
-> > +                 "SEV KVM ioctl %d failed, rc: %i errno: %i (%s), fw_error: %d",
-> > +                 cmd, ret, errno, strerror(errno), arg.error);
-> > +}
-> > +
-> > +/* Local helpers. */
-> > +
-> > +static void
->
-> Don't split here, e.g. a grep/search for the function, should also show the return
-> type and any attributes, e.g. "static" vs. something else is typically much more
-> interesting than the parameters (and parameters is not a fully solvable problem).
->
-> > +sev_register_user_region(struct sev_vm *sev, void *hva, uint64_t size)
->
-> Align like so:
->
-> static void sev_register_user_region(struct sev_vm *sev, void *hva,
->                                      uint64_t size)
->
-> or maybe even let it poke out.
-
-Ah never thought about that, sounds good. Done.
-
->
-> > +{
-> > +     struct kvm_enc_region range = {0};
-> > +     int ret;
-> > +
-> > +     pr_debug("%s: hva: %p, size: %lu\n", __func__, hva, size);
-> > +
-> > +     range.addr = (__u64)hva;
-> > +     range.size = size;
-> > +
-> > +     ret = ioctl(sev->vm->fd, KVM_MEMORY_ENCRYPT_REG_REGION, &range);
-> > +     TEST_ASSERT(ret == 0, "failed to register user range, errno: %i\n", errno);
-> > +}
-> > +
-> > +static void
-> > +sev_encrypt_phy_range(struct sev_vm *sev, vm_paddr_t gpa, uint64_t size)
->
-> Same thing here.
->
-> > +{
-> > +     struct kvm_sev_launch_update_data ksev_update_data = {0};
-> > +
-> > +     pr_debug("%s: addr: 0x%lx, size: %lu\n", __func__, gpa, size);
-> > +
-> > +     ksev_update_data.uaddr = (__u64)addr_gpa2hva(sev->vm, gpa);
-> > +     ksev_update_data.len = size;
-> > +
-> > +     kvm_sev_ioctl(sev, KVM_SEV_LAUNCH_UPDATE_DATA, &ksev_update_data);
-> > +}
-> > +
-> > +static void sev_encrypt(struct sev_vm *sev)
-> > +{
-> > +     const struct sparsebit *enc_phy_pages;
-> > +     struct kvm_vm *vm = sev->vm;
-> > +     sparsebit_idx_t pg = 0;
-> > +     vm_paddr_t gpa_start;
-> > +     uint64_t memory_size;
-> > +
-> > +     /* Only memslot 0 supported for now. */
->
-> Eww.  Haven't looked at this in depth, but is there a way to avoid hardcoding the
-> memslot in this code?
-
-Done.
-
->
-> > +void sev_vm_launch(struct sev_vm *sev)
-> > +{
-> > +     struct kvm_sev_launch_start ksev_launch_start = {0};
-> > +     struct kvm_sev_guest_status ksev_status = {0};
->
-> Doesn't " = {};" do the same thing?  And for the status, and any other cases where
-> userspace is reading, wouldn't it be better from a test coverage perspective to
-> _not_ zero the data?  Hmm, though I suppose false passes are possible in that case...
-
-We want to zero out kvm_sev_launch_start because it has main fields we
-explicitly want zero: the dh_* and session_* fields need to be set up
-correctly or zeroed. We can add a test for these later if we want, but
-it would be mostly testing userspace + the PSP.
-
-We can not zero status I agree.
-
->
-> > +     /* Need to use ucall_shared for synchronization. */
-> > +     //ucall_init_ops(sev_get_vm(sev), NULL, &ucall_ops_halt);
->
-> Can this be deleted?  If not, what's up?
-
-Whoops, removed.
