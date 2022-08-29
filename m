@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D10FEECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A23FCECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:41:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232921AbiH2LlI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:41:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56138 "EHLO
+        id S230291AbiH2LlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232910AbiH2Lkv (ORCPT
+        with ESMTP id S232941AbiH2Lkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:40:51 -0400
+        Mon, 29 Aug 2022 07:40:55 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356406555C;
-        Mon, 29 Aug 2022 04:24:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF1AC1580C;
+        Mon, 29 Aug 2022 04:25:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E3CCB80EB8;
-        Mon, 29 Aug 2022 11:17:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FF75C433D6;
-        Mon, 29 Aug 2022 11:17:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7586B80EF9;
+        Mon, 29 Aug 2022 11:18:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06258C433D7;
+        Mon, 29 Aug 2022 11:18:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771845;
-        bh=CrR8uZ9q1pmhgQX9lW9hiAzAFZMyb3XBJwrjhsOyE8o=;
+        s=korg; t=1661771921;
+        bh=iWgbc10WgRoYFt9Hy0C8s2nFStLP7XnQe67FEXV9k3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bq6vBsZZ9HsCETDPjMCmt2zvyLQ6YX4n2kFVArv3bUmfN6nXiKkbK6Uw+WbPppTJH
-         VM6bqDlzJqt6d+gJQmWARpdyFly7GE3IiSNVV5WRsH3EnMjIsVJsXmHtYU7xojinsN
-         YB17b4O059EL39jJDWVRPuTN0z/waaEmQo2snEm4=
+        b=kpFNmLjLhy/jReo2vmZVuXq6ez/mLDEpdxQyrZrPFSZ8Q/+nQUofqGizq4HHHonWx
+         22Ltiqo9UfNHrI7wiqMlGZduWNc7gW5ce9o4Hp/e1oEeQs9sRr8zocaiYNNrxq9/QH
+         mHYK/GycQMmzZH1B4wCkrWLNJN+bToT00FjeoU0U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steve Payne <spayne@aurora.tech>,
-        Ilya Evenbach <ievenbach@aurora.tech>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH 5.19 082/158] ixgbe: stop resetting SYSTIME in ixgbe_ptp_start_cyclecounter
-Date:   Mon, 29 Aug 2022 12:58:52 +0200
-Message-Id: <20220829105812.483435129@linuxfoundation.org>
+        stable@vger.kernel.org, Salvatore Bonaccorso <carnil@debian.org>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.19 141/158] Documentation/ABI: Mention retbleed vulnerability info file for sysfs
+Date:   Mon, 29 Aug 2022 12:59:51 +0200
+Message-Id: <20220829105815.003163707@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -52,137 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+From: Salvatore Bonaccorso <carnil@debian.org>
 
-[ Upstream commit 25d7a5f5a6bb15a2dae0a3f39ea5dda215024726 ]
+commit 00da0cb385d05a89226e150a102eb49d8abb0359 upstream.
 
-The ixgbe_ptp_start_cyclecounter is intended to be called whenever the
-cyclecounter parameters need to be changed.
+While reporting for the AMD retbleed vulnerability was added in
 
-Since commit a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x
-devices"), this function has cleared the SYSTIME registers and reset the
-TSAUXC DISABLE_SYSTIME bit.
+  6b80b59b3555 ("x86/bugs: Report AMD retbleed vulnerability")
 
-While these need to be cleared during ixgbe_ptp_reset, it is wrong to clear
-them during ixgbe_ptp_start_cyclecounter. This function may be called
-during both reset and link status change. When link changes, the SYSTIME
-counter is still operating normally, but the cyclecounter should be updated
-to account for the possibly changed parameters.
+the new sysfs file was not mentioned so far in the ABI documentation for
+sysfs-devices-system-cpu. Fix that.
 
-Clearing SYSTIME when link changes causes the timecounter to jump because
-the cycle counter now reads zero.
-
-Extract the SYSTIME initialization out to a new function and call this
-during ixgbe_ptp_reset. This prevents the timecounter adjustment and avoids
-an unnecessary reset of the current time.
-
-This also restores the original SYSTIME clearing that occurred during
-ixgbe_ptp_reset before the commit above.
-
-Reported-by: Steve Payne <spayne@aurora.tech>
-Reported-by: Ilya Evenbach <ievenbach@aurora.tech>
-Fixes: a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x devices")
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6b80b59b3555 ("x86/bugs: Report AMD retbleed vulnerability")
+Signed-off-by: Salvatore Bonaccorso <carnil@debian.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220801091529.325327-1-carnil@debian.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 59 +++++++++++++++-----
- 1 file changed, 46 insertions(+), 13 deletions(-)
+ Documentation/ABI/testing/sysfs-devices-system-cpu |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-index 336426a67ac1b..38cda659f65f4 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
-@@ -1208,7 +1208,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	struct cyclecounter cc;
- 	unsigned long flags;
- 	u32 incval = 0;
--	u32 tsauxc = 0;
- 	u32 fuse0 = 0;
- 
- 	/* For some of the boards below this mask is technically incorrect.
-@@ -1243,18 +1242,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	case ixgbe_mac_x550em_a:
- 	case ixgbe_mac_X550:
- 		cc.read = ixgbe_ptp_read_X550;
--
--		/* enable SYSTIME counter */
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
--		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
--		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
--		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
--				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
--		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
--		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
--
--		IXGBE_WRITE_FLUSH(hw);
- 		break;
- 	case ixgbe_mac_X540:
- 		cc.read = ixgbe_ptp_read_82599;
-@@ -1286,6 +1273,50 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
- 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
- }
- 
-+/**
-+ * ixgbe_ptp_init_systime - Initialize SYSTIME registers
-+ * @adapter: the ixgbe private board structure
-+ *
-+ * Initialize and start the SYSTIME registers.
-+ */
-+static void ixgbe_ptp_init_systime(struct ixgbe_adapter *adapter)
-+{
-+	struct ixgbe_hw *hw = &adapter->hw;
-+	u32 tsauxc;
-+
-+	switch (hw->mac.type) {
-+	case ixgbe_mac_X550EM_x:
-+	case ixgbe_mac_x550em_a:
-+	case ixgbe_mac_X550:
-+		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
-+
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+
-+		/* Reset interrupt settings */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
-+		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
-+
-+		/* Activate the SYSTIME counter */
-+		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
-+				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
-+		break;
-+	case ixgbe_mac_X540:
-+	case ixgbe_mac_82599EB:
-+		/* Reset SYSTIME registers to 0 */
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
-+		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
-+		break;
-+	default:
-+		/* Other devices aren't supported */
-+		return;
-+	};
-+
-+	IXGBE_WRITE_FLUSH(hw);
-+}
-+
- /**
-  * ixgbe_ptp_reset
-  * @adapter: the ixgbe private board structure
-@@ -1312,6 +1343,8 @@ void ixgbe_ptp_reset(struct ixgbe_adapter *adapter)
- 
- 	ixgbe_ptp_start_cyclecounter(adapter);
- 
-+	ixgbe_ptp_init_systime(adapter);
-+
- 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
- 	timecounter_init(&adapter->hw_tc, &adapter->hw_cc,
- 			 ktime_to_ns(ktime_get_real()));
--- 
-2.35.1
-
+--- a/Documentation/ABI/testing/sysfs-devices-system-cpu
++++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+@@ -527,6 +527,7 @@ What:		/sys/devices/system/cpu/vulnerabi
+ 		/sys/devices/system/cpu/vulnerabilities/tsx_async_abort
+ 		/sys/devices/system/cpu/vulnerabilities/itlb_multihit
+ 		/sys/devices/system/cpu/vulnerabilities/mmio_stale_data
++		/sys/devices/system/cpu/vulnerabilities/retbleed
+ Date:		January 2018
+ Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
+ Description:	Information about CPU vulnerabilities
 
 
