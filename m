@@ -2,46 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED303ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50444ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231569AbiH2LXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S231868AbiH2LXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:23:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231806AbiH2LWX (ORCPT
+        with ESMTP id S231680AbiH2LWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:22:23 -0400
+        Mon, 29 Aug 2022 07:22:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5FA10CC;
-        Mon, 29 Aug 2022 04:14:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E19E2DC1;
+        Mon, 29 Aug 2022 04:14:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DD4BB80EB8;
-        Mon, 29 Aug 2022 11:14:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98329C433C1;
-        Mon, 29 Aug 2022 11:13:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EAC5B80F96;
+        Mon, 29 Aug 2022 11:14:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56205C433D6;
+        Mon, 29 Aug 2022 11:14:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771640;
-        bh=tsEm34MD0Tn8vSDRsytIQ74EGAeQxHopaubzDZhDV+k=;
+        s=korg; t=1661771653;
+        bh=7cmEhpS7VRIaJaXNYOdVtNF7dkvQur5wm7hrDNvC0zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RU/7g5kZwIadwRx2wD9TA99laJzAv7oZ/YOMw/d7gPS22DDt/IPJwm+kE+A52NNCN
-         5qr8LSzSuFazasA1TZpyAWlpvRyLT5qgJ+A3udt9cvxMdbFWucrjrP5fu0xjhimk92
-         VfUYMktiQxmogfnzOo7QsW1xLp/5+nduzzOhEf48=
+        b=KXKUfTCE+E4tFXvQzCe+0I6kLAwOaF+3yijcfvBxB8b2cYoj+EnSh5oA4TgwURPHK
+         JZdzAXVFXSTpWLE7hJbbVShuaSz2OhTnFhDda56xsPNzUbHzHWj3qmyzqry/VHg/ll
+         nMDbMQQMwpQkCpsA5wJ3ySsAU4ncozwQRCT8yy9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 054/158] bnxt_en: fix LRO/GRO_HW features in ndo_fix_features callback
-Date:   Mon, 29 Aug 2022 12:58:24 +0200
-Message-Id: <20220829105810.994163211@linuxfoundation.org>
+        stable@vger.kernel.org, Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: [PATCH 5.15 133/136] perf stat: Clear evsel->reset_group for each stat run
+Date:   Mon, 29 Aug 2022 13:00:00 +0200
+Message-Id: <20220829105810.144338082@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +57,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vikas Gupta <vikas.gupta@broadcom.com>
+From: Ian Rogers <irogers@google.com>
 
-[ Upstream commit 366c304741729e64d778c80555d9eb422cf5cc89 ]
+commit bf515f024e4c0ca46a1b08c4f31860c01781d8a5 upstream.
 
-LRO/GRO_HW should be disabled if there is an attached XDP program.
-BNXT_FLAG_TPA is the current setting of the LRO/GRO_HW.  Using
-BNXT_FLAG_TPA to disable LRO/GRO_HW will cause these features to be
-permanently disabled once they are disabled.
+If a weak group is broken then the reset_group flag remains set for
+the next run. Having reset_group set means the counter isn't created
+and ultimately a segfault.
 
-Fixes: 1dc4c557bfed ("bnxt: adding bnxt_xdp_build_skb to build skb from multibuffer xdp_buff")
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+A simple reproduction of this is:
+
+  # perf stat -r2 -e '{cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles,cycles}:W
+
+which will be added as a test in the next patch.
+
+Fixes: 4804e0111662d7d8 ("perf stat: Use affinity for opening events")
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Ian Rogers <irogers@google.com>
+Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Tested-by: Xing Zhengjun <zhengjun.xing@linux.intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Kan Liang <kan.liang@linux.intel.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Link: https://lore.kernel.org/r/20220822213352.75721-1-irogers@google.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ tools/perf/builtin-stat.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index cf9b00576ed36..964354536f9ce 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -11183,10 +11183,7 @@ static netdev_features_t bnxt_fix_features(struct net_device *dev,
- 	if ((features & NETIF_F_NTUPLE) && !bnxt_rfs_capable(bp))
- 		features &= ~NETIF_F_NTUPLE;
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -807,6 +807,7 @@ static int __run_perf_stat(int argc, con
+ 		return -1;
  
--	if (bp->flags & BNXT_FLAG_NO_AGG_RINGS)
--		features &= ~(NETIF_F_LRO | NETIF_F_GRO_HW);
--
--	if (!(bp->flags & BNXT_FLAG_TPA))
-+	if ((bp->flags & BNXT_FLAG_NO_AGG_RINGS) || bp->xdp_prog)
- 		features &= ~(NETIF_F_LRO | NETIF_F_GRO_HW);
- 
- 	if (!(features & NETIF_F_GRO))
--- 
-2.35.1
-
+ 	evlist__for_each_entry(evsel_list, counter) {
++		counter->reset_group = false;
+ 		if (bpf_counter__load(counter, &target))
+ 			return -1;
+ 		if (!evsel__is_bpf(counter))
 
 
