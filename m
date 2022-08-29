@@ -2,243 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD4C3ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCA0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230501AbiH2QwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
+        id S229784AbiH2Qwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:52:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230463AbiH2Qvw (ORCPT
+        with ESMTP id S229677AbiH2Qwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:51:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FA89BB4D;
-        Mon, 29 Aug 2022 09:51:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27B506111F;
-        Mon, 29 Aug 2022 16:51:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35B4CC433C1;
-        Mon, 29 Aug 2022 16:51:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661791872;
-        bh=0oX+Br/2G9BuezF1HwwTWZg3k/n+2W2ihM7lEGTPdBA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TnD3HkUyPwEacvZ+lLBe5G3UQnoq7J5t2W0reDWzZ9ZiV8LVf70WrhwjquLrkDv4u
-         Nm8ZKG3/43PcxZTEtbZ73loyQg/sNEPqhz9xLckPQwnvI92AHuEQk+VB0pQcU9vOye
-         oZcwvRgMUTjfzzSOJRR4SRIMPl4h/s91I5/kumEzz6dAv6gttq9WtsMhucEyEdOKSI
-         8DR8+rKe0wJT+aGyygqTDBJcaeXsotp/rHQdAyuIeoK1TdIvRbGVyXtqCvncmFhWYL
-         trQgw8YHrz1l/q38BmYPBTOWtw1NvnVGY9qCDfU2XMBTq6s4PXs1G/YzjXe00J5inX
-         5PJ81kWAigq0Q==
-Received: by pali.im (Postfix)
-        id 7190E7DE; Mon, 29 Aug 2022 18:51:09 +0200 (CEST)
-Date:   Mon, 29 Aug 2022 18:51:09 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marc Zyngier <maz@kernel.org>
-Subject: Re: [PATCH] PCI: mvebu: Use devm_request_irq() for registering
- interrupt handler
-Message-ID: <20220829165109.fzrgguchg4otbbab@pali>
-References: <20220709143151.qhoa7vjcidxadrvt@pali>
- <20220709234430.GA489657@bhelgaas>
- <20220710000659.vxmlsvoin26tdiqw@pali>
+        Mon, 29 Aug 2022 12:52:49 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E6F7AC0D
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:52:45 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id e195so1103150iof.1
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:52:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=YQCZ5HXSfGZcA8bcBTLo0V3fSltEFeq1A11Jwesd6xE=;
+        b=kYSctfKLBfS+DN/xG+rtV9Jy92t2ysJSmULWExywhnmeM6p58gImEdKuuQ1ee3JaaH
+         tCdETv8lpg7U8P8M5yqFbeAkxkP2XBk0PkR7q4a3m/7FpDHGhF4/eGxenF4e1bHaiw9B
+         II2LQsvExAMznOJMpU3H80SLkzQWY/ro6k9KQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=YQCZ5HXSfGZcA8bcBTLo0V3fSltEFeq1A11Jwesd6xE=;
+        b=tTT1B51u4HitAHql9AXy/L2Hv1t8YzUyoRoK+D1I5Wcc5ErNmCL+toNH1h6Zje/czz
+         o9KUp1neOa5BxdvQCStIrjMm6Mqt/xldXmAuEnTQAkPnKt6Nh4K1j6B6wRJx2b47jimY
+         g9AyfHTgp2rHgZBF0UkC9vQ2CoMYKxuDKGKqSBRCe5WiY3/Lg1XYJdSniInfp4pd4Bex
+         FMI7SJe2d46puis/0EXttZuRcD5CN7wd1JWIxDoE9IWNHzIfqReOw41Hv/xAjtg+iBM1
+         13wZjY0Gq5SszjtuASJ2+iujfHJB/1sCUiFM50K5tb50pT/dz8pgy+S6ALYwBsq9R5+3
+         jwIg==
+X-Gm-Message-State: ACgBeo0XQP4ilBYig0WcEVuZAPPOOE6XyTj5sak2tHx10XqwHFgCoUVE
+        OYj6V2B8OMIHsIstHPFbqqDSpIzYPdXrXTa4
+X-Google-Smtp-Source: AA6agR5R4kHwgTW6tJd1EttpQkEzZ8bHczrLsbT7jKF2PmUTB8IJMJFTVanMKX+sJyGdlov7bDziWg==
+X-Received: by 2002:a02:9101:0:b0:341:a089:e855 with SMTP id a1-20020a029101000000b00341a089e855mr10265397jag.230.1661791964273;
+        Mon, 29 Aug 2022 09:52:44 -0700 (PDT)
+Received: from mail-io1-f46.google.com (mail-io1-f46.google.com. [209.85.166.46])
+        by smtp.gmail.com with ESMTPSA id t18-20020a02b192000000b0034689175166sm4445236jah.86.2022.08.29.09.52.43
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 09:52:43 -0700 (PDT)
+Received: by mail-io1-f46.google.com with SMTP id e195so1103063iof.1
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:52:43 -0700 (PDT)
+X-Received: by 2002:a05:6602:2dcb:b0:68b:7804:e924 with SMTP id
+ l11-20020a0566022dcb00b0068b7804e924mr2910751iow.54.1661791962863; Mon, 29
+ Aug 2022 09:52:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220710000659.vxmlsvoin26tdiqw@pali>
-User-Agent: NeoMutt/20180716
+References: <20220829094435.1.I4534cf408373478dd6e84dc8b9ddd0d4e1a3f143@changeid>
+In-Reply-To: <20220829094435.1.I4534cf408373478dd6e84dc8b9ddd0d4e1a3f143@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 29 Aug 2022 09:52:29 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WvpoK-z8pU0u+oKPahSA3sgwj+1u9DtJX4nRq4xOO24g@mail.gmail.com>
+Message-ID: <CAD=FV=WvpoK-z8pU0u+oKPahSA3sgwj+1u9DtJX4nRq4xOO24g@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: qcom: sc7280-qcard: Add alias 'wifi0'
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sunday 10 July 2022 02:06:59 Pali Rohár wrote:
-> On Saturday 09 July 2022 18:44:30 Bjorn Helgaas wrote:
-> > [+cc Marc, since he commented on this]
-> > 
-> > On Sat, Jul 09, 2022 at 04:31:51PM +0200, Pali Rohár wrote:
-> > > On Friday 01 July 2022 16:29:41 Pali Rohár wrote:
-> > > > On Thursday 23 June 2022 11:27:47 Bjorn Helgaas wrote:
-> > > > > On Tue, May 24, 2022 at 02:28:17PM +0200, Pali Rohár wrote:
-> > > > > > Same as in commit a3b69dd0ad62 ("Revert "PCI: aardvark: Rewrite IRQ code to
-> > > > > > chained IRQ handler"") for pci-aardvark driver, use devm_request_irq()
-> > > > > > instead of chained IRQ handler in pci-mvebu.c driver.
-> > > > > >
-> > > > > > This change fixes affinity support and allows to pin interrupts from
-> > > > > > different PCIe controllers to different CPU cores.
-> > > > > 
-> > > > > Several other drivers use irq_set_chained_handler_and_data().  Do any
-> > > > > of them need similar changes?  The commit log suggests that using
-> > > > > chained IRQ handlers breaks affinity support.  But perhaps that's not
-> > > > > the case and the real culprit is some other difference between mvebu
-> > > > > and the other drivers.
-> > > > 
-> > > > And there is another reason to not use irq_set_chained_handler_and_data
-> > > > and instead use devm_request_irq(). Armada XP has some interrupts
-> > > > shared and it looks like that irq_set_chained_handler_and_data() API
-> > > > does not handle shared interrupt sources too.
-> > > > 
-> > > > I can update commit message to mention also this fact.
-> > > 
-> > > Anything needed from me to improve this fix?
-> > 
-> > My impression from Marc's response [1] was that this patch would
-> > "break the contract the kernel has with userspace" and he didn't think
-> > this was acceptable.  But maybe I'm not understanding it correctly.
-> 
-> This is argument which Marc use when he does not have any argument.
-> 
-> Support for dedicated INTx into pci-mvebu.c was introduced just recently
-> and I used irq_set_chained_handler_and_data() just because I thought it
-> is a good idea and did not know about all those issues with it. So there
-> cannot be any breakage by this patch.
-> 
-> I already converted other pci-aardvark.c driver to use
-> irq_set_chained_handler_and_data() API because wanted it... But at the
-> end _that conversion_ caused breakage of afinity support and so this
-> conversion had to be reverted:
-> https://lore.kernel.org/linux-pci/20220515125815.30157-1-pali@kernel.org/#t
-> 
-> Based on his past decisions, above suggestions which cause _real_
-> breakage and his expressions like mvebu should be put into the trash,
-> I'm not going to listen him anymore. The only breaking is done by him.
-> 
-> 
-> There are two arguments why to not use irq_set_chained_handler_and_data:
-> 
-> 1) It does not support afinity and therefore has negative performance
->    impact on Armada platforms with more CPUs and more PCIe ports.
-> 
-> 2) It does not support shared interrupts and therefore it will break
->    hardware on which interrupt lines are shares (mostly Armada XP).
-> 
-> So these issues have to be fixed and currently I see only option to
-> switch irq_set_chained_handler_and_data() to devm_request_irq() which I
-> did in this fixup patch.
+Hi,
 
-Any progress here? This patch is waiting here since end of May and if
-something is going to be broken then it is this fact of ignoring reported
-issues and proposed patch. Do you better solution how to fix commit
-ec075262648f?
+On Mon, Aug 29, 2022 at 9:44 AM Matthias Kaehlcke <mka@chromium.org> wrote:
+>
+> Add the alias 'wifi0' for the WiFi interface on the Qcard. The alias
+> is needed by the BIOS which patches the WiFi MAC address read from
+> the VPD (Vital Product Data) into the device tree.
+>
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> ---
+>
+>  arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 1 +
+>  1 file changed, 1 insertion(+)
 
-> > In any event, I'm waiting for you to continue that discussion.  Maybe
-> > there's an argument for doing this even though it breaks some
-> > userspace expectations.  If so, that should be acknowledged and
-> > explained.  Or maybe there's an alternative implementation.  Marc
-> > gave a link to some suggestions [2], which I haven't looked into, but
-> > maybe you could.
-> 
-> Once Marc fix/implement that alternative implementation in his codebase
-> then we can continue discuss this direction. Until that happens I think
-> there is no other way, at least I do not see them.
-> 
-> And I'm not going to work again any patch for him and his codebase as he
-> explicitly expressed that is against any improvements in mvebu drivers
-> and is rejecting (my) patches. This is just waste of my time. So sorry.
-> 
-> > [1] https://lore.kernel.org/r/874k0bf7f7.wl-maz@kernel.org
-> > [2] https://lore.kernel.org/all/20220502102137.764606ee@thinkpad/
-> > 
-> > > > > > Fixes: ec075262648f ("PCI: mvebu: Implement support for legacy INTx interrupts")
-> > > > > > Signed-off-by: Pali Rohár <pali@kernel.org>
-> > > > > > ---
-> > > > > > Hello Bjorn! This is basically same issue as for pci-aardvark.c:
-> > > > > > https://lore.kernel.org/linux-pci/20220515125815.30157-1-pali@kernel.org/#t
-> > > > > > 
-> > > > > > I tested this patch with pci=nomsi in cmdline (to force kernel to use
-> > > > > > legacy intx instead of MSI) on A385 and checked that I can set affinity
-> > > > > > via /proc/irq/XX/smp_affinity file for every mvebu pcie controller to
-> > > > > > different CPU and legacy interrupts from different cards/controllers
-> > > > > > were handled by different CPUs.
-> > > > > > 
-> > > > > > I think that this is important on Armada XP platforms which have many
-> > > > > > independent PCIe controllers (IIRC up to 10) and many cores (up to 4).
-> > > > > > ---
-> > > > > >  drivers/pci/controller/pci-mvebu.c | 30 +++++++++++++++++-------------
-> > > > > >  1 file changed, 17 insertions(+), 13 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-> > > > > > index 8f76d4bda356..de67ea39fea5 100644
-> > > > > > --- a/drivers/pci/controller/pci-mvebu.c
-> > > > > > +++ b/drivers/pci/controller/pci-mvebu.c
-> > > > > > @@ -1017,16 +1017,13 @@ static int mvebu_pcie_init_irq_domain(struct mvebu_pcie_port *port)
-> > > > > >  	return 0;
-> > > > > >  }
-> > > > > >  
-> > > > > > -static void mvebu_pcie_irq_handler(struct irq_desc *desc)
-> > > > > > +static irqreturn_t mvebu_pcie_irq_handler(int irq, void *arg)
-> > > > > >  {
-> > > > > > -	struct mvebu_pcie_port *port = irq_desc_get_handler_data(desc);
-> > > > > > -	struct irq_chip *chip = irq_desc_get_chip(desc);
-> > > > > > +	struct mvebu_pcie_port *port = arg;
-> > > > > >  	struct device *dev = &port->pcie->pdev->dev;
-> > > > > >  	u32 cause, unmask, status;
-> > > > > >  	int i;
-> > > > > >  
-> > > > > > -	chained_irq_enter(chip, desc);
-> > > > > > -
-> > > > > >  	cause = mvebu_readl(port, PCIE_INT_CAUSE_OFF);
-> > > > > >  	unmask = mvebu_readl(port, PCIE_INT_UNMASK_OFF);
-> > > > > >  	status = cause & unmask;
-> > > > > > @@ -1040,7 +1037,7 @@ static void mvebu_pcie_irq_handler(struct irq_desc *desc)
-> > > > > >  			dev_err_ratelimited(dev, "unexpected INT%c IRQ\n", (char)i+'A');
-> > > > > >  	}
-> > > > > >  
-> > > > > > -	chained_irq_exit(chip, desc);
-> > > > > > +	return status ? IRQ_HANDLED : IRQ_NONE;
-> > > > > >  }
-> > > > > >  
-> > > > > >  static int mvebu_pcie_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
-> > > > > > @@ -1490,9 +1487,20 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
-> > > > > >  				mvebu_pcie_powerdown(port);
-> > > > > >  				continue;
-> > > > > >  			}
-> > > > > > -			irq_set_chained_handler_and_data(irq,
-> > > > > > -							 mvebu_pcie_irq_handler,
-> > > > > > -							 port);
-> > > > > > +
-> > > > > > +			ret = devm_request_irq(dev, irq, mvebu_pcie_irq_handler,
-> > > > > > +					       IRQF_SHARED | IRQF_NO_THREAD,
-> > > > > > +					       port->name, port);
-> > > > > > +			if (ret) {
-> > > > > > +				dev_err(dev, "%s: cannot register interrupt handler: %d\n",
-> > > > > > +					port->name, ret);
-> > > > > > +				irq_domain_remove(port->intx_irq_domain);
-> > > > > > +				pci_bridge_emul_cleanup(&port->bridge);
-> > > > > > +				devm_iounmap(dev, port->base);
-> > > > > > +				port->base = NULL;
-> > > > > > +				mvebu_pcie_powerdown(port);
-> > > > > > +				continue;
-> > > > > > +			}
-> > > > > >  		}
-> > > > > >  
-> > > > > >  		/*
-> > > > > > @@ -1599,7 +1607,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
-> > > > > >  
-> > > > > >  	for (i = 0; i < pcie->nports; i++) {
-> > > > > >  		struct mvebu_pcie_port *port = &pcie->ports[i];
-> > > > > > -		int irq = port->intx_irq;
-> > > > > >  
-> > > > > >  		if (!port->base)
-> > > > > >  			continue;
-> > > > > > @@ -1615,9 +1622,6 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
-> > > > > >  		/* Clear all interrupt causes. */
-> > > > > >  		mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_CAUSE_OFF);
-> > > > > >  
-> > > > > > -		if (irq > 0)
-> > > > > > -			irq_set_chained_handler_and_data(irq, NULL, NULL);
-> > > > > > -
-> > > > > >  		/* Remove IRQ domains. */
-> > > > > >  		if (port->intx_irq_domain)
-> > > > > >  			irq_domain_remove(port->intx_irq_domain);
-> > > > > > -- 
-> > > > > > 2.20.1
-> > > > > > 
+Looks right to me.
+
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
