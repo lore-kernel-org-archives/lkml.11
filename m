@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B46EBECAAA2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 04:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D18ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 04:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229657AbiH2EhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 00:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39326 "EHLO
+        id S229668AbiH2EhZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 00:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiH2EhR (ORCPT
+        with ESMTP id S229622AbiH2EhR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 00:37:17 -0400
 Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 468E63ECF9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A1203ED40
         for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 21:37:16 -0700 (PDT)
 Received: from bogon.localdomain (unknown [113.200.148.30])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8DxvmtvQgxjO6YLAA--.39821S5;
-        Mon, 29 Aug 2022 12:37:08 +0800 (CST)
+        by localhost.localdomain (Coremail) with SMTP id AQAAf8DxvmtvQgxjO6YLAA--.39821S2;
+        Mon, 29 Aug 2022 12:37:04 +0800 (CST)
 From:   Youling Tang <tangyouling@loongson.cn>
 To:     Huacai Chen <chenhuacai@kernel.org>, Baoquan He <bhe@redhat.com>,
         Eric Biederman <ebiederm@xmission.com>
@@ -26,54 +26,82 @@ Cc:     WANG Xuerui <kernel@xen0n.name>, Vivek Goyal <vgoyal@redhat.com>,
         Jiaxun Yang <jiaxun.yang@flygoat.com>,
         kexec@lists.infradead.org, loongarch@lists.linux.dev,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] LoongArch: Enable CONFIG_KEXEC
-Date:   Mon, 29 Aug 2022 12:37:03 +0800
-Message-Id: <1661747823-23745-4-git-send-email-tangyouling@loongson.cn>
+Subject: [PATCH 0/3] LoongArch: Add kexec/kdump support
+Date:   Mon, 29 Aug 2022 12:37:00 +0800
+Message-Id: <1661747823-23745-1-git-send-email-tangyouling@loongson.cn>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1661747823-23745-1-git-send-email-tangyouling@loongson.cn>
-References: <1661747823-23745-1-git-send-email-tangyouling@loongson.cn>
-X-CM-TRANSID: AQAAf8DxvmtvQgxjO6YLAA--.39821S5
-X-Coremail-Antispam: 1UD129KBjvdXoWrZF48WFWUJr1xAw4rXr1fJFb_yoWxCFg_JF
-        y7Gw4Dur48ta97uw4xXw1rWwsrA3W7ZF1FkF17Ar1xX3Wagr13tw4qq3W3C3ZYg3yUWrs3
-        ZaykAF9Fkr10yjkaLaAFLSUrUUUUbb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbg8YjsxI4VWxJwAYFVCjjxCrM7AC8VAFwI0_Wr0E3s1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l82xGYIkIc2x26280x7
-        IE14v26r1rM28IrcIa0xkI8VCY1x0267AKxVW5JVCq3wA2ocxC64kIII0Yj41l84x0c7CE
-        w4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6x
-        kF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv
-        6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c
-        02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVW8JVWxJwAm72CE
-        4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2
-        xSY4AK67AK6r45MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E
-        5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtV
-        W8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY
-        1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI
-        0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7I
-        U8G-e7UUUUU==
+X-CM-TRANSID: AQAAf8DxvmtvQgxjO6YLAA--.39821S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cw1xGFy7tF1rWw4ruFy8Xwb_yoW8uw1kpF
+        4Uurn8Kr48GFn3Jwnxtw1DuryrJ3s7Gw1ag3ZIy34rZFW2qF1UZrnYqF9rXF15tw4fKrW0
+        qFnYg3y2g3WUJa7anT9S1TB71UUUUUDqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvqb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwV
+        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Gr0_Cr
+        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY
+        04v7MxkIecxEwVAFwVW8XwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8Jw
+        C20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAF
+        wI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjx
+        v20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2
+        jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0x
+        ZFpf9x07br4EiUUUUU=
 X-CM-SenderInfo: 5wdqw5prxox03j6o00pqjv00gofq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Defaults enable CONFIG_KEXEC to convenient kexec operations.
+This patch series to support kexec/kdump (only 64bit).
 
-Signed-off-by: Youling Tang <tangyouling@loongson.cn>
----
- arch/loongarch/configs/loongson3_defconfig | 1 +
- 1 file changed, 1 insertion(+)
+Kexec is a system call that enables you to load and boot into another kernel
+from the currently running kernel. This is useful for kernel developers or
+other people who need to reboot very quickly without waiting for the whole
+BIOS boot process to finish. 
 
-diff --git a/arch/loongarch/configs/loongson3_defconfig b/arch/loongarch/configs/loongson3_defconfig
-index 68c9609670d4..52db7a3a79f3 100644
---- a/arch/loongarch/configs/loongson3_defconfig
-+++ b/arch/loongarch/configs/loongson3_defconfig
-@@ -45,6 +45,7 @@ CONFIG_SMP=y
- CONFIG_HOTPLUG_CPU=y
- CONFIG_NR_CPUS=64
- CONFIG_NUMA=y
-+CONFIG_KEXEC=y
- CONFIG_PAGE_SIZE_16KB=y
- CONFIG_HZ_250=y
- CONFIG_ACPI=y
+Kdump uses kexec to quickly boot to a dump-capture kernel whenever a
+dump of the system kernel's memory needs to be taken (for example, when
+the system panics). The system kernel's memory image is preserved across
+the reboot and is accessible to the dump-capture kernel.
+
+For details, see Documentation/admin-guide/kdump/kdump.rst.
+
+User tools kexec-tools see link [1].
+
+TODO:
+Currently kdump does not support the same binary image, the production kernel
+and the capture kernel will be generated with different configurations. I will
+support kernel relocation support in the near future. Then will go to implement
+the same binary support based on kernel relocation support.
+
+[1] Link: https://github.com/tangyouling/kexec-tools
+
+
+Youling Tang (3):
+  LoongArch: Add kexec support
+  LoongArch: Add kdump support
+  LoongArch: Enable CONFIG_KEXEC
+
+ arch/loongarch/Kconfig                     |  33 ++++
+ arch/loongarch/Makefile                    |   4 +
+ arch/loongarch/configs/loongson3_defconfig |   1 +
+ arch/loongarch/include/asm/kexec.h         |  58 +++++++
+ arch/loongarch/kernel/Makefile             |   3 +
+ arch/loongarch/kernel/crash.c              | 100 ++++++++++++
+ arch/loongarch/kernel/crash_dump.c         |  19 +++
+ arch/loongarch/kernel/head.S               |   7 +-
+ arch/loongarch/kernel/machine_kexec.c      | 176 +++++++++++++++++++++
+ arch/loongarch/kernel/mem.c                |   6 +
+ arch/loongarch/kernel/relocate_kernel.S    | 131 +++++++++++++++
+ arch/loongarch/kernel/setup.c              |  49 ++++++
+ arch/loongarch/kernel/traps.c              |   4 +
+ 13 files changed, 590 insertions(+), 1 deletion(-)
+ create mode 100644 arch/loongarch/include/asm/kexec.h
+ create mode 100644 arch/loongarch/kernel/crash.c
+ create mode 100644 arch/loongarch/kernel/crash_dump.c
+ create mode 100644 arch/loongarch/kernel/machine_kexec.c
+ create mode 100644 arch/loongarch/kernel/relocate_kernel.S
+
 -- 
 2.36.0
 
