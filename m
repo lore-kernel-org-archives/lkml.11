@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A71B6ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:43:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 761C1ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:44:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233030AbiH2Lnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:43:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37338 "EHLO
+        id S230459AbiH2Lnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232912AbiH2LnE (ORCPT
+        with ESMTP id S232969AbiH2LnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:43:04 -0400
+        Mon, 29 Aug 2022 07:43:06 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B736C85AA7;
-        Mon, 29 Aug 2022 04:27:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC67585AB2;
+        Mon, 29 Aug 2022 04:27:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DCEC611D7;
-        Mon, 29 Aug 2022 11:19:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4535FC433C1;
-        Mon, 29 Aug 2022 11:19:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BF6E61231;
+        Mon, 29 Aug 2022 11:13:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97FEEC433D6;
+        Mon, 29 Aug 2022 11:13:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771979;
-        bh=4WjlWH8J126wrlHjO6n2BS/x3Mg6Ty1H/2N1ZLuMDIQ=;
+        s=korg; t=1661771634;
+        bh=fd2B/jkW98W9XGlcOE2Qih4zdW0I/EfQnMIYTXhDY5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WZe8b8D08L8p0Z2p/UJLqWX1znryL83L+08TK4qCzrqQYTdECCPQy2xHF6uDBpP1j
-         Hr0GctG3vcdrjolTOgp8wiQkrT0ntcz3LQ8a+5TklyZDrA+Hr44tO4KLgozeBbJk1B
-         ix6jeXP+5lRN8ndq8qxuz6KW02zS3saF72zfOKpE=
+        b=vwDlQMIQPKj3M9RizvAb2r3mcBbykrZLLYAJjF3N9aCqvKfTNIW6d3W2svmX6J4mo
+         fFsidxAYAuG0WLn20ViseEbH1x7yRlqoJy0NxdgHZg+Xbl/wIF1Mh3dDTEE3tDkMTw
+         /BGIeB2xIOq2WRvOZhwaRzTKVdwuVGHU5IPraUXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Mike Christie <michael.christie@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.19 153/158] scsi: core: Fix passthrough retry counter handling
-Date:   Mon, 29 Aug 2022 13:00:03 +0200
-Message-Id: <20220829105815.534215031@linuxfoundation.org>
+        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 053/158] bnxt_en: fix NQ resource accounting during vf creation on 57500 chips
+Date:   Mon, 29 Aug 2022 12:58:23 +0200
+Message-Id: <20220829105810.954627849@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,52 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Christie <michael.christie@oracle.com>
+From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-commit fac8e558da9485e13a0ae0488aa0b8a8c307cd34 upstream.
+[ Upstream commit 09a89cc59ad67794a11e1d3dd13c5b3172adcc51 ]
 
-Passthrough users will set the scsi_cmnd->allowed value and were expecting
-up to $allowed retries. The problem is that before:
+There are 2 issues:
 
-commit 6aded12b10e0 ("scsi: core: Remove struct scsi_request")
+1. We should decrement hw_resc->max_nqs instead of hw_resc->max_irqs
+   with the number of NQs assigned to the VFs.  The IRQs are fixed
+   on each function and cannot be re-assigned.  Only the NQs are being
+   assigned to the VFs.
 
-we used to set the retries on the scsi_request then copy them over to
-scsi_cmnd->allowed in scsi_setup_scsi_cmnd. With that patch we now set
-scsi_cmnd->allowed to 0 in scsi_prepare_cmd and overwrite what the
-passthrough user set.
+2. vf_msix is the total number of NQs to be assigned to the VFs.  So
+   we should decrement vf_msix from hw_resc->max_nqs.
 
-This moves the allowed initialization to after the blk_rq_is_passthrough()
-check so it's only done for the non-passthrough path where the ULD
-init_command will normally set an allowed value it prefers.
-
-Link: https://lore.kernel.org/r/20220812011206.9157-1-michael.christie@oracle.com
-Fixes: 6aded12b10e0 ("scsi: core: Remove struct scsi_request")
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Mike Christie <michael.christie@oracle.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b16b68918674 ("bnxt_en: Add SR-IOV support for 57500 chips.")
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_lib.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/scsi/scsi_lib.c
-+++ b/drivers/scsi/scsi_lib.c
-@@ -1549,7 +1549,6 @@ static blk_status_t scsi_prepare_cmd(str
- 	scsi_init_command(sdev, cmd);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index a1a2c7a64fd58..c9cf0569451a2 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -623,7 +623,7 @@ static int bnxt_hwrm_func_vf_resc_cfg(struct bnxt *bp, int num_vfs, bool reset)
+ 		hw_resc->max_stat_ctxs -= le16_to_cpu(req->min_stat_ctx) * n;
+ 		hw_resc->max_vnics -= le16_to_cpu(req->min_vnics) * n;
+ 		if (bp->flags & BNXT_FLAG_CHIP_P5)
+-			hw_resc->max_irqs -= vf_msix * n;
++			hw_resc->max_nqs -= vf_msix;
  
- 	cmd->eh_eflags = 0;
--	cmd->allowed = 0;
- 	cmd->prot_type = 0;
- 	cmd->prot_flags = 0;
- 	cmd->submitter = 0;
-@@ -1600,6 +1599,8 @@ static blk_status_t scsi_prepare_cmd(str
- 			return ret;
+ 		rc = pf->active_vfs;
  	}
- 
-+	/* Usually overridden by the ULP */
-+	cmd->allowed = 0;
- 	memset(cmd->cmnd, 0, sizeof(cmd->cmnd));
- 	return scsi_cmd_to_driver(cmd)->init_command(cmd);
- }
+-- 
+2.35.1
+
 
 
