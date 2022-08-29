@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83943ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317FDECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231787AbiH2LWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
+        id S231792AbiH2LWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:22:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231556AbiH2LUi (ORCPT
+        with ESMTP id S231651AbiH2LUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:20:38 -0400
+        Mon, 29 Aug 2022 07:20:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2E66A4B6;
-        Mon, 29 Aug 2022 04:13:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2184566A49;
+        Mon, 29 Aug 2022 04:14:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E97AB80F9C;
-        Mon, 29 Aug 2022 11:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2606C433D6;
-        Mon, 29 Aug 2022 11:10:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 85B9AB80FB3;
+        Mon, 29 Aug 2022 11:13:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD0BEC433D6;
+        Mon, 29 Aug 2022 11:13:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771456;
-        bh=/YP6VvDcJ9DScd+mjxxX5q2txVxjWzz7n9jvS0JRzxc=;
+        s=korg; t=1661771585;
+        bh=gtulpLrNC9Vr2OGeOpWy446vUQ2NNprrFCbro7zgi+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v8TvZZnlmYPj7vtUJOcipCIL6knEaFCf29Q+9WWxSegJrQcJzeSiSY6UFlA+7/qfo
-         6w21K+bWoLt02+Jr1n3ZtNW0YSOTxvtATKeZIijNjXqFa4lgyqS5XhnT55SwMKWiU3
-         +yXmbSyOtgtPHkHEuRJ+kmcFAa4DVBy3KOGFrsz8=
+        b=UgfCpt/49qwh7mvyiUVi9CxitNythR4hzuU39Ufi4Jl4zkXlx/6c7/UWMOdgYTx3r
+         yyvEM2gOh1+leFItfHjMVv498KEGXb3XML6xK9J8BvVJW+uNk9TRaZWexjMNEqe2Mv
+         gw49053ff4gAdohL7cK5D9xqCbxGlUtX6HkXB9FM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.10 69/86] x86/unwind/orc: Unwind ftrace trampolines with correct ORC entry
-Date:   Mon, 29 Aug 2022 12:59:35 +0200
-Message-Id: <20220829105759.370739152@linuxfoundation.org>
+        stable@vger.kernel.org, Sergei Antonov <saproj@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 046/158] net: moxa: get rid of asymmetry in DMA mapping/unmapping
+Date:   Mon, 29 Aug 2022 12:58:16 +0200
+Message-Id: <20220829105810.698091357@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,72 +49,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Zhongjin <chenzhongjin@huawei.com>
+From: Sergei Antonov <saproj@gmail.com>
 
-commit fc2e426b1161761561624ebd43ce8c8d2fa058da upstream.
+[ Upstream commit 0ee7828dfc56e97d71e51e6374dc7b4eb2b6e081 ]
 
-When meeting ftrace trampolines in ORC unwinding, unwinder uses address
-of ftrace_{regs_}call address to find the ORC entry, which gets next frame at
-sp+176.
+Since priv->rx_mapping[i] is maped in moxart_mac_open(), we
+should unmap it from moxart_mac_stop(). Fixes 2 warnings.
 
-If there is an IRQ hitting at sub $0xa8,%rsp, the next frame should be
-sp+8 instead of 176. It makes unwinder skip correct frame and throw
-warnings such as "wrong direction" or "can't access registers", etc,
-depending on the content of the incorrect frame address.
+1. During error unwinding in moxart_mac_probe(): "goto init_fail;",
+then moxart_mac_free_memory() calls dma_unmap_single() with
+priv->rx_mapping[i] pointers zeroed.
 
-By adding the base address ftrace_{regs_}caller with the offset
-*ip - ops->trampoline*, we can get the correct address to find the ORC entry.
+WARNING: CPU: 0 PID: 1 at kernel/dma/debug.c:963 check_unmap+0x704/0x980
+DMA-API: moxart-ethernet 92000000.mac: device driver tries to free DMA memory it has not allocated [device address=0x0000000000000000] [size=1600 bytes]
+CPU: 0 PID: 1 Comm: swapper Not tainted 5.19.0+ #60
+Hardware name: Generic DT based system
+ unwind_backtrace from show_stack+0x10/0x14
+ show_stack from dump_stack_lvl+0x34/0x44
+ dump_stack_lvl from __warn+0xbc/0x1f0
+ __warn from warn_slowpath_fmt+0x94/0xc8
+ warn_slowpath_fmt from check_unmap+0x704/0x980
+ check_unmap from debug_dma_unmap_page+0x8c/0x9c
+ debug_dma_unmap_page from moxart_mac_free_memory+0x3c/0xa8
+ moxart_mac_free_memory from moxart_mac_probe+0x190/0x218
+ moxart_mac_probe from platform_probe+0x48/0x88
+ platform_probe from really_probe+0xc0/0x2e4
 
-Also change "caller" to "tramp_addr" to make variable name conform to
-its content.
+2. After commands:
+ ip link set dev eth0 down
+ ip link set dev eth0 up
 
-[ mingo: Clarified the changelog a bit. ]
+WARNING: CPU: 0 PID: 55 at kernel/dma/debug.c:570 add_dma_entry+0x204/0x2ec
+DMA-API: moxart-ethernet 92000000.mac: cacheline tracking EEXIST, overlapping mappings aren't supported
+CPU: 0 PID: 55 Comm: ip Not tainted 5.19.0+ #57
+Hardware name: Generic DT based system
+ unwind_backtrace from show_stack+0x10/0x14
+ show_stack from dump_stack_lvl+0x34/0x44
+ dump_stack_lvl from __warn+0xbc/0x1f0
+ __warn from warn_slowpath_fmt+0x94/0xc8
+ warn_slowpath_fmt from add_dma_entry+0x204/0x2ec
+ add_dma_entry from dma_map_page_attrs+0x110/0x328
+ dma_map_page_attrs from moxart_mac_open+0x134/0x320
+ moxart_mac_open from __dev_open+0x11c/0x1ec
+ __dev_open from __dev_change_flags+0x194/0x22c
+ __dev_change_flags from dev_change_flags+0x14/0x44
+ dev_change_flags from devinet_ioctl+0x6d4/0x93c
+ devinet_ioctl from inet_ioctl+0x1ac/0x25c
 
-Fixes: 6be7fa3c74d1 ("ftrace, orc, x86: Handle ftrace dynamically allocated trampolines")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220819084334.244016-1-chenzhongjin@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+v1 -> v2:
+Extraneous change removed.
+
+Fixes: 6c821bd9edc9 ("net: Add MOXA ART SoCs ethernet driver")
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220819110519.1230877-1-saproj@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/unwind_orc.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/moxa/moxart_ether.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
---- a/arch/x86/kernel/unwind_orc.c
-+++ b/arch/x86/kernel/unwind_orc.c
-@@ -93,22 +93,27 @@ static struct orc_entry *orc_find(unsign
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
+diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
+index f11f1cb92025f..3b6beb96ca856 100644
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -74,11 +74,6 @@ static int moxart_set_mac_address(struct net_device *ndev, void *addr)
+ static void moxart_mac_free_memory(struct net_device *ndev)
  {
- 	struct ftrace_ops *ops;
--	unsigned long caller;
-+	unsigned long tramp_addr, offset;
+ 	struct moxart_mac_priv_t *priv = netdev_priv(ndev);
+-	int i;
+-
+-	for (i = 0; i < RX_DESC_NUM; i++)
+-		dma_unmap_single(&priv->pdev->dev, priv->rx_mapping[i],
+-				 priv->rx_buf_size, DMA_FROM_DEVICE);
  
- 	ops = ftrace_ops_trampoline(ip);
- 	if (!ops)
- 		return NULL;
+ 	if (priv->tx_desc_base)
+ 		dma_free_coherent(&priv->pdev->dev,
+@@ -193,6 +188,7 @@ static int moxart_mac_open(struct net_device *ndev)
+ static int moxart_mac_stop(struct net_device *ndev)
+ {
+ 	struct moxart_mac_priv_t *priv = netdev_priv(ndev);
++	int i;
  
-+	/* Set tramp_addr to the start of the code copied by the trampoline */
- 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS)
--		caller = (unsigned long)ftrace_regs_call;
-+		tramp_addr = (unsigned long)ftrace_regs_caller;
- 	else
--		caller = (unsigned long)ftrace_call;
-+		tramp_addr = (unsigned long)ftrace_caller;
+ 	napi_disable(&priv->napi);
+ 
+@@ -204,6 +200,11 @@ static int moxart_mac_stop(struct net_device *ndev)
+ 	/* disable all functions */
+ 	writel(0, priv->base + REG_MAC_CTRL);
+ 
++	/* unmap areas mapped in moxart_mac_setup_desc_ring() */
++	for (i = 0; i < RX_DESC_NUM; i++)
++		dma_unmap_single(&priv->pdev->dev, priv->rx_mapping[i],
++				 priv->rx_buf_size, DMA_FROM_DEVICE);
 +
-+	/* Now place tramp_addr to the location within the trampoline ip is at */
-+	offset = ip - ops->trampoline;
-+	tramp_addr += offset;
- 
- 	/* Prevent unlikely recursion */
--	if (ip == caller)
-+	if (ip == tramp_addr)
- 		return NULL;
- 
--	return orc_find(caller);
-+	return orc_find(tramp_addr);
+ 	return 0;
  }
- #else
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
+ 
+-- 
+2.35.1
+
 
 
