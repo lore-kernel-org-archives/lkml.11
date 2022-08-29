@@ -2,153 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3181ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E10DECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbiH2QBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43704 "EHLO
+        id S229937AbiH2QCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:02:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230156AbiH2QBK (ORCPT
+        with ESMTP id S229619AbiH2QCb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:01:10 -0400
-Received: from smtp-bc0b.mail.infomaniak.ch (smtp-bc0b.mail.infomaniak.ch [45.157.188.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350BE74DD8
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:01:05 -0700 (PDT)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4MGZt73sLWzMqD9B;
-        Mon, 29 Aug 2022 18:01:03 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4MGZt630S8zlh8V4;
-        Mon, 29 Aug 2022 18:01:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1661788863;
-        bh=UDehGM8zok+fb4aL9IKQsjADGXsUJoA7AfyxVK4RScI=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=UljJ9FrIJnA4nbsJvP/j21pbDxFUUDdLhmks9Cj0wPynT87BtPv5PPBr7AI+9BGzf
-         7ub5XvC/972M0toGVuazsbSfU7iaoDsgNJipkBR1ZcCsRNGWgn4GnJtlLR/7BlV2sC
-         QyyiRc3PRpqjk6W3cJQwufU2zHjI9yHG9YcbN/2A=
-Message-ID: <de4620d2-3268-b3cc-71dd-acbbd204435e@digikod.net>
-Date:   Mon, 29 Aug 2022 18:01:01 +0200
+        Mon, 29 Aug 2022 12:02:31 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C8DC75FDE
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:02:29 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id cu2so16703746ejb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:02:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=PWMBMRMPN5GhvCOAnnAdFknz4G+9De4RqcsPk0Z1BG4=;
+        b=NYJnIKLUJrUZStzT8ciuU41oE7tVij2lLq+s+AiEcOqIZwRO2tVIvUmDN2h0h+krqo
+         d1IzFfocFezhlX9U9fk02nHKFeBuuQqrjG5Yixliri9tUNIVf5qacBQipFaZczv6jP4A
+         vq9KS79+uIf3t1gDDWkMp9aXUQtbyAvr3/NdRmEG/UJ5blaAxBSEHgjSQRSS2N2TYk0R
+         0Yn8HMa9dyg/hOoPn2qBkP1VxMq4+A4RxXM4M9k2ohO+Nup6xhbaGD+0qpjE9I1Pn/gg
+         Na7hh1ha8jwnRIXebmeJHDx33e6q7F7H9UpnJ9dQ+Imp4gxiyNPLG8V+wCLbY0aU2FcE
+         Mk6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=PWMBMRMPN5GhvCOAnnAdFknz4G+9De4RqcsPk0Z1BG4=;
+        b=VgbZMGoisQRB68Ng7Pi1NDrct+h8jXcG+5OYv1R6TRsxAk40hqhVqfWQtRUJtNojoI
+         +fVdCLzFDStVtUA9EhENhrKS75sCGP06Z1GkGPoCHzodOACgjKPj0Ar4RCz+fy9TaEdj
+         c3vQxCTturKZ9XTJmpPJQIxHn4XroOfs0m3jT5SPW4mIxQ0F0Ye64d2pFN4XyHwGeE5o
+         uH4BDBvSRrFwOcHb+rcagSc7vfrkZNpSsyxpMs0dLzdDV3aUNgXV0XK8BLOE1/udh1aa
+         AXjwdF/TcpIA3P6ZYRUHvj7xBT8xQBjVSmYqiMy5YzqrdXz26t3aLdglGtf5xi9bsn4v
+         dXbQ==
+X-Gm-Message-State: ACgBeo0m5T5z+NMbYXP69nElbufVQh7BGUi0DQukFp6gGTftcWn/VHVP
+        u6fmA41P3git0diyhra8hWG5dI2obEexwX1wsGXozGvMPfg=
+X-Google-Smtp-Source: AA6agR6el4xi1uh8MNRyeKzalfI37Tyvgw01vmh8rhtJ4CKqz7iElZwCgeZkvXcMx5FicxZX67QbZ1VGJh0PgF+k3xo=
+X-Received: by 2002:a17:907:743:b0:740:ef93:2ffc with SMTP id
+ xc3-20020a170907074300b00740ef932ffcmr10122140ejb.514.1661788948001; Mon, 29
+ Aug 2022 09:02:28 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     xiujianfeng <xiujianfeng@huawei.com>,
-        =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
-Cc:     paul@paul-moore.com, jmorris@namei.org, serge@hallyn.com,
-        shuah@kernel.org, corbet@lwn.net,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220827111215.131442-1-xiujianfeng@huawei.com>
- <20220827111215.131442-4-xiujianfeng@huawei.com> <Ywpw66EYRDTQIyTx@nuc>
- <de8834b6-0ff2-1a81-f2d3-af33103e9942@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH -next v2 3/6] landlock: add chmod and chown support
-In-Reply-To: <de8834b6-0ff2-1a81-f2d3-af33103e9942@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220319151016.983348-1-alvin@pqrs.dk>
+In-Reply-To: <20220319151016.983348-1-alvin@pqrs.dk>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Mon, 29 Aug 2022 18:02:17 +0200
+Message-ID: <CAG3jFyvqPFL4d=s6DsbVZOzkuMwwi-GUZwFYyeajr=jLqmdm4Q@mail.gmail.com>
+Subject: Re: [PATCH 0/2] drm: bridge: adv7511: CEC support for ADV7535
+To:     =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alvin@pqrs.dk>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Alvin,
 
-On 29/08/2022 03:17, xiujianfeng wrote:
-> 
-> Hi,
-> 
-> 在 2022/8/28 3:30, Günther Noack 写道:
->> Hello!
->>
->> the mapping between Landlock rights to LSM hooks is now as follows in
->> your patch set:
->>
->> * LANDLOCK_ACCESS_FS_CHMOD controls hook_path_chmod
->> * LANDLOCK_ACCESS_FS_CHGRP controls hook_path_chown
->>     (this hook can restrict both the chown(2) and chgrp(2) syscalls)
->>
->> Is this the desired mapping?
->>
->> The previous discussion I found on the topic was in
->>
->> [1] https://lore.kernel.org/all/5873455f-fff9-618c-25b1-8b6a4ec94368@digikod.net/
->> [2] https://lore.kernel.org/all/b1d69dfa-6d93-2034-7854-e2bc4017d20e@schaufler-ca.com/
->> [3] https://lore.kernel.org/all/c369c45d-5aa8-3e39-c7d6-b08b165495fd@digikod.net/
->>
->> In my understanding the main arguments were the ones in [2] and [3].
->>
->> There were no further responses to [3], so I was under the impression
->> that we were gravitating towards an approach where the
->> file-metadata-modification operations were grouped more coarsely?
->>
->> For example with the approach suggested in [3], which would be to
->> group the operations coarsely into (a) one Landlock right for
->> modifying file metadata that is used in security contexts, and (b) one
->> Landlock right for modifying metadata that was used in non-security
->> contexts. That would mean that there would be:
->>
->> (a) LANDLOCK_ACCESS_FS_MODIFY_SECURITY_ATTRIBUTES to control the
->> following operations:
->>     * chmod(2)-variants through hook_path_chmod,
->>     * chown(2)-variants and chgrp(2)-variants through hook_path_chown,
->>     * setxattr(2)-variants and removexattr(2)-variants for extended
->>       attributes that are not "user extended attributes" as described in
->>       xattr(7) through hook_inode_setxattr and hook_inode_removexattr
->>
->> (b) LANDLOCK_ACCESS_FS_MODIFY_NON_SECURITY_ATTRIBUTES to control the
->> following operations:
->>     * utimes(2) and other operations for setting other non-security
->>       sensitive attributes, probably through hook_inode_setattr(?)
->>     * xattr modifications like above, but for the "user extended
->>       attributes", though hook_inode_setxattr and hook_inode_removexattr
->>
->> In my mind, this would be a sensible grouping, and it would also help
->> to decouple the userspace-exposed API from the underlying
->> implementation, as Casey suggested to do in [2].
->>
->> Specifically for this patch set, if you want to use this grouping, you
->> would only need to add one new Landlock right
->> (LANDLOCK_ACCESS_FS_MODIFY_SECURITY_ATTRIBUTES) as described above
->> under (a) (and maybe we can find a shorter name for it... :))?
->>
->> Did I miss any operations here that would be necessary to restrict?
->>
->> Would that make sense to you? Xiu, what is your opinion on how this
->> should be grouped? Do you have use cases in mind where a more
->> fine-grained grouping would be required?
-> 
-> I apologize I may missed that discussion when I prepared v2:(
-> 
-> Yes, agreed, this grouping is more sensible and resonnable. so in this
-> patchset only one right will be added, and I suppose the first commit
-> which expand access_mask_t to u32 can be droped.
-> 
->>
->> —Günther
->>
->> P.S.: Regarding utimes: The hook_inode_setattr hook *also* gets called
->> on a variety on attribute changes including file ownership, file size
->> and file mode, so it might potentially interact with a bunch of other
->> existing Landlock rights. Maybe that is not the right approach. In any
->> case, it seems like it might require more thinking and it might be
->> sensible to do that in a separate patch set IMHO.
-> 
-> Thanks for you reminder, that seems it's more complicated to support
-> utimes, so I think we'd better not support it in this patchset.
+Sorry about being slow to get to this series.
 
-The issue with this approach is that it makes it impossible to properly 
-group such access rights. Indeed, to avoid inconsistencies and much more 
-complexity, we cannot extend a Landlock access right once it is defined.
+Can you rebase it on drm-misc-next and send out the next version?
 
-We also need to consider that file ownership and permissions have a 
-default (e.g. umask), which is also a way to set them. How to 
-consistently manage that? What if the application wants to protect its 
-files with chmod 0400?
-
-About the naming, I think we can start with:
-- LANDLOCK_ACCESS_FS_READ_METADATA (read any file/dir metadata);
-- LANDLOCK_ACCESS_FS_WRITE_SAFE_METADATA: change file times, user xattr;
-- LANDLOCK_ACCESS_FS_WRITE_UNSAFE_METADATA: interpreted by the kernel 
-(could change non-Landlock DAC or MAC, which could be considered as a 
-policy bypass; or other various xattr that might be interpreted by 
-filesystems), this should be denied most of the time.
+On Sat, 19 Mar 2022 at 16:10, Alvin =C5=A0ipraga <alvin@pqrs.dk> wrote:
+>
+> From: Alvin =C5=A0ipraga <alsi@bang-olufsen.dk>
+>
+> We have an ADV7535 which is nominally supported by this driver. These
+> two patches fix up the driver to get CEC working too.
+>
+> The first adds the basic support by correcting some register offsets.
+>
+> The second addresses an issue we saw with CEC RX on the ADV7535. It
+> hasn't been tested with the other chips (e.g. ADV7533), although it
+> should be compatible. I'm sending it against drm-misc-next because the
+> issue wasn't reported for other chips, and ADV7535 didn't have CEC
+> support before. But feel free to take it into -fixes instead.
+>
+> Alvin =C5=A0ipraga (2):
+>   drm: bridge: adv7511: enable CEC support for ADV7535
+>   drm: bridge: adv7511: use non-legacy mode for CEC RX
+>
+>  drivers/gpu/drm/bridge/adv7511/adv7511.h     |  27 ++++-
+>  drivers/gpu/drm/bridge/adv7511/adv7511_cec.c | 116 +++++++++++++------
+>  drivers/gpu/drm/bridge/adv7511/adv7511_drv.c |  22 +++-
+>  3 files changed, 119 insertions(+), 46 deletions(-)
+>
+> --
+> 2.35.1
+>
