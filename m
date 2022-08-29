@@ -2,74 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AB1C0502F
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4592CC6FA81
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbiH2RAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
+        id S231194AbiH2RBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:01:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbiH2RAK (ORCPT
+        with ESMTP id S229823AbiH2RBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:00:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0CDA457;
-        Mon, 29 Aug 2022 10:00:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E60CAB81184;
-        Mon, 29 Aug 2022 17:00:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C0DEC433D6;
-        Mon, 29 Aug 2022 17:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661792404;
-        bh=vbK+NKnTY0tLEtHzVrjwosQhoAXqqJtC+umeGRGzjEc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tVbR3HowOrYum8oIip+mLhL7HWD+e8KPZkkHJsyxoo9VTRf7orQxr/9u/uyDi9Kmc
-         OToVf1WmeQjQHq8cdiODqDuITjR/kAJNQkL1oRF9jpr1Cy59scPef9UOWnWFRcgwrX
-         oR7BBVtyvLKvzdwkt2RJQ3jqIbQxqvAQgQfb/2YHjUs6+sMwBIywjubRksDt7d5YKb
-         skuTgjXEsZ1P26AuVeWcC7On8qFsxh+8RdOxUEn4mBzm22mB7GSjLjysXwMxc5Z46N
-         +mP/EJey55vOfDKVcZAptWyiddnIV21laLQ+EfLOVCSGBafwuGIZ7WdB6dftOwAVhG
-         jrwrJxB7ERBBQ==
-Date:   Mon, 29 Aug 2022 22:30:00 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Lee Jones <lee@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        David Heidelberg <david@ixit.cz>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Subject: Re: [PATCH 00/14] arm64/dt-bindings: mfd: qcom: SPMI PMIC fixes
-Message-ID: <YwzwkOyFIIcOgj7t@matsya>
-References: <20220828084341.112146-1-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220828084341.112146-1-krzysztof.kozlowski@linaro.org>
+        Mon, 29 Aug 2022 13:01:45 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9109B9A9BE
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:01:42 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id b16so10965043edd.4
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:01:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kohlschutter-com.20210112.gappssmtp.com; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:from:to:cc;
+        bh=bTARlCeOibrBAZlTV6Fk9ACuYXQ1cVcNl7i+g8mazqU=;
+        b=hVzqRNsdQaTATFlTRZEAUtegZzrniojbBze7lC0I1DCFGyj6BkyQ5+0ggqZhq7zSSU
+         6zy7RkbawwAYK000WcoS4z9DbiDoTtUzmOPxwjv5oeD3bBDK4xrd2tMZamPQsOvGfnNa
+         UpB9OXBiQo3k2aWxOmoOL5iUfv0LCkTMr3iyb59yIqgyN01+zKEJu1xTJsbfHqDZK05h
+         X+jAloKUs5wfYSVw8Q7s4Ql2Snaj6uXlu/EJ7yoJfmF1RPB/1UlQynzfsSmZU7vLktoD
+         c+/Dmzo7x0JhxUkbT1OAsiGFb9etA7VWwcvKSzGLX+vse77NW3ypLtFoJCpKrJrXQB2r
+         PrPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:references:message-id:content-transfer-encoding:cc:date
+         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc;
+        bh=bTARlCeOibrBAZlTV6Fk9ACuYXQ1cVcNl7i+g8mazqU=;
+        b=BJ9sUZ13lRPJVyF+csa44G7FExkjaBWzgfAgWiwnXNjprpTEUqscbUINZsz/N/5mfW
+         5egzz8SmPhlwssn6dyKtgUbbtU7d3X93Pi1TXaG9xmNereH+uRH//tGYoG6t3gBf80bW
+         HdkNULmBN1PbDPq+Ghr35kXaD4qpggSm/w8Dz5OjqazBav4342JMLYvCg9w+KctBohvx
+         Ou8TdX0aIOnn22yzuDsjSyGXR5YB1UM6uRLiStv83/tOlBL6PosVtEznZIQXP2UcdRgI
+         KJoUc3PY8a9WySQ24iydKXwZvtT7dEv6UC7iM93R0fc4TEBtpV0LPiIEmO6mMHNEMyJ/
+         a0JQ==
+X-Gm-Message-State: ACgBeo3iQIIp/cPgkDTFVEB8Sv3QT039pjChH2aEAQsK7Nq0hlOcWsoy
+        TeuXKblCRzN+JEzgNBz9cIJgNg==
+X-Google-Smtp-Source: AA6agR4R+kKRn6AXknM8I0Gcw14CKYwx4jBXyZeW4PcPSqKr5gZ/66Zs3WorLAtQqLsDEX0N1uLleg==
+X-Received: by 2002:a05:6402:138f:b0:43d:8ed5:c841 with SMTP id b15-20020a056402138f00b0043d8ed5c841mr17596592edv.27.1661792500845;
+        Mon, 29 Aug 2022 10:01:40 -0700 (PDT)
+Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
+        by smtp.gmail.com with ESMTPSA id gl10-20020a170906e0ca00b0073dbfd33a8dsm4697277ejb.21.2022.08.29.10.01.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 29 Aug 2022 10:01:40 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Re: [PATCH v5] regulator: core: Resolve supply name earlier to
+ prevent double-init
+From:   =?utf-8?Q?Christian_Kohlsch=C3=BCtter?= 
+        <christian@kohlschutter.com>
+In-Reply-To: <YwzerCnjvTKsEyIi@sirena.org.uk>
+Date:   Mon, 29 Aug 2022 19:01:38 +0200
+Cc:     =?utf-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Markus Reichl <m.reichl@fivetechno.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Vincent Legoll <vincent.legoll@gmail.com>, wens@kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <479AFACA-866E-4B3B-B0C2-ABA83591DA56@kohlschutter.com>
+References: <932DEB17-70FB-4416-80B3-C48A7C31848F@kohlschutter.com>
+ <20220825212842.7176-1-christian@kohlschutter.com>
+ <YwzerCnjvTKsEyIi@sirena.org.uk>
+To:     Mark Brown <broonie@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+X-Mailer: Apple Mail (2.3696.120.41.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28-08-22, 11:43, Krzysztof Kozlowski wrote:
-> Hi,
-> 
-> The Qualcomm SPMI PMIC DT schema conversion was not really tested and several
-> issues in the bindings and DTS should be corrected.
-> 
-> 1. The DTS patches can go independently.
-> 2. The binding change continuous work of PWM reg fix and depends on it in
->    context (diff hunk):
->    https://lore.kernel.org/all/20220827145640.3530878-1-bryan.odonoghue@linaro.org/
->    Binidings changes and above, can be taken via MFD tree (fixed commit was
->    merged in v6.0-rc1).
+> On 29. Aug 2022, at 17:43, Mark Brown <broonie@kernel.org> wrote:
+>=20
+> On Thu, Aug 25, 2022 at 09:28:42PM +0000, Christian Kohlsch=C3=BCtter =
+wrote:
+>> Previously, an unresolved regulator supply reference upon calling
+>> regulator_register on an always-on or boot-on regulator caused
+>> set_machine_constraints to be called twice.
+>=20
+> Please do not submit new versions of already applied patches, please
+> submit incremental updates to the existing code.  Modifying existing
+> commits creates problems for other users building on top of those
+> commits so it's best practice to only change pubished git commits if
+> absolutely essential.
+>=20
+> Please don't send new patches in reply to old patches or serieses, =
+this
+> makes it harder for both people and tools to understand what is going
+> on - it can bury things in mailboxes and make it difficult to keep =
+track
+> of what current patches are, both for the new patches and the old =
+ones.
 
-Reviewed-by: Vinod Koul <vkoul@kernel.org>
+My apologies, I wasn't aware that's not the preferred way forward.
 
--- 
-~Vinod
+Following up with "regulator: core: Fix regulator supply registration =
+with sysfs", see
+=
+https://lore.kernel.org/all/20220829165543.24856-1-christian@kohlschutter.=
+com/
+
