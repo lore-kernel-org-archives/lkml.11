@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0389CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1589ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230380AbiH2Lta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
+        id S231418AbiH2Lto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233190AbiH2Lsx (ORCPT
+        with ESMTP id S232573AbiH2LtH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:48:53 -0400
+        Mon, 29 Aug 2022 07:49:07 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7B08A1E9;
-        Mon, 29 Aug 2022 04:32:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521978A1EA;
+        Mon, 29 Aug 2022 04:32:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DDBCB80F79;
-        Mon, 29 Aug 2022 11:16:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D84C433D6;
-        Mon, 29 Aug 2022 11:16:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 246B7B80EF1;
+        Mon, 29 Aug 2022 11:16:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA95C433D7;
+        Mon, 29 Aug 2022 11:16:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771796;
-        bh=MW7k14D6wvJJxHEMsB9O+rplv0E+qjehGPwxE/Qy2Tc=;
+        s=korg; t=1661771777;
+        bh=Hm7ck0pyFkIzWB8bOJExwUSf4WH/YCxW04iZeChVs9k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qZbUe2w9A/JsLYft2fOO+BlWNAtidSb1TxbFsdyRUZJrBB5vTQwE9KvSsZOYFWW+9
-         m61kmfi5b8sEeOKZseXoSx3YHrIHIV6xoT362vBqIY+gSiz19tuBI/S/Jn0P7xOMB0
-         X7mMxUHVykp75Cjh3pbRDWwZwIIBvhShOcMfNImM=
+        b=cvz8Ir8BhHIUrfAcwYqMqZjfe2fNxFVeSaO1k1aAp5lk5o3Chc+C3DlCgiMz0VIOu
+         7rVmL66btoeBaX4ENkfXp0ef1awamWzyCnE+b66P9wu2Spkmj3yD6oQCS5qDfPc6ua
+         1IV75AJK80XuEQHFm3B4sk81s8dZt9lTJpNXmJ3c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        Filipe Manana <fdmanana@suse.com>,
+        stable@vger.kernel.org, Anand Jain <anand.jain@oracle.com>,
         David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.19 100/158] btrfs: update generation of hole file extent item when merging holes
-Date:   Mon, 29 Aug 2022 12:59:10 +0200
-Message-Id: <20220829105813.285939666@linuxfoundation.org>
+Subject: [PATCH 5.19 095/158] btrfs: replace: drop assert for suspended replace
+Date:   Mon, 29 Aug 2022 12:59:05 +0200
+Message-Id: <20220829105813.046797635@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,92 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Anand Jain <anand.jain@oracle.com>
 
-commit e6e3dec6c3c288d556b991a85d5d8e3ee71e9046 upstream.
+commit 59a3991984dbc1fc47e5651a265c5200bd85464e upstream.
 
-When punching a hole into a file range that is adjacent with a hole and we
-are not using the no-holes feature, we expand the range of the adjacent
-file extent item that represents a hole, to save metadata space.
+If the filesystem mounts with the replace-operation in a suspended state
+and try to cancel the suspended replace-operation, we hit the assert. The
+assert came from the commit fe97e2e173af ("btrfs: dev-replace: replace's
+scrub must not be running in suspended state") that was actually not
+required. So just remove it.
 
-However we don't update the generation of hole file extent item, which
-means a full fsync will not log that file extent item if the fsync happens
-in a later transaction (since commit 7f30c07288bb9e ("btrfs: stop copying
-old file extents when doing a full fsync")).
+ $ mount /dev/sda5 /btrfs
 
-For example, if we do this:
+    BTRFS info (device sda5): cannot continue dev_replace, tgtdev is missing
+    BTRFS info (device sda5): you may cancel the operation after 'mount -o degraded'
 
-    $ mkfs.btrfs -f -O ^no-holes /dev/sdb
-    $ mount /dev/sdb /mnt
-    $ xfs_io -f -c "pwrite -S 0xab 2M 2M" /mnt/foobar
-    $ sync
+ $ mount -o degraded /dev/sda5 /btrfs <-- success.
 
-We end up with 2 file extent items in our file:
+ $ btrfs replace cancel /btrfs
 
-1) One that represents the hole for the file range [0, 2M), with a
-   generation of 7;
+    kernel: assertion failed: ret != -ENOTCONN, in fs/btrfs/dev-replace.c:1131
+    kernel: ------------[ cut here ]------------
+    kernel: kernel BUG at fs/btrfs/ctree.h:3750!
 
-2) Another one that represents an extent covering the range [2M, 4M).
+After the patch:
 
-After that if we do the following:
+ $ btrfs replace cancel /btrfs
 
-    $ xfs_io -c "fpunch 2M 2M" /mnt/foobar
+    BTRFS info (device sda5): suspended dev_replace from /dev/sda5 (devid 1) to <missing disk> canceled
 
-We end up with a single file extent item in the file, which represents a
-hole for the range [0, 4M) and with a generation of 7 - because we end
-dropping the data extent for range [2M, 4M) and then update the file
-extent item that represented the hole at [0, 2M), by increasing
-length from 2M to 4M.
-
-Then doing a full fsync and power failing:
-
-    $ xfs_io -c "fsync" /mnt/foobar
-    <power failure>
-
-will result in the full fsync not logging the file extent item that
-represents the hole for the range [0, 4M), because its generation is 7,
-which is lower than the generation of the current transaction (8).
-As a consequence, after mounting again the filesystem (after log replay),
-the region [2M, 4M) does not have a hole, it still points to the
-previous data extent.
-
-So fix this by always updating the generation of existing file extent
-items representing holes when we merge/expand them. This solves the
-problem and it's the same approach as when we merge prealloc extents that
-got written (at btrfs_mark_extent_written()). Setting the generation to
-the current transaction's generation is also what we do when merging
-the new hole extent map with the previous one or the next one.
-
-A test case for fstests, covering both cases of hole file extent item
-merging (to the left and to the right), will be sent soon.
-
-Fixes: 7f30c07288bb9e ("btrfs: stop copying old file extents when doing a full fsync")
-CC: stable@vger.kernel.org # 5.18+
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Fixes: fe97e2e173af ("btrfs: dev-replace: replace's scrub must not be running in suspended state")
+CC: stable@vger.kernel.org # 5.0+
+Signed-off-by: Anand Jain <anand.jain@oracle.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/file.c |    2 ++
- 1 file changed, 2 insertions(+)
+ fs/btrfs/dev-replace.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -2483,6 +2483,7 @@ static int fill_holes(struct btrfs_trans
- 		btrfs_set_file_extent_num_bytes(leaf, fi, num_bytes);
- 		btrfs_set_file_extent_ram_bytes(leaf, fi, num_bytes);
- 		btrfs_set_file_extent_offset(leaf, fi, 0);
-+		btrfs_set_file_extent_generation(leaf, fi, trans->transid);
- 		btrfs_mark_buffer_dirty(leaf);
- 		goto out;
- 	}
-@@ -2499,6 +2500,7 @@ static int fill_holes(struct btrfs_trans
- 		btrfs_set_file_extent_num_bytes(leaf, fi, num_bytes);
- 		btrfs_set_file_extent_ram_bytes(leaf, fi, num_bytes);
- 		btrfs_set_file_extent_offset(leaf, fi, 0);
-+		btrfs_set_file_extent_generation(leaf, fi, trans->transid);
- 		btrfs_mark_buffer_dirty(leaf);
- 		goto out;
- 	}
+--- a/fs/btrfs/dev-replace.c
++++ b/fs/btrfs/dev-replace.c
+@@ -1128,8 +1128,7 @@ int btrfs_dev_replace_cancel(struct btrf
+ 		up_write(&dev_replace->rwsem);
+ 
+ 		/* Scrub for replace must not be running in suspended state */
+-		ret = btrfs_scrub_cancel(fs_info);
+-		ASSERT(ret != -ENOTCONN);
++		btrfs_scrub_cancel(fs_info);
+ 
+ 		trans = btrfs_start_transaction(root, 0);
+ 		if (IS_ERR(trans)) {
 
 
