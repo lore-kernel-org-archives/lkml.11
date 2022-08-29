@@ -2,42 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D32EFECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2108EECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231713AbiH2LVS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56100 "EHLO
+        id S231719AbiH2LVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiH2LTb (ORCPT
+        with ESMTP id S230132AbiH2LTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:19:31 -0400
+        Mon, 29 Aug 2022 07:19:32 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21543754B9;
-        Mon, 29 Aug 2022 04:13:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B1275CC9;
+        Mon, 29 Aug 2022 04:13:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF896611DD;
-        Mon, 29 Aug 2022 11:13:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B996FC433C1;
-        Mon, 29 Aug 2022 11:13:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AA6CD61242;
+        Mon, 29 Aug 2022 11:13:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84A57C433D6;
+        Mon, 29 Aug 2022 11:13:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771588;
-        bh=eENv8UcVfNOwQo2gHGwHRC5eNFSdrkUeTqEzT+bnqJ4=;
+        s=korg; t=1661771611;
+        bh=lbbo5zIz7LBHyIKQSGFYcidE8T1e9xUIFuGqFczWtjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=At8y6NToDdcFR/bKng7KTx14PAoLah1VlFsijHvYV1j0g3klIzuipY+bGLFqM5wtg
-         mdOK2s365DiB5917qEa1/hHs/dLFbv2kqtoFAwQ98DWDEujF/kMCGKD50CdFzHYnA/
-         4S5vCDmM7cZ8kBrkf4cbjDpnxWyv5HGkWo8/ZGSs=
+        b=kcO+/oBeAG4cL3PJdGf1mxz/gfYZ88oHIIMLBBmdAmQ4NpA0j/7gv8aVNDwQSTYZM
+         QiekmG9ohj/3YEnYdqE73BLcTT2hGqx1siG8hfi8+0oJwdRdSKYMl9MzG3pntmj7XW
+         Xqw1jBQcSOeCBI3Y6bFuhPRw8I4EYwTXxgICSMTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 095/136] btrfs: fix silent failure when deleting root reference
-Date:   Mon, 29 Aug 2022 12:59:22 +0200
-Message-Id: <20220829105808.561184572@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+        Ondrej Mosnacek <omosnace@redhat.com>,
+        syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com,
+        Carlos Llamas <cmllamas@google.com>,
+        Minchan Kim <minchan@kernel.org>,
+        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Hridya Valsaraju <hridya@google.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Martijn Coenen <maco@android.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Todd Kjos <tkjos@android.com>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        =?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?= <arve@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 126/136] binder_alloc: add missing mmap_lock calls when using the VMA
+Date:   Mon, 29 Aug 2022 12:59:53 +0200
+Message-Id: <20220829105809.855177179@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -49,43 +61,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Liam Howlett <liam.howlett@oracle.com>
 
-commit 47bf225a8d2cccb15f7e8d4a1ed9b757dd86afd7 upstream.
+commit 44e602b4e52f70f04620bbbf4fe46ecb40170bde upstream.
 
-At btrfs_del_root_ref(), if btrfs_search_slot() returns an error, we end
-up returning from the function with a value of 0 (success). This happens
-because the function returns the value stored in the variable 'err',
-which is 0, while the error value we got from btrfs_search_slot() is
-stored in the 'ret' variable.
+Take the mmap_read_lock() when using the VMA in binder_alloc_print_pages()
+and when checking for a VMA in binder_alloc_new_buf_locked().
 
-So fix it by setting 'err' with the error value.
+It is worth noting binder_alloc_new_buf_locked() drops the VMA read lock
+after it verifies a VMA exists, but may be taken again deeper in the call
+stack, if necessary.
 
-Fixes: 8289ed9f93bef2 ("btrfs: replace the BUG_ON in btrfs_del_root_ref with proper error handling")
-CC: stable@vger.kernel.org # 5.16+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Link: https://lkml.kernel.org/r/20220810160209.1630707-1-Liam.Howlett@oracle.com
+Fixes: a43cfc87caaf (android: binder: stop saving a pointer to the VMA)
+Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
+Reported-by: <syzbot+a7b60a176ec13cafb793@syzkaller.appspotmail.com>
+Acked-by: Carlos Llamas <cmllamas@google.com>
+Tested-by: Ondrej Mosnacek <omosnace@redhat.com>
+Cc: Minchan Kim <minchan@kernel.org>
+Cc: Christian Brauner (Microsoft) <brauner@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Hridya Valsaraju <hridya@google.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Martijn Coenen <maco@android.com>
+Cc: Suren Baghdasaryan <surenb@google.com>
+Cc: Todd Kjos <tkjos@android.com>
+Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+Cc: "Arve Hjønnevåg" <arve@android.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/root-tree.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/android/binder_alloc.c |   31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
---- a/fs/btrfs/root-tree.c
-+++ b/fs/btrfs/root-tree.c
-@@ -351,9 +351,10 @@ int btrfs_del_root_ref(struct btrfs_tran
- 	key.offset = ref_id;
- again:
- 	ret = btrfs_search_slot(trans, tree_root, &key, path, -1, 1);
--	if (ret < 0)
-+	if (ret < 0) {
-+		err = ret;
- 		goto out;
--	if (ret == 0) {
-+	} else if (ret == 0) {
- 		leaf = path->nodes[0];
- 		ref = btrfs_item_ptr(leaf, path->slots[0],
- 				     struct btrfs_root_ref);
+--- a/drivers/android/binder_alloc.c
++++ b/drivers/android/binder_alloc.c
+@@ -395,12 +395,15 @@ static struct binder_buffer *binder_allo
+ 	size_t size, data_offsets_size;
+ 	int ret;
+ 
++	mmap_read_lock(alloc->vma_vm_mm);
+ 	if (!binder_alloc_get_vma(alloc)) {
++		mmap_read_unlock(alloc->vma_vm_mm);
+ 		binder_alloc_debug(BINDER_DEBUG_USER_ERROR,
+ 				   "%d: binder_alloc_buf, no vma\n",
+ 				   alloc->pid);
+ 		return ERR_PTR(-ESRCH);
+ 	}
++	mmap_read_unlock(alloc->vma_vm_mm);
+ 
+ 	data_offsets_size = ALIGN(data_size, sizeof(void *)) +
+ 		ALIGN(offsets_size, sizeof(void *));
+@@ -922,17 +925,25 @@ void binder_alloc_print_pages(struct seq
+ 	 * Make sure the binder_alloc is fully initialized, otherwise we might
+ 	 * read inconsistent state.
+ 	 */
+-	if (binder_alloc_get_vma(alloc) != NULL) {
+-		for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
+-			page = &alloc->pages[i];
+-			if (!page->page_ptr)
+-				free++;
+-			else if (list_empty(&page->lru))
+-				active++;
+-			else
+-				lru++;
+-		}
++
++	mmap_read_lock(alloc->vma_vm_mm);
++	if (binder_alloc_get_vma(alloc) == NULL) {
++		mmap_read_unlock(alloc->vma_vm_mm);
++		goto uninitialized;
++	}
++
++	mmap_read_unlock(alloc->vma_vm_mm);
++	for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
++		page = &alloc->pages[i];
++		if (!page->page_ptr)
++			free++;
++		else if (list_empty(&page->lru))
++			active++;
++		else
++			lru++;
+ 	}
++
++uninitialized:
+ 	mutex_unlock(&alloc->mutex);
+ 	seq_printf(m, "  pages: %d:%d:%d\n", active, lru, free);
+ 	seq_printf(m, "  pages high watermark: %zu\n", alloc->pages_high);
 
 
