@@ -2,134 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F29CBECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E25EECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230049AbiH2Ies (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36368 "EHLO
+        id S229750AbiH2Igi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230096AbiH2Ie3 (ORCPT
+        with ESMTP id S229487AbiH2Igg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 04:34:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE8958DDC
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:34:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661762035;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hM8HJaijm1Mkioa6hopD9yAVjvlgH6+HcTEXEv171y0=;
-        b=JPPM7QJ21wPis65TWXOw3+5IQVwgn/F7gpL8c83nUhLfmYC7e0E34RI+N9EhT/vWCMGQ3c
-        x9f5FG692SSCEM7INRi1SRVvR70dj8GFASdv/H9nY5Lde4I11R8CPtYLQw1XTmag5dUXzM
-        240ichwQ//NVh4CF2WyO4Mu0I/3eor8=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-425-WuILL2OoP0S_is-V4jm7dQ-1; Mon, 29 Aug 2022 04:33:53 -0400
-X-MC-Unique: WuILL2OoP0S_is-V4jm7dQ-1
-Received: by mail-ed1-f70.google.com with SMTP id z20-20020a05640235d400b0043e1e74a495so5069222edc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:33:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=hM8HJaijm1Mkioa6hopD9yAVjvlgH6+HcTEXEv171y0=;
-        b=bGGPl87gqvn9l/7pvGsNeCXwnYEXXV1tW5W5vXBDC4zWbeAshEaoM5hZ9Hrwcr/kkc
-         LmkazgoIpr8TfB129L9Hn+Al5Ue7C4miNFGbFf/XU5YIL9Wj4hvK08eV9fE7SCje7Xea
-         u/AfS8tV9p+KfyurmAqPsgcK1VMIx++M6V50p4ZZk7QBfMrADmgYX8eTqRGaS709lwKS
-         if6zn+KAf/R7Ia4nQwChb667o/oAI7ccxy48SCbCou2+0yZUmBfMgTEjYfjZi4igxoC0
-         lBvgASLLFbv+oYyktr4hCrts0bTeacosk3a+2VCaCtkkgr//tAZ0YcDlWiQJZdwaWWG8
-         o6wA==
-X-Gm-Message-State: ACgBeo0PsS8S1p79Js3lA9Ik0lR4UMUB/xCEY+WGsVSzqm1e2SEF8NEC
-        AsUPVQbzRwJPlwKgp0bUqUYFPv9x0rFKwqQ5krIckZMjYios6E54jqmXHYnjApTgRHbzR6sV0Gx
-        k8ZToa+//VSxOLYaadZHBvj5X
-X-Received: by 2002:a17:907:31c9:b0:740:ef93:2ffd with SMTP id xf9-20020a17090731c900b00740ef932ffdmr8452823ejb.584.1661762032238;
-        Mon, 29 Aug 2022 01:33:52 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR70UPPGbBViyRTVwz/+mggKcBfe/vGVnpnvQcgVk/BYNS9tIZjxZivQ97eKHE8mipYj76UHAw==
-X-Received: by 2002:a17:907:31c9:b0:740:ef93:2ffd with SMTP id xf9-20020a17090731c900b00740ef932ffdmr8452811ejb.584.1661762032017;
-        Mon, 29 Aug 2022 01:33:52 -0700 (PDT)
-Received: from [192.168.0.198] (host-87-8-60-205.retail.telecomitalia.it. [87.8.60.205])
-        by smtp.gmail.com with ESMTPSA id s14-20020a1709067b8e00b0073dc60271b2sm4242195ejo.32.2022.08.29.01.33.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 01:33:51 -0700 (PDT)
-Message-ID: <3a623696-a0f9-2246-420d-aee88d6acd75@redhat.com>
-Date:   Mon, 29 Aug 2022 10:33:50 +0200
+        Mon, 29 Aug 2022 04:36:36 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B8CF5788C
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:36:32 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VNaXq0c_1661762188;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VNaXq0c_1661762188)
+          by smtp.aliyun-inc.com;
+          Mon, 29 Aug 2022 16:36:29 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     alexander.deucher@amd.com
+Cc:     harry.wentland@amd.com, sunpeng.li@amd.com,
+        Rodrigo.Siqueira@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next 1/4 RESEND] drm/amd/display: clean up one inconsistent indenting
+Date:   Mon, 29 Aug 2022 16:36:24 +0800
+Message-Id: <20220829083627.12774-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH -next] sched/deadline: Save processing meaningless ops in
- dl_task_offline_migration
-Content-Language: en-US
-To:     Shang XiaoJing <shangxiaojing@huawei.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-References: <20220827020430.29415-1-shangxiaojing@huawei.com>
-From:   Daniel Bristot de Oliveira <bristot@redhat.com>
-In-Reply-To: <20220827020430.29415-1-shangxiaojing@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/27/22 04:04, Shang XiaoJing wrote:
-> Task's bw will be sub from old rd, and add to new rd, even though
-> find_lock_later_rq returns a new rq that belong to the same rd with old
-> rq. Save ops for moving task's bw if rd is not changed.
+1. The indentation of statements in the same curly bracket should be
+consistent.
+2. Variable declarations in the same function should be aligned.
 
-This subject is not good. Please change it to a "meaningful" one, describing the
-change, not its consequence.
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1887
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1888
+Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1889
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ .../gpu/drm/amd/display/dc/dml/dcn32/dcn32_fpu.c    | 13 ++++++++-----
+ .../amd/display/dc/dml/dcn32/display_mode_vba_32.c  |  6 +++---
+ .../display/dc/dml/dcn32/display_mode_vba_util_32.c |  2 +-
+ 3 files changed, 12 insertions(+), 9 deletions(-)
 
--- Daniel
-> Signed-off-by: Shang XiaoJing <shangxiaojing@huawei.com>
-> ---
->  kernel/sched/deadline.c | 28 +++++++++++++++-------------
->  1 file changed, 15 insertions(+), 13 deletions(-)
-> 
-> diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-> index 3bf4b12ec5b7..58ca9aaa9c44 100644
-> --- a/kernel/sched/deadline.c
-> +++ b/kernel/sched/deadline.c
-> @@ -714,20 +714,22 @@ static struct rq *dl_task_offline_migration(struct rq *rq, struct task_struct *p
->  		add_rq_bw(&p->dl, &later_rq->dl);
->  	}
->  
-> -	/*
-> -	 * And we finally need to fixup root_domain(s) bandwidth accounting,
-> -	 * since p is still hanging out in the old (now moved to default) root
-> -	 * domain.
-> -	 */
-> -	dl_b = &rq->rd->dl_bw;
-> -	raw_spin_lock(&dl_b->lock);
-> -	__dl_sub(dl_b, p->dl.dl_bw, cpumask_weight(rq->rd->span));
-> -	raw_spin_unlock(&dl_b->lock);
-> +	if (&rq->rd != &later_rq->rd) {
-> +		/*
-> +		 * And we finally need to fixup root_domain(s) bandwidth accounting,
-> +		 * since p is still hanging out in the old (now moved to default) root
-> +		 * domain.
-> +		 */
-> +		dl_b = &rq->rd->dl_bw;
-> +		raw_spin_lock(&dl_b->lock);
-> +		__dl_sub(dl_b, p->dl.dl_bw, cpumask_weight(rq->rd->span));
-> +		raw_spin_unlock(&dl_b->lock);
->  
-> -	dl_b = &later_rq->rd->dl_bw;
-> -	raw_spin_lock(&dl_b->lock);
-> -	__dl_add(dl_b, p->dl.dl_bw, cpumask_weight(later_rq->rd->span));
-> -	raw_spin_unlock(&dl_b->lock);
-> +		dl_b = &later_rq->rd->dl_bw;
-> +		raw_spin_lock(&dl_b->lock);
-> +		__dl_add(dl_b, p->dl.dl_bw, cpumask_weight(later_rq->rd->span));
-> +		raw_spin_unlock(&dl_b->lock);
-> +	}
->  
->  	set_task_cpu(p, later_rq->cpu);
->  	double_unlock_balance(later_rq, rq);
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn32/dcn32_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn32/dcn32_fpu.c
+index edefb3fc1c3c..25406e00da49 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn32/dcn32_fpu.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn32/dcn32_fpu.c
+@@ -2141,13 +2141,16 @@ void dcn32_update_bw_bounding_box_fpu(struct dc *dc, struct clk_bw_params *bw_pa
+ 
+ 			if (dc->ctx->dc_bios->funcs->get_soc_bb_info(dc->ctx->dc_bios, &bb_info) == BP_RESULT_OK) {
+ 				if (bb_info.dram_clock_change_latency_100ns > 0)
+-					dcn3_2_soc.dram_clock_change_latency_us = bb_info.dram_clock_change_latency_100ns * 10;
++					dcn3_2_soc.dram_clock_change_latency_us =
++						bb_info.dram_clock_change_latency_100ns * 10;
+ 
+-			if (bb_info.dram_sr_enter_exit_latency_100ns > 0)
+-				dcn3_2_soc.sr_enter_plus_exit_time_us = bb_info.dram_sr_enter_exit_latency_100ns * 10;
++				if (bb_info.dram_sr_enter_exit_latency_100ns > 0)
++					dcn3_2_soc.sr_enter_plus_exit_time_us =
++						bb_info.dram_sr_enter_exit_latency_100ns * 10;
+ 
+-			if (bb_info.dram_sr_exit_latency_100ns > 0)
+-				dcn3_2_soc.sr_exit_time_us = bb_info.dram_sr_exit_latency_100ns * 10;
++				if (bb_info.dram_sr_exit_latency_100ns > 0)
++					dcn3_2_soc.sr_exit_time_us =
++						bb_info.dram_sr_exit_latency_100ns * 10;
+ 			}
+ 		}
+ 
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c
+index cb2025771646..6a4f730419c0 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_32.c
+@@ -677,9 +677,9 @@ static void DISPCLKDPPCLKDCFCLKDeepSleepPrefetchParametersWatermarksAndPerforman
+ 				dml_ceil((double) v->WritebackDelay[mode_lib->vba.VoltageLevel][k]
+ 				/ (mode_lib->vba.HTotal[k] / mode_lib->vba.PixelClock[k]), 1));
+ 
+-	// Clamp to max OTG vstartup register limit
+-	if (v->MaxVStartupLines[k] > 1023)
+-		v->MaxVStartupLines[k] = 1023;
++		// Clamp to max OTG vstartup register limit
++		if (v->MaxVStartupLines[k] > 1023)
++			v->MaxVStartupLines[k] = 1023;
+ 
+ #ifdef __DML_VBA_DEBUG__
+ 		dml_print("DML::%s: k=%d MaxVStartupLines = %d\n", __func__, k, v->MaxVStartupLines[k]);
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
+index 05fc14a47fba..5a6b893f7295 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
+@@ -4277,7 +4277,7 @@ void dml32_CalculateWatermarksMALLUseAndDRAMSpeedChangeSupport(
+ 	double ActiveClockChangeLatencyHidingY;
+ 	double ActiveClockChangeLatencyHidingC;
+ 	double ActiveClockChangeLatencyHiding;
+-    double EffectiveDETBufferSizeY;
++	double EffectiveDETBufferSizeY;
+ 	double     ActiveFCLKChangeLatencyMargin[DC__NUM_DPP__MAX];
+ 	double     USRRetrainingLatencyMargin[DC__NUM_DPP__MAX];
+ 	double TotalPixelBW = 0.0;
+-- 
+2.20.1.7.g153144c
 
