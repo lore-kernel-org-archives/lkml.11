@@ -2,412 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B41ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:37:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D15B3ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229530AbiH2Mg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
+        id S230096AbiH2MhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbiH2Mgl (ORCPT
+        with ESMTP id S229898AbiH2Mgz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:36:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8344B1D31A;
-        Mon, 29 Aug 2022 05:20:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DB5AB80F4B;
-        Mon, 29 Aug 2022 11:11:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1C2CC433C1;
-        Mon, 29 Aug 2022 11:11:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771508;
-        bh=Ky9nomgv1UdChL3vKwYjaaj0E8a3NGLhtr35o/ZcjRc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bQvlS1iLgrJMsAQTe4UHcDr3lGWyzmib/R3E1MhRwVtF0drTBOWFs4SIPoH3S7e4Q
-         Uya5kLnkp1ETIbIyZ3HlPTIKXCPFyDQlR/lwbnIsvFv3+siJsYpAK5detwf6sewCBT
-         NhcUKR55tg5VmKC256Zz8UwC/pY7aBWXjhspazyU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 038/158] net: dsa: microchip: move switch chip_id detection to ksz_common
-Date:   Mon, 29 Aug 2022 12:58:08 +0200
-Message-Id: <20220829105810.382846006@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 29 Aug 2022 08:36:55 -0400
+Received: from sonic302-24.consmr.mail.ne1.yahoo.com (sonic302-24.consmr.mail.ne1.yahoo.com [66.163.186.150])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F917436F
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:20:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=att.net; s=s1024; t=1661775621; bh=FzJ4m4M3w53N7NQdJusfo1VfYGPaC+jsrMKVyE2Cxow=; h=Date:From:Subject:To:Cc:In-Reply-To:References:From:Subject:Reply-To; b=k6ixTCTgmcH5kzoQx4PHGgJ8Dgx4buwrfpX/oKmtFFDdjg28Woux0NgRx2NTKf0Bw/D7s3P9w+rXvt2cM8oK4+dqHzRb2I4lLZXiBVQRDvbStp/aViB94wRvsByRUBdAyL7Z6Ozz85tRFqWQtrNJ16bZdbaOco+AoHYPKYhIWI0=
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1661775621; bh=zCVcVuhE/UyhuZQsAwCHlxvG1zZP3IrA1z2QKCElrxm=; h=X-Sonic-MF:Date:From:Subject:To:From:Subject; b=ZtLbG7vRU5yqhDYWObUcNHXQ+Zzf+VViUnD/KuoYfy89hCGZ2G4Hyhi/CEEVfmO8/KLMbsZMsgDzmkD1ecri2rq5I04E97gdGS5B+rOVDsc0ZgFS44l3UNUqUIeT7+/QTLdyXE1HIHoQXe1z+oMeJqiXYvXusqYbW2FmydU9wTDHuM7OumMNwhPpVPEFXVYwOjOMS4pBofetGTpzdzL4lxs4U1QISizQE3Sl2au521ml5uwFs6sOhUZz7Wshs6CwlqwUiOO5DnCr29Kp+uywVZIvC55CYTtDaK/m2pn84KBVjmf4kEsO4UkzuOwRxEXeBg/bcFPu1VVOOE2Yb7EPYg==
+X-YMail-OSG: aVtxlbYVM1kSbDRjwKQ66EINaVQP3gdReZ9OGxwhKVSU1vZAnXflQQZwXbi.E7f
+ KFWOuBxxOmtgmTPe8Hhza1OnqfADnW.0xmVftJCuuSRYHVLXssK7ayfN6qMYwoRW6j4Dq1g2F.An
+ IOBKL1.YqLL6l7VN_ppPDE63jGqCMpUnQJbh04qNuFfWMRENdIheqYgYYwBP5dT3WCUJ78VGI7vq
+ cfFfWYb54bNuXXQ5Dmb3PEB4XctbuUJvn255bd_2lRRxzYyvuO7zvXIwgMIRCIUFIL0o_RCUtkgI
+ xwpzaU53t1CBx1LnpGpQ.4stjq6CMrcwJ.n..B9SWs4PCYlx725rHx11ppVAtBNIgxF0r6Yvxqoz
+ 0SQj0e0abTIALJolemp0Pquv3.BIF4PKMptkvynnVjHUJzqUCIDVMBpM4p0.PY.jtlvlF2YO8BW7
+ WUFIWwN8t9LEIka_BN6ymQTZnv_DFM0QAWmSKf3ZMORXa3ghF3VqkV0RmBUCI3C_LTc5h72xH8PO
+ DaBTMHsbcKL1nIfxrWjCWRYHwYKnh3fFkCsk3QPjk48ckXUj3qdh2wU0aj46zJMuBfsqY0gIcAEK
+ .QAlzt3f18KhDaNthulQ_b2QqAE4ZyO48jYFYjaWPyRnk1mFsRRxand2s0V_..Ra8.MNzJ6LAoxZ
+ Jk55cn_hpn9PK5ogdYQyGIPxNDemOeHCRWzYFESECeAoYyI.FVtZM_xCh02KYz.lVuPHC8mD4lxw
+ LiSyUZqgJU.43N19xzfUHucDGcqseN62zWElrtod1d7LWwQKy5SEXUtvjFd0y7njxu.EmFHy8IlF
+ cWg4PXKbaQUJOUq1zHpguK6e8YTUnZfNz.H3t1HZllhxWyd.aW1205xQLOtrt7zUy0sVizzDGntL
+ JPVCxb2VF9TWW5KMudMcGjwTSuT6V0q0BIUpJs26ZUvZjmevb_9YRQL41fNjOYt2eF2MdSvRMOur
+ IBq3H.rfPCC6rymqwwWEHMhiFeFkpNtEcZ3vM_GI5kj2P.MntkubXQTB29mmWeH6bbw8pGtDy7I5
+ 2Nnree0ZN0PXNu6QGN_anrMRnCoWsk.QOhFaVywoaGSZ8GCV2d4DxQtPuStA5DIP.QhjWbeNbxFe
+ 7IbxDYRLZAt2Payv87bG.0ShNNhF2QgVPfAFX_4u6GFLTTkf4snDTpV4_liOMOUE14ISemQBn7m1
+ JMOAEfM9FQ5zq1iYWAvXRyaAfgOa1_7F_jfTgfFDMsq2zJtWwb4GSicpzW5yEA41BNOrm1aLZfhW
+ qIfol7REB4Bkjar4ffMBBZsnbyaRrrWE_cFrAYyM0WCxZEjqi11viCl5OqlQ4.b8huHKtvMaOv.V
+ Xlq1dy_ANTRaARrrwbbVJd8WWvCoWI9xGO.wnTxR.OWhP6goPaW6wzWGQJ4dUp7zLatOyrAL.GRc
+ 3RQjtljGu5vODNnt8y8WKKRo1aPlh0ksYwKlhhbfXJ30cYX.Pijki7qSNL7NNPTNRAxO6CiO1agd
+ CePzDebDCY3GFsvLharcj92S4vHabrnurb0iX_RXLo8zfk2kXCRk6kwChEqfAWFx2S307Siwqk5m
+ aScp6FuD5rWzHUajjl5dJUBWYfhNOEn_cm.aaMLMJPei.FnNQLkBp5fMgF680tWnSiGWJa9B69Bm
+ GO._jLOghuVf_Adjy2CEeGd4vvBuQSPd_hKokmW_oUCqWfjXyiRdxvHMgu2vEeMcj2WRlx7G7_nM
+ 3_4lKL8WNi2QTs4VZs6QsTdt.JBIw53sZvAmIVCknnlpspxwrb6qM5sZXfEVeHHCXZCZ7UvGVHEg
+ 6ahaimhUqngNutXt5YSXfNpQ3XwhcoTpfNUZUQE8P6_hgA__6CUIR9HQORNZIBztDZpoxyk8cMvY
+ JsN4sczyYYDU1usfyknF1VEcZS.zpKcJ58MCVjt7FK4lx.KbmJ1M1yns1inH227ePLxDcoiGJ4bX
+ tv6V7.ple9Nr2rjqKeMrVo6uiz8ftWbsILM6bc.yMULWtexQo9ny1d5hRf0vNVyffM6JOYYM24tS
+ GAVgA3Wf47Zz.g2UNk6HWflJr6sk1U6i1JoxTK8Qsox4QAXKprS.hUGSUdPbdGZkXUHgcXpxmert
+ HqA2oC14TfPfdRjYDy.VWrNm_uYc9kpyeHV9Y6Yx20aEpnuyj4uJv01YlTf6ESgROW31rNEpsm2Y
+ 14ckgHFk.mxLuZkjv6fWSPXb.mkNoK9hVt6DMXfWnbG33VnsYv86wJer4g5ZEcZvhCpjVmskkEim
+ fjDTuOO33WCHHgPodw07WyNW2
+X-Sonic-MF: <pheonix.sja@att.net>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic302.consmr.mail.ne1.yahoo.com with HTTP; Mon, 29 Aug 2022 12:20:21 +0000
+Received: by hermes--production-gq1-686964ccb6-z2kdz (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 0b31fffa8eb0473f83fde84cab2d06af;
+          Mon, 29 Aug 2022 12:20:17 +0000 (UTC)
+Date:   Mon, 29 Aug 2022 08:20:09 -0400
+From:   Steven J Abner <pheonix.sja@att.net>
+Subject: Re: thermal driver patch
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org
+Message-Id: <L9MDHR.JVBXTJ2L6TPP2@att.net>
+In-Reply-To: <0f961ea6-4948-0b7a-e01d-d62ca4065af8@infradead.org>
+References: <DL9RGR.8W3XFSCFFYXI2.ref@att.net> <DL9RGR.8W3XFSCFFYXI2@att.net>
+        <0f961ea6-4948-0b7a-e01d-d62ca4065af8@infradead.org>
+X-Mailer: geary/3.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Ramadoss <arun.ramadoss@microchip.com>
 
-[ Upstream commit 91a98917a8839923d404a77c21646ca5fc9e330a ]
 
-KSZ87xx and KSZ88xx have chip_id representation at reg location 0. And
-KSZ9477 compatible switch and LAN937x switch have same chip_id detection
-at location 0x01 and 0x02. To have the common switch detect
-functionality for ksz switches, ksz_switch_detect function is
-introduced.
+On Mon, Aug 29, 2022 at 05:47, Randy Dunlap <rdunlap@infradead.org> 
+wrote:
+> a. the exact message(s) [copy-paste]
+> c. what kernel version is causing the problem
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/dsa/microchip/ksz8795.c     | 48 +--------------
- drivers/net/dsa/microchip/ksz8795_reg.h | 16 -----
- drivers/net/dsa/microchip/ksz9477.c     | 21 -------
- drivers/net/dsa/microchip/ksz9477_reg.h |  1 -
- drivers/net/dsa/microchip/ksz_common.c  | 78 +++++++++++++++++++++++--
- drivers/net/dsa/microchip/ksz_common.h  | 19 +++++-
- 6 files changed, 93 insertions(+), 90 deletions(-)
+[    0.000000] Linux version 5.18.12-051812-generic (kernel@sita) (gcc 
+(Ubuntu 11.3.0-4ubuntu1) 11.3.0, GNU ld (GNU Binutils for Ubuntu) 
+2.38.50.20220629) #202207150942 SMP PREEMPT_DYNAMIC Fri Jul 15 10:10:55 
+UTC 2022
+[    5.244369] thermal thermal_zone0: failed to read out thermal zone 
+(-61)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 12a599d5e61a4..3cc51ee5fb6cc 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1272,7 +1272,7 @@ static void ksz8_config_cpu_port(struct dsa_switch *ds)
- 			continue;
- 		if (!ksz_is_ksz88x3(dev)) {
- 			ksz_pread8(dev, i, regs[P_REMOTE_STATUS], &remote);
--			if (remote & PORT_FIBER_MODE)
-+			if (remote & KSZ8_PORT_FIBER_MODE)
- 				p->fiber = 1;
- 		}
- 		if (p->fiber)
-@@ -1424,51 +1424,6 @@ static u32 ksz8_get_port_addr(int port, int offset)
- 	return PORT_CTRL_ADDR(port, offset);
- }
- 
--static int ksz8_switch_detect(struct ksz_device *dev)
--{
--	u8 id1, id2;
--	u16 id16;
--	int ret;
--
--	/* read chip id */
--	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
--	if (ret)
--		return ret;
--
--	id1 = id16 >> 8;
--	id2 = id16 & SW_CHIP_ID_M;
--
--	switch (id1) {
--	case KSZ87_FAMILY_ID:
--		if ((id2 != CHIP_ID_94 && id2 != CHIP_ID_95))
--			return -ENODEV;
--
--		if (id2 == CHIP_ID_95) {
--			u8 val;
--
--			id2 = 0x95;
--			ksz_read8(dev, REG_PORT_STATUS_0, &val);
--			if (val & PORT_FIBER_MODE)
--				id2 = 0x65;
--		} else if (id2 == CHIP_ID_94) {
--			id2 = 0x94;
--		}
--		break;
--	case KSZ88_FAMILY_ID:
--		if (id2 != CHIP_ID_63)
--			return -ENODEV;
--		break;
--	default:
--		dev_err(dev->dev, "invalid family id: %d\n", id1);
--		return -ENODEV;
--	}
--	id16 &= ~0xff;
--	id16 |= id2;
--	dev->chip_id = id16;
--
--	return 0;
--}
--
- static int ksz8_switch_init(struct ksz_device *dev)
- {
- 	struct ksz8 *ksz8 = dev->priv;
-@@ -1522,7 +1477,6 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.freeze_mib = ksz8_freeze_mib,
- 	.port_init_cnt = ksz8_port_init_cnt,
- 	.shutdown = ksz8_reset_switch,
--	.detect = ksz8_switch_detect,
- 	.init = ksz8_switch_init,
- 	.exit = ksz8_switch_exit,
- };
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index 4109433b6b6c2..b8f6ad7581bcd 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -14,23 +14,10 @@
- #define KS_PRIO_M			0x3
- #define KS_PRIO_S			2
- 
--#define REG_CHIP_ID0			0x00
--
--#define KSZ87_FAMILY_ID			0x87
--#define KSZ88_FAMILY_ID			0x88
--
--#define REG_CHIP_ID1			0x01
--
--#define SW_CHIP_ID_M			0xF0
--#define SW_CHIP_ID_S			4
- #define SW_REVISION_M			0x0E
- #define SW_REVISION_S			1
- #define SW_START			0x01
- 
--#define CHIP_ID_94			0x60
--#define CHIP_ID_95			0x90
--#define CHIP_ID_63			0x30
--
- #define KSZ8863_REG_SW_RESET		0x43
- 
- #define KSZ8863_GLOBAL_SOFTWARE_RESET	BIT(4)
-@@ -217,8 +204,6 @@
- #define REG_PORT_4_STATUS_0		0x48
- 
- /* For KSZ8765. */
--#define PORT_FIBER_MODE			BIT(7)
--
- #define PORT_REMOTE_ASYM_PAUSE		BIT(5)
- #define PORT_REMOTE_SYM_PAUSE		BIT(4)
- #define PORT_REMOTE_100BTX_FD		BIT(3)
-@@ -322,7 +307,6 @@
- 
- #define REG_PORT_CTRL_5			0x05
- 
--#define REG_PORT_STATUS_0		0x08
- #define REG_PORT_STATUS_1		0x09
- #define REG_PORT_LINK_MD_CTRL		0x0A
- #define REG_PORT_LINK_MD_RESULT		0x0B
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 876a801ac23a4..bcfdd505ca79a 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1363,23 +1363,6 @@ static u32 ksz9477_get_port_addr(int port, int offset)
- 	return PORT_CTRL_ADDR(port, offset);
- }
- 
--static int ksz9477_switch_detect(struct ksz_device *dev)
--{
--	u32 id32;
--	int ret;
--
--	/* read chip id */
--	ret = ksz_read32(dev, REG_CHIP_ID0__1, &id32);
--	if (ret)
--		return ret;
--
--	dev_dbg(dev->dev, "Switch detect: ID=%08x\n", id32);
--
--	dev->chip_id = id32 & 0x00FFFF00;
--
--	return 0;
--}
--
- static int ksz9477_switch_init(struct ksz_device *dev)
- {
- 	u8 data8;
-@@ -1410,8 +1393,6 @@ static int ksz9477_switch_init(struct ksz_device *dev)
- 	dev->features = GBIT_SUPPORT;
- 
- 	if (dev->chip_id == KSZ9893_CHIP_ID) {
--		/* Chip is from KSZ9893 design. */
--		dev_info(dev->dev, "Found KSZ9893\n");
- 		dev->features |= IS_9893;
- 
- 		/* Chip does not support gigabit. */
-@@ -1419,7 +1400,6 @@ static int ksz9477_switch_init(struct ksz_device *dev)
- 			dev->features &= ~GBIT_SUPPORT;
- 		dev->phy_port_cnt = 2;
- 	} else {
--		dev_info(dev->dev, "Found KSZ9477 or compatible\n");
- 		/* Chip uses new XMII register definitions. */
- 		dev->features |= NEW_XMII;
- 
-@@ -1446,7 +1426,6 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.freeze_mib = ksz9477_freeze_mib,
- 	.port_init_cnt = ksz9477_port_init_cnt,
- 	.shutdown = ksz9477_reset_switch,
--	.detect = ksz9477_switch_detect,
- 	.init = ksz9477_switch_init,
- 	.exit = ksz9477_switch_exit,
- };
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index 7a2c8d4767aff..077e35ab11b54 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -25,7 +25,6 @@
- 
- #define REG_CHIP_ID2__1			0x0002
- 
--#define CHIP_ID_63			0x63
- #define CHIP_ID_66			0x66
- #define CHIP_ID_67			0x67
- #define CHIP_ID_77			0x77
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 92a500e1ccd21..4511e99823f57 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -930,6 +930,72 @@ void ksz_port_stp_state_set(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(ksz_port_stp_state_set);
- 
-+static int ksz_switch_detect(struct ksz_device *dev)
-+{
-+	u8 id1, id2;
-+	u16 id16;
-+	u32 id32;
-+	int ret;
-+
-+	/* read chip id */
-+	ret = ksz_read16(dev, REG_CHIP_ID0, &id16);
-+	if (ret)
-+		return ret;
-+
-+	id1 = FIELD_GET(SW_FAMILY_ID_M, id16);
-+	id2 = FIELD_GET(SW_CHIP_ID_M, id16);
-+
-+	switch (id1) {
-+	case KSZ87_FAMILY_ID:
-+		if (id2 == KSZ87_CHIP_ID_95) {
-+			u8 val;
-+
-+			dev->chip_id = KSZ8795_CHIP_ID;
-+
-+			ksz_read8(dev, KSZ8_PORT_STATUS_0, &val);
-+			if (val & KSZ8_PORT_FIBER_MODE)
-+				dev->chip_id = KSZ8765_CHIP_ID;
-+		} else if (id2 == KSZ87_CHIP_ID_94) {
-+			dev->chip_id = KSZ8794_CHIP_ID;
-+		} else {
-+			return -ENODEV;
-+		}
-+		break;
-+	case KSZ88_FAMILY_ID:
-+		if (id2 == KSZ88_CHIP_ID_63)
-+			dev->chip_id = KSZ8830_CHIP_ID;
-+		else
-+			return -ENODEV;
-+		break;
-+	default:
-+		ret = ksz_read32(dev, REG_CHIP_ID0, &id32);
-+		if (ret)
-+			return ret;
-+
-+		dev->chip_rev = FIELD_GET(SW_REV_ID_M, id32);
-+		id32 &= ~0xFF;
-+
-+		switch (id32) {
-+		case KSZ9477_CHIP_ID:
-+		case KSZ9897_CHIP_ID:
-+		case KSZ9893_CHIP_ID:
-+		case KSZ9567_CHIP_ID:
-+		case LAN9370_CHIP_ID:
-+		case LAN9371_CHIP_ID:
-+		case LAN9372_CHIP_ID:
-+		case LAN9373_CHIP_ID:
-+		case LAN9374_CHIP_ID:
-+			dev->chip_id = id32;
-+			break;
-+		default:
-+			dev_err(dev->dev,
-+				"unsupported switch detected %x)\n", id32);
-+			return -ENODEV;
-+		}
-+	}
-+	return 0;
-+}
-+
- struct ksz_device *ksz_switch_alloc(struct device *base, void *priv)
- {
- 	struct dsa_switch *ds;
-@@ -986,10 +1052,9 @@ int ksz_switch_register(struct ksz_device *dev,
- 	mutex_init(&dev->alu_mutex);
- 	mutex_init(&dev->vlan_mutex);
- 
--	dev->dev_ops = ops;
--
--	if (dev->dev_ops->detect(dev))
--		return -EINVAL;
-+	ret = ksz_switch_detect(dev);
-+	if (ret)
-+		return ret;
- 
- 	info = ksz_lookup_info(dev->chip_id);
- 	if (!info)
-@@ -998,10 +1063,15 @@ int ksz_switch_register(struct ksz_device *dev,
- 	/* Update the compatible info with the probed one */
- 	dev->info = info;
- 
-+	dev_info(dev->dev, "found switch: %s, rev %i\n",
-+		 dev->info->dev_name, dev->chip_rev);
-+
- 	ret = ksz_check_device_id(dev);
- 	if (ret)
- 		return ret;
- 
-+	dev->dev_ops = ops;
-+
- 	ret = dev->dev_ops->init(dev);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 8500eaedad67a..e6bc5fb2b1303 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -90,6 +90,7 @@ struct ksz_device {
- 
- 	/* chip specific data */
- 	u32 chip_id;
-+	u8 chip_rev;
- 	int cpu_port;			/* port connected to CPU */
- 	int phy_port_cnt;
- 	phy_interface_t compat_interface;
-@@ -182,7 +183,6 @@ struct ksz_dev_ops {
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	int (*shutdown)(struct ksz_device *dev);
--	int (*detect)(struct ksz_device *dev);
- 	int (*init)(struct ksz_device *dev);
- 	void (*exit)(struct ksz_device *dev);
- };
-@@ -353,6 +353,23 @@ static inline void ksz_regmap_unlock(void *__mtx)
- #define PORT_RX_ENABLE			BIT(1)
- #define PORT_LEARN_DISABLE		BIT(0)
- 
-+/* Switch ID Defines */
-+#define REG_CHIP_ID0			0x00
-+
-+#define SW_FAMILY_ID_M			GENMASK(15, 8)
-+#define KSZ87_FAMILY_ID			0x87
-+#define KSZ88_FAMILY_ID			0x88
-+
-+#define KSZ8_PORT_STATUS_0		0x08
-+#define KSZ8_PORT_FIBER_MODE		BIT(7)
-+
-+#define SW_CHIP_ID_M			GENMASK(7, 4)
-+#define KSZ87_CHIP_ID_94		0x6
-+#define KSZ87_CHIP_ID_95		0x9
-+#define KSZ88_CHIP_ID_63		0x3
-+
-+#define SW_REV_ID_M			GENMASK(7, 4)
-+
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
--- 
-2.35.1
+[    0.000000] Linux version 5.4.204-0504204-generic (kernel@kathleen) 
+(gcc version 9.4.0 (Ubuntu 9.4.0-1ubuntu1~20.04.1)) #202207071639 SMP 
+Thu Jul 7 16:59:09 UTC 2022
+[    5.207243] thermal thermal_zone0: failed to read out thermal zone 
+(-61)
 
+as to reproduce, can only think of saying: boot up kernel without 
+patched?
+
+additional info that may? help:
+I did not trace what calls 'update_temperature', just saw any call to it
+will cause message due to it's call to 'thermal_zone_get_temp', which 
+states
+no thermal_zone_device should provide or be requesting an update.
+It may be that if 'thermal_zone_get_temp' where removed was actual 
+function's
+intent, and all instances in this file and other function's use was a 
+case of designer debugging or signaling a deprecated API? That was my 
+intent on saying
+'for you to do and review', because it looked like a lot of functions 
+could be
+updated to take into account that no device should call functions that 
+start off
+by calling 'thermal_zone_get_temp'.
+  It is more probable that my patch suggestion is wrong and calls to
+'update_temperature' are suppose to fail with return -ENODEV always 
+allowing
+other calls to 'update_temperature' to fail also. With proposed code, 
+I've not
+seen adverse side effects. It just removed dmesg error, but was hoping 
+I would
+get lucky and it was the reason for CPUTIN -62C without actually hard 
+work of
+finding real reason.
+
+additional dmesg info:
+only other 'thermal' are 'thermal_sys' loading governors
+smpboot: CPU0: AMD Ryzen 5 2400G with Radeon Vega Graphics (family: 
+0x17, model: 0x11, stepping: 0x0)
+from lspci:
+Kernel driver in use: k10temp
+from lsmod:
+nct6775
+hwmon_vid
+these 2 removed in personal configs, but used in the two ubuntu kernel 
+builds:
+wmi
+wmi_bmof
+
+Steve
 
 
