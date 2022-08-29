@@ -2,124 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E306ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:13:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DC1ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229543AbiH2KNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 06:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        id S229599AbiH2KNt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 06:13:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbiH2KMw (ORCPT
+        with ESMTP id S229675AbiH2KNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 06:12:52 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2083.outbound.protection.outlook.com [40.107.220.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A63560683;
-        Mon, 29 Aug 2022 03:12:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nwSF41Z6EOScUNvJL77uqGyFspbLr17yuK3kyxnmrkfepqUo4ZGa9PwKkrceSkHKSbuOdRAHaZFl0KYLZGnvrsBV75RZzNBV1fAzPszEKWfBcAWXBRT4+Dc6Gbe91JolRdM5vF2uBz3KAW/kHZGMaRY7+ckBXXVRx/fRE+foXz8cqleTDZYQE5NHLwZs2sTk+KPVVmc6+GmidVMhOWbDWss5URqBCWInEbxLmX/DZG6zi+InEW/6ajmiUzuN2sw1zYMIpq6VvWO9BKCrJxhz2rZ3kHGaeBq18qe8GB2A8ZrQbCBERg/WUtdVyBcNOinomO3E4j8nNRHw+znKIbFksA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6EZG/lz1SUy56FBbUHo27pkj4aikMggVHur0m7qvhnw=;
- b=eIk46hUOohYANPVhCAWzjF3VqwnSn5a5wLq0vKoRCRKEbvaaYLojt7FmUkIiqRZcvRMLYJdZ/WXoktvYiHEI7IBntLT/p3cm+u8p8/JzlMsH3uzHWj3Aj/K6Zu9RO4+DBBUuCQnjjvS0M75eu5pi3GcLcEsCAaRBzq/WucOUhKfePuWVrQehuXh5f6AEIDUHPAfYePwUHb+nVkHx7MIcorEF2I9BFez/BbkYSyxh2kv93ZLJGbEC8mcYifbDxQ9DKETcide0wOXhFJ3X71rfwLFccxtQoFjpR/nZGzqBpxm5UFTepMXNLYVadLWY5nKXF+e4AYSH7UsE/1XqQnmQXQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6EZG/lz1SUy56FBbUHo27pkj4aikMggVHur0m7qvhnw=;
- b=42lLqhGUiibh/IZSKl0XI/9iMyM/07j7bUjig+lMbUNHJRBPasmbyfxD562jfZOyOKq/OC9tBGWo3oQTmpOww3xlBCEOBPdqEHGLX4vG0LE+w6v6Es+rExaiaQcaXRsDy+lh1GOJ1RTbudVrIzx9H6pATAbmsum1CilKjRGuTnc=
-Received: from MW4PR04CA0259.namprd04.prod.outlook.com (2603:10b6:303:88::24)
- by BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Mon, 29 Aug
- 2022 10:12:34 +0000
-Received: from CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:88:cafe::ca) by MW4PR04CA0259.outlook.office365.com
- (2603:10b6:303:88::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14 via Frontend
- Transport; Mon, 29 Aug 2022 10:12:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT061.mail.protection.outlook.com (10.13.175.200) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5566.15 via Frontend Transport; Mon, 29 Aug 2022 10:12:34 +0000
-Received: from BLR-5CG113396M.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Mon, 29 Aug
- 2022 05:12:28 -0500
-From:   Santosh Shukla <santosh.shukla@amd.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-CC:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <santosh.shukla@amd.com>,
-        <mlevitsk@redhat.com>, <mail@maciej.szmigiero.name>
-Subject: [PATCHv4 8/8] KVM: SVM: Enable VNMI feature
-Date:   Mon, 29 Aug 2022 15:38:50 +0530
-Message-ID: <20220829100850.1474-9-santosh.shukla@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220829100850.1474-1-santosh.shukla@amd.com>
-References: <20220829100850.1474-1-santosh.shukla@amd.com>
+        Mon, 29 Aug 2022 06:13:41 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41494E47
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:13:40 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id z25so10465845lfr.2
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:13:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1/ET8JN98Ye+2oSbnSBckiDuz3aa/P73E4RHpohVUXc=;
+        b=O3+Bm2FqeC36Q2AA8jc5nm+UKm3ZbQWSsP7vTzBYfP4b1Uiy56ZBUeIRsFx8zl7YpZ
+         tQSpQcFt30vndgceV5CzgRgOGgZnZF8ecbb79SXmu9hJwdiJIgBpntu7ZbIR3pd4szl2
+         N7mpH8tNlWtyJ8NjxzqJfczvIELP7Z9qTCAZg3arV2EFgMPYzoN7vgRYLz1UQsG6ykYc
+         a/iEXaTt3mp2JmVOIfQ22De9JcjNSecNqRL0WeDTMN9I0+G4mSFNHIajxs/KhiabDsDT
+         4f3cqLM7VfJCPh76l0VivjGgRFylGZGM1qWZ8y86e8i+ZH1fK8pr2BZHfNghg/+rNiV1
+         zgAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1/ET8JN98Ye+2oSbnSBckiDuz3aa/P73E4RHpohVUXc=;
+        b=IElCy31wT3ssXz24MfU2e2ScvxJC9xm89EdvtnCQ5GX0/aRRZNhT4ZAYXKGIbnhXfc
+         iOqNDrVjg0vcwrs1VEoof0IsI3y2kLuxH/5RGezyHEngYO4obJl1xHt0dzIgNTS8DWJI
+         oElcql60ZlGNVWJEklsTXWb2IYl4rkBegFG3vWEA2qz0LgL8Ja4zADedI9i7DhcS7lBh
+         jU+0T2KxD85Gv4uf0TMAQvxr2JBKeMRARG3ESDnl58a2BX6zmZ+zQXPU3nLx7MZy4ZTO
+         7mCs58Nb1xFuSDQNChMbmAOHJQecDQQ8JUMfNht/zf19uhzWFQyzk5wK2qN+c2TtrTC/
+         M53Q==
+X-Gm-Message-State: ACgBeo10yNKlTwaAcUBFfJoulXx6M6I6Kar7MVIIG7jOGjT1dmuZaLKQ
+        WyrkuQbRnY/Mh6kldqrLSIRmgeNDpPHFJCjKnr+QwYFt42HLvnOE
+X-Google-Smtp-Source: AA6agR4k0mPFoXTIHXgeTGQ7Ddw+kTJas6rx3CatpHDBznt62jZH2/1rDKJNIx885Gj8RA/6uXvP/DfHdaz9VKEVpdI=
+X-Received: by 2002:a05:6512:159b:b0:492:c1c0:5aab with SMTP id
+ bp27-20020a056512159b00b00492c1c05aabmr5966752lfb.523.1661768018550; Mon, 29
+ Aug 2022 03:13:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: df736ec9-864d-4474-a0f5-08da89a6fdf8
-X-MS-TrafficTypeDiagnostic: BN8PR12MB3587:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gKVEjZ6wzsETItt+MGa6sEH7ST+TtL/SqjingZc7A1ITc2seBXJvcUl+MdxMisd7gR19C3KMA/vMUorybc2/BwL23+FLdtucXSh66mpL6tHcBj2QAaeLprBmPVuxPjVp0MtpuvWYgdT9o1uMOzxPFq2CHUA2PGT5EvU9E8rc9KkCWwBmucqA4M9qbj8I9dgUjVIcCjBv/QXJ+JVYmWNlF2gqvXaHurotaQ0BLt9tE406wXZlxHPpl6TanYKKDfGQbCMR1FrpuBbU0Rxdx0OGSNv264jQJ9farcDHwxXodXfYLRqZMcgvT7GB5eWx5dHHHODF6wlTZyZrTea0e6DST51PX4VPhJY349t1fVnCgSKZ0eeiFCPVpI5oP4M90FFWUdI/t9WNxW/aQ4UG8eY8pz3WwOdqC8pJqhPAgtRtLtqaqx+Xknfh2+ZEDTk8F3I9aQlpKzeJq94or8hC+BTc0nWOHzF2EXd+wMCpKrZKwohvYIO8a8cEbHDBwGEE/cQdLddGQ6MtWpfHpDjz+3823lrwBiB+eLzKBCD2VYU6mh3XoD7cS/KyIZ7BIbgr+IwXJONpItX82U2oobsEIx/streStD6aLCvarRKkaNawZe3R6bOcPipem63IWAxaiqEuhvvWnipMq+p7GZFmLFBaaLmv3oCtHIekinf+kCoG5cWLd76bPfzVv1AxQkwstHg3TNkad+8PDpAGMyp+9S+GzaOcWqWDux+LQOFSF9vrv21VXkH8YH4HXEogXIYXDkq6Pi1VkoB+MH8gGJbqWPdthCJ6ar/8dd5453bylq44YXJCeDnTX2oxfIJeMv7nxQbY
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(396003)(39860400002)(46966006)(36840700001)(40470700004)(81166007)(40460700003)(16526019)(86362001)(36860700001)(1076003)(47076005)(186003)(426003)(336012)(2616005)(356005)(44832011)(82740400003)(5660300002)(36756003)(4326008)(8676002)(70586007)(70206006)(2906002)(82310400005)(40480700001)(41300700001)(478600001)(7696005)(8936002)(4744005)(6666004)(26005)(54906003)(316002)(6916009)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 10:12:34.2977
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: df736ec9-864d-4474-a0f5-08da89a6fdf8
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3587
+References: <20220829055450.1703092-1-dietmar.eggemann@arm.com>
+ <20220829055450.1703092-2-dietmar.eggemann@arm.com> <Ywxz7cuR+/+1CFMR@hirez.programming.kicks-ass.net>
+ <YwyOzgbbUbB+JmSH@hirez.programming.kicks-ass.net>
+In-Reply-To: <YwyOzgbbUbB+JmSH@hirez.programming.kicks-ass.net>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Mon, 29 Aug 2022 12:13:26 +0200
+Message-ID: <CAKfTPtAnC4escfufhjJkqsYyhDPzpmQH4xYT4nj=EjCP7gzifg@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/1] sched/pelt: Introduce PELT multiplier
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Vincent Donnefort <vdonnefort@google.com>,
+        Quentin Perret <qperret@google.com>,
+        Patrick Bellasi <patrick.bellasi@matbug.net>,
+        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
+        Jian-Min <Jian-Min.Liu@mediatek.com>,
+        Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable the NMI virtualization (V_NMI_ENABLE) in the VMCB interrupt
-control when the vnmi module parameter is set.
+On Mon, 29 Aug 2022 at 12:03, Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Mon, Aug 29, 2022 at 10:08:13AM +0200, Peter Zijlstra wrote:
+> > On Mon, Aug 29, 2022 at 07:54:50AM +0200, Dietmar Eggemann wrote:
+> > > From: Vincent Donnefort <vincent.donnefort@arm.com>
+> > >
+> > > The new sysctl sched_pelt_multiplier allows a user to set a clock
+> > > multiplier to x2 or x4 (x1 being the default). This clock multiplier
+> > > artificially speeds up PELT ramp up/down similarly to use a faster
+> > > half-life than the default 32ms.
+> > >
+> > >   - x1: 32ms half-life
+> > >   - x2: 16ms half-life
+> > >   - x4: 8ms  half-life
+> > >
+> > > Internally, a new clock is created: rq->clock_task_mult. It sits in the
+> > > clock hierarchy between rq->clock_task and rq->clock_pelt.
+> > >
+> > > Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+> > > Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> >
+> > > +extern unsigned int sched_pelt_lshift;
+> > > +
+> > > +/*
+> > > + * absolute time   |1      |2      |3      |4      |5      |6      |
+> > > + * @ mult = 1      --------****************--------****************-
+> > > + * @ mult = 2      --------********----------------********---------
+> > > + * @ mult = 4      --------****--------------------****-------------
+> > > + * clock task mult
+> > > + * @ mult = 2      |   |   |2  |3  |   |   |   |   |5  |6  |   |   |
+> > > + * @ mult = 4      | | | | |2|3| | | | | | | | | | |5|6| | | | | | |
+> > > + *
+> > > + */
+> > > +static inline void update_rq_clock_task_mult(struct rq *rq, s64 delta)
+> > > +{
+> > > +   delta <<= READ_ONCE(sched_pelt_lshift);
+> > > +
+> > > +   rq->clock_task_mult += delta;
+> > > +
+> > > +   update_rq_clock_pelt(rq, delta);
+> > > +}
+> >
+> > Hurmph... I'd almost go write you something like
+> > static_call()/static_branch() but for immediates.
+> >
+> > That said; given there's only like 3 options, perhaps a few
+> > static_branch() instances work just fine ?
+>
+> Also, I'm not at all sure about exposing that as an official sysctl.
 
-Signed-off-by: Santosh Shukla <santosh.shukla@amd.com>
----
- arch/x86/kvm/svm/svm.c | 3 +++
- 1 file changed, 3 insertions(+)
+Me too, I would even make it a boot time parameter so we can remove
+the new clock_task_mult clock and left shift clock_taslk or the delta
+before passing it to clock_pelt
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 2e50a7ab32db..cb1ad6c6d377 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1309,6 +1309,9 @@ static void init_vmcb(struct kvm_vcpu *vcpu)
- 	if (kvm_vcpu_apicv_active(vcpu))
- 		avic_init_vmcb(svm, vmcb);
- 
-+	if (vnmi)
-+		svm->vmcb->control.int_ctl |= V_NMI_ENABLE;
-+
- 	if (vgif) {
- 		svm_clr_intercept(svm, INTERCEPT_STGI);
- 		svm_clr_intercept(svm, INTERCEPT_CLGI);
--- 
-2.25.1
-
+>
+> How about something like so?
+>
+> ---
+> Subject: sched/pelt: Introduce PELT multiplier
+> From: Vincent Donnefort <vincent.donnefort@arm.com>
+> Date: Mon, 29 Aug 2022 07:54:50 +0200
+>
+> From: Vincent Donnefort <vincent.donnefort@arm.com>
+>
+> The new sysctl sched_pelt_multiplier allows a user to set a clock
+> multiplier to x2 or x4 (x1 being the default). This clock multiplier
+> artificially speeds up PELT ramp up/down similarly to use a faster
+> half-life than the default 32ms.
+>
+>   - x1: 32ms half-life
+>   - x2: 16ms half-life
+>   - x4: 8ms  half-life
+>
+> Internally, a new clock is created: rq->clock_task_mult. It sits in the
+> clock hierarchy between rq->clock_task and rq->clock_pelt.
+>
+> [peterz: Use sched_feat()]
+> Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+> Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  kernel/sched/core.c     |    2 +-
+>  kernel/sched/features.h |    3 +++
+>  kernel/sched/pelt.h     |   45 +++++++++++++++++++++++++++++++++++++++++----
+>  kernel/sched/sched.h    |    1 +
+>  4 files changed, 46 insertions(+), 5 deletions(-)
+>
+> --- a/kernel/sched/core.c
+> +++ b/kernel/sched/core.c
+> @@ -727,7 +727,7 @@ static void update_rq_clock_task(struct
+>         if ((irq_delta + steal) && sched_feat(NONTASK_CAPACITY))
+>                 update_irq_load_avg(rq, irq_delta + steal);
+>  #endif
+> -       update_rq_clock_pelt(rq, delta);
+> +       update_rq_clock_task_mult(rq, delta);
+>  }
+>
+>  void update_rq_clock(struct rq *rq)
+> --- a/kernel/sched/features.h
+> +++ b/kernel/sched/features.h
+> @@ -101,3 +101,6 @@ SCHED_FEAT(LATENCY_WARN, false)
+>
+>  SCHED_FEAT(ALT_PERIOD, true)
+>  SCHED_FEAT(BASE_SLICE, true)
+> +
+> +SCHED_FEAT(PELT_M2, false)
+> +SCHED_FEAT(PELT_M4, false)
+> --- a/kernel/sched/pelt.h
+> +++ b/kernel/sched/pelt.h
+> @@ -61,6 +61,14 @@ static inline void cfs_se_util_change(st
+>         WRITE_ONCE(avg->util_est.enqueued, enqueued);
+>  }
+>
+> +static inline u64 rq_clock_task_mult(struct rq *rq)
+> +{
+> +       lockdep_assert_rq_held(rq);
+> +       assert_clock_updated(rq);
+> +
+> +       return rq->clock_task_mult;
+> +}
+> +
+>  static inline u64 rq_clock_pelt(struct rq *rq)
+>  {
+>         lockdep_assert_rq_held(rq);
+> @@ -72,7 +80,7 @@ static inline u64 rq_clock_pelt(struct r
+>  /* The rq is idle, we can sync to clock_task */
+>  static inline void _update_idle_rq_clock_pelt(struct rq *rq)
+>  {
+> -       rq->clock_pelt  = rq_clock_task(rq);
+> +       rq->clock_pelt = rq_clock_task_mult(rq);
+>
+>         u64_u32_store(rq->clock_idle, rq_clock(rq));
+>         /* Paired with smp_rmb in migrate_se_pelt_lag() */
+> @@ -121,6 +129,30 @@ static inline void update_rq_clock_pelt(
+>         rq->clock_pelt += delta;
+>  }
+>
+> +extern unsigned int sched_pelt_lshift;
+> +
+> +/*
+> + * absolute time   |1      |2      |3      |4      |5      |6      |
+> + * @ mult = 1      --------****************--------****************-
+> + * @ mult = 2      --------********----------------********---------
+> + * @ mult = 4      --------****--------------------****-------------
+> + * clock task mult
+> + * @ mult = 2      |   |   |2  |3  |   |   |   |   |5  |6  |   |   |
+> + * @ mult = 4      | | | | |2|3| | | | | | | | | | |5|6| | | | | | |
+> + *
+> + */
+> +static inline void update_rq_clock_task_mult(struct rq *rq, s64 delta)
+> +{
+> +       if (sched_feat(PELT_M2))
+> +               delta *= 2;
+> +       if (sched_feat(PELT_M4))
+> +               delta *= 4;
+> +
+> +       rq->clock_task_mult += delta;
+> +
+> +       update_rq_clock_pelt(rq, delta);
+> +}
+> +
+>  /*
+>   * When rq becomes idle, we have to check if it has lost idle time
+>   * because it was fully busy. A rq is fully used when the /Sum util_sum
+> @@ -147,7 +179,7 @@ static inline void update_idle_rq_clock_
+>          * rq's clock_task.
+>          */
+>         if (util_sum >= divider)
+> -               rq->lost_idle_time += rq_clock_task(rq) - rq->clock_pelt;
+> +               rq->lost_idle_time += rq_clock_task_mult(rq) - rq->clock_pelt;
+>
+>         _update_idle_rq_clock_pelt(rq);
+>  }
+> @@ -218,13 +250,18 @@ update_irq_load_avg(struct rq *rq, u64 r
+>         return 0;
+>  }
+>
+> -static inline u64 rq_clock_pelt(struct rq *rq)
+> +static inline u64 rq_clock_task_mult(struct rq *rq)
+>  {
+>         return rq_clock_task(rq);
+>  }
+>
+> +static inline u64 rq_clock_pelt(struct rq *rq)
+> +{
+> +       return rq_clock_task_mult(rq);
+> +}
+> +
+>  static inline void
+> -update_rq_clock_pelt(struct rq *rq, s64 delta) { }
+> +update_rq_clock_task_mult(struct rq *rq, s64 delta) { }
+>
+>  static inline void
+>  update_idle_rq_clock_pelt(struct rq *rq) { }
+> --- a/kernel/sched/sched.h
+> +++ b/kernel/sched/sched.h
+> @@ -1009,6 +1009,7 @@ struct rq {
+>         u64                     clock;
+>         /* Ensure that all clocks are in the same cache line */
+>         u64                     clock_task ____cacheline_aligned;
+> +       u64                     clock_task_mult;
+>         u64                     clock_pelt;
+>         unsigned long           lost_idle_time;
+>         u64                     clock_pelt_idle;
