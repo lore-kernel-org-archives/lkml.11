@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0373ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01010ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:17:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231384AbiH2LRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
+        id S230161AbiH2LRq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231162AbiH2LRQ (ORCPT
+        with ESMTP id S231341AbiH2LRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:17:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACD7673927;
-        Mon, 29 Aug 2022 04:11:17 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F7C72FE4;
+        Mon, 29 Aug 2022 04:11:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8BBD611F1;
-        Mon, 29 Aug 2022 11:09:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5E91C433C1;
-        Mon, 29 Aug 2022 11:09:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 629F5B80F88;
+        Mon, 29 Aug 2022 11:08:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB57DC433D6;
+        Mon, 29 Aug 2022 11:08:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771350;
-        bh=V9jVGqk7lz1UgihqpJfWjn5UtbbfwutqK2q9IUj0wAk=;
+        s=korg; t=1661771282;
+        bh=OHYA85URht/qFHqxPLlYtHkN5nXS5dCClUmonlWO9hg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q9GSHAhTGytasI5CrrHQsyQrE41tZaiWx0dvXudvDZU6m8fo40HYTrP4lE2XGydpV
-         mH3LYKt7pZAMyjdP68111yLHBLbGmnf0qRpjM0M5rKQS5IHaJ7kNq7XFRwMTtbPbuS
-         h5XKZ4h7JOJIc1dnacGzfz4zx7ML6Rc7IrLTB+No=
+        b=awTy3dJ5PDBfeY/d47EdzYZwSqxzbAOhyNYOUOpz6f6Wxqy2/h+PE3gAv4Z0Wa8A4
+         kmK0IOVghMwLFAh8FWOaMvYvGbOz4o9Nr7Bm/sbVBZiTwplGKukGcGxykYL4gczPNR
+         M8bibSp433OovW3gjOwem360/Bm1PbRlM8ajKgoI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qi Duan <qi.duan@amlogic.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 094/136] net: stmmac: work around sporadic tx issue on link-up
-Date:   Mon, 29 Aug 2022 12:59:21 +0200
-Message-Id: <20220829105808.525512557@linuxfoundation.org>
+        stable@vger.kernel.org, Steve Payne <spayne@aurora.tech>,
+        Ilya Evenbach <ievenbach@aurora.tech>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 087/136] ixgbe: stop resetting SYSTIME in ixgbe_ptp_start_cyclecounter
+Date:   Mon, 29 Aug 2022 12:59:14 +0200
+Message-Id: <20220829105808.225048661@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -51,87 +52,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-[ Upstream commit a3a57bf07de23fe1ff779e0fdf710aa581c3ff73 ]
+[ Upstream commit 25d7a5f5a6bb15a2dae0a3f39ea5dda215024726 ]
 
-This is a follow-up to the discussion in [0]. It seems to me that
-at least the IP version used on Amlogic SoC's sometimes has a problem
-if register MAC_CTRL_REG is written whilst the chip is still processing
-a previous write. But that's just a guess.
-Adding a delay between two writes to this register helps, but we can
-also simply omit the offending second write. This patch uses the second
-approach and is based on a suggestion from Qi Duan.
-Benefit of this approach is that we can save few register writes, also
-on not affected chip versions.
+The ixgbe_ptp_start_cyclecounter is intended to be called whenever the
+cyclecounter parameters need to be changed.
 
-[0] https://www.spinics.net/lists/netdev/msg831526.html
+Since commit a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x
+devices"), this function has cleared the SYSTIME registers and reset the
+TSAUXC DISABLE_SYSTIME bit.
 
-Fixes: bfab27a146ed ("stmmac: add the experimental PCI support")
-Suggested-by: Qi Duan <qi.duan@amlogic.com>
-Suggested-by: Jerome Brunet <jbrunet@baylibre.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Link: https://lore.kernel.org/r/e99857ce-bd90-5093-ca8c-8cd480b5a0a2@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+While these need to be cleared during ixgbe_ptp_reset, it is wrong to clear
+them during ixgbe_ptp_start_cyclecounter. This function may be called
+during both reset and link status change. When link changes, the SYSTIME
+counter is still operating normally, but the cyclecounter should be updated
+to account for the possibly changed parameters.
+
+Clearing SYSTIME when link changes causes the timecounter to jump because
+the cycle counter now reads zero.
+
+Extract the SYSTIME initialization out to a new function and call this
+during ixgbe_ptp_reset. This prevents the timecounter adjustment and avoids
+an unnecessary reset of the current time.
+
+This also restores the original SYSTIME clearing that occurred during
+ixgbe_ptp_reset before the commit above.
+
+Reported-by: Steve Payne <spayne@aurora.tech>
+Reported-by: Ilya Evenbach <ievenbach@aurora.tech>
+Fixes: a9763f3cb54c ("ixgbe: Update PTP to support X550EM_x devices")
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c   | 8 ++++++--
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 9 +++++----
- 2 files changed, 11 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c | 59 +++++++++++++++-----
+ 1 file changed, 46 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
-index d1c31200bb911..01d0a14f67520 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
-@@ -258,14 +258,18 @@ EXPORT_SYMBOL_GPL(stmmac_set_mac_addr);
- /* Enable disable MAC RX/TX */
- void stmmac_set_mac(void __iomem *ioaddr, bool enable)
- {
--	u32 value = readl(ioaddr + MAC_CTRL_REG);
-+	u32 old_val, value;
-+
-+	old_val = readl(ioaddr + MAC_CTRL_REG);
-+	value = old_val;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+index 23ddfd79fc8b6..29be1d6eca436 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ptp.c
+@@ -1212,7 +1212,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
+ 	struct cyclecounter cc;
+ 	unsigned long flags;
+ 	u32 incval = 0;
+-	u32 tsauxc = 0;
+ 	u32 fuse0 = 0;
  
- 	if (enable)
- 		value |= MAC_ENABLE_RX | MAC_ENABLE_TX;
- 	else
- 		value &= ~(MAC_ENABLE_TX | MAC_ENABLE_RX);
- 
--	writel(value, ioaddr + MAC_CTRL_REG);
-+	if (value != old_val)
-+		writel(value, ioaddr + MAC_CTRL_REG);
+ 	/* For some of the boards below this mask is technically incorrect.
+@@ -1247,18 +1246,6 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
+ 	case ixgbe_mac_x550em_a:
+ 	case ixgbe_mac_X550:
+ 		cc.read = ixgbe_ptp_read_X550;
+-
+-		/* enable SYSTIME counter */
+-		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
+-		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
+-		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
+-		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
+-		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
+-				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
+-		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
+-		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
+-
+-		IXGBE_WRITE_FLUSH(hw);
+ 		break;
+ 	case ixgbe_mac_X540:
+ 		cc.read = ixgbe_ptp_read_82599;
+@@ -1290,6 +1277,50 @@ void ixgbe_ptp_start_cyclecounter(struct ixgbe_adapter *adapter)
+ 	spin_unlock_irqrestore(&adapter->tmreg_lock, flags);
  }
  
- void stmmac_get_mac_addr(void __iomem *ioaddr, unsigned char *addr,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index b4f83c8655684..2569673559df3 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1083,10 +1083,10 @@ static void stmmac_mac_link_up(struct phylink_config *config,
- 			       bool tx_pause, bool rx_pause)
- {
- 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
--	u32 ctrl;
-+	u32 old_ctrl, ctrl;
++/**
++ * ixgbe_ptp_init_systime - Initialize SYSTIME registers
++ * @adapter: the ixgbe private board structure
++ *
++ * Initialize and start the SYSTIME registers.
++ */
++static void ixgbe_ptp_init_systime(struct ixgbe_adapter *adapter)
++{
++	struct ixgbe_hw *hw = &adapter->hw;
++	u32 tsauxc;
++
++	switch (hw->mac.type) {
++	case ixgbe_mac_X550EM_x:
++	case ixgbe_mac_x550em_a:
++	case ixgbe_mac_X550:
++		tsauxc = IXGBE_READ_REG(hw, IXGBE_TSAUXC);
++
++		/* Reset SYSTIME registers to 0 */
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMR, 0);
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
++
++		/* Reset interrupt settings */
++		IXGBE_WRITE_REG(hw, IXGBE_TSIM, IXGBE_TSIM_TXTS);
++		IXGBE_WRITE_REG(hw, IXGBE_EIMS, IXGBE_EIMS_TIMESYNC);
++
++		/* Activate the SYSTIME counter */
++		IXGBE_WRITE_REG(hw, IXGBE_TSAUXC,
++				tsauxc & ~IXGBE_TSAUXC_DISABLE_SYSTIME);
++		break;
++	case ixgbe_mac_X540:
++	case ixgbe_mac_82599EB:
++		/* Reset SYSTIME registers to 0 */
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIML, 0);
++		IXGBE_WRITE_REG(hw, IXGBE_SYSTIMH, 0);
++		break;
++	default:
++		/* Other devices aren't supported */
++		return;
++	};
++
++	IXGBE_WRITE_FLUSH(hw);
++}
++
+ /**
+  * ixgbe_ptp_reset
+  * @adapter: the ixgbe private board structure
+@@ -1316,6 +1347,8 @@ void ixgbe_ptp_reset(struct ixgbe_adapter *adapter)
  
--	ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
--	ctrl &= ~priv->hw->link.speed_mask;
-+	old_ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
-+	ctrl = old_ctrl & ~priv->hw->link.speed_mask;
+ 	ixgbe_ptp_start_cyclecounter(adapter);
  
- 	if (interface == PHY_INTERFACE_MODE_USXGMII) {
- 		switch (speed) {
-@@ -1161,7 +1161,8 @@ static void stmmac_mac_link_up(struct phylink_config *config,
- 	if (tx_pause && rx_pause)
- 		stmmac_mac_flow_ctrl(priv, duplex);
- 
--	writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
-+	if (ctrl != old_ctrl)
-+		writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
- 
- 	stmmac_mac_set(priv, priv->ioaddr, true);
- 	if (phy && priv->dma_cap.eee) {
++	ixgbe_ptp_init_systime(adapter);
++
+ 	spin_lock_irqsave(&adapter->tmreg_lock, flags);
+ 	timecounter_init(&adapter->hw_tc, &adapter->hw_cc,
+ 			 ktime_to_ns(ktime_get_real()));
 -- 
 2.35.1
 
