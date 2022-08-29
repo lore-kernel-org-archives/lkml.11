@@ -2,87 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8677ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCBDECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiH2QbX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41258 "EHLO
+        id S229947AbiH2QeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231136AbiH2QbC (ORCPT
+        with ESMTP id S229502AbiH2QeR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:31:02 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AB2186C9;
-        Mon, 29 Aug 2022 09:30:58 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73:8b7:7001:c8aa:b65f])
+        Mon, 29 Aug 2022 12:34:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A7A8F97A;
+        Mon, 29 Aug 2022 09:34:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id EB21A2E0;
-        Mon, 29 Aug 2022 16:30:57 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net EB21A2E0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1661790658; bh=6S2NvRoZE/Y8A50MoD1XPsNF4V8uUQaelVt/mreMJRg=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=gNwEAPj165YacmV5Ngo8DAVSTlVaXOD9wnwNCqaBU/YBdgftaev80ngRiYcR7ZyO6
-         P/kSWojSF4TsBKmMDwxxbKuULBTGqUQvcLq0D1+AO9Vai9Zef5BstG2ytlTFgflGZm
-         nhkdMFWbgIeMJ3YI0xfyAW5McHWc8uNDJd/BAOagr6p8KTrdT7S1R2uQBUehb3VR8Y
-         2ELd2FW07UkVdNxrcVZ2B+Vv4gzsvn+3YBzgmiVGFfX1a+/j72jtbIP3jGepJ327R1
-         11crHnaVQCMapwM5UpjnBFYN8g5cd9YCk41vXTYWBOCcKLd0ijp0riaY9slHt9VlHM
-         JoZ5wacjNz2KA==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Jules Maselbas <jmaselbas@kalray.eu>, linux-kernel@vger.kernel.org
-Cc:     Jules Maselbas <jmaselbas@kalray.eu>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v3] Remove duplicated words across the whole documentation
-In-Reply-To: <20220826163458.1142-1-jmaselbas@kalray.eu>
-References: <20220826143300.6794-1-jmaselbas@kalray.eu>
- <20220826163458.1142-1-jmaselbas@kalray.eu>
-Date:   Mon, 29 Aug 2022 10:30:57 -0600
-Message-ID: <87wnarovum.fsf@meer.lwn.net>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FEC3B81160;
+        Mon, 29 Aug 2022 16:34:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79BADC433C1;
+        Mon, 29 Aug 2022 16:34:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661790853;
+        bh=EHNP4RzQnuQOX+7RxLEAqc1syZDl49UGa8ehhKTXRQg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cDp7X8gBmpAOAKJ8Rlu6UmYCh/TwfAd+Jwhm1G1Jt0ADl/0+xpDQqwt1xfPELrpMx
+         ldgBmtZYVf7Ppsyy3Pytt6xBmXCK6ejuba3d7PxD8NolqsJPBsZepd0w9dBLtnRFfV
+         ONSDgqTK/PV84hBTcRtABTBs1RaIeKNRoOpAa3CJOPACNNqoRQ8KCvkDNT7jCAuU0S
+         kb2ekjtAWyRQD1WjoPZRpVw+FP+Oe+/QVHD6QAmMR/6FyMdCw2MqByS5BbA8lB9y4G
+         04a3AvVZ9ZNMS6LkZqYUQinoBzbvgdpDDaze8B1XDISXxfQSH8AviJsLmWtCdeHzfX
+         fOJH30FPzz/NQ==
+Date:   Mon, 29 Aug 2022 16:59:50 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: iio: Add missing
+ (unevaluated|additional)Properties on child nodes
+Message-ID: <20220829165950.268433ca@jic23-huawei>
+In-Reply-To: <20220829141029.GA1470207-robh@kernel.org>
+References: <20220823145649.3118479-2-robh@kernel.org>
+        <99dfcc39-ab1b-1b24-c6b2-67de5509f5ac@linaro.org>
+        <20220828180050.51c3e857@jic23-huawei>
+        <20220829141029.GA1470207-robh@kernel.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jules Maselbas <jmaselbas@kalray.eu> writes:
+On Mon, 29 Aug 2022 09:10:29 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-> Remove duplicated words (the, at, be ...) across the whole documentation.
-> In some cases the duplicated words are replaced by something that makes
-> more sense, for instance: "be be" is replaced by "can be" when possible.
->
-> There are likely more duplicated words to be found.
->
-> CC: Randy Dunlap <rdunlap@infradead.org>
-> CC: Bagas Sanjaya <bagasdotme@gmail.com>
-> CC: Jonathan Corbet <corbet@lwn.net>
-> CC: linux-doc@vger.kernel.org
-> Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
-> ---
-> in v3:
->  as suggested by Randy Dunlap:
->  - remove duplicated 'The the '
->  - remove duplicated 'at at ' (some are replaced by 'at a ')
->  - remove duplicated be, is, to, we, on ...
-> in v2:
->  - also remove the second 'the' in one sentence as suggested by
->    Bagas Sanjaya
->
->  Documentation/RCU/checklist.rst                               | 2 +-
->  Documentation/admin-guide/kdump/vmcoreinfo.rst                | 2 +-
->  Documentation/admin-guide/media/vivid.rst                     | 2 +-
->  Documentation/bpf/instruction-set.rst                         | 2 +-
->  Documentation/bpf/map_cgroup_storage.rst                      | 4 ++--
->  Documentation/core-api/cpu_hotplug.rst                        | 3 +--
->  Documentation/devicetree/bindings/arm/arm,vexpress-juno.yaml  | 4 ++--
->  .../devicetree/bindings/arm/tegra/nvidia,tegra20-ahb.txt      | 2 +-
+> On Sun, Aug 28, 2022 at 06:01:41PM +0100, Jonathan Cameron wrote:
+> > On Thu, 25 Aug 2022 15:04:33 +0300
+> > Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+> >   
+> > > On 23/08/2022 17:56, Rob Herring wrote:  
+> > > > In order to ensure only documented properties are present, node schemas
+> > > > must have unevaluatedProperties or additionalProperties set to false
+> > > > (typically).
+> > > >     
+> > > 
+> > > 
+> > > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>  
+> > 
+> > Applied to the togreg branch of iio.git and pushed out as testing for 0-day
+> > to poke at it before I push out as togreg for linux-next to pick up.  
+> 
+> Thanks.
+> 
+> > Side note. Some odd entries in your cc list...  alsa-devel?  
+> 
+> Blame MAINTAINERS:
+> 
+> STM32 AUDIO (ASoC) DRIVERS
+> M:      Olivier Moysan <olivier.moysan@foss.st.com>
+> M:      Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> L:      alsa-devel@alsa-project.org (moderated for non-subscribers)
+> S:      Maintained
+> F:      Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml
+> F:      Documentation/devicetree/bindings/sound/st,stm32-*.yaml
+> F:      sound/soc/stm/
 
-When you redo the patch to reflect the other comments, please split the
-devicetree changes into a separate patch.  I don't handle devicetree
-stuff, so that will need to go via a separate path.
+There is some logic to that entry I suppose.
 
-Thanks,
+Thanks for explanation!
 
-jon
+Jonathan
