@@ -2,98 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8436ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 22:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D14ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 22:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229533AbiH2WNx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 18:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
+        id S229635AbiH2WO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 18:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229633AbiH2WNo (ORCPT
+        with ESMTP id S229513AbiH2WO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 18:13:44 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973A27D791
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:13:42 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id s11so3448505ilt.7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:13:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=kDv1Wdc30xWBR5Q0HuYAotIhWz3t+ru73XnAdWghxwI=;
-        b=Gq4sUZurjYGuE+u5O3j2RPt3kH6sF9BEFst5+Qd9srQfDIQgEvvWP9MdWR0k1+2/fj
-         OJdW/koxBPgaPsvyuXDEy2ur/Z6xGvlGjaG1lYjtyk9ndTDNZrVjPLrd8/ASoneSfmsk
-         zlHfh0jGvDHVFmNSzEM+0xCDN7pWnAmvm5E00=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=kDv1Wdc30xWBR5Q0HuYAotIhWz3t+ru73XnAdWghxwI=;
-        b=3Bpm9BQglBPSnZSLVlNjYkoBZrps92uPJAyJvoB2qpqWW07GFMWGaGvq+hMX13G5yV
-         X4W5epFyzuzlCNp2pKFiCQYKTmWiYezKNatceijaHNBPeROmbZkpZpNGXNRK5wlU8zDh
-         Qoefz3OdN13MXl5z4KlkrpWSC5MjDo96oNcDtS4f1F8etCCVtOG9XZqk7tfnsbANF/Hq
-         OO0kbLuddgAEgHhI9mbgPHyyvAoFPL8U/dxrRlLe6W5jk2jt5OmaA/ifq0D3iJ7moLqO
-         6rmWB07wVQs/bYieI31WAMED6fgTwzm5qzOIjUWFj0iUmXIA5OIrPz9/+vZPYtNzSghC
-         l9ng==
-X-Gm-Message-State: ACgBeo1Jt8tAvTIz8pOT28lSGvjnlc3BzBwAjqi44sQAJaHzK0Fgdou/
-        aXio1K3r7Hl6NH39P6i6zoa6nA==
-X-Google-Smtp-Source: AA6agR6OiMbT9QS5vUvJpCSlESqGYBg7bCf4i7bAop9yLFf0rMnFMiz16VoN5lw2AS5k+N1aDyQQrg==
-X-Received: by 2002:a05:6e02:1347:b0:2ea:e939:fef1 with SMTP id k7-20020a056e02134700b002eae939fef1mr5127804ilr.114.1661811221915;
-        Mon, 29 Aug 2022 15:13:41 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id q5-20020a027b05000000b0034a58cd5718sm379644jac.175.2022.08.29.15.13.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 15:13:41 -0700 (PDT)
-Message-ID: <c06c35e2-f811-088e-2a93-45b2cae45f5f@linuxfoundation.org>
-Date:   Mon, 29 Aug 2022 16:13:40 -0600
+        Mon, 29 Aug 2022 18:14:26 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5340A7D78B;
+        Mon, 29 Aug 2022 15:14:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:Cc:References:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=5bh+6c/zBVS1U48Zom3Me0IcZEFs+/RPrgsPPRgOxVk=; b=mm03mYlIcQ7K8cuqTLwVw7ug27
+        jOa21wzn+kG2i6trNc84diYwqHNrvT79eRpxqN0lfqEr5Agkx6uZqwA6bURsFIzGz+gFA3XI6ROXu
+        gMDoF+jd/VVS1+QoO/JVYKRZq0vTVwIzOtfYDUDbo6rWMmdVvl8LIXObd83/6cTWJl+ABmsLdGnTL
+        yeU/WvW7qxESpQo5UWQg7Hfg03YT852YXzKQDM14XAmMId8ytPqEiOhmG8cuZTdy5F9J3T11fKnRt
+        7iSHv8B3tqRF00veRPHJz1XUAz2XPeKUNWgsEddUipTiYY7x0d/Z8ASAoRjQxFxcH9nwavstl/9WH
+        7D6q2x1g==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oSn1T-00D2DE-Ot; Mon, 29 Aug 2022 22:14:23 +0000
+Message-ID: <dd8fb085-76dc-f2b0-6101-f84c93b8a0af@infradead.org>
+Date:   Mon, 29 Aug 2022 15:14:23 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5.19 000/158] 5.19.6-rc1 review
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: pcieport bug?
 Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Steven J Abner <pheonix.sja@att.net>, linux-kernel@vger.kernel.org
+References: <TY1EHR.8720BA9PHAKY2.ref@att.net> <TY1EHR.8720BA9PHAKY2@att.net>
+Cc:     PCI <linux-pci@vger.kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <TY1EHR.8720BA9PHAKY2@att.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/29/22 04:57, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.19.6 release.
-> There are 158 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+[adding linux-pci mailing list]
+
+
+On 8/29/22 10:59, Steven J Abner wrote:
+> Hi
+> Building a kernel tailored for AMD 2400g on ASRock B450 using 5.18.12 as base, OS
+> is Elementary 6.1 on top of Ubuntu 20.04.5.
+> In a config I changed some which lead to this query,'cause not sure what it means.
+> So up to you see if it is of concern. Notation igpu# refers to build sequence tests.
+> Also note that pcieport may affect other drivers?
 > 
-> Responses should be made by Wed, 31 Aug 2022 10:57:37 +0000.
-> Anything received after that time might be too late.
+> config differences
+> igpu33
+> # CONFIG_PCIEPORTBUS is not set
+> # CONFIG_PCI_IOV is not set
+> # CONFIG_VGA_ARB is not set
+> # CONFIG_HOTPLUG_PCI is not set
+> igpu32
+> CONFIG_PCIEPORTBUS=y
+> CONFIG_HOTPLUG_PCI_PCIE=y
+> CONFIG_PCIEAER=y
+> # CONFIG_PCIEAER_INJECT is not set
+> # CONFIG_PCIE_ECRC is not set
+> CONFIG_PCIE_PME=y
+> CONFIG_PCIE_DPC=y
+> # CONFIG_PCIE_EDR is not set
+> CONFIG_PCI_REALLOC_ENABLE_AUTO=y
+> # CONFIG_PCI_PF_STUB is not set
+> CONFIG_PCI_IOV=y
+> CONFIG_VGA_ARB=y
+> CONFIG_VGA_ARB_MAX_GPUS=16
+> CONFIG_HOTPLUG_PCI=y
+> CONFIG_HOTPLUG_PCI_ACPI=y
+> # CONFIG_HOTPLUG_PCI_ACPI_IBM is not set
+> CONFIG_HOTPLUG_PCI_CPCI=y
+> # CONFIG_HOTPLUG_PCI_CPCI_ZT5550 is not set
+> # CONFIG_HOTPLUG_PCI_CPCI_GENERIC is not set
+> CONFIG_HOTPLUG_PCI_SHPC=y
+> # CONFIG_RAPIDIO_TSI721 is not set
+> # CONFIG_EEEPC_LAPTOP is not set
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.19.6-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.19.y
-> and the diffstat can be found below.
+> lspci differences:
+> start with identical:
+> 00:00.0 Host bridge
+> 00:00.2 IOMMU
+> 00:01.0 Host bridge
 > 
-> thanks,
+> kernel builds after igpu33 stable flags, only irq differences
+> kernel builds upto igpu32 flags differ including non-pcieport drivers,
+> there was a few builds where flags matched out of 32 different builds
+> I thought was normal that flags changed prior to 33-37 being very stable.
 > 
-> greg k-h
+> under 00:01.1 PCI bridge:
+> igpu33
+> Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+> DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+> RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- PMEIntEna- CRSVisible+
+> Capabilities: [a0] MSI: Enable- Count=1/1 Maskable- 64bit+
+>  Address: 0000000000000000 Data: 0000
+> RootCmd: CERptEn- NFERptEn- FERptEn-
+> 
+> igpu32
+> Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+
+> Interrupt: pin ? routed to IRQ 26
+> DevCtl: CorrErr+ NonFatalErr+ FatalErr+ UnsupReq+
+> RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- PMEIntEna+ CRSVisible+
+> Capabilities: [a0] MSI: Enable+ Count=1/1 Maskable- 64bit+
+>  Address: 00000000fee00000 Data: 0000
+> RootCmd: CERptEn+ NFERptEn+ FERptEn+
+> Kernel driver in use: pcieport
+> 
+> under these, nearly same readout as above (32vs33 use of pcieport)
+> 00:01.6 PCI bridge
+> 00:08.1 PCI bridge
+> 00:08.2 PCI bridge
+> 11:01.0 PCI bridge
+> 11:02.0 PCI bridge
+> 15:00.2 PCI bridge
+> 1d:00.0 PCI bridge
+> 1d:01.0 PCI bridge
+> 1d:04.0 PCI bridge
+> 1d:05.0 PCI bridge
+> 1d:06.0 PCI bridge
+> 1d:07.0 PCI bridge
+> 
+> on non-pcieport drivers minor differences in +- states
+> on nvme added line:
+> Physical Slot: 0
+> but +- state can change like others
+> 
+> dmesg differences (alphabetical):
+> igu33
+> acpi PNP0A08:00: PCIe port services disabled; not requesting _OSC control
+> igpu32
+> acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+> acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME AER PCIeCapability]
+> acpi PNP0A08:00: _OSC: platform does not support [SHPCHotplug LTR]
+> amdgpu 0000:38:00.0: vgaarb: deactivate vga console
+> pci 0000:38:00.0: vgaarb: bridge control possible
+> pci 0000:38:00.0: vgaarb: setting as boot VGA device
+> pci 0000:38:00.0: vgaarb: VGA device added: decodes=io+mem,owns=none,locks=none
+> pcieport 0000:00:01.1: AER: enabled with IRQ 26
+> pcieport 0000:00:01.1: PME: Signaling with IRQ 26
+> pcieport 0000:00:01.2: AER: enabled with IRQ 27
+> pcieport 0000:00:01.2: PME: Signaling with IRQ 27
+> pcieport 0000:00:01.6: AER: enabled with IRQ 28
+> pcieport 0000:00:01.6: pciehp: Slot #0 AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug+ Surprise- Interlock- NoCompl+ IbPresDis- LLActRep+
+> pcieport 0000:00:01.6: PME: Signaling with IRQ 28
+> pcieport 0000:00:08.1: PME: Signaling with IRQ 29
+> pcieport 0000:00:08.2: PME: Signaling with IRQ 30
+> shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+> vgaarb: loaded
+> 
+> Steve
+> 
+> I wish to be personally CC'ed the answers/comments posted to the list
+> in response to your posting, please.
+> 
+> 
+> 
+> 
+> 
 > 
 
-Compiled and booted on my test system. No dmesg regressions.
-
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
-
-thanks,
--- Shuah
+-- 
+~Randy
