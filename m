@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26044ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA41AECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231697AbiH2LVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58518 "EHLO
+        id S229579AbiH2LVO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231839AbiH2LT0 (ORCPT
+        with ESMTP id S231862AbiH2LT3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:19:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937BC6DAE4;
-        Mon, 29 Aug 2022 04:13:26 -0700 (PDT)
+        Mon, 29 Aug 2022 07:19:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB6D753A9;
+        Mon, 29 Aug 2022 04:13:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E8ABB80F79;
-        Mon, 29 Aug 2022 11:12:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D12BEC433C1;
-        Mon, 29 Aug 2022 11:12:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E20F611D7;
+        Mon, 29 Aug 2022 11:13:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D960C433D6;
+        Mon, 29 Aug 2022 11:13:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771548;
-        bh=SvzpnSA7V08mLhJ4Mh17TtCBf+nZSutJ+9NaMn4hbe4=;
+        s=korg; t=1661771602;
+        bh=BDjo6JZk8S0mYtcxIeWCrD8mUb1acJssRAqW0UfZoGM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ViQkvQJCgMmzVkeCiXIi6N3y1kYmzezvFzHhXrRqauWm8MnorfUhdgpTiUupbfeSd
-         LqduQnL69SuAr1fFnhsKcZYc/UqkAQHvRVNvBgvD+8bZhJlbSWwmKEg7LMeK8VQll5
-         0b8WridKUJN9djzR81BX3aK+PPoxJ2NgO4J/Z5wQ=
+        b=PgcUClD1z9Sh3wWrMFh63+lyBJ8GL6BuZp/XGiHpSuVtC9vsKMZbHcdC4SKGlHv87
+         TUmQaeLav7a7sVHn1KJ5s7olk51V1+U1+1BvCt3fWth+WHFiUinFKDtmOqNy9H2n+/
+         t3uS0qy8UVi7dJLn2FSVRzE+krxjtoANB+Mg0R6E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Howells <dhowells@redhat.com>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 115/136] smb3: missing inode locks in punch hole
-Date:   Mon, 29 Aug 2022 12:59:42 +0200
-Message-Id: <20220829105809.420859934@linuxfoundation.org>
+        stable@vger.kernel.org, Mahesh Bandewar <maheshb@google.com>,
+        Sainath Grandhi <sainath.grandhi@intel.com>,
+        =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 048/158] net: ipvtap - add __init/__exit annotations to module init/exit funcs
+Date:   Mon, 29 Aug 2022 12:58:18 +0200
+Message-Id: <20220829105810.774366636@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,60 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Howells <dhowells@redhat.com>
+From: Maciej Żenczykowski <maze@google.com>
 
-commit ba0803050d610d5072666be727bca5e03e55b242 upstream.
+[ Upstream commit 4b2e3a17e9f279325712b79fb01d1493f9e3e005 ]
 
-smb3 fallocate punch hole was not grabbing the inode or filemap_invalidate
-locks so could have race with pagemap reinstantiating the page.
+Looks to have been left out in an oversight.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: David Howells <dhowells@redhat.com>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Mahesh Bandewar <maheshb@google.com>
+Cc: Sainath Grandhi <sainath.grandhi@intel.com>
+Fixes: 235a9d89da97 ('ipvtap: IP-VLAN based tap driver')
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Link: https://lore.kernel.org/r/20220821130808.12143-1-zenczykowski@gmail.com
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/cifs/smb2ops.c |   12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/ipvlan/ipvtap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -3599,7 +3599,7 @@ static long smb3_zero_range(struct file
- static long smb3_punch_hole(struct file *file, struct cifs_tcon *tcon,
- 			    loff_t offset, loff_t len)
+diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
+index ef02f2cf5ce13..cbabca167a078 100644
+--- a/drivers/net/ipvlan/ipvtap.c
++++ b/drivers/net/ipvlan/ipvtap.c
+@@ -194,7 +194,7 @@ static struct notifier_block ipvtap_notifier_block __read_mostly = {
+ 	.notifier_call	= ipvtap_device_event,
+ };
+ 
+-static int ipvtap_init(void)
++static int __init ipvtap_init(void)
  {
--	struct inode *inode;
-+	struct inode *inode = file_inode(file);
- 	struct cifsFileInfo *cfile = file->private_data;
- 	struct file_zero_data_information fsctl_buf;
- 	long rc;
-@@ -3608,14 +3608,12 @@ static long smb3_punch_hole(struct file
+ 	int err;
  
- 	xid = get_xid();
- 
--	inode = d_inode(cfile->dentry);
--
-+	inode_lock(inode);
- 	/* Need to make file sparse, if not already, before freeing range. */
- 	/* Consider adding equivalent for compressed since it could also work */
- 	if (!smb2_set_sparse(xid, tcon, cfile, inode, set_sparse)) {
- 		rc = -EOPNOTSUPP;
--		free_xid(xid);
--		return rc;
-+		goto out;
- 	}
- 
- 	filemap_invalidate_lock(inode->i_mapping);
-@@ -3635,8 +3633,10 @@ static long smb3_punch_hole(struct file
- 			true /* is_fctl */, (char *)&fsctl_buf,
- 			sizeof(struct file_zero_data_information),
- 			CIFSMaxBufSize, NULL, NULL);
--	free_xid(xid);
- 	filemap_invalidate_unlock(inode->i_mapping);
-+out:
-+	inode_unlock(inode);
-+	free_xid(xid);
- 	return rc;
+@@ -228,7 +228,7 @@ static int ipvtap_init(void)
  }
+ module_init(ipvtap_init);
  
+-static void ipvtap_exit(void)
++static void __exit ipvtap_exit(void)
+ {
+ 	rtnl_link_unregister(&ipvtap_link_ops);
+ 	unregister_netdevice_notifier(&ipvtap_notifier_block);
+-- 
+2.35.1
+
 
 
