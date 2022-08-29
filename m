@@ -2,68 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3427ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D224ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:54:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229823AbiH2TyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 15:54:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52870 "EHLO
+        id S229971AbiH2Ty1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 15:54:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229894AbiH2TyG (ORCPT
+        with ESMTP id S229957AbiH2TyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 15:54:06 -0400
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901F38287C;
-        Mon, 29 Aug 2022 12:54:05 -0700 (PDT)
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-11c4d7d4683so11754552fac.8;
-        Mon, 29 Aug 2022 12:54:05 -0700 (PDT)
+        Mon, 29 Aug 2022 15:54:20 -0400
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390CF832D4;
+        Mon, 29 Aug 2022 12:54:15 -0700 (PDT)
+Received: by mail-ot1-f45.google.com with SMTP id 92-20020a9d0be5000000b0063946111607so6631402oth.10;
+        Mon, 29 Aug 2022 12:54:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=V7u+Bh9RpSlaYJuPHwhUdmvGa0EBqCLrlN332Ycl1Pc=;
-        b=J7sHkwyowc4ZyMpR82OHKXOsOuerrsJ5O8n8RRmfycGgCS6JyVS1p5+Wlmc1s/aJuV
-         61Wo1vfBxiOvb4vbfYyOqGNjjlHfqqiKypsAIsTvQxlXzSqPVYB6yvqautcw7eJ7z/Vp
-         YLvlSRP9FHZUuaIibu60DYtJ96cGgV+KZjeJLE4g2xm8i+ZgqfmzlU80OtV+McPohbsP
-         imJBSXOFjhxANW3se7mnIap5wlc6AGIGA709VwiR2ta1s40Y3bcnKSMbISh6om3km7Ol
-         LjPey71DSnH9shK8WMxwd9MWauTW3GKELf4M+rWMIseEyg/T/lyivknpPDb7ISeBrLEa
-         pNtQ==
-X-Gm-Message-State: ACgBeo14KSKiPWAkAakWOIW9HT71u9DintZm+8kev0XPxIokfxR0K1BW
-        5AA4QwgC+L6tvuIXe/LZM0xf386vOA==
-X-Google-Smtp-Source: AA6agR78KtmMgJ+uUQLn+hXNfUXmQ3ezT1EjeM7ZMnQtrI9HbezgSzrt6/Pv05xZgGUy/Vh7E7lVkQ==
-X-Received: by 2002:a05:6870:ec94:b0:11e:c890:64b8 with SMTP id eo20-20020a056870ec9400b0011ec89064b8mr5049422oab.14.1661802844464;
-        Mon, 29 Aug 2022 12:54:04 -0700 (PDT)
+        bh=lyPncyvzGMnHsn2NJD2Wx8+l/ZBBh2eY7zSwVmEoXhQ=;
+        b=Kor4jSQu79bAvmMzEpyFc6ixpsCUvVvvoFr+49fJmwxqtkFZ0raZ1jN08EXmQ8CSdd
+         EPiB36C/ynjJkW8FwMckLPxN+NrLx+kDgecPFbQg0XrzYwqf8DWnEjTsIFosv6kf/XHe
+         MxU+GxA2LbcccvBJBG6byrr6xqBWMTUsx5xRhUbjM4DmRyziwGOOKFgkS9BwMNlGA++a
+         pCzB7TXIpZYLsX01nq20QXPBEFA09j/AGFcayrt5KoqYonIk75lNVF3MmK05e3eEY8x/
+         azZK7vxQ/TroOBGhN2wxsUE9hlkxXBv1sHWZUhqZFmY5JKdlpYFhZrCVdCg/Qb8IK2oo
+         xTFg==
+X-Gm-Message-State: ACgBeo0m4KrH4hKkwAH8erWZp1NDbeFlX5Bb1MKOslo33wEoLs1QoYTZ
+        B+rxgD+J2OCvxhKNcc7FXgy0Br0c1Q==
+X-Google-Smtp-Source: AA6agR6G5hd8fP2T9Gav0pJhipDiWl8T+BE4tQsy1a0XIeVRqP6SrT2YylqqpXl02qFIKmi+lgC6iA==
+X-Received: by 2002:a9d:f43:0:b0:638:c3c4:73ee with SMTP id 61-20020a9d0f43000000b00638c3c473eemr6919760ott.186.1661802853800;
+        Mon, 29 Aug 2022 12:54:13 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v188-20020acadec5000000b00342eade43d4sm5226612oig.13.2022.08.29.12.54.03
+        by smtp.gmail.com with ESMTPSA id u41-20020a05687100a900b00118927e0dacsm6645582oaa.4.2022.08.29.12.54.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 12:54:04 -0700 (PDT)
-Received: (nullmailer pid 2307888 invoked by uid 1000);
-        Mon, 29 Aug 2022 19:54:03 -0000
-Date:   Mon, 29 Aug 2022 14:54:03 -0500
+        Mon, 29 Aug 2022 12:54:13 -0700 (PDT)
+Received: (nullmailer pid 2308225 invoked by uid 1000);
+        Mon, 29 Aug 2022 19:54:12 -0000
+Date:   Mon, 29 Aug 2022 14:54:12 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: serial: samsung_uart: drop ref from
+Cc:     linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        netdev@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: can: nxp,sja1000: drop ref from
  reg-io-width
-Message-ID: <20220829195403.GA2307840-robh@kernel.org>
-References: <20220823101000.386927-1-krzysztof.kozlowski@linaro.org>
+Message-ID: <20220829195412.GA2308173-robh@kernel.org>
+References: <20220823101011.386970-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220823101000.386927-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220823101011.386970-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 23 Aug 2022 13:10:00 +0300, Krzysztof Kozlowski wrote:
+On Tue, 23 Aug 2022 13:10:11 +0300, Krzysztof Kozlowski wrote:
 > reg-io-width is a standard property, so no need for defining its type
 > 
 > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > ---
->  Documentation/devicetree/bindings/serial/samsung_uart.yaml | 1 -
+>  Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml | 1 -
 >  1 file changed, 1 deletion(-)
 > 
 
