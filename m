@@ -2,104 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3028DECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF07ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232096AbiH2MZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34438 "EHLO
+        id S231321AbiH2M00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232013AbiH2MZZ (ORCPT
+        with ESMTP id S231156AbiH2M0G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:25:25 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1EB923F5;
-        Mon, 29 Aug 2022 05:09:16 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 5AC4E1884942;
-        Mon, 29 Aug 2022 11:43:18 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 4B03125032B7;
-        Mon, 29 Aug 2022 11:43:18 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 42CC79EC0001; Mon, 29 Aug 2022 11:43:18 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        Mon, 29 Aug 2022 08:26:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620811D0E3;
+        Mon, 29 Aug 2022 05:10:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C0FDB80F9F;
+        Mon, 29 Aug 2022 11:09:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B6C0C433D7;
+        Mon, 29 Aug 2022 11:09:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771392;
+        bh=ZDiK8jX6cb1oKsAdnCNZLZhtFnRPXVYAq73tA3QscPo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bW2rBlWFSQkZYJaZvwDwm83gLn0yeu+8BSSYVZoJcR616otj/L7RAXHgsIiBai++P
+         BsID7wkXjRtv6pTt02HnwxAdrZ9t3TB9miCN3YxeeqoL//1Pb+w+5eFpduqywx9ua+
+         wYWc1okWqxXvfJiqAWj6z7XyoMyBPxuKr3A7Q3So=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 026/158] nfc: pn533: Fix use-after-free bugs caused by pn532_cmd_timeout
+Date:   Mon, 29 Aug 2022 12:57:56 +0200
+Message-Id: <20220829105809.876472837@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 13:43:18 +0200
-From:   netdev@kapio-technology.com
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
- extend locked port feature
-In-Reply-To: <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-2-netdev@kapio-technology.com>
- <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
-User-Agent: Gigahost Webmail
-Message-ID: <e1e07c4ebdcc494d9a20d1a8ec398b48@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On 2022-08-27 13:30, Nikolay Aleksandrov wrote:
->> @@ -879,6 +888,10 @@ void br_fdb_update(struct net_bridge *br, struct 
->> net_bridge_port *source,
->>  						      &fdb->flags)))
->>  					clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
->>  						  &fdb->flags);
->> +				if (source->flags & BR_PORT_MAB)
->> +					set_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
->> +				else
->> +					clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
-> Please add a test for that bit and only then change it.
-> 
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-Okay, I have revised this part now. I hope that it is suitable?
+[ Upstream commit f1e941dbf80a9b8bab0bffbc4cbe41cc7f4c6fb6 ]
 
-@@ -749,6 +756,10 @@ void br_fdb_update(struct net_bridge *br, struct 
-net_bridge_port *source,
-                                                       &fdb->flags)))
-                                         
-clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
-                                                   &fdb->flags);
-+                               /* Allow roaming from an unauthorized 
-port to an
-+                                * authorized port */
-+                               if 
-(unlikely(test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags)))
-+                                       clear_bit(BR_FDB_ENTRY_LOCKED, 
-&fdb->flags);
-                         }
+When the pn532 uart device is detaching, the pn532_uart_remove()
+is called. But there are no functions in pn532_uart_remove() that
+could delete the cmd_timeout timer, which will cause use-after-free
+bugs. The process is shown below:
 
-                         if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, 
-&flags)))
+    (thread 1)                  |        (thread 2)
+                                |  pn532_uart_send_frame
+pn532_uart_remove               |    mod_timer(&pn532->cmd_timeout,...)
+  ...                           |    (wait a time)
+  kfree(pn532) //FREE           |    pn532_cmd_timeout
+                                |      pn532_uart_send_frame
+                                |        pn532->... //USE
+
+This patch adds del_timer_sync() in pn532_uart_remove() in order to
+prevent the use-after-free bugs. What's more, the pn53x_unregister_nfc()
+is well synchronized, it sets nfc_dev->shutting_down to true and there
+are no syscalls could restart the cmd_timeout timer.
+
+Fixes: c656aa4c27b1 ("nfc: pn533: add UART phy driver")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/nfc/pn533/uart.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/nfc/pn533/uart.c b/drivers/nfc/pn533/uart.c
+index 2caf997f9bc94..07596bf5f7d6d 100644
+--- a/drivers/nfc/pn533/uart.c
++++ b/drivers/nfc/pn533/uart.c
+@@ -310,6 +310,7 @@ static void pn532_uart_remove(struct serdev_device *serdev)
+ 	pn53x_unregister_nfc(pn532->priv);
+ 	serdev_device_close(serdev);
+ 	pn53x_common_clean(pn532->priv);
++	del_timer_sync(&pn532->cmd_timeout);
+ 	kfree_skb(pn532->recv_skb);
+ 	kfree(pn532);
+ }
+-- 
+2.35.1
+
+
 
