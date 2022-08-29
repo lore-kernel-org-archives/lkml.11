@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7D7ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C857ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:12:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231240AbiH2LMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:12:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
+        id S231247AbiH2LM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230252AbiH2LLz (ORCPT
+        with ESMTP id S231184AbiH2LLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:11:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD526CF66;
-        Mon, 29 Aug 2022 04:08:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042C36BD6F;
+        Mon, 29 Aug 2022 04:08:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A40361203;
-        Mon, 29 Aug 2022 11:08:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A2C0C433C1;
-        Mon, 29 Aug 2022 11:08:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0BFFB80EFE;
+        Mon, 29 Aug 2022 11:05:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43F29C433D6;
+        Mon, 29 Aug 2022 11:05:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771308;
-        bh=P3SlovIRutuA6JKfB9XCrc+B1Jw0/rqIXjtWcP45Iko=;
+        s=korg; t=1661771147;
+        bh=iNS9lmGg7cs0ns3adudyXzKIqRSAekCu57/qbPqQYDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1nQyGmDvlkraOiWBm7dE5lkCILoL6992hcxvJqvRrceJa15JKqPocxWLg+Dz4KSbK
-         C8GmgLy+oz5lHwehcVj2dV6jKYNSZ2MQs7uo65oaVzUVQ9fr4fVelKUUlBuKBkbBNS
-         NBY4T44V1AiuibRh+PRfY4LI3qzQjjg1c+t4eC0k=
+        b=aFzLzp57ToYjkc/0O8Lxwhm8IUc6sESRoFHxU4W4UI7oJJvqdDg3uV6KXXaHCWOaC
+         Jh4xu6jwVX3BqHBRkFSOQXwc2eCvNQp/8hyeE4L6iQ5kF8CZdr3UQfbJlFW9pVVkDz
+         VtA1zPfkSPhBv94R5cvC5MWPnK2yDacCzq1HmhQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhishek Shah <abhishek.shah@columbia.edu>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 015/158] af_key: Do not call xfrm_probe_algs in parallel
-Date:   Mon, 29 Aug 2022 12:57:45 +0200
-Message-Id: <20220829105809.458966859@linuxfoundation.org>
+Subject: [PATCH 5.10 31/86] bnxt_en: fix NQ resource accounting during vf creation on 57500 chips
+Date:   Mon, 29 Aug 2022 12:58:57 +0200
+Message-Id: <20220829105757.828198418@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herbert Xu <herbert@gondor.apana.org.au>
+From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-[ Upstream commit ba953a9d89a00c078b85f4b190bc1dde66fe16b5 ]
+[ Upstream commit 09a89cc59ad67794a11e1d3dd13c5b3172adcc51 ]
 
-When namespace support was added to xfrm/afkey, it caused the
-previously single-threaded call to xfrm_probe_algs to become
-multi-threaded.  This is buggy and needs to be fixed with a mutex.
+There are 2 issues:
 
-Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
-Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+1. We should decrement hw_resc->max_nqs instead of hw_resc->max_irqs
+   with the number of NQs assigned to the VFs.  The IRQs are fixed
+   on each function and cannot be re-assigned.  Only the NQs are being
+   assigned to the VFs.
+
+2. vf_msix is the total number of NQs to be assigned to the VFs.  So
+   we should decrement vf_msix from hw_resc->max_nqs.
+
+Fixes: b16b68918674 ("bnxt_en: Add SR-IOV support for 57500 chips.")
+Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index fb16d7c4e1b8d..20e73643b9c89 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -1697,9 +1697,12 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
- 		pfk->registered |= (1<<hdr->sadb_msg_satype);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index 23b80aa171dd0..819f9df9425c6 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -599,7 +599,7 @@ static int bnxt_hwrm_func_vf_resc_cfg(struct bnxt *bp, int num_vfs, bool reset)
+ 		hw_resc->max_stat_ctxs -= le16_to_cpu(req.min_stat_ctx) * n;
+ 		hw_resc->max_vnics -= le16_to_cpu(req.min_vnics) * n;
+ 		if (bp->flags & BNXT_FLAG_CHIP_P5)
+-			hw_resc->max_irqs -= vf_msix * n;
++			hw_resc->max_nqs -= vf_msix;
+ 
+ 		rc = pf->active_vfs;
  	}
- 
-+	mutex_lock(&pfkey_mutex);
- 	xfrm_probe_algs();
- 
- 	supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
-+	mutex_unlock(&pfkey_mutex);
-+
- 	if (!supp_skb) {
- 		if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
- 			pfk->registered &= ~(1<<hdr->sadb_msg_satype);
 -- 
 2.35.1
 
