@@ -2,104 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C301ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:58:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B28ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231192AbiH2Q6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54688 "EHLO
+        id S231199AbiH2Q7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:59:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231150AbiH2Q5y (ORCPT
+        with ESMTP id S231195AbiH2Q7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:57:54 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08F39A9A8
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:57:53 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id d1so6785091qvs.0
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:57:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=2yr+D2Z29fm9kNcmJTj1HTUfj6bYsT7aNdzDoDu4Xao=;
-        b=aSJhhvppoLOB6ONuv9L4JT71wLnlDbFq4KocMuPpcLUo4xQKpg13BQKZXekAECmTCE
-         rS4MdiDt+MzI2Rnt7WhpFZ2IJFw/FEurV0dhPBUR9UTHGXwYoFvliQg0eypzjaeLK53g
-         D4s6kzlK8rduE56YR2+jhOPKJlVrGX/WKfb3mj9qCqn1zDm9nsEESfmb319Q+fUdRBsO
-         PcAV2NUxBnigcKfJV3vCw5YLFgLuwujZHl47BONWFlDmYrAd1JqwnmSOY1ZovfWJ/jvc
-         qQedichT1M940tLrhnVKf9bm+4TIeR9NqQ6xl5g+E18eoxUJThGdqarbvdwl6P+q5+0q
-         3LGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=2yr+D2Z29fm9kNcmJTj1HTUfj6bYsT7aNdzDoDu4Xao=;
-        b=V7IG3TTsTe3hrmUoBs62fAnv/ja7gNOL+kvfroHbbSipAd9/UuHcyTnCKSTtrA0eQt
-         KncYMtc0bJUR5968RNzn01+y8yt4m+O86EdK3ZDTx2HUouQQrmq1dTJZYyl/dJjNT1yn
-         qkHJ6kqP9k2NYXmSw4u8fXzXSiyhbBY0Y++YMGHkYo3QYN4+qLPGAMmw2r6J7Qu6zbBa
-         Zy3r8IaPDGEUUCaqNad5lZ3a9Qn5AMkzD+UzbFu39sC+LjOT5HC8FAkYZTX9l/UeY5OU
-         LGg3tN5ZlczhQKXxuUFQOxg/t7n7dvNsrrEuDiPkStVL5CWpdpcebfNtGS4jYiLKDWO8
-         bV6w==
-X-Gm-Message-State: ACgBeo0sqdcv3WURYdAYN/L8I8tyEoV3x3isUXcfQB/HbzRyDucdmjb+
-        P801GhcJx7w5psmoNULSUa3THOXayao=
-X-Google-Smtp-Source: AA6agR70/L2QQF1ATcyW9dJWSu3GjTEPOXrFklOHn8IearbWOsTPA6LLLD5k3ft+hnipvZIO3McLVw==
-X-Received: by 2002:a05:6214:2409:b0:499:606:153f with SMTP id fv9-20020a056214240900b004990606153fmr3076912qvb.20.1661792272804;
-        Mon, 29 Aug 2022 09:57:52 -0700 (PDT)
-Received: from localhost ([2601:4c1:c100:2270:5d44:81a:c7bc:27d1])
-        by smtp.gmail.com with ESMTPSA id he7-20020a05622a600700b00344f7cf05b4sm5488592qtb.14.2022.08.29.09.57.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 09:57:52 -0700 (PDT)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        Alexey Klimov <klimov.linux@gmail.com>,
-        Eric Biggers <ebiggers@google.com>
-Subject: [PATCH 2/4] lib/cpumask: delete misleading comment
-Date:   Mon, 29 Aug 2022 09:57:46 -0700
-Message-Id: <20220829165748.1008477-3-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220829165748.1008477-1-yury.norov@gmail.com>
-References: <20220829165748.1008477-1-yury.norov@gmail.com>
+        Mon, 29 Aug 2022 12:59:08 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07D269C210;
+        Mon, 29 Aug 2022 09:59:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661792343; x=1693328343;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CYz8gmC188I7X0Y1EWCMJGKwgvo0NnQBvcuTDxv+92E=;
+  b=ObswXpX5teA5cHkCctMsXc3m9L2H5nk85ewFMWfqiVq04Xl0NS1QZxEP
+   R6nDa1uP+tb66FAr39xYZ4bEGNok9Bx6E8ThFgFXdAC2iJfjQMESVyU3f
+   7yeGvoOlhen88XAz7rXkBKbvgIQAQ9Wq8ZM7uYjRSdB0tWVy8sWFtkMRH
+   KLp24DtC3ITpv8/g4uz+s9AYaNGAbW1Sk5vbPzAXGvvklpY/uZ1f3YNJA
+   CYs3NnNo58F+o8o+Rp2gPOM/2stlqIxkesEmeaUbosQzCbrm/kaJcfMK0
+   mhbqjVDsCNXTO73jvowNiALIzI71SUT36oBffR9LlJGcmDvQPIfq3s07s
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="293682382"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="293682382"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 09:39:11 -0700
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="714935922"
+Received: from aschofie-mobl2.amr.corp.intel.com (HELO aschofie-mobl2) ([10.251.3.205])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 09:39:10 -0700
+Date:   Mon, 29 Aug 2022 09:39:08 -0700
+From:   Alison Schofield <alison.schofield@intel.com>
+To:     David Gow <davidgow@google.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-cxl@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: Re: [PATCH] tracepoint: Allow trace events in modules with TAINT_TEST
+Message-ID: <YwzrrMqUbCu+ZBkr@aschofie-mobl2>
+References: <20220826223511.170256-1-alison.schofield@intel.com>
+ <Ywle+96kZr5Y6Kn/@aschofie-mobl2>
+ <CABVgOSkdXPw3yx=J+=YLxgu=0kpBGD5MvPJr0=_VO4jgrSBpPw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABVgOSkdXPw3yx=J+=YLxgu=0kpBGD5MvPJr0=_VO4jgrSBpPw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The comment says that HOTPLUG config option enables all cpus in
-cpu_possible_mask up to NR_CPUs. This is wrong. Even if HOTPLUG is
-enabled, the mask is populated on boot with respect to ACPI/DT records.
+On Sat, Aug 27, 2022 at 09:09:54AM +0800, David Gow wrote:
+> On Sat, Aug 27, 2022 at 8:02 AM Alison Schofield
+> <alison.schofield@intel.com> wrote:
+> >
+> > + David Gow - Submitter of the new taint type
+> >
+> > On Fri, Aug 26, 2022 at 03:35:11PM -0700, alison.schofield@intel.com wrote:
+> > > From: Alison Schofield <alison.schofield@intel.com>
+> > >
+> > > Commit 2852ca7fba9f ("panic: Taint kernel if tests are run")
+> > > introduced a new taint type, TAINT_TEST, to signal that an
+> > > in-kernel test has been run.
+> > >
+> > > TAINT_TEST taint type defaults into a 'bad_taint' list for
+> > > kernel tracing and blocks the creation of trace events. This
+> > > causes a problem for CXL testing where loading the cxl_test
+> > > module makes all CXL modules out-of-tree, blocking any trace
+> > > events.
+> > >
+> > > Trace events are in development for CXL at the moment and this
+> > > issue was found in test with v6.0-rc1.
+> > >
+> > > Reported-by: Ira Weiny <ira.weiny@intel.com>
+> > > Suggested-by: Dan Williams <dan.j.williams@intel.com>
+> > > Signed-off-by: Alison Schofield <alison.schofield@intel.com>
+> > > ---
+> 
+> This seems fine to me: thanks for catching it. Test modules should be
+> safe enough to load for this.
+> 
+> Does the comment in tracepoint_module_coming() need updating as well?
+> https://elixir.bootlin.com/linux/v6.0-rc2/source/kernel/tracepoint.c#L650
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- include/linux/cpumask.h | 4 ----
- 1 file changed, 4 deletions(-)
+Yes, ready in a v2:
+-	 * Staging, out-of-tree, and unsigned GPL modules are fine.
++	 * Staging, out-of-tree, unsigned GPL, and test modules are fine.
 
-diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-index bd047864c7ac..f70bf9ffa9d3 100644
---- a/include/linux/cpumask.h
-+++ b/include/linux/cpumask.h
-@@ -67,10 +67,6 @@ extern unsigned int nr_cpu_ids;
-  *  cpu_online_mask is the dynamic subset of cpu_present_mask,
-  *  indicating those CPUs available for scheduling.
-  *
-- *  If HOTPLUG is enabled, then cpu_possible_mask is forced to have
-- *  all NR_CPUS bits set, otherwise it is just the set of CPUs that
-- *  ACPI reports present at boot.
-- *
-  *  If HOTPLUG is enabled, then cpu_present_mask varies dynamically,
-  *  depending on what ACPI reports as currently plugged in, otherwise
-  *  cpu_present_mask is just a copy of cpu_possible_mask.
--- 
-2.34.1
+Thanks!
+Alison
 
+> 
+> Regardless, this is
+> Reviewed-by: David Gow <davidgow@google.com>
+> 
+> Cheers,
+> -- David
+> 
+> > >  kernel/tracepoint.c | 3 ++-
+> > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/kernel/tracepoint.c b/kernel/tracepoint.c
+> > > index 64ea283f2f86..5f17378c9dc2 100644
+> > > --- a/kernel/tracepoint.c
+> > > +++ b/kernel/tracepoint.c
+> > > @@ -571,7 +571,8 @@ static void for_each_tracepoint_range(
+> > >  bool trace_module_has_bad_taint(struct module *mod)
+> > >  {
+> > >       return mod->taints & ~((1 << TAINT_OOT_MODULE) | (1 << TAINT_CRAP) |
+> > > -                            (1 << TAINT_UNSIGNED_MODULE));
+> > > +                            (1 << TAINT_UNSIGNED_MODULE) |
+> > > +                            (1 << TAINT_TEST));
+> > >  }
+> > >
+> > >  static BLOCKING_NOTIFIER_HEAD(tracepoint_notify_list);
+> > >
+> > > base-commit: 4c612826bec1441214816827979b62f84a097e91
+> > > --
+> > > 2.31.1
+> > >
