@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 210CAECAAD8
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 23:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24522ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 23:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbiH2XrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 19:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35090 "EHLO
+        id S229750AbiH2XrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 19:47:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229842AbiH2Xqn (ORCPT
+        with ESMTP id S229851AbiH2Xqq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 19:46:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC89FA407A;
-        Mon, 29 Aug 2022 16:46:35 -0700 (PDT)
+        Mon, 29 Aug 2022 19:46:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663759FA81;
+        Mon, 29 Aug 2022 16:46:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD388B815A1;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCEA1B815BE;
+        Mon, 29 Aug 2022 23:46:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA19C4314E;
         Mon, 29 Aug 2022 23:46:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8793CC43140;
-        Mon, 29 Aug 2022 23:46:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661816792;
-        bh=lnMDKIqHQoq/XIAA3IDppKfWWWZfqPHGgPCGaos8E5g=;
+        s=k20201202; t=1661816794;
+        bh=03KnsmBF+BfrLK1T6rQ4rdE1hYYkMJYIiXB2LfVO9xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pPIYgj0xJXzehYH7WAUdd0XUQiBr8ziKGVZLsEZZKUtsikBi+R2sKTMuwc1lKSr7Z
-         kHG5clKHCkGeCGQfP32Aa7L56r33imi+NEgSJVcJcp5YSWb8wn+4mPRAjG6kfWneO8
-         FnZ8GGByhxjlEq+g9JxNegz2/UVZSS2IoLZl/NSpbNfbFxzJLgOmV2ScwG5eS43hFX
-         zPYl72g38cSZqkM4rXkRE0TuMWouaTXaxmBhJUDjwxcO624mSQjyVyYtdvsBGAkDE3
-         7Mi2ERYS1FgplgOBezn+wnaX5gOY28BTfCpiqXPq9/4FzONf20Kx+yFTWYdeM2u66H
-         PKD6AbEGHKLrg==
+        b=AwSR+ZOfRGeaBMLWExfPLNcrDthGvVLb2HKQK730WsugB/XyfEAgIm1PkujwdJDWx
+         iYyfWG1c55edJDnfpLLiR+gzvJW2oPKh7T1Zv0ciDUFWKl9a0QK0AbPrs/G1JR5s1e
+         0zV5HTvZf0XJVEGDU0F7BkzBCTWf8vA9x8PqQFbvMGrb3wdwSWp9PWZeoNNeV8SVfj
+         LNcpoR2OVQbM7FWdKhqP3rQApJw30SxTfzw8Fnv0yLBB2Y3YR8Zh/5/rsmZyMOPFXO
+         eT/WebozWuVgqse1mWaBDoWsxUN/gL2T9WKoDO7m5AAKne9kaSPX5jxaoKDNAJ26UI
+         hRZkSPpG0dPIg==
 From:   Bjorn Andersson <andersson@kernel.org>
-To:     robert.foss@linaro.org, linux-i2c@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, robh+dt@kernel.org,
+To:     ulf.hansson@linaro.org, linux-mmc@vger.kernel.org,
+        robh+dt@kernel.org, linux-arm-msm@vger.kernel.org,
         Bjorn Andersson <andersson@kernel.org>,
-        loic.poulain@linaro.org, linux-kernel@vger.kernel.org,
-        konrad.dybcio@somainline.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, konrad.dybcio@somainline.org,
+        bhupesh.sharma@linaro.org, devicetree@vger.kernel.org,
         krzysztof.kozlowski+dt@linaro.org, agross@kernel.org,
-        krzysztof.kozlowski@linaro.org
-Cc:     corbet@lwn.net
-Subject: Re: (subset) [PATCH 0/5] i2c/arm: dt-bindings: qcom: qcom,i2c-cci: convert to dtschema
-Date:   Mon, 29 Aug 2022 18:45:54 -0500
-Message-Id: <166181675981.322065.10838450052309212584.b4-ty@kernel.org>
+        krzysztof.kozlowski@linaro.org, adrian.hunter@intel.com
+Cc:     dianders@chromium.org
+Subject: Re: (subset) [PATCH v3 0/3] dt-bindings: mmc: / ARM: qcom: add MSM8998 and cleanup driver of_device_id
+Date:   Mon, 29 Aug 2022 18:45:56 -0500
+Message-Id: <166181675959.322065.11391852631848577834.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220802153947.44457-1-krzysztof.kozlowski@linaro.org>
-References: <20220802153947.44457-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220714091042.22287-1-krzysztof.kozlowski@linaro.org>
+References: <20220714091042.22287-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -54,27 +54,22 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2 Aug 2022 17:39:42 +0200, Krzysztof Kozlowski wrote:
-> The DTS patches are independent. Bindings can go via I2C tree, DTS via Qualcomm.
+On Thu, 14 Jul 2022 11:10:39 +0200, Krzysztof Kozlowski wrote:
+> Rationale/background:
+> https://lore.kernel.org/linux-devicetree/CAD=FV=WGxQF4vPuRi7kWKoqTpe0RFsgH+J82C=sQbmncK_AFpw@mail.gmail.com/
 > 
-> This is the most northern-patch I created so far: 71°10'21"N 25°47'04"E. Does
-> anyone needs a key-signing around? :)
-> 
-> The place is quite unusual for developing code although its location is
-> significant only in personal aspect. The geography does not impute any
-> particular importance of the patches. This is just one more small step towards
-> better DTS and broader DT schema validation.
+> Changes since v2
+> ================
+> 1. Add Rb tags.
+> 2. Add a comment to SDHCI driver to hopefully prevent re-adding of compatibles
+> (suggested by Doug).
 > 
 > [...]
 
 Applied, thanks!
 
-[1/5] arm64: dts: qcom: sdm845-db845c: drop power-domains from CCI I2C sensors
-      commit: 62e60e35309d977eac7f9775574ac01b5c7371fc
-[2/5] arm64: dts: qcom: sdm845-db845c: drop gpios from CCI I2C sensors
-      commit: a64f7d415281db0b727911de0035809f756b10d7
-[3/5] arm64: dts: qcom: use GPIO flags for tlmm
-      commit: 36c9d012f193747d42af80b634217addd974c522
+[2/3] arm64: dts: qcom: msm8998: add MSM8998 SDCC specific compatible
+      commit: 18f581bfe29de7c3ad33b3f2b2bd515623417494
 
 Best regards,
 -- 
