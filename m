@@ -2,91 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 507E6ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:19:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D6CECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:19:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbiH2MTH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:19:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
+        id S231171AbiH2MTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:19:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229726AbiH2MSV (ORCPT
+        with ESMTP id S231372AbiH2MST (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:18:21 -0400
+        Mon, 29 Aug 2022 08:18:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D308FA2630;
-        Mon, 29 Aug 2022 05:01:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC32A2613
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:01:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93E93611D4;
-        Mon, 29 Aug 2022 11:09:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A01E3C433C1;
-        Mon, 29 Aug 2022 11:09:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771398;
-        bh=CcvhuDNw5qbcHmwy2zshWRqK1xATh0A24rhR35OQhk4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KH5AvRmm/iUSOvg8F+o0BWhcqUhNpP98VhvX2yPQgP/L5bnK4naXoeTC3Oe15VIww
-         8cK2kYAr3vv0BEQ5RN/+qPgCkRUDVCGPtZe3q/WrLJjkg5XZbBhMiyl8KxjLn+9ff2
-         vxcX9G1C6SUP81KqUhRdFBO6W31IOsZj7QCfR0Lw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TOTE Robot <oslab@tsinghua.edu.cn>,
-        Boris Burkov <boris@bur.io>, Zixuan Fu <r33s3n6@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 099/136] btrfs: fix possible memory leak in btrfs_get_dev_args_from_path()
-Date:   Mon, 29 Aug 2022 12:59:26 +0200
-Message-Id: <20220829105808.735329576@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
-User-Agent: quilt/0.67
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 249FE61244
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 11:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89584C433D7
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 11:18:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661771910;
+        bh=fpt/38wI087gZxxVJZedw7NMuIynb21K6uf3UFvOwDU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=B75XTaN6by5tSHcf6mM05wwWWL0lynG9ahNfP0WiVG7ola7CFolG7czog3rkf4uDP
+         NTZuPEV+fN32JwwqCXfRewnZDxZA/vv8AQaT8kU/RiepPwhY565ZyJRmgy3TEOqoDQ
+         cUqTLIMIDGO8GeA9YQjWz81vNjBHKpO+Pc0eOfgxs18k1OFxzM1Ee5XB+syFmO2pi4
+         5o02WakWRtCkhwsPOVcJuWPDFKIunvmrW1f8iq+yWQ+p7pQHvq6PNQ/Rlsu6n1/+zU
+         TEJJ3Wft87KyEtXo/k+CkIxrWNgJmbJhNfeXZTHdx5223L/dRSkxmac8gcclYGjXfZ
+         TdY5p6+7gpH5w==
+Received: by mail-ua1-f54.google.com with SMTP id u1so2739793uan.3
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 04:18:30 -0700 (PDT)
+X-Gm-Message-State: ACgBeo1m/7WstRK4R+jY7imkP+wGp1tCnR/TBoksWhq3MesqIkpKZ9Gl
+        45sF81O2Z0VdCrO7dn8VCMI8GmOXt45e3qHeSJ8=
+X-Google-Smtp-Source: AA6agR6TM1ay2sWGgvmwk7suH1NCwAt/b4hH3wheL74RS1FBbrKdQcCnucOqZcbzmcs5EkRGlXfBcktbPyhBABk41tg=
+X-Received: by 2002:ab0:d82:0:b0:39e:db4c:c80c with SMTP id
+ i2-20020ab00d82000000b0039edb4cc80cmr3107265uak.22.1661771909479; Mon, 29 Aug
+ 2022 04:18:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220827175436.156464-1-xry111@xry111.site> <CAAhV-H4+=CqeRUUt+XPZ2Nf=1GRgHtTFyMuVu-y6QdgQgD4mog@mail.gmail.com>
+ <b681993ca92d5243a73e23303ff9386ad03cf05a.camel@xry111.site>
+ <CAAhV-H5tB9nvD8Uufn5SQ1s0hzob4TuxRTaSri-cxHVqtRH6uw@mail.gmail.com> <927f85844e31f0563523622134b5d01af6991e60.camel@xry111.site>
+In-Reply-To: <927f85844e31f0563523622134b5d01af6991e60.camel@xry111.site>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Mon, 29 Aug 2022 19:18:18 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H5-NhSvHwc4_bEafkrxfi5Aq4ePiHK7PdFkGupSDRDVVA@mail.gmail.com>
+Message-ID: <CAAhV-H5-NhSvHwc4_bEafkrxfi5Aq4ePiHK7PdFkGupSDRDVVA@mail.gmail.com>
+Subject: Re: [PATCH 0/8] LoongArch: Support toolchain with new relocation types
+To:     Xi Ruoyao <xry111@xry111.site>
+Cc:     Arnd Bergmann <arnd@arndb.de>, loongarch@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zixuan Fu <r33s3n6@gmail.com>
+Hi, Ruoyao,
 
-commit 9ea0106a7a3d8116860712e3f17cd52ce99f6707 upstream.
+On Mon, Aug 29, 2022 at 1:04 PM Xi Ruoyao <xry111@xry111.site> wrote:
+>
+> On Mon, 2022-08-29 at 12:33 +0800, Huacai Chen wrote:
+> > > If we'll drop support for old GCC/Binutils, we can drop patch 5 (it's
+> > > only needed for the combination of old GCC and new Binutils).  Then
+> > > squash 4 and 7.  8 should still be standalone IMO.
+>
+> > Whether we can drop old toolchains depends on Arnd. :)
+>
+> I'd like to prepare V6 after we can make a final decision.
+I think we can assume that we should support old toolchains until Arnd
+responds, but again, we can only consider new/new and old/old.
+>
+> > But even if we should support old toolchains, I think we only need to
+> > consider new binutils + new gcc and old binutils + old gcc, I don't
+> > think new binutils + old gcc and old binutils + new gcc can exist in
+> > the real world.
+>
+> Generally, how do we report an unsupported configuration in kernel
+> building system?  With a $(error, "message") in the Makefile, or in some
+> header with a #error?  I don't want to leave an unsupported
+> configuration silently generating modules which can't be loaded by the
+> kernel.
 
-In btrfs_get_dev_args_from_path(), btrfs_get_bdev_and_sb() can fail if
-the path is invalid. In this case, btrfs_get_dev_args_from_path()
-returns directly without freeing args->uuid and args->fsid allocated
-before, which causes memory leak.
+$(error, "message") in the Makefile is fine to me,  you can "grep
+error arch -rwI | grep Makefile".
 
-To fix these possible leaks, when btrfs_get_bdev_and_sb() fails,
-btrfs_put_dev_args_from_path() is called to clean up the memory.
-
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Fixes: faa775c41d655 ("btrfs: add a btrfs_get_dev_args_from_path helper")
-CC: stable@vger.kernel.org # 5.16
-Reviewed-by: Boris Burkov <boris@bur.io>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- fs/btrfs/volumes.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
---- a/fs/btrfs/volumes.c
-+++ b/fs/btrfs/volumes.c
-@@ -2392,8 +2392,11 @@ int btrfs_get_dev_args_from_path(struct
- 
- 	ret = btrfs_get_bdev_and_sb(path, FMODE_READ, fs_info->bdev_holder, 0,
- 				    &bdev, &disk_super);
--	if (ret)
-+	if (ret) {
-+		btrfs_put_dev_args_from_path(args);
- 		return ret;
-+	}
-+
- 	args->devid = btrfs_stack_device_id(&disk_super->dev_item);
- 	memcpy(args->uuid, disk_super->dev_item.uuid, BTRFS_UUID_SIZE);
- 	if (btrfs_fs_incompat(fs_info, METADATA_UUID))
-
-
+Huacai
+>
+> --
+> Xi Ruoyao <xry111@xry111.site>
+> School of Aerospace Science and Technology, Xidian University
+>
