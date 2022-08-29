@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF6FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B7EC0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232924AbiH2Lhz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:37:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51726 "EHLO
+        id S232817AbiH2Lh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:37:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230334AbiH2LhA (ORCPT
+        with ESMTP id S232428AbiH2LhB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:37:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EF630F5B;
-        Mon, 29 Aug 2022 04:21:12 -0700 (PDT)
+        Mon, 29 Aug 2022 07:37:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F766DF9E;
+        Mon, 29 Aug 2022 04:21:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E45BB80F6F;
-        Mon, 29 Aug 2022 11:09:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57A5CC433C1;
-        Mon, 29 Aug 2022 11:09:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2137DB80EF5;
+        Mon, 29 Aug 2022 11:09:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7267DC433D6;
+        Mon, 29 Aug 2022 11:09:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771364;
-        bh=IKqqejYC51+KE+xS6pnujKBsGdECRe7c/5XlbeSemxM=;
+        s=korg; t=1661771385;
+        bh=aw/3zNij5f5EZVoU20NAljEgXvZHzpu7ZFU2j+Zl8Uo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qwN8KiReUSqHIP0lkSupltSS6gBUOD0p48UCZ1WdY2RMMzSN+GLI3MNflPpv71xIE
-         TFG6Z4zSl5ENcCwDOsCRBds4yOQDeOJsU2ySsu0fRNZip/NzuCBJkB1b5iRkWy3DdS
-         htbyJBSMf1quouXvXeqhnjK6JNzonf4Ux3uS4jx0=
+        b=P3EHVlYkRWME5GIDBECg3mfTmOZEO6+JCrw0pPzlsSJifvlxdTSri1pkRTkIxHVQR
+         U7dqWHpePdM8DzLoNJ5Z1pPPI66MVNJvmEFF/J7j8ZMYNFUB5MUVUdjYBrF1yIkkDX
+         wLmbis0gGYADSVfdSZ52K9/M1CPpzPNsoIHbpstg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
-        Francois Romieu <romieu@fr.zoreil.com>,
-        Thomas DL9SAU Osterried <thomas@osterried.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 023/158] rose: check NULL rose_loopback_neigh->loopback
-Date:   Mon, 29 Aug 2022 12:57:53 +0200
-Message-Id: <20220829105809.777675280@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 098/136] btrfs: check if root is readonly while setting security xattr
+Date:   Mon, 29 Aug 2022 12:59:25 +0200
+Message-Id: <20220829105808.695855923@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,69 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bernard Pidoux <f6bvp@free.fr>
+From: Goldwyn Rodrigues <rgoldwyn@suse.de>
 
-[ Upstream commit 3c53cd65dece47dd1f9d3a809f32e59d1d87b2b8 ]
+commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
 
-Commit 3b3fd068c56e3fbea30090859216a368398e39bf added NULL check for
-`rose_loopback_neigh->dev` in rose_loopback_timer() but omitted to
-check rose_loopback_neigh->loopback.
+For a filesystem which has btrfs read-only property set to true, all
+write operations including xattr should be denied. However, security
+xattr can still be changed even if btrfs ro property is true.
 
-It thus prevents *all* rose connect.
+This happens because xattr_permission() does not have any restrictions
+on security.*, system.*  and in some cases trusted.* from VFS and
+the decision is left to the underlying filesystem. See comments in
+xattr_permission() for more details.
 
-The reason is that a special rose_neigh loopback has a NULL device.
+This patch checks if the root is read-only before performing the set
+xattr operation.
 
-/proc/net/rose_neigh illustrates it via rose_neigh_show() function :
-[...]
-seq_printf(seq, "%05d %-9s %-4s   %3d %3d  %3s     %3s %3lu %3lu",
-	   rose_neigh->number,
-	   (rose_neigh->loopback) ? "RSLOOP-0" : ax2asc(buf, &rose_neigh->callsign),
-	   rose_neigh->dev ? rose_neigh->dev->name : "???",
-	   rose_neigh->count,
+Testcase:
 
-/proc/net/rose_neigh displays special rose_loopback_neigh->loopback as
-callsign RSLOOP-0:
+  DEV=/dev/vdb
+  MNT=/mnt
 
-addr  callsign  dev  count use mode restart  t0  tf digipeaters
-00001 RSLOOP-0  ???      1   2  DCE     yes   0   0
+  mkfs.btrfs -f $DEV
+  mount $DEV $MNT
+  echo "file one" > $MNT/f1
 
-By checking rose_loopback_neigh->loopback, rose_rx_call_request() is called
-even in case rose_loopback_neigh->dev is NULL. This repairs rose connections.
+  setfattr -n "security.one" -v 2 $MNT/f1
+  btrfs property set /mnt ro true
 
-Verification with rose client application FPAC:
+  setfattr -n "security.one" -v 1 $MNT/f1
 
-FPAC-Node v 4.1.3 (built Aug  5 2022) for LINUX (help = h)
-F6BVP-4 (Commands = ?) : u
-Users - AX.25 Level 2 sessions :
-Port   Callsign     Callsign  AX.25 state  ROSE state  NetRom status
-axudp  F6BVP-5   -> F6BVP-9   Connected    Connected   ---------
+  umount $MNT
 
-Fixes: 3b3fd068c56e ("rose: Fix Null pointer dereference in rose_send_frame()")
-Signed-off-by: Bernard Pidoux <f6bvp@free.fr>
-Suggested-by: Francois Romieu <romieu@fr.zoreil.com>
-Cc: Thomas DL9SAU Osterried <thomas@osterried.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org # 4.9+
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/rose/rose_loopback.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/btrfs/xattr.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/rose/rose_loopback.c b/net/rose/rose_loopback.c
-index 11c45c8c6c164..036d92c0ad794 100644
---- a/net/rose/rose_loopback.c
-+++ b/net/rose/rose_loopback.c
-@@ -96,7 +96,8 @@ static void rose_loopback_timer(struct timer_list *unused)
- 		}
- 
- 		if (frametype == ROSE_CALL_REQUEST) {
--			if (!rose_loopback_neigh->dev) {
-+			if (!rose_loopback_neigh->dev &&
-+			    !rose_loopback_neigh->loopback) {
- 				kfree_skb(skb);
- 				continue;
- 			}
--- 
-2.35.1
-
+--- a/fs/btrfs/xattr.c
++++ b/fs/btrfs/xattr.c
+@@ -391,6 +391,9 @@ static int btrfs_xattr_handler_set(const
+ 				   const char *name, const void *buffer,
+ 				   size_t size, int flags)
+ {
++	if (btrfs_root_readonly(BTRFS_I(inode)->root))
++		return -EROFS;
++
+ 	name = xattr_full_name(handler, name);
+ 	return btrfs_setxattr_trans(inode, name, buffer, size, flags);
+ }
 
 
