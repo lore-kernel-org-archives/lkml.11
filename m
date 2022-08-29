@@ -2,86 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D984ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C558AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbiH2Pzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:55:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35648 "EHLO
+        id S230072AbiH2P6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230001AbiH2Pzm (ORCPT
+        with ESMTP id S229507AbiH2P6B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:55:42 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D9183F3D;
-        Mon, 29 Aug 2022 08:55:41 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id 69so6419687pgb.13;
-        Mon, 29 Aug 2022 08:55:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=o1D98z3mFMBJRrzCcsbL8Mo1gt/r97vRuaih/7SLPHY=;
-        b=E3c4ZJF7NWlVsR6u1C2p/hNsu24KBR9b6V36GUpANlsMhvf3iJp+u8uUf8OlxCvK03
-         uIbBF1+rKhgsN10RgdaymZ0FGfOzXybGVkpqOv0O6eAmJHTCcjLHPU0Q9eKUsbzvfESk
-         Og8DFQHag5Y7m3jzKFmjIzRS1g2ehaA/jvThsS9I/73t2J4NbrB7wYCKlwmeA1VP/bza
-         cedd8IhOLiDr2MDK2UGedP8Edo0M3FJwMHeJxMf1pPUpz8UIig6PFgK2r0PPZd1QqHV6
-         YP00HSgIR8fzvucKEjCLLjGmS488Owf3auneBdkiPmqc6ZKyxpzmechEGM1aKzxMJPuv
-         UMpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=o1D98z3mFMBJRrzCcsbL8Mo1gt/r97vRuaih/7SLPHY=;
-        b=4tS1Yl9vsOx9J89t0LCE+FpePzaz1Ucxv87ni2ifqAqVCT+xl+Bag6/7PJdqVIIlhD
-         CwV34YBDMNfyKzOvq0SsDn7cmHpPfnlELGIu2GowXWRW5nEbwgrpLyFGUHjL7WyBjMiL
-         2VA63i6b1Pc5f31QBKDVSX+GeXiPN0zbSP8WOjTH84SWvJh+oP61Rd92iwFkFCxg4CIy
-         seXuzuQ8ji1xk3o0QFkYFGxwij6TJXzYOgdvaZY+hGMw1RtA3PxOqA5iSLUCY/ZBqVXS
-         WeQqwjNBC/9rxj9uKjwjG10jCeRKj5PBoGFJqzh2XBjdPUykkrSjZVOQZWpOsXE53fQY
-         UyGA==
-X-Gm-Message-State: ACgBeo0VzhJfQl0ozgBnBsBYxehK8VDjQfJc6RWlQYCeGW8ggn7NT8kG
-        qgoqcd1i79QbB47eJqK4ZGvwuSeO4MkMND7w
-X-Google-Smtp-Source: AA6agR5y99+69yOmkB97EALjo2VwgTeiFh45+mKxUglNef7UD8cXMgcjRZOlREr2Jsud6xcSevjFiQ==
-X-Received: by 2002:a05:6a00:2484:b0:538:cfb:4b2 with SMTP id c4-20020a056a00248400b005380cfb04b2mr9418427pfv.65.1661788541225;
-        Mon, 29 Aug 2022 08:55:41 -0700 (PDT)
-Received: from localhost.localdomain ([182.160.5.243])
-        by smtp.gmail.com with ESMTPSA id t13-20020a17090340cd00b00174923afa8asm4079416pld.3.2022.08.29.08.55.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 08:55:40 -0700 (PDT)
-From:   Tuo Cao <91tuocao@gmail.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        corbet@lwn.net
-Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        91tuocao@gmail.com
-Subject: [PATCH] docs: x86: move do_IRQ to common_interrupt in entry_64.rst
-Date:   Mon, 29 Aug 2022 23:53:50 +0800
-Message-Id: <20220829155350.7014-1-91tuocao@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 29 Aug 2022 11:58:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5683597B21
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:58:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97442B81115
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:57:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10EFAC433D6;
+        Mon, 29 Aug 2022 15:57:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661788677;
+        bh=+II9I2VUO84fey3cODw3Ntjm3FbAKD1mEnge+7FYRdo=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=i0WV2Nx8FJHxIRF0kPF9suCEsov7v9BmjxoqMxP/RrFl/HLHFi1ApRBPm2Lntr8Nr
+         mSdBBYnc80tyPtYweOUsPtuVzxmy+37QzY/5dRVievd/oAj/JF9D+8b8SZNLKHLNJR
+         /jYvsfS2cmme0i7z5eq+ejoR8ztN8tytfCSGZEUvObriBHLrt578Sd5VQtb0R1JMSX
+         NLpRrPIuwrFks7gKS3W+nzaPowwZOuvJoZqQ3yWqoKU03/iC+MW0TURODdqD8OlUrM
+         5ICEc957rKLPvVW5JRAPl2naTy0/TiBGxZDWVKS+QAUll9tnHtfpjECGAm61KzIJ8N
+         cf0k2OG63mhUA==
+From:   Mark Brown <broonie@kernel.org>
+To:     lgirdwood@gmail.com, cgel.zte@gmail.com
+Cc:     linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        ckeepax@opensource.cirrus.com, cui.jinpeng2@zte.com.cn,
+        perex@perex.cz, jiapeng.chong@linux.alibaba.com, tiwai@suse.com,
+        tommaso.merciai@amarulasolutions.com, steve@sk2.org,
+        alsa-devel@alsa-project.org
+In-Reply-To: <20220829091319.266068-1-cui.jinpeng2@zte.com.cn>
+References: <20220829091319.266068-1-cui.jinpeng2@zte.com.cn>
+Subject: Re: [PATCH linux-next] ASoC: codecs: max98088: remove redundant ret variable
+Message-Id: <166178866796.855087.12254175359520201304.b4-ty@kernel.org>
+Date:   Mon, 29 Aug 2022 16:57:47 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-65ba7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-do_IRQ has been replaced by common_interrupt in commit
-fa5e5c409213 ("x86/entry: Use idtentry for interrupts").
-Move do_IRQ to common_interrupt.
+On Mon, 29 Aug 2022 09:13:19 +0000, cgel.zte@gmail.com wrote:
+> From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+> 
+> Return value from devm_snd_soc_register_component() directly
+> instead of taking this in another redundant variable.
+> 
+> 
 
-Signed-off-by: Tuo Cao <91tuocao@gmail.com>
----
- Documentation/x86/entry_64.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Applied to
 
-diff --git a/Documentation/x86/entry_64.rst b/Documentation/x86/entry_64.rst
-index e433e08f7018..e27f1fa796db 100644
---- a/Documentation/x86/entry_64.rst
-+++ b/Documentation/x86/entry_64.rst
-@@ -33,7 +33,7 @@ Some of these entries are:
-  - interrupt: An array of entries.  Every IDT vector that doesn't
-    explicitly point somewhere else gets set to the corresponding
-    value in interrupts.  These point to a whole array of
--   magically-generated functions that make their way to do_IRQ with
-+   magically-generated functions that make their way to common_interrupt with
-    the interrupt number as a parameter.
- 
-  - APIC interrupts: Various special-purpose interrupts for things
--- 
-2.17.1
+   broonie/sound.git for-next
 
+Thanks!
+
+[1/1] ASoC: codecs: max98088: remove redundant ret variable
+      commit: e0550fffd5b3d32118a335718d1e3ec93e6bc411
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
