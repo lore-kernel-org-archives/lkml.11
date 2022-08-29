@@ -2,259 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 390B5ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28779ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbiH2KDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 06:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52708 "EHLO
+        id S229457AbiH2KEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 06:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiH2KDP (ORCPT
+        with ESMTP id S229490AbiH2KEr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 06:03:15 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A8AA5F981
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:03:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=vd9jVrMN2zfJQr2gkQEgY6lJ/h/t5ORUZobeIccBr08=; b=CmbVXb/32SiPLRq5G3OEhHKXuO
-        281Sq0sDT0LBlG5L/zXcRwTINWRMPe3p0rWVerALqUzXO/RJBf05ytAcBsUHaGALZdvmfgOLmM6+T
-        DzJOwzotRUOAi/SpKNdiG2nug2TaLd1GjJ1/mjodkEjGcsQvmz4tjsf6AO9mq5J06BLl/TjQtXyEP
-        SjQDE0xVLdIq/2PWs9zyvmawoINJzYoYLt7lzPNYBj9e2yH2ZVQF1w9cPie9RIOyvjXnmA26yDs72
-        y2U6c+G7BBahMWybQSPCwyjoBcVH4YMQbbKD27L3zH5g+ZoFkRIT0v1FDBUvfdSQc/IKaJJYaZC4e
-        NO9lqQcg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oSbbc-002zat-Ik; Mon, 29 Aug 2022 10:02:56 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        Mon, 29 Aug 2022 06:04:47 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7561C4F182;
+        Mon, 29 Aug 2022 03:04:41 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7B922300410;
-        Mon, 29 Aug 2022 12:02:54 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 65F31207FBF60; Mon, 29 Aug 2022 12:02:54 +0200 (CEST)
-Date:   Mon, 29 Aug 2022 12:02:54 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Morten Rasmussen <morten.rasmussen@arm.com>,
-        Vincent Donnefort <vdonnefort@google.com>,
-        Quentin Perret <qperret@google.com>,
-        Patrick Bellasi <patrick.bellasi@matbug.net>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Jian-Min <Jian-Min.Liu@mediatek.com>,
-        Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 1/1] sched/pelt: Introduce PELT multiplier
-Message-ID: <YwyOzgbbUbB+JmSH@hirez.programming.kicks-ass.net>
-References: <20220829055450.1703092-1-dietmar.eggemann@arm.com>
- <20220829055450.1703092-2-dietmar.eggemann@arm.com>
- <Ywxz7cuR+/+1CFMR@hirez.programming.kicks-ass.net>
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 1C99838F;
+        Mon, 29 Aug 2022 12:04:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1661767479;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vCIErdxtYSs48v8IzFvX4Iwt90EXPm6+TYmgBg9KbBw=;
+        b=x9jrPLve1l3tLiKr84DdJ/XSBTPHTkqiUwKL5ANRrnhHyyd7yRhxcaVjU9g36XlmI4ny2/
+        seE3vX2yFczl11K63REpyr7kegG/cW4jgHEAwwGi8jvrBcNEFai6161Qboa6jiHGW/klJu
+        7DT+tA6hyKb5w47L2wOf21ILsqP3bR7lFJyL2PjRkJ/6SFDoLa89Ag9HrGCqXismm27f30
+        qGJDNKdMmZnG9Tj8470tB9Uro+qxOwm+AfmbvRW3c3ePH5GNENxrmBvpMB+TXg7UQUcMgr
+        XZj99YtAtqZWQ1ksZ1hkzTe+OXE6JHknvbbgxw/CZKpUjlpiPjdd/n13aNYtoQ==
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ywxz7cuR+/+1CFMR@hirez.programming.kicks-ass.net>
+Date:   Mon, 29 Aug 2022 12:04:38 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <pratyush@kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org, saikrishna12468@gmail.com,
+        git@amd.com
+Subject: Re: [PATCH 2/2] mtd: spi-nor: Add support for flash reset
+In-Reply-To: <20220829090528.21613-3-sai.krishna.potthuri@amd.com>
+References: <20220829090528.21613-1-sai.krishna.potthuri@amd.com>
+ <20220829090528.21613-3-sai.krishna.potthuri@amd.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <be7f0b7bbb25d86ac079502babbf5f1b@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 10:08:13AM +0200, Peter Zijlstra wrote:
-> On Mon, Aug 29, 2022 at 07:54:50AM +0200, Dietmar Eggemann wrote:
-> > From: Vincent Donnefort <vincent.donnefort@arm.com>
-> > 
-> > The new sysctl sched_pelt_multiplier allows a user to set a clock
-> > multiplier to x2 or x4 (x1 being the default). This clock multiplier
-> > artificially speeds up PELT ramp up/down similarly to use a faster
-> > half-life than the default 32ms.
-> > 
-> >   - x1: 32ms half-life
-> >   - x2: 16ms half-life
-> >   - x4: 8ms  half-life
-> > 
-> > Internally, a new clock is created: rq->clock_task_mult. It sits in the
-> > clock hierarchy between rq->clock_task and rq->clock_pelt.
-> > 
-> > Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-> > Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Hi,
+
+Am 2022-08-29 11:05, schrieb Sai Krishna Potthuri:
+> Add support for spi-nor flash reset via GPIO controller by reading the
+> reset-gpio property. If there is a valid GPIO specifier then reset will
+> be performed by asserting and deasserting the GPIO using gpiod APIs
+> otherwise it will not perform any operation.
 > 
-> > +extern unsigned int sched_pelt_lshift;
-> > +
-> > +/*
-> > + * absolute time   |1      |2      |3      |4      |5      |6      |
-> > + * @ mult = 1      --------****************--------****************-
-> > + * @ mult = 2      --------********----------------********---------
-> > + * @ mult = 4      --------****--------------------****-------------
-> > + * clock task mult
-> > + * @ mult = 2      |   |   |2  |3  |   |   |   |   |5  |6  |   |   |
-> > + * @ mult = 4      | | | | |2|3| | | | | | | | | | |5|6| | | | | | |
-> > + *
-> > + */
-> > +static inline void update_rq_clock_task_mult(struct rq *rq, s64 delta)
-> > +{
-> > +	delta <<= READ_ONCE(sched_pelt_lshift);
-> > +
-> > +	rq->clock_task_mult += delta;
-> > +
-> > +	update_rq_clock_pelt(rq, delta);
-> > +}
+> Signed-off-by: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+> ---
+>  drivers/mtd/spi-nor/core.c | 50 +++++++++++++++++++++++++++++++++++---
+>  1 file changed, 46 insertions(+), 4 deletions(-)
 > 
-> Hurmph... I'd almost go write you something like
-> static_call()/static_branch() but for immediates.
+> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> index f2c64006f8d7..d4703ff69ad0 100644
+> --- a/drivers/mtd/spi-nor/core.c
+> +++ b/drivers/mtd/spi-nor/core.c
+> @@ -2401,12 +2401,8 @@ static void spi_nor_no_sfdp_init_params(struct
+> spi_nor *nor)
+>   */
+>  static void spi_nor_init_flags(struct spi_nor *nor)
+>  {
+> -	struct device_node *np = spi_nor_get_flash_node(nor);
+>  	const u16 flags = nor->info->flags;
 > 
-> That said; given there's only like 3 options, perhaps a few
-> static_branch() instances work just fine ?
+> -	if (of_property_read_bool(np, "broken-flash-reset"))
+> -		nor->flags |= SNOR_F_BROKEN_RESET;
+> -
+>  	if (flags & SPI_NOR_SWP_IS_VOLATILE)
+>  		nor->flags |= SNOR_F_SWP_IS_VOLATILE;
+> 
+> @@ -2933,9 +2929,47 @@ static void spi_nor_set_mtd_info(struct spi_nor 
+> *nor)
+>  	mtd->_put_device = spi_nor_put_device;
+>  }
+> 
+> +static int spi_nor_hw_reset(struct spi_nor *nor)
+> +{
+> +	struct gpio_desc *reset;
+> +	int ret;
+> +
+> +	reset = devm_gpiod_get_optional(nor->dev, "reset", GPIOD_ASIS);
 
-Also, I'm not at all sure about exposing that as an official sysctl.
+devm_gpiod_get_optional(nor->dev, "reset", GPIOD_OUT_HIGH);
 
-How about something like so?
+> +	if (IS_ERR_OR_NULL(reset))
+> +		return PTR_ERR_OR_ZERO(reset);
+> +
+> +	/* Set the direction as output and enable the output */
+> +	ret = gpiod_direction_output(reset, 1);
 
----
-Subject: sched/pelt: Introduce PELT multiplier
-From: Vincent Donnefort <vincent.donnefort@arm.com>
-Date: Mon, 29 Aug 2022 07:54:50 +0200
+Not necessary then.
 
-From: Vincent Donnefort <vincent.donnefort@arm.com>
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * Experimental Minimum Chip select high to Reset delay value
+> +	 * based on the flash device spec.
+> +	 */
 
-The new sysctl sched_pelt_multiplier allows a user to set a clock
-multiplier to x2 or x4 (x1 being the default). This clock multiplier
-artificially speeds up PELT ramp up/down similarly to use a faster
-half-life than the default 32ms.
+Which flash device spec?
 
-  - x1: 32ms half-life
-  - x2: 16ms half-life
-  - x4: 8ms  half-life
+> +	usleep_range(1, 5);
+> +	gpiod_set_value(reset, 0);
 
-Internally, a new clock is created: rq->clock_task_mult. It sits in the
-clock hierarchy between rq->clock_task and rq->clock_pelt.
+Mh, is your logic inverted here? If I read the code correctly,
+you should use a value of 1 to take the device into reset. The
+device tree should then have a flag "active low", which will
+invert the value here. Also please use the cansleep() variant.
 
-[peterz: Use sched_feat()]
-Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
----
- kernel/sched/core.c     |    2 +-
- kernel/sched/features.h |    3 +++
- kernel/sched/pelt.h     |   45 +++++++++++++++++++++++++++++++++++++++++----
- kernel/sched/sched.h    |    1 +
- 4 files changed, 46 insertions(+), 5 deletions(-)
+> +	/*
+> +	 * Experimental Minimum Reset pulse width value based on the
+> +	 * flash device spec.
+> +	 */
+> +	usleep_range(10, 15);
+> +	gpiod_set_value(reset, 1);
+> +
+> +	/*
+> +	 * Experimental Minimum Reset recovery delay value based on the
+> +	 * flash device spec.
+> +	 */
+> +	usleep_range(35, 40);
+> +
+> +	return 0;
+> +}
+> +
+>  int spi_nor_scan(struct spi_nor *nor, const char *name,
+>  		 const struct spi_nor_hwcaps *hwcaps)
+>  {
+> +	struct device_node *np = spi_nor_get_flash_node(nor);
+>  	const struct flash_info *info;
+>  	struct device *dev = nor->dev;
+>  	struct mtd_info *mtd = &nor->mtd;
+> @@ -2965,6 +2999,14 @@ int spi_nor_scan(struct spi_nor *nor, const char 
+> *name,
+>  	if (!nor->bouncebuf)
+>  		return -ENOMEM;
+> 
+> +	if (of_property_read_bool(np, "broken-flash-reset")) {
+> +		nor->flags |= SNOR_F_BROKEN_RESET;
+> +	} else {
+> +		ret = spi_nor_hw_reset(nor);
+> +		if (ret)
+> +			return ret;
+> +	}
 
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -727,7 +727,7 @@ static void update_rq_clock_task(struct
- 	if ((irq_delta + steal) && sched_feat(NONTASK_CAPACITY))
- 		update_irq_load_avg(rq, irq_delta + steal);
- #endif
--	update_rq_clock_pelt(rq, delta);
-+	update_rq_clock_task_mult(rq, delta);
- }
- 
- void update_rq_clock(struct rq *rq)
---- a/kernel/sched/features.h
-+++ b/kernel/sched/features.h
-@@ -101,3 +101,6 @@ SCHED_FEAT(LATENCY_WARN, false)
- 
- SCHED_FEAT(ALT_PERIOD, true)
- SCHED_FEAT(BASE_SLICE, true)
-+
-+SCHED_FEAT(PELT_M2, false)
-+SCHED_FEAT(PELT_M4, false)
---- a/kernel/sched/pelt.h
-+++ b/kernel/sched/pelt.h
-@@ -61,6 +61,14 @@ static inline void cfs_se_util_change(st
- 	WRITE_ONCE(avg->util_est.enqueued, enqueued);
- }
- 
-+static inline u64 rq_clock_task_mult(struct rq *rq)
-+{
-+	lockdep_assert_rq_held(rq);
-+	assert_clock_updated(rq);
-+
-+	return rq->clock_task_mult;
-+}
-+
- static inline u64 rq_clock_pelt(struct rq *rq)
- {
- 	lockdep_assert_rq_held(rq);
-@@ -72,7 +80,7 @@ static inline u64 rq_clock_pelt(struct r
- /* The rq is idle, we can sync to clock_task */
- static inline void _update_idle_rq_clock_pelt(struct rq *rq)
- {
--	rq->clock_pelt  = rq_clock_task(rq);
-+	rq->clock_pelt = rq_clock_task_mult(rq);
- 
- 	u64_u32_store(rq->clock_idle, rq_clock(rq));
- 	/* Paired with smp_rmb in migrate_se_pelt_lag() */
-@@ -121,6 +129,30 @@ static inline void update_rq_clock_pelt(
- 	rq->clock_pelt += delta;
- }
- 
-+extern unsigned int sched_pelt_lshift;
-+
-+/*
-+ * absolute time   |1      |2      |3      |4      |5      |6      |
-+ * @ mult = 1      --------****************--------****************-
-+ * @ mult = 2      --------********----------------********---------
-+ * @ mult = 4      --------****--------------------****-------------
-+ * clock task mult
-+ * @ mult = 2      |   |   |2  |3  |   |   |   |   |5  |6  |   |   |
-+ * @ mult = 4      | | | | |2|3| | | | | | | | | | |5|6| | | | | | |
-+ *
-+ */
-+static inline void update_rq_clock_task_mult(struct rq *rq, s64 delta)
-+{
-+	if (sched_feat(PELT_M2))
-+		delta *= 2;
-+	if (sched_feat(PELT_M4))
-+		delta *= 4;
-+
-+	rq->clock_task_mult += delta;
-+
-+	update_rq_clock_pelt(rq, delta);
-+}
-+
- /*
-  * When rq becomes idle, we have to check if it has lost idle time
-  * because it was fully busy. A rq is fully used when the /Sum util_sum
-@@ -147,7 +179,7 @@ static inline void update_idle_rq_clock_
- 	 * rq's clock_task.
- 	 */
- 	if (util_sum >= divider)
--		rq->lost_idle_time += rq_clock_task(rq) - rq->clock_pelt;
-+		rq->lost_idle_time += rq_clock_task_mult(rq) - rq->clock_pelt;
- 
- 	_update_idle_rq_clock_pelt(rq);
- }
-@@ -218,13 +250,18 @@ update_irq_load_avg(struct rq *rq, u64 r
- 	return 0;
- }
- 
--static inline u64 rq_clock_pelt(struct rq *rq)
-+static inline u64 rq_clock_task_mult(struct rq *rq)
- {
- 	return rq_clock_task(rq);
- }
- 
-+static inline u64 rq_clock_pelt(struct rq *rq)
-+{
-+	return rq_clock_task_mult(rq);
-+}
-+
- static inline void
--update_rq_clock_pelt(struct rq *rq, s64 delta) { }
-+update_rq_clock_task_mult(struct rq *rq, s64 delta) { }
- 
- static inline void
- update_idle_rq_clock_pelt(struct rq *rq) { }
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1009,6 +1009,7 @@ struct rq {
- 	u64			clock;
- 	/* Ensure that all clocks are in the same cache line */
- 	u64			clock_task ____cacheline_aligned;
-+	u64			clock_task_mult;
- 	u64			clock_pelt;
- 	unsigned long		lost_idle_time;
- 	u64			clock_pelt_idle;
+This should be done unconditionally, no? Even if the reset
+pin is broken, we know we have one (otherwise the device
+tree would be broken) and we can do a reset in any case.
+
+Also, which tree are you using? That was moved into
+spi_nor_init_flags() some time ago. Please rebase to latest
+spi-next.
+
+-michael
+
+> +
+>  	info = spi_nor_get_flash_info(nor, name);
+>  	if (IS_ERR(info))
+>  		return PTR_ERR(info);
