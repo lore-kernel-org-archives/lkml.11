@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C38B5C0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C44ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230228AbiH2LUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
+        id S231567AbiH2LUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbiH2LSy (ORCPT
+        with ESMTP id S231654AbiH2LS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:18:54 -0400
+        Mon, 29 Aug 2022 07:18:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A276BCE5;
-        Mon, 29 Aug 2022 04:12:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D70E13DF2;
+        Mon, 29 Aug 2022 04:12:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E723161212;
-        Mon, 29 Aug 2022 11:11:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 054B3C433C1;
-        Mon, 29 Aug 2022 11:11:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2093611DD;
+        Mon, 29 Aug 2022 11:10:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F07C0C433C1;
+        Mon, 29 Aug 2022 11:10:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771502;
-        bh=qkwOKJi5gsnAyH0eidBUxLUMppPsZof6v77fr4sDNdg=;
+        s=korg; t=1661771447;
+        bh=0RcrxzIq4WhOjo87Hq+HJS6+Nz8mi0V3Oos3YAzgquo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zTSK11GvJ9WSU48V6M9Mj5dhb6bgIWNbw1ncT7fWMg7fs6F91VBxeA6nM8ywdd2NJ
-         nmb4ofOnZSkYtCia6UHoQDHN3LAYUvbLrMFRsi0yEGoaY2LNq3ZBRZJFm58bblkfB4
-         4cWYEYBhhWgHv4nahXzftN1hx4gRdl9tHa4r5JtY=
+        b=A7SUL+dKE0+S7zQeEorDRc4u/hSW/xEioZSdefYkQD2m3YxxKhyU3w07IoC+1Tdv+
+         N6+bRfxcTcCRfmjWb0QQvXnlpCVvTEDOV1q6pTzvza9bWVhFwhOtqA0IkDzshbMirX
+         owT2I/KK1vDFL7OB6S0q0JQawxALBCEOrFT28Mhk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 5.15 110/136] s390: fix double free of GS and RI CBs on fork() failure
-Date:   Mon, 29 Aug 2022 12:59:37 +0200
-Message-Id: <20220829105809.224470741@linuxfoundation.org>
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.10 68/86] perf/x86/lbr: Enable the branch type for the Arch LBR by default
+Date:   Mon, 29 Aug 2022 12:59:34 +0200
+Message-Id: <20220829105759.331636667@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,81 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Foster <bfoster@redhat.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-commit 13cccafe0edcd03bf1c841de8ab8a1c8e34f77d9 upstream.
+commit 32ba156df1b1c8804a4e5be5339616945eafea22 upstream.
 
-The pointers for guarded storage and runtime instrumentation control
-blocks are stored in the thread_struct of the associated task. These
-pointers are initially copied on fork() via arch_dup_task_struct()
-and then cleared via copy_thread() before fork() returns. If fork()
-happens to fail after the initial task dup and before copy_thread(),
-the newly allocated task and associated thread_struct memory are
-freed via free_task() -> arch_release_task_struct(). This results in
-a double free of the guarded storage and runtime info structs
-because the fields in the failed task still refer to memory
-associated with the source task.
+On the platform with Arch LBR, the HW raw branch type encoding may leak
+to the perf tool when the SAVE_TYPE option is not set.
 
-This problem can manifest as a BUG_ON() in set_freepointer() (with
-CONFIG_SLAB_FREELIST_HARDENED enabled) or KASAN splat (if enabled)
-when running trinity syscall fuzz tests on s390x. To avoid this
-problem, clear the associated pointer fields in
-arch_dup_task_struct() immediately after the new task is copied.
-Note that the RI flag is still cleared in copy_thread() because it
-resides in thread stack memory and that is where stack info is
-copied.
+In the intel_pmu_store_lbr(), the HW raw branch type is stored in
+lbr_entries[].type. If the SAVE_TYPE option is set, the
+lbr_entries[].type will be converted into the generic PERF_BR_* type
+in the intel_pmu_lbr_filter() and exposed to the user tools.
+But if the SAVE_TYPE option is NOT set by the user, the current perf
+kernel doesn't clear the field. The HW raw branch type leaks.
 
-Signed-off-by: Brian Foster <bfoster@redhat.com>
-Fixes: 8d9047f8b967c ("s390/runtime instrumentation: simplify task exit handling")
-Fixes: 7b83c6297d2fc ("s390/guarded storage: simplify task exit handling")
-Cc: <stable@vger.kernel.org> # 4.15
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220816155407.537372-1-bfoster@redhat.com
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+There are two solutions to fix the issue for the Arch LBR.
+One is to clear the field if the SAVE_TYPE option is NOT set.
+The other solution is to unconditionally convert the branch type and
+expose the generic type to the user tools.
+
+The latter is implemented here, because
+- The branch type is valuable information. I don't see a case where
+  you would not benefit from the branch type. (Stephane Eranian)
+- Not having the branch type DOES NOT save any space in the
+  branch record (Stephane Eranian)
+- The Arch LBR HW can retrieve the common branch types from the
+  LBR_INFO. It doesn't require the high overhead SW disassemble.
+
+Fixes: 47125db27e47 ("perf/x86/intel/lbr: Support Architectural LBR")
+Reported-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220816125612.2042397-1-kan.liang@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/kernel/process.c |   22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
+ arch/x86/events/intel/lbr.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/s390/kernel/process.c
-+++ b/arch/s390/kernel/process.c
-@@ -91,6 +91,18 @@ int arch_dup_task_struct(struct task_str
+--- a/arch/x86/events/intel/lbr.c
++++ b/arch/x86/events/intel/lbr.c
+@@ -1114,6 +1114,14 @@ static int intel_pmu_setup_hw_lbr_filter
  
- 	memcpy(dst, src, arch_task_struct_size);
- 	dst->thread.fpu.regs = dst->thread.fpu.fprs;
+ 	if (static_cpu_has(X86_FEATURE_ARCH_LBR)) {
+ 		reg->config = mask;
 +
-+	/*
-+	 * Don't transfer over the runtime instrumentation or the guarded
-+	 * storage control block pointers. These fields are cleared here instead
-+	 * of in copy_thread() to avoid premature freeing of associated memory
-+	 * on fork() failure. Wait to clear the RI flag because ->stack still
-+	 * refers to the source thread.
-+	 */
-+	dst->thread.ri_cb = NULL;
-+	dst->thread.gs_cb = NULL;
-+	dst->thread.gs_bc_cb = NULL;
-+
- 	return 0;
- }
++		/*
++		 * The Arch LBR HW can retrieve the common branch types
++		 * from the LBR_INFO. It doesn't require the high overhead
++		 * SW disassemble.
++		 * Enable the branch type by default for the Arch LBR.
++		 */
++		reg->reg |= X86_BR_TYPE_SAVE;
+ 		return 0;
+ 	}
  
-@@ -149,13 +161,11 @@ int copy_thread(unsigned long clone_flag
- 	frame->childregs.flags = 0;
- 	if (new_stackp)
- 		frame->childregs.gprs[15] = new_stackp;
--
--	/* Don't copy runtime instrumentation info */
--	p->thread.ri_cb = NULL;
-+	/*
-+	 * Clear the runtime instrumentation flag after the above childregs
-+	 * copy. The CB pointer was already cleared in arch_dup_task_struct().
-+	 */
- 	frame->childregs.psw.mask &= ~PSW_MASK_RI;
--	/* Don't copy guarded storage control block */
--	p->thread.gs_cb = NULL;
--	p->thread.gs_bc_cb = NULL;
- 
- 	/* Set a new TLS ?  */
- 	if (clone_flags & CLONE_SETTLS) {
 
 
