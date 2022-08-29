@@ -2,166 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90589ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C890ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232277AbiH2L2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40560 "EHLO
+        id S232174AbiH2L20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:28:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231991AbiH2L0Z (ORCPT
+        with ESMTP id S232038AbiH2L0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:26:25 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BE778229;
-        Mon, 29 Aug 2022 04:16:16 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id h204-20020a1c21d5000000b003a5b467c3abso7978421wmh.5;
-        Mon, 29 Aug 2022 04:16:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=lOhpCObqWHdCARz2NDIqCtnDWiHAAEeM53JGliLfbVs=;
-        b=lPGL8ZYWjAj7lle2UsdjAKp8K4qbyHtSf55Qa20c3HvaGTUBoTNNE3UbgpAQzUSdJ9
-         ScCRoCdu1b/tozGYB49Vrh6y22+ltPQmKoFzXnjAP0eRt9MgOtyhCAd7/zptlTRSuZCi
-         /ri+vo2WEQD3283UxpbIfrcLtUaV/d8oNSdkqRSM/2Ruya08cC9WnnUsE2ji6bI4u17V
-         iN6gRKwKEXi6I/BhxBOFIJpsAtiYkn3Yz/OWGaHZy0sMIzQ56ise+n4dZwylixG3w9bK
-         a8mB3KaYAA6kF4kPDdGk0WG25mg27N4E3Xn0ORxHPpWWRdkD2VR7Cl1HfkI0rrcyBWGb
-         Q4gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=lOhpCObqWHdCARz2NDIqCtnDWiHAAEeM53JGliLfbVs=;
-        b=uVGuddQaLjarwyT0/c2+NLbFIljYVkA9Vt5h/mWF6h78pM689TYO/D/c6Iz2wDJjXS
-         AFkXSMNqn0YSeawmmxBL5mkSp1dkxNcecu7wzXfkUdFhXSYa6hWghWlZxOnjs5FtRfaz
-         i4m48i4fLUAxA5pWQa6z2P1p5ltayL8Yacr9O1WIKuUXsXalwLBtyC3AeYga3RO+Ko+y
-         1WWv2bVlYs6VNxulYQTS97uQsnucBSfbCv+dUiQ6Oawd+zoTMI4E5fx9r20Gg6aOhi+N
-         AqGW97odEw4pCK9R79bXhpyCg3CCSAT/kkScZtFijUpYuT3r34O8UerANV4gJbxM90P6
-         x4hg==
-X-Gm-Message-State: ACgBeo2yndI7IDJfHWMrlY+C4YVT6VYVmXzJSvCbnIU8nJcd4T8VbLUc
-        0x3qn+K5VMqfqO9G76suhUw=
-X-Google-Smtp-Source: AA6agR4qShWVRNC4Kl1p705Z5ez+1h9e3xNpc5r4siUX0qgzgQ1wfjL7bmInQOMaCVIxez4Wdyz4KA==
-X-Received: by 2002:a05:600c:198e:b0:3a5:d4a2:8896 with SMTP id t14-20020a05600c198e00b003a5d4a28896mr6318695wmq.140.1661771694406;
-        Mon, 29 Aug 2022 04:14:54 -0700 (PDT)
-Received: from [192.168.0.30] ([47.62.125.55])
-        by smtp.gmail.com with ESMTPSA id n8-20020adff088000000b002258235bda3sm6624936wro.61.2022.08.29.04.14.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 04:14:53 -0700 (PDT)
-Message-ID: <ae3523f9-6420-9413-30cf-ab6a081c8500@gmail.com>
-Date:   Mon, 29 Aug 2022 13:14:52 +0200
+        Mon, 29 Aug 2022 07:26:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6DA78591;
+        Mon, 29 Aug 2022 04:16:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8F04611D7;
+        Mon, 29 Aug 2022 11:15:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB11BC433C1;
+        Mon, 29 Aug 2022 11:15:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771704;
+        bh=Rtv0W/RxDptni++jUiUdRolbugDTJsRA+DiimTN3q/w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H0+4tscDltwC33hEtLsg29hj2SRkSGZf9GWgJg3JcQrWo7WFqryjiLqVEsU3HysA9
+         uW4KVRLPDoqvQJRhVALzQxXweoKbqOl+hqFcqxUOnNXCjFBAxYNbQ0I4mobpTEXqfY
+         2PQ8bxPDGQOD9virhF1dSqxTwY1RoBIpLemyZIq4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 068/158] net: Fix data-races around netdev_tstamp_prequeue.
+Date:   Mon, 29 Aug 2022 12:58:38 +0200
+Message-Id: <20220829105811.838301381@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH 2/4] spi: mt7621: Use the devm_clk_get_enabled() helper to
- simplify error handling
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        broonie@kernel.org, gregkh@linuxfoundation.org, neil@brown.name,
-        blogic@openwrt.org
-Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <cover.1661599671.git.christophe.jaillet@wanadoo.fr>
- <05a7fd22719008c8a905d6328aa9548ce40f2a7a.1661599671.git.christophe.jaillet@wanadoo.fr>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <05a7fd22719008c8a905d6328aa9548ce40f2a7a.1661599671.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
+
+[ Upstream commit 61adf447e38664447526698872e21c04623afb8e ]
+
+While reading netdev_tstamp_prequeue, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
+
+Fixes: 3b098e2d7c69 ("net: Consistent skb timestamping")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/core/dev.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index e1496e626a532..34282b93c3f60 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4927,7 +4927,7 @@ static int netif_rx_internal(struct sk_buff *skb)
+ {
+ 	int ret;
+ 
+-	net_timestamp_check(netdev_tstamp_prequeue, skb);
++	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 
+ 	trace_netif_rx(skb);
+ 
+@@ -5280,7 +5280,7 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+ 	int ret = NET_RX_DROP;
+ 	__be16 type;
+ 
+-	net_timestamp_check(!netdev_tstamp_prequeue, skb);
++	net_timestamp_check(!READ_ONCE(netdev_tstamp_prequeue), skb);
+ 
+ 	trace_netif_receive_skb(skb);
+ 
+@@ -5663,7 +5663,7 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
+ {
+ 	int ret;
+ 
+-	net_timestamp_check(netdev_tstamp_prequeue, skb);
++	net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 
+ 	if (skb_defer_rx_timestamp(skb))
+ 		return NET_RX_SUCCESS;
+@@ -5693,7 +5693,7 @@ void netif_receive_skb_list_internal(struct list_head *head)
+ 
+ 	INIT_LIST_HEAD(&sublist);
+ 	list_for_each_entry_safe(skb, next, head, list) {
+-		net_timestamp_check(netdev_tstamp_prequeue, skb);
++		net_timestamp_check(READ_ONCE(netdev_tstamp_prequeue), skb);
+ 		skb_list_del_init(skb);
+ 		if (!skb_defer_rx_timestamp(skb))
+ 			list_add_tail(&skb->list, &sublist);
+-- 
+2.35.1
 
 
-On 27/08/2022 13:42, Christophe JAILLET wrote:
-> The devm_clk_get_enabled() helper:
->     - calls devm_clk_get()
->     - calls clk_prepare_enable() and registers what is needed in order to
->       call clk_disable_unprepare() when needed, as a managed resource.
-> 
-> This helper is well suited for cases where the clock would be kept
-> prepared or enabled for the whole lifetime of the driver.
-> 
-> This simplifies the error handling a lot.
-> 
-> The order between spi_unregister_controller() (in the remove function) and
-> the clk_disable_unprepare() (now handle by a  managed resource) is kept
-> the same.
-> (see commit 46b5c4fb87ce ("spi: mt7621: Don't leak SPI master in probe
-> error path") to see why it matters)
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-
-> ---
-> The order with  devm_spi_release_controller() (which undoes
-> devm_spi_alloc_master()) is reversed, but I don't think it is an issue.
-> ---
->   drivers/spi/spi-mt7621.c | 14 +-------------
->   1 file changed, 1 insertion(+), 13 deletions(-)
-> 
-> diff --git a/drivers/spi/spi-mt7621.c b/drivers/spi/spi-mt7621.c
-> index 351b0ef52bbc..2580b28042be 100644
-> --- a/drivers/spi/spi-mt7621.c
-> +++ b/drivers/spi/spi-mt7621.c
-> @@ -327,7 +327,6 @@ static int mt7621_spi_probe(struct platform_device *pdev)
->   	struct spi_controller *master;
->   	struct mt7621_spi *rs;
->   	void __iomem *base;
-> -	int status = 0;
->   	struct clk *clk;
->   	int ret;
->   
-> @@ -339,19 +338,14 @@ static int mt7621_spi_probe(struct platform_device *pdev)
->   	if (IS_ERR(base))
->   		return PTR_ERR(base);
->   
-> -	clk = devm_clk_get(&pdev->dev, NULL);
-> +	clk = devm_clk_get_enabled(&pdev->dev, NULL);
->   	if (IS_ERR(clk))
->   		return dev_err_probe(&pdev->dev, PTR_ERR(clk),
->   				     "unable to get SYS clock\n");
->   
-> -	status = clk_prepare_enable(clk);
-> -	if (status)
-> -		return status;
-> -
->   	master = devm_spi_alloc_master(&pdev->dev, sizeof(*rs));
->   	if (!master) {
->   		dev_info(&pdev->dev, "master allocation failed\n");
-> -		clk_disable_unprepare(clk);
->   		return -ENOMEM;
->   	}
->   
-> @@ -376,13 +370,10 @@ static int mt7621_spi_probe(struct platform_device *pdev)
->   	ret = device_reset(&pdev->dev);
->   	if (ret) {
->   		dev_err(&pdev->dev, "SPI reset failed!\n");
-> -		clk_disable_unprepare(clk);
->   		return ret;
->   	}
->   
->   	ret = spi_register_controller(master);
-> -	if (ret)
-> -		clk_disable_unprepare(clk);
->   
->   	return ret;
->   }
-> @@ -390,13 +381,10 @@ static int mt7621_spi_probe(struct platform_device *pdev)
->   static int mt7621_spi_remove(struct platform_device *pdev)
->   {
->   	struct spi_controller *master;
-> -	struct mt7621_spi *rs;
->   
->   	master = dev_get_drvdata(&pdev->dev);
-> -	rs = spi_controller_get_devdata(master);
->   
->   	spi_unregister_controller(master);
-> -	clk_disable_unprepare(rs->clk);
->   
->   	return 0;
->   }
