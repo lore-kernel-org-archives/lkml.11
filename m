@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82B7EC0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04168ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232817AbiH2Lh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42104 "EHLO
+        id S232942AbiH2LiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232428AbiH2LhB (ORCPT
+        with ESMTP id S232861AbiH2LhC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:37:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F766DF9E;
-        Mon, 29 Aug 2022 04:21:28 -0700 (PDT)
+        Mon, 29 Aug 2022 07:37:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073D27F0AF;
+        Mon, 29 Aug 2022 04:21:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2137DB80EF5;
-        Mon, 29 Aug 2022 11:09:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7267DC433D6;
-        Mon, 29 Aug 2022 11:09:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03BD5B80F9C;
+        Mon, 29 Aug 2022 11:14:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 557AAC433D6;
+        Mon, 29 Aug 2022 11:14:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771385;
-        bh=aw/3zNij5f5EZVoU20NAljEgXvZHzpu7ZFU2j+Zl8Uo=;
+        s=korg; t=1661771642;
+        bh=WsrrEYl6BCNkHwhC3FbLb44ylZ8NV6zRuGxlu10Lnx4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P3EHVlYkRWME5GIDBECg3mfTmOZEO6+JCrw0pPzlsSJifvlxdTSri1pkRTkIxHVQR
-         U7dqWHpePdM8DzLoNJ5Z1pPPI66MVNJvmEFF/J7j8ZMYNFUB5MUVUdjYBrF1yIkkDX
-         wLmbis0gGYADSVfdSZ52K9/M1CPpzPNsoIHbpstg=
+        b=JtDLc+75F4c+IluIZSxw7hBs6kH2T8lwS7hI49/9tRB1UujVGzJ63qCp12UKd3TQY
+         6ofe8qnBOmRBBxVMyw26KDwxCEnLLb2bbALLYFmUcHczmBOEN4r/bBybCrsDCeqtaz
+         Hlz5qLQR7NMqE3D5jW8BIWI9EZHlZ3TJwjFh6vHw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        Filipe Manana <fdmanana@suse.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 098/136] btrfs: check if root is readonly while setting security xattr
-Date:   Mon, 29 Aug 2022 12:59:25 +0200
-Message-Id: <20220829105808.695855923@linuxfoundation.org>
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH 5.15 131/136] perf/x86/intel/uncore: Fix broken read_counter() for SNB IMC PMU
+Date:   Mon, 29 Aug 2022 12:59:58 +0200
+Message-Id: <20220829105810.074888714@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -50,60 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Goldwyn Rodrigues <rgoldwyn@suse.de>
+From: Stephane Eranian <eranian@google.com>
 
-commit b51111271b0352aa596c5ae8faf06939e91b3b68 upstream.
+commit 11745ecfe8fea4b4a4c322967a7605d2ecbd5080 upstream.
 
-For a filesystem which has btrfs read-only property set to true, all
-write operations including xattr should be denied. However, security
-xattr can still be changed even if btrfs ro property is true.
+Existing code was generating bogus counts for the SNB IMC bandwidth counters:
 
-This happens because xattr_permission() does not have any restrictions
-on security.*, system.*  and in some cases trusted.* from VFS and
-the decision is left to the underlying filesystem. See comments in
-xattr_permission() for more details.
+$ perf stat -a -I 1000 -e uncore_imc/data_reads/,uncore_imc/data_writes/
+     1.000327813           1,024.03 MiB  uncore_imc/data_reads/
+     1.000327813              20.73 MiB  uncore_imc/data_writes/
+     2.000580153         261,120.00 MiB  uncore_imc/data_reads/
+     2.000580153              23.28 MiB  uncore_imc/data_writes/
 
-This patch checks if the root is read-only before performing the set
-xattr operation.
+The problem was introduced by commit:
+  07ce734dd8ad ("perf/x86/intel/uncore: Clean up client IMC")
 
-Testcase:
+Where the read_counter callback was replace to point to the generic
+uncore_mmio_read_counter() function.
 
-  DEV=/dev/vdb
-  MNT=/mnt
+The SNB IMC counters are freerunnig 32-bit counters laid out contiguously in
+MMIO. But uncore_mmio_read_counter() is using a readq() call to read from
+MMIO therefore reading 64-bit from MMIO. Although this is okay for the
+uncore_perf_event_update() function because it is shifting the value based
+on the actual counter width to compute a delta, it is not okay for the
+uncore_pmu_event_start() which is simply reading the counter  and therefore
+priming the event->prev_count with a bogus value which is responsible for
+causing bogus deltas in the perf stat command above.
 
-  mkfs.btrfs -f $DEV
-  mount $DEV $MNT
-  echo "file one" > $MNT/f1
+The fix is to reintroduce the custom callback for read_counter for the SNB
+IMC PMU and use readl() instead of readq(). With the change the output of
+perf stat is back to normal:
+$ perf stat -a -I 1000 -e uncore_imc/data_reads/,uncore_imc/data_writes/
+     1.000120987             296.94 MiB  uncore_imc/data_reads/
+     1.000120987             138.42 MiB  uncore_imc/data_writes/
+     2.000403144             175.91 MiB  uncore_imc/data_reads/
+     2.000403144              68.50 MiB  uncore_imc/data_writes/
 
-  setfattr -n "security.one" -v 2 $MNT/f1
-  btrfs property set /mnt ro true
-
-  setfattr -n "security.one" -v 1 $MNT/f1
-
-  umount $MNT
-
-CC: stable@vger.kernel.org # 4.9+
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 07ce734dd8ad ("perf/x86/intel/uncore: Clean up client IMC")
+Signed-off-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Link: https://lore.kernel.org/r/20220803160031.1379788-1-eranian@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/xattr.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/events/intel/uncore_snb.c |   18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/xattr.c
-+++ b/fs/btrfs/xattr.c
-@@ -391,6 +391,9 @@ static int btrfs_xattr_handler_set(const
- 				   const char *name, const void *buffer,
- 				   size_t size, int flags)
- {
-+	if (btrfs_root_readonly(BTRFS_I(inode)->root))
-+		return -EROFS;
-+
- 	name = xattr_full_name(handler, name);
- 	return btrfs_setxattr_trans(inode, name, buffer, size, flags);
+--- a/arch/x86/events/intel/uncore_snb.c
++++ b/arch/x86/events/intel/uncore_snb.c
+@@ -788,6 +788,22 @@ int snb_pci2phy_map_init(int devid)
+ 	return 0;
  }
+ 
++static u64 snb_uncore_imc_read_counter(struct intel_uncore_box *box, struct perf_event *event)
++{
++	struct hw_perf_event *hwc = &event->hw;
++
++	/*
++	 * SNB IMC counters are 32-bit and are laid out back to back
++	 * in MMIO space. Therefore we must use a 32-bit accessor function
++	 * using readq() from uncore_mmio_read_counter() causes problems
++	 * because it is reading 64-bit at a time. This is okay for the
++	 * uncore_perf_event_update() function because it drops the upper
++	 * 32-bits but not okay for plain uncore_read_counter() as invoked
++	 * in uncore_pmu_event_start().
++	 */
++	return (u64)readl(box->io_addr + hwc->event_base);
++}
++
+ static struct pmu snb_uncore_imc_pmu = {
+ 	.task_ctx_nr	= perf_invalid_context,
+ 	.event_init	= snb_uncore_imc_event_init,
+@@ -807,7 +823,7 @@ static struct intel_uncore_ops snb_uncor
+ 	.disable_event	= snb_uncore_imc_disable_event,
+ 	.enable_event	= snb_uncore_imc_enable_event,
+ 	.hw_config	= snb_uncore_imc_hw_config,
+-	.read_counter	= uncore_mmio_read_counter,
++	.read_counter	= snb_uncore_imc_read_counter,
+ };
+ 
+ static struct intel_uncore_type snb_uncore_imc = {
 
 
