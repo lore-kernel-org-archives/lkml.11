@@ -2,129 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 211D0ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D86C0502A
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229629AbiH2BiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 21:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
+        id S229634AbiH2Bkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 21:40:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiH2BiQ (ORCPT
+        with ESMTP id S229468AbiH2Bki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 21:38:16 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECF93A4BD
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 18:38:14 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MGCgm3gwVznTW1;
-        Mon, 29 Aug 2022 09:35:48 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 29 Aug 2022 09:38:12 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 29 Aug 2022 09:38:12 +0800
-Message-ID: <271c1983-9f84-46ee-4c9f-beb1aa3a681f@huawei.com>
-Date:   Mon, 29 Aug 2022 09:38:11 +0800
+        Sun, 28 Aug 2022 21:40:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993AA192A5
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 18:40:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661737234;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0vCF2MFLwabeNCUHxCLBI4UWY8z6BpyfJcEettVVvuc=;
+        b=EpZgxBT9LcyHIx4A85HcZ4xyPZZAjCBhsoTIqMSy/rt+KrDjrOlSM3kqXxzBBFyPo6GntN
+        Heu5u6QydNsyL0yl0gtJWLS5scbXngLrf5E58UP379aBFJ5hPg2Dz3gGoQuvnu8/bjVdVB
+        4ALzbmC/bbRqeeDOQzsD8NwL4Zudq88=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-329-LevrZ2iyNZi2Fkpakragqg-1; Sun, 28 Aug 2022 21:40:29 -0400
+X-MC-Unique: LevrZ2iyNZi2Fkpakragqg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 092B3101A54E;
+        Mon, 29 Aug 2022 01:40:29 +0000 (UTC)
+Received: from localhost (ovpn-12-153.pek2.redhat.com [10.72.12.153])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0EDB34010FCC;
+        Mon, 29 Aug 2022 01:40:27 +0000 (UTC)
+Date:   Mon, 29 Aug 2022 09:40:24 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, agordeev@linux.ibm.com,
+        wangkefeng.wang@huawei.com, linux-arm-kernel@lists.infradead.org,
+        Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Stafford Horne <shorne@gmail.com>,
+        openrisc@lists.librecores.org
+Subject: Re: [PATCH v2 07/11] openrisc: mm: Convert to GENERIC_IOREMAP
+Message-ID: <YwwZCO279Vh/cXGW@MiWiFi-R3L-srv>
+References: <20220820003125.353570-1-bhe@redhat.com>
+ <20220820003125.353570-8-bhe@redhat.com>
+ <YwHYx0eXouIWnN8Z@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2] mm: fix null-ptr-deref in kswapd_is_running()
-Content-Language: en-US
-To:     Andrew Morton <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        Muchun Song <muchun.song@linux.dev>
-References: <20220827111959.186838-1-wangkefeng.wang@huawei.com>
- <20220827150855.b8885a5c4f09df712d619760@linux-foundation.org>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <20220827150855.b8885a5c4f09df712d619760@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwHYx0eXouIWnN8Z@infradead.org>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 08/21/22 at 12:03am, Christoph Hellwig wrote:
+> > +	if (unlikely(!mem_init_done)) {
+> >  		if ((fixmaps_used + (size >> PAGE_SHIFT)) > FIX_N_IOREMAPS)
+> > +			return IOMEM_ERR_PTR(ret);
+> >  		v = fix_to_virt(FIX_IOREMAP_BEGIN + fixmaps_used);
+> >  		fixmaps_used += (size >> PAGE_SHIFT);
+> >  
+> > +		if (ioremap_page_range(v, v + size, p, __pgprot(*prot_val))) {
+> >  			fixmaps_used -= (size >> PAGE_SHIFT);
+> > +			return IOMEM_ERR_PTR(ret);
+> > +		}
+> > +
+> > +		return (void __iomem *)(offset + (char *)v);
+> >  	}
+> 
+> This code needs to go away, and all very early boot uses of ioremap
+> need to switch to use early_ioremap insted.
 
-On 2022/8/28 6:08, Andrew Morton wrote:
-> On Sat, 27 Aug 2022 19:19:59 +0800 Kefeng Wang <wangkefeng.wang@huawei.com> wrote:
->
->> The kswapd_run/stop() will set pgdat->kswapd to NULL, which
->> could race with kswapd_is_running() in kcompactd(),
->>
->> kswapd_run/stop()                       kcompactd()
->>                                            kswapd_is_running()
->>    pgdat->kswapd // error or nomal ptr
->>                                            verify pgdat->kswapd
->>                                              // load non-NULL
->> pgdat->kswapd
->>    pgdat->kswapd = NULL
->>                                            task_is_running(pgdat->kswapd)
->>                                              // Null pointer derefence
->>
->> The KASAN report the null-ptr-deref shown below,
->>
->>    vmscan: Failed to start kswapd on node 0
->>    ...
->>    BUG: KASAN: null-ptr-deref in kcompactd+0x440/0x504
->>    Read of size 8 at addr 0000000000000024 by task kcompactd0/37
->>
->>    CPU: 0 PID: 37 Comm: kcompactd0 Kdump: loaded Tainted: G           OE     5.10.60 #1
->>    Hardware name: QEMU KVM Virtual Machine, BIOS 0.0.0 02/06/2015
->>    Call trace:
->>     dump_backtrace+0x0/0x394
->>     show_stack+0x34/0x4c
->>     dump_stack+0x158/0x1e4
->>     __kasan_report+0x138/0x140
->>     kasan_report+0x44/0xdc
->>     __asan_load8+0x94/0xd0
->>     kcompactd+0x440/0x504
->>     kthread+0x1a4/0x1f0
->>     ret_from_fork+0x10/0x18
->>
->> For now, kswapd/kcompactd_run() and kswapd/kcompactd_stop() protected
->> by mem_hotplug_begin/done(), but without kcompactd(). It is no need to
->> involve memory hotplug lock in kcompactd(), so let's add new mutex to
->> protect pgdat->kswapd accessed concurrently, also because kcompactd task
->> will check the state of kswapd task, it's better to call kcompactd_stop()
->> before kswapd_stop() to reduce lock conflicts.
->>
-> Looks right to me.
->
-> I think the below will make the code a little more maintainable?
-Thanks Andrew, it's better.
->
-> --- a/include/linux/memory_hotplug.h~mm-fix-null-ptr-deref-in-kswapd_is_running-fix
-> +++ a/include/linux/memory_hotplug.h
-> @@ -215,6 +215,7 @@ void put_online_mems(void);
->   void mem_hotplug_begin(void);
->   void mem_hotplug_done(void);
->   
-> +/* See kswapd_is_running() */
->   static inline void pgdat_kswapd_lock(pg_data_t *pgdat)
->   {
->   	mutex_lock(&pgdat->kswapd_lock);
-> --- a/mm/compaction.c~mm-fix-null-ptr-deref-in-kswapd_is_running-fix
-> +++ a/mm/compaction.c
-> @@ -1980,6 +1980,12 @@ static inline bool is_via_compact_memory
->   	return order == -1;
->   }
->   
-> +/*
-> + * Determine whether kswapd is (or recently was!) running on this node.
-> + *
-> + * pgdat_kswapd_lock() pins pgdat->kswapd, so a concurrent kswapd_stop() can't
-> + * zero it.
-> + */
->   static bool kswapd_is_running(pg_data_t *pgdat)
->   {
->   	bool running;
-> _
->
-> .
+Makes sense. On openrisc, the thing is I didn't find one place where
+ioremap() is called in arch code. I can cut the early ioremap out and
+wrap into a separate early_ioremap() function, however I don't know
+where to put it. Not sure if I miss anything or openrisc doesn't really
+need early ioremap.
+
