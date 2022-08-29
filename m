@@ -2,72 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B026ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 07:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37907ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 07:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbiH2Htv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 03:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
+        id S229714AbiH2HuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 03:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229715AbiH2Htp (ORCPT
+        with ESMTP id S229447AbiH2HuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 03:49:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FDE4F66C;
-        Mon, 29 Aug 2022 00:49:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4553B60ED2;
-        Mon, 29 Aug 2022 07:49:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3748C433D6;
-        Mon, 29 Aug 2022 07:49:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661759381;
-        bh=aGFduZhHwfv9PnY3vRPitP/7usWw3M+bWFBLuYbVIS0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yt6GPMZRoQxQaQf7mU/klM55vy27vm/KW0cqKOSj5iD/P/uxiaB1ghupJK+xPOHZE
-         jycDWKH4POpzprvZDeN7T2Blk08twg/3ueahnOlDziRYemic+wlJlb/b7Ty6IgS/HJ
-         yKAcr7PsClex4E5DnXvgHPsNsfCpWcgDjEqnMmng=
-Date:   Mon, 29 Aug 2022 09:48:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Maxime Coquelin <maxime.coquelin@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, elic@nvidia.com,
-        guanjun@linux.alibaba.com, parav@nvidia.com,
-        gautam.dawar@xilinx.com, dan.carpenter@oracle.com,
-        xieyongji@bytedance.com, jasowang@redhat.com, mst@redhat.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2] vduse: prevent uninitialized memory accesses
-Message-ID: <YwxvXFiuRqGxRgZH@kroah.com>
-References: <20220829073424.5677-1-maxime.coquelin@redhat.com>
+        Mon, 29 Aug 2022 03:50:08 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B76B7CB;
+        Mon, 29 Aug 2022 00:50:04 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 07:50:00 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661759401;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fO3ZTj6meGiDyhJqc5NyEivNjZrZ1xDwGlcPWQwXCF8=;
+        b=jKlN3wT6MsxVoqu6RlSeVQMeQZ45pTNSGEHFdubXT5lNe+0byBiUbk0t19QDJehToxKfzF
+        7VtaH2d9Y3qiIL4f8PSHIx9PUZy2O0lY+1yw3nNbllu4zKwP4y+JpPsfksV54012yuBAuW
+        vbZ9n4m6x7zbBc+P6Wo2p3DbGVSo2n7mph3dHVys7g3jK/qfhZ8/eETPLidF+vY+dTTSlv
+        DaH0/+z7seXlQI5AI8/MTQ7U1wPnH6H98udoj/GAqPNXov7BEg826nBoqMZJ9FJgm27UWH
+        kacw+3jid0Q15FOxzWs8gzcygiqL/vmg/mlkz7Yf9w6GJggG5T7cvUpUcblUpg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661759401;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fO3ZTj6meGiDyhJqc5NyEivNjZrZ1xDwGlcPWQwXCF8=;
+        b=9Vr6cZOymKnYSrGBjc5jV5Lmi7MEaSOmSWS0axyIsUYXSBm4pLaQ283OA9MZxWDay8q8vs
+        dVMY0jRbvJSZzpAQ==
+From:   "tip-bot2 for Anshuman Khandual" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/core] perf: Capture branch privilege information
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        James Clark <james.clark@arm.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220824044822.70230-4-anshuman.khandual@arm.com>
+References: <20220824044822.70230-4-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829073424.5677-1-maxime.coquelin@redhat.com>
+Message-ID: <166175940031.401.8517902436805331352.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 09:34:24AM +0200, Maxime Coquelin wrote:
-> If the VDUSE application provides a smaller config space
-> than the driver expects, the driver may use uninitialized
-> memory from the stack.
-> 
-> This patch prevents it by initializing the buffer passed by
-> the driver to store the config value.
-> 
-> This fix addresses CVE-2022-2308.
-> 
-> Cc: xieyongji@bytedance.com
-> Cc: stable@vger.kernel.org # v5.15+
-> Fixes: c8a6153b6c59 ("vduse: Introduce VDUSE - vDPA Device in Userspace")
-> 
-> Acked-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Maxime Coquelin <maxime.coquelin@redhat.com>
+The following commit has been merged into the perf/core branch of tip:
 
-Please no blank line above the Acked-by: line here if possible.
+Commit-ID:     5402d25aa5710d240040f73fb13d7d5c303ef071
+Gitweb:        https://git.kernel.org/tip/5402d25aa5710d240040f73fb13d7d5c303ef071
+Author:        Anshuman Khandual <anshuman.khandual@arm.com>
+AuthorDate:    Wed, 24 Aug 2022 10:18:17 +05:30
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Mon, 29 Aug 2022 09:42:42 +02:00
 
-thanks,
+perf: Capture branch privilege information
 
-greg k-h
+Platforms like arm64 could capture privilege level information for all the
+branch records. Hence this adds a new element in the struct branch_entry to
+record the privilege level information, which could be requested through a
+new event.attr.branch_sample_type based flag PERF_SAMPLE_BRANCH_PRIV_SAVE.
+This flag helps user choose whether privilege information is captured.
+
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: James Clark <james.clark@arm.com>
+Link: https://lkml.kernel.org/r/20220824044822.70230-4-anshuman.khandual@arm.com
+---
+ include/uapi/linux/perf_event.h | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/perf_event.h b/include/uapi/linux/perf_event.h
+index fed60e6..1a258d4 100644
+--- a/include/uapi/linux/perf_event.h
++++ b/include/uapi/linux/perf_event.h
+@@ -204,6 +204,8 @@ enum perf_branch_sample_type_shift {
+ 
+ 	PERF_SAMPLE_BRANCH_HW_INDEX_SHIFT	= 17, /* save low level index of raw branch records */
+ 
++	PERF_SAMPLE_BRANCH_PRIV_SAVE_SHIFT	= 18, /* save privilege mode */
++
+ 	PERF_SAMPLE_BRANCH_MAX_SHIFT		/* non-ABI */
+ };
+ 
+@@ -233,6 +235,8 @@ enum perf_branch_sample_type {
+ 
+ 	PERF_SAMPLE_BRANCH_HW_INDEX	= 1U << PERF_SAMPLE_BRANCH_HW_INDEX_SHIFT,
+ 
++	PERF_SAMPLE_BRANCH_PRIV_SAVE	= 1U << PERF_SAMPLE_BRANCH_PRIV_SAVE_SHIFT,
++
+ 	PERF_SAMPLE_BRANCH_MAX		= 1U << PERF_SAMPLE_BRANCH_MAX_SHIFT,
+ };
+ 
+@@ -282,6 +286,13 @@ enum {
+ 	PERF_BR_NEW_MAX,
+ };
+ 
++enum {
++	PERF_BR_PRIV_UNKNOWN	= 0,
++	PERF_BR_PRIV_USER	= 1,
++	PERF_BR_PRIV_KERNEL	= 2,
++	PERF_BR_PRIV_HV		= 3,
++};
++
+ #define PERF_SAMPLE_BRANCH_PLM_ALL \
+ 	(PERF_SAMPLE_BRANCH_USER|\
+ 	 PERF_SAMPLE_BRANCH_KERNEL|\
+@@ -1402,7 +1413,8 @@ struct perf_branch_entry {
+ 		type:4,     /* branch type */
+ 		spec:2,     /* branch speculation info */
+ 		new_type:4, /* additional branch type */
+-		reserved:34;
++		priv:3,     /* privilege level */
++		reserved:31;
+ };
+ 
+ union perf_sample_weight {
