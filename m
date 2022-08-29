@@ -2,102 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE33ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C08BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:56:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229708AbiH2Qz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:55:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49104 "EHLO
+        id S230360AbiH2Q4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231145AbiH2QzP (ORCPT
+        with ESMTP id S229628AbiH2Q4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:55:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC7F365A6;
-        Mon, 29 Aug 2022 09:55:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25DF9B8117E;
-        Mon, 29 Aug 2022 16:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D01FAC433C1;
-        Mon, 29 Aug 2022 16:55:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661792103;
-        bh=HiXBOm9dvzWK6mHglRBKim5I3iQDy4svVep8E5b0sME=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FoHQL1KrEzneppmN3SgxX1IImlY1zrOwvKJF+GUdJRm5+H/HpCnTOtgJ6h/aNK/J4
-         JM2GTtzIl/wrW9a9+cmiP629/xcU8pZmfxHUA7R+HulqRJ7dWt7eTLiQnyT+725A5j
-         XcVNJUAlfLSx8hSA29R+DX++apn0uqdeFHVPhTDAUIEDGXcq5yVtMoQiFEKrzn0lWs
-         jCyEob3iychWRCGKEn3iLg7EYBwckUhb1c6jEBku8PHjerkshTRWyowPeiBiv6gVPx
-         L3+bvNz+IWCI1ePD5z1S6HukDWKta+RxSBSwaXEGZg/zGor8U6PgwxWpTskJKfcSTZ
-         7cguOZzgEcctg==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Sean Paul <sean@poorly.run>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        patches@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] drm/msm/dsi: Remove use of device_node in dsi_host_parse_dt()
-Date:   Mon, 29 Aug 2022 09:54:50 -0700
-Message-Id: <20220829165450.217628-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.37.2
+        Mon, 29 Aug 2022 12:56:08 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27722B62F
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:56:04 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id cu2so17004448ejb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:56:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kohlschutter-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=88K4+TLVUo0SZBqnuedDZAAtJGW65jtkotKx2tWux4w=;
+        b=b5wu3ceMdhWyNutScJuZIBwlVDrKh4SWcYTvLFnvCj63SjC6hjviO6aJx5rwAPkPVC
+         z75GEKCTpmAPglR+2NSUV45quW5kZJj+zM34zO9Fed6dhNYbraihvUgax7dKZpJ371pX
+         lMlpPUz7MI54mn1xDCMu5dJxXChWaqRhvhVw1qFYkOuGAZwjXuOu+8aF9hOptfD7uPv/
+         S7ZFbeOj5/lm92QMHF6TZqclBA9XDWWtMuDSM8jMCLSKto5z2TpCXV0BOqirLfRiQa5F
+         UxEpaIlogDDrDDMvYyHJRuNJsZEIuFPNspN0xx1qjUr09hNQriS0jwZEC4czKc3028Z6
+         aPjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=88K4+TLVUo0SZBqnuedDZAAtJGW65jtkotKx2tWux4w=;
+        b=bsSeOvo0ZT5Lh/B1pO8Jev2wg8PnQHKMyh2Ut0bSLfCtDQBdIT7Xcu31mvNIE3yOIy
+         LlKTUS3VnzH9j/5UDit/mffUpF3e3oe1xJ9LrvpwR1esxW1Tj8/vfggZJ1pu3jfOiRvK
+         UJ3bMW4w9odLMkBvhAntPG6jToXOWAZYReQ84NOFWev7PYqbEU3rGikx0M7SQct1MIoZ
+         TCfWfB7cLP4jLZxtU8fdYRG/QiK4Z26xShdSWVMFbrdNZLq0VeArNguIRMB+an65/le2
+         cm8JQ8brF3xKi78SMp+3NvhWHB+1btwAVg8M5PRMrJu51AFyH9O/dxTl30ptdYyaopjP
+         IKfQ==
+X-Gm-Message-State: ACgBeo1ikjm3KW4xpynzAyHAMhBTpvtozDkYMvmWZX/QvNsH/RNSbspc
+        1zj9mcj8OaTUMD4FU8W/06+fnEF2WoYNBD5L
+X-Google-Smtp-Source: AA6agR7knbzfglL1V8ncw5OA1DeeDFObheh09PJKN2ltBTimKn2gYUzwHtoJpSM9lrV36fgnOKQgDg==
+X-Received: by 2002:a17:907:6092:b0:731:59f0:49ac with SMTP id ht18-20020a170907609200b0073159f049acmr14138215ejc.383.1661792163199;
+        Mon, 29 Aug 2022 09:56:03 -0700 (PDT)
+Received: from p330.kohl.home (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
+        by smtp.gmail.com with ESMTPSA id r18-20020a1709061bb200b007304bdf18cfsm4682160ejg.136.2022.08.29.09.56.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 09:56:02 -0700 (PDT)
+From:   =?UTF-8?q?Christian=20Kohlsch=C3=BCtter?= 
+        <christian@kohlschutter.com>
+To:     m.szyprowski@samsung.com, Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?q?Christian=20Kohlsch=C3=BCtter?= 
+        <christian@kohlschutter.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH] regulator: core: Fix regulator supply registration with sysfs
+Date:   Mon, 29 Aug 2022 16:55:43 +0000
+Message-Id: <20220829165543.24856-1-christian@kohlschutter.com>
+X-Mailer: git-send-email 2.36.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang warns:
+In "regulator: core: Resolve supply name earlier to prevent
+double-init", we introduced a bug that prevented the regulator names
+from registering properly with sysfs.
 
-  drivers/gpu/drm/msm/dsi/dsi_host.c:1903:14: error: variable 'device_node' is uninitialized when used here [-Werror,-Wuninitialized]
-          of_node_put(device_node);
-                      ^~~~~~~~~~~
-  drivers/gpu/drm/msm/dsi/dsi_host.c:1870:44: note: initialize the variable 'device_node' to silence this warning
-          struct device_node *endpoint, *device_node;
-                                                    ^
-                                                    = NULL
-  1 error generated.
+Reorder regulator_register such that supply names are properly resolved
+and registered.
 
-device_node's assignment was removed but not all of its uses. Remove the
-call to of_node_put() and the variable declaration to clean up the
-warning.
-
-Fixes: 5f8cdece42ff ("drm/msm/dsi: switch to DRM_PANEL_BRIDGE")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1700
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Fixes: 8a866d527ac0 ("regulator: core: Resolve supply name earlier to prevent double-init")
+Link: https://lore.kernel.org/all/58b92e75-f373-dae7-7031-8abd465bb874@samsung.com/
+Signed-off-by: Christian Kohlschütter <christian@kohlschutter.com>
 ---
- drivers/gpu/drm/msm/dsi/dsi_host.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/regulator/core.c | 44 +++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_host.c b/drivers/gpu/drm/msm/dsi/dsi_host.c
-index 57a4c0fa614b..7fbf391c024f 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_host.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_host.c
-@@ -1867,7 +1867,7 @@ static int dsi_host_parse_dt(struct msm_dsi_host *msm_host)
- {
- 	struct device *dev = &msm_host->pdev->dev;
- 	struct device_node *np = dev->of_node;
--	struct device_node *endpoint, *device_node;
-+	struct device_node *endpoint;
- 	int ret = 0;
+diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
+index 1d030831ae..b1ece764de 100644
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -5414,6 +5414,7 @@ regulator_register(const struct regulator_desc *regulator_desc,
+ 	bool dangling_of_gpiod = false;
+ 	struct device *dev;
+ 	int ret, i;
++	bool resolved_early = false;
  
- 	/*
-@@ -1900,8 +1900,6 @@ static int dsi_host_parse_dt(struct msm_dsi_host *msm_host)
- 		}
+ 	if (cfg == NULL)
+ 		return ERR_PTR(-EINVAL);
+@@ -5517,6 +5518,18 @@ regulator_register(const struct regulator_desc *regulator_desc,
+ 	BLOCKING_INIT_NOTIFIER_HEAD(&rdev->notifier);
+ 	INIT_DELAYED_WORK(&rdev->disable_work, regulator_disable_work);
+ 
++	if (init_data && init_data->supply_regulator)
++		rdev->supply_name = init_data->supply_regulator;
++	else if (regulator_desc->supply_name)
++		rdev->supply_name = regulator_desc->supply_name;
++
++	/* register with sysfs */
++	rdev->dev.class = &regulator_class;
++	rdev->dev.parent = dev;
++	dev_set_name(&rdev->dev, "regulator.%lu",
++		    (unsigned long) atomic_inc_return(&regulator_no));
++	dev_set_drvdata(&rdev->dev, rdev);
++
+ 	/* set regulator constraints */
+ 	if (init_data)
+ 		rdev->constraints = kmemdup(&init_data->constraints,
+@@ -5527,33 +5540,25 @@ regulator_register(const struct regulator_desc *regulator_desc,
+ 					    GFP_KERNEL);
+ 	if (!rdev->constraints) {
+ 		ret = -ENOMEM;
+-		goto clean;
++		goto wash;
  	}
  
--	of_node_put(device_node);
+-	if (init_data && init_data->supply_regulator)
+-		rdev->supply_name = init_data->supply_regulator;
+-	else if (regulator_desc->supply_name)
+-		rdev->supply_name = regulator_desc->supply_name;
 -
- err:
- 	of_node_put(endpoint);
+ 	if ((rdev->supply_name && !rdev->supply) &&
+-			(rdev->constraints->always_on ||
+-			 rdev->constraints->boot_on)) {
+-		/* Try to resolve the name of the supplying regulator here first
+-		 * so we prevent double-initializing the regulator, which may
+-		 * cause timing-specific voltage brownouts/glitches that are
+-		 * hard to debug.
+-		 */
++		(rdev->constraints->always_on ||
++		 rdev->constraints->boot_on)) {
+ 		ret = regulator_resolve_supply(rdev);
+ 		if (ret)
+ 			rdev_dbg(rdev, "unable to resolve supply early: %pe\n",
+ 					 ERR_PTR(ret));
++
++		resolved_early = true;
+ 	}
  
-
-base-commit: 5f8cdece42ff0c615e213b6619d29487f9f409d7
+ 	/* perform any regulator specific init */
+ 	if (init_data && init_data->regulator_init) {
+ 		ret = init_data->regulator_init(rdev->reg_data);
+ 		if (ret < 0)
+-			goto clean;
++			goto wash;
+ 	}
+ 
+ 	if (config->ena_gpiod) {
+@@ -5561,22 +5566,15 @@ regulator_register(const struct regulator_desc *regulator_desc,
+ 		if (ret != 0) {
+ 			rdev_err(rdev, "Failed to request enable GPIO: %pe\n",
+ 				 ERR_PTR(ret));
+-			goto clean;
++			goto wash;
+ 		}
+ 		/* The regulator core took over the GPIO descriptor */
+ 		dangling_cfg_gpiod = false;
+ 		dangling_of_gpiod = false;
+ 	}
+ 
+-	/* register with sysfs */
+-	rdev->dev.class = &regulator_class;
+-	rdev->dev.parent = dev;
+-	dev_set_name(&rdev->dev, "regulator.%lu",
+-		    (unsigned long) atomic_inc_return(&regulator_no));
+-	dev_set_drvdata(&rdev->dev, rdev);
+-
+ 	ret = set_machine_constraints(rdev);
+-	if (ret == -EPROBE_DEFER) {
++	if (ret == -EPROBE_DEFER && !resolved_early) {
+ 		/* Regulator might be in bypass mode and so needs its supply
+ 		 * to set the constraints
+ 		 */
 -- 
-2.37.2
+2.36.2
 
