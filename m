@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCBCECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37115ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229573AbiH2Mun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40234 "EHLO
+        id S229898AbiH2Mu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:50:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiH2MuT (ORCPT
+        with ESMTP id S229846AbiH2Mu1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:50:19 -0400
-Received: from outbound-smtp31.blacknight.com (outbound-smtp31.blacknight.com [81.17.249.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20141835F
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:36:45 -0700 (PDT)
-Received: from mail.blacknight.com (pemlinmail01.blacknight.ie [81.17.254.10])
-        by outbound-smtp31.blacknight.com (Postfix) with ESMTPS id 67F24C0DDE
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 13:36:44 +0100 (IST)
-Received: (qmail 2562 invoked from network); 29 Aug 2022 12:36:44 -0000
+        Mon, 29 Aug 2022 08:50:27 -0400
+Received: from outbound-smtp51.blacknight.com (outbound-smtp51.blacknight.com [46.22.136.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A851B6567A
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:37:05 -0700 (PDT)
+Received: from mail.blacknight.com (pemlinmail05.blacknight.ie [81.17.254.26])
+        by outbound-smtp51.blacknight.com (Postfix) with ESMTPS id A362EFAADE
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 13:37:03 +0100 (IST)
+Received: (qmail 11672 invoked from network); 29 Aug 2022 12:37:03 -0000
 Received: from unknown (HELO techsingularity.net) (mgorman@techsingularity.net@[84.203.198.246])
-  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 29 Aug 2022 12:36:44 -0000
-Date:   Mon, 29 Aug 2022 13:36:39 +0100
+  by 81.17.254.9 with ESMTPSA (AES256-SHA encrypted, authenticated); 29 Aug 2022 12:37:03 -0000
+Date:   Mon, 29 Aug 2022 13:36:59 +0100
 From:   Mel Gorman <mgorman@techsingularity.net>
 To:     Abel Wu <wuyun.abel@bytedance.com>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -29,21 +29,22 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Vincent Guittot <vincent.guittot@linaro.org>,
         Josh Don <joshdon@google.com>, Chen Yu <yu.c.chen@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] sched/fair: remove redundant check in select_idle_smt
-Message-ID: <20220829123639.orhg3swn72u457zd@techsingularity.net>
+Subject: Re: [PATCH 4/5] sched/fair: avoid double search on same cpu
+Message-ID: <20220829123659.xoeerauu72nrs7x4@techsingularity.net>
 References: <20220712082036.5130-1-wuyun.abel@bytedance.com>
- <20220712082036.5130-4-wuyun.abel@bytedance.com>
+ <20220712082036.5130-5-wuyun.abel@bytedance.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-15
 Content-Disposition: inline
-In-Reply-To: <20220712082036.5130-4-wuyun.abel@bytedance.com>
+In-Reply-To: <20220712082036.5130-5-wuyun.abel@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 04:20:34PM +0800, Abel Wu wrote:
-> If two cpus share LLC cache, then the two cores they belong to
-> are also in the same LLC domain.
+On Tue, Jul 12, 2022 at 04:20:35PM +0800, Abel Wu wrote:
+> The prev cpu is checked at the beginning of SIS, and it's unlikely
+> to be idle before the second check in select_idle_smt(). So we'd
+> better focus on its SMT siblings.
 > 
 > Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
 > Reviewed-by: Josh Don <joshdon@google.com>
