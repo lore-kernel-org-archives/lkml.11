@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C7DECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF6DECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232091AbiH2L0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40636 "EHLO
+        id S231941AbiH2L0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232136AbiH2LYW (ORCPT
+        with ESMTP id S232148AbiH2LYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:24:22 -0400
+        Mon, 29 Aug 2022 07:24:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583F8DFD7;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B7C326E6;
         Mon, 29 Aug 2022 04:15:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C26CB80EE6;
-        Mon, 29 Aug 2022 11:06:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A737C433C1;
-        Mon, 29 Aug 2022 11:06:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC37B80EF3;
+        Mon, 29 Aug 2022 11:05:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99696C433C1;
+        Mon, 29 Aug 2022 11:05:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771190;
-        bh=P/LQ/LiPfXrvovDBXBZ9fnnqsUSFQ6KLiLsbKyi7RZ0=;
+        s=korg; t=1661771142;
+        bh=qbshFygz1OTxTwAuZ3hXovueGrj+5WeQXtGonnyAtrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a1um1TE+lPGsH+wB9b0JEm+nKaurkg6IMa1n+l+2XMFRPcqgwaVYaUecfE+dqf8Xg
-         LNFRSEtIsYkI3u6UE7BM2r8ZrfmtG6+4mK29l0NPlXKK/3s3dGRw3OFtWmHCx/F5sE
-         7rPJ6gHT2Ze9N7r4niJzi0wrZiFwvysvxLgeTvAg=
+        b=hHF+HxWfeHil9fX9j/I2YJkTMHaFmv9h7yxncGR/I6dg9aqtXnJYEYWiPnhZAaZZ0
+         nOlazcfM8uP+pb/5tI+6vMhpDwx7OeaO3+9KVP656nKubV8dgdZo/AX36gTn5NqVXO
+         sHGvzrNaEwzeeGgljZlGy9jqUeepJYRWmtsYOnV0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
-        Jan Kara <jack@suse.cz>, Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 5.19 003/158] audit: fix potential double free on error path from fsnotify_add_inode_mark
-Date:   Mon, 29 Aug 2022 12:57:33 +0200
-Message-Id: <20220829105808.970145922@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Florian Westphal <fw@strlen.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 30/86] netfilter: ebtables: reject blobs that dont provide all entry points
+Date:   Mon, 29 Aug 2022 12:58:56 +0200
+Message-Id: <20220829105757.788568486@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,37 +51,165 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gaosheng Cui <cuigaosheng1@huawei.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit ad982c3be4e60c7d39c03f782733503cbd88fd2a upstream.
+[ Upstream commit 7997eff82828304b780dc0a39707e1946d6f1ebf ]
 
-Audit_alloc_mark() assign pathname to audit_mark->path, on error path
-from fsnotify_add_inode_mark(), fsnotify_put_mark will free memory
-of audit_mark->path, but the caller of audit_alloc_mark will free
-the pathname again, so there will be double free problem.
+Harshit Mogalapalli says:
+ In ebt_do_table() function dereferencing 'private->hook_entry[hook]'
+ can lead to NULL pointer dereference. [..] Kernel panic:
 
-Fix this by resetting audit_mark->path to NULL pointer on error path
-from fsnotify_add_inode_mark().
+general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+[..]
+RIP: 0010:ebt_do_table+0x1dc/0x1ce0
+Code: 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 5c 16 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b 6c df 08 48 8d 7d 2c 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 88
+[..]
+Call Trace:
+ nf_hook_slow+0xb1/0x170
+ __br_forward+0x289/0x730
+ maybe_deliver+0x24b/0x380
+ br_flood+0xc6/0x390
+ br_dev_xmit+0xa2e/0x12c0
 
-Cc: stable@vger.kernel.org
-Fixes: 7b1293234084d ("fsnotify: Add group pointer in fsnotify_init_mark()")
-Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For some reason ebtables rejects blobs that provide entry points that are
+not supported by the table, but what it should instead reject is the
+opposite: blobs that DO NOT provide an entry point supported by the table.
+
+t->valid_hooks is the bitmask of hooks (input, forward ...) that will see
+packets.  Providing an entry point that is not support is harmless
+(never called/used), but the inverse isn't: it results in a crash
+because the ebtables traverser doesn't expect a NULL blob for a location
+its receiving packets for.
+
+Instead of fixing all the individual checks, do what iptables is doing and
+reject all blobs that differ from the expected hooks.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/audit_fsnotify.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/linux/netfilter_bridge/ebtables.h | 4 ----
+ net/bridge/netfilter/ebtable_broute.c     | 8 --------
+ net/bridge/netfilter/ebtable_filter.c     | 8 --------
+ net/bridge/netfilter/ebtable_nat.c        | 8 --------
+ net/bridge/netfilter/ebtables.c           | 8 +-------
+ 5 files changed, 1 insertion(+), 35 deletions(-)
 
---- a/kernel/audit_fsnotify.c
-+++ b/kernel/audit_fsnotify.c
-@@ -102,6 +102,7 @@ struct audit_fsnotify_mark *audit_alloc_
+diff --git a/include/linux/netfilter_bridge/ebtables.h b/include/linux/netfilter_bridge/ebtables.h
+index 3a956145a25cb..a18fb73a2b772 100644
+--- a/include/linux/netfilter_bridge/ebtables.h
++++ b/include/linux/netfilter_bridge/ebtables.h
+@@ -94,10 +94,6 @@ struct ebt_table {
+ 	struct ebt_replace_kernel *table;
+ 	unsigned int valid_hooks;
+ 	rwlock_t lock;
+-	/* e.g. could be the table explicitly only allows certain
+-	 * matches, targets, ... 0 == let it in */
+-	int (*check)(const struct ebt_table_info *info,
+-	   unsigned int valid_hooks);
+ 	/* the data used by the kernel */
+ 	struct ebt_table_info *private;
+ 	struct module *me;
+diff --git a/net/bridge/netfilter/ebtable_broute.c b/net/bridge/netfilter/ebtable_broute.c
+index 32bc2821027f3..57f91efce0f73 100644
+--- a/net/bridge/netfilter/ebtable_broute.c
++++ b/net/bridge/netfilter/ebtable_broute.c
+@@ -36,18 +36,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)&initial_chain,
+ };
  
- 	ret = fsnotify_add_inode_mark(&audit_mark->mark, inode, 0);
- 	if (ret < 0) {
-+		audit_mark->path = NULL;
- 		fsnotify_put_mark(&audit_mark->mark);
- 		audit_mark = ERR_PTR(ret);
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~(1 << NF_BR_BROUTING))
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table broute_table = {
+ 	.name		= "broute",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= 1 << NF_BR_BROUTING,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
+ 
+diff --git a/net/bridge/netfilter/ebtable_filter.c b/net/bridge/netfilter/ebtable_filter.c
+index bcf982e12f16b..7f2e620f4978f 100644
+--- a/net/bridge/netfilter/ebtable_filter.c
++++ b/net/bridge/netfilter/ebtable_filter.c
+@@ -43,18 +43,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)initial_chains,
+ };
+ 
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~FILTER_VALID_HOOKS)
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table frame_filter = {
+ 	.name		= "filter",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= FILTER_VALID_HOOKS,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
+ 
+diff --git a/net/bridge/netfilter/ebtable_nat.c b/net/bridge/netfilter/ebtable_nat.c
+index 0d092773f8161..1743a105485c4 100644
+--- a/net/bridge/netfilter/ebtable_nat.c
++++ b/net/bridge/netfilter/ebtable_nat.c
+@@ -43,18 +43,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)initial_chains,
+ };
+ 
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~NAT_VALID_HOOKS)
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table frame_nat = {
+ 	.name		= "nat",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= NAT_VALID_HOOKS,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
+ 
+diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
+index d481ff24a1501..310740cc684ad 100644
+--- a/net/bridge/netfilter/ebtables.c
++++ b/net/bridge/netfilter/ebtables.c
+@@ -999,8 +999,7 @@ static int do_replace_finish(struct net *net, struct ebt_replace *repl,
+ 		goto free_iterate;
  	}
+ 
+-	/* the table doesn't like it */
+-	if (t->check && (ret = t->check(newinfo, repl->valid_hooks)))
++	if (repl->valid_hooks != t->valid_hooks)
+ 		goto free_unlock;
+ 
+ 	if (repl->num_counters && repl->num_counters != t->private->nentries) {
+@@ -1186,11 +1185,6 @@ int ebt_register_table(struct net *net, const struct ebt_table *input_table,
+ 	if (ret != 0)
+ 		goto free_chainstack;
+ 
+-	if (table->check && table->check(newinfo, table->valid_hooks)) {
+-		ret = -EINVAL;
+-		goto free_chainstack;
+-	}
+-
+ 	table->private = newinfo;
+ 	rwlock_init(&table->lock);
+ 	mutex_lock(&ebt_mutex);
+-- 
+2.35.1
+
 
 
