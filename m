@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC0CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:36:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3161ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:36:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232797AbiH2LgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:36:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58358 "EHLO
+        id S232814AbiH2LgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233050AbiH2Le0 (ORCPT
+        with ESMTP id S233068AbiH2Le1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:34:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F6366119;
-        Mon, 29 Aug 2022 04:20:22 -0700 (PDT)
+        Mon, 29 Aug 2022 07:34:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB509101E9;
+        Mon, 29 Aug 2022 04:20:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C87CB6125C;
-        Mon, 29 Aug 2022 11:19:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B64F9C433D6;
-        Mon, 29 Aug 2022 11:19:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57415B80F92;
+        Mon, 29 Aug 2022 11:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF29C433D6;
+        Mon, 29 Aug 2022 11:17:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771995;
-        bh=iUKIcguMV7W0XpnW0ZTi2WsxbvEz6OR62XO4fdkU0L0=;
+        s=korg; t=1661771830;
+        bh=OO0la5LJzIAMzZqhWPOrFSwER2Kaqw02nahsFFOjM/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F/zmgqCa5WuO14Qrq3IL1NukClK/cJr+DKMwsGnd9lzBbGrcA3hMuULspH49fYl3n
-         ginyjAnBJM7hHWgo2cmTCMUwxrOihF+LF84dn4DK9E7oq/1lr04K8EsXBNE69ueRcU
-         FBSeHIfBaPvsQLPzshsJF+I0SmYwcaGmPwy84t5o=
+        b=ljTlipDpfpBUK0q3p+SGt1fjjMwa5Pes9NReL6ue1BWi2TKfVXDKPCQRwDltTuY+p
+         /tSjs00zza8chdLOxcCK2gtPcQgbse4ub/n6MtHZLQMmk0KZ2D+qoVro8R53tCs7l0
+         tM1X2Yu18BvEqmIQ3jx0T2+T/XxHorG+fTXHB/sk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hsin-Wei Hung <hsinweih@uci.edu>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.19 158/158] bpf: Dont use tnum_range on array range checking for poke descriptors
-Date:   Mon, 29 Aug 2022 13:00:08 +0200
-Message-Id: <20220829105815.762896642@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Siddh Raman Pant <code@siddh.me>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
+        syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
+Subject: [PATCH 5.19 110/158] loop: Check for overflow while configuring loop
+Date:   Mon, 29 Aug 2022 12:59:20 +0200
+Message-Id: <20220829105813.721388114@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -51,107 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+From: Siddh Raman Pant <code@siddh.me>
 
-commit a657182a5c5150cdfacb6640aad1d2712571a409 upstream.
+commit c490a0b5a4f36da3918181a8acdc6991d967c5f3 upstream.
 
-Hsin-Wei reported a KASAN splat triggered by their BPF runtime fuzzer which
-is based on a customized syzkaller:
+The userspace can configure a loop using an ioctl call, wherein
+a configuration of type loop_config is passed (see lo_ioctl()'s
+case on line 1550 of drivers/block/loop.c). This proceeds to call
+loop_configure() which in turn calls loop_set_status_from_info()
+(see line 1050 of loop.c), passing &config->info which is of type
+loop_info64*. This function then sets the appropriate values, like
+the offset.
 
-  BUG: KASAN: slab-out-of-bounds in bpf_int_jit_compile+0x1257/0x13f0
-  Read of size 8 at addr ffff888004e90b58 by task syz-executor.0/1489
-  CPU: 1 PID: 1489 Comm: syz-executor.0 Not tainted 5.19.0 #1
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-  1.13.0-1ubuntu1.1 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x9c/0xc9
-   print_address_description.constprop.0+0x1f/0x1f0
-   ? bpf_int_jit_compile+0x1257/0x13f0
-   kasan_report.cold+0xeb/0x197
-   ? kvmalloc_node+0x170/0x200
-   ? bpf_int_jit_compile+0x1257/0x13f0
-   bpf_int_jit_compile+0x1257/0x13f0
-   ? arch_prepare_bpf_dispatcher+0xd0/0xd0
-   ? rcu_read_lock_sched_held+0x43/0x70
-   bpf_prog_select_runtime+0x3e8/0x640
-   ? bpf_obj_name_cpy+0x149/0x1b0
-   bpf_prog_load+0x102f/0x2220
-   ? __bpf_prog_put.constprop.0+0x220/0x220
-   ? find_held_lock+0x2c/0x110
-   ? __might_fault+0xd6/0x180
-   ? lock_downgrade+0x6e0/0x6e0
-   ? lock_is_held_type+0xa6/0x120
-   ? __might_fault+0x147/0x180
-   __sys_bpf+0x137b/0x6070
-   ? bpf_perf_link_attach+0x530/0x530
-   ? new_sync_read+0x600/0x600
-   ? __fget_files+0x255/0x450
-   ? lock_downgrade+0x6e0/0x6e0
-   ? fput+0x30/0x1a0
-   ? ksys_write+0x1a8/0x260
-   __x64_sys_bpf+0x7a/0xc0
-   ? syscall_enter_from_user_mode+0x21/0x70
-   do_syscall_64+0x3b/0x90
-   entry_SYSCALL_64_after_hwframe+0x63/0xcd
-  RIP: 0033:0x7f917c4e2c2d
+loop_device has lo_offset of type loff_t (see line 52 of loop.c),
+which is typdef-chained to long long, whereas loop_info64 has
+lo_offset of type __u64 (see line 56 of include/uapi/linux/loop.h).
 
-The problem here is that a range of tnum_range(0, map->max_entries - 1) has
-limited ability to represent the concrete tight range with the tnum as the
-set of resulting states from value + mask can result in a superset of the
-actual intended range, and as such a tnum_in(range, reg->var_off) check may
-yield true when it shouldn't, for example tnum_range(0, 2) would result in
-00XX -> v = 0000, m = 0011 such that the intended set of {0, 1, 2} is here
-represented by a less precise superset of {0, 1, 2, 3}. As the register is
-known const scalar, really just use the concrete reg->var_off.value for the
-upper index check.
+The function directly copies offset from info to the device as
+follows (See line 980 of loop.c):
+	lo->lo_offset = info->lo_offset;
 
-Fixes: d2e4c1e6c294 ("bpf: Constant map key tracking for prog array pokes")
-Reported-by: Hsin-Wei Hung <hsinweih@uci.edu>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Shung-Hsi Yu <shung-hsi.yu@suse.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/r/984b37f9fdf7ac36831d2137415a4a915744c1b6.1661462653.git.daniel@iogearbox.net
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+This results in an overflow, which triggers a warning in iomap_iter()
+due to a call to iomap_iter_done() which has:
+	WARN_ON_ONCE(iter->iomap.offset > iter->pos);
+
+Thus, check for negative value during loop_set_status_from_info().
+
+Bug report: https://syzkaller.appspot.com/bug?id=c620fe14aac810396d3c3edc9ad73848bf69a29e
+
+Reported-and-tested-by: syzbot+a8e049cd3abd342936b6@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Signed-off-by: Siddh Raman Pant <code@siddh.me>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20220823160810.181275-1-code@siddh.me
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/block/loop.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -6999,8 +6999,7 @@ record_func_key(struct bpf_verifier_env
- 	struct bpf_insn_aux_data *aux = &env->insn_aux_data[insn_idx];
- 	struct bpf_reg_state *regs = cur_regs(env), *reg;
- 	struct bpf_map *map = meta->map_ptr;
--	struct tnum range;
--	u64 val;
-+	u64 val, max;
- 	int err;
+--- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -979,6 +979,11 @@ loop_set_status_from_info(struct loop_de
  
- 	if (func_id != BPF_FUNC_tail_call)
-@@ -7010,10 +7009,11 @@ record_func_key(struct bpf_verifier_env
- 		return -EINVAL;
- 	}
- 
--	range = tnum_range(0, map->max_entries - 1);
- 	reg = &regs[BPF_REG_3];
-+	val = reg->var_off.value;
-+	max = map->max_entries;
- 
--	if (!register_is_const(reg) || !tnum_in(range, reg->var_off)) {
-+	if (!(register_is_const(reg) && val < max)) {
- 		bpf_map_key_store(aux, BPF_MAP_KEY_POISON);
- 		return 0;
- 	}
-@@ -7021,8 +7021,6 @@ record_func_key(struct bpf_verifier_env
- 	err = mark_chain_precision(env, BPF_REG_3);
- 	if (err)
- 		return err;
--
--	val = reg->var_off.value;
- 	if (bpf_map_key_unseen(aux))
- 		bpf_map_key_store(aux, val);
- 	else if (!bpf_map_key_poisoned(aux) &&
+ 	lo->lo_offset = info->lo_offset;
+ 	lo->lo_sizelimit = info->lo_sizelimit;
++
++	/* loff_t vars have been assigned __u64 */
++	if (lo->lo_offset < 0 || lo->lo_sizelimit < 0)
++		return -EOVERFLOW;
++
+ 	memcpy(lo->lo_file_name, info->lo_file_name, LO_NAME_SIZE);
+ 	lo->lo_file_name[LO_NAME_SIZE-1] = 0;
+ 	lo->lo_flags = info->lo_flags;
 
 
