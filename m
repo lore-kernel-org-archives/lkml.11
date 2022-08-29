@@ -2,109 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F23ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2531ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229635AbiH2Juy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 05:50:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35424 "EHLO
+        id S229753AbiH2JvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 05:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiH2Juw (ORCPT
+        with ESMTP id S229644AbiH2JvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 05:50:52 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226BC24BFA
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:50:52 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27T5Kb9I007486;
-        Mon, 29 Aug 2022 04:50:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=PODMain02222019;
- bh=Ac1E2dHlHNO3x2YovIPvIWmXBzgoM79hvAsvFpx0KBo=;
- b=Tc08a30i0ip9GJ71TVtXMDIYCV24uqfkO2ABQbCDQW7cAQ1iJ0VKFAyHeQxR/9K10ZX4
- m3V1LjUdLvU4j3wExX7csAwXiEcRvwnwK70RM7TExLypYzgj2Pb9FDwOVBbXUx+WbcSs
- ca8IW+TMsnW70E7pqbXMq43c9mp8f9UG090XtUjBy94IKSwkR0uGYrB0BpFcMsJqkRYj
- mNVn1MoosMQCK0vqYJvEoQ4ymL3jSpUdH3woSvwMSiqa2KiQ0j0i1t0y4x9GQDHeNBk6
- iXmpZ/fdtbNQ/D64OoLZMKUT+w8TiHnMW74DY+/WffyL1pycMiZ6tefsSOEoW5LGLXc8 NQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3j7gp21u5d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 04:50:37 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.12; Mon, 29 Aug
- 2022 04:50:35 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.12 via Frontend
- Transport; Mon, 29 Aug 2022 04:50:35 -0500
-Received: from [198.90.251.95] (edi-sw-dsktp-006.ad.cirrus.com [198.90.251.95])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id E511F459;
-        Mon, 29 Aug 2022 09:50:34 +0000 (UTC)
-Message-ID: <b163327f-587d-d933-35de-7058cdcd6b9e@opensource.cirrus.com>
-Date:   Mon, 29 Aug 2022 10:50:34 +0100
+        Mon, 29 Aug 2022 05:51:20 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC2F58B57
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:51:18 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id y3so14615416ejc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:51:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=SlYMUlG2qSvFZB0N2mq5+Vuwq77kZgSrLYVLPhtOEnc=;
+        b=VA8mRlDIJuRpUjAr2wap2tw76G9iqQ95P1eKHRbi0MXQ+y5IRx86u42xLbqDa3N5Uw
+         WBpv8t9zipWs3CctFwvBsrOIu5XtbCOP1buoXyRAK4MLU31Yw5ngEBFKEMkK8zVonfRa
+         j0ONoFy8E5axclexgQI8Deix+KM6vUXYS29+vk/m2cgOGWRgF4irThnGgYZYmbUaOgFL
+         UAiaDDzB1hu/DAZMMj9RMnoiMeWabPFTFH2n9WQhu3VNwHXDNrCWsZF6emYbnh58OVDq
+         r+pUZaGHVx50qLZUXUjESZfGWi8gRrSNSOgOjZjybuBNJVt27lkMLyDAdhTM/SlwI1T9
+         rD/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=SlYMUlG2qSvFZB0N2mq5+Vuwq77kZgSrLYVLPhtOEnc=;
+        b=6MoqbnyKjjF4WVg05ZZhlAe18bHkQJh6miu/tFk1/IKF/bPv0ogyDLulqJ8N6/ieoE
+         8a64f+YsvPqYNHCidxK3nmI5wjI1ziK91K74KvjmSUijyxQHIbzVqdqiY5h7HO7U1pc8
+         gO4HFnip0VfYhrmKMqZfoPeGsAHgFPb/hYotuGx6Hx5nckWO8tI0ZhvsC8QcDEYBjcWF
+         lylGVEqS0iT41krfeHnY8KOax5dEwDe6/q9X+72upAUfU/ab1Gta/kysanvrZruU1moU
+         xqxg91LXZbvRjZ7FHE0YxJWyD9dNasC9VgTAByr/k4T3tTdwSk9Hcz0VeP3N3f0rD1ej
+         3zfw==
+X-Gm-Message-State: ACgBeo0RK9ljegHdff39K8X866Fc+mbQ4rYlv2nZ/D+KogLdVuPfP/kC
+        ImV943dctpZ75HmxGN7+8Gn2Xw==
+X-Google-Smtp-Source: AA6agR7M8nHmvMXeLrqK9slD36AnzRPtNtaEGwJrWTLaeYi3Ldj3MRdNNKrrHzv2HbakO0uElrxasg==
+X-Received: by 2002:a17:907:2d23:b0:730:acf0:4907 with SMTP id gs35-20020a1709072d2300b00730acf04907mr13239673ejc.700.1661766676786;
+        Mon, 29 Aug 2022 02:51:16 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id z2-20020a170906240200b0073c23616cb1sm4374177eja.12.2022.08.29.02.51.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 02:51:16 -0700 (PDT)
+Message-ID: <4749d6b6-c20c-fd20-f904-accee3f1947a@blackwall.org>
+Date:   Mon, 29 Aug 2022 12:51:14 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.12.0
-Subject: Re: [PATCH 3/3] soundwire: bus: Fix lost UNATTACH when re-enumerating
+Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
+ extend locked port feature
 Content-Language: en-US
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        <vkoul@kernel.org>, <yung-chuan.liao@linux.intel.com>,
-        <sanyog.r.kale@intel.com>
-CC:     <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220825122241.273090-1-rf@opensource.cirrus.com>
- <20220825122241.273090-4-rf@opensource.cirrus.com>
- <adfdf06a-e1a3-e47c-a71f-5e5dccef6fd0@linux.intel.com>
- <e9deb2fb-458a-8136-5ba7-a9e2b0f2d174@opensource.cirrus.com>
- <01e03c55-1fcf-1e33-78e8-398a50b622ce@linux.intel.com>
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-In-Reply-To: <01e03c55-1fcf-1e33-78e8-398a50b622ce@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Ido Schimmel <idosch@nvidia.com>, netdev@kapio-technology.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
+ <20220826114538.705433-2-netdev@kapio-technology.com>
+ <Ywo16vHMqxxszWzX@shredder>
+ <dd9a4156fe421f6be3a49f5b928ef77e@kapio-technology.com>
+ <YwxwPJOx/n5SHZM5@shredder>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <YwxwPJOx/n5SHZM5@shredder>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: ykjxJIMpY9jph5RvS6dhUuZyA2n6Im8u
-X-Proofpoint-ORIG-GUID: ykjxJIMpY9jph5RvS6dhUuZyA2n6Im8u
-X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/08/2022 09:06, Pierre-Louis Bossart wrote:
+On 29/08/2022 10:52, Ido Schimmel wrote:
+> On Sun, Aug 28, 2022 at 12:23:30PM +0200, netdev@kapio-technology.com wrote:
+>> On 2022-08-27 17:19, Ido Schimmel wrote:
+>>> On Fri, Aug 26, 2022 at 01:45:33PM +0200, Hans Schultz wrote:
+>>>>
+>>>>  	nbp_switchdev_frame_mark(p, skb);
+>>>> @@ -943,6 +946,10 @@ static int br_setport(struct net_bridge_port
+>>>> *p, struct nlattr *tb[],
+>>>>  	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS,
+>>>> BR_NEIGH_SUPPRESS);
+>>>>  	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
+>>>>  	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
+>>>> +	br_set_port_flag(p, tb, IFLA_BRPORT_MAB, BR_PORT_MAB);
+>>>> +
+>>>> +	if (!(p->flags & BR_PORT_LOCKED))
+>>>> +		p->flags &= ~BR_PORT_MAB;
+>>
+>> The reason for this is that I wanted it to be so that if you have MAB
+>> enabled (and locked of course) and unlock the port, it will automatically
+>> clear both flags instead of having to first disable MAB and then unlock the
+>> port.
 > 
-<SNIP>
+> User space can just do:
 > 
-> Thanks for the detailed answer, this sequence of events will certainly
-> defeat the Cadence IP and the way sticky bits were handled.
+> # bridge link set dev swp1 locked off mab off
 > 
-> The UNATTACHED case was assumed to be a really rare case of losing sync,
-> i.e. a SOFT_RESET in SoundWire parlance.
-> 
-> If you explicitly do a device reset, that would be a new scenario that
-> was not considered before on any of the existing SoundWire commercial
-> devices. It's however something we need to support, and your work here
-> is much appreciated.
-> 
-> I still think we should re-check the actual status from a PING frame, in
-> order to work with more current data than the sticky bits taken at an
-> earlier time, but that would only be a minor improvement.
-> 
-> I also have a vague feeling that additional work is needed to make sure
-> the DAIs are not used before that second enumeration and all firmware
-> download complete. I did a couple of tests last year where I used the
-> debugfs interface to issue a device reset command while streaming audio,
-> and the detach/reattach was not handled at the ASoC level.
-> 
-> I really don't see any logical flaws in your patch as is, so
-> 
-> Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> 
+> I prefer not to push such logic into the kernel and instead fail
+> explicitly. I won't argue if more people are in favor.
 
-I have pushed an alternative fix that waits until it sees an UNATTACHED
-status before reprogramming the device ID.
-https://lore.kernel.org/lkml/20220829094458.1169504-1-rf@opensource.cirrus.com/T/#t
++1
 
-I've tested it with 4 amps on the same bus, all being reset after their
-firmware has been downloaded.
-
-I leave it to you to choose which fix you prefer. The second fix is
-simpler and I didn't see any problems in testing.
+I prefer to fail explicitly too, actually I also had a comment about this but
+somehow have managed to delete it before sending my review. :)
