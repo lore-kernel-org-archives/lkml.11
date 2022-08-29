@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C230ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E12ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231920AbiH2LXm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:23:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40740 "EHLO
+        id S231739AbiH2LYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:24:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbiH2LWl (ORCPT
+        with ESMTP id S231820AbiH2LWl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:22:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2435E6E8B7;
-        Mon, 29 Aug 2022 04:14:28 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96B675FC0;
+        Mon, 29 Aug 2022 04:14:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADE8461211;
-        Mon, 29 Aug 2022 11:14:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7482C433C1;
-        Mon, 29 Aug 2022 11:14:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 322C9B80F9A;
+        Mon, 29 Aug 2022 11:14:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96D2EC433D6;
+        Mon, 29 Aug 2022 11:14:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771668;
-        bh=rK/vo63zVSb2SAWkr37ODOaLG2Zf364H/XTk3h+ZdrQ=;
+        s=korg; t=1661771651;
+        bh=nYi7yo5WilhPU9ch9G1UIw/5uXKbivK+derF2TVJPiw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tu/oxNtaJzPulAoco+j3pgI69Zwr5FuPYPVlUP9hZYZ7PiXASqtHQEJkN6mV8+Och
-         VdPu6XsvZGsoFWrzb/JvTX05SIV4FVTZHFjt184BtfybZ2Bj85w6n99ixfrYI7TcNu
-         VwowY7v0CAbxRv8rSr7U2BjfnmnoNmFvwaZid4Jk=
+        b=aMbwW87Pfvtts8RxSaRaZzqQWNyaE6N/9ScFFwtu5kpZgVnraxjBM20bZx9ECkmKx
+         hU/4/AJAed67ChrpWmKQ/JaBPxedeZvqpnmX8dfesvRFr0rgvXDc25+5coeDBycw8v
+         tWFycOOlUqWZEgcVb2yHqXNSTOsFHnU735xoYn0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>,
-        Saurabh Sengar <ssengar@linux.microsoft.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 135/136] scsi: storvsc: Remove WQ_MEM_RECLAIM from storvsc_error_wq
-Date:   Mon, 29 Aug 2022 13:00:02 +0200
-Message-Id: <20220829105810.211811066@linuxfoundation.org>
+        stable@vger.kernel.org, Abhishek Shah <abhishek.shah@columbia.edu>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 056/158] netfilter: nf_tables: make table handle allocation per-netns friendly
+Date:   Mon, 29 Aug 2022 12:58:26 +0200
+Message-Id: <20220829105811.071559791@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,67 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Saurabh Sengar <ssengar@linux.microsoft.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit d957e7ffb2c72410bcc1a514153a46719255a5da upstream.
+[ Upstream commit ab482c6b66a4a8c0a8c0b0f577a785cf9ff1c2e2 ]
 
-storvsc_error_wq workqueue should not be marked as WQ_MEM_RECLAIM as it
-doesn't need to make forward progress under memory pressure.  Marking this
-workqueue as WQ_MEM_RECLAIM may cause deadlock while flushing a
-non-WQ_MEM_RECLAIM workqueue.  In the current state it causes the following
-warning:
+mutex is per-netns, move table_netns to the pernet area.
 
-[   14.506347] ------------[ cut here ]------------
-[   14.506354] workqueue: WQ_MEM_RECLAIM storvsc_error_wq_0:storvsc_remove_lun is flushing !WQ_MEM_RECLAIM events_freezable_power_:disk_events_workfn
-[   14.506360] WARNING: CPU: 0 PID: 8 at <-snip->kernel/workqueue.c:2623 check_flush_dependency+0xb5/0x130
-[   14.506390] CPU: 0 PID: 8 Comm: kworker/u4:0 Not tainted 5.4.0-1086-azure #91~18.04.1-Ubuntu
-[   14.506391] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS Hyper-V UEFI Release v4.1 05/09/2022
-[   14.506393] Workqueue: storvsc_error_wq_0 storvsc_remove_lun
-[   14.506395] RIP: 0010:check_flush_dependency+0xb5/0x130
-		<-snip->
-[   14.506408] Call Trace:
-[   14.506412]  __flush_work+0xf1/0x1c0
-[   14.506414]  __cancel_work_timer+0x12f/0x1b0
-[   14.506417]  ? kernfs_put+0xf0/0x190
-[   14.506418]  cancel_delayed_work_sync+0x13/0x20
-[   14.506420]  disk_block_events+0x78/0x80
-[   14.506421]  del_gendisk+0x3d/0x2f0
-[   14.506423]  sr_remove+0x28/0x70
-[   14.506427]  device_release_driver_internal+0xef/0x1c0
-[   14.506428]  device_release_driver+0x12/0x20
-[   14.506429]  bus_remove_device+0xe1/0x150
-[   14.506431]  device_del+0x167/0x380
-[   14.506432]  __scsi_remove_device+0x11d/0x150
-[   14.506433]  scsi_remove_device+0x26/0x40
-[   14.506434]  storvsc_remove_lun+0x40/0x60
-[   14.506436]  process_one_work+0x209/0x400
-[   14.506437]  worker_thread+0x34/0x400
-[   14.506439]  kthread+0x121/0x140
-[   14.506440]  ? process_one_work+0x400/0x400
-[   14.506441]  ? kthread_park+0x90/0x90
-[   14.506443]  ret_from_fork+0x35/0x40
-[   14.506445] ---[ end trace 2d9633159fdc6ee7 ]---
+*read-write* to 0xffffffff883a01e8 of 8 bytes by task 6542 on cpu 0:
+ nf_tables_newtable+0x6dc/0xc00 net/netfilter/nf_tables_api.c:1221
+ nfnetlink_rcv_batch net/netfilter/nfnetlink.c:513 [inline]
+ nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
+ nfnetlink_rcv+0xa6a/0x13a0 net/netfilter/nfnetlink.c:652
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x652/0x730 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0x643/0x740 net/netlink/af_netlink.c:1921
 
-Link: https://lore.kernel.org/r/1659628534-17539-1-git-send-email-ssengar@linux.microsoft.com
-Fixes: 436ad9413353 ("scsi: storvsc: Allow only one remove lun work item to be issued per lun")
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Signed-off-by: Saurabh Sengar <ssengar@linux.microsoft.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f102d66b335a ("netfilter: nf_tables: use dedicated mutex to guard transactions")
+Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
+Reviewed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/storvsc_drv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/netfilter/nf_tables.h | 1 +
+ net/netfilter/nf_tables_api.c     | 3 +--
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -2093,7 +2093,7 @@ static int storvsc_probe(struct hv_devic
- 	 */
- 	host_dev->handle_error_wq =
- 			alloc_ordered_workqueue("storvsc_error_wq_%d",
--						WQ_MEM_RECLAIM,
-+						0,
- 						host->host_no);
- 	if (!host_dev->handle_error_wq) {
- 		ret = -ENOMEM;
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index b8890ace0f879..0daad6e63ccb2 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -1635,6 +1635,7 @@ struct nftables_pernet {
+ 	struct list_head	module_list;
+ 	struct list_head	notify_list;
+ 	struct mutex		commit_mutex;
++	u64			table_handle;
+ 	unsigned int		base_seq;
+ 	u8			validate_state;
+ };
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 8b6ee9df817fb..e171257739c2f 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -32,7 +32,6 @@ static LIST_HEAD(nf_tables_objects);
+ static LIST_HEAD(nf_tables_flowtables);
+ static LIST_HEAD(nf_tables_destroy_list);
+ static DEFINE_SPINLOCK(nf_tables_destroy_list_lock);
+-static u64 table_handle;
+ 
+ enum {
+ 	NFT_VALIDATE_SKIP	= 0,
+@@ -1235,7 +1234,7 @@ static int nf_tables_newtable(struct sk_buff *skb, const struct nfnl_info *info,
+ 	INIT_LIST_HEAD(&table->flowtables);
+ 	table->family = family;
+ 	table->flags = flags;
+-	table->handle = ++table_handle;
++	table->handle = ++nft_net->table_handle;
+ 	if (table->flags & NFT_TABLE_F_OWNER)
+ 		table->nlpid = NETLINK_CB(skb).portid;
+ 
+-- 
+2.35.1
+
 
 
