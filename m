@@ -2,130 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BA35ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BAC3ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230101AbiH2PVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:21:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
+        id S230081AbiH2PXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiH2PVt (ORCPT
+        with ESMTP id S229946AbiH2PXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:21:49 -0400
-Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED356DAEA;
-        Mon, 29 Aug 2022 08:21:47 -0700 (PDT)
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
- id d3c77fd95de3eca7; Mon, 29 Aug 2022 17:21:44 +0200
-Received: from kreacher.localnet (public-gprs523165.centertel.pl [31.61.162.222])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id D44B666D25B;
-        Mon, 29 Aug 2022 17:21:43 +0200 (CEST)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v1] ACPI: PM: Fix NULL argument handling in acpi_device_get/set_power()
-Date:   Mon, 29 Aug 2022 17:21:43 +0200
-Message-ID: <12062887.O9o76ZdvQC@kreacher>
-In-Reply-To: <12036348.O9o76ZdvQC@kreacher>
-References: <12036348.O9o76ZdvQC@kreacher>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
+        Mon, 29 Aug 2022 11:23:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE9088DC0
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:23:40 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1oSgbl-0007eP-Sn; Mon, 29 Aug 2022 17:23:25 +0200
+Message-ID: <9b2eba50b41e19d3f71a08416b295ba2e7bcc1ee.camel@pengutronix.de>
+Subject: Re: [PATCH v4 4/6] arm64: dts: imx8mp: Add iMX8MP PCIe support
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, p.zabel@pengutronix.de,
+        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        shawnguo@kernel.org, vkoul@kernel.org,
+        alexander.stein@ew.tq-group.com, marex@denx.de,
+        richard.leitner@linux.dev
+Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Mon, 29 Aug 2022 17:23:23 +0200
+In-Reply-To: <1661760917-9558-5-git-send-email-hongxing.zhu@nxp.com>
+References: <1661760917-9558-1-git-send-email-hongxing.zhu@nxp.com>
+         <1661760917-9558-5-git-send-email-hongxing.zhu@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 31.61.162.222
-X-CLIENT-HOSTNAME: public-gprs523165.centertel.pl
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddgkeelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdffueeitdfgvddtudegueejtdffteetgeefkeffvdeftddttdeuhfegfedvjefhnecukfhppeefuddriedurdduiedvrddvvddvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepfedurdeiuddrudeivddrvddvvddphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohephedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopegrnhgurhhihidrshhhvghvtghhvghnkhhosehlihhnuhigrdhinhhtvghlrdgtohhmpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghl
- rdhorhhgpdhrtghpthhtohepuggrnhdrtggrrhhpvghnthgvrhesohhrrggtlhgvrdgtohhm
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Am Montag, dem 29.08.2022 um 16:15 +0800 schrieb Richard Zhu:
+> Add i.MX8MP PCIe support.
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+> Tested-by: Marek Vasut <marex@denx.de>
+> Tested-by: Richard Leitner <richard.leitner@skidata.com>
+> Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+> ---
+>  arch/arm64/boot/dts/freescale/imx8mp.dtsi | 46 ++++++++++++++++++++++-
+>  1 file changed, 45 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/freescale/imx8mp.dtsi b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+> index fe178b7d063c..d11f079fd1f3 100644
+> --- a/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/imx8mp.dtsi
+> @@ -5,6 +5,7 @@
+>  
+>  #include <dt-bindings/clock/imx8mp-clock.h>
+>  #include <dt-bindings/power/imx8mp-power.h>
+> +#include <dt-bindings/reset/imx8mp-reset.h>
+>  #include <dt-bindings/gpio/gpio.h>
+>  #include <dt-bindings/input/input.h>
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+> @@ -410,7 +411,8 @@ iomuxc: pinctrl@30330000 {
+>  			};
+>  
+>  			gpr: iomuxc-gpr@30340000 {
+> -				compatible = "fsl,imx8mp-iomuxc-gpr", "syscon";
+> +				compatible = "fsl,imx8mp-iomuxc-gpr",
+> +					     "fsl,imx6q-iomuxc-gpr", "syscon";
 
-In principle, it should be valid to pass NULL as the ACPI device
-pointer to acpi_device_get_power() and acpi_device_set_power() and they
-both are expected to return -EINVAL in that case, but that has been
-broken recently by commit 62fcb99bdf10 ("ACPI: Drop parent field from
-struct acpi_device") which has caused the ACPI device pointer to be
-dereferenced in these functions before the NULL check.
+I don't like this part. The iomux GPR in the i.MX8M* is not really
+compatible with the i.MX6Q, so I think it's a pretty bad idea to claim
+it is. Why can't we have this syscon looked up by phandle, like we
+discussed in some early version of the i.MX8MM patchset? Sorry, for not
+catching this on the 8MM submission, I was pretty busy back then.
 
-Fix that and while at it make acpi_device_set_power() only use the
-parent field if the target ACPI device object's ignore_parent flag
-in not set.
+Regards,
+Lucas
 
-Fixes: 62fcb99bdf10 ("ACPI: Drop parent field from struct acpi_device")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
-
-linux-next material.
-
----
- drivers/acpi/device_pm.c |   23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
-
-Index: linux-pm/drivers/acpi/device_pm.c
-===================================================================
---- linux-pm.orig/drivers/acpi/device_pm.c
-+++ linux-pm/drivers/acpi/device_pm.c
-@@ -74,13 +74,15 @@ static int acpi_dev_pm_explicit_get(stru
-  */
- int acpi_device_get_power(struct acpi_device *device, int *state)
- {
--	struct acpi_device *parent = acpi_dev_parent(device);
- 	int result = ACPI_STATE_UNKNOWN;
-+	struct acpi_device *parent;
- 	int error;
- 
- 	if (!device || !state)
- 		return -EINVAL;
- 
-+	parent = acpi_dev_parent(device);
-+
- 	if (!device->flags.power_manageable) {
- 		/* TBD: Non-recursive algorithm for walking up hierarchy. */
- 		*state = parent ? parent->power.state : ACPI_STATE_D0;
-@@ -159,7 +161,6 @@ static int acpi_dev_pm_explicit_set(stru
-  */
- int acpi_device_set_power(struct acpi_device *device, int state)
- {
--	struct acpi_device *parent = acpi_dev_parent(device);
- 	int target_state = state;
- 	int result = 0;
- 
-@@ -192,13 +193,17 @@ int acpi_device_set_power(struct acpi_de
- 		return -ENODEV;
- 	}
- 
--	if (!device->power.flags.ignore_parent && parent &&
--	    state < parent->power.state) {
--		acpi_handle_debug(device->handle,
--				  "Cannot transition to %s for parent in %s\n",
--				  acpi_power_state_string(state),
--				  acpi_power_state_string(parent->power.state));
--		return -ENODEV;
-+	if (!device->power.flags.ignore_parent) {
-+		struct acpi_device *parent;
-+
-+		parent = acpi_dev_parent(device);
-+		if (parent && state < parent->power.state) {
-+			acpi_handle_debug(device->handle,
-+					  "Cannot transition to %s for parent in %s\n",
-+					  acpi_power_state_string(state),
-+					  acpi_power_state_string(parent->power.state));
-+			return -ENODEV;
-+		}
- 	}
- 
- 	/*
-
+>  				reg = <0x30340000 0x10000>;
+>  			};
+>  
+> @@ -1084,6 +1086,17 @@ media_blk_ctrl: blk-ctrl@32ec0000 {
+>  				#power-domain-cells = <1>;
+>  			};
+>  
+> +			pcie_phy: pcie-phy@32f00000 {
+> +				compatible = "fsl,imx8mp-pcie-phy";
+> +				reg = <0x32f00000 0x10000>;
+> +				resets = <&src IMX8MP_RESET_PCIEPHY>,
+> +					 <&src IMX8MP_RESET_PCIEPHY_PERST>;
+> +				reset-names = "pciephy", "perst";
+> +				power-domains = <&hsio_blk_ctrl IMX8MP_HSIOBLK_PD_PCIE_PHY>;
+> +				#phy-cells = <0>;
+> +				status = "disabled";
+> +			};
+> +
+>  			hsio_blk_ctrl: blk-ctrl@32f10000 {
+>  				compatible = "fsl,imx8mp-hsio-blk-ctrl", "syscon";
+>  				reg = <0x32f10000 0x24>;
+> @@ -1099,6 +1112,37 @@ hsio_blk_ctrl: blk-ctrl@32f10000 {
+>  			};
+>  		};
+>  
+> +		pcie: pcie@33800000 {
+> +			compatible = "fsl,imx8mp-pcie";
+> +			reg = <0x33800000 0x400000>, <0x1ff00000 0x80000>;
+> +			reg-names = "dbi", "config";
+> +			#address-cells = <3>;
+> +			#size-cells = <2>;
+> +			device_type = "pci";
+> +			bus-range = <0x00 0xff>;
+> +			ranges =  <0x81000000 0 0x00000000 0x1ff80000 0 0x00010000>, /* downstream I/O 64KB */
+> +				  <0x82000000 0 0x18000000 0x18000000 0 0x07f00000>; /* non-prefetchable memory */
+> +			num-lanes = <1>;
+> +			num-viewport = <4>;
+> +			interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
+> +			interrupt-names = "msi";
+> +			#interrupt-cells = <1>;
+> +			interrupt-map-mask = <0 0 0 0x7>;
+> +			interrupt-map = <0 0 0 1 &gic GIC_SPI 126 IRQ_TYPE_LEVEL_HIGH>,
+> +					<0 0 0 2 &gic GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
+> +					<0 0 0 3 &gic GIC_SPI 124 IRQ_TYPE_LEVEL_HIGH>,
+> +					<0 0 0 4 &gic GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>;
+> +			fsl,max-link-speed = <3>;
+> +			linux,pci-domain = <0>;
+> +			power-domains = <&hsio_blk_ctrl IMX8MP_HSIOBLK_PD_PCIE>;
+> +			resets = <&src IMX8MP_RESET_PCIE_CTRL_APPS_EN>,
+> +				 <&src IMX8MP_RESET_PCIE_CTRL_APPS_TURNOFF>;
+> +			reset-names = "apps", "turnoff";
+> +			phys = <&pcie_phy>;
+> +			phy-names = "pcie-phy";
+> +			status = "disabled";
+> +		};
+> +
+>  		gpu3d: gpu@38000000 {
+>  			compatible = "vivante,gc";
+>  			reg = <0x38000000 0x8000>;
 
 
