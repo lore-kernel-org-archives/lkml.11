@@ -2,101 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9C1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69252ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231614AbiH2Lor (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:44:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55794 "EHLO
+        id S231873AbiH2Loz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233136AbiH2Ln4 (ORCPT
+        with ESMTP id S233232AbiH2LoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:43:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8338D7823F;
-        Mon, 29 Aug 2022 04:28:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1742B80EFE;
-        Mon, 29 Aug 2022 11:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B4DDC433D6;
-        Mon, 29 Aug 2022 11:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771418;
-        bh=q/shjSGFz7yyHESNs3WnEG3/8Lkyqt5tkFOSehy3gDU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IPVOfwIS3BNj0c1Vwy56bypjqVItOaYJ6MO/HRZLwm+tuYvCBOQI0mBX9Adv9anZ1
-         Vtm/GFf/0mUvSkJCqTzUsMouSnBCrdViYl20P7FPA+ULDpBij2qiMk5J3aGPWxevib
-         EEmaJnXIOLfGatCnNlVxJ5moJOiAJcvQ/YFk9LOY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anand Jain <anand.jain@oracle.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 65/86] btrfs: replace: drop assert for suspended replace
-Date:   Mon, 29 Aug 2022 12:59:31 +0200
-Message-Id: <20220829105759.209953827@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 29 Aug 2022 07:44:10 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599CE861D9;
+        Mon, 29 Aug 2022 04:28:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661772497; x=1693308497;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ktD+MPSTkvtZ2p7zqOjOliH/f+SyytDdfafxmL8w04Y=;
+  b=bbcRocCU4+jjG224BVz7Gp7O0HRvVWi7nA5TSBLxv7CVkJ4oZqGgnrSM
+   VH1tC9WEhh507wPduZ87AtwFzNJnR0LuFcskSOKCzY1+9CfpRWLB1O+ii
+   oiWTxLBFn6ID+BJoh9cEBDwZy1rhdRnJ+f78ogvJLIB/nLC6SMUDdNZJa
+   FkE0jHpULtiZSbVpm/wmjPE89eGeBnUzJnMxaEZtEAmBfHWTVd/tSLzf0
+   HxwxmVb1vtT7PMCo/cX3mi6PzrC6ND46cq8tznlq/+r/HszSnP0ibaaJ3
+   2TiPA2qMMXYRIMAJt1jU7aALPG8gQRXwFDmxxyLAiFxa9UrnME7lK3MBz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="294879419"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="294879419"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 04:23:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="562188843"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 29 Aug 2022 04:23:55 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 63062AD; Mon, 29 Aug 2022 14:24:10 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jakob Hauser <jahau@rocketmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v1 1/4] iio: magnetometer: yamaha-yas530: Use pointers as driver data
+Date:   Mon, 29 Aug 2022 14:24:04 +0300
+Message-Id: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anand Jain <anand.jain@oracle.com>
+Unify ID tables to use pointers for driver data. It will allow
+to simplify the driver later on.
 
-commit 59a3991984dbc1fc47e5651a265c5200bd85464e upstream.
-
-If the filesystem mounts with the replace-operation in a suspended state
-and try to cancel the suspended replace-operation, we hit the assert. The
-assert came from the commit fe97e2e173af ("btrfs: dev-replace: replace's
-scrub must not be running in suspended state") that was actually not
-required. So just remove it.
-
- $ mount /dev/sda5 /btrfs
-
-    BTRFS info (device sda5): cannot continue dev_replace, tgtdev is missing
-    BTRFS info (device sda5): you may cancel the operation after 'mount -o degraded'
-
- $ mount -o degraded /dev/sda5 /btrfs <-- success.
-
- $ btrfs replace cancel /btrfs
-
-    kernel: assertion failed: ret != -ENOTCONN, in fs/btrfs/dev-replace.c:1131
-    kernel: ------------[ cut here ]------------
-    kernel: kernel BUG at fs/btrfs/ctree.h:3750!
-
-After the patch:
-
- $ btrfs replace cancel /btrfs
-
-    BTRFS info (device sda5): suspended dev_replace from /dev/sda5 (devid 1) to <missing disk> canceled
-
-Fixes: fe97e2e173af ("btrfs: dev-replace: replace's scrub must not be running in suspended state")
-CC: stable@vger.kernel.org # 5.0+
-Signed-off-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- fs/btrfs/dev-replace.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/iio/magnetometer/yamaha-yas530.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
---- a/fs/btrfs/dev-replace.c
-+++ b/fs/btrfs/dev-replace.c
-@@ -954,8 +954,7 @@ int btrfs_dev_replace_cancel(struct btrf
- 		up_write(&dev_replace->rwsem);
+diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
+index 026f71e524f3..03e0525e6364 100644
+--- a/drivers/iio/magnetometer/yamaha-yas530.c
++++ b/drivers/iio/magnetometer/yamaha-yas530.c
+@@ -32,6 +32,7 @@
+ #include <linux/mod_devicetable.h>
+ #include <linux/mutex.h>
+ #include <linux/pm_runtime.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/random.h>
+@@ -1437,8 +1438,8 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 		goto assert_reset;
+ 	}
  
- 		/* Scrub for replace must not be running in suspended state */
--		ret = btrfs_scrub_cancel(fs_info);
--		ASSERT(ret != -ENOTCONN);
-+		btrfs_scrub_cancel(fs_info);
+-	yas5xx->chip_info = &yas5xx_chip_info_tbl[id->driver_data];
+-	ci = yas5xx->chip_info;
++	ci = device_get_match_data(dev);
++	yas5xx->chip_info = ci;
  
- 		trans = btrfs_start_transaction(root, 0);
- 		if (IS_ERR(trans)) {
-
+ 	ret = regmap_read(yas5xx->map, YAS5XX_DEVICE_ID, &id_check);
+ 	if (ret)
+@@ -1583,19 +1584,19 @@ static DEFINE_RUNTIME_DEV_PM_OPS(yas5xx_dev_pm_ops, yas5xx_runtime_suspend,
+ 				 yas5xx_runtime_resume, NULL);
+ 
+ static const struct i2c_device_id yas5xx_id[] = {
+-	{"yas530", yas530 },
+-	{"yas532", yas532 },
+-	{"yas533", yas533 },
+-	{"yas537", yas537 },
++	{"yas530", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas530] },
++	{"yas532", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas532] },
++	{"yas533", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas533] },
++	{"yas537", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas537] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, yas5xx_id);
+ 
+ static const struct of_device_id yas5xx_of_match[] = {
+-	{ .compatible = "yamaha,yas530", },
+-	{ .compatible = "yamaha,yas532", },
+-	{ .compatible = "yamaha,yas533", },
+-	{ .compatible = "yamaha,yas537", },
++	{ .compatible = "yamaha,yas530", &yas5xx_chip_info_tbl[yas530] },
++	{ .compatible = "yamaha,yas532", &yas5xx_chip_info_tbl[yas532] },
++	{ .compatible = "yamaha,yas533", &yas5xx_chip_info_tbl[yas533] },
++	{ .compatible = "yamaha,yas537", &yas5xx_chip_info_tbl[yas537] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, yas5xx_of_match);
+-- 
+2.35.1
 
