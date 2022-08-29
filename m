@@ -2,77 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E96C0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 18:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCFBECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 18:42:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbiH2Slc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 14:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59388 "EHLO
+        id S229870AbiH2SmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 14:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiH2Sl3 (ORCPT
+        with ESMTP id S229751AbiH2SmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 14:41:29 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E6C80522;
-        Mon, 29 Aug 2022 11:41:27 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 02C861C0001; Mon, 29 Aug 2022 20:41:25 +0200 (CEST)
-Date:   Mon, 29 Aug 2022 20:41:23 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/86] 5.10.140-rc1 review
-Message-ID: <20220829184123.GA26356@duo.ucw.cz>
-References: <20220829105756.500128871@linuxfoundation.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="5vNYLRcllDrimb99"
-Content-Disposition: inline
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Mon, 29 Aug 2022 14:42:04 -0400
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67FF082766;
+        Mon, 29 Aug 2022 11:42:03 -0700 (PDT)
+Received: by mail-oi1-f175.google.com with SMTP id v125so11456228oie.0;
+        Mon, 29 Aug 2022 11:42:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=LXkEPrKAVM00r7oWbx73qYiaSM+RhvXxRLquIsmnm1w=;
+        b=ZMvJ9FpJkby3WOHVXYDHjST/jqY4/4HSTljwowxMFvI3u0rsvn/0jvF95iY7erAA/x
+         bPMeuSMgGP7SSOdYvlKbVyvvu/N+ZtlLOmD0/kLTKu9VSUI0FyEOAczPwVLbNJJnj6iy
+         TZyIvolAIfADUJ83Kr7LXlAu71HM68Z5pKSfbX0LU1Oi1VVomdoQrlQ16WN2xr2A4zZl
+         uiiIcHxPLFPQTr7To/u4fDekAxRvdrD207xU5aLwP6bLFzz5PrgISbWeP3OtKHqcBkjg
+         p2eQ9tHrqc2J2W5uLH2hnRc0M0znqVdaXCWYNqI7dU2xomTCcVS4lfjMkvbzlDEJq5PN
+         0vDA==
+X-Gm-Message-State: ACgBeo0FbbSuOkMR3m7PZPJUdJRBJzfgjmohpSMDEUYx1Hs272kUuEkh
+        qYSVxhZdl8GbuGyi8tEiXw==
+X-Google-Smtp-Source: AA6agR42ZU6Hvi/yKVQOmrNtnY8Z/N6ngoK1AmvM742vrzGwV1LSvyBk0CuqpQSMIwTLFyQapO6Rqg==
+X-Received: by 2002:a05:6808:21a2:b0:345:d23e:d2e2 with SMTP id be34-20020a05680821a200b00345d23ed2e2mr4725175oib.273.1661798522665;
+        Mon, 29 Aug 2022 11:42:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id n29-20020a056870241d00b0011c8332922fsm691084oap.29.2022.08.29.11.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 11:42:02 -0700 (PDT)
+Received: (nullmailer pid 2118960 invoked by uid 1000);
+        Mon, 29 Aug 2022 18:42:01 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Zong Li <zong.li@sifive.com>
+Cc:     robh+dt@kernel.org, aou@eecs.berkeley.edu,
+        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        palmer@dabbelt.com, conor.dooley@microchip.com,
+        paul.walmsley@sifive.com, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, greentime.hu@sifive.com
+In-Reply-To: <20220829062202.3287-2-zong.li@sifive.com>
+References: <20220829062202.3287-1-zong.li@sifive.com> <20220829062202.3287-2-zong.li@sifive.com>
+Subject: Re: [PATCH 1/3] dt-bindings: sifive-ccache: rename SiFive L2 cache to composible cache
+Date:   Mon, 29 Aug 2022 13:42:01 -0500
+Message-Id: <1661798521.316365.2118959.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, 29 Aug 2022 06:22:00 +0000, Zong Li wrote:
+> Since composible cache may be L3 cache if private L2 cache exists, it
+> should use its original name composible cache to prevent confusion.
+> 
+> Signed-off-by: Greentime Hu <greentime.hu@sifive.com>
+> Signed-off-by: Zong Li <zong.li@sifive.com>
+> ---
+>  .../riscv/{sifive-l2-cache.yaml => sifive-ccache.yaml}      | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>  rename Documentation/devicetree/bindings/riscv/{sifive-l2-cache.yaml => sifive-ccache.yaml} (92%)
+> 
 
---5vNYLRcllDrimb99
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Hi!
+yamllint warnings/errors:
 
-> This is the start of the stable review cycle for the 5.10.140 release.
-> There are 86 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/riscv/sifive-ccache.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/riscv/sifive-ccache.yaml#
 
-CIP testing did not find any problems here:
+doc reference errors (make refcheckdocs):
 
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-5.10.y
+See https://patchwork.ozlabs.org/patch/
 
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-Best regards,
-                                                                Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
---5vNYLRcllDrimb99
-Content-Type: application/pgp-signature; name="signature.asc"
+pip3 install dtschema --upgrade
 
------BEGIN PGP SIGNATURE-----
+Please check and re-submit.
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYw0IUwAKCRAw5/Bqldv6
-8m87AJ4hsnjDUcuTUQcuRdmLnstfLZPicwCgnQZuoxcWPplofy2/n6xL09lB/lA=
-=SysB
------END PGP SIGNATURE-----
-
---5vNYLRcllDrimb99--
