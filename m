@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC39ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DFCECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:38:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232889AbiH2LiL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:38:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        id S232837AbiH2LiP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:38:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232868AbiH2LhD (ORCPT
+        with ESMTP id S232870AbiH2LhD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:37:03 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD36461B3C;
-        Mon, 29 Aug 2022 04:21:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A7737FE50;
+        Mon, 29 Aug 2022 04:21:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F0E561185;
-        Mon, 29 Aug 2022 11:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 771CAC433C1;
-        Mon, 29 Aug 2022 11:19:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8B2E61238;
+        Mon, 29 Aug 2022 11:13:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBCE7C433C1;
+        Mon, 29 Aug 2022 11:13:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771966;
-        bh=9TpFLjXDWWPGSkUHylnED8xi99Am0soBk1z8T1wdQ/I=;
+        s=korg; t=1661771605;
+        bh=k099SGT6cbJNMFaxVYzbiadsUxeStwCwgm8jejTEimg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y21Qnk3E//3apmt8RiGP/5U+uWMfhdeGIQJJbzpKU1ZCNgo50Lk1faCmvr6/44Gkr
-         GhtHIf7W9/+AkQo5clbL/2MXCVRKMAeKIpJkzHiptRzPc+VB9IvjELKui1+2jmBojl
-         VbUxq1wgoNrM//Y1PyCLNHpziuh8H/CYsiaQOX2I=
+        b=Ut59T2mpCYPpLwP3PvFCKBwrQBTE467r/LhtcMYJEapoWC0iz7+TpFeXvhMZm7A3S
+         INE9Ih05jDb90LoC+Fp9dibJqCFh4mvi9wucfDf+oR2zCxfCPrIwltqOlBU2ASczRv
+         Z/v4mNXGQnH6cBsnPE1S3K9wbU0VXetrAzj1u97Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.19 123/158] shmem: update folio if shmem_replace_page() updates the page
-Date:   Mon, 29 Aug 2022 12:59:33 +0200
-Message-Id: <20220829105814.269068045@linuxfoundation.org>
+        stable@vger.kernel.org, Shreyas K K <quic_shrekk@quicinc.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
+Subject: [PATCH 5.15 125/136] arm64: Fix match_list for erratum 1286807 on Arm Cortex-A76
+Date:   Mon, 29 Aug 2022 12:59:52 +0200
+Message-Id: <20220829105809.816891196@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,41 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Wilcox (Oracle) <willy@infradead.org>
+From: Zenghui Yu <yuzenghui@huawei.com>
 
-commit 9dfb3b8d655022760ca68af11821f1c63aa547c3 upstream.
+commit 5e1e087457c94ad7fafbe1cf6f774c6999ee29d4 upstream.
 
-If we allocate a new page, we need to make sure that our folio matches
-that new page.
+Since commit 51f559d66527 ("arm64: Enable repeat tlbi workaround on KRYO4XX
+gold CPUs"), we failed to detect erratum 1286807 on Cortex-A76 because its
+entry in arm64_repeat_tlbi_list[] was accidently corrupted by this commit.
 
-If we do end up in this code path, we store the wrong page in the shmem
-inode's page cache, and I would rather imagine that data corruption
-ensues.
+Fix this issue by creating a separate entry for Kryo4xx Gold.
 
-This will be solved by changing shmem_replace_page() to
-shmem_replace_folio(), but this is the minimal fix.
-
-Link: https://lkml.kernel.org/r/20220730042518.1264767-1-willy@infradead.org
-Fixes: da08e9b79323 ("mm/shmem: convert shmem_swapin_page() to shmem_swapin_folio()")
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reviewed-by: William Kucharski <william.kucharski@oracle.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: 51f559d66527 ("arm64: Enable repeat tlbi workaround on KRYO4XX gold CPUs")
+Cc: Shreyas K K <quic_shrekk@quicinc.com>
+Signed-off-by: Zenghui Yu <yuzenghui@huawei.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220809043848.969-1-yuzenghui@huawei.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/shmem.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/kernel/cpu_errata.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -1771,6 +1771,7 @@ static int shmem_swapin_folio(struct ino
- 
- 	if (shmem_should_replace_folio(folio, gfp)) {
- 		error = shmem_replace_page(&page, gfp, info, index);
-+		folio = page_folio(page);
- 		if (error)
- 			goto failed;
- 	}
+--- a/arch/arm64/kernel/cpu_errata.c
++++ b/arch/arm64/kernel/cpu_errata.c
+@@ -208,6 +208,8 @@ static const struct arm64_cpu_capabiliti
+ #ifdef CONFIG_ARM64_ERRATUM_1286807
+ 	{
+ 		ERRATA_MIDR_RANGE(MIDR_CORTEX_A76, 0, 0, 3, 0),
++	},
++	{
+ 		/* Kryo4xx Gold (rcpe to rfpe) => (r0p0 to r3p0) */
+ 		ERRATA_MIDR_RANGE(MIDR_QCOM_KRYO_4XX_GOLD, 0xc, 0xe, 0xf, 0xe),
+ 	},
 
 
