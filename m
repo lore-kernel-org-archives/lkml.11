@@ -2,105 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4954ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9726ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232360AbiH2LzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35212 "EHLO
+        id S229695AbiH2L5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232026AbiH2LyX (ORCPT
+        with ESMTP id S229563AbiH2L5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:54:23 -0400
+        Mon, 29 Aug 2022 07:57:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7CF93529;
-        Mon, 29 Aug 2022 04:38:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13C7A95AE0;
+        Mon, 29 Aug 2022 04:41:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83DB3611F1;
-        Mon, 29 Aug 2022 11:11:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83E77C433D6;
-        Mon, 29 Aug 2022 11:11:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4BA9610E7;
+        Mon, 29 Aug 2022 11:39:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72600C433C1;
+        Mon, 29 Aug 2022 11:39:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771494;
-        bh=MWjADRMk2URAIFFTWgxZCUWXo7D4BssI/xnxSLMxXSU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gYVpIknm8lpbgOPF3hIwNJ6hoDfOcC0PoDLgytMyj18GmGULCEuquPq/HDAXS3xh9
-         dZ9jHX3xuZZBB4s93kjt+878q/r58/4XMWAJahKoCPNm2mOrA8lw+D1zesMX1A46j9
-         5P7UfDZ140QdXIWiXYsJRZOLGfJwAuh9yO57W67M=
+        s=korg; t=1661773157;
+        bh=PUH3ViVHVj54pbPEDClUi/8HHM7+ZaoZalmXOTxsBTI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZC4eJtFSoF30Mn/CPoOM7gOwz4yywp1R8svyfupEQ1gONEOkmY4t/FSJ5cBgzn2NZ
+         hE7mFlzHVmiLUR5Ntjl/ZbN7QsOAZYAOyDl+S5Ik/s/5UTMCcLZnk2maP/W3Mwb9vT
+         iIhLrzStvmJ1iAJvE1VLxBicn3umbgP2sJ3pH1k4=
+Date:   Mon, 29 Aug 2022 13:39:13 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liu Shixin <liushixin2@huawei.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 109/136] bootmem: remove the vmemmap pages from kmemleak in put_page_bootmem
-Date:   Mon, 29 Aug 2022 12:59:36 +0200
-Message-Id: <20220829105809.193452766@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [PATCH 5.15 042/136] ice: xsk: Force rings to be sized to power
+ of 2
+Message-ID: <YwylYXZ9R9ILBYTx@kroah.com>
 References: <20220829105804.609007228@linuxfoundation.org>
-User-Agent: quilt/0.67
+ <20220829105806.324347516@linuxfoundation.org>
+ <YwygGA09Qtddbgw6@boxer>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwygGA09Qtddbgw6@boxer>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Shixin <liushixin2@huawei.com>
+On Mon, Aug 29, 2022 at 01:16:40PM +0200, Maciej Fijalkowski wrote:
+> On Mon, Aug 29, 2022 at 12:58:29PM +0200, Greg Kroah-Hartman wrote:
+> > From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> > 
+> > [ Upstream commit 296f13ff3854535009a185aaf8e3603266d39d94 ]
+> > 
+> > With the upcoming introduction of batching to XSK data path,
+> > performance wise it will be the best to have the ring descriptor count
+> > to be aligned to power of 2.
+> > 
+> > Check if ring sizes that user is going to attach the XSK socket fulfill
+> > the condition above. For Tx side, although check is being done against
+> > the Tx queue and in the end the socket will be attached to the XDP
+> > queue, it is fine since XDP queues get the ring->count setting from Tx
+> > queues.
+> 
+> Hi Greg,
+> 
+> We had multiple customers reporting that this change makes them unable to
+> use max ring size which is 8160 for this particular driver (which is not a
+> power of 2 obviously) so we are about to send a patch that will drop this
+> limitation.
+> 
+> To avoid the double work, can you please not proceed with this one?
+> The other two:
+> ice: xsk: prohibit usage of non-balanced queue id
+> ice: xsk: use Rx rings XDP ring when picking NAPI context
+> 
+> are valid and needed.
 
-commit dd0ff4d12dd284c334f7e9b07f8f335af856ac78 upstream.
+This is in the 5.18 kernel release, which has been out for a while.
 
-The vmemmap pages is marked by kmemleak when allocated from memblock.
-Remove it from kmemleak when freeing the page.  Otherwise, when we reuse
-the page, kmemleak may report such an error and then stop working.
+We will be glad to pick up the fixed commit when it hits Linus's tree.
 
- kmemleak: Cannot insert 0xffff98fb6eab3d40 into the object search tree (overlaps existing)
- kmemleak: Kernel memory leak detector disabled
- kmemleak: Object 0xffff98fb6be00000 (size 335544320):
- kmemleak:   comm "swapper", pid 0, jiffies 4294892296
- kmemleak:   min_count = 0
- kmemleak:   count = 0
- kmemleak:   flags = 0x1
- kmemleak:   checksum = 0
- kmemleak:   backtrace:
+> FWIW this was a part of -next patch set, so I suppose you picked this due
+> to some dependency?
 
-Link: https://lkml.kernel.org/r/20220819094005.2928241-1-liushixin2@huawei.com
-Fixes: f41f2ed43ca5 (mm: hugetlb: free the vmemmap pages associated with each HugeTLB page)
-Signed-off-by: Liu Shixin <liushixin2@huawei.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Oscar Salvador <osalvador@suse.de>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- mm/bootmem_info.c |    2 ++
- 1 file changed, 2 insertions(+)
+I think it was, for a later patch in the series, 5a42f112d367 ("ice:
+xsk: prohibit usage of non-balanced queue id").
 
---- a/mm/bootmem_info.c
-+++ b/mm/bootmem_info.c
-@@ -12,6 +12,7 @@
- #include <linux/memblock.h>
- #include <linux/bootmem_info.h>
- #include <linux/memory_hotplug.h>
-+#include <linux/kmemleak.h>
- 
- void get_page_bootmem(unsigned long info, struct page *page, unsigned long type)
- {
-@@ -34,6 +35,7 @@ void put_page_bootmem(struct page *page)
- 		ClearPagePrivate(page);
- 		set_page_private(page, 0);
- 		INIT_LIST_HEAD(&page->lru);
-+		kmemleak_free_part(page_to_virt(page), PAGE_SIZE);
- 		free_reserved_page(page);
- 	}
- }
+thanks,
 
-
+greg k-h
