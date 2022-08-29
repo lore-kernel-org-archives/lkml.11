@@ -2,118 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC595ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:48:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F25A9ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229551AbiH2Msf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
+        id S229790AbiH2Msz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230055AbiH2MsQ (ORCPT
+        with ESMTP id S230088AbiH2Msh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:48:16 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A04515816;
-        Mon, 29 Aug 2022 05:33:28 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27T7lCJ8005664;
-        Mon, 29 Aug 2022 14:33:09 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=SS0hLQPrAPBMabF9dirIJRH0zBiCY+0ym1TnTQn0oCI=;
- b=2ZPUD6SR8RXeCDoNaZB2DXDLd+zcQmjcIwo5PulbFaV/omXwBd/C+kjwDO5RzSnGZwmN
- oYMB7Y44dR01CS+Fta3MOweUjR9D72nv9suWcvfuJk9coUJ8ya4LX2/On7L8HJgmKNfn
- EC0NxGBtZ2SYD0AJ6eVX7OdaSoj+jj5FwboKKyHVSrOJhkcLx9Q3mjAHtd8yGlfZl58L
- C8r3/iAIvJrHxhXrj8MIOMTDNowEc82g3XN3FoED+GtGC7m/UVSOGnn87fkUb70Ok2Vr
- hUYfNg45BhMucEZTRs+jDpzP2idS3yiTPENV2xvBva/gXR40i+1SURAmNl7UINWi6mvW zA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3j7a5hsn30-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 14:33:09 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A3EE410002A;
-        Mon, 29 Aug 2022 14:33:07 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 9A6C2229A77;
-        Mon, 29 Aug 2022 14:33:07 +0200 (CEST)
-Received: from localhost (10.75.127.47) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.7; Mon, 29 Aug
- 2022 14:33:07 +0200
-From:   <patrice.chotard@foss.st.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
-        <patrice.chotard@foss.st.com>
-Subject: [PATCH] spi: stm32-qspi: Fix pm_runtime management in stm32_qspi_transfer_one_message()
-Date:   Mon, 29 Aug 2022 14:32:50 +0200
-Message-ID: <20220829123250.2170562-1-patrice.chotard@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 29 Aug 2022 08:48:37 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81583B7761
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:34:32 -0700 (PDT)
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+        by gnuweeb.org (Postfix) with ESMTPSA id C484A809CF
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 12:34:31 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1661776471;
+        bh=N1uDE91BqGxI7oqT6ZPOAuib3sKIAcIKvPFQNbnaYxM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=cj/5EiuksvAtUjyMmn4aZqVyxlpZLPb6ng2YG/1uTnVbncK+3A4+nBH7Zdxp6AN5e
+         fL60A9jw7nXZL15bBIUt68u1X0B2cx4R1ovBIZ2Zn1TWoEhwOi5O2nQQ8u1Ot6qy0O
+         Q5a/frtZArUHr25DgYlJb+JTWMaCJEGl0BeaEiduIcRnIfNsqVuHjw8RKXPqhx4Z6V
+         xzxa19ddlFflfNKt6ZmTpLauuMwUoo8+/4jB6wYkyuji3YM5av/lBft4vdFRsUJm3B
+         AjZoLQ8mlcWCiII6XeQd/5ypJsQW5T045sDlZyYj19OXvFp19d6hp8oS1ViKUd+jvy
+         1gCK2ThuHzyQA==
+Received: by mail-lf1-f51.google.com with SMTP id z25so10943126lfr.2
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:34:31 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2Yu4jv5mr6TX1oTdWa31GuZwkQSUBMOUG2ZP+lMFa+RFXcPNIA
+        yO/Lzx+Bpdt1kHXlIgQDVaTr4pBHRWGOCzMxZjFQrA==
+X-Google-Smtp-Source: AA6agR5GbTehGGG7rAld1ZY9g1RxolXE4vO8PFMy3NVNbJcN02f2heEEbGWkSswl8x7LF06IOKxexLhBjrUnAxndPJM=
+X-Received: by 2002:a05:6512:12c2:b0:492:dc0c:f4ac with SMTP id
+ p2-20020a05651212c200b00492dc0cf4acmr6997012lfg.612.1661776469902; Mon, 29
+ Aug 2022 05:34:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-29_07,2022-08-25_01,2022-06-22_01
+References: <20220829111643.266866-1-cui.jinpeng2@zte.com.cn>
+In-Reply-To: <20220829111643.266866-1-cui.jinpeng2@zte.com.cn>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Date:   Mon, 29 Aug 2022 19:34:18 +0700
+X-Gmail-Original-Message-ID: <CAGzmLMW-D8cGbZruQ=Vy7Yu8j5nCqGvNC8mMw-XeNjHr62Mf6g@mail.gmail.com>
+Message-ID: <CAGzmLMW-D8cGbZruQ=Vy7Yu8j5nCqGvNC8mMw-XeNjHr62Mf6g@mail.gmail.com>
+Subject: Re: [PATCH linux-next] wifi: cfg80211: remove redundant ret variable
+To:     cgel.zte@gmail.com
+Cc:     ajay.kathat@microchip.com, claudiu.beznea@microchip.com,
+        kvalo@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        edumazet@google.com, Jakub Kicinski <kuba@kernel.org>,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+On Mon, Aug 29, 2022 at 6:35 PM <cgel.zte@gmail.com> wrote:
+> From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+>
+> Return value from cfg80211_rx_mgmt() directly instead of
+> taking this in another redundant variable.
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-ctrl->auto_runtime_pm was wrongly set to true when adding
-transfer_one_message() callback.
-As explained in commit 6e6ccb3d4cdc ("spi: stm32-qspi: Add pm_runtime support")
-the expected behavior is to prevent runtime suspends between each transfer.
-
-Add needed pm_runtime API calls in stm32_qspi_transfer_one_message().
-
-Fixes: a557fca630cc ("spi: stm32_qspi: Add transfer_one_message() spi callback")
-
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
----
- drivers/spi/spi-stm32-qspi.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index 679fd1c34f7e..227f450aa5f0 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -567,6 +567,10 @@ static int stm32_qspi_transfer_one_message(struct spi_controller *ctrl,
- 	if (!spi->cs_gpiod)
- 		return -EOPNOTSUPP;
- 
-+	ret = pm_runtime_resume_and_get(qspi->dev);
-+	if (ret < 0)
-+		return ret;
-+
- 	mutex_lock(&qspi->lock);
- 
- 	gpiod_set_value_cansleep(spi->cs_gpiod, true);
-@@ -629,6 +633,9 @@ static int stm32_qspi_transfer_one_message(struct spi_controller *ctrl,
- 	msg->status = ret;
- 	spi_finalize_current_message(ctrl);
- 
-+	pm_runtime_mark_last_busy(qspi->dev);
-+	pm_runtime_put_autosuspend(qspi->dev);
-+
- 	return ret;
- }
- 
-@@ -847,7 +854,6 @@ static int stm32_qspi_probe(struct platform_device *pdev)
- 	ctrl->mem_ops = &stm32_qspi_mem_ops;
- 	ctrl->use_gpio_descriptors = true;
- 	ctrl->transfer_one_message = stm32_qspi_transfer_one_message;
--	ctrl->auto_runtime_pm = true;
- 	ctrl->num_chipselect = STM32_QSPI_MAX_NORCHIP;
- 	ctrl->dev.of_node = dev->of_node;
- 
--- 
-2.25.1
-
+Reviewed-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
