@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD3AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBFFECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:20:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231631AbiH2LUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55818 "EHLO
+        id S230140AbiH2LUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231728AbiH2LTH (ORCPT
+        with ESMTP id S231730AbiH2LTH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:19:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD68274E15;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97456E2CC;
         Mon, 29 Aug 2022 04:12:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EF49611F8;
-        Mon, 29 Aug 2022 11:11:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F42BC433D6;
-        Mon, 29 Aug 2022 11:11:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 312CBB80F01;
+        Mon, 29 Aug 2022 11:10:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FD2C433D6;
+        Mon, 29 Aug 2022 11:10:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771467;
-        bh=iWrTExGP0AMWOGEgyqCzCDpnfY6fPahRzrPaMRQ+M1w=;
+        s=korg; t=1661771436;
+        bh=TBH4bae03KLFeJfWladI1VYZD+elE5fWvRvkd4Rg3/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YrQe58RLETf+odKX7ydzIbhatCN238zrGpRIE1chn6h4nFEWIcSV8O6kJSnKTjT12
-         TJuL53Q7neS2dWpFGS1fvLRG3jqaPpHhbKtjzbE+B/O85Q4Wr7ojQtNd163V14teGB
-         HGJZMvFtlcuinekPBkX9j24P+lZtij3r69+vE8CI=
+        b=XTdR7CV5MDZTnTME4BuF540IZDw40E889UReJyMFg8+y6PoAIBETgQzyai71iqKIo
+         apdOyHUw9Md+IYbiPMgkQMTWBGO9GWo3baGvEiEya2AgRRi+V5pRyjRIITF0tBLsqr
+         dHbl57jRW1c0OixIHjIw/bm/uy66CA+Bx2rju4AE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.10 70/86] x86/bugs: Add "unknown" reporting for MMIO Stale Data
-Date:   Mon, 29 Aug 2022 12:59:36 +0200
-Message-Id: <20220829105759.420648966@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.15 103/136] x86/nospec: Unwreck the RSB stuffing
+Date:   Mon, 29 Aug 2022 12:59:30 +0200
+Message-Id: <20220829105808.939286345@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,209 +48,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 7df548840c496b0141fb2404b889c346380c2b22 upstream.
+commit 4e3aa9238277597c6c7624f302d81a7b568b6f2d upstream.
 
-Older Intel CPUs that are not in the affected processor list for MMIO
-Stale Data vulnerabilities currently report "Not affected" in sysfs,
-which may not be correct. Vulnerability status for these older CPUs is
-unknown.
+Commit 2b1299322016 ("x86/speculation: Add RSB VM Exit protections")
+made a right mess of the RSB stuffing, rewrite the whole thing to not
+suck.
 
-Add known-not-affected CPUs to the whitelist. Report "unknown"
-mitigation status for CPUs that are not in blacklist, whitelist and also
-don't enumerate MSR ARCH_CAPABILITIES bits that reflect hardware
-immunity to MMIO Stale Data vulnerabilities.
+Thanks to Andrew for the enlightening comment about Post-Barrier RSB
+things so we can make this code less magical.
 
-Mitigation is not deployed when the status is unknown.
-
-  [ bp: Massage, fixup. ]
-
-Fixes: 8d50cdf8b834 ("x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data")
-Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
-Suggested-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/a932c154772f2121794a5f2eded1a11013114711.1657846269.git.pawan.kumar.gupta@linux.intel.com
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/YvuNdDWoUZSBjYcm@worktop.programming.kicks-ass.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst |   14 +++
- arch/x86/include/asm/cpufeatures.h                              |    5 -
- arch/x86/kernel/cpu/bugs.c                                      |   14 ++-
- arch/x86/kernel/cpu/common.c                                    |   42 ++++++----
- 4 files changed, 56 insertions(+), 19 deletions(-)
+ arch/x86/include/asm/nospec-branch.h |   80 +++++++++++++++++------------------
+ 1 file changed, 39 insertions(+), 41 deletions(-)
 
---- a/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
-+++ b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
-@@ -230,6 +230,20 @@ The possible values in this file are:
-      * - 'Mitigation: Clear CPU buffers'
-        - The processor is vulnerable and the CPU buffer clearing mitigation is
-          enabled.
-+     * - 'Unknown: No mitigations'
-+       - The processor vulnerability status is unknown because it is
-+	 out of Servicing period. Mitigation is not attempted.
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -35,33 +35,44 @@
+ #define RSB_CLEAR_LOOPS		32	/* To forcibly overwrite all entries */
+ 
+ /*
++ * Common helper for __FILL_RETURN_BUFFER and __FILL_ONE_RETURN.
++ */
++#define __FILL_RETURN_SLOT			\
++	ANNOTATE_INTRA_FUNCTION_CALL;		\
++	call	772f;				\
++	int3;					\
++772:
 +
-+Definitions:
-+------------
++/*
++ * Stuff the entire RSB.
++ *
+  * Google experimented with loop-unrolling and this turned out to be
+  * the optimal version - two calls, each with their own speculation
+  * trap should their return address end up getting used, in a loop.
+  */
+-#define __FILL_RETURN_BUFFER(reg, nr, sp)	\
+-	mov	$(nr/2), reg;			\
+-771:						\
+-	ANNOTATE_INTRA_FUNCTION_CALL;		\
+-	call	772f;				\
+-773:	/* speculation trap */			\
+-	UNWIND_HINT_EMPTY;			\
+-	pause;					\
+-	lfence;					\
+-	jmp	773b;				\
+-772:						\
+-	ANNOTATE_INTRA_FUNCTION_CALL;		\
+-	call	774f;				\
+-775:	/* speculation trap */			\
+-	UNWIND_HINT_EMPTY;			\
+-	pause;					\
+-	lfence;					\
+-	jmp	775b;				\
+-774:						\
+-	add	$(BITS_PER_LONG/8) * 2, sp;	\
+-	dec	reg;				\
+-	jnz	771b;				\
+-	/* barrier for jnz misprediction */	\
++#define __FILL_RETURN_BUFFER(reg, nr)			\
++	mov	$(nr/2), reg;				\
++771:							\
++	__FILL_RETURN_SLOT				\
++	__FILL_RETURN_SLOT				\
++	add	$(BITS_PER_LONG/8) * 2, %_ASM_SP;	\
++	dec	reg;					\
++	jnz	771b;					\
++	/* barrier for jnz misprediction */		\
++	lfence;
 +
-+Servicing period: The process of providing functional and security updates to
-+Intel processors or platforms, utilizing the Intel Platform Update (IPU)
-+process or other similar mechanisms.
++/*
++ * Stuff a single RSB slot.
++ *
++ * To mitigate Post-Barrier RSB speculation, one CALL instruction must be
++ * forced to retire before letting a RET instruction execute.
++ *
++ * On PBRSB-vulnerable CPUs, it is not safe for a RET to be executed
++ * before this point.
++ */
++#define __FILL_ONE_RETURN				\
++	__FILL_RETURN_SLOT				\
++	add	$(BITS_PER_LONG/8), %_ASM_SP;		\
+ 	lfence;
+ 
+ #ifdef __ASSEMBLY__
+@@ -120,28 +131,15 @@
+ #endif
+ .endm
+ 
+-.macro ISSUE_UNBALANCED_RET_GUARD
+-	ANNOTATE_INTRA_FUNCTION_CALL
+-	call .Lunbalanced_ret_guard_\@
+-	int3
+-.Lunbalanced_ret_guard_\@:
+-	add $(BITS_PER_LONG/8), %_ASM_SP
+-	lfence
+-.endm
+-
+  /*
+   * A simpler FILL_RETURN_BUFFER macro. Don't make people use the CPP
+   * monstrosity above, manually.
+   */
+-.macro FILL_RETURN_BUFFER reg:req nr:req ftr:req ftr2
+-.ifb \ftr2
+-	ALTERNATIVE "jmp .Lskip_rsb_\@", "", \ftr
+-.else
+-	ALTERNATIVE_2 "jmp .Lskip_rsb_\@", "", \ftr, "jmp .Lunbalanced_\@", \ftr2
+-.endif
+-	__FILL_RETURN_BUFFER(\reg,\nr,%_ASM_SP)
+-.Lunbalanced_\@:
+-	ISSUE_UNBALANCED_RET_GUARD
++.macro FILL_RETURN_BUFFER reg:req nr:req ftr:req ftr2=ALT_NOT(X86_FEATURE_ALWAYS)
++	ALTERNATIVE_2 "jmp .Lskip_rsb_\@", \
++		__stringify(__FILL_RETURN_BUFFER(\reg,\nr)), \ftr, \
++		__stringify(__FILL_ONE_RETURN), \ftr2
 +
-+End of Servicing Updates (ESU): ESU is the date at which Intel will no
-+longer provide Servicing, such as through IPU or other similar update
-+processes. ESU dates will typically be aligned to end of quarter.
+ .Lskip_rsb_\@:
+ .endm
  
- If the processor is vulnerable then the following information is appended to
- the above information:
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -429,7 +429,8 @@
- #define X86_BUG_ITLB_MULTIHIT		X86_BUG(23) /* CPU may incur MCE during certain page attribute changes */
- #define X86_BUG_SRBDS			X86_BUG(24) /* CPU may leak RNG bits if not mitigated */
- #define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
--#define X86_BUG_RETBLEED		X86_BUG(26) /* CPU is affected by RETBleed */
--#define X86_BUG_EIBRS_PBRSB		X86_BUG(27) /* EIBRS is vulnerable to Post Barrier RSB Predictions */
-+#define X86_BUG_MMIO_UNKNOWN		X86_BUG(26) /* CPU is too old and its MMIO Stale Data status is unknown */
-+#define X86_BUG_RETBLEED		X86_BUG(27) /* CPU is affected by RETBleed */
-+#define X86_BUG_EIBRS_PBRSB		X86_BUG(28) /* EIBRS is vulnerable to Post Barrier RSB Predictions */
- 
- #endif /* _ASM_X86_CPUFEATURES_H */
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -424,7 +424,8 @@ static void __init mmio_select_mitigatio
- 	u64 ia32_cap;
- 
- 	if (!boot_cpu_has_bug(X86_BUG_MMIO_STALE_DATA) ||
--	    cpu_mitigations_off()) {
-+	     boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN) ||
-+	     cpu_mitigations_off()) {
- 		mmio_mitigation = MMIO_MITIGATION_OFF;
- 		return;
- 	}
-@@ -529,6 +530,8 @@ out:
- 		pr_info("TAA: %s\n", taa_strings[taa_mitigation]);
- 	if (boot_cpu_has_bug(X86_BUG_MMIO_STALE_DATA))
- 		pr_info("MMIO Stale Data: %s\n", mmio_strings[mmio_mitigation]);
-+	else if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
-+		pr_info("MMIO Stale Data: Unknown: No mitigations\n");
- }
- 
- static void __init md_clear_select_mitigation(void)
-@@ -2198,6 +2201,9 @@ static ssize_t tsx_async_abort_show_stat
- 
- static ssize_t mmio_stale_data_show_state(char *buf)
- {
-+	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
-+		return sysfs_emit(buf, "Unknown: No mitigations\n");
-+
- 	if (mmio_mitigation == MMIO_MITIGATION_OFF)
- 		return sysfs_emit(buf, "%s\n", mmio_strings[mmio_mitigation]);
- 
-@@ -2344,6 +2350,7 @@ static ssize_t cpu_show_common(struct de
- 		return srbds_show_state(buf);
- 
- 	case X86_BUG_MMIO_STALE_DATA:
-+	case X86_BUG_MMIO_UNKNOWN:
- 		return mmio_stale_data_show_state(buf);
- 
- 	case X86_BUG_RETBLEED:
-@@ -2403,7 +2410,10 @@ ssize_t cpu_show_srbds(struct device *de
- 
- ssize_t cpu_show_mmio_stale_data(struct device *dev, struct device_attribute *attr, char *buf)
- {
--	return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
-+	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
-+		return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_UNKNOWN);
-+	else
-+		return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
- }
- 
- ssize_t cpu_show_retbleed(struct device *dev, struct device_attribute *attr, char *buf)
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -1024,7 +1024,8 @@ static void identify_cpu_without_cpuid(s
- #define NO_SWAPGS		BIT(6)
- #define NO_ITLB_MULTIHIT	BIT(7)
- #define NO_SPECTRE_V2		BIT(8)
--#define NO_EIBRS_PBRSB		BIT(9)
-+#define NO_MMIO			BIT(9)
-+#define NO_EIBRS_PBRSB		BIT(10)
- 
- #define VULNWL(vendor, family, model, whitelist)	\
- 	X86_MATCH_VENDOR_FAM_MODEL(vendor, family, model, whitelist)
-@@ -1045,6 +1046,11 @@ static const __initconst struct x86_cpu_
- 	VULNWL(NSC,	5, X86_MODEL_ANY,	NO_SPECULATION),
- 
- 	/* Intel Family 6 */
-+	VULNWL_INTEL(TIGERLAKE,			NO_MMIO),
-+	VULNWL_INTEL(TIGERLAKE_L,		NO_MMIO),
-+	VULNWL_INTEL(ALDERLAKE,			NO_MMIO),
-+	VULNWL_INTEL(ALDERLAKE_L,		NO_MMIO),
-+
- 	VULNWL_INTEL(ATOM_SALTWELL,		NO_SPECULATION | NO_ITLB_MULTIHIT),
- 	VULNWL_INTEL(ATOM_SALTWELL_TABLET,	NO_SPECULATION | NO_ITLB_MULTIHIT),
- 	VULNWL_INTEL(ATOM_SALTWELL_MID,		NO_SPECULATION | NO_ITLB_MULTIHIT),
-@@ -1063,9 +1069,9 @@ static const __initconst struct x86_cpu_
- 	VULNWL_INTEL(ATOM_AIRMONT_MID,		NO_L1TF | MSBDS_ONLY | NO_SWAPGS | NO_ITLB_MULTIHIT),
- 	VULNWL_INTEL(ATOM_AIRMONT_NP,		NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
- 
--	VULNWL_INTEL(ATOM_GOLDMONT,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_INTEL(ATOM_GOLDMONT_D,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_INTEL(ATOM_GOLDMONT_PLUS,	NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_EIBRS_PBRSB),
-+	VULNWL_INTEL(ATOM_GOLDMONT,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_INTEL(ATOM_GOLDMONT_D,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_INTEL(ATOM_GOLDMONT_PLUS,	NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO | NO_EIBRS_PBRSB),
- 
- 	/*
- 	 * Technically, swapgs isn't serializing on AMD (despite it previously
-@@ -1080,18 +1086,18 @@ static const __initconst struct x86_cpu_
- 	VULNWL_INTEL(ATOM_TREMONT_D,		NO_ITLB_MULTIHIT | NO_EIBRS_PBRSB),
- 
- 	/* AMD Family 0xf - 0x12 */
--	VULNWL_AMD(0x0f,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_AMD(0x10,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_AMD(0x11,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_AMD(0x12,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
-+	VULNWL_AMD(0x0f,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_AMD(0x10,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_AMD(0x11,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_AMD(0x12,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
- 
- 	/* FAMILY_ANY must be last, otherwise 0x0f - 0x12 matches won't work */
--	VULNWL_AMD(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
--	VULNWL_HYGON(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
-+	VULNWL_AMD(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
-+	VULNWL_HYGON(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
- 
- 	/* Zhaoxin Family 7 */
--	VULNWL(CENTAUR,	7, X86_MODEL_ANY,	NO_SPECTRE_V2 | NO_SWAPGS),
--	VULNWL(ZHAOXIN,	7, X86_MODEL_ANY,	NO_SPECTRE_V2 | NO_SWAPGS),
-+	VULNWL(CENTAUR,	7, X86_MODEL_ANY,	NO_SPECTRE_V2 | NO_SWAPGS | NO_MMIO),
-+	VULNWL(ZHAOXIN,	7, X86_MODEL_ANY,	NO_SPECTRE_V2 | NO_SWAPGS | NO_MMIO),
- 	{}
- };
- 
-@@ -1245,10 +1251,16 @@ static void __init cpu_set_bug_bits(stru
- 	 * Affected CPU list is generally enough to enumerate the vulnerability,
- 	 * but for virtualization case check for ARCH_CAP MSR bits also, VMM may
- 	 * not want the guest to enumerate the bug.
-+	 *
-+	 * Set X86_BUG_MMIO_UNKNOWN for CPUs that are neither in the blacklist,
-+	 * nor in the whitelist and also don't enumerate MSR ARCH_CAP MMIO bits.
- 	 */
--	if (cpu_matches(cpu_vuln_blacklist, MMIO) &&
--	    !arch_cap_mmio_immune(ia32_cap))
--		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
-+	if (!arch_cap_mmio_immune(ia32_cap)) {
-+		if (cpu_matches(cpu_vuln_blacklist, MMIO))
-+			setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
-+		else if (!cpu_matches(cpu_vuln_whitelist, NO_MMIO))
-+			setup_force_cpu_bug(X86_BUG_MMIO_UNKNOWN);
-+	}
- 
- 	if (!cpu_has(c, X86_FEATURE_BTC_NO)) {
- 		if (cpu_matches(cpu_vuln_blacklist, RETBLEED) || (ia32_cap & ARCH_CAP_RSBA))
 
 
