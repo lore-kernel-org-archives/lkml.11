@@ -2,88 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63656ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:35:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 319F8ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230234AbiH2Le6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41980 "EHLO
+        id S232723AbiH2LfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232801AbiH2Ld5 (ORCPT
+        with ESMTP id S232816AbiH2LeA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:33:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E334E6E2C3;
-        Mon, 29 Aug 2022 04:19:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82292611BD;
-        Mon, 29 Aug 2022 11:06:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91541C433C1;
-        Mon, 29 Aug 2022 11:06:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771165;
-        bh=iJrwqGLzctYkJWPWDFIJ4wnhEHS7r6NpMKdPiRKCmYo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GPgqElJ9nSFtE2C7BoMYNEgJB/OS6o4CPzM6BIWPJm9QkosJW6c1pysRo2M/7Fb0F
-         kvzR9g2j1AdF0YNnX9q/0DeEjQpchyM0LgDtJE4/Za92wNNPmtWsKrBmv86sRNK2hb
-         pDzf3/Sx/YKEX0Sl/CV7/+KCLSQgZAOHmJmjB7hs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 25/86] net/mlx5e: Properly disable vlan strip on non-UL reps
-Date:   Mon, 29 Aug 2022 12:58:51 +0200
-Message-Id: <20220829105757.562481330@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 29 Aug 2022 07:34:00 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B13BEC;
+        Mon, 29 Aug 2022 04:19:45 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id y127so7850069pfy.5;
+        Mon, 29 Aug 2022 04:19:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=YkkKSKY+6i4yHV5ZW1S/rfBMmWbd8iaSJkFCcuATEeY=;
+        b=LInHvVBeUEexcOe/cX62gE+S/tEsoIUhf5PfXek7gDmcpdHcmB40THnsBm3nkY7i42
+         PryYhkkbIFqL4OGyJLNDa73lkcLq+xAxI2U1LjGnFCj7v7/xbSBUzVZjViXpoJtRQCs3
+         zjKMT5dvbxd4kQv8x1B1gEXNiNlLEIl6+EwFKHY+S9GTUJBxzqdJF+eekIOJ8NT/pJp+
+         m6yneZAuCLkqeYRI/uvhfdQvseUyElfBTxuc0kiPPMCkMtV7DB2CKxqYMCBx1sQaayb4
+         XSpr/y1Rf4HW3CFFagStmJ6XGL8LubHgtGL+VZk33fUx+Nucwg61QcrlA8DX360dNKb2
+         6nGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=YkkKSKY+6i4yHV5ZW1S/rfBMmWbd8iaSJkFCcuATEeY=;
+        b=e1PkLzw2bKxvAnEjIOjCB49fs8MCsHy/HCtY7JGtVRzhnc+fSBf5pgxNc94Pxfs+tp
+         w1BBhf5uWOCAPtbdzNUzmXtD0mMCqifLfmYmb+qepfpd3F3kslIPi1h9mHzaFpOi8b+c
+         50Y5jbPq5BeWnoYIjozEeuW9hZ1FiGxE45lsqvPptFNjcGNru6UNbsUnHxjP6bFPX0dm
+         YahmwXDAGnK/TWhGwzhplVjBnZD3FekiMBelCEMucIOSZkM0G0O+BMZVHdiEnoOtJWrO
+         DPtMaCNqfscqo1MHiHMdjo2Ssgx+TE7JSvKDHgB9cwfialu87Ti9tU5DZ0n6oAfhWI0x
+         LD0Q==
+X-Gm-Message-State: ACgBeo0A3oTtwhJVa3m57u0AT641g/T14ocCgm9Jnl0p0kIuo33Rhzsy
+        RmZLhjnyt5YwASIs5paODbk=
+X-Google-Smtp-Source: AA6agR7xoTZyJARGoWnaR8u6bIBcsAd0Tzd/NjaSus665bhBHmI7yO+ibqo0VXy0LEVbBKZytfMQHw==
+X-Received: by 2002:a05:6a00:10d3:b0:4fe:5d:75c8 with SMTP id d19-20020a056a0010d300b004fe005d75c8mr16371630pfu.6.1661771835532;
+        Mon, 29 Aug 2022 04:17:15 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id l15-20020a170903120f00b00174a8d357b7sm3062421plh.20.2022.08.29.04.17.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 04:17:15 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: cui.jinpeng2@zte.com.cn
+To:     ajay.kathat@microchip.com, claudiu.beznea@microchip.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] wifi: cfg80211: remove redundant ret variable
+Date:   Mon, 29 Aug 2022 11:16:44 +0000
+Message-Id: <20220829111643.266866-1-cui.jinpeng2@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-[ Upstream commit f37044fd759b6bc40b6398a978e0b1acdf717372 ]
+Return value from cfg80211_rx_mgmt() directly instead of
+taking this in another redundant variable.
 
-When querying mlx5 non-uplink representors capabilities with ethtool
-rx-vlan-offload is marked as "off [fixed]". However, it is actually always
-enabled because mlx5e_params->vlan_strip_disable is 0 by default when
-initializing struct mlx5e_params instance. Fix the issue by explicitly
-setting the vlan_strip_disable to 'true' for non-uplink representors.
-
-Fixes: cb67b832921c ("net/mlx5e: Introduce SRIOV VF representors")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/microchip/wilc1000/cfg80211.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 304435e561170..b991f03c7e991 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -706,6 +706,8 @@ static void mlx5e_build_rep_params(struct net_device *netdev)
+diff --git a/drivers/net/wireless/microchip/wilc1000/cfg80211.c b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
+index f810a56a7ff0..b89047965e78 100644
+--- a/drivers/net/wireless/microchip/wilc1000/cfg80211.c
++++ b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
+@@ -997,12 +997,11 @@ bool wilc_wfi_mgmt_frame_rx(struct wilc_vif *vif, u8 *buff, u32 size)
+ {
+ 	struct wilc *wl = vif->wilc;
+ 	struct wilc_priv *priv = &vif->priv;
+-	int freq, ret;
++	int freq;
  
- 	params->num_tc                = 1;
- 	params->tunneled_offload_en = false;
-+	if (rep->vport != MLX5_VPORT_UPLINK)
-+		params->vlan_strip_disable = true;
+ 	freq = ieee80211_channel_to_frequency(wl->op_ch, NL80211_BAND_2GHZ);
+-	ret = cfg80211_rx_mgmt(&priv->wdev, freq, 0, buff, size, 0);
  
- 	mlx5_query_min_inline(mdev, &params->tx_min_inline_mode);
+-	return ret;
++	return cfg80211_rx_mgmt(&priv->wdev, freq, 0, buff, size, 0);
+ }
  
+ void wilc_wfi_p2p_rx(struct wilc_vif *vif, u8 *buff, u32 size)
 -- 
-2.35.1
-
-
+2.25.1
 
