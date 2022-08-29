@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80279ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2532ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbiH2M52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51466 "EHLO
+        id S229636AbiH2M5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230271AbiH2M4b (ORCPT
+        with ESMTP id S229845AbiH2M4b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 08:56:31 -0400
-Received: from mail-ed1-x54a.google.com (mail-ed1-x54a.google.com [IPv6:2a00:1450:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162CF5588
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:48:19 -0700 (PDT)
-Received: by mail-ed1-x54a.google.com with SMTP id f18-20020a056402355200b00446c8d2ed50so5361908edd.18
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:48:19 -0700 (PDT)
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98930DFAE
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:48:23 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-33f8988daecso119250627b3.12
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:48:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=T2C4sxYRs2lEzCnHUaLRTNKBKI12YQqfPe+dPUrodjM=;
-        b=Oei65SiBeyseuj2GkCMZu6UkQDXfMukCs8q/ts7docSju1x50Wnuyo56PNgsA6HyKh
-         QIN3iALVpE4KtqSJCJw7xhEOCvdF6Nj4aaQRdldUGReSHeSUPlQtPNrfZMshM9WmIh7D
-         F66kQer8IfUfc0aZZBJKqF2p8mQNUtHZduPcpyzmcjmfTP8IAtSfvKheWIe8pbsuF80V
-         n6JT0dTHHJGAeqPEaae41JTQVmfHG3xrkJcxGeiFu5iSEmPx+AxR8pfqXZMWkWBblTqj
-         qwkITtO1N1SMp71IBMV7uOhDi/g7bC6iP/ZkN9sylaZYO6ap321AAv0sJxlYpg70So+Z
-         I9Ig==
+        bh=17GhIUVsdBD381xCSlsSf/bvMmuZOpgOvCsizfGJYww=;
+        b=CbUwP42fuhmKg7ri7biMklFhB21W8cZzoP21+kt7Lgj6pRAyQfpzbZRWFbKeP6coDy
+         AtkU/EIId8EZZt3IqUVsnXV5/PdeWQ/wbj3+W3aWt+UGVld9yGpyxTMNZ+LkqFqFDq4E
+         Eg6dryn4nCZzZyYEDkk4dENmaVGKAEjjahQAFSW9MrwIn2ia3Ddf8nIbwrLhCtzzbI6c
+         JLfLxik35LBKo1sshesg7tGD+yKVjyy6SkFYmLaXuEjFwS58Wn8DixsyUbFkK1+1u4L0
+         yG9CGURYktVy3sgJ3tVijbDxB25JjEwg6LeoC3rHTdBX+q3W9l3w84Qs4AN3cxM2jwfa
+         1Pqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=T2C4sxYRs2lEzCnHUaLRTNKBKI12YQqfPe+dPUrodjM=;
-        b=xJBaTIeHPJK8dBNCPZqcKWOlxOonyNjOjRdyGtRXdKaBm8waeVAQOcLr+2DfHqp88D
-         LsjU9lvt+BsmjZ2hCCyRlpvoa7W3foGlVt+dPWN2ssypYlW73/D+zfSgJDJWZW2PZtB6
-         16Va9FqQYegCJjJ4/TQXlkvmRRBbXZVyOa2YJE9v1i0NaMa5aVMp0G3P3WzbZ4OEfOes
-         movMXRyiPf6fKGBsphrWaW4Vx6bK1lwv4GqlJBPkCe/+srCJJDykQEJV/zQZ4cHsBvIx
-         ObBSZ79pMAvF56IyBnkr5gp+bpN6Xk6bBqaov2VKKYQOUNRKiE/S64BWpY9y0NORASm8
-         OQNg==
-X-Gm-Message-State: ACgBeo2D2CAnMgotiN/CkkkSYKPgegIj0RPxH4IknrYaeBbk3BCUhhbB
-        aV9e6lT7/J98lipV2tWSPz50L5/3cw==
-X-Google-Smtp-Source: AA6agR7pPBxBn4gZSDR06aP3DtZ7Ndp+4q6FXFUDOBECLllaiRHkqTE+4IlfvAW4YcpDEfo5TzfTEk2i4g==
+        bh=17GhIUVsdBD381xCSlsSf/bvMmuZOpgOvCsizfGJYww=;
+        b=HW9gH67GYGmOCajEMVBz+XXEUHKPOzsxKoIwdARpZrw8xePIV3sj3V7FJRkS6HLGDp
+         uMqiarQgC/R7v7qQU7x8BWxjVUpBAEntHyqz2bCtDDJ5OKYxGIoeBrbLfNlmdfw0uEWD
+         kFmO0jMT5y5+CMNEceFxRY4QGBWcq5ptbOC1+Dr2LlcmQ2rqoL83WSKiSV80waf9Ryrk
+         pwxeqMx77YrFGPxMaB7XVIwBv3IdF4vU2WxJluphCokhA9mAtZBTc1tj2Xof+k2/Cqh3
+         o60fokHz2vLisAwQW45lTnyxLVo6Gsv32nbbY3I8eNpT/6MzODCvgi0DcRcyyIawS2rW
+         hwAw==
+X-Gm-Message-State: ACgBeo2MIdCQHtUnCWh6MWkwDdkREN1/KYqHKcEQDYREBEXaTy/jI6hz
+        sWHTaG0tQR2JsWiem9QtWmVsOvqHRg==
+X-Google-Smtp-Source: AA6agR7saRNQPyfeUGNlvdKaMJxYtoC1JW5xi3rwIoqgRCRjBdEPFh2wH5NnVmpB77WBemcvNGm+4C/jLw==
 X-Received: from elver.muc.corp.google.com ([2a00:79e0:9c:201:196d:4fc7:fa9c:62e3])
- (user=elver job=sendgmr) by 2002:a17:907:3f97:b0:741:84b4:8356 with SMTP id
- hr23-20020a1709073f9700b0074184b48356mr3916826ejc.148.1661777297695; Mon, 29
- Aug 2022 05:48:17 -0700 (PDT)
-Date:   Mon, 29 Aug 2022 14:47:12 +0200
+ (user=elver job=sendgmr) by 2002:a0d:f402:0:b0:33c:eda4:8557 with SMTP id
+ d2-20020a0df402000000b0033ceda48557mr9486024ywf.183.1661777302876; Mon, 29
+ Aug 2022 05:48:22 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 14:47:14 +0200
 In-Reply-To: <20220829124719.675715-1-elver@google.com>
 Mime-Version: 1.0
 References: <20220829124719.675715-1-elver@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220829124719.675715-8-elver@google.com>
-Subject: [PATCH v4 07/14] perf/hw_breakpoint: Make hw_breakpoint_weight() inlinable
+Message-ID: <20220829124719.675715-10-elver@google.com>
+Subject: [PATCH v4 09/14] powerpc/hw_breakpoint: Avoid relying on caller synchronization
 From:   Marco Elver <elver@google.com>
 To:     elver@google.com, Peter Zijlstra <peterz@infradead.org>,
         Frederic Weisbecker <frederic@kernel.org>,
@@ -74,63 +74,184 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to being a __weak function, hw_breakpoint_weight() will cause the
-compiler to always emit a call to it. This generates unnecessarily bad
-code (register spills etc.) for no good reason; in fact it appears in
-profiles of `perf bench -r 100 breakpoint thread -b 4 -p 128 -t 512`:
+Internal data structures (cpu_bps, task_bps) of powerpc's hw_breakpoint
+implementation have relied on nr_bp_mutex serializing access to them.
 
-    ...
-    0.70%  [kernel]       [k] hw_breakpoint_weight
-    ...
+Before overhauling synchronization of kernel/events/hw_breakpoint.c,
+introduce 2 spinlocks to synchronize cpu_bps and task_bps respectively,
+thus avoiding reliance on callers synchronizing powerpc's hw_breakpoint.
 
-While a small percentage, no architecture defines its own
-hw_breakpoint_weight() nor are there users outside hw_breakpoint.c,
-which makes the fact it is currently __weak a poor choice.
-
-Change hw_breakpoint_weight()'s definition to follow a similar protocol
-to hw_breakpoint_slots(), such that if <asm/hw_breakpoint.h> defines
-hw_breakpoint_weight(), we'll use it instead.
-
-The result is that it is inlined and no longer shows up in profiles.
-
+Reported-by: Dmitry Vyukov <dvyukov@google.com>
 Signed-off-by: Marco Elver <elver@google.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
+Acked-by: Dmitry Vyukov <dvyukov@google.com>
 Acked-by: Ian Rogers <irogers@google.com>
 ---
- include/linux/hw_breakpoint.h | 1 -
- kernel/events/hw_breakpoint.c | 4 +++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+v2:
+* New patch.
+---
+ arch/powerpc/kernel/hw_breakpoint.c | 53 ++++++++++++++++++++++-------
+ 1 file changed, 40 insertions(+), 13 deletions(-)
 
-diff --git a/include/linux/hw_breakpoint.h b/include/linux/hw_breakpoint.h
-index a3fb846705eb..f319bd26b030 100644
---- a/include/linux/hw_breakpoint.h
-+++ b/include/linux/hw_breakpoint.h
-@@ -80,7 +80,6 @@ extern int dbg_reserve_bp_slot(struct perf_event *bp);
- extern int dbg_release_bp_slot(struct perf_event *bp);
- extern int reserve_bp_slot(struct perf_event *bp);
- extern void release_bp_slot(struct perf_event *bp);
--int hw_breakpoint_weight(struct perf_event *bp);
- int arch_reserve_bp_slot(struct perf_event *bp);
- void arch_release_bp_slot(struct perf_event *bp);
- void arch_unregister_hw_breakpoint(struct perf_event *bp);
-diff --git a/kernel/events/hw_breakpoint.c b/kernel/events/hw_breakpoint.c
-index 9fb66d358d81..9c9bf17666a5 100644
---- a/kernel/events/hw_breakpoint.c
-+++ b/kernel/events/hw_breakpoint.c
-@@ -124,10 +124,12 @@ static __init int init_breakpoint_slots(void)
- }
- #endif
+diff --git a/arch/powerpc/kernel/hw_breakpoint.c b/arch/powerpc/kernel/hw_breakpoint.c
+index 2669f80b3a49..8db1a15d7acb 100644
+--- a/arch/powerpc/kernel/hw_breakpoint.c
++++ b/arch/powerpc/kernel/hw_breakpoint.c
+@@ -15,6 +15,7 @@
+ #include <linux/kernel.h>
+ #include <linux/sched.h>
+ #include <linux/smp.h>
++#include <linux/spinlock.h>
+ #include <linux/debugfs.h>
+ #include <linux/init.h>
  
--__weak int hw_breakpoint_weight(struct perf_event *bp)
-+#ifndef hw_breakpoint_weight
-+static inline int hw_breakpoint_weight(struct perf_event *bp)
- {
- 	return 1;
- }
-+#endif
+@@ -129,7 +130,14 @@ struct breakpoint {
+ 	bool ptrace_bp;
+ };
  
- static inline enum bp_type_idx find_slot_idx(u64 bp_type)
++/*
++ * While kernel/events/hw_breakpoint.c does its own synchronization, we cannot
++ * rely on it safely synchronizing internals here; however, we can rely on it
++ * not requesting more breakpoints than available.
++ */
++static DEFINE_SPINLOCK(cpu_bps_lock);
+ static DEFINE_PER_CPU(struct breakpoint *, cpu_bps[HBP_NUM_MAX]);
++static DEFINE_SPINLOCK(task_bps_lock);
+ static LIST_HEAD(task_bps);
+ 
+ static struct breakpoint *alloc_breakpoint(struct perf_event *bp)
+@@ -174,7 +182,9 @@ static int task_bps_add(struct perf_event *bp)
+ 	if (IS_ERR(tmp))
+ 		return PTR_ERR(tmp);
+ 
++	spin_lock(&task_bps_lock);
+ 	list_add(&tmp->list, &task_bps);
++	spin_unlock(&task_bps_lock);
+ 	return 0;
+ }
+ 
+@@ -182,6 +192,7 @@ static void task_bps_remove(struct perf_event *bp)
  {
+ 	struct list_head *pos, *q;
+ 
++	spin_lock(&task_bps_lock);
+ 	list_for_each_safe(pos, q, &task_bps) {
+ 		struct breakpoint *tmp = list_entry(pos, struct breakpoint, list);
+ 
+@@ -191,6 +202,7 @@ static void task_bps_remove(struct perf_event *bp)
+ 			break;
+ 		}
+ 	}
++	spin_unlock(&task_bps_lock);
+ }
+ 
+ /*
+@@ -200,12 +212,17 @@ static void task_bps_remove(struct perf_event *bp)
+ static bool all_task_bps_check(struct perf_event *bp)
+ {
+ 	struct breakpoint *tmp;
++	bool ret = false;
+ 
++	spin_lock(&task_bps_lock);
+ 	list_for_each_entry(tmp, &task_bps, list) {
+-		if (!can_co_exist(tmp, bp))
+-			return true;
++		if (!can_co_exist(tmp, bp)) {
++			ret = true;
++			break;
++		}
+ 	}
+-	return false;
++	spin_unlock(&task_bps_lock);
++	return ret;
+ }
+ 
+ /*
+@@ -215,13 +232,18 @@ static bool all_task_bps_check(struct perf_event *bp)
+ static bool same_task_bps_check(struct perf_event *bp)
+ {
+ 	struct breakpoint *tmp;
++	bool ret = false;
+ 
++	spin_lock(&task_bps_lock);
+ 	list_for_each_entry(tmp, &task_bps, list) {
+ 		if (tmp->bp->hw.target == bp->hw.target &&
+-		    !can_co_exist(tmp, bp))
+-			return true;
++		    !can_co_exist(tmp, bp)) {
++			ret = true;
++			break;
++		}
+ 	}
+-	return false;
++	spin_unlock(&task_bps_lock);
++	return ret;
+ }
+ 
+ static int cpu_bps_add(struct perf_event *bp)
+@@ -234,6 +256,7 @@ static int cpu_bps_add(struct perf_event *bp)
+ 	if (IS_ERR(tmp))
+ 		return PTR_ERR(tmp);
+ 
++	spin_lock(&cpu_bps_lock);
+ 	cpu_bp = per_cpu_ptr(cpu_bps, bp->cpu);
+ 	for (i = 0; i < nr_wp_slots(); i++) {
+ 		if (!cpu_bp[i]) {
+@@ -241,6 +264,7 @@ static int cpu_bps_add(struct perf_event *bp)
+ 			break;
+ 		}
+ 	}
++	spin_unlock(&cpu_bps_lock);
+ 	return 0;
+ }
+ 
+@@ -249,6 +273,7 @@ static void cpu_bps_remove(struct perf_event *bp)
+ 	struct breakpoint **cpu_bp;
+ 	int i = 0;
+ 
++	spin_lock(&cpu_bps_lock);
+ 	cpu_bp = per_cpu_ptr(cpu_bps, bp->cpu);
+ 	for (i = 0; i < nr_wp_slots(); i++) {
+ 		if (!cpu_bp[i])
+@@ -260,19 +285,25 @@ static void cpu_bps_remove(struct perf_event *bp)
+ 			break;
+ 		}
+ 	}
++	spin_unlock(&cpu_bps_lock);
+ }
+ 
+ static bool cpu_bps_check(int cpu, struct perf_event *bp)
+ {
+ 	struct breakpoint **cpu_bp;
++	bool ret = false;
+ 	int i;
+ 
++	spin_lock(&cpu_bps_lock);
+ 	cpu_bp = per_cpu_ptr(cpu_bps, cpu);
+ 	for (i = 0; i < nr_wp_slots(); i++) {
+-		if (cpu_bp[i] && !can_co_exist(cpu_bp[i], bp))
+-			return true;
++		if (cpu_bp[i] && !can_co_exist(cpu_bp[i], bp)) {
++			ret = true;
++			break;
++		}
+ 	}
+-	return false;
++	spin_unlock(&cpu_bps_lock);
++	return ret;
+ }
+ 
+ static bool all_cpu_bps_check(struct perf_event *bp)
+@@ -286,10 +317,6 @@ static bool all_cpu_bps_check(struct perf_event *bp)
+ 	return false;
+ }
+ 
+-/*
+- * We don't use any locks to serialize accesses to cpu_bps or task_bps
+- * because are already inside nr_bp_mutex.
+- */
+ int arch_reserve_bp_slot(struct perf_event *bp)
+ {
+ 	int ret;
 -- 
 2.37.2.672.g94769d06f0-goog
 
