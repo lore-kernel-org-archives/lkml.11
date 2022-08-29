@@ -2,122 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CC0C0502A
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 03:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4B8C0502E
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 03:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbiH2DBb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 23:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34552 "EHLO
+        id S229666AbiH2DFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 23:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229668AbiH2DBY (ORCPT
+        with ESMTP id S229462AbiH2DFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 23:01:24 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78CA3D58D
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 20:01:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661742083;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=J3eYJm2AtdKAUutUhamGeD2WJMAiL0MgHbUn5Jwkdx4=;
-        b=JIOTRJry34y/PCAYw/ZyvgdsC2siIM0nIxumieq1Di3CdvjfNzbuWHJsKyepLFfFPN2sFA
-        6UYSh58LK+zxOAUCZXhta1o3+VMl6nlCLX1Zign1IIQPkuBdvaSC0UV8swjlSR2CTW5TEK
-        VdHw4swCPDfxBJhsJhv/bTyhSx20t2o=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-307-Ob_JffuqOqiPVcKJZWhIjw-1; Sun, 28 Aug 2022 23:01:19 -0400
-X-MC-Unique: Ob_JffuqOqiPVcKJZWhIjw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 24EDD3C11059;
-        Mon, 29 Aug 2022 03:01:19 +0000 (UTC)
-Received: from T590 (ovpn-8-18.pek2.redhat.com [10.72.8.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 195F62166B26;
-        Mon, 29 Aug 2022 03:01:14 +0000 (UTC)
-Date:   Mon, 29 Aug 2022 11:01:11 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     ZiyangZhang <ZiyangZhang@linux.alibaba.com>
-Cc:     axboe@kernel.dk, xiaoguang.wang@linux.alibaba.com,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        joseph.qi@linux.alibaba.com
-Subject: Re: [RFC PATCH 2/9] ublk_drv: refactor ublk_cancel_queue()
-Message-ID: <Ywwr9wWI4Hf06fMD@T590>
-References: <20220824054744.77812-1-ZiyangZhang@linux.alibaba.com>
- <20220824054744.77812-3-ZiyangZhang@linux.alibaba.com>
+        Sun, 28 Aug 2022 23:05:20 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F026412749;
+        Sun, 28 Aug 2022 20:05:18 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id x26so6921187pfo.8;
+        Sun, 28 Aug 2022 20:05:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=YGMycgUwRPz2tjC0IBocG1q3RSZtySFGaidz43cV5mI=;
+        b=m/gLKyuUbF+icm8Yz9zwxD0N9vkmX3cs76hdop5mlBlaFzUWeGVyOLDH0oiVpHeuK1
+         VydYgN15GzhWYkSGDqpg5Bhk4ARWqY1x9wiRWaM9ohQwELgakqYvVubm4hH8fLNHpZVz
+         1glbhvau8PfbLE7oOds6vVD6MmMNKXmpTzZ8FNbytsXOyC+U/7Wu1irtdVmZr5m4uEe8
+         1CulPuo/NP6SqiN/Q2fH7vlO2Vbg0LkzuganH4+ozfQ5mkboRYBRRdAPBRQJwIFLKN/J
+         PCXhClXnbaycryphMDz5/pjhsMoWrX6efu2cZXugpaugmEj/y2RuK+TmdD9qQkdQefzT
+         8MLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=YGMycgUwRPz2tjC0IBocG1q3RSZtySFGaidz43cV5mI=;
+        b=rfuZIFl5i6RP3VNTjpDLOkWJfzHtGXzNskH5bmVDi7SjFdRvoeI5FFAVxynvKT0JO1
+         90DNM1bsOz3A3hqy8LoUFW7eK6uVBI+f1U7gMKfUREbn+6+ErP19yO3p9aYAKkGGgqYi
+         1IVK1R7mL+AFnqbXQ71qiLi+JPF+JVU1m6uptgxm2YuEybJ3r7OeoPtoGp72VoUHroL9
+         mn63tdY4Lmw6wndKIhQ65YyaFUDn4IpuMq+Y7HKst1kzV8phI33UB3sv+HU8BnJSir2Z
+         DqF9kD48QHiMDUyq6c0ghY87ZlDG5ZpMGV+G3GaD/vZycXt5ECU7J61seLyjJhpOFWOR
+         TNCw==
+X-Gm-Message-State: ACgBeo2RCVEmD0dZsXZ4CbQ4kCEXTEXtES6Jnfwp4u6IWH9O9asbTUFL
+        UWHw7TFolCm6zqDoy0y9NSM=
+X-Google-Smtp-Source: AA6agR7jOTRj0JjX9FzvbZ6qDZVc3TA4M8apOwMPYUKq51zSAfxHPThpv50qvuijD4qdyeGidXowsg==
+X-Received: by 2002:a63:5749:0:b0:42b:4002:2f65 with SMTP id h9-20020a635749000000b0042b40022f65mr11881048pgm.340.1661742318529;
+        Sun, 28 Aug 2022 20:05:18 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id c23-20020a63ef57000000b0042988a04bfdsm1263680pgk.9.2022.08.28.20.05.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Aug 2022 20:05:17 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: xu.panda@zte.com.cn
+To:     linux@roeck-us.net
+Cc:     heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xupanda <xu.panda@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next v3] usb: typec: tcpm: tcpci: Remove the unneeded result variable
+Date:   Mon, 29 Aug 2022 03:04:43 +0000
+Message-Id: <20220829030442.264695-1-xu.panda@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220824054744.77812-3-ZiyangZhang@linux.alibaba.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 01:47:37PM +0800, ZiyangZhang wrote:
-> Assume only a few FETCH_REQ ioucmds are sent to ublk_drv, then the
-> ubq_daemon exits, We have to call io_uring_cmd_done() for all ioucmds
-> received so that io_uring ctx will not leak.
-> 
-> ublk_cancel_queue() may be called before START_DEV or after STOP_DEV,
-> we decrease ubq->nr_io_ready and clear UBLK_IO_FLAG_ACTIVE so that we
-> won't call io_uring_cmd_done() twice for one ioucmd to avoid UAF. Also
-> clearing UBLK_IO_FLAG_ACTIVE makes the code more reasonable.
-> 
-> Signed-off-by: ZiyangZhang <ZiyangZhang@linux.alibaba.com>
-> ---
->  drivers/block/ublk_drv.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/block/ublk_drv.c b/drivers/block/ublk_drv.c
-> index c39b67d7133d..e08f636b0b9d 100644
-> --- a/drivers/block/ublk_drv.c
-> +++ b/drivers/block/ublk_drv.c
-> @@ -967,18 +967,23 @@ static void ublk_cancel_queue(struct ublk_queue *ubq)
->  {
->  	int i;
->  
-> -	if (!ublk_queue_ready(ubq))
-> +	if (!ubq->nr_io_ready)
->  		return;
->  
->  	for (i = 0; i < ubq->q_depth; i++) {
->  		struct ublk_io *io = &ubq->ios[i];
->  
-> -		if (io->flags & UBLK_IO_FLAG_ACTIVE)
-> +		if (io->flags & UBLK_IO_FLAG_ACTIVE) {
-> +			pr_devel("%s: done old cmd: qid %d tag %d\n",
-> +					__func__, ubq->q_id, i);
->  			io_uring_cmd_done(io->cmd, UBLK_IO_RES_ABORT, 0);
-> +			io->flags &= ~UBLK_IO_FLAG_ACTIVE;
-> +			ubq->nr_io_ready--;
-> +		}
->  	}
->  
->  	/* all io commands are canceled */
-> -	ubq->nr_io_ready = 0;
-> +	WARN_ON_ONCE(ubq->nr_io_ready);
+From: xupanda <xu.panda@zte.com.cn>
 
-The change looks fine, but suggest to add comment like the
-following given the above WARN_ON_ONCE() change isn't obvious.
+Return the value regmap_update_bits() directly instead of
+storing it in another redundant variable.
 
-```
-1) ublk_cancel_dev() is called before sending START_DEV(), ->mutex
-provides protection on above update.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: xupanda <xu.panda@zte.com.cn>
 
-2) ublk_cancel_dev() is called after sending START_DEV(), disk is
-deleted first, UBLK_IO_RES_ABORT is returned so that any new io
-command can't be issued to driver, so updating on io flags and
-nr_io_ready is safe here
+---
+chang for v3
+ - re-align continuation line alignment
+---
+ drivers/usb/typec/tcpm/tcpci.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Also ->nr_io_ready is guaranteed to become zero after ublk_cance_queue
-returns since request queue is either frozen or not present in both two cases.
-
-```
-
-
-Thanks,
-Ming
+diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
+index b2bfcebe218f..cd243530264b 100644
+--- a/drivers/usb/typec/tcpm/tcpci.c
++++ b/drivers/usb/typec/tcpm/tcpci.c
+@@ -328,11 +328,9 @@ static int tcpci_set_vconn(struct tcpc_dev *tcpc, bool enable)
+ static int tcpci_enable_auto_vbus_discharge(struct tcpc_dev *dev, bool enable)
+ {
+ 	struct tcpci *tcpci = tcpc_to_tcpci(dev);
+-	int ret;
+ 
+-	ret = regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
+-				 enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
+-	return ret;
++	return regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
++			enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
+ }
+ 
+ static int tcpci_set_auto_vbus_discharge_threshold(struct tcpc_dev *dev, enum typec_pwr_opmode mode,
+-- 
+2.25.1
 
