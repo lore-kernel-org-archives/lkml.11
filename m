@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B3AFECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB5CECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230436AbiH2LJS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:09:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58350 "EHLO
+        id S230483AbiH2LJY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbiH2LHd (ORCPT
+        with ESMTP id S230430AbiH2LHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:07:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5302520B7;
-        Mon, 29 Aug 2022 04:05:20 -0700 (PDT)
+        Mon, 29 Aug 2022 07:07:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E3C848EAC;
+        Mon, 29 Aug 2022 04:05:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EED0B80EC5;
-        Mon, 29 Aug 2022 11:05:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9310EC433C1;
-        Mon, 29 Aug 2022 11:05:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4F2BB80EF5;
+        Mon, 29 Aug 2022 11:04:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E794C433C1;
+        Mon, 29 Aug 2022 11:04:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771119;
-        bh=Qe9CtB/eJop4L+BZbhVntplBrPozxKEmknaFXBM9F0o=;
+        s=korg; t=1661771046;
+        bh=KL20WVIWi1PJCJaEc2TafejaDSA5XEZq6uU3sKE3Q20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aa69G8DHkj6WtLy7IjQpkOQsHQ5FRwEl1UxsEGg2/VAotUKGKw57evy9NxOgqzh2s
-         azetdA3JhhTYPRWMyrPotpDUqIKzcriGul39k9OgKkpxNgdUcoC4w+/Q/w/46VycNB
-         qBvCxm39xhhWOvRFoFoAxUl5FRxkJzFv4ZzZAVFU=
+        b=tbmzRTVC1Qh2uEzdtXu8H2nJj5MgnYoIVbG5KgHKemrS1lywuvqsIyv/mbOBVIpro
+         lX7Eo22iTXpv1dA0kLgf6flfd/6MV2hR8GSsBDHmVPENIkmAYe0yoYm+33/3RxehRa
+         qopdxXLmLURoahHNSNlAHUayiH14CCaztHkmapeg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        ntfs3@lists.linux.dev,
-        "Christian Brauner (Microsoft)" <brauner@kernel.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Florian Westphal <fw@strlen.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 037/136] ntfs: fix acl handling
-Date:   Mon, 29 Aug 2022 12:58:24 +0200
-Message-Id: <20220829105806.116680390@linuxfoundation.org>
+Subject: [PATCH 5.15 053/136] netfilter: ebtables: reject blobs that dont provide all entry points
+Date:   Mon, 29 Aug 2022 12:58:40 +0200
+Message-Id: <20220829105806.810560455@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -51,107 +51,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <brauner@kernel.org>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 0c3bc7899e6dfb52df1c46118a5a670ae619645f ]
+[ Upstream commit 7997eff82828304b780dc0a39707e1946d6f1ebf ]
 
-While looking at our current POSIX ACL handling in the context of some
-overlayfs work I went through a range of other filesystems checking how they
-handle them currently and encountered ntfs3.
+Harshit Mogalapalli says:
+ In ebt_do_table() function dereferencing 'private->hook_entry[hook]'
+ can lead to NULL pointer dereference. [..] Kernel panic:
 
-The posic_acl_{from,to}_xattr() helpers always need to operate on the
-filesystem idmapping. Since ntfs3 can only be mounted in the initial user
-namespace the relevant idmapping is init_user_ns.
+general protection fault, probably for non-canonical address 0xdffffc0000000005: 0000 [#1] PREEMPT SMP KASAN
+KASAN: null-ptr-deref in range [0x0000000000000028-0x000000000000002f]
+[..]
+RIP: 0010:ebt_do_table+0x1dc/0x1ce0
+Code: 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 5c 16 00 00 48 b8 00 00 00 00 00 fc ff df 49 8b 6c df 08 48 8d 7d 2c 48 89 fa 48 c1 ea 03 <0f> b6 14 02 48 89 f8 83 e0 07 83 c0 03 38 d0 7c 08 84 d2 0f 85 88
+[..]
+Call Trace:
+ nf_hook_slow+0xb1/0x170
+ __br_forward+0x289/0x730
+ maybe_deliver+0x24b/0x380
+ br_flood+0xc6/0x390
+ br_dev_xmit+0xa2e/0x12c0
 
-The posix_acl_{from,to}_xattr() helpers are concerned with translating between
-the kernel internal struct posix_acl{_entry} and the uapi struct
-posix_acl_xattr_{header,entry} and the kernel internal data structure is cached
-filesystem wide.
+For some reason ebtables rejects blobs that provide entry points that are
+not supported by the table, but what it should instead reject is the
+opposite: blobs that DO NOT provide an entry point supported by the table.
 
-Additional idmappings such as the caller's idmapping or the mount's idmapping
-are handled higher up in the VFS. Individual filesystems usually do not need to
-concern themselves with these.
+t->valid_hooks is the bitmask of hooks (input, forward ...) that will see
+packets.  Providing an entry point that is not support is harmless
+(never called/used), but the inverse isn't: it results in a crash
+because the ebtables traverser doesn't expect a NULL blob for a location
+its receiving packets for.
 
-The posix_acl_valid() helper is concerned with checking whether the values in
-the kernel internal struct posix_acl can be represented in the filesystem's
-idmapping. IOW, if they can be written to disk. So this helper too needs to
-take the filesystem's idmapping.
+Instead of fixing all the individual checks, do what iptables is doing and
+reject all blobs that differ from the expected hooks.
 
-Fixes: be71b5cba2e6 ("fs/ntfs3: Add attrib operations")
-Cc: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-Cc: ntfs3@lists.linux.dev
-Signed-off-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ntfs3/xattr.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ include/linux/netfilter_bridge/ebtables.h | 4 ----
+ net/bridge/netfilter/ebtable_broute.c     | 8 --------
+ net/bridge/netfilter/ebtable_filter.c     | 8 --------
+ net/bridge/netfilter/ebtable_nat.c        | 8 --------
+ net/bridge/netfilter/ebtables.c           | 8 +-------
+ 5 files changed, 1 insertion(+), 35 deletions(-)
 
-diff --git a/fs/ntfs3/xattr.c b/fs/ntfs3/xattr.c
-index 872eb56bb1706..e8bfa709270d1 100644
---- a/fs/ntfs3/xattr.c
-+++ b/fs/ntfs3/xattr.c
-@@ -476,8 +476,7 @@ static noinline int ntfs_set_ea(struct inode *inode, const char *name,
- }
+diff --git a/include/linux/netfilter_bridge/ebtables.h b/include/linux/netfilter_bridge/ebtables.h
+index 10a01978bc0d3..bde9db771ae41 100644
+--- a/include/linux/netfilter_bridge/ebtables.h
++++ b/include/linux/netfilter_bridge/ebtables.h
+@@ -94,10 +94,6 @@ struct ebt_table {
+ 	struct ebt_replace_kernel *table;
+ 	unsigned int valid_hooks;
+ 	rwlock_t lock;
+-	/* e.g. could be the table explicitly only allows certain
+-	 * matches, targets, ... 0 == let it in */
+-	int (*check)(const struct ebt_table_info *info,
+-	   unsigned int valid_hooks);
+ 	/* the data used by the kernel */
+ 	struct ebt_table_info *private;
+ 	struct nf_hook_ops *ops;
+diff --git a/net/bridge/netfilter/ebtable_broute.c b/net/bridge/netfilter/ebtable_broute.c
+index a7af4eaff17d3..3d4ea774d7e8f 100644
+--- a/net/bridge/netfilter/ebtable_broute.c
++++ b/net/bridge/netfilter/ebtable_broute.c
+@@ -36,18 +36,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)&initial_chain,
+ };
  
- #ifdef CONFIG_NTFS3_FS_POSIX_ACL
--static struct posix_acl *ntfs_get_acl_ex(struct user_namespace *mnt_userns,
--					 struct inode *inode, int type,
-+static struct posix_acl *ntfs_get_acl_ex(struct inode *inode, int type,
- 					 int locked)
- {
- 	struct ntfs_inode *ni = ntfs_i(inode);
-@@ -512,7 +511,7 @@ static struct posix_acl *ntfs_get_acl_ex(struct user_namespace *mnt_userns,
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~(1 << NF_BR_BROUTING))
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table broute_table = {
+ 	.name		= "broute",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= 1 << NF_BR_BROUTING,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
  
- 	/* Translate extended attribute to acl. */
- 	if (err >= 0) {
--		acl = posix_acl_from_xattr(mnt_userns, buf, err);
-+		acl = posix_acl_from_xattr(&init_user_ns, buf, err);
- 	} else if (err == -ENODATA) {
- 		acl = NULL;
- 	} else {
-@@ -535,8 +534,7 @@ struct posix_acl *ntfs_get_acl(struct inode *inode, int type, bool rcu)
- 	if (rcu)
- 		return ERR_PTR(-ECHILD);
+diff --git a/net/bridge/netfilter/ebtable_filter.c b/net/bridge/netfilter/ebtable_filter.c
+index c0b121df4a9af..257d63b5dec16 100644
+--- a/net/bridge/netfilter/ebtable_filter.c
++++ b/net/bridge/netfilter/ebtable_filter.c
+@@ -43,18 +43,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)initial_chains,
+ };
  
--	/* TODO: init_user_ns? */
--	return ntfs_get_acl_ex(&init_user_ns, inode, type, 0);
-+	return ntfs_get_acl_ex(inode, type, 0);
- }
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~FILTER_VALID_HOOKS)
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table frame_filter = {
+ 	.name		= "filter",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= FILTER_VALID_HOOKS,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
  
- static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
-@@ -588,7 +586,7 @@ static noinline int ntfs_set_acl_ex(struct user_namespace *mnt_userns,
- 		value = kmalloc(size, GFP_NOFS);
- 		if (!value)
- 			return -ENOMEM;
--		err = posix_acl_to_xattr(mnt_userns, acl, value, size);
-+		err = posix_acl_to_xattr(&init_user_ns, acl, value, size);
- 		if (err < 0)
- 			goto out;
- 		flags = 0;
-@@ -639,7 +637,7 @@ static int ntfs_xattr_get_acl(struct user_namespace *mnt_userns,
- 	if (!acl)
- 		return -ENODATA;
+diff --git a/net/bridge/netfilter/ebtable_nat.c b/net/bridge/netfilter/ebtable_nat.c
+index 4078151c224fb..39179c2cf87d2 100644
+--- a/net/bridge/netfilter/ebtable_nat.c
++++ b/net/bridge/netfilter/ebtable_nat.c
+@@ -43,18 +43,10 @@ static struct ebt_replace_kernel initial_table = {
+ 	.entries	= (char *)initial_chains,
+ };
  
--	err = posix_acl_to_xattr(mnt_userns, acl, buffer, size);
-+	err = posix_acl_to_xattr(&init_user_ns, acl, buffer, size);
- 	posix_acl_release(acl);
+-static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
+-{
+-	if (valid_hooks & ~NAT_VALID_HOOKS)
+-		return -EINVAL;
+-	return 0;
+-}
+-
+ static const struct ebt_table frame_nat = {
+ 	.name		= "nat",
+ 	.table		= &initial_table,
+ 	.valid_hooks	= NAT_VALID_HOOKS,
+-	.check		= check,
+ 	.me		= THIS_MODULE,
+ };
  
- 	return err;
-@@ -663,12 +661,12 @@ static int ntfs_xattr_set_acl(struct user_namespace *mnt_userns,
- 	if (!value) {
- 		acl = NULL;
- 	} else {
--		acl = posix_acl_from_xattr(mnt_userns, value, size);
-+		acl = posix_acl_from_xattr(&init_user_ns, value, size);
- 		if (IS_ERR(acl))
- 			return PTR_ERR(acl);
+diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
+index ba045f35114dd..8905fe2fe023d 100644
+--- a/net/bridge/netfilter/ebtables.c
++++ b/net/bridge/netfilter/ebtables.c
+@@ -1040,8 +1040,7 @@ static int do_replace_finish(struct net *net, struct ebt_replace *repl,
+ 		goto free_iterate;
+ 	}
  
- 		if (acl) {
--			err = posix_acl_valid(mnt_userns, acl);
-+			err = posix_acl_valid(&init_user_ns, acl);
- 			if (err)
- 				goto release_and_out;
- 		}
+-	/* the table doesn't like it */
+-	if (t->check && (ret = t->check(newinfo, repl->valid_hooks)))
++	if (repl->valid_hooks != t->valid_hooks)
+ 		goto free_unlock;
+ 
+ 	if (repl->num_counters && repl->num_counters != t->private->nentries) {
+@@ -1231,11 +1230,6 @@ int ebt_register_table(struct net *net, const struct ebt_table *input_table,
+ 	if (ret != 0)
+ 		goto free_chainstack;
+ 
+-	if (table->check && table->check(newinfo, table->valid_hooks)) {
+-		ret = -EINVAL;
+-		goto free_chainstack;
+-	}
+-
+ 	table->private = newinfo;
+ 	rwlock_init(&table->lock);
+ 	mutex_lock(&ebt_mutex);
 -- 
 2.35.1
 
