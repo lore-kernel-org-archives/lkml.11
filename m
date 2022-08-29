@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC1AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C7EECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231733AbiH2LV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55538 "EHLO
+        id S229986AbiH2LVe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbiH2LTk (ORCPT
+        with ESMTP id S231489AbiH2LTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:19:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB3D696C7;
-        Mon, 29 Aug 2022 04:12:43 -0700 (PDT)
+        Mon, 29 Aug 2022 07:19:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B1C06E2D4;
+        Mon, 29 Aug 2022 04:13:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE65661231;
-        Mon, 29 Aug 2022 11:12:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFCE5C43147;
-        Mon, 29 Aug 2022 11:12:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9C24611C2;
+        Mon, 29 Aug 2022 11:10:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5570C433C1;
+        Mon, 29 Aug 2022 11:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771545;
-        bh=PAkLakiva+eRxlLa8CPm6Kw0uAf6QR0uZ0BvuAUJ6OQ=;
+        s=korg; t=1661771450;
+        bh=/slrUSaOwjcVBIvDPuQHSaZdw8BBQ7UOc4B+Ytzhick=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uU4FvhL34IxuvRFepmfeSa7SbP/c7/6flzY889UxPcQFb7VWXq4NTQsYu091RVHeL
-         xXCciyhNaUgrpaS84n2Cg0yzIKd+IENDXPVjoXlWuAAARQxWU9Icxg3YCbqv2+R9HL
-         lVqBsehRhilXEMLHTHBZ/bdOaWC8U2o/0AAsEvXY=
+        b=RqaV/9OSm5nmCCBJZDoJuY50zzf8Gq7w7mLpbGrJQYoaASvjfFnbr6IEWC8eBGfTc
+         gmvwdq5rWFG2GOHmV5xa4NvdxOYQn6/jxZdfUVFXpzBN/ecIawnJPySqME7V5wXY6V
+         Fmu1uZsrdbNpLK/6/A3agKbmrfjHf4rgLjV+K2zw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 042/158] net: dsa: microchip: update the ksz_phylink_get_caps
-Date:   Mon, 29 Aug 2022 12:58:12 +0200
-Message-Id: <20220829105810.542750343@linuxfoundation.org>
+Subject: [PATCH 5.19 032/158] net/mlx5: Disable irq when locking lag_lock
+Date:   Mon, 29 Aug 2022 12:58:02 +0200
+Message-Id: <20220829105810.128570137@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -51,122 +50,407 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Ramadoss <arun.ramadoss@microchip.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-[ Upstream commit 7012033ce10e0968e6cb82709aa0ed7f2080b61e ]
+[ Upstream commit 8e93f29422ffe968d7161f91acdf0d47f5323727 ]
 
-This patch assigns the phylink_get_caps in ksz8795 and ksz9477 to
-ksz_phylink_get_caps. And update their mac_capabilities in the
-respective ksz_dev_ops.
+The lag_lock is taken from both process and softirq contexts which results
+lockdep warning[0] about potential deadlock. However, just disabling
+softirqs by using *_bh spinlock API is not enough since it will cause
+warning in some contexts where the lock is obtained with hard irqs
+disabled. To fix the issue save current irq state, disable them before
+obtaining the lock an re-enable irqs from saved state after releasing it.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+[0]:
+
+[Sun Aug  7 13:12:29 2022] ================================
+[Sun Aug  7 13:12:29 2022] WARNING: inconsistent lock state
+[Sun Aug  7 13:12:29 2022] 5.19.0_for_upstream_debug_2022_08_04_16_06 #1 Not tainted
+[Sun Aug  7 13:12:29 2022] --------------------------------
+[Sun Aug  7 13:12:29 2022] inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
+[Sun Aug  7 13:12:29 2022] swapper/0/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
+[Sun Aug  7 13:12:29 2022] ffffffffa06dc0d8 (lag_lock){+.?.}-{2:2}, at: mlx5_lag_is_shared_fdb+0x1f/0x120 [mlx5_core]
+[Sun Aug  7 13:12:29 2022] {SOFTIRQ-ON-W} state was registered at:
+[Sun Aug  7 13:12:29 2022]   lock_acquire+0x1c1/0x550
+[Sun Aug  7 13:12:29 2022]   _raw_spin_lock+0x2c/0x40
+[Sun Aug  7 13:12:29 2022]   mlx5_lag_add_netdev+0x13b/0x480 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]   mlx5e_nic_enable+0x114/0x470 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]   mlx5e_attach_netdev+0x30e/0x6a0 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]   mlx5e_resume+0x105/0x160 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]   mlx5e_probe+0xac3/0x14f0 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]   auxiliary_bus_probe+0x9d/0xe0
+[Sun Aug  7 13:12:29 2022]   really_probe+0x1e0/0xaa0
+[Sun Aug  7 13:12:29 2022]   __driver_probe_device+0x219/0x480
+[Sun Aug  7 13:12:29 2022]   driver_probe_device+0x49/0x130
+[Sun Aug  7 13:12:29 2022]   __driver_attach+0x1e4/0x4d0
+[Sun Aug  7 13:12:29 2022]   bus_for_each_dev+0x11e/0x1a0
+[Sun Aug  7 13:12:29 2022]   bus_add_driver+0x3f4/0x5a0
+[Sun Aug  7 13:12:29 2022]   driver_register+0x20f/0x390
+[Sun Aug  7 13:12:29 2022]   __auxiliary_driver_register+0x14e/0x260
+[Sun Aug  7 13:12:29 2022]   mlx5e_init+0x38/0x90 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]   vhost_iotlb_itree_augment_rotate+0xcb/0x180 [vhost_iotlb]
+[Sun Aug  7 13:12:29 2022]   do_one_initcall+0xc4/0x400
+[Sun Aug  7 13:12:29 2022]   do_init_module+0x18a/0x620
+[Sun Aug  7 13:12:29 2022]   load_module+0x563a/0x7040
+[Sun Aug  7 13:12:29 2022]   __do_sys_finit_module+0x122/0x1d0
+[Sun Aug  7 13:12:29 2022]   do_syscall_64+0x3d/0x90
+[Sun Aug  7 13:12:29 2022]   entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[Sun Aug  7 13:12:29 2022] irq event stamp: 3596508
+[Sun Aug  7 13:12:29 2022] hardirqs last  enabled at (3596508): [<ffffffff813687c2>] __local_bh_enable_ip+0xa2/0x100
+[Sun Aug  7 13:12:29 2022] hardirqs last disabled at (3596507): [<ffffffff813687da>] __local_bh_enable_ip+0xba/0x100
+[Sun Aug  7 13:12:29 2022] softirqs last  enabled at (3596488): [<ffffffff81368a2a>] irq_exit_rcu+0x11a/0x170
+[Sun Aug  7 13:12:29 2022] softirqs last disabled at (3596495): [<ffffffff81368a2a>] irq_exit_rcu+0x11a/0x170
+[Sun Aug  7 13:12:29 2022]
+                           other info that might help us debug this:
+[Sun Aug  7 13:12:29 2022]  Possible unsafe locking scenario:
+
+[Sun Aug  7 13:12:29 2022]        CPU0
+[Sun Aug  7 13:12:29 2022]        ----
+[Sun Aug  7 13:12:29 2022]   lock(lag_lock);
+[Sun Aug  7 13:12:29 2022]   <Interrupt>
+[Sun Aug  7 13:12:29 2022]     lock(lag_lock);
+[Sun Aug  7 13:12:29 2022]
+                            *** DEADLOCK ***
+
+[Sun Aug  7 13:12:29 2022] 4 locks held by swapper/0/0:
+[Sun Aug  7 13:12:29 2022]  #0: ffffffff84643260 (rcu_read_lock){....}-{1:2}, at: mlx5e_napi_poll+0x43/0x20a0 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  #1: ffffffff84643260 (rcu_read_lock){....}-{1:2}, at: netif_receive_skb_list_internal+0x2d7/0xd60
+[Sun Aug  7 13:12:29 2022]  #2: ffff888144a18b58 (&br->hash_lock){+.-.}-{2:2}, at: br_fdb_update+0x301/0x570
+[Sun Aug  7 13:12:29 2022]  #3: ffffffff84643260 (rcu_read_lock){....}-{1:2}, at: atomic_notifier_call_chain+0x5/0x1d0
+[Sun Aug  7 13:12:29 2022]
+                           stack backtrace:
+[Sun Aug  7 13:12:29 2022] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0_for_upstream_debug_2022_08_04_16_06 #1
+[Sun Aug  7 13:12:29 2022] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[Sun Aug  7 13:12:29 2022] Call Trace:
+[Sun Aug  7 13:12:29 2022]  <IRQ>
+[Sun Aug  7 13:12:29 2022]  dump_stack_lvl+0x57/0x7d
+[Sun Aug  7 13:12:29 2022]  mark_lock.part.0.cold+0x5f/0x92
+[Sun Aug  7 13:12:29 2022]  ? lock_chain_count+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  ? unwind_next_frame+0x1c4/0x1b50
+[Sun Aug  7 13:12:29 2022]  ? secondary_startup_64_no_verify+0xcd/0xdb
+[Sun Aug  7 13:12:29 2022]  ? mlx5e_napi_poll+0x4e9/0x20a0 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? mlx5e_napi_poll+0x4e9/0x20a0 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? stack_access_ok+0x1d0/0x1d0
+[Sun Aug  7 13:12:29 2022]  ? start_kernel+0x3a7/0x3c5
+[Sun Aug  7 13:12:29 2022]  __lock_acquire+0x1260/0x6720
+[Sun Aug  7 13:12:29 2022]  ? lock_chain_count+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  ? lock_chain_count+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  ? register_lock_class+0x1880/0x1880
+[Sun Aug  7 13:12:29 2022]  ? mark_lock.part.0+0xed/0x3060
+[Sun Aug  7 13:12:29 2022]  ? stack_trace_save+0x91/0xc0
+[Sun Aug  7 13:12:29 2022]  lock_acquire+0x1c1/0x550
+[Sun Aug  7 13:12:29 2022]  ? mlx5_lag_is_shared_fdb+0x1f/0x120 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? lockdep_hardirqs_on_prepare+0x400/0x400
+[Sun Aug  7 13:12:29 2022]  ? __lock_acquire+0xd6f/0x6720
+[Sun Aug  7 13:12:29 2022]  _raw_spin_lock+0x2c/0x40
+[Sun Aug  7 13:12:29 2022]  ? mlx5_lag_is_shared_fdb+0x1f/0x120 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  mlx5_lag_is_shared_fdb+0x1f/0x120 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  mlx5_esw_bridge_rep_vport_num_vhca_id_get+0x1a0/0x600 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? mlx5_esw_bridge_update_work+0x90/0x90 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? lock_acquire+0x1c1/0x550
+[Sun Aug  7 13:12:29 2022]  mlx5_esw_bridge_switchdev_event+0x185/0x8f0 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? mlx5_esw_bridge_port_obj_attr_set+0x3e0/0x3e0 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? check_chain_key+0x24a/0x580
+[Sun Aug  7 13:12:29 2022]  atomic_notifier_call_chain+0xd7/0x1d0
+[Sun Aug  7 13:12:29 2022]  br_switchdev_fdb_notify+0xea/0x100
+[Sun Aug  7 13:12:29 2022]  ? br_switchdev_set_port_flag+0x310/0x310
+[Sun Aug  7 13:12:29 2022]  fdb_notify+0x11b/0x150
+[Sun Aug  7 13:12:29 2022]  br_fdb_update+0x34c/0x570
+[Sun Aug  7 13:12:29 2022]  ? lock_chain_count+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  ? br_fdb_add_local+0x50/0x50
+[Sun Aug  7 13:12:29 2022]  ? br_allowed_ingress+0x5f/0x1070
+[Sun Aug  7 13:12:29 2022]  ? check_chain_key+0x24a/0x580
+[Sun Aug  7 13:12:29 2022]  br_handle_frame_finish+0x786/0x18e0
+[Sun Aug  7 13:12:29 2022]  ? check_chain_key+0x24a/0x580
+[Sun Aug  7 13:12:29 2022]  ? br_handle_local_finish+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  ? __lock_acquire+0xd6f/0x6720
+[Sun Aug  7 13:12:29 2022]  ? sctp_inet_bind_verify+0x4d/0x190
+[Sun Aug  7 13:12:29 2022]  ? xlog_unpack_data+0x2e0/0x310
+[Sun Aug  7 13:12:29 2022]  ? br_handle_local_finish+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  br_nf_hook_thresh+0x227/0x380 [br_netfilter]
+[Sun Aug  7 13:12:29 2022]  ? setup_pre_routing+0x460/0x460 [br_netfilter]
+[Sun Aug  7 13:12:29 2022]  ? br_handle_local_finish+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  ? br_nf_pre_routing_ipv6+0x48b/0x69c [br_netfilter]
+[Sun Aug  7 13:12:29 2022]  br_nf_pre_routing_finish_ipv6+0x5c2/0xbf0 [br_netfilter]
+[Sun Aug  7 13:12:29 2022]  ? br_handle_local_finish+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  br_nf_pre_routing_ipv6+0x4c6/0x69c [br_netfilter]
+[Sun Aug  7 13:12:29 2022]  ? br_validate_ipv6+0x9e0/0x9e0 [br_netfilter]
+[Sun Aug  7 13:12:29 2022]  ? br_nf_forward_arp+0xb70/0xb70 [br_netfilter]
+[Sun Aug  7 13:12:29 2022]  ? br_nf_pre_routing+0xacf/0x1160 [br_netfilter]
+[Sun Aug  7 13:12:29 2022]  br_handle_frame+0x8a9/0x1270
+[Sun Aug  7 13:12:29 2022]  ? br_handle_frame_finish+0x18e0/0x18e0
+[Sun Aug  7 13:12:29 2022]  ? register_lock_class+0x1880/0x1880
+[Sun Aug  7 13:12:29 2022]  ? br_handle_local_finish+0x20/0x20
+[Sun Aug  7 13:12:29 2022]  ? bond_handle_frame+0xf9/0xac0 [bonding]
+[Sun Aug  7 13:12:29 2022]  ? br_handle_frame_finish+0x18e0/0x18e0
+[Sun Aug  7 13:12:29 2022]  __netif_receive_skb_core+0x7c0/0x2c70
+[Sun Aug  7 13:12:29 2022]  ? check_chain_key+0x24a/0x580
+[Sun Aug  7 13:12:29 2022]  ? generic_xdp_tx+0x5b0/0x5b0
+[Sun Aug  7 13:12:29 2022]  ? __lock_acquire+0xd6f/0x6720
+[Sun Aug  7 13:12:29 2022]  ? register_lock_class+0x1880/0x1880
+[Sun Aug  7 13:12:29 2022]  ? check_chain_key+0x24a/0x580
+[Sun Aug  7 13:12:29 2022]  __netif_receive_skb_list_core+0x2d7/0x8a0
+[Sun Aug  7 13:12:29 2022]  ? lock_acquire+0x1c1/0x550
+[Sun Aug  7 13:12:29 2022]  ? process_backlog+0x960/0x960
+[Sun Aug  7 13:12:29 2022]  ? lockdep_hardirqs_on_prepare+0x129/0x400
+[Sun Aug  7 13:12:29 2022]  ? kvm_clock_get_cycles+0x14/0x20
+[Sun Aug  7 13:12:29 2022]  netif_receive_skb_list_internal+0x5f4/0xd60
+[Sun Aug  7 13:12:29 2022]  ? do_xdp_generic+0x150/0x150
+[Sun Aug  7 13:12:29 2022]  ? mlx5e_poll_rx_cq+0xf6b/0x2960 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? mlx5e_poll_ico_cq+0x3d/0x1590 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  napi_complete_done+0x188/0x710
+[Sun Aug  7 13:12:29 2022]  mlx5e_napi_poll+0x4e9/0x20a0 [mlx5_core]
+[Sun Aug  7 13:12:29 2022]  ? __queue_work+0x53c/0xeb0
+[Sun Aug  7 13:12:29 2022]  __napi_poll+0x9f/0x540
+[Sun Aug  7 13:12:29 2022]  net_rx_action+0x420/0xb70
+[Sun Aug  7 13:12:29 2022]  ? napi_threaded_poll+0x470/0x470
+[Sun Aug  7 13:12:29 2022]  ? __common_interrupt+0x79/0x1a0
+[Sun Aug  7 13:12:29 2022]  __do_softirq+0x271/0x92c
+[Sun Aug  7 13:12:29 2022]  irq_exit_rcu+0x11a/0x170
+[Sun Aug  7 13:12:29 2022]  common_interrupt+0x7d/0xa0
+[Sun Aug  7 13:12:29 2022]  </IRQ>
+[Sun Aug  7 13:12:29 2022]  <TASK>
+[Sun Aug  7 13:12:29 2022]  asm_common_interrupt+0x22/0x40
+[Sun Aug  7 13:12:29 2022] RIP: 0010:default_idle+0x42/0x60
+[Sun Aug  7 13:12:29 2022] Code: c1 83 e0 07 48 c1 e9 03 83 c0 03 0f b6 14 11 38 d0 7c 04 84 d2 75 14 8b 05 6b f1 22 02 85 c0 7e 07 0f 00 2d 80 3b 4a 00 fb f4 <c3> 48 c7 c7 e0 07 7e 85 e8 21 bd 40 fe eb de 66 66 2e 0f 1f 84 00
+[Sun Aug  7 13:12:29 2022] RSP: 0018:ffffffff84407e18 EFLAGS: 00000242
+[Sun Aug  7 13:12:29 2022] RAX: 0000000000000001 RBX: ffffffff84ec4a68 RCX: 1ffffffff0afc0fc
+[Sun Aug  7 13:12:29 2022] RDX: 0000000000000004 RSI: 0000000000000000 RDI: ffffffff835b1fac
+[Sun Aug  7 13:12:29 2022] RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8884d2c44ac3
+[Sun Aug  7 13:12:29 2022] R10: ffffed109a588958 R11: 00000000ffffffff R12: 0000000000000000
+[Sun Aug  7 13:12:29 2022] R13: ffffffff84efac20 R14: 0000000000000000 R15: dffffc0000000000
+[Sun Aug  7 13:12:29 2022]  ? default_idle_call+0xcc/0x460
+[Sun Aug  7 13:12:29 2022]  default_idle_call+0xec/0x460
+[Sun Aug  7 13:12:29 2022]  do_idle+0x394/0x450
+[Sun Aug  7 13:12:29 2022]  ? arch_cpu_idle_exit+0x40/0x40
+[Sun Aug  7 13:12:29 2022]  cpu_startup_entry+0x19/0x20
+[Sun Aug  7 13:12:29 2022]  rest_init+0x156/0x250
+[Sun Aug  7 13:12:29 2022]  arch_call_rest_init+0xf/0x15
+[Sun Aug  7 13:12:29 2022]  start_kernel+0x3a7/0x3c5
+[Sun Aug  7 13:12:29 2022]  secondary_startup_64_no_verify+0xcd/0xdb
+[Sun Aug  7 13:12:29 2022]  </TASK>
+
+Fixes: ff9b7521468b ("net/mlx5: Bridge, support LAG")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 9 +++------
- drivers/net/dsa/microchip/ksz9477.c    | 7 +++----
- drivers/net/dsa/microchip/ksz_common.c | 3 +++
- drivers/net/dsa/microchip/ksz_common.h | 2 ++
- 4 files changed, 11 insertions(+), 10 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/lag/lag.c | 55 +++++++++++--------
+ 1 file changed, 33 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 2e3d24a3260e1..c771797fd902f 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1353,13 +1353,9 @@ static int ksz8_setup(struct dsa_switch *ds)
- 	return ksz8_handle_global_errata(ds);
- }
- 
--static void ksz8_get_caps(struct dsa_switch *ds, int port,
-+static void ksz8_get_caps(struct ksz_device *dev, int port,
- 			  struct phylink_config *config)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+index c520edb942ca5..d98acd68af2ec 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
+@@ -1067,30 +1067,32 @@ static void mlx5_ldev_add_netdev(struct mlx5_lag *ldev,
+ 				 struct net_device *netdev)
  {
--	struct ksz_device *dev = ds->priv;
--
--	ksz_phylink_get_caps(ds, port, config);
--
- 	config->mac_capabilities = MAC_10 | MAC_100;
+ 	unsigned int fn = mlx5_get_dev_index(dev);
++	unsigned long flags;
  
- 	/* Silicon Errata Sheet (DS80000830A):
-@@ -1381,7 +1377,7 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.setup			= ksz8_setup,
- 	.phy_read		= ksz_phy_read16,
- 	.phy_write		= ksz_phy_write16,
--	.phylink_get_caps	= ksz8_get_caps,
-+	.phylink_get_caps	= ksz_phylink_get_caps,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
- 	.port_enable		= ksz_enable_port,
- 	.get_strings		= ksz_get_strings,
-@@ -1463,6 +1459,7 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.vlan_del = ksz8_port_vlan_del,
- 	.mirror_add = ksz8_port_mirror_add,
- 	.mirror_del = ksz8_port_mirror_del,
-+	.get_caps = ksz8_get_caps,
- 	.shutdown = ksz8_reset_switch,
- 	.init = ksz8_switch_init,
- 	.exit = ksz8_switch_exit,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index cd4a3088e9473..125124fdefbf4 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -1082,11 +1082,9 @@ static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
- 	ksz9477_port_mmd_write(dev, port, 0x1c, 0x20, 0xeeee);
+ 	if (fn >= ldev->ports)
+ 		return;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev->pf[fn].netdev = netdev;
+ 	ldev->tracker.netdev_state[fn].link_up = 0;
+ 	ldev->tracker.netdev_state[fn].tx_enabled = 0;
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
  }
  
--static void ksz9477_get_caps(struct dsa_switch *ds, int port,
-+static void ksz9477_get_caps(struct ksz_device *dev, int port,
- 			     struct phylink_config *config)
+ static void mlx5_ldev_remove_netdev(struct mlx5_lag *ldev,
+ 				    struct net_device *netdev)
  {
--	ksz_phylink_get_caps(ds, port, config);
--
- 	config->mac_capabilities = MAC_10 | MAC_100 | MAC_1000FD |
- 				   MAC_ASYM_PAUSE | MAC_SYM_PAUSE;
- }
-@@ -1316,7 +1314,7 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.phy_read		= ksz9477_phy_read16,
- 	.phy_write		= ksz9477_phy_write16,
- 	.phylink_mac_link_down	= ksz_mac_link_down,
--	.phylink_get_caps	= ksz9477_get_caps,
-+	.phylink_get_caps	= ksz_phylink_get_caps,
- 	.port_enable		= ksz_enable_port,
- 	.get_strings		= ksz_get_strings,
- 	.get_ethtool_stats	= ksz_get_ethtool_stats,
-@@ -1412,6 +1410,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.vlan_del = ksz9477_port_vlan_del,
- 	.mirror_add = ksz9477_port_mirror_add,
- 	.mirror_del = ksz9477_port_mirror_del,
-+	.get_caps = ksz9477_get_caps,
- 	.shutdown = ksz9477_reset_switch,
- 	.init = ksz9477_switch_init,
- 	.exit = ksz9477_switch_exit,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 676669d353ea6..0f02c62b02685 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -456,6 +456,9 @@ void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
- 	if (dev->info->internal_phy[port])
- 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
- 			  config->supported_interfaces);
-+
-+	if (dev->dev_ops->get_caps)
-+		dev->dev_ops->get_caps(dev, port, config);
- }
- EXPORT_SYMBOL_GPL(ksz_phylink_get_caps);
++	unsigned long flags;
+ 	int i;
  
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index c724cbb437e29..10f9ef2dbf1ca 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -192,6 +192,8 @@ struct ksz_dev_ops {
- 			  bool ingress, struct netlink_ext_ack *extack);
- 	void (*mirror_del)(struct ksz_device *dev, int port,
- 			   struct dsa_mall_mirror_tc_entry *mirror);
-+	void (*get_caps)(struct ksz_device *dev, int port,
-+			 struct phylink_config *config);
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	int (*shutdown)(struct ksz_device *dev);
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	for (i = 0; i < ldev->ports; i++) {
+ 		if (ldev->pf[i].netdev == netdev) {
+ 			ldev->pf[i].netdev = NULL;
+ 			break;
+ 		}
+ 	}
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ }
+ 
+ static void mlx5_ldev_add_mdev(struct mlx5_lag *ldev,
+@@ -1246,12 +1248,13 @@ void mlx5_lag_add_netdev(struct mlx5_core_dev *dev,
+ bool mlx5_lag_is_roce(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 	bool res;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 	res  = ldev && __mlx5_lag_is_roce(ldev);
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 
+ 	return res;
+ }
+@@ -1260,12 +1263,13 @@ EXPORT_SYMBOL(mlx5_lag_is_roce);
+ bool mlx5_lag_is_active(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 	bool res;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 	res  = ldev && __mlx5_lag_is_active(ldev);
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 
+ 	return res;
+ }
+@@ -1274,13 +1278,14 @@ EXPORT_SYMBOL(mlx5_lag_is_active);
+ bool mlx5_lag_is_master(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 	bool res;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 	res = ldev && __mlx5_lag_is_active(ldev) &&
+ 		dev == ldev->pf[MLX5_LAG_P1].dev;
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 
+ 	return res;
+ }
+@@ -1289,12 +1294,13 @@ EXPORT_SYMBOL(mlx5_lag_is_master);
+ bool mlx5_lag_is_sriov(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 	bool res;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 	res  = ldev && __mlx5_lag_is_sriov(ldev);
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 
+ 	return res;
+ }
+@@ -1303,13 +1309,14 @@ EXPORT_SYMBOL(mlx5_lag_is_sriov);
+ bool mlx5_lag_is_shared_fdb(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 	bool res;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 	res = ldev && __mlx5_lag_is_sriov(ldev) &&
+ 	      test_bit(MLX5_LAG_MODE_FLAG_SHARED_FDB, &ldev->mode_flags);
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 
+ 	return res;
+ }
+@@ -1352,9 +1359,10 @@ struct net_device *mlx5_lag_get_roce_netdev(struct mlx5_core_dev *dev)
+ {
+ 	struct net_device *ndev = NULL;
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 	int i;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 
+ 	if (!(ldev && __mlx5_lag_is_roce(ldev)))
+@@ -1373,7 +1381,7 @@ struct net_device *mlx5_lag_get_roce_netdev(struct mlx5_core_dev *dev)
+ 		dev_hold(ndev);
+ 
+ unlock:
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 
+ 	return ndev;
+ }
+@@ -1383,10 +1391,11 @@ u8 mlx5_lag_get_slave_port(struct mlx5_core_dev *dev,
+ 			   struct net_device *slave)
+ {
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 	u8 port = 0;
+ 	int i;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 	if (!(ldev && __mlx5_lag_is_roce(ldev)))
+ 		goto unlock;
+@@ -1401,7 +1410,7 @@ u8 mlx5_lag_get_slave_port(struct mlx5_core_dev *dev,
+ 	port = ldev->v2p_map[port * ldev->buckets];
+ 
+ unlock:
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 	return port;
+ }
+ EXPORT_SYMBOL(mlx5_lag_get_slave_port);
+@@ -1422,8 +1431,9 @@ struct mlx5_core_dev *mlx5_lag_get_peer_mdev(struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_core_dev *peer_dev = NULL;
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 	if (!ldev)
+ 		goto unlock;
+@@ -1433,7 +1443,7 @@ struct mlx5_core_dev *mlx5_lag_get_peer_mdev(struct mlx5_core_dev *dev)
+ 			   ldev->pf[MLX5_LAG_P1].dev;
+ 
+ unlock:
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 	return peer_dev;
+ }
+ EXPORT_SYMBOL(mlx5_lag_get_peer_mdev);
+@@ -1446,6 +1456,7 @@ int mlx5_lag_query_cong_counters(struct mlx5_core_dev *dev,
+ 	int outlen = MLX5_ST_SZ_BYTES(query_cong_statistics_out);
+ 	struct mlx5_core_dev **mdev;
+ 	struct mlx5_lag *ldev;
++	unsigned long flags;
+ 	int num_ports;
+ 	int ret, i, j;
+ 	void *out;
+@@ -1462,7 +1473,7 @@ int mlx5_lag_query_cong_counters(struct mlx5_core_dev *dev,
+ 
+ 	memset(values, 0, sizeof(*values) * num_counters);
+ 
+-	spin_lock(&lag_lock);
++	spin_lock_irqsave(&lag_lock, flags);
+ 	ldev = mlx5_lag_dev(dev);
+ 	if (ldev && __mlx5_lag_is_active(ldev)) {
+ 		num_ports = ldev->ports;
+@@ -1472,7 +1483,7 @@ int mlx5_lag_query_cong_counters(struct mlx5_core_dev *dev,
+ 		num_ports = 1;
+ 		mdev[MLX5_LAG_P1] = dev;
+ 	}
+-	spin_unlock(&lag_lock);
++	spin_unlock_irqrestore(&lag_lock, flags);
+ 
+ 	for (i = 0; i < num_ports; ++i) {
+ 		u32 in[MLX5_ST_SZ_DW(query_cong_statistics_in)] = {};
 -- 
 2.35.1
 
