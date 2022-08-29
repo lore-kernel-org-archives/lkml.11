@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 502F5C0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C59ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232315AbiH2LaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55436 "EHLO
+        id S232344AbiH2LaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232389AbiH2L2w (ORCPT
+        with ESMTP id S232409AbiH2L2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:28:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03557A514;
-        Mon, 29 Aug 2022 04:17:12 -0700 (PDT)
+        Mon, 29 Aug 2022 07:28:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4706A2719;
+        Mon, 29 Aug 2022 04:17:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5782AB80EFA;
-        Mon, 29 Aug 2022 11:04:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F8B3C433C1;
-        Mon, 29 Aug 2022 11:04:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03E7D611B3;
+        Mon, 29 Aug 2022 11:14:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BEC5C433C1;
+        Mon, 29 Aug 2022 11:14:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771052;
-        bh=3NhdeY8HFeNZCiXqEDGDabYJL1Sk+THfGbYM30UYW0w=;
+        s=korg; t=1661771692;
+        bh=8wcWicOBd5LoPg57jDudrOyj8i8B9hcXWR7IZJ9W3BQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AphdjpFGfw9cwRX6lPPc+VbMKr66aR9cuHDmEHSfRO0wmonM7GyxTm1wSCtBrGgfS
-         v7Utsw1M8ORk629vPL1YE3tdyGPCPaNnOMTmqo6hqE6tOdgiVhKjROOWnaqePmRQEj
-         FPkqlh7UfxgQVtDS7q0f8iYWFa/SpNoYJbf9dQK8=
+        b=Sv0V9cLBHJTJBfvVHOZK9QN39JZpBcPjCQdotA5gMan1hO+FLTZdonL675xgefiCp
+         mctkt1DfjCxjlHGUzUVeFhtVoOzhpXX02dCUtnrLm/zo7QyMTS+bdsS4hBGAQDVMmR
+         4XHI8izKdQz1332dLInAkSRHHBlNvQHEntrt/Y7A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 054/136] bnxt_en: fix NQ resource accounting during vf creation on 57500 chips
-Date:   Mon, 29 Aug 2022 12:58:41 +0200
-Message-Id: <20220829105806.849052586@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.10 84/86] scsi: ufs: core: Enable link lost interrupt
+Date:   Mon, 29 Aug 2022 12:59:50 +0200
+Message-Id: <20220829105759.963958548@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vikas Gupta <vikas.gupta@broadcom.com>
+From: Kiwoong Kim <kwmad.kim@samsung.com>
 
-[ Upstream commit 09a89cc59ad67794a11e1d3dd13c5b3172adcc51 ]
+commit 6d17a112e9a63ff6a5edffd1676b99e0ffbcd269 upstream.
 
-There are 2 issues:
+Link lost is treated as fatal error with commit c99b9b230149 ("scsi: ufs:
+Treat link loss as fatal error"), but the event isn't registered as
+interrupt source. Enable it.
 
-1. We should decrement hw_resc->max_nqs instead of hw_resc->max_irqs
-   with the number of NQs assigned to the VFs.  The IRQs are fixed
-   on each function and cannot be re-assigned.  Only the NQs are being
-   assigned to the VFs.
-
-2. vf_msix is the total number of NQs to be assigned to the VFs.  So
-   we should decrement vf_msix from hw_resc->max_nqs.
-
-Fixes: b16b68918674 ("bnxt_en: Add SR-IOV support for 57500 chips.")
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/1659404551-160958-1-git-send-email-kwmad.kim@samsung.com
+Fixes: c99b9b230149 ("scsi: ufs: Treat link loss as fatal error")
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/ufs/ufshci.h |    6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index 70d8ca3039dcb..78763f5027d10 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -623,7 +623,7 @@ static int bnxt_hwrm_func_vf_resc_cfg(struct bnxt *bp, int num_vfs, bool reset)
- 		hw_resc->max_stat_ctxs -= le16_to_cpu(req->min_stat_ctx) * n;
- 		hw_resc->max_vnics -= le16_to_cpu(req->min_vnics) * n;
- 		if (bp->flags & BNXT_FLAG_CHIP_P5)
--			hw_resc->max_irqs -= vf_msix * n;
-+			hw_resc->max_nqs -= vf_msix;
+--- a/drivers/scsi/ufs/ufshci.h
++++ b/drivers/scsi/ufs/ufshci.h
+@@ -129,11 +129,7 @@ enum {
  
- 		rc = pf->active_vfs;
- 	}
--- 
-2.35.1
-
+ #define UFSHCD_UIC_MASK		(UIC_COMMAND_COMPL | UFSHCD_UIC_PWR_MASK)
+ 
+-#define UFSHCD_ERROR_MASK	(UIC_ERROR |\
+-				DEVICE_FATAL_ERROR |\
+-				CONTROLLER_FATAL_ERROR |\
+-				SYSTEM_BUS_FATAL_ERROR |\
+-				CRYPTO_ENGINE_FATAL_ERROR)
++#define UFSHCD_ERROR_MASK	(UIC_ERROR | INT_FATAL_ERRORS)
+ 
+ #define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
+ 				CONTROLLER_FATAL_ERROR |\
 
 
