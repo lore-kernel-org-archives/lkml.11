@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD51ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C46DCECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:15:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiH2LPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        id S229620AbiH2LPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:15:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231282AbiH2LN3 (ORCPT
+        with ESMTP id S231365AbiH2LNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:13:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B14B6F55D;
-        Mon, 29 Aug 2022 04:09:27 -0700 (PDT)
+        Mon, 29 Aug 2022 07:13:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72E46EF11;
+        Mon, 29 Aug 2022 04:09:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7356B80F52;
-        Mon, 29 Aug 2022 11:06:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF95C433D6;
-        Mon, 29 Aug 2022 11:06:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 68F836119A;
+        Mon, 29 Aug 2022 11:09:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C724C433D7;
+        Mon, 29 Aug 2022 11:09:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771205;
-        bh=Nb6+AMYQpGhnwYwdkReyMSW/tBCfGShXBCn1+KPqVqQ=;
+        s=korg; t=1661771361;
+        bh=d0jzzWeYwW6y3dWo8vEIEcbUQKTc2Bx34MAZ6E9eQhM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CovXXTqvJDLj0crHfdN2u0QATIVIoM/bGfnZ00hA6BRLVwbc5OwbOUz4/pWe7zQv4
-         knfcjqnyFWzds0duN/VZtzdAsKsP+4U4prXNTbkpyxWqOxI0XhIS/PWdLbOmBTu6EV
-         QsHR8Lb0usefCMkJ3UQnQlDuG5kIJo6q/R7unWJ8=
+        b=Pl6it1ZKIBA8Yaa/rifKi4YbM9E0Ppr01LtAsRI08FclA1HC4slb7diQ6fGa2W0XW
+         eIywYmu/hIQOEm90Mtp7f5pmzXp+bT4BllDPqQrJMwZPcrK/JnzMdCfaAhY+v/dzha
+         Q3vlvfWGrR1nZJ/1wfiMO0K5x2GbkdvSDhlT1QYk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 079/136] net: Fix a data-race around netdev_budget.
-Date:   Mon, 29 Aug 2022 12:59:06 +0200
-Message-Id: <20220829105807.882879650@linuxfoundation.org>
+Subject: [PATCH 5.10 55/86] net: Fix a data-race around sysctl_net_busy_read.
+Date:   Mon, 29 Aug 2022 12:59:21 +0200
+Message-Id: <20220829105758.787792768@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,32 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 2e0c42374ee32e72948559d2ae2f7ba3dc6b977c ]
+[ Upstream commit e59ef36f0795696ab229569c153936bfd068d21c ]
 
-While reading netdev_budget, it can be changed concurrently.
+While reading sysctl_net_busy_read, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 51b0bdedb8e7 ("[NET]: Separate two usages of netdev_max_backlog.")
+Fixes: 2d48d67fa8cd ("net: poll/select low latency socket support")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 2 +-
+ net/core/sock.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 28f623628876c..fefe8ddd282fd 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -7138,7 +7138,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
- 	unsigned long time_limit = jiffies +
- 		usecs_to_jiffies(netdev_budget_usecs);
--	int budget = netdev_budget;
-+	int budget = READ_ONCE(netdev_budget);
- 	LIST_HEAD(list);
- 	LIST_HEAD(repoll);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index f01e71c98d5be..1bb6a003323b3 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3032,7 +3032,7 @@ void sock_init_data(struct socket *sock, struct sock *sk)
  
+ #ifdef CONFIG_NET_RX_BUSY_POLL
+ 	sk->sk_napi_id		=	0;
+-	sk->sk_ll_usec		=	sysctl_net_busy_read;
++	sk->sk_ll_usec		=	READ_ONCE(sysctl_net_busy_read);
+ #endif
+ 
+ 	sk->sk_max_pacing_rate = ~0UL;
 -- 
 2.35.1
 
