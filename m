@@ -2,69 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA89ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D51ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230027AbiH2Jk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 05:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50700 "EHLO
+        id S230110AbiH2JlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 05:41:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbiH2Jko (ORCPT
+        with ESMTP id S230017AbiH2Jk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 05:40:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C67750075;
-        Mon, 29 Aug 2022 02:40:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6C2CB80E39;
-        Mon, 29 Aug 2022 09:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A852C433C1;
-        Mon, 29 Aug 2022 09:40:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661766037;
-        bh=xSyxs5vEChg+9OmgkEw0sJWwgnZB5xfwg0//Dtnj+f0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=uLsRUh7qpyGZtQxd745ChAVYdJFoLPu85EAaBKy7puJpuPh/kfTEp1rrMI81xjWb7
-         Sry5eT+kCf6xUBjQ+XvVhvTCAHfjC7RGn2w7ye3p9nYdBYzrckFcDHU7AGTYgab+wl
-         IHaZHPYSkKZj8AQytLtemnDGGP5dQwJZPoemhnDI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.10.139
-Date:   Mon, 29 Aug 2022 11:40:30 +0200
-Message-Id: <166176603093188@kroah.com>
-X-Mailer: git-send-email 2.37.2
+        Mon, 29 Aug 2022 05:40:57 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297752C656
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:40:53 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id cu2so14602919ejb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:40:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ionos.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=cxuF/ium3scKvYnBUMW/FtsmInIOSdhuZXM02yUsCjg=;
+        b=QXAoVw/zfOdmoFPJaZK/+4ItQKmIAcafmuOKpDk5xgbVxVHMGbUGsREiDwk9gLbJvp
+         +76cyZ9vxN308IRTBm40Pnmq5tH2cIuG54qJhRi/aUSbV5sRoIYxvu4FfQZnP5gHqxof
+         /C81T/946nQ6YkgMXc66eCDwlVFqpK+HIEp8Kv+LDvju2z4tv4+b/Y/+IBiNp4Nuecqb
+         zNARr8vXqc8MKfNWwOgsWA7uqyXdVClP7Iz+jDh0B0ST81EvbmPOoxoiRuUPT5smnXtx
+         0i9KRrg/16oa154kuErN80838lWTkm+N1FhhehluAl3iYtETP9I34wmsPsg3tfHuDG/H
+         dmEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=cxuF/ium3scKvYnBUMW/FtsmInIOSdhuZXM02yUsCjg=;
+        b=MgNkA2dHmUIbpLAUxQpjBaw96HQHhdCfT4LDUX2A/RWtnW6NCrdXaZICmN8iTazwuv
+         Y1+29pBIXfd+kG8Iba5HNAlyQMLDDJZtv/PCSBhW8Pgiwc+kqzJLXaL/NOzutdV4LYaX
+         2WkyAYGAxC15O4bcrXjlV/AZ0z2EtEymV9v5z1bdKolHoUvGkH+IvlF8WJ0JyN0tLxFx
+         TVXqzDBPjqFVK8FHtx7HAClTWnHYJ6bEuwYxeS36tq1ucjgpC4zQlQDTCBUNhVSXA4Ty
+         P+SJUP2muXqrta6gzzfWveNyh7ZDOSyFracBhOZrjzCQnTKb6tMEdNyO1C8wsYA/BE6r
+         0MHw==
+X-Gm-Message-State: ACgBeo22/fl53L4vk6390oh3SL6N8nUyT0lgX73Xnfi93HzJYtPTRwXc
+        1mYfNAAlpqv9XGjHTjFWIzgf+EJVBTldCIxSvGtiXjqTTYNbaA==
+X-Google-Smtp-Source: AA6agR7ylu3hD2hyA9Uv8Qh9utjTfaLfySCnAmTi/0o12556IHchh9nERJx9RuwbQJJB0FpGMXAqNilDzey2p0JsHK0=
+X-Received: by 2002:a17:907:6e21:b0:741:73f1:d19b with SMTP id
+ sd33-20020a1709076e2100b0074173f1d19bmr3952539ejc.435.1661766050936; Mon, 29
+ Aug 2022 02:40:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220826095615.74328-1-jinpu.wang@ionos.com> <20220826095615.74328-3-jinpu.wang@ionos.com>
+ <YwtM+/nB1F6p1Ey3@unreal>
+In-Reply-To: <YwtM+/nB1F6p1Ey3@unreal>
+From:   Jinpu Wang <jinpu.wang@ionos.com>
+Date:   Mon, 29 Aug 2022 11:40:40 +0200
+Message-ID: <CAMGffEmffkW0fHrjx84gQ6FnWuwriRUg=HSdwzU4W_sZLdiT7g@mail.gmail.com>
+Subject: Re: [PATCH 2/2] RDMA: dma-mapping: Return an unsigned int from ib_dma_map_sg{,_attrs}
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     jgg@ziepe.ca, linux-rdma@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.10.139 kernel.
-
-All users of the 5.10 kernel series must upgrade.
-
-The updated 5.10.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
-
-thanks,
-
-greg k-h
-
-------------
-
- Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-Greg Kroah-Hartman (1):
-      Linux 5.10.139
-
-Ondrej Mosnacek (1):
-      kbuild: dummy-tools: avoid tmpdir leak in dummy gcc
-
+On Sun, Aug 28, 2022 at 1:09 PM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Fri, Aug 26, 2022 at 11:56:15AM +0200, Jack Wang wrote:
+> > Following 2a047e0662ae ("dma-mapping: return an unsigned int from dma_map_sg{,_attrs}")
+> > change the return value of ib_dma_map_sg{,attrs} to unsigned int.
+> >
+> > Cc: Jason Gunthorpe <jgg@ziepe.ca>
+> > Cc: Leon Romanovsky <leon@kernel.org>
+> > Cc: Christoph Hellwig <hch@lst.de>
+> > Cc: linux-rdma@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org
+> >
+> > Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
+> > ---
+> >  drivers/infiniband/core/device.c | 2 +-
+> >  include/rdma/ib_verbs.h          | 6 +++---
+> >  2 files changed, 4 insertions(+), 4 deletions(-)
+>
+> You forgot to change ib_dma_map_sgtable_attrs() and various
+> ib_dma_map_sg*() callers.
+No, they are different.
+ib_dma_map_sgtable_attrs and dma_map_sgtable return negative on errors.
+>
+> Thanks
+Thanks!
