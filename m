@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69153ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E691FECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231229AbiH2LK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
+        id S231248AbiH2LKe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:10:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiH2LJk (ORCPT
+        with ESMTP id S231159AbiH2LJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:09:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C9C6AA2E;
-        Mon, 29 Aug 2022 04:06:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59DE67148;
+        Mon, 29 Aug 2022 04:06:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB93FB80F1A;
-        Mon, 29 Aug 2022 11:04:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E25C433C1;
-        Mon, 29 Aug 2022 11:04:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77E01611B0;
+        Mon, 29 Aug 2022 11:04:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8454EC433D6;
+        Mon, 29 Aug 2022 11:04:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771098;
-        bh=4nTNHl5S3HL6mEb67F8Y4yfxVRIqeK9Bw4AkzmLu8OU=;
+        s=korg; t=1661771092;
+        bh=d3HKlBsXcLeK4mkuebyAltdj5guPsJxMc7cwL4yHCM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HjxYE71mC9yhTfgYMZP56TLhe5nwhy79Qt3hnbNIklnEkg0FrsNxu1P1JQZUfbKGh
-         cPhiVIi6Gro8ZFKVCQvJrT/4foow/ucPvXNrWS6KURI+GCja2VsKbS/ZCVvLX0fuhi
-         GMy0D5MTeJg+sHmJzh6Cc/JUUAWM7yW71UCd2jok=
+        b=GYBQnLmd9ECJk9L3lFMFg63vkBhJvRoWSMPl203CEuYzZP3YXFA/hZrSs178VfJ3k
+         Wig+qsc0y4YuGjyqJxj47noYMN6Xm4Al3DAvPUnHcakUu8EyE2GYH0BMXhYI7tliIC
+         TtLNHB6JGguXlfTOF3f8FVseAVz8aoVL/riKhahg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -40,12 +40,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Huang Ying <ying.huang@intel.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 036/136] mm/smaps: dont access young/dirty bit if pte unpresent
-Date:   Mon, 29 Aug 2022 12:58:23 +0200
-Message-Id: <20220829105806.078883223@linuxfoundation.org>
+Subject: [PATCH 5.10 20/86] mm/smaps: dont access young/dirty bit if pte unpresent
+Date:   Mon, 29 Aug 2022 12:58:46 +0200
+Message-Id: <20220829105757.352116900@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -86,7 +86,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index 79ca4d69dfd6b..d9c07eecd7872 100644
+index ba98371e9d164..ef18f0d71b11b 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
 @@ -503,10 +503,12 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
