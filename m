@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A949ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB824ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231477AbiH2LQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:16:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47416 "EHLO
+        id S231483AbiH2LRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:17:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230039AbiH2LOu (ORCPT
+        with ESMTP id S229926AbiH2LOu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:14:50 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C8F72EE6;
-        Mon, 29 Aug 2022 04:10:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF6472B75;
+        Mon, 29 Aug 2022 04:10:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C30F5611F4;
-        Mon, 29 Aug 2022 11:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEB49C433C1;
-        Mon, 29 Aug 2022 11:10:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1BF86119C;
+        Mon, 29 Aug 2022 11:08:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5167C433C1;
+        Mon, 29 Aug 2022 11:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771459;
-        bh=W44FEAb37n7Wy9RGxWFSblgq5CDx+4dVjGZlb+fJRmQ=;
+        s=korg; t=1661771323;
+        bh=VA5pbYSxgeywqyxib2YTEtxEPOdpdXM6dct4Diz46Fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ekrhZt4SYiM/rO6nnmLrOGilA37DU3blHqvIqSKay9CTiExoRribJPclHxFdjTqRi
-         1uv2NoJT1XxDuTnF/lZJnD2OrnS7WZagwo4uH/0q8helKG0ctHPA6E4BCpLHpMEzl8
-         JKiFzOcnqeQ3LomrpX8LNKNmIrWoTHuU4rmAlm3k=
+        b=GKggqe1SNZrAwiY0KQD5QGt3qJRh/begl8qdfnblbFF4YAwVXFWLNx90bZ9taRbjf
+         36pR/c1vQLUsBT7af+558ww6qkdh5NfuyBhuFTrALBjRljUyeyh3Z8Y+TyjggJFpnU
+         06UutScM6NiXFEe+J/xX4j4gUkis2pYlcbleCNaw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 57/86] net: Fix a data-race around netdev_budget_usecs.
-Date:   Mon, 29 Aug 2022 12:59:23 +0200
-Message-Id: <20220829105758.885353984@linuxfoundation.org>
+        stable@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        KP Singh <kpsingh@google.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 51/86] bpf: Folding omem_charge() into sk_storage_charge()
+Date:   Mon, 29 Aug 2022 12:59:17 +0200
+Message-Id: <20220829105758.618733724@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
 References: <20220829105756.500128871@linuxfoundation.org>
@@ -49,34 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Martin KaFai Lau <kafai@fb.com>
 
-[ Upstream commit fa45d484c52c73f79db2c23b0cdfc6c6455093ad ]
+[ Upstream commit 9e838b02b0bb795793f12049307a354e28b5749c ]
 
-While reading netdev_budget_usecs, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+sk_storage_charge() is the only user of omem_charge().
+This patch simplifies it by folding omem_charge() into
+sk_storage_charge().
 
-Fixes: 7acf8a1e8a28 ("Replace 2 jiffies with sysctl netdev_budget_usecs to enable softirq tuning")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Song Liu <songliubraving@fb.com>
+Acked-by: KP Singh <kpsingh@google.com>
+Link: https://lore.kernel.org/bpf/20201112211301.2586255-1-kafai@fb.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/bpf_sk_storage.c | 23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index c4eb1b666a21c..8355cc5e11a98 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6879,7 +6879,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+index 5f773624948ff..39c5a059d1c2b 100644
+--- a/net/core/bpf_sk_storage.c
++++ b/net/core/bpf_sk_storage.c
+@@ -15,18 +15,6 @@
+ 
+ DEFINE_BPF_STORAGE_CACHE(sk_cache);
+ 
+-static int omem_charge(struct sock *sk, unsigned int size)
+-{
+-	/* same check as in sock_kmalloc() */
+-	if (size <= sysctl_optmem_max &&
+-	    atomic_read(&sk->sk_omem_alloc) + size < sysctl_optmem_max) {
+-		atomic_add(size, &sk->sk_omem_alloc);
+-		return 0;
+-	}
+-
+-	return -ENOMEM;
+-}
+-
+ static struct bpf_local_storage_data *
+ sk_storage_lookup(struct sock *sk, struct bpf_map *map, bool cacheit_lockit)
  {
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
- 	unsigned long time_limit = jiffies +
--		usecs_to_jiffies(netdev_budget_usecs);
-+		usecs_to_jiffies(READ_ONCE(netdev_budget_usecs));
- 	int budget = READ_ONCE(netdev_budget);
- 	LIST_HEAD(list);
- 	LIST_HEAD(repoll);
+@@ -316,7 +304,16 @@ BPF_CALL_2(bpf_sk_storage_delete, struct bpf_map *, map, struct sock *, sk)
+ static int sk_storage_charge(struct bpf_local_storage_map *smap,
+ 			     void *owner, u32 size)
+ {
+-	return omem_charge(owner, size);
++	struct sock *sk = (struct sock *)owner;
++
++	/* same check as in sock_kmalloc() */
++	if (size <= sysctl_optmem_max &&
++	    atomic_read(&sk->sk_omem_alloc) + size < sysctl_optmem_max) {
++		atomic_add(size, &sk->sk_omem_alloc);
++		return 0;
++	}
++
++	return -ENOMEM;
+ }
+ 
+ static void sk_storage_uncharge(struct bpf_local_storage_map *smap,
 -- 
 2.35.1
 
