@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1204EECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A50ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232582AbiH2Lci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
+        id S232511AbiH2Lck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232717AbiH2L3p (ORCPT
+        with ESMTP id S232728AbiH2L3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:29:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1E57B2BE;
-        Mon, 29 Aug 2022 04:18:04 -0700 (PDT)
+        Mon, 29 Aug 2022 07:29:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36997393D;
+        Mon, 29 Aug 2022 04:18:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B32F561202;
-        Mon, 29 Aug 2022 11:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D19C433D6;
-        Mon, 29 Aug 2022 11:17:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70981B80EFA;
+        Mon, 29 Aug 2022 11:17:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2950C433D6;
+        Mon, 29 Aug 2022 11:17:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771860;
-        bh=6EKBDqc52IalgZq0HP2UlKus3oH3wi8p+iN3Nd5JAPw=;
+        s=korg; t=1661771869;
+        bh=f+sxPNp24pAkBBPm+zWJ/V2IkOpA4s2q0og+aCyQKIw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZQPWXiNdNjVx0OLdD+yUMkuRfIngHYt+Wbz8bMIUwgDLNNNHQWbJtUmMLeOPuLcZ
-         UEZ12B3KyXNvk896tIXrTM2q4l03r2nqWmneA2IQxY+s5+3ytwsOWck1jpjS3fQTRz
-         U5XSME9RJebNMckHoIWzwco8AJz6aMffjUgkBrcI=
+        b=rCQowzh3bYdUgiYF1+ONvwcCwW9vwkbD9IElU9UxIij/f+1uTJ40A9XKqeueiOuLT
+         wFPxoxp8uwLcmZooDrn15fxuByLcfg0mL05ZGp4HWAE+DFPSEjF2kndGq7pVuvsgy7
+         8+c8qNZ1hbWoGZXE7oq5Vb51ksv6hxTMMUXGT3WA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 077/158] net: Fix data-races around sysctl_fb_tunnels_only_for_init_net.
-Date:   Mon, 29 Aug 2022 12:58:47 +0200
-Message-Id: <20220829105812.263072308@linuxfoundation.org>
+        stable@vger.kernel.org, Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.19 125/158] nouveau: explicitly wait on the fence in nouveau_bo_move_m2mf
+Date:   Mon, 29 Aug 2022 12:59:35 +0200
+Message-Id: <20220829105814.337312403@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,45 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Karol Herbst <kherbst@redhat.com>
 
-[ Upstream commit af67508ea6cbf0e4ea27f8120056fa2efce127dd ]
+commit 6b04ce966a738ecdd9294c9593e48513c0dc90aa upstream.
 
-While reading sysctl_fb_tunnels_only_for_init_net, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+It is a bit unlcear to us why that's helping, but it does and unbreaks
+suspend/resume on a lot of GPUs without any known drawbacks.
 
-Fixes: 79134e6ce2c9 ("net: do not create fallback tunnels for non-default namespaces")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org # v5.15+
+Closes: https://gitlab.freedesktop.org/drm/nouveau/-/issues/156
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220819200928.401416-1-kherbst@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/netdevice.h | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/nouveau/nouveau_bo.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 2563d30736e9a..78dd63a5c7c80 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -640,9 +640,14 @@ extern int sysctl_devconf_inherit_init_net;
-  */
- static inline bool net_has_fallback_tunnels(const struct net *net)
- {
--	return !IS_ENABLED(CONFIG_SYSCTL) ||
--	       !sysctl_fb_tunnels_only_for_init_net ||
--	       (net == &init_net && sysctl_fb_tunnels_only_for_init_net == 1);
-+#if IS_ENABLED(CONFIG_SYSCTL)
-+	int fb_tunnels_only_for_init_net = READ_ONCE(sysctl_fb_tunnels_only_for_init_net);
-+
-+	return !fb_tunnels_only_for_init_net ||
-+		(net_eq(net, &init_net) && fb_tunnels_only_for_init_net == 1);
-+#else
-+	return true;
-+#endif
- }
- 
- static inline int netdev_queue_numa_node_read(const struct netdev_queue *q)
--- 
-2.35.1
-
+--- a/drivers/gpu/drm/nouveau/nouveau_bo.c
++++ b/drivers/gpu/drm/nouveau/nouveau_bo.c
+@@ -820,6 +820,15 @@ nouveau_bo_move_m2mf(struct ttm_buffer_o
+ 		if (ret == 0) {
+ 			ret = nouveau_fence_new(chan, false, &fence);
+ 			if (ret == 0) {
++				/* TODO: figure out a better solution here
++				 *
++				 * wait on the fence here explicitly as going through
++				 * ttm_bo_move_accel_cleanup somehow doesn't seem to do it.
++				 *
++				 * Without this the operation can timeout and we'll fallback to a
++				 * software copy, which might take several minutes to finish.
++				 */
++				nouveau_fence_wait(fence, false, false);
+ 				ret = ttm_bo_move_accel_cleanup(bo,
+ 								&fence->base,
+ 								evict, false,
 
 
