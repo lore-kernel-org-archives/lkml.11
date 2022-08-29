@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA0DECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C21ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiH2LWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:22:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55078 "EHLO
+        id S231835AbiH2LW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:22:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231738AbiH2LV3 (ORCPT
+        with ESMTP id S231741AbiH2LVb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:21:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0306F261;
-        Mon, 29 Aug 2022 04:14:06 -0700 (PDT)
+        Mon, 29 Aug 2022 07:21:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED556E899;
+        Mon, 29 Aug 2022 04:14:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E325B80DB5;
-        Mon, 29 Aug 2022 11:13:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54473C433C1;
-        Mon, 29 Aug 2022 11:13:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6D1061211;
+        Mon, 29 Aug 2022 11:14:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6645C433C1;
+        Mon, 29 Aug 2022 11:14:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771619;
-        bh=ilM81X9bYHzCIl7Y5JRsv5m6sk0E4ZL2agqH2ayJy2Q=;
+        s=korg; t=1661771648;
+        bh=6Ltr5qBukKjhhHTvLgKNizGlEkxMiV2rNVMmQfGMDXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DZYW0uOADux0tGepdDgLqeEaa5Nxv+tZxIQBULK8eqMTaOI1f/iNihmL5vbU2GAfN
-         +9AKkE7hOgtDzTbFfYlIvkbi1JIGZO50GztGPuNAJ1awYz27OeemLc3ToSF5jKtnlp
-         coKM+1mgfEJx9soVbVISla1R94tOiPbhML12iSMs=
+        b=n5Kv5ADIdIqJYWi0ozU6HfuHHUCpvppVCo0iJCpkMFz1YAokjGWbSuVzFvZyq95jP
+         v64rpoLujfpWkwlKmwoAMRdQnpvIueeVZaUc2o+eRCwlXAwHqN6VyfDxPv9Ooj1eSK
+         qgJQdndKwLU0aisNls/nUydeV05m7JbZ7gK6A0xc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 051/158] bnxt_en: Use PAGE_SIZE to init buffer when multi buffer XDP is not in use
-Date:   Mon, 29 Aug 2022 12:58:21 +0200
-Message-Id: <20220829105810.878458809@linuxfoundation.org>
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.15 132/136] perf/x86/intel/ds: Fix precise store latency handling
+Date:   Mon, 29 Aug 2022 12:59:59 +0200
+Message-Id: <20220829105810.112913670@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,77 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Stephane Eranian <eranian@google.com>
 
-[ Upstream commit 7dd3de7cb1d657a918c6b2bc673c71e318aa0c05 ]
+commit d4bdb0bebc5ba3299d74f123c782d99cd4e25c49 upstream.
 
-Using BNXT_PAGE_MODE_BUF_SIZE + offset as buffer length value is not
-sufficient when running single buffer XDP programs doing redirect
-operations. The stack will complain on missing skb tail room. Fix it
-by using PAGE_SIZE when calling xdp_init_buff() for single buffer
-programs.
+With the existing code in store_latency_data(), the memory operation (mem_op)
+returned to the user is always OP_LOAD where in fact, it should be OP_STORE.
+This comes from the fact that the function is simply grabbing the information
+from a data source map which covers only load accesses. Intel 12th gen CPU
+offers precise store sampling that captures both the data source and latency.
+Therefore it can use the data source mapping table but must override the
+memory operation to reflect stores instead of loads.
 
-Fixes: b231c3f3414c ("bnxt: refactor bnxt_rx_xdp to separate xdp_init_buff/xdp_prepare_buff")
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 61b985e3e775 ("perf/x86/intel: Add perf core PMU support for Sapphire Rapids")
+Signed-off-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20220818054613.1548130-1-eranian@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 10 ++++++++--
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ arch/x86/events/intel/ds.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 075c6206325ce..b1b17f9113006 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -2130,6 +2130,7 @@ struct bnxt {
- #define BNXT_DUMP_CRASH		1
- 
- 	struct bpf_prog		*xdp_prog;
-+	u8			xdp_has_frags;
- 
- 	struct bnxt_ptp_cfg	*ptp_cfg;
- 	u8			ptp_all_rx_tstamp;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-index f53387ed0167b..c3065ec0a4798 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
-@@ -181,6 +181,7 @@ void bnxt_xdp_buff_init(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
- 			struct xdp_buff *xdp)
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -236,6 +236,7 @@ static u64 load_latency_data(u64 status)
+ static u64 store_latency_data(u64 status)
  {
- 	struct bnxt_sw_rx_bd *rx_buf;
-+	u32 buflen = PAGE_SIZE;
- 	struct pci_dev *pdev;
- 	dma_addr_t mapping;
- 	u32 offset;
-@@ -192,7 +193,10 @@ void bnxt_xdp_buff_init(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
- 	mapping = rx_buf->mapping - bp->rx_dma_offset;
- 	dma_sync_single_for_cpu(&pdev->dev, mapping + offset, *len, bp->rx_dir);
+ 	union intel_x86_pebs_dse dse;
++	union perf_mem_data_src src;
+ 	u64 val;
  
--	xdp_init_buff(xdp, BNXT_PAGE_MODE_BUF_SIZE + offset, &rxr->xdp_rxq);
-+	if (bp->xdp_has_frags)
-+		buflen = BNXT_PAGE_MODE_BUF_SIZE + offset;
+ 	dse.val = status;
+@@ -263,7 +264,14 @@ static u64 store_latency_data(u64 status
+ 
+ 	val |= P(BLK, NA);
+ 
+-	return val;
++	/*
++	 * the pebs_data_source table is only for loads
++	 * so override the mem_op to say STORE instead
++	 */
++	src.val = val;
++	src.mem_op = P(OP,STORE);
 +
-+	xdp_init_buff(xdp, buflen, &rxr->xdp_rxq);
- 	xdp_prepare_buff(xdp, *data_ptr - offset, offset, *len, false);
++	return src.val;
  }
  
-@@ -397,8 +401,10 @@ static int bnxt_xdp_set(struct bnxt *bp, struct bpf_prog *prog)
- 		netdev_warn(dev, "ethtool rx/tx channels must be combined to support XDP.\n");
- 		return -EOPNOTSUPP;
- 	}
--	if (prog)
-+	if (prog) {
- 		tx_xdp = bp->rx_nr_rings;
-+		bp->xdp_has_frags = prog->aux->xdp_has_frags;
-+	}
- 
- 	tc = netdev_get_num_tc(dev);
- 	if (!tc)
--- 
-2.35.1
-
+ struct pebs_record_core {
 
 
