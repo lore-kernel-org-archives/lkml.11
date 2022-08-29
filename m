@@ -2,113 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B65FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D5BECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:04:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbiH2PEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47054 "EHLO
+        id S229924AbiH2PEi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiH2PEM (ORCPT
+        with ESMTP id S229906AbiH2PEd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:04:12 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE97A85A9F
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:04:10 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id z20so8348950ljq.3
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:04:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=347LfAP44frQffdHJ/9JrhHkWnMPl3tC3TkZmIT/0NE=;
-        b=jWuBrwJQtN3vnRcvGuWYl6rCPZeeGWKfwekOKFMZAZJAopoRRDOSpGVrBSVgL3YUbn
-         Gts3fGDwlIff6pYoiRTaQeUDPYQy/fFV2eELp/KRKZf38hGTlpXdWvKeo/7NqeepsRWY
-         yTihnSYuAX6/QBE8kRmxAd7cenmDMHTrI0AnopDvWgtxw8iK8wa6HQqNq6swKQXf0iFx
-         JJlZL1+lvcdfk+VPOmCYMh10xZsleuo4sRPp/LiollY71hl18vvA4nnvM9vWXUM9noWS
-         2m0e7LLzx7ztw6ON3JCeH9Wyt0Y2/V+KYN+O7mttlB+64NztmemE1uUoqDFNJT0kY6KK
-         ZQqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=347LfAP44frQffdHJ/9JrhHkWnMPl3tC3TkZmIT/0NE=;
-        b=74VAqm96nXPGSWx8F0kTaGxGcD4n3hyFYk0o14avuzyN/Or9q6ZgryNWrRMHZ1/9j8
-         YzEH4HBOAy0YjP8tiXqXp3lchgM0Gm41tKlyM2fQycxERp02ynEN7y82/nsOsZQgE52L
-         +i462lrNvSLtejZRdKenJDh7+WJXVKGtQmNeaMAoFj8ep3l4feTiU9U4zEUDxy2uY7hS
-         9R4pX+nMrEJDhs+FG+sBJec2DEjjbYP7SzNgP6ATQpwE/Lp6Fs5TWSpYXTls+kfcv4Wf
-         gJJAoRk4PfDvH5ZYMQR0Q3ojDlqrTPUusQQhC7vufuM7ijFZxCyFSIws0hS3M/bYdXVM
-         9Quw==
-X-Gm-Message-State: ACgBeo3Ke+8CJBPQa2PLCjXZYnpWymL3J+49+IQ7VPt9gJROb5Ppr8iT
-        L9LvAGE2/YRBWUlfVXvTC7GZb5dSUUE4UD7DwE4hKQD9ObJ9XA==
-X-Google-Smtp-Source: AA6agR4GKG6UxIBeSkOj9tZcipNHDDnq+j1l+bVcOZUPMOaA9GrHrvXDpw8gLBRsJuY++8TK/MQWsHwVNf9LJUS8rQ0=
-X-Received: by 2002:a17:906:d550:b0:733:8e1a:f7 with SMTP id
- cr16-20020a170906d55000b007338e1a00f7mr14228340ejc.580.1661785438494; Mon, 29
- Aug 2022 08:03:58 -0700 (PDT)
+        Mon, 29 Aug 2022 11:04:33 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 451458D3D8
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:04:31 -0700 (PDT)
+Received: from [192.168.42.144] (mtl.collabora.ca [66.171.169.34])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: padovan)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 8A4BC660036C;
+        Mon, 29 Aug 2022 16:04:29 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661785470;
+        bh=zQrJBqu8D8yQ6EMK5HMuX9D6RuD9Hr5OLic3O4LfX+E=;
+        h=Date:Subject:From:To:Cc:Reply-To:References:In-Reply-To:From;
+        b=AE0JegUBQW9as0diIv4K376AHI9UFKcIKpZR5xdphx5y6Vahi+m7w4rFd2c6rSeKC
+         6TqmdsUPDMfwfsMGf+XgJWl2uFi3pcQNKWtHX4YOxN8BIpvjEKgdX9aBuH7SKfcTO+
+         6K79H58UApaw6K1Zkokk15dKQD9Tf7yfkWr+Pa/Ffqdh+wgWto9KeeQNoRSc3wXca3
+         a0BVpMbgVqxvEMpgbnwaPwqZpUZOt+zLcXJCaukMlNUMUZUEL5kEugbGpVlwO9FXjC
+         ZxXKV5i7NsDjQjKEKJeK4k0JNBCjy4G2+8/aB8w4g0DzT6cbxQ6QLonUtSeTheC4yj
+         xKyTDLqv5RCOA==
+Message-ID: <ce17e20b-b60d-baaf-15af-1e3c8157df7b@collabora.com>
+Date:   Mon, 29 Aug 2022 11:04:26 -0400
 MIME-Version: 1.0
-References: <20220716081304.2762135-1-zheyuma97@gmail.com>
-In-Reply-To: <20220716081304.2762135-1-zheyuma97@gmail.com>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 29 Aug 2022 17:03:47 +0200
-Message-ID: <CAG3jFytOyhy_es2cULpp0TCdp70HTcqKo1hd-ZxVaC4O-vi-3w@mail.gmail.com>
-Subject: Re: [PATCH] drm/bridge: megachips: Fix a null pointer dereference bug
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     peter.senna@gmail.com, martin.donnelly@ge.com,
-        martyn.welch@collabora.co.uk, andrzej.hajda@intel.com,
-        narmstrong@baylibre.com, Laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [kernelci-members] KernelCI working group: Web Dashboard
+Content-Language: en-US
+From:   Gustavo Padovan <gustavo.padovan@collabora.com>
+To:     kernelci-members@groups.io,
+        "kernelci@groups.io" <kernelci@groups.io>
+Cc:     automated-testing@lists.yoctoproject.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernelci-tsc@groups.io" <kernelci-tsc@groups.io>,
+        Simon Xiao <sixiao@microsoft.com>,
+        Carlos Cardenas <Carlos.Cardenas@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Sharath George John <sgeorgejohn@microsoft.com>,
+        "Alain Gefflaut (HE/HIM)" <agefflaut@microsoft.com>,
+        Johnson George <Johnson.George@microsoft.com>
+Reply-To: kernelci-members@groups.io
+References: <f3874e7d-ccfe-4a2d-d054-9b7bf9e8b44d@collabora.com>
+ <16F4479F76A8C807.11895@groups.io> <16F65ECD601264EC.15470@groups.io>
+ <1706557437ACCB9C.25939@groups.io>
+In-Reply-To: <1706557437ACCB9C.25939@groups.io>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 16 Jul 2022 at 10:13, Zheyu Ma <zheyuma97@gmail.com> wrote:
->
-> When removing the module we will get the following warning:
->
-> [   31.911505] i2c-core: driver [stdp2690-ge-b850v3-fw] unregistered
-> [   31.912484] general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN PTI
-> [   31.913338] KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
-> [   31.915280] RIP: 0010:drm_bridge_remove+0x97/0x130
-> [   31.921825] Call Trace:
-> [   31.922533]  stdp4028_ge_b850v3_fw_remove+0x34/0x60 [megachips_stdpxxxx_ge_b850v3_fw]
-> [   31.923139]  i2c_device_remove+0x181/0x1f0
->
-> The two bridges (stdp2690, stdp4028) do not probe at the same time, so
-> the driver does not call ge_b850v3_resgiter() when probing, causing the
-> driver to try to remove the object that has not been initialized.
->
-> Fix this by checking whether both the bridges are probed.
->
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> ---
->  drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c b/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
-> index cce98bf2a4e7..c68a4cdf4625 100644
-> --- a/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
-> +++ b/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
-> @@ -296,7 +296,9 @@ static void ge_b850v3_lvds_remove(void)
->          * This check is to avoid both the drivers
->          * removing the bridge in their remove() function
->          */
-> -       if (!ge_b850v3_lvds_ptr)
-> +       if (!ge_b850v3_lvds_ptr ||
-> +               !ge_b850v3_lvds_ptr->stdp2690_i2c ||
-> +               !ge_b850v3_lvds_ptr->stdp4028_i2c)
+Hello,
 
-This chunk fails checkpatch --strict.
+The previous tentative below didn't work due to vacation season. Here's 
+a new pool with dates from 1st to 8th of September. Please answer it 
+until this Wednesday August 31th.
 
-Alignment should match open parenthesis
-#39: FILE: drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c:300:
+https://doodle.com/meeting/participate/id/dG5v423a
 
+See the email below for meetings notes and current User Stories document.
 
->                 goto out;
+Regards,
+
+Gustavo
+
+On 7/18/22 10:17, Gustavo Padovan wrote:
+> Hi everyone,
 >
->         drm_bridge_remove(&ge_b850v3_lvds_ptr->bridge);
-> --
-> 2.25.1
+> In our last Web Dashboard meeting[1] where we reviewed the User 
+> Stories document[2]. Then, after that we worked offline to incorporate 
+> the feedback on doc, so it is time for our next meeting to further 
+> discuss. Please answer the poll with your time availability on the 
+> link below. I added dates from 21th to 28th of July.
 >
+> https://doodle.com/meeting/participate/id/eX6vyY5b
+>
+> Thank you,
+>
+> Gus
+> —
+> [1]https://docs.google.com/document/d/1yp-2L54tnrwkZ--59t2GeXuq1gt5dDnsFy08odizl1Y/edit#bookmark=id.6ok0ufne9shj 
+>
+> [2]https://docs.google.com/document/d/1_rfMpas4n_gw2GvUTRU63vIXk95VotJuittalX7trP8/edit#heading=h.wjoxi4s5pxzl 
+>
+>
+> On 6/7/22 10:46, Gustavo Padovan wrote:
+>>
+>> Hello,
+>>
+>> Our next meeting has been scheduled for this Thursday at 3pm UTC. 
+>> Invite was sent to the kernelci-members list, but here goes the 
+>> instructions to join as well:
+>>
+>> This event has a video call.
+>> Join: https://meet.google.com/yyz-jzjy-yfu
+>> (US) +1 254-227-6870 PIN: 188509910#
+>> View more phone numbers: 
+>> https://tel.meet/yyz-jzjy-yfu?pin=5882595078642&hs=7
+>>
+>> Regards,
+>>
+>> Gustavo
+>>
+>> Le 31/05/2022 à 15:34, Gustavo Padovan a écrit :
+>>>
+>>> Hello everyone,
+>>>
+>>> **
+>>>
+>>> *From our first meeting back in October[1], we took the action of 
+>>> organizing our user stories that you were spread as a comments in 
+>>> the the github issue{2} and, converting them into User Stories 
+>>> document[3].*
+>>>
+>>> *
+>>>
+>>> In the next meeting, we want to study the current User Stories and 
+>>> start discussions to progress on development. The proposed slots are 
+>>> for next week. Please answer the doodle by the end of this week:
+>>>
+>>> https://doodle.com/meeting/participate/id/egJ12A9d
+>>>
+>>> Best regards,
+>>>
+>>> Gustavo
+>>>
+>>> [1] 
+>>> https://docs.google.com/document/d/1yp-2L54tnrwkZ--59t2GeXuq1gt5dDnsFy08odizl1Y/edit# 
+>>> <https://docs.google.com/document/d/1yp-2L54tnrwkZ--59t2GeXuq1gt5dDnsFy08odizl1Y/edit#> 
+>>>
+>>>
+>>> [2] https://github.com/kernelci/kernelci-project/discussions/28 
+>>> <https://github.com/kernelci/kernelci-project/discussions/28>
+>>>
+>>> {3} 
+>>> https://docs.google.com/document/d/1_rfMpas4n_gw2GvUTRU63vIXk95VotJuittalX7trP8/edit 
+>>> <https://docs.google.com/document/d/1_rfMpas4n_gw2GvUTRU63vIXk95VotJuittalX7trP8/edit>* 
+>>>
+>>> Le 27/07/2021 à 11:54, Guillaume Tucker a écrit :
+>>>> Last year's KernelCI Community Survey[1] showed the importance of
+>>>> having a good web dashboard.  About 70% of respondents would use
+>>>> one if it provided the information they needed efficiently.
+>>>> While other things are arguably even more important, such as
+>>>> testing patches from mailing lists, replying to stable reviews
+>>>> and sending email reports directly to contributors in a "natural"
+>>>> workflow, the web dashboard has been a sticking point for a
+>>>> while.
+>>>>
+>>>> There have been several attempts at solving this problem, using
+>>>> Elastic Stack and Grafana among other things, but there isn't a
+>>>> single framework able to directly provide an off-the-shelf
+>>>> solution to the community's needs.  In fact, the first issue is
+>>>> the lack of understanding of these needs: who wants to use the
+>>>> web dashboard, and how?  Then, how does one translate those needs
+>>>> into a user interface?  Doing this requires skills that engineers
+>>>> who regularly contribute to KernelCI typically don't have. As
+>>>> such, a dedicated working group is being created in order to fill
+>>>> this gap.
+>>>>
+>>>> The aim is to coordinate efforts and try to follow best practices
+>>>> to make steady progress and avoid repeating the same mistakes.
+>>>> Most likely, we will need some help from proper web developers
+>>>> who aren't part of the usual KernelCI community.  This may be
+>>>> facilitated by the KernelCI LF project budget if approved by the
+>>>> governing board.
+>>>>
+>>>> In order to get started, we would need to have maybe 3 to 5
+>>>> people available to focus on this.  It doesn't necessarily mean a
+>>>> lot of hours spent but actions to be carried out on a daily or
+>>>> weekly basis.  So far we have Gustavo Padovan as our new KernelCI
+>>>> Project Manager and a few people have expressed interest but we
+>>>> still need formal confirmation.
+>>>>
+>>>>
+>>>> Here's a GitHub project dedicated to the new web dashboard:
+>>>>
+>>>>    https://github.com/orgs/kernelci/projects/4
+>>>>
+>>>> I've created a couple of issues to get started about user
+>>>> stories, and some initial milestones as a basic skeleton:
+>>>>
+>>>>    https://github.com/kernelci/kernelci-project/milestones
+>>>>
+>>>>
+>>>> This is ultimately a community-driven effort to address the needs
+>>>> of the kernel community.  Please share any thoughts you may have
+>>>> on this, whether you want to add some user stories, share some
+>>>> expertise, be officially in the working group or take part in
+>>>> this effort in any other way.
+>>>>
+>>>> Best wishes,
+>>>> Guillaume
+>>>>
+>>>> [1]https://foundation.kernelci.org/blog/2020/07/09/kernelci-community-survey-report/ 
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>>>
+>>
+>
+
+-- 
+Gustavo Padovan
+
+Collabora Ltd.
+Platinum Building, St John's Innovation Park
+Cambridge CB4 0DS, UK
+Registered in England & Wales, no. 5513718
+
