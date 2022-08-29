@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F45BECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F2D0ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbiH2LGO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:06:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43210 "EHLO
+        id S230352AbiH2LGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:06:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbiH2LFj (ORCPT
+        with ESMTP id S230255AbiH2LFs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:05:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C59E66A65;
-        Mon, 29 Aug 2022 04:04:02 -0700 (PDT)
+        Mon, 29 Aug 2022 07:05:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FAD61D57;
+        Mon, 29 Aug 2022 04:04:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05DAEB80EF6;
-        Mon, 29 Aug 2022 11:03:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68876C433D6;
-        Mon, 29 Aug 2022 11:03:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAFD9B80EF3;
+        Mon, 29 Aug 2022 11:04:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A534C433C1;
+        Mon, 29 Aug 2022 11:04:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770990;
-        bh=6VbZojWMmU4Y+MpgO0QlKrTbXkiyR9CyV+KXlxMELIo=;
+        s=korg; t=1661771043;
+        bh=Hg0iic/LV1UHfhKvfDy001aBE/HyLI2pbHSboJUYZH4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uZQK2pBsjy0hIFuQ0drgRYAJFjz7DqhzAqHZmLaaCa3WUqKthLVvY2wBZ0u38W35G
-         DKyzsVnjgEJna/7CcZrPQ8fjvCv6KdMRfLqQeHwA9f+KhvzyHDId1ttpVl7foKguP6
-         oxrS7J6YMf5IuZQQckdm+CMu30PfWfJEW34ZE2Ho=
+        b=GL0liS7EzVDUOmdEVm6Rg4cTdhJQDjnaTRbJPfJq4duLeWnceAgz7zruiNelTFo20
+         iwGu6EmwowB0PMH8MZRezg78Ob9Ngg4mU2oThHDjLMMsPb+gi8fqYEhMJPs6hD0iZa
+         p/xk/lwMpH5+tUCKm32FsDfpb7pBm5e5FRmlJY6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.10 04/86] pinctrl: amd: Dont save/restore interrupt status and wake status bits
-Date:   Mon, 29 Aug 2022 12:58:30 +0200
-Message-Id: <20220829105756.704237505@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 12/86] xfrm: fix refcount leak in __xfrm_policy_check()
+Date:   Mon, 29 Aug 2022 12:58:38 +0200
+Message-Id: <20220829105757.031310925@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
 References: <20220829105756.500128871@linuxfoundation.org>
@@ -50,64 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-commit b8c824a869f220c6b46df724f85794349bafbf23 upstream.
+[ Upstream commit 9c9cb23e00ddf45679b21b4dacc11d1ae7961ebe ]
 
-Saving/restoring interrupt and wake status bits across suspend can
-cause the suspend to fail if an IRQ is serviced across the
-suspend cycle.
+The issue happens on an error path in __xfrm_policy_check(). When the
+fetching process of the object `pols[1]` fails, the function simply
+returns 0, forgetting to decrement the reference count of `pols[0]`,
+which is incremented earlier by either xfrm_sk_policy_lookup() or
+xfrm_policy_lookup(). This may result in memory leaks.
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Basavaraj Natikar <Basavaraj.Natikar@amd.com>
-Fixes: 79d2c8bede2c ("pinctrl/amd: save pin registers over suspend/resume")
-Link: https://lore.kernel.org/r/20220613064127.220416-3-Basavaraj.Natikar@amd.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it by decreasing the reference count of `pols[0]` in that path.
+
+Fixes: 134b0fc544ba ("IPsec: propagate security module errors up from flow_cache_lookup")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-amd.c |   11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ net/xfrm/xfrm_policy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/pinctrl/pinctrl-amd.c
-+++ b/drivers/pinctrl/pinctrl-amd.c
-@@ -815,6 +815,7 @@ static int amd_gpio_suspend(struct devic
- {
- 	struct amd_gpio *gpio_dev = dev_get_drvdata(dev);
- 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
-+	unsigned long flags;
- 	int i;
- 
- 	for (i = 0; i < desc->npins; i++) {
-@@ -823,7 +824,9 @@ static int amd_gpio_suspend(struct devic
- 		if (!amd_gpio_should_save(gpio_dev, pin))
- 			continue;
- 
--		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin*4);
-+		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
-+		gpio_dev->saved_regs[i] = readl(gpio_dev->base + pin * 4) & ~PIN_IRQ_PENDING;
-+		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
- 	}
- 
- 	return 0;
-@@ -833,6 +836,7 @@ static int amd_gpio_resume(struct device
- {
- 	struct amd_gpio *gpio_dev = dev_get_drvdata(dev);
- 	struct pinctrl_desc *desc = gpio_dev->pctrl->desc;
-+	unsigned long flags;
- 	int i;
- 
- 	for (i = 0; i < desc->npins; i++) {
-@@ -841,7 +845,10 @@ static int amd_gpio_resume(struct device
- 		if (!amd_gpio_should_save(gpio_dev, pin))
- 			continue;
- 
--		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin*4);
-+		raw_spin_lock_irqsave(&gpio_dev->lock, flags);
-+		gpio_dev->saved_regs[i] |= readl(gpio_dev->base + pin * 4) & PIN_IRQ_PENDING;
-+		writel(gpio_dev->saved_regs[i], gpio_dev->base + pin * 4);
-+		raw_spin_unlock_irqrestore(&gpio_dev->lock, flags);
- 	}
- 
- 	return 0;
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 603b05ed7eb4c..2cd66f3e52386 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3641,6 +3641,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 		if (pols[1]) {
+ 			if (IS_ERR(pols[1])) {
+ 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLERROR);
++				xfrm_pol_put(pols[0]);
+ 				return 0;
+ 			}
+ 			pols[1]->curlft.use_time = ktime_get_real_seconds();
+-- 
+2.35.1
+
 
 
