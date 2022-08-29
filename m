@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D039BECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F09ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbiH2LU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:20:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
+        id S231684AbiH2LVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231800AbiH2LTW (ORCPT
+        with ESMTP id S231823AbiH2LTZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:19:22 -0400
+        Mon, 29 Aug 2022 07:19:25 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2163C74CDD;
-        Mon, 29 Aug 2022 04:13:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1F26DF86;
+        Mon, 29 Aug 2022 04:13:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3C28B80F96;
-        Mon, 29 Aug 2022 11:12:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFCEC433D7;
-        Mon, 29 Aug 2022 11:12:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4C9AB80FA3;
+        Mon, 29 Aug 2022 11:12:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E998C433D6;
+        Mon, 29 Aug 2022 11:12:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771536;
-        bh=eJX9FKnILFDrlwXT+vuAPtTESD8DHPjjPUBG0DnkAxg=;
+        s=korg; t=1661771539;
+        bh=zvQ2yyzXmUiskuCkUP4unrwYo2Z75bDECc3GxabstgM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JrwpJz9I2htj31Wv8vGaR8g+gMxacb+7Gy9Z7r71x3ElW1xYeYAt+4v755PN04B5X
-         AfJwm+yqZspiHx1GSFkUqCwQ5TE1wKi18HPFN4G40V11BJzpKKCRdkn9PL6kjaXH37
-         PRTrMNA6iMEZr9hOyJoIQacXjXl1fA9z8V5LgyXM=
+        b=ige7kBvjawdXIdIrnQsSDzKFANOrusypW26g2ce3w1foVznqroqU5KDAQWfxzEB/k
+         twDctxW6AjgixSz7FA7AFCAjj54wfw1dXThL35SNx6O5ro/zSUqweef6u6dibOlZFv
+         Bzd+qkSYIa5tGC52mDg7koKeUQlkUziYAz/g1tPA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 041/158] net: dsa: microchip: move the port mirror to ksz_common
-Date:   Mon, 29 Aug 2022 12:58:11 +0200
-Message-Id: <20220829105810.503081452@linuxfoundation.org>
+        stable@vger.kernel.org, Karol Herbst <kherbst@redhat.com>,
+        Lyude Paul <lyude@redhat.com>
+Subject: [PATCH 5.15 114/136] nouveau: explicitly wait on the fence in nouveau_bo_move_m2mf
+Date:   Mon, 29 Aug 2022 12:59:41 +0200
+Message-Id: <20220829105809.384152318@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,189 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Ramadoss <arun.ramadoss@microchip.com>
+From: Karol Herbst <kherbst@redhat.com>
 
-[ Upstream commit 00a298bbc23876288b1cd04c38752d8e7ed53ae2 ]
+commit 6b04ce966a738ecdd9294c9593e48513c0dc90aa upstream.
 
-This patch updates the common port mirror add/del dsa_switch_ops in
-ksz_common.c. The individual switches implementation is executed based
-on the ksz_dev_ops function pointers.
+It is a bit unlcear to us why that's helping, but it does and unbreaks
+suspend/resume on a lot of GPUs without any known drawbacks.
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org # v5.15+
+Closes: https://gitlab.freedesktop.org/drm/nouveau/-/issues/156
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Reviewed-by: Lyude Paul <lyude@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220819200928.401416-1-kherbst@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/microchip/ksz8795.c    | 13 ++++++-------
- drivers/net/dsa/microchip/ksz9477.c    | 12 ++++++------
- drivers/net/dsa/microchip/ksz_common.c | 23 +++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h | 10 ++++++++++
- 4 files changed, 45 insertions(+), 13 deletions(-)
+ drivers/gpu/drm/nouveau/nouveau_bo.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 16e946dbd9d42..2e3d24a3260e1 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1089,12 +1089,10 @@ static int ksz8_port_vlan_del(struct ksz_device *dev, int port,
- 	return 0;
- }
- 
--static int ksz8_port_mirror_add(struct dsa_switch *ds, int port,
-+static int ksz8_port_mirror_add(struct ksz_device *dev, int port,
- 				struct dsa_mall_mirror_tc_entry *mirror,
- 				bool ingress, struct netlink_ext_ack *extack)
- {
--	struct ksz_device *dev = ds->priv;
--
- 	if (ingress) {
- 		ksz_port_cfg(dev, port, P_MIRROR_CTRL, PORT_MIRROR_RX, true);
- 		dev->mirror_rx |= BIT(port);
-@@ -1113,10 +1111,9 @@ static int ksz8_port_mirror_add(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
--static void ksz8_port_mirror_del(struct dsa_switch *ds, int port,
-+static void ksz8_port_mirror_del(struct ksz_device *dev, int port,
- 				 struct dsa_mall_mirror_tc_entry *mirror)
- {
--	struct ksz_device *dev = ds->priv;
- 	u8 data;
- 
- 	if (mirror->ingress) {
-@@ -1400,8 +1397,8 @@ static const struct dsa_switch_ops ksz8_switch_ops = {
- 	.port_fdb_dump		= ksz_port_fdb_dump,
- 	.port_mdb_add           = ksz_port_mdb_add,
- 	.port_mdb_del           = ksz_port_mdb_del,
--	.port_mirror_add	= ksz8_port_mirror_add,
--	.port_mirror_del	= ksz8_port_mirror_del,
-+	.port_mirror_add	= ksz_port_mirror_add,
-+	.port_mirror_del	= ksz_port_mirror_del,
- };
- 
- static u32 ksz8_get_port_addr(int port, int offset)
-@@ -1464,6 +1461,8 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
- 	.vlan_filtering = ksz8_port_vlan_filtering,
- 	.vlan_add = ksz8_port_vlan_add,
- 	.vlan_del = ksz8_port_vlan_del,
-+	.mirror_add = ksz8_port_mirror_add,
-+	.mirror_del = ksz8_port_mirror_del,
- 	.shutdown = ksz8_reset_switch,
- 	.init = ksz8_switch_init,
- 	.exit = ksz8_switch_exit,
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 1bb994a9109cd..cd4a3088e9473 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -819,11 +819,10 @@ static int ksz9477_port_mdb_del(struct dsa_switch *ds, int port,
- 	return ret;
- }
- 
--static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
-+static int ksz9477_port_mirror_add(struct ksz_device *dev, int port,
- 				   struct dsa_mall_mirror_tc_entry *mirror,
- 				   bool ingress, struct netlink_ext_ack *extack)
- {
--	struct ksz_device *dev = ds->priv;
- 	u8 data;
- 	int p;
- 
-@@ -859,10 +858,9 @@ static int ksz9477_port_mirror_add(struct dsa_switch *ds, int port,
- 	return 0;
- }
- 
--static void ksz9477_port_mirror_del(struct dsa_switch *ds, int port,
-+static void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
- 				    struct dsa_mall_mirror_tc_entry *mirror)
- {
--	struct ksz_device *dev = ds->priv;
- 	bool in_use = false;
- 	u8 data;
- 	int p;
-@@ -1335,8 +1333,8 @@ static const struct dsa_switch_ops ksz9477_switch_ops = {
- 	.port_fdb_del		= ksz9477_port_fdb_del,
- 	.port_mdb_add           = ksz9477_port_mdb_add,
- 	.port_mdb_del           = ksz9477_port_mdb_del,
--	.port_mirror_add	= ksz9477_port_mirror_add,
--	.port_mirror_del	= ksz9477_port_mirror_del,
-+	.port_mirror_add	= ksz_port_mirror_add,
-+	.port_mirror_del	= ksz_port_mirror_del,
- 	.get_stats64		= ksz_get_stats64,
- 	.port_change_mtu	= ksz9477_change_mtu,
- 	.port_max_mtu		= ksz9477_max_mtu,
-@@ -1412,6 +1410,8 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
- 	.vlan_filtering = ksz9477_port_vlan_filtering,
- 	.vlan_add = ksz9477_port_vlan_add,
- 	.vlan_del = ksz9477_port_vlan_del,
-+	.mirror_add = ksz9477_port_mirror_add,
-+	.mirror_del = ksz9477_port_mirror_del,
- 	.shutdown = ksz9477_reset_switch,
- 	.init = ksz9477_switch_init,
- 	.exit = ksz9477_switch_exit,
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 5db2b55152885..676669d353ea6 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -991,6 +991,29 @@ int ksz_port_vlan_del(struct dsa_switch *ds, int port,
- }
- EXPORT_SYMBOL_GPL(ksz_port_vlan_del);
- 
-+int ksz_port_mirror_add(struct dsa_switch *ds, int port,
-+			struct dsa_mall_mirror_tc_entry *mirror,
-+			bool ingress, struct netlink_ext_ack *extack)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (!dev->dev_ops->mirror_add)
-+		return -EOPNOTSUPP;
-+
-+	return dev->dev_ops->mirror_add(dev, port, mirror, ingress, extack);
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_mirror_add);
-+
-+void ksz_port_mirror_del(struct dsa_switch *ds, int port,
-+			 struct dsa_mall_mirror_tc_entry *mirror)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (dev->dev_ops->mirror_del)
-+		dev->dev_ops->mirror_del(dev, port, mirror);
-+}
-+EXPORT_SYMBOL_GPL(ksz_port_mirror_del);
-+
- static int ksz_switch_detect(struct ksz_device *dev)
- {
- 	u8 id1, id2;
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 1baa270859aa2..c724cbb437e29 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -187,6 +187,11 @@ struct ksz_dev_ops {
- 			 struct netlink_ext_ack *extack);
- 	int  (*vlan_del)(struct ksz_device *dev, int port,
- 			 const struct switchdev_obj_port_vlan *vlan);
-+	int (*mirror_add)(struct ksz_device *dev, int port,
-+			  struct dsa_mall_mirror_tc_entry *mirror,
-+			  bool ingress, struct netlink_ext_ack *extack);
-+	void (*mirror_del)(struct ksz_device *dev, int port,
-+			   struct dsa_mall_mirror_tc_entry *mirror);
- 	void (*freeze_mib)(struct ksz_device *dev, int port, bool freeze);
- 	void (*port_init_cnt)(struct ksz_device *dev, int port);
- 	int (*shutdown)(struct ksz_device *dev);
-@@ -247,6 +252,11 @@ int ksz_port_vlan_add(struct dsa_switch *ds, int port,
- 		      struct netlink_ext_ack *extack);
- int ksz_port_vlan_del(struct dsa_switch *ds, int port,
- 		      const struct switchdev_obj_port_vlan *vlan);
-+int ksz_port_mirror_add(struct dsa_switch *ds, int port,
-+			struct dsa_mall_mirror_tc_entry *mirror,
-+			bool ingress, struct netlink_ext_ack *extack);
-+void ksz_port_mirror_del(struct dsa_switch *ds, int port,
-+			 struct dsa_mall_mirror_tc_entry *mirror);
- 
- /* Common register access functions */
- 
+diff --git a/drivers/gpu/drm/nouveau/nouveau_bo.c b/drivers/gpu/drm/nouveau/nouveau_bo.c
+index 05076e530e7d..e29175e4b44c 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_bo.c
++++ b/drivers/gpu/drm/nouveau/nouveau_bo.c
+@@ -820,6 +820,15 @@ nouveau_bo_move_m2mf(struct ttm_buffer_object *bo, int evict,
+ 		if (ret == 0) {
+ 			ret = nouveau_fence_new(chan, false, &fence);
+ 			if (ret == 0) {
++				/* TODO: figure out a better solution here
++				 *
++				 * wait on the fence here explicitly as going through
++				 * ttm_bo_move_accel_cleanup somehow doesn't seem to do it.
++				 *
++				 * Without this the operation can timeout and we'll fallback to a
++				 * software copy, which might take several minutes to finish.
++				 */
++				nouveau_fence_wait(fence, false, false);
+ 				ret = ttm_bo_move_accel_cleanup(bo,
+ 								&fence->base,
+ 								evict, false,
 -- 
-2.35.1
+2.37.2
 
 
 
