@@ -2,203 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4EEAECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD553ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbiH2NSM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:18:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
+        id S229551AbiH2NSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230050AbiH2NRJ (ORCPT
+        with ESMTP id S229757AbiH2NRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:17:09 -0400
-Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9398F2C115
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:16:34 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.west.internal (Postfix) with ESMTP id 707D12B06076;
-        Mon, 29 Aug 2022 09:15:00 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 29 Aug 2022 09:15:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1661778899; x=
-        1661786099; bh=ReY7J5eErJiBY0rbxwL7vnhNBn09T/DT66uuFDXXy5o=; b=N
-        4aBI9wNpgH0ceAnmBkyvIF5Lu77njTisbo1TIyV+MRUDKNuwulNc4YbhWRKmMWKJ
-        dMmbHy4NlVARJ71cduUN5bndKcGqo8JAA1V3MMlbU7gj2RVigr/12iQMd4qrtjTR
-        068iX8T9PUlEal4YDwm5TNEO/mByZnEOIfRoYuFPdfrfUMlRXdE9c3P19gsyqyXj
-        ULyMUUW3+3BbIZxip3q0FnvBh2WgJ9dnK6bwrIPhSQ8jwWS0oUTKpTHV0Zx0Hc1l
-        W2FKnIl25AbHCAn3CMWARmuupC2rggRMAEZFdpGGnE0LNPXQeoWvqeSqAa+Rme1h
-        I6rVpG7lLlXdnj2mlt6yg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661778899; x=
-        1661786099; bh=ReY7J5eErJiBY0rbxwL7vnhNBn09T/DT66uuFDXXy5o=; b=o
-        VKmlz4/W/h4tuO2rKshy4dLtdEoUzgZu3epYaNMaNiZt0AisN2tANX1ZniOGV8o/
-        Zr8hHGEYyaqvt/kyIHZfgQKZRLOuNEL08Q6NPh72AbG8zqv0YKyvo0/QUc/ahNXx
-        OHORusfP8StHLkZSbT302o7kyPAQgMWNH+Uxb7NfWkPV2Fm5FVbqXv1TwxUlc9Pj
-        lDb4SXb/cJMZ2vBJ2tRKZZAiRAcZNN1CulovQA4L/67dQL24Ss62DpW3Vl4ScGeP
-        gCJSF6wBmQpFVDqSNKaPOr/nue5Uubipn1xysS4U07LHhACEjHMCEpdjKgLlGVRk
-        00smxhdUqCJ13zgW5eqdg==
-X-ME-Sender: <xms:07sMY4v1KrwH5b2QwEQbcPIY_gZm-mu5VNd3fJbAikYySqx6ASjW-A>
-    <xme:07sMY1eK_-TorPa-ERxLshxC1NNCAh7i-en7iE_eHNGVn0G504n_HD8KbmeWEOCAk
-    y5IBjZYHs6V2lIBucc>
-X-ME-Received: <xmr:07sMYzxprAjrU7vfNAYaqREbT9wjpqmung_J5Sej1zgKs3MOyULW3HTDe-U2>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddgieefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhggtgfogfesthhqredtredtjeenucfhrhhomhepofgr
-    gihimhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtf
-    frrghtthgvrhhnpeefiedvfefggffgffehveejieffuddtgffhjefggeetieduvdeileet
-    lefgveegtdenucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:07sMY7MiKOjYLhG8tGdhJzlApsnjf_MwTt1kLgRgs0CxFwF0kUeKGg>
-    <xmx:07sMY49ci1sqB6ChX6AMudvjFJ2yzb2fDhUgstuqxWngZbuXDN2ruA>
-    <xmx:07sMYzV_OQb2dXGxOlNySF4yZw8tPGR06FPKH2kBVcR6UTTqXSTRfA>
-    <xmx:07sMY0mej0rQ3D6ADPox7KBLYHgBWJpAig_pqgai4x81lxMwDGJxuL3ozkU>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 29 Aug 2022 09:14:58 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Maxime Ripard <mripard@kernel.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc:     Maxime Ripard <maxime@cerno.tech>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        intel-gfx@lists.freedesktop.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        dri-devel@lists.freedesktop.org, Dom Cobley <dom@raspberrypi.com>,
-        linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org,
-        linux-sunxi@lists.linux.dev,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 27/41] drm/vc4: vec: Remove redundant atomic_mode_set
-Date:   Mon, 29 Aug 2022 15:11:41 +0200
-Message-Id: <20220728-rpi-analog-tv-properties-v2-27-459522d653a7@cerno.tech>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
-References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
+        Mon, 29 Aug 2022 09:17:12 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A881580E9D;
+        Mon, 29 Aug 2022 06:16:39 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27TB2F31015197;
+        Mon, 29 Aug 2022 09:15:13 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j7d4843am-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Aug 2022 09:15:13 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 27TDFCos019131
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 29 Aug 2022 09:15:12 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 29 Aug
+ 2022 09:15:11 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 29 Aug 2022 09:15:11 -0400
+Received: from nsa.ad.analog.com ([10.44.3.68])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27TDEeiS026449;
+        Mon, 29 Aug 2022 09:15:05 -0400
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-input@vger.kernel.org>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH v4 08/10] input: keyboard: adp5588-keys: add optional reset gpio
+Date:   Mon, 29 Aug 2022 15:15:51 +0200
+Message-ID: <20220829131553.690063-9-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829131553.690063-1-nuno.sa@analog.com>
+References: <20220829131553.690063-1-nuno.sa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.10.0-dev-65ba7
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3082; i=maxime@cerno.tech; h=from:subject:message-id; bh=QXOlllk5ml+SVmFRbPCWgY/56C60l8/t88mB+T2Hd8I=; b=owGbwMvMwCX2+D1vfrpE4FHG02pJDMk8uxRarzw76nXbROFT8FTJfZ3vCgOyZc3+Rc1vzw7+F6jR czK6o5SFQYyLQVZMkSVG2HxJ3KlZrzvZ+ObBzGFlAhnCwMUpABOp7GD4xTxX5aN6ObuKyquJYl93cv MypLxZ/fer0zGFZZyfLztEXGZkeBN54K165Hf/Iv1072wP+68Xg+pWPT0srdHbuOGba9J3XgA=
-X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: Yr-eSYquuVgF2olYoJR0GRoZ-Gi9MjkI
+X-Proofpoint-ORIG-GUID: Yr-eSYquuVgF2olYoJR0GRoZ-Gi9MjkI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-29_07,2022-08-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ impostorscore=0 priorityscore=1501 bulkscore=0 clxscore=1015
+ malwarescore=0 lowpriorityscore=0 mlxlogscore=999 mlxscore=0 adultscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208290061
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>=0D
-=0D
-Let's remove the superfluous tv_mode field, which was redundant with the=0D
-mode field in struct drm_tv_connector_state.=0D
-=0D
-Signed-off-by: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>=0D
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>=0D
-=0D
-diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c=
-=0D
-index 9a37c3fcc295..4d7bc7c20704 100644=0D
---- a/drivers/gpu/drm/vc4/vc4_vec.c=0D
-+++ b/drivers/gpu/drm/vc4/vc4_vec.c=0D
-@@ -171,8 +171,6 @@ struct vc4_vec {=0D
- =0D
- 	struct clk *clock;=0D
- =0D
--	const struct vc4_vec_tv_mode *tv_mode;=0D
--=0D
- 	struct debugfs_regset32 regset;=0D
- };=0D
- =0D
-@@ -316,7 +314,6 @@ static int vc4_vec_connector_init(struct drm_device *de=
-v, struct vc4_vec *vec)=0D
- 	drm_object_attach_property(&connector->base,=0D
- 				   dev->mode_config.legacy_tv_mode_property,=0D
- 				   VC4_VEC_TV_MODE_NTSC);=0D
--	vec->tv_mode =3D &vc4_vec_tv_modes[VC4_VEC_TV_MODE_NTSC];=0D
- =0D
- 	drm_connector_attach_encoder(connector, &vec->encoder.base);=0D
- =0D
-@@ -360,6 +357,11 @@ static void vc4_vec_encoder_enable(struct drm_encoder =
-*encoder,=0D
- {=0D
- 	struct drm_device *drm =3D encoder->dev;=0D
- 	struct vc4_vec *vec =3D encoder_to_vc4_vec(encoder);=0D
-+	struct drm_connector *connector =3D &vec->connector;=0D
-+	struct drm_connector_state *conn_state =3D=0D
-+		drm_atomic_get_new_connector_state(state, connector);=0D
-+	const struct vc4_vec_tv_mode *tv_mode =3D=0D
-+		&vc4_vec_tv_modes[conn_state->tv.mode];=0D
- 	int idx, ret;=0D
- =0D
- 	if (!drm_dev_enter(drm, &idx))=0D
-@@ -418,15 +420,14 @@ static void vc4_vec_encoder_enable(struct drm_encoder=
- *encoder,=0D
- 	/* Mask all interrupts. */=0D
- 	VEC_WRITE(VEC_MASK0, 0);=0D
- =0D
--	VEC_WRITE(VEC_CONFIG0, vec->tv_mode->config0);=0D
--	VEC_WRITE(VEC_CONFIG1, vec->tv_mode->config1);=0D
-+	VEC_WRITE(VEC_CONFIG0, tv_mode->config0);=0D
-+	VEC_WRITE(VEC_CONFIG1, tv_mode->config1);=0D
- =0D
--	if (vec->tv_mode->custom_freq !=3D 0) {=0D
-+	if (tv_mode->custom_freq !=3D 0) {=0D
- 		VEC_WRITE(VEC_FREQ3_2,=0D
--			  (vec->tv_mode->custom_freq >> 16) &=0D
--			  0xffff);=0D
-+			  (tv_mode->custom_freq >> 16) & 0xffff);=0D
- 		VEC_WRITE(VEC_FREQ1_0,=0D
--			  vec->tv_mode->custom_freq & 0xffff);=0D
-+			  tv_mode->custom_freq & 0xffff);=0D
- 	}=0D
- =0D
- 	VEC_WRITE(VEC_DAC_MISC,=0D
-@@ -442,15 +443,6 @@ static void vc4_vec_encoder_enable(struct drm_encoder =
-*encoder,=0D
- 	drm_dev_exit(idx);=0D
- }=0D
- =0D
--static void vc4_vec_encoder_atomic_mode_set(struct drm_encoder *encoder,=0D
--					struct drm_crtc_state *crtc_state,=0D
--					struct drm_connector_state *conn_state)=0D
--{=0D
--	struct vc4_vec *vec =3D encoder_to_vc4_vec(encoder);=0D
--=0D
--	vec->tv_mode =3D &vc4_vec_tv_modes[conn_state->tv.mode];=0D
--}=0D
--=0D
- static int vc4_vec_encoder_atomic_check(struct drm_encoder *encoder,=0D
- 					struct drm_crtc_state *crtc_state,=0D
- 					struct drm_connector_state *conn_state)=0D
-@@ -470,7 +462,6 @@ static const struct drm_encoder_helper_funcs vc4_vec_en=
-coder_helper_funcs =3D {=0D
- 	.atomic_check =3D vc4_vec_encoder_atomic_check,=0D
- 	.atomic_disable =3D vc4_vec_encoder_disable,=0D
- 	.atomic_enable =3D vc4_vec_encoder_enable,=0D
--	.atomic_mode_set =3D vc4_vec_encoder_atomic_mode_set,=0D
- };=0D
- =0D
- static int vc4_vec_late_register(struct drm_encoder *encoder)=0D
-=0D
--- =0D
-b4 0.10.0-dev-65ba7=0D
+Optionally reset the device during probe.
+
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/input/keyboard/adp5588-keys.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/drivers/input/keyboard/adp5588-keys.c b/drivers/input/keyboard/adp5588-keys.c
+index 3a234ec37fd4..b2bb7c6702e1 100644
+--- a/drivers/input/keyboard/adp5588-keys.c
++++ b/drivers/input/keyboard/adp5588-keys.c
+@@ -11,6 +11,7 @@
+ #include <linux/bits.h>
+ #include <linux/delay.h>
+ #include <linux/errno.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/gpio/driver.h>
+ #include <linux/i2c.h>
+ #include <linux/input.h>
+@@ -715,6 +716,7 @@ static int adp5588_probe(struct i2c_client *client,
+ {
+ 	struct adp5588_kpad *kpad;
+ 	struct input_dev *input;
++	struct gpio_desc *gpio;
+ 	unsigned int revid;
+ 	int ret;
+ 	int error;
+@@ -740,6 +742,16 @@ static int adp5588_probe(struct i2c_client *client,
+ 	if (error)
+ 		return error;
+ 
++	gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(gpio))
++		return PTR_ERR(gpio);
++
++	if (gpio) {
++		fsleep(30);
++		gpiod_set_value_cansleep(gpio, 0);
++		fsleep(60);
++	}
++
+ 	ret = adp5588_read(client, DEV_ID);
+ 	if (ret < 0)
+ 		return ret;
+-- 
+2.37.2
+
