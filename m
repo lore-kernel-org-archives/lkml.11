@@ -2,114 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2967FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DD3ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbiH2OWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:22:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
+        id S229806AbiH2OWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229670AbiH2OWW (ORCPT
+        with ESMTP id S230242AbiH2OWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:22:22 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68378B988
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:22:21 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-11edd61a9edso4483898fac.5
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:22:21 -0700 (PDT)
+        Mon, 29 Aug 2022 10:22:36 -0400
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92158E4FB;
+        Mon, 29 Aug 2022 07:22:32 -0700 (PDT)
+Received: by mail-il1-x133.google.com with SMTP id l6so2790752ilk.13;
+        Mon, 29 Aug 2022 07:22:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=r2IisvDZhIUwr3A4znPc/Y5pU34Q3HM0h5+VHVWhOk4=;
+        b=gHRIscN/jmrTqobS5b2rFsptm4KH1+QQiZdg/c4BJJ+nZ7VIzisYERmizhRPFmwKU0
+         SxIacjlrjP1QHzndUY5Z1A3/acAqOh0DDpDS5MZb1eRrajp+KFpE2ufYGXvWwkBHuGFy
+         H57kRraoxtdG09kqsKSYS7DpsqksYAQBWeMWM5ssFkTZaa/oYY/ZxKsDjc9PH7RDTbeY
+         7uPswya4MXUNvy0fC1BH8nc2tdJ6849qHtsz39qiM4eL5kBpGEbxF+JMpZBD0aLPQX7/
+         jbCvj/JCdPzwhr1zbw49eRGaSI29DlmM8adoRWD/dLmTOQs0XNGolZJuf7NeQhQomNw4
+         U6ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=+LNH7GWYgSUzsjvph8IQNcroBifhiDios4fo6CTY2/U=;
-        b=XVunXF3kjTus4d6ghRjoX/G3g6du/2+bZ0NFdJ4nJuVzrU0bZ1yCuXay3gzzk+mu60
-         fNgmJcD5phH4nVkxv3kCXO53Q8YaIVADSbrxGNyF17xXWi1OxEN8NI1ggco5qqjYQxqm
-         HP8C3P61XtqKmEGfrUWrxDjwD6Wulwehdu7ZbWogo/QrCcqFIb0xl/rDioRX4+qb/VME
-         MPVID9JCMLttgQa6eUivOkemGZ5Z2HnpLjjUvH97HIapXJIsaQzg4/sNHbnEUweLfVoY
-         QZzmAi4+iy/E65r/vqrvNzzfIamgrLCf8xW1rZmaXQ5qNXVCc2FqvBvgEEGL8zNvJyAC
-         EsWw==
-X-Gm-Message-State: ACgBeo2Q26yaxRm6RU8zqlq/IZCcbpDxfq1irAHB+AdsJHNKuhO+C4j6
-        zv7bby7Uk6c/HeaO/IqKrv8t3wXcIlFXSA==
-X-Google-Smtp-Source: AA6agR5N1A2Gvptc6i3QpAjwFZ0eyDsy6gap/xa1uX6YGTUyIDM3KSvJBCY2l+mVv0zkfBvbhqb+qA==
-X-Received: by 2002:a05:6870:438b:b0:11c:ecf2:e4ca with SMTP id r11-20020a056870438b00b0011cecf2e4camr8141008oah.122.1661782940808;
-        Mon, 29 Aug 2022 07:22:20 -0700 (PDT)
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com. [209.85.210.53])
-        by smtp.gmail.com with ESMTPSA id g10-20020acab60a000000b0034516ca90dcsm4791240oif.23.2022.08.29.07.22.20
-        for <linux-kernel@vger.kernel.org>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=r2IisvDZhIUwr3A4znPc/Y5pU34Q3HM0h5+VHVWhOk4=;
+        b=FJCw1jaO7QMwML5oejPlt+1HfyDfwG/MQ08IvzG/O6oVfqjtIKQNbENrtWSTIER0lE
+         m7YK/cV+MKumdLtGf9LBz8iYc7YDCLNCyqsgUc7STUevUkAfmXQ0YdvypNkImRyF6Uf4
+         0ewQyB+eJojl29jvBWw8d4KSSVjBNRxp9nOGTsnb30RY9rOQs3CovEMV8xvXR+GRDvif
+         fgsOAOKUzjOGOHlZwLoXx1wPeRkmHsZj6xLQEavru+zpXVe3XzHyHZOvr4NNVgxk8atw
+         asq0vMLBSrlqAubFWUKyLk3CmiZ1gSTpdLkAADgYw0DYZyYvS+eO2ELQ50Hq6lypxTOB
+         C47w==
+X-Gm-Message-State: ACgBeo3p/Gxf15vTOICoW9eqJVXP361m2yLwbrn33WEValpwZs0+CESP
+        DS5zcoKJMHnxAt/FYUo9L0s=
+X-Google-Smtp-Source: AA6agR7dSn8UGvaaP95ttMa51jL3T38SsmfSy8tqy4l3eQroIkxmc1Vapo6+T0bEXq5pCmYQdz0aew==
+X-Received: by 2002:a92:c242:0:b0:2e9:62e2:a87c with SMTP id k2-20020a92c242000000b002e962e2a87cmr9970868ilo.246.1661782951170;
+        Mon, 29 Aug 2022 07:22:31 -0700 (PDT)
+Received: from [192.168.0.27] ([204.237.49.50])
+        by smtp.gmail.com with ESMTPSA id h16-20020a92d850000000b002eb109706f4sm1316923ilq.84.2022.08.29.07.22.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 07:22:20 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id t11-20020a05683014cb00b0063734a2a786so5973619otq.11
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:22:20 -0700 (PDT)
-X-Received: by 2002:a25:415:0:b0:696:814:7c77 with SMTP id 21-20020a250415000000b0069608147c77mr8612505ybe.36.1661782506395;
- Mon, 29 Aug 2022 07:15:06 -0700 (PDT)
+        Mon, 29 Aug 2022 07:22:30 -0700 (PDT)
+Message-ID: <fab763ac-2865-58b1-d735-51a28a76aa94@gmail.com>
+Date:   Mon, 29 Aug 2022 10:22:28 -0400
 MIME-Version: 1.0
-References: <CAMuHMdUusnhYodWGCxJBu-1Hd2KW-xdT8jxE_iVdQjDo8b3Y5Q@mail.gmail.com>
- <20220817131454.qcuywcuc4ts4hswm@houat> <CAMuHMdVPEgnnsY-4uuf=FDJ0YxWpch-0kZWFT_TZfcDvXLtwWQ@mail.gmail.com>
- <20220818123934.eim2bfrgbxsmviqx@houat> <CAMuHMdWXbHkrBZgsmUnU=q52+q7UZZNO3tgQW7Men+msQ1JDwQ@mail.gmail.com>
- <20220818134200.cr22bftmjn226ehn@houat> <CAMuHMdX6dyQaB34oeXwiCa2rDkxks0qNh=ekqh7Wd2kSNED9TA@mail.gmail.com>
- <20220818154641.ouvrar5s74qu74zn@houat> <CAMuHMdUjE0mwu8z5AksW4h1OwzDCQ5h1ZoCWDi+rC4p2Pu5O4g@mail.gmail.com>
- <6d1dfaad-7310-a596-34dd-4a6d9aa95f65@gmail.com> <20220829132953.sfv5yex2dhv76vrq@houat>
-In-Reply-To: <20220829132953.sfv5yex2dhv76vrq@houat>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 29 Aug 2022 16:14:54 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXxoEYV7v-R+o4eMJEiV_xGUgpN6sUbZ95r_qewV5QpRA@mail.gmail.com>
-Message-ID: <CAMuHMdXxoEYV7v-R+o4eMJEiV_xGUgpN6sUbZ95r_qewV5QpRA@mail.gmail.com>
-Subject: Re: [PATCH v1 04/35] drm/modes: Introduce 480i and 576i modes
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Mateusz Kwiatkowski <kfyatek@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        linux-sunxi@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Dom Cobley <dom@raspberrypi.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [RFC v1 1/2] HID: logitech-hidpp: Fix "Sw. Id." for HID++ 2.0
+ commands
+Content-Language: en-US
+To:     Bastien Nocera <hadess@hadess.net>, linux-input@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        =?UTF-8?Q?Filipe_La=c3=adns?= <lains@riseup.net>,
+        Nestor Lopez Casado <nlopezcasad@logitech.com>
+References: <20220829134852.312548-1-hadess@hadess.net>
+From:   "Peter F. Patel-Schneider" <pfpschneider@gmail.com>
+In-Reply-To: <20220829134852.312548-1-hadess@hadess.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maxime,
 
-On Mon, Aug 29, 2022 at 3:30 PM Maxime Ripard <maxime@cerno.tech> wrote:
-> On Wed, Aug 24, 2022 at 06:42:18PM +0200, Mateusz Kwiatkowski wrote:
-> > - Speaking of closed captioning... a lot of different stuff were put in the
-> >   blanking interval over the years. Like teletext in Europe. There are projects
-> >   like VBIT2 <https://github.com/peterkvt80/vbit2> which intentionally
-> >   reconfigure the Raspberry Pi composite output to include the blanking interval
-> >   in the framebuffer so that teletext can be output by drawing on the edge of
-> >   the "screen" (from the computer point of view).
+On 8/29/22 09:48, Bastien Nocera wrote:
+> Always set a non-zero "Sw. Id." in the lower nibble of the Function/ASE
+> and Software Identifier byte in HID++ 2.0 commands.
 >
-> I'm not sure how we would support this in KMS to be honest. Asking for a
-> wider mode and the userspace putting whatever it wants in the margins
-> seems like a good choice.
+> As per the "Protocol HID++2.0 essential features" section in
+> https://lekensteyn.nl/files/logitech/logitech_hidpp_2.0_specification_draft_2012-06-04.pdf
+> "
+> Software identifier (4 bits, unsigned)
+>
+> A number uniquely defining the software that sends a request. The
+> firmware must copy the software identifier in the response but does
+> not use it in any other ways.
+>
+> 0 Do not use (allows to distinguish a notification from a response).
+> "
+>
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=215699
+> Signed-off-by: Bastien Nocera <hadess@hadess.net>
+> ---
+>   drivers/hid/hid-logitech-hidpp.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/hid/hid-logitech-hidpp.c b/drivers/hid/hid-logitech-hidpp.c
+> index 86e7a38d8a9a..02f8c99672c7 100644
+> --- a/drivers/hid/hid-logitech-hidpp.c
+> +++ b/drivers/hid/hid-logitech-hidpp.c
+> @@ -41,6 +41,9 @@ module_param(disable_tap_to_click, bool, 0644);
+>   MODULE_PARM_DESC(disable_tap_to_click,
+>   	"Disable Tap-To-Click mode reporting for touchpads (only on the K400 currently).");
+>   
+> +/* Define a non-zero software ID to identify our own requests */
+> +#define LINUX_KERNEL_SW_ID			0x06
+> +
+>   #define REPORT_ID_HIDPP_SHORT			0x10
+>   #define REPORT_ID_HIDPP_LONG			0x11
+>   #define REPORT_ID_HIDPP_VERY_LONG		0x12
+> @@ -343,7 +346,7 @@ static int hidpp_send_fap_command_sync(struct hidpp_device *hidpp,
+>   	else
+>   		message->report_id = REPORT_ID_HIDPP_LONG;
+>   	message->fap.feature_index = feat_index;
+> -	message->fap.funcindex_clientid = funcindex_clientid;
+> +	message->fap.funcindex_clientid = funcindex_clientid | LINUX_KERNEL_SW_ID;
+>   	memcpy(&message->fap.params, params, param_count);
+>   
+>   	ret = hidpp_send_message_sync(hidpp, message, response);
 
-s/wider/higher/
 
-Teletext is transmitted in the "visible" parts of (horizontal) lines, but during
-the vertical blank.
 
-Gr{oetje,eeting}s,
+Looks good to me.  It might be better to use ID 0x01 to signifiy the "first" 
+software but that is a minor quibble.
 
-                        Geert
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+peter
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
