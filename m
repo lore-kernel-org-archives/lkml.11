@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37B55ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 498E4C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:49:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231589AbiH2Ls6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40770 "EHLO
+        id S233043AbiH2LtO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:49:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230470AbiH2Lse (ORCPT
+        with ESMTP id S233145AbiH2Lsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:48:34 -0400
+        Mon, 29 Aug 2022 07:48:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B49889917;
-        Mon, 29 Aug 2022 04:32:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F5D7B7B4;
+        Mon, 29 Aug 2022 04:32:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB09FB80FAF;
-        Mon, 29 Aug 2022 11:17:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 037ABC433D6;
-        Mon, 29 Aug 2022 11:17:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E68EB80F9E;
+        Mon, 29 Aug 2022 11:16:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A004BC433D6;
+        Mon, 29 Aug 2022 11:16:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771878;
-        bh=sqwZwaMa4ltO+ZnF2OW0LOrSQsC+7lCx8oJFCuGBDEU=;
+        s=korg; t=1661771799;
+        bh=1nf+LBF2sKGwkTpTN8P40gOXyki1/W9fa4kqIVgEXNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ap5TsoJVg8esKzgaj8QhfERta/RmrVncpaM/J5g9OQr1bQ0BWr6J2P0SPthP++BfY
-         11rZSmxNsZYp4IZcI/NxsdIH9f02/pDv6DjDjz2vTrXUaaIWWnbQMQH8J+0dUHBrjY
-         FLYHgy74qgqPnhWX4FcI12Wg7ZhE7Fu9fODWjmoY=
+        b=Duvo/fRt7/5+4bXaF+mtIyfjhq6maTISK9WiK6wfGnNUyBj87OngR3N60yi9DyXvG
+         BVJc45lvVeOI7PBsxYZ5lACxKUYkuQ8B192+C+kguFC5EJlQf/R/puZ4ZWLnySWWwW
+         ipiKNPzipSAG1pEea/6rZr5FYQm+HrtI8lNyUMqw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Subject: [PATCH 5.19 128/158] xen/privcmd: fix error exit of privcmd_ioctl_dm_op()
-Date:   Mon, 29 Aug 2022 12:59:38 +0200
-Message-Id: <20220829105814.449509146@linuxfoundation.org>
+        Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>,
+        watnuss@gmx.de, Michael Roth <michael.roth@amd.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.19 101/158] x86/boot: Dont propagate uninitialized boot_params->cc_blob_address
+Date:   Mon, 29 Aug 2022 12:59:11 +0200
+Message-Id: <20220829105813.324012491@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -51,95 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Michael Roth <michael.roth@amd.com>
 
-commit c5deb27895e017a0267de0a20d140ad5fcc55a54 upstream.
+commit 4b1c742407571eff58b6de9881889f7ca7c4b4dc upstream.
 
-The error exit of privcmd_ioctl_dm_op() is calling unlock_pages()
-potentially with pages being NULL, leading to a NULL dereference.
+In some cases, bootloaders will leave boot_params->cc_blob_address
+uninitialized rather than zeroing it out. This field is only meant to be
+set by the boot/compressed kernel in order to pass information to the
+uncompressed kernel when SEV-SNP support is enabled.
 
-Additionally lock_pages() doesn't check for pin_user_pages_fast()
-having been completely successful, resulting in potentially not
-locking all pages into memory. This could result in sporadic failures
-when using the related memory in user mode.
+Therefore, there are no cases where the bootloader-provided values
+should be treated as anything other than garbage. Otherwise, the
+uncompressed kernel may attempt to access this bogus address, leading to
+a crash during early boot.
 
-Fix all of that by calling unlock_pages() always with the real number
-of pinned pages, which will be zero in case pages being NULL, and by
-checking the number of pages pinned by pin_user_pages_fast() matching
-the expected number of pages.
+Normally, sanitize_boot_params() would be used to clear out such fields
+but that happens too late: sev_enable() may have already initialized
+it to a valid value that should not be zeroed out. Instead, have
+sev_enable() zero it out unconditionally beforehand.
 
-Cc: <stable@vger.kernel.org>
-Fixes: ab520be8cd5d ("xen/privcmd: Add IOCTL_PRIVCMD_DM_OP")
-Reported-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Link: https://lore.kernel.org/r/20220825141918.3581-1-jgross@suse.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Also ensure this happens for !CONFIG_AMD_MEM_ENCRYPT as well by also
+including this handling in the sev_enable() stub function.
+
+  [ bp: Massage commit message and comments. ]
+
+Fixes: b190a043c49a ("x86/sev: Add SEV-SNP feature detection/setup")
+Reported-by: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+Reported-by: watnuss@gmx.de
+Signed-off-by: Michael Roth <michael.roth@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216387
+Link: https://lore.kernel.org/r/20220823160734.89036-1-michael.roth@amd.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/privcmd.c |   21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ arch/x86/boot/compressed/misc.h | 12 +++++++++++-
+ arch/x86/boot/compressed/sev.c  |  8 ++++++++
+ 2 files changed, 19 insertions(+), 1 deletion(-)
 
---- a/drivers/xen/privcmd.c
-+++ b/drivers/xen/privcmd.c
-@@ -581,27 +581,30 @@ static int lock_pages(
- 	struct privcmd_dm_op_buf kbufs[], unsigned int num,
- 	struct page *pages[], unsigned int nr_pages, unsigned int *pinned)
+diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
+index 4910bf230d7b..62208ec04ca4 100644
+--- a/arch/x86/boot/compressed/misc.h
++++ b/arch/x86/boot/compressed/misc.h
+@@ -132,7 +132,17 @@ void snp_set_page_private(unsigned long paddr);
+ void snp_set_page_shared(unsigned long paddr);
+ void sev_prep_identity_maps(unsigned long top_level_pgt);
+ #else
+-static inline void sev_enable(struct boot_params *bp) { }
++static inline void sev_enable(struct boot_params *bp)
++{
++	/*
++	 * bp->cc_blob_address should only be set by boot/compressed kernel.
++	 * Initialize it to 0 unconditionally (thus here in this stub too) to
++	 * ensure that uninitialized values from buggy bootloaders aren't
++	 * propagated.
++	 */
++	if (bp)
++		bp->cc_blob_address = 0;
++}
+ static inline void sev_es_shutdown_ghcb(void) { }
+ static inline bool sev_es_check_ghcb_fault(unsigned long address)
  {
--	unsigned int i;
-+	unsigned int i, off = 0;
+diff --git a/arch/x86/boot/compressed/sev.c b/arch/x86/boot/compressed/sev.c
+index 52f989f6acc2..c93930d5ccbd 100644
+--- a/arch/x86/boot/compressed/sev.c
++++ b/arch/x86/boot/compressed/sev.c
+@@ -276,6 +276,14 @@ void sev_enable(struct boot_params *bp)
+ 	struct msr m;
+ 	bool snp;
  
--	for (i = 0; i < num; i++) {
-+	for (i = 0; i < num; ) {
- 		unsigned int requested;
- 		int page_count;
- 
- 		requested = DIV_ROUND_UP(
- 			offset_in_page(kbufs[i].uptr) + kbufs[i].size,
--			PAGE_SIZE);
-+			PAGE_SIZE) - off;
- 		if (requested > nr_pages)
- 			return -ENOSPC;
- 
- 		page_count = pin_user_pages_fast(
--			(unsigned long) kbufs[i].uptr,
-+			(unsigned long)kbufs[i].uptr + off * PAGE_SIZE,
- 			requested, FOLL_WRITE, pages);
--		if (page_count < 0)
--			return page_count;
-+		if (page_count <= 0)
-+			return page_count ? : -EFAULT;
- 
- 		*pinned += page_count;
- 		nr_pages -= page_count;
- 		pages += page_count;
++	/*
++	 * bp->cc_blob_address should only be set by boot/compressed kernel.
++	 * Initialize it to 0 to ensure that uninitialized values from
++	 * buggy bootloaders aren't propagated.
++	 */
++	if (bp)
++		bp->cc_blob_address = 0;
 +
-+		off = (requested == page_count) ? 0 : off + page_count;
-+		i += !off;
- 	}
- 
- 	return 0;
-@@ -677,10 +680,8 @@ static long privcmd_ioctl_dm_op(struct f
- 	}
- 
- 	rc = lock_pages(kbufs, kdata.num, pages, nr_pages, &pinned);
--	if (rc < 0) {
--		nr_pages = pinned;
-+	if (rc < 0)
- 		goto out;
--	}
- 
- 	for (i = 0; i < kdata.num; i++) {
- 		set_xen_guest_handle(xbufs[i].h, kbufs[i].uptr);
-@@ -692,7 +693,7 @@ static long privcmd_ioctl_dm_op(struct f
- 	xen_preemptible_hcall_end();
- 
- out:
--	unlock_pages(pages, nr_pages);
-+	unlock_pages(pages, pinned);
- 	kfree(xbufs);
- 	kfree(pages);
- 	kfree(kbufs);
+ 	/*
+ 	 * Setup/preliminary detection of SNP. This will be sanity-checked
+ 	 * against CPUID/MSR values later.
+-- 
+2.37.2
+
 
 
