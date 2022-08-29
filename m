@@ -2,139 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E0FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 22:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45169ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 22:07:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229903AbiH2WHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 18:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37766 "EHLO
+        id S229957AbiH2WHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 18:07:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbiH2WGz (ORCPT
+        with ESMTP id S229992AbiH2WHU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 18:06:55 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850DD9109D;
-        Mon, 29 Aug 2022 15:06:53 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-333a4a5d495so229727837b3.10;
-        Mon, 29 Aug 2022 15:06:53 -0700 (PDT)
+        Mon, 29 Aug 2022 18:07:20 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E01D3A2ABC
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:07:18 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id l5so5436851pjy.5
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:07:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=6Abl5zZCzh0eLx1GmDcxV2L0GXAFo3L1+X9aKPxjNDA=;
-        b=YPsZlLiBWiMP2+zlnDZT4Vxzf0OGSoXdSJdNlanwZYXC8RMDqZ9wpd2t/8aU7evV+o
-         zxWCZhI6q/ie/peuMZLPfoKOA1YI3CsEFfAapphb0z7jt+3yPJDoyj52gb1Yc78Iy07R
-         Gy3wg4XMGO3X7+oFAlOwXIL1XWYtHnPI2NcncEbl3+f0QdWWLSctPs/s2FAruOkKQ8bU
-         P7yG0aGMOfaJsn6DaWcmjP30jBXCwN/Eb5UQ82zTQn2X29hOHy8kFcylDSjMdlCPArow
-         spYGzkPLckm009zSrmPINSkgs6IazycCcsIZtQU8K33/QyR49zswTCE4EkB7cQUVo76G
-         WTfw==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=k2Isl7E2TJrjz9RWvaLb1hVmrU1bdckrw7QzjwxtCok=;
+        b=kgkdmJX7EizEvIXDuh3PyH9dF4tkinwEbVoInAmpJDW2RpLs7hLMkXJ04kArFIK4uw
+         xJinRNSts20Fpeyl0cWOYrfKmZ93mkCktWz28aG7myBx5tzDJ3gL5KlNzCWRomOCtDQZ
+         RUyqDuIw0xjEQayVF6Ia5ksfmxWePWZW1oRRQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=6Abl5zZCzh0eLx1GmDcxV2L0GXAFo3L1+X9aKPxjNDA=;
-        b=RE8ChDUzEVcQyQ73WAlhmVm+aUCF0/tMqB2LpF7Ot33oraezhIagb11OQNB6lStUYD
-         uTw8GQLA+TPlqKHqoRk5M9+5ZBEAzfq4KQaSVy5vGkcIV88hDqlRS/ScawUsfkMG6DZI
-         Fws78i9GlntXiZ6hd3j+v2PdIYq+VR6xc12vyM7a5XwAkFgXSdlTaHni6sEhfMVhwnzh
-         tthxoVHdnLeaFPyGppRHOyMuQt4pMmxfNqx4hw3DPXWbVEEA9k8Cb4mu0iPCbsAAbhky
-         Os6/fZmjx8t3rNK5pGwlLUpQ51bUycockHoyUI/5ZFmE64cvzGILrziIWLkJUb7KSbcb
-         6Amg==
-X-Gm-Message-State: ACgBeo3RGV1AHqa7V5/ZYLOtyJ07G5nOxmvq61tcUC78lU6Fgkbh1W+h
-        RRNdPmFlH16Vs5wLc8h42DKMYPTKc5sNxM0IUbQ=
-X-Google-Smtp-Source: AA6agR7hbDqk2wWLeoQUy/xHKvZshH921s+9+bo31Aysii3pnqFKRfPeu3cOkHbVrGwSYjXIxTLZ0CCnxrsN8vV0Ybo=
-X-Received: by 2002:a25:403:0:b0:696:4fe0:2dcd with SMTP id
- 3-20020a250403000000b006964fe02dcdmr9853101ybe.279.1661810812665; Mon, 29 Aug
- 2022 15:06:52 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=k2Isl7E2TJrjz9RWvaLb1hVmrU1bdckrw7QzjwxtCok=;
+        b=KxCHePPrXj/PgENPpLLeUFLckL0TCXvlL+PpP6sW36pZepd1sS8CBZI7mtfiz+WC7e
+         /yP7Vx5CmKsszDW9BE0fAxzCvM7rW+ZOXNKNzN2tWtFvgRJvlpUvDvUny602g4G7Aiss
+         1P4CpLGO5SXA363HhiSTq2Dq3t3hWdZkk/8PZBZWcVpzEh9w2m6M2gqFmDX+c7IAoNSY
+         3qJzKYdFEOHdaW72ER9NOXnHv7DhrIvqexP7FBz01bxp1AgpEgBKvQdjaMfbjX/saqEN
+         48HN4f0NGCbwlrSFsXvpzAloHq4VmnfYhKEYVECHdTxo18FQAbwNSvmSXjlCIxa8zlh6
+         ODcg==
+X-Gm-Message-State: ACgBeo0PObd4tSNPhclVxoRt0mxt4vH7C+gomd5PJrJdFxybqCG5VneB
+        1algCBI9E2GzzUf0HlkXqePUnA==
+X-Google-Smtp-Source: AA6agR4KrLR6NM3om4AqBBqcBSC2Rv/4c/jLw32zl1wdhvYKXC6KOo0sBiRaKJGSYNPNPGv75DjJ2Q==
+X-Received: by 2002:a17:902:c94d:b0:16d:c10a:650e with SMTP id i13-20020a170902c94d00b0016dc10a650emr17851903pla.29.1661810838390;
+        Mon, 29 Aug 2022 15:07:18 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id md10-20020a17090b23ca00b001f24c08c3fesm7324164pjb.1.2022.08.29.15.07.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 15:07:17 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 15:07:16 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] ALSA: hda/hdmi: Replace zero-length array with
+ DECLARE_FLEX_ARRAY() helper
+Message-ID: <202208291507.FBA7EF4@keescook>
+References: <Yw01A+TvF1FWQ588@work>
 MIME-Version: 1.0
-References: <20220801214718.16943-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220801214718.16943-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Mon, 29 Aug 2022 23:06:26 +0100
-Message-ID: <CA+V-a8vQ5De-QKNqGtOFuLduiFf6o8reNk_6SoHLvWaXgjoFcg@mail.gmail.com>
-Subject: Re: [PATCH 0/4] Add driver for CSI2 and CRU modules found on Renesas
- RZ/G2L SoC
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Jacopo Mondi <jacopo@jmondi.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-media <linux-media@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yw01A+TvF1FWQ588@work>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 10:47 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
->
-> Hi All,
->
-> This patch series aims to add driver support to CRU module found
-> on Renesas RZ/G2L SoC.
->
-> The Camera Data Receiving Unit (CRU) consists of a MIPI CSI-2
-> block and an Image Processing block. The Image Processing block
-> can receive video data received from the external Digital Parallel
-> Interface or MIPI CSI-2 block, and perform appropriate image
-> processing for each.
->
-> More details:
-> * https://renesas.info/wiki/File:CRU.png
-> * https://www.renesas.com/document/mah/rzg2l-group-rzg2lc-group-users-manual-hardware-0?language=en&r=1467981
->
-> Currently the driver has been tested using yavta and Gstreamer
-> on RZ/G2L SMARC EVK using the ov5645 sensor on CSI2 interface
-> only.
->
-> RFC v2: https://patchwork.kernel.org/project/linux-renesas-soc/cover/20220121010543.31385-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
->
-> RFC v1: https://patchwork.kernel.org/project/linux-renesas-soc/cover/20211207012351.15754-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
->
-> Cheers,
-> Prabhakar
->
-> Lad Prabhakar (4):
->   media: dt-bindings: media: Document RZ/G2L CSI-2 block
->   media: dt-bindings: media: Document RZ/G2L CRU
->   media: platform: Add Renesas RZ/G2L MIPI CSI-2 receiver driver
->   media: platform: Add Renesas RZ/G2L CRU driver
->
->  .../bindings/media/renesas,rzg2l-cru.yaml     | 142 ++++
->  .../bindings/media/renesas,rzg2l-csi2.yaml    | 149 ++++
->  drivers/media/platform/renesas/Kconfig        |   1 +
->  drivers/media/platform/renesas/Makefile       |   1 +
->  .../media/platform/renesas/rzg2l-cru/Kconfig  |  34 +
->  .../media/platform/renesas/rzg2l-cru/Makefile |   6 +
->  .../platform/renesas/rzg2l-cru/rzg2l-core.c   | 371 +++++++++
->  .../platform/renesas/rzg2l-cru/rzg2l-cru.h    | 144 ++++
->  .../platform/renesas/rzg2l-cru/rzg2l-csi2.c   | 702 +++++++++++++++++
->  .../platform/renesas/rzg2l-cru/rzg2l-csi2.h   |  49 ++
->  .../platform/renesas/rzg2l-cru/rzg2l-dma.c    | 728 ++++++++++++++++++
->  .../platform/renesas/rzg2l-cru/rzg2l-v4l2.c   | 354 +++++++++
->  12 files changed, 2681 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/renesas,rzg2l-cru.yaml
->  create mode 100644 Documentation/devicetree/bindings/media/renesas,rzg2l-csi2.yaml
->  create mode 100644 drivers/media/platform/renesas/rzg2l-cru/Kconfig
->  create mode 100644 drivers/media/platform/renesas/rzg2l-cru/Makefile
->  create mode 100644 drivers/media/platform/renesas/rzg2l-cru/rzg2l-core.c
->  create mode 100644 drivers/media/platform/renesas/rzg2l-cru/rzg2l-cru.h
->  create mode 100644 drivers/media/platform/renesas/rzg2l-cru/rzg2l-csi2.c
->  create mode 100644 drivers/media/platform/renesas/rzg2l-cru/rzg2l-csi2.h
->  create mode 100644 drivers/media/platform/renesas/rzg2l-cru/rzg2l-dma.c
->  create mode 100644 drivers/media/platform/renesas/rzg2l-cru/rzg2l-v4l2.c
->
-Gentle ping, request to review the driver code.
+On Mon, Aug 29, 2022 at 04:52:03PM -0500, Gustavo A. R. Silva wrote:
+> Zero-length arrays are deprecated and we are moving towards adopting
+> C99 flexible-array members, instead. So, replace zero-length array
+> declaration in union audio_infoframe with the new DECLARE_FLEX_ARRAY()
+> helper macro.
+> 
+> This helper allows for a flexible-array member in a union.
+> 
+> Link: https://github.com/KSPP/linux/issues/193
+> Link: https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Cheers,
-Prabhakar
+Reviewed-by: Kees Cook <keescook@chromium.org>
+
+-- 
+Kees Cook
