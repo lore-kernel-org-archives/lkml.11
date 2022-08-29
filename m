@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B606ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B8BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231588AbiH2LZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
+        id S231663AbiH2LZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231989AbiH2LXu (ORCPT
+        with ESMTP id S232018AbiH2LXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:23:50 -0400
+        Mon, 29 Aug 2022 07:23:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE811260D;
-        Mon, 29 Aug 2022 04:15:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9972C67E;
+        Mon, 29 Aug 2022 04:15:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5642B80F03;
-        Mon, 29 Aug 2022 11:04:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4AAC433C1;
-        Mon, 29 Aug 2022 11:04:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76389B80F91;
+        Mon, 29 Aug 2022 11:07:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3B0CC433D6;
+        Mon, 29 Aug 2022 11:07:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771081;
-        bh=/2TgZp9/QnELkEnYvXdcofmDRuWGi0Sg490D9xcwBWI=;
+        s=korg; t=1661771261;
+        bh=dYzrEy0JL2Yge+1xE4zJCRSulIl0IZUKNJKzOgvPSrc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AdYMmUww0Kg/LyiS6AslzoMbp2EpywNReTzrZyK3qPcQKGkpBrY/rVSfszJKjlMjI
-         5wAcLsFGzUjrcNgOtrnh3u6BkcHf7lLIbIV9fAqkFEJ2/YDRRoui2+pSx0lbPDov4S
-         SQaWKt2oa0ZyQ8T8+w+jz0tn8gB9Tmc19M1BZtu8=
+        b=YabyQDofyd1d7TH+BGAm3dIjIYtwKJFtA0wwGM80ZOA+1qFvpa5biWPOCcrXYREpD
+         IUA9NOqXVdUK+nzn+kjpcMdpyb/z8IpG9EsAiQC0u0HgiCGrhwlrQWc6mNbY0qFxDw
+         pWiJQiRYKxrWDuFfIuCYKLHSquXb4qGJmL7Xnhe8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        stable@vger.kernel.org, Gwangun Jung <exsociety@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 18/86] SUNRPC: RPC level errors should set task->tk_rpc_status
-Date:   Mon, 29 Aug 2022 12:58:44 +0200
-Message-Id: <20220829105757.266541903@linuxfoundation.org>
+Subject: [PATCH 5.15 067/136] netfilter: nf_tables: disallow binding to already bound chain
+Date:   Mon, 29 Aug 2022 12:58:54 +0200
+Message-Id: <20220829105807.382365862@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trond Myklebust <trond.myklebust@hammerspace.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit ed06fce0b034b2e25bd93430f5c4cbb28036cc1a ]
+[ Upstream commit e02f0d3970404bfea385b6edb86f2d936db0ea2b ]
 
-Fix up a case in call_encode() where we're failing to set
-task->tk_rpc_status when an RPC level error occurred.
+Update nft_data_init() to report EINVAL if chain is already bound.
 
-Fixes: 9c5948c24869 ("SUNRPC: task should be exit if encode return EKEYEXPIRED more times")
-Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Fixes: d0e2c7de92c7 ("netfilter: nf_tables: add NFT_CHAIN_BINDING")
+Reported-by: Gwangun Jung <exsociety@gmail.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/clnt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_tables_api.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
-index c5af31312e0cf..78c6648af7827 100644
---- a/net/sunrpc/clnt.c
-+++ b/net/sunrpc/clnt.c
-@@ -1867,7 +1867,7 @@ call_encode(struct rpc_task *task)
- 			break;
- 		case -EKEYEXPIRED:
- 			if (!task->tk_cred_retry) {
--				rpc_exit(task, task->tk_status);
-+				rpc_call_rpcerror(task, task->tk_status);
- 			} else {
- 				task->tk_action = call_refresh;
- 				task->tk_cred_retry--;
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 8bc4460b627ae..d8ca55d6be409 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -9505,6 +9505,8 @@ static int nft_verdict_init(const struct nft_ctx *ctx, struct nft_data *data,
+ 			return PTR_ERR(chain);
+ 		if (nft_is_base_chain(chain))
+ 			return -EOPNOTSUPP;
++		if (nft_chain_is_bound(chain))
++			return -EINVAL;
+ 		if (desc->flags & NFT_DATA_DESC_SETELEM &&
+ 		    chain->flags & NFT_CHAIN_BINDING)
+ 			return -EINVAL;
 -- 
 2.35.1
 
