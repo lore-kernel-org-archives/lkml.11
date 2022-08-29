@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 491D9ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:27:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C116ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232170AbiH2L07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34068 "EHLO
+        id S232000AbiH2L1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232265AbiH2LYi (ORCPT
+        with ESMTP id S231646AbiH2LXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:24:38 -0400
+        Mon, 29 Aug 2022 07:23:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEA2760E4;
-        Mon, 29 Aug 2022 04:15:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8637B1EA;
+        Mon, 29 Aug 2022 04:14:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65475B80FA8;
-        Mon, 29 Aug 2022 11:15:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1010C433C1;
-        Mon, 29 Aug 2022 11:15:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 544BDB80EB8;
+        Mon, 29 Aug 2022 11:14:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A05FDC433C1;
+        Mon, 29 Aug 2022 11:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771707;
-        bh=FufMUVUaQh+PDh29tlw9bNgetLwgT2UPVsGlg+Vo9Jk=;
+        s=korg; t=1661771680;
+        bh=8FkDwLZrpoSuvjoJww+KkBs/L9j41Rsp290Zc/VDYCk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EvIB9YLIzRbN+blTGnOVN4y+73RoKREYjubQ2c1k2x9Jg8vbuPAUHgQK4S4KP5UO/
-         +MHrrDqZRDFNXXE516VhZAYbCQHx/V4NEWTOJE8EPBYjx4byfopT432dUsQpJXMgMP
-         B7HRsRdc4qoE3iZOUL1zlp088MNbJl4P4hUgKyyw=
+        b=l84mFPBUDFZPYe7laJG7uzsZyOiAcGWZhUzT6E6AeexTwGaqLIoHj/5EmTRRFGy0e
+         a0k8HDw01I8J4xfDicfE28tUeLCKAINSF0Y/NV2H4B1YNXGfk5RXeKUjQDcEX7Oocm
+         8ZXEzVrGxQpYIbpF7JMR6FqeWl1vLWKzYnKTQfTc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 069/158] ratelimit: Fix data-races in ___ratelimit().
-Date:   Mon, 29 Aug 2022 12:58:39 +0200
-Message-Id: <20220829105811.888810970@linuxfoundation.org>
+Subject: [PATCH 5.19 061/158] netfilter: nft_tunnel: restrict it to netdev family
+Date:   Mon, 29 Aug 2022 12:58:31 +0200
+Message-Id: <20220829105811.267293432@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,62 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 6bae8ceb90ba76cdba39496db936164fa672b9be ]
+[ Upstream commit 01e4092d53bc4fe122a6e4b6d664adbd57528ca3 ]
 
-While reading rs->interval and rs->burst, they can be changed
-concurrently via sysctl (e.g. net_ratelimit_state).  Thus, we
-need to add READ_ONCE() to their readers.
+Only allow to use this expression from NFPROTO_NETDEV family.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: af308b94a2a4 ("netfilter: nf_tables: add tunnel support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/ratelimit.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ net/netfilter/nft_tunnel.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/lib/ratelimit.c b/lib/ratelimit.c
-index e01a93f46f833..ce945c17980b9 100644
---- a/lib/ratelimit.c
-+++ b/lib/ratelimit.c
-@@ -26,10 +26,16 @@
-  */
- int ___ratelimit(struct ratelimit_state *rs, const char *func)
- {
-+	/* Paired with WRITE_ONCE() in .proc_handler().
-+	 * Changing two values seperately could be inconsistent
-+	 * and some message could be lost.  (See: net_ratelimit_state).
-+	 */
-+	int interval = READ_ONCE(rs->interval);
-+	int burst = READ_ONCE(rs->burst);
- 	unsigned long flags;
- 	int ret;
+diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
+index d0f9b1d51b0e9..96b03e0bf74ff 100644
+--- a/net/netfilter/nft_tunnel.c
++++ b/net/netfilter/nft_tunnel.c
+@@ -161,6 +161,7 @@ static const struct nft_expr_ops nft_tunnel_get_ops = {
  
--	if (!rs->interval)
-+	if (!interval)
- 		return 1;
- 
- 	/*
-@@ -44,7 +50,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
- 	if (!rs->begin)
- 		rs->begin = jiffies;
- 
--	if (time_is_before_jiffies(rs->begin + rs->interval)) {
-+	if (time_is_before_jiffies(rs->begin + interval)) {
- 		if (rs->missed) {
- 			if (!(rs->flags & RATELIMIT_MSG_ON_RELEASE)) {
- 				printk_deferred(KERN_WARNING
-@@ -56,7 +62,7 @@ int ___ratelimit(struct ratelimit_state *rs, const char *func)
- 		rs->begin   = jiffies;
- 		rs->printed = 0;
- 	}
--	if (rs->burst && rs->burst > rs->printed) {
-+	if (burst && burst > rs->printed) {
- 		rs->printed++;
- 		ret = 1;
- 	} else {
+ static struct nft_expr_type nft_tunnel_type __read_mostly = {
+ 	.name		= "tunnel",
++	.family		= NFPROTO_NETDEV,
+ 	.ops		= &nft_tunnel_get_ops,
+ 	.policy		= nft_tunnel_policy,
+ 	.maxattr	= NFTA_TUNNEL_MAX,
 -- 
 2.35.1
 
