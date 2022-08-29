@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0283ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4A8ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229735AbiH2LDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        id S230159AbiH2LD0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiH2LCB (ORCPT
+        with ESMTP id S229687AbiH2LCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:02:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB4BF3AB38;
-        Mon, 29 Aug 2022 04:02:00 -0700 (PDT)
+        Mon, 29 Aug 2022 07:02:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB314D80B;
+        Mon, 29 Aug 2022 04:02:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6995C61132;
-        Mon, 29 Aug 2022 11:02:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E0FC433C1;
-        Mon, 29 Aug 2022 11:01:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0AD74B80EF4;
+        Mon, 29 Aug 2022 11:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CEC2C433D7;
+        Mon, 29 Aug 2022 11:02:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770919;
-        bh=JFszvvfNIEW/xserBuvtdDUlhOD02mgyujNkLisWBDw=;
+        s=korg; t=1661770931;
+        bh=JYpfQQ30zXo/7zlfcEFyBdEtk3ZB2sFqVIVSXvRZhp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RsNj85ylZOjGnwfPnJ8yDFwKdu5qoLcqImVJkuvPSwfRXc3hAfqF79e0CxyDfFBwX
-         L81XQAtL/SvOXH9Vte6jiMSbNogUSxzSo1+eO1j8oVb3FXlrpr4k28R6qxt9BqCYBr
-         8Gp5VJzVy7OnMFYd6UhPlAeNeJLO1MVGNj+Yqm7A=
+        b=ixK7QJ2iNBgQ3ztpJTX1YSAuu8sZ6hcbsYEd91wVhewhsxGnZvEIi4+7mC1CoMXgB
+         J7tCvD8a/7qbtL16zk2naYoIUNlwUUqbr5BM+2K6gLd7Iv7i5g8OghFkafKTi37btG
+         dYs4SFVuA2vt8t91oTi3XkwyGLfiqG6qnywXjH4M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 022/136] btrfs: pass the dentry to btrfs_log_new_name() instead of the inode
-Date:   Mon, 29 Aug 2022 12:58:09 +0200
-Message-Id: <20220829105805.495470085@linuxfoundation.org>
+Subject: [PATCH 5.15 026/136] xfrm: fix refcount leak in __xfrm_policy_check()
+Date:   Mon, 29 Aug 2022 12:58:13 +0200
+Message-Id: <20220829105805.645385206@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -49,114 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit d5f5bd546552a94eefd68c42f40f778c40a89d2c ]
+[ Upstream commit 9c9cb23e00ddf45679b21b4dacc11d1ae7961ebe ]
 
-In the next patch in the series, there will be the need to access the old
-name, and its length, of an inode when logging the inode during a rename.
-So instead of passing the inode to btrfs_log_new_name() pass the dentry,
-because from the dentry we can get the inode, the name and its length.
+The issue happens on an error path in __xfrm_policy_check(). When the
+fetching process of the object `pols[1]` fails, the function simply
+returns 0, forgetting to decrement the reference count of `pols[0]`,
+which is incremented earlier by either xfrm_sk_policy_lookup() or
+xfrm_policy_lookup(). This may result in memory leaks.
 
-This will avoid passing 3 new parameters to btrfs_log_new_name() in the
-next patch - the name, its length and an index number. This way we end
-up passing only 1 new parameter, the index number.
+Fix it by decreasing the reference count of `pols[0]` in that path.
 
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 134b0fc544ba ("IPsec: propagate security module errors up from flow_cache_lookup")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/inode.c    |  8 ++++----
- fs/btrfs/tree-log.c | 19 +++++++++++++++----
- fs/btrfs/tree-log.h |  2 +-
- 3 files changed, 20 insertions(+), 9 deletions(-)
+ net/xfrm/xfrm_policy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
-index 26a4acb856a38..428a56f248bba 100644
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -6952,7 +6952,7 @@ static int btrfs_link(struct dentry *old_dentry, struct inode *dir,
- 				goto fail;
- 		}
- 		d_instantiate(dentry, inode);
--		btrfs_log_new_name(trans, BTRFS_I(inode), NULL, parent);
-+		btrfs_log_new_name(trans, old_dentry, NULL, parent);
- 	}
- 
- fail:
-@@ -9621,13 +9621,13 @@ static int btrfs_rename_exchange(struct inode *old_dir,
- 		BTRFS_I(new_inode)->dir_index = new_idx;
- 
- 	if (root_log_pinned) {
--		btrfs_log_new_name(trans, BTRFS_I(old_inode), BTRFS_I(old_dir),
-+		btrfs_log_new_name(trans, old_dentry, BTRFS_I(old_dir),
- 				   new_dentry->d_parent);
- 		btrfs_end_log_trans(root);
- 		root_log_pinned = false;
- 	}
- 	if (dest_log_pinned) {
--		btrfs_log_new_name(trans, BTRFS_I(new_inode), BTRFS_I(new_dir),
-+		btrfs_log_new_name(trans, new_dentry, BTRFS_I(new_dir),
- 				   old_dentry->d_parent);
- 		btrfs_end_log_trans(dest);
- 		dest_log_pinned = false;
-@@ -9908,7 +9908,7 @@ static int btrfs_rename(struct user_namespace *mnt_userns,
- 		BTRFS_I(old_inode)->dir_index = index;
- 
- 	if (log_pinned) {
--		btrfs_log_new_name(trans, BTRFS_I(old_inode), BTRFS_I(old_dir),
-+		btrfs_log_new_name(trans, old_dentry, BTRFS_I(old_dir),
- 				   new_dentry->d_parent);
- 		btrfs_end_log_trans(root);
- 		log_pinned = false;
-diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
-index e9e1aae89030a..1d7e9812f55e1 100644
---- a/fs/btrfs/tree-log.c
-+++ b/fs/btrfs/tree-log.c
-@@ -6628,14 +6628,25 @@ void btrfs_record_snapshot_destroy(struct btrfs_trans_handle *trans,
- 	mutex_unlock(&dir->log_mutex);
- }
- 
--/*
-- * Call this after adding a new name for a file and it will properly
-- * update the log to reflect the new name.
-+/**
-+ * Update the log after adding a new name for an inode.
-+ *
-+ * @trans:              Transaction handle.
-+ * @old_dentry:         The dentry associated with the old name and the old
-+ *                      parent directory.
-+ * @old_dir:            The inode of the previous parent directory for the case
-+ *                      of a rename. For a link operation, it must be NULL.
-+ * @parent:             The dentry associated with the directory under which the
-+ *                      new name is located.
-+ *
-+ * Call this after adding a new name for an inode, as a result of a link or
-+ * rename operation, and it will properly update the log to reflect the new name.
-  */
- void btrfs_log_new_name(struct btrfs_trans_handle *trans,
--			struct btrfs_inode *inode, struct btrfs_inode *old_dir,
-+			struct dentry *old_dentry, struct btrfs_inode *old_dir,
- 			struct dentry *parent)
- {
-+	struct btrfs_inode *inode = BTRFS_I(d_inode(old_dentry));
- 	struct btrfs_log_ctx ctx;
- 
- 	/*
-diff --git a/fs/btrfs/tree-log.h b/fs/btrfs/tree-log.h
-index 731bd9c029f55..7ffcac8a89905 100644
---- a/fs/btrfs/tree-log.h
-+++ b/fs/btrfs/tree-log.h
-@@ -84,7 +84,7 @@ void btrfs_record_unlink_dir(struct btrfs_trans_handle *trans,
- void btrfs_record_snapshot_destroy(struct btrfs_trans_handle *trans,
- 				   struct btrfs_inode *dir);
- void btrfs_log_new_name(struct btrfs_trans_handle *trans,
--			struct btrfs_inode *inode, struct btrfs_inode *old_dir,
-+			struct dentry *old_dentry, struct btrfs_inode *old_dir,
- 			struct dentry *parent);
- 
- #endif
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index fb198f9490a0f..036d7de164914 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3600,6 +3600,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
+ 		if (pols[1]) {
+ 			if (IS_ERR(pols[1])) {
+ 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLERROR);
++				xfrm_pol_put(pols[0]);
+ 				return 0;
+ 			}
+ 			pols[1]->curlft.use_time = ktime_get_real_seconds();
 -- 
 2.35.1
 
