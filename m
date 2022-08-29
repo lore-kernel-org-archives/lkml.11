@@ -2,85 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD95ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18398ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:02:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230087AbiH2LCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42202 "EHLO
+        id S229593AbiH2LCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:02:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbiH2LBv (ORCPT
+        with ESMTP id S230033AbiH2LBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:01:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396954DF21;
-        Mon, 29 Aug 2022 04:01:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA226611AE;
-        Mon, 29 Aug 2022 11:01:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9ADFC433C1;
-        Mon, 29 Aug 2022 11:01:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770892;
-        bh=pCL62aRY0kn9cQuGBJr9fRHrDK8715xVex+Jsc90Ze4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wvLYOml2bL+sceJsJYpILNbTHpG4VH7bWKAjrK3KTauJXBQ1pWWIyOoZnzET2ahqw
-         LI0msR+SMfzuRG3aauqbhY/8vTu9pVFbEY5ohYK55WMyO/BGSHtt7EA9Swe2NaWoQe
-         1NH1BoXi80m7/amy4XcMj+AsEgISWavjt8rYS1Xo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Werner Sembach <wse@tuxedocomputers.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 014/136] Input: i8042 - move __initconst to fix code styling warning
-Date:   Mon, 29 Aug 2022 12:58:01 +0200
-Message-Id: <20220829105805.223340210@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
-User-Agent: quilt/0.67
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87CE1D0C1;
+        Mon, 29 Aug 2022 04:01:31 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 24F0C1884980;
+        Mon, 29 Aug 2022 11:01:29 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 0C5DA25032B7;
+        Mon, 29 Aug 2022 11:01:29 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id E0ADE9EC0003; Mon, 29 Aug 2022 11:01:28 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Date:   Mon, 29 Aug 2022 13:01:28 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
+ extend locked port feature
+In-Reply-To: <Ywo16vHMqxxszWzX@shredder>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
+ <20220826114538.705433-2-netdev@kapio-technology.com>
+ <Ywo16vHMqxxszWzX@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <63c78aabe2683b9639717c1a74dbdacc@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Werner Sembach <wse@tuxedocomputers.com>
+On 2022-08-27 17:19, Ido Schimmel wrote:
+> On Fri, Aug 26, 2022 at 01:45:33PM +0200, Hans Schultz wrote:
 
-[ Upstream commit 95a9916c909f0b1d95e24b4232b4bc38ff755415 ]
+How about this?
 
-Move __intconst from before i8042_dmi_laptop_table[] to after it for
-consistent code styling.
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 1064a5b2d478..82bb50851716 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -103,8 +103,19 @@ int br_handle_frame_finish(struct net *net, struct 
+sock *sk, struct sk_buff *skb
+                         br_fdb_find_rcu(br, eth_hdr(skb)->h_source, 
+vid);
 
-Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220629112725.12922-2-wse@tuxedocomputers.com
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/input/serio/i8042-x86ia64io.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+                 if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+-                   test_bit(BR_FDB_LOCAL, &fdb_src->flags))
++                   test_bit(BR_FDB_LOCAL, &fdb_src->flags) ||
++                   test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags)) {
++                       if (!fdb_src || ((READ_ONCE(fdb_src->dst) != p) 
+&&
++                                        
+(!unlikely(test_bit(BR_FDB_LOCAL, &fdb_src->flags))))) {
++                               unsigned long flags = 0;
++
++                               if (p->flags & BR_PORT_MAB) {
++                                       __set_bit(BR_FDB_ENTRY_LOCKED, 
+&flags);
++                                       br_fdb_update(br, p, 
+eth_hdr(skb)->h_source, vid, flags);
++                               }
++                       }
+                         goto drop;
++               }
+         }
 
-diff --git a/drivers/input/serio/i8042-x86ia64io.h b/drivers/input/serio/i8042-x86ia64io.h
-index 148a7c5fd0e22..91c6f24b48375 100644
---- a/drivers/input/serio/i8042-x86ia64io.h
-+++ b/drivers/input/serio/i8042-x86ia64io.h
-@@ -791,7 +791,7 @@ static const struct dmi_system_id __initconst i8042_dmi_nopnp_table[] = {
- 	{ }
- };
- 
--static const struct dmi_system_id __initconst i8042_dmi_laptop_table[] = {
-+static const struct dmi_system_id i8042_dmi_laptop_table[] __initconst = {
- 	{
- 		.matches = {
- 			DMI_MATCH(DMI_CHASSIS_TYPE, "8"), /* Portable */
--- 
-2.35.1
+         nbp_switchdev_frame_mark(p, skb);
 
-
-
+It will allow roaming to a MAB enabled port (no roaming to a simply 
+locked port should be allowed of course), and it will not change a local 
+entry and not rely on 'learning on' on the locked port of course.
+Roaming to an unlocked port will also be allowed, and the locked flag 
+will be removed in this case according to code in br_fdb_update().
