@@ -2,207 +2,246 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34562ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:54:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 234FEECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbiH2PyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S230070AbiH2Pzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230154AbiH2PyX (ORCPT
+        with ESMTP id S229575AbiH2Pzi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:54:23 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2090.outbound.protection.outlook.com [40.107.92.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6FB497B19;
-        Mon, 29 Aug 2022 08:54:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CWV3UH04DahhL2WIrGi35+ux2+7fq+VLCt8tljjTcbMrvc/DTDkUf4/4F0qIxQaVx1EyMbJ2RlHhn5k+vKscONgzqfdW2jd28ZAw3JKokAkUhw5xeBkZrfDgKSSOs775ulO0rlCV9YH1RMMlzsEaA8jjk4m9XECGCHdNNgff7UttFtVZi3KsQ9y6L/ci6yGGheZimLnw+89dzxz9CtUVYrfxkaObVxAgR4vKDZccAjCQxv1gy1ljB9lLEiz2+GlKylZNtFWAL3TzA4tN/NxwKMRP+vg7vvgD6aORY6vOJfPxqhB0zqbfuRkLdlYStqdZYZd9KsxHaxNEzUvCFCPLkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gPx0F3VoRRc6Wt9CRUuOEfwkYIVhfAWfXq+Yg9U5Ju0=;
- b=iNHDRidWutgE7aGNw4CmNSjpfFRm2ut6gkPgv/fhVzU1v3Lc9KUWTr2EgTMgYBRuqLTCA+LynebCfRe6PpFxXzsth33D5WW4r1R6big2vC+Ly0RMkWxjAPxl+DwVqbqzwgoXMStyRABbD4JuuSxwV0t2182TEutCo9bGzX+LrLSCum0lSM9eJ8hXbCzogdGu4wBzy3h1pWKjm8HcHNReone0ELcIiPlAbJZimwQ6BIeKh36wuy2YpwFQxpaLlZtJrMkos5Tng+YwnrjgHFr6wSNV9MjaJotT5G18FWrl47S6TfUNOiIIKC1cjSTifPUWoX2U7U0T88cX1/WESHDWdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gPx0F3VoRRc6Wt9CRUuOEfwkYIVhfAWfXq+Yg9U5Ju0=;
- b=kIzppg7SQJvlcCNHebGVUcguhz16vSjuku4y0SyUfH9GatWX3mvV4OHFM5V6SyjhrSssgEZMdcR1kYjUkEUPDXRTSAYpdav5p5g3pb4CvGG3W+RzOQQpiSPFwaMGRjUKhp5tz5I0+f+PRZWytMZ9D0bGrcsDSAWI+d7ERfWf5N8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from DM6PR13MB4431.namprd13.prod.outlook.com (2603:10b6:5:1bb::21)
- by CH2PR13MB3605.namprd13.prod.outlook.com (2603:10b6:610:2c::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Mon, 29 Aug
- 2022 15:54:15 +0000
-Received: from DM6PR13MB4431.namprd13.prod.outlook.com
- ([fe80::2944:20ba:ee80:b9c7]) by DM6PR13MB4431.namprd13.prod.outlook.com
- ([fe80::2944:20ba:ee80:b9c7%3]) with mapi id 15.20.5588.010; Mon, 29 Aug 2022
- 15:54:15 +0000
-From:   =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>
-To:     Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Joe Perches <joe@perches.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andy Whitcroft <apw@canonical.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     oss-drivers@corigine.com,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
-        Simon Horman <simon.horman@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>
-Subject: [PATCH] checkpatch: warn for non-standard fixes tag style
-Date:   Mon, 29 Aug 2022 17:53:58 +0200
-Message-Id: <20220829155358.2546732-1-niklas.soderlund@corigine.com>
-X-Mailer: git-send-email 2.37.2
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AM6PR04CA0063.eurprd04.prod.outlook.com
- (2603:10a6:20b:f0::40) To DM6PR13MB4431.namprd13.prod.outlook.com
- (2603:10b6:5:1bb::21)
+        Mon, 29 Aug 2022 11:55:38 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0672E83F14
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:55:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661788537; x=1693324537;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HFPLv6WoHq6EGa80dvFEMfVw+Tqm+g1GYQJ/bxU+Ws4=;
+  b=Nh+WRxHa+Fp9/APY1WMpJm9zsHrUD6YmzSkg/YpTGO+ts/EGhNrg9DMG
+   Z48HeSAI4dJIbeqD7urqnsqp8o3WYlDdTzd0VNn6qq0m+yasUmQtQkjz1
+   jtFWcxJtMQv4qbA0ZUiyZgR4sWefSVahPlvQ0Jx9SU8ZY5RMbM7CvYEkm
+   MP/Dmu96+OzUV7ma9QsvE+TecAnLbF2N7CcoKKFfafOg7hDtK94Ppoprd
+   h640/+NOPU42nNPeFcEMDgJ11n5bJ+hU/JV/wZQaima8vFkrDxA5IWndB
+   +D7ktFbY4bSpETSR87Jtcm6bL0Gjo4cMq3O4dAMTtfi4+ZoiQOa4Cwt3F
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="296204814"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="296204814"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 08:55:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="939621320"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmsmga005.fm.intel.com with ESMTP; 29 Aug 2022 08:55:14 -0700
+Received: from [10.252.208.168] (kliang2-mobl1.ccr.corp.intel.com [10.252.208.168])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 6CCA5580C20;
+        Mon, 29 Aug 2022 08:55:13 -0700 (PDT)
+Message-ID: <e8b5086e-735f-51ea-f413-3b2d456c0e32@linux.intel.com>
+Date:   Mon, 29 Aug 2022 11:55:12 -0400
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dc920175-50e8-438e-e23a-08da89d6b95b
-X-MS-TrafficTypeDiagnostic: CH2PR13MB3605:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QufVHZ4fxIu0SJXaERvZUeKPayJywCLGvEVIdXTHX5VEAzTbuCYPmcgkDPx8r95tMMN1ZYFlVqIoKAEZoZz1HKPupTWhkNTHoonsMmcZlhsGyQUKLcTWBaXkEhnnBXgvPTl7Nnlx6LRMYCofYaqJLbm0W2Y272K03sVaFIJrtejAhgcqEQnwEt06Obo8w570HMVj0HCvvAh2IxPkJSUhdeHxWNrSWgyy3t7mUUs03nR/0DlmHUEEJNSqKBFtJpQw+SID4Mdnd8B3Tl0UlDuknY+MayPilq0NFuoCKSVW2VEd7wbY58iQRC67Pfkhl8aWuhU4vLQXtpU23vvIW0a1+5599J/vd9htjIZWSwkQ7vs89tZkSouM/4+2BP/y25qMAiau8bLjkekB+0L6zhKf96EpToNrI/LY9UcMw6bTY/uZntYAFe6Yf2uxTdB6l5Q6O2lNTId3DEVUavwx9DHwU0RztslDaCHnZbblO6772jKKk+52g7JkoZ/q5mWjZDcMvbdWuoXtFqpADT6pjNltyO8yqrtczT1Tib60OKfE282mowyD/8g5JdjxtlZEdZ0QJRJezR+1k5WH35SIvXrO/pGEhwsKVuCCgPiCpK8qDXaAj7Vf9Apibffenhwt+JssakZYkTE+diUSwqJRcosPsa4Mh2hymF+zucDpOIw8cFUDbMDisajjD2IY7RitFCsfUsTpJLpwmUnzI6I662byowV/HavKu27unmM+WzlcianNZ+HdObXNV+QDff92xv+9w6sjagCYkKZi6or4DpyN6KzxYbP/16DmYPrYLfR5xa/CTj5QcEV4PpocDElTAiRIy2eKryQsfPHdRetaRw0mhA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR13MB4431.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39830400003)(136003)(346002)(366004)(376002)(396003)(86362001)(8676002)(110136005)(66946007)(66556008)(66476007)(54906003)(4326008)(966005)(316002)(6486002)(5660300002)(8936002)(478600001)(41300700001)(36756003)(38350700002)(6506007)(2616005)(52116002)(6512007)(2906002)(26005)(6666004)(38100700002)(107886003)(83380400001)(66574015)(186003)(1076003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UWFoVXlIalNYMXAvdlhnbVcwQnFrUTAwZVk5Y1RyVnVIaUtEeWlUc3BoZS8y?=
- =?utf-8?B?MTRlZjdJcU84MURVRmRyYjRsRENwOUxuMktMbkFleTMzcCtuNVVsdmszbFgx?=
- =?utf-8?B?QUd2MnNqS1VwMU01Z3MvNkVVTEVodUdibVpxSHlTRVNmRzZzODVrNFhhMDJU?=
- =?utf-8?B?VHZVa05BUEFxa3lBZ0duQU9uZVVVbzlNaDFkbzNCaGZHdmpKMnRzcU9IdjhQ?=
- =?utf-8?B?K1ZwbWVKVHNvTDlPNXZaeWhMem0vY3kwOFY2c1BXbSs4RFN0VmhSV1dObTV0?=
- =?utf-8?B?dTdCMFNUY0ozMU5CSmQ2d0p5YlFhck91ZytDcWNRd24zV25Zc29KLzRDYkpB?=
- =?utf-8?B?VWNvZmIyMGVxL1hSeU5iVS9jY2VZN1ducTRXa3AySGpGK2t0dmxSVGRRdjBQ?=
- =?utf-8?B?ZnVlZnpnNExMQnVjaEJVMkZXYnNudXNkbElrcVdkRWFPRmR0b2xnMW52TEFP?=
- =?utf-8?B?RVd0YXRLbXZpKy9RM2pqRXQ4UUxOalNFSWhxNG85T3ZJd1Z3MkR4TTlPTVFs?=
- =?utf-8?B?bDhjYzA1RFV4Q0VaNWJreW9YbmI0NG5pR2J6MG4vMVV5WGJ6TVRqRjc2TWll?=
- =?utf-8?B?ekUyZXhxTm9jVUR3TFJZWHVJK1VmRCtKRmN3WS80S1g2UXVWU1hOTGZqYzZD?=
- =?utf-8?B?VXdRd29Jb2hmeU4wd1pNUEwvNFZCSDBlbHoxMjBPVCtkWlFLZXV4K1FMTlZi?=
- =?utf-8?B?SEFVTVZqN1NRd3RRRFNWeWpLbnhIUVBPVCtDUkFWaU5vWFBOaWJia1J6b3Jm?=
- =?utf-8?B?T1hOZ0RJS2RtM01YQkFOWG9rNWNuRXR2YmZiVUxzSGorRnRtRmNzTmpYYlB1?=
- =?utf-8?B?cTJkaG5DZkxOcFBaSEhJSGpYUmJaRnpRdlE0VnFSdFN4eE9hR1ROQTRDV0Nk?=
- =?utf-8?B?cFMzb3M4OHFTcVEveXdVUlQ5bDJLb0JETU1yT3VZV3VESHdmREdCS0ZueXV5?=
- =?utf-8?B?ZUh2TzMyd0tCa05Bd1VZRFZjcDlxRjlPWGkrdkFWUjdiUUhaNis3ZXJuK0g3?=
- =?utf-8?B?RktrU0RBWVhnTURtMDJDcmIvZ3JYQ2RKTWIwbmlZUXlMZXlaWGhOVEtXbjU0?=
- =?utf-8?B?MEhFeFE0MHNOenkzblFLYnh0Y2hweXVMNDI0Y3VOYk1PdWcwYXB3U1UwSGxn?=
- =?utf-8?B?RjMrWk5RWTNnUmVXVGd0clRHNlVvVXhwc0UzRldTb0Uvcmt6dzRjRzFyQXpj?=
- =?utf-8?B?OEJSc3NBMDczQzFOSG1HNlQ0b1RzMUhNcDJkNTVDVkhhOERqUXZyNkZZTkJp?=
- =?utf-8?B?eUJpSkR1bk5NV2tic2VUYWZrVk1EUytHNi9IVWM2Y2xSQ25WRHIyTHcxNWdM?=
- =?utf-8?B?L2I1TDdIbWM4VHlyZXI3R3hhM0VXSVo5SE9hRU1CbGcvYmR1eEN4a0JpaWNZ?=
- =?utf-8?B?SmM0S2JMU3UvNU1zU3lkQURlSmNoZkg4RWtEUjdudkpXd08zSEFZbHBoOTR0?=
- =?utf-8?B?N2Zhck5WZ0pocDd1R1ZBWWxRSWQ2YW5FMTVLems5TkxqeXp4M29wWmhqUzBI?=
- =?utf-8?B?ZWhyZmJrM3VQMWRvVmFsd1kydVBuSHRkZkYzMFRBOVVRZTdSN2ZxTy8wUnN6?=
- =?utf-8?B?a3lmQU9GUDFiK3hDSTBKLzBnRlVMVXorR2ZMSkFCaUtuUzhhbFZwZW9OcXBS?=
- =?utf-8?B?RUxGRjIwV3pNU3B5Z1poRC83Y3h3cnJvZCt5WEV1OTNnSUZlWEptTGhlSGZs?=
- =?utf-8?B?TmRyOXZ0K3hCWVB4bTlEdVZvakFWcEd6RUFYL2FMVThmTDk4NmZXa0t4SjVY?=
- =?utf-8?B?YUZNeVVVZnhRRFBKM3ZTcXlFSmxCOG91TUpTUmt1NUtVWmMwWHdsVkRZclYw?=
- =?utf-8?B?SEVzaXc1b2pmdEZtU1ZEa0d1a2dZZ21vUGpmck9PUXhpbTVwT2dhdDNORFYx?=
- =?utf-8?B?bXZJM1JjOGlKNHArOEU4QURUd2ZlR2FrQWtQcnVqNS92Qk9tRGI0WXI5UTVS?=
- =?utf-8?B?RTFSNG9yVDFpRlQ1Y01OOTFrY3FWdzBvbHNaTHlKcncwVkxhbXVETC9lWFRn?=
- =?utf-8?B?QWxzM2k0U2JCOTAwS09mejVVZ284VWRnbnlkNDNiTEh1QmlHS2xIYVpva1hy?=
- =?utf-8?B?V1JWU3VXNmdLVGVqbkhEMWxZTUdqNDUwNnlxYUpOb2NWVVpyRTJZSnlNMHZL?=
- =?utf-8?B?VFY4RVN0T3lvVjF5MSthckVNSXYrNVl6K2VJaG9ONTBKODdyOE9oNEFjczVE?=
- =?utf-8?B?alE9PQ==?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dc920175-50e8-438e-e23a-08da89d6b95b
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR13MB4431.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 15:54:15.3253
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EotWf5x9gvek1PczoXnKjtBdSyf1GDiQYQDT2E9LMuvVEK/TfpZoQu63GFAQKzEwO2fQXOYWos+g/2aVYZy0zCjaEtLEuRH8YDYL/EOaCM0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR13MB3605
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 9/9] perf/x86/intel: Optimize short PEBS counters
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        eranian@google.com, ravi.bangoria@amd.com
+Cc:     linux-kernel@vger.kernel.org, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org
+References: <20220829100959.917169441@infradead.org>
+ <20220829101321.971473694@infradead.org>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220829101321.971473694@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a warning for fixes tags that does not fall in line with the
-standards specified by the community.
 
-Signed-off-by: Niklas Söderlund <niklas.soderlund@corigine.com>
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
-Reviewed-by: Louis Peens <louis.peens@corigine.com>
----
- Documentation/dev-tools/checkpatch.rst |  6 ++++
- scripts/checkpatch.pl                  | 41 ++++++++++++++++++++++++++
- 2 files changed, 47 insertions(+)
 
-diff --git a/Documentation/dev-tools/checkpatch.rst b/Documentation/dev-tools/checkpatch.rst
-index b52452bc2963..8164f362a2fc 100644
---- a/Documentation/dev-tools/checkpatch.rst
-+++ b/Documentation/dev-tools/checkpatch.rst
-@@ -612,6 +612,12 @@ Commit message
- 
-     See: https://www.kernel.org/doc/html/latest/process/submitting-patches.html#describe-your-changes
- 
-+  **BAD_FIXES_TAG**
-+    The fixes line does not fall in line with the standards specified by the
-+    community.
-+
-+    See: https://www.kernel.org/doc/html/latest/process/submitting-patches.html#describe-your-changes
-+
- 
- Comparison style
- ----------------
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 79e759aac543..9b8cdc582fb5 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -3140,6 +3140,47 @@ sub process {
- 			}
- 		}
- 
-+# Check Fixes: styles is correct
-+		if (!$in_header_lines && $line =~ /^fixes:/i) {
-+			my $orig_commit = "";
-+			my $id = "0123456789ab";
-+			my $title = "commit title";
-+			my $tag_case = 1;
-+			my $tag_space = 1;
-+			my $id_length = 1;
-+			my $id_case = 1;
-+			my $title_has_quotes = 0;
-+
-+			if ($line =~ /(fixes:)\s+([0-9a-f]{5,})\s+($balanced_parens)/i) {
-+				my $tag = $1;
-+				$orig_commit = $2;
-+				$title = $3;
-+
-+				$tag_case = 0 if $tag eq "Fixes:";
-+				$tag_space = 0 if ($line =~ /^fixes: [0-9a-f]{5,} ($balanced_parens)/i);
-+
-+				$id_length = 0 if ($orig_commit =~ /^[0-9a-f]{12}$/i);
-+				$id_case = 0 if ($orig_commit !~ /[A-F]/);
-+
-+				# Always strip leading/trailing parens then double quotes if existing
-+				$title = substr($title, 1, -1);
-+				if ($title =~ /^".*"$/) {
-+					$title = substr($title, 1, -1);
-+					$title_has_quotes = 1;
-+				}
-+			}
-+
-+			($id, $title) = git_commit_info($orig_commit, $id,
-+							$title);
-+
-+			if ($tag_case || $tag_space || $id_length || $id_case ||
-+			    !$title_has_quotes) {
-+				WARN("BAD_FIXES_TAG",
-+				     "Please use correct Fixes: style 'Fixes: <12 chars of sha1> (\"<title line>\")' - ie: 'Fixes: $id (\"$title\")'\n" . $herecurr);
-+
-+			}
-+		}
-+
- # Check email subject for common tools that don't need to be mentioned
- 		if ($in_header_lines &&
- 		    $line =~ /^Subject:.*\b(?:checkpatch|sparse|smatch)\b[^:]/i) {
--- 
-2.37.2
+On 2022-08-29 6:10 a.m., Peter Zijlstra wrote:
+> XXX: crazy idea; really not sure this is worth the extra complexity
+> 
+> It is possible to have the counter programmed to a value smaller than
+> the sampling period.
 
+I'm not quite sure how the above case can be triggered.
+
+For the most of the cases, the pmc_prev_left[idx] should be the same as
+the hwc->period_left.
+
+For the left < 2 or the limit_period case, I think perf usually program
+a larger value, so the pmc_prev_left[idx] > hwc->period_left.
+
+It looks like the only case, which triggers the pmc_prev_left[idx] <
+hwc->period_left, is the left > max_period. I don't think it's common
+for a user to set a period which is larger than the HW counter limit.
+Even if they set a huge period, the PEBS overhead should not be an
+issue, since it may causes days to trigger a sample.
+
+If so, it may not be a good idea to introduce such complexity to only
+handle such rare cases.
+
+Thanks,
+Kan
+
+> In that case, the code suppresses the sample,
+> recalculates the remaining events and reprograms the counter.
+> 
+> This should also work for PEBS counters (and it does); however
+> triggering a full PEBS assist and parsing the event from the DS is
+> more overhead than is required.
+> 
+> As such, detect this case and temporarily suppress PEBS. This will
+> then trigger a regular PMI for the counter which will reprogram the
+> event and re-enable PEBS once the target period is in reach.
+> 
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/x86/events/intel/core.c |   80 ++++++++++++++++++++++++++++++++++++++-----
+>  arch/x86/events/perf_event.h |    9 ++++
+>  2 files changed, 81 insertions(+), 8 deletions(-)
+> 
+> --- a/arch/x86/events/intel/core.c
+> +++ b/arch/x86/events/intel/core.c
+> @@ -2722,12 +2722,7 @@ static void intel_pmu_enable_fixed(struc
+>  
+>  	intel_set_masks(event, idx);
+>  
+> -	/*
+> -	 * Enable IRQ generation (0x8), if not PEBS,
+> -	 * and enable ring-3 counting (0x2) and ring-0 counting (0x1)
+> -	 * if requested:
+> -	 */
+> -	if (!event->attr.precise_ip)
+> +	if (hwc->config & ARCH_PERFMON_EVENTSEL_INT)
+>  		bits |= 0x8;
+>  	if (hwc->config & ARCH_PERFMON_EVENTSEL_USR)
+>  		bits |= 0x2;
+> @@ -2816,12 +2811,75 @@ int intel_pmu_save_and_restart(struct pe
+>  	return static_call(x86_pmu_set_period)(event);
+>  }
+>  
+> +static void intel_pmu_update_config(struct perf_event *event)
+> +{
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	u64 config = hwc->config;
+> +
+> +	if (hwc->idx >= INTEL_PMC_IDX_FIXED) { /* PEBS is limited to real PMCs */
+> +		u64 mask = 0xf, bits = 0;
+> +
+> +		if (config & ARCH_PERFMON_EVENTSEL_INT)
+> +			bits |= 0x8;
+> +		if (config & ARCH_PERFMON_EVENTSEL_USR)
+> +			bits |= 0x2;
+> +		if (config & ARCH_PERFMON_EVENTSEL_OS)
+> +			bits |= 0x1;
+> +
+> +		bits <<= (hwc->idx * 4);
+> +		mask <<= (hwc->idx * 4);
+> +
+> +		config = this_cpu_read(intel_fixed_ctrl);
+> +		config &= ~mask;
+> +		config |= bits;
+> +		this_cpu_write(intel_fixed_ctrl, config);
+> +	}
+> +
+> +	wrmsrl(hwc->config_base, config);
+> +}
+> +
+> +static void intel_pmu_handle_short_pebs(struct perf_event *event)
+> +{
+> +	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
+> +	struct hw_perf_event *hwc = &event->hw;
+> +
+> +	/* if the event is not enabled; intel_pmu_pebs_enable() DTRT */
+> +	if (!test_bit(hwc->idx, cpuc->active_mask))
+> +		return;
+> +
+> +	WARN_ON_ONCE(cpuc->enabled);
+> +
+> +	if (intel_pmu_is_short_pebs(event)) {
+> +
+> +		/* stripped down intel_pmu_pebs_disable() */
+> +		cpuc->pebs_enabled &= ~(1ULL << hwc->idx);
+> +		hwc->config |= ARCH_PERFMON_EVENTSEL_INT;
+> +
+> +		intel_pmu_update_config(event);
+> +
+> +	} else if (!(cpuc->pebs_enabled & (1ULL << hwc->idx))) {
+> +
+> +		/* stripped down intel_pmu_pebs_enable() */
+> +		hwc->config &= ~ARCH_PERFMON_EVENTSEL_INT;
+> +		cpuc->pebs_enabled |= (1ULL << hwc->idx);
+> +
+> +		intel_pmu_update_config(event);
+> +	}
+> +}
+> +
+>  static int intel_pmu_set_period(struct perf_event *event)
+>  {
+> +	int ret;
+> +
+>  	if (unlikely(is_topdown_count(event)))
+>  		return static_call(intel_pmu_set_topdown_event_period)(event);
+>  
+> -	return x86_perf_event_set_period(event);
+> +	ret = x86_perf_event_set_period(event);
+> +
+> +	if (event->attr.precise_ip)
+> +		intel_pmu_handle_short_pebs(event);
+> +
+> +	return ret;
+>  }
+>  
+>  static u64 intel_pmu_update(struct perf_event *event)
+> @@ -2975,6 +3033,9 @@ static int handle_pmi_common(struct pt_r
+>  		 * MSR_IA32_PEBS_ENABLE is not updated. Because the
+>  		 * cpuc->enabled has been forced to 0 in PMI.
+>  		 * Update the MSR if pebs_enabled is changed.
+> +		 *
+> +		 * Also; short counters temporarily disable PEBS, see
+> +		 * intel_pmu_set_period().
+>  		 */
+>  		if (pebs_enabled != cpuc->pebs_enabled)
+>  			wrmsrl(MSR_IA32_PEBS_ENABLE, cpuc->pebs_enabled);
+> @@ -3856,7 +3917,10 @@ static int intel_pmu_hw_config(struct pe
+>  		if ((event->attr.config & INTEL_ARCH_EVENT_MASK) == INTEL_FIXED_VLBR_EVENT)
+>  			return -EINVAL;
+>  
+> -		if (!(event->attr.freq || (event->attr.wakeup_events && !event->attr.watermark))) {
+> +		if (!(event->attr.freq ||
+> +		      (event->attr.wakeup_events && !event->attr.watermark) ||
+> +		      event->attr.sample_period > x86_pmu.max_period)) {
+> +
+>  			event->hw.flags |= PERF_X86_EVENT_AUTO_RELOAD;
+>  			if (!(event->attr.sample_type &
+>  			      ~intel_pmu_large_pebs_flags(event))) {
+> --- a/arch/x86/events/perf_event.h
+> +++ b/arch/x86/events/perf_event.h
+> @@ -1063,6 +1063,15 @@ static inline bool x86_pmu_has_lbr_calls
+>  DECLARE_PER_CPU(struct cpu_hw_events, cpu_hw_events);
+>  DECLARE_PER_CPU(u64 [X86_PMC_IDX_MAX], pmc_prev_left);
+>  
+> +static inline bool intel_pmu_is_short_pebs(struct perf_event *event)
+> +{
+> +	struct hw_perf_event *hwc = &event->hw;
+> +	s64 counter = this_cpu_read(pmc_prev_left[hwc->idx]);
+> +	s64 left = local64_read(&hwc->period_left);
+> +
+> +	return counter < left;
+> +}
+> +
+>  int x86_perf_event_set_period(struct perf_event *event);
+>  
+>  /*
+> 
+> 
