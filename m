@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 761C1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:44:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C65ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:44:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230459AbiH2Lnj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:43:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
+        id S231153AbiH2Loi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232969AbiH2LnG (ORCPT
+        with ESMTP id S229961AbiH2LnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:43:06 -0400
+        Mon, 29 Aug 2022 07:43:11 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC67585AB2;
-        Mon, 29 Aug 2022 04:27:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86427857DC;
+        Mon, 29 Aug 2022 04:27:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BF6E61231;
-        Mon, 29 Aug 2022 11:13:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97FEEC433D6;
-        Mon, 29 Aug 2022 11:13:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 388F8611C2;
+        Mon, 29 Aug 2022 11:15:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29E3CC433B5;
+        Mon, 29 Aug 2022 11:15:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771634;
-        bh=fd2B/jkW98W9XGlcOE2Qih4zdW0I/EfQnMIYTXhDY5c=;
+        s=korg; t=1661771731;
+        bh=RpKmRn+j85ozogCqWaFhx6L2PA8dH7V2AnILqV8enls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vwDlQMIQPKj3M9RizvAb2r3mcBbykrZLLYAJjF3N9aCqvKfTNIW6d3W2svmX6J4mo
-         fFsidxAYAuG0WLn20ViseEbH1x7yRlqoJy0NxdgHZg+Xbl/wIF1Mh3dDTEE3tDkMTw
-         /BGIeB2xIOq2WRvOZhwaRzTKVdwuVGHU5IPraUXo=
+        b=C/EB0nvd93eT86OPS/ZgQCAucLrv4xNsqbyKQsLX7huA2voRywQS52Yx8wZ5NHlZJ
+         IS9X1OPPbK3U0bGuZw8Vek47UMEXEW1zMQLTrjIriJfWBVdaDhhVOHahU9rdVmgQ7W
+         0Ld6iEr/FPxA7tsv9hCf14rMazkewAyK0/HYgLCI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 053/158] bnxt_en: fix NQ resource accounting during vf creation on 57500 chips
-Date:   Mon, 29 Aug 2022 12:58:23 +0200
-Message-Id: <20220829105810.954627849@linuxfoundation.org>
+Subject: [PATCH 5.19 076/158] net: Fix a data-race around netdev_budget_usecs.
+Date:   Mon, 29 Aug 2022 12:58:46 +0200
+Message-Id: <20220829105812.217130260@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -50,42 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vikas Gupta <vikas.gupta@broadcom.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 09a89cc59ad67794a11e1d3dd13c5b3172adcc51 ]
+[ Upstream commit fa45d484c52c73f79db2c23b0cdfc6c6455093ad ]
 
-There are 2 issues:
+While reading netdev_budget_usecs, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-1. We should decrement hw_resc->max_nqs instead of hw_resc->max_irqs
-   with the number of NQs assigned to the VFs.  The IRQs are fixed
-   on each function and cannot be re-assigned.  Only the NQs are being
-   assigned to the VFs.
-
-2. vf_msix is the total number of NQs to be assigned to the VFs.  So
-   we should decrement vf_msix from hw_resc->max_nqs.
-
-Fixes: b16b68918674 ("bnxt_en: Add SR-IOV support for 57500 chips.")
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 7acf8a1e8a28 ("Replace 2 jiffies with sysctl netdev_budget_usecs to enable softirq tuning")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 2 +-
+ net/core/dev.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index a1a2c7a64fd58..c9cf0569451a2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -623,7 +623,7 @@ static int bnxt_hwrm_func_vf_resc_cfg(struct bnxt *bp, int num_vfs, bool reset)
- 		hw_resc->max_stat_ctxs -= le16_to_cpu(req->min_stat_ctx) * n;
- 		hw_resc->max_vnics -= le16_to_cpu(req->min_vnics) * n;
- 		if (bp->flags & BNXT_FLAG_CHIP_P5)
--			hw_resc->max_irqs -= vf_msix * n;
-+			hw_resc->max_nqs -= vf_msix;
- 
- 		rc = pf->active_vfs;
- 	}
+diff --git a/net/core/dev.c b/net/core/dev.c
+index a330f93629314..19baeaf65a646 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6646,7 +6646,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
+ {
+ 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+ 	unsigned long time_limit = jiffies +
+-		usecs_to_jiffies(netdev_budget_usecs);
++		usecs_to_jiffies(READ_ONCE(netdev_budget_usecs));
+ 	int budget = READ_ONCE(netdev_budget);
+ 	LIST_HEAD(list);
+ 	LIST_HEAD(repoll);
 -- 
 2.35.1
 
