@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0754AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 687FBECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbiH2Lav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
+        id S231929AbiH2La4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:30:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232465AbiH2L3D (ORCPT
+        with ESMTP id S232487AbiH2L3I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:29:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF6DB79A60;
-        Mon, 29 Aug 2022 04:17:26 -0700 (PDT)
+        Mon, 29 Aug 2022 07:29:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A9BD78BD2;
+        Mon, 29 Aug 2022 04:17:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2204FB80EF9;
-        Mon, 29 Aug 2022 11:17:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8340DC433C1;
-        Mon, 29 Aug 2022 11:17:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1444A61128;
+        Mon, 29 Aug 2022 11:05:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CFD5C433D6;
+        Mon, 29 Aug 2022 11:05:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771838;
-        bh=IJZ1Sv51W6wbH5EH3TEYJ96vTozxig1d5LNRFVngQHc=;
+        s=korg; t=1661771150;
+        bh=eTejDpS13D/jixJdgnj9+fUID/w5E/ssspcErqeGyTE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bXEMCqNatCdY99ywwCF/CSEUB0LpIoRASwiHeG4Y4c36WO2lJFC8vj2CWhp+7BGyN
-         atAGoyGEoxjH6XIri2O5dyO1eGE77g35CMK6CPfdm/QOE3WaYOm6vEYtqVTxqoOt1I
-         8QFEUWROCxP1QWOE3FDUAZRwES8TI5y3Kw2GC23M=
+        b=Ck4ZbxrkW9wDjSCgcmvc+/5P8STVcaQgxrkCyBlgbQ6BM63GrI12OI3VBt5e45Ppf
+         j/Pf7xDqK+s95e2jTF1nmnWlkEPFfpGA+a3COcsBrPFE2YLaRtg9UB7SYGZZqN4CSv
+         0yTu9dZbQWw3n6eg0uBDQpIxpqRYqG3LQQklExK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Quanyang Wang <quanyang.wang@windriver.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thierry Reding <treding@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.19 113/158] asm-generic: sections: refactor memory_intersects
-Date:   Mon, 29 Aug 2022 12:59:23 +0200
-Message-Id: <20220829105813.846082081@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 072/136] net: Fix data-races around netdev_max_backlog.
+Date:   Mon, 29 Aug 2022 12:58:59 +0200
+Message-Id: <20220829105807.589560174@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,96 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quanyang Wang <quanyang.wang@windriver.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 0c7d7cc2b4fe2e74ef8728f030f0f1674f9f6aee upstream.
+[ Upstream commit 5dcd08cd19912892586c6082d56718333e2d19db ]
 
-There are two problems with the current code of memory_intersects:
+While reading netdev_max_backlog, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-First, it doesn't check whether the region (begin, end) falls inside the
-region (virt, vend), that is (virt < begin && vend > end).
+While at it, we remove the unnecessary spaces in the doc.
 
-The second problem is if vend is equal to begin, it will return true but
-this is wrong since vend (virt + size) is not the last address of the
-memory region but (virt + size -1) is.  The wrong determination will
-trigger the misreporting when the function check_for_illegal_area calls
-memory_intersects to check if the dma region intersects with stext region.
-
-The misreporting is as below (stext is at 0x80100000):
- WARNING: CPU: 0 PID: 77 at kernel/dma/debug.c:1073 check_for_illegal_area+0x130/0x168
- DMA-API: chipidea-usb2 e0002000.usb: device driver maps memory from kernel text or rodata [addr=800f0000] [len=65536]
- Modules linked in:
- CPU: 1 PID: 77 Comm: usb-storage Not tainted 5.19.0-yocto-standard #5
- Hardware name: Xilinx Zynq Platform
-  unwind_backtrace from show_stack+0x18/0x1c
-  show_stack from dump_stack_lvl+0x58/0x70
-  dump_stack_lvl from __warn+0xb0/0x198
-  __warn from warn_slowpath_fmt+0x80/0xb4
-  warn_slowpath_fmt from check_for_illegal_area+0x130/0x168
-  check_for_illegal_area from debug_dma_map_sg+0x94/0x368
-  debug_dma_map_sg from __dma_map_sg_attrs+0x114/0x128
-  __dma_map_sg_attrs from dma_map_sg_attrs+0x18/0x24
-  dma_map_sg_attrs from usb_hcd_map_urb_for_dma+0x250/0x3b4
-  usb_hcd_map_urb_for_dma from usb_hcd_submit_urb+0x194/0x214
-  usb_hcd_submit_urb from usb_sg_wait+0xa4/0x118
-  usb_sg_wait from usb_stor_bulk_transfer_sglist+0xa0/0xec
-  usb_stor_bulk_transfer_sglist from usb_stor_bulk_srb+0x38/0x70
-  usb_stor_bulk_srb from usb_stor_Bulk_transport+0x150/0x360
-  usb_stor_Bulk_transport from usb_stor_invoke_transport+0x38/0x440
-  usb_stor_invoke_transport from usb_stor_control_thread+0x1e0/0x238
-  usb_stor_control_thread from kthread+0xf8/0x104
-  kthread from ret_from_fork+0x14/0x2c
-
-Refactor memory_intersects to fix the two problems above.
-
-Before the 1d7db834a027e ("dma-debug: use memory_intersects()
-directly"), memory_intersects is called only by printk_late_init:
-
-printk_late_init -> init_section_intersects ->memory_intersects.
-
-There were few places where memory_intersects was called.
-
-When commit 1d7db834a027e ("dma-debug: use memory_intersects()
-directly") was merged and CONFIG_DMA_API_DEBUG is enabled, the DMA
-subsystem uses it to check for an illegal area and the calltrace above
-is triggered.
-
-[akpm@linux-foundation.org: fix nearby comment typo]
-Link: https://lkml.kernel.org/r/20220819081145.948016-1-quanyang.wang@windriver.com
-Fixes: 979559362516 ("asm/sections: add helpers to check for section data")
-Signed-off-by: Quanyang Wang <quanyang.wang@windriver.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Thierry Reding <treding@nvidia.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/asm-generic/sections.h |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ Documentation/admin-guide/sysctl/net.rst | 2 +-
+ net/core/dev.c                           | 4 ++--
+ net/core/gro_cells.c                     | 2 +-
+ net/xfrm/espintcp.c                      | 2 +-
+ net/xfrm/xfrm_input.c                    | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
 
---- a/include/asm-generic/sections.h
-+++ b/include/asm-generic/sections.h
-@@ -97,7 +97,7 @@ static inline bool memory_contains(void
- /**
-  * memory_intersects - checks if the region occupied by an object intersects
-  *                     with another memory region
-- * @begin: virtual address of the beginning of the memory regien
-+ * @begin: virtual address of the beginning of the memory region
-  * @end: virtual address of the end of the memory region
-  * @virt: virtual address of the memory object
-  * @size: size of the memory object
-@@ -110,7 +110,10 @@ static inline bool memory_intersects(voi
+diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
+index 4150f74c521a8..5310f398794c1 100644
+--- a/Documentation/admin-guide/sysctl/net.rst
++++ b/Documentation/admin-guide/sysctl/net.rst
+@@ -271,7 +271,7 @@ poll cycle or the number of packets processed reaches netdev_budget.
+ netdev_max_backlog
+ ------------------
+ 
+-Maximum number  of  packets,  queued  on  the  INPUT  side, when the interface
++Maximum number of packets, queued on the INPUT side, when the interface
+ receives packets faster than kernel can process them.
+ 
+ netdev_rss_key
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1a0de071fcf45..87cf2e0d8f6f1 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4589,7 +4589,7 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
+ 	struct softnet_data *sd;
+ 	unsigned int old_flow, new_flow;
+ 
+-	if (qlen < (netdev_max_backlog >> 1))
++	if (qlen < (READ_ONCE(netdev_max_backlog) >> 1))
+ 		return false;
+ 
+ 	sd = this_cpu_ptr(&softnet_data);
+@@ -4637,7 +4637,7 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+ 	if (!netif_running(skb->dev))
+ 		goto drop;
+ 	qlen = skb_queue_len(&sd->input_pkt_queue);
+-	if (qlen <= netdev_max_backlog && !skb_flow_limit(skb, qlen)) {
++	if (qlen <= READ_ONCE(netdev_max_backlog) && !skb_flow_limit(skb, qlen)) {
+ 		if (qlen) {
+ enqueue:
+ 			__skb_queue_tail(&sd->input_pkt_queue, skb);
+diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
+index 6eb2e5ec2c506..2f66f3f295630 100644
+--- a/net/core/gro_cells.c
++++ b/net/core/gro_cells.c
+@@ -26,7 +26,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct sk_buff *skb)
+ 
+ 	cell = this_cpu_ptr(gcells->cells);
+ 
+-	if (skb_queue_len(&cell->napi_skbs) > netdev_max_backlog) {
++	if (skb_queue_len(&cell->napi_skbs) > READ_ONCE(netdev_max_backlog)) {
+ drop:
+ 		atomic_long_inc(&dev->rx_dropped);
+ 		kfree_skb(skb);
+diff --git a/net/xfrm/espintcp.c b/net/xfrm/espintcp.c
+index 1f08ebf7d80c5..24ca49ecebea3 100644
+--- a/net/xfrm/espintcp.c
++++ b/net/xfrm/espintcp.c
+@@ -170,7 +170,7 @@ int espintcp_queue_out(struct sock *sk, struct sk_buff *skb)
  {
- 	void *vend = virt + size;
+ 	struct espintcp_ctx *ctx = espintcp_getctx(sk);
  
--	return (virt >= begin && virt < end) || (vend >= begin && vend < end);
-+	if (virt < end && vend > begin)
-+		return true;
-+
-+	return false;
- }
+-	if (skb_queue_len(&ctx->out_queue) >= netdev_max_backlog)
++	if (skb_queue_len(&ctx->out_queue) >= READ_ONCE(netdev_max_backlog))
+ 		return -ENOBUFS;
  
- /**
+ 	__skb_queue_tail(&ctx->out_queue, skb);
+diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+index 3df0861d4390f..5f34bc378fdcf 100644
+--- a/net/xfrm/xfrm_input.c
++++ b/net/xfrm/xfrm_input.c
+@@ -782,7 +782,7 @@ int xfrm_trans_queue_net(struct net *net, struct sk_buff *skb,
+ 
+ 	trans = this_cpu_ptr(&xfrm_trans_tasklet);
+ 
+-	if (skb_queue_len(&trans->queue) >= netdev_max_backlog)
++	if (skb_queue_len(&trans->queue) >= READ_ONCE(netdev_max_backlog))
+ 		return -ENOBUFS;
+ 
+ 	BUILD_BUG_ON(sizeof(struct xfrm_trans_cb) > sizeof(skb->cb));
+-- 
+2.35.1
+
 
 
