@@ -2,111 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A62EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F35ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229597AbiH2O0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
+        id S229949AbiH2O07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiH2O0i (ORCPT
+        with ESMTP id S229918AbiH2O0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:26:38 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2D68000C;
-        Mon, 29 Aug 2022 07:26:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661783197; x=1693319197;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FyvJKZ/FWxFaZvEWDEmNEu+M3JS/Cae8gERyT2MCqIY=;
-  b=N5yb8Z85DEF0u3951mrfp5fvjPOAECwfjaN+J0VuS2gJ3Xo52tmIxGMz
-   mSBC8u1Gsly5LIm5b0QJQsdv5R5h4kCSHJ2nV3ABJ5WP3IODIFCreQ/2n
-   jEaD6zhdTHbjp2ZuVcWJ8GjFx5bmzf+f6rEQPa2b8c/GuEMnSdqllsXaz
-   WZ6Hk86gEf4qgzgEvkN2cRBY73/EgQomwgn0VVjg/6RTJ3viBNKGQKN25
-   1/9GcdG2Mz1SiPACloIuLFn3IHAq9z1hyquEaWuuhIQEoojBlpTGK6ech
-   DDGH8Zux2TQrFdqO8DOphMKOf6NbffZDvdloCRIGepVijZJMCu1EWOxn1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="358868116"
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="358868116"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 07:24:17 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="753644690"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 29 Aug 2022 07:24:14 -0700
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Mon, 29 Aug 2022 17:24:13 +0300
-Date:   Mon, 29 Aug 2022 17:24:13 +0300
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     cgel.zte@gmail.com
-Cc:     linux@roeck-us.net, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xupanda <xu.panda@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next v3] usb: typec: tcpm: tcpci: Remove the
- unneeded result variable
-Message-ID: <YwzMDdzfo58hufmd@kuha.fi.intel.com>
-References: <20220829030442.264695-1-xu.panda@zte.com.cn>
+        Mon, 29 Aug 2022 10:26:55 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45B5804B5
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:26:53 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id e18so2850641edj.3
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:26:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=GIk/xkbPv4LgXcBVD6Hp47oriRMLTxoq4XVelR6765w=;
+        b=BSMoWKn4oRS9sT/rH1cFhlHkePfwvcU7/ud7uTEpVJ/DBoiOPF6OQ6qd1ChG8h27N0
+         FjvYWe+r1/5GS6H9yn8UnMsxqi469U8Seo87WzovbJPI2rfOEmEA6GkoP4u1GVtb9Gw/
+         Tfq19RCdG7SLePWpS9FiJFWN4vsHbjOjD3durT0Rd4ACkkSQF5dP9CmzeA1LTh/ChLCH
+         nDTXPmAwbGRCLN7C7kqKpF7vNbOGWBH2KwpPGh5EU68IImNxa8SrHKLe6+TFZO7u9w6u
+         HTWt9c4sRiVHfC8TUYuAxfoLctSdD3sfJ5zeHO5kYhgmITSa91Cwy0grpaBzc0rzhPX+
+         2eHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=GIk/xkbPv4LgXcBVD6Hp47oriRMLTxoq4XVelR6765w=;
+        b=vy1bN/8+00oLCmQGnSIQ5xw2cCG26mKfZVBrTH/MXzEN+8V/L1gHcOfLlAs9joQN3s
+         OXlrUSquRmJoB2Q4FBzoEkK2eK0XOQREDUAZcW+vb8IfFN3sxDJcEhYI0R2VYf/DvVfS
+         UEFBhAXoFhgjjEx3ZLZPttnWjYGJW/YJIu7OIgam1EKce8vY3zMAabNBcapgZeXr5wcT
+         mW/O5NcvRXPV/OOoH0x5CFGjFLqkMDXNo0EK5Z1OamB+o1UHxsdcjjXYpgcfTstCnP9z
+         HooYS6+l5aLSilXmz3TZwa0/508+oQaK2VDB7G5K6vWCydSAQm/Y6r6dipzu+Ad+ygo/
+         5ldQ==
+X-Gm-Message-State: ACgBeo1flp+9uF29CRLQRgDOv38gfgOShZd+4pbIBbu5VM3bsZxQyVGt
+        4rp6T3pOr2ICu2ykDUCr7hQ1xbE2xI4rxu/6bu2Fgw==
+X-Google-Smtp-Source: AA6agR5hDRCKM756jRF+1WFTznbKy1uj1tle9cnUNV0EFYxwrOnIBw7YN9Pw+gaRfTgFU895UlBIYWkDOdO7yVBfQVU=
+X-Received: by 2002:aa7:d846:0:b0:447:d664:8409 with SMTP id
+ f6-20020aa7d846000000b00447d6648409mr13081244eds.159.1661783212482; Mon, 29
+ Aug 2022 07:26:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829030442.264695-1-xu.panda@zte.com.cn>
+References: <20220802153947.44457-1-krzysztof.kozlowski@linaro.org> <20220802153947.44457-3-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220802153947.44457-3-krzysztof.kozlowski@linaro.org>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Mon, 29 Aug 2022 16:26:41 +0200
+Message-ID: <CAG3jFytBmVLh8dgNnLVpfN3qqzBcarVRfyF7ojdGw2_UOy_xKw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] arm64: dts: qcom: sdm845-db845c: drop gpios from CCI
+ I2C sensors
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        corbet@lwn.net
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On Mon, Aug 29, 2022 at 03:04:43AM +0000, cgel.zte@gmail.com wrote:
-> From: xupanda <xu.panda@zte.com.cn>
-
-I think that's a pseudonym. Is the name "Xu Panda" (so not
-"xupanda")? Please use full real names.
-
-> Return the value regmap_update_bits() directly instead of
-> storing it in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: xupanda <xu.panda@zte.com.cn>
-
-I just realised that this is version 3, and this is the third time you
-are being asked to check that. You really have to use full real names
-here.
-
-Please read this section completely and fix those lines:
-https://docs.kernel.org/process/submitting-patches.html#sign-your-work-the-developer-s-certificate-of-origin
-
-thanks,
-
+On Tue, 2 Aug 2022 at 17:40, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> The OV7251 and OV8856 camera sensor bindings do not allow
+> property "gpios" and Linux driver does not parse it.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>
 > ---
-> chang for v3
->  - re-align continuation line alignment
+>
+> Not tested on hardware.
 > ---
->  drivers/usb/typec/tcpm/tcpci.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/usb/typec/tcpm/tcpci.c b/drivers/usb/typec/tcpm/tcpci.c
-> index b2bfcebe218f..cd243530264b 100644
-> --- a/drivers/usb/typec/tcpm/tcpci.c
-> +++ b/drivers/usb/typec/tcpm/tcpci.c
-> @@ -328,11 +328,9 @@ static int tcpci_set_vconn(struct tcpc_dev *tcpc, bool enable)
->  static int tcpci_enable_auto_vbus_discharge(struct tcpc_dev *dev, bool enable)
->  {
->  	struct tcpci *tcpci = tcpc_to_tcpci(dev);
-> -	int ret;
->  
-> -	ret = regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
-> -				 enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
-> -	return ret;
-> +	return regmap_update_bits(tcpci->regmap, TCPC_POWER_CTRL, TCPC_POWER_CTRL_AUTO_DISCHARGE,
-> +			enable ? TCPC_POWER_CTRL_AUTO_DISCHARGE : 0);
->  }
->  
->  static int tcpci_set_auto_vbus_discharge_threshold(struct tcpc_dev *dev, enum typec_pwr_opmode mode,
-> -- 
-> 2.25.1
+>  arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 4 ----
+>  1 file changed, 4 deletions(-)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+> index b9304f81290a..f313f6964810 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+> +++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
+> @@ -1214,8 +1214,6 @@ camera@10 {
+>                 reset-gpios = <&tlmm 9 GPIO_ACTIVE_LOW>;
+>                 pinctrl-names = "default";
+>                 pinctrl-0 = <&cam0_default>;
+> -               gpios = <&tlmm 13 0>,
+> -                       <&tlmm 9 GPIO_ACTIVE_LOW>;
+>
+>                 clocks = <&clock_camcc CAM_CC_MCLK0_CLK>;
+>                 clock-names = "xvclk";
+> @@ -1256,8 +1254,6 @@ camera@60 {
+>                 enable-gpios = <&tlmm 21 0>;
+>                 pinctrl-names = "default";
+>                 pinctrl-0 = <&cam3_default>;
+> -               gpios = <&tlmm 16 0>,
+> -                       <&tlmm 21 0>;
+>
+>                 clocks = <&clock_camcc CAM_CC_MCLK3_CLK>;
+>                 clock-names = "xclk";
+> --
+> 2.34.1
 
--- 
-heikki
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
