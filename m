@@ -2,124 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32144ECAAA5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D14CECAAA1
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:36:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231459AbiH2Rey (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60582 "EHLO
+        id S230438AbiH2RgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230356AbiH2Rev (ORCPT
+        with ESMTP id S229653AbiH2RgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:34:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868CA9C;
-        Mon, 29 Aug 2022 10:34:44 -0700 (PDT)
+        Mon, 29 Aug 2022 13:36:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1921A74E26;
+        Mon, 29 Aug 2022 10:36:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3EC04B8119D;
-        Mon, 29 Aug 2022 17:34:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B5A4C433D7;
-        Mon, 29 Aug 2022 17:34:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A971612F3;
+        Mon, 29 Aug 2022 17:36:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 862B4C433B5;
+        Mon, 29 Aug 2022 17:36:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661794481;
-        bh=gnf4Jlo1A0o7rUsp7O03aHFQN2TyPZez03WfQkmxHSs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ST3Da3EZaNBmtKV8anrXbMqMPWZjEhZf1rZXsTPeI6Ol6HCzQafhNJxg3yFfbBLWl
-         YWgpHzfWe7VrIkLPKrTXWmKHu8lxZJhx1GklCLlF2NOw1hY9XxOrP+qtd0hXugy4+C
-         uUqIl65z8IF6D630q/xhrxw4OMl4QI69HU7+opSDUXkefoWYqKefeAVFEiia6vuF2R
-         Y10aLyPS/ehmBFeatikwW4qCSJdatrWnLEhZ+XB6b8YMxWQCRiS8+Fip+3PqACYy/7
-         3PWSt3YlFnlaxDspvzGwFw6SmF8Fx5bRLDhvWyBp6d0yM4RrfbyguzE4+fm5ol/yaU
-         AOMIIG3wbLUvA==
-Date:   Mon, 29 Aug 2022 18:00:22 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jakob Hauser <jahau@rocketmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/4] iio: magnetometer: yamaha-yas530: Use pointers
- as driver data
-Message-ID: <20220829180022.18dac46a@jic23-huawei>
-In-Reply-To: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
-References: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1661794572;
+        bh=rsrie5xAIPERRfy5hV2/lMm7+uIPsinOty7KExwvFfI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=OZI38IqpeQLjkNktjbjkZgbz8ZZ7HJoB8Tea+n9Y1xRKTO/HyDpMNuAzHVsLOMW75
+         y7XmNUll7k9IlOpkFVIKUPeVhQTzXE7bA7F3FiNVjDZAcG1AoivaphkxETl1B+Cq7x
+         T5mDVb1ehKN6HDtTLZKJjHI/j9A37GVoqSezA4k2ffmkzvg3U4x12+5R57HMHDPY+i
+         RgVGOf9pfgD26/6OJcurpLwBP4+nLfqbkfgUY7WkfyKsmiTThx7Bz4pfjhv7vKRD4v
+         8nwYlpYJ24uSsiO0U345SWUqnGRZDyIj60mpCctnusSQkdS30E1uNNDZILEC0ABtIk
+         xM/Sy+JrekpnA==
+Date:   Mon, 29 Aug 2022 10:36:10 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Keith Busch <kbusch@kernel.org>
+Subject: Re: [PATCH v5 6/8] f2fs: simplify f2fs_force_buffered_io()
+Message-ID: <Ywz5CrBg6udTMnW/@google.com>
+References: <20220827065851.135710-1-ebiggers@kernel.org>
+ <20220827065851.135710-7-ebiggers@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220827065851.135710-7-ebiggers@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 29 Aug 2022 14:24:04 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> Unify ID tables to use pointers for driver data. It will allow
-> to simplify the driver later on.
+On 08/26, Eric Biggers wrote:
+> From: Eric Biggers <ebiggers@google.com>
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> f2fs only allows direct I/O that is aligned to the filesystem block
+> size.  Given that fact, simplify f2fs_force_buffered_io() by removing
+> the redundant call to block_unaligned_IO().
+> 
+> This makes it easier to reuse this code for STATX_DIOALIGN.
+> 
+> Signed-off-by: Eric Biggers <ebiggers@google.com>
+
+Acked-by: Jaegeuk Kim <jaegeuk@kernel.org>
+
 > ---
->  drivers/iio/magnetometer/yamaha-yas530.c | 21 +++++++++++----------
->  1 file changed, 11 insertions(+), 10 deletions(-)
+>  fs/f2fs/file.c | 27 +++++----------------------
+>  1 file changed, 5 insertions(+), 22 deletions(-)
 > 
-> diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-> index 026f71e524f3..03e0525e6364 100644
-> --- a/drivers/iio/magnetometer/yamaha-yas530.c
-> +++ b/drivers/iio/magnetometer/yamaha-yas530.c
-> @@ -32,6 +32,7 @@
->  #include <linux/mod_devicetable.h>
->  #include <linux/mutex.h>
->  #include <linux/pm_runtime.h>
-> +#include <linux/property.h>
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/random.h>
-> @@ -1437,8 +1438,8 @@ static int yas5xx_probe(struct i2c_client *i2c,
->  		goto assert_reset;
->  	}
+> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+> index 8a9455bf956f16..8e11311db21060 100644
+> --- a/fs/f2fs/file.c
+> +++ b/fs/f2fs/file.c
+> @@ -808,22 +808,9 @@ int f2fs_truncate(struct inode *inode)
+>  	return 0;
+>  }
 >  
-> -	yas5xx->chip_info = &yas5xx_chip_info_tbl[id->driver_data];
-> -	ci = yas5xx->chip_info;
-> +	ci = device_get_match_data(dev);
-> +	yas5xx->chip_info = ci;
-
-Am I missing a path by which device_get_match_data() can use the i2c_device_id values?
-I'd expect to see a fallback to that if ci == NULL to cover the non firmware causes
-of probe().  I've seen a few patches without that fallback path recently so wondering
-if some magic has gotten hooked up and I've missed it (something to push that via
-a swnode perhaps?)
-
-
+> -static int block_unaligned_IO(struct inode *inode, struct kiocb *iocb,
+> -			      struct iov_iter *iter)
+> -{
+> -	unsigned int i_blkbits = READ_ONCE(inode->i_blkbits);
+> -	unsigned int blocksize_mask = (1 << i_blkbits) - 1;
+> -	loff_t offset = iocb->ki_pos;
+> -	unsigned long align = offset | iov_iter_alignment(iter);
+> -
+> -	return align & blocksize_mask;
+> -}
+> -
+> -static bool f2fs_force_buffered_io(struct inode *inode,
+> -				   struct kiocb *iocb, struct iov_iter *iter)
+> +static bool f2fs_force_buffered_io(struct inode *inode, int rw)
+>  {
+>  	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+> -	int rw = iov_iter_rw(iter);
 >  
->  	ret = regmap_read(yas5xx->map, YAS5XX_DEVICE_ID, &id_check);
->  	if (ret)
-> @@ -1583,19 +1584,19 @@ static DEFINE_RUNTIME_DEV_PM_OPS(yas5xx_dev_pm_ops, yas5xx_runtime_suspend,
->  				 yas5xx_runtime_resume, NULL);
+>  	if (!fscrypt_dio_supported(inode))
+>  		return true;
+> @@ -836,13 +823,9 @@ static bool f2fs_force_buffered_io(struct inode *inode,
+>  	if (f2fs_is_multi_device(sbi) && !sbi->aligned_blksize)
+>  		return true;
 >  
->  static const struct i2c_device_id yas5xx_id[] = {
-> -	{"yas530", yas530 },
-> -	{"yas532", yas532 },
-> -	{"yas533", yas533 },
-> -	{"yas537", yas537 },
-> +	{"yas530", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas530] },
-> +	{"yas532", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas532] },
-> +	{"yas533", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas533] },
-> +	{"yas537", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas537] },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(i2c, yas5xx_id);
+> -	if (f2fs_lfs_mode(sbi) && (rw == WRITE)) {
+> -		if (block_unaligned_IO(inode, iocb, iter))
+> -			return true;
+> -		if (F2FS_IO_ALIGNED(sbi))
+> -			return true;
+> -	}
+> -	if (is_sbi_flag_set(F2FS_I_SB(inode), SBI_CP_DISABLED))
+> +	if (f2fs_lfs_mode(sbi) && rw == WRITE && F2FS_IO_ALIGNED(sbi))
+> +		return true;
+> +	if (is_sbi_flag_set(sbi, SBI_CP_DISABLED))
+>  		return true;
 >  
->  static const struct of_device_id yas5xx_of_match[] = {
-> -	{ .compatible = "yamaha,yas530", },
-> -	{ .compatible = "yamaha,yas532", },
-> -	{ .compatible = "yamaha,yas533", },
-> -	{ .compatible = "yamaha,yas537", },
-> +	{ .compatible = "yamaha,yas530", &yas5xx_chip_info_tbl[yas530] },
-> +	{ .compatible = "yamaha,yas532", &yas5xx_chip_info_tbl[yas532] },
-> +	{ .compatible = "yamaha,yas533", &yas5xx_chip_info_tbl[yas533] },
-> +	{ .compatible = "yamaha,yas537", &yas5xx_chip_info_tbl[yas537] },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, yas5xx_of_match);
-
+>  	return false;
+> @@ -4222,7 +4205,7 @@ static bool f2fs_should_use_dio(struct inode *inode, struct kiocb *iocb,
+>  	if (!(iocb->ki_flags & IOCB_DIRECT))
+>  		return false;
+>  
+> -	if (f2fs_force_buffered_io(inode, iocb, iter))
+> +	if (f2fs_force_buffered_io(inode, iov_iter_rw(iter)))
+>  		return false;
+>  
+>  	/*
+> -- 
+> 2.37.2
