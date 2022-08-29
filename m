@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E71ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA25ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229794AbiH2LGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44694 "EHLO
+        id S230190AbiH2LGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:06:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiH2LFx (ORCPT
+        with ESMTP id S230320AbiH2LFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:05:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5843A66A46;
-        Mon, 29 Aug 2022 04:04:26 -0700 (PDT)
+        Mon, 29 Aug 2022 07:05:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E37642F3;
+        Mon, 29 Aug 2022 04:04:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAF29B80EFB;
-        Mon, 29 Aug 2022 11:03:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 201BEC433C1;
-        Mon, 29 Aug 2022 11:03:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48855B80EF6;
+        Mon, 29 Aug 2022 11:04:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D004C433D6;
+        Mon, 29 Aug 2022 11:04:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771011;
-        bh=1X41frZTHQivlLsOnkoqvM+UV/1idMNbJM8zsDD4H5s=;
+        s=korg; t=1661771058;
+        bh=J2SB5bmPljpkP9lpMCL8I+guc1tT+i/fXt5y9INNn24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mVqUQ8vx1SYoiN++QOynZgVC7MWqqrOLhg/UkJYTFdyq2TTnJeZA5aLv2b8Nie3O7
-         vEw2Q7FuW8JWxL6F7NS5iXgErhYw5dHDaIGAyo4R3wIdvY2ZDzENrY6Q71Eg8FlIAm
-         mbOvSaNnDcukGnmIeQ7/lfmPosyk/6rkP4D6Zukc=
+        b=ZKj0lzmY7Ap6c4tyY7S8G2GUdVO8X2Tx/vuPgiQgjthH1ZTG8M2cjYHTE341C6Q4M
+         M+Q6xuqT4tImxYgyMaSSXg/lnpNmjPZWbeokOift0KIlEczbdAyO2rXeBa3rMjSvG9
+         L88CmToM7zTDOHCcC7EiWHIL/m1p4mLhM1Z751F8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Amir Goldstein <amir73il@gmail.com>,
-        "Darrick J. Wong" <djwong@kernel.org>
-Subject: [PATCH 5.10 07/86] fs: remove __sync_filesystem
-Date:   Mon, 29 Aug 2022 12:58:33 +0200
-Message-Id: <20220829105756.833028102@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 055/136] netfilter: nf_tables: disallow updates of implicit chain
+Date:   Mon, 29 Aug 2022 12:58:42 +0200
+Message-Id: <20220829105806.886843813@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,80 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 9a208ba5c9afa62c7b1e9c6f5e783066e84e2d3c upstream.
+[ Upstream commit 5dc52d83baac30decf5f3b371d5eb41dfa1d1412 ]
 
-[backported for dependency]
+Updates on existing implicit chain make no sense, disallow this.
 
-There is no clear benefit in having this helper vs just open coding it.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Link: https://lore.kernel.org/r/20211019062530.2174626-2-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Acked-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d0e2c7de92c7 ("netfilter: nf_tables: add NFT_CHAIN_BINDING")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/sync.c |   38 +++++++++++++++++---------------------
- 1 file changed, 17 insertions(+), 21 deletions(-)
+ net/netfilter/nf_tables_api.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/fs/sync.c
-+++ b/fs/sync.c
-@@ -22,25 +22,6 @@
- 			SYNC_FILE_RANGE_WAIT_AFTER)
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 2f22a172a27e1..58f9513bd1419 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -2479,6 +2479,9 @@ static int nf_tables_newchain(struct sk_buff *skb, const struct nfnl_info *info,
+ 	nft_ctx_init(&ctx, net, skb, info->nlh, family, table, chain, nla);
  
- /*
-- * Do the filesystem syncing work. For simple filesystems
-- * writeback_inodes_sb(sb) just dirties buffers with inodes so we have to
-- * submit IO for these buffers via __sync_blockdev(). This also speeds up the
-- * wait == 1 case since in that case write_inode() functions do
-- * sync_dirty_buffer() and thus effectively write one block at a time.
-- */
--static int __sync_filesystem(struct super_block *sb, int wait)
--{
--	if (wait)
--		sync_inodes_sb(sb);
--	else
--		writeback_inodes_sb(sb, WB_REASON_SYNC);
--
--	if (sb->s_op->sync_fs)
--		sb->s_op->sync_fs(sb, wait);
--	return __sync_blockdev(sb->s_bdev, wait);
--}
--
--/*
-  * Write out and wait upon all dirty data associated with this
-  * superblock.  Filesystem data as well as the underlying block
-  * device.  Takes the superblock lock.
-@@ -61,10 +42,25 @@ int sync_filesystem(struct super_block *
- 	if (sb_rdonly(sb))
- 		return 0;
- 
--	ret = __sync_filesystem(sb, 0);
-+	/*
-+	 * Do the filesystem syncing work.  For simple filesystems
-+	 * writeback_inodes_sb(sb) just dirties buffers with inodes so we have
-+	 * to submit I/O for these buffers via __sync_blockdev().  This also
-+	 * speeds up the wait == 1 case since in that case write_inode()
-+	 * methods call sync_dirty_buffer() and thus effectively write one block
-+	 * at a time.
-+	 */
-+	writeback_inodes_sb(sb, WB_REASON_SYNC);
-+	if (sb->s_op->sync_fs)
-+		sb->s_op->sync_fs(sb, 0);
-+	ret = __sync_blockdev(sb->s_bdev, 0);
- 	if (ret < 0)
- 		return ret;
--	return __sync_filesystem(sb, 1);
+ 	if (chain != NULL) {
++		if (chain->flags & NFT_CHAIN_BINDING)
++			return -EINVAL;
 +
-+	sync_inodes_sb(sb);
-+	if (sb->s_op->sync_fs)
-+		sb->s_op->sync_fs(sb, 1);
-+	return __sync_blockdev(sb->s_bdev, 1);
- }
- EXPORT_SYMBOL(sync_filesystem);
- 
+ 		if (info->nlh->nlmsg_flags & NLM_F_EXCL) {
+ 			NL_SET_BAD_ATTR(extack, attr);
+ 			return -EEXIST;
+-- 
+2.35.1
+
 
 
