@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4C1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42994ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232245AbiH2LbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:31:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
+        id S232468AbiH2LbX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232573AbiH2L3T (ORCPT
+        with ESMTP id S232590AbiH2L3W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:29:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C7474348;
-        Mon, 29 Aug 2022 04:17:43 -0700 (PDT)
+        Mon, 29 Aug 2022 07:29:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E847A51D;
+        Mon, 29 Aug 2022 04:17:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8326F6119E;
-        Mon, 29 Aug 2022 11:06:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E29DC433D6;
-        Mon, 29 Aug 2022 11:06:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 560326123F;
+        Mon, 29 Aug 2022 11:15:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F9DDC433D6;
+        Mon, 29 Aug 2022 11:15:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771184;
-        bh=KajPj0vbZGsmzxD4MAGUcFjOapLpV3mI9kgv98ycWxA=;
+        s=korg; t=1661771737;
+        bh=iiYN7jTbVnfZ1a9WEQqnOjECpLWYni+txOyNliRC4l8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C2AOUp4Z6HK7exQ9pnnZehOeo/lUx7OuLyxb6RgrHW5ElruwwcLlIyHGKkkjGUePy
-         bTpakeVMuck0HPFoce04wjIFSMWcl9MQ5QONq65ozUUtYMdSjw3Hf07fIpwij+eYhi
-         guiK2FptsZcgoBHRdzvo0dQbdoEeURVqUVdycVqM=
+        b=ia81612R4GpOYTkQcF2xilu8jyMc90ZsWK7oAo1b1JJ2y94AquYfzLLHYuvKInynm
+         ZjVeDiw5KWiJnAc411fUILR8lgS5O2r49m/ClRP+cNvXMFasY1kq4GMokuPEhTaJH7
+         jcnatBfvoKUNHCgFt1H0km4Z8EHjny8EhZZz2lYY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 077/136] net: Fix a data-race around sysctl_net_busy_poll.
-Date:   Mon, 29 Aug 2022 12:59:04 +0200
-Message-Id: <20220829105807.795203859@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH 5.15 123/136] md: call __md_stop_writes in md_stop
+Date:   Mon, 29 Aug 2022 12:59:50 +0200
+Message-Id: <20220829105809.718583595@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -49,36 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Guoqing Jiang <guoqing.jiang@linux.dev>
 
-[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
+commit 0dd84b319352bb8ba64752d4e45396d8b13e6018 upstream.
 
-While reading sysctl_net_busy_poll, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+>From the link [1], we can see raid1d was running even after the path
+raid_dtr -> md_stop -> __md_stop.
 
-Fixes: 060212928670 ("net: add low latency socket poll")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Let's stop write first in destructor to align with normal md-raid to
+fix the KASAN issue.
+
+[1]. https://lore.kernel.org/linux-raid/CAPhsuW5gc4AakdGNdF8ubpezAuDLFOYUO_sfMZcec6hQFm8nhg@mail.gmail.com/T/#m7f12bf90481c02c6d2da68c64aeed4779b7df74a
+
+Fixes: 48df498daf62 ("md: move bitmap_destroy to the beginning of __md_stop")
+Reported-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/busy_poll.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/md.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
-index 40296ed976a97..3459a04a3d61c 100644
---- a/include/net/busy_poll.h
-+++ b/include/net/busy_poll.h
-@@ -33,7 +33,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
- 
- static inline bool net_busy_loop_on(void)
- {
--	return sysctl_net_busy_poll;
-+	return READ_ONCE(sysctl_net_busy_poll);
- }
- 
- static inline bool sk_can_busy_loop(const struct sock *sk)
--- 
-2.35.1
-
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -6272,6 +6272,7 @@ void md_stop(struct mddev *mddev)
+ 	/* stop the array and free an attached data structures.
+ 	 * This is called from dm-raid
+ 	 */
++	__md_stop_writes(mddev);
+ 	__md_stop(mddev);
+ 	bioset_exit(&mddev->bio_set);
+ 	bioset_exit(&mddev->sync_set);
 
 
