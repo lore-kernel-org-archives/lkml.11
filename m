@@ -2,399 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79F1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:33:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE954C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230362AbiH2OdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59782 "EHLO
+        id S230204AbiH2OdT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230092AbiH2Ocs (ORCPT
+        with ESMTP id S230180AbiH2Ocx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:32:48 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA94E94EDC
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:32:41 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 69so6214620pgb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:32:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=RDnPvOgnWts/1Il5tnF5HORcsXGeOx9O2R1lyMejcAA=;
-        b=hsQ0k56WYL56KksVLhBryNtOCWzsMN1s0dOD5C0PAIGH6xeu96/zQeTKEVOrJlaVYh
-         gmyYJULEzKr5yWAOKl12Xe9zd49V9luGbIL/yplSkpE1Z0em4xllvP4Zdya7pARoVPmP
-         lPaiSr/JrSSUSuBk5kI6g81nsb8wEtWpkXFPxb9To0Ev9NsuE3WUr7GVFVIY/ejWuEXU
-         TkE489K74ndLTKHnmqIbddoEHBYWt8Wip0hzZagd8mzdaIaAE88Xc/3beQhghx7EI0QW
-         Ux6nBlFrg5FTZ39EGB9DXrro80vUcwuA4NjZxmt38srHmMdIFDZVXjUDrH6/gN+CjYXi
-         y6hw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=RDnPvOgnWts/1Il5tnF5HORcsXGeOx9O2R1lyMejcAA=;
-        b=N6BXCzDwmPQDMc9+J62orH7/oNwOPCbW9J81Xx0APBLoodl200rM6JjTRJXX0ffoUL
-         O204tX++gN81xZYVnWh6+xBVHgImpiz0OyWCIMkJPtieBbxmCur0jHllMwXEryCxW9j7
-         O+Fclv1V9R3ZCfqMnTCahO99QLJ0mUZllrERwcuMkfq/Uu6ncjBFM7r9wlmtEFHFe9dH
-         QHZ9q95afp56CHsflfmyMBBbAhdsizy/FERxWLujYfvFLcfpnP+EFQXmRhsP+E2VxWen
-         45hG+hLpYpMFeii27faQ7sU8FclFRv+5bjxZy8DG6FbQyf4815JNj5139Hfmsa8oQvZI
-         5+Sw==
-X-Gm-Message-State: ACgBeo27B/war9SFBsAwwz8Gsj/jrldYPovzLs+r7Rqx8c7aSU+vPnK6
-        7xsTs/lK9b9cl1mnuteZnaCWFQ==
-X-Google-Smtp-Source: AA6agR4pT9o4m5qO0QprR+EPh9zYCtMUy7tL0+86Vtz831/0tmCv8TyBquYk4zOIjWUOduZuLGsNvA==
-X-Received: by 2002:a05:6a00:2446:b0:528:5da9:cc7 with SMTP id d6-20020a056a00244600b005285da90cc7mr17126146pfj.51.1661783560449;
-        Mon, 29 Aug 2022 07:32:40 -0700 (PDT)
-Received: from C02DW0BEMD6R.bytedance.net ([139.177.225.228])
-        by smtp.gmail.com with ESMTPSA id x128-20020a626386000000b0052d200c8040sm7259327pfb.211.2022.08.29.07.32.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 07:32:39 -0700 (PDT)
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-To:     akpm@linux-foundation.org, willy@infradead.org, vbabka@suse.cz,
-        hannes@cmpxchg.org, minchan@kernel.org, rppt@kernel.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: [PATCH 7/7] ksm: convert to use common struct mm_slot
-Date:   Mon, 29 Aug 2022 22:30:55 +0800
-Message-Id: <20220829143055.41201-8-zhengqi.arch@bytedance.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20220829143055.41201-1-zhengqi.arch@bytedance.com>
-References: <20220829143055.41201-1-zhengqi.arch@bytedance.com>
+        Mon, 29 Aug 2022 10:32:53 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2062a.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8a::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A586915F5;
+        Mon, 29 Aug 2022 07:32:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fPR4bkGiS1cxen5ZBZ0KmzNb6pVNXTQ54ZjaALvEsJlVLo5PgO1bXlC8NbEkd/ZQoEQEE6DQkEqXoRuRSJ46oRcW9/3iEhtMFWJJTkKJp9Ij7MtidYGthcgOd4HNpcjaJbeovKuVkOrjEi8ULW5NpbG3oFCYn0Ie0Pe89S+9PIjeubinhJ+EAAq59nG/k5ipAf7m2VUWcOdHrushTFC+WF4Ne7qNva+pHiKR8iIORUJbwITK6F2k1k+35+aePjMWq4GMCVWk0QkALUuVLFC7Q3IPPQBuDcAC0+uQa/QW/WAHtK+ysSQliJOcalbNjXtGcqeeEAjW+xN4X5hs7fUprw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jwzXYq6+BZ6aXvMFHGJPw2KJwJ8qz5b98jXVOF+3MvM=;
+ b=FVc4aYfuIks98tbzm+rpB5FtnmOR14AM9P5qpqjM7qktDgvkTYHdkwg9hjdtJ+gVpiEMDfgwVvf4MJbYsO/9TnO58ixfLu0OBEeuanY9ZREzX7dltNlK0IOyVuORCfyschlBVQBJ8vYoXt860A+VZx5MUY1qy4vsLjgVRNX4rlfqQmubPjyQa4szbPbdfsbqHUbNK37PlU3dqfSVOPgflyRx991HKm7KG6ROMOYUnFAHu4LF8n4m5MwkLfy6tBzrDEnDTbKfZTffGRyhccxhymVMMlJTJcpq2ds1IoA7aTQqBM4hhUvggRhemo/1Hk9xf5gf7+7WMfs3Q6qugSr9ZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jwzXYq6+BZ6aXvMFHGJPw2KJwJ8qz5b98jXVOF+3MvM=;
+ b=TsWjAZcVjxN/o6ExYswFgZEkfw2RXHkVFZAZDGGAg5LSDaU1zfTWtPRVKQ20rIHX3wVkcmtFeAxqblr+K4VTUBC0UpjZNX++hohpKAcxdPcBP8qZzavomVYmlZxjdv5HlXmqVl5hnWLaqnlnDTM98to06oqFB4K+cMynlSgpxd0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from MN0PR12MB6101.namprd12.prod.outlook.com (2603:10b6:208:3cb::10)
+ by BL3PR12MB6618.namprd12.prod.outlook.com (2603:10b6:208:38d::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Mon, 29 Aug
+ 2022 14:32:46 +0000
+Received: from MN0PR12MB6101.namprd12.prod.outlook.com
+ ([fe80::e00a:1f8c:dcd1:afc3]) by MN0PR12MB6101.namprd12.prod.outlook.com
+ ([fe80::e00a:1f8c:dcd1:afc3%6]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
+ 14:32:46 +0000
+Message-ID: <a0a63b87-f1ec-03ce-0c3c-a66d7c8144b0@amd.com>
+Date:   Mon, 29 Aug 2022 09:32:44 -0500
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 1/4] ACPI: s2idle: Add a new ->enter() callback for
+ platform_s2idle_ops
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Hans de Goede <hdegoede@redhat.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+References: <20220829132908.5254-1-mario.limonciello@amd.com>
+ <20220829132908.5254-2-mario.limonciello@amd.com>
+ <CAJZ5v0hfYhNLp+x9iFiqsQaL4XA8QdFhRK7Csgr8po8JPoimyQ@mail.gmail.com>
+From:   "Limonciello, Mario" <mario.limonciello@amd.com>
+In-Reply-To: <CAJZ5v0hfYhNLp+x9iFiqsQaL4XA8QdFhRK7Csgr8po8JPoimyQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR01CA0015.prod.exchangelabs.com (2603:10b6:208:10c::28)
+ To MN0PR12MB6101.namprd12.prod.outlook.com (2603:10b6:208:3cb::10)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 92e6e69f-ef9f-48aa-5f71-08da89cb572f
+X-MS-TrafficTypeDiagnostic: BL3PR12MB6618:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pHWpGXiI8NST2Exh7VN/pdOKZOVNJYp0zx6w8A9EIrDT1VD2beV8fDti6QD4cg8Hta9o6PnhWM8pOO7xHk6yZ4YWKBgfLgRW8LPgI4dGiNF8Ab47exU5f3u9zqEhUn2su3N4jxmGZkE9Vc6tOHHirA1MSLjPlgXqMCM1FheZ0v26ZoxPu0pshYmz6Mp7HDGR/mKuV/MIrxBl0CbeJ+287OnvrKIsR4rLvDeIoVGL+MM+dNHqrLgYwYWjnmGuuaxlVGFOqTQXFA2pBk6RBjq848/IJ7Enq+JN0An/+KgXeKCSRa6OmzScydyQWDPXIyAqteOGIpAxlWyCg//AtB902HkqDy7ohEtAWysHvNSSXybNkYRjCg4RhNRnUN7HFmBYykbONoXEzKzPUL6M7/R73KEG7BPVs1LAt824ZhYQUt3MGOZ2ZZv8a55EZ/p4JZfdeQKwD6vcmCbDtYXA6kTcjSWFXkH4GlyMBOF4harbvulqkg0V27u8TVR8F3RJiBuOXWZR9IJWwtbZoqTArboEvP8jARcTqxNpVd1XHwP1aqd7zIhoybBgCbWa0T0mwcAC58kjshk/AEYzU61OJJ/Kvq5Yjotk+BN7+2IAwWl9cn7l17No5GIH+/Qzsp6cuHy5A4OqancK85BPAwxF0xMU5/4iXWEkdptgYevG1MFMIU+E0TDUbrJFuswie7K06ueMvcrSivg9QjP3Ncu+IPUxh8it+YqklV2UlO5ndo3Er9WR4ueGvVdpcUpGMZ0U+q3RUhl8RD3QyoJ8PU268XINhQK3keKF2GB0qLochl4bz+Q=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB6101.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(346002)(376002)(136003)(396003)(5660300002)(86362001)(2906002)(53546011)(6486002)(83380400001)(4326008)(66946007)(186003)(8676002)(66556008)(66476007)(316002)(6916009)(31686004)(6506007)(478600001)(36756003)(41300700001)(26005)(6512007)(31696002)(2616005)(38100700002)(8936002)(54906003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cFBHUUd0anlxaTYxR3hVN1IzRFlYUk9rR0JRS1R6dDJqVG5IMzVYby90aDkw?=
+ =?utf-8?B?NjM4bVJpZTFzY0lwNVdaNjlVK0Jna25RNHBEWWFQN0wwRGJoUVhVK2hlVDZK?=
+ =?utf-8?B?dWpzVDNjcTB1MURlMHpRNnpVTXNBSE5iMTI1QTJhcTNoa1F0M1pIdDdMSlVh?=
+ =?utf-8?B?aktUUm5PcEMyb1UrY1BTd21KK0RqSkhjcFVHMEdhYmFDQzJrK3JwYyt4SER4?=
+ =?utf-8?B?SlV6cSt1OElqUXBOME5RQUpMN2ZkNzRlNGJLUmkwZW55OTM0cEFwTllmRmlO?=
+ =?utf-8?B?emZ1TE9zMUIvSE5vUWxsaEVvdHV0TTBLYTJpTHBjaDMvZGFpbGR3M0Iwd1ZD?=
+ =?utf-8?B?Z2dqMmk0M204ZWxNYjBqM2YySFh4eG9Pb1BUU1BIOWpKYzJRWWNORmR1bkJU?=
+ =?utf-8?B?c1ljZ2t2c3c4Si8vaFNkUnVJbFFNaC9DS1ZVbllYTHcyM2hhblp4OU5MUC8v?=
+ =?utf-8?B?RjNBR1hhR3ZvNC8yT1VPeTZNYzlWTzg5RUZnSzl2dWZLRTlROStQU0tGU2o0?=
+ =?utf-8?B?VG1iM2ZCcUxCNzVHT3BCWk4xQXJxTzlLS3V3NEdYM1gweEZsYVZraTdTcXpF?=
+ =?utf-8?B?aXFueDNvajZhNjFRZ0xQdXE4Z1pHcmlyb1dMdzRvZlVkS01NOVEwQldtclFk?=
+ =?utf-8?B?UDNuTzRkYjBPa0NmeVI3LzdVWC85cHp5QVBuOCt6YmtJaW9uVHpZZUpOaTFW?=
+ =?utf-8?B?dXl2VGF6MUdiMWJzM2FYUGk3SG82VkhlUnlVTXZTYUVpcnRDTTZXMENFRzEy?=
+ =?utf-8?B?K04vZW9GaDdoTzZRMzE4QklVdTQ5amFKN3JRcGo4WUdrWTZuWmxXMG9sRDV3?=
+ =?utf-8?B?TGFBS2dHMjVPWWYvWUEzSGQzUVJGYmdHR2NpOFF5Nm5oWWRaa0dzVWxyUk5m?=
+ =?utf-8?B?UUFLeGNrWUxKQ2QvSE9XajgzVkRrRGk0b2ZuN2JzbCs4U251SWNhZmQrZFg1?=
+ =?utf-8?B?VS9MMEdoQ2czZXNCUjdReE5UYW1nWVpPRy9DTFF6ZCtNY1FoaHQzR1FHbnZz?=
+ =?utf-8?B?ajBGS2drWG1EZGFiOXg0ekVRdG1HSjd1ZTVBOGxveTRhUUpTeVMyOFJrL0Y3?=
+ =?utf-8?B?QVNrRlRpYmlmSUdMMEtrUHJjWjdqemM3dUZsWURPWWcrZEJmamVzU1M2eGhr?=
+ =?utf-8?B?bDlWSDdpZW9oRW9WcTRoUnhZOHhrL0praWkwSzBvdVlDSlB5Q1hxK0RqN3RU?=
+ =?utf-8?B?dE0vYks4NUNCUnJCcXlscmlnZlRHSnVJbEdPcFVsTWdSUVIzdkN4bmhCQ3pa?=
+ =?utf-8?B?NjM5NFZpR2FIYnlLb2VUSmZlRTRzQXQ0SjZlWG1ieGc3UHNpc3FjYWxiR2l6?=
+ =?utf-8?B?TWRUQ3JpWmNNU1Q0ZVc0KzRVbWVlVUpnanVBWGU5TEJrcHNuaXBXczM4bmVn?=
+ =?utf-8?B?Yjh4SSttbnNwM05wOHB5Rm1aaGFOTzE1ekNuNUw1TVNUNC9hUVJpQzNmMnFh?=
+ =?utf-8?B?cG83L3VvZUwrcWI0dmFYVDVEbkJoL1NRSFptVm9nZ01vWG03OE83Z3Q0VFB1?=
+ =?utf-8?B?QUxpaDZhQVVMTDJRWldqMVdhWWhsWVptdVBrMFZoMEVJYXRnY1lsNnBTZHdX?=
+ =?utf-8?B?d3VWb3JsVk9RVXJjalAvTzVlVk9HdnZoZjV0dFl3N244Qkdnd0Y3UU4yN20v?=
+ =?utf-8?B?T3lSUitOdG9lUGQxbmVENnFaTjh5QjJsbHp0OWZCZUlFeGhyek1JeHBTY2tr?=
+ =?utf-8?B?MTFLYWRILzFhWHRDZ1FUSzhHVkhFaHQ0bmRjQzR3RU5JdjdmOXVYc21DNDAw?=
+ =?utf-8?B?TG8vb3pvNWxKQ3VRejZNWXJrWEYzYlpLUHgzanA5Yis5NTlxQmpOTll1ZEtu?=
+ =?utf-8?B?elc2dTFZSGtaMmxjQlc1UmFkMVFFekp1T2NLeFVFM1RIUFgxdFBsS3NkWFEz?=
+ =?utf-8?B?cFZZUlFzNlZiaGhtK0pTSE1mMm1iMlNiYTB4Z3pLVFlxZUJZdVYyT3NIM0Iw?=
+ =?utf-8?B?NUNBS1I2MUVmU2RkZTgzWTk3UlNpSGxDN3JVc3Zvdk5JUE5YNVE4aFBaT0Vm?=
+ =?utf-8?B?L3J5NEpIZ3BSbm1tYzFSQkE1Rkxtdnc0VXo2M0dZME12YlBNZHFweDZEa3l4?=
+ =?utf-8?B?T29mRkVqVTZac0wxZHdzR3RNMXFnVmdSTmp5bGxycHNFcHRCNHg0QUJNMUY0?=
+ =?utf-8?Q?pmkV4DIFGdpD8wnRLlYkTk0Id?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92e6e69f-ef9f-48aa-5f71-08da89cb572f
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB6101.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 14:32:46.3872
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kr2EcomotBundsCp4gw1jdneEH8Cg7VPYqNPIoz0Adk/77J9eIefYg0YlQlNvj8hJIUzPjyDR+7n+tWsk7QizA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6618
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert to use common struct mm_slot, no functional change.
+On 8/29/2022 09:20, Rafael J. Wysocki wrote:
+> On Mon, Aug 29, 2022 at 3:29 PM Mario Limonciello
+> <mario.limonciello@amd.com> wrote:
+>>
+>> On some platforms it is found that Linux more aggressively enters s2idle
+>> than Windows enters Modern Standby and this uncovers some synchronization
+>> issues for the platform.  To aid in debugging this class of problems in
+>> the future, add support for an extra optional callback intended for
+>> drivers to emit extra debugging.
+> 
+> I'm not liking this.
+> 
+> If you want debug, why not simply add it where it is needed?
 
-Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
----
- mm/ksm.c | 132 +++++++++++++++++++++++--------------------------------
- 1 file changed, 56 insertions(+), 76 deletions(-)
+Actually this is exactly where it's needed.  The synchronization issue 
+is with what non-x86 is doing while x86 transitions into ACPI C3.
 
-diff --git a/mm/ksm.c b/mm/ksm.c
-index 667efca75b0d..051a09d24d54 100644
---- a/mm/ksm.c
-+++ b/mm/ksm.c
-@@ -42,6 +42,7 @@
- 
- #include <asm/tlbflush.h>
- #include "internal.h"
-+#include "mm_slot.h"
- 
- #ifdef CONFIG_NUMA
- #define NUMA(x)		(x)
-@@ -113,16 +114,12 @@
- 
- /**
-  * struct ksm_mm_slot - ksm information per mm that is being scanned
-- * @hash: link to the mm_slots hash list
-- * @mm_node: link into the mm_slots list, rooted in ksm_mm_head
-+ * @slot: hash lookup from mm to mm_slot
-  * @rmap_list: head for this mm_slot's singly-linked list of rmap_items
-- * @mm: the mm that this information is valid for
-  */
- struct ksm_mm_slot {
--	struct hlist_node hash;
--	struct list_head mm_node;
-+	struct mm_slot slot;
- 	struct ksm_rmap_item *rmap_list;
--	struct mm_struct *mm;
- };
- 
- /**
-@@ -231,7 +228,7 @@ static LIST_HEAD(migrate_nodes);
- static DEFINE_HASHTABLE(mm_slots_hash, MM_SLOTS_HASH_BITS);
- 
- static struct ksm_mm_slot ksm_mm_head = {
--	.mm_node = LIST_HEAD_INIT(ksm_mm_head.mm_node),
-+	.slot.mm_node = LIST_HEAD_INIT(ksm_mm_head.slot.mm_node),
- };
- static struct ksm_scan ksm_scan = {
- 	.mm_slot = &ksm_mm_head,
-@@ -408,36 +405,6 @@ static inline void free_stable_node(struct ksm_stable_node *stable_node)
- 	kmem_cache_free(stable_node_cache, stable_node);
- }
- 
--static inline struct ksm_mm_slot *alloc_mm_slot(void)
--{
--	if (!mm_slot_cache)	/* initialization failed */
--		return NULL;
--	return kmem_cache_zalloc(mm_slot_cache, GFP_KERNEL);
--}
--
--static inline void free_mm_slot(struct ksm_mm_slot *mm_slot)
--{
--	kmem_cache_free(mm_slot_cache, mm_slot);
--}
--
--static struct ksm_mm_slot *get_mm_slot(struct mm_struct *mm)
--{
--	struct ksm_mm_slot *slot;
--
--	hash_for_each_possible(mm_slots_hash, slot, hash, (unsigned long)mm)
--		if (slot->mm == mm)
--			return slot;
--
--	return NULL;
--}
--
--static void insert_to_mm_slots_hash(struct mm_struct *mm,
--				    struct ksm_mm_slot *mm_slot)
--{
--	mm_slot->mm = mm;
--	hash_add(mm_slots_hash, &mm_slot->hash, (unsigned long)mm);
--}
--
- /*
-  * ksmd, and unmerge_and_remove_all_rmap_items(), must not touch an mm's
-  * page tables after it has passed through ksm_exit() - which, if necessary,
-@@ -975,20 +942,22 @@ static int remove_all_stable_nodes(void)
- static int unmerge_and_remove_all_rmap_items(void)
- {
- 	struct ksm_mm_slot *mm_slot;
-+	struct mm_slot *slot;
- 	struct mm_struct *mm;
- 	struct vm_area_struct *vma;
- 	int err = 0;
- 
- 	spin_lock(&ksm_mmlist_lock);
--	ksm_scan.mm_slot = list_entry(ksm_mm_head.mm_node.next,
--						struct ksm_mm_slot, mm_node);
-+	slot = list_entry(ksm_mm_head.slot.mm_node.next,
-+			  struct mm_slot, mm_node);
-+	ksm_scan.mm_slot = mm_slot_entry(slot, struct ksm_mm_slot, slot);
- 	spin_unlock(&ksm_mmlist_lock);
- 
- 	for (mm_slot = ksm_scan.mm_slot; mm_slot != &ksm_mm_head;
- 	     mm_slot = ksm_scan.mm_slot) {
--		VMA_ITERATOR(vmi, mm_slot->mm, 0);
-+		VMA_ITERATOR(vmi, mm_slot->slot.mm, 0);
- 
--		mm = mm_slot->mm;
-+		mm = mm_slot->slot.mm;
- 		mmap_read_lock(mm);
- 		for_each_vma(vmi, vma) {
- 			if (ksm_test_exit(mm))
-@@ -1005,14 +974,15 @@ static int unmerge_and_remove_all_rmap_items(void)
- 		mmap_read_unlock(mm);
- 
- 		spin_lock(&ksm_mmlist_lock);
--		ksm_scan.mm_slot = list_entry(mm_slot->mm_node.next,
--						struct ksm_mm_slot, mm_node);
-+		slot = list_entry(mm_slot->slot.mm_node.next,
-+				  struct mm_slot, mm_node);
-+		ksm_scan.mm_slot = mm_slot_entry(slot, struct ksm_mm_slot, slot);
- 		if (ksm_test_exit(mm)) {
--			hash_del(&mm_slot->hash);
--			list_del(&mm_slot->mm_node);
-+			hash_del(&mm_slot->slot.hash);
-+			list_del(&mm_slot->slot.mm_node);
- 			spin_unlock(&ksm_mmlist_lock);
- 
--			free_mm_slot(mm_slot);
-+			free_mm_slot(mm_slot_cache, mm_slot);
- 			clear_bit(MMF_VM_MERGEABLE, &mm->flags);
- 			mmdrop(mm);
- 		} else
-@@ -2233,7 +2203,7 @@ static struct ksm_rmap_item *get_next_rmap_item(struct ksm_mm_slot *mm_slot,
- 	rmap_item = alloc_rmap_item();
- 	if (rmap_item) {
- 		/* It has already been zeroed */
--		rmap_item->mm = mm_slot->mm;
-+		rmap_item->mm = mm_slot->slot.mm;
- 		rmap_item->address = addr;
- 		rmap_item->rmap_list = *rmap_list;
- 		*rmap_list = rmap_item;
-@@ -2244,17 +2214,18 @@ static struct ksm_rmap_item *get_next_rmap_item(struct ksm_mm_slot *mm_slot,
- static struct ksm_rmap_item *scan_get_next_rmap_item(struct page **page)
- {
- 	struct mm_struct *mm;
--	struct ksm_mm_slot *slot;
-+	struct ksm_mm_slot *mm_slot;
-+	struct mm_slot *slot;
- 	struct vm_area_struct *vma;
- 	struct ksm_rmap_item *rmap_item;
- 	struct vma_iterator vmi;
- 	int nid;
- 
--	if (list_empty(&ksm_mm_head.mm_node))
-+	if (list_empty(&ksm_mm_head.slot.mm_node))
- 		return NULL;
- 
--	slot = ksm_scan.mm_slot;
--	if (slot == &ksm_mm_head) {
-+	mm_slot = ksm_scan.mm_slot;
-+	if (mm_slot == &ksm_mm_head) {
- 		/*
- 		 * A number of pages can hang around indefinitely on per-cpu
- 		 * pagevecs, raised page count preventing write_protect_page
-@@ -2291,20 +2262,23 @@ static struct ksm_rmap_item *scan_get_next_rmap_item(struct page **page)
- 			root_unstable_tree[nid] = RB_ROOT;
- 
- 		spin_lock(&ksm_mmlist_lock);
--		slot = list_entry(slot->mm_node.next, struct ksm_mm_slot, mm_node);
--		ksm_scan.mm_slot = slot;
-+		slot = list_entry(mm_slot->slot.mm_node.next,
-+				  struct mm_slot, mm_node);
-+		mm_slot = mm_slot_entry(slot, struct ksm_mm_slot, slot);
-+		ksm_scan.mm_slot = mm_slot;
- 		spin_unlock(&ksm_mmlist_lock);
- 		/*
- 		 * Although we tested list_empty() above, a racing __ksm_exit
- 		 * of the last mm on the list may have removed it since then.
- 		 */
--		if (slot == &ksm_mm_head)
-+		if (mm_slot == &ksm_mm_head)
- 			return NULL;
- next_mm:
- 		ksm_scan.address = 0;
--		ksm_scan.rmap_list = &slot->rmap_list;
-+		ksm_scan.rmap_list = &mm_slot->rmap_list;
- 	}
- 
-+	slot = &mm_slot->slot;
- 	mm = slot->mm;
- 	vma_iter_init(&vmi, mm, ksm_scan.address);
- 
-@@ -2334,7 +2308,7 @@ static struct ksm_rmap_item *scan_get_next_rmap_item(struct page **page)
- 			if (PageAnon(*page)) {
- 				flush_anon_page(vma, *page, ksm_scan.address);
- 				flush_dcache_page(*page);
--				rmap_item = get_next_rmap_item(slot,
-+				rmap_item = get_next_rmap_item(mm_slot,
- 					ksm_scan.rmap_list, ksm_scan.address);
- 				if (rmap_item) {
- 					ksm_scan.rmap_list =
-@@ -2355,7 +2329,7 @@ static struct ksm_rmap_item *scan_get_next_rmap_item(struct page **page)
- 	if (ksm_test_exit(mm)) {
- no_vmas:
- 		ksm_scan.address = 0;
--		ksm_scan.rmap_list = &slot->rmap_list;
-+		ksm_scan.rmap_list = &mm_slot->rmap_list;
- 	}
- 	/*
- 	 * Nuke all the rmap_items that are above this current rmap:
-@@ -2364,8 +2338,9 @@ static struct ksm_rmap_item *scan_get_next_rmap_item(struct page **page)
- 	remove_trailing_rmap_items(ksm_scan.rmap_list);
- 
- 	spin_lock(&ksm_mmlist_lock);
--	ksm_scan.mm_slot = list_entry(slot->mm_node.next,
--						struct ksm_mm_slot, mm_node);
-+	slot = list_entry(mm_slot->slot.mm_node.next,
-+			  struct mm_slot, mm_node);
-+	ksm_scan.mm_slot = mm_slot_entry(slot, struct ksm_mm_slot, slot);
- 	if (ksm_scan.address == 0) {
- 		/*
- 		 * We've completed a full scan of all vmas, holding mmap_lock
-@@ -2376,11 +2351,11 @@ static struct ksm_rmap_item *scan_get_next_rmap_item(struct page **page)
- 		 * or when all VM_MERGEABLE areas have been unmapped (and
- 		 * mmap_lock then protects against race with MADV_MERGEABLE).
- 		 */
--		hash_del(&slot->hash);
--		list_del(&slot->mm_node);
-+		hash_del(&mm_slot->slot.hash);
-+		list_del(&mm_slot->slot.mm_node);
- 		spin_unlock(&ksm_mmlist_lock);
- 
--		free_mm_slot(slot);
-+		free_mm_slot(mm_slot_cache, mm_slot);
- 		clear_bit(MMF_VM_MERGEABLE, &mm->flags);
- 		mmap_read_unlock(mm);
- 		mmdrop(mm);
-@@ -2397,8 +2372,8 @@ static struct ksm_rmap_item *scan_get_next_rmap_item(struct page **page)
- 	}
- 
- 	/* Repeat until we've completed scanning the whole list */
--	slot = ksm_scan.mm_slot;
--	if (slot != &ksm_mm_head)
-+	mm_slot = ksm_scan.mm_slot;
-+	if (mm_slot != &ksm_mm_head)
- 		goto next_mm;
- 
- 	ksm_scan.seqnr++;
-@@ -2426,7 +2401,7 @@ static void ksm_do_scan(unsigned int scan_npages)
- 
- static int ksmd_should_run(void)
- {
--	return (ksm_run & KSM_RUN_MERGE) && !list_empty(&ksm_mm_head.mm_node);
-+	return (ksm_run & KSM_RUN_MERGE) && !list_empty(&ksm_mm_head.slot.mm_node);
- }
- 
- static int ksm_scan_thread(void *nothing)
-@@ -2516,17 +2491,20 @@ EXPORT_SYMBOL_GPL(ksm_madvise);
- int __ksm_enter(struct mm_struct *mm)
- {
- 	struct ksm_mm_slot *mm_slot;
-+	struct mm_slot *slot;
- 	int needs_wakeup;
- 
--	mm_slot = alloc_mm_slot();
-+	mm_slot = alloc_mm_slot(mm_slot_cache);
- 	if (!mm_slot)
- 		return -ENOMEM;
- 
-+	slot = &mm_slot->slot;
-+
- 	/* Check ksm_run too?  Would need tighter locking */
--	needs_wakeup = list_empty(&ksm_mm_head.mm_node);
-+	needs_wakeup = list_empty(&ksm_mm_head.slot.mm_node);
- 
- 	spin_lock(&ksm_mmlist_lock);
--	insert_to_mm_slots_hash(mm, mm_slot);
-+	insert_to_mm_slots_hash(mm_slots_hash, mm, slot);
- 	/*
- 	 * When KSM_RUN_MERGE (or KSM_RUN_STOP),
- 	 * insert just behind the scanning cursor, to let the area settle
-@@ -2538,9 +2516,9 @@ int __ksm_enter(struct mm_struct *mm)
- 	 * missed: then we might as well insert at the end of the list.
- 	 */
- 	if (ksm_run & KSM_RUN_UNMERGE)
--		list_add_tail(&mm_slot->mm_node, &ksm_mm_head.mm_node);
-+		list_add_tail(&slot->mm_node, &ksm_mm_head.slot.mm_node);
- 	else
--		list_add_tail(&mm_slot->mm_node, &ksm_scan.mm_slot->mm_node);
-+		list_add_tail(&slot->mm_node, &ksm_scan.mm_slot->slot.mm_node);
- 	spin_unlock(&ksm_mmlist_lock);
- 
- 	set_bit(MMF_VM_MERGEABLE, &mm->flags);
-@@ -2555,6 +2533,7 @@ int __ksm_enter(struct mm_struct *mm)
- void __ksm_exit(struct mm_struct *mm)
- {
- 	struct ksm_mm_slot *mm_slot;
-+	struct mm_slot *slot;
- 	int easy_to_free = 0;
- 
- 	/*
-@@ -2567,21 +2546,22 @@ void __ksm_exit(struct mm_struct *mm)
- 	 */
- 
- 	spin_lock(&ksm_mmlist_lock);
--	mm_slot = get_mm_slot(mm);
-+	slot = get_mm_slot(mm_slots_hash, mm);
-+	mm_slot = mm_slot_entry(slot, struct ksm_mm_slot, slot);
- 	if (mm_slot && ksm_scan.mm_slot != mm_slot) {
- 		if (!mm_slot->rmap_list) {
--			hash_del(&mm_slot->hash);
--			list_del(&mm_slot->mm_node);
-+			hash_del(&slot->hash);
-+			list_del(&slot->mm_node);
- 			easy_to_free = 1;
- 		} else {
--			list_move(&mm_slot->mm_node,
--				  &ksm_scan.mm_slot->mm_node);
-+			list_move(&slot->mm_node,
-+				  &ksm_scan.mm_slot->slot.mm_node);
- 		}
- 	}
- 	spin_unlock(&ksm_mmlist_lock);
- 
- 	if (easy_to_free) {
--		free_mm_slot(mm_slot);
-+		free_mm_slot(mm_slot_cache, mm_slot);
- 		clear_bit(MMF_VM_MERGEABLE, &mm->flags);
- 		mmdrop(mm);
- 	} else if (mm_slot) {
--- 
-2.20.1
+> 
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+>> v1->v2:
+>>   * Add a prototype for `acpi_s2idle_enter`
+>>
+>>   drivers/acpi/sleep.h      |  1 +
+>>   drivers/acpi/x86/s2idle.c | 14 ++++++++++++++
+>>   include/linux/acpi.h      |  1 +
+>>   include/linux/suspend.h   |  1 +
+>>   kernel/power/suspend.c    |  3 +++
+>>   5 files changed, 20 insertions(+)
+>>
+>> diff --git a/drivers/acpi/sleep.h b/drivers/acpi/sleep.h
+>> index 7fe41ee489d6..7856930a7da9 100644
+>> --- a/drivers/acpi/sleep.h
+>> +++ b/drivers/acpi/sleep.h
+>> @@ -18,6 +18,7 @@ static inline acpi_status acpi_set_waking_vector(u32 wakeup_address)
+>>   extern int acpi_s2idle_begin(void);
+>>   extern int acpi_s2idle_prepare(void);
+>>   extern int acpi_s2idle_prepare_late(void);
+>> +extern void acpi_s2idle_enter(void);
+> 
+> And this name is confusing, because it suggests that the role of the
+> callback is to make the platform enter s2idle which isn't the case.
+
+Can you propose another name?
+
+> 
+>>   extern bool acpi_s2idle_wake(void);
+>>   extern void acpi_s2idle_restore_early(void);
+>>   extern void acpi_s2idle_restore(void);
+>> diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
+>> index f9ac12b778e6..c984093a3657 100644
+>> --- a/drivers/acpi/x86/s2idle.c
+>> +++ b/drivers/acpi/x86/s2idle.c
+>> @@ -486,6 +486,19 @@ int acpi_s2idle_prepare_late(void)
+>>          return 0;
+>>   }
+>>
+>> +void acpi_s2idle_enter(void)
+>> +{
+>> +       struct acpi_s2idle_dev_ops *handler;
+>> +
+>> +       if (!lps0_device_handle || sleep_no_lps0)
+>> +               return;
+>> +
+>> +       list_for_each_entry(handler, &lps0_s2idle_devops_head, list_node) {
+>> +               if (handler->enter)
+>> +                       handler->enter();
+>> +       }
+>> +}
+>> +
+>>   void acpi_s2idle_restore_early(void)
+>>   {
+>>          struct acpi_s2idle_dev_ops *handler;
+>> @@ -527,6 +540,7 @@ static const struct platform_s2idle_ops acpi_s2idle_ops_lps0 = {
+>>          .begin = acpi_s2idle_begin,
+>>          .prepare = acpi_s2idle_prepare,
+>>          .prepare_late = acpi_s2idle_prepare_late,
+>> +       .enter = acpi_s2idle_enter,
+>>          .wake = acpi_s2idle_wake,
+>>          .restore_early = acpi_s2idle_restore_early,
+>>          .restore = acpi_s2idle_restore,
+>> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+>> index 6f64b2f3dc54..9df14b5a875c 100644
+>> --- a/include/linux/acpi.h
+>> +++ b/include/linux/acpi.h
+>> @@ -1076,6 +1076,7 @@ struct acpi_s2idle_dev_ops {
+>>          struct list_head list_node;
+>>          void (*prepare)(void);
+>>          void (*restore)(void);
+>> +       void (*enter)(void);
+>>   };
+>>   int acpi_register_lps0_dev(struct acpi_s2idle_dev_ops *arg);
+>>   void acpi_unregister_lps0_dev(struct acpi_s2idle_dev_ops *arg);
+>> diff --git a/include/linux/suspend.h b/include/linux/suspend.h
+>> index 70f2921e2e70..5a3fdca0a628 100644
+>> --- a/include/linux/suspend.h
+>> +++ b/include/linux/suspend.h
+>> @@ -191,6 +191,7 @@ struct platform_s2idle_ops {
+>>          int (*begin)(void);
+>>          int (*prepare)(void);
+>>          int (*prepare_late)(void);
+>> +       void (*enter)(void);
+>>          bool (*wake)(void);
+>>          void (*restore_early)(void);
+>>          void (*restore)(void);
+>> diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
+>> index 827075944d28..0c08032d6b50 100644
+>> --- a/kernel/power/suspend.c
+>> +++ b/kernel/power/suspend.c
+>> @@ -136,6 +136,9 @@ static void s2idle_loop(void)
+>>                          break;
+>>                  }
+>>
+>> +               if (s2idle_ops && s2idle_ops->enter)
+>> +                       s2idle_ops->enter();
+>> +
+>>                  s2idle_enter();
+>>          }
+>>
+>> --
+>> 2.34.1
+>>
 
