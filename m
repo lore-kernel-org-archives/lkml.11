@@ -2,190 +2,459 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A44C6FA81
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF29C6FA82
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229549AbiH2RWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
+        id S230527AbiH2RXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiH2RWA (ORCPT
+        with ESMTP id S229682AbiH2RXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:22:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F0274DF8;
-        Mon, 29 Aug 2022 10:21:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93E07B80B8C;
-        Mon, 29 Aug 2022 17:21:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38600C433C1;
-        Mon, 29 Aug 2022 17:21:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661793715;
-        bh=XrplDPQ8UTAXX6VsmmOcv63Bxz1cFoVo/yyz+x0kx0c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ogjAob9zUvKKOvxWfsX3D3DSadfpRqW1j6s6iRdf1LoQZhBHkzsrRQ80z6wMjUIJd
-         sBiBf0RKTrjUlVaG0CjJ+TRMQIqfGyPY5gaE0J+2+JO7pnXInZDlCiGGsJVrVrYTw6
-         4aOAezpv5hb7Iz9DGmj4+Z2KENj6K8LHFfWmEYC273TCu/SMT4aN7kzL0LHAdWoRhB
-         W1woaUUUzCZXjPfBxKrLo/eNP03ZxXgmqo+OXwWWNUVjNu83qjSMud5IGYDEtCKtox
-         SNVT+wRnkVxH4NVEIoCiVVtY85NA90nZFBw0gbSXoc7F2EMgM+aLiHD46TOWS5SRt+
-         iJkHXBM1W+vkw==
-Date:   Mon, 29 Aug 2022 17:47:37 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Regus, Ciprian" <Ciprian.Regus@analog.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/3] drivers: iio: adc: LTC2499 support
-Message-ID: <20220829174737.3192f5a7@jic23-huawei>
-In-Reply-To: <e13827526235412585f8b7d60257c5a2@analog.com>
-References: <20220822125106.1106798-1-ciprian.regus@analog.com>
-        <20220822125106.1106798-3-ciprian.regus@analog.com>
-        <20220822203731.29c4c33b@jic23-huawei>
-        <CAHp75Vft2pvXtxZcpvyV38cR9gOdDxDfCae8g5Uf2q6npWpb+Q@mail.gmail.com>
-        <e13827526235412585f8b7d60257c5a2@analog.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Mon, 29 Aug 2022 13:23:11 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74DD50731
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:23:08 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id bu22so10722975wrb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 10:23:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod.ie; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=ROXY/xQox8OqNuTJQ3y6eDkrd5/vObL/9ruPCF9KJhc=;
+        b=GPTh7pSppYKbIzxX9/3YX9sE937R2LpYvg8mw/wOK1ZzyqfxtN8ZOAp0PYReeFYHZz
+         IIExw5R0osm0CyCIvZaoDG0hqDP2Ctg11vcoV/ZOHWlOp7n27QwClS4v7ydHA3jNKI6n
+         /4k7yZZCY8E2uiTpT/9pJD7/ldWmN3PZXUbb4rkCrLNSqB8nTj033+vb5rGU+VjXI4QR
+         z+a7hKkLyhdXvIseRHcebsAs4OCFtUDYsGEA330DMt45p6rU1p6IIqMs1V7dv2uG4Rn7
+         VtNbNvO3Ixb6KYsjKIgNWq2ZMrKzzg+SvCTToaWL0O+9V5YDUGWWFq0KeuiTJB9nOfFI
+         AIDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ROXY/xQox8OqNuTJQ3y6eDkrd5/vObL/9ruPCF9KJhc=;
+        b=1hq9uwkXwSqvTYz0t9q4TQiWekNdxAnmID/9F6spbVvqRuY6SfVgBBMMmkh+MAd6b+
+         wP0p69k/atfX4/9In2KNDdLhhKKI+kqXHsc09Lgm1AhPuCPrbZ2rNsiCXzJ0LEEl6bPG
+         nN3oYZWIpGEI2ETyj/ulPYcpzFxPPcY95W7PtlBdyw0rFWi8ejuV/R8pNfSv/Wfkxzh2
+         wHDZxF7uq5vn2S6dzr6fBelwA9u9j2jnAUB8LzYTdsJh5FLeLi5Tr+/WK60qPq4QZyHx
+         vrkFpqKca68CLN1lY/lHwonFNaiSFEiQGqUV31WyaYCRpEP8zhXwiLsVlS+EAf7qx7q3
+         Q0NQ==
+X-Gm-Message-State: ACgBeo1RP23NgS4cF0Q+Us3qqE/Jio3NSCm4ncPIePYi/I2zbGVkQUpp
+        Zsklpq1cDqwq3bKQe7aVtjrRQ8NNfBHe012B
+X-Google-Smtp-Source: AA6agR6qERXecGefvattNTWo9v3TTFZE0mKqpbS89ELHPg9qbkLio16lNhQTkR4ObRAON1DzOiWNOg==
+X-Received: by 2002:a05:6000:1d82:b0:220:5f9b:9a77 with SMTP id bk2-20020a0560001d8200b002205f9b9a77mr6894102wrb.622.1661793787323;
+        Mon, 29 Aug 2022 10:23:07 -0700 (PDT)
+Received: from [192.168.2.222] ([51.37.149.245])
+        by smtp.gmail.com with ESMTPSA id l9-20020adfe9c9000000b0022586045c89sm7792594wrn.69.2022.08.29.10.23.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 10:23:06 -0700 (PDT)
+Message-ID: <3cd38c59-708e-76d3-52dc-2adf250c2d14@conchuod.ie>
+Date:   Mon, 29 Aug 2022 18:23:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5] Remove duplicated words across the whole documentation
+Content-Language: en-US
+To:     Jules Maselbas <jmaselbas@kalray.eu>, linux-kernel@vger.kernel.org
+Cc:     Conor.Dooley@microchip.com, Randy Dunlap <rdunlap@infradead.org>,
+        Bagas Sanjaya <bagasdotme@gmail.com>, linux-doc@vger.kernel.org
+References: <20220826165634.5617-1-jmaselbas@kalray.eu>
+ <20220829092910.12267-1-jmaselbas@kalray.eu>
+From:   Conor Dooley <mail@conchuod.ie>
+In-Reply-To: <20220829092910.12267-1-jmaselbas@kalray.eu>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 29 Aug 2022 06:30:52 +0000
-"Regus, Ciprian" <Ciprian.Regus@analog.com> wrote:
-
-> In reply to one of Andy's questions.
+On 29/08/2022 10:29, Jules Maselbas wrote:
+> Remove duplicated words (the, at, be ...) across the whole documentation.
+> In some cases the duplicated words are replaced by something that makes
+> more sense, for instance: "be be" is replaced by "can be" when possible.
 > 
-> > On Mon, Aug 22, 2022 at 11:13 PM Jonathan Cameron <jic23@kernel.org>
-> > wrote:  
-> > > On Mon, 22 Aug 2022 15:51:05 +0300
-> > > Ciprian Regus <ciprian.regus@analog.com> wrote:  
-> > 
-> > In reply to Jonathan's comments to answer his question and add more
-> > comments from me.
-> > 
-> > ...
-> >   
-> > > > Datasheet: https://www.analog.com/media/en/technical-  
-> > documentation/data-sheets/2499fe.pdf  
-> > > >
-> > > > Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>  
-> > 
-> > Tag block mustn't have the blank line(s).
-> > 
-> > ...
-> >   
-> > > >  #include <linux/iio/iio.h>
-> > > >  #include <linux/iio/driver.h>
-> > > >  #include <linux/module.h>
-> > > > +#include <linux/property.h>  
-> > > why?  
-> > 
-> > device_get_match_data() requires it.
-> > 
-> > But why not sort them?
-> >   
-> > > >  #include <linux/mod_devicetable.h>  
-> > 
-> > ...
-> >   
-> > > > -             *val = (be32_to_cpu(st->buf) >> 14) - (1 << 17);  
-> > >
-> > > Old code here is less than ideal, should be reading into 3 bytes then using
-> > > the be24 accesors. Please fix whilst here.  You will need multiple paths here
-> > > depending on size.
-> > >  
-> > > > +             *val = (be32_to_cpu(st->buf) >> st->sub_lsb) -
-> > > > +                     BIT(ddata->chip_info->resolution + 1);  
-> > 
-> > Shouldn't this use some kind of sign_extend()?  
-> The BIT(ddata->chip_info->resolution + 1) subtraction part is already doing the sign extension,
-> since that bit (which is the most significant one) will be 0 if the result is < 0, and 1 otherwise.
-
-This wins the award for one of the strangest formats I've yet seen.
-The format is normal 2s complement 24 bit, but with a bonus upper bit to allow representation of
-ever so slightly more than 24 bits.  Specifically on the postive side the out of range value.
-0x7fffff + 1 = 0x800000 (which would normally be considered wrapped around to most negative value.
-
-and on the negative side as well
-0x800000 - 1 = 0x7fffff (normally most positive value).
-It does this by throwing in an additional bit for sign which only tells us something useful
-if in these two edge conditions (which are really an out of range error).
-That bit corresponds int his case to
-0x1000000 and is set for postive values only.
-
-Thus our VS+ value becomes 0x01800000
-and VS- value becomes      0x007fffff 
-(extended to 32 bits for reasons that will become clear)
-Applying 2's complement subtraction of the magic value above.
-
-0x01800000 - 0x01000000 = 0x00800000   (2^23)
-0x007fffff - 0x01000000 = 0xff7fffff   (-(2^23 + 1))
-
-So it is indeed sign extended by the above.
-
-Perhaps a few comments to set people off along the right path to what is
-going on here would be useful?
-
-Jonathan
-
-
+> There are likely more duplicated words.
 > 
-> Regards,
-> Ciprian
-> >
-> > Also with a temporary variable for chip info this line can be single.
-> > 
-> >    struct ... *ci = ddata->chip_info;
-> > 
-> >    ...BIT(ci->resolution + 1)
-> > 
-> > ...
-> >   
-> > > > +     u32 resolution;  
-> > 
-> > Keep this in a way that the "longer lines go first".
-> > 
-> > ...
-> >   
-> > > > +     resolution = st->common_ddata.chip_info->resolution;
-> > > > +     st->sub_lsb = 31 - (resolution + 1);
-> > > > +     st->recv_size = resolution / BITS_PER_BYTE + 1;  
-> > 
-> > BITS_TO_BYTES()
-> > 
-> > ...
-> >   
-> > > >  static const struct i2c_device_id ltc2497_id[] = {
-> > > > -     { "ltc2497", 0 },
-> > > > +     { "ltc2497", TYPE_LTC2497 },
-> > > > +     { "ltc2499", TYPE_LTC2499 },  
-> > 
-> > Use pointers here like you have done for the OF table.
-> >   
-> > > >       { }
-> > > >  };  
-> > 
-> > ...
-> >   
-> > > > +enum chip_type {
-> > > > +     TYPE_LTC2496,
-> > > > +     TYPE_LTC2497,
-> > > > +     TYPE_LTC2499  
-> > 
-> > Keep trailing comma.
-> >   
-> > > > +};  
-> > 
-> > --
-> > With Best Regards,
-> > Andy Shevchenko  
+> CC: Conor.Dooley@microchip.com
+> CC: Randy Dunlap <rdunlap@infradead.org>
+> CC: Bagas Sanjaya <bagasdotme@gmail.com>
+> CC: linux-doc@vger.kernel.org
+> Signed-off-by: Jules Maselbas <jmaselbas@kalray.eu>
+> ---
+> in v5:
+>  - remove spurious changes reported by Randy Dunlap
+> in v4:
+>  - remove spurious changes reported by Conor Dooley
+> in v3:
+>  as suggested by Randy Dunlap:
+>  - remove duplicated 'The the '
+>  - remove duplicated 'at at ' (some are replaced by 'at a ')
+>  - remove duplicated be, is, to, we, on ...
+> in v2:
+>  - also remove the second 'the' in one sentence as suggested by
+>    Bagas Sanjaya
+> ---
+>  Documentation/RCU/checklist.rst                               | 2 +-
+>  Documentation/admin-guide/kdump/vmcoreinfo.rst                | 2 +-
+>  Documentation/bpf/instruction-set.rst                         | 2 +-
+>  Documentation/bpf/map_cgroup_storage.rst                      | 4 ++--
+>  Documentation/core-api/cpu_hotplug.rst                        | 3 +--
 
+---8<---
+>  Documentation/devicetree/bindings/arm/arm,vexpress-juno.yaml  | 4 ++--
+>  .../devicetree/bindings/arm/tegra/nvidia,tegra20-ahb.txt      | 2 +-
+>  Documentation/devicetree/bindings/dma/ti-dma-crossbar.txt     | 2 +-
+>  Documentation/devicetree/bindings/fpga/fpga-region.txt        | 4 ++--
+>  Documentation/devicetree/bindings/mfd/ti,lp87524-q1.yaml      | 2 +-
+>  Documentation/devicetree/bindings/mfd/ti,lp87561-q1.yaml      | 2 +-
+>  Documentation/devicetree/bindings/mfd/ti,lp87565-q1.yaml      | 2 +-
+>  .../devicetree/bindings/net/amlogic,meson-dwmac.yaml          | 2 +-
+>  .../devicetree/bindings/net/can/microchip,mcp251xfd.yaml      | 2 +-
+---8<---
+
+I think I saw Jon pointing out against the v3 that these are bindings
+and need to be sent separately via the subsystem trees rather than his
+docs tree.
+
+Other than that, I read back through these and all seem correct now,
+so FWIW:
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+
+Thanks.
+
+>  Documentation/driver-api/isa.rst                              | 2 +-
+>  Documentation/filesystems/caching/backend-api.rst             | 2 +-
+>  Documentation/filesystems/journalling.rst                     | 2 +-
+>  Documentation/hwmon/f71882fg.rst                              | 2 +-
+>  Documentation/locking/seqlock.rst                             | 2 +-
+>  Documentation/sphinx/cdomain.py                               | 2 +-
+>  Documentation/trace/histogram.rst                             | 2 +-
+>  Documentation/userspace-api/media/dvb/dmx-reqbufs.rst         | 2 +-
+>  Documentation/userspace-api/media/dvb/frontend_f_open.rst     | 2 +-
+>  23 files changed, 26 insertions(+), 27 deletions(-)
+> 
+> diff --git a/Documentation/RCU/checklist.rst b/Documentation/RCU/checklist.rst
+> index 42cc5d891bd2..7b1c85a16dc3 100644
+> --- a/Documentation/RCU/checklist.rst
+> +++ b/Documentation/RCU/checklist.rst
+> @@ -477,6 +477,6 @@ over a rather long period of time, but improvements are always welcome!
+>  	So if you need to wait for both an RCU grace period and for
+>  	all pre-existing call_rcu() callbacks, you will need to execute
+>  	both rcu_barrier() and synchronize_rcu(), if necessary, using
+> -	something like workqueues to to execute them concurrently.
+> +	something like workqueues to execute them concurrently.
+>  
+>  	See rcubarrier.rst for more information.
+> diff --git a/Documentation/admin-guide/kdump/vmcoreinfo.rst b/Documentation/admin-guide/kdump/vmcoreinfo.rst
+> index 8419019b6a88..6726f439958c 100644
+> --- a/Documentation/admin-guide/kdump/vmcoreinfo.rst
+> +++ b/Documentation/admin-guide/kdump/vmcoreinfo.rst
+> @@ -200,7 +200,7 @@ prb
+>  
+>  A pointer to the printk ringbuffer (struct printk_ringbuffer). This
+>  may be pointing to the static boot ringbuffer or the dynamically
+> -allocated ringbuffer, depending on when the the core dump occurred.
+> +allocated ringbuffer, depending on when the core dump occurred.
+>  Used by user-space tools to read the active kernel log buffer.
+>  
+>  printk_rb_static
+> diff --git a/Documentation/bpf/instruction-set.rst b/Documentation/bpf/instruction-set.rst
+> index 1b0e6711dec9..0ac7ae40be37 100644
+> --- a/Documentation/bpf/instruction-set.rst
+> +++ b/Documentation/bpf/instruction-set.rst
+> @@ -133,7 +133,7 @@ code field of ``BPF_END``.
+>  The byte swap instructions operate on the destination register
+>  only and do not use a separate source register or immediate value.
+>  
+> -The 1-bit source operand field in the opcode is used to to select what byte
+> +The 1-bit source operand field in the opcode is used to select what byte
+>  order the operation convert from or to:
+>  
+>    =========  =====  =================================================
+> diff --git a/Documentation/bpf/map_cgroup_storage.rst b/Documentation/bpf/map_cgroup_storage.rst
+> index cab9543017bf..8e5fe532c07e 100644
+> --- a/Documentation/bpf/map_cgroup_storage.rst
+> +++ b/Documentation/bpf/map_cgroup_storage.rst
+> @@ -31,7 +31,7 @@ The map uses key of type of either ``__u64 cgroup_inode_id`` or
+>      };
+>  
+>  ``cgroup_inode_id`` is the inode id of the cgroup directory.
+> -``attach_type`` is the the program's attach type.
+> +``attach_type`` is the program's attach type.
+>  
+>  Linux 5.9 added support for type ``__u64 cgroup_inode_id`` as the key type.
+>  When this key type is used, then all attach types of the particular cgroup and
+> @@ -155,7 +155,7 @@ However, the BPF program can still only associate with one map of each type
+>  ``BPF_MAP_TYPE_CGROUP_STORAGE`` or more than one
+>  ``BPF_MAP_TYPE_PERCPU_CGROUP_STORAGE``.
+>  
+> -In all versions, userspace may use the the attach parameters of cgroup and
+> +In all versions, userspace may use the attach parameters of cgroup and
+>  attach type pair in ``struct bpf_cgroup_storage_key`` as the key to the BPF map
+>  APIs to read or update the storage for a given attachment. For Linux 5.9
+>  attach type shared storages, only the first value in the struct, cgroup inode
+> diff --git a/Documentation/core-api/cpu_hotplug.rst b/Documentation/core-api/cpu_hotplug.rst
+> index c6f4ba2fb32d..c326f4a86d34 100644
+> --- a/Documentation/core-api/cpu_hotplug.rst
+> +++ b/Documentation/core-api/cpu_hotplug.rst
+> @@ -560,8 +560,7 @@ available:
+>    * cpuhp_state_remove_instance(state, node)
+>    * cpuhp_state_remove_instance_nocalls(state, node)
+>  
+> -The arguments are the same as for the the cpuhp_state_add_instance*()
+> -variants above.
+> +The arguments are the same as for cpuhp_state_add_instance*() variants above.
+>  
+>  The functions differ in the way how the installed callbacks are treated:
+>  
+> diff --git a/Documentation/devicetree/bindings/arm/arm,vexpress-juno.yaml b/Documentation/devicetree/bindings/arm/arm,vexpress-juno.yaml
+> index a4b4452afc1d..e5b56ee500bc 100644
+> --- a/Documentation/devicetree/bindings/arm/arm,vexpress-juno.yaml
+> +++ b/Documentation/devicetree/bindings/arm/arm,vexpress-juno.yaml
+> @@ -121,7 +121,7 @@ properties:
+>  
+>    arm,vexpress,position:
+>      description: When daughterboards are stacked on one site, their position
+> -      in the stack be be described this attribute.
+> +      in the stack can be described with this attribute.
+>      $ref: '/schemas/types.yaml#/definitions/uint32'
+>      minimum: 0
+>      maximum: 3
+> @@ -139,7 +139,7 @@ patternProperties:
+>        the connection between the motherboard and any tiles. Sometimes the
+>        compatible is placed directly under this node, sometimes it is placed
+>        in a subnode named "motherboard-bus". Sometimes the compatible includes
+> -      "arm,vexpress,v2?-p1" sometimes (on software models) is is just
+> +      "arm,vexpress,v2?-p1" sometimes (on software models) it is just
+>        "simple-bus". If the compatible is placed in the "motherboard-bus" node,
+>        it is stricter and always has two compatibles.
+>      type: object
+> diff --git a/Documentation/devicetree/bindings/arm/tegra/nvidia,tegra20-ahb.txt b/Documentation/devicetree/bindings/arm/tegra/nvidia,tegra20-ahb.txt
+> index 9a4295b54539..b300c42c52d7 100644
+> --- a/Documentation/devicetree/bindings/arm/tegra/nvidia,tegra20-ahb.txt
+> +++ b/Documentation/devicetree/bindings/arm/tegra/nvidia,tegra20-ahb.txt
+> @@ -8,7 +8,7 @@ Required properties:
+>  - reg : Should contain 1 register ranges(address and length).  For
+>    Tegra20, Tegra30, and Tegra114 chips, the value must be <0x6000c004
+>    0x10c>.  For Tegra124, Tegra132 and Tegra210 chips, the value should
+> -  be be <0x6000c000 0x150>.
+> +  be <0x6000c000 0x150>.
+>  
+>  Example (for a Tegra20 chip):
+>  	ahb: ahb@6000c004 {
+> diff --git a/Documentation/devicetree/bindings/dma/ti-dma-crossbar.txt b/Documentation/devicetree/bindings/dma/ti-dma-crossbar.txt
+> index b849a1ed389d..47e477cce6d2 100644
+> --- a/Documentation/devicetree/bindings/dma/ti-dma-crossbar.txt
+> +++ b/Documentation/devicetree/bindings/dma/ti-dma-crossbar.txt
+> @@ -4,7 +4,7 @@ Required properties:
+>  - compatible:	"ti,dra7-dma-crossbar" for DRA7xx DMA crossbar
+>  		"ti,am335x-edma-crossbar" for AM335x and AM437x
+>  - reg:		Memory map for accessing module
+> -- #dma-cells:	Should be set to to match with the DMA controller's dma-cells
+> +- #dma-cells:	Should be set to match with the DMA controller's dma-cells
+>  		for ti,dra7-dma-crossbar and <3> for ti,am335x-edma-crossbar.
+>  - dma-requests:	Number of DMA requests the crossbar can receive
+>  - dma-masters:	phandle pointing to the DMA controller
+> diff --git a/Documentation/devicetree/bindings/fpga/fpga-region.txt b/Documentation/devicetree/bindings/fpga/fpga-region.txt
+> index 6694ef29a267..095b5e728dff 100644
+> --- a/Documentation/devicetree/bindings/fpga/fpga-region.txt
+> +++ b/Documentation/devicetree/bindings/fpga/fpga-region.txt
+> @@ -50,7 +50,7 @@ Partial Reconfiguration Region (PRR)
+>  Persona
+>   * Also called a "partial bit stream"
+>   * An FPGA image that is designed to be loaded into a PRR.  There may be
+> -   any number of personas designed to fit into a PRR, but only one at at time
+> +   any number of personas designed to fit into a PRR, but only one at a time
+>     may be loaded.
+>   * A persona may create more regions.
+>  
+> @@ -127,7 +127,7 @@ add the child devices:
+>  
+>   * FPGA Manager
+>   * FPGA Bridges
+> - * image-specific information needed to to the programming.
+> + * image-specific information needed to do the programming.
+>   * child nodes
+>  
+>  The intended use is that a Device Tree overlay (DTO) can be used to reprogram an
+> diff --git a/Documentation/devicetree/bindings/mfd/ti,lp87524-q1.yaml b/Documentation/devicetree/bindings/mfd/ti,lp87524-q1.yaml
+> index f6cac4b1079c..3549a32452ec 100644
+> --- a/Documentation/devicetree/bindings/mfd/ti,lp87524-q1.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/ti,lp87524-q1.yaml
+> @@ -26,7 +26,7 @@ properties:
+>    '#gpio-cells':
+>      description:
+>        The first cell is the pin number.
+> -      The second cell is is used to specify flags.
+> +      The second cell is used to specify flags.
+>        See ../gpio/gpio.txt for more information.
+>      const: 2
+>  
+> diff --git a/Documentation/devicetree/bindings/mfd/ti,lp87561-q1.yaml b/Documentation/devicetree/bindings/mfd/ti,lp87561-q1.yaml
+> index dc5a29b5ef7d..43a3f7ccaf36 100644
+> --- a/Documentation/devicetree/bindings/mfd/ti,lp87561-q1.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/ti,lp87561-q1.yaml
+> @@ -26,7 +26,7 @@ properties:
+>    '#gpio-cells':
+>      description:
+>        The first cell is the pin number.
+> -      The second cell is is used to specify flags.
+> +      The second cell is used to specify flags.
+>        See ../gpio/gpio.txt for more information.
+>      const: 2
+>  
+> diff --git a/Documentation/devicetree/bindings/mfd/ti,lp87565-q1.yaml b/Documentation/devicetree/bindings/mfd/ti,lp87565-q1.yaml
+> index 012d25111054..373c4f89c4ea 100644
+> --- a/Documentation/devicetree/bindings/mfd/ti,lp87565-q1.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/ti,lp87565-q1.yaml
+> @@ -28,7 +28,7 @@ properties:
+>    '#gpio-cells':
+>      description:
+>        The first cell is the pin number.
+> -      The second cell is is used to specify flags.
+> +      The second cell is used to specify flags.
+>        See ../gpio/gpio.txt for more information.
+>      const: 2
+>  
+> diff --git a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+> index 608e1d62bed5..3eb0513d824c 100644
+> --- a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
+> @@ -149,7 +149,7 @@ properties:
+>        - description:
+>            The first register range should be the one of the DWMAC controller
+>        - description:
+> -          The second range is is for the Amlogic specific configuration
+> +          The second range is for the Amlogic specific configuration
+>            (for example the PRG_ETHERNET register range on Meson8b and newer)
+>  
+>  required:
+> diff --git a/Documentation/devicetree/bindings/net/can/microchip,mcp251xfd.yaml b/Documentation/devicetree/bindings/net/can/microchip,mcp251xfd.yaml
+> index 7a73057707b4..0415c3a886ca 100644
+> --- a/Documentation/devicetree/bindings/net/can/microchip,mcp251xfd.yaml
+> +++ b/Documentation/devicetree/bindings/net/can/microchip,mcp251xfd.yaml
+> @@ -42,7 +42,7 @@ properties:
+>  
+>    microchip,rx-int-gpios:
+>      description:
+> -      GPIO phandle of GPIO connected to to INT1 pin of the MCP251XFD, which
+> +      GPIO phandle of GPIO connected to INT1 pin of the MCP251XFD, which
+>        signals a pending RX interrupt.
+>      maxItems: 1
+>  
+> diff --git a/Documentation/driver-api/isa.rst b/Documentation/driver-api/isa.rst
+> index def4a7b690b5..3df1b1696524 100644
+> --- a/Documentation/driver-api/isa.rst
+> +++ b/Documentation/driver-api/isa.rst
+> @@ -100,7 +100,7 @@ I believe platform_data is available for this, but if rather not, moving
+>  the isa_driver pointer to the private struct isa_dev is ofcourse fine as
+>  well.
+>  
+> -Then, if the the driver did not provide a .match, it matches. If it did,
+> +Then, if the driver did not provide a .match, it matches. If it did,
+>  the driver match() method is called to determine a match.
+>  
+>  If it did **not** match, dev->platform_data is reset to indicate this to
+> diff --git a/Documentation/filesystems/caching/backend-api.rst b/Documentation/filesystems/caching/backend-api.rst
+> index d7507becf674..3a199fc50828 100644
+> --- a/Documentation/filesystems/caching/backend-api.rst
+> +++ b/Documentation/filesystems/caching/backend-api.rst
+> @@ -122,7 +122,7 @@ volumes, calling::
+>  to tell fscache that a volume has been withdrawn.  This waits for all
+>  outstanding accesses on the volume to complete before returning.
+>  
+> -When the the cache is completely withdrawn, fscache should be notified by
+> +When the cache is completely withdrawn, fscache should be notified by
+>  calling::
+>  
+>  	void fscache_relinquish_cache(struct fscache_cache *cache);
+> diff --git a/Documentation/filesystems/journalling.rst b/Documentation/filesystems/journalling.rst
+> index e18f90ffc6fd..2a69bd2d95ed 100644
+> --- a/Documentation/filesystems/journalling.rst
+> +++ b/Documentation/filesystems/journalling.rst
+> @@ -93,7 +93,7 @@ easily as on jbd2_journal_start().
+>  
+>  Try to reserve the right number of blocks the first time. ;-). This will
+>  be the maximum number of blocks you are going to touch in this
+> -transaction. I advise having a look at at least ext4_jbd.h to see the
+> +transaction. I advise having at least a look at ext4_jbd.h to see the
+>  basis on which ext4 uses to make these decisions.
+>  
+>  Another wriggle to watch out for is your on-disk block allocation
+> diff --git a/Documentation/hwmon/f71882fg.rst b/Documentation/hwmon/f71882fg.rst
+> index 38e30fbd4806..ab83bc7bbbdf 100644
+> --- a/Documentation/hwmon/f71882fg.rst
+> +++ b/Documentation/hwmon/f71882fg.rst
+> @@ -179,7 +179,7 @@ Writing an unsupported mode will result in an invalid parameter error.
+>  
+>  * 2: Normal auto mode
+>    You can define a number of temperature/fan speed trip points, which % the
+> -  fan should run at at this temp and which temp a fan should follow using the
+> +  fan should run at this temp and which temp a fan should follow using the
+>    standard sysfs interface. The number and type of trip points is chip
+>    depended, see which files are available in sysfs.
+>    Fan/PWM channel 3 of the F8000 is always in this mode!
+> diff --git a/Documentation/locking/seqlock.rst b/Documentation/locking/seqlock.rst
+> index 64405e5da63e..bfda1a5fecad 100644
+> --- a/Documentation/locking/seqlock.rst
+> +++ b/Documentation/locking/seqlock.rst
+> @@ -39,7 +39,7 @@ as the writer can invalidate a pointer that the reader is following.
+>  Sequence counters (``seqcount_t``)
+>  ==================================
+>  
+> -This is the the raw counting mechanism, which does not protect against
+> +This is the raw counting mechanism, which does not protect against
+>  multiple writers.  Write side critical sections must thus be serialized
+>  by an external lock.
+>  
+> diff --git a/Documentation/sphinx/cdomain.py b/Documentation/sphinx/cdomain.py
+> index ca8ac9e59ded..a7d1866e72ff 100644
+> --- a/Documentation/sphinx/cdomain.py
+> +++ b/Documentation/sphinx/cdomain.py
+> @@ -151,7 +151,7 @@ class CObject(Base_CObject):
+>      def handle_func_like_macro(self, sig, signode):
+>          u"""Handles signatures of function-like macros.
+>  
+> -        If the objtype is 'function' and the the signature ``sig`` is a
+> +        If the objtype is 'function' and the signature ``sig`` is a
+>          function-like macro, the name of the macro is returned. Otherwise
+>          ``False`` is returned.  """
+>  
+> diff --git a/Documentation/trace/histogram.rst b/Documentation/trace/histogram.rst
+> index 859fd1b76c63..c1b685a38f6b 100644
+> --- a/Documentation/trace/histogram.rst
+> +++ b/Documentation/trace/histogram.rst
+> @@ -412,7 +412,7 @@ Extended error information
+>    Because the default sort key above is 'hitcount', the above shows a
+>    the list of call_sites by increasing hitcount, so that at the bottom
+>    we see the functions that made the most kmalloc calls during the
+> -  run.  If instead we we wanted to see the top kmalloc callers in
+> +  run.  If instead we wanted to see the top kmalloc callers in
+>    terms of the number of bytes requested rather than the number of
+>    calls, and we wanted the top caller to appear at the top, we can use
+>    the 'sort' parameter, along with the 'descending' modifier::
+> diff --git a/Documentation/userspace-api/media/dvb/dmx-reqbufs.rst b/Documentation/userspace-api/media/dvb/dmx-reqbufs.rst
+> index d2bb1909ec98..18810f0bbca8 100644
+> --- a/Documentation/userspace-api/media/dvb/dmx-reqbufs.rst
+> +++ b/Documentation/userspace-api/media/dvb/dmx-reqbufs.rst
+> @@ -72,4 +72,4 @@ appropriately. The generic error codes are described at the
+>  :ref:`Generic Error Codes <gen-errors>` chapter.
+>  
+>  EOPNOTSUPP
+> -    The  the requested I/O method is not supported.
+> +    The requested I/O method is not supported.
+> diff --git a/Documentation/userspace-api/media/dvb/frontend_f_open.rst b/Documentation/userspace-api/media/dvb/frontend_f_open.rst
+> index bb37eded0870..70e169b8f601 100644
+> --- a/Documentation/userspace-api/media/dvb/frontend_f_open.rst
+> +++ b/Documentation/userspace-api/media/dvb/frontend_f_open.rst
+> @@ -91,7 +91,7 @@ appropriately.
+>         -  The caller has no permission to access the device.
+>  
+>      -  - ``EBUSY``
+> -       -  The the device driver is already in use.
+> +       -  The device driver is already in use.
+>  
+>      -  - ``EMFILE``
+>         -  The process already has the maximum number of files open.
