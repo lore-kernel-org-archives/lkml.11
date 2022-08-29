@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60EF0ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:09:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3397ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231142AbiH2LJg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:09:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
+        id S231202AbiH2LJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:09:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiH2LId (ORCPT
+        with ESMTP id S231182AbiH2LIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:08:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFCB86527E;
-        Mon, 29 Aug 2022 04:05:45 -0700 (PDT)
+        Mon, 29 Aug 2022 07:08:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFDD82CC8B;
+        Mon, 29 Aug 2022 04:05:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17E35B80F10;
-        Mon, 29 Aug 2022 11:04:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75156C433C1;
-        Mon, 29 Aug 2022 11:04:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F11DCB80EF8;
+        Mon, 29 Aug 2022 11:04:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B55C433D6;
+        Mon, 29 Aug 2022 11:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771063;
-        bh=g4os0/ez26nrauGumgFQEHoy+Q8e4jwx5m8oNhza+Lg=;
+        s=korg; t=1661771066;
+        bh=nBzjdW6fb64fB9AGAlHPIidKuMsr/NFHuwJh6wcAEk0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y/Bqmj6bhOLYopsz0AbL8bWz5foTlyKB331h8V+QWc+rljkwD9mXocMa2sAgJFFbA
-         dwTgO5g6R5FlxXbSs42RL184zno0JGnk+rgY5bSdtFX/h6/2QFK8ixLuZR9MqkhaxL
-         0G1mh4bten/FqKCzbM30rQNTjNrmY9Ymx4PTHxYM=
+        b=KRDNLL8kOhHV2Hhz5Ep69CIWFlc6pPbMXikBr7Uz0vJmVcSKUDnGudRjKQg6aAdM1
+         /HcWWiQyW3MrT0o5Q6y4mEZPLiD9+GwxennBtIDBIVHy5HZzurZy8ce9Q1zMW/1H9/
+         QmxTzkcd3l8l2LKF+NyJ5SnIsBCbZ2FmUkQM9Kj0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abhishek Shah <abhishek.shah@columbia.edu>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 056/136] netfilter: nf_tables: make table handle allocation per-netns friendly
-Date:   Mon, 29 Aug 2022 12:58:43 +0200
-Message-Id: <20220829105806.923199963@linuxfoundation.org>
+Subject: [PATCH 5.15 035/136] SUNRPC: RPC level errors should set task->tk_rpc_status
+Date:   Mon, 29 Aug 2022 12:58:22 +0200
+Message-Id: <20220829105806.039829876@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -50,64 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit ab482c6b66a4a8c0a8c0b0f577a785cf9ff1c2e2 ]
+[ Upstream commit ed06fce0b034b2e25bd93430f5c4cbb28036cc1a ]
 
-mutex is per-netns, move table_netns to the pernet area.
+Fix up a case in call_encode() where we're failing to set
+task->tk_rpc_status when an RPC level error occurred.
 
-*read-write* to 0xffffffff883a01e8 of 8 bytes by task 6542 on cpu 0:
- nf_tables_newtable+0x6dc/0xc00 net/netfilter/nf_tables_api.c:1221
- nfnetlink_rcv_batch net/netfilter/nfnetlink.c:513 [inline]
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
- nfnetlink_rcv+0xa6a/0x13a0 net/netfilter/nfnetlink.c:652
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x652/0x730 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0x643/0x740 net/netlink/af_netlink.c:1921
-
-Fixes: f102d66b335a ("netfilter: nf_tables: use dedicated mutex to guard transactions")
-Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
-Reviewed-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 9c5948c24869 ("SUNRPC: task should be exit if encode return EKEYEXPIRED more times")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/netfilter/nf_tables.h | 1 +
- net/netfilter/nf_tables_api.c     | 3 +--
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/sunrpc/clnt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index f56a1071c0052..af4d9f1049528 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -1595,6 +1595,7 @@ struct nftables_pernet {
- 	struct list_head	module_list;
- 	struct list_head	notify_list;
- 	struct mutex		commit_mutex;
-+	u64			table_handle;
- 	unsigned int		base_seq;
- 	u8			validate_state;
- };
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 58f9513bd1419..96903c72ebb45 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -32,7 +32,6 @@ static LIST_HEAD(nf_tables_objects);
- static LIST_HEAD(nf_tables_flowtables);
- static LIST_HEAD(nf_tables_destroy_list);
- static DEFINE_SPINLOCK(nf_tables_destroy_list_lock);
--static u64 table_handle;
- 
- enum {
- 	NFT_VALIDATE_SKIP	= 0,
-@@ -1156,7 +1155,7 @@ static int nf_tables_newtable(struct sk_buff *skb, const struct nfnl_info *info,
- 	INIT_LIST_HEAD(&table->flowtables);
- 	table->family = family;
- 	table->flags = flags;
--	table->handle = ++table_handle;
-+	table->handle = ++nft_net->table_handle;
- 	if (table->flags & NFT_TABLE_F_OWNER)
- 		table->nlpid = NETLINK_CB(skb).portid;
- 
+diff --git a/net/sunrpc/clnt.c b/net/sunrpc/clnt.c
+index 6a035e9339d20..ca2a494d727b2 100644
+--- a/net/sunrpc/clnt.c
++++ b/net/sunrpc/clnt.c
+@@ -1881,7 +1881,7 @@ call_encode(struct rpc_task *task)
+ 			break;
+ 		case -EKEYEXPIRED:
+ 			if (!task->tk_cred_retry) {
+-				rpc_exit(task, task->tk_status);
++				rpc_call_rpcerror(task, task->tk_status);
+ 			} else {
+ 				task->tk_action = call_refresh;
+ 				task->tk_cred_retry--;
 -- 
 2.35.1
 
