@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C21ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F60AECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:23:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231835AbiH2LW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:22:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        id S231844AbiH2LXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231741AbiH2LVb (ORCPT
+        with ESMTP id S231642AbiH2LVy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:21:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED556E899;
-        Mon, 29 Aug 2022 04:14:08 -0700 (PDT)
+        Mon, 29 Aug 2022 07:21:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9A701165;
+        Mon, 29 Aug 2022 04:14:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6D1061211;
-        Mon, 29 Aug 2022 11:14:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6645C433C1;
-        Mon, 29 Aug 2022 11:14:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9964461214;
+        Mon, 29 Aug 2022 11:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2889DC433C1;
+        Mon, 29 Aug 2022 11:11:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771648;
-        bh=6Ltr5qBukKjhhHTvLgKNizGlEkxMiV2rNVMmQfGMDXQ=;
+        s=korg; t=1661771474;
+        bh=VN7QLUM9u6R6IOVbvpnY/9cLJJiXJQxgKLVbZmB60TI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n5Kv5ADIdIqJYWi0ozU6HfuHHUCpvppVCo0iJCpkMFz1YAokjGWbSuVzFvZyq95jP
-         v64rpoLujfpWkwlKmwoAMRdQnpvIueeVZaUc2o+eRCwlXAwHqN6VyfDxPv9Ooj1eSK
-         qgJQdndKwLU0aisNls/nUydeV05m7JbZ7gK6A0xc=
+        b=bVaZDNlvo/t1l0Than623tRj/s0R1k8c5/53Qgg6sPT7HNfEtU6ev7TYvpsloSG/A
+         4p5Td4iZ1GjbRriz93f30orH47JnFuwv7OZmFipC9CKKQozPVAFqMjkW9xklNkF8cK
+         FGMRT11KSCOHsa9vBni5u00boDmVIeWDGTJwQ7ew=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 132/136] perf/x86/intel/ds: Fix precise store latency handling
-Date:   Mon, 29 Aug 2022 12:59:59 +0200
-Message-Id: <20220829105810.112913670@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Badari Pulavarty <badari.pulavarty@intel.com>,
+        SeongJae Park <sj@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.15 107/136] mm/damon/dbgfs: avoid duplicate context directory creation
+Date:   Mon, 29 Aug 2022 12:59:34 +0200
+Message-Id: <20220829105809.108745359@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -48,52 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephane Eranian <eranian@google.com>
+From: Badari Pulavarty <badari.pulavarty@intel.com>
 
-commit d4bdb0bebc5ba3299d74f123c782d99cd4e25c49 upstream.
+commit d26f60703606ab425eee9882b32a1781a8bed74d upstream.
 
-With the existing code in store_latency_data(), the memory operation (mem_op)
-returned to the user is always OP_LOAD where in fact, it should be OP_STORE.
-This comes from the fact that the function is simply grabbing the information
-from a data source map which covers only load accesses. Intel 12th gen CPU
-offers precise store sampling that captures both the data source and latency.
-Therefore it can use the data source mapping table but must override the
-memory operation to reflect stores instead of loads.
+When user tries to create a DAMON context via the DAMON debugfs interface
+with a name of an already existing context, the context directory creation
+fails but a new context is created and added in the internal data
+structure, due to absence of the directory creation success check.  As a
+result, memory could leak and DAMON cannot be turned on.  An example test
+case is as below:
 
-Fixes: 61b985e3e775 ("perf/x86/intel: Add perf core PMU support for Sapphire Rapids")
-Signed-off-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20220818054613.1548130-1-eranian@google.com
+    # cd /sys/kernel/debug/damon/
+    # echo "off" >  monitor_on
+    # echo paddr > target_ids
+    # echo "abc" > mk_context
+    # echo "abc" > mk_context
+    # echo $$ > abc/target_ids
+    # echo "on" > monitor_on  <<< fails
+
+Return value of 'debugfs_create_dir()' is expected to be ignored in
+general, but this is an exceptional case as DAMON feature is depending
+on the debugfs functionality and it has the potential duplicate name
+issue.  This commit therefore fixes the issue by checking the directory
+creation failure and immediately return the error in the case.
+
+Link: https://lkml.kernel.org/r/20220821180853.2400-1-sj@kernel.org
+Fixes: 75c1c2b53c78 ("mm/damon/dbgfs: support multiple contexts")
+Signed-off-by: Badari Pulavarty <badari.pulavarty@intel.com>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Cc: <stable@vger.kernel.org>	[ 5.15.x]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/ds.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ mm/damon/dbgfs.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/x86/events/intel/ds.c
-+++ b/arch/x86/events/intel/ds.c
-@@ -236,6 +236,7 @@ static u64 load_latency_data(u64 status)
- static u64 store_latency_data(u64 status)
- {
- 	union intel_x86_pebs_dse dse;
-+	union perf_mem_data_src src;
- 	u64 val;
+--- a/mm/damon/dbgfs.c
++++ b/mm/damon/dbgfs.c
+@@ -376,6 +376,9 @@ static int dbgfs_mk_context(char *name)
+ 		return -ENOENT;
  
- 	dse.val = status;
-@@ -263,7 +264,14 @@ static u64 store_latency_data(u64 status
+ 	new_dir = debugfs_create_dir(name, root);
++	/* Below check is required for a potential duplicated name case */
++	if (IS_ERR(new_dir))
++		return PTR_ERR(new_dir);
+ 	dbgfs_dirs[dbgfs_nr_ctxs] = new_dir;
  
- 	val |= P(BLK, NA);
- 
--	return val;
-+	/*
-+	 * the pebs_data_source table is only for loads
-+	 * so override the mem_op to say STORE instead
-+	 */
-+	src.val = val;
-+	src.mem_op = P(OP,STORE);
-+
-+	return src.val;
- }
- 
- struct pebs_record_core {
+ 	new_ctx = dbgfs_new_ctx();
 
 
