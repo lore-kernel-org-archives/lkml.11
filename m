@@ -2,81 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A396ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A7CECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbiH2Mci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
+        id S230250AbiH2Mcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229748AbiH2McG (ORCPT
+        with ESMTP id S229596AbiH2McZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:32:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53A3A8C036;
-        Mon, 29 Aug 2022 05:15:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50F4961199;
-        Mon, 29 Aug 2022 12:15:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60BB2C433D7;
-        Mon, 29 Aug 2022 12:15:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661775338;
-        bh=7Urql1E5XDxhVb8MTBNbpYyK+YMAUNovIVIRoaYnK5U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ovf4b4rrY7jDp4P2Fo6D6lw72zZM8qV/FkZnvS3c+EPLkH6Upxl2k3Boaw1OGZafX
-         oSevbWijQv4eAHsPzvMT2Wv0FuxY7r0Yz+l+lVDBezjhxHaAwkNBbHQZVmrnDXcxmA
-         JOGqm//Y8feSgrrSeSmeYLfm0CxTOX5xR7OhV5xG7Z8677Xdhj4IaWXACwK4HlT3Nz
-         SmdGf1lOzr7egQD9EZzXJi9U+yzxGJdky6e6VgPKRI3LfuXnbpM+PvdGKXD33Q/EAT
-         jwBJQOAEaQwrR7/pF8sKN/9GOeSjtJITK7+rrKfm5oV9T7rNcvEWL2/D9jGYtwtQy2
-         e97CBc2s57N1g==
-Date:   Mon, 29 Aug 2022 15:15:30 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Dhanuka Warusadura <wdnuka@gmail.com>
-Cc:     dave.hansen@linux.intel.com, shuah@kernel.org,
-        linux-sgx@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] selftests/sgx: Fix OpenSSL deprecated warning for
- ERR_get_error_line
-Message-ID: <Ywyt4tvHrK4r48RK@kernel.org>
-References: <20220828061859.181061-1-wdnuka@gmail.com>
+        Mon, 29 Aug 2022 08:32:25 -0400
+Received: from rtits2.realtek.com.tw (unknown [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E646B647CD;
+        Mon, 29 Aug 2022 05:16:02 -0700 (PDT)
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27TBiue37000966, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27TBiue37000966
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 29 Aug 2022 19:44:57 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 29 Aug 2022 19:45:13 +0800
+Received: from localhost.localdomain (172.21.132.158) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Mon, 29 Aug 2022 19:45:12 +0800
+From:   <max.chou@realtek.com>
+To:     <marcel@holtmann.org>
+CC:     <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>,
+        <linux-bluetooth@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <alex_lu@realsil.com.cn>, <hildawu@realtek.com>,
+        <karenhsu@realtek.com>, <kidman@realtek.com>,
+        <max.chou@realtek.com>
+Subject: [PATCH 1/1] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x13D3:0x3592
+Date:   Mon, 29 Aug 2022 19:45:07 +0800
+Message-ID: <20220829114507.1024-1-max.chou@realtek.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220828061859.181061-1-wdnuka@gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [172.21.132.158]
+X-ClientProxiedBy: RTEXH36505.realtek.com.tw (172.21.6.25) To
+ RTEXMBS03.realtek.com.tw (172.21.6.96)
+X-KSE-ServerInfo: RTEXMBS03.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/29/2022 10:20:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzgvMjkgpFekyCAwODozNTowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 11:48:59AM +0530, Dhanuka Warusadura wrote:
-> These changes fix the "error: ‘ERR_get_error_line’ is deprecated:
-> Since OpenSSL 3.0" warning.
-> 
-> Signed-off-by: Dhanuka Warusadura <wdnuka@gmail.com>
-> ---
->  tools/testing/selftests/sgx/sigstruct.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/sgx/sigstruct.c b/tools/testing/selftests/sgx/sigstruct.c
-> index 50c5ab1aa6fa..671d9b58e274 100644
-> --- a/tools/testing/selftests/sgx/sigstruct.c
-> +++ b/tools/testing/selftests/sgx/sigstruct.c
-> @@ -136,7 +136,7 @@ static bool check_crypto_errors(void)
->  			break;
->  
->  		had_errors = true;
-> -		err = ERR_get_error_line(&filename, &line);
-> +		err = ERR_peek_last_error_line(&filename, &line);
->  		ERR_error_string_n(err, str, sizeof(str));
->  		fprintf(stderr, "crypto: %s: %s:%d\n", str, filename, line);
->  	}
-> -- 
-> 2.37.2
-> 
+From: Max Chou <max.chou@realtek.com>
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Add the support ID(0x13D3, 0x3592) to usb_device_id table for
+Realtek RTL8852C.
 
-BR, Jarkko
+The device info from /sys/kernel/debug/usb/devices as below.
+
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=13d3 ProdID=3592 Rev= 0.00
+S:  Manufacturer=Realtek
+S:  Product=Bluetooth Radio
+S:  SerialNumber=00e04c000001
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+
+Signed-off-by: Max Chou <max.chou@realtek.com>
+---
+ drivers/bluetooth/btusb.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 30dd443f395f..7dd46b4183f5 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -438,6 +438,8 @@ static const struct usb_device_id blacklist_table[] = {
+ 						     BTUSB_WIDEBAND_SPEECH },
+ 	{ USB_DEVICE(0x13d3, 0x3586), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
++	{ USB_DEVICE(0x13d3, 0x3592), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
+ 
+ 	/* Realtek Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
+-- 
+2.34.1
+
