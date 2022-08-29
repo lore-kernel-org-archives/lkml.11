@@ -2,90 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6240CC0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BE5C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229820AbiH2JRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 05:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43204 "EHLO
+        id S229757AbiH2JSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 05:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiH2JRu (ORCPT
+        with ESMTP id S229518AbiH2JSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 05:17:50 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E435AA08;
-        Mon, 29 Aug 2022 02:17:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=cIZGy8AFz0cIbgd3MkyM5IT0va3Zeq4n+wa1IkV9nl0=;
-        b=LePJvJfdE1GqQOVmO7TTja09TsA90wcCFlJLkK8mpzSb0Uc0BWY+leipDvJ0yoI90e2RXHPVVvv/N
-         pF5ZFCI5UUsenTsAVGSK0Bh424xhVdShOoQL3pLo/gUKnkq43Qnv5G1cUjC6F+l0ptEGsfiITs38rK
-         O+q/wW8yzKvUoifebaDocp4xYuzPLia7ALXXQEc6GAsedhQhYYQmAmywA0CdJSbS5ISaDHcERO9N8K
-         s6qWnv0G8ZoDLkOlGK8KKlPhAQiVcw66VvQ1PFAC/r/aXHS+JebqyvMeyBCfIKGpBCiCkQveeODVDs
-         o6YjVC1LXYvYK62XSpmgyoF3DwUw6Bg==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.4.1445, Stamp: 3], Multi: [Enabled, t: (0.000010,0.007372)], BW: [Enabled, t: (0.000017,0.000001)], RTDA: [Enabled, t: (0.075475), Hit: No, Details: v2.41.0; Id: 15.52kafc.1gbke8nv1.299r; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Mon, 29 Aug 2022 12:17:34 +0300
-Date:   Mon, 29 Aug 2022 12:16:35 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     Xu Yilun <yilun.xu@intel.com>
-Cc:     mdf@kernel.org, hao.wu@intel.com, trix@redhat.com, dg@emlix.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH v8 1/2] fpga: lattice-sysconfig-spi: add Lattice
- sysCONFIG FPGA manager
-Message-ID: <20220829091635.odubpbqdgb4i64jm@h-e2.ddg>
-References: <20220825112433.14583-1-i.bornyakov@metrotek.ru>
- <20220825112433.14583-2-i.bornyakov@metrotek.ru>
- <Ywxp9XgcjM0LIIC2@yilunxu-OptiPlex-7050>
- <20220829082740.glbcu5464zs3hceh@h-e2.ddg>
+        Mon, 29 Aug 2022 05:18:47 -0400
+Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8FD5AA13;
+        Mon, 29 Aug 2022 02:18:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1661764726;
+  x=1693300726;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HrikD+LuR2sVPUHOU5CUMyrG4nJVEC9Rl5WE5VrgimU=;
+  b=kPFnjXHdA5RpRZpFuC98vG+v9UqdVIVudmi92ozMpQhpBAfTYdVpyL6Y
+   7VP8BvNQAVlUlxdRWM85DpcG8RJIrhtEb0YNUmKHSpC+28CpaneRueVLM
+   HRmNDzs2I/LtPxJ2PAY823xjcuJg4zfzZYy3kiNz4MEPs/EjHyZKtdckV
+   wlvTmCOABmDUqIGdTEUIc1HLj+38CtjV3pEfJoTcktMXeRHrt8v+4MfKR
+   74yDFs87CSRX9kCmuTZYnhPeqPHePJzyUGh/eTEbBr1XQflL1gKB7N2rx
+   RYGZ3Ykngf8j7ppYdVKmwb673RZjYV36ov7e3zGPqTHjmTLB8k5CXegef
+   A==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     <kernel@axis.com>, <andy.shevchenko@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Matt Ranostay <mranostay@gmail.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2] iio: Use per-device lockdep class for mlock
+Date:   Mon, 29 Aug 2022 11:18:40 +0200
+Message-ID: <20220829091840.2791846-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829082740.glbcu5464zs3hceh@h-e2.ddg>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 11:27:40AM +0300, Ivan Bornyakov wrote:
-> On Mon, Aug 29, 2022 at 03:25:41PM +0800, Xu Yilun wrote:
-> > On 2022-08-25 at 14:24:32 +0300, Ivan Bornyakov wrote:
-> > > Add support to the FPGA manager for programming Lattice ECP5 and MachXO2
-> > > FPGAs over slave SPI sysCONFIG interface.
-> > > 
-> > > ... snip ...
-> > >
-> > > +
-> > > +static const struct spi_device_id sysconfig_spi_ids[] = {
-> > > +	{
-> > > +		.name = "ecp5-fpga-mgr",
-> > > +		.driver_data = (kernel_ulong_t)ecp5_probe,
-> > > +	}, {
-> > > +		.name = "machxo2-fpga-mgr",
-> > > +		.driver_data = (kernel_ulong_t)machxo2_probe,
-> > 
-> > Putting the whole probe flow in driver_data is the same as providing 2
-> > drivers. The purpose is not to put all the code in one file.
-> > 
-> 
-> Sorry, I don't understand what you suggest. Separate file for each
-> specific FPGA?
-> 
+If an IIO driver uses callbacks from another IIO driver and calls
+iio_channel_start_all_cb() from one of its buffer setup ops, then
+lockdep complains due to the lock nesting, as in the below example with
+lmp91000.
 
-In v9 I was about to split this to sysconfig.c with sysCONFIG interface
-port functions independent of port type + sysconfig-spi.c with functions
-specific for SPI port. In this approach there is opportunity for
-Johannes to add sysconfig-i2c.c with MachXO2's I2C port while reusing
-fpga_manager_ops->state(), fpga_manager_ops->write_init() and
-fpga_manager_ops->write_complete().
+Since the locks are being taken on different IIO devices, there is no
+actual deadlock.  Fix the warning by telling lockdep to use a different
+class for each iio_device.
 
-IDs structs array in sysconfig-spi.c still contains data with FPGA
-specific probe, though.
+ ============================================
+ WARNING: possible recursive locking detected
+ --------------------------------------------
+ python3/23 is trying to acquire lock:
+ (&indio_dev->mlock){+.+.}-{3:3}, at: iio_update_buffers
+
+ but task is already holding lock:
+ (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store
+
+ other info that might help us debug this:
+  Possible unsafe locking scenario:
+
+        CPU0
+        ----
+   lock(&indio_dev->mlock);
+   lock(&indio_dev->mlock);
+
+  *** DEADLOCK ***
+
+  May be due to missing lock nesting notation
+
+ 5 locks held by python3/23:
+  #0: (sb_writers#5){.+.+}-{0:0}, at: ksys_write
+  #1: (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter
+  #2: (kn->active#14){.+.+}-{0:0}, at: kernfs_fop_write_iter
+  #3: (&indio_dev->mlock){+.+.}-{3:3}, at: enable_store
+  #4: (&iio_dev_opaque->info_exist_lock){+.+.}-{3:3}, at: iio_update_buffers
+
+ Call Trace:
+  __mutex_lock
+  iio_update_buffers
+  iio_channel_start_all_cb
+  lmp91000_buffer_postenable
+  __iio_update_buffers
+  enable_store
+
+Fixes: 67e17300dc1d76 ("iio: potentiostat: add LMP91000 support")
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+---
+
+Notes:
+    v2:
+    - Use a different lockdep class for each iio_device, instead of using
+      mutex_lock_nested.
+    - Add fixes tag pointing to first IIO driver which used this API.
+    - Trim call stack in commit message.
+
+ drivers/iio/industrialio-core.c | 5 +++++
+ include/linux/iio/iio-opaque.h  | 2 ++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 0f4dbda3b9d3..921d8e8643a2 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1621,6 +1621,8 @@ static void iio_dev_release(struct device *device)
+ 
+ 	iio_device_detach_buffers(indio_dev);
+ 
++	lockdep_unregister_key(&iio_dev_opaque->mlock_key);
++
+ 	ida_free(&iio_ida, iio_dev_opaque->id);
+ 	kfree(iio_dev_opaque);
+ }
+@@ -1680,6 +1682,9 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ 	INIT_LIST_HEAD(&iio_dev_opaque->buffer_list);
+ 	INIT_LIST_HEAD(&iio_dev_opaque->ioctl_handlers);
+ 
++	lockdep_register_key(&iio_dev_opaque->mlock_key);
++	lockdep_set_class(&indio_dev->mlock, &iio_dev_opaque->mlock_key);
++
+ 	return indio_dev;
+ }
+ EXPORT_SYMBOL(iio_device_alloc);
+diff --git a/include/linux/iio/iio-opaque.h b/include/linux/iio/iio-opaque.h
+index 6b3586b3f952..d1f8b30a7c8b 100644
+--- a/include/linux/iio/iio-opaque.h
++++ b/include/linux/iio/iio-opaque.h
+@@ -11,6 +11,7 @@
+  *				checked by device drivers but should be considered
+  *				read-only as this is a core internal bit
+  * @driver_module:		used to make it harder to undercut users
++ * @mlock_key:			lockdep class for iio_dev lock
+  * @info_exist_lock:		lock to prevent use during removal
+  * @trig_readonly:		mark the current trigger immutable
+  * @event_interface:		event chrdevs associated with interrupt lines
+@@ -42,6 +43,7 @@ struct iio_dev_opaque {
+ 	int				currentmode;
+ 	int				id;
+ 	struct module			*driver_module;
++	struct lock_class_key		mlock_key;
+ 	struct mutex			info_exist_lock;
+ 	bool				trig_readonly;
+ 	struct iio_event_interface	*event_interface;
+-- 
+2.34.1
 
