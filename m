@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B47ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3F33ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbiH2LSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:18:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43076 "EHLO
+        id S231538AbiH2LSF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:18:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbiH2LRV (ORCPT
+        with ESMTP id S231433AbiH2LRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:17:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE2F96CD0C;
-        Mon, 29 Aug 2022 04:11:36 -0700 (PDT)
+        Mon, 29 Aug 2022 07:17:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4276C133;
+        Mon, 29 Aug 2022 04:11:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B32FB80F98;
-        Mon, 29 Aug 2022 11:11:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C793BC433C1;
-        Mon, 29 Aug 2022 11:11:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88048B80FA3;
+        Mon, 29 Aug 2022 11:08:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6487C433D6;
+        Mon, 29 Aug 2022 11:08:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771491;
-        bh=5fD5YTwbU+0/XNyGqfiaf0hqk11P2yRg5wws2o/JuTk=;
+        s=korg; t=1661771338;
+        bh=+9wM4QlZB+oC1gAupTb1i7MvWaWUDZZLNPUsZ5YiG+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nr5a2VlriWiMhLcR0lwz5uGpKQB3f3hV+0KOddTqoCoCUBQOhuscNjYGo4UtWuV3y
-         KGbCRvpbJajBmwdpXwlKMmcAmzyVHvUlKZK5Chh4QZXHpdGqyOXCGXa93W5IIc7bOW
-         HnpGefKHJ0XZrMNlsCLtZ7vQy7qos4g4XGT9bhdw=
+        b=rydlBiuvl1lNCA8TInV5ySVDq9hoJsxl5MlCUsq3JLZ2aEgGjSibPDrBBjo/tWUny
+         JApoSrVIH7xPD5AI8zeSJPSALz/XED8Nkv8GDDnqzXZ53PjCBKbxEEcbhQJQJgOadG
+         w8CQzE+k/hTw0w9woRBm3zy0lRr469w6owez3T18=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Konstantin Khlebnikov <khlebnikov@openvz.org>,
-        Huang Ying <ying.huang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+        stable@vger.kernel.org, Sabrina Dubroca <sd@queasysnail.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 021/158] mm/smaps: dont access young/dirty bit if pte unpresent
-Date:   Mon, 29 Aug 2022 12:57:51 +0200
-Message-Id: <20220829105809.698936822@linuxfoundation.org>
+Subject: [PATCH 5.19 018/158] Revert "net: macsec: update SCI upon MAC address change."
+Date:   Mon, 29 Aug 2022 12:57:48 +0200
+Message-Id: <20220829105809.581648514@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -54,65 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Xu <peterx@redhat.com>
+From: Sabrina Dubroca <sd@queasysnail.net>
 
-[ Upstream commit efd4149342db2df41b1bbe68972ead853b30e444 ]
+[ Upstream commit e82c649e851c9c25367fb7a2a6cf3479187de467 ]
 
-These bits should only be valid when the ptes are present.  Introducing
-two booleans for it and set it to false when !pte_present() for both pte
-and pmd accountings.
+This reverts commit 6fc498bc82929ee23aa2f35a828c6178dfd3f823.
 
-The bug is found during code reading and no real world issue reported, but
-logically such an error can cause incorrect readings for either smaps or
-smaps_rollup output on quite a few fields.
+Commit 6fc498bc8292 states:
 
-For example, it could cause over-estimate on values like Shared_Dirty,
-Private_Dirty, Referenced.  Or it could also cause under-estimate on
-values like LazyFree, Shared_Clean, Private_Clean.
+    SCI should be updated, because it contains MAC in its first 6
+    octets.
 
-Link: https://lkml.kernel.org/r/20220805160003.58929-1-peterx@redhat.com
-Fixes: b1d4d9e0cbd0 ("proc/smaps: carefully handle migration entries")
-Fixes: c94b6923fa0a ("/proc/PID/smaps: Add PMD migration entry parsing")
-Signed-off-by: Peter Xu <peterx@redhat.com>
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Yang Shi <shy828301@gmail.com>
-Cc: Konstantin Khlebnikov <khlebnikov@openvz.org>
-Cc: Huang Ying <ying.huang@intel.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+That's not entirely correct. The SCI can be based on the MAC address,
+but doesn't have to be. We can also use any 64-bit number as the
+SCI. When the SCI based on the MAC address, it uses a 16-bit "port
+number" provided by userspace, which commit 6fc498bc8292 overwrites
+with 1.
+
+In addition, changing the SCI after macsec has been setup can just
+confuse the receiver. If we configure the RXSC on the peer based on
+the original SCI, we should keep the same SCI on TX.
+
+When the macsec device is being managed by a userspace key negotiation
+daemon such as wpa_supplicant, commit 6fc498bc8292 would also
+overwrite the SCI defined by userspace.
+
+Fixes: 6fc498bc8292 ("net: macsec: update SCI upon MAC address change.")
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+Link: https://lore.kernel.org/r/9b1a9d28327e7eb54550a92eebda45d25e54dd0d.1660667033.git.sd@queasysnail.net
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/proc/task_mmu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/macsec.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index 2d04e3470d4cd..313788bc0c307 100644
---- a/fs/proc/task_mmu.c
-+++ b/fs/proc/task_mmu.c
-@@ -525,10 +525,12 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
- 	struct vm_area_struct *vma = walk->vma;
- 	bool locked = !!(vma->vm_flags & VM_LOCKED);
- 	struct page *page = NULL;
--	bool migration = false;
-+	bool migration = false, young = false, dirty = false;
- 
- 	if (pte_present(*pte)) {
- 		page = vm_normal_page(vma, addr, *pte);
-+		young = pte_young(*pte);
-+		dirty = pte_dirty(*pte);
- 	} else if (is_swap_pte(*pte)) {
- 		swp_entry_t swpent = pte_to_swp_entry(*pte);
- 
-@@ -558,8 +560,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
- 	if (!page)
- 		return;
- 
--	smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte),
--		      locked, migration);
-+	smaps_account(mss, page, false, young, dirty, locked, migration);
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index f354fad05714a..5b0b23e55fa76 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -449,11 +449,6 @@ static struct macsec_eth_header *macsec_ethhdr(struct sk_buff *skb)
+ 	return (struct macsec_eth_header *)skb_mac_header(skb);
  }
  
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+-static sci_t dev_to_sci(struct net_device *dev, __be16 port)
+-{
+-	return make_sci(dev->dev_addr, port);
+-}
+-
+ static void __macsec_pn_wrapped(struct macsec_secy *secy,
+ 				struct macsec_tx_sa *tx_sa)
+ {
+@@ -3622,7 +3617,6 @@ static int macsec_set_mac_address(struct net_device *dev, void *p)
+ 
+ out:
+ 	eth_hw_addr_set(dev, addr->sa_data);
+-	macsec->secy.sci = dev_to_sci(dev, MACSEC_PORT_ES);
+ 
+ 	/* If h/w offloading is available, propagate to the device */
+ 	if (macsec_is_offloaded(macsec)) {
+@@ -3960,6 +3954,11 @@ static bool sci_exists(struct net_device *dev, sci_t sci)
+ 	return false;
+ }
+ 
++static sci_t dev_to_sci(struct net_device *dev, __be16 port)
++{
++	return make_sci(dev->dev_addr, port);
++}
++
+ static int macsec_add_dev(struct net_device *dev, sci_t sci, u8 icv_len)
+ {
+ 	struct macsec_dev *macsec = macsec_priv(dev);
 -- 
 2.35.1
 
