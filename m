@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7E8ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1176CECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230112AbiH2LC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42514 "EHLO
+        id S229988AbiH2LDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiH2LB4 (ORCPT
+        with ESMTP id S229991AbiH2LB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:01:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC2A2AC7A;
-        Mon, 29 Aug 2022 04:01:51 -0700 (PDT)
+        Mon, 29 Aug 2022 07:01:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4176F1C915;
+        Mon, 29 Aug 2022 04:01:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F035F611A6;
-        Mon, 29 Aug 2022 11:01:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20E3C433D6;
-        Mon, 29 Aug 2022 11:01:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F34AAB80EC8;
+        Mon, 29 Aug 2022 11:01:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 044E3C433B5;
+        Mon, 29 Aug 2022 11:01:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661770910;
-        bh=X5oYj97w2Zr9o+u8wQ8RFXzUEGRTSZQ+I3WOqowwdAc=;
+        s=korg; t=1661770913;
+        bh=zsP5m/HM7B3yPTjrS0qFApOqZLNggpW8XOAOb0CmZP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CkB3xCLF+OcZDwzv1x//CGzsHDGDR4/wBLnT5Qz8uX6uHay6h+anWJnWShEQAZjXh
-         q7CrAqlu5Da0KChhOJVF0kBG5MRs6hexZtAPd697RPe/NNatrk8QfeA+yTVoXM3JA9
-         tPzlrsbZd1+IWCOQwVxvoWsnvjP2rOzswS0eq/x0=
+        b=OXZbAoe7g7GTPT+2qSKGTODGB+wTjnS6OpdIqAhPtLZHJ7yBKdmnEdbABWIlXBZ6d
+         imdjRdCpLnXZI5sS0ibcrsGOD1BN6eywj4+BhV2nKTkBqGY6AbylTpNPUaEOLpiPNM
+         SeJZZyuyOCloHDujzzPk5j7SUfX1I+z9MbVnS0oc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Quinn Tran <qutran@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 020/136] scsi: qla2xxx: edif: Fix dropped IKE message
-Date:   Mon, 29 Aug 2022 12:58:07 +0200
-Message-Id: <20220829105805.432538063@linuxfoundation.org>
+Subject: [PATCH 5.15 021/136] btrfs: put initial index value of a directory in a constant
+Date:   Mon, 29 Aug 2022 12:58:08 +0200
+Message-Id: <20220829105805.464243592@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -52,124 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quinn Tran <qutran@marvell.com>
+From: Filipe Manana <fdmanana@suse.com>
 
-[ Upstream commit c019cd656e717349ff22d0c41d6fbfc773f48c52 ]
+[ Upstream commit 528ee697126fddaff448897c2d649bd756153c79 ]
 
-This patch fixes IKE message being dropped due to error in processing Purex
-IOCB and Continuation IOCBs.
+At btrfs_set_inode_index_count() we refer twice to the number 2 as the
+initial index value for a directory (when it's empty), with a proper
+comment explaining the reason for that value. In the next patch I'll
+have to use that magic value in the directory logging code, so put
+the value in a #define at btrfs_inode.h, to avoid hardcoding the
+magic value again at tree-log.c.
 
-Link: https://lore.kernel.org/r/20220713052045.10683-6-njavali@marvell.com
-Fixes: fac2807946c1 ("scsi: qla2xxx: edif: Add extraction of auth_els from the wire")
-Cc: stable@vger.kernel.org
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Quinn Tran <qutran@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_isr.c | 54 +++++++++++++++-------------------
- 1 file changed, 24 insertions(+), 30 deletions(-)
+ fs/btrfs/btrfs_inode.h | 12 ++++++++++--
+ fs/btrfs/inode.c       | 10 ++--------
+ 2 files changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_isr.c b/drivers/scsi/qla2xxx/qla_isr.c
-index ecbc0a5ffb3f5..59f5918dca95f 100644
---- a/drivers/scsi/qla2xxx/qla_isr.c
-+++ b/drivers/scsi/qla2xxx/qla_isr.c
-@@ -3707,12 +3707,11 @@ void qla24xx_nvme_ls4_iocb(struct scsi_qla_host *vha,
-  * Return: 0 all iocbs has arrived, xx- all iocbs have not arrived.
-  */
- static int qla_chk_cont_iocb_avail(struct scsi_qla_host *vha,
--	struct rsp_que *rsp, response_t *pkt)
-+	struct rsp_que *rsp, response_t *pkt, u32 rsp_q_in)
- {
--	int start_pkt_ring_index, end_pkt_ring_index, n_ring_index;
--	response_t *end_pkt;
-+	int start_pkt_ring_index;
-+	u32 iocb_cnt = 0;
- 	int rc = 0;
--	u32 rsp_q_in;
+diff --git a/fs/btrfs/btrfs_inode.h b/fs/btrfs/btrfs_inode.h
+index 76ee1452c57ba..37ceea85b871c 100644
+--- a/fs/btrfs/btrfs_inode.h
++++ b/fs/btrfs/btrfs_inode.h
+@@ -13,6 +13,13 @@
+ #include "ordered-data.h"
+ #include "delayed-inode.h"
  
- 	if (pkt->entry_count == 1)
- 		return rc;
-@@ -3723,34 +3722,18 @@ static int qla_chk_cont_iocb_avail(struct scsi_qla_host *vha,
- 	else
- 		start_pkt_ring_index = rsp->ring_index - 1;
- 
--	if ((start_pkt_ring_index + pkt->entry_count) >= rsp->length)
--		end_pkt_ring_index = start_pkt_ring_index + pkt->entry_count -
--			rsp->length - 1;
-+	if (rsp_q_in < start_pkt_ring_index)
-+		/* q in ptr is wrapped */
-+		iocb_cnt = rsp->length - start_pkt_ring_index + rsp_q_in;
- 	else
--		end_pkt_ring_index = start_pkt_ring_index + pkt->entry_count - 1;
-+		iocb_cnt = rsp_q_in - start_pkt_ring_index;
- 
--	end_pkt = rsp->ring + end_pkt_ring_index;
--
--	/*  next pkt = end_pkt + 1 */
--	n_ring_index = end_pkt_ring_index + 1;
--	if (n_ring_index >= rsp->length)
--		n_ring_index = 0;
--
--	rsp_q_in = rsp->qpair->use_shadow_reg ? *rsp->in_ptr :
--		rd_reg_dword(rsp->rsp_q_in);
--
--	/* rsp_q_in is either wrapped or pointing beyond endpkt */
--	if ((rsp_q_in < start_pkt_ring_index && rsp_q_in < n_ring_index) ||
--			rsp_q_in >= n_ring_index)
--		/* all IOCBs arrived. */
--		rc = 0;
--	else
-+	if (iocb_cnt < pkt->entry_count)
- 		rc = -EIO;
- 
--	ql_dbg(ql_dbg_init + ql_dbg_verbose, vha, 0x5091,
--	    "%s - ring %p pkt %p end pkt %p entry count %#x rsp_q_in %d rc %d\n",
--	    __func__, rsp->ring, pkt, end_pkt, pkt->entry_count,
--	    rsp_q_in, rc);
-+	ql_dbg(ql_dbg_init, vha, 0x5091,
-+	       "%s - ring %p pkt %p entry count %d iocb_cnt %d rsp_q_in %d rc %d\n",
-+	       __func__, rsp->ring, pkt, pkt->entry_count, iocb_cnt, rsp_q_in, rc);
- 
- 	return rc;
- }
-@@ -3767,7 +3750,7 @@ void qla24xx_process_response_queue(struct scsi_qla_host *vha,
- 	struct qla_hw_data *ha = vha->hw;
- 	struct purex_entry_24xx *purex_entry;
- 	struct purex_item *pure_item;
--	u16 rsp_in = 0;
-+	u16 rsp_in = 0, cur_ring_index;
- 	int follow_inptr, is_shadow_hba;
- 
- 	if (!ha->flags.fw_started)
-@@ -3798,6 +3781,7 @@ void qla24xx_process_response_queue(struct scsi_qla_host *vha,
- 		       (!follow_inptr &&
- 			rsp->ring_ptr->signature != RESPONSE_PROCESSED)) {
- 		pkt = (struct sts_entry_24xx *)rsp->ring_ptr;
-+		cur_ring_index = rsp->ring_index;
- 
- 		rsp->ring_index++;
- 		if (rsp->ring_index == rsp->length) {
-@@ -3918,7 +3902,17 @@ void qla24xx_process_response_queue(struct scsi_qla_host *vha,
- 				break;
- 
- 			case ELS_AUTH_ELS:
--				if (qla_chk_cont_iocb_avail(vha, rsp, (response_t *)pkt)) {
-+				if (qla_chk_cont_iocb_avail(vha, rsp, (response_t *)pkt, rsp_in)) {
-+					/*
-+					 * ring_ptr and ring_index were
-+					 * pre-incremented above. Reset them
-+					 * back to current. Wait for next
-+					 * interrupt with all IOCBs to arrive
-+					 * and re-process.
-+					 */
-+					rsp->ring_ptr = (response_t *)pkt;
-+					rsp->ring_index = cur_ring_index;
++/*
++ * Since we search a directory based on f_pos (struct dir_context::pos) we have
++ * to start at 2 since '.' and '..' have f_pos of 0 and 1 respectively, so
++ * everybody else has to start at 2 (see btrfs_real_readdir() and dir_emit_dots()).
++ */
++#define BTRFS_DIR_START_INDEX 2
 +
- 					ql_dbg(ql_dbg_init, vha, 0x5091,
- 					    "Defer processing ELS opcode %#x...\n",
- 					    purex_entry->els_frame_payload[3]);
+ /*
+  * ordered_data_close is set by truncate when a file that used
+  * to have good data has been truncated to zero.  When it is set
+@@ -164,8 +171,9 @@ struct btrfs_inode {
+ 	u64 disk_i_size;
+ 
+ 	/*
+-	 * if this is a directory then index_cnt is the counter for the index
+-	 * number for new files that are created
++	 * If this is a directory then index_cnt is the counter for the index
++	 * number for new files that are created. For an empty directory, this
++	 * must be initialized to BTRFS_DIR_START_INDEX.
+ 	 */
+ 	u64 index_cnt;
+ 
+diff --git a/fs/btrfs/inode.c b/fs/btrfs/inode.c
+index ac6ba984973c0..26a4acb856a38 100644
+--- a/fs/btrfs/inode.c
++++ b/fs/btrfs/inode.c
+@@ -6396,14 +6396,8 @@ static int btrfs_set_inode_index_count(struct btrfs_inode *inode)
+ 		goto out;
+ 	ret = 0;
+ 
+-	/*
+-	 * MAGIC NUMBER EXPLANATION:
+-	 * since we search a directory based on f_pos we have to start at 2
+-	 * since '.' and '..' have f_pos of 0 and 1 respectively, so everybody
+-	 * else has to start at 2
+-	 */
+ 	if (path->slots[0] == 0) {
+-		inode->index_cnt = 2;
++		inode->index_cnt = BTRFS_DIR_START_INDEX;
+ 		goto out;
+ 	}
+ 
+@@ -6414,7 +6408,7 @@ static int btrfs_set_inode_index_count(struct btrfs_inode *inode)
+ 
+ 	if (found_key.objectid != btrfs_ino(inode) ||
+ 	    found_key.type != BTRFS_DIR_INDEX_KEY) {
+-		inode->index_cnt = 2;
++		inode->index_cnt = BTRFS_DIR_START_INDEX;
+ 		goto out;
+ 	}
+ 
 -- 
 2.35.1
 
