@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 994DAECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FA7ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231747AbiH2LVk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
+        id S231756AbiH2LVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231496AbiH2LTm (ORCPT
+        with ESMTP id S231520AbiH2LTt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:19:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E134647C2;
-        Mon, 29 Aug 2022 04:13:30 -0700 (PDT)
+        Mon, 29 Aug 2022 07:19:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB1B75FC2;
+        Mon, 29 Aug 2022 04:13:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA176B80FA7;
-        Mon, 29 Aug 2022 11:12:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C63C433D7;
-        Mon, 29 Aug 2022 11:12:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24ADD61211;
+        Mon, 29 Aug 2022 11:13:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B6AEC433C1;
+        Mon, 29 Aug 2022 11:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771557;
-        bh=dYGJFV5EgdP70WN5QswLCao+TYDUvdlFgfKFcjfE1/0=;
+        s=korg; t=1661771622;
+        bh=vHOP5kvxzs+2Ky4SsWI9e/BdipXe6+F7K0c2gRIs+NQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TvCNLybzY9424i3iA1gL/8Inu5HpZVfpaGhAPGeHv6zrJWrHnIIful3Y9jf2CZGjM
-         Byz60xyEpUsaSAnYsdD3szXtVYb5BkQ5bhKqerXLw6wLCN5QygWbf577+9L2YdbIBl
-         xpLM1o7K/roFAxHp+zg/YILZ1krcUl1hIqcbCD84=
+        b=aXdUlgZzBj/BaAxnccf7c4sNEpN0FTx1cTISoaNX3Yqyln+/iVz1Zzkbo/NbMr6O2
+         tqYW9ub7Quk5d9HKhD8ympaicxiDqJGdhLZTcTqFM5jfrZFOAWpRN62G5K4MWwp+4E
+         Sa3GKXDroxWhdU2vH0uVM78Y44bwoDZS87ebVy5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Craig McQueen <craig@mcqueen.id.au>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 043/158] net: dsa: microchip: keep compatibility with device tree blobs with no phy-mode
-Date:   Mon, 29 Aug 2022 12:58:13 +0200
-Message-Id: <20220829105810.577903823@linuxfoundation.org>
+        stable@vger.kernel.org, Salvatore Bonaccorso <carnil@debian.org>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 128/136] Documentation/ABI: Mention retbleed vulnerability info file for sysfs
+Date:   Mon, 29 Aug 2022 12:59:55 +0200
+Message-Id: <20220829105809.949023168@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,91 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Salvatore Bonaccorso <carnil@debian.org>
 
-[ Upstream commit 5fbb08eb7f945c7e8896ea39f03143ce66dfa4c7 ]
+commit 00da0cb385d05a89226e150a102eb49d8abb0359 upstream.
 
-DSA has multiple ways of specifying a MAC connection to an internal PHY.
-One requires a DT description like this:
+While reporting for the AMD retbleed vulnerability was added in
 
-	port@0 {
-		reg = <0>;
-		phy-handle = <&internal_phy>;
-		phy-mode = "internal";
-	};
+  6b80b59b3555 ("x86/bugs: Report AMD retbleed vulnerability")
 
-(which is IMO the recommended approach, as it is the clearest
-description)
+the new sysfs file was not mentioned so far in the ABI documentation for
+sysfs-devices-system-cpu. Fix that.
 
-but it is also possible to leave the specification as just:
-
-	port@0 {
-		reg = <0>;
-	}
-
-and if the driver implements ds->ops->phy_read and ds->ops->phy_write,
-the DSA framework "knows" it should create a ds->slave_mii_bus, and it
-should connect to a non-OF-based internal PHY on this MDIO bus, at an
-MDIO address equal to the port address.
-
-There is also an intermediary way of describing things:
-
-	port@0 {
-		reg = <0>;
-		phy-handle = <&internal_phy>;
-	};
-
-In case 2, DSA calls phylink_connect_phy() and in case 3, it calls
-phylink_of_phy_connect(). In both cases, phylink_create() has been
-called with a phy_interface_t of PHY_INTERFACE_MODE_NA, and in both
-cases, PHY_INTERFACE_MODE_NA is translated into phy->interface.
-
-It is important to note that phy_device_create() initializes
-dev->interface = PHY_INTERFACE_MODE_GMII, and so, when we use
-phylink_create(PHY_INTERFACE_MODE_NA), no one will override this, and we
-will end up with a PHY_INTERFACE_MODE_GMII interface inherited from the
-PHY.
-
-All this means that in order to maintain compatibility with device tree
-blobs where the phy-mode property is missing, we need to allow the
-"gmii" phy-mode and treat it as "internal".
-
-Fixes: 2c709e0bdad4 ("net: dsa: microchip: ksz8795: add phylink support")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216320
-Reported-by: Craig McQueen <craig@mcqueen.id.au>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Tested-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Link: https://lore.kernel.org/r/20220818143250.2797111-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6b80b59b3555 ("x86/bugs: Report AMD retbleed vulnerability")
+Signed-off-by: Salvatore Bonaccorso <carnil@debian.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220801091529.325327-1-carnil@debian.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/microchip/ksz_common.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ Documentation/ABI/testing/sysfs-devices-system-cpu |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 0f02c62b02685..c9389880ad1fa 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -453,9 +453,15 @@ void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
- 	if (dev->info->supports_rgmii[port])
- 		phy_interface_set_rgmii(config->supported_interfaces);
- 
--	if (dev->info->internal_phy[port])
-+	if (dev->info->internal_phy[port]) {
- 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
- 			  config->supported_interfaces);
-+		/* Compatibility for phylib's default interface type when the
-+		 * phy-mode property is absent
-+		 */
-+		__set_bit(PHY_INTERFACE_MODE_GMII,
-+			  config->supported_interfaces);
-+	}
- 
- 	if (dev->dev_ops->get_caps)
- 		dev->dev_ops->get_caps(dev, port, config);
--- 
-2.35.1
-
+--- a/Documentation/ABI/testing/sysfs-devices-system-cpu
++++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+@@ -521,6 +521,7 @@ What:		/sys/devices/system/cpu/vulnerabi
+ 		/sys/devices/system/cpu/vulnerabilities/tsx_async_abort
+ 		/sys/devices/system/cpu/vulnerabilities/itlb_multihit
+ 		/sys/devices/system/cpu/vulnerabilities/mmio_stale_data
++		/sys/devices/system/cpu/vulnerabilities/retbleed
+ Date:		January 2018
+ Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
+ Description:	Information about CPU vulnerabilities
 
 
