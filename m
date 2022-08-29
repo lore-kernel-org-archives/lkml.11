@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD3AECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E71ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229579AbiH2LG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:06:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
+        id S229794AbiH2LGf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230263AbiH2LFv (ORCPT
+        with ESMTP id S230280AbiH2LFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:05:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD7C642C4;
-        Mon, 29 Aug 2022 04:04:22 -0700 (PDT)
+        Mon, 29 Aug 2022 07:05:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5843A66A46;
+        Mon, 29 Aug 2022 04:04:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 287C4611BE;
-        Mon, 29 Aug 2022 11:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39AF4C433D6;
-        Mon, 29 Aug 2022 11:03:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BAF29B80EFB;
+        Mon, 29 Aug 2022 11:03:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 201BEC433C1;
+        Mon, 29 Aug 2022 11:03:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771005;
-        bh=RdsxlfRGYPFDh+9Tzh7mDILcijz/JNwWIspFb79gCrs=;
+        s=korg; t=1661771011;
+        bh=1X41frZTHQivlLsOnkoqvM+UV/1idMNbJM8zsDD4H5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JwMZQ/h8ukwP5XZ4Bico7TrRyBCBSkMPZZ5WhsMEe7i9ogHE9Ifu7tisXpLoMsQT9
-         MI2onXiOHdP4noM+qMTGmfmycF5jluaga7lkbMWQx/g0h11FlFb3/vqR/kTMDkB/C9
-         I1wlGoKHZ3LXqt66oZf11KhWguDR1b0hU1haFF/c=
+        b=mVqUQ8vx1SYoiN++QOynZgVC7MWqqrOLhg/UkJYTFdyq2TTnJeZA5aLv2b8Nie3O7
+         vEw2Q7FuW8JWxL6F7NS5iXgErhYw5dHDaIGAyo4R3wIdvY2ZDzENrY6Q71Eg8FlIAm
+         mbOvSaNnDcukGnmIeQ7/lfmPosyk/6rkP4D6Zukc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
-        Allison Henderson <allison.henderson@oracle.com>,
-        Catherine Hoang <catherine.hoang@oracle.com>,
-        Amir Goldstein <amir73il@gmail.com>
-Subject: [PATCH 5.10 06/86] xfs: reject crazy array sizes being fed to XFS_IOC_GETBMAP*
-Date:   Mon, 29 Aug 2022 12:58:32 +0200
-Message-Id: <20220829105756.791492007@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Amir Goldstein <amir73il@gmail.com>,
+        "Darrick J. Wong" <djwong@kernel.org>
+Subject: [PATCH 5.10 07/86] fs: remove __sync_filesystem
+Date:   Mon, 29 Aug 2022 12:58:33 +0200
+Message-Id: <20220829105756.833028102@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
 References: <20220829105756.500128871@linuxfoundation.org>
@@ -50,47 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Darrick J. Wong" <djwong@kernel.org>
+From: Christoph Hellwig <hch@lst.de>
 
-commit 29d650f7e3ab55283b89c9f5883d0c256ce478b5 upstream.
+commit 9a208ba5c9afa62c7b1e9c6f5e783066e84e2d3c upstream.
 
-Syzbot tripped over the following complaint from the kernel:
+[backported for dependency]
 
-WARNING: CPU: 2 PID: 15402 at mm/util.c:597 kvmalloc_node+0x11e/0x125 mm/util.c:597
+There is no clear benefit in having this helper vs just open coding it.
 
-While trying to run XFS_IOC_GETBMAP against the following structure:
-
-struct getbmap fubar = {
-	.bmv_count	= 0x22dae649,
-};
-
-Obviously, this is a crazy huge value since the next thing that the
-ioctl would do is allocate 37GB of memory.  This is enough to make
-kvmalloc mad, but isn't large enough to trip the validation functions.
-In other words, I'm fussing with checks that were **already sufficient**
-because that's easier than dealing with 644 internal bug reports.  Yes,
-that's right, six hundred and forty-four.
-
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Reviewed-by: Allison Henderson <allison.henderson@oracle.com>
-Reviewed-by: Catherine Hoang <catherine.hoang@oracle.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Link: https://lore.kernel.org/r/20211019062530.2174626-2-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Amir Goldstein <amir73il@gmail.com>
 Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_ioctl.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/sync.c |   38 +++++++++++++++++---------------------
+ 1 file changed, 17 insertions(+), 21 deletions(-)
 
---- a/fs/xfs/xfs_ioctl.c
-+++ b/fs/xfs/xfs_ioctl.c
-@@ -1689,7 +1689,7 @@ xfs_ioc_getbmap(
+--- a/fs/sync.c
++++ b/fs/sync.c
+@@ -22,25 +22,6 @@
+ 			SYNC_FILE_RANGE_WAIT_AFTER)
  
- 	if (bmx.bmv_count < 2)
- 		return -EINVAL;
--	if (bmx.bmv_count > ULONG_MAX / recsize)
-+	if (bmx.bmv_count >= INT_MAX / recsize)
- 		return -ENOMEM;
+ /*
+- * Do the filesystem syncing work. For simple filesystems
+- * writeback_inodes_sb(sb) just dirties buffers with inodes so we have to
+- * submit IO for these buffers via __sync_blockdev(). This also speeds up the
+- * wait == 1 case since in that case write_inode() functions do
+- * sync_dirty_buffer() and thus effectively write one block at a time.
+- */
+-static int __sync_filesystem(struct super_block *sb, int wait)
+-{
+-	if (wait)
+-		sync_inodes_sb(sb);
+-	else
+-		writeback_inodes_sb(sb, WB_REASON_SYNC);
+-
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, wait);
+-	return __sync_blockdev(sb->s_bdev, wait);
+-}
+-
+-/*
+  * Write out and wait upon all dirty data associated with this
+  * superblock.  Filesystem data as well as the underlying block
+  * device.  Takes the superblock lock.
+@@ -61,10 +42,25 @@ int sync_filesystem(struct super_block *
+ 	if (sb_rdonly(sb))
+ 		return 0;
  
- 	buf = kvzalloc(bmx.bmv_count * sizeof(*buf), GFP_KERNEL);
+-	ret = __sync_filesystem(sb, 0);
++	/*
++	 * Do the filesystem syncing work.  For simple filesystems
++	 * writeback_inodes_sb(sb) just dirties buffers with inodes so we have
++	 * to submit I/O for these buffers via __sync_blockdev().  This also
++	 * speeds up the wait == 1 case since in that case write_inode()
++	 * methods call sync_dirty_buffer() and thus effectively write one block
++	 * at a time.
++	 */
++	writeback_inodes_sb(sb, WB_REASON_SYNC);
++	if (sb->s_op->sync_fs)
++		sb->s_op->sync_fs(sb, 0);
++	ret = __sync_blockdev(sb->s_bdev, 0);
+ 	if (ret < 0)
+ 		return ret;
+-	return __sync_filesystem(sb, 1);
++
++	sync_inodes_sb(sb);
++	if (sb->s_op->sync_fs)
++		sb->s_op->sync_fs(sb, 1);
++	return __sync_blockdev(sb->s_bdev, 1);
+ }
+ EXPORT_SYMBOL(sync_filesystem);
+ 
 
 
