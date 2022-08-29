@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF012ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5685FECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231258AbiH2LJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:09:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
+        id S231270AbiH2LKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:10:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231236AbiH2LI4 (ORCPT
+        with ESMTP id S230383AbiH2LJM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:08:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C5D5924F;
-        Mon, 29 Aug 2022 04:06:13 -0700 (PDT)
+        Mon, 29 Aug 2022 07:09:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2960A6B15C;
+        Mon, 29 Aug 2022 04:06:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8ED3AB80EE6;
-        Mon, 29 Aug 2022 11:04:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4AA0C433C1;
-        Mon, 29 Aug 2022 11:04:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3F07611B8;
+        Mon, 29 Aug 2022 11:06:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9A1FC433C1;
+        Mon, 29 Aug 2022 11:06:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771049;
-        bh=ZY+39YoS1KQ/nzpx8QF2bN9pbwC5e8JdY3tGQteHWLA=;
+        s=korg; t=1661771182;
+        bh=YlnfQbV4ZasJ5+pYHMjHHupkiCta5PQLbbUdF/59zA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b7BfGu7EnvfzX3hJYsoKDyDtb70IOKhGL3EgMssHNPF+9cMdNlcpJWYk0YkRl1+Xl
-         z+EjNSmxqEwvn09hNBTBHB5h1JT3ah7iYy29yClw7kJi3xCmtLRqBd+NzJTTyOUEYo
-         6fZVceJuYeGwCk7wE7K08ANM8b11WVsllkU1TabY=
+        b=xXtPM+FyEq1wd+nd9vOQ/DIx4ZFMuHpEJgJYfhsNGprOy1cvHrcaeouOL6z4Uri9i
+         Vo3WkCK0vjIrdZlBx0IOxmRiIcyqRSzNQ2rRRaZtTEofwUSVQkGz9911vmEamWRfML
+         hKsVLzEK6qC3VjVOLVQbUlk2DLd7lMbEmzYzBG/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 13/86] xfrm: clone missing x->lastused in xfrm_do_migrate
-Date:   Mon, 29 Aug 2022 12:58:39 +0200
-Message-Id: <20220829105757.066188996@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 5.19 002/158] NFS: Fix another fsync() issue after a server reboot
+Date:   Mon, 29 Aug 2022 12:57:32 +0200
+Message-Id: <20220829105808.934230208@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +48,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 6aa811acdb76facca0b705f4e4c1d948ccb6af8b ]
+commit 67f4b5dc49913abcdb5cc736e73674e2f352f81d upstream.
 
-x->lastused was not cloned in xfrm_do_migrate. Add it to clone during
-migrate.
+Currently, when the writeback code detects a server reboot, it redirties
+any pages that were not committed to disk, and it sets the flag
+NFS_CONTEXT_RESEND_WRITES in the nfs_open_context of the file descriptor
+that dirtied the file. While this allows the file descriptor in question
+to redrive its own writes, it violates the fsync() requirement that we
+should be synchronising all writes to disk.
+While the problem is infrequent, we do see corner cases where an
+untimely server reboot causes the fsync() call to abandon its attempt to
+sync data to disk and causing data corruption issues due to missed error
+conditions or similar.
 
-Fixes: 80c9abaabf42 ("[XFRM]: Extension for dynamic update of endpoint address(es)")
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In order to tighted up the client's ability to deal with this situation
+without introducing livelocks, add a counter that records the number of
+times pages are redirtied due to a server reboot-like condition, and use
+that in fsync() to redrive the sync to disk.
+
+Fixes: 2197e9b06c22 ("NFS: Fix up fsync() when the server rebooted")
+Cc: stable@vger.kernel.org
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/xfrm/xfrm_state.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/nfs/file.c          |   15 ++++++---------
+ fs/nfs/inode.c         |    1 +
+ fs/nfs/write.c         |    6 ++++--
+ include/linux/nfs_fs.h |    1 +
+ 4 files changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index bc0bbb1571cef..fdbd56ed4bd52 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1557,6 +1557,7 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	x->replay = orig->replay;
- 	x->preplay = orig->preplay;
- 	x->mapping_maxage = orig->mapping_maxage;
-+	x->lastused = orig->lastused;
- 	x->new_mapping = 0;
- 	x->new_mapping_sport = 0;
+--- a/fs/nfs/file.c
++++ b/fs/nfs/file.c
+@@ -221,8 +221,10 @@ nfs_file_fsync_commit(struct file *file,
+ int
+ nfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
+ {
+-	struct nfs_open_context *ctx = nfs_file_open_context(file);
+ 	struct inode *inode = file_inode(file);
++	struct nfs_inode *nfsi = NFS_I(inode);
++	long save_nredirtied = atomic_long_read(&nfsi->redirtied_pages);
++	long nredirtied;
+ 	int ret;
  
--- 
-2.35.1
-
+ 	trace_nfs_fsync_enter(inode);
+@@ -237,15 +239,10 @@ nfs_file_fsync(struct file *file, loff_t
+ 		ret = pnfs_sync_inode(inode, !!datasync);
+ 		if (ret != 0)
+ 			break;
+-		if (!test_and_clear_bit(NFS_CONTEXT_RESEND_WRITES, &ctx->flags))
++		nredirtied = atomic_long_read(&nfsi->redirtied_pages);
++		if (nredirtied == save_nredirtied)
+ 			break;
+-		/*
+-		 * If nfs_file_fsync_commit detected a server reboot, then
+-		 * resend all dirty pages that might have been covered by
+-		 * the NFS_CONTEXT_RESEND_WRITES flag
+-		 */
+-		start = 0;
+-		end = LLONG_MAX;
++		save_nredirtied = nredirtied;
+ 	}
+ 
+ 	trace_nfs_fsync_exit(inode, ret);
+--- a/fs/nfs/inode.c
++++ b/fs/nfs/inode.c
+@@ -426,6 +426,7 @@ nfs_ilookup(struct super_block *sb, stru
+ static void nfs_inode_init_regular(struct nfs_inode *nfsi)
+ {
+ 	atomic_long_set(&nfsi->nrequests, 0);
++	atomic_long_set(&nfsi->redirtied_pages, 0);
+ 	INIT_LIST_HEAD(&nfsi->commit_info.list);
+ 	atomic_long_set(&nfsi->commit_info.ncommit, 0);
+ 	atomic_set(&nfsi->commit_info.rpcs_out, 0);
+--- a/fs/nfs/write.c
++++ b/fs/nfs/write.c
+@@ -1419,10 +1419,12 @@ static void nfs_initiate_write(struct nf
+  */
+ static void nfs_redirty_request(struct nfs_page *req)
+ {
++	struct nfs_inode *nfsi = NFS_I(page_file_mapping(req->wb_page)->host);
++
+ 	/* Bump the transmission count */
+ 	req->wb_nio++;
+ 	nfs_mark_request_dirty(req);
+-	set_bit(NFS_CONTEXT_RESEND_WRITES, &nfs_req_openctx(req)->flags);
++	atomic_long_inc(&nfsi->redirtied_pages);
+ 	nfs_end_page_writeback(req);
+ 	nfs_release_request(req);
+ }
+@@ -1892,7 +1894,7 @@ static void nfs_commit_release_pages(str
+ 		/* We have a mismatch. Write the page again */
+ 		dprintk_cont(" mismatch\n");
+ 		nfs_mark_request_dirty(req);
+-		set_bit(NFS_CONTEXT_RESEND_WRITES, &nfs_req_openctx(req)->flags);
++		atomic_long_inc(&NFS_I(data->inode)->redirtied_pages);
+ 	next:
+ 		nfs_unlock_and_release_request(req);
+ 		/* Latency breaker */
+--- a/include/linux/nfs_fs.h
++++ b/include/linux/nfs_fs.h
+@@ -182,6 +182,7 @@ struct nfs_inode {
+ 		/* Regular file */
+ 		struct {
+ 			atomic_long_t	nrequests;
++			atomic_long_t	redirtied_pages;
+ 			struct nfs_mds_commit_info commit_info;
+ 			struct mutex	commit_mutex;
+ 		};
 
 
