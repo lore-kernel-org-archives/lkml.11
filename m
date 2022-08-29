@@ -2,127 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98081ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E620ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230098AbiH2NSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33740 "EHLO
+        id S229909AbiH2NS7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:18:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230142AbiH2NRQ (ORCPT
+        with ESMTP id S230350AbiH2NRy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:17:16 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C778A1C939;
-        Mon, 29 Aug 2022 06:16:42 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27TCgHnP025952;
-        Mon, 29 Aug 2022 09:15:17 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j7g673cf5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 09:15:17 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 27TDFGck019146
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 29 Aug 2022 09:15:16 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 29 Aug
- 2022 09:15:15 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 29 Aug 2022 09:15:15 -0400
-Received: from nsa.ad.analog.com ([10.44.3.68])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27TDEeiU026449;
-        Mon, 29 Aug 2022 09:15:08 -0400
-From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-To:     <linux-kernel@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        <devicetree@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <linux-input@vger.kernel.org>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH v4 10/10] input: keyboard: adp5588-keys: Use new PM macros
-Date:   Mon, 29 Aug 2022 15:15:53 +0200
-Message-ID: <20220829131553.690063-11-nuno.sa@analog.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829131553.690063-1-nuno.sa@analog.com>
-References: <20220829131553.690063-1-nuno.sa@analog.com>
+        Mon, 29 Aug 2022 09:17:54 -0400
+Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC5F82F92
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:17:03 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.west.internal (Postfix) with ESMTP id C3CD12B0607D;
+        Mon, 29 Aug 2022 09:15:27 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 29 Aug 2022 09:15:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1661778927; x=
+        1661786127; bh=bQFyjpMNqkENbIjlSD35Zj5sFEYA6vUdCkuwZuqm7TI=; b=T
+        9IkExrnDo9ILGrnq65wN97FCrtXIWEkeAbP7nG+06RyRiXlLSVe3R7e00njnxjxW
+        ihQ7N3hJahATrSjNUdUwxLJ/KsBVUDjsR0LCVAdPmE8DbuWPT/Cg1Gl32hPb2f26
+        CL+VqMnWH5A0hHYOTBqtn/d27OQN2g6B5v+Q3pFmZOQtA0H2RnhRRORhY08k0oGE
+        J25NC+YLvd+tMlnu3jILDJuRAhEmalcH4sA4335YDZavHGur3s5grORCWCLpbHxZ
+        9l1yqbMR7z3zUAqS+qnCfb9kjs+PIlRFirN7otRAgE/53ijdKXHt9f98qaBejXEN
+        N71z0ZXNz+okkgR24LbIg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661778927; x=
+        1661786127; bh=bQFyjpMNqkENbIjlSD35Zj5sFEYA6vUdCkuwZuqm7TI=; b=w
+        8Xcr7VMECbXJcl7zuFEBY1iPiaxVXjWlcOy4VKZovQgyi17NMpiUYtj155sYq0LZ
+        N0edC6V1dOZAqqPSY2zHcS2D9PspSaBi3bp6u7JEi5u3DYjXWue66PIzdcNP/qmP
+        jGOer/3WtP+mnVQyHlQ8EwMLq+2QOCbsXEdXqk1Hehsa700xtF47tSQa+3p4nj1e
+        gnHEqXNuEZb8MeYGZuQMF6ZwWlIywbtt6Mp5fjkRVw7zBh2OVHL/hFRBEKz2I4Cz
+        2lMcKoIJIoAdorEeLBNKDWvOl7fLCxEnTqQ+bns1HY0JLI/Seqhu7R2kEWxQbmai
+        fRDyRwrKoeVv/1kN8ccrw==
+X-ME-Sender: <xms:77sMY43svq0XTMq1D8GkJ4GfCAYLaDiRUO7V99tseGcbkZbgSywdZg>
+    <xme:77sMYzGCwyLJisatZYIdsUHAGwL2rjD_6ayJO7NjVcGULvf_I8sXmA9aj96zeXZLY
+    0eXQmcR_sN1NRanB3s>
+X-ME-Received: <xmr:77sMYw7Nwu6JUynm4S3d-HW-k79s3C9MmmBgNyQuKXkXCDbSVub0kP90X0ab>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddgieegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgjfhggtgfogfesthhqredtredtjeenucfhrhhomhepofgr
+    gihimhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtf
+    frrghtthgvrhhnpeefiedvfefggffgffehveejieffuddtgffhjefggeetieduvdeileet
+    lefgveegtdenucevlhhushhtvghrufhiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:77sMYx1P9x52He3Mg77DiCCa-KCczGJ8Uie6pETXMrbzpzzbjBfsXA>
+    <xmx:77sMY7GBYLFVpwrTQn02RvcENGHBBdhagEqTRHIhP4LzT8EMDl3FLw>
+    <xmx:77sMY6_arsjgK6IndJoQaGAlCWk58Gvx3QPehDb6sgLfa9IYij1Jdg>
+    <xmx:77sMY1M0oB61Jo2868sQfv_B44QheY63yiqDOENEV2JABVK0vUAGIHnTFkU>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 29 Aug 2022 09:15:26 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Maxime Ripard <mripard@kernel.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Lyude Paul <lyude@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        intel-gfx@lists.freedesktop.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        dri-devel@lists.freedesktop.org, Dom Cobley <dom@raspberrypi.com>,
+        linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org,
+        linux-sunxi@lists.linux.dev,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2 31/41] drm/vc4: vec: Use TV Reset implementation
+Date:   Mon, 29 Aug 2022 15:11:45 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v2-31-459522d653a7@cerno.tech>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: HzHZf3F1q6vI2raEM49qHnp9POj5dtts
-X-Proofpoint-GUID: HzHZf3F1q6vI2raEM49qHnp9POj5dtts
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-29_07,2022-08-25_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- lowpriorityscore=0 spamscore=0 phishscore=0 mlxlogscore=999 malwarescore=0
- impostorscore=0 mlxscore=0 adultscore=0 bulkscore=0 suspectscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208290061
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.10.0-dev-65ba7
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1413; i=maxime@cerno.tech; h=from:subject:message-id; bh=qDLYBra+oWv7qr1ofEsAPnJEYg3c17J8Q720Wj/k2mc=; b=owGbwMvMwCX2+D1vfrpE4FHG02pJDMk8uxTUr6gwqegmf4jUmrupInBnsidH0hqHF5vePV/cONdk 29zdHaUsDGJcDLJiiiwxwuZL4k7Net3JxjcPZg4rE8gQBi5OAZjIETOGf9p7mWTvl6jclM39d6qm90 TxRs2+DTfepCVap7b/PPSIR4aR4fiBWr6yQ9N+Xb7aP/NzffBEvtS6Tl67ookBZXEGQQfCWQA=
+X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the new PM macros (DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr()), the
-compiler has visibility to see that the functions are not used when
-!CONFIG_PM and hence, remove the dead code. As such, there's no need
-for '__maybe_unused'.
-
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/input/keyboard/adp5588-keys.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/input/keyboard/adp5588-keys.c b/drivers/input/keyboard/adp5588-keys.c
-index 0e6f4a47bb9c..7cb120ad3a68 100644
---- a/drivers/input/keyboard/adp5588-keys.c
-+++ b/drivers/input/keyboard/adp5588-keys.c
-@@ -825,7 +825,7 @@ static void adp5588_remove(struct i2c_client *client)
- 	/* all resources will be freed by devm */
- }
- 
--static int __maybe_unused adp5588_suspend(struct device *dev)
-+static int adp5588_suspend(struct device *dev)
- {
- 	struct i2c_client *client = to_i2c_client(dev);
- 
-@@ -834,7 +834,7 @@ static int __maybe_unused adp5588_suspend(struct device *dev)
- 	return 0;
- }
- 
--static int __maybe_unused adp5588_resume(struct device *dev)
-+static int adp5588_resume(struct device *dev)
- {
- 	struct i2c_client *client = to_i2c_client(dev);
- 
-@@ -843,7 +843,7 @@ static int __maybe_unused adp5588_resume(struct device *dev)
- 	return 0;
- }
- 
--static SIMPLE_DEV_PM_OPS(adp5588_dev_pm_ops, adp5588_suspend, adp5588_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(adp5588_dev_pm_ops, adp5588_suspend, adp5588_resume);
- 
- static const struct i2c_device_id adp5588_id[] = {
- 	{ "adp5588-keys", 0 },
-@@ -863,7 +863,7 @@ static struct i2c_driver adp5588_driver = {
- 	.driver = {
- 		.name = KBUILD_MODNAME,
- 		.of_match_table = adp5588_of_match,
--		.pm   = &adp5588_dev_pm_ops,
-+		.pm   = pm_sleep_ptr(&adp5588_dev_pm_ops),
- 	},
- 	.probe    = adp5588_probe,
- 	.remove   = adp5588_remove,
--- 
-2.37.2
-
+The analog TV properties created by the drm_mode_create_tv_properties() are=
+=0D
+not properly initialised at reset. Let's switch our implementation to call=
+=0D
+drm_atomic_helper_connector_tv_reset().=0D
+=0D
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>=0D
+=0D
+diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c=
+=0D
+index fa85dd260742..ba6f81908923 100644=0D
+--- a/drivers/gpu/drm/vc4/vc4_vec.c=0D
++++ b/drivers/gpu/drm/vc4/vc4_vec.c=0D
+@@ -254,6 +254,12 @@ vc4_vec_connector_detect(struct drm_connector *connect=
+or, bool force)=0D
+ 	return connector_status_unknown;=0D
+ }=0D
+ =0D
++static void vc4_vec_connector_reset(struct drm_connector *connector)=0D
++{=0D
++	drm_atomic_helper_connector_reset(connector);=0D
++	drm_atomic_helper_connector_tv_reset(connector);=0D
++}=0D
++=0D
+ static int vc4_vec_connector_get_modes(struct drm_connector *connector)=0D
+ {=0D
+ 	struct drm_connector_state *state =3D connector->state;=0D
+@@ -274,7 +280,7 @@ static int vc4_vec_connector_get_modes(struct drm_conne=
+ctor *connector)=0D
+ static const struct drm_connector_funcs vc4_vec_connector_funcs =3D {=0D
+ 	.detect =3D vc4_vec_connector_detect,=0D
+ 	.fill_modes =3D drm_helper_probe_single_connector_modes,=0D
+-	.reset =3D drm_atomic_helper_connector_reset,=0D
++	.reset =3D vc4_vec_connector_reset,=0D
+ 	.atomic_duplicate_state =3D drm_atomic_helper_connector_duplicate_state,=
+=0D
+ 	.atomic_destroy_state =3D drm_atomic_helper_connector_destroy_state,=0D
+ };=0D
+=0D
+-- =0D
+b4 0.10.0-dev-65ba7=0D
