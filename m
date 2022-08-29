@@ -2,43 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC14AECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6318ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232630AbiH2LdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55580 "EHLO
+        id S231336AbiH2LdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231237AbiH2LaD (ORCPT
+        with ESMTP id S232326AbiH2LaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:30:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC0C46BCEE;
-        Mon, 29 Aug 2022 04:18:09 -0700 (PDT)
+        Mon, 29 Aug 2022 07:30:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9982AC5C;
+        Mon, 29 Aug 2022 04:18:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A945361128;
-        Mon, 29 Aug 2022 11:17:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6285C433C1;
-        Mon, 29 Aug 2022 11:17:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B95611D7;
+        Mon, 29 Aug 2022 11:18:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA79C433C1;
+        Mon, 29 Aug 2022 11:18:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771863;
-        bh=9GGEEK+29rkGbgMDUIJYkfa5qhQ5CwqP81QP7W3+6jc=;
+        s=korg; t=1661771900;
+        bh=V8qOksT9B2HakiCF8OjLf9plcRuIIdKdMNzf8b+ZEdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jxfnSXOWwSB0yoI5ESkNciXrdC8oTQRWLc5ifir9Nfak0wNR3jYNO/isGkOIQKBPV
-         5/fV3v3Q+DIjkZK2EhBQTht+DtauK3ALJfny6+8LqMQI4uBqehhSPH4sspSMe9fYqT
-         6/X0rk+on0tRtXWJJv/s9Ujn1kNuG8YF6zTMQCww=
+        b=Uh9g3xEu+MBNF9K3F+s4iRdQJDgd1hhfaUtJQvubDcDfVLCY/jkXQfDCaoVEU6s8Y
+         4CCdt8KhkGAA6YugFTrcHOEf8Qu1eu+RIJFa/sWNwMPcDb0N/phHiDRJUmqg1W0W0K
+         eQENY0uP5YxR/pF+2g+zNdlqhYRCVtfDN8xeTB98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Subject: [PATCH 5.19 115/158] s390/mm: do not trigger write fault when vma does not allow VM_WRITE
-Date:   Mon, 29 Aug 2022 12:59:25 +0200
-Message-Id: <20220829105813.924839469@linuxfoundation.org>
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Peter Feiner <pfeiner@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Cyrill Gorcunov <gorcunov@openvz.org>,
+        Pavel Emelyanov <xemul@parallels.com>,
+        Jamie Liu <jamieliu@google.com>,
+        Hugh Dickins <hughd@google.com>,
+        Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Xu <peterx@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.19 134/158] mm/hugetlb: fix hugetlb not supporting softdirty tracking
+Date:   Mon, 29 Aug 2022 12:59:44 +0200
+Message-Id: <20220829105814.700417788@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -50,49 +59,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+From: David Hildenbrand <david@redhat.com>
 
-commit 41ac42f137080bc230b5882e3c88c392ab7f2d32 upstream.
+commit f96f7a40874d7c746680c0b9f57cef2262ae551f upstream.
 
-For non-protection pXd_none() page faults in do_dat_exception(), we
-call do_exception() with access == (VM_READ | VM_WRITE | VM_EXEC).
-In do_exception(), vma->vm_flags is checked against that before
-calling handle_mm_fault().
+Patch series "mm/hugetlb: fix write-fault handling for shared mappings", v2.
 
-Since commit 92f842eac7ee3 ("[S390] store indication fault optimization"),
-we call handle_mm_fault() with FAULT_FLAG_WRITE, when recognizing that
-it was a write access. However, the vma flags check is still only
-checking against (VM_READ | VM_WRITE | VM_EXEC), and therefore also
-calling handle_mm_fault() with FAULT_FLAG_WRITE in cases where the vma
-does not allow VM_WRITE.
+I observed that hugetlb does not support/expect write-faults in shared
+mappings that would have to map the R/O-mapped page writable -- and I
+found two case where we could currently get such faults and would
+erroneously map an anon page into a shared mapping.
 
-Fix this by changing access check in do_exception() to VM_WRITE only,
-when recognizing write access.
+Reproducers part of the patches.
 
-Link: https://lkml.kernel.org/r/20220811103435.188481-3-david@redhat.com
-Fixes: 92f842eac7ee3 ("[S390] store indication fault optimization")
-Cc: <stable@vger.kernel.org>
-Reported-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Vasily Gorbik <gor@linux.ibm.com>
+I propose to backport both fixes to stable trees.  The first fix needs a
+small adjustment.
+
+
+This patch (of 2):
+
+Staring at hugetlb_wp(), one might wonder where all the logic for shared
+mappings is when stumbling over a write-protected page in a shared
+mapping.  In fact, there is none, and so far we thought we could get away
+with that because e.g., mprotect() should always do the right thing and
+map all pages directly writable.
+
+Looks like we were wrong:
+
+--------------------------------------------------------------------------
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <fcntl.h>
+ #include <unistd.h>
+ #include <errno.h>
+ #include <sys/mman.h>
+
+ #define HUGETLB_SIZE (2 * 1024 * 1024u)
+
+ static void clear_softdirty(void)
+ {
+         int fd = open("/proc/self/clear_refs", O_WRONLY);
+         const char *ctrl = "4";
+         int ret;
+
+         if (fd < 0) {
+                 fprintf(stderr, "open(clear_refs) failed\n");
+                 exit(1);
+         }
+         ret = write(fd, ctrl, strlen(ctrl));
+         if (ret != strlen(ctrl)) {
+                 fprintf(stderr, "write(clear_refs) failed\n");
+                 exit(1);
+         }
+         close(fd);
+ }
+
+ int main(int argc, char **argv)
+ {
+         char *map;
+         int fd;
+
+         fd = open("/dev/hugepages/tmp", O_RDWR | O_CREAT);
+         if (!fd) {
+                 fprintf(stderr, "open() failed\n");
+                 return -errno;
+         }
+         if (ftruncate(fd, HUGETLB_SIZE)) {
+                 fprintf(stderr, "ftruncate() failed\n");
+                 return -errno;
+         }
+
+         map = mmap(NULL, HUGETLB_SIZE, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+         if (map == MAP_FAILED) {
+                 fprintf(stderr, "mmap() failed\n");
+                 return -errno;
+         }
+
+         *map = 0;
+
+         if (mprotect(map, HUGETLB_SIZE, PROT_READ)) {
+                 fprintf(stderr, "mmprotect() failed\n");
+                 return -errno;
+         }
+
+         clear_softdirty();
+
+         if (mprotect(map, HUGETLB_SIZE, PROT_READ|PROT_WRITE)) {
+                 fprintf(stderr, "mmprotect() failed\n");
+                 return -errno;
+         }
+
+         *map = 0;
+
+         return 0;
+ }
+--------------------------------------------------------------------------
+
+Above test fails with SIGBUS when there is only a single free hugetlb page.
+ # echo 1 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+ # ./test
+ Bus error (core dumped)
+
+And worse, with sufficient free hugetlb pages it will map an anonymous page
+into a shared mapping, for example, messing up accounting during unmap
+and breaking MAP_SHARED semantics:
+ # echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+ # ./test
+ # cat /proc/meminfo | grep HugePages_
+ HugePages_Total:       2
+ HugePages_Free:        1
+ HugePages_Rsvd:    18446744073709551615
+ HugePages_Surp:        0
+
+Reason in this particular case is that vma_wants_writenotify() will
+return "true", removing VM_SHARED in vma_set_page_prot() to map pages
+write-protected. Let's teach vma_wants_writenotify() that hugetlb does not
+support softdirty tracking.
+
+Link: https://lkml.kernel.org/r/20220811103435.188481-1-david@redhat.com
+Link: https://lkml.kernel.org/r/20220811103435.188481-2-david@redhat.com
+Fixes: 64e455079e1b ("mm: softdirty: enable write notifications on VMAs after VM_SOFTDIRTY cleared")
+Signed-off-by: David Hildenbrand <david@redhat.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Peter Feiner <pfeiner@google.com>
+Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Cyrill Gorcunov <gorcunov@openvz.org>
+Cc: Pavel Emelyanov <xemul@parallels.com>
+Cc: Jamie Liu <jamieliu@google.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Muchun Song <songmuchun@bytedance.com>
+Cc: Peter Xu <peterx@redhat.com>
+Cc: <stable@vger.kernel.org>	[3.18+]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: David Hildenbrand <david@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/mm/fault.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ mm/mmap.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/arch/s390/mm/fault.c
-+++ b/arch/s390/mm/fault.c
-@@ -379,7 +379,9 @@ static inline vm_fault_t do_exception(st
- 	flags = FAULT_FLAG_DEFAULT;
- 	if (user_mode(regs))
- 		flags |= FAULT_FLAG_USER;
--	if (access == VM_WRITE || is_write)
-+	if (is_write)
-+		access = VM_WRITE;
-+	if (access == VM_WRITE)
- 		flags |= FAULT_FLAG_WRITE;
- 	mmap_read_lock(mm);
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1693,8 +1693,12 @@ int vma_wants_writenotify(struct vm_area
+ 	    pgprot_val(vm_pgprot_modify(vm_page_prot, vm_flags)))
+ 		return 0;
  
+-	/* Do we need to track softdirty? */
+-	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) && !(vm_flags & VM_SOFTDIRTY))
++	/*
++	 * Do we need to track softdirty? hugetlb does not support softdirty
++	 * tracking yet.
++	 */
++	if (IS_ENABLED(CONFIG_MEM_SOFT_DIRTY) && !(vm_flags & VM_SOFTDIRTY) &&
++	    !is_vm_hugetlb_page(vma))
+ 		return 1;
+ 
+ 	/* Specialty mapping? */
 
 
