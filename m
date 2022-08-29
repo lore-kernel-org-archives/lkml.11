@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E691FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 339E0ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231248AbiH2LKe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:10:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
+        id S229696AbiH2LKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231159AbiH2LJk (ORCPT
+        with ESMTP id S231173AbiH2LJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:09:40 -0400
+        Mon, 29 Aug 2022 07:09:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59DE67148;
-        Mon, 29 Aug 2022 04:06:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659E26B8E7;
+        Mon, 29 Aug 2022 04:07:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77E01611B0;
-        Mon, 29 Aug 2022 11:04:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8454EC433D6;
-        Mon, 29 Aug 2022 11:04:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D42F611E7;
+        Mon, 29 Aug 2022 11:06:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28891C433C1;
+        Mon, 29 Aug 2022 11:06:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771092;
-        bh=d3HKlBsXcLeK4mkuebyAltdj5guPsJxMc7cwL4yHCM0=;
+        s=korg; t=1661771202;
+        bh=c3mgWRxCA72LwoTlctjyeQI1EGN5ZfAcpD7L1ju73eM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GYBQnLmd9ECJk9L3lFMFg63vkBhJvRoWSMPl203CEuYzZP3YXFA/hZrSs178VfJ3k
-         Wig+qsc0y4YuGjyqJxj47noYMN6Xm4Al3DAvPUnHcakUu8EyE2GYH0BMXhYI7tliIC
-         TtLNHB6JGguXlfTOF3f8FVseAVz8aoVL/riKhahg=
+        b=zAlNC2BKIvbtvwgM/tsFPa/hiLjqnd4CsIsMVqu1pHAInlA7DmUx9UfRXadHZE2dJ
+         EaWk15LRjnQA9+k7iT9R5Ff5dDqXD1FoTWIIwj25ZOPgW9tXiXhdo9i3BHcscAC/gp
+         BQ7FA0sekWRO26LHD3/LXsXhlUgz/a3oVfYjPsNU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Xu <peterx@redhat.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Hildenbrand <david@redhat.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Konstantin Khlebnikov <khlebnikov@openvz.org>,
-        Huang Ying <ying.huang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 20/86] mm/smaps: dont access young/dirty bit if pte unpresent
-Date:   Mon, 29 Aug 2022 12:58:46 +0200
-Message-Id: <20220829105757.352116900@linuxfoundation.org>
+        stable@vger.kernel.org, Jing-Ting Wu <jing-ting.wu@mediatek.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Mukesh Ojha <quic_mojha@quicinc.com>, Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.19 004/158] cgroup: Fix race condition at rebind_subsystems()
+Date:   Mon, 29 Aug 2022 12:57:34 +0200
+Message-Id: <20220829105809.018206751@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,67 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Xu <peterx@redhat.com>
+From: Jing-Ting Wu <Jing-Ting.Wu@mediatek.com>
 
-[ Upstream commit efd4149342db2df41b1bbe68972ead853b30e444 ]
+commit 763f4fb76e24959c370cdaa889b2492ba6175580 upstream.
 
-These bits should only be valid when the ptes are present.  Introducing
-two booleans for it and set it to false when !pte_present() for both pte
-and pmd accountings.
+Root cause:
+The rebind_subsystems() is no lock held when move css object from A
+list to B list,then let B's head be treated as css node at
+list_for_each_entry_rcu().
 
-The bug is found during code reading and no real world issue reported, but
-logically such an error can cause incorrect readings for either smaps or
-smaps_rollup output on quite a few fields.
+Solution:
+Add grace period before invalidating the removed rstat_css_node.
 
-For example, it could cause over-estimate on values like Shared_Dirty,
-Private_Dirty, Referenced.  Or it could also cause under-estimate on
-values like LazyFree, Shared_Clean, Private_Clean.
-
-Link: https://lkml.kernel.org/r/20220805160003.58929-1-peterx@redhat.com
-Fixes: b1d4d9e0cbd0 ("proc/smaps: carefully handle migration entries")
-Fixes: c94b6923fa0a ("/proc/PID/smaps: Add PMD migration entry parsing")
-Signed-off-by: Peter Xu <peterx@redhat.com>
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Reviewed-by: Yang Shi <shy828301@gmail.com>
-Cc: Konstantin Khlebnikov <khlebnikov@openvz.org>
-Cc: Huang Ying <ying.huang@intel.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
+Suggested-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
+Tested-by: Jing-Ting Wu <jing-ting.wu@mediatek.com>
+Link: https://lore.kernel.org/linux-arm-kernel/d8f0bc5e2fb6ed259f9334c83279b4c011283c41.camel@mediatek.com/T/
+Acked-by: Mukesh Ojha <quic_mojha@quicinc.com>
+Fixes: a7df69b81aac ("cgroup: rstat: support cgroup1")
+Cc: stable@vger.kernel.org # v5.13+
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/proc/task_mmu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ kernel/cgroup/cgroup.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index ba98371e9d164..ef18f0d71b11b 100644
---- a/fs/proc/task_mmu.c
-+++ b/fs/proc/task_mmu.c
-@@ -503,10 +503,12 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
- 	struct vm_area_struct *vma = walk->vma;
- 	bool locked = !!(vma->vm_flags & VM_LOCKED);
- 	struct page *page = NULL;
--	bool migration = false;
-+	bool migration = false, young = false, dirty = false;
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -1811,6 +1811,7 @@ int rebind_subsystems(struct cgroup_root
  
- 	if (pte_present(*pte)) {
- 		page = vm_normal_page(vma, addr, *pte);
-+		young = pte_young(*pte);
-+		dirty = pte_dirty(*pte);
- 	} else if (is_swap_pte(*pte)) {
- 		swp_entry_t swpent = pte_to_swp_entry(*pte);
- 
-@@ -540,8 +542,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
- 	if (!page)
- 		return;
- 
--	smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte),
--		      locked, migration);
-+	smaps_account(mss, page, false, young, dirty, locked, migration);
- }
- 
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
--- 
-2.35.1
-
+ 		if (ss->css_rstat_flush) {
+ 			list_del_rcu(&css->rstat_css_node);
++			synchronize_rcu();
+ 			list_add_rcu(&css->rstat_css_node,
+ 				     &dcgrp->rstat_css_list);
+ 		}
 
 
