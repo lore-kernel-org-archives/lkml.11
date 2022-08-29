@@ -2,100 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 319F8ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EF2ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232723AbiH2LfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56842 "EHLO
+        id S232730AbiH2LfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:35:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232816AbiH2LeA (ORCPT
+        with ESMTP id S232823AbiH2LeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:34:00 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B13BEC;
-        Mon, 29 Aug 2022 04:19:45 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id y127so7850069pfy.5;
-        Mon, 29 Aug 2022 04:19:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=YkkKSKY+6i4yHV5ZW1S/rfBMmWbd8iaSJkFCcuATEeY=;
-        b=LInHvVBeUEexcOe/cX62gE+S/tEsoIUhf5PfXek7gDmcpdHcmB40THnsBm3nkY7i42
-         PryYhkkbIFqL4OGyJLNDa73lkcLq+xAxI2U1LjGnFCj7v7/xbSBUzVZjViXpoJtRQCs3
-         zjKMT5dvbxd4kQv8x1B1gEXNiNlLEIl6+EwFKHY+S9GTUJBxzqdJF+eekIOJ8NT/pJp+
-         m6yneZAuCLkqeYRI/uvhfdQvseUyElfBTxuc0kiPPMCkMtV7DB2CKxqYMCBx1sQaayb4
-         XSpr/y1Rf4HW3CFFagStmJ6XGL8LubHgtGL+VZk33fUx+Nucwg61QcrlA8DX360dNKb2
-         6nGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=YkkKSKY+6i4yHV5ZW1S/rfBMmWbd8iaSJkFCcuATEeY=;
-        b=e1PkLzw2bKxvAnEjIOjCB49fs8MCsHy/HCtY7JGtVRzhnc+fSBf5pgxNc94Pxfs+tp
-         w1BBhf5uWOCAPtbdzNUzmXtD0mMCqifLfmYmb+qepfpd3F3kslIPi1h9mHzaFpOi8b+c
-         50Y5jbPq5BeWnoYIjozEeuW9hZ1FiGxE45lsqvPptFNjcGNru6UNbsUnHxjP6bFPX0dm
-         YahmwXDAGnK/TWhGwzhplVjBnZD3FekiMBelCEMucIOSZkM0G0O+BMZVHdiEnoOtJWrO
-         DPtMaCNqfscqo1MHiHMdjo2Ssgx+TE7JSvKDHgB9cwfialu87Ti9tU5DZ0n6oAfhWI0x
-         LD0Q==
-X-Gm-Message-State: ACgBeo0A3oTtwhJVa3m57u0AT641g/T14ocCgm9Jnl0p0kIuo33Rhzsy
-        RmZLhjnyt5YwASIs5paODbk=
-X-Google-Smtp-Source: AA6agR7xoTZyJARGoWnaR8u6bIBcsAd0Tzd/NjaSus665bhBHmI7yO+ibqo0VXy0LEVbBKZytfMQHw==
-X-Received: by 2002:a05:6a00:10d3:b0:4fe:5d:75c8 with SMTP id d19-20020a056a0010d300b004fe005d75c8mr16371630pfu.6.1661771835532;
-        Mon, 29 Aug 2022 04:17:15 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id l15-20020a170903120f00b00174a8d357b7sm3062421plh.20.2022.08.29.04.17.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 04:17:15 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: cui.jinpeng2@zte.com.cn
-To:     ajay.kathat@microchip.com, claudiu.beznea@microchip.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] wifi: cfg80211: remove redundant ret variable
-Date:   Mon, 29 Aug 2022 11:16:44 +0000
-Message-Id: <20220829111643.266866-1-cui.jinpeng2@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Mon, 29 Aug 2022 07:34:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790EC7CA8C;
+        Mon, 29 Aug 2022 04:19:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E613B80E4C;
+        Mon, 29 Aug 2022 11:19:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DC2CC433D6;
+        Mon, 29 Aug 2022 11:19:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771961;
+        bh=QXzMtzimhRYt8XWF/LVdnFlStaAGw59NdLQPfaF4lB8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A/F2z5j910CaZcxMB/L4oqmp0jnVl8N9JeAAAKCmxNplm5RZhD2Fn1tqM+lae8I3A
+         5MXDVqRjC8Q/jXMwq8mVIlQV4+SZjum1Lx7hqliDX39G5V368tm7hmXZ2j1239wqzB
+         JQusUXakfnebjOrY0RFQ5Mg+GcfWLF14rC2kTb74=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+a168dbeaaa7778273c1b@syzkaller.appspotmail.com,
+        Shigeru Yoshida <syoshida@redhat.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.19 121/158] fbdev: fbcon: Properly revert changes when vc_resize() failed
+Date:   Mon, 29 Aug 2022 12:59:31 +0200
+Message-Id: <20220829105814.184053079@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+From: Shigeru Yoshida <syoshida@redhat.com>
 
-Return value from cfg80211_rx_mgmt() directly instead of
-taking this in another redundant variable.
+commit a5a923038d70d2d4a86cb4e3f32625a5ee6e7e24 upstream.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+fbcon_do_set_font() calls vc_resize() when font size is changed.
+However, if if vc_resize() failed, current implementation doesn't
+revert changes for font size, and this causes inconsistent state.
+
+syzbot reported unable to handle page fault due to this issue [1].
+syzbot's repro uses fault injection which cause failure for memory
+allocation, so vc_resize() failed.
+
+This patch fixes this issue by properly revert changes for font
+related date when vc_resize() failed.
+
+Link: https://syzkaller.appspot.com/bug?id=3443d3a1fa6d964dd7310a0cb1696d165a3e07c4 [1]
+Reported-by: syzbot+a168dbeaaa7778273c1b@syzkaller.appspotmail.com
+Signed-off-by: Shigeru Yoshida <syoshida@redhat.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+CC: stable@vger.kernel.org # 5.15+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/microchip/wilc1000/cfg80211.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/core/fbcon.c |   27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/cfg80211.c b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
-index f810a56a7ff0..b89047965e78 100644
---- a/drivers/net/wireless/microchip/wilc1000/cfg80211.c
-+++ b/drivers/net/wireless/microchip/wilc1000/cfg80211.c
-@@ -997,12 +997,11 @@ bool wilc_wfi_mgmt_frame_rx(struct wilc_vif *vif, u8 *buff, u32 size)
- {
- 	struct wilc *wl = vif->wilc;
- 	struct wilc_priv *priv = &vif->priv;
--	int freq, ret;
-+	int freq;
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -2402,15 +2402,21 @@ static int fbcon_do_set_font(struct vc_d
+ 	struct fb_info *info = fbcon_info_from_console(vc->vc_num);
+ 	struct fbcon_ops *ops = info->fbcon_par;
+ 	struct fbcon_display *p = &fb_display[vc->vc_num];
+-	int resize;
++	int resize, ret, old_userfont, old_width, old_height, old_charcount;
+ 	char *old_data = NULL;
  
- 	freq = ieee80211_channel_to_frequency(wl->op_ch, NL80211_BAND_2GHZ);
--	ret = cfg80211_rx_mgmt(&priv->wdev, freq, 0, buff, size, 0);
- 
--	return ret;
-+	return cfg80211_rx_mgmt(&priv->wdev, freq, 0, buff, size, 0);
+ 	resize = (w != vc->vc_font.width) || (h != vc->vc_font.height);
+ 	if (p->userfont)
+ 		old_data = vc->vc_font.data;
+ 	vc->vc_font.data = (void *)(p->fontdata = data);
++	old_userfont = p->userfont;
+ 	if ((p->userfont = userfont))
+ 		REFCOUNT(data)++;
++
++	old_width = vc->vc_font.width;
++	old_height = vc->vc_font.height;
++	old_charcount = vc->vc_font.charcount;
++
+ 	vc->vc_font.width = w;
+ 	vc->vc_font.height = h;
+ 	vc->vc_font.charcount = charcount;
+@@ -2426,7 +2432,9 @@ static int fbcon_do_set_font(struct vc_d
+ 		rows = FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
+ 		cols /= w;
+ 		rows /= h;
+-		vc_resize(vc, cols, rows);
++		ret = vc_resize(vc, cols, rows);
++		if (ret)
++			goto err_out;
+ 	} else if (con_is_visible(vc)
+ 		   && vc->vc_mode == KD_TEXT) {
+ 		fbcon_clear_margins(vc, 0);
+@@ -2436,6 +2444,21 @@ static int fbcon_do_set_font(struct vc_d
+ 	if (old_data && (--REFCOUNT(old_data) == 0))
+ 		kfree(old_data - FONT_EXTRA_WORDS * sizeof(int));
+ 	return 0;
++
++err_out:
++	p->fontdata = old_data;
++	vc->vc_font.data = (void *)old_data;
++
++	if (userfont) {
++		p->userfont = old_userfont;
++		REFCOUNT(data)--;
++	}
++
++	vc->vc_font.width = old_width;
++	vc->vc_font.height = old_height;
++	vc->vc_font.charcount = old_charcount;
++
++	return ret;
  }
  
- void wilc_wfi_p2p_rx(struct wilc_vif *vif, u8 *buff, u32 size)
--- 
-2.25.1
+ /*
+
 
