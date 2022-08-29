@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4C01ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F39CCECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229871AbiH2LQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42912 "EHLO
+        id S231432AbiH2LQe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:16:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231673AbiH2LO3 (ORCPT
+        with ESMTP id S231682AbiH2LOb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:14:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA3D67446;
-        Mon, 29 Aug 2022 04:10:19 -0700 (PDT)
+        Mon, 29 Aug 2022 07:14:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2202B6AA0A;
+        Mon, 29 Aug 2022 04:10:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35789611DA;
-        Mon, 29 Aug 2022 11:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F423C433D6;
-        Mon, 29 Aug 2022 11:10:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2739611E0;
+        Mon, 29 Aug 2022 11:07:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D47D2C433C1;
+        Mon, 29 Aug 2022 11:07:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771415;
-        bh=/YP6VvDcJ9DScd+mjxxX5q2txVxjWzz7n9jvS0JRzxc=;
+        s=korg; t=1661771232;
+        bh=awihSWkQlFYFU8mVvNwY4oyQltm5YraP7Navup+wI68=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yQsWaH4rwG2JkJU5h1VUCIkGbaaSkZDmwkuLJl/80qy5YndP87l/2nEkhW6XOjEAo
-         FFIwcbpXY9vIpBmpQyvzgR8AMdyKXuWKP0rIR0+26L4sTD30yhx1q0YJyvYEoU+0ly
-         b7Q5nFwf07UVJ0PWKniKV/G+B53H78ILlFt8en+U=
+        b=STzvw6bjjGYjZBbIJbUuS9upNWWerWfJgDCFwXxHAGuXkGqwe5P4cI0BS/PHxl7Ga
+         fMC+HHrs+tm5CSerpuUIVjU9oEPvld6Uzws8eyHtN/r2ZolIsWRXThs6u355WY0wyA
+         KBzwziwV/57e7lqyTespu61oAu1FmR05Y4hDVcp4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 101/136] x86/unwind/orc: Unwind ftrace trampolines with correct ORC entry
-Date:   Mon, 29 Aug 2022 12:59:28 +0200
-Message-Id: <20220829105808.840578337@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.19 007/158] kernel/sys_ni: add compat entry for fadvise64_64
+Date:   Mon, 29 Aug 2022 12:57:37 +0200
+Message-Id: <20220829105809.152935751@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,72 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Zhongjin <chenzhongjin@huawei.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit fc2e426b1161761561624ebd43ce8c8d2fa058da upstream.
+commit a8faed3a02eeb75857a3b5d660fa80fe79db77a3 upstream.
 
-When meeting ftrace trampolines in ORC unwinding, unwinder uses address
-of ftrace_{regs_}call address to find the ORC entry, which gets next frame at
-sp+176.
+When CONFIG_ADVISE_SYSCALLS is not set/enabled and CONFIG_COMPAT is
+set/enabled, the riscv compat_syscall_table references
+'compat_sys_fadvise64_64', which is not defined:
 
-If there is an IRQ hitting at sub $0xa8,%rsp, the next frame should be
-sp+8 instead of 176. It makes unwinder skip correct frame and throw
-warnings such as "wrong direction" or "can't access registers", etc,
-depending on the content of the incorrect frame address.
+riscv64-linux-ld: arch/riscv/kernel/compat_syscall_table.o:(.rodata+0x6f8):
+undefined reference to `compat_sys_fadvise64_64'
 
-By adding the base address ftrace_{regs_}caller with the offset
-*ip - ops->trampoline*, we can get the correct address to find the ORC entry.
+Add 'fadvise64_64' to kernel/sys_ni.c as a conditional COMPAT function so
+that when CONFIG_ADVISE_SYSCALLS is not set, there is a fallback function
+available.
 
-Also change "caller" to "tramp_addr" to make variable name conform to
-its content.
-
-[ mingo: Clarified the changelog a bit. ]
-
-Fixes: 6be7fa3c74d1 ("ftrace, orc, x86: Handle ftrace dynamically allocated trampolines")
-Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lkml.kernel.org/r/20220807220934.5689-1-rdunlap@infradead.org
+Fixes: d3ac21cacc24 ("mm: Support compiling out madvise and fadvise")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Suggested-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Josh Triplett <josh@joshtriplett.org>
+Cc: Paul Walmsley <paul.walmsley@sifive.com>
+Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Cc: Albert Ou <aou@eecs.berkeley.edu>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20220819084334.244016-1-chenzhongjin@huawei.com
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/unwind_orc.c |   15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ kernel/sys_ni.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/x86/kernel/unwind_orc.c
-+++ b/arch/x86/kernel/unwind_orc.c
-@@ -93,22 +93,27 @@ static struct orc_entry *orc_find(unsign
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
- {
- 	struct ftrace_ops *ops;
--	unsigned long caller;
-+	unsigned long tramp_addr, offset;
+--- a/kernel/sys_ni.c
++++ b/kernel/sys_ni.c
+@@ -277,6 +277,7 @@ COND_SYSCALL(landlock_restrict_self);
  
- 	ops = ftrace_ops_trampoline(ip);
- 	if (!ops)
- 		return NULL;
+ /* mm/fadvise.c */
+ COND_SYSCALL(fadvise64_64);
++COND_SYSCALL_COMPAT(fadvise64_64);
  
-+	/* Set tramp_addr to the start of the code copied by the trampoline */
- 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS)
--		caller = (unsigned long)ftrace_regs_call;
-+		tramp_addr = (unsigned long)ftrace_regs_caller;
- 	else
--		caller = (unsigned long)ftrace_call;
-+		tramp_addr = (unsigned long)ftrace_caller;
-+
-+	/* Now place tramp_addr to the location within the trampoline ip is at */
-+	offset = ip - ops->trampoline;
-+	tramp_addr += offset;
- 
- 	/* Prevent unlikely recursion */
--	if (ip == caller)
-+	if (ip == tramp_addr)
- 		return NULL;
- 
--	return orc_find(caller);
-+	return orc_find(tramp_addr);
- }
- #else
- static struct orc_entry *orc_ftrace_find(unsigned long ip)
+ /* mm/, CONFIG_MMU only */
+ COND_SYSCALL(swapon);
 
 
