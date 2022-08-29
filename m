@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A50ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BC8ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232511AbiH2Lck (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:32:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
+        id S232597AbiH2Lco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232728AbiH2L3q (ORCPT
+        with ESMTP id S232727AbiH2L3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:29:46 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C36997393D;
-        Mon, 29 Aug 2022 04:18:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B087B287;
+        Mon, 29 Aug 2022 04:18:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70981B80EFA;
-        Mon, 29 Aug 2022 11:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2950C433D6;
-        Mon, 29 Aug 2022 11:17:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D03F6B80E4C;
+        Mon, 29 Aug 2022 11:18:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155EBC433C1;
+        Mon, 29 Aug 2022 11:18:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771869;
-        bh=f+sxPNp24pAkBBPm+zWJ/V2IkOpA4s2q0og+aCyQKIw=;
+        s=korg; t=1661771881;
+        bh=+V/D1GHL9qP5qXMTVQSMo8g0Czk/LRtjnEWZXR0z0IM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rCQowzh3bYdUgiYF1+ONvwcCwW9vwkbD9IElU9UxIij/f+1uTJ40A9XKqeueiOuLT
-         wFPxoxp8uwLcmZooDrn15fxuByLcfg0mL05ZGp4HWAE+DFPSEjF2kndGq7pVuvsgy7
-         8+c8qNZ1hbWoGZXE7oq5Vb51ksv6hxTMMUXGT3WA=
+        b=DZQNn3w+NctsR+esguj4zA3BCm8eOK5QltKJF0TgDqY4deftZT1/LO6Fn5sGgqFV+
+         cDneZqKseAgAITTtTqSnMDUOZwFRHLic1jsSQFCiXY+adW37pZeORvQmi8SKFsIVmP
+         Z+WDMOINMLPVinGsGF6JZNC9ds+dmIN6vY802Fd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.19 125/158] nouveau: explicitly wait on the fence in nouveau_bo_move_m2mf
-Date:   Mon, 29 Aug 2022 12:59:35 +0200
-Message-Id: <20220829105814.337312403@linuxfoundation.org>
+        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.19 129/158] riscv: signal: fix missing prototype warning
+Date:   Mon, 29 Aug 2022 12:59:39 +0200
+Message-Id: <20220829105814.497687057@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -48,40 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karol Herbst <kherbst@redhat.com>
+From: Conor Dooley <conor.dooley@microchip.com>
 
-commit 6b04ce966a738ecdd9294c9593e48513c0dc90aa upstream.
+commit b5c3aca86d2698c4850b6ee8b341938025d2780c upstream.
 
-It is a bit unlcear to us why that's helping, but it does and unbreaks
-suspend/resume on a lot of GPUs without any known drawbacks.
+Fix the warning:
+arch/riscv/kernel/signal.c:316:27: warning: no previous prototype for function 'do_notify_resume' [-Wmissing-prototypes]
+asmlinkage __visible void do_notify_resume(struct pt_regs *regs,
 
-Cc: stable@vger.kernel.org # v5.15+
-Closes: https://gitlab.freedesktop.org/drm/nouveau/-/issues/156
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220819200928.401416-1-kherbst@redhat.com
+All other functions in the file are static & none of the existing
+headers stood out as an obvious location. Create signal.h to hold the
+declaration.
+
+Fixes: e2c0cdfba7f6 ("RISC-V: User-facing API")
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20220814141237.493457-4-mail@conchuod.ie
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_bo.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/riscv/include/asm/signal.h |   12 ++++++++++++
+ arch/riscv/kernel/signal.c      |    1 +
+ 2 files changed, 13 insertions(+)
+ create mode 100644 arch/riscv/include/asm/signal.h
 
---- a/drivers/gpu/drm/nouveau/nouveau_bo.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_bo.c
-@@ -820,6 +820,15 @@ nouveau_bo_move_m2mf(struct ttm_buffer_o
- 		if (ret == 0) {
- 			ret = nouveau_fence_new(chan, false, &fence);
- 			if (ret == 0) {
-+				/* TODO: figure out a better solution here
-+				 *
-+				 * wait on the fence here explicitly as going through
-+				 * ttm_bo_move_accel_cleanup somehow doesn't seem to do it.
-+				 *
-+				 * Without this the operation can timeout and we'll fallback to a
-+				 * software copy, which might take several minutes to finish.
-+				 */
-+				nouveau_fence_wait(fence, false, false);
- 				ret = ttm_bo_move_accel_cleanup(bo,
- 								&fence->base,
- 								evict, false,
+--- /dev/null
++++ b/arch/riscv/include/asm/signal.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifndef __ASM_SIGNAL_H
++#define __ASM_SIGNAL_H
++
++#include <uapi/asm/signal.h>
++#include <uapi/asm/ptrace.h>
++
++asmlinkage __visible
++void do_notify_resume(struct pt_regs *regs, unsigned long thread_info_flags);
++
++#endif
+--- a/arch/riscv/kernel/signal.c
++++ b/arch/riscv/kernel/signal.c
+@@ -15,6 +15,7 @@
+ 
+ #include <asm/ucontext.h>
+ #include <asm/vdso.h>
++#include <asm/signal.h>
+ #include <asm/signal32.h>
+ #include <asm/switch_to.h>
+ #include <asm/csr.h>
 
 
