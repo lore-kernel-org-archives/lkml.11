@@ -2,94 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D54ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:16:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA3AECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 09:17:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiH2JQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 05:16:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
+        id S229487AbiH2JRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 05:17:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiH2JQi (ORCPT
+        with ESMTP id S229447AbiH2JQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 05:16:38 -0400
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD915281A
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:16:37 -0700 (PDT)
-Received: by mail-ej1-f54.google.com with SMTP id kk26so14379067ejc.11
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:16:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=EZyAKGxDJWQWEgkfKzptYNGJYnD9auk8Xlm/WrZ7jdU=;
-        b=d1aqREwB7C2c1lguMj7cO3Fo+Im3ujyrobnrfIY2VqxxMGlcAxB0spySQteOm9fSsy
-         N/05PcdFeVMrlE5TLB9WRStdBWJCzHDyaC968vVKy98bi2YqLJMQ8DDi0kKW6z/fN7dw
-         HKZJ1UxGsRzqGfFzvPr7RA0o+e+UoXqitmpIiJb3nzPVnQlNNixVow3PWud3GQY4KW8u
-         2gpRJYTqQS6jFLOmBFrV2s8q9QdoljvkkeJ0/syk6IspnaOXeh8qWf5i1tzwSheeUWaT
-         ZQDvKuKpEX4ixAMpQTlUbqK9T+vi50HmL7Xl3VsUG9CF3H+HSIzqNNY7hUgD3lGxbCLz
-         BT0A==
-X-Gm-Message-State: ACgBeo0qMpu7qbB1gyGiqf2/jciwJnfcOtvvmDh+Qf884dogfwJs8OWU
-        /jDqgjI0ZCo1+/NdsPED4OkKqtsh0jA3yg==
-X-Google-Smtp-Source: AA6agR7L7Zo8+3boKcduPEH8hNCqgDk58TMtCsjz06qKSqqKWkUKDWoye5odSbnSHlehicIrNvED8g==
-X-Received: by 2002:a17:906:9752:b0:738:364a:4ac with SMTP id o18-20020a170906975200b00738364a04acmr13022013ejy.759.1661764596299;
-        Mon, 29 Aug 2022 02:16:36 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id c15-20020a056402120f00b0043bbb3535d6sm5398344edw.66.2022.08.29.02.16.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 02:16:35 -0700 (PDT)
-Message-ID: <b772c39f-c5ae-8f17-fe6e-6a2bc4d1f83b@kernel.org>
-Date:   Mon, 29 Aug 2022 11:16:34 +0200
+        Mon, 29 Aug 2022 05:16:58 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7165A2FD
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 02:16:56 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MGPsn449zzHnWK;
+        Mon, 29 Aug 2022 17:15:09 +0800 (CST)
+Received: from dggpemm100009.china.huawei.com (7.185.36.113) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 17:16:54 +0800
+Received: from huawei.com (10.175.113.32) by dggpemm100009.china.huawei.com
+ (7.185.36.113) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 29 Aug
+ 2022 17:16:54 +0800
+From:   Liu Shixin <liushixin2@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+CC:     <linux-kernel@vger.kernel.org>, Liu Shixin <liushixin2@huawei.com>
+Subject: [PATCH] mm/thp: remove redundant CONFIG_TRANSPARENT_HUGEPAGE
+Date:   Mon, 29 Aug 2022 17:51:25 +0800
+Message-ID: <20220829095125.3284567-1-liushixin2@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Weird RIP printed in BUGs [was: 6.0 tty regression, NULL pointer
- deref in flush_to_ldisc]
-Content-Language: en-US
-To:     Hans de Goede <hdegoede@redhat.com>,
-        =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux regressions mailing list <regressions@lists.linux.dev>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@suse.de>, Oleg Nesterov <oleg@redhat.com>
-References: <4b4bba5d-d291-d9fa-8382-cdc197b7ed35@redhat.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <4b4bba5d-d291-d9fa-8382-cdc197b7ed35@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.32]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm100009.china.huawei.com (7.185.36.113)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Simplify code by removing redundant CONFIG_TRANSPARENT_HUGEPAGE judgment.
 
-On 29. 08. 22, 10:37, Hans de Goede wrote:
-> [   28.626537] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> [   28.626555] #PF: supervisor instruction fetch in kernel mode
-> [   28.626563] #PF: error_code(0x0010) - not-present page
-> [   28.626569] PGD 0 P4D 0
-> [   28.626580] Oops: 0010 [#1] PREEMPT SMP PTI
-> [   28.626589] CPU: 2 PID: 8 Comm: kworker/u8:0 Tainted: G         C  E      6.0.0-rc2+ #102
-> [   28.626598] Hardware name: MPMAN Converter9/Converter9, BIOS 5.6.5 07/28/2015
-> [   28.626604] Workqueue: events_unbound flush_to_ldisc
-> [   28.626617] RIP: 0010:0x0
-> [   28.626633] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+No functional change.
 
-Irrelevant to the original report, this new message format (the old 
-being "Bad RIP value") confuses me. It always makes me think how can RIP 
-be -42. So can we either:
+Signed-off-by: Liu Shixin <liushixin2@huawei.com>
+---
+ include/linux/pgtable.h | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-1) print regs->ip value (0x0000000000000000) instead of prologue value 
-(regs->ip - 42 = 0xffffffffffffffd6) here? Even though we really pass 
-"regs->ip - 42" to copy_code()), or
-
-2) don't print "RIP" in that message. So only "at 0xffffffffffffffd6"
-
-? (I can send a patch for whichever is preferred, if anything.)
-
-thanks,
+diff --git a/include/linux/pgtable.h b/include/linux/pgtable.h
+index d9095251bffd..73fb1b2af795 100644
+--- a/include/linux/pgtable.h
++++ b/include/linux/pgtable.h
+@@ -1289,8 +1289,7 @@ static inline int pgd_devmap(pgd_t pgd)
+ #endif
+ 
+ #if !defined(CONFIG_TRANSPARENT_HUGEPAGE) || \
+-	(defined(CONFIG_TRANSPARENT_HUGEPAGE) && \
+-	 !defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD))
++	!defined(CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD)
+ static inline int pud_trans_huge(pud_t pud)
+ {
+ 	return 0;
 -- 
-js
-suse labs
+2.25.1
 
