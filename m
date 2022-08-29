@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C2BC3DA6B
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F979ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231822AbiH2L3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
+        id S232200AbiH2L3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231849AbiH2L2G (ORCPT
+        with ESMTP id S232035AbiH2L2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:28:06 -0400
+        Mon, 29 Aug 2022 07:28:22 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3619072EE6;
-        Mon, 29 Aug 2022 04:16:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999A079600;
+        Mon, 29 Aug 2022 04:16:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67E64B80E4C;
-        Mon, 29 Aug 2022 11:10:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0506C433D7;
-        Mon, 29 Aug 2022 11:10:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1BF7B80F92;
+        Mon, 29 Aug 2022 11:16:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADB7C433C1;
+        Mon, 29 Aug 2022 11:16:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771407;
-        bh=0RcrxzIq4WhOjo87Hq+HJS6+Nz8mi0V3Oos3YAzgquo=;
+        s=korg; t=1661771814;
+        bh=zP9teG4g2k77iBIISVR9f46KcpRZc5GjFyYLRroBqsM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CNtY928bXkuK0ZYkAsuk+nRYQNCI2n8a8AKzjjryYsH7dfEzXNuXz2zBnWOYfw9fx
-         LiQCzW7rxQ/Kdp1KU/PIC5lGXaXxsixsm4cQXcnbJpn7+RlvVIfKhSR/UgF3ANGlFk
-         gdxPt/Z3nxqQmcBl+FeQc2jlKbQgCwsLf9JmkrMY=
+        b=jl/rvxdXa/uGM3doo/WvMjbUXOJddDRtUGzhhSxRy1aVf4Dh+4VDXKaFUiLmtY3gB
+         dqtADNpRzVKfujinUJncrzrSwk+KrTJQSeLNOGNOVaEU5yW3z38Vu871jdKMwDLbHb
+         U2IZj3w4Sof0QtX3RDlXetgpQb+2D6TghWUn3Fa4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 100/136] perf/x86/lbr: Enable the branch type for the Arch LBR by default
-Date:   Mon, 29 Aug 2022 12:59:27 +0200
-Message-Id: <20220829105808.788608261@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.19 106/158] x86/sev: Dont use cc_platform_has() for early SEV-SNP calls
+Date:   Mon, 29 Aug 2022 12:59:16 +0200
+Message-Id: <20220829105813.541426749@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,60 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kan Liang <kan.liang@linux.intel.com>
+From: Tom Lendacky <thomas.lendacky@amd.com>
 
-commit 32ba156df1b1c8804a4e5be5339616945eafea22 upstream.
+commit cdaa0a407f1acd3a44861e3aea6e3c7349e668f1 upstream.
 
-On the platform with Arch LBR, the HW raw branch type encoding may leak
-to the perf tool when the SAVE_TYPE option is not set.
+When running identity-mapped and depending on the kernel configuration,
+it is possible that the compiler uses jump tables when generating code
+for cc_platform_has().
 
-In the intel_pmu_store_lbr(), the HW raw branch type is stored in
-lbr_entries[].type. If the SAVE_TYPE option is set, the
-lbr_entries[].type will be converted into the generic PERF_BR_* type
-in the intel_pmu_lbr_filter() and exposed to the user tools.
-But if the SAVE_TYPE option is NOT set by the user, the current perf
-kernel doesn't clear the field. The HW raw branch type leaks.
+This causes a boot failure because the jump table uses un-mapped kernel
+virtual addresses, not identity-mapped addresses. This has been seen
+with CONFIG_RETPOLINE=n.
 
-There are two solutions to fix the issue for the Arch LBR.
-One is to clear the field if the SAVE_TYPE option is NOT set.
-The other solution is to unconditionally convert the branch type and
-expose the generic type to the user tools.
+Similar to sme_encrypt_kernel(), use an open-coded direct check for the
+status of SNP rather than trying to eliminate the jump table. This
+preserves any code optimization in cc_platform_has() that can be useful
+post boot. It also limits the changes to SEV-specific files so that
+future compiler features won't necessarily require possible build changes
+just because they are not compatible with running identity-mapped.
 
-The latter is implemented here, because
-- The branch type is valuable information. I don't see a case where
-  you would not benefit from the branch type. (Stephane Eranian)
-- Not having the branch type DOES NOT save any space in the
-  branch record (Stephane Eranian)
-- The Arch LBR HW can retrieve the common branch types from the
-  LBR_INFO. It doesn't require the high overhead SW disassemble.
+  [ bp: Massage commit message. ]
 
-Fixes: 47125db27e47 ("perf/x86/intel/lbr: Support Architectural LBR")
-Reported-by: Stephane Eranian <eranian@google.com>
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220816125612.2042397-1-kan.liang@linux.intel.com
+Fixes: 5e5ccff60a29 ("x86/sev: Add helper for validating pages in early enc attribute changes")
+Reported-by: Sean Christopherson <seanjc@google.com>
+Suggested-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org> # 5.19.x
+Link: https://lore.kernel.org/all/YqfabnTRxFSM+LoX@google.com/
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/events/intel/lbr.c |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/x86/kernel/sev.c |   16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
---- a/arch/x86/events/intel/lbr.c
-+++ b/arch/x86/events/intel/lbr.c
-@@ -1114,6 +1114,14 @@ static int intel_pmu_setup_hw_lbr_filter
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -701,7 +701,13 @@ e_term:
+ void __init early_snp_set_memory_private(unsigned long vaddr, unsigned long paddr,
+ 					 unsigned int npages)
+ {
+-	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
++	/*
++	 * This can be invoked in early boot while running identity mapped, so
++	 * use an open coded check for SNP instead of using cc_platform_has().
++	 * This eliminates worries about jump tables or checking boot_cpu_data
++	 * in the cc_platform_has() function.
++	 */
++	if (!(sev_status & MSR_AMD64_SEV_SNP_ENABLED))
+ 		return;
  
- 	if (static_cpu_has(X86_FEATURE_ARCH_LBR)) {
- 		reg->config = mask;
-+
-+		/*
-+		 * The Arch LBR HW can retrieve the common branch types
-+		 * from the LBR_INFO. It doesn't require the high overhead
-+		 * SW disassemble.
-+		 * Enable the branch type by default for the Arch LBR.
-+		 */
-+		reg->reg |= X86_BR_TYPE_SAVE;
- 		return 0;
- 	}
+ 	 /*
+@@ -717,7 +723,13 @@ void __init early_snp_set_memory_private
+ void __init early_snp_set_memory_shared(unsigned long vaddr, unsigned long paddr,
+ 					unsigned int npages)
+ {
+-	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
++	/*
++	 * This can be invoked in early boot while running identity mapped, so
++	 * use an open coded check for SNP instead of using cc_platform_has().
++	 * This eliminates worries about jump tables or checking boot_cpu_data
++	 * in the cc_platform_has() function.
++	 */
++	if (!(sev_status & MSR_AMD64_SEV_SNP_ENABLED))
+ 		return;
  
+ 	/* Invalidate the memory pages before they are marked shared in the RMP table. */
 
 
