@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2119BECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:16:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A66BFECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231849AbiH2MQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
+        id S229934AbiH2MQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:16:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229732AbiH2MQT (ORCPT
+        with ESMTP id S229762AbiH2MQU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:16:19 -0400
+        Mon, 29 Aug 2022 08:16:20 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F78DF21;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E09DBB44;
         Mon, 29 Aug 2022 04:59:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC0FAB80EFB;
-        Mon, 29 Aug 2022 11:11:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD67C433C1;
-        Mon, 29 Aug 2022 11:11:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A47EBB80DB5;
+        Mon, 29 Aug 2022 11:14:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF927C433D6;
+        Mon, 29 Aug 2022 11:14:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771513;
-        bh=sqwZwaMa4ltO+ZnF2OW0LOrSQsC+7lCx8oJFCuGBDEU=;
+        s=korg; t=1661771695;
+        bh=j/AA/qB98OBC/3qt5R55AMzuATgg/+LREcY+zbIqUEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rdjLntboY9cQLdpmlJgAKqTSz/rHUGTDOtyzYydFENFghNU6TKqdq4oJCO3oc5axn
-         f0FeWh9GgLspxSXSagPAz9JSuy9FbLs/zjvv9lFXWsFmO5JH2AxFjuJ+w49QDdWJhU
-         ojhJqfZ2o7M9PFkHONAd7E5CTcOwWXuzPyDLMDTY=
+        b=EXpmzyt7+Pnp7gnVj8j9IF9Y5AJ7Sjcrjh6pi4nAx5Vwnr3zaz+H9wJQs2AVNbY5q
+         6dsMLouWxwgpJm04TvIYeQYaTjkhVygld1cw0KzPIsiQ/9XA7txmPJ1TEskHNDxnDf
+         5BivIDKIqRSO7+qkpFEr9PCMajNKqtfjPTti9dLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Subject: [PATCH 5.10 75/86] xen/privcmd: fix error exit of privcmd_ioctl_dm_op()
-Date:   Mon, 29 Aug 2022 12:59:41 +0200
-Message-Id: <20220829105759.574557229@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 065/158] net: Fix data-races around sysctl_[rw]mem_(max|default).
+Date:   Mon, 29 Aug 2022 12:58:35 +0200
+Message-Id: <20220829105811.442361269@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,95 +49,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit c5deb27895e017a0267de0a20d140ad5fcc55a54 upstream.
+[ Upstream commit 1227c1771dd2ad44318aa3ab9e3a293b3f34ff2a ]
 
-The error exit of privcmd_ioctl_dm_op() is calling unlock_pages()
-potentially with pages being NULL, leading to a NULL dereference.
+While reading sysctl_[rw]mem_(max|default), they can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-Additionally lock_pages() doesn't check for pin_user_pages_fast()
-having been completely successful, resulting in potentially not
-locking all pages into memory. This could result in sporadic failures
-when using the related memory in user mode.
-
-Fix all of that by calling unlock_pages() always with the real number
-of pinned pages, which will be zero in case pages being NULL, and by
-checking the number of pages pinned by pin_user_pages_fast() matching
-the expected number of pages.
-
-Cc: <stable@vger.kernel.org>
-Fixes: ab520be8cd5d ("xen/privcmd: Add IOCTL_PRIVCMD_DM_OP")
-Reported-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Link: https://lore.kernel.org/r/20220825141918.3581-1-jgross@suse.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/privcmd.c |   21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ net/core/filter.c               | 4 ++--
+ net/core/sock.c                 | 8 ++++----
+ net/ipv4/ip_output.c            | 2 +-
+ net/ipv4/tcp_output.c           | 2 +-
+ net/netfilter/ipvs/ip_vs_sync.c | 4 ++--
+ 5 files changed, 10 insertions(+), 10 deletions(-)
 
---- a/drivers/xen/privcmd.c
-+++ b/drivers/xen/privcmd.c
-@@ -581,27 +581,30 @@ static int lock_pages(
- 	struct privcmd_dm_op_buf kbufs[], unsigned int num,
- 	struct page *pages[], unsigned int nr_pages, unsigned int *pinned)
- {
--	unsigned int i;
-+	unsigned int i, off = 0;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 74f05ed6aff29..60c854e7d98ba 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5036,14 +5036,14 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+ 		/* Only some socketops are supported */
+ 		switch (optname) {
+ 		case SO_RCVBUF:
+-			val = min_t(u32, val, sysctl_rmem_max);
++			val = min_t(u32, val, READ_ONCE(sysctl_rmem_max));
+ 			val = min_t(int, val, INT_MAX / 2);
+ 			sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
+ 			WRITE_ONCE(sk->sk_rcvbuf,
+ 				   max_t(int, val * 2, SOCK_MIN_RCVBUF));
+ 			break;
+ 		case SO_SNDBUF:
+-			val = min_t(u32, val, sysctl_wmem_max);
++			val = min_t(u32, val, READ_ONCE(sysctl_wmem_max));
+ 			val = min_t(int, val, INT_MAX / 2);
+ 			sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
+ 			WRITE_ONCE(sk->sk_sndbuf,
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 2ff40dd0a7a65..62f69bc3a0e6e 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1100,7 +1100,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 		 * play 'guess the biggest size' games. RCVBUF/SNDBUF
+ 		 * are treated in BSD as hints
+ 		 */
+-		val = min_t(u32, val, sysctl_wmem_max);
++		val = min_t(u32, val, READ_ONCE(sysctl_wmem_max));
+ set_sndbuf:
+ 		/* Ensure val * 2 fits into an int, to prevent max_t()
+ 		 * from treating it as a negative value.
+@@ -1132,7 +1132,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 		 * play 'guess the biggest size' games. RCVBUF/SNDBUF
+ 		 * are treated in BSD as hints
+ 		 */
+-		__sock_set_rcvbuf(sk, min_t(u32, val, sysctl_rmem_max));
++		__sock_set_rcvbuf(sk, min_t(u32, val, READ_ONCE(sysctl_rmem_max)));
+ 		break;
  
--	for (i = 0; i < num; i++) {
-+	for (i = 0; i < num; ) {
- 		unsigned int requested;
- 		int page_count;
+ 	case SO_RCVBUFFORCE:
+@@ -3307,8 +3307,8 @@ void sock_init_data(struct socket *sock, struct sock *sk)
+ 	timer_setup(&sk->sk_timer, NULL, 0);
  
- 		requested = DIV_ROUND_UP(
- 			offset_in_page(kbufs[i].uptr) + kbufs[i].size,
--			PAGE_SIZE);
-+			PAGE_SIZE) - off;
- 		if (requested > nr_pages)
- 			return -ENOSPC;
+ 	sk->sk_allocation	=	GFP_KERNEL;
+-	sk->sk_rcvbuf		=	sysctl_rmem_default;
+-	sk->sk_sndbuf		=	sysctl_wmem_default;
++	sk->sk_rcvbuf		=	READ_ONCE(sysctl_rmem_default);
++	sk->sk_sndbuf		=	READ_ONCE(sysctl_wmem_default);
+ 	sk->sk_state		=	TCP_CLOSE;
+ 	sk_set_socket(sk, sock);
  
- 		page_count = pin_user_pages_fast(
--			(unsigned long) kbufs[i].uptr,
-+			(unsigned long)kbufs[i].uptr + off * PAGE_SIZE,
- 			requested, FOLL_WRITE, pages);
--		if (page_count < 0)
--			return page_count;
-+		if (page_count <= 0)
-+			return page_count ? : -EFAULT;
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 00b4bf26fd932..da8b3cc67234d 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1712,7 +1712,7 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
  
- 		*pinned += page_count;
- 		nr_pages -= page_count;
- 		pages += page_count;
-+
-+		off = (requested == page_count) ? 0 : off + page_count;
-+		i += !off;
+ 	sk->sk_protocol = ip_hdr(skb)->protocol;
+ 	sk->sk_bound_dev_if = arg->bound_dev_if;
+-	sk->sk_sndbuf = sysctl_wmem_default;
++	sk->sk_sndbuf = READ_ONCE(sysctl_wmem_default);
+ 	ipc.sockc.mark = fl4.flowi4_mark;
+ 	err = ip_append_data(sk, &fl4, ip_reply_glue_bits, arg->iov->iov_base,
+ 			     len, 0, &ipc, &rt, MSG_DONTWAIT);
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index aed0c5f828bef..84314de754f87 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -239,7 +239,7 @@ void tcp_select_initial_window(const struct sock *sk, int __space, __u32 mss,
+ 	if (wscale_ok) {
+ 		/* Set window scaling on max possible window */
+ 		space = max_t(u32, space, READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_rmem[2]));
+-		space = max_t(u32, space, sysctl_rmem_max);
++		space = max_t(u32, space, READ_ONCE(sysctl_rmem_max));
+ 		space = min_t(u32, space, *window_clamp);
+ 		*rcv_wscale = clamp_t(int, ilog2(space) - 15,
+ 				      0, TCP_MAX_WSCALE);
+diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
+index 9d43277b8b4fe..a56fd0b5a430a 100644
+--- a/net/netfilter/ipvs/ip_vs_sync.c
++++ b/net/netfilter/ipvs/ip_vs_sync.c
+@@ -1280,12 +1280,12 @@ static void set_sock_size(struct sock *sk, int mode, int val)
+ 	lock_sock(sk);
+ 	if (mode) {
+ 		val = clamp_t(int, val, (SOCK_MIN_SNDBUF + 1) / 2,
+-			      sysctl_wmem_max);
++			      READ_ONCE(sysctl_wmem_max));
+ 		sk->sk_sndbuf = val * 2;
+ 		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
+ 	} else {
+ 		val = clamp_t(int, val, (SOCK_MIN_RCVBUF + 1) / 2,
+-			      sysctl_rmem_max);
++			      READ_ONCE(sysctl_rmem_max));
+ 		sk->sk_rcvbuf = val * 2;
+ 		sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
  	}
- 
- 	return 0;
-@@ -677,10 +680,8 @@ static long privcmd_ioctl_dm_op(struct f
- 	}
- 
- 	rc = lock_pages(kbufs, kdata.num, pages, nr_pages, &pinned);
--	if (rc < 0) {
--		nr_pages = pinned;
-+	if (rc < 0)
- 		goto out;
--	}
- 
- 	for (i = 0; i < kdata.num; i++) {
- 		set_xen_guest_handle(xbufs[i].h, kbufs[i].uptr);
-@@ -692,7 +693,7 @@ static long privcmd_ioctl_dm_op(struct f
- 	xen_preemptible_hcall_end();
- 
- out:
--	unlock_pages(pages, nr_pages);
-+	unlock_pages(pages, pinned);
- 	kfree(xbufs);
- 	kfree(pages);
- 	kfree(kbufs);
+-- 
+2.35.1
+
 
 
