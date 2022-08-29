@@ -2,158 +2,374 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE82BC0502E
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F054C0502A
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229629AbiH2Bl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 21:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
+        id S229652AbiH2Bt1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 21:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiH2BlZ (ORCPT
+        with ESMTP id S229462AbiH2BtX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 21:41:25 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 28 Aug 2022 18:41:23 PDT
-Received: from esa12.fujitsucc.c3s2.iphmx.com (esa12.fujitsucc.c3s2.iphmx.com [216.71.156.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37E82B626;
-        Sun, 28 Aug 2022 18:41:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj1;
-  t=1661737284; x=1693273284;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=J4RQCuWPV9WDXIQumOaE9HJByO3PhTR2ifhpAZjeTes=;
-  b=XwqC4+nKZ7pjCpYQTqJJoIvNB9TOANpXBki6a+9jYNywwb7Dx3Ksf+MQ
-   lLngysbm44tsrtV3fk3ekmAgyTLE8TdC+1rpn91z2NkY20vvICENU4hEM
-   VT1VTRGJidD/yzwqNHyRUB2LSdLGn03gcEaTGe8K76tGO0w8igyu03+7M
-   UejjmE7pzj/7wQeg1Pa+HqFkd+Zkn817ju3tu+kEBaA965JTsg67E2398
-   d9BYF9lf0Y/YPTovdnFy2EsBDR5Q/SGXFmNaAxPs8Ps2gRBV2UDmBOuL3
-   d+cclI9FX3Z2I1ITdaDMg7ihJe7vVQpgawyHcUmqtX6k4vLIoIejkwHDh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="63909008"
-X-IronPort-AV: E=Sophos;i="5.93,271,1654527600"; 
-   d="scan'208";a="63909008"
-Received: from mail-os0jpn01lp2113.outbound.protection.outlook.com (HELO JPN01-OS0-obe.outbound.protection.outlook.com) ([104.47.23.113])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 10:40:16 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=krbzWuARLWG94s7JIhzcyqsED+g5sEQJ4d0o/eULjffD8zo6NeD5aFHBJpcmB0g8pArhGL+hlKU7cSkLS0ZXRprEgNQwpa89IH2XLy5mwd20KOmlWqPA5v56Tt721DdKIMOMFt5mxAqgxuDrXH5j1do/KIMOLCuubU+bg7xHlj9O46YdtcpXX3pWz6Ogic27rO6hQzrjCPZKLo33HfnuX/moLl2w8bs98cRi3YL/MfKGV19J7P4TiFN5K6GshIEXx9HpOSU5cxcuc3dTEpas2YXQeuxjIZxKjGz8CmguX4PJyZyXWPXS4ANFW2tPN9ONhATll9olYapD5+JeEYlpqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=J4RQCuWPV9WDXIQumOaE9HJByO3PhTR2ifhpAZjeTes=;
- b=ngovOWxz9OD3/FmZ2tzEyrpzDGF0fO5T53QsHmBjvfOVuY0bWTPWpEVwTmj5FVAIG0oKwvr1b9tC9nf0gdUhydAPNPje9OMwtjKuwYtEU4NuL6PwSt8BUZw/F08jv/KXyW+Nu9HT8Rb3INNXOds4SLxkY1kBHtXtBlAEdExW86wHfKubZS71Pa0UjtodGHbVLoiGkK7FHL3Vg3jsQbwWhSqcvpUJBQI8zqKB1XwQiYKLkqS26f7JD+qjJsgZsYTEflRSvfnjbF7f6H7EdKUOG7L1op13AVqcCdhkD1D86idPe7TUmZUg11DLEl0V/+7Y7XF+ImIcmJlGRf9nxe6chQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-Received: from OS3PR01MB9499.jpnprd01.prod.outlook.com (2603:1096:604:1c8::5)
- by OSAPR01MB2673.jpnprd01.prod.outlook.com (2603:1096:603:3a::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Mon, 29 Aug
- 2022 01:40:12 +0000
-Received: from OS3PR01MB9499.jpnprd01.prod.outlook.com
- ([fe80::9d81:6e2:6f1:e08e]) by OS3PR01MB9499.jpnprd01.prod.outlook.com
- ([fe80::9d81:6e2:6f1:e08e%8]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
- 01:40:12 +0000
-From:   "yangx.jy@fujitsu.com" <yangx.jy@fujitsu.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>,
-        "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>
-CC:     Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "y-goto@fujitsu.com" <y-goto@fujitsu.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Mark Bloch <mbloch@nvidia.com>,
-        Aharon Landau <aharonl@nvidia.com>,
-        Tom Talpey <tom@talpey.com>,
-        "tomasz.gromadzki@intel.com" <tomasz.gromadzki@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Wenpeng Liang <liangwenpeng@huawei.com>
-Subject: Re: [PATCH v4 0/6] RDMA/rxe: Add RDMA FLUSH operation
-Thread-Topic: [PATCH v4 0/6] RDMA/rxe: Add RDMA FLUSH operation
-Thread-Index: AQHYqJ6RXCLE07oY+UeunYbJo1eZUK3BUNqAgAPudQA=
-Date:   Mon, 29 Aug 2022 01:40:12 +0000
-Message-ID: <5f471583-55d5-efb1-963f-bdf1f30864d2@fujitsu.com>
-References: <1659685579-2-1-git-send-email-lizhijian@fujitsu.com>
- <YwjMs4wKm7CHzTuf@ziepe.ca>
-In-Reply-To: <YwjMs4wKm7CHzTuf@ziepe.ca>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=fujitsu.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a2f43763-a976-421a-25c0-08da895f6a73
-x-ms-traffictypediagnostic: OSAPR01MB2673:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YDbSxosWSYAw/Lj4ND7fh91uEyJnGjzU7rnGyLFWaIYR3U7yMFOqyYzMdLr4cSPR+hI5DxraMNSkjtSAmLAoru4msXekDrmz/FnLIg0WmYTJArGMxk7vCoSj/ncOtm+SgLPo2/4vmmID7gcPlpqtj7b6fc5aYhowf23Q6dIo98xXx/5YGzQ2JqjWYrSv8M7icXBq4fGrFwYA5LM5FkTCr7xivxT/rScJuQg1+QcwnRYh3o+fKbX5B8v46Tly/TJ5que4Rz9qSlcp+6UIary4pZ7UnRfiM49LNl9ZFvj+4fQ+RitBfKzoPlRP4bVFamySx/c/YY5E5zCef+//VQKfi2TaWqrD1XtJCjYW6MkxUUCdhu9UfElcx06LpfFWBaz09R+eRH1BTfBmH9tYS+StjVxM7Nt+5vccPxJz1GNNbW1yURaE4E/jtu5pVjD3td835H0Rj6roilNV4VF4MM3aVkHLrNpDnplHjgCydpfKTcWexksCogUw2+eYCVce3ehvNRRQFgYMpc42WpG/XwMEkQHC3t1JShF3vLp+/bzALLh+ZoqrZBifFzXKZzIpD5q8NielmoB7L1OmYQn7VrFHs5G/6jML62fNs+Dy3qwblAlbItqSH2BDaWqdLZ/QZGnZMNB0X/kY0kVKx8jqytR7RgYOPcXOymsYmbhDAUNhr0vmwDIN8gYCr0yjnie4vrvQeAggPD7lxt0j9KZp5GFzQqtOB/OhklN1E2qFbmgA3gGXmYnOJRrHPqEFNJ/JzMUkh63Z5Fpx5aVxLudPMV57K+xyUksOL41D2+isJgIneJlMr39OP6kv6G+mbjAeoOLEAAhN7K7eVkwgWsgDaY8WK0kTxSCJMd8D8KW16Ai56c2I+ojRem2cuM98teVEl2lsWYwgpMGL1Om3o8IJnLrq5g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB9499.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(376002)(136003)(39860400002)(346002)(1590799006)(31696002)(53546011)(6506007)(82960400001)(6512007)(38070700005)(26005)(36756003)(85182001)(122000001)(186003)(2616005)(41300700001)(31686004)(478600001)(6486002)(966005)(71200400001)(86362001)(1580799003)(66446008)(8676002)(66476007)(4326008)(91956017)(64756008)(6636002)(54906003)(316002)(110136005)(76116006)(66946007)(66556008)(5660300002)(8936002)(7416002)(4744005)(38100700002)(2906002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?K29veS8vN2RFV2t6RE9mVGFMS09KSGg4anB0OFpiVkpzRm5hclJlNnFYVmhN?=
- =?utf-8?B?d1Jkbm11RTRHSEZIWkZNMkN5NldnZ1RUQU84TXVzdU9heDRNbnN2S1luci8r?=
- =?utf-8?B?Rjl5R203alIrdlVvMUlXY0V0eWR0TXZZZ0N5ZUp4MGZRaFZNdlRtSHJRMFhC?=
- =?utf-8?B?NkhhR3NORkZrV1NYZzVqeEtacTZJMGxNejBFOGx2Y0FTYlJqSkZNNTk2K3lt?=
- =?utf-8?B?a0I1TTJlQkhCR3BObnU4UEpXUWxFSmhUSFozSlMvTjR1aUtPOXBiSmxGMTFh?=
- =?utf-8?B?aVdNQlZzb054YWUzcWNtRENZb2EzTkxXZmlIM2liS0t3VjhhOGlNR25qRkFz?=
- =?utf-8?B?aU05MHYxTG1uNDVKYUNVYzFpOW1XYms4dkM1cTkxcVVjVThjckF4TXFNT2VW?=
- =?utf-8?B?NWJ5NVQ3SDNjYWg1bDdMc3BleVZ0ZGhVVUFhU3M0N0RISmhVTGI0ZjdHWVZx?=
- =?utf-8?B?S25paGp4YlFFbzYxQkRwV1JoSEl3NnIyUTB2VHlyT3h5ZlRvOGtLTFlQNFNu?=
- =?utf-8?B?NjJMVWxLYUNETzh4dUFpbU41RUJTS0RjR1VHL1ZSNmU0VG54bDBzekNzR243?=
- =?utf-8?B?M2lxNmVvT3kvbzJUTXRvUHNvK29McnBBWnRLQXdsYnA3T0g5VzBBOCsvQmdj?=
- =?utf-8?B?REZSTFZwSGVOaXE1am5FWkFiNHFPWFptY0pvRENZcndYMG44WVB5TU5sQVJT?=
- =?utf-8?B?NmF3RHJIWWZyK3IwdkJNSFZDUitjWktPUHFPSGdXK051VHU5VUhmclhCb1Uv?=
- =?utf-8?B?UXpBSCtPaC9rRXJPWURBRVVncHQzNlJHeWV3WVlOWDFIQjQzUndmQjFoNFRk?=
- =?utf-8?B?Y2d5dndac3hRZDM5d2l2aktPeTk5a2IzSmpQR2NIMkd4S3hWNFRRRUlYcUpu?=
- =?utf-8?B?bW80T1NVejJlcWR2YUpiOTNUZytTeXRvUk9qeG1VdHJiQlA1bVZGREoyUlNP?=
- =?utf-8?B?OVFHZUZYcVhHQ1VOdkFoZlNDSGFQWFl6MXZkbXhDQlQxY09IdW9NK1dLdElP?=
- =?utf-8?B?RnhjNGljalAvTG9ZSnFMMjdzSm42TnFjVWMxMEhyV09qdW1qZ213L2lYekh6?=
- =?utf-8?B?Y1ZNMUNlQ3JIVXdTVWxsSGRSOSt1VlA0amRSS0l0TFlxS2RMRGQvVW5Pelpq?=
- =?utf-8?B?cXk2NEY3aXNYSDZVUUh3amNTWWFvaXRKT3RLZlMzanhHMXM4MENRRGszMm9G?=
- =?utf-8?B?a2lOUVdZbmdTdk5jYUNia2RiaHUrTTNheHpBNzVKZEtwcHNTSXl6azArVWZt?=
- =?utf-8?B?K3FrSTB4enBUZU50UHVIbmRSVWY4bVpzQ3M3M1hJTlZsUWlKNE84UGNQaks1?=
- =?utf-8?B?b0JlejZvZEFIWlNlVTFzQWRndkJ6RGhMU3pjRmhxMWZYbXI5Vit4c1hiQ3M5?=
- =?utf-8?B?NjVXbXdndldGZXpxemtXd1RhM2FmNmRWVjZhZUlRQjFqOVFXUFZBVXVST2lz?=
- =?utf-8?B?S09lQllVTlNUT2xxUC9Ha3Zkd0dhcHZxSHY2eVhGeHVDdzlCdWNFT21lTUt2?=
- =?utf-8?B?TFR4b1dJdnhqenJ3T1RtbENIVEQwWmdXT3k5dlV2RE5qSy9ZZFhzdyt3d1Np?=
- =?utf-8?B?TDlQMTNCR3NPZmhXUjQ0ZnYxYkVYelREQXdhTGdMcFRhYTNuaFZKTlNLbHZQ?=
- =?utf-8?B?aVpLYXRaMlE0NVlHTzJwVDVBNFEydElpaGZCcUtScHpZTUVnT2Z2d0dFTXYx?=
- =?utf-8?B?ZGJESFBzRGhBVGIxby9OLzROQXJvWTB4QkQ1ZytvRnlMOCt5LzF3eGpCZnNL?=
- =?utf-8?B?ZG1HUjlLdlRwQjhCUHg0WmxKYzJyd1ZlSEpKWmUxb25PRG8vdE1KK2pqRS9U?=
- =?utf-8?B?MWp1dHI0MElKQ2hrV0JsaXdURHI0WWh2VWdXdTNwWTk5SHlGVDVYd20zazU2?=
- =?utf-8?B?TlRZaEFVZC82NWtEZVpqRktOZ21Sbi9pZldFRkZQZkVHRGd6K3BBV1Z2RkJZ?=
- =?utf-8?B?ZW85aER2ZnpFa0RDaDBRTzFQMDhMYnY4VVdyQk41MENYWXR2dUlydzlyV0Uw?=
- =?utf-8?B?R2RpNWV2T0FUUmtDNmdxQ21vSW9xUDBYWG5HL0g4dlpWYWpEMStKOFByb1BS?=
- =?utf-8?B?VkNlcEVtZUxqMVZKVThWZDRWcjZ5US9tZG03cUE0MlVPdDBDaEE3eElCWm4v?=
- =?utf-8?B?VDJzNEp3Nm51a0pYOFhIZUIyU2g0cXpFZVBZZ2lxSkhsS3d4OHZDOTlkUXBF?=
- =?utf-8?B?ZlE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1D2BB2982B545046B114E1911CA8FBB5@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Sun, 28 Aug 2022 21:49:23 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C8C30572;
+        Sun, 28 Aug 2022 18:49:21 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MGCwb0HlpznTm1;
+        Mon, 29 Aug 2022 09:46:55 +0800 (CST)
+Received: from [10.67.110.112] (10.67.110.112) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 09:49:19 +0800
+Subject: Re: [PATCH -next v2 4/6] landlock/selftests: add selftests for chmod
+ and chown
+To:     =?UTF-8?Q?G=c3=bcnther_Noack?= <gnoack3000@gmail.com>
+CC:     <mic@digikod.net>, <paul@paul-moore.com>, <jmorris@namei.org>,
+        <serge@hallyn.com>, <shuah@kernel.org>, <corbet@lwn.net>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>
+References: <20220827111215.131442-1-xiujianfeng@huawei.com>
+ <20220827111215.131442-5-xiujianfeng@huawei.com> <YwpY6UpznnHpweh+@nuc>
+From:   xiujianfeng <xiujianfeng@huawei.com>
+Message-ID: <76c05799-91e1-dea3-92dd-beb299d0945c@huawei.com>
+Date:   Mon, 29 Aug 2022 09:49:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB9499.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2f43763-a976-421a-25c0-08da895f6a73
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Aug 2022 01:40:12.6551
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RW8rkl9Za4r4zQCrmxLVVP5VEpz6z/XYOe72WuOvwmPF+wVh6WGZOHFNfgHFrYhhkBrxO9+1UAuRRoAi9eTmcg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB2673
+In-Reply-To: <YwpY6UpznnHpweh+@nuc>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.112]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMjAyMi84LzI2IDIxOjM3LCBKYXNvbiBHdW50aG9ycGUgd3JvdGU6DQo+IEkgdGhpbmsgZW5v
-dWdoIHdvcmsgaXMgZG9uZSB0byBzdGFydCBnb2luZyBmb3J3YXJkIHdpdGggbmV3IGZlYXR1cmVz
-DQpIaSwNCg0KR29vZCBuZXdzLiBJIGhvcGUgd2UgY2FuIHN0YXJ0IHJldmlld2luZyB0aGUgUkRN
-QSBGbHVzaCBhbmQgQXRvbWljIFdyaXRlIA0Kb3BlcmF0aW9ucy4gXl9eDQoNCkJUVywgdGhlIHY1
-IG9mIEF0b21pYyBXcml0ZSBoYXMgYmVlbiBzZW50IG9uIDIwMjItMDctMDg6DQpodHRwczovL2xv
-cmUua2VybmVsLm9yZy9saW51eC1yZG1hLzIwMjIwNzA4MDQwMjI4LjY3MDMtMi15YW5neC5qeUBm
-dWppdHN1LmNvbS8NCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LXJkbWEvMjAyMjA3MDgw
-NDAyMjguNjcwMy0zLXlhbmd4Lmp5QGZ1aml0c3UuY29tLw0KDQpCZXN0IFJlZ2FyZHMsDQpYaWFv
-IFlhbmc=
+Hi,
+
+ÔÚ 2022/8/28 1:48, G¨¹nther Noack Ð´µÀ:
+> On Sat, Aug 27, 2022 at 07:12:13PM +0800, Xiu Jianfeng wrote:
+>> The following APIs are tested with simple scenarios.
+>> 1. chmod/fchmod/fchmodat;
+>> 2. chmod/fchmod/lchown/fchownat;
+>>
+>> The key point is that set these access rights on a directory but only for
+>> its content, not the directory itself. this scenario is covered.
+>>
+>> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+>> ---
+>>   tools/testing/selftests/landlock/fs_test.c | 261 +++++++++++++++++++++
+>>   1 file changed, 261 insertions(+)
+>>
+>> diff --git a/tools/testing/selftests/landlock/fs_test.c b/tools/testing/selftests/landlock/fs_test.c
+>> index f513cd8d9d51..982cb824967c 100644
+>> --- a/tools/testing/selftests/landlock/fs_test.c
+>> +++ b/tools/testing/selftests/landlock/fs_test.c
+>> @@ -3272,6 +3272,267 @@ TEST_F_FORK(layout1, truncate)
+>>   	EXPECT_EQ(0, test_creat(file_in_dir_w));
+>>   }
+>>
+>> +/* Invokes chmod(2) and returns its errno or 0. */
+>> +static int test_chmod(const char *const path, mode_t mode)
+>> +{
+>> +	if (chmod(path, mode) < 0)
+>> +		return errno;
+>> +	return 0;
+>> +}
+> 
+> Nice, this is much simpler than in the last revision :)
+> 
+>> +
+>> +/* Invokes fchmod(2) and returns its errno or 0. */
+>> +static int test_fchmod(int fd, mode_t mode)
+>> +{
+>> +	if (fchmod(fd, mode) < 0)
+>> +		return errno;
+>> +	return 0;
+>> +}
+>> +
+>> +/* Invokes fchmodat(2) and returns its errno or 0. */
+>> +static int test_fchmodat(int dirfd, const char *path, mode_t mode, int flags)
+> 
+> Nitpick: Some of these functions have path arguments declared as
+> 
+>    const char *path
+> 
+> and others as
+> 
+>    const char *const path
+> 
+> -- would be nice to stay consistent.
+
+Thanks, const char *const path would be good to me.
+
+> 
+>> +{
+>> +	if (fchmodat(dirfd, path, mode, flags) < 0)
+>> +		return errno;
+>> +	return 0;
+>> +}
+>> +
+>> +/* Invokes chown(2) and returns its errno or 0. */
+>> +static int test_chown(const char *path, uid_t uid, gid_t gid)
+>> +{
+>> +	if (chown(path, uid, gid) < 0)
+>> +		return errno;
+>> +	return 0;
+>> +}
+>> +
+>> +/* Invokes fchown(2) and returns its errno or 0. */
+>> +static int test_fchown(int fd, uid_t uid, gid_t gid)
+>> +{
+>> +	if (fchown(fd, uid, gid) < 0)
+>> +		return errno;
+>> +	return 0;
+>> +}
+>> +
+>> +/* Invokes lchown(2) and returns its errno or 0. */
+>> +static int test_lchown(const char *path, uid_t uid, gid_t gid)
+>> +{
+>> +	if (lchown(path, uid, gid) < 0)
+>> +		return errno;
+>> +	return 0;
+>> +}
+>> +
+>> +/* Invokes fchownat(2) and returns its errno or 0. */
+>> +static int test_fchownat(int dirfd, const char *path,
+>> +			 uid_t uid, gid_t gid, int flags)
+>> +{
+>> +	if (fchownat(dirfd, path, uid, gid, flags) < 0)
+>> +		return errno;
+>> +	return 0;
+>> +}
+>> +
+>> +TEST_F_FORK(layout1, unhandled_chmod)
+>> +{
+>> +	int ruleset_fd, file1_fd;
+>> +	const char *file1 = file1_s1d1;
+>> +	const char *file2 = file2_s1d1;
+>> +	const char *dir1 = dir_s1d1;
+> 
+> I'd suggest to name these kinds of variables according to the rights
+> that are granted on these files and directories, for example as as
+> w_file and rw_file. (Then, when looking at the EXPECT_EQ checks below,
+> you don't need to jump back up to the start of the test to remember
+> which of the rights is being tested.)
+> 
+> Nitpick: The same remark as above about the 'const' modifier applies
+> here as well. The rest of the file uses "const char *const varname".
+
+Good point, will do it in v3.
+> 
+>> +	const struct rule rules[] = {
+>> +		{
+>> +			.path = file1,
+>> +			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
+>> +		},
+>> +		{
+>> +			.path = file2,
+>> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
+>> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
+>> +		},
+>> +		{
+>> +			.path = dir1,
+>> +			.access = ACCESS_RW,
+>> +		},
+>> +		{},
+>> +	};
+>> +
+>> +	ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+>> +	ASSERT_LE(0, ruleset_fd);
+>> +	file1_fd = open(file1, O_WRONLY | O_CLOEXEC);
+>> +	ASSERT_LE(0, file1_fd);
+>> +
+>> +	enforce_ruleset(_metadata, ruleset_fd);
+>> +	ASSERT_EQ(0, close(ruleset_fd));
+>> +
+>> +	EXPECT_EQ(0, test_chmod(file1, 0400));
+>> +	EXPECT_EQ(0, test_fchmod(file1_fd, 0400));
+>> +	EXPECT_EQ(0, test_fchmodat(AT_FDCWD, file1, 0400, 0));
+>> +	EXPECT_EQ(0, test_chmod(file2, 0400));
+>> +	EXPECT_EQ(0, test_chmod(dir1, 0700));
+>> +	ASSERT_EQ(0, close(file1_fd));
+>> +}
+>> +
+>> +TEST_F_FORK(layout1, chmod)
+>> +{
+>> +	int ruleset_fd, file1_fd;
+>> +	const char *file1 = file1_s1d1;
+>> +	const char *file2 = file2_s1d1;
+>> +	const char *file3 = file1_s2d1;
+>> +	const char *dir1 = dir_s1d1;
+>> +	const char *dir2 = dir_s2d1;
+>> +	const struct rule rules[] = {
+>> +		{
+>> +			.path = file1,
+>> +			.access = LANDLOCK_ACCESS_FS_WRITE_FILE |
+>> +				  LANDLOCK_ACCESS_FS_CHMOD,
+>> +		},
+>> +		{
+>> +			.path = file2,
+>> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
+>> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
+>> +		},
+>> +		{
+>> +			.path = dir1,
+>> +			.access = ACCESS_RW,
+>> +		},
+>> +		{
+>> +			.path = dir2,
+>> +			.access = ACCESS_RW | LANDLOCK_ACCESS_FS_CHMOD,
+>> +		},
+>> +		{},
+>> +	};
+>> +
+>> +	ruleset_fd = create_ruleset(_metadata, ACCESS_RW | LANDLOCK_ACCESS_FS_CHMOD, rules);
+>> +	ASSERT_LE(0, ruleset_fd);
+>> +	file1_fd = open(file1, O_WRONLY | O_CLOEXEC);
+>> +	ASSERT_LE(0, file1_fd);
+>> +
+>> +	enforce_ruleset(_metadata, ruleset_fd);
+>> +	ASSERT_EQ(0, close(ruleset_fd));
+>> +
+>> +	EXPECT_EQ(0, test_chmod(file1, 0400));
+>> +	EXPECT_EQ(0, test_fchmod(file1_fd, 0400));
+>> +	EXPECT_EQ(0, test_fchmodat(AT_FDCWD, file1, 0400, 0));
+>> +	EXPECT_EQ(EACCES, test_chmod(file2, 0400));
+>> +	EXPECT_EQ(EACCES, test_chmod(dir1, 0700));
+>> +	/* set CHMOD right on dir will only affect its context not dir itself*/
+>> +	EXPECT_EQ(0, test_chmod(file3, 0400));
+>> +	EXPECT_EQ(0, test_fchmodat(AT_FDCWD, file3, 0400, 0));
+>> +	EXPECT_EQ(EACCES, test_chmod(dir2, 0700));
+>> +	EXPECT_EQ(EACCES, test_fchmodat(AT_FDCWD, dir2, 0700, 0));
+>> +	ASSERT_EQ(0, close(file1_fd));
+>> +}
+>> +
+>> +TEST_F_FORK(layout1, unhandled_chown)
+>> +{
+>> +	int ruleset_fd, file1_fd;
+>> +	const char *file1 = file1_s1d1;
+>> +	const char *file2 = file2_s1d1;
+>> +	const char *dir1 = dir_s1d1;
+>> +	const struct rule rules[] = {
+>> +		{
+>> +			.path = file1,
+>> +			.access = LANDLOCK_ACCESS_FS_WRITE_FILE,
+>> +		},
+>> +		{
+>> +			.path = file2,
+>> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
+>> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
+>> +		},
+>> +		{
+>> +			.path = dir1,
+>> +			.access = ACCESS_RW,
+>> +		},
+>> +		{},
+>> +	};
+>> +	struct stat st;
+>> +	uid_t uid;
+>> +	gid_t gid;
+>> +
+>> +	ruleset_fd = create_ruleset(_metadata, ACCESS_RW, rules);
+>> +	ASSERT_LE(0, ruleset_fd);
+>> +	file1_fd = open(file1, O_WRONLY | O_CLOEXEC);
+>> +	ASSERT_LE(0, file1_fd);
+>> +	/*
+>> +	 * there is no CAP_CHOWN when the testcases framework setup,
+>> +	 * and we cannot assume the testcases are run as root, to make
+>> +	 * sure {f}chown syscall won't fail, get the original uid/gid and
+>> +	 * use them in test_{f}chown.
+>> +	 */
+>> +	ASSERT_EQ(0, stat(dir1, &st));
+>> +	uid = st.st_uid;
+>> +	gid = st.st_gid;
+>> +
+>> +	enforce_ruleset(_metadata, ruleset_fd);
+>> +	ASSERT_EQ(0, close(ruleset_fd));
+>> +
+>> +	EXPECT_EQ(0, test_chown(file1, uid, gid));
+>> +	EXPECT_EQ(0, test_fchown(file1_fd, uid, gid));
+>> +	EXPECT_EQ(0, test_lchown(file1, uid, gid));
+>> +	EXPECT_EQ(0, test_fchownat(AT_FDCWD, file1, uid, gid, 0));
+>> +	EXPECT_EQ(0, test_chown(file2, uid, gid));
+>> +	EXPECT_EQ(0, test_chown(dir1, uid, gid));
+>> +	ASSERT_EQ(0, close(file1_fd));
+>> +}
+>> +
+>> +TEST_F_FORK(layout1, chown)
+>> +{
+>> +	int ruleset_fd, file1_fd;
+>> +	const char *file1 = file1_s1d1;
+>> +	const char *file2 = file2_s1d1;
+>> +	const char *file3 = file1_s2d1;
+>> +	const char *dir1 = dir_s1d1;
+>> +	const char *dir2 = dir_s2d1;
+>> +	const struct rule rules[] = {
+>> +		{
+>> +			.path = file1,
+>> +			.access = LANDLOCK_ACCESS_FS_WRITE_FILE |
+>> +				  LANDLOCK_ACCESS_FS_CHGRP,
+>> +		},
+>> +		{
+>> +			.path = file2,
+>> +			.access = LANDLOCK_ACCESS_FS_READ_FILE |
+>> +				  LANDLOCK_ACCESS_FS_WRITE_FILE,
+>> +		},
+>> +		{
+>> +			.path = dir1,
+>> +			.access = ACCESS_RW,
+>> +		},
+>> +		{
+>> +			.path = dir2,
+>> +			.access = ACCESS_RW | LANDLOCK_ACCESS_FS_CHGRP,
+>> +		},
+>> +		{},
+>> +	};
+>> +	struct stat st;
+>> +	uid_t uid;
+>> +	gid_t gid;
+>> +
+>> +	ruleset_fd = create_ruleset(_metadata, ACCESS_RW | LANDLOCK_ACCESS_FS_CHGRP, rules);
+>> +	ASSERT_LE(0, ruleset_fd);
+>> +	file1_fd = open(file1, O_WRONLY | O_CLOEXEC);
+>> +	ASSERT_LE(0, file1_fd);
+>> +	/*
+>> +	 * there is no CAP_CHOWN when the testcases framework setup,
+>> +	 * and we cannot assume the testcases are run as root, to make
+>> +	 * sure {f}chown syscall won't fail, get the original uid/gid and
+>> +	 * use them in test_{f}chown.
+>> +	 */
+>> +	ASSERT_EQ(0, stat(dir1, &st));
+>> +	uid = st.st_uid;
+>> +	gid = st.st_gid;
+>> +
+>> +	enforce_ruleset(_metadata, ruleset_fd);
+>> +	ASSERT_EQ(0, close(ruleset_fd));
+>> +
+>> +	EXPECT_EQ(0, test_chown(file1, uid, gid));
+>> +	EXPECT_EQ(0, test_fchown(file1_fd, uid, gid));
+>> +	EXPECT_EQ(0, test_lchown(file1, uid, gid));
+>> +	EXPECT_EQ(0, test_fchownat(AT_FDCWD, file1, uid, gid, 0));
+>> +	EXPECT_EQ(EACCES, test_chown(file2, uid, gid));
+>> +	EXPECT_EQ(EACCES, test_chown(dir1, uid, gid));
+>> +	/* set CHOWN right on dir will only affect its context not dir itself*/
+>> +	EXPECT_EQ(0, test_chown(file3, uid, gid));
+>> +	EXPECT_EQ(EACCES, test_chown(dir2, uid, gid));
+>> +	ASSERT_EQ(0, close(file1_fd));
+>> +}
+>> +
+>>   /* clang-format off */
+>>   FIXTURE(layout1_bind) {};
+>>   /* clang-format on */
+>> --
+>> 2.17.1
+>>
+> 
+> --
+> .
+> 
