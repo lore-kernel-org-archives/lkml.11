@@ -2,101 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1589ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F00ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:50:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231418AbiH2Lto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:49:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48842 "EHLO
+        id S231820AbiH2LuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232573AbiH2LtH (ORCPT
+        with ESMTP id S232387AbiH2Ltq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:49:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521978A1EA;
-        Mon, 29 Aug 2022 04:32:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 246B7B80EF1;
-        Mon, 29 Aug 2022 11:16:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CA95C433D7;
-        Mon, 29 Aug 2022 11:16:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771777;
-        bh=Hm7ck0pyFkIzWB8bOJExwUSf4WH/YCxW04iZeChVs9k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cvz8Ir8BhHIUrfAcwYqMqZjfe2fNxFVeSaO1k1aAp5lk5o3Chc+C3DlCgiMz0VIOu
-         7rVmL66btoeBaX4ENkfXp0ef1awamWzyCnE+b66P9wu2Spkmj3yD6oQCS5qDfPc6ua
-         1IV75AJK80XuEQHFm3B4sk81s8dZt9lTJpNXmJ3c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anand Jain <anand.jain@oracle.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.19 095/158] btrfs: replace: drop assert for suspended replace
-Date:   Mon, 29 Aug 2022 12:59:05 +0200
-Message-Id: <20220829105813.046797635@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
-User-Agent: quilt/0.67
+        Mon, 29 Aug 2022 07:49:46 -0400
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323478B2D1;
+        Mon, 29 Aug 2022 04:32:54 -0700 (PDT)
+Received: by mail-pf1-f172.google.com with SMTP id x19so6007856pfr.1;
+        Mon, 29 Aug 2022 04:32:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=pBLLGEGYnktZSeTxTWcGt32QrgAx7yVlLK4MjY1qqhI=;
+        b=ne5d51L9xjEKs7DdRagSRjMWmJdrKnT4+ZCYielLT7zYOqPWHqnyekjpB+s8YssnmY
+         nAkKS48j/zv4Ymbxp2jhiIrh923qqStFaklqrv+MZWXqJIJcGaPKYarg7bScG8de5dXu
+         9TURein/V2qkWEFJzd0rnLAv57JzEC0TaQ0VivabE22ARFpvA9egnaEEcnV2ipBdQsJX
+         ccSx5kMENmqFAGzvXpLCXkYe0tkLPiYtt523YpFL6cnIVTpy58tkOpyEeE8PB9k9JDOZ
+         0rzb+Qbl2zSz5RgKVinchg5gSPsJDejG3W4aAEvbvZV9sBmovj7MAX2UkWsjQILkLQ7E
+         AMyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=pBLLGEGYnktZSeTxTWcGt32QrgAx7yVlLK4MjY1qqhI=;
+        b=GX17oIs3EWn6ieruM3Cm2DS59AhHLKBF0lYDf8WODV1VwjpJ6CMBU7k2DqYUnu6HrP
+         S8nC72snQP6j688eIgvvBNXhI1bAbIRHjJMixuNEh0dqdECaFm8HL8knnDEjPMgAKa0g
+         c0DtspcHz1ao5dyXT7rCyAr/Ij5xyoQXde3b+w8IEau4r+TfZ25iTJhqoQZ4XV8n2Sz+
+         6uiu7hshm93DDC/d+kR3eL7oG537vdDXHZZyP4BYQgtv3HLbjT4y3lVrUgBOzEtU02MS
+         adrJgeLqYn5htHpSeCGj6B5wzuJLi393XmhRVbVp5YUoFQzCLYbfobIUAjs3E8FUfu8u
+         aO6g==
+X-Gm-Message-State: ACgBeo0MD3xy4mWYvKQUvGO5XbCbXVM00b14dsBe8ujjfIf4+B+JbmVV
+        fTNKsFgqs/mR0nmA+ci0ZN5wbE5RwMc=
+X-Google-Smtp-Source: AA6agR5XQyCzNY1WzDhZvKkWUGQF1sEJ7Yb1v2dBNb+sMJjEBq1+LrTNZhd/G+OU17ymO/VRwgp30g==
+X-Received: by 2002:a63:f747:0:b0:429:f993:da06 with SMTP id f7-20020a63f747000000b00429f993da06mr13633553pgk.291.1661772623684;
+        Mon, 29 Aug 2022 04:30:23 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 126-20020a620484000000b0053617cbe2d2sm6983286pfe.168.2022.08.29.04.30.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 04:30:23 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: cui.jinpeng2@zte.com.cn
+To:     johannes@sipsolutions.net, davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] wifi: nl80211: remove redundant err variable
+Date:   Mon, 29 Aug 2022 11:29:53 +0000
+Message-Id: <20220829112953.267100-1-cui.jinpeng2@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anand Jain <anand.jain@oracle.com>
+From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-commit 59a3991984dbc1fc47e5651a265c5200bd85464e upstream.
+Return value from rdev_set_mcast_rate() directly instead of
+taking this in another redundant variable.
 
-If the filesystem mounts with the replace-operation in a suspended state
-and try to cancel the suspended replace-operation, we hit the assert. The
-assert came from the commit fe97e2e173af ("btrfs: dev-replace: replace's
-scrub must not be running in suspended state") that was actually not
-required. So just remove it.
-
- $ mount /dev/sda5 /btrfs
-
-    BTRFS info (device sda5): cannot continue dev_replace, tgtdev is missing
-    BTRFS info (device sda5): you may cancel the operation after 'mount -o degraded'
-
- $ mount -o degraded /dev/sda5 /btrfs <-- success.
-
- $ btrfs replace cancel /btrfs
-
-    kernel: assertion failed: ret != -ENOTCONN, in fs/btrfs/dev-replace.c:1131
-    kernel: ------------[ cut here ]------------
-    kernel: kernel BUG at fs/btrfs/ctree.h:3750!
-
-After the patch:
-
- $ btrfs replace cancel /btrfs
-
-    BTRFS info (device sda5): suspended dev_replace from /dev/sda5 (devid 1) to <missing disk> canceled
-
-Fixes: fe97e2e173af ("btrfs: dev-replace: replace's scrub must not be running in suspended state")
-CC: stable@vger.kernel.org # 5.0+
-Signed-off-by: Anand Jain <anand.jain@oracle.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 ---
- fs/btrfs/dev-replace.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ net/wireless/nl80211.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
---- a/fs/btrfs/dev-replace.c
-+++ b/fs/btrfs/dev-replace.c
-@@ -1128,8 +1128,7 @@ int btrfs_dev_replace_cancel(struct btrf
- 		up_write(&dev_replace->rwsem);
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index dad88d231d56..4f5e5b763a15 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -11279,7 +11279,6 @@ static int nl80211_set_mcast_rate(struct sk_buff *skb, struct genl_info *info)
+ 	struct net_device *dev = info->user_ptr[1];
+ 	int mcast_rate[NUM_NL80211_BANDS];
+ 	u32 nla_rate;
+-	int err;
  
- 		/* Scrub for replace must not be running in suspended state */
--		ret = btrfs_scrub_cancel(fs_info);
--		ASSERT(ret != -ENOTCONN);
-+		btrfs_scrub_cancel(fs_info);
+ 	if (dev->ieee80211_ptr->iftype != NL80211_IFTYPE_ADHOC &&
+ 	    dev->ieee80211_ptr->iftype != NL80211_IFTYPE_MESH_POINT &&
+@@ -11298,9 +11297,7 @@ static int nl80211_set_mcast_rate(struct sk_buff *skb, struct genl_info *info)
+ 	if (!nl80211_parse_mcast_rate(rdev, mcast_rate, nla_rate))
+ 		return -EINVAL;
  
- 		trans = btrfs_start_transaction(root, 0);
- 		if (IS_ERR(trans)) {
-
+-	err = rdev_set_mcast_rate(rdev, dev, mcast_rate);
+-
+-	return err;
++	return rdev_set_mcast_rate(rdev, dev, mcast_rate);
+ }
+ 
+ static struct sk_buff *
+-- 
+2.25.1
 
