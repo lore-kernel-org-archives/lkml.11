@@ -2,78 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6A1ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A7F8C0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbiH2QkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
+        id S229893AbiH2Qoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:44:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiH2QkD (ORCPT
+        with ESMTP id S229456AbiH2Qon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:40:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A873055AA;
-        Mon, 29 Aug 2022 09:39:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F18BB81162;
-        Mon, 29 Aug 2022 16:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9B0C433D6;
-        Mon, 29 Aug 2022 16:39:56 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LfnwDr2l"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1661791194;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oF1j60atJlDmJ/i/cn/SVD6+lw8BdA37ZDx7OhjUUlY=;
-        b=LfnwDr2lKEuM/Iwq0wN8pMO7EITZzEXBK5Kj2tMINL0OnmV9YDrfbY2Q39x0MdvAPxPqU6
-        fNfDUe+vtWaZF0gRIt21dYVm25wBfkrMt3+G7os0IBL6FyocNXA5YinK8TyR1pNh4fvn6Y
-        6Am/7NMH2JQJRpwpE/jexjTKW7H4NVA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 5635b464 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
-        Mon, 29 Aug 2022 16:39:54 +0000 (UTC)
-Date:   Mon, 29 Aug 2022 12:39:53 -0400
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Adam Langley <agl@google.com>, Ard Biesheuvel <ardb@kernel.org>
-Subject: Re: Should Linux set the new constant-time mode CPU flags?
-Message-ID: <Ywzr2d52ixYXUDWR@zx2c4.com>
-References: <YwgCrqutxmX0W72r@gmail.com>
+        Mon, 29 Aug 2022 12:44:43 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501957EFF2
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:44:42 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id f24so5800500plr.1
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 09:44:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=qLN8fBo6PyBt7E99VZUSZQ3s6EIjif7d4pGqJZoTYK8=;
+        b=AWOO90lMcEYDvhomUOFe3IJEk9k7PehD16RoavUH+k3tVdP29oyJnKhNKlJeLpmH/G
+         N4adaaiJcJM9I5+1ZiAzIMcyrnSOQG5YjURrKnH6yFQb/ZXdSigPXVFZ3lIbwLcXODoD
+         3fTjkc/kk/K1Z8kMkpcCx3uWjP3ZyHBMSDK0I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=qLN8fBo6PyBt7E99VZUSZQ3s6EIjif7d4pGqJZoTYK8=;
+        b=LbsxbE8LSkBi+jiTSrvDKa3DA/MLhUwqYaFIVc7yIMhlnEbpi3n5EtXVKN1Rgesfpd
+         JDIz0AnFjytH1zNaZTB757zrd+kTkd6eDBGQHbvljJfDBxUJjmH2KODhVEI+G2th2nwa
+         iI1S/S6xA8qGtA4rtgiRkllfPwNCBNQ7VgU//gWcWEr3SP8APNajtgGAOxUZGnAokJxk
+         oufyV3Fj6bBMwBU3kynwRhFnRQTt3e5FT+ixGuwIWa3d2JI7ktS6MXSjr/Emmi5Ql/D4
+         askfjA6BJ9/j0SM5LTm5By/p8QpvCVD8f+wEmSQYGLaAiIAp4RZhOSsATftqZzlItcbU
+         Bu6A==
+X-Gm-Message-State: ACgBeo2CJJCKOiCNsq6eF4rdD+zviH0m+n+xF94ghIyWn1b3eVo3+rBz
+        iS+eJ+vIALouC/hJUq3smbwUcQ==
+X-Google-Smtp-Source: AA6agR4apsS+tj9IjFo34eaXpnXJQGrN7w2evDtE4E2ZScswf9Oeucx97W3O6v2+bP4nHo2MIiSYtg==
+X-Received: by 2002:a17:90b:35c5:b0:1fd:9087:6a70 with SMTP id nb5-20020a17090b35c500b001fd90876a70mr12414100pjb.158.1661791481886;
+        Mon, 29 Aug 2022 09:44:41 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:49ac:6e1:90a2:a0e0])
+        by smtp.gmail.com with UTF8SMTPSA id e8-20020a17090301c800b001729da53673sm7863682plh.14.2022.08.29.09.44.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 09:44:41 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH] arm64: dts: qcom: sc7280-qcard: Add alias 'wifi0'
+Date:   Mon, 29 Aug 2022 09:44:38 -0700
+Message-Id: <20220829094435.1.I4534cf408373478dd6e84dc8b9ddd0d4e1a3f143@changeid>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YwgCrqutxmX0W72r@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eric,
+Add the alias 'wifi0' for the WiFi interface on the Qcard. The alias
+is needed by the BIOS which patches the WiFi MAC address read from
+the VPD (Vital Product Data) into the device tree.
 
-On Thu, Aug 25, 2022 at 11:15:58PM +0000, Eric Biggers wrote:
-> I'm wondering if people are aware of this issue, and whether anyone has any
-> thoughts on whether/where the kernel should be setting these new CPU flags.
-> There don't appear to have been any prior discussions about this.  (Thanks to
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+---
 
-Maybe it should be set unconditionally now, until we figure out how to
-make it more granular.
+ arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-In terms of granularity, I saw other folks suggesting making it per-task
-(so, presumably, a prctl() knob), and others mentioning doing it just
-for kernel crypto. For the latter, I guess the crypto API could set it
-inside of its abstractions, and the various lib/crypto APIs could set it
-at invocation time. I wonder, though, what's the cost of
-enabling/disabling it? Would we in fact need a kind of lazy-deferred
-disabling, like we have with kernel_fpu_end()? I also wonder what
-crypto-adjacent code might wind up being missed if we're going function
-by function. Like, obviously we'd set this for crypto_memneq, but what
-about potential unprotected `==` of ID numbers that could leak some info
-in various protocols? What other subtle nearby code should we be
-thinking about, that relies on constant time logic but isn't neatly
-folded inside a crypto_do_something() function?
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+index 7adf31bb9827..7cd91df7a118 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7280-qcard.dtsi
+@@ -28,6 +28,7 @@ aliases {
+ 		bluetooth0 = &bluetooth;
+ 		serial0 = &uart5;
+ 		serial1 = &uart7;
++		wifi0 = &wifi;
+ 	};
+ 
+ 	pm8350c_pwm_backlight: backlight {
+-- 
+2.37.2.672.g94769d06f0-goog
 
-Jason
