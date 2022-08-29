@@ -2,57 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A33ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B6C0ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229781AbiH2K5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 06:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
+        id S229853AbiH2K5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 06:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiH2K5F (ORCPT
+        with ESMTP id S229478AbiH2K5r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 06:57:05 -0400
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5959E5D110;
-        Mon, 29 Aug 2022 03:57:02 -0700 (PDT)
-Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <heiko@sntech.de>)
-        id 1oScRv-0007z6-1j; Mon, 29 Aug 2022 12:56:59 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org
-Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Subject: Re: [PATCH 1/3] arm64: dts: rockchip: add vcc_cam regulator to rock-3a
-Date:   Mon, 29 Aug 2022 12:56:57 +0200
-Message-Id: <166177061356.1804690.5092608099700382034.b4-ty@sntech.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220712133204.2524942-1-michael.riesch@wolfvision.net>
-References: <20220712133204.2524942-1-michael.riesch@wolfvision.net>
+        Mon, 29 Aug 2022 06:57:47 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E82795C9F0;
+        Mon, 29 Aug 2022 03:57:46 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MGS673bCszHnVN;
+        Mon, 29 Aug 2022 18:55:59 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 18:57:44 +0800
+Received: from [10.67.103.212] (10.67.103.212) by
+ dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 18:57:44 +0800
+From:   "yekai (A)" <yekai13@huawei.com>
+Subject: Re: [PATCH v7 0/3] crypto: hisilicon - supports device isolation
+ feature
+To:     <gregkh@linuxfoundation.org>, <herbert@gondor.apana.org.au>
+References: <20220806022943.47292-1-yekai13@huawei.com>
+ <cffec511-dff2-5951-264a-1e82bb71e183@huawei.com>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <liulongfang@huawei.com>
+Message-ID: <3fd1c0be-71d1-2402-395f-2fbb85f0d8ec@huawei.com>
+Date:   Mon, 29 Aug 2022 18:57:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
+In-Reply-To: <cffec511-dff2-5951-264a-1e82bb71e183@huawei.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.103.212]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Jul 2022 15:32:02 +0200, Michael Riesch wrote:
-> The Radxa ROCK3 Model A features a voltage regulator that provides
-> a 3V3 supply to the MIPI CSI connector. Add this regulator to the
-> device tree of the board.
 
-Applied, thanks!
 
-[1/3] arm64: dts: rockchip: add vcc_cam regulator to rock-3a
-      commit: 2fd8bd005897436c5a6d2d150d7b1ae2907f8b06
-[2/3] arm64: dts: rockchip: add vcc_mipi regulator to rock-3a
-      commit: 7a3eabdcd0fdc344d31b18e78e4f4b5d94db8df5
-[3/3] arm64: dts: rockchip: specify pinctrl for i2c adapters on rock-3a
-      commit: a233ea1e6268a779d5c8c427eb14a2a89f95f4f9
+On 2022/8/22 11:38, yekai (A) wrote:
+> On 2022/8/6 10:29, Kai Ye wrote:
+>> 1、Add the uacce hardware error isolation interface. Supports
+>>    configures the hardware error isolation frequency.
+>> 2、Defining the isolation strategy for ACC by uacce sysfs node. If the 
+>>    number of hardware errors in a per hour exceeds the configured value,
+>>    the device will not be available in user space. The VF device use the
+>>    PF device isolation strategy.
+>>    
+>> changes v1->v2:
+>> 	- deleted dev_to_uacce api.
+>> 	- add vfs node doc. 
+>> 	- move uacce->ref to driver.
+>> changes v2->v3:
+>> 	- deleted some redundant code.
+>> 	- use qm state instead of reference count.
+>> 	- add null pointer check.
+>> 	- isolate_strategy_read() instead of a copy.
+>> changes v3->v4:
+>> 	- modify a comment
+>> changes v4->v5:
+>> 	- use bool instead of atomic.
+>> 	- isolation frequency instead of isolation command.
+>> changes v5->v6:
+>> 	- add is_visible in uacce.
+>> 	- add the description of the isolation strategy file node.
+>> changes v6->v7
+>> 	- add an example for isolate_strategy in Documentation.
+>>
+>> Kai Ye (3):
+>>   uacce: supports device isolation feature
+>>   Documentation: add a isolation strategy sysfs node for uacce
+>>   crypto: hisilicon/qm - define the device isolation strategy
+>>
+>>  Documentation/ABI/testing/sysfs-driver-uacce |  26 +++
+>>  drivers/crypto/hisilicon/qm.c                | 163 +++++++++++++++++--
+>>  drivers/misc/uacce/uacce.c                   |  58 +++++++
+>>  include/linux/hisi_acc_qm.h                  |   9 +
+>>  include/linux/uacce.h                        |  11 ++
+>>  5 files changed, 255 insertions(+), 12 deletions(-)
+>>
+> Hi,
+>
+> Just a friendly ping...
+>
+> thanks
+> Kai
+>
+> .
+Hi Greg KH
 
-Best regards,
--- 
-Heiko Stuebner <heiko@sntech.de>
+Could you help me to apply this patchset?
+
+thanks
+Kai
+
