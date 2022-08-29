@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A8E1ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C75ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiH2LVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33136 "EHLO
+        id S231433AbiH2LVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231576AbiH2LT7 (ORCPT
+        with ESMTP id S231642AbiH2LUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:19:59 -0400
+        Mon, 29 Aug 2022 07:20:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00480647C1;
-        Mon, 29 Aug 2022 04:13:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 262E775CCD;
+        Mon, 29 Aug 2022 04:13:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80AEA611DD;
-        Mon, 29 Aug 2022 11:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D2CDC433D7;
-        Mon, 29 Aug 2022 11:13:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95DD1611B3;
+        Mon, 29 Aug 2022 11:13:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A50CFC433C1;
+        Mon, 29 Aug 2022 11:13:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771616;
-        bh=SjK8YthD50v9y6edsXYSTabrhgyU4hJiAfB4Nscbk8A=;
+        s=korg; t=1661771614;
+        bh=DHfQ2MVPDKZLOla2IysgKsIAjBu/fzi98akwzPOfeyI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aAQhlbQm4dEgun9mBy4VuEsVIhXkG9VfqDwbMVtgbRIRrBke00fbgeq4adTE+0pXZ
-         twPYbgthUWsjwxJZFaWb3qqZFbpJJNQaEiRwiDGvdvv6czyH8iPQ0ft9oDNAfE5Lxi
-         XCCM6YQ98mhRWWTjczr6PADp+iCpfnSrEaj6Lck0=
+        b=GjngkI1RTrzRfWHL1I/kBEswLnxMjaD6JhAnFrrCNT2rEucRi3GGYqWwoM10TPHuY
+         jT/9NLCeDwOoeFJXsaWBpXhADadmZeOHXdAPjIhK4xY0JsVcowuZEWT8+BiXNGF4oP
+         aSrtuQIdNIo1NkE9uEJZeLmomgVLIlc1FohKbZQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 127/136] x86/nospec: Fix i386 RSB stuffing
-Date:   Mon, 29 Aug 2022 12:59:54 +0200
-Message-Id: <20220829105809.901244306@linuxfoundation.org>
+        stable@vger.kernel.org, Shell Chen <xierch@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 050/158] netfilter: nft_tproxy: restrict to prerouting hook
+Date:   Mon, 29 Aug 2022 12:58:20 +0200
+Message-Id: <20220829105810.840201024@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,50 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Florian Westphal <fw@strlen.de>
 
-commit 332924973725e8cdcc783c175f68cf7e162cb9e5 upstream.
+[ Upstream commit 18bbc3213383a82b05383827f4b1b882e3f0a5a5 ]
 
-Turns out that i386 doesn't unconditionally have LFENCE, as such the
-loop in __FILL_RETURN_BUFFER isn't actually speculation safe on such
-chips.
+TPROXY is only allowed from prerouting, but nft_tproxy doesn't check this.
+This fixes a crash (null dereference) when using tproxy from e.g. output.
 
-Fixes: ba6e31af2be9 ("x86/speculation: Add LFENCE to RSB fill sequence")
-Reported-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/Yv9tj9vbQ9nNlXoY@worktop.programming.kicks-ass.net
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4ed8eb6570a4 ("netfilter: nf_tables: Add native tproxy support")
+Reported-by: Shell Chen <xierch@gmail.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/nospec-branch.h |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/netfilter/nft_tproxy.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -50,6 +50,7 @@
-  * the optimal version - two calls, each with their own speculation
-  * trap should their return address end up getting used, in a loop.
-  */
-+#ifdef CONFIG_X86_64
- #define __FILL_RETURN_BUFFER(reg, nr)			\
- 	mov	$(nr/2), reg;				\
- 771:							\
-@@ -60,6 +61,17 @@
- 	jnz	771b;					\
- 	/* barrier for jnz misprediction */		\
- 	lfence;
-+#else
-+/*
-+ * i386 doesn't unconditionally have LFENCE, as such it can't
-+ * do a loop.
-+ */
-+#define __FILL_RETURN_BUFFER(reg, nr)			\
-+	.rept nr;					\
-+	__FILL_RETURN_SLOT;				\
-+	.endr;						\
-+	add	$(BITS_PER_LONG/8) * nr, %_ASM_SP;
-+#endif
+diff --git a/net/netfilter/nft_tproxy.c b/net/netfilter/nft_tproxy.c
+index 801f013971dfa..a701ad64f10af 100644
+--- a/net/netfilter/nft_tproxy.c
++++ b/net/netfilter/nft_tproxy.c
+@@ -312,6 +312,13 @@ static int nft_tproxy_dump(struct sk_buff *skb,
+ 	return 0;
+ }
  
- /*
-  * Stuff a single RSB slot.
++static int nft_tproxy_validate(const struct nft_ctx *ctx,
++			       const struct nft_expr *expr,
++			       const struct nft_data **data)
++{
++	return nft_chain_validate_hooks(ctx->chain, 1 << NF_INET_PRE_ROUTING);
++}
++
+ static struct nft_expr_type nft_tproxy_type;
+ static const struct nft_expr_ops nft_tproxy_ops = {
+ 	.type		= &nft_tproxy_type,
+@@ -321,6 +328,7 @@ static const struct nft_expr_ops nft_tproxy_ops = {
+ 	.destroy	= nft_tproxy_destroy,
+ 	.dump		= nft_tproxy_dump,
+ 	.reduce		= NFT_REDUCE_READONLY,
++	.validate	= nft_tproxy_validate,
+ };
+ 
+ static struct nft_expr_type nft_tproxy_type __read_mostly = {
+-- 
+2.35.1
+
 
 
