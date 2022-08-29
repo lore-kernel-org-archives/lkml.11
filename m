@@ -2,116 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C620ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CB5ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 01:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229603AbiH2BHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 21:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50142 "EHLO
+        id S229626AbiH2BIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 21:08:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiH2BHM (ORCPT
+        with ESMTP id S229447AbiH2BIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 21:07:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2532B21258;
-        Sun, 28 Aug 2022 18:07:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5971B80BA6;
-        Mon, 29 Aug 2022 01:07:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70022C4347C;
-        Mon, 29 Aug 2022 01:07:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661735228;
-        bh=j8/zqgqNyC238z42ZPV1ON5xd+ITJAITq0g3ep8McsM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=YRvCl4g4oGgxKzPA836qQYoF4bx5v6YEuiyvBYTijOE2fyi+U0il9dMvuXdDcWP7v
-         4n4ji8GRNc578a+4stpuFiEGdjwtxLqHiMWrptl87wx+L+2kVm3ZV5VO+qhpn/6ijD
-         Xd/3dc7nsKMmEEovFvTvhCmWNcn5DkHP+6KxxDWR4Sa7t4GyeaKFZNQleglq4rmTS4
-         cCprnhMPZsN7yur1bdLcrVo0npS6a7EqAv1tjeFpU/k0f9kAduLV72mY97+tnER1Lw
-         /DRz7/JPR/y5O0yn8asC04oRF/YA7GKiUIY9gTG3VuyIT98jJVNAxiKeHMnRuoZf6e
-         AUdEkc9OeAn8A==
-Received: by mail-vs1-f43.google.com with SMTP id m66so6898384vsm.12;
-        Sun, 28 Aug 2022 18:07:08 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3nJ3h48FAv1p16bcsh+mNAS3kX+BEfVyLM5XF9mbcsRUYHjsgi
-        YfZhHJdxkFAPANuVhVhKKnBmlArCtUVWWXhIOw==
-X-Google-Smtp-Source: AA6agR4fQb9xrIurzt54N3Y2edfUMuKjgVXXkR09se9ZwVek3NCyjgznD4ZHMdHxJO8T40Gr1zdCrEOKkKvjzLB8zP0=
-X-Received: by 2002:a05:6102:3353:b0:38c:9170:a96b with SMTP id
- j19-20020a056102335300b0038c9170a96bmr2915159vse.26.1661735227313; Sun, 28
- Aug 2022 18:07:07 -0700 (PDT)
+        Sun, 28 Aug 2022 21:08:00 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C7421253;
+        Sun, 28 Aug 2022 18:07:58 -0700 (PDT)
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MGC1b328czGptB;
+        Mon, 29 Aug 2022 09:06:11 +0800 (CST)
+Received: from dggpeml500003.china.huawei.com (7.185.36.200) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 09:07:56 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500003.china.huawei.com
+ (7.185.36.200) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 29 Aug
+ 2022 09:07:55 +0800
+From:   Yu Liao <liaoyu15@huawei.com>
+To:     <rafael@kernel.org>, <daniel.lezcano@linaro.org>
+CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <liaoyu15@huawei.com>, <liwei391@huawei.com>
+Subject: [PATCH] cpuidle: remove redundant check in cpuidle_switch_governor
+Date:   Mon, 29 Aug 2022 09:15:34 +0800
+Message-ID: <20220829011534.445092-1-liaoyu15@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220824203934.2855320-1-robh@kernel.org> <CAK7LNAS8nH+9HnfhV8yEtxShBbSYGQdOyVxbNJmbQJjEiqHPzA@mail.gmail.com>
-In-Reply-To: <CAK7LNAS8nH+9HnfhV8yEtxShBbSYGQdOyVxbNJmbQJjEiqHPzA@mail.gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Sun, 28 Aug 2022 20:06:56 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKA7gLF=FkzMbiH6NyDo6M7=i2LLSAYFw5sETwszZY5zw@mail.gmail.com>
-Message-ID: <CAL_JsqKA7gLF=FkzMbiH6NyDo6M7=i2LLSAYFw5sETwszZY5zw@mail.gmail.com>
-Subject: Re: [PATCH] kbuild: Split up DT binding build targets
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500003.china.huawei.com (7.185.36.200)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 2:31 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Thu, Aug 25, 2022 at 5:39 AM Rob Herring <robh@kernel.org> wrote:
-> >
-> > The DT binding validation target, dt_binding_check, is composed of
-> > multiple steps which can't be run individually. This resulted in
-> > the passing of make variables to control which steps were run for
-> > 'dtbs_check'. Some steps are also doing multiple things in a single rule
-> > which is error prone[1].
-> >
-> > Rework the build to split each of the steps into its own make target.
-> > This allows users more fine grained control over what's run and makes
-> > for easier make dependencies.
->
->
-> I do not think it makes the code easier.
->
->
-> A tricky case is that multiple targets run in parallel.
->
->
-> "make  -j$(nproc)  dtbs_check  dt_binding_examples"
->
->
-> Two different threads dive into Documentation/devicetree/bindings/Makefile,
-> and try to build the same file simultaneously.
->
-> If you run the command above, you will see two lines of
->
->   SCHEMA  Documentation/devicetree/bindings/processed-schema.json
->
-> processed-schema.json may result in a corrupted file.
+gov has already been NULL checked at the beginning of
+cpuidle_switch_governor, so remove redundant check.
 
-Indeed... :(
+And use pr_info instead printk to fix the following checkpatch warning.
 
->
-> > The new targets are:
-> >
-> > dt_binding_lint - Runs yamllint on the bindings
-> > dt_binding_schemas - Validates the binding schemas
-> > dt_binding_examples - Builds and validates the binding examples
->
->
-> I still do not understand why so many phony targets are necessary.
+WARNING: Prefer [subsystem eg: netdev]_info([subsystem]dev, ... then
+dev_info(dev, ... then pr_info(...  to printk(KERN_INFO ...
 
-I thought that's what you were suggesting, but I guess you meant just
-separate internal targets. Separate targets exposed to the user are
-useful as well. I've had some requests to be able to skip running
-yamllint for example. The processed schema can be used for a few other
-tools now, so being able to just build it is useful.
+Signed-off-by: Yu Liao <liaoyu15@huawei.com>
+---
+ drivers/cpuidle/governor.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-Rob
+diff --git a/drivers/cpuidle/governor.c b/drivers/cpuidle/governor.c
+index 29acaf48e575..9e6865edb942 100644
+--- a/drivers/cpuidle/governor.c
++++ b/drivers/cpuidle/governor.c
+@@ -63,12 +63,10 @@ int cpuidle_switch_governor(struct cpuidle_governor *gov)
+ 
+ 	cpuidle_curr_governor = gov;
+ 
+-	if (gov) {
+-		list_for_each_entry(dev, &cpuidle_detected_devices, device_list)
+-			cpuidle_enable_device(dev);
+-		cpuidle_install_idle_handler();
+-		printk(KERN_INFO "cpuidle: using governor %s\n", gov->name);
+-	}
++	list_for_each_entry(dev, &cpuidle_detected_devices, device_list)
++		cpuidle_enable_device(dev);
++	cpuidle_install_idle_handler();
++	pr_info("cpuidle: using governor %s\n", gov->name);
+ 
+ 	return 0;
+ }
+-- 
+2.25.1
+
