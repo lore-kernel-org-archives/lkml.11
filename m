@@ -2,77 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B368ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2119BECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbiH2MPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
+        id S231849AbiH2MQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:16:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229977AbiH2MPa (ORCPT
+        with ESMTP id S229732AbiH2MQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:15:30 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5134C832DF;
-        Mon, 29 Aug 2022 04:59:23 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id C4E821E80D90;
-        Mon, 29 Aug 2022 19:26:48 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id M6hgVIKQLa_j; Mon, 29 Aug 2022 19:26:46 +0800 (CST)
-Received: from [172.30.38.131] (unknown [180.167.10.98])
-        (Authenticated sender: liqiong@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 8AB451E80D59;
-        Mon, 29 Aug 2022 19:26:44 +0800 (CST)
-Subject: Re: [PATCH] wifi: cfg80211: add error code in
- brcmf_notify_sched_scan_results()
-To:     Arend Van Spriel <aspriel@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yu Zhe <yuzhe@nfschina.com>
-References: <20220829065831.14023-1-liqiong@nfschina.com>
- <a054ffb1-527b-836c-f43e-9f76058cc9ed@gmail.com>
-From:   liqiong <liqiong@nfschina.com>
-Message-ID: <6b8c94c3-2c8d-a222-67ec-4461615185e1@nfschina.com>
-Date:   Mon, 29 Aug 2022 19:31:25 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        Mon, 29 Aug 2022 08:16:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F78DF21;
+        Mon, 29 Aug 2022 04:59:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC0FAB80EFB;
+        Mon, 29 Aug 2022 11:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD67C433C1;
+        Mon, 29 Aug 2022 11:11:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661771513;
+        bh=sqwZwaMa4ltO+ZnF2OW0LOrSQsC+7lCx8oJFCuGBDEU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rdjLntboY9cQLdpmlJgAKqTSz/rHUGTDOtyzYydFENFghNU6TKqdq4oJCO3oc5axn
+         f0FeWh9GgLspxSXSagPAz9JSuy9FbLs/zjvv9lFXWsFmO5JH2AxFjuJ+w49QDdWJhU
+         ojhJqfZ2o7M9PFkHONAd7E5CTcOwWXuzPyDLMDTY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Rustam Subkhankulov <subkhankulov@ispras.ru>,
+        Juergen Gross <jgross@suse.com>,
+        Jan Beulich <jbeulich@suse.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Subject: [PATCH 5.10 75/86] xen/privcmd: fix error exit of privcmd_ioctl_dm_op()
+Date:   Mon, 29 Aug 2022 12:59:41 +0200
+Message-Id: <20220829105759.574557229@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
+User-Agent: quilt/0.67
 MIME-Version: 1.0
-In-Reply-To: <a054ffb1-527b-836c-f43e-9f76058cc9ed@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Juergen Gross <jgross@suse.com>
 
+commit c5deb27895e017a0267de0a20d140ad5fcc55a54 upstream.
 
-在 2022年08月29日 16:51, Arend Van Spriel 写道:
-> On 8/29/2022 8:58 AM, Li Qiong wrote:
->> The err code is 0 at the first two "out_err" paths, add error code
->> '-EINVAL' for these error paths.
->
-> There is no added value provided in this change. There is an error message, but it is otherwise silently ignored as there is no additional fault handling required.
-It should be better to fix the return code, and It seems that the code has been checked, eg:
-if (ifp->drvr->fweh.evt_handler[i]) {
-.....
-}
+The error exit of privcmd_ioctl_dm_op() is calling unlock_pages()
+potentially with pages being NULL, leading to a NULL dereference.
 
+Additionally lock_pages() doesn't check for pin_user_pages_fast()
+having been completely successful, resulting in potentially not
+locking all pages into memory. This could result in sporadic failures
+when using the related memory in user mode.
 
->
-> Regards,
-> Arend
->
->> Signed-off-by: Li Qiong <liqiong@nfschina.com>
->> ---
->>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 ++
->>   1 file changed, 2 insertions(+)
+Fix all of that by calling unlock_pages() always with the real number
+of pinned pages, which will be zero in case pages being NULL, and by
+checking the number of pages pinned by pin_user_pages_fast() matching
+the expected number of pages.
+
+Cc: <stable@vger.kernel.org>
+Fixes: ab520be8cd5d ("xen/privcmd: Add IOCTL_PRIVCMD_DM_OP")
+Reported-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jan Beulich <jbeulich@suse.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Link: https://lore.kernel.org/r/20220825141918.3581-1-jgross@suse.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/xen/privcmd.c |   21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+--- a/drivers/xen/privcmd.c
++++ b/drivers/xen/privcmd.c
+@@ -581,27 +581,30 @@ static int lock_pages(
+ 	struct privcmd_dm_op_buf kbufs[], unsigned int num,
+ 	struct page *pages[], unsigned int nr_pages, unsigned int *pinned)
+ {
+-	unsigned int i;
++	unsigned int i, off = 0;
+ 
+-	for (i = 0; i < num; i++) {
++	for (i = 0; i < num; ) {
+ 		unsigned int requested;
+ 		int page_count;
+ 
+ 		requested = DIV_ROUND_UP(
+ 			offset_in_page(kbufs[i].uptr) + kbufs[i].size,
+-			PAGE_SIZE);
++			PAGE_SIZE) - off;
+ 		if (requested > nr_pages)
+ 			return -ENOSPC;
+ 
+ 		page_count = pin_user_pages_fast(
+-			(unsigned long) kbufs[i].uptr,
++			(unsigned long)kbufs[i].uptr + off * PAGE_SIZE,
+ 			requested, FOLL_WRITE, pages);
+-		if (page_count < 0)
+-			return page_count;
++		if (page_count <= 0)
++			return page_count ? : -EFAULT;
+ 
+ 		*pinned += page_count;
+ 		nr_pages -= page_count;
+ 		pages += page_count;
++
++		off = (requested == page_count) ? 0 : off + page_count;
++		i += !off;
+ 	}
+ 
+ 	return 0;
+@@ -677,10 +680,8 @@ static long privcmd_ioctl_dm_op(struct f
+ 	}
+ 
+ 	rc = lock_pages(kbufs, kdata.num, pages, nr_pages, &pinned);
+-	if (rc < 0) {
+-		nr_pages = pinned;
++	if (rc < 0)
+ 		goto out;
+-	}
+ 
+ 	for (i = 0; i < kdata.num; i++) {
+ 		set_xen_guest_handle(xbufs[i].h, kbufs[i].uptr);
+@@ -692,7 +693,7 @@ static long privcmd_ioctl_dm_op(struct f
+ 	xen_preemptible_hcall_end();
+ 
+ out:
+-	unlock_pages(pages, nr_pages);
++	unlock_pages(pages, pinned);
+ 	kfree(xbufs);
+ 	kfree(pages);
+ 	kfree(kbufs);
+
 
