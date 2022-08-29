@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD66ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:11:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF1FECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231174AbiH2MLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:11:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59992 "EHLO
+        id S230428AbiH2MMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiH2MLG (ORCPT
+        with ESMTP id S229922AbiH2MLd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:11:06 -0400
+        Mon, 29 Aug 2022 08:11:33 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A609410B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EF522527;
         Mon, 29 Aug 2022 04:56:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D05CCB80FA7;
-        Mon, 29 Aug 2022 11:18:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28D5EC433D6;
-        Mon, 29 Aug 2022 11:18:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FB0AB80FAE;
+        Mon, 29 Aug 2022 11:14:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECD8EC433C1;
+        Mon, 29 Aug 2022 11:14:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771924;
-        bh=0OQtm6rkpc4cY5rw8LYv1/UD5ttx5nhgrijG2qWkUBQ=;
+        s=korg; t=1661771665;
+        bh=uMQJvyfzpyrFxCJ+wIpRifUys8/OmF5TnZH79b4QBCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ydkK0+kbRBryEgHMllYavm+KuaGgv7Xjg11JxyeMbiP54Ck0AdvF+8XUQDBjQE2Tl
-         M9aib6I34x0Lam1bQj9aYxx54Csj5Rs7H6jXj049pqbUS9FOEMA8+IcpmiPiXuVl/z
-         eb97pO87LONaYmojFGg0bKwGzUGJcLCCOe1yWPSo=
+        b=iIvfEMz7yaPNNKg+TUCIiSKW+9ZlJ2NggJdKhWK8HywPrMHBbgPIs9FyKI/JMdwLW
+         BC/yN/QlCE2hbOO47HRxRdIQ5uUv+n7OT4e8zqNKI+MDQ7L6ak1p9BSPgWmasX6ZN7
+         UTwKnrbruIyHA2apg8ZZC2/2imU3+mtwwqVN3B78=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yu Kuai <yukuai3@huawei.com>,
-        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.19 142/158] blk-mq: fix io hung due to missing commit_rqs
-Date:   Mon, 29 Aug 2022 12:59:52 +0200
-Message-Id: <20220829105815.052283659@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 058/158] netfilter: nft_payload: do not truncate csum_offset and csum_type
+Date:   Mon, 29 Aug 2022 12:58:28 +0200
+Message-Id: <20220829105811.147620883@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -48,94 +48,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 65fac0d54f374625b43a9d6ad1f2c212bd41f518 upstream.
+[ Upstream commit 7044ab281febae9e2fa9b0b247693d6026166293 ]
 
-Currently, in virtio_scsi, if 'bd->last' is not set to true while
-dispatching request, such io will stay in driver's queue, and driver
-will wait for block layer to dispatch more rqs. However, if block
-layer failed to dispatch more rq, it should trigger commit_rqs to
-inform driver.
+Instead report ERANGE if csum_offset is too long, and EOPNOTSUPP if type
+is not support.
 
-There is a problem in blk_mq_try_issue_list_directly() that commit_rqs
-won't be called:
-
-// assume that queue_depth is set to 1, list contains two rq
-blk_mq_try_issue_list_directly
- blk_mq_request_issue_directly
- // dispatch first rq
- // last is false
-  __blk_mq_try_issue_directly
-   blk_mq_get_dispatch_budget
-   // succeed to get first budget
-   __blk_mq_issue_directly
-    scsi_queue_rq
-     cmd->flags |= SCMD_LAST
-      virtscsi_queuecommand
-       kick = (sc->flags & SCMD_LAST) != 0
-       // kick is false, first rq won't issue to disk
- queued++
-
- blk_mq_request_issue_directly
- // dispatch second rq
-  __blk_mq_try_issue_directly
-   blk_mq_get_dispatch_budget
-   // failed to get second budget
- ret == BLK_STS_RESOURCE
-  blk_mq_request_bypass_insert
- // errors is still 0
-
- if (!list_empty(list) || errors && ...)
-  // won't pass, commit_rqs won't be called
-
-In this situation, first rq relied on second rq to dispatch, while
-second rq relied on first rq to complete, thus they will both hung.
-
-Fix the problem by also treat 'BLK_STS_*RESOURCE' as 'errors' since
-it means that request is not queued successfully.
-
-Same problem exists in blk_mq_dispatch_rq_list(), 'BLK_STS_*RESOURCE'
-can't be treated as 'errors' here, fix the problem by calling
-commit_rqs if queue_rq return 'BLK_STS_*RESOURCE'.
-
-Fixes: d666ba98f849 ("blk-mq: add mq_ops->commit_rqs()")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Link: https://lore.kernel.org/r/20220726122224.1790882-1-yukuai1@huaweicloud.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7ec3f7b47b8d ("netfilter: nft_payload: add packet mangling support")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-mq.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/netfilter/nft_payload.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -1925,7 +1925,8 @@ out:
- 	/* If we didn't flush the entire list, we could have told the driver
- 	 * there was more coming, but that turned out to be a lie.
- 	 */
--	if ((!list_empty(list) || errors) && q->mq_ops->commit_rqs && queued)
-+	if ((!list_empty(list) || errors || needs_resource ||
-+	     ret == BLK_STS_DEV_RESOURCE) && q->mq_ops->commit_rqs && queued)
- 		q->mq_ops->commit_rqs(hctx);
- 	/*
- 	 * Any items that need requeuing? Stuff them into hctx->dispatch,
-@@ -2678,6 +2679,7 @@ void blk_mq_try_issue_list_directly(stru
- 		list_del_init(&rq->queuelist);
- 		ret = blk_mq_request_issue_directly(rq, list_empty(list));
- 		if (ret != BLK_STS_OK) {
-+			errors++;
- 			if (ret == BLK_STS_RESOURCE ||
- 					ret == BLK_STS_DEV_RESOURCE) {
- 				blk_mq_request_bypass_insert(rq, false,
-@@ -2685,7 +2687,6 @@ void blk_mq_try_issue_list_directly(stru
- 				break;
- 			}
- 			blk_mq_end_request(rq, ret);
--			errors++;
- 		} else
- 			queued++;
+diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
+index 4fee67abfe2c5..eb0e40c297121 100644
+--- a/net/netfilter/nft_payload.c
++++ b/net/netfilter/nft_payload.c
+@@ -740,17 +740,23 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 				const struct nlattr * const tb[])
+ {
+ 	struct nft_payload_set *priv = nft_expr_priv(expr);
++	u32 csum_offset, csum_type = NFT_PAYLOAD_CSUM_NONE;
++	int err;
+ 
+ 	priv->base        = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_BASE]));
+ 	priv->offset      = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_OFFSET]));
+ 	priv->len         = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_LEN]));
+ 
+ 	if (tb[NFTA_PAYLOAD_CSUM_TYPE])
+-		priv->csum_type =
+-			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
+-	if (tb[NFTA_PAYLOAD_CSUM_OFFSET])
+-		priv->csum_offset =
+-			ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_OFFSET]));
++		csum_type = ntohl(nla_get_be32(tb[NFTA_PAYLOAD_CSUM_TYPE]));
++	if (tb[NFTA_PAYLOAD_CSUM_OFFSET]) {
++		err = nft_parse_u32_check(tb[NFTA_PAYLOAD_CSUM_OFFSET], U8_MAX,
++					  &csum_offset);
++		if (err < 0)
++			return err;
++
++		priv->csum_offset = csum_offset;
++	}
+ 	if (tb[NFTA_PAYLOAD_CSUM_FLAGS]) {
+ 		u32 flags;
+ 
+@@ -761,7 +767,7 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 		priv->csum_flags = flags;
  	}
+ 
+-	switch (priv->csum_type) {
++	switch (csum_type) {
+ 	case NFT_PAYLOAD_CSUM_NONE:
+ 	case NFT_PAYLOAD_CSUM_INET:
+ 		break;
+@@ -775,6 +781,7 @@ static int nft_payload_set_init(const struct nft_ctx *ctx,
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
++	priv->csum_type = csum_type;
+ 
+ 	return nft_parse_register_load(tb[NFTA_PAYLOAD_SREG], &priv->sreg,
+ 				       priv->len);
+-- 
+2.35.1
+
 
 
