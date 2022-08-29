@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D676ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD4DECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230463AbiH2LIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
+        id S230377AbiH2LIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbiH2LHI (ORCPT
+        with ESMTP id S229646AbiH2LHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:07:08 -0400
+        Mon, 29 Aug 2022 07:07:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539FD10FE3;
-        Mon, 29 Aug 2022 04:04:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA40711C22;
+        Mon, 29 Aug 2022 04:05:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2137B80EF3;
-        Mon, 29 Aug 2022 11:04:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53300C433C1;
-        Mon, 29 Aug 2022 11:04:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D41FB80EFC;
+        Mon, 29 Aug 2022 11:03:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE416C433D7;
+        Mon, 29 Aug 2022 11:03:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771095;
-        bh=0ueb1dFP4tHhZS/U5agUHIjvYCKjpIfxMbvS/5u0iLk=;
+        s=korg; t=1661771017;
+        bh=1DXxsGH8T/db2sgGF+1eQuMxjREEw9B8J1bXMaBHUEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h4w/eZH0y0bppUllspDDfzMIiUamzK/ZjS7cTlb8a14fOcCUw9fmvcH5ADBNXr/gq
-         N8sBnm9dOnCjTLZgRMM9ojHoQEKMHM3l1S9a5YY/GBicKZOluU5qsr81HzWOza6r9P
-         8GNMoO/iRFeUP6MM7V/kNst8KwXhyCElGwfKAS/g=
+        b=XfNtV9fATiH5u8rlECAKk8zYe9b7D3T4fjJ8QihWs5EmbJJoM48DPvaudU2cyUGlt
+         OzcEj/vKveIqB7Cy3kBpZSlG9O6fDzGddIdGbWAbA+JGedw/mP+UfAfXVPmXaQ65ei
+         E+3O6UjSXd9+Tzdm1RCWUL/VLP/haPi/yUU2/naY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 061/136] netfilter: nft_tunnel: restrict it to netdev family
-Date:   Mon, 29 Aug 2022 12:58:48 +0200
-Message-Id: <20220829105807.133212941@linuxfoundation.org>
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@lst.de>,
+        Christian Brauner <brauner@kernel.org>,
+        Amir Goldstein <amir73il@gmail.com>
+Subject: [PATCH 5.10 08/86] vfs: make sync_filesystem return errors from ->sync_fs
+Date:   Mon, 29 Aug 2022 12:58:34 +0200
+Message-Id: <20220829105756.882417989@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,33 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-[ Upstream commit 01e4092d53bc4fe122a6e4b6d664adbd57528ca3 ]
+commit 5679897eb104cec9e99609c3f045a0c20603da4c upstream.
 
-Only allow to use this expression from NFPROTO_NETDEV family.
+[backport to 5.10 only differs in __sync_blockdev helper]
 
-Fixes: af308b94a2a4 ("netfilter: nf_tables: add tunnel support")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Strangely, sync_filesystem ignores the return code from the ->sync_fs
+call, which means that syscalls like syncfs(2) never see the error.
+This doesn't seem right, so fix that.
+
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Christian Brauner <brauner@kernel.org>
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nft_tunnel.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/sync.c |   18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/net/netfilter/nft_tunnel.c b/net/netfilter/nft_tunnel.c
-index 3b27926d5382c..2ee50996da8cc 100644
---- a/net/netfilter/nft_tunnel.c
-+++ b/net/netfilter/nft_tunnel.c
-@@ -133,6 +133,7 @@ static const struct nft_expr_ops nft_tunnel_get_ops = {
+--- a/fs/sync.c
++++ b/fs/sync.c
+@@ -28,7 +28,7 @@
+  */
+ int sync_filesystem(struct super_block *sb)
+ {
+-	int ret;
++	int ret = 0;
  
- static struct nft_expr_type nft_tunnel_type __read_mostly = {
- 	.name		= "tunnel",
-+	.family		= NFPROTO_NETDEV,
- 	.ops		= &nft_tunnel_get_ops,
- 	.policy		= nft_tunnel_policy,
- 	.maxattr	= NFTA_TUNNEL_MAX,
--- 
-2.35.1
-
+ 	/*
+ 	 * We need to be protected against the filesystem going from
+@@ -51,15 +51,21 @@ int sync_filesystem(struct super_block *
+ 	 * at a time.
+ 	 */
+ 	writeback_inodes_sb(sb, WB_REASON_SYNC);
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 0);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 0);
++		if (ret)
++			return ret;
++	}
+ 	ret = __sync_blockdev(sb->s_bdev, 0);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	sync_inodes_sb(sb);
+-	if (sb->s_op->sync_fs)
+-		sb->s_op->sync_fs(sb, 1);
++	if (sb->s_op->sync_fs) {
++		ret = sb->s_op->sync_fs(sb, 1);
++		if (ret)
++			return ret;
++	}
+ 	return __sync_blockdev(sb->s_bdev, 1);
+ }
+ EXPORT_SYMBOL(sync_filesystem);
 
 
