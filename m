@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB1DECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83943ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:22:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbiH2LV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56162 "EHLO
+        id S231787AbiH2LWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:22:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230421AbiH2LUi (ORCPT
+        with ESMTP id S231556AbiH2LUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 07:20:38 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0509269F41;
-        Mon, 29 Aug 2022 04:13:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2E66A4B6;
+        Mon, 29 Aug 2022 04:13:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85A5CB80FAF;
-        Mon, 29 Aug 2022 11:12:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF412C4314A;
-        Mon, 29 Aug 2022 11:12:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E97AB80F9C;
+        Mon, 29 Aug 2022 11:10:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2606C433D6;
+        Mon, 29 Aug 2022 11:10:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771567;
-        bh=Ni34Pt2IXXF69N2LilYGEglvTYQrUDNUfcAhq8Qrsrk=;
+        s=korg; t=1661771456;
+        bh=/YP6VvDcJ9DScd+mjxxX5q2txVxjWzz7n9jvS0JRzxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yyx004VhLsOyLQt1gF/CHvKi9X47SDnRsT4joqCDq/6e2PUwAn2qKhHXGUtDQk9uI
-         Hpvn7LNL2KwS6Hwxk65LVVA7JTfO2sxHwvyOb3gHyAKzOKQqG02f/AUyqpA8rlfjUm
-         MA/5bSLnvutFZrY6qSkC3YoMs7PXJKs+F7Q5W8uY=
+        b=v8TvZZnlmYPj7vtUJOcipCIL6knEaFCf29Q+9WWxSegJrQcJzeSiSY6UFlA+7/qfo
+         6w21K+bWoLt02+Jr1n3ZtNW0YSOTxvtATKeZIijNjXqFa4lgyqS5XhnT55SwMKWiU3
+         +yXmbSyOtgtPHkHEuRJ+kmcFAa4DVBy3KOGFrsz8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Elder <elder@linaro.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 044/158] net: ipa: dont assume SMEM is page-aligned
-Date:   Mon, 29 Aug 2022 12:58:14 +0200
-Message-Id: <20220829105810.622219825@linuxfoundation.org>
+        stable@vger.kernel.org, Chen Zhongjin <chenzhongjin@huawei.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.10 69/86] x86/unwind/orc: Unwind ftrace trampolines with correct ORC entry
+Date:   Mon, 29 Aug 2022 12:59:35 +0200
+Message-Id: <20220829105759.370739152@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +49,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Chen Zhongjin <chenzhongjin@huawei.com>
 
-[ Upstream commit b8d4380365c515d8e0351f2f46d371738dd19be1 ]
+commit fc2e426b1161761561624ebd43ce8c8d2fa058da upstream.
 
-In ipa_smem_init(), a Qualcomm SMEM region is allocated (if needed)
-and then its virtual address is fetched using qcom_smem_get().  The
-physical address associated with that region is also fetched.
+When meeting ftrace trampolines in ORC unwinding, unwinder uses address
+of ftrace_{regs_}call address to find the ORC entry, which gets next frame at
+sp+176.
 
-The physical address is adjusted so that it is page-aligned, and an
-attempt is made to update the size of the region to compensate for
-any non-zero adjustment.
+If there is an IRQ hitting at sub $0xa8,%rsp, the next frame should be
+sp+8 instead of 176. It makes unwinder skip correct frame and throw
+warnings such as "wrong direction" or "can't access registers", etc,
+depending on the content of the incorrect frame address.
 
-But that adjustment isn't done properly.  The physical address is
-aligned twice, and as a result the size is never actually adjusted.
+By adding the base address ftrace_{regs_}caller with the offset
+*ip - ops->trampoline*, we can get the correct address to find the ORC entry.
 
-Fix this by *not* aligning the "addr" local variable, and instead
-making the "phys" local variable be the adjusted "addr" value.
+Also change "caller" to "tramp_addr" to make variable name conform to
+its content.
 
-Fixes: a0036bb413d5b ("net: ipa: define SMEM memory region for IPA")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Link: https://lore.kernel.org/r/20220818134206.567618-1-elder@linaro.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[ mingo: Clarified the changelog a bit. ]
+
+Fixes: 6be7fa3c74d1 ("ftrace, orc, x86: Handle ftrace dynamically allocated trampolines")
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20220819084334.244016-1-chenzhongjin@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_mem.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/unwind_orc.c |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ipa/ipa_mem.c b/drivers/net/ipa/ipa_mem.c
-index 1e9eae208e44f..53a1dbeaffa6d 100644
---- a/drivers/net/ipa/ipa_mem.c
-+++ b/drivers/net/ipa/ipa_mem.c
-@@ -568,7 +568,7 @@ static int ipa_smem_init(struct ipa *ipa, u32 item, size_t size)
- 	}
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -93,22 +93,27 @@ static struct orc_entry *orc_find(unsign
+ static struct orc_entry *orc_ftrace_find(unsigned long ip)
+ {
+ 	struct ftrace_ops *ops;
+-	unsigned long caller;
++	unsigned long tramp_addr, offset;
  
- 	/* Align the address down and the size up to a page boundary */
--	addr = qcom_smem_virt_to_phys(virt) & PAGE_MASK;
-+	addr = qcom_smem_virt_to_phys(virt);
- 	phys = addr & PAGE_MASK;
- 	size = PAGE_ALIGN(size + addr - phys);
- 	iova = phys;	/* We just want a direct mapping */
--- 
-2.35.1
-
+ 	ops = ftrace_ops_trampoline(ip);
+ 	if (!ops)
+ 		return NULL;
+ 
++	/* Set tramp_addr to the start of the code copied by the trampoline */
+ 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS)
+-		caller = (unsigned long)ftrace_regs_call;
++		tramp_addr = (unsigned long)ftrace_regs_caller;
+ 	else
+-		caller = (unsigned long)ftrace_call;
++		tramp_addr = (unsigned long)ftrace_caller;
++
++	/* Now place tramp_addr to the location within the trampoline ip is at */
++	offset = ip - ops->trampoline;
++	tramp_addr += offset;
+ 
+ 	/* Prevent unlikely recursion */
+-	if (ip == caller)
++	if (ip == tramp_addr)
+ 		return NULL;
+ 
+-	return orc_find(caller);
++	return orc_find(tramp_addr);
+ }
+ #else
+ static struct orc_entry *orc_ftrace_find(unsigned long ip)
 
 
