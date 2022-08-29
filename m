@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15F09ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2BFECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231684AbiH2LVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55666 "EHLO
+        id S231690AbiH2LVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231823AbiH2LTZ (ORCPT
+        with ESMTP id S231831AbiH2LT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:19:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A1F26DF86;
-        Mon, 29 Aug 2022 04:13:23 -0700 (PDT)
+        Mon, 29 Aug 2022 07:19:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B81A1117E;
+        Mon, 29 Aug 2022 04:13:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C4C9AB80FA3;
-        Mon, 29 Aug 2022 11:12:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E998C433D6;
-        Mon, 29 Aug 2022 11:12:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01ACE61228;
+        Mon, 29 Aug 2022 11:13:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9747C433C1;
+        Mon, 29 Aug 2022 11:13:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771539;
-        bh=zvQ2yyzXmUiskuCkUP4unrwYo2Z75bDECc3GxabstgM=;
+        s=korg; t=1661771582;
+        bh=SnbJ+6NkH4rpT9T12sHrdeFOzjthET33klZwQgtz3mY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ige7kBvjawdXIdIrnQsSDzKFANOrusypW26g2ce3w1foVznqroqU5KDAQWfxzEB/k
-         twDctxW6AjgixSz7FA7AFCAjj54wfw1dXThL35SNx6O5ro/zSUqweef6u6dibOlZFv
-         Bzd+qkSYIa5tGC52mDg7koKeUQlkUziYAz/g1tPA=
+        b=YFJJ6lAbwZULKLVcc4/vvS7E1oZ47OMLMUrZZdrX9z8OZVj6IhXoKj/rONGxbhff9
+         CJhuzczjTiNj3nVGS77KqGUPm/pOmjYAABZgucTu5c+5mvM0d+VjuVlZhrfM4UpFHB
+         Uc7z62wwfW2fyeyyjpq2V1fJR/xP3f5f+b4rM9B0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Karol Herbst <kherbst@redhat.com>,
-        Lyude Paul <lyude@redhat.com>
-Subject: [PATCH 5.15 114/136] nouveau: explicitly wait on the fence in nouveau_bo_move_m2mf
-Date:   Mon, 29 Aug 2022 12:59:41 +0200
-Message-Id: <20220829105809.384152318@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        Ian Rogers <irogers@google.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 82/86] perf python: Fix build when PYTHON_CONFIG is user supplied
+Date:   Mon, 29 Aug 2022 12:59:48 +0200
+Message-Id: <20220829105759.877832785@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,45 +54,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karol Herbst <kherbst@redhat.com>
+From: James Clark <james.clark@arm.com>
 
-commit 6b04ce966a738ecdd9294c9593e48513c0dc90aa upstream.
+commit bc9e7fe313d5e56d4d5f34bcc04d1165f94f86fb upstream.
 
-It is a bit unlcear to us why that's helping, but it does and unbreaks
-suspend/resume on a lot of GPUs without any known drawbacks.
+The previous change to Python autodetection had a small mistake where
+the auto value was used to determine the Python binary, rather than the
+user supplied value. The Python binary is only used for one part of the
+build process, rather than the final linking, so it was producing
+correct builds in most scenarios, especially when the auto detected
+value matched what the user wanted, or the system only had a valid set
+of Pythons.
 
-Cc: stable@vger.kernel.org # v5.15+
-Closes: https://gitlab.freedesktop.org/drm/nouveau/-/issues/156
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Reviewed-by: Lyude Paul <lyude@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220819200928.401416-1-kherbst@redhat.com
+Change it so that the Python binary path is derived from either the
+PYTHON_CONFIG value or PYTHON value, depending on what is specified by
+the user. This was the original intention.
+
+This error was spotted in a build failure an odd cross compilation
+environment after commit 4c41cb46a732fe82 ("perf python: Prefer
+python3") was merged.
+
+Fixes: 630af16eee495f58 ("perf tools: Use Python devtools for version autodetection rather than runtime")
+Signed-off-by: James Clark <james.clark@arm.com>
+Acked-by: Ian Rogers <irogers@google.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: James Clark <james.clark@arm.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220728093946.1337642-1-james.clark@arm.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_bo.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ tools/perf/Makefile.config |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nouveau_bo.c b/drivers/gpu/drm/nouveau/nouveau_bo.c
-index 05076e530e7d..e29175e4b44c 100644
---- a/drivers/gpu/drm/nouveau/nouveau_bo.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_bo.c
-@@ -820,6 +820,15 @@ nouveau_bo_move_m2mf(struct ttm_buffer_object *bo, int evict,
- 		if (ret == 0) {
- 			ret = nouveau_fence_new(chan, false, &fence);
- 			if (ret == 0) {
-+				/* TODO: figure out a better solution here
-+				 *
-+				 * wait on the fence here explicitly as going through
-+				 * ttm_bo_move_accel_cleanup somehow doesn't seem to do it.
-+				 *
-+				 * Without this the operation can timeout and we'll fallback to a
-+				 * software copy, which might take several minutes to finish.
-+				 */
-+				nouveau_fence_wait(fence, false, false);
- 				ret = ttm_bo_move_accel_cleanup(bo,
- 								&fence->base,
- 								evict, false,
--- 
-2.37.2
-
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -248,7 +248,7 @@ endif
+ # defined. get-executable-or-default fails with an error if the first argument is supplied but
+ # doesn't exist.
+ override PYTHON_CONFIG := $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON_AUTO))
+-override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_AUTO)))
++override PYTHON := $(call get-executable-or-default,PYTHON,$(subst -config,,$(PYTHON_CONFIG)))
+ 
+ grep-libs  = $(filter -l%,$(1))
+ strip-libs  = $(filter-out -l%,$(1))
 
 
