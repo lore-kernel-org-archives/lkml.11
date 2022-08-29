@@ -2,232 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E54ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F70ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230213AbiH2NI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50886 "EHLO
+        id S230329AbiH2NJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229979AbiH2NI3 (ORCPT
+        with ESMTP id S229694AbiH2NIl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:08:29 -0400
-Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DA46581F;
-        Mon, 29 Aug 2022 06:03:43 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.169])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4MGVvZ4t90zKGHG;
-        Mon, 29 Aug 2022 21:02:02 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.127.227])
-        by APP4 (Coremail) with SMTP id gCh0CgB3PY0ruQxjk7hcAA--.5381S6;
-        Mon, 29 Aug 2022 21:03:42 +0800 (CST)
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-To:     song@kernel.org
-Cc:     linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
-Subject: [PATCH -next 2/3] md/raid10: convert resync_lock to use seqlock
-Date:   Mon, 29 Aug 2022 21:15:01 +0800
-Message-Id: <20220829131502.165356-3-yukuai1@huaweicloud.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220829131502.165356-1-yukuai1@huaweicloud.com>
-References: <20220829131502.165356-1-yukuai1@huaweicloud.com>
+        Mon, 29 Aug 2022 09:08:41 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53854252AA;
+        Mon, 29 Aug 2022 06:04:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=pdDi8Hto3QQlhAqHUYRAutf609+jWwmbLMpT1YKx2Y0=; b=rDaq7KdM9lfijXKqTBmGn/7Cp7
+        waRr4eq4L8rXMT54TdUUOtJpceLfJHWCSs9IMroDw1SejU1RVAsbT+OjSwP2D3UZYUpjJ5GLw7Wuo
+        daPXDOFr4IckygiD3NLf//RoVCw6SiYnfiMRSoioJpIqH/g2ctJ3rQtlYe7QJHOWNbZcwiYYnJw3H
+        afpj4yedD40VTS7smYdwOzUCBjLtS/Wge1FbiZ9gaPHu+W4Np2xqqhHBeMenVGc/tSk+g5vBjlr4D
+        qFVhIbj0S1SEx83YnBM+2eYy1qC2x01nOAfIzSLq+pqZRFgSoRtS2MgvVMVFxIvmmGt9k0xEhTKpM
+        hU51sohA==;
+Received: from 189-69-202-182.dial-up.telesp.net.br ([189.69.202.182] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oSeRJ-0046Jh-By; Mon, 29 Aug 2022 15:04:29 +0200
+Message-ID: <468b8369-84c2-da12-1eb0-6ec16d160b34@igalia.com>
+Date:   Mon, 29 Aug 2022 10:04:14 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: gCh0CgB3PY0ruQxjk7hcAA--.5381S6
-X-Coremail-Antispam: 1UD129KBjvJXoW3Jw45Gr4ruFyfArW8ZFW5Wrg_yoW7Cr48pw
-        4agr43JrWUXwnxXrs8Ja1q9r1ftw1kKa4UKa9rua4kZFs5tryfXr1UGrykWryqvr9xJrnY
-        qFWrCFWrGw12yFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9m14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
-        A2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
-        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
-        IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
-        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCFx2
-        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
-        6r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
-        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IY
-        s7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr
-        0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU2jgxUUUUU=
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 0/3] The UEFI panic notification mechanism, 2nd round
+Content-Language: en-US
+To:     ardb@kernel.org, linux-efi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, anton@enomsg.org, ccross@android.com,
+        keescook@chromium.org, matt@codeblueprint.co.uk,
+        mjg59@srcf.ucam.org, tony.luck@intel.com
+References: <20220729194532.228403-1-gpiccoli@igalia.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <20220729194532.228403-1-gpiccoli@igalia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+On 29/07/2022 16:45, Guilherme G. Piccoli wrote:
+> Hey folks, this is the 2nd iteration of the patchset adding a simple
+> mechanism to notify the UEFI firmware about a panic event in the kernel.
+> V1 here:
+> https://lore.kernel.org/lkml/20220520195028.1347426-1-gpiccoli@igalia.com/
+> 
+> 
+> First thing, the differences in this V2:
+> 
+> - Ardb response in V1 mentioned a refactor aimed for v5.20 that removes an
+> obsolete/confusing way of setting EFI variables - this led to a weird
+> condition, deleted variables stayed in sysfs after deletion. Well, I've
+> refactored the code based on efi/next, so I'm using the recommended API
+> now - thanks a bunch for the advice Ardb!
+> 
+> - I've changed NULL-terminating char in patch 1 to the format I've seen
+> in Ardb's code, L'\0'.
+> 
+> - Patch 2 is new, it's somewhat a fix for a patch only in efi/next, part
+> of the efivar refactor.
+> 
+> 
+> In the V1 review, it was mentioned we could maybe use efi-pstore as a way
+> to signal the firmware about a panic event - in the end, the efi-pstore
+> mechanism can collect a dmesg, so it's even richer in the information level.
+> But I disagree that it is the way to go, for 3 main reasons:
+> 
+> a) efi-pstore could be impossible to use, if the users are already using
+> another pstore backend (like ramoops), which is _exactly_ our case!
+> Of course, we could rework pstore and allow 2 backends, quite a bit of work,
+> but...see next points!
+> 
+> b) Even if (a) is a not an issue, we have another one, even more important:
+> signaling the firmware about a panic is *different* than collecting a bunch
+> of data, a full dmesg even. This could be considered a security issue for
+> some users; also, the dmesg collected consumes a bunch more memory in the
+> (potentially scarce) UEFI available memory.
+> Although related, the goal of pstore is orthogonal to our mechanism here:
+> users rely on pstore to collect data, our proposal is a simple infrastructure
+> to just let the firmware know about a panic. Our kernel module also shows a
+> message and automatically clears the UEFI variable, so it tracks a single
+> panic, whereas efi-pstore logs are kept by default, in order to provide
+> data to users.
+> 
+> c) Finally, it's faster and less "invasive"/risky to just write a byte in a
+> variable on a panic event than having a ksmg dumper collecting the full dmesg
+> and writing it to the UEFI memory; again, some users wish to have the logs,
+> but not all of them.
+> 
+> 
+> With all of that said, I think this module makes sense, it's a very simple
+> solution that opens doors to firmware panic handling approaches, like in our
+> proposed case (a different splash screen on panic).
+> 
+> Finally, the variable name (PanicWarn) and value (0xFF by default, can be
+> changed by a module parameter) are just my personal choices but I'm open to
+> suggestions, not strongly attached to them heh
+> 
+> Thanks again for the reviews/suggestions!
+> Cheers,
+> 
+> 
+> Guilherme
+> 
+> 
 
-Currently, wait_barrier() will hold 'resync_lock' to read 'conf->barrier',
-and io can't be dispatched until 'barrier' is dropped.
+Hi Ard, sorry for the ping =]
 
-Since holding the 'barrier' is not common, convert 'resync_lock' to use
-seqlock so that holding lock can be avoided in fast path.
+Any opinions in this one? Patch 2 is a simple fix, BTW.
+Cheers,
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- drivers/md/raid10.c | 62 ++++++++++++++++++++++++++++++---------------
- drivers/md/raid10.h |  2 +-
- 2 files changed, 43 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/md/raid10.c b/drivers/md/raid10.c
-index b70c207f7932..086216b051f5 100644
---- a/drivers/md/raid10.c
-+++ b/drivers/md/raid10.c
-@@ -930,38 +930,60 @@ static void flush_pending_writes(struct r10conf *conf)
- 
- static void raise_barrier(struct r10conf *conf, int force)
- {
--	spin_lock_irq(&conf->resync_lock);
-+	write_seqlock_irq(&conf->resync_lock);
- 	BUG_ON(force && !conf->barrier);
- 
- 	/* Wait until no block IO is waiting (unless 'force') */
- 	wait_event_lock_irq(conf->wait_barrier, force || !conf->nr_waiting,
--			    conf->resync_lock);
-+			    conf->resync_lock.lock);
- 
- 	/* block any new IO from starting */
--	conf->barrier++;
-+	WRITE_ONCE(conf->barrier, conf->barrier + 1);
- 
- 	/* Now wait for all pending IO to complete */
- 	wait_event_lock_irq(conf->wait_barrier,
- 			    !atomic_read(&conf->nr_pending) && conf->barrier < RESYNC_DEPTH,
--			    conf->resync_lock);
-+			    conf->resync_lock.lock);
- 
--	spin_unlock_irq(&conf->resync_lock);
-+	write_sequnlock_irq(&conf->resync_lock);
- }
- 
- static void lower_barrier(struct r10conf *conf)
- {
- 	unsigned long flags;
--	spin_lock_irqsave(&conf->resync_lock, flags);
--	conf->barrier--;
--	spin_unlock_irqrestore(&conf->resync_lock, flags);
-+
-+	write_seqlock_irqsave(&conf->resync_lock, flags);
-+	WRITE_ONCE(conf->barrier, conf->barrier - 1);
-+	write_sequnlock_irqrestore(&conf->resync_lock, flags);
- 	wake_up(&conf->wait_barrier);
- }
- 
-+static bool wait_barrier_nolock(struct r10conf *conf)
-+{
-+	unsigned int seq = raw_read_seqcount(&conf->resync_lock.seqcount);
-+
-+	if (seq & 1)
-+		return false;
-+
-+	if (READ_ONCE(conf->barrier))
-+		return false;
-+
-+	atomic_inc(&conf->nr_pending);
-+	if (!read_seqcount_retry(&conf->resync_lock.seqcount, seq))
-+		return true;
-+
-+	atomic_dec(&conf->nr_pending);
-+	return false;
-+}
-+
- static bool wait_barrier(struct r10conf *conf, bool nowait)
- {
- 	bool ret = true;
- 
--	spin_lock_irq(&conf->resync_lock);
-+	if (wait_barrier_nolock(conf))
-+		return true;
-+
-+	write_seqlock_irq(&conf->resync_lock);
- 	if (conf->barrier) {
- 		struct bio_list *bio_list = current->bio_list;
- 		conf->nr_waiting++;
-@@ -992,7 +1014,7 @@ static bool wait_barrier(struct r10conf *conf, bool nowait)
- 					      test_bit(MD_RECOVERY_RUNNING,
- 						       &conf->mddev->recovery) &&
- 					      conf->nr_queued > 0),
--					    conf->resync_lock);
-+					    conf->resync_lock.lock);
- 		}
- 		conf->nr_waiting--;
- 		if (!conf->nr_waiting)
-@@ -1001,7 +1023,7 @@ static bool wait_barrier(struct r10conf *conf, bool nowait)
- 	/* Only increment nr_pending when we wait */
- 	if (ret)
- 		atomic_inc(&conf->nr_pending);
--	spin_unlock_irq(&conf->resync_lock);
-+	write_sequnlock_irq(&conf->resync_lock);
- 	return ret;
- }
- 
-@@ -1026,27 +1048,27 @@ static void freeze_array(struct r10conf *conf, int extra)
- 	 * must match the number of pending IOs (nr_pending) before
- 	 * we continue.
- 	 */
--	spin_lock_irq(&conf->resync_lock);
-+	write_seqlock_irq(&conf->resync_lock);
- 	conf->array_freeze_pending++;
--	conf->barrier++;
-+	WRITE_ONCE(conf->barrier, conf->barrier + 1);
- 	conf->nr_waiting++;
- 	wait_event_lock_irq_cmd(conf->wait_barrier,
- 				atomic_read(&conf->nr_pending) == conf->nr_queued+extra,
--				conf->resync_lock,
-+				conf->resync_lock.lock,
- 				flush_pending_writes(conf));
- 
- 	conf->array_freeze_pending--;
--	spin_unlock_irq(&conf->resync_lock);
-+	write_sequnlock_irq(&conf->resync_lock);
- }
- 
- static void unfreeze_array(struct r10conf *conf)
- {
- 	/* reverse the effect of the freeze */
--	spin_lock_irq(&conf->resync_lock);
--	conf->barrier--;
-+	write_seqlock_irq(&conf->resync_lock);
-+	WRITE_ONCE(conf->barrier, conf->barrier - 1);
- 	conf->nr_waiting--;
- 	wake_up(&conf->wait_barrier);
--	spin_unlock_irq(&conf->resync_lock);
-+	write_sequnlock_irq(&conf->resync_lock);
- }
- 
- static sector_t choose_data_offset(struct r10bio *r10_bio,
-@@ -4033,7 +4055,7 @@ static struct r10conf *setup_conf(struct mddev *mddev)
- 	INIT_LIST_HEAD(&conf->retry_list);
- 	INIT_LIST_HEAD(&conf->bio_end_io_list);
- 
--	spin_lock_init(&conf->resync_lock);
-+	seqlock_init(&conf->resync_lock);
- 	init_waitqueue_head(&conf->wait_barrier);
- 	atomic_set(&conf->nr_pending, 0);
- 
-@@ -4352,7 +4374,7 @@ static void *raid10_takeover_raid0(struct mddev *mddev, sector_t size, int devs)
- 				rdev->new_raid_disk = rdev->raid_disk * 2;
- 				rdev->sectors = size;
- 			}
--		conf->barrier = 1;
-+		WRITE_ONCE(conf->barrier, 1);
- 	}
- 
- 	return conf;
-diff --git a/drivers/md/raid10.h b/drivers/md/raid10.h
-index 5c0804d8bb1f..8c072ce0bc54 100644
---- a/drivers/md/raid10.h
-+++ b/drivers/md/raid10.h
-@@ -76,7 +76,7 @@ struct r10conf {
- 	/* queue pending writes and submit them on unplug */
- 	struct bio_list		pending_bio_list;
- 
--	spinlock_t		resync_lock;
-+	seqlock_t		resync_lock;
- 	atomic_t		nr_pending;
- 	int			nr_waiting;
- 	int			nr_queued;
--- 
-2.31.1
-
+Guilherme
