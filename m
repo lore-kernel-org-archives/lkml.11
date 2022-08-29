@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC5D2ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E0EECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232678AbiH2Lev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:34:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55572 "EHLO
+        id S232700AbiH2Lez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232658AbiH2Ld0 (ORCPT
+        with ESMTP id S232754AbiH2Ldw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:33:26 -0400
+        Mon, 29 Aug 2022 07:33:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2633B1CF;
-        Mon, 29 Aug 2022 04:19:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05E796DF8F;
+        Mon, 29 Aug 2022 04:19:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C09FB80EFD;
-        Mon, 29 Aug 2022 11:19:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44D0C433C1;
-        Mon, 29 Aug 2022 11:19:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75566B80FAB;
+        Mon, 29 Aug 2022 11:19:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B104C433D6;
+        Mon, 29 Aug 2022 11:19:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771949;
-        bh=MxbjKBSd536T0KBxBEW8a5zFrhtcNCt1W0Z+VVvMzc8=;
+        s=korg; t=1661771970;
+        bh=evU2Kna9ifw/gXx4du2NmnnysFwzHAvOA6q/RwqBm5c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OrJQ3vB8Jhjt9OIanA2mTRORQWkXEZCJIizAwIhUXWnZFrgukjVC4/93YxjmiDtnp
-         VFVYTsUK9ar+CycYPSFqpUcWQsPlTbhsCPdb0pJ9jTiWZfRfwZ19TojTedMDsFpv4R
-         6P5F7QC3Pyal4B3xMnPghmWdBHP9i69TkWVRdGbg=
+        b=1Mwfbu2u3b+zcM/NjWhRCYcDCRtmvl2YqPVHpdZAZXYLEETRDXRMVTwSzyD0tHdJ6
+         taJA98b5LyvujMPBWPSmZcoOoxLVmFD+VHq3lAFxG8Em/tSHkqHQUZmWex9D71+XXY
+         8MiWoCUnST7D9EJVpOAHnV1PkU2dYQ+kscpfjAbE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH 5.19 149/158] arm64/sme: Dont flush SVE register state when allocating SME storage
-Date:   Mon, 29 Aug 2022 12:59:59 +0200
-Message-Id: <20220829105815.354075797@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Badari Pulavarty <badari.pulavarty@intel.com>,
+        SeongJae Park <sj@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.19 114/158] mm/damon/dbgfs: avoid duplicate context directory creation
+Date:   Mon, 29 Aug 2022 12:59:24 +0200
+Message-Id: <20220829105813.885649323@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,130 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Badari Pulavarty <badari.pulavarty@intel.com>
 
-commit 826a4fdd2ada9e5923c58bdd168f31a42e958ffc upstream.
+commit d26f60703606ab425eee9882b32a1781a8bed74d upstream.
 
-Currently when taking a SME access trap we allocate storage for the SVE
-register state in order to be able to handle storage of streaming mode SVE.
-Due to the original usage in a purely SVE context the SVE register state
-allocation this also flushes the register state for SVE if storage was
-already allocated but in the SME context this is not desirable. For a SME
-access trap to be taken the task must not be in streaming mode so either
-there already is SVE register state present for regular SVE mode which would
-be corrupted or the task does not have TIF_SVE and the flush is redundant.
+When user tries to create a DAMON context via the DAMON debugfs interface
+with a name of an already existing context, the context directory creation
+fails but a new context is created and added in the internal data
+structure, due to absence of the directory creation success check.  As a
+result, memory could leak and DAMON cannot be turned on.  An example test
+case is as below:
 
-Fix this by adding a flag to sve_alloc() indicating if we are in a SVE
-context and need to flush the state. Freshly allocated storage is always
-zeroed either way.
+    # cd /sys/kernel/debug/damon/
+    # echo "off" >  monitor_on
+    # echo paddr > target_ids
+    # echo "abc" > mk_context
+    # echo "abc" > mk_context
+    # echo $$ > abc/target_ids
+    # echo "on" > monitor_on  <<< fails
 
-Fixes: 8bd7f91c03d8 ("arm64/sme: Implement traps and syscall handling for SME")
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220817182324.638214-4-broonie@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
+Return value of 'debugfs_create_dir()' is expected to be ignored in
+general, but this is an exceptional case as DAMON feature is depending
+on the debugfs functionality and it has the potential duplicate name
+issue.  This commit therefore fixes the issue by checking the directory
+creation failure and immediately return the error in the case.
+
+Link: https://lkml.kernel.org/r/20220821180853.2400-1-sj@kernel.org
+Fixes: 75c1c2b53c78 ("mm/damon/dbgfs: support multiple contexts")
+Signed-off-by: Badari Pulavarty <badari.pulavarty@intel.com>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+Cc: <stable@vger.kernel.org>	[ 5.15.x]
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/fpsimd.h |    4 ++--
- arch/arm64/kernel/fpsimd.c      |   10 ++++++----
- arch/arm64/kernel/ptrace.c      |    6 +++---
- arch/arm64/kernel/signal.c      |    2 +-
- 4 files changed, 12 insertions(+), 10 deletions(-)
+ mm/damon/dbgfs.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/arch/arm64/include/asm/fpsimd.h
-+++ b/arch/arm64/include/asm/fpsimd.h
-@@ -153,7 +153,7 @@ struct vl_info {
+--- a/mm/damon/dbgfs.c
++++ b/mm/damon/dbgfs.c
+@@ -787,6 +787,9 @@ static int dbgfs_mk_context(char *name)
+ 		return -ENOENT;
  
- #ifdef CONFIG_ARM64_SVE
+ 	new_dir = debugfs_create_dir(name, root);
++	/* Below check is required for a potential duplicated name case */
++	if (IS_ERR(new_dir))
++		return PTR_ERR(new_dir);
+ 	dbgfs_dirs[dbgfs_nr_ctxs] = new_dir;
  
--extern void sve_alloc(struct task_struct *task);
-+extern void sve_alloc(struct task_struct *task, bool flush);
- extern void fpsimd_release_task(struct task_struct *task);
- extern void fpsimd_sync_to_sve(struct task_struct *task);
- extern void fpsimd_force_sync_to_sve(struct task_struct *task);
-@@ -256,7 +256,7 @@ size_t sve_state_size(struct task_struct
- 
- #else /* ! CONFIG_ARM64_SVE */
- 
--static inline void sve_alloc(struct task_struct *task) { }
-+static inline void sve_alloc(struct task_struct *task, bool flush) { }
- static inline void fpsimd_release_task(struct task_struct *task) { }
- static inline void sve_sync_to_fpsimd(struct task_struct *task) { }
- static inline void sve_sync_from_fpsimd_zeropad(struct task_struct *task) { }
---- a/arch/arm64/kernel/fpsimd.c
-+++ b/arch/arm64/kernel/fpsimd.c
-@@ -716,10 +716,12 @@ size_t sve_state_size(struct task_struct
-  * do_sve_acc() case, there is no ABI requirement to hide stale data
-  * written previously be task.
-  */
--void sve_alloc(struct task_struct *task)
-+void sve_alloc(struct task_struct *task, bool flush)
- {
- 	if (task->thread.sve_state) {
--		memset(task->thread.sve_state, 0, sve_state_size(task));
-+		if (flush)
-+			memset(task->thread.sve_state, 0,
-+			       sve_state_size(task));
- 		return;
- 	}
- 
-@@ -1389,7 +1391,7 @@ void do_sve_acc(unsigned long esr, struc
- 		return;
- 	}
- 
--	sve_alloc(current);
-+	sve_alloc(current, true);
- 	if (!current->thread.sve_state) {
- 		force_sig(SIGKILL);
- 		return;
-@@ -1440,7 +1442,7 @@ void do_sme_acc(unsigned long esr, struc
- 		return;
- 	}
- 
--	sve_alloc(current);
-+	sve_alloc(current, false);
- 	sme_alloc(current);
- 	if (!current->thread.sve_state || !current->thread.za_state) {
- 		force_sig(SIGKILL);
---- a/arch/arm64/kernel/ptrace.c
-+++ b/arch/arm64/kernel/ptrace.c
-@@ -882,7 +882,7 @@ static int sve_set_common(struct task_st
- 		 * state and ensure there's storage.
- 		 */
- 		if (target->thread.svcr != old_svcr)
--			sve_alloc(target);
-+			sve_alloc(target, true);
- 	}
- 
- 	/* Registers: FPSIMD-only case */
-@@ -912,7 +912,7 @@ static int sve_set_common(struct task_st
- 		goto out;
- 	}
- 
--	sve_alloc(target);
-+	sve_alloc(target, true);
- 	if (!target->thread.sve_state) {
- 		ret = -ENOMEM;
- 		clear_tsk_thread_flag(target, TIF_SVE);
-@@ -1082,7 +1082,7 @@ static int za_set(struct task_struct *ta
- 
- 	/* Ensure there is some SVE storage for streaming mode */
- 	if (!target->thread.sve_state) {
--		sve_alloc(target);
-+		sve_alloc(target, false);
- 		if (!target->thread.sve_state) {
- 			clear_thread_flag(TIF_SME);
- 			ret = -ENOMEM;
---- a/arch/arm64/kernel/signal.c
-+++ b/arch/arm64/kernel/signal.c
-@@ -307,7 +307,7 @@ static int restore_sve_fpsimd_context(st
- 	fpsimd_flush_task_state(current);
- 	/* From now, fpsimd_thread_switch() won't touch thread.sve_state */
- 
--	sve_alloc(current);
-+	sve_alloc(current, true);
- 	if (!current->thread.sve_state) {
- 		clear_thread_flag(TIF_SVE);
- 		return -ENOMEM;
+ 	new_ctx = dbgfs_new_ctx();
 
 
