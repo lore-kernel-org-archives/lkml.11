@@ -2,151 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C580ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B283ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230056AbiH2Idd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:33:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        id S229992AbiH2Iep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbiH2IdJ (ORCPT
+        with ESMTP id S230091AbiH2Ie1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 04:33:09 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F667578BA;
-        Mon, 29 Aug 2022 01:33:03 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id DD2261A2C9C;
-        Mon, 29 Aug 2022 10:33:00 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4E65A1A2C60;
-        Mon, 29 Aug 2022 10:33:00 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 5382A181D0C0;
-        Mon, 29 Aug 2022 16:32:58 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     p.zabel@pengutronix.de, l.stach@pengutronix.de,
-        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
-        shawnguo@kernel.org, vkoul@kernel.org,
-        alexander.stein@ew.tq-group.com, marex@denx.de,
-        richard.leitner@linux.dev
-Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com, Richard Zhu <hongxing.zhu@nxp.com>
-Subject: [PATCH v4 5/6] arm64: dts: imx8mp-evk: Add PCIe support
-Date:   Mon, 29 Aug 2022 16:15:16 +0800
-Message-Id: <1661760917-9558-6-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1661760917-9558-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1661760917-9558-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Mon, 29 Aug 2022 04:34:27 -0400
+Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E4858507;
+        Mon, 29 Aug 2022 01:34:02 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1661762036; bh=1vMZ0dX5dY0+I40JPo+IzGf0b+MZYSJImU8ZR2XqqQs=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=SoCNSiGx48l+rdngjy81aq2A4fYWJspecsZEkjjwEL2b+JT7ZTzGs7NUXr8Jzv82C
+         tBewXXCEwolXTcG7vLIXlULQBR5sr2LXgZHuAzR8peB7CXYUrK+922upum0Dtfe8WX
+         oqgySWoXR6LZBOnWkekISbb23xJKpdi1Q6talUdNIdqioHryYH9PAYL0CpECe6E1ne
+         3LBgIuIA285+22uzfJIRMY/QLrI/st0gbw0ow2HPfMnD1RpTnrYpeYTONOkn25P7xm
+         xYZjTCT/haw87O7HyH1qD72e1AxW/raKc5QHvLyOKFxx39tJs3JtklN8Xdc41P1IwS
+         ESfgrF2BBdlEQ==
+To:     Zhengchao Shao <shaozhengchao@huawei.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        stephen@networkplumber.org
+Cc:     cake@lists.bufferbloat.net, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com, shaozhengchao@huawei.com
+Subject: Re: [PATCH net-next,v2] net: sched: remove redundant NULL check in
+ change hook function
+In-Reply-To: <20220829071219.208646-1-shaozhengchao@huawei.com>
+References: <20220829071219.208646-1-shaozhengchao@huawei.com>
+Date:   Mon, 29 Aug 2022 10:33:55 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87fshf78jw.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add PCIe support on i.MX8MP EVK board.
+Zhengchao Shao <shaozhengchao@huawei.com> writes:
 
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Tested-by: Marek Vasut <marex@denx.de>
-Tested-by: Richard Leitner <richard.leitner@skidata.com>
-Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 53 ++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+> Currently, the change function can be called by two ways. The one way is
+> that qdisc_change() will call it. Before calling change function,
+> qdisc_change() ensures tca[TCA_OPTIONS] is not empty. The other way is
+> that .init() will call it. The opt parameter is also checked before
+> calling change function in .init(). Therefore, it's no need to check the
+> input parameter opt in change function.
+>
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index f6b017ab5f53..defc92a8bb60 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -5,6 +5,7 @@
- 
- /dts-v1/;
- 
-+#include <dt-bindings/phy/phy-imx8-pcie.h>
- #include "imx8mp.dtsi"
- 
- / {
-@@ -33,6 +34,12 @@ memory@40000000 {
- 		      <0x1 0x00000000 0 0xc0000000>;
- 	};
- 
-+	pcie0_refclk: pcie0-refclk {
-+		compatible = "fixed-clock";
-+			#clock-cells = <0>;
-+			clock-frequency = <100000000>;
-+	};
-+
- 	reg_can1_stby: regulator-can1-stby {
- 		compatible = "regulator-fixed";
- 		regulator-name = "can1-stby";
-@@ -55,6 +62,17 @@ reg_can2_stby: regulator-can2-stby {
- 		enable-active-high;
- 	};
- 
-+	reg_pcie0: regulator-pcie {
-+		compatible = "regulator-fixed";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&pinctrl_pcie0_reg>;
-+		regulator-name = "MPCIE_3V3";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		gpio = <&gpio2 6 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
-+
- 	reg_usdhc2_vmmc: regulator-usdhc2 {
- 		compatible = "regulator-fixed";
- 		pinctrl-names = "default";
-@@ -350,6 +368,28 @@ &i2c5 {
- 	 */
- };
- 
-+&pcie_phy {
-+	fsl,refclk-pad-mode = <IMX8_PCIE_REFCLK_PAD_INPUT>;
-+	clocks = <&pcie0_refclk>;
-+	clock-names = "ref";
-+	status = "okay";
-+};
-+
-+&pcie{
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_pcie0>;
-+	reset-gpio = <&gpio2 7 GPIO_ACTIVE_LOW>;
-+	clocks = <&clk IMX8MP_CLK_HSIO_ROOT>,
-+		 <&clk IMX8MP_CLK_PCIE_ROOT>,
-+		 <&clk IMX8MP_CLK_HSIO_AXI>;
-+	clock-names = "pcie", "pcie_aux", "pcie_bus";
-+	assigned-clocks = <&clk IMX8MP_CLK_PCIE_AUX>;
-+	assigned-clock-rates = <10000000>;
-+	assigned-clock-parents = <&clk IMX8MP_SYS_PLL2_50M>;
-+	vpcie-supply = <&reg_pcie0>;
-+	status = "okay";
-+};
-+
- &snvs_pwrkey {
- 	status = "okay";
- };
-@@ -502,6 +542,19 @@ MX8MP_IOMUXC_SPDIF_TX__I2C5_SCL         0x400001c2
- 		>;
- 	};
- 
-+	pinctrl_pcie0: pcie0grp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_I2C4_SCL__PCIE_CLKREQ_B	0x61 /* open drain, pull up */
-+			MX8MP_IOMUXC_SD1_DATA5__GPIO2_IO07	0x41
-+		>;
-+	};
-+
-+	pinctrl_pcie0_reg: pcie0reggrp {
-+		fsl,pins = <
-+			MX8MP_IOMUXC_SD1_DATA4__GPIO2_IO06	0x41
-+		>;
-+	};
-+
- 	pinctrl_pmic: pmicgrp {
- 		fsl,pins = <
- 			MX8MP_IOMUXC_GPIO1_IO03__GPIO1_IO03	0x000001c0
--- 
-2.25.1
+for sch_cake:
 
+Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
