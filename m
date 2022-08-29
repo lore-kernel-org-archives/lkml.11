@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD13CECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD6F7C3DA6B
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232370AbiH2La2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:30:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
+        id S232389AbiH2Lad (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbiH2L3A (ORCPT
+        with ESMTP id S232449AbiH2L3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:29:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066C97A745;
-        Mon, 29 Aug 2022 04:17:20 -0700 (PDT)
+        Mon, 29 Aug 2022 07:29:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1144679EEC;
+        Mon, 29 Aug 2022 04:17:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7F58B80F10;
-        Mon, 29 Aug 2022 11:07:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC1DFC433C1;
-        Mon, 29 Aug 2022 11:07:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A46EA61239;
+        Mon, 29 Aug 2022 11:15:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93AADC433D6;
+        Mon, 29 Aug 2022 11:15:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771235;
-        bh=yjoZOiEcvdnTyVB/vFAkaEAvDwwad/7SbJUYxTfTwBQ=;
+        s=korg; t=1661771716;
+        bh=bGnwbFAYIoG1XzBZhEeiYHiXx8ZOhGl8KOE1yi58ZZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=coHuRp3gXTLNNKa/hLQLyUuHvXBEF5rcxbjPRiuQGiXxZYtYmureWJGiOA59oo/F4
-         ZnhK4CdJK3XlkRXNl/H4J+jXtH9/7mfpdLkR6sjidbMxyywppaOQlMPkuJJN3ZpxOb
-         4+XXoRXw4+F4M6B909wesUyNbXPbaZjK1ZSC+lv0=
+        b=l2fOEXSiyH+K3g8ZDsL7I/4TGAe7O6tNY8YOnYAt2CcMYc0SOcBhWrO5F5/FG7oMI
+         CPx1aorSI5E7tMM+D++tSNkc1QcrG8p98kIgXbPm80XrQmDXFU0ohJELUDEKQsgwJk
+         QakRR1pD3uQW/e3hMs7Z36kZim4d+egRRuYrYEws=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 082/136] net: Fix data-races around sysctl_max_skb_frags.
-Date:   Mon, 29 Aug 2022 12:59:09 +0200
-Message-Id: <20220829105808.008903886@linuxfoundation.org>
+Subject: [PATCH 5.19 072/158] net: Fix a data-race around sysctl_net_busy_poll.
+Date:   Mon, 29 Aug 2022 12:58:42 +0200
+Message-Id: <20220829105812.038796291@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,55 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 657b991afb89d25fe6c4783b1b75a8ad4563670d ]
+[ Upstream commit c42b7cddea47503411bfb5f2f93a4154aaffa2d9 ]
 
-While reading sysctl_max_skb_frags, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_net_busy_poll, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 5f74f82ea34c ("net:Add sysctl_max_skb_frags")
+Fixes: 060212928670 ("net: add low latency socket poll")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c       | 4 ++--
- net/mptcp/protocol.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ include/net/busy_poll.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 52f51717f02f3..0ebef2a5950cd 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -991,7 +991,7 @@ struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index c4898fcbf923b..f90f0021f5f2d 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -33,7 +33,7 @@ extern unsigned int sysctl_net_busy_poll __read_mostly;
  
- 	i = skb_shinfo(skb)->nr_frags;
- 	can_coalesce = skb_can_coalesce(skb, i, page, offset);
--	if (!can_coalesce && i >= sysctl_max_skb_frags) {
-+	if (!can_coalesce && i >= READ_ONCE(sysctl_max_skb_frags)) {
- 		tcp_mark_push(tp, skb);
- 		goto new_segment;
- 	}
-@@ -1344,7 +1344,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ static inline bool net_busy_loop_on(void)
+ {
+-	return sysctl_net_busy_poll;
++	return READ_ONCE(sysctl_net_busy_poll);
+ }
  
- 			if (!skb_can_coalesce(skb, i, pfrag->page,
- 					      pfrag->offset)) {
--				if (i >= sysctl_max_skb_frags) {
-+				if (i >= READ_ONCE(sysctl_max_skb_frags)) {
- 					tcp_mark_push(tp, skb);
- 					goto new_segment;
- 				}
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index a089791414bfb..5df60a4b09304 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1317,7 +1317,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
- 
- 		i = skb_shinfo(skb)->nr_frags;
- 		can_coalesce = skb_can_coalesce(skb, i, dfrag->page, offset);
--		if (!can_coalesce && i >= sysctl_max_skb_frags) {
-+		if (!can_coalesce && i >= READ_ONCE(sysctl_max_skb_frags)) {
- 			tcp_mark_push(tcp_sk(ssk), skb);
- 			goto alloc_skb;
- 		}
+ static inline bool sk_can_busy_loop(const struct sock *sk)
 -- 
 2.35.1
 
