@@ -2,128 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF77DECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48EC7ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 08:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbiH2II5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 04:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49948 "EHLO
+        id S229908AbiH2IJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 04:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbiH2IIo (ORCPT
+        with ESMTP id S229883AbiH2IIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 04:08:44 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 527A452822;
-        Mon, 29 Aug 2022 01:08:39 -0700 (PDT)
-X-UUID: 3f817560679c4b61b99f0799a4f9b31e-20220829
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=p3jDS+anpj2LQBBhFpvH/7hZoDUBQYDGsqtevz1LVB4=;
-        b=UDpQYknpMmTmFnOwVza4ixEYY/LF6emmRe96HrBrmJXSiUH8AUk2XWMYzFWT4nNrTydzPv3ehQqCv+wwG403qwx6uGpS1HzYsFf0S2h2Sy/OtZuGN8fwJmJVQpNhk8gjKjXhbrUKCC0vnIMY0jKYaWWoed+rivhH168rIhMa8Hk=;
-X-CID-UNFAMILIAR: 1
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.10,REQID:57b06774-c721-4ccb-86fb-ad10888e02f1,OB:0,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Releas
-        e_Ham,ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.10,REQID:57b06774-c721-4ccb-86fb-ad10888e02f1,OB:0,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,BULK:0,RULE:Spam_GS9
-        81B3D,ACTION:quarantine,TS:100
-X-CID-META: VersionHash:84eae18,CLOUDID:76856820-1c20-48a5-82a0-25f9c331906d,C
-        OID:8f99929d9f75,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:11|1,File:nil,Bulk:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 3f817560679c4b61b99f0799a4f9b31e-20220829
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 929739708; Mon, 29 Aug 2022 16:08:35 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 29 Aug 2022 16:08:33 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 29 Aug 2022 16:08:32 +0800
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
-CC:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-phy@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Eddie Hung <eddie.hung@mediatek.com>
-Subject: [PATCH v2 3/7] phy: phy-mtk-tphy: add property to set pre-emphasis
-Date:   Mon, 29 Aug 2022 16:08:26 +0800
-Message-ID: <20220829080830.5378-3-chunfeng.yun@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220829080830.5378-1-chunfeng.yun@mediatek.com>
-References: <20220829080830.5378-1-chunfeng.yun@mediatek.com>
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A875D52E53
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 01:08:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=whIFzUNn2x7iARS4Q2Ru0lB06BgW8fnFGxV1bucuo5g=; b=TNp53cZumHIZt7P1mtvKkMpfZP
+        SDra78XTm+4oPzPywZBCkcfr/mM6m4OoCIlsf+DtjV9Hhq3dyUhV4mm/xPhAfot1oMowQohvUr6UJ
+        mrfXQgTnsG1Dx9okgUm/tAvIz9iEtvnwn4zy78F4PZghA5TdQPX83N/URrK6aocuZ7GRtV3Xbcjco
+        34X6+lOkEL9nS4PVGL6FUpXFMmpMsJnFTJVhen2lbRjEyf8jNDpYkuY2ALOD+7X8njsWEd00UylOv
+        +77Noc9ko65aZVrV3z93KcP/ECizrSWV9mzDyyQc0Oaaup5LRFCYVbwQs5rNX3im+EbB/I2yEceQX
+        FKMDdIwg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oSZoe-007RYV-6j; Mon, 29 Aug 2022 08:08:16 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 709CD3002C7;
+        Mon, 29 Aug 2022 10:08:13 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 502E3207FBF75; Mon, 29 Aug 2022 10:08:13 +0200 (CEST)
+Date:   Mon, 29 Aug 2022 10:08:13 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Morten Rasmussen <morten.rasmussen@arm.com>,
+        Vincent Donnefort <vdonnefort@google.com>,
+        Quentin Perret <qperret@google.com>,
+        Patrick Bellasi <patrick.bellasi@matbug.net>,
+        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
+        Jian-Min <Jian-Min.Liu@mediatek.com>,
+        Qais Yousef <qais.yousef@arm.com>, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 1/1] sched/pelt: Introduce PELT multiplier
+Message-ID: <Ywxz7cuR+/+1CFMR@hirez.programming.kicks-ass.net>
+References: <20220829055450.1703092-1-dietmar.eggemann@arm.com>
+ <20220829055450.1703092-2-dietmar.eggemann@arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829055450.1703092-2-dietmar.eggemann@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a property to set usb2 phy's pre-emphasis, it's disabled by default
-on some SoCs.
+On Mon, Aug 29, 2022 at 07:54:50AM +0200, Dietmar Eggemann wrote:
+> From: Vincent Donnefort <vincent.donnefort@arm.com>
+> 
+> The new sysctl sched_pelt_multiplier allows a user to set a clock
+> multiplier to x2 or x4 (x1 being the default). This clock multiplier
+> artificially speeds up PELT ramp up/down similarly to use a faster
+> half-life than the default 32ms.
+> 
+>   - x1: 32ms half-life
+>   - x2: 16ms half-life
+>   - x4: 8ms  half-life
+> 
+> Internally, a new clock is created: rq->clock_task_mult. It sits in the
+> clock hierarchy between rq->clock_task and rq->clock_pelt.
+> 
+> Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+> Signed-off-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
----
-v2: no changes
----
- drivers/phy/mediatek/phy-mtk-tphy.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+> +extern unsigned int sched_pelt_lshift;
+> +
+> +/*
+> + * absolute time   |1      |2      |3      |4      |5      |6      |
+> + * @ mult = 1      --------****************--------****************-
+> + * @ mult = 2      --------********----------------********---------
+> + * @ mult = 4      --------****--------------------****-------------
+> + * clock task mult
+> + * @ mult = 2      |   |   |2  |3  |   |   |   |   |5  |6  |   |   |
+> + * @ mult = 4      | | | | |2|3| | | | | | | | | | |5|6| | | | | | |
+> + *
+> + */
+> +static inline void update_rq_clock_task_mult(struct rq *rq, s64 delta)
+> +{
+> +	delta <<= READ_ONCE(sched_pelt_lshift);
+> +
+> +	rq->clock_task_mult += delta;
+> +
+> +	update_rq_clock_pelt(rq, delta);
+> +}
 
-diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
-index 8ee7682b8e93..986fde0f63a0 100644
---- a/drivers/phy/mediatek/phy-mtk-tphy.c
-+++ b/drivers/phy/mediatek/phy-mtk-tphy.c
-@@ -72,6 +72,8 @@
- #define PA5_RG_U2_HS_100U_U3_EN	BIT(11)
- 
- #define U3P_USBPHYACR6		0x018
-+#define PA6_RG_U2_PRE_EMP		GENMASK(31, 30)
-+#define PA6_RG_U2_PRE_EMP_VAL(x)	((0x3 & (x)) << 30)
- #define PA6_RG_U2_BC11_SW_EN		BIT(23)
- #define PA6_RG_U2_OTG_VBUSCMP_EN	BIT(20)
- #define PA6_RG_U2_DISCTH		GENMASK(7, 4)
-@@ -370,6 +372,7 @@ struct mtk_phy_instance {
- 	int eye_term;
- 	int intr;
- 	int discth;
-+	int pre_emphasis;
- 	bool bc12_en;
- };
- 
-@@ -841,10 +844,13 @@ static void phy_parse_property(struct mtk_tphy *tphy,
- 				 &instance->intr);
- 	device_property_read_u32(dev, "mediatek,discth",
- 				 &instance->discth);
-+	device_property_read_u32(dev, "mediatek,pre-emphasis",
-+				 &instance->pre_emphasis);
- 	dev_dbg(dev, "bc12:%d, src:%d, vrt:%d, term:%d, intr:%d, disc:%d\n",
- 		instance->bc12_en, instance->eye_src,
- 		instance->eye_vrt, instance->eye_term,
- 		instance->intr, instance->discth);
-+	dev_dbg(dev, "pre-emp:%d\n", instance->pre_emphasis);
- }
- 
- static void u2_phy_props_set(struct mtk_tphy *tphy,
-@@ -875,6 +881,10 @@ static void u2_phy_props_set(struct mtk_tphy *tphy,
- 	if (instance->discth)
- 		mtk_phy_update_bits(com + U3P_USBPHYACR6, PA6_RG_U2_DISCTH,
- 				    PA6_RG_U2_DISCTH_VAL(instance->discth));
-+
-+	if (instance->pre_emphasis)
-+		mtk_phy_update_bits(com + U3P_USBPHYACR6, PA6_RG_U2_PRE_EMP,
-+				    PA6_RG_U2_PRE_EMP_VAL(instance->pre_emphasis));
- }
- 
- /* type switch for usb3/pcie/sgmii/sata */
--- 
-2.18.0
+Hurmph... I'd almost go write you something like
+static_call()/static_branch() but for immediates.
 
+That said; given there's only like 3 options, perhaps a few
+static_branch() instances work just fine ?
