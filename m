@@ -2,97 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31D6CECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:19:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4749ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231171AbiH2MTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48220 "EHLO
+        id S229716AbiH2MVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231372AbiH2MST (ORCPT
+        with ESMTP id S231240AbiH2MU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:18:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC32A2613
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:01:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 249FE61244
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 11:18:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89584C433D7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 11:18:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661771910;
-        bh=fpt/38wI087gZxxVJZedw7NMuIynb21K6uf3UFvOwDU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=B75XTaN6by5tSHcf6mM05wwWWL0lynG9ahNfP0WiVG7ola7CFolG7czog3rkf4uDP
-         NTZuPEV+fN32JwwqCXfRewnZDxZA/vv8AQaT8kU/RiepPwhY565ZyJRmgy3TEOqoDQ
-         cUqTLIMIDGO8GeA9YQjWz81vNjBHKpO+Pc0eOfgxs18k1OFxzM1Ee5XB+syFmO2pi4
-         5o02WakWRtCkhwsPOVcJuWPDFKIunvmrW1f8iq+yWQ+p7pQHvq6PNQ/Rlsu6n1/+zU
-         TEJJ3Wft87KyEtXo/k+CkIxrWNgJmbJhNfeXZTHdx5223L/dRSkxmac8gcclYGjXfZ
-         TdY5p6+7gpH5w==
-Received: by mail-ua1-f54.google.com with SMTP id u1so2739793uan.3
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 04:18:30 -0700 (PDT)
-X-Gm-Message-State: ACgBeo1m/7WstRK4R+jY7imkP+wGp1tCnR/TBoksWhq3MesqIkpKZ9Gl
-        45sF81O2Z0VdCrO7dn8VCMI8GmOXt45e3qHeSJ8=
-X-Google-Smtp-Source: AA6agR6TM1ay2sWGgvmwk7suH1NCwAt/b4hH3wheL74RS1FBbrKdQcCnucOqZcbzmcs5EkRGlXfBcktbPyhBABk41tg=
-X-Received: by 2002:ab0:d82:0:b0:39e:db4c:c80c with SMTP id
- i2-20020ab00d82000000b0039edb4cc80cmr3107265uak.22.1661771909479; Mon, 29 Aug
- 2022 04:18:29 -0700 (PDT)
+        Mon, 29 Aug 2022 08:20:56 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B077A6C27;
+        Mon, 29 Aug 2022 05:04:19 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id ay39-20020a05600c1e2700b003a5503a80cfso4308443wmb.2;
+        Mon, 29 Aug 2022 05:04:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:content-disposition:mime-version:message-id:subject:to
+         :from:date:from:to:cc;
+        bh=hxqAbFcpuVmdCzBbtEdTgdjeLFVRaXCJcGCpu8UlHog=;
+        b=iZzG6XdkeygsKjHjT6RHpXFX6DlmUVFzmovWRy8vNxWLeceNyeXYUKr7L2XB4+8AVq
+         aahDfhtahb9AAneV5jaW2aYoF+XY26cVuqyDoLP5zOeN57xcRIicsllLxN2YrHhBJWFF
+         f2+pHPwMdJOcfsrSB/qE2aIjOGfrwCYmc2X3awL4QPEeLhFp6eR2bQ7uhoxf15GL7Qcc
+         LmA8cXhgJ+zR9f3Bq6Nq7fyPEqxDBuHAEq0wuMSTFfURW3nElycUDfgfX6p1JCsdgyjf
+         XqSL+QnTp4e15Yz/u+jtPc+QXYOvwhTcnS8kLQvdI9J4qFa2KG4qj0bHUmYne1tcX+f4
+         rBFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:content-disposition:mime-version:message-id:subject:to
+         :from:date:x-gm-message-state:from:to:cc;
+        bh=hxqAbFcpuVmdCzBbtEdTgdjeLFVRaXCJcGCpu8UlHog=;
+        b=mJVvjSYyfFUjLfAS/mMZULatd0WHiDEke5qX1UD7NkofsY3tUKOaCykwteyT7ja6j8
+         L/WS8BlGK0cq91vZ/IafHDGGdIoFPe6hNmzt4zLZbZAhvIGZg4o41Oq5JetMmOEAg0zl
+         Ko/n7yLfTLm5/5ABxCStTnfG8ZzUw7NM/3TysTE2XivHSqHCBT2vZGrOuCACEK2Sgy5z
+         qpVNuC3Yxb1QtRmggRYOAlifj2otK/cy7lKICeC66PvdL98fNxswrzCaZwTnkMGeY0op
+         cIqFfWbaQKiY3e4azrXga9BE/htAsSv6ISdCXShC3u/yLR8t8uKr23+tf/20NjG3LnsW
+         rpeA==
+X-Gm-Message-State: ACgBeo0++LOYr2JpCMmdCAaXh6ItEkR0tFUnE/muF0rIPfpKIes5bwh6
+        gj7+cn4gqBmV/8d2eRFfDacmf/tAe5I=
+X-Google-Smtp-Source: AA6agR7YxhHVMj9XWpJVMLkVYl9/G+NCIxQVTy6U5aONCYYoP9w92jav+CBywTEPIw3JdyMrtVUZ+g==
+X-Received: by 2002:a05:600c:3b8c:b0:3a6:71a:f286 with SMTP id n12-20020a05600c3b8c00b003a6071af286mr6463379wms.120.1661773632330;
+        Mon, 29 Aug 2022 04:47:12 -0700 (PDT)
+Received: from debian ([89.238.191.199])
+        by smtp.gmail.com with ESMTPSA id o7-20020adfeac7000000b00226332f9275sm6768446wrn.22.2022.08.29.04.46.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 04:47:12 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 13:45:20 +0200
+From:   Richard Gobert <richardbgobert@gmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, corbet@lwn.net, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org, alex.aring@gmail.com,
+        stefan@datenfreihafen.org, pablo@netfilter.org,
+        kadlec@netfilter.org, fw@strlen.de, kafai@fb.com,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
+Subject: [PATCH 1/4] net-next: frags: move inetpeer from ip4 to inet
+Message-ID: <20220829114507.GA2348@debian>
 MIME-Version: 1.0
-References: <20220827175436.156464-1-xry111@xry111.site> <CAAhV-H4+=CqeRUUt+XPZ2Nf=1GRgHtTFyMuVu-y6QdgQgD4mog@mail.gmail.com>
- <b681993ca92d5243a73e23303ff9386ad03cf05a.camel@xry111.site>
- <CAAhV-H5tB9nvD8Uufn5SQ1s0hzob4TuxRTaSri-cxHVqtRH6uw@mail.gmail.com> <927f85844e31f0563523622134b5d01af6991e60.camel@xry111.site>
-In-Reply-To: <927f85844e31f0563523622134b5d01af6991e60.camel@xry111.site>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Mon, 29 Aug 2022 19:18:18 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H5-NhSvHwc4_bEafkrxfi5Aq4ePiHK7PdFkGupSDRDVVA@mail.gmail.com>
-Message-ID: <CAAhV-H5-NhSvHwc4_bEafkrxfi5Aq4ePiHK7PdFkGupSDRDVVA@mail.gmail.com>
-Subject: Re: [PATCH 0/8] LoongArch: Support toolchain with new relocation types
-To:     Xi Ruoyao <xry111@xry111.site>
-Cc:     Arnd Bergmann <arnd@arndb.de>, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Youling Tang <tangyouling@loongson.cn>,
-        Jinyang He <hejinyang@loongson.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Ruoyao,
+Move frags-related inetpeer logic from ip4 to inet. This allows us to
+access peer information inside inet_frag logic.
 
-On Mon, Aug 29, 2022 at 1:04 PM Xi Ruoyao <xry111@xry111.site> wrote:
->
-> On Mon, 2022-08-29 at 12:33 +0800, Huacai Chen wrote:
-> > > If we'll drop support for old GCC/Binutils, we can drop patch 5 (it's
-> > > only needed for the combination of old GCC and new Binutils).  Then
-> > > squash 4 and 7.  8 should still be standalone IMO.
->
-> > Whether we can drop old toolchains depends on Arnd. :)
->
-> I'd like to prepare V6 after we can make a final decision.
-I think we can assume that we should support old toolchains until Arnd
-responds, but again, we can only consider new/new and old/old.
->
-> > But even if we should support old toolchains, I think we only need to
-> > consider new binutils + new gcc and old binutils + old gcc, I don't
-> > think new binutils + old gcc and old binutils + new gcc can exist in
-> > the real world.
->
-> Generally, how do we report an unsupported configuration in kernel
-> building system?  With a $(error, "message") in the Makefile, or in some
-> header with a #error?  I don't want to leave an unsupported
-> configuration silently generating modules which can't be loaded by the
-> kernel.
+Signed-off-by: Richard Gobert <richardbgobert@gmail.com>
+---
+ include/net/inet_frag.h  |  1 +
+ net/ipv4/inet_fragment.c | 11 ++++++++++-
+ net/ipv4/ip_fragment.c   | 19 +++----------------
+ 3 files changed, 14 insertions(+), 17 deletions(-)
 
-$(error, "message") in the Makefile is fine to me,  you can "grep
-error arch -rwI | grep Makefile".
+diff --git a/include/net/inet_frag.h b/include/net/inet_frag.h
+index 0b0876610553..05d95fad8a1a 100644
+--- a/include/net/inet_frag.h
++++ b/include/net/inet_frag.h
+@@ -98,6 +98,7 @@ struct inet_frag_queue {
+ 	__u8			flags;
+ 	u16			max_size;
+ 	struct fqdir		*fqdir;
++	struct inet_peer	*peer;
+ 	struct rcu_head		rcu;
+ };
+ 
+diff --git a/net/ipv4/inet_fragment.c b/net/ipv4/inet_fragment.c
+index c9f9ac5013a7..c3ec1dbe7081 100644
+--- a/net/ipv4/inet_fragment.c
++++ b/net/ipv4/inet_fragment.c
+@@ -23,6 +23,7 @@
+ #include <net/inet_ecn.h>
+ #include <net/ip.h>
+ #include <net/ipv6.h>
++#include <net/inetpeer.h>
+ 
+ /* Use skb->cb to track consecutive/adjacent fragments coming at
+  * the end of the queue. Nodes in the rb-tree queue will
+@@ -282,6 +283,14 @@ unsigned int inet_frag_rbtree_purge(struct rb_root *root)
+ }
+ EXPORT_SYMBOL(inet_frag_rbtree_purge);
+ 
++void inet_frag_free(struct inet_frag_queue *q)
++{
++	if (q->peer)
++		inet_putpeer(q->peer);
++
++	call_rcu(&q->rcu, inet_frag_destroy_rcu);
++}
++
+ void inet_frag_destroy(struct inet_frag_queue *q)
+ {
+ 	struct fqdir *fqdir;
+@@ -297,7 +306,7 @@ void inet_frag_destroy(struct inet_frag_queue *q)
+ 	sum_truesize = inet_frag_rbtree_purge(&q->rb_fragments);
+ 	sum = sum_truesize + f->qsize;
+ 
+-	call_rcu(&q->rcu, inet_frag_destroy_rcu);
++	inet_frag_free(q);
+ 
+ 	sub_frag_mem_limit(fqdir, sum);
+ }
+diff --git a/net/ipv4/ip_fragment.c b/net/ipv4/ip_fragment.c
+index fb153569889e..d0c22c41cf26 100644
+--- a/net/ipv4/ip_fragment.c
++++ b/net/ipv4/ip_fragment.c
+@@ -65,7 +65,6 @@ struct ipq {
+ 	u16		max_df_size; /* largest frag with DF set seen */
+ 	int             iif;
+ 	unsigned int    rid;
+-	struct inet_peer *peer;
+ };
+ 
+ static u8 ip4_frag_ecn(u8 tos)
+@@ -88,21 +87,9 @@ static void ip4_frag_init(struct inet_frag_queue *q, const void *a)
+ 
+ 	q->key.v4 = *key;
+ 	qp->ecn = 0;
+-	qp->peer = q->fqdir->max_dist ?
+-		inet_getpeer_v4(net->ipv4.peers, key->saddr, key->vif, 1) :
+-		NULL;
++	q->peer = inet_getpeer_v4(net->ipv4.peers, key->saddr, key->vif, 1);
+ }
+ 
+-static void ip4_frag_free(struct inet_frag_queue *q)
+-{
+-	struct ipq *qp;
+-
+-	qp = container_of(q, struct ipq, q);
+-	if (qp->peer)
+-		inet_putpeer(qp->peer);
+-}
+-
+-
+ /* Destruction primitives. */
+ 
+ static void ipq_put(struct ipq *ipq)
+@@ -224,7 +211,7 @@ static struct ipq *ip_find(struct net *net, struct iphdr *iph,
+ /* Is the fragment too far ahead to be part of ipq? */
+ static int ip_frag_too_far(struct ipq *qp)
+ {
+-	struct inet_peer *peer = qp->peer;
++	struct inet_peer *peer = qp->q.peer;
+ 	unsigned int max = qp->q.fqdir->max_dist;
+ 	unsigned int start, end;
+ 
+@@ -741,7 +728,7 @@ static const struct rhashtable_params ip4_rhash_params = {
+ void __init ipfrag_init(void)
+ {
+ 	ip4_frags.constructor = ip4_frag_init;
+-	ip4_frags.destructor = ip4_frag_free;
++	ip4_frags.destructor = NULL;
+ 	ip4_frags.qsize = sizeof(struct ipq);
+ 	ip4_frags.frag_expire = ip_expire;
+ 	ip4_frags.frags_cache_name = ip_frag_cache_name;
+-- 
+2.36.1
 
-Huacai
->
-> --
-> Xi Ruoyao <xry111@xry111.site>
-> School of Aerospace Science and Technology, Xidian University
->
