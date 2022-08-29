@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC103ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1204EECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232574AbiH2Lcd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
+        id S232582AbiH2Lci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232711AbiH2L3o (ORCPT
+        with ESMTP id S232717AbiH2L3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:29:44 -0400
+        Mon, 29 Aug 2022 07:29:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179AC785B8;
-        Mon, 29 Aug 2022 04:18:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1E57B2BE;
+        Mon, 29 Aug 2022 04:18:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 343FE611EC;
-        Mon, 29 Aug 2022 11:18:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F265C433C1;
-        Mon, 29 Aug 2022 11:18:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B32F561202;
+        Mon, 29 Aug 2022 11:17:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5D19C433D6;
+        Mon, 29 Aug 2022 11:17:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771884;
-        bh=YJt4NxBD+NcoXprsbu4ayUDQDeGzuAoSY2VYAF4I89c=;
+        s=korg; t=1661771860;
+        bh=6EKBDqc52IalgZq0HP2UlKus3oH3wi8p+iN3Nd5JAPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D/e6J7wH02DoWPylSrWqpOd9wavDcBmZx+knXw82ae/eLBjhocjDJ0uJogPeQAMYT
-         PBgAixO2uf47aws75K2BL+ZsXnrVQjuUm6beSNLY9fjGBYAG1KSGAqOChngAngYRpq
-         JJdI32JCXgB8ZepViMN1BLF2cOWHazRyxZaz01Mo=
+        b=jZQPWXiNdNjVx0OLdD+yUMkuRfIngHYt+Wbz8bMIUwgDLNNNHQWbJtUmMLeOPuLcZ
+         UEZ12B3KyXNvk896tIXrTM2q4l03r2nqWmneA2IQxY+s5+3ytwsOWck1jpjS3fQTRz
+         U5XSME9RJebNMckHoIWzwco8AJz6aMffjUgkBrcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.19 130/158] riscv: traps: add missing prototype
-Date:   Mon, 29 Aug 2022 12:59:40 +0200
-Message-Id: <20220829105814.545548868@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 077/158] net: Fix data-races around sysctl_fb_tunnels_only_for_init_net.
+Date:   Mon, 29 Aug 2022 12:58:47 +0200
+Message-Id: <20220829105812.263072308@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -48,51 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit d951b20b9def73dcc39a5379831525d0d2a537e9 upstream.
+[ Upstream commit af67508ea6cbf0e4ea27f8120056fa2efce127dd ]
 
-Sparse complains:
-arch/riscv/kernel/traps.c:213:6: warning: symbol 'shadow_stack' was not declared. Should it be static?
+While reading sysctl_fb_tunnels_only_for_init_net, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-The variable is used in entry.S, so declare shadow_stack there
-alongside SHADOW_OVERFLOW_STACK_SIZE.
-
-Fixes: 31da94c25aea ("riscv: add VMAP_STACK overflow detection")
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220814141237.493457-5-mail@conchuod.ie
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 79134e6ce2c9 ("net: do not create fallback tunnels for non-default namespaces")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/riscv/include/asm/thread_info.h |    2 ++
- arch/riscv/kernel/traps.c            |    3 ++-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ include/linux/netdevice.h | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
---- a/arch/riscv/include/asm/thread_info.h
-+++ b/arch/riscv/include/asm/thread_info.h
-@@ -42,6 +42,8 @@
- 
- #ifndef __ASSEMBLY__
- 
-+extern long shadow_stack[SHADOW_OVERFLOW_STACK_SIZE / sizeof(long)];
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 2563d30736e9a..78dd63a5c7c80 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -640,9 +640,14 @@ extern int sysctl_devconf_inherit_init_net;
+  */
+ static inline bool net_has_fallback_tunnels(const struct net *net)
+ {
+-	return !IS_ENABLED(CONFIG_SYSCTL) ||
+-	       !sysctl_fb_tunnels_only_for_init_net ||
+-	       (net == &init_net && sysctl_fb_tunnels_only_for_init_net == 1);
++#if IS_ENABLED(CONFIG_SYSCTL)
++	int fb_tunnels_only_for_init_net = READ_ONCE(sysctl_fb_tunnels_only_for_init_net);
 +
- #include <asm/processor.h>
- #include <asm/csr.h>
++	return !fb_tunnels_only_for_init_net ||
++		(net_eq(net, &init_net) && fb_tunnels_only_for_init_net == 1);
++#else
++	return true;
++#endif
+ }
  
---- a/arch/riscv/kernel/traps.c
-+++ b/arch/riscv/kernel/traps.c
-@@ -20,9 +20,10 @@
- 
- #include <asm/asm-prototypes.h>
- #include <asm/bug.h>
-+#include <asm/csr.h>
- #include <asm/processor.h>
- #include <asm/ptrace.h>
--#include <asm/csr.h>
-+#include <asm/thread_info.h>
- 
- int show_unhandled_signals = 1;
- 
+ static inline int netdev_queue_numa_node_read(const struct netdev_queue *q)
+-- 
+2.35.1
+
 
 
