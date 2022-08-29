@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C36FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F358BECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:19:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231503AbiH2LTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55394 "EHLO
+        id S231531AbiH2LTt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:19:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231328AbiH2LS1 (ORCPT
+        with ESMTP id S231536AbiH2LSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:18:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5893611177;
-        Mon, 29 Aug 2022 04:12:11 -0700 (PDT)
+        Mon, 29 Aug 2022 07:18:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4606DAC2;
+        Mon, 29 Aug 2022 04:12:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C83D611B3;
-        Mon, 29 Aug 2022 11:03:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5390C433C1;
-        Mon, 29 Aug 2022 11:03:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38A8A611B5;
+        Mon, 29 Aug 2022 11:03:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43443C433D6;
+        Mon, 29 Aug 2022 11:03:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771038;
-        bh=CskFODK24XP61S8XHnOcBXRzfeS7HOnzRz69tyNccf8=;
+        s=korg; t=1661771002;
+        bh=4FghYDHna6S5rhzo+Rl9VOc4RV5gF/FkMeafEW6AivU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XYxqUugzBuXLOYj3etsZw2ngRiIIqIweZulrRXdXN49fYIAg2v/6DtbGfZ9sl26SN
-         eIZroEsjscrexESbb/ScWksKkUQ0vjbgN1zBRHl1E+c3u4d0GzVwIZcxFFSG3RpLuX
-         8Ote4JhkRNdzRF6f34er1gAD2lXT3zy2XKZq32tA=
+        b=K5B613Zi9F+NnaJ537KBGzEsm8ZG8hvyefYTwaj0OdfNeXUF6ks3CQq/4RiFOK7x5
+         tDUYUP1RQX7+ObEB+7ScILVO8t3EE6cihfCMSupoh/MISh8Kdk3dei/ot+LKgZ9MPT
+         Ha8RjgjL7D/rRQRTxBgaBLlIlKE4+Tp3P5VOLjRY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hui Su <suhui_kernel@163.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Subject: [PATCH 5.10 11/86] kernel/sched: Remove dl_boosted flag comment
-Date:   Mon, 29 Aug 2022 12:58:37 +0200
-Message-Id: <20220829105756.992352518@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 033/136] NFS: Dont allocate nfs_fattr on the stack in __nfs42_ssc_open()
+Date:   Mon, 29 Aug 2022 12:58:20 +0200
+Message-Id: <20220829105805.943725596@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,35 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hui Su <suhui_kernel@163.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-commit 0e3872499de1a1230cef5221607d71aa09264bd5 upstream.
+[ Upstream commit 156cd28562a4e8ca454d11b234d9f634a45d6390 ]
 
-since commit 2279f540ea7d ("sched/deadline: Fix priority
-inheritance with multiple scheduling classes"), we should not
-keep it here.
+The preferred behaviour is always to allocate struct nfs_fattr from the
+slab.
 
-Signed-off-by: Hui Su <suhui_kernel@163.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Daniel Bristot de Oliveira <bristot@redhat.com>
-Link: https://lore.kernel.org/r/20220107095254.GA49258@localhost.localdomain
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/sched.h |    4 ----
- 1 file changed, 4 deletions(-)
+ fs/nfs/nfs4file.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -542,10 +542,6 @@ struct sched_dl_entity {
- 	 * task has to wait for a replenishment to be performed at the
- 	 * next firing of dl_timer.
- 	 *
--	 * @dl_boosted tells if we are boosted due to DI. If so we are
--	 * outside bandwidth enforcement mechanism (but only until we
--	 * exit the critical section);
--	 *
- 	 * @dl_yielded tells if task gave up the CPU before consuming
- 	 * all its available runtime during the last job.
- 	 *
+diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
+index 4120e1cb3feef..61ee03c8bcd2d 100644
+--- a/fs/nfs/nfs4file.c
++++ b/fs/nfs/nfs4file.c
+@@ -319,7 +319,7 @@ static int read_name_gen = 1;
+ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
+ 		struct nfs_fh *src_fh, nfs4_stateid *stateid)
+ {
+-	struct nfs_fattr fattr;
++	struct nfs_fattr *fattr = nfs_alloc_fattr();
+ 	struct file *filep, *res;
+ 	struct nfs_server *server;
+ 	struct inode *r_ino = NULL;
+@@ -330,9 +330,10 @@ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
+ 
+ 	server = NFS_SERVER(ss_mnt->mnt_root->d_inode);
+ 
+-	nfs_fattr_init(&fattr);
++	if (!fattr)
++		return ERR_PTR(-ENOMEM);
+ 
+-	status = nfs4_proc_getattr(server, src_fh, &fattr, NULL, NULL);
++	status = nfs4_proc_getattr(server, src_fh, fattr, NULL, NULL);
+ 	if (status < 0) {
+ 		res = ERR_PTR(status);
+ 		goto out;
+@@ -345,7 +346,7 @@ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
+ 		goto out;
+ 	snprintf(read_name, len, SSC_READ_NAME_BODY, read_name_gen++);
+ 
+-	r_ino = nfs_fhget(ss_mnt->mnt_root->d_inode->i_sb, src_fh, &fattr,
++	r_ino = nfs_fhget(ss_mnt->mnt_root->d_inode->i_sb, src_fh, fattr,
+ 			NULL);
+ 	if (IS_ERR(r_ino)) {
+ 		res = ERR_CAST(r_ino);
+@@ -390,6 +391,7 @@ static struct file *__nfs42_ssc_open(struct vfsmount *ss_mnt,
+ out_free_name:
+ 	kfree(read_name);
+ out:
++	nfs_free_fattr(fattr);
+ 	return res;
+ out_stateowner:
+ 	nfs4_put_state_owner(sp);
+-- 
+2.35.1
+
 
 
