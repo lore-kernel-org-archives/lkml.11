@@ -2,285 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC12ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 07:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE1D5ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 07:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbiH2H4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 03:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
+        id S229793AbiH2H4V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 03:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbiH2H4A (ORCPT
+        with ESMTP id S229747AbiH2H4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 03:56:00 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6209828737
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 00:55:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661759758; x=1693295758;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=yiiKiHFW1n9E7Th9pCd+R7oBSWy8ZV+t/bo5jll4JtA=;
-  b=HEzIsxpkSstILAru1ixeIR0u3jNymcuIVmo9ymYSmdHQrP6l/+68VNKD
-   F+l555AjblM+h6jbh48YYbKKP9N3SkSd4fI36BaV+CPVCZvpl6MQe9wlL
-   OH5qMJ9acV/S+WEBaCma6piQZfL1c1Pif5N4z/mw6rG+zlcfFXyBqnam3
-   Lcn94Ri6j+rA+2ZHpxtmSKBsqjBtpaOR3a3A3I4Rv9pJqNpVyg8qyO5hc
-   ABKQkMufC/E/D9OlF+/b5kNOJBRZnAHY0YNrsxkrjwbqACUY0O+t7kHsj
-   aDfppm3nMgIR+qIMeqzgslYKNEqWU7+69UtcUpwkkLCmJRWItEnikbbiD
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="381140135"
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="381140135"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 00:55:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="672283594"
-Received: from shbuild999.sh.intel.com ([10.239.147.181])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Aug 2022 00:55:55 -0700
-From:   Feng Tang <feng.tang@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Feng Tang <feng.tang@intel.com>
-Subject: [PATCH v4 4/4] mm/slub: extend redzone check to cover extra allocated kmalloc space than requested
-Date:   Mon, 29 Aug 2022 15:56:18 +0800
-Message-Id: <20220829075618.69069-5-feng.tang@intel.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220829075618.69069-1-feng.tang@intel.com>
-References: <20220829075618.69069-1-feng.tang@intel.com>
-MIME-Version: 1.0
+        Mon, 29 Aug 2022 03:56:06 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2058.outbound.protection.outlook.com [40.107.21.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4AE11819;
+        Mon, 29 Aug 2022 00:56:00 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iu0ZVGk+Au+mnimVo3UewfPuNxPHWw0WP98AHr+NLizbdj0KaxHBcz5mNEhN/xnDl+oYcGtFxIraOT3fD42sD5hO/Me8Fpla6DMuNA0UTUuTlsVZ0i/ATAhY7IBehrAzjhfBt6Ykvu+NOnMiTtLsW5wO83gW91UX3HBFwET3aT54+V5/moNLkFyjb7JCGgAgUOyqJWV707Lsdd9tDYmyLblKdijcCAFpweJ/YKROYfpnnwQA0Iw6THWGF9mIIBY0BAfkk9jf+KOax918gcUXAjNCAC7exW9wDwC0zozTRCkgqqtdEOeaeMG1vq9x1YyFMsFLv8QINtFVfONG4Mb05g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=h/uhp+ejqiSCUTv6XvJqDLN5rybCPPKud1opQ3+Huqk=;
+ b=WTNYTV8omxEwLV1qFWsIh0RBEiCPX9TlyYxX+nwqf7LV9NZJclST1KUoK6nLoifq+srmIWQyWSZXtDGRFE5NvFVJejaeXSannhuacNToAyUoy+dRXlnOFb/r/iFIOe6qi7R3YXUJNwpkXoE892iAsK1kSrnTpunlxRmP7DPlmmE3Pw/L1y6yHAMz5bRSl9DbBR6Hv9gpLfLSa/8gpNuA0yR3F5HTTU4ZOGpPUI/2R1yTk9rJ1oEemJq+uMmC//Jwg6KpejY9zZsZWicA82X23GxppXwkQUuqaGukJJKUA3ANP/gE6dShbA+FBzfDITrC0la+917QM5KATRJ3YqFREA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h/uhp+ejqiSCUTv6XvJqDLN5rybCPPKud1opQ3+Huqk=;
+ b=cJmKJG7OI8iw5vIqHfYPDYm3MKy0uFXRUvUZx084PO0r4H+FViaQ4ZTX8vWbg9lrm8uDQkhDcWyWedN4seyLsyLw5kA/qCO4gPwqoH1V+caVcrdKQ8mIxB+i7UMo8tuMFzxdtVgX0qkFscYxEd6neOvgCeYzWfwJL8ECrtIvuLU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4222.eurprd04.prod.outlook.com (2603:10a6:803:46::19)
+ by PR3PR04MB7482.eurprd04.prod.outlook.com (2603:10a6:102:8f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Mon, 29 Aug
+ 2022 07:55:58 +0000
+Received: from VI1PR04MB4222.eurprd04.prod.outlook.com
+ ([fe80::3139:70b4:6648:bd32]) by VI1PR04MB4222.eurprd04.prod.outlook.com
+ ([fe80::3139:70b4:6648:bd32%4]) with mapi id 15.20.5566.021; Mon, 29 Aug 2022
+ 07:55:58 +0000
+From:   Chancel Liu <chancel.liu@nxp.com>
+To:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shengjiu.wang@nxp.com, Xiubo.Lee@gmail.com, festevam@gmail.com,
+        nicoleotsuka@gmail.com, linuxppc-dev@lists.ozlabs.org
+Cc:     Chancel Liu <chancel.liu@nxp.com>
+Subject: [PATCH 1/5] ASoC: dt-bindings: fsl_rpmsg: Add a property to assign platform driver name
+Date:   Mon, 29 Aug 2022 15:51:40 +0800
+Message-Id: <20220829075144.2405000-2-chancel.liu@nxp.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220829075144.2405000-1-chancel.liu@nxp.com>
+References: <20220829075144.2405000-1-chancel.liu@nxp.com>
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR06CA0012.apcprd06.prod.outlook.com
+ (2603:1096:4:186::13) To VI1PR04MB4222.eurprd04.prod.outlook.com
+ (2603:10a6:803:46::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 720768d7-02f5-4f6e-f135-08da8993e852
+X-MS-TrafficTypeDiagnostic: PR3PR04MB7482:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5yyjbXe9a92Y88qWN7oTFJUa26iG/lrvBXmFTqqeTYSsN9BXhiJ80D0D95AXoSEvnFm9CiTXQb6oCL91EmTAKDG3Hk9WRktaOfsmMQGhqkWhiGWSor6O7IrQmRLXy2xDd1Y/qqHhqqb6rWPEVNa47kxCZBZSu8Hf7dPXkiX3wHxEcv+FYzdTD/g8Qjhn1jFXQeAwtwWP1rHTu4WWpAsW/ABAgkejnMaM10+n2aO97y1+CxY3AC+wG+hFFtfpSv72VrVZBBtTn5XlKK2YZ08stJoqJtlWUINa/1g0swBOS2kh1jFPRR8S2/PgekQ7FcmLOWfrKXkAXlMSyaXfs5r+beQdgE0t9UCOR6L5wt2AD8MlHin/uSCqu/1pL86XAHl4CeH+8UdtRdou9HpSmUTVoKpwGzxol9+j4Zf6h+O+OdZm/Ye5SL8Pnf7gVzk+kJ8PgRi5EegakCQi6Ny7PTSEigmJ1ZK9pa+T4qr6RP84PoNvyDwNdmSTd9KUxJFSZMBCQRwEJwpqM/hbRlMM1XQlE8vT7kZXwMrdd6tL/COWxWRM0+O3Wm+ii3DfeHKogUEL2pDldZN02HlzHr1+OA3uNfn67YbzFhvueCO3mhya92vGxx5wIVkgOw2j7maSbRfcX77ds5PziUCp134ToMPV0AKWvj/BRGOiBxrKRVMe9eeBcfTeeSg9n8zQgQzWOm5/q/ruEY57bYgp4N1qTwCKKLd+qAfxmcrk6weO5eb+N/LVvgJ5FrHi9C3OZcncbeh41Tnm7ONmMjOaldX2eAXijnjANm4sbjLTRKxsQDsUR1o=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4222.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(366004)(39860400002)(136003)(396003)(7416002)(5660300002)(8936002)(41300700001)(186003)(6506007)(2616005)(6512007)(86362001)(1076003)(6666004)(44832011)(52116002)(2906002)(26005)(38350700002)(316002)(36756003)(66476007)(83380400001)(478600001)(38100700002)(921005)(4326008)(6486002)(66556008)(8676002)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1YQA757UJ5Lp+71cInY34JB+iOIxz8UApDHGpHsOzsCwqRjF/1YVK58yxihX?=
+ =?us-ascii?Q?Q3AoFxNY1PypYgSpR+JNcwDA6onfP4l06VdmC7xu07Wj3tPLs/v9hM6UPtf8?=
+ =?us-ascii?Q?9/CWmx0ryzwsLcEGg0wXc0TecMnstJLoOrNqHq4x780UdGjWajzryy6p+kbg?=
+ =?us-ascii?Q?YltThpN1/0zD5LsiRQZ9Wvg5up6dJvOWHkWZiFMRl5puS3bN1y1RmtDYOWtW?=
+ =?us-ascii?Q?s77vEVDlQxpRoEdxaS7lLsl0ZUJk5ktnk1yNpbLEHEYavmo7+iRnD7kSorIj?=
+ =?us-ascii?Q?dZM7Byu1RF+EyBgKJY+I3gDF3NQfRPpcYcY8RCckAprh25qns3Sdu6bZxbWs?=
+ =?us-ascii?Q?j0LEwfhWcP9f+qKoJDvzL918gu6JNbciJNQ/+CI1HDN3rMaF1fiGv7xWJ1m2?=
+ =?us-ascii?Q?Kr+ddA/cFKCPn2wpgVhMcc3DH9eoIuY0qbhZa7n2dbWFfHnRbaJA8762q4mG?=
+ =?us-ascii?Q?ZwXco8OK1ecM0PDfCDPT3XDB4qlXikafjXOMSzws35olBVzvVNY3JCA7U7uS?=
+ =?us-ascii?Q?UVvkcfg29iEkvLhFf9y+ARJLnpOhRiyKFz3RvR8XqH/oGOtblb8edWYqDfNR?=
+ =?us-ascii?Q?JZc+oP7ah28JEDE2j9WlSgY0PgjtZ+x0INX01LRt4Ngu6ON/gX7NiHc5hJMz?=
+ =?us-ascii?Q?1aRyf4LwTphpVG5XUdjXbW/SuQquuRtulXs/s1LPmWdFvpEvhO8+5vgYxrRy?=
+ =?us-ascii?Q?96hISQbp9UrOoJulo8DSaf6B/rp0X88zd8qoRDUiUyvYgq+on6P3Uv6r7w1/?=
+ =?us-ascii?Q?pBJSVtYQs8uaJJjrGO3+mMupib1UXIH6PZoAkquejHhDltuDEAXB8ECiyl2o?=
+ =?us-ascii?Q?Boi3InVHb5EFxC5EQuQEAKRb6FjUulGoddhTVAp4PAaV35MX+4CTicXeY+z1?=
+ =?us-ascii?Q?99eDu4PM+rpV5+p55h1Ab4joE5OI4KHtsyGjCg4mAT3g9SuDEDVSOw7W184h?=
+ =?us-ascii?Q?L/ck26qR/LACCgs27+PSzcowiV009CX82YbMRp/jILYZwGjyQOkVW1McaHTO?=
+ =?us-ascii?Q?Y4TlRO3oOiMWI7sZpMZj+WAywWDQ9BvMYwx3+J7TPmjhZ5b2habrn7P66k9R?=
+ =?us-ascii?Q?aiqQvcEYosCPsX3WZZpFy9bmV7Ws+SEf0/ntCYnJKdo3HVFREJzNGtg4srfS?=
+ =?us-ascii?Q?49d+/x1xQRl0CQZywhXho86MrPFSU2yW1O9xndT6f8xFJwB5M9SR8C5ERjVH?=
+ =?us-ascii?Q?WQeFmkJ/ZP0q284ETWUbPNYGl4yNeG0iYxHsgJfC7eDalr1aI3FnfRphInl4?=
+ =?us-ascii?Q?RWNmBuDLInYF6onvGXEHgRqdXPRUChsVjoo4YcJJ5u8clrmUkJRtwlVvs6LD?=
+ =?us-ascii?Q?vW/7GSY3IQgp0lCC90XrNsS7R6aLMKxfH68XNfljwQ7oFByvKzsMsV7jTNAI?=
+ =?us-ascii?Q?PFMenVw0KwoqUYnELk9+H0DeKi/VF1nxx8Hx7V+jp0rPn5OE4t+s98Zlt+GO?=
+ =?us-ascii?Q?myJ8KlH/3zRECulHX8cMicMIT+0U3dZMeAkgAU2+xqqTi2PwRFLu82Nm/pI0?=
+ =?us-ascii?Q?blc7dWrsyEIqSmfqwCnVrfTsX295D649heQ25S0CfXOdAJuavP4eIjThPrt8?=
+ =?us-ascii?Q?vWgNPko9Mr7LnfRHvUGPVAiWmGClifekn5X+a2WI?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 720768d7-02f5-4f6e-f135-08da8993e852
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4222.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 07:55:57.9012
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: P5pCZTQhJtXtbfbnqFcBDzYNXJuDh6GcgEtbkuN+tEnWkt6jqBlVLk1w2PjDExkyPZuNr/f3/2LnMR5mD/DYzg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7482
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kmalloc will round up the request size to a fixed size (mostly power
-of 2), so there could be a extra space than what is requested, whose
-size is the actual buffer size minus original request size.
+Add a string property to assign ASoC platform driver name. It also
+represents the rpmsg channel this sound card sits on. This property
+can be omitted if there is only one sound card and it sits on
+"rpmsg-audio-channel".
 
-To better detect out of bound access or abuse of this space, add
-redzone sanity check for it.
-
-And in current kernel, some kmalloc user already knows the existence
-of the space and utilizes it after calling 'ksize()' to know the real
-size of the allocated buffer. So we skip the redzone sanity check and
-kmalloc wastage debug for objects which have been called with ksize(),
-as treating them as legitimate users of the extra space.
-
-Suggested-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Feng Tang <feng.tang@intel.com>
+Signed-off-by: Chancel Liu <chancel.liu@nxp.com>
 ---
- mm/slab.h        |  4 ++
- mm/slab_common.c |  4 ++
- mm/slub.c        | 95 +++++++++++++++++++++++++++++++++++++++++++-----
- 3 files changed, 93 insertions(+), 10 deletions(-)
+ .../devicetree/bindings/sound/fsl,rpmsg.yaml  | 34 +++++++++++++++++--
+ 1 file changed, 32 insertions(+), 2 deletions(-)
 
-diff --git a/mm/slab.h b/mm/slab.h
-index 1c773195cfcd..e296191b9453 100644
---- a/mm/slab.h
-+++ b/mm/slab.h
-@@ -875,4 +875,8 @@ void __check_heap_object(const void *ptr, unsigned long n,
- }
- #endif
+diff --git a/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml b/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
+index d370c98a62c7..35e3cb9f768b 100644
+--- a/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
++++ b/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
+@@ -11,8 +11,11 @@ maintainers:
  
-+#ifdef CONFIG_SLUB_DEBUG
-+extern void skip_orig_size_check(struct kmem_cache *s, const void *object);
-+#endif
+ description: |
+   fsl_rpmsg is a virtual audio device. Mapping to real hardware devices
+-  are SAI, DMA controlled by Cortex M core. What we see from Linux
+-  side is a device which provides audio service by rpmsg channel.
++  are SAI, MICFIL, DMA controlled by Cortex M core. What we see from
++  Linux side is a device which provides audio service by rpmsg channel.
++  We can create different sound cards which access different hardwares
++  such as SAI, MICFIL, .etc through building rpmsg channels between
++  Cortex-A and Cortex-M.
+ 
+ properties:
+   compatible:
+@@ -85,6 +88,14 @@ properties:
+       This is a boolean property. If present, the receiving function
+       will be enabled.
+ 
++  fsl,platform:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: |
++      A string property to assign ASoC platform driver name. It also
++      represents the rpmsg channel this sound card sits on. This property
++      can be omitted if there is only one sound card and it sits on
++      "rpmsg-audio-channel".
 +
- #endif /* MM_SLAB_H */
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 8e13e3aac53f..5106667d6adb 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -1001,6 +1001,10 @@ size_t __ksize(const void *object)
- 		return folio_size(folio);
- 	}
- 
-+#ifdef CONFIG_SLUB_DEBUG
-+	skip_orig_size_check(folio_slab(folio)->slab_cache, object);
-+#endif
+ required:
+   - compatible
+   - model
+@@ -107,3 +118,22 @@ examples:
+                  <&clk IMX8MN_AUDIO_PLL2_OUT>;
+         clock-names = "ipg", "mclk", "dma", "pll8k", "pll11k";
+     };
 +
- 	return slab_ksize(folio_slab(folio)->slab_cache);
- }
- 
-diff --git a/mm/slub.c b/mm/slub.c
-index 936b7be0642a..4348e0dbf8ee 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -791,18 +791,37 @@ static void print_slab_info(const struct slab *slab)
- 	       folio_flags(folio, 0));
- }
- 
--static inline void set_orig_size(struct kmem_cache *s,
++  - |
++    #include <dt-bindings/clock/imx8mm-clock.h>
 +
-+/*
-+ * Return true if the saved orig_size is different from object size,
-+ * and the return value can be used to judge whether redzone is needed.
-+ */
-+static inline bool set_orig_size(struct kmem_cache *s,
- 					void *object, unsigned int orig_size)
- {
- 	void *p = kasan_reset_tag(object);
- 
--	if (!slub_debug_orig_size(s))
--		return;
-+#ifdef CONFIG_KASAN_GENERIC
-+	/*
-+	 * KASAN could save its free meta data in the start part of
-+	 * object area, so skip the redzone check if kasan's meta data
-+	 * size is bigger enough to possibly overlap kmalloc redzone.
-+	 */
-+	if (s->kasan_info.free_meta_size_in_object * 2 >= s->object_size)
-+		orig_size = s->object_size;
-+#endif
- 
- 	p += get_info_end(s);
- 	p += sizeof(struct track) * 2;
--
- 	*(unsigned int *)p = orig_size;
++    rpmsg_micfil: rpmsg_micfil {
++        compatible = "fsl,imx8mm-rpmsg-audio";
++        model = "micfil-audio";
++        fsl,platform = "rpmsg-micfil-channel";
++        fsl,enable-lpa;
++        fsl,rpmsg-in;
++        clocks = <&clk IMX8MM_CLK_PDM_IPG>,
++                 <&clk IMX8MM_CLK_PDM_ROOT>,
++                 <&clk IMX8MM_CLK_SDMA3_ROOT>,
++                 <&clk IMX8MM_AUDIO_PLL1_OUT>,
++                 <&clk IMX8MM_AUDIO_PLL2_OUT>;
++        clock-names = "ipg", "mclk", "dma", "pll8k", "pll11k";
++    };
 +
-+	return (orig_size != s->object_size);
-+}
-+
-+void skip_orig_size_check(struct kmem_cache *s, const void *object)
-+{
-+	if (slub_debug_orig_size(s))
-+		set_orig_size(s, (void *)object, s->object_size);
- }
- 
- static unsigned int get_orig_size(struct kmem_cache *s, void *object)
-@@ -949,6 +968,45 @@ static void init_object(struct kmem_cache *s, void *object, u8 val)
- 		memset(p + s->object_size, val, s->inuse - s->object_size);
- }
- 
-+/*
-+ * For kmalloced objects, its allocated area could be larger than
-+ * what was requested, save the original request size and extend
-+ * the redzone check into this extra erea, if related debug flags
-+ * are enabled
-+ */
-+static void init_kmalloc_object(struct kmem_cache *s, void *object, int orig_size)
-+{
-+	unsigned int redzone_start;
-+	u8 *p = kasan_reset_tag(object);
-+
-+	if (!slub_debug_orig_size(s) || !set_orig_size(s, object, orig_size))
-+		return;
-+
-+	/* Skip the redzone part if the flag is not enabled */
-+	if (!(s->flags & SLAB_RED_ZONE))
-+		return;
-+
-+	/*
-+	 * init_object() has been called earlier in alloc_debug_processing(),
-+	 * here only the object's data area is touched.
-+	 */
-+	redzone_start = orig_size;
-+
-+	if (!freeptr_outside_object(s))
-+		redzone_start = max_t(unsigned int, orig_size,
-+					s->offset + sizeof(void *));
-+
-+	if (redzone_start >= s->object_size)
-+		return;
-+
-+	memset(p + redzone_start, SLUB_RED_ACTIVE,
-+			s->object_size - redzone_start);
-+
-+	/* Poison area also need be shrunk */
-+	if (s->flags & __OBJECT_POISON)
-+		p[orig_size - 1] = POISON_END;
-+}
-+
- static void restore_bytes(struct kmem_cache *s, char *message, u8 data,
- 						void *from, void *to)
- {
-@@ -1089,6 +1147,7 @@ static int check_object(struct kmem_cache *s, struct slab *slab,
- {
- 	u8 *p = object;
- 	u8 *endobject = object + s->object_size;
-+	unsigned int orig_size;
- 
- 	if (s->flags & SLAB_RED_ZONE) {
- 		if (!check_bytes_and_report(s, slab, object, "Left Redzone",
-@@ -1098,6 +1157,20 @@ static int check_object(struct kmem_cache *s, struct slab *slab,
- 		if (!check_bytes_and_report(s, slab, object, "Right Redzone",
- 			endobject, val, s->inuse - s->object_size))
- 			return 0;
-+
-+		if (slub_debug_orig_size(s) && val == SLUB_RED_ACTIVE) {
-+			orig_size = get_orig_size(s, object);
-+
-+			if (!freeptr_outside_object(s))
-+				orig_size = max_t(unsigned int, orig_size,
-+						s->offset + sizeof(void *));
-+			if (s->object_size > orig_size  &&
-+				!check_bytes_and_report(s, slab, object,
-+					"kmalloc Redzone", p + orig_size,
-+					val, s->object_size - orig_size)) {
-+				return 0;
-+			}
-+		}
- 	} else {
- 		if ((s->flags & SLAB_POISON) && s->object_size < s->inuse) {
- 			check_bytes_and_report(s, slab, p, "Alignment padding",
-@@ -1612,9 +1685,11 @@ void setup_slab_debug(struct kmem_cache *s, struct slab *slab, void *addr) {}
- static inline int alloc_debug_processing(struct kmem_cache *s,
- 	struct slab *slab, void *object) { return 0; }
- 
--static inline void set_orig_size(struct kmem_cache *s,
--	void *object, unsigned int orig_size) {}
-+static inline bool set_orig_size(struct kmem_cache *s,
-+	void *object, unsigned int orig_size) { return false; }
- 
-+static inline void init_kmalloc_object(struct kmem_cache *s,
-+	void *object, int orig_size) {}
- static inline void free_debug_processing(
- 	struct kmem_cache *s, struct slab *slab,
- 	void *head, void *tail, int bulk_cnt,
-@@ -2071,7 +2146,7 @@ static void *alloc_single_from_partial(struct kmem_cache *s,
-  * and put the slab to the partial (or full) list.
-  */
- static void *alloc_single_from_new_slab(struct kmem_cache *s,
--					struct slab *slab)
-+					struct slab *slab, int orig_size)
- {
- 	int nid = slab_nid(slab);
- 	struct kmem_cache_node *n = get_node(s, nid);
-@@ -3151,14 +3226,14 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
- 	stat(s, ALLOC_SLAB);
- 
- 	if (kmem_cache_debug(s)) {
--		freelist = alloc_single_from_new_slab(s, slab);
-+		freelist = alloc_single_from_new_slab(s, slab, orig_size);
- 
- 		if (unlikely(!freelist))
- 			goto new_objects;
- 
- 		if (s->flags & SLAB_STORE_USER)
- 			set_track(s, freelist, TRACK_ALLOC, addr);
--		set_orig_size(s, freelist, orig_size);
-+		init_kmalloc_object(s, freelist, orig_size);
- 
- 		return freelist;
- 	}
-@@ -3184,7 +3259,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
- 		 */
- 		if (s->flags & SLAB_STORE_USER)
- 			set_track(s, freelist, TRACK_ALLOC, addr);
--		set_orig_size(s, freelist, orig_size);
-+		init_kmalloc_object(s, freelist, orig_size);
- 
- 		return freelist;
- 	}
++...
 -- 
-2.34.1
+2.25.1
 
