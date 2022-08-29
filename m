@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7259BECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42671ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229447AbiH2Lbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:31:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55110 "EHLO
+        id S232317AbiH2Lbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232601AbiH2L3X (ORCPT
+        with ESMTP id S232608AbiH2L3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:29:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D8A6BCFF;
+        Mon, 29 Aug 2022 07:29:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000E86C740;
         Mon, 29 Aug 2022 04:17:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1C5E61216;
-        Mon, 29 Aug 2022 11:10:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2DC7C433B5;
-        Mon, 29 Aug 2022 11:10:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66119B80FA8;
+        Mon, 29 Aug 2022 11:17:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B004AC433B5;
+        Mon, 29 Aug 2022 11:17:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771453;
-        bh=gOyiS2kyGxvi8FAixdQXIrEn2pTE5ybOPXL0Jlo3kcs=;
+        s=korg; t=1661771851;
+        bh=fu51cPml/zweYYB/F7Mk2HqtdVHoi5XycmFY9Fmsyqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HuvDJIOD5FmDsp2igxmXIgqw8ZOJNpoQVIgiQ/gZjrtVpHr29wrpR9Qg36OdcyLz8
-         RgiBTcbxenkMDNtrUs5+JJdsIFtixqZwk87Xbcnyz2mT6jXAQjauoyf6gGT5wAsXa9
-         E+jbQbXhN8sC0U8YmBkZpjBmA0GR4nmx+MQRoSIU=
+        b=iVh0YsVQ9P2K/kgPm9Q+PV53Xcn0b6CQ99dgRbZx3GBIjFCek6SEWytRDUlMuAVw+
+         Jio4KsSBtbpwba675Lir+9FqMtm2DQMIGAspEKEyWd9f4WJ6vy4FB39+HHti2hobG9
+         wOAtzgBy7A1oT9nD3vjPIHJjqwryrL9KdQqfIBNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Khazhismel Kumykov <khazhy@google.com>,
-        Jan Kara <jack@suse.cz>,
-        Michael Stapelberg <stapelberg+linux@google.com>,
-        Wu Fengguang <fengguang.wu@intel.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.15 105/136] writeback: avoid use-after-free after removing device
-Date:   Mon, 29 Aug 2022 12:59:32 +0200
-Message-Id: <20220829105809.020795379@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.19 084/158] net: ethernet: mtk_eth_soc: enable rx cksum offload for MTK_NETSYS_V2
+Date:   Mon, 29 Aug 2022 12:58:54 +0200
+Message-Id: <20220829105812.576260888@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,139 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Khazhismel Kumykov <khazhy@chromium.org>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-commit f87904c075515f3e1d8f4a7115869d3b914674fd upstream.
+[ Upstream commit da6e113ff010815fdd21ee1e9af2e8d179a2680f ]
 
-When a disk is removed, bdi_unregister gets called to stop further
-writeback and wait for associated delayed work to complete.  However,
-wb_inode_writeback_end() may schedule bandwidth estimation dwork after
-this has completed, which can result in the timer attempting to access the
-just freed bdi_writeback.
+Enable rx checksum offload for mt7986 chipset.
 
-Fix this by checking if the bdi_writeback is alive, similar to when
-scheduling writeback work.
-
-Since this requires wb->work_lock, and wb_inode_writeback_end() may get
-called from interrupt, switch wb->work_lock to an irqsafe lock.
-
-Link: https://lkml.kernel.org/r/20220801155034.3772543-1-khazhy@google.com
-Fixes: 45a2966fd641 ("writeback: fix bandwidth estimate for spiky workload")
-Signed-off-by: Khazhismel Kumykov <khazhy@google.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Cc: Michael Stapelberg <stapelberg+linux@google.com>
-Cc: Wu Fengguang <fengguang.wu@intel.com>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Link: https://lore.kernel.org/r/c8699805c18f7fd38315fcb8da2787676d83a32c.1654544585.git.lorenzo@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fs-writeback.c   |   12 ++++++------
- mm/backing-dev.c    |   10 +++++-----
- mm/page-writeback.c |    6 +++++-
- 3 files changed, 16 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/fs/fs-writeback.c
-+++ b/fs/fs-writeback.c
-@@ -134,10 +134,10 @@ static bool inode_io_list_move_locked(st
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 59c9a10f83ba5..6beb3d4873a37 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1444,8 +1444,8 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 	int done = 0, bytes = 0;
  
- static void wb_wakeup(struct bdi_writeback *wb)
- {
--	spin_lock_bh(&wb->work_lock);
-+	spin_lock_irq(&wb->work_lock);
- 	if (test_bit(WB_registered, &wb->state))
- 		mod_delayed_work(bdi_wq, &wb->dwork, 0);
--	spin_unlock_bh(&wb->work_lock);
-+	spin_unlock_irq(&wb->work_lock);
- }
- 
- static void finish_writeback_work(struct bdi_writeback *wb,
-@@ -164,7 +164,7 @@ static void wb_queue_work(struct bdi_wri
- 	if (work->done)
- 		atomic_inc(&work->done->cnt);
- 
--	spin_lock_bh(&wb->work_lock);
-+	spin_lock_irq(&wb->work_lock);
- 
- 	if (test_bit(WB_registered, &wb->state)) {
- 		list_add_tail(&work->list, &wb->work_list);
-@@ -172,7 +172,7 @@ static void wb_queue_work(struct bdi_wri
- 	} else
- 		finish_writeback_work(wb, work);
- 
--	spin_unlock_bh(&wb->work_lock);
-+	spin_unlock_irq(&wb->work_lock);
- }
- 
- /**
-@@ -2109,13 +2109,13 @@ static struct wb_writeback_work *get_nex
- {
- 	struct wb_writeback_work *work = NULL;
- 
--	spin_lock_bh(&wb->work_lock);
-+	spin_lock_irq(&wb->work_lock);
- 	if (!list_empty(&wb->work_list)) {
- 		work = list_entry(wb->work_list.next,
- 				  struct wb_writeback_work, list);
- 		list_del_init(&work->list);
- 	}
--	spin_unlock_bh(&wb->work_lock);
-+	spin_unlock_irq(&wb->work_lock);
- 	return work;
- }
- 
---- a/mm/backing-dev.c
-+++ b/mm/backing-dev.c
-@@ -258,10 +258,10 @@ void wb_wakeup_delayed(struct bdi_writeb
- 	unsigned long timeout;
- 
- 	timeout = msecs_to_jiffies(dirty_writeback_interval * 10);
--	spin_lock_bh(&wb->work_lock);
-+	spin_lock_irq(&wb->work_lock);
- 	if (test_bit(WB_registered, &wb->state))
- 		queue_delayed_work(bdi_wq, &wb->dwork, timeout);
--	spin_unlock_bh(&wb->work_lock);
-+	spin_unlock_irq(&wb->work_lock);
- }
- 
- static void wb_update_bandwidth_workfn(struct work_struct *work)
-@@ -337,12 +337,12 @@ static void cgwb_remove_from_bdi_list(st
- static void wb_shutdown(struct bdi_writeback *wb)
- {
- 	/* Make sure nobody queues further work */
--	spin_lock_bh(&wb->work_lock);
-+	spin_lock_irq(&wb->work_lock);
- 	if (!test_and_clear_bit(WB_registered, &wb->state)) {
--		spin_unlock_bh(&wb->work_lock);
-+		spin_unlock_irq(&wb->work_lock);
- 		return;
- 	}
--	spin_unlock_bh(&wb->work_lock);
-+	spin_unlock_irq(&wb->work_lock);
- 
- 	cgwb_remove_from_bdi_list(wb);
- 	/*
---- a/mm/page-writeback.c
-+++ b/mm/page-writeback.c
-@@ -2755,6 +2755,7 @@ static void wb_inode_writeback_start(str
- 
- static void wb_inode_writeback_end(struct bdi_writeback *wb)
- {
-+	unsigned long flags;
- 	atomic_dec(&wb->writeback_inodes);
- 	/*
- 	 * Make sure estimate of writeback throughput gets updated after
-@@ -2763,7 +2764,10 @@ static void wb_inode_writeback_end(struc
- 	 * that if multiple inodes end writeback at a similar time, they get
- 	 * batched into one bandwidth update.
- 	 */
--	queue_delayed_work(bdi_wq, &wb->bw_dwork, BANDWIDTH_INTERVAL);
-+	spin_lock_irqsave(&wb->work_lock, flags);
-+	if (test_bit(WB_registered, &wb->state))
-+		queue_delayed_work(bdi_wq, &wb->bw_dwork, BANDWIDTH_INTERVAL);
-+	spin_unlock_irqrestore(&wb->work_lock, flags);
- }
- 
- int test_clear_page_writeback(struct page *page)
+ 	while (done < budget) {
++		unsigned int pktlen, *rxdcsum;
+ 		struct net_device *netdev;
+-		unsigned int pktlen;
+ 		dma_addr_t dma_addr;
+ 		u32 hash, reason;
+ 		int mac = 0;
+@@ -1512,7 +1512,13 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 		pktlen = RX_DMA_GET_PLEN0(trxd.rxd2);
+ 		skb->dev = netdev;
+ 		skb_put(skb, pktlen);
+-		if (trxd.rxd4 & eth->soc->txrx.rx_dma_l4_valid)
++
++		if (MTK_HAS_CAPS(eth->soc->caps, MTK_NETSYS_V2))
++			rxdcsum = &trxd.rxd3;
++		else
++			rxdcsum = &trxd.rxd4;
++
++		if (*rxdcsum & eth->soc->txrx.rx_dma_l4_valid)
+ 			skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 		else
+ 			skb_checksum_none_assert(skb);
+@@ -3761,6 +3767,7 @@ static const struct mtk_soc_data mt7986_data = {
+ 		.txd_size = sizeof(struct mtk_tx_dma_v2),
+ 		.rxd_size = sizeof(struct mtk_rx_dma_v2),
+ 		.rx_irq_done_mask = MTK_RX_DONE_INT_V2,
++		.rx_dma_l4_valid = RX_DMA_L4_VALID_V2,
+ 		.dma_max_len = MTK_TX_DMA_BUF_LEN_V2,
+ 		.dma_len_offset = 8,
+ 	},
+-- 
+2.35.1
+
 
 
