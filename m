@@ -2,102 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B67C0502A
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 02:20:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08EC7ECAAA2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 02:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229567AbiH2CUA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 22:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
+        id S229573AbiH2C2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 22:28:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiH2CT5 (ORCPT
+        with ESMTP id S229462AbiH2C2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 22:19:57 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC3862D1
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 19:19:51 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id u9-20020a17090a1f0900b001fde6477464so86558pja.4
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 19:19:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc;
-        bh=0H3AUYuP4P/tMp7k/Nt9coEcCeVEYZaStWGgcyYhtco=;
-        b=NfCku//zQ3DpnXc2hrSQ7Mpl2mjyzVD0yU0fwGZyS/DevEh8mNstpHBjJpZWsFB4KD
-         WaGGtlT3WOFDuSHMVnZO0TtCQkvmfx9PslISrbdToNHVdoh4yAuiklbNb9XxguEXwdBq
-         LLgkPtf8jgCjtTmNtikm+8RDG4sOrj9/UfADcaAvQks4Mpl0RXHwY6VZajwE+XWdummB
-         teKDEK854SRoZA1/MCNrptCcbY6+VIxuPk7XuhrAgapunOVhKH2n++LW+ZLP3CQIclGE
-         6eP+srcogAz1o2FOTaT/6B390AH3LmOg0xu7xRYpsweBEy5PgsmJ8ez6JiOITylGbCMd
-         di8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=0H3AUYuP4P/tMp7k/Nt9coEcCeVEYZaStWGgcyYhtco=;
-        b=39PiqPBwm8l/4iTbnjwqXJlb1/KD03/SyJoVzyMH2RPWvph63Gr1b2zP1SVp7JCCmf
-         hi657p6ACx5Qd/W48gTd//K50rcunI8JBtQ4wleiKOIWL2HeFSt0vuEzsIih8Ztbmqh6
-         3d32uvGL5ZgvLYVNI0CcHR1wgUmcj5BkU9wMsm1dfy2Ix+iglUuVL0XWJDn2teRQ+196
-         9gcK0I+JtL8djXR5HPSAekiBHu5kCrbef/J4Ev2odeBECxvOIaGU4aHPKnhKdy1O9baE
-         VFrwXiuQzmxWOLPFYZQXtr8ofDwL7qXtDBMYKRHKdc3wcjPSuI6SZ03/JTZrS1Y98auR
-         Qzpw==
-X-Gm-Message-State: ACgBeo0TiUct9LZS6samv4FT7boSuM4Xer7c24y1dtm3ytLXvL3fGl4q
-        PTwKdaqmgiuEYTjkRgFUN1PvmcGRD8M=
-X-Google-Smtp-Source: AA6agR7eB1+pPFKRUGO04fj1oQc0uJXG3yYMgqjDCnKY4J9L8oslQsJujDPNtFhFYMbbRCaHc5SXhA==
-X-Received: by 2002:a17:902:bd49:b0:172:df88:8981 with SMTP id b9-20020a170902bd4900b00172df888981mr14448764plx.120.1661739591284;
-        Sun, 28 Aug 2022 19:19:51 -0700 (PDT)
-Received: from debian.me (subs09a-223-255-225-73.three.co.id. [223.255.225.73])
-        by smtp.gmail.com with ESMTPSA id q15-20020a170902a3cf00b0016d72804664sm5988156plb.205.2022.08.28.19.19.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 19:19:50 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id 166A5107D6A; Mon, 29 Aug 2022 09:19:43 +0700 (WIB)
-Date:   Mon, 29 Aug 2022 09:19:43 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM and miscellaneous subsystems list 
-        <linux-mm@kvack.org>
-Cc:     Dwaipayan Ray <dwaipayanray1@gmail.com>,
-        Andy Whitcroft <apw@canonical.com>,
-        Joe Perches <joe@perches.com>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: One of reviewers and maintainers for checkpatch is inactive
-Message-ID: <YwwiP7Erud6Ns9mu@debian.me>
+        Sun, 28 Aug 2022 22:28:03 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2DB220E0;
+        Sun, 28 Aug 2022 19:27:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=PO7cJBFihQeNVhVlYLRbma6dh9Gy9x7adrAO453Twb0=; b=bPqnn3CW6xQRwD6JjWz14jxZdr
+        kMnVFfoaBwrW5AF+BfDMLpXQ8IoJFwlUWCG4PLfLWems1Q8OBX2jMIwkJ5oySLAyCCg7xAQ0XyLjS
+        GtGoY8383o6BcX5fdnthyKbBTbS8EFfDJizIm1K1k3ff1b0zv/LPoRRIpokLuAxUc2+0HxAldahWe
+        3rO/GTVfaPC7E2SH4H1MWTxz/bURqJb5HAnIaVnNjv0Pkm7CzALezZUrgOCzrxSBVKxbkxSvVcw2C
+        tJkRxMy1G34P75tY1qugd4DKO3Xhk32Sr+oOGlxB4SL1aWAwrsMbcRwbbnF01wa1ZgftQVaIKkIMF
+        7po+Jr2Q==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oSUUx-003jOd-DL; Mon, 29 Aug 2022 02:27:38 +0000
+Message-ID: <d6ddb57b-4a6c-1549-1352-800a7bb4d529@infradead.org>
+Date:   Sun, 28 Aug 2022 19:27:33 -0700
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ks3BxDV1mEZuNsep"
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH] cpuidle: qcom_scm: fix Kconfig dependencies again
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@kernel.org>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        He Ying <heying24@huawei.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Lina Iyer <ilina@codeaurora.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+References: <20210421135723.3601743-1-arnd@kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20210421135723.3601743-1-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi--
 
---ks3BxDV1mEZuNsep
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Can we get Arnd's patch merged, please?
 
-Hi,
+It's been awhile...
 
-It seems like one of reviewers for checkpatch subsystem, Dwaipayan Ray
-<dwaipayanray1@gmail.com>, is apparently inactive with his last post
-about a year ago ([1]). Maybe remove him from MAINTAINERS?
+On 4/21/21 06:57, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The previous compile time fix was incomplete and still results in
+> warnings like:
+> 
+> WARNING: unmet direct dependencies detected for ARM_CPU_SUSPEND
+>   Depends on [n]: ARCH_SUSPEND_POSSIBLE [=n]
+>   Selected by [y]:
+>   - ARM_QCOM_SPM_CPUIDLE [=y] && CPU_IDLE [=y] && (ARM [=y] || ARM64) && (ARCH_QCOM [=n] || COMPILE_TEST [=y]) && !ARM64 && MMU [=y]
+> 
+> WARNING: unmet direct dependencies detected for QCOM_SCM
+>   Depends on [n]: (ARM [=y] || ARM64) && HAVE_ARM_SMCCC [=n]
+>   Selected by [y]:
+>   - ARM_QCOM_SPM_CPUIDLE [=y] && CPU_IDLE [=y] && (ARM [=y] || ARM64) && (ARCH_QCOM [=n] || COMPILE_TEST [=y]) && !ARM64 && MMU [=y]
+> 
+> Use a dependency on ARCH_SUSPEND_POSSIBLE as a prerequisite for
+> selecting ARM_CPU_SUSPEND, and a dependency on HAVE_ARM_SMCCC
+> for QCOM_SCM.
+> 
+> Fixes: 498ba2a8a275 ("cpuidle: Fix ARM_QCOM_SPM_CPUIDLE configuration")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-[1]: https://lore.kernel.org/lkml/CABJPP5Bpc_0c=3Db8kymo0fgXZARNZJ8EM5F=3DG=
-px1=3Dy+vOfPWM8Q@mail.gmail.com/
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+
+> ---
+>  drivers/cpuidle/Kconfig.arm | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/cpuidle/Kconfig.arm b/drivers/cpuidle/Kconfig.arm
+> index 334f83e56120..fc596494251c 100644
+> --- a/drivers/cpuidle/Kconfig.arm
+> +++ b/drivers/cpuidle/Kconfig.arm
+> @@ -107,7 +107,8 @@ config ARM_TEGRA_CPUIDLE
+>  
+>  config ARM_QCOM_SPM_CPUIDLE
+>  	bool "CPU Idle Driver for Qualcomm Subsystem Power Manager (SPM)"
+> -	depends on (ARCH_QCOM || COMPILE_TEST) && !ARM64 && MMU
+> +	depends on ARCH_QCOM || (ARCH_SUSPEND_POSSIBLE && COMPILE_TEST)
+> +	depends on ARM && HAVE_ARM_SMCCC
+>  	select ARM_CPU_SUSPEND
+>  	select CPU_IDLE_MULTIPLE_DRIVERS
+>  	select DT_IDLE_STATES
 
 Thanks.
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---ks3BxDV1mEZuNsep
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCYwwiMAAKCRD2uYlJVVFO
-o0PgAP4/JO9GTBTBL35I5zYvgbcbrSpyY3d+aEGd/y8c1Ma7SAD/XhY9gy1c+h9Z
-YM8MpPhqMqieVwyln6yo8PyRo0WJGQs=
-=CJEt
------END PGP SIGNATURE-----
-
---ks3BxDV1mEZuNsep--
+-- 
+~Randy
