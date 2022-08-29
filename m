@@ -2,96 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE695ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19313ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229906AbiH2PHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:07:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
+        id S229987AbiH2PHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiH2PHB (ORCPT
+        with ESMTP id S229926AbiH2PHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:07:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1DD86B54
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:07:00 -0700 (PDT)
+        Mon, 29 Aug 2022 11:07:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20BF282F96
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:07:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F62AB810A8
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:06:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 954FDC433C1;
-        Mon, 29 Aug 2022 15:06:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A789A6111A
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:07:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18257C433D6
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 15:07:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661785618;
-        bh=K2Sqs5g2tp+43xxFZspN1D8v3qOT6RryXTyaXO3QnJY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YYXlnOUgStpRCiFT6xNptSzJyFRT4JucbhZeoUfkRrgmPajuUSeKoR2RX375IVAwW
-         fWUicxuedS/yJYoXbHl4oSA/B2FW4Hz1VP9bGfUEJlbJX8b/18ozyR5dvuBNk65C/1
-         0qtiP53v9e830gxaaZCnzYMnKam3CbPRjQ4nOKmzqo5F3Jj+l1hxIot9mlt3Y0BGiL
-         fKvlG2pZGtIPoSDEMmqaV1Mh/qCP9u7wSb8asYue/vJJuJQ8Lc0UToDR4WpIVVJLP9
-         Ew2MdR07uCX8N1dG2rJ8pMmJIueJ2b/CS8S5qxyNZBtoIJx5RjYNRLyepRzDAfq1Qb
-         SMTZRKKlK8L/g==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Andrew Jones <ajones@ventanamicro.com>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v3] riscv: enable THP_SWAP for RV64
-Date:   Mon, 29 Aug 2022 22:57:42 +0800
-Message-Id: <20220829145742.3139-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        s=k20201202; t=1661785635;
+        bh=I4PRhuO4Dx8YD9+YdrZ8EP0Cq4NO9S+/yC8tdR4+uHA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Tu/E5/D/EXEbam1fA/lejWD6EkruRMXsfEvhKcvlVScA1k5wLT36yUf3vxSFFn5kc
+         60KTZVglVh0/TD4kGRhvoPsQNskf7d0rgENOMts6vQL9MvwzAWDW2yhfhNXW8CzEZw
+         Pxw+HvH/FwMwCMNez4bA+03uKoLxyNRqXdP0FmG7gBecmjz8AzyAZ6OnhUOo8w+I5y
+         pl1kdCgWz04ybowiS00pKfgb8mm+2tlb1ut33AfWRPg0bYRp7LBHdPzT4U14lEf9aL
+         E4BqaQlO5kbjuW3zTeNtpfPDdoEXks3UbhK/uWTVL8FqZXdj6FbjzF8u8Z8tH1vLMV
+         dTcCzCYmJI1OA==
+Received: by mail-vk1-f180.google.com with SMTP id w129so3876575vkg.10
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:07:15 -0700 (PDT)
+X-Gm-Message-State: ACgBeo0rSIqoCOQH1VOHlVbMAsQ45Ce8btyV45lG2LKgS5NeTMTD2XpF
+        AdPvP58LxcGG+t11jkzlejxVyjQWIKrsDlbGDM4=
+X-Google-Smtp-Source: AA6agR7fh4G4J1JE520SBej7rcxzWIHuaLbymnR2C0cxZ3aFAOS1gZF6KQ+3bGNC0jLEA2AwSIQpzjeFDZDdGJvjMjY=
+X-Received: by 2002:a1f:9b90:0:b0:374:f09c:876f with SMTP id
+ d138-20020a1f9b90000000b00374f09c876fmr3440362vke.12.1661785634050; Mon, 29
+ Aug 2022 08:07:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220829133146.15236-1-xry111@xry111.site> <20220829133146.15236-4-xry111@xry111.site>
+ <5f9d3aa5fad957dae2f14e483b3b79dbcf9e794d.camel@xry111.site>
+In-Reply-To: <5f9d3aa5fad957dae2f14e483b3b79dbcf9e794d.camel@xry111.site>
+From:   Huacai Chen <chenhuacai@kernel.org>
+Date:   Mon, 29 Aug 2022 23:06:58 +0800
+X-Gmail-Original-Message-ID: <CAAhV-H7mkYCNx0dR_3fXKA0u85Pnub8T+WJ=7sS_JS9v6JfOxA@mail.gmail.com>
+Message-ID: <CAAhV-H7mkYCNx0dR_3fXKA0u85Pnub8T+WJ=7sS_JS9v6JfOxA@mail.gmail.com>
+Subject: Re: [PATCH v6 3/6] LoongArch: Use model("extreme") attribute for
+ per-CPU variables in module if CONFIG_AS_HAS_EXPLICIT_RELOCS
+To:     Xi Ruoyao <xry111@xry111.site>
+Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I have a Sipeed Lichee RV dock board which only has 512MB DDR, so
-memory optimizations such as swap on zram are helpful. As is seen
-in commit d0637c505f8a ("arm64: enable THP_SWAP for arm64") and
-commit bd4c82c22c367e ("mm, THP, swap: delay splitting THP after
-swapped out"), THP_SWAP can improve the swap throughput significantly.
+Hi, Ruoyao,
 
-Enable THP_SWAP for RV64, testing the micro-benchmark which is
-introduced by commit d0637c505f8a ("arm64: enable THP_SWAP for arm64")
-shows below numbers on the Lichee RV dock board:
+On Mon, Aug 29, 2022 at 11:02 PM Xi Ruoyao <xry111@xry111.site> wrote:
+>
+> On Mon, 2022-08-29 at 21:31 +0800, Xi Ruoyao wrote:
+> > diff --git a/arch/loongarch/Makefile b/arch/loongarch/Makefile
+> > index 1563747c4fa8..593818a61741 100644
+> > --- a/arch/loongarch/Makefile
+> > +++ b/arch/loongarch/Makefile
+> > @@ -53,6 +53,9 @@ LDFLAGS_vmlinux                       += -G0 -static -n -nostdlib
+> >  # combination of a "new" assembler and "old" compiler is not supported.  Either
+> >  # upgrade the compiler or downgrade the assembler.
+> >  ifdef CONFIG_AS_HAS_EXPLICIT_RELOCS
+> > +ifeq ($(shell echo '__has_attribute(model)' | $(CC) -E -P - 2> /dev/null), 0)
+> > +$(error "C compiler must support model attribute if using explicit relocs")
+> > +endif
+>
+> Self review:
+>
+> I'm wondering if we really need this thing...  There won't be a GCC
+> version released with explicit relocation but without model attribute
+> (GCC 13 starts to support them both).
+>
+> But without a check, if someone uses an early GCC 13 snapshot and
+> ignores the -Wattributes warning, the system will suddenly blow up
+> loading a module with per-CPU variable defined.
+>
+> Maybe "-Werror=attributes" is better, but is it OK to add a -Werror=
+> option for entire Linux tree?
+I think we can remove it entirely, and then this patch seems can be
+squashed into patch 2.
 
-swp out bandwidth w/o patch: 66908 bytes/ms (mean of 10 tests)
-swp out bandwidth w/ patch: 322638 bytes/ms (mean of 10 tests)
-
-Improved by 382%!
-
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Reviewed-by: Andrew Jones <ajones@ventanamicro.com>
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
----
-Since v2:
- - correct reviewed-by tag
- - update commit msg
-
-Since v1:
- - collect reviewed-by tag
- - make ARCH_WANTS_THP_SWAP rely on HAVE_ARCH_TRANSPARENT_HUGEPAGE
-   instead
-
- arch/riscv/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index ed66c31e4655..79e52441e18b 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -45,6 +45,7 @@ config RISCV
- 	select ARCH_WANT_FRAME_POINTERS
- 	select ARCH_WANT_GENERAL_HUGETLB
- 	select ARCH_WANT_HUGE_PMD_SHARE if 64BIT
-+	select ARCH_WANTS_THP_SWAP if HAVE_ARCH_TRANSPARENT_HUGEPAGE
- 	select BINFMT_FLAT_NO_DATA_START_OFFSET if !MMU
- 	select BUILDTIME_TABLE_SORT if MMU
- 	select CLONE_BACKWARDS
--- 
-2.34.1
-
+Huacai
+>
+> >  cflags-y                       += -mexplicit-relocs
+> >  else
+> >  cflags-y                       += $(call cc-option,-mno-explicit-relocs)
+>
+> --
+> Xi Ruoyao <xry111@xry111.site>
+> School of Aerospace Science and Technology, Xidian University
+>
