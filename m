@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 895DAECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB80ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233050AbiH2Lqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43778 "EHLO
+        id S232481AbiH2Lqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233020AbiH2LqO (ORCPT
+        with ESMTP id S232803AbiH2Lqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:46:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54E2786C1;
-        Mon, 29 Aug 2022 04:29:31 -0700 (PDT)
+        Mon, 29 Aug 2022 07:46:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3D255A7;
+        Mon, 29 Aug 2022 04:29:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B1016120A;
-        Mon, 29 Aug 2022 11:10:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D34C433C1;
-        Mon, 29 Aug 2022 11:10:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8747C6124C;
+        Mon, 29 Aug 2022 11:17:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90ACBC433B5;
+        Mon, 29 Aug 2022 11:17:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771400;
-        bh=MfO06DdabSfW+lcqbBBnnNJSNAzT1VCcU04W7Qi6R48=;
+        s=korg; t=1661771836;
+        bh=3ZJ55aFjljXhDNzP5PC35zGb7thw45TdC+48KtP1bZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nTBB6ZBkOqS+hdNlJas2k4F+UrTNEt5Zn66r2TVaZq9MFiVPHtviv0gHIFgndeSD4
-         0ilFfppNILjYxBDglBDWkcvr8Wn7DnQ5K/15Pb2MCIciw8sp84RrF7DjL3chSH7DHk
-         uK223cmIwg27wcNxJ7SKrbFu8SQwstDvFkjwMCSU=
+        b=N+YdrDVJZ/FQL2QtGzZfMpTUPf2QQmhExb+LbU6s4GVTDIFnq60et9YFLo61WU8lv
+         yi0CdqwTiGml7LSZCRtnnE1Zak6Nj0mGWnKm+PCX8hS5/xcDjq3+hSDhZSbX0+PuXF
+         mtg5iQ5VdFAUyijoAI0oaOgw/c8KVEhdxGj/5LJk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shannon Nelson <snelson@pensando.io>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 63/86] ionic: fix up issues with handling EAGAIN on FW cmds
-Date:   Mon, 29 Aug 2022 12:59:29 +0200
-Message-Id: <20220829105759.132113363@linuxfoundation.org>
+        stable@vger.kernel.org, Richard Guy Briggs <rgb@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.19 112/158] audit: move audit_return_fixup before the filters
+Date:   Mon, 29 Aug 2022 12:59:22 +0200
+Message-Id: <20220829105813.797371125@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
-References: <20220829105756.500128871@linuxfoundation.org>
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
+References: <20220829105808.828227973@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,53 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shannon Nelson <snelson@pensando.io>
+From: Richard Guy Briggs <rgb@redhat.com>
 
-[ Upstream commit 0fc4dd452d6c14828eed6369155c75c0ac15bab3 ]
+commit d4fefa4801a1c2f9c0c7a48fbb0fdf384e89a4ab upstream.
 
-In looping on FW update tests we occasionally see the
-FW_ACTIVATE_STATUS command fail while it is in its EAGAIN loop
-waiting for the FW activate step to finsh inside the FW.  The
-firmware is complaining that the done bit is set when a new
-dev_cmd is going to be processed.
+The success and return_code are needed by the filters.  Move
+audit_return_fixup() before the filters.  This was causing syscall
+auditing events to be missed.
 
-Doing a clean on the cmd registers and doorbell before exiting
-the wait-for-done and cleaning the done bit before the sleep
-prevents this from occurring.
-
-Fixes: fbfb8031533c ("ionic: Add hardware init and device commands")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://github.com/linux-audit/audit-kernel/issues/138
+Cc: stable@vger.kernel.org
+Fixes: 12c5e81d3fd0 ("audit: prepare audit_context for use in calling contexts beyond syscalls")
+Signed-off-by: Richard Guy Briggs <rgb@redhat.com>
+[PM: manual merge required]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/auditsc.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index e14869a2e24a5..f60ffef33e0ce 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -378,8 +378,8 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 				ionic_opcode_to_str(opcode), opcode,
- 				ionic_error_to_str(err), err);
- 
--			msleep(1000);
- 			iowrite32(0, &idev->dev_cmd_regs->done);
-+			msleep(1000);
- 			iowrite32(1, &idev->dev_cmd_regs->doorbell);
- 			goto try_again;
- 		}
-@@ -392,6 +392,8 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 		return ionic_error_to_errno(err);
+--- a/kernel/auditsc.c
++++ b/kernel/auditsc.c
+@@ -1965,6 +1965,7 @@ void __audit_uring_exit(int success, lon
+ 		goto out;
  	}
  
-+	ionic_dev_cmd_clean(ionic);
-+
- 	return 0;
- }
++	audit_return_fixup(ctx, success, code);
+ 	if (ctx->context == AUDIT_CTX_SYSCALL) {
+ 		/*
+ 		 * NOTE: See the note in __audit_uring_entry() about the case
+@@ -2006,7 +2007,6 @@ void __audit_uring_exit(int success, lon
+ 	audit_filter_inodes(current, ctx);
+ 	if (ctx->current_state != AUDIT_STATE_RECORD)
+ 		goto out;
+-	audit_return_fixup(ctx, success, code);
+ 	audit_log_exit();
  
--- 
-2.35.1
-
+ out:
+@@ -2090,13 +2090,13 @@ void __audit_syscall_exit(int success, l
+ 	if (!list_empty(&context->killed_trees))
+ 		audit_kill_trees(context);
+ 
++	audit_return_fixup(context, success, return_code);
+ 	/* run through both filters to ensure we set the filterkey properly */
+ 	audit_filter_syscall(current, context);
+ 	audit_filter_inodes(current, context);
+ 	if (context->current_state < AUDIT_STATE_RECORD)
+ 		goto out;
+ 
+-	audit_return_fixup(context, success, return_code);
+ 	audit_log_exit();
+ 
+ out:
 
 
