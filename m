@@ -2,116 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA92ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 525A2ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 16:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbiH2QPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 12:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38318 "EHLO
+        id S230140AbiH2QP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 12:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbiH2QPj (ORCPT
+        with ESMTP id S229894AbiH2QPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 12:15:39 -0400
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58834D147;
-        Mon, 29 Aug 2022 09:15:36 -0700 (PDT)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
-        by localhost (Postfix) with ESMTP id 4MGbBt35PJz9spN;
-        Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
-        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fo9r7bRubnDp; Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase2.c-s.fr (Postfix) with ESMTP id 4MGbBt1d9bz9smN;
-        Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 1FEB18B770;
-        Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id G8xiXSUm_EUb; Mon, 29 Aug 2022 18:15:34 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id E17AD8B76E;
-        Mon, 29 Aug 2022 18:15:33 +0200 (CEST)
-Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 27TGFO24988571
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Mon, 29 Aug 2022 18:15:24 +0200
-Received: (from chleroy@localhost)
-        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 27TGFMP7988534;
-        Mon, 29 Aug 2022 18:15:22 +0200
-X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Keerthy <j-keerthy@ti.com>, Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
-        linux-doc@vger.kernel.org, x86@kernel.org
-Subject: [PATCH v1 0/8] gpio: Get rid of ARCH_NR_GPIOS (v1)
-Date:   Mon, 29 Aug 2022 18:15:02 +0200
-Message-Id: <cover.1661789204.git.christophe.leroy@csgroup.eu>
-X-Mailer: git-send-email 2.37.1
+        Mon, 29 Aug 2022 12:15:49 -0400
+Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DED97199F;
+        Mon, 29 Aug 2022 09:15:40 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 18:15:36 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1661789739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+wStadIO0VmoiizHUtMBUV7ir4oix+OG46hCH3/9nUA=;
+        b=axsCOB4iqY8LlEIt1QM5kBid32gDCkM7tTjX+MaW67UKJMAocXMBMyQTKWkZJQuliAWCSI
+        ugfhKgH5bl8QaX3KFeeyeHQAfBD2EZSE87zo7nshwXmqu46M70v71qFDmiv34QxSkK6F98
+        iiMDGI469oRRmmLbgxzwFTpnag5/u3c=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Andrew Jones <andrew.jones@linux.dev>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, Marc Zyngier <maz@kernel.org>,
+        Anup Patel <anup@brainfault.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Oliver Upton <oliver.upton@linux.dev>,
+        Atish Patra <atishp@atishpatra.org>,
+        David Hildenbrand <david@redhat.com>,
+        Tom Rix <trix@redhat.com>, kvm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
+        llvm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Colton Lewis <coltonlewis@google.com>,
+        Peter Gonda <pgonda@google.com>
+Subject: Re: [PATCH v5 3/7] KVM: selftests: Automatically do init_ucall() for
+ non-barebones VMs
+Message-ID: <20220829161536.gszp6yvgbzwnor7r@kamzik>
+References: <20220825232522.3997340-1-seanjc@google.com>
+ <20220825232522.3997340-4-seanjc@google.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1661789703; l=1865; s=20211009; h=from:subject:message-id; bh=Vl/sfiqqYCKPx5L5pTixiJLacXAAcuoC8yRZdP3eXxA=; b=9IH3swSm3id8KIsons/Q3yxValzSB+wJ/4C4y5L9EbH7Udj/av3v2DSHbVZID5OuRevIwV/lp66p WFgDODeFB04IIwVGsiAsAp4v5VACL5hz6QzPeEZcV1ZfsYRuYz/x
-X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825232522.3997340-4-seanjc@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 14e85c0e69d5 ("gpio: remove gpio_descs global array")
-there is no limitation on the number of GPIOs that can be allocated
-in the system since the allocation is fully dynamic.
+On Thu, Aug 25, 2022 at 11:25:18PM +0000, Sean Christopherson wrote:
+> Do init_ucall() automatically during VM creation to kill two (three?)
+> birds with one stone.
+> 
+> First, initializing ucall immediately after VM creations allows forcing
+> aarch64's MMIO ucall address to immediately follow memslot0.  This is
+> still somewhat fragile as tests could clobber the MMIO address with a
+> new memslot, but it's safe-ish since tests have to be conversative when
+> accounting for memslot0.  And this can be hardened in the future by
+> creating a read-only memslot for the MMIO page (KVM ARM exits with MMIO
+> if the guest writes to a read-only memslot).  Add a TODO to document that
+> selftests can and should use a memslot for the ucall MMIO (doing so
+> requires yet more rework because tests assumes thay can use all memslots
+> except memslot0).
+> 
+> Second, initializing ucall for all VMs prepares for making ucall
+> initialization meaningful on all architectures.  aarch64 is currently the
+> only arch that needs to do any setup, but that will change in the future
+> by switching to a pool-based implementation (instead of the current
+> stack-based approach).
+> 
+> Lastly, defining the ucall MMIO address from common code will simplify
+> switching all architectures (except s390) to a common MMIO-based ucall
+> implementation (if there's ever sufficient motivation to do so).
+> 
+> Cc: Oliver Upton <oliver.upton@linux.dev>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  .../selftests/kvm/aarch64/arch_timer.c        |  1 -
+>  .../selftests/kvm/aarch64/debug-exceptions.c  |  1 -
+>  .../selftests/kvm/aarch64/hypercalls.c        |  1 -
+>  .../testing/selftests/kvm/aarch64/psci_test.c |  1 -
+>  .../testing/selftests/kvm/aarch64/vgic_init.c |  2 -
+>  .../testing/selftests/kvm/aarch64/vgic_irq.c  |  1 -
+>  tools/testing/selftests/kvm/dirty_log_test.c  |  2 -
+>  .../selftests/kvm/include/ucall_common.h      |  6 +--
+>  .../selftests/kvm/kvm_page_table_test.c       |  1 -
+>  .../testing/selftests/kvm/lib/aarch64/ucall.c | 54 ++-----------------
+>  tools/testing/selftests/kvm/lib/kvm_util.c    | 11 ++++
+>  .../selftests/kvm/lib/perf_test_util.c        |  2 -
+>  tools/testing/selftests/kvm/lib/riscv/ucall.c |  2 +-
+>  tools/testing/selftests/kvm/lib/s390x/ucall.c |  2 +-
+>  .../testing/selftests/kvm/lib/x86_64/ucall.c  |  2 +-
+>  .../testing/selftests/kvm/memslot_perf_test.c |  1 -
+>  tools/testing/selftests/kvm/rseq_test.c       |  1 -
+>  tools/testing/selftests/kvm/steal_time.c      |  1 -
+>  .../kvm/system_counter_offset_test.c          |  1 -
+>  19 files changed, 20 insertions(+), 73 deletions(-)
+>
 
-ARCH_NR_GPIOS is today only used in order to provide downwards
-gpiobase allocation from that value, while static allocation is
-performed upwards from 0. However that has the disadvantage of
-limiting the number of GPIOs that can be registered in the system.
+Reviewed-by: Andrew Jones <andrew.jones@linux.dev>
 
-To overcome this limitation without requiring each and every
-platform to provide its 'best-guess' maximum number, rework the
-allocation to allocate from 256 upwards, allowing approx 2 millions
-of GPIOs.
-
-In the meantime, add a warning for drivers how are still doing
-static allocation, so that in the future the static allocation gets
-removed completely and dynamic allocation can start at base 0.
-
-Christophe Leroy (8):
-  gpio: aggregator: Stop using ARCH_NR_GPIOS
-  gpio: davinci: Stop using ARCH_NR_GPIOS
-  gpiolib: Warn on drivers still using static gpiobase allocation
-  gpiolib: Get rid of ARCH_NR_GPIOS
-  Documentation: gpio: Remove text about ARCH_NR_GPIOS
-  x86: Remove CONFIG_ARCH_NR_GPIO
-  arm: Remove CONFIG_ARCH_NR_GPIO
-  arm64: Remove CONFIG_ARCH_NR_GPIO
-
- Documentation/driver-api/gpio/legacy.rst |  5 ---
- arch/arm/Kconfig                         | 21 ---------
- arch/arm/include/asm/gpio.h              |  1 -
- arch/arm64/Kconfig                       | 12 ------
- arch/x86/Kconfig                         |  5 ---
- drivers/gpio/gpio-aggregator.c           |  8 ++--
- drivers/gpio/gpio-davinci.c              |  3 --
- drivers/gpio/gpio-sta2x11.c              |  5 +--
- drivers/gpio/gpiolib.c                   | 13 +++---
- include/asm-generic/gpio.h               | 55 +++++++++---------------
- 10 files changed, 36 insertions(+), 92 deletions(-)
-
--- 
-2.37.1
-
+Thanks,
+drew
