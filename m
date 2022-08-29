@@ -2,93 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C27EECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D4ACECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 15:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiH2PCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 11:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46046 "EHLO
+        id S229749AbiH2PDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 11:03:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229484AbiH2PCs (ORCPT
+        with ESMTP id S229484AbiH2PDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 11:02:48 -0400
-Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55C0485A9C
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 08:02:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1661785363;
-        bh=P0So/d1QHvZh/G4+ijTFNIkaXwtW+51RX8yFY1F9e6Y=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=SNXxaCpVH8BLpiKMYNfVMPX5HvyElAUAwMtcmZu+HwbE9GvPxhY4zfKNj8bUsS1mp
-         wcaJ9lbFKot2YOykwAPcPcp9EsvTkJnNAXPmsp5bmPbjNNfFohHlF4ZpHESvi2IH8e
-         B6ZK9xOP0qQ5U4biZl12cXlO6f9kHChQInPCLmww=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id 34143667AA;
-        Mon, 29 Aug 2022 11:02:42 -0400 (EDT)
-Message-ID: <5f9d3aa5fad957dae2f14e483b3b79dbcf9e794d.camel@xry111.site>
-Subject: Re: [PATCH v6 3/6] LoongArch: Use model("extreme") attribute for
- per-CPU variables in module if CONFIG_AS_HAS_EXPLICIT_RELOCS
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     loongarch@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Youling Tang <tangyouling@loongson.cn>,
-        Jinyang He <hejinyang@loongson.cn>
-Date:   Mon, 29 Aug 2022 23:02:40 +0800
-In-Reply-To: <20220829133146.15236-4-xry111@xry111.site>
-References: <20220829133146.15236-1-xry111@xry111.site>
-         <20220829133146.15236-4-xry111@xry111.site>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.45.2 
+        Mon, 29 Aug 2022 11:03:14 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CD084EC8;
+        Mon, 29 Aug 2022 08:03:14 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id h11-20020a17090a470b00b001fbc5ba5224so8871038pjg.2;
+        Mon, 29 Aug 2022 08:03:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:from:to:cc;
+        bh=hl19yC27qvJPGzvVoFgwuG8P3RA3WT4VWzdG/9QIu5c=;
+        b=N1pIhGD3wyaigKJVuMP6jb4oj231Asc43jUz5tjVhjk5bTdEAAcjlu+xAvZU/qb9+m
+         1m5qLiwFAUAIcOjaHfMSChJoyufmA6Zxclf8RU9S0ixKv80UoHtL5WOqQbTrCT5xznXF
+         i/DS01nwtIF3d68Na5mCvQV6XHczdhOioi+X3kRLspOP22nPcUGEzf/BcTd2Wab9vPr2
+         Pb+N0BxHyJH2UG61ugOuyC7ND/2XO7a1AAvBqSddPCtxvGkFlyUweO+GxukeWHRkQLyG
+         GSzOxEhS5UmBsZtvXcWaPYZyMCdtpdX+51/lZH7B3YGIrlj1f6rRpOARqnvUSkOJO7lm
+         aX1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=hl19yC27qvJPGzvVoFgwuG8P3RA3WT4VWzdG/9QIu5c=;
+        b=rf35cl/icSz8RACWLuwSlxSbtJ8o9MhKSCrZQZPMAkyBx/tD+3Z7sP+8lnusIC38C4
+         lutGgHNJ/Yj5o8l4LrjaPKXXnky/BP60O0Q+uApOOvO19XQI1yWFnipBeUl229H3afT0
+         CeEfZUmmiQqTK3u9Hi/knGBuImGPBNKJH6tNx0z4JvaG9ErDjH2jHiI9j70JIvIsO0tI
+         wc/3XCNRkxERAg14SJb1ZNIjJGSNXWe4RMgUpU8oCduZc3PiCAvlDkg94+FVYof6TFOj
+         53BQM2D5MO3iARwHghg7v5aMM5+oRUVeg2Nofc4xzJIzxyVCFlxTQ9MSngytfwyp7tRO
+         4DEw==
+X-Gm-Message-State: ACgBeo1tbX+YtxbkJc5iIc/GrysXJayUjvUGEd2Z1IA2SM94eUyDE6Ah
+        CBGIAUuDumpovalB3nTiZEhL9RSBaKTVXw==
+X-Google-Smtp-Source: AA6agR7OFBttzwRQAP0jnnmDnPAv1l0tyFU2JXitdpeRVfDA4S77kutEDWZof5n4mxHqPaLyKs4WNQ==
+X-Received: by 2002:a17:90b:2404:b0:1fc:b5d1:446f with SMTP id nr4-20020a17090b240400b001fcb5d1446fmr18494415pjb.58.1661785392095;
+        Mon, 29 Aug 2022 08:03:12 -0700 (PDT)
+Received: from Negi ([207.151.52.7])
+        by smtp.gmail.com with ESMTPSA id u1-20020a170902e80100b0016c4546fbf9sm6644546plg.128.2022.08.29.08.03.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 08:03:11 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 08:03:10 -0700
+From:   Soumya Negi <soumya.negi97@gmail.com>
+To:     Anton Altaparmakov <anton@tuxera.com>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Cc:     linux-ntfs-dev@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] ntfs: Ensure $Extend is a directory
+Message-ID: <20220829150309.GA26122@Negi>
+References: <20220727001513.11902-1-soumya.negi97@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220727001513.11902-1-soumya.negi97@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-08-29 at 21:31 +0800, Xi Ruoyao wrote:
-> diff --git a/arch/loongarch/Makefile b/arch/loongarch/Makefile
-> index 1563747c4fa8..593818a61741 100644
-> --- a/arch/loongarch/Makefile
-> +++ b/arch/loongarch/Makefile
-> @@ -53,6 +53,9 @@ LDFLAGS_vmlinux=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0+=3D -G0 -static -n -nostdlib
-> =C2=A0# combination of a "new" assembler and "old" compiler is not suppor=
-ted.=C2=A0 Either
-> =C2=A0# upgrade the compiler or downgrade the assembler.
-> =C2=A0ifdef CONFIG_AS_HAS_EXPLICIT_RELOCS
-> +ifeq ($(shell echo '__has_attribute(model)' | $(CC) -E -P - 2> /dev/null=
-), 0)
-> +$(error "C compiler must support model attribute if using explicit reloc=
-s")
-> +endif
+On Tue, Jul 26, 2022 at 05:15:13PM -0700, Soumya Negi wrote:
+> Fix Syzbot bug: kernel BUG in ntfs_lookup_inode_by_name
+> https://syzkaller.appspot.com/bug?id=32cf53b48c1846ffc25a185a2e92e170d1a95d71
+> 
+> Check whether $Extend is a directory or not( for NTFS3.0+) while
+> loading system files. If it isn't(as in the case of this bug where the
+> mft record for $Extend contains a regular file), load_system_files()
+> returns false.
+> 
+> Reported-by: syzbot+30b7f850c6d98ea461d2@syzkaller.appspotmail.com
+> CC: stable@vger.kernel.org # 4.9+
+> Signed-off-by: Soumya Negi <soumya.negi97@gmail.com>
+> ---
+> Changes since v1:
+> * Added CC tag for stable
+> * Formatted changelog to fit within 72 cols
+> 
+> ---
+>  fs/ntfs/super.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/fs/ntfs/super.c b/fs/ntfs/super.c
+> index 5ae8de09b271..18e2902531f9 100644
+> --- a/fs/ntfs/super.c
+> +++ b/fs/ntfs/super.c
+> @@ -2092,10 +2092,15 @@ static bool load_system_files(ntfs_volume *vol)
+>  	// TODO: Initialize security.
+>  	/* Get the extended system files' directory inode. */
+>  	vol->extend_ino = ntfs_iget(sb, FILE_Extend);
+> -	if (IS_ERR(vol->extend_ino) || is_bad_inode(vol->extend_ino)) {
+> +	if (IS_ERR(vol->extend_ino) || is_bad_inode(vol->extend_ino) ||
+> +	    !S_ISDIR(vol->extend_ino->i_mode)) {
+> +		static const char *es1 = "$Extend is not a directory";
+> +		static const char *es2 = "Failed to load $Extend";
+> +		const char *es = !S_ISDIR(vol->extend_ino->i_mode) ? es1 : es2;
+> +
+>  		if (!IS_ERR(vol->extend_ino))
+>  			iput(vol->extend_ino);
+> -		ntfs_error(sb, "Failed to load $Extend.");
+> +		ntfs_error(sb, "%s.", es);
+>  		goto iput_sec_err_out;
+>  	}
+>  #ifdef NTFS_RW
+> -- 
+> 2.17.1
 
-Self review:
+Hi Anton,
+Have you had a chance to look at this patch?
 
-I'm wondering if we really need this thing...  There won't be a GCC
-version released with explicit relocation but without model attribute
-(GCC 13 starts to support them both).
+Thanks,
+Soumya
 
-But without a check, if someone uses an early GCC 13 snapshot and
-ignores the -Wattributes warning, the system will suddenly blow up
-loading a module with per-CPU variable defined.
-
-Maybe "-Werror=3Dattributes" is better, but is it OK to add a -Werror=3D
-option for entire Linux tree?
-
-> =C2=A0cflags-y=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0+=3D -mexplicit-relocs
-> =C2=A0else
-> =C2=A0cflags-y=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0+=3D $(call cc-option,-mno-explicit-relocs)
-
---=20
-Xi Ruoyao <xry111@xry111.site>
-School of Aerospace Science and Technology, Xidian University
