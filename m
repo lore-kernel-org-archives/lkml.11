@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAF9ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 733DDECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232925AbiH2Llo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:41:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54534 "EHLO
+        id S230098AbiH2Ll7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232908AbiH2LlG (ORCPT
+        with ESMTP id S232743AbiH2Ll1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:41:06 -0400
+        Mon, 29 Aug 2022 07:41:27 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AC215F9B5;
-        Mon, 29 Aug 2022 04:25:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542326FA30;
+        Mon, 29 Aug 2022 04:25:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE5F1B80F98;
-        Mon, 29 Aug 2022 11:18:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DF19C433D6;
-        Mon, 29 Aug 2022 11:18:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BFE5B80F00;
+        Mon, 29 Aug 2022 11:16:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75306C433D7;
+        Mon, 29 Aug 2022 11:16:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771887;
-        bh=o/HNSoSVRYqLb9w4klxap5MlomTwg5zz/toUw3fcwuo=;
+        s=korg; t=1661771804;
+        bh=kCJJ0zEhqeKzejMCjY23kNjAuEHLY49pqrGAAhrL7AQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c1EMbmsf0qu84nuIEtK4rfkvw6/IszNEG5z8dRKBq5ji7H5uyT2ikyO7Xx/sOhYEW
-         yAuuZcIq/9nU1TqRyEeENgB237Qj00wgfyODPNBOAPEIVk8bpcXFAwN4Wf0A3755xS
-         0s5BGhjH91ZbtZPA3/pFR0qUzD6tbMtFLQzv2Rzs=
+        b=nnFD8i+NN4HszMpToMICFTbbtsG3g8NazuP/1iB/qwOt8UzYHS1JK1U5O8vmKVQfx
+         ZgJ3TtdCElh8xQAkJqv9WOwWdZ64ncBKgvAtW6rLUgOGNJDfosDDcQGdIbTx8EuSJf
+         mAxB+rLdqbVxsF6yCAtvI3anoldEpjQpztvkVB/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH 5.19 131/158] riscv: dts: microchip: correct L2 cache interrupts
-Date:   Mon, 29 Aug 2022 12:59:41 +0200
-Message-Id: <20220829105814.583123387@linuxfoundation.org>
+        stable@vger.kernel.org, Stephane Eranian <eranian@google.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.19 103/158] perf/x86/lbr: Enable the branch type for the Arch LBR by default
+Date:   Mon, 29 Aug 2022 12:59:13 +0200
+Message-Id: <20220829105813.414117464@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 References: <20220829105808.828227973@linuxfoundation.org>
@@ -49,58 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-commit 34fc9cc3aebe8b9e27d3bc821543dd482dc686ca upstream.
+commit 32ba156df1b1c8804a4e5be5339616945eafea22 upstream.
 
-The "PolarFire SoC MSS Technical Reference Manual" documents the
-following PLIC interrupts:
+On the platform with Arch LBR, the HW raw branch type encoding may leak
+to the perf tool when the SAVE_TYPE option is not set.
 
-1 - L2 Cache Controller Signals when a metadata correction event occurs
-2 - L2 Cache Controller Signals when an uncorrectable metadata event occurs
-3 - L2 Cache Controller Signals when a data correction event occurs
-4 - L2 Cache Controller Signals when an uncorrectable data event occurs
+In the intel_pmu_store_lbr(), the HW raw branch type is stored in
+lbr_entries[].type. If the SAVE_TYPE option is set, the
+lbr_entries[].type will be converted into the generic PERF_BR_* type
+in the intel_pmu_lbr_filter() and exposed to the user tools.
+But if the SAVE_TYPE option is NOT set by the user, the current perf
+kernel doesn't clear the field. The HW raw branch type leaks.
 
-This differs from the SiFive FU540 which only has three L2 cache related
-interrupts.
+There are two solutions to fix the issue for the Arch LBR.
+One is to clear the field if the SAVE_TYPE option is NOT set.
+The other solution is to unconditionally convert the branch type and
+expose the generic type to the user tools.
 
-The sequence in the device tree is defined by an enum:
+The latter is implemented here, because
+- The branch type is valuable information. I don't see a case where
+  you would not benefit from the branch type. (Stephane Eranian)
+- Not having the branch type DOES NOT save any space in the
+  branch record (Stephane Eranian)
+- The Arch LBR HW can retrieve the common branch types from the
+  LBR_INFO. It doesn't require the high overhead SW disassemble.
 
-    enum {
-            DIR_CORR = 0,
-            DATA_CORR,
-            DATA_UNCORR,
-            DIR_UNCORR,
-    };
-
-So the correct sequence of the L2 cache interrupts is
-
-    interrupts = <1>, <3>, <4>, <2>;
-
-[Conor]
-This manifests as an unusable system if the l2-cache driver is enabled,
-as the wrong interrupt gets cleared & the handler prints errors to the
-console ad infinitum.
-
-Fixes: 0fa6107eca41 ("RISC-V: Initial DTS for Microchip ICICLE board")
-CC: stable@vger.kernel.org # 5.15: e35b07a7df9b: riscv: dts: microchip: mpfs: Group tuples in interrupt properties
-Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Fixes: 47125db27e47 ("perf/x86/intel/lbr: Support Architectural LBR")
+Reported-by: Stephane Eranian <eranian@google.com>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220816125612.2042397-1-kan.liang@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/boot/dts/microchip/mpfs.dtsi |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/events/intel/lbr.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/riscv/boot/dts/microchip/mpfs.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs.dtsi
-@@ -169,7 +169,7 @@
- 			cache-size = <2097152>;
- 			cache-unified;
- 			interrupt-parent = <&plic>;
--			interrupts = <1>, <2>, <3>;
-+			interrupts = <1>, <3>, <4>, <2>;
- 		};
+--- a/arch/x86/events/intel/lbr.c
++++ b/arch/x86/events/intel/lbr.c
+@@ -1097,6 +1097,14 @@ static int intel_pmu_setup_hw_lbr_filter
  
- 		clint: clint@2000000 {
+ 	if (static_cpu_has(X86_FEATURE_ARCH_LBR)) {
+ 		reg->config = mask;
++
++		/*
++		 * The Arch LBR HW can retrieve the common branch types
++		 * from the LBR_INFO. It doesn't require the high overhead
++		 * SW disassemble.
++		 * Enable the branch type by default for the Arch LBR.
++		 */
++		reg->reg |= X86_BR_TYPE_SAVE;
+ 		return 0;
+ 	}
+ 
 
 
