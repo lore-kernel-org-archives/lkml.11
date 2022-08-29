@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A2C3ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 06:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B666DECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 06:35:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229866AbiH2GfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 02:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45518 "EHLO
+        id S229593AbiH2Gfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 02:35:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229843AbiH2GfR (ORCPT
+        with ESMTP id S229794AbiH2Gfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 02:35:17 -0400
-Received: from 189.cn (ptr.189.cn [183.61.185.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA67B1275F
-        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 23:35:13 -0700 (PDT)
-HMM_SOURCE_IP: 10.64.8.41:33464.1972940701
+        Mon, 29 Aug 2022 02:35:33 -0400
+Received: from 189.cn (ptr.189.cn [183.61.185.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E5A91402A
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 23:35:32 -0700 (PDT)
+HMM_SOURCE_IP: 10.64.8.43:58254.465013519
 HMM_ATTACHE_NUM: 0000
 HMM_SOURCE_TYPE: SMTP
-Received: from clientip-123.150.8.42 (unknown [10.64.8.41])
-        by 189.cn (HERMES) with SMTP id 440CB1002B3;
-        Mon, 29 Aug 2022 14:35:11 +0800 (CST)
+Received: from clientip-123.150.8.42 (unknown [10.64.8.43])
+        by 189.cn (HERMES) with SMTP id 47BFB1002C5;
+        Mon, 29 Aug 2022 14:35:30 +0800 (CST)
 Received: from  ([123.150.8.42])
-        by gateway-153622-dep-84fc4d489d-ngzxf with ESMTP id f15f6262ff3f481d8b2da43890107d73 for karolinadrobnik@gmail.com;
-        Mon, 29 Aug 2022 14:35:12 CST
-X-Transaction-ID: f15f6262ff3f481d8b2da43890107d73
+        by gateway-153622-dep-84fc4d489d-2xtjd with ESMTP id d5b1e1b832374690908240b4c2875a1c for karolinadrobnik@gmail.com;
+        Mon, 29 Aug 2022 14:35:31 CST
+X-Transaction-ID: d5b1e1b832374690908240b4c2875a1c
 X-Real-From: chensong_2000@189.cn
 X-Receive-IP: 123.150.8.42
 X-MEDUSA-Status: 0
@@ -33,62 +33,43 @@ From:   Song Chen <chensong_2000@189.cn>
 To:     karolinadrobnik@gmail.com, rppt@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
         Song Chen <chensong_2000@189.cn>
-Subject: [PATCH 1/2] tools/libs/slab.c: fix compiling mistakes of uatomic_inc/uatomic_dec
-Date:   Mon, 29 Aug 2022 14:38:41 +0800
-Message-Id: <1661755121-3286-1-git-send-email-chensong_2000@189.cn>
+Subject: [PATCH 2/2] tools/testing/memblock: define pr_warn_ratelimited
+Date:   Mon, 29 Aug 2022 14:39:00 +0800
+Message-Id: <1661755140-3331-1-git-send-email-chensong_2000@189.cn>
 X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I tried to build tools/test/memblock and got such message:
+Commit 14d9a675fd0d("mm: Ratelimited mirrored memory related warning
+messages") introduced pr_warn_ratelimited in memblock.c, which breaks
+tools/test/memblock, below is the message:
 
-/usr/bin/ld: slab.o: in function `kmalloc':
-slab.c:(.text+0x2b): undefined reference to `uatomic_inc'
-/usr/bin/ld: slab.o: in function `kfree':
-slab.c:(.text+0x97): undefined reference to `uatomic_dec'
+/usr/bin/ld: memblock.o: in function `memblock_find_in_range.constprop.0':
+memblock.c:(.text+0x4603): undefined reference to `pr_warn_ratelimited'
+/usr/bin/ld: memblock.o: in function `memblock_alloc_range_nid':
+memblock.c:(.text+0x786a): undefined reference to `pr_warn_ratelimited'
 collect2: error: ld returned 1 exit status
 
-I could find any definition or inplememtation of uatomic_inc/uatomic_dec
-in anywhere of the code base. So I use atomic_inc/atomic_dec_and_test
-to replace like other tests underneath tools/test, it works.
+A fake pr_warn_ratelimited needs to be defined in printk.h like other
+prink functions.
 
 Signed-off-by: Song Chen <chensong_2000@189.cn>
 ---
- tools/lib/slab.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/testing/memblock/linux/printk.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/lib/slab.c b/tools/lib/slab.c
-index 959997fb0652..8a5a8d536e35 100644
---- a/tools/lib/slab.c
-+++ b/tools/lib/slab.c
-@@ -3,7 +3,7 @@
- #include <stdio.h>
- #include <string.h>
+diff --git a/tools/testing/memblock/linux/printk.h b/tools/testing/memblock/linux/printk.h
+index 61af424d8c6c..bdca5eedbe4c 100644
+--- a/tools/testing/memblock/linux/printk.h
++++ b/tools/testing/memblock/linux/printk.h
+@@ -21,5 +21,6 @@
+ #define pr_cont printk
+ #define pr_err printk
+ #define pr_warn printk
++#define pr_warn_ratelimited printf
  
--#include <urcu/uatomic.h>
-+#include <linux/atomic.h>
- #include <linux/slab.h>
- #include <malloc.h>
- #include <linux/gfp.h>
-@@ -19,7 +19,7 @@ void *kmalloc(size_t size, gfp_t gfp)
- 		return NULL;
- 
- 	ret = malloc(size);
--	uatomic_inc(&kmalloc_nr_allocated);
-+	atomic_inc(&kmalloc_nr_allocated);
- 	if (kmalloc_verbose)
- 		printf("Allocating %p from malloc\n", ret);
- 	if (gfp & __GFP_ZERO)
-@@ -31,7 +31,7 @@ void kfree(void *p)
- {
- 	if (!p)
- 		return;
--	uatomic_dec(&kmalloc_nr_allocated);
-+	atomic_dec_and_test(&kmalloc_nr_allocated);
- 	if (kmalloc_verbose)
- 		printf("Freeing %p to malloc\n", p);
- 	free(p);
+ #endif
 -- 
 2.25.1
 
