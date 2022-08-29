@@ -2,37 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F5AECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67FCDECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 10:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229910AbiH2KAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 06:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
+        id S230040AbiH2KBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 06:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiH2KAq (ORCPT
+        with ESMTP id S229974AbiH2KBH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 06:00:46 -0400
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B781E0C5
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 03:00:44 -0700 (PDT)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by xavier.telenet-ops.be with bizsmtp
-        id DN0h2800E4C55Sk01N0iWy; Mon, 29 Aug 2022 12:00:42 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oSbZR-0036s9-I1; Mon, 29 Aug 2022 12:00:41 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oSbZQ-000IaT-VG; Mon, 29 Aug 2022 12:00:40 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     linux-m68k@lists.linux-m68k.org
-Cc:     linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] m68k: defconfig: Update defconfigs for v6.0-rc2
-Date:   Mon, 29 Aug 2022 12:00:39 +0200
-Message-Id: <1fbe623e5d69bdce0352445c06e1b2c9fb8d123e.1661767119.git.geert@linux-m68k.org>
+        Mon, 29 Aug 2022 06:01:07 -0400
+Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813B92AC78;
+        Mon, 29 Aug 2022 03:00:55 -0700 (PDT)
+X-UUID: cf7f36dbf7294ea4b53f654fe2a6086c-20220829
+X-GW-Reason: 13103
+X-Policy-Incident: 5pS25Lu25Lq66LaF6L+HMTDkurrpnIDopoHlrqHmoLg=
+X-Content-Feature: ica/max.line-size 103
+        audit/email.address 2
+        dict/adv 1
+        dict/contack 1
+        dict/notice 1
+        dict/operate 1
+        meta/cnt.alert 1
+X-UUID: cf7f36dbf7294ea4b53f654fe2a6086c-20220829
+X-User: oushixiong@kylinos.cn
+Received: from localhost.localdomain [(116.128.244.169)] by mailgw
+        (envelope-from <oushixiong@kylinos.cn>)
+        (Generic MTA)
+        with ESMTP id 784702270; Mon, 29 Aug 2022 14:00:07 +0800
+From:   oushixiong <oushixiong@kylinos.cn>
+To:     Dave Airlie <airlied@redhat.com>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
+        oushixiong <oushixiong@kylinos.cn>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH v3] drm/ast: add dmabuf/prime buffer sharing support
+Date:   Mon, 29 Aug 2022 13:59:37 +0800
+Message-Id: <20220829055937.302377-1-oushixiong@kylinos.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -40,172 +52,227 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  - Drop CONFIG_NF_CONNTRACK_PROCFS=n (no longer auto-enabled since
-    commit aa5762c34213aba7 ("netfilter: conntrack: NF_CONNTRACK_PROCFS
-    should no longer default to y").
+This patch adds ast specific codes for DRM prime feature, this is to
+allow for offloading of rending in one direction and outputs in other.
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
-To be combined with "m68k: defconfig: Update defconfigs for v6.0-rc1".
----
- arch/m68k/configs/amiga_defconfig    | 1 -
- arch/m68k/configs/apollo_defconfig   | 1 -
- arch/m68k/configs/atari_defconfig    | 1 -
- arch/m68k/configs/bvme6000_defconfig | 1 -
- arch/m68k/configs/hp300_defconfig    | 1 -
- arch/m68k/configs/mac_defconfig      | 1 -
- arch/m68k/configs/multi_defconfig    | 1 -
- arch/m68k/configs/mvme147_defconfig  | 1 -
- arch/m68k/configs/mvme16x_defconfig  | 1 -
- arch/m68k/configs/q40_defconfig      | 1 -
- arch/m68k/configs/sun3_defconfig     | 1 -
- arch/m68k/configs/sun3x_defconfig    | 1 -
- 12 files changed, 12 deletions(-)
+This patch is designed to solve the problem that the AST is not displayed
+when the server plug in a discrete  graphics card at the same time.
+We call the dirty callback function to copy the rendering results of the
+discrete graphics card to the ast side by dma-buf.
 
-diff --git a/arch/m68k/configs/amiga_defconfig b/arch/m68k/configs/amiga_defconfig
-index 1e545592ece66309..e2038d9499e479cd 100644
---- a/arch/m68k/configs/amiga_defconfig
-+++ b/arch/m68k/configs/amiga_defconfig
-@@ -84,7 +84,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/apollo_defconfig b/arch/m68k/configs/apollo_defconfig
-index 8b3c02455f13e1c3..ddd201259e43a95a 100644
---- a/arch/m68k/configs/apollo_defconfig
-+++ b/arch/m68k/configs/apollo_defconfig
-@@ -80,7 +80,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/atari_defconfig b/arch/m68k/configs/atari_defconfig
-index 217e286c2a760607..66a5dbd8bd428a33 100644
---- a/arch/m68k/configs/atari_defconfig
-+++ b/arch/m68k/configs/atari_defconfig
-@@ -87,7 +87,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/bvme6000_defconfig b/arch/m68k/configs/bvme6000_defconfig
-index 083cbb179e708e1b..68957c6bcff1a1be 100644
---- a/arch/m68k/configs/bvme6000_defconfig
-+++ b/arch/m68k/configs/bvme6000_defconfig
-@@ -77,7 +77,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/hp300_defconfig b/arch/m68k/configs/hp300_defconfig
-index 291e250d843deefe..825c6a02fa9d102f 100644
---- a/arch/m68k/configs/hp300_defconfig
-+++ b/arch/m68k/configs/hp300_defconfig
-@@ -79,7 +79,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/mac_defconfig b/arch/m68k/configs/mac_defconfig
-index 815ff8d9a65e4240..17f64c562bf119e8 100644
---- a/arch/m68k/configs/mac_defconfig
-+++ b/arch/m68k/configs/mac_defconfig
-@@ -78,7 +78,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/multi_defconfig b/arch/m68k/configs/multi_defconfig
-index 5c84db94f9e11153..f5f4c572b6949698 100644
---- a/arch/m68k/configs/multi_defconfig
-+++ b/arch/m68k/configs/multi_defconfig
-@@ -98,7 +98,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/mvme147_defconfig b/arch/m68k/configs/mvme147_defconfig
-index 0a2df9102b8e8404..b4a0bbef7e39b490 100644
---- a/arch/m68k/configs/mvme147_defconfig
-+++ b/arch/m68k/configs/mvme147_defconfig
-@@ -76,7 +76,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/mvme16x_defconfig b/arch/m68k/configs/mvme16x_defconfig
-index 951d37effb0cedff..c6a6d59267934021 100644
---- a/arch/m68k/configs/mvme16x_defconfig
-+++ b/arch/m68k/configs/mvme16x_defconfig
-@@ -77,7 +77,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/q40_defconfig b/arch/m68k/configs/q40_defconfig
-index 258001e059baac3a..49c9c89f0caf76ee 100644
---- a/arch/m68k/configs/q40_defconfig
-+++ b/arch/m68k/configs/q40_defconfig
-@@ -78,7 +78,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/sun3_defconfig b/arch/m68k/configs/sun3_defconfig
-index eea582f0e4dc57f1..9b44eeb9c07f7aa9 100644
---- a/arch/m68k/configs/sun3_defconfig
-+++ b/arch/m68k/configs/sun3_defconfig
-@@ -74,7 +74,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
-diff --git a/arch/m68k/configs/sun3x_defconfig b/arch/m68k/configs/sun3x_defconfig
-index d2c857cf74b8c99f..d2ffb0a65b44ac47 100644
---- a/arch/m68k/configs/sun3x_defconfig
-+++ b/arch/m68k/configs/sun3x_defconfig
-@@ -74,7 +74,6 @@ CONFIG_NETFILTER=y
- CONFIG_NETFILTER_NETLINK_HOOK=m
- CONFIG_NF_CONNTRACK=m
- CONFIG_NF_CONNTRACK_ZONES=y
--# CONFIG_NF_CONNTRACK_PROCFS is not set
- # CONFIG_NF_CT_PROTO_DCCP is not set
- CONFIG_NF_CONNTRACK_AMANDA=m
- CONFIG_NF_CONNTRACK_FTP=m
+v1->v2:
+  - Fix the comment.
+v2->v3:
+  - we remove the gem_prime_import_sg_table callback and use the
+    gem_prime_import callback, because it just map and access the buffer
+    with the CPU. and do not to pin the buffer.
+
+Signed-off-by: oushixiong <oushixiong@kylinos.cn>
+Reported-by: kernel test robot <lkp@intel.com>
+---
+ drivers/gpu/drm/ast/ast_drv.c  |  27 +++++++
+ drivers/gpu/drm/ast/ast_mode.c | 125 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 151 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/ast/ast_drv.c b/drivers/gpu/drm/ast/ast_drv.c
+index 7465c4f0156a..fd3c4bad2eb4 100644
+--- a/drivers/gpu/drm/ast/ast_drv.c
++++ b/drivers/gpu/drm/ast/ast_drv.c
+@@ -28,6 +28,7 @@
+ 
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/dma-buf.h>
+ 
+ #include <drm/drm_aperture.h>
+ #include <drm/drm_atomic_helper.h>
+@@ -50,6 +51,29 @@ module_param_named(modeset, ast_modeset, int, 0400);
+ 
+ DEFINE_DRM_GEM_FOPS(ast_fops);
+ 
++static struct drm_gem_object *ast_gem_prime_import(struct drm_device *dev,
++						struct dma_buf *dma_buf)
++{
++	struct drm_gem_vram_object *gbo;
++
++	gbo = drm_gem_vram_of_gem(dma_buf->priv);
++	if (gbo->bo.base.dev == dev) {
++		/*
++		 * Importing dmabuf exported from out own gem increases
++		 * refcount on gem itself instead of f_count of dmabuf.
++		 */
++		drm_gem_object_get(&gbo->bo.base);
++		return &gbo->bo.base;
++	}
++
++	gbo = drm_gem_vram_create(dev, dma_buf->size, 0);
++	if (IS_ERR(gbo))
++		return NULL;
++
++	get_dma_buf(dma_buf);
++	return &gbo->bo.base;
++}
++
+ static const struct drm_driver ast_driver = {
+ 	.driver_features = DRIVER_ATOMIC |
+ 			   DRIVER_GEM |
+@@ -63,6 +87,9 @@ static const struct drm_driver ast_driver = {
+ 	.minor = DRIVER_MINOR,
+ 	.patchlevel = DRIVER_PATCHLEVEL,
+ 
++	.prime_fd_to_handle = drm_gem_prime_fd_to_handle,
++	.gem_prime_import = ast_gem_prime_import,
++
+ 	DRM_GEM_VRAM_DRIVER
+ };
+ 
+diff --git a/drivers/gpu/drm/ast/ast_mode.c b/drivers/gpu/drm/ast/ast_mode.c
+index 45b56b39ad47..65a4342c5622 100644
+--- a/drivers/gpu/drm/ast/ast_mode.c
++++ b/drivers/gpu/drm/ast/ast_mode.c
+@@ -48,6 +48,8 @@
+ #include "ast_drv.h"
+ #include "ast_tables.h"
+ 
++MODULE_IMPORT_NS(DMA_BUF);
++
+ static inline void ast_load_palette_index(struct ast_private *ast,
+ 				     u8 index, u8 red, u8 green,
+ 				     u8 blue)
+@@ -1535,8 +1537,129 @@ static const struct drm_mode_config_helper_funcs ast_mode_config_helper_funcs =
+ 	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
+ };
+ 
++static int ast_handle_damage(struct drm_framebuffer *fb, int x, int y,
++					int width, int height)
++{
++	struct drm_gem_vram_object *dst_bo = NULL;
++	void *dst = NULL;
++	int ret = 0, i;
++	unsigned long offset = 0;
++	bool unmap = false;
++	unsigned int bytesPerPixel;
++	struct iosys_map map;
++	struct iosys_map dmabuf_map;
++
++	bytesPerPixel = fb->format->cpp[0];
++
++	if (!fb->obj[0]->dma_buf)
++		return -EINVAL;
++
++	if (!fb->obj[0]->dma_buf->vmap_ptr.vaddr) {
++		ret = dma_buf_vmap(fb->obj[0]->dma_buf, &dmabuf_map);
++		if (ret)
++			return ret;
++	} else
++		dmabuf_map.vaddr = fb->obj[0]->dma_buf->vmap_ptr.vaddr;
++
++	dst_bo = drm_gem_vram_of_gem(fb->obj[0]);
++
++	ret = drm_gem_vram_pin(dst_bo, 0);
++	if (ret) {
++		DRM_ERROR("ast_bo_pin failed\n");
++		return ret;
++	}
++
++	if (!dst_bo->map.vaddr) {
++		ret = drm_gem_vram_vmap(dst_bo, &map);
++		if (ret) {
++			drm_gem_vram_unpin(dst_bo);
++			DRM_ERROR("failed to vmap fbcon\n");
++			return ret;
++		}
++		unmap = true;
++	}
++	dst = dst_bo->map.vaddr;
++
++	for (i = y; i < y + height; i++) {
++		offset = i * fb->pitches[0] + (x * bytesPerPixel);
++		memcpy_toio(dst + offset, dmabuf_map.vaddr + offset,
++			width * bytesPerPixel);
++	}
++
++	if (unmap)
++		drm_gem_vram_vunmap(dst_bo, &map);
++
++	drm_gem_vram_unpin(dst_bo);
++
++	return 0;
++}
++
++
++static int ast_user_framebuffer_dirty(struct drm_framebuffer *fb,
++				struct drm_file *file,
++				unsigned int flags,
++				unsigned int color,
++				struct drm_clip_rect *clips,
++				unsigned int num_clips)
++{
++	int i, ret = 0;
++
++	drm_modeset_lock_all(fb->dev);
++	if (fb->obj[0]->dma_buf) {
++		ret = dma_buf_begin_cpu_access(fb->obj[0]->dma_buf,
++				DMA_FROM_DEVICE);
++		if (ret)
++			goto unlock;
++	}
++
++	for (i = 0; i < num_clips; i++) {
++		ret = ast_handle_damage(fb, clips[i].x1, clips[i].y1,
++				clips[i].x2 - clips[i].x1, clips[i].y2 - clips[i].y1);
++		if (ret)
++			break;
++	}
++
++	if (fb->obj[0]->dma_buf) {
++		dma_buf_end_cpu_access(fb->obj[0]->dma_buf,
++				DMA_FROM_DEVICE);
++	}
++
++unlock:
++	drm_modeset_unlock_all(fb->dev);
++
++	return ret;
++}
++
++static void ast_user_framebuffer_destroy(struct drm_framebuffer *fb)
++{
++	struct iosys_map dmabuf_map;
++
++	if (fb->obj[0]->dma_buf) {
++		dmabuf_map.is_iomem = fb->obj[0]->dma_buf->vmap_ptr.is_iomem;
++		dmabuf_map.vaddr = fb->obj[0]->dma_buf->vmap_ptr.vaddr;
++		if (dmabuf_map.vaddr)
++			dma_buf_vunmap(fb->obj[0]->dma_buf, &dmabuf_map);
++	}
++
++	drm_gem_fb_destroy(fb);
++}
++
++static const struct drm_framebuffer_funcs ast_gem_fb_funcs_dirtyfb = {
++	.destroy	= ast_user_framebuffer_destroy,
++	.create_handle	= drm_gem_fb_create_handle,
++	.dirty		= ast_user_framebuffer_dirty,
++};
++
++static struct drm_framebuffer *
++ast_gem_fb_create_with_dirty(struct drm_device *dev, struct drm_file *file,
++				const struct drm_mode_fb_cmd2 *mode_cmd)
++{
++	return drm_gem_fb_create_with_funcs(dev, file, mode_cmd,
++					&ast_gem_fb_funcs_dirtyfb);
++}
++
+ static const struct drm_mode_config_funcs ast_mode_config_funcs = {
+-	.fb_create = drm_gem_fb_create,
++	.fb_create = ast_gem_fb_create_with_dirty,
+ 	.mode_valid = drm_vram_helper_mode_valid,
+ 	.atomic_check = drm_atomic_helper_check,
+ 	.atomic_commit = drm_atomic_helper_commit,
 -- 
-2.25.1
+2.17.1
 
+
+No virus found
+		Checked by Hillstone Network AntiVirus
