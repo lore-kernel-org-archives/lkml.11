@@ -2,144 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D29DECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E19AEECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 19:26:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229645AbiH2TZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 15:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
+        id S229849AbiH2T0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 15:26:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiH2TY7 (ORCPT
+        with ESMTP id S229555AbiH2T0F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 15:24:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F091F2F1;
-        Mon, 29 Aug 2022 12:24:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F17EB811E9;
-        Mon, 29 Aug 2022 19:24:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5E72C433D6;
-        Mon, 29 Aug 2022 19:24:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1661801094;
-        bh=bvJk1oFFNYzt8e4h6wKH6kqiTtNdEy8t/HVURp2TtOU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e6GuB5/Z8vBgiihEDvt2dTWer1Mz4W1uoXySfQkHPdYVggcEMqrXENRWvhytKJ68N
-         rOi3UokczdAHOoeSYIYDF+3pjSiCZjQZcIHCJEAM2IXlp4WL8aTnQ3QyeQD6GvYEeV
-         LNm9hPATckMyEfH8R7ZRYofxbCOEfH2WK+fF02jo=
-Date:   Mon, 29 Aug 2022 12:24:52 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 04/44] x86: asm: instrument usercopy in get_user()
- and put_user()
-Message-Id: <20220829122452.cce41f2754c4e063f3ae8b75@linux-foundation.org>
-In-Reply-To: <CAG_fn=Xpva_yx8oG-xi7jqJyM2YLcjNda+8ZyQPGBMV411XgMQ@mail.gmail.com>
-References: <20220826150807.723137-1-glider@google.com>
-        <20220826150807.723137-5-glider@google.com>
-        <20220826211729.e65d52e7919fee5c34d22efc@linux-foundation.org>
-        <CAG_fn=Xpva_yx8oG-xi7jqJyM2YLcjNda+8ZyQPGBMV411XgMQ@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 29 Aug 2022 15:26:05 -0400
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3448A7C6
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 12:26:02 -0700 (PDT)
+Received: by mail-pl1-x634.google.com with SMTP id l3so8942604plb.10
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 12:26:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=VhWA9zltNIvjVh8Z8DuaAQPbsy5x2B8HO8rAH51nZcs=;
+        b=eJWdBVSqu/L3b4Gx52Gb4jKAo92U2TKDhf7bztvP63HYkGxkmA2CVM9dFnWwHtbxyi
+         /oqM5qROQsahReI/SrXkrJbmthPE66kBHogzexruiDDXvtE1a30nJPJFmAlle+/lnR0z
+         /2BBq6o/dTJ7AVRL7iOu8FeE1wwhMaUGWML4E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=VhWA9zltNIvjVh8Z8DuaAQPbsy5x2B8HO8rAH51nZcs=;
+        b=Tzm47BJnfUXj9ZuhE1GKIgl/mM+h62CfbOt9wsC6z7ChzoBd6YWTGEmJns2cylWvay
+         LZXOyTM4er6rn8h8I5oUPVZ8ifnYtIJe5somMiE6IYYk02ye7TS3uVTGYo5FCXfHVEg2
+         cxE8jKwrZfd2X1B6ccySX0vx2+P83VdYCrmaB0z4DPv/HgPH/+iEZFZI+/kzExeD5yxL
+         FM7vlaxcAH/+AkkDiA9t7HV5sxeytdlpiF6BxnmKrvkX7U3W8Ig6Iw0UaPJSBklC/6Fp
+         qfUExik9pWfbEHB3+N7519pkZmCuB4WSjWhH0X9l/fpUEaHEV3LsVBVbuLWKhJMVfzUU
+         eQbw==
+X-Gm-Message-State: ACgBeo2IECUbENUkZ3knwUmGoDi2FtObYW+TxJaUZLi7WXKTjE7A5t3i
+        0q10Q9rBBHbUKly7mnlDW9HjVA==
+X-Google-Smtp-Source: AA6agR7u3y84UCyhfAk1IOVCe6FUtEm4rdvgw806xCycjSX/X3gzP52Q1hWrrhqe4GxNhc/peNJs5A==
+X-Received: by 2002:a17:902:7003:b0:172:cbb0:9af8 with SMTP id y3-20020a170902700300b00172cbb09af8mr18161965plk.57.1661801161717;
+        Mon, 29 Aug 2022 12:26:01 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id t17-20020a170902e85100b00172e6c66f84sm7901946plg.148.2022.08.29.12.26.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 12:26:00 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 12:25:59 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Robert Elliott <elliott@hpe.com>
+Cc:     mpe@ellerman.id.au, nanya@linux.vnet.ibm.com, asahiroy@kernel.org,
+        michal.lkml@markovi.net, corbet@lwn.net, ndesaulniers@google.com,
+        linux-hardening@vger.kernel.org, linux-kbuild@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] docs/core-api: expand Fedora instructions for GCC plugins
+Message-ID: <202208291225.A0D3FAFC@keescook>
+References: <20220827193836.2582079-1-elliott@hpe.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220827193836.2582079-1-elliott@hpe.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 29 Aug 2022 16:57:31 +0200 Alexander Potapenko <glider@google.com> wrote:
-
-> On Sat, Aug 27, 2022 at 6:17 AM Andrew Morton <akpm@linux-foundation.org> wrote:
-> >
-> > On Fri, 26 Aug 2022 17:07:27 +0200 Alexander Potapenko <glider@google.com> wrote:
-> >
-> > > Use hooks from instrumented.h to notify bug detection tools about
-> > > usercopy events in variations of get_user() and put_user().
-> >
-> > And this one blows up x86_64 allmodconfig builds.
+On Sat, Aug 27, 2022 at 02:38:36PM -0500, Robert Elliott wrote:
+> In Fedora 36, cross-compiling an allmodconfig configuration
+> for other architectures on x86 fails with this problem:
 > 
-> How do I reproduce this?
-> I tried running `make mrproper; make allmodconfig; make -j64` (or
-> allyesconfig, allnoconfig) on both KMSAN tree
-> (https://github.com/google/kmsan/commit/ac3859c02d7f40f59992737d63afcacda0a972ec,
-> which is Linux v6.0-rc2 plus the 44 KMSAN patches) and
-> linux-mm/mm-stable @ec6624452e36158d0813758d837f7a2263a4109d with
-> KMSAN patches applied on top of it.
-> All builds were successful.
+> In file included from ../scripts/gcc-plugins/gcc-common.h:95,
+>                  from ../scripts/gcc-plugins/latent_entropy_plugin.c:78:
+> /usr/lib/gcc/aarch64-linux-gnu/12/plugin/include/builtins.h:23:10: fatal
+> error: mpc.h: No such file or directory
+>    23 | #include <mpc.h>
+>       |          ^~~~~~~
+> compilation terminated.
 > 
-> I then tried to cherry-pick just the first 4 commits to mm-stable and
-> see if allmodconfig works - it resulted in numerous "implicit
-> declaration of function ‘instrument_get_user’" errors (quite silly of
-> me), but nothing looking like the errors you posted.
-> I'll try to build-test every patch in the series after fixing the
-> missing declarations, but so far I don't see other problems.
+> In that distro, that header file is available in the separate
+> libmpc-devel package.
 > 
-> Could you share the mmotm commit id which resulted in the failures?
+> Although future versions of Fedora might correctly mark
+> that dependency, mention this additional package.
+> 
+> To help detect such problems ahead of time, describe the
+>     gcc -print-file-name=plugin
+> command that is used by scripts/gcc-plugins/Kconfig to detect
+> plugins [1].
+> 
+> [1] https://lore.kernel.org/lkml/CAHk-=wjjiYjCp61gdAMpDOsUBU-A2hFFKJoVx5VAC7yV4K6WYg@xxxxxxxxxxxxxx/
+> 
+> Fixes: 43e96ef8b70c50f ("docs/core-api: Add Fedora instructions for GCC plugins");
+> Signed-off-by: Robert Elliott <elliott@hpe.com>
 
-I just pushed out a tree which exhibits this with gcc-12.1.1 and with
-gcc-11.1.0.  Tag is mm-everything-2022-08-29-19-17.
+Thanks!
 
-The problem is introduced by d0d9a44d2210 ("kmsan: add KMSAN runtime core")
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-make mrproper
-make allmodconfig
-make init/do_mounts.o
+Jon, do you want to take this since it's entirely in the .rst file?
 
-In file included from ./include/linux/kernel.h:22,
-                 from ./arch/x86/include/asm/percpu.h:27,
-                 from ./arch/x86/include/asm/nospec-branch.h:14,
-                 from ./arch/x86/include/asm/paravirt_types.h:40,
-                 from ./arch/x86/include/asm/ptrace.h:97,
-                 from ./arch/x86/include/asm/math_emu.h:5,
-                 from ./arch/x86/include/asm/processor.h:13,
-                 from ./arch/x86/include/asm/timex.h:5,
-                 from ./include/linux/timex.h:67,
-                 from ./include/linux/time32.h:13,
-                 from ./include/linux/time.h:60,
-                 from ./include/linux/stat.h:19,
-                 from ./include/linux/module.h:13,
-                 from init/do_mounts.c:2:
-./include/linux/page-flags.h: In function ‘page_fixed_fake_head’:
-./include/linux/page-flags.h:226:36: error: invalid use of undefined type ‘const struct page’
-  226 |             test_bit(PG_head, &page->flags)) {
-      |                                    ^~
-./include/linux/bitops.h:50:44: note: in definition of macro ‘bitop’
-   50 |           __builtin_constant_p((uintptr_t)(addr) != (uintptr_t)NULL) && \
-      |                                            ^~~~
-./include/linux/page-flags.h:226:13: note: in expansion of macro ‘test_bit’
-  226 |             test_bit(PG_head, &page->flags)) {
-      |             ^~~~~~~~
-...
+-- 
+Kees Cook
