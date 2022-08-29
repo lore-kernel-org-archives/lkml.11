@@ -2,411 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC60ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D16ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 12:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiH2Mym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 08:54:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
+        id S229788AbiH2MzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 08:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiH2MyR (ORCPT
+        with ESMTP id S229959AbiH2Myf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 08:54:17 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6C88D3FE
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:43:32 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id bv25so3002653wrb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 05:43:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:to:from:user-agent
-         :references:from:to:cc;
-        bh=NuDtPSZGsUB4/CSpCp0BYNq4Z61X61IoPrDP4sjDs8g=;
-        b=tVOpcOkvELJfESUge43zatRu60HyutEJwNjPUtTcK0b8tCXDTqoNHJzA+1GeV4GTAL
-         n2Yy22KIjn+ZL600oAvGIjSrYbnKF8r0GgofyQHExGN3EfCkWxgmRD15EzP+/uJRNWvl
-         hTiRvJvFDh+b4/TcaDF3QNmHPNSDMyGLa/mn+6okolljsh5ntht3lTYzZrr7kf399isW
-         8Ht4xRmPqcMZ6FUO0UMd2r1K4GF3bCG13akL+s8+PQWFsbX1gDEm79P9+nFgRpttaZjY
-         /ZLD4VD15lz0zukROxQF6NCkIgJXaQkQqO77sTESyfvICdWdsXDPelMjEQD0Q+z1S6ve
-         nauQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:to:from:user-agent
-         :references:x-gm-message-state:from:to:cc;
-        bh=NuDtPSZGsUB4/CSpCp0BYNq4Z61X61IoPrDP4sjDs8g=;
-        b=jYj3V5TcPA5gBw5PNOW+QMgruLVbi9y8CNgNYKKNSQYN5dmu8jcHicz0/90cJhxGaa
-         KpnmPiofj5jDYsj400t3L1eUL4TW7GsLOQGiw4OY1R9g/owaXaS2CO5bfgFpg6JCdE3D
-         8/IcVDISOMOBsZ4fh2VRmVMRIMRbJ6/2fQRZYNESyF6At+JDTr084WGIgzE/oUfb6/Mt
-         eFy+v/wf4g+8d+nfVbElHgjsmbKohpjWSRk7e97+P7OwpgDs0kcAATlnrIPCZX0tK0Lj
-         S2O6UsiN7HNU/qbUP3qFvrsVM3OV/6+8xV0kJPGsl4vw1gAANuGmFS1bivKwiGt8fbB6
-         QHgw==
-X-Gm-Message-State: ACgBeo3aZfeh9Zb0bT54dxJas0UK41tn5cVta96+RfwjpF2bx8K6eo1Q
-        qnvRMKOTvmB3GI15htSxR7wU4Q==
-X-Google-Smtp-Source: AA6agR4g54C4i+JaM6ngjD20lfOuvr3Z3k/pbaJDJw1GAipj5i9NLSpSGO14T5zArba6MMO/CWoydw==
-X-Received: by 2002:adf:ce08:0:b0:226:d1ba:3e23 with SMTP id p8-20020adfce08000000b00226d1ba3e23mr5679234wrn.374.1661777010387;
-        Mon, 29 Aug 2022 05:43:30 -0700 (PDT)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id v5-20020a5d59c5000000b002257fd37877sm7320643wry.6.2022.08.29.05.43.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 05:43:29 -0700 (PDT)
-References: <20220805085716.5635-1-yu.tu@amlogic.com>
- <20220805085716.5635-7-yu.tu@amlogic.com>
- <1jedxlzxyz.fsf@starbuckisacylon.baylibre.com>
- <8f40cb49-fdc5-20cd-343b-8ce50e5d6d97@amlogic.com>
-User-agent: mu4e 1.8.7; emacs 28.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V3 6/6] clk: meson: s4: add s4 SoC peripheral clock
- controller driver
-Date:   Mon, 29 Aug 2022 14:19:15 +0200
-In-reply-to: <8f40cb49-fdc5-20cd-343b-8ce50e5d6d97@amlogic.com>
-Message-ID: <1j7d2rte33.fsf@starbuckisacylon.baylibre.com>
+        Mon, 29 Aug 2022 08:54:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3594F85FB9;
+        Mon, 29 Aug 2022 05:44:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5F0D611F3;
+        Mon, 29 Aug 2022 12:44:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 642AAC433D6;
+        Mon, 29 Aug 2022 12:43:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661777042;
+        bh=R9zzgLzZSPVV9Mhehs5l6vfcLsVsdPiUxuIz3VgSFdo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=rAzOexdtwUaWalSMuHplpDo742wK//OftfNO/vfAbjOdFacGSsdXf2ZZ8/pc/ve8k
+         5KtfkksWYEInD6/3ydeEYUdTxlkV/CtkIv+uRdJMLyFiwQEsVQld508DmWYNKDCqAK
+         HDo+JbVjDRyTLrZls65r59t/tWD13itz5DdED8U6Yexe/EQgo+x4O5EYn3T3Macvv9
+         AA5miCjKNd7u8gVsaSWN2WrP8GNNsCC8ULnBreEB1MXO+jV/0qmVDpbvaqor1I9Cud
+         PFMsd2e1l03gOiRQWjoMMHj5tu0Jcic2Pnc6Ts1BdjaGufoUxSONYOEVi0+XbxTm+u
+         TtV4o/wjzeg6w==
+Message-ID: <8ef8b2f8-a1c1-b277-22b1-6e951e8dfc72@kernel.org>
+Date:   Mon, 29 Aug 2022 15:43:56 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v3 2/2] phy: ti: gmii-sel: Add support for CPSW5G GMII SEL
+ in J7200
+Content-Language: en-US
+To:     Siddharth Vadapalli <s-vadapalli@ti.com>
+Cc:     robh+dt@kernel.org, lee.jones@linaro.org,
+        krzysztof.kozlowski@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        kishon@ti.com, vkoul@kernel.org, dan.carpenter@oracle.com,
+        grygorii.strashko@ti.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org
+References: <20220822065631.27933-1-s-vadapalli@ti.com>
+ <20220822065631.27933-3-s-vadapalli@ti.com>
+ <655c39a3-cf5f-6dd7-3c1a-61ebeae915bd@kernel.org>
+ <7dd27795-11d0-3147-ed86-959ff3e89df4@ti.com>
+From:   Roger Quadros <rogerq@kernel.org>
+In-Reply-To: <7dd27795-11d0-3147-ed86-959ff3e89df4@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Siddharth,
 
-On Tue 16 Aug 2022 at 20:00, Yu Tu <yu.tu@amlogic.com> wrote:
-
-Please trim your replies 
-
->>> diff --git a/drivers/clk/meson/Kconfig b/drivers/clk/meson/Kconfig
->>> index f4244edc7b28..ec6beb9284d3 100644
->>> --- a/drivers/clk/meson/Kconfig
->>> +++ b/drivers/clk/meson/Kconfig
->>> @@ -127,4 +127,17 @@ config COMMON_CLK_S4_PLL
->>>   	  Support for the pll clock controller on Amlogic S805X2 and S905Y4 devices,
->>>   	  aka s4. Amlogic S805X2 and S905Y4 devices include AQ222 and AQ229.
->>>   	  Say Y if you want peripherals and CPU frequency scaling to work.
->>> +
->>> +config COMMON_CLK_S4
->>> +	tristate "S4 SoC Peripherals clock controllers support"
->>> +	depends on ARM64
->>> +	default y
->>> +	select COMMON_CLK_MESON_REGMAP
->>> +	select COMMON_CLK_MESON_DUALDIV
->>> +	select COMMON_CLK_MESON_VID_PLL_DIV
->>> +	select COMMON_CLK_S4_PLL
->> Do you really this ? your driver does not even include the related
->> header.
-> If the PLL driver is not turned on in DTS, will it not cause an error?
+On 29/08/2022 07:53, Siddharth Vadapalli wrote:
+> Hello Roger,
+> 
+> On 25/08/22 13:11, Roger Quadros wrote:
+>> Hi Siddharth,
 >>
+>> On 22/08/2022 09:56, Siddharth Vadapalli wrote:
+>>> Each of the CPSW5G ports in J7200 support additional modes like QSGMII.
+>>> Add a new compatible for J7200 to support the additional modes.
+>>>
+>>> In TI's J7200, each of the CPSW5G ethernet interfaces can act as a
+>>> QSGMII or QSGMII-SUB port. The QSGMII interface is responsible for
+>>> performing auto-negotiation between the MAC and the PHY while the rest of
+>>> the interfaces are designated as QSGMII-SUB interfaces, indicating that
+>>> they will not be taking part in the auto-negotiation process.
+>>>
+>>> To indicate the interface which will serve as the main QSGMII interface,
+>>> add a property "ti,qsgmii-main-ports", whose value indicates the
+>>> port number of the interface which shall serve as the main QSGMII
+>>> interface. The rest of the interfaces are then assigned QSGMII-SUB mode by
+>>> default.
+>>
+>> Can you please describe here why you are using "ti,qsgmii-main-ports" instead
+>> of "ti,qsgmii-main-port" as there can be only one main port per PHY instance?
+> 
+> Thank you for reviewing the patch. I am using "ports" instead of "port"
+> because I plan to add support for CPSW9G on TI's J721e device in the
+> future patches. CPSW9G (8 external ports) supports up to two QSGMII main
+> ports. For CPSW9G, by specifying the two main ports in the device tree,
+> it is possible to configure the CTRLMMR_ENETx_CTRL register for each of
+> the 8 ports, with the two QSGMII main ports being configured as main
+> ports in the CTRLMMR_ENETx_CTRL register and the rest of them being
+> configured as sub ports. Since I will be using the same property
+> "ti,qsgmii-main-ports" for CPSW9G as well, the property will be an array
+> of 2 values for CPSW9G. Therefore, I am using "ports" instead of "port".
+> Please let me know if this is fine.
+> 
 
-I don't get the question.
-Kconfig list compile deps. S4 PLL is not a compile dep of the peripheral
-controller.
-
-If you really want to, you may use 'imply'.
->> 
->>> +static const struct clk_parent_data sys_ab_clk_parent_data[] = {
->>> +	{ .fw_name = "xtal" },
->>> +	{ .fw_name = "fclk_div2" },
->>> +	{ .fw_name = "fclk_div3" },
->>> +	{ .fw_name = "fclk_div4" },
->>> +	{ .fw_name = "fclk_div5" },
->>> +	{ .fw_name = "fclk_div7" },
->>> +	{ .hw = &s4_rtc_clk.hw }
->>> +};
->>> +
->>> +static struct clk_regmap s4_sysclk_b_sel = {
->>> +	.data = &(struct clk_regmap_mux_data){
->>> +		.offset = CLKCTRL_SYS_CLK_CTRL0,
->>> +		.mask = 0x7,
->>> +		.shift = 26,
->>> +		.table = mux_table_sys_ab_clk_sel,
->>> +	},
->>> +	.hw.init = &(struct clk_init_data){
->>> +		.name = "sysclk_b_sel",
->>> +		.ops = &clk_regmap_mux_ro_ops,
->> Why is this using the RO ops ?
-> Sys_clk is initialized during the Uboot phase and is fixed at
-> 166.666MHz. So I'm going to change it to ro.
-
-That really much depends on the bootloader and is a pretty weak design.
-The bootloader deps should be kept as minimal as possible.
-
-I see no reason for RO. 
-
-You may cut rate propagation on the user if you need to and continue to
-whatever you want in your u-boot
-
->> 
->>> +		.parent_data = sys_ab_clk_parent_data,
->>> +		.num_parents = ARRAY_SIZE(sys_ab_clk_parent_data),
->>> +	},
->>> +};
->>> +
->>> +static struct clk_regmap s4_sysclk_b_div = {
->>> +	.data = &(struct clk_regmap_div_data){
->>> +		.offset = CLKCTRL_SYS_CLK_CTRL0,
->>> +		.shift = 16,
->>> +		.width = 10,
->>> +	},
->>> +	.hw.init = &(struct clk_init_data){
->>> +		.name = "sysclk_b_div",
->>> +		.ops = &clk_regmap_divider_ro_ops,
->> Same here and for the rest of the sys part
-> Same above.
-
-We can play that game for a while
-
->>> +
->>> +/* Video Clocks */
->>> +static struct clk_regmap s4_vid_pll_div = {
->>> +	.data = &(struct meson_vid_pll_div_data){
->>> +		.val = {
->>> +			.reg_off = CLKCTRL_VID_PLL_CLK_DIV,
->>> +			.shift   = 0,
->>> +			.width   = 15,
->>> +		},
->>> +		.sel = {
->>> +			.reg_off = CLKCTRL_VID_PLL_CLK_DIV,
->>> +			.shift   = 16,
->>> +			.width   = 2,
->>> +		},
->>> +	},
->>> +	.hw.init = &(struct clk_init_data) {
->>> +		.name = "vid_pll_div",
->>> +		.ops = &meson_vid_pll_div_ro_ops,
->> Why RO ? applies to the rest of the video part.
-> Because vid_pll_div parent is HDMI_PLL, and HDMI_PLL is a fixed
-> frequency. Flags is CLK_SET_RATE_PARENT. So we use RO.
-
-If the HDMI_PLL is fixed somehow, that is not reason for this clock to
-be RO
-
-> Can I remove RO and use CLK_SET_RATE_NO_REPARENT instead, which one do you
-> think is more reasonable?
-
-Neither. CLK_SET_RATE_NO_REPARENT makes no sense, it is not mux
-
->
->> 
->>> +		.parent_data = (const struct clk_parent_data []) {
->>> +			{ .fw_name = "hdmi_pll", }
->>> +		},
->>> +		.num_parents = 1,
->>> +		.flags = CLK_SET_RATE_PARENT,
->>> +	},
->>> +};
->>> +
->>> +static struct clk_regmap s4_vid_pll_sel = {
->>> +	.data = &(struct clk_regmap_mux_data){
->>> +		.offset = CLKCTRL_VID_PLL_CLK_DIV,
->>> +		.mask = 0x1,
->>> +		.shift = 18,
->>> +	},
->>> +	.hw.init = &(struct clk_init_data){
->>> +		.name = "vid_pll_sel",
->>> +		.ops = &clk_regmap_mux_ops,
->>> +		/*
->>> +		 * bit 18 selects from 2 possible parents:
->>> +		 * vid_pll_div or hdmi_pll
->>> +		 */
->>> +		.parent_data = (const struct clk_parent_data []) {
->>> +			{ .hw = &s4_vid_pll_div.hw },
->>> +			{ .fw_name = "hdmi_pll", }
->>> +		},
->>> +		.num_parents = 2,
->>> +		.flags = CLK_SET_RATE_NO_REPARENT,
->> Why ? are you planning to DT assigned clocks to statically set this ?
-> Because vid_pll_sel one parent is HDMI_PLL, and HDMI_PLL is a fixed
-> frequency. To prevent modification, use CLK_SET_RATE_NO_REPARENT.
-
-Again, this makes no sense.
-
->> 
->>> +	},
->>> +};
->>> +
->>> +static struct clk_regmap s4_vid_pll = {
->>> +	.data = &(struct clk_regmap_gate_data){
->>> +		.offset = CLKCTRL_VID_PLL_CLK_DIV,
->>> +		.bit_idx = 19,
->>> +	},
->>> +	.hw.init = &(struct clk_init_data) {
->>> +		.name = "vid_pll",
->>> +		.ops = &clk_regmap_gate_ops,
->>> +		.parent_hws = (const struct clk_hw *[]) {
->>> +			&s4_vid_pll_sel.hw
->>> +		},
->>> +		.num_parents = 1,
->>> +		.flags = CLK_SET_RATE_PARENT,
->>> +	},
->>> +};
->>> +
->>> +static const struct clk_parent_data s4_vclk_parent_data[] = {
->>> +	{ .hw = &s4_vid_pll.hw },
->>> +	{ .fw_name = "gp0_pll", },
->>> +	{ .fw_name = "hifi_pll", },
->>> +	{ .fw_name = "mpll1", },
->>> +	{ .fw_name = "fclk_div3", },
->>> +	{ .fw_name = "fclk_div4", },
->>> +	{ .fw_name = "fclk_div5", },
->>> +	{ .fw_name = "fclk_div7", },
->>> +};
->>> +
->>> +static struct clk_regmap s4_vclk_sel = {
->>> +	.data = &(struct clk_regmap_mux_data){
->>> +		.offset = CLKCTRL_VID_CLK_CTRL,
->>> +		.mask = 0x7,
->>> +		.shift = 16,
->>> +	},
->>> +	.hw.init = &(struct clk_init_data){
->>> +		.name = "vclk_sel",
->>> +		.ops = &clk_regmap_mux_ops,
->>> +		.parent_data = s4_vclk_parent_data,
->>> +		.num_parents = ARRAY_SIZE(s4_vclk_parent_data),
->>> +		.flags = CLK_SET_RATE_NO_REPARENT,
->> Same
-> Since fclk_div* is a fixed frequency value, mplL1 and hifi_pll and gp0_pll
-> are used by other specialized modules, vid_pll has CLK_SET_RATE_PARENT. The
-> parent of vid_pll is that vid_pll_sel uses CLK_SET_RATE_NO_REPARENT.
-
-Still not good.
-
-You don't have CLK_SET_RATE, propagation is stopped and parent clock
-will not changed. The best parent will be picked but not changed.
-
-If one parent MUST NOT be picked, just remove it from the list and add a
-explaining why
-
-[...]
-
->>> +
->>> +static struct clk_regmap s4_ts_clk_div = {
->>> +	.data = &(struct clk_regmap_div_data){
->>> +		.offset = CLKCTRL_TS_CLK_CTRL,
->>> +		.shift = 0,
->>> +		.width = 8,
->>> +	},
->>> +	.hw.init = &(struct clk_init_data){
->>> +		.name = "ts_clk_div",
->>> +		.ops = &clk_regmap_divider_ops,
->>> +		.parent_data = &(const struct clk_parent_data) {
->>> +			.fw_name = "xtal",
->>> +		},
->>> +		.num_parents = 1,
->> propagation stopped ?
-> Its parent is xtal, so I should use CLK_SET_RATE_NO_REPARENT.
-
-Still no. You seem to have problem with the meaning of
-CLK_SET_RATE_NO_REPARENT.
-
-* CLK_SET_RATE_NO_REPARENT: means the parent will no be changed, even if
-  selecting another parent would result in a closer rate to the
-  request. It makes sense only if the clock has several parents
-
-* CLK_SET_RATE_PARENT: means rate change may propagate the parent,
-  meaning the rate of the parent may change if it help the child achieve
-  a closer rate to the request
-
->> 
->>> +	},
->>> +};
->>> +
->>> +static struct clk_regmap s4_ts_clk_gate = {
->>> +	.data = &(struct clk_regmap_gate_data){
->>> +		.offset = CLKCTRL_TS_CLK_CTRL,
->>> +		.bit_idx = 8,
->>> +	},
->>> +	.hw.init = &(struct clk_init_data){
->>> +		.name = "ts_clk",
->>> +		.ops = &clk_regmap_gate_ops,
->>> +		.parent_hws = (const struct clk_hw *[]) {
->>> +			&s4_ts_clk_div.hw
->>> +		},
->>> +		.num_parents = 1,
->>> +	},
->> propagation stopped ?
-> I will add CLK_SET_RATE_PARENT.
-
-[...]
-
->>> +/* EMMC/NAND clock */
->>> +
->>> +static const struct clk_parent_data s4_sd_emmc_clk0_parent_data[] = {
->>> +	{ .fw_name = "xtal", },
->>> +	{ .fw_name = "fclk_div2", },
->>> +	{ .fw_name = "fclk_div3", },
->>> +	{ .fw_name = "hifi_pll", },
->>> +	{ .fw_name = "fclk_div2p5", },
->>> +	/*
->>> +	 * Following these parent clocks, we should also have had mpll2, mpll3
->>> +	 * and gp0_pll but these clocks are too precious to be used here. All
->>> +	 * the necessary rates for MMC and NAND operation can be acheived using
->>> +	 * hifi_pll or fclk_div clocks
->>> +	 */
->> You don't want to list mplls but hifi_pll is fine ? seems dangerous.
-> hifi pll is for EMMC and NAND on this SoC.
-
-That deserve a better explanation.
-Why can't it use fdiv2 and xtal like the previous SoCs ?
-
-Which PLLs are you using for Audio then ?
-Typical operation on these SoCs usually require 3 PLLs to acheive all rates
+OK. Please mention this in commit message.
 
 >>
-
-
->>> +/*
->>> + * gen clk is designed for debug/monitor some internal clock quality. Some of the
->>> + * corresponding clock sources are not described in the clock tree, so they are skipped.
->>> + */
->> Still feels a bit light, don't you think ? Among all the clocks, can't
->> you add a bit more parents here ? It would certainly help debug down the road
-> [16:12]	is gen_clk source select.All is:
-> 0: cts_oscin_clk
-> 1:cts_rtc_clk
-> 2:sys_pll_div16 (internal clock)
-> 3:ddr_pll_div32  (internal clock)
-> 4: vid_pll
-> 5: gp0_pll
-> 7: hifi_pll
-> 10:adc_dpll_clk_b3 (internal clock for debug)
-> 11:adc_dpll_intclk (internal clock for debug)
-> 12:clk_msr_src(select from all internal clock except PLLs);
-> 16: no used
-> 17: sys_cpu_clk_div16 (internal clock)
-> 19: fclk_div2
-> 20: fclk_div2p5
-> 21: fclk_div3
-> 22: fclk_div4
-> 23: fclk_div5
-> 24: fclk_div7
-> 25: mpll0
-> 26: mpll1
-> 27: mpll2
-> 28: mpll3
-> So i only added the clocks that will actually be used, and some debugging
-> clock peripherals will not be used.
-
-you may at least add vid_pll
-
->> 
->>> +static u32 s4_gen_clk_mux_table[] = { 0, 5, 7, 19, 21, 22,
->>> +				      23, 24, 25, 26, 27, 28 };
->>> +static const struct clk_parent_data s4_gen_clk_parent_data[] = {
->>> +	{ .fw_name = "xtal", },
->>> +	{ .fw_name = "gp0_pll", },
->>> +	{ .fw_name = "hifi_pll", },
->>> +	{ .fw_name = "fclk_div2", },
->>> +	{ .fw_name = "fclk_div3", },
->>> +	{ .fw_name = "fclk_div4", },
->>> +	{ .fw_name = "fclk_div5", },
->>> +	{ .fw_name = "fclk_div7", },
->>> +	{ .fw_name = "mpll0", },
->>> +	{ .fw_name = "mpll1", },
->>> +	{ .fw_name = "mpll2", },
->>> +	{ .fw_name = "mpll3", },
+>>>
+>>> Signed-off-by: Siddharth Vadapalli <s-vadapalli@ti.com>
+>>> ---
+>>>  drivers/phy/ti/phy-gmii-sel.c | 40 ++++++++++++++++++++++++++++++++---
+>>>  1 file changed, 37 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/phy/ti/phy-gmii-sel.c b/drivers/phy/ti/phy-gmii-sel.c
+>>> index d0ab69750c6b..270083606b14 100644
+>>> --- a/drivers/phy/ti/phy-gmii-sel.c
+>>> +++ b/drivers/phy/ti/phy-gmii-sel.c
+>>> @@ -22,6 +22,12 @@
+>>>  #define AM33XX_GMII_SEL_MODE_RMII	1
+>>>  #define AM33XX_GMII_SEL_MODE_RGMII	2
+>>>  
+>>> +/* J72xx SoC specific definitions for the CONTROL port */
+>>> +#define J72XX_GMII_SEL_MODE_QSGMII	4
+>>> +#define J72XX_GMII_SEL_MODE_QSGMII_SUB	6
+>>> +
+>>> +#define PHY_GMII_PORT(n)	BIT((n) - 1)
+>>> +
+>>>  enum {
+>>>  	PHY_GMII_SEL_PORT_MODE = 0,
+>>>  	PHY_GMII_SEL_RGMII_ID_MODE,
+>>> @@ -43,6 +49,7 @@ struct phy_gmii_sel_soc_data {
+>>>  	u32 features;
+>>>  	const struct reg_field (*regfields)[PHY_GMII_SEL_LAST];
+>>>  	bool use_of_data;
+>>> +	u64 extra_modes;
+>>>  };
+>>>  
+>>>  struct phy_gmii_sel_priv {
+>>> @@ -53,6 +60,7 @@ struct phy_gmii_sel_priv {
+>>>  	struct phy_gmii_sel_phy_priv *if_phys;
+>>>  	u32 num_ports;
+>>>  	u32 reg_offset;
+>>> +	u32 qsgmii_main_ports;
+>>>  };
+>>>  
+>>>  static int phy_gmii_sel_mode(struct phy *phy, enum phy_mode mode, int submode)
+>>> @@ -88,10 +96,17 @@ static int phy_gmii_sel_mode(struct phy *phy, enum phy_mode mode, int submode)
+>>>  		gmii_sel_mode = AM33XX_GMII_SEL_MODE_MII;
+>>>  		break;
+>>>  
+>>> +	case PHY_INTERFACE_MODE_QSGMII:
+>>> +		if (!(soc_data->extra_modes & BIT(PHY_INTERFACE_MODE_QSGMII)))
+>>> +			goto unsupported;
+>>> +		if (if_phy->priv->qsgmii_main_ports & BIT(if_phy->id - 1))
+>>> +			gmii_sel_mode = J72XX_GMII_SEL_MODE_QSGMII;
+>>> +		else
+>>> +			gmii_sel_mode = J72XX_GMII_SEL_MODE_QSGMII_SUB;
+>>> +		break;
+>>> +
+>>>  	default:
+>>> -		dev_warn(dev, "port%u: unsupported mode: \"%s\"\n",
+>>> -			 if_phy->id, phy_modes(submode));
+>>> -		return -EINVAL;
+>>> +		goto unsupported;
+>>>  	}
+>>>  
+>>>  	if_phy->phy_if_mode = submode;
+>>> @@ -123,6 +138,11 @@ static int phy_gmii_sel_mode(struct phy *phy, enum phy_mode mode, int submode)
+>>>  	}
+>>>  
+>>>  	return 0;
+>>> +
+>>> +unsupported:
+>>> +	dev_warn(dev, "port%u: unsupported mode: \"%s\"\n",
+>>> +		 if_phy->id, phy_modes(submode));
+>>> +	return -EINVAL;
+>>>  }
+>>>  
+>>>  static const
+>>> @@ -188,6 +208,13 @@ struct phy_gmii_sel_soc_data phy_gmii_sel_soc_am654 = {
+>>>  	.regfields = phy_gmii_sel_fields_am654,
+>>>  };
+>>>  
+>>> +static const
+>>> +struct phy_gmii_sel_soc_data phy_gmii_sel_cpsw5g_soc_j7200 = {
+>>> +	.use_of_data = true,
+>>> +	.regfields = phy_gmii_sel_fields_am654,
+>>> +	.extra_modes = BIT(PHY_INTERFACE_MODE_QSGMII),
 >>> +};
+>>> +
+>>>  static const struct of_device_id phy_gmii_sel_id_table[] = {
+>>>  	{
+>>>  		.compatible	= "ti,am3352-phy-gmii-sel",
+>>> @@ -209,6 +236,10 @@ static const struct of_device_id phy_gmii_sel_id_table[] = {
+>>>  		.compatible	= "ti,am654-phy-gmii-sel",
+>>>  		.data		= &phy_gmii_sel_soc_am654,
+>>>  	},
+>>> +	{
+>>> +		.compatible	= "ti,j7200-cpsw5g-phy-gmii-sel",
+>>> +		.data		= &phy_gmii_sel_cpsw5g_soc_j7200,
+>>> +	},
+>>>  	{}
+>>>  };
+>>>  MODULE_DEVICE_TABLE(of, phy_gmii_sel_id_table);
+>>> @@ -350,6 +381,7 @@ static int phy_gmii_sel_probe(struct platform_device *pdev)
+>>>  	struct device_node *node = dev->of_node;
+>>>  	const struct of_device_id *of_id;
+>>>  	struct phy_gmii_sel_priv *priv;
+>>> +	u32 main_ports = 1;
+>>>  	int ret;
+>>>  
+>>>  	of_id = of_match_node(phy_gmii_sel_id_table, pdev->dev.of_node);
+>>> @@ -363,6 +395,8 @@ static int phy_gmii_sel_probe(struct platform_device *pdev)
+>>>  	priv->dev = &pdev->dev;
+>>>  	priv->soc_data = of_id->data;
+>>>  	priv->num_ports = priv->soc_data->num_ports;
+>>> +	of_property_read_u32_array(node, "ti,qsgmii-main-ports", &main_ports, 1);
+>>
+>> of_property_read_u32_array can return error and you are not doing any sanity checks.
+>> This should fail if "ti,qsgmii-main-ports" is not present or out of bounds if port mode is QSGMII.
+> 
+> In the scenario that the user doesn't want to use QSGMII mode, the
+> property will not be mentioned in the device tree. In the phy-gmii-sel
+> driver, the call to of_property_read_u32_array() will return an error
+> since the optional ti,qsgmii-main-ports property doesn't exist in the
+> device tree. However, the main_ports variable has already been
+> initialized to 1 and in case of Non-QSGMII modes, the main_ports
+> variable will not even be used. If the mode is QSGMII and the user
+> forgets to mention the ti,qsgmii-main-ports property in the device tree,
+> then the default value of 1 is used.
+> 
+> Since the of_property_read_u32_array() function doesn't overwrite
+> main_ports variable if the ti,qsgmii-main-ports property is not present
+> in the device tree, the value of main_ports will continue to remain 1
+> even in the case where of_property_read_u32_array() errors out.
+> 
+> In the other scenario where the user mentions a value that is smaller or
+> greater than the allowed value for "ti,qsgmii-main-ports" property, I
+> have added bindings to ensure that make dtbs_check fails. This will
+> enforce the bounds on the property.
+
+This I'm not sure about. dtbs_check is not always run at build time and we cannot
+depend on that.
+
+> 
+> For the above reasons, I think that the return value of the call to
+> of_property_read_u32_array() can be safely ignored, and the value of
+> main_ports doesn't need to be validated within the driver as it is being
+> enforced in the bindings.
+> 
+>>
+>> How is this going to scale if you are going to have multiple main ports?
+>> Let's say you increase it to 2 in the future. won't this break with -EOVERFLOW for older
+>> DTs where you had only 1 u32.
+> 
+> For multiple main ports (like CPSW9G for example), I had planned to add
+> an IF-ELSE condition to check the compatible (I plan to add a new
+> compatible for J721e which uses CPSW9G) and then call
+> of_property_read_u32_array() with either 1 or 2 values to be read based
+> on the compatible.
+
+In that case please use of_property_read_u32 for the case where you know only there is only 1 value.
+
+> 
+> Please let me know if you have a suggestion for a better way to
+> implement this.
+> 
+> Regards,
+> Siddharth.
+
+cheers,
+-roger
