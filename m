@@ -2,126 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E75B1ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2967FECAAD5
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 14:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbiH2OVq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 10:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44316 "EHLO
+        id S229875AbiH2OWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 10:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbiH2OVl (ORCPT
+        with ESMTP id S229670AbiH2OWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 10:21:41 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82591883DA
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:21:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661782898; x=1693318898;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=NUz1jJcbJ1/Hsp5cNd+z53+9gjXd6c9c4lg/Ll6+Nvk=;
-  b=EH/SoiKjBdB6sTf8ySgGoGsJ46kJ8akN63IiwJhGpNViVYIsuSmiL6/G
-   VXaoFmDcQj1LVX37sdwJf0Yph4VdnysSvIrlcEeSxGRYmcjeklKAvS9ag
-   /Pnd9kRg4zTtnGb/fib8liJVbntTCuVPTvWd+2xDvFWLvHypgzF8PMFET
-   /IRUhX+Fzmb8xzVeyiMHYC+Bik4wAvaBjdSJLY27S9S4A8bBaKLwFDrbJ
-   l2uKHLgrNzT1JwBDFPmC838l5NEgx+JAkPfrwpBSLwgOWGtEKo/6757uY
-   ovQzzyDDWgB0aKQKZhXF48pDZzoGLbbDgCYmeESOIJMzwR4NznKm8eAjY
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="294911013"
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="294911013"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 07:17:25 -0700
-X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="679637633"
-Received: from idecesar-mobl1.ger.corp.intel.com (HELO localhost) ([10.252.53.198])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 07:17:23 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     intel-gfx@lists.freedesktop.org, Jilin Yuan <yuanjilin@cdjrlc.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH] drm/i915: fix repeated words in comments
-In-Reply-To: <20220823123044.24593-1-yuanjilin@cdjrlc.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220823123044.24593-1-yuanjilin@cdjrlc.com>
-Date:   Mon, 29 Aug 2022 17:17:16 +0300
-Message-ID: <87v8qbdthv.fsf@intel.com>
+        Mon, 29 Aug 2022 10:22:22 -0400
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A68378B988
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:22:21 -0700 (PDT)
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-11edd61a9edso4483898fac.5
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:22:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=+LNH7GWYgSUzsjvph8IQNcroBifhiDios4fo6CTY2/U=;
+        b=XVunXF3kjTus4d6ghRjoX/G3g6du/2+bZ0NFdJ4nJuVzrU0bZ1yCuXay3gzzk+mu60
+         fNgmJcD5phH4nVkxv3kCXO53Q8YaIVADSbrxGNyF17xXWi1OxEN8NI1ggco5qqjYQxqm
+         HP8C3P61XtqKmEGfrUWrxDjwD6Wulwehdu7ZbWogo/QrCcqFIb0xl/rDioRX4+qb/VME
+         MPVID9JCMLttgQa6eUivOkemGZ5Z2HnpLjjUvH97HIapXJIsaQzg4/sNHbnEUweLfVoY
+         QZzmAi4+iy/E65r/vqrvNzzfIamgrLCf8xW1rZmaXQ5qNXVCc2FqvBvgEEGL8zNvJyAC
+         EsWw==
+X-Gm-Message-State: ACgBeo2Q26yaxRm6RU8zqlq/IZCcbpDxfq1irAHB+AdsJHNKuhO+C4j6
+        zv7bby7Uk6c/HeaO/IqKrv8t3wXcIlFXSA==
+X-Google-Smtp-Source: AA6agR5N1A2Gvptc6i3QpAjwFZ0eyDsy6gap/xa1uX6YGTUyIDM3KSvJBCY2l+mVv0zkfBvbhqb+qA==
+X-Received: by 2002:a05:6870:438b:b0:11c:ecf2:e4ca with SMTP id r11-20020a056870438b00b0011cecf2e4camr8141008oah.122.1661782940808;
+        Mon, 29 Aug 2022 07:22:20 -0700 (PDT)
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com. [209.85.210.53])
+        by smtp.gmail.com with ESMTPSA id g10-20020acab60a000000b0034516ca90dcsm4791240oif.23.2022.08.29.07.22.20
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 07:22:20 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id t11-20020a05683014cb00b0063734a2a786so5973619otq.11
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 07:22:20 -0700 (PDT)
+X-Received: by 2002:a25:415:0:b0:696:814:7c77 with SMTP id 21-20020a250415000000b0069608147c77mr8612505ybe.36.1661782506395;
+ Mon, 29 Aug 2022 07:15:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CAMuHMdUusnhYodWGCxJBu-1Hd2KW-xdT8jxE_iVdQjDo8b3Y5Q@mail.gmail.com>
+ <20220817131454.qcuywcuc4ts4hswm@houat> <CAMuHMdVPEgnnsY-4uuf=FDJ0YxWpch-0kZWFT_TZfcDvXLtwWQ@mail.gmail.com>
+ <20220818123934.eim2bfrgbxsmviqx@houat> <CAMuHMdWXbHkrBZgsmUnU=q52+q7UZZNO3tgQW7Men+msQ1JDwQ@mail.gmail.com>
+ <20220818134200.cr22bftmjn226ehn@houat> <CAMuHMdX6dyQaB34oeXwiCa2rDkxks0qNh=ekqh7Wd2kSNED9TA@mail.gmail.com>
+ <20220818154641.ouvrar5s74qu74zn@houat> <CAMuHMdUjE0mwu8z5AksW4h1OwzDCQ5h1ZoCWDi+rC4p2Pu5O4g@mail.gmail.com>
+ <6d1dfaad-7310-a596-34dd-4a6d9aa95f65@gmail.com> <20220829132953.sfv5yex2dhv76vrq@houat>
+In-Reply-To: <20220829132953.sfv5yex2dhv76vrq@houat>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 29 Aug 2022 16:14:54 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXxoEYV7v-R+o4eMJEiV_xGUgpN6sUbZ95r_qewV5QpRA@mail.gmail.com>
+Message-ID: <CAMuHMdXxoEYV7v-R+o4eMJEiV_xGUgpN6sUbZ95r_qewV5QpRA@mail.gmail.com>
+Subject: Re: [PATCH v1 04/35] drm/modes: Introduce 480i and 576i modes
+To:     Maxime Ripard <maxime@cerno.tech>
+Cc:     Mateusz Kwiatkowski <kfyatek@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Dom Cobley <dom@raspberrypi.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 23 Aug 2022, Jilin Yuan <yuanjilin@cdjrlc.com> wrote:
->  Delete the redundant word 'other'.
->  Delete the redundant word 'the'.
->  Delete the redundant word 'will'.
+Hi Maxime,
+
+On Mon, Aug 29, 2022 at 3:30 PM Maxime Ripard <maxime@cerno.tech> wrote:
+> On Wed, Aug 24, 2022 at 06:42:18PM +0200, Mateusz Kwiatkowski wrote:
+> > - Speaking of closed captioning... a lot of different stuff were put in the
+> >   blanking interval over the years. Like teletext in Europe. There are projects
+> >   like VBIT2 <https://github.com/peterkvt80/vbit2> which intentionally
+> >   reconfigure the Raspberry Pi composite output to include the blanking interval
+> >   in the framebuffer so that teletext can be output by drawing on the edge of
+> >   the "screen" (from the computer point of view).
 >
-> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
+> I'm not sure how we would support this in KMS to be honest. Asking for a
+> wider mode and the userspace putting whatever it wants in the margins
+> seems like a good choice.
 
-Doesn't apply because some of the hunks were already fixed by other
-commits.
+s/wider/higher/
 
-BR,
-Jani.
+Teletext is transmitted in the "visible" parts of (horizontal) lines, but during
+the vertical blank.
 
+Gr{oetje,eeting}s,
 
-> ---
->  drivers/gpu/drm/i915/i915_gem_evict.c | 2 +-
->  drivers/gpu/drm/i915/i915_irq.c       | 4 ++--
->  drivers/gpu/drm/i915/i915_memcpy.h    | 2 +-
->  3 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/i915_gem_evict.c b/drivers/gpu/drm/i915/i915_gem_evict.c
-> index f025ee4fa526..028e509e1628 100644
-> --- a/drivers/gpu/drm/i915/i915_gem_evict.c
-> +++ b/drivers/gpu/drm/i915/i915_gem_evict.c
-> @@ -256,7 +256,7 @@ i915_gem_evict_something(struct i915_address_space *vm,
->  	goto search_again;
->  
->  found:
-> -	/* drm_mm doesn't allow any other other operations while
-> +	/* drm_mm doesn't allow any other operations while
->  	 * scanning, therefore store to-be-evicted objects on a
->  	 * temporary list and take a reference for all before
->  	 * calling unbind (which may remove the active reference
-> diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
-> index 73cebc6aa650..1e4a705bc5cc 100644
-> --- a/drivers/gpu/drm/i915/i915_irq.c
-> +++ b/drivers/gpu/drm/i915/i915_irq.c
-> @@ -65,7 +65,7 @@
->  
->  /*
->   * Interrupt statistic for PMU. Increments the counter only if the
-> - * interrupt originated from the the GPU so interrupts from a device which
-> + * interrupt originated from the GPU so interrupts from a device which
->   * shares the interrupt line are not accounted.
->   */
->  static inline void pmu_irq_stats(struct drm_i915_private *i915,
-> @@ -2175,7 +2175,7 @@ static irqreturn_t ilk_irq_handler(int irq, void *arg)
->  	raw_reg_write(regs, DEIER, de_ier & ~DE_MASTER_IRQ_CONTROL);
->  
->  	/* Disable south interrupts. We'll only write to SDEIIR once, so further
-> -	 * interrupts will will be stored on its back queue, and then we'll be
-> +	 * interrupts will be stored on its back queue, and then we'll be
->  	 * able to process them after we restore SDEIER (as soon as we restore
->  	 * it, we'll get an interrupt if SDEIIR still has something to process
->  	 * due to its back queue). */
-> diff --git a/drivers/gpu/drm/i915/i915_memcpy.h b/drivers/gpu/drm/i915/i915_memcpy.h
-> index 3df063a3293b..126dfb4352f0 100644
-> --- a/drivers/gpu/drm/i915/i915_memcpy.h
-> +++ b/drivers/gpu/drm/i915/i915_memcpy.h
-> @@ -18,7 +18,7 @@ void i915_unaligned_memcpy_from_wc(void *dst, const void *src, unsigned long len
->  /* The movntdqa instructions used for memcpy-from-wc require 16-byte alignment,
->   * as well as SSE4.1 support. i915_memcpy_from_wc() will report if it cannot
->   * perform the operation. To check beforehand, pass in the parameters to
-> - * to i915_can_memcpy_from_wc() - since we only care about the low 4 bits,
-> + * i915_can_memcpy_from_wc() - since we only care about the low 4 bits,
->   * you only need to pass in the minor offsets, page-aligned pointers are
->   * always valid.
->   *
+                        Geert
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
