@@ -2,146 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A37C2ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98081ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230230AbiH2NSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33720 "EHLO
+        id S230098AbiH2NSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:18:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbiH2NRN (ORCPT
+        with ESMTP id S230142AbiH2NRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:17:13 -0400
-Received: from wnew2-smtp.messagingengine.com (wnew2-smtp.messagingengine.com [64.147.123.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74F7A80B45
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 06:16:38 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.west.internal (Postfix) with ESMTP id D00CF2B06078;
-        Mon, 29 Aug 2022 09:15:06 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Mon, 29 Aug 2022 09:15:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1661778906; x=
-        1661786106; bh=Geyfyn7lfIjW9QZzqjQEZrV6BKt6Cr6Jw67lImD/OP4=; b=h
-        33Sqoi3MkH+ZfTUG5VyM/1Yc4D0pxeQLMY9HSQHQ9Mo2IG1PDJUNCVB3pqA9rvnL
-        LMEKXt4dmv0GP0ITDYj/FfUZCwY15kFl0QdezZEf+TDII8t/6NhrR2pG8lfdD++7
-        NeE/0udJEPaol0QQoe3yfkJzOzVLUneLEp+0Nt09Bxxgoaxmx2GmbU/qsgTiI0js
-        ATh3k2IB2n00v5oUh/H8snvsQCI17AhnLXatMoWEKsQOsyi5mJbJ6TLo8dOUeDDm
-        ebhsRkqfPzYj6g/0V/FWZMGcINYxs0eyHBG6ZAT85WMspC5azLuoHo+oyJg43Mvy
-        IfUnKoNoU0/A19XLmZh5A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661778906; x=
-        1661786106; bh=Geyfyn7lfIjW9QZzqjQEZrV6BKt6Cr6Jw67lImD/OP4=; b=3
-        Bjv21wSh+GGHvc5hlBIDbzL3rKJF7MtA9EN/oaUUinAyKYv9FP8JEhwty3Gxx4Mc
-        AVqF2CHgMXYa99YqyJGyr47vci3oBHhHtPT41H4FixhO8T2EkP2Xr11FsKcOEOte
-        3yH5F/kyqxt0IY5QDRMpUeKpvrmg5ERKdUWcatbn34ENW5F6gBo8JYwq3ok6x/wC
-        8oV9h9Mb6bsRWOEugQAZpZDfDx+l++ASlzQ4IsM1d7w1Q9FHtvc1fkXaR3s8+L4v
-        Z8SbooHfl3vcmjVqdIQ9V3MNlcfpUEEna6w7Ll35wX7YeSPl9ZxbCpX7+/3P16kJ
-        DUSmGdh31y/ZWOWPRX44Q==
-X-ME-Sender: <xms:2rsMY8JCdF_8rteGEr2k2yvQvhEBGnq9oQvCRPBEQayX95Y_HN5I7g>
-    <xme:2rsMY8LUSCcC0VEGgs0qrwXBu9pIftsmHF101NVYfZ7iyFHKddotBBCBbJI9LoKUg
-    l6kKqSrV_0MfxruZyI>
-X-ME-Received: <xmr:2rsMY8s6YX-G6cO9GjDtYI3LOp8psHcne1FsHvtym8aZAuJSVvo7F0eyjrNo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekuddgieefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgjfhggtgfogfesthhqredtredtjeenucfhrhhomhepofgr
-    gihimhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtf
-    frrghtthgvrhhnpeefiedvfefggffgffehveejieffuddtgffhjefggeetieduvdeileet
-    lefgveegtdenucevlhhushhtvghrufhiiigvpeehnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:2rsMY5bWPxkAVFpDeM43i4y_BVD63X8wGJmW6fAM1R81raTncLzWCg>
-    <xmx:2rsMYzbmhD1B_2j8SrSNGK_75-LzYQC9Ywi4hMPZmczx1gL8M0oBCA>
-    <xmx:2rsMY1AlGSd7E8HpeiuRyAdKh7xwlBoJh9MY27lytQZhq2hJD2_0WA>
-    <xmx:2rsMY9zSQ2tNxwqPsy_4R-vp1fu-0LcZF8Y0y42MtY_gRvlqp9q5ko7iVfI>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 29 Aug 2022 09:15:05 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Maxime Ripard <mripard@kernel.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc:     Maxime Ripard <maxime@cerno.tech>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        intel-gfx@lists.freedesktop.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        dri-devel@lists.freedesktop.org, Dom Cobley <dom@raspberrypi.com>,
-        linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org,
-        linux-sunxi@lists.linux.dev,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 28/41] drm/vc4: vec: Fix timings for VEC modes
-Date:   Mon, 29 Aug 2022 15:11:42 +0200
-Message-Id: <20220728-rpi-analog-tv-properties-v2-28-459522d653a7@cerno.tech>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
-References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
+        Mon, 29 Aug 2022 09:17:16 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C778A1C939;
+        Mon, 29 Aug 2022 06:16:42 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27TCgHnP025952;
+        Mon, 29 Aug 2022 09:15:17 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j7g673cf5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 29 Aug 2022 09:15:17 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 27TDFGck019146
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 29 Aug 2022 09:15:16 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 29 Aug
+ 2022 09:15:15 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 29 Aug 2022 09:15:15 -0400
+Received: from nsa.ad.analog.com ([10.44.3.68])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27TDEeiU026449;
+        Mon, 29 Aug 2022 09:15:08 -0400
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        <devicetree@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <linux-input@vger.kernel.org>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH v4 10/10] input: keyboard: adp5588-keys: Use new PM macros
+Date:   Mon, 29 Aug 2022 15:15:53 +0200
+Message-ID: <20220829131553.690063-11-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220829131553.690063-1-nuno.sa@analog.com>
+References: <20220829131553.690063-1-nuno.sa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.10.0-dev-65ba7
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1306; i=maxime@cerno.tech; h=from:subject:message-id; bh=9tioiA5EY1yO34HzEK5H+VWpSJS31+Xh9uw365Ba2yU=; b=owGbwMvMwCX2+D1vfrpE4FHG02pJDMk8uxRU4rkSg9yPxRosun83wiov2a7/nrxu9Y6Aph1rXLe0 7mLuKGVhEONikBVTZIkRNl8Sd2rW6042vnkwc1iZQIYwcHEKwETu7GZkmMWzwP741qhVqtP7flkdWf nO+EBY5h7n/M235WT1pRIuMDIyrP2h9Snyj8H1n6cVJOKSZlgmxAnPyzI2qlKMVZz4s/sLBwA=
-X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: HzHZf3F1q6vI2raEM49qHnp9POj5dtts
+X-Proofpoint-GUID: HzHZf3F1q6vI2raEM49qHnp9POj5dtts
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-29_07,2022-08-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 spamscore=0 phishscore=0 mlxlogscore=999 malwarescore=0
+ impostorscore=0 mlxscore=0 adultscore=0 bulkscore=0 suspectscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208290061
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>=0D
-=0D
-This commit fixes vertical timings of the VEC (composite output) modes=0D
-to accurately represent the 525-line ("NTSC") and 625-line ("PAL") ITU-R=0D
-standards.=0D
-=0D
-Previous timings were actually defined as 502 and 601 lines, resulting=0D
-in non-standard 62.69 Hz and 52 Hz signals being generated,=0D
-respectively.=0D
-=0D
-Signed-off-by: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>=0D
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>=0D
-=0D
-diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c=
-=0D
-index 4d7bc7c20704..d1d40b69279e 100644=0D
---- a/drivers/gpu/drm/vc4/vc4_vec.c=0D
-+++ b/drivers/gpu/drm/vc4/vc4_vec.c=0D
-@@ -227,14 +227,14 @@ static const struct debugfs_reg32 vec_regs[] =3D {=0D
- static const struct drm_display_mode ntsc_mode =3D {=0D
- 	DRM_MODE("720x480", DRM_MODE_TYPE_DRIVER, 13500,=0D
- 		 720, 720 + 14, 720 + 14 + 64, 720 + 14 + 64 + 60, 0,=0D
--		 480, 480 + 3, 480 + 3 + 3, 480 + 3 + 3 + 16, 0,=0D
-+		 480, 480 + 7, 480 + 7 + 6, 525, 0,=0D
- 		 DRM_MODE_FLAG_INTERLACE)=0D
- };=0D
- =0D
- static const struct drm_display_mode pal_mode =3D {=0D
- 	DRM_MODE("720x576", DRM_MODE_TYPE_DRIVER, 13500,=0D
- 		 720, 720 + 20, 720 + 20 + 64, 720 + 20 + 64 + 60, 0,=0D
--		 576, 576 + 2, 576 + 2 + 3, 576 + 2 + 3 + 20, 0,=0D
-+		 576, 576 + 4, 576 + 4 + 6, 625, 0,=0D
- 		 DRM_MODE_FLAG_INTERLACE)=0D
- };=0D
- =0D
-=0D
--- =0D
-b4 0.10.0-dev-65ba7=0D
+With the new PM macros (DEFINE_SIMPLE_DEV_PM_OPS() and pm_sleep_ptr()), the
+compiler has visibility to see that the functions are not used when
+!CONFIG_PM and hence, remove the dead code. As such, there's no need
+for '__maybe_unused'.
+
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/input/keyboard/adp5588-keys.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/input/keyboard/adp5588-keys.c b/drivers/input/keyboard/adp5588-keys.c
+index 0e6f4a47bb9c..7cb120ad3a68 100644
+--- a/drivers/input/keyboard/adp5588-keys.c
++++ b/drivers/input/keyboard/adp5588-keys.c
+@@ -825,7 +825,7 @@ static void adp5588_remove(struct i2c_client *client)
+ 	/* all resources will be freed by devm */
+ }
+ 
+-static int __maybe_unused adp5588_suspend(struct device *dev)
++static int adp5588_suspend(struct device *dev)
+ {
+ 	struct i2c_client *client = to_i2c_client(dev);
+ 
+@@ -834,7 +834,7 @@ static int __maybe_unused adp5588_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int __maybe_unused adp5588_resume(struct device *dev)
++static int adp5588_resume(struct device *dev)
+ {
+ 	struct i2c_client *client = to_i2c_client(dev);
+ 
+@@ -843,7 +843,7 @@ static int __maybe_unused adp5588_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-static SIMPLE_DEV_PM_OPS(adp5588_dev_pm_ops, adp5588_suspend, adp5588_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(adp5588_dev_pm_ops, adp5588_suspend, adp5588_resume);
+ 
+ static const struct i2c_device_id adp5588_id[] = {
+ 	{ "adp5588-keys", 0 },
+@@ -863,7 +863,7 @@ static struct i2c_driver adp5588_driver = {
+ 	.driver = {
+ 		.name = KBUILD_MODNAME,
+ 		.of_match_table = adp5588_of_match,
+-		.pm   = &adp5588_dev_pm_ops,
++		.pm   = pm_sleep_ptr(&adp5588_dev_pm_ops),
+ 	},
+ 	.probe    = adp5588_probe,
+ 	.remove   = adp5588_remove,
+-- 
+2.37.2
+
