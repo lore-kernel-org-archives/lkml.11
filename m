@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2276ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CFBCC0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230314AbiH2LJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55302 "EHLO
+        id S230429AbiH2LJP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:09:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230381AbiH2LH1 (ORCPT
+        with ESMTP id S230427AbiH2LHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:07:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B29712778;
-        Mon, 29 Aug 2022 04:05:16 -0700 (PDT)
+        Mon, 29 Aug 2022 07:07:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E552ED4A;
+        Mon, 29 Aug 2022 04:05:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF92DB80EFD;
-        Mon, 29 Aug 2022 11:03:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 122CCC433D7;
-        Mon, 29 Aug 2022 11:03:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ACA36119E;
+        Mon, 29 Aug 2022 11:05:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64203C433D7;
+        Mon, 29 Aug 2022 11:05:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771032;
-        bh=MSbtcP4DVTBwTKfXt/XLBcPj7KhlA006+k6U4WaCZTc=;
+        s=korg; t=1661771121;
+        bh=IKqqejYC51+KE+xS6pnujKBsGdECRe7c/5XlbeSemxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o304jP49cImH3DpVJSlt9oXP6UuHOPBkmDHIj5eWtIrytieTVO20u2BTxBcW22Zdm
-         gsNb1nvI4zGrWVvv0DOzvFqVk/a2+LAbhvC/Js2/O/PBdYYT8PUwbutJmzdU3fDjOx
-         6E8O/uejVhxVOIjQ+N5P5/31w6BYFMjffHvyJv/8=
+        b=Oiy944RPZRShgn1OWw8yKNaRwFwhrG4jaMYuJuOu7yg3/6l12GBtGy5P3Mz3dYwNS
+         VRK/8xpO6MocgtHuJ61epWGlRms8+Leyw9O85Dw8yGzlI6frSOCOEyslLju12vcNvw
+         F/9DwoXcwgk7ZBwLgeXu9h5gYfAWzSU0nEURc7uE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan Toppins <jtoppins@redhat.com>,
-        Jay Vosburgh <jay.vosburgh@canonical.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Bernard Pidoux <f6bvp@free.fr>,
+        Francois Romieu <romieu@fr.zoreil.com>,
+        Thomas DL9SAU Osterried <thomas@osterried.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 051/136] bonding: 802.3ad: fix no transmission of LACPDUs
-Date:   Mon, 29 Aug 2022 12:58:38 +0200
-Message-Id: <20220829105806.720926470@linuxfoundation.org>
+Subject: [PATCH 5.15 038/136] rose: check NULL rose_loopback_neigh->loopback
+Date:   Mon, 29 Aug 2022 12:58:25 +0200
+Message-Id: <20220829105806.165567983@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
 References: <20220829105804.609007228@linuxfoundation.org>
@@ -50,135 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Toppins <jtoppins@redhat.com>
+From: Bernard Pidoux <f6bvp@free.fr>
 
-[ Upstream commit d745b5062ad2b5da90a5e728d7ca884fc07315fd ]
+[ Upstream commit 3c53cd65dece47dd1f9d3a809f32e59d1d87b2b8 ]
 
-This is caused by the global variable ad_ticks_per_sec being zero as
-demonstrated by the reproducer script discussed below. This causes
-all timer values in __ad_timer_to_ticks to be zero, resulting
-in the periodic timer to never fire.
+Commit 3b3fd068c56e3fbea30090859216a368398e39bf added NULL check for
+`rose_loopback_neigh->dev` in rose_loopback_timer() but omitted to
+check rose_loopback_neigh->loopback.
 
-To reproduce:
-Run the script in
-`tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh` which
-puts bonding into a state where it never transmits LACPDUs.
+It thus prevents *all* rose connect.
 
-line 44: ip link add fbond type bond mode 4 miimon 200 \
-            xmit_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
-setting bond param: ad_actor_sys_prio
-given:
-    params.ad_actor_system = 0
-call stack:
-    bond_option_ad_actor_sys_prio()
-    -> bond_3ad_update_ad_actor_settings()
-       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
-       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
-            params.ad_actor_system == 0
-results:
-     ad.system.sys_mac_addr = bond->dev->dev_addr
+The reason is that a special rose_neigh loopback has a NULL device.
 
-line 48: ip link set fbond address 52:54:00:3B:7C:A6
-setting bond MAC addr
-call stack:
-    bond->dev->dev_addr = new_mac
+/proc/net/rose_neigh illustrates it via rose_neigh_show() function :
+[...]
+seq_printf(seq, "%05d %-9s %-4s   %3d %3d  %3s     %3s %3lu %3lu",
+	   rose_neigh->number,
+	   (rose_neigh->loopback) ? "RSLOOP-0" : ax2asc(buf, &rose_neigh->callsign),
+	   rose_neigh->dev ? rose_neigh->dev->name : "???",
+	   rose_neigh->count,
 
-line 52: ip link set fbond type bond ad_actor_sys_prio 65535
-setting bond param: ad_actor_sys_prio
-given:
-    params.ad_actor_system = 0
-call stack:
-    bond_option_ad_actor_sys_prio()
-    -> bond_3ad_update_ad_actor_settings()
-       -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
-       -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
-            params.ad_actor_system == 0
-results:
-     ad.system.sys_mac_addr = bond->dev->dev_addr
+/proc/net/rose_neigh displays special rose_loopback_neigh->loopback as
+callsign RSLOOP-0:
 
-line 60: ip link set veth1-bond down master fbond
-given:
-    params.ad_actor_system = 0
-    params.mode = BOND_MODE_8023AD
-    ad.system.sys_mac_addr == bond->dev->dev_addr
-call stack:
-    bond_enslave
-    -> bond_3ad_initialize(); because first slave
-       -> if ad.system.sys_mac_addr != bond->dev->dev_addr
-          return
-results:
-     Nothing is run in bond_3ad_initialize() because dev_addr equals
-     sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
-     never initialized anywhere else.
+addr  callsign  dev  count use mode restart  t0  tf digipeaters
+00001 RSLOOP-0  ???      1   2  DCE     yes   0   0
 
-The if check around the contents of bond_3ad_initialize() is no longer
-needed due to commit 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings
-changes immediately") which sets ad.system.sys_mac_addr if any one of
-the bonding parameters whos set function calls
-bond_3ad_update_ad_actor_settings(). This is because if
-ad.system.sys_mac_addr is zero it will be set to the current bond mac
-address, this causes the if check to never be true.
+By checking rose_loopback_neigh->loopback, rose_rx_call_request() is called
+even in case rose_loopback_neigh->dev is NULL. This repairs rose connections.
 
-Fixes: 5ee14e6d336f ("bonding: 3ad: apply ad_actor settings changes immediately")
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Verification with rose client application FPAC:
+
+FPAC-Node v 4.1.3 (built Aug  5 2022) for LINUX (help = h)
+F6BVP-4 (Commands = ?) : u
+Users - AX.25 Level 2 sessions :
+Port   Callsign     Callsign  AX.25 state  ROSE state  NetRom status
+axudp  F6BVP-5   -> F6BVP-9   Connected    Connected   ---------
+
+Fixes: 3b3fd068c56e ("rose: Fix Null pointer dereference in rose_send_frame()")
+Signed-off-by: Bernard Pidoux <f6bvp@free.fr>
+Suggested-by: Francois Romieu <romieu@fr.zoreil.com>
+Cc: Thomas DL9SAU Osterried <thomas@osterried.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_3ad.c | 38 ++++++++++++++--------------------
- 1 file changed, 16 insertions(+), 22 deletions(-)
+ net/rose/rose_loopback.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index d7fb33c078e81..1f0120cbe9e80 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -2007,30 +2007,24 @@ void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
-  */
- void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
- {
--	/* check that the bond is not initialized yet */
--	if (!MAC_ADDRESS_EQUAL(&(BOND_AD_INFO(bond).system.sys_mac_addr),
--				bond->dev->dev_addr)) {
--
--		BOND_AD_INFO(bond).aggregator_identifier = 0;
--
--		BOND_AD_INFO(bond).system.sys_priority =
--			bond->params.ad_actor_sys_prio;
--		if (is_zero_ether_addr(bond->params.ad_actor_system))
--			BOND_AD_INFO(bond).system.sys_mac_addr =
--			    *((struct mac_addr *)bond->dev->dev_addr);
--		else
--			BOND_AD_INFO(bond).system.sys_mac_addr =
--			    *((struct mac_addr *)bond->params.ad_actor_system);
-+	BOND_AD_INFO(bond).aggregator_identifier = 0;
-+	BOND_AD_INFO(bond).system.sys_priority =
-+		bond->params.ad_actor_sys_prio;
-+	if (is_zero_ether_addr(bond->params.ad_actor_system))
-+		BOND_AD_INFO(bond).system.sys_mac_addr =
-+		    *((struct mac_addr *)bond->dev->dev_addr);
-+	else
-+		BOND_AD_INFO(bond).system.sys_mac_addr =
-+		    *((struct mac_addr *)bond->params.ad_actor_system);
+diff --git a/net/rose/rose_loopback.c b/net/rose/rose_loopback.c
+index 11c45c8c6c164..036d92c0ad794 100644
+--- a/net/rose/rose_loopback.c
++++ b/net/rose/rose_loopback.c
+@@ -96,7 +96,8 @@ static void rose_loopback_timer(struct timer_list *unused)
+ 		}
  
--		/* initialize how many times this module is called in one
--		 * second (should be about every 100ms)
--		 */
--		ad_ticks_per_sec = tick_resolution;
-+	/* initialize how many times this module is called in one
-+	 * second (should be about every 100ms)
-+	 */
-+	ad_ticks_per_sec = tick_resolution;
- 
--		bond_3ad_initiate_agg_selection(bond,
--						AD_AGGREGATOR_SELECTION_TIMER *
--						ad_ticks_per_sec);
--	}
-+	bond_3ad_initiate_agg_selection(bond,
-+					AD_AGGREGATOR_SELECTION_TIMER *
-+					ad_ticks_per_sec);
- }
- 
- /**
+ 		if (frametype == ROSE_CALL_REQUEST) {
+-			if (!rose_loopback_neigh->dev) {
++			if (!rose_loopback_neigh->dev &&
++			    !rose_loopback_neigh->loopback) {
+ 				kfree_skb(skb);
+ 				continue;
+ 			}
 -- 
 2.35.1
 
