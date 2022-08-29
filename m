@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70FAAECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1696EECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232845AbiH2Lgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:36:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41764 "EHLO
+        id S232777AbiH2Lgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232154AbiH2Lf4 (ORCPT
+        with ESMTP id S232772AbiH2Lf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:35:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2697E320;
-        Mon, 29 Aug 2022 04:20:51 -0700 (PDT)
+        Mon, 29 Aug 2022 07:35:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B127E80D;
+        Mon, 29 Aug 2022 04:20:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9768BB80EFA;
-        Mon, 29 Aug 2022 11:18:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA9B8C433D6;
-        Mon, 29 Aug 2022 11:18:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D29A5B80FA0;
+        Mon, 29 Aug 2022 11:13:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4534CC43151;
+        Mon, 29 Aug 2022 11:13:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771906;
-        bh=pp1K60d+bAPmwzR6F+LVuC53PVa7MXLH3HOEvGhGyNI=;
+        s=korg; t=1661771599;
+        bh=/92fL+7tW0QBg5vD25tOhzrYyIWIUzFk26TKpw5MrTE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ujtZEH6GQbAsq2xk0AopW2CihNgDQh6OwP4ug5vPG/VwMiVuEg01MgJAMetgsuW4U
-         7fFkuAAHg6Oh8hZKK44I4v2gX9bkjWumjcGspDSqGxvo2IQODsxJ2t4y3wrU9SeWI7
-         57ieDg0dspG2Y/V507wuLhN2bys277uZK5WYAcYI=
+        b=B6zfe8nnvb8Gdtl0gz3PrT0g6Fa4d58K7Q0boWH5F2yLKCyKsiJPFSr92UHDpBDTt
+         xABQ5I4ahHBNTMoru3gSTauguorlQPB5Dq1RRg604lbNZo1QAK8cMvGoFIaO+8euMj
+         1puClfPKHL3hXkF1YCfdWCuQ6erLBpOuuOJ6A4Bg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
-        Guoqing Jiang <guoqing.jiang@linux.dev>,
-        Song Liu <song@kernel.org>
-Subject: [PATCH 5.19 136/158] md: call __md_stop_writes in md_stop
-Date:   Mon, 29 Aug 2022 12:59:46 +0200
-Message-Id: <20220829105814.778624942@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Yonglong Li <liyonglong@chinatelecom.cn>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 124/136] mptcp: Fix crash due to tcp_tsorted_anchor was initialized before release skb
+Date:   Mon, 29 Aug 2022 12:59:51 +0200
+Message-Id: <20220829105809.765999180@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
-References: <20220829105808.828227973@linuxfoundation.org>
+In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
+References: <20220829105804.609007228@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <guoqing.jiang@linux.dev>
+From: Yonglong Li <liyonglong@chinatelecom.cn>
 
-commit 0dd84b319352bb8ba64752d4e45396d8b13e6018 upstream.
+commit 3ef3905aa3b5b3e222ee6eb0210bfd999417a8cc upstream.
 
->From the link [1], we can see raid1d was running even after the path
-raid_dtr -> md_stop -> __md_stop.
+Got crash when doing pressure test of mptcp:
 
-Let's stop write first in destructor to align with normal md-raid to
-fix the KASAN issue.
+===========================================================================
+dst_release: dst:ffffa06ce6e5c058 refcnt:-1
+kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
+BUG: unable to handle kernel paging request at ffffa06ce6e5c058
+PGD 190a01067 P4D 190a01067 PUD 43fffb067 PMD 22e403063 PTE 8000000226e5c063
+Oops: 0011 [#1] SMP PTI
+CPU: 7 PID: 7823 Comm: kworker/7:0 Kdump: loaded Tainted: G            E
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.2.1 04/01/2014
+Call Trace:
+ ? skb_release_head_state+0x68/0x100
+ ? skb_release_all+0xe/0x30
+ ? kfree_skb+0x32/0xa0
+ ? mptcp_sendmsg_frag+0x57e/0x750
+ ? __mptcp_retrans+0x21b/0x3c0
+ ? __switch_to_asm+0x35/0x70
+ ? mptcp_worker+0x25e/0x320
+ ? process_one_work+0x1a7/0x360
+ ? worker_thread+0x30/0x390
+ ? create_worker+0x1a0/0x1a0
+ ? kthread+0x112/0x130
+ ? kthread_flush_work_fn+0x10/0x10
+ ? ret_from_fork+0x35/0x40
+===========================================================================
 
-[1]. https://lore.kernel.org/linux-raid/CAPhsuW5gc4AakdGNdF8ubpezAuDLFOYUO_sfMZcec6hQFm8nhg@mail.gmail.com/T/#m7f12bf90481c02c6d2da68c64aeed4779b7df74a
+In __mptcp_alloc_tx_skb skb was allocated and skb->tcp_tsorted_anchor will
+be initialized, in under memory pressure situation sk_wmem_schedule will
+return false and then kfree_skb. In this case skb->_skb_refdst is not null
+because_skb_refdst and tcp_tsorted_anchor are stored in the same mem, and
+kfree_skb will try to release dst and cause crash.
 
-Fixes: 48df498daf62 ("md: move bitmap_destroy to the beginning of __md_stop")
-Reported-by: Mikulas Patocka <mpatocka@redhat.com>
-Signed-off-by: Guoqing Jiang <guoqing.jiang@linux.dev>
-Signed-off-by: Song Liu <song@kernel.org>
+Fixes: f70cad1085d1 ("mptcp: stop relying on tcp_tx_skb_cache")
+Reviewed-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Link: https://lore.kernel.org/r/20220317220953.426024-1-mathew.j.martineau@linux.intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |    1 +
+ net/mptcp/protocol.c |    1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -6266,6 +6266,7 @@ void md_stop(struct mddev *mddev)
- 	/* stop the array and free an attached data structures.
- 	 * This is called from dm-raid
- 	 */
-+	__md_stop_writes(mddev);
- 	__md_stop(mddev);
- 	bioset_exit(&mddev->bio_set);
- 	bioset_exit(&mddev->sync_set);
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1246,6 +1246,7 @@ static struct sk_buff *__mptcp_alloc_tx_
+ 		tcp_skb_entail(ssk, skb);
+ 		return skb;
+ 	}
++	tcp_skb_tsorted_anchor_cleanup(skb);
+ 	kfree_skb(skb);
+ 	return NULL;
+ }
 
 
