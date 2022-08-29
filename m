@@ -2,65 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1841DC6FA81
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90445ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 17:20:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229481AbiH2RRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 13:17:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
+        id S229941AbiH2RUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 13:20:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229950AbiH2RRe (ORCPT
+        with ESMTP id S231281AbiH2RT7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 13:17:34 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CF1380343;
-        Mon, 29 Aug 2022 10:17:32 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73:8b7:7001:c8aa:b65f])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 2AB892E0;
-        Mon, 29 Aug 2022 17:17:32 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 2AB892E0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1661793452; bh=hpFnyRp0GSiap9UKKqsLCUe2WDepAjQkPBTYBDtSZx4=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=sDaqgwqL3MltUnueike4HQN9coKG9RpCbpgXiD8R3a1VCl+MC22JqZpbStsNfTQhB
-         iyGd+IBPS1nTPIjQiNWGXUG0h8yaMJmuxfNTT901NaIeFNBhcH4QHgWPxA3Eyyl1Kz
-         irAQ/fX1PvONca74YW79Tczeok4D6d8fXVxbPdZpehmECqj1T6aae+vMLgW+aBU6MJ
-         u+F92zLI7SwaO0d/Kclr70XA9OCFMENqx38ausElCC21glRSfuq/GDqt00we5iC3YL
-         z3K96xdVSk15R99z+pBFMmgxtT1QsUqcU5V7vXWtPH3kRdonxuJU9BNXVQDuWEoUxs
-         syZ57GK0ZWUjw==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Akhil Raj <lf32.dev@gmail.com>, skhan@linuxfoundation.org
-Cc:     Akhil Raj <lf32.dev@gmail.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Delete duplicate words from kernel docs
-In-Reply-To: <20220829065239.4531-1-lf32.dev@gmail.com>
-References: <20220829065239.4531-1-lf32.dev@gmail.com>
-Date:   Mon, 29 Aug 2022 11:17:31 -0600
-Message-ID: <87wnarnf4k.fsf@meer.lwn.net>
+        Mon, 29 Aug 2022 13:19:59 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 246BADF51;
+        Mon, 29 Aug 2022 10:19:56 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id h21so6665858qta.3;
+        Mon, 29 Aug 2022 10:19:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=WVwojOfpbU3ZWFPUDfRDkq9+aL+8zLwFug1ZZrW5dX0=;
+        b=T8xFkLIDCeUPGDB+9bZRM3uJWq5YWPDImyfUhgmiUdsFSRtIIi/jz4INGslHyr2SHZ
+         T+/7NVW1FjnheAa/o+zYBnaIeAZgZJy2QxvNDNnb+dmncTcr87F8MF3mlIqd4rP3PGP8
+         J9LdQMNcPW+TasKZdGUA95cUP0Q+fqzjaf2sZw9Bz7RbI5X4stasGwBoqsZSfSZEZNHv
+         JP56OFXg1X/wUtASYSgtF8bk8xSc6fT8oPW3uV+4sNbjg63lrU1ZQe0/Ed8MKM6jPMBT
+         ZXw+ZWIxCs2FpaDBXzzg7B3SZIjqHXXm970eyXNYBFXlRedkceue3dqunzuxFMJqHeA5
+         yFlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=WVwojOfpbU3ZWFPUDfRDkq9+aL+8zLwFug1ZZrW5dX0=;
+        b=SDAlNx7ZJE1sUsqYS2p2zPSrmZ3I2d2NiXTPOwoEIP5P2Pg97NyvvQf2ydP0JSofGo
+         O8AwtYv2cGqop6iEn0+xJS3Hva17HGIEgV2QtVMAfdtMfbhICv82+hP9ey/pCj7wyflQ
+         rtYm6F6JYfYrAtvJ0PWFHI9T4Vv27fLcil7eqx5ZG6R4eoJn3Z6joj4+a6zWaAAzgUMy
+         oPKJ1i7aQ/1KJZSo8A4+wsnjLZnDgfOWBh4k40owllEZl6BEO5ieGrFDXohmUhSxDC4p
+         8dVBNYwYRJefulkzV/EFxQP+naqbJf0jkXMOP5rrMwTxWqG3FmOXnnWLQk5XD4w8N1tH
+         jTPQ==
+X-Gm-Message-State: ACgBeo2hMUvPxaTUwT5p/aa2uHEjKwhCM/0aj+i+2S5qZcmceLy/TcUj
+        AF5aOqtBSrS3gpamgp0csJg=
+X-Google-Smtp-Source: AA6agR5DA85StQSxQRPWxX6B6a/OS9cpLxiZxUArgaPS5Qk97tH+FkkUKSN+RB9nMiZGKW0aIAjdXQ==
+X-Received: by 2002:ac8:5f10:0:b0:343:7a81:e89b with SMTP id x16-20020ac85f10000000b003437a81e89bmr10978565qta.527.1661793595210;
+        Mon, 29 Aug 2022 10:19:55 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id bm2-20020a05620a198200b006b5f06186aesm6348724qkb.65.2022.08.29.10.19.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 10:19:54 -0700 (PDT)
+Message-ID: <6f6eea4e-67c0-7410-4705-3fbe9c72ba9d@gmail.com>
+Date:   Mon, 29 Aug 2022 10:19:51 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH 5.10 00/86] 5.10.140-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220829105756.500128871@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Akhil Raj <lf32.dev@gmail.com> writes:
 
-> I have deleted duplicate words like
->
-> to, guest, trace, when, we
->
-> Signed-off-by: Akhil Raj <lf32.dev@gmail.com>
-> ---
->  Documentation/RCU/checklist.rst         | 2 +-
->  Documentation/RCU/lockdep.rst           | 2 +-
->  Documentation/bpf/instruction-set.rst   | 2 +-
->  Documentation/trace/histogram.rst       | 2 +-
->  Documentation/trace/timerlat-tracer.rst | 2 +-
->  Documentation/virt/kvm/x86/mmu.rst      | 2 +-
->  6 files changed, 6 insertions(+), 6 deletions(-)
 
-Applied, thanks,
+On 8/29/2022 3:58 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.140 release.
+> There are 86 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 31 Aug 2022 10:57:37 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.140-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-jon
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels and build tested on 
+BMIPS_GENERIC:
+
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
