@@ -2,115 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB92C0502C
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E160BECAAD2
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 13:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229620AbiH2NhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 09:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
+        id S230048AbiH2Nhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 09:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiH2NhT (ORCPT
+        with ESMTP id S229958AbiH2Nhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 09:37:19 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEAC5C9E0;
-        Mon, 29 Aug 2022 06:37:18 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id 69so6068098pgb.13;
-        Mon, 29 Aug 2022 06:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=X3n9fRJaISOoKGJibDsyztvDNBHKFphlKvEWrr6bIeU=;
-        b=JmveZP+OCtghdybFvzZuRj03k/Ivj7Z4v78rEHsMaUQflE8XEa1FSSIPA4qxIysrsX
-         hRwLqoHh7RwiZWfeasksEzY1AZt4HO0w2Wh0vzOeAQvxVcjvePKk3/5NLe1P0jMzZPr0
-         C3w92DFNaqCYqp+A0tkGrgn/E6Ghwg79oBXmlhs0AukPkw7AOJf6KjMgI6Yf1MtZ3umw
-         kLgxEtSaK19JgXmRBT3LceBY3eeZA2rAyDaaLD/dF/Ztf83av5LsXcRwYeehHL+p35ZM
-         04IGdAVcT83avsiNnjG2yVExJOwkJoBEunJCeXcWP50c9tjx4xWNpAyf/CVPEpAgE4KW
-         owOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=X3n9fRJaISOoKGJibDsyztvDNBHKFphlKvEWrr6bIeU=;
-        b=oWZWYylHJV1yxVhKchfyCqrLeXaEea1Tomkb1mbFO62LCF3EfU/AVc6Uqx+5MTOx6d
-         0offumDnEKRGjQLlDuuvlFT9g5XGncauhEGevda8PZSTmhm87jl40e5QFj8TAlnoBZ8j
-         lfw5+5lirbD0LUKtq0Op+f7smuVhl90A/vrI+UUYl4W74QEuaSel27RkL1BnvGkjIg4J
-         Z5FOUL9zJRfWaOLr5Yi3XYe0URkOkK1YU6ozoZsPsM2rOKGbxDH2L6WVl36eV+K9I7sy
-         P7OYvBt/X5KhH1dCGiEabKb2Rs0yeD7SJEqKZPyjy+YB/nsGHZ8xvaKO5guGErCAoOLW
-         ddGg==
-X-Gm-Message-State: ACgBeo3jLrCUo0KghCz7Lio0AR+LDGSdo2J/CwiWVDDEb54LNF+v9DFM
-        uiVzdUnnSeCii7PJ5EKuPhK6lFTH03zvMw==
-X-Google-Smtp-Source: AA6agR6npqtvrRablWh07/Vw19Q4Z94J2iztkOOWgCiPSa/C7qzH1PxhccJrg3G8KKctib1y/VU5Vw==
-X-Received: by 2002:a63:fa49:0:b0:429:fd87:3171 with SMTP id g9-20020a63fa49000000b00429fd873171mr13353291pgk.504.1661780238253;
-        Mon, 29 Aug 2022 06:37:18 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id e2-20020a17090a630200b001fdcfe9a731sm1962628pjj.50.2022.08.29.06.37.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 06:37:17 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Mon, 29 Aug 2022 06:37:16 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jean Delvare <jdelvare@suse.com>
-Subject: Re: [PATCH v2 1/1] hwmon: (iio_hwmon) Make use of device properties
-Message-ID: <20220829133716.GA3968626@roeck-us.net>
-References: <20220826173700.17395-1-andriy.shevchenko@linux.intel.com>
+        Mon, 29 Aug 2022 09:37:46 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 57EDF90805;
+        Mon, 29 Aug 2022 06:37:43 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1oSexS-0006mi-00; Mon, 29 Aug 2022 15:37:42 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 1F5CDC0931; Mon, 29 Aug 2022 15:14:40 +0200 (CEST)
+Date:   Mon, 29 Aug 2022 15:14:40 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Keguang Zhang <keguang.zhang@gmail.com>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yang Ling <gnaygnil@gmail.com>
+Subject: Re: [PATCH] MIPS: loongson32: ls1c: Fix hang during startup
+Message-ID: <20220829131440.GA12409@alpha.franken.de>
+References: <20220823111725.3134377-1-keguang.zhang@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220826173700.17395-1-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220823111725.3134377-1-keguang.zhang@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 08:37:00PM +0300, Andy Shevchenko wrote:
-> Convert the module to be property provider agnostic and allow
-> it to be used on non-OF platforms.
+On Tue, Aug 23, 2022 at 07:17:25PM +0800, Keguang Zhang wrote:
+> From: Yang Ling <gnaygnil@gmail.com>
 > 
-> Include mod_devicetable.h explicitly to replace the dropped of.h
-> which included mod_devicetable.h indirectly.
+> The RTCCTRL reg of LS1C is obselete.
+> Writing this reg will cause system hang.
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-Applied to hwmon-next.
-
-Thanks,
-Guenter
-
+> Fixes: 60219c563c9b6 ("MIPS: Add RTC support for Loongson1C board")
+> Signed-off-by: Yang Ling <gnaygnil@gmail.com>
+> Tested-by: Keguang Zhang <keguang.zhang@gmail.com>
+> Acked-by: Keguang Zhang <keguang.zhang@gmail.com>
 > ---
-> v2: amended commit message (Guenter)
->  drivers/hwmon/iio_hwmon.c | 8 +++++---
->  1 file changed, 5 insertions(+), 3 deletions(-)
+>  arch/mips/loongson32/ls1c/board.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
-> index 580a7d125b88..3aa40893fc09 100644
-> --- a/drivers/hwmon/iio_hwmon.c
-> +++ b/drivers/hwmon/iio_hwmon.c
-> @@ -6,11 +6,13 @@
+> diff --git a/arch/mips/loongson32/ls1c/board.c b/arch/mips/loongson32/ls1c/board.c
+> index e9de6da0ce51..9dcfe9de55b0 100644
+> --- a/arch/mips/loongson32/ls1c/board.c
+> +++ b/arch/mips/loongson32/ls1c/board.c
+> @@ -15,7 +15,6 @@ static struct platform_device *ls1c_platform_devices[] __initdata = {
+>  static int __init ls1c_platform_init(void)
+>  {
+>  	ls1x_serial_set_uartclk(&ls1x_uart_pdev);
+> -	ls1x_rtc_set_extclk(&ls1x_rtc_pdev);
 >  
->  #include <linux/kernel.h>
->  #include <linux/slab.h>
-> +#include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/err.h>
->  #include <linux/platform_device.h>
-> +#include <linux/property.h>
-> +
->  #include <linux/hwmon.h>
-> -#include <linux/of.h>
->  #include <linux/hwmon-sysfs.h>
->  #include <linux/iio/consumer.h>
->  #include <linux/iio/types.h>
-> @@ -149,8 +151,8 @@ static int iio_hwmon_probe(struct platform_device *pdev)
->  	st->attr_group.attrs = st->attrs;
->  	st->groups[0] = &st->attr_group;
->  
-> -	if (dev->of_node) {
-> -		sname = devm_kasprintf(dev, GFP_KERNEL, "%pOFn", dev->of_node);
-> +	if (dev_fwnode(dev)) {
-> +		sname = devm_kasprintf(dev, GFP_KERNEL, "%pfwP", dev_fwnode(dev));
->  		if (!sname)
->  			return -ENOMEM;
->  		strreplace(sname, '-', '_');
+>  	return platform_add_devices(ls1c_platform_devices,
+>  				   ARRAY_SIZE(ls1c_platform_devices));
+> 
+> base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+> -- 
+> 2.34.1
+
+applied to mips-fixes.
+
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
