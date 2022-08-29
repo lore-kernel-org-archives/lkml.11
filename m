@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1696EECAAD2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F6EC0502C
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 11:37:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232777AbiH2Lgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:36:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
+        id S232486AbiH2LhB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:37:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232772AbiH2Lf5 (ORCPT
+        with ESMTP id S232810AbiH2LgI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 07:35:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8B127E80D;
-        Mon, 29 Aug 2022 04:20:55 -0700 (PDT)
+        Mon, 29 Aug 2022 07:36:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1953B7D7BC;
+        Mon, 29 Aug 2022 04:20:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D29A5B80FA0;
-        Mon, 29 Aug 2022 11:13:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4534CC43151;
-        Mon, 29 Aug 2022 11:13:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2688B80F3B;
+        Mon, 29 Aug 2022 11:05:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7EFDC433C1;
+        Mon, 29 Aug 2022 11:05:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661771599;
-        bh=/92fL+7tW0QBg5vD25tOhzrYyIWIUzFk26TKpw5MrTE=;
+        s=korg; t=1661771107;
+        bh=IAXDwtfFOmitaIKfjHPlHTXJpqG+oOz2KWYeG26f2ZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B6zfe8nnvb8Gdtl0gz3PrT0g6Fa4d58K7Q0boWH5F2yLKCyKsiJPFSr92UHDpBDTt
-         xABQ5I4ahHBNTMoru3gSTauguorlQPB5Dq1RRg604lbNZo1QAK8cMvGoFIaO+8euMj
-         1puClfPKHL3hXkF1YCfdWCuQ6erLBpOuuOJ6A4Bg=
+        b=sHRk26T30VgQYp8PHv14XxNkkFQXoenkAQaVRynMEQAl333u5U0A4lOLBnPKYCUe4
+         ckKRPS/k7fz3Zlmdo+whB1jlHHhC5W/q6buIRgeLEbdu8/2US3nA44G0+yExe2K0Bw
+         pdneKWEF4vPOYOLX6IP/MHZAO7BJP5bN/VKoLFwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Yonglong Li <liyonglong@chinatelecom.cn>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 124/136] mptcp: Fix crash due to tcp_tsorted_anchor was initialized before release skb
-Date:   Mon, 29 Aug 2022 12:59:51 +0200
-Message-Id: <20220829105809.765999180@linuxfoundation.org>
+        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 22/86] nfc: pn533: Fix use-after-free bugs caused by pn532_cmd_timeout
+Date:   Mon, 29 Aug 2022 12:58:48 +0200
+Message-Id: <20220829105757.429379589@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220829105804.609007228@linuxfoundation.org>
-References: <20220829105804.609007228@linuxfoundation.org>
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+References: <20220829105756.500128871@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,62 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonglong Li <liyonglong@chinatelecom.cn>
+From: Duoming Zhou <duoming@zju.edu.cn>
 
-commit 3ef3905aa3b5b3e222ee6eb0210bfd999417a8cc upstream.
+[ Upstream commit f1e941dbf80a9b8bab0bffbc4cbe41cc7f4c6fb6 ]
 
-Got crash when doing pressure test of mptcp:
+When the pn532 uart device is detaching, the pn532_uart_remove()
+is called. But there are no functions in pn532_uart_remove() that
+could delete the cmd_timeout timer, which will cause use-after-free
+bugs. The process is shown below:
 
-===========================================================================
-dst_release: dst:ffffa06ce6e5c058 refcnt:-1
-kernel tried to execute NX-protected page - exploit attempt? (uid: 0)
-BUG: unable to handle kernel paging request at ffffa06ce6e5c058
-PGD 190a01067 P4D 190a01067 PUD 43fffb067 PMD 22e403063 PTE 8000000226e5c063
-Oops: 0011 [#1] SMP PTI
-CPU: 7 PID: 7823 Comm: kworker/7:0 Kdump: loaded Tainted: G            E
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.2.1 04/01/2014
-Call Trace:
- ? skb_release_head_state+0x68/0x100
- ? skb_release_all+0xe/0x30
- ? kfree_skb+0x32/0xa0
- ? mptcp_sendmsg_frag+0x57e/0x750
- ? __mptcp_retrans+0x21b/0x3c0
- ? __switch_to_asm+0x35/0x70
- ? mptcp_worker+0x25e/0x320
- ? process_one_work+0x1a7/0x360
- ? worker_thread+0x30/0x390
- ? create_worker+0x1a0/0x1a0
- ? kthread+0x112/0x130
- ? kthread_flush_work_fn+0x10/0x10
- ? ret_from_fork+0x35/0x40
-===========================================================================
+    (thread 1)                  |        (thread 2)
+                                |  pn532_uart_send_frame
+pn532_uart_remove               |    mod_timer(&pn532->cmd_timeout,...)
+  ...                           |    (wait a time)
+  kfree(pn532) //FREE           |    pn532_cmd_timeout
+                                |      pn532_uart_send_frame
+                                |        pn532->... //USE
 
-In __mptcp_alloc_tx_skb skb was allocated and skb->tcp_tsorted_anchor will
-be initialized, in under memory pressure situation sk_wmem_schedule will
-return false and then kfree_skb. In this case skb->_skb_refdst is not null
-because_skb_refdst and tcp_tsorted_anchor are stored in the same mem, and
-kfree_skb will try to release dst and cause crash.
+This patch adds del_timer_sync() in pn532_uart_remove() in order to
+prevent the use-after-free bugs. What's more, the pn53x_unregister_nfc()
+is well synchronized, it sets nfc_dev->shutting_down to true and there
+are no syscalls could restart the cmd_timeout timer.
 
-Fixes: f70cad1085d1 ("mptcp: stop relying on tcp_tx_skb_cache")
-Reviewed-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Yonglong Li <liyonglong@chinatelecom.cn>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Link: https://lore.kernel.org/r/20220317220953.426024-1-mathew.j.martineau@linux.intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c656aa4c27b1 ("nfc: pn533: add UART phy driver")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mptcp/protocol.c |    1 +
+ drivers/nfc/pn533/uart.c | 1 +
  1 file changed, 1 insertion(+)
 
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1246,6 +1246,7 @@ static struct sk_buff *__mptcp_alloc_tx_
- 		tcp_skb_entail(ssk, skb);
- 		return skb;
- 	}
-+	tcp_skb_tsorted_anchor_cleanup(skb);
- 	kfree_skb(skb);
- 	return NULL;
+diff --git a/drivers/nfc/pn533/uart.c b/drivers/nfc/pn533/uart.c
+index a0665d8ea85bc..e92535ebb5287 100644
+--- a/drivers/nfc/pn533/uart.c
++++ b/drivers/nfc/pn533/uart.c
+@@ -310,6 +310,7 @@ static void pn532_uart_remove(struct serdev_device *serdev)
+ 	pn53x_unregister_nfc(pn532->priv);
+ 	serdev_device_close(serdev);
+ 	pn53x_common_clean(pn532->priv);
++	del_timer_sync(&pn532->cmd_timeout);
+ 	kfree_skb(pn532->recv_skb);
+ 	kfree(pn532);
  }
+-- 
+2.35.1
+
 
 
