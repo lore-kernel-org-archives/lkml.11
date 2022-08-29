@@ -2,162 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78856ECAAA2
-	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 03:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA89AC3DA6B
+	for <linux-kernel@archiver.kernel.org>; Mon, 29 Aug 2022 03:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbiH2DIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 28 Aug 2022 23:08:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
+        id S229795AbiH2DIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 28 Aug 2022 23:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiH2DIP (ORCPT
+        with ESMTP id S229671AbiH2DIW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 28 Aug 2022 23:08:15 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F3E3DF30;
-        Sun, 28 Aug 2022 20:08:01 -0700 (PDT)
-Received: from localhost.localdomain (unknown [182.2.68.216])
-        by gnuweeb.org (Postfix) with ESMTPSA id 1127A80B16;
-        Mon, 29 Aug 2022 03:07:52 +0000 (UTC)
-X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1661742475;
-        bh=VlX7C/9ehX4QyKg5QD8GEmv081Be7gwIp1s3dgH//yY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o64f1A3MlidJp35tF/cMKXgBgL2Vaj5V4SWmqMedI8qKaUwtkxe8EEDT4eXLeVchY
-         bGw7WbvnfxZGNHdeepaHpkmHoU5QZPFJ6kSr5yAoozKYZgTnnS/iCRj2adDq0RMtkj
-         /Sdd9eGMdDUyYWefiEnASTHCX8F9dod+1sD/SerSgiOhAaFZyCjpOREZqviy3kMHb0
-         gpE3dK3UR3e4/tHmIo6wgp54iZQ048dXNBpurBzN34WHDQk/M8mgeO2b9n0zoXgQwC
-         IMS/fOOJI7BEEE3/NSedv5J720kYdxypGok4OQSDRuKN98Z6Bs8DTL9CD7D/TBhtWQ
-         RbBEslJiy9enA==
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        Caleb Sander <csander@purestorage.com>,
-        Muhammad Rizki <kiizuha@gnuweeb.org>,
-        Kanna Scarlet <knscarlet@gnuweeb.org>,
-        io-uring Mailing List <io-uring@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>
-Subject: [RFC PATCH liburing v1 1/4] syscall: Add io_uring syscall functions
-Date:   Mon, 29 Aug 2022 10:07:36 +0700
-Message-Id: <20220829030521.3373516-2-ammar.faizi@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220829030521.3373516-1-ammar.faizi@intel.com>
-References: <20220829030521.3373516-1-ammar.faizi@intel.com>
+        Sun, 28 Aug 2022 23:08:22 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9837B3F1D8
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 20:08:16 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id e28so5290061qts.1
+        for <linux-kernel@vger.kernel.org>; Sun, 28 Aug 2022 20:08:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fusetak.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=XFPVDLt22Mf+eywEhtbrRGQZP+BqmzTLYoHmyhTVdSw=;
+        b=fcbB/iInZapQUJ2oYudpXbpXZpEX3NIzrhQSi0gN5gKzpw6P/juoLEESyKTdrZ5d8d
+         /YDB/uh3pG+lKkCmMcb+js/fZaWQxXk+ZmvGcDleQ0hk9SvRIAzQyN4A8vPmcsRfRmZX
+         l8Kl3+ah2OGElogYljWy3pnzOQ/GGAfo4fHFLXCTel8CVKmRuTkExVT2mbHnm3cMhqhk
+         LZuogQqdTh9vpe6QSHPwouC3tTlAtK8C6zjibQNA96wGAj9Zw1v4tvCbTot+W+jYwhoo
+         Sqy+Fnre0Sw3zmNjNnaX6jGnRqjRjxIxqC/SQsWPUgkLME1j+LYPHYUtM+DS+b99ny7P
+         QCkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=XFPVDLt22Mf+eywEhtbrRGQZP+BqmzTLYoHmyhTVdSw=;
+        b=QEEk3imleXhEy06oAZuO5M3FIx+szBuDvhJTNhk0WsBN/H26FU0QuMIRHh6BVmHIAD
+         I/VnOc1F4mm+UXjo4ma7d8RtuWdNmqMuoJVPe7SrNRWb7+xndwQwlsTXMJEiqXsqbuST
+         LjKCCEvIUiE95WtIbov/4wUjTlqTG0toByeOcdJBbdqo4MhbhOSSjd61wKRXwv76GZKE
+         steODpAzcQBsN3vjfUDX4Rs7ejAMDTvSz1CXCwqNfySk7ewLvL6ZztM7ztxJxHjhdOZZ
+         l0nRcbTOTkQj3myOMfj/uB14uwfl7ylrlNz0PUoSRcPwXUzJr2bBskwSxGcn9hshutCI
+         452g==
+X-Gm-Message-State: ACgBeo1cNpFqYs9pLwOEm4cdRwKtVhe2w0kcJpqd+p+NDmmMbEmjPeM9
+        vBscIUZf+Gpce/3eL8UscZkDtg==
+X-Google-Smtp-Source: AA6agR7hLwZ29c1VezpHHkk+bMHwJXVH/dx7lvm8lqxW0VcnNRQnAaL+1jCUrBfQ7E506itw19MPJA==
+X-Received: by 2002:a05:622a:130d:b0:344:8f5c:2cda with SMTP id v13-20020a05622a130d00b003448f5c2cdamr8589786qtk.685.1661742480648;
+        Sun, 28 Aug 2022 20:08:00 -0700 (PDT)
+Received: from fusetakDesktop.internal.fusetak.net (cpe84948c2a9a83-cm84948c2a9a80.cpe.net.fido.ca. [72.140.25.213])
+        by smtp.gmail.com with ESMTPSA id s16-20020ac85290000000b0034305a91aaesm4457940qtn.83.2022.08.28.20.07.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Aug 2022 20:08:00 -0700 (PDT)
+From:   Tamim Khan <tamim@fusetak.com>
+To:     linux-acpi@vger.kernel.org
+Cc:     lenb@kernel.org, rafael@kernel.org, linux-kernel@vger.kernel.org,
+        Tamim Khan <tamim@fusetak.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        Sunand <sunandchakradhar@gmail.com>
+Subject: [PATCH] ACPI: Skip IRQ override on Asus Vivobook K3402ZA/K3502ZA
+Date:   Sun, 28 Aug 2022 23:04:19 -0400
+Message-Id: <20220829030417.236471-1-tamim@fusetak.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+In the ACPI DSDT table for Asus VivoBook K3402ZA/K3502ZA
+IRQ 1 is described as ActiveLow; however, the kernel overrides
+it to Edge_High. This prevents the internal keyboard from working
+on these laptops. In order to fix this add these laptops to the
+skip_override_table so that the kernel does not override IRQ 1 to
+Edge_High.
 
-We have:
-
-  man 2 io_uring_setup;
-  man 2 io_uring_enter;
-  man 2 io_uring_register;
-
-Those entries say that io_uring syscall functions are declared in
-`<linux/io_uring.h>`. But they don't actually exist and never existed.
-This is causing confusion for people who read the manpage. Let's just
-implement them in liburing so they exist.
-
-This also allows the user to invoke io_uring syscalls directly instead
-of using the full liburing provided setup.
-
-Link: https://github.com/axboe/liburing/pull/646#issuecomment-1229639532
-Cc: Caleb Sander <csander@purestorage.com>
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216158
+Reviewed-by: Hui Wang <hui.wang@canonical.com>
+Tested-by: Tamim Khan <tamim@fusetak.com>
+Tested-by: Sunand <sunandchakradhar@gmail.com>
+Signed-off-by: Tamim Khan <tamim@fusetak.com>
 ---
- src/Makefile           |  2 +-
- src/include/liburing.h |  8 ++++++++
- src/liburing.map       |  4 ++++
- src/syscall.c          | 30 ++++++++++++++++++++++++++++++
- 4 files changed, 43 insertions(+), 1 deletion(-)
- create mode 100644 src/syscall.c
+This patch is very similar to the fix implemented for keyboards on 
+Medion laptops in 892a012699fc0b91a2ed6309078936191447f480 
+(ACPI: resources: Add DMI-based legacy IRQ override quirk) and 
+1b26ae40092b43bb6e9c5df376227382b390b953 (ACPI: resources: Add one 
+more Medion model in IRQ override quirk) and has been reviewed by the
+author of those commits. It has also been tested by myself on a K3502ZA 
+and by someone else with a K3402ZA to verify that this patch allows
+the internal keyboard to work.
 
-diff --git a/src/Makefile b/src/Makefile
-index dad379d..73a98ba 100644
---- a/src/Makefile
-+++ b/src/Makefile
-@@ -32,7 +32,7 @@ endif
+ drivers/acpi/resource.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
+index 510cdec375c4..2ebc85233bac 100644
+--- a/drivers/acpi/resource.c
++++ b/drivers/acpi/resource.c
+@@ -399,6 +399,24 @@ static const struct dmi_system_id medion_laptop[] = {
+ 	{ }
+ };
  
- all: $(all_targets)
++static const struct dmi_system_id asus_laptop[] = {
++	{
++		.ident = "Asus Vivobook K3402ZA",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
++			DMI_MATCH(DMI_BOARD_NAME, "K3402ZA"),
++		},
++	},
++	{
++		.ident = "Asus Vivobook K3502ZA",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
++			DMI_MATCH(DMI_BOARD_NAME, "K3502ZA"),
++		},
++	},
++	{ }
++};
++
+ struct irq_override_cmp {
+ 	const struct dmi_system_id *system;
+ 	unsigned char irq;
+@@ -409,6 +427,7 @@ struct irq_override_cmp {
  
--liburing_srcs := setup.c queue.c register.c
-+liburing_srcs := setup.c queue.c register.c syscall.c
+ static const struct irq_override_cmp skip_override_table[] = {
+ 	{ medion_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0 },
++	{ asus_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0 },
+ };
  
- ifeq ($(CONFIG_NOLIBC),y)
- 	liburing_srcs += nolibc.c
-diff --git a/src/include/liburing.h b/src/include/liburing.h
-index 66c5095..7db1ea9 100644
---- a/src/include/liburing.h
-+++ b/src/include/liburing.h
-@@ -202,6 +202,14 @@ int io_uring_register_file_alloc_range(struct io_uring *ring,
- int io_uring_register_notifications(struct io_uring *ring, unsigned nr,
- 				    struct io_uring_notification_slot *slots);
- int io_uring_unregister_notifications(struct io_uring *ring);
-+int io_uring_enter(unsigned int fd, unsigned int to_submit,
-+		   unsigned int min_complete, unsigned int flags,
-+		   sigset_t *sig);
-+int io_uring_enter2(int fd, unsigned to_submit, unsigned min_complete,
-+		    unsigned flags, sigset_t *sig, int sz);
-+int io_uring_setup(unsigned entries, struct io_uring_params *p);
-+int io_uring_register(int fd, unsigned opcode, const void *arg,
-+		      unsigned nr_args);
- 
- /*
-  * Helper for the peek/wait single cqe functions. Exported because of that,
-diff --git a/src/liburing.map b/src/liburing.map
-index 7d8f143..8573dfc 100644
---- a/src/liburing.map
-+++ b/src/liburing.map
-@@ -62,4 +62,8 @@ LIBURING_2.3 {
- 		io_uring_register_file_alloc_range;
- 		io_uring_register_notifications;
- 		io_uring_unregister_notifications;
-+		io_uring_enter;
-+		io_uring_enter2;
-+		io_uring_setup;
-+		io_uring_register;
- } LIBURING_2.2;
-diff --git a/src/syscall.c b/src/syscall.c
-new file mode 100644
-index 0000000..fcc6808
---- /dev/null
-+++ b/src/syscall.c
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: MIT */
-+
-+#include "lib.h"
-+#include "syscall.h"
-+#include <liburing.h>
-+
-+int io_uring_enter(unsigned int fd, unsigned int to_submit,
-+		   unsigned int min_complete, unsigned int flags,
-+		   sigset_t *sig)
-+{
-+	return __sys_io_uring_enter(fd, to_submit, min_complete, flags, sig);
-+}
-+
-+int io_uring_enter2(int fd, unsigned to_submit, unsigned min_complete,
-+		    unsigned flags, sigset_t *sig, int sz)
-+{
-+	return __sys_io_uring_enter2(fd, to_submit, min_complete, flags, sig,
-+				     sz);
-+}
-+
-+int io_uring_setup(unsigned entries, struct io_uring_params *p)
-+{
-+	return __sys_io_uring_setup(entries, p);
-+}
-+
-+int io_uring_register(int fd, unsigned opcode, const void *arg,
-+		      unsigned nr_args)
-+{
-+	return __sys_io_uring_register(fd, opcode, arg, nr_args);
-+}
+ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
 -- 
-Ammar Faizi
+2.37.2
 
