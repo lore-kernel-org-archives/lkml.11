@@ -2,93 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 729C4ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A923ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:48:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiH3Ksl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:48:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
+        id S229524AbiH3Ksp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:48:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiH3Ksf (ORCPT
+        with ESMTP id S229833AbiH3Ksh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:48:35 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9269ADCFD8
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:48:34 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id i77so8859568ioa.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:48:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=D+Zr5m06Dz7pd1eCr8Zp9JUK+jm0toq4g0HWVGImRYA=;
-        b=abgFhPl46C8ei+7f36OH7DAnCzAMmjSmJbnkvTvPumKxM3f1C6WzRbefKGvkLMtYsA
-         NxpwF8HNjVwrUZ6K95DrwmzLJHXoauPusJCJ4avSH0MRD+rplq5ciQoaVkW+htEFWz4W
-         sYCigAomDmWEBjn4ZQLux3KreIkC02bze3h9E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=D+Zr5m06Dz7pd1eCr8Zp9JUK+jm0toq4g0HWVGImRYA=;
-        b=T2PmgJp2mHgcM+2THcg9zo4ikDpAXOqPQa/5Fe/EGr0R8Rz+MT7zNHeIV2sIbUaqrw
-         AGYwxCfmkJTQ8p9kkRd2gbXQqKF4FbH6M+vur3CPo8H7sn3ALz6LfVF6QRlCcwBKs8TU
-         juxuikyeB1CSzQ3+dJiYW9AmryY42M4ciEirIYf7IHAMTHRqqjifEIHsugitD/XfyAFY
-         lQcNCxvDicYkXYej/H0pudmfh09Oyc67xftg46Hq/cmHh67NZ3nHD2RCrSJQpTS8AqT+
-         Mx1iCLdl1ZVo9fbo62h5BEckdpnbd+x74dFe/gYl8wmJgdM1+p0IM6Yf7aTxU/pLAM5j
-         DfeA==
-X-Gm-Message-State: ACgBeo3NSm/ico/78tmxZMsabiaDp+D7kRVQz88uSAfGl/bUstEevbp+
-        Gbf8kkXlMcitohhiiNLX2yp7Hp30u7o9VyloTdJAbQ==
-X-Google-Smtp-Source: AA6agR6iliUyUmz+S8kqdlyWYTe+420xcq+qusgU+R+5fk0mgQgTG3lhPxjIa7eRDTILKtYwB+ryOdEjtuc+NxjSFFc=
-X-Received: by 2002:a05:6602:15ce:b0:688:e4fd:bbfc with SMTP id
- f14-20020a05660215ce00b00688e4fdbbfcmr10180294iow.121.1661856513754; Tue, 30
- Aug 2022 03:48:33 -0700 (PDT)
+        Tue, 30 Aug 2022 06:48:37 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35399DC5D0
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:48:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1661856514;
+        bh=DRSUwEoTCztac7oUAw8Om3bUbvawDARF481p3R69yCc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=TGxo0Hi8qz0Y7QGlB7/VaZv0/oO9yWi2zVUih/Pvf+NR7U0pTtqNod7V6Ikvrcpff
+         4Uu3N1LkA3jRVWhXQeydtMgsTcrUOlrersduah/KbtMbA4+/JpH0xGjPENqGRHgC9E
+         U2/EcZHVhwy0iyxtDNnhZZMl/WYUxU9FDJqB0lE4=
+Received: from xry111-x57s1.. (unknown [IPv6:240e:358:11dd:1900:dc73:854d:832e:5])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 726BD65927;
+        Tue, 30 Aug 2022 06:48:28 -0400 (EDT)
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>,
+        Xi Ruoyao <xry111@xry111.site>
+Subject: [PATCH v7 0/5] LoongArch: Support toolchain with new relocation types
+Date:   Tue, 30 Aug 2022 18:48:01 +0800
+Message-Id: <20220830104806.128365-1-xry111@xry111.site>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <20220729165954.991-1-ignat@cloudflare.com> <Yv9dvvy0rK/1T0sU@gondor.apana.org.au>
- <CALrw=nEh7LX3DSCa3FTu8BYr4QWx+W2h3Jei9Qo67+XXH-Vegw@mail.gmail.com> <Yw3Rneo6Ik1QEfbG@gondor.apana.org.au>
-In-Reply-To: <Yw3Rneo6Ik1QEfbG@gondor.apana.org.au>
-From:   Ignat Korchagin <ignat@cloudflare.com>
-Date:   Tue, 30 Aug 2022 11:48:23 +0100
-Message-ID: <CALrw=nGJgMACrFVy+FVVCDb4H3wNUN2E-GLZaXzLsm3ReOUeVg@mail.gmail.com>
-Subject: Re: [PATCH] crypto: akcipher - default implementations for setting
- private/public keys
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        linux-crypto <linux-crypto@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 10:00 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> On Mon, Aug 29, 2022 at 11:48:23AM +0100, Ignat Korchagin wrote:
-> >
-> > I can only elaborate here as I didn't encounter any real-world
-> > use-cases, but may assume some limited crypto hardware device, which
-> > may somehow "encourage" doing public key operations in software and
-> > providing only "private-key" operations due to its limited resources.
->
-> In general if a hardware is missing a piece of the functinoality
-> required by the API then it should implement a software fallback.
->
-> The only time such a NULL helper would make sense if an algorithm
-> had no public key.
+The version 2.00 of LoongArch ELF ABI specification introduced new
+relocation types, and the development tree of Binutils and GCC has
+started to use them.  If the kernel is built with the latest snapshot of
+Binutils or GCC, it will fail to load the modules because of unrecognized
+relocation types in modules.
 
-I vaguely remember some initial research in quantum-resistant
-signatures, which used HMAC for "signing" thus don't have any public
-keys. But it is way beyond my expertise to comment on the practicality
-and availability of such schemes.
+Add support for GOT and new relocation types for the module loader, so
+the kernel (with modules) can be built with the "normal" code model and
+function properly.
 
-I'm more concerned here about a buggy "third-party" RSA driver, which
-may not implement the callback and which gets prioritised by the
-framework, thus giving the ability to trigger a NULL-ptr dereference
-from userspace via keyctl(2). I think the Crypto API framework should
-be a bit more robust to handle such a case, but I also understand that
-there are a lot of "if"s in this scenario and we can say it is up to
-crypto driver not to be buggy. Therefore, consider my opinion as not
-strong and I can post a v2, which does not provide a default stub for
-set_pub_key, if you prefer.
+This series does not break the compatibility with old toolchain using
+stack-based relocation types, so with the patches applied the kernel can
+be be built with both old and new toolchains.  But, the combination of
+"new" Binutils and "old" GCC is not supported.
 
-Ignat
+Tested by building the kernel with the following combinations:
+
+- GCC 12 and Binutils 2.39
+- GCC trunk and Binutils trunk
+
+and running the builds with 35 in-tree modules loaded, and loading one
+module with 20 GOT loads and a per-CPU variable (loaded addresses
+verified by comparing with /proc/kallsyms).
+
+Changes from v6 to v7:
+
+- Simplify apply_r_larch_pcala.
+- Remove a build check only for excluding early GCC 13 dev snapshots.
+- Squash model attribute addition into the previous patch.
+- Retain "-fplt".
+
+Changes from v5 to v6:
+
+- Restore version number.
+- Rename CONFIG_CC_HAS_EXPLICIT_RELOCS to CONFIG_AS_HAS_EXPLICIT_RELOCS.
+  It now only checks assembler.
+- No longer support "old GCC with new Binutils", so R_LARCH_ABS* is
+  dropped.
+  - "Old GCC with old Binutils" is still supported until Arnd ack.
+  - "New GCC with old Binutils" is still supported as it does not
+    require additional code.
+- Remove "cc-option" around "-mexplicit-relocs".  For unsupported
+  "old GCC with new Binutils" combination, forcing -mexplicit-relocs
+  makes assembling fail, instead of silently producing unloadable
+  modules.
+- Move the error report for "lacking model attribute" into Makefile.
+- Squash the two patches for R_LARCH_B26 and R_LARCH_PCALA* into one.
+
+Changes from v4 to v5 ("v5" missed in the subject):
+
+- Change subject.
+- Introduce CONFIG_CC_HAS_EXPLICIT_RELOCS.
+- Retain -Wa,-mla-* options for old toolchains
+  (!CONFIG_CC_HAS_EXPLICIT_RELOCS).
+- Use __attribute__((model("extreme"))) in PER_CPU_ATTRIBUTES, to fix
+  a breakage with per-CPU variables defined in modules.
+- Handle R_LARCH_PCALA64_{HI12,LO12} for extreme model.
+- Handle R_LARCH_ABS* for "old GCC with new Binutils".
+- Separate the last patch into more small patches.
+- Avoid BUG_ON() for the handling of GOT.
+
+Changes from v3 to v4:
+
+- No code change.  Reword the commit message of the 3rd patch again
+  based on suggestion from Huacai.
+
+Changes from v2 to v3:
+
+- Use `union loongarch_instruction` instead of explicit bit shifts
+  applying the relocation.  Suggested by Youling.
+- For R_LARCH_B26, move the alignment check before the range check to be
+  consistent with stack pop relocations.  Suggested by Youling.
+- Reword the commit message of the 3rd patch.  Suggested by Huacai.
+
+Changes from v1 to v2:
+
+- Fix a stupid programming error (confusion between the number of PLT
+  entries and the number of GOT entries).  (Bug spotted by Youling).
+- Synthesize the _GLOBAL_OFFSET_TABLE_ symbol with module.lds, instead
+  of faking it at runtime.  The 3rd patch from V1 is now merged into
+  the 1st patch because it would be a one-line change.  (Suggested by
+  Jinyang).
+- Keep reloc_rela_handlers[] ordered by the relocation type ID.
+  (Suggested by Youling).
+- Remove -fplt along with -Wa,-mla-* options because it's the default.
+  (Suggested by Youling).
+
+Xi Ruoyao (5):
+  LoongArch: Add CONFIG_AS_HAS_EXPLICIT_RELOCS
+  LoongArch: Adjust symbol addressing for CONFIG_AS_HAS_EXPLICIT_RELOCS
+  LoongArch: Define ELF relocation types added in v2.00 ABI
+  LoongArch: Support PC-relative relocations in modules
+  LoongArch: Support R_LARCH_GOT_PC* in modules
+
+ arch/loongarch/Kconfig                  |  3 +
+ arch/loongarch/Makefile                 | 17 +++++
+ arch/loongarch/include/asm/elf.h        | 37 ++++++++++
+ arch/loongarch/include/asm/module.h     | 23 ++++++
+ arch/loongarch/include/asm/module.lds.h |  1 +
+ arch/loongarch/include/asm/percpu.h     |  8 +++
+ arch/loongarch/kernel/head.S            | 10 +--
+ arch/loongarch/kernel/module-sections.c | 56 +++++++++++++--
+ arch/loongarch/kernel/module.c          | 93 ++++++++++++++++++++++++-
+ 9 files changed, 238 insertions(+), 10 deletions(-)
+
+-- 
+2.37.0
+
