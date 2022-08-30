@@ -2,91 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A5EECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:53:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9E3ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230006AbiH3Kxl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:53:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
+        id S230072AbiH3Kxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229983AbiH3Kxg (ORCPT
+        with ESMTP id S230032AbiH3Kxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:53:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4C32AE13;
-        Tue, 30 Aug 2022 03:53:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9683B80CAE;
-        Tue, 30 Aug 2022 10:53:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E70C433D6;
-        Tue, 30 Aug 2022 10:53:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661856807;
-        bh=ofan/VoCA8fQBPr7dkw1KzvWzkg3kfS1WZRBqvhhND8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Xw104m072l6dL7s5Whkjd8J+vTSXkgEqjZ9EVm7G3jtX1oR3lJdEsJOvQza/mfa/R
-         ylSfefsM3HsyQcRnf3NeoBByXzgLWXhO8V5NhnYXszNSnxW5dBxRkroRrLjLcYwEz7
-         eGV64yfb6ymytIuvrqHit8J6TTsyU/IMnEUI6nDxNq6p2/WiLc5lLO6KzjhODK37+Y
-         mhZAf+ieQM4bhP/AoW3VQLlm+v6u+oH/68H1OA+5+47i4gcJpZj8WZidacbgefCpK+
-         +Mm6/oB86objx0QEdsYbn+RWtfKVQvu50VNKfFADxOD3joTDr8r6KomsQmd3KX6n5s
-         UHutHLLcvY8bA==
-Date:   Tue, 30 Aug 2022 12:53:24 +0200
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Joel Fernandes <joel@joelfernandes.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
-        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        rcu <rcu@vger.kernel.org>,
-        Vineeth Pillai <vineeth@bitbyteword.org>
-Subject: Re: [PATCH v4 00/14] Implement call_rcu_lazy() and miscellaneous
- fixes
-Message-ID: <20220830105324.GA71266@lothringen>
-References: <20220819204857.3066329-1-joel@joelfernandes.org>
- <20220829134045.GA54589@lothringen>
- <1f7dd31b-f4d0-5c1c-ce28-c27f75c17f05@joelfernandes.org>
- <20220829194622.GA58291@lothringen>
- <CAEXW_YS593n8Gget+REaD-c8vT8Ht_AzOY0kXA_uc674LOyvVw@mail.gmail.com>
- <20220829204202.GQ6159@paulmck-ThinkPad-P17-Gen-1>
+        Tue, 30 Aug 2022 06:53:48 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4CF7E1AB5;
+        Tue, 30 Aug 2022 03:53:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661856822; x=1693392822;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=i+NhalCfka2N+uo3jTS84TDOu0zWQkP5sMNEBtCTXuc=;
+  b=w0/J5B+bk8x2l1EPr8I0sEoiMee9KN0rIvxziKvq6e8kE9FgjjG7yUOP
+   rxxzu6jwqDN8JLIgLbWLW4/YTJXCqs5PKRsm50wsU/NDOLxrVZsAkf/Ar
+   cMWacoDZAHbj+Xj0rBc5BYhfyoP5zfneNb2r+krNTDuVcNXM4zG/VrL/R
+   TbaUEGZXie8bkJYYX28k8prhbfBG3gGT5DqVGCaoxgcLRyo5SIzCVFB/z
+   bCB9CLYkjcC7w+hX4UTX4OAO9g9/4GZEYYofj+ZOSzDFSeD+Xo7x6I4Uo
+   zEh8ExOJU4REfxrjpvcqx1dlPXwxNHNiWzhQ1gD4PC580kOP2AciLpZlH
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="171569490"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 03:53:40 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 30 Aug 2022 03:53:37 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 03:53:32 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: [RFC Patch net-next v3 2/3] net: dsa: microchip: add reference to ksz_device inside the ksz_port
+Date:   Tue, 30 Aug 2022 16:23:02 +0530
+Message-ID: <20220830105303.22067-3-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220830105303.22067-1-arun.ramadoss@microchip.com>
+References: <20220830105303.22067-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829204202.GQ6159@paulmck-ThinkPad-P17-Gen-1>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 01:42:02PM -0700, Paul E. McKenney wrote:
-> On Mon, Aug 29, 2022 at 04:36:40PM -0400, Joel Fernandes wrote:
-> > On Mon, Aug 29, 2022 at 3:46 PM Frederic Weisbecker <frederic@kernel.org> wrote:
-> > > On Mon, Aug 29, 2022 at 12:45:40PM -0400, Joel Fernandes wrote:
-> > > > On 8/29/2022 9:40 AM, Frederic Weisbecker wrote:
-> 
-> [ . .  . ]
-> 
-> > > > > 2) NOCB implies performance issues.
-> > > >
-> > > > Which kinds of? There is slightly worse boot times, but I'm guessing that's do
-> > > > with the extra scheduling overhead of the extra threads which is usually not a
-> > > > problem except that RCU is used in the critical path of boot up (on ChromeOS).
-> > >
-> > > I never measured it myself but executing callbacks on another CPUs, with
-> > > context switches and locking can only involve significant performance issues if callbacks
-> > > are frequent. So it's a tradeoff between power and performance.
-> > 
-> > In my testing of benchmarks on real systems with 8-16 CPUs, the
-> > performance hit is down in the noise. It is possible though that maybe
-> > one can write a non-realistic synthetic test to force the performance
-> > issues, but I've not seen it in the real world. Maybe on
-> > networking-heavy servers with lots of cores, you'll see it but their
-> > batteries if any would be pretty big :-).
-> 
-> To Frederic's point, if you have enough servers, even a 1% decrease in
-> power consumption is a very big deal.  ;-)
+struct ksz_port doesn't have reference to ksz_device as of now. In order
+to find out from which port interrupt has triggered, we need to pass the
+struct ksz_port as a host data. When the interrupt is triggered, we can
+get the port from which interrupt triggered, but to identify it is phy
+interrupt we have to read status register. The regmap structure for
+accessing the device register is present in the ksz_device struct. To
+access the ksz_device from the ksz_port, the reference is added to it
+with port number as well.
 
-The world has enough servers, for that matters ;-)
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 3 +++
+ drivers/net/dsa/microchip/ksz_common.h | 4 ++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index da9bdf753f7a..8714a20da0e7 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -1917,6 +1917,9 @@ int ksz_switch_register(struct ksz_device *dev)
+ 				     GFP_KERNEL);
+ 		if (!dev->ports[i].mib.counters)
+ 			return -ENOMEM;
++
++		dev->ports[i].ksz_dev = dev;
++		dev->ports[i].num = i;
+ 	}
+ 
+ 	/* set the real number of ports */
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 0d9520dc6d2d..c675a58ef298 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -16,6 +16,8 @@
+ 
+ #define KSZ_MAX_NUM_PORTS 8
+ 
++struct ksz_device;
++
+ struct vlan_table {
+ 	u32 table[3];
+ };
+@@ -82,6 +84,8 @@ struct ksz_port {
+ 	u16 max_frame;
+ 	u32 rgmii_tx_val;
+ 	u32 rgmii_rx_val;
++	struct ksz_device *ksz_dev;
++	u8 num;
+ };
+ 
+ struct ksz_device {
+-- 
+2.36.1
+
