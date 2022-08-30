@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F29ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C82CECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232024AbiH3Rcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
+        id S231518AbiH3Rci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231787AbiH3Rbk (ORCPT
+        with ESMTP id S231887AbiH3Rbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:31:40 -0400
+        Tue, 30 Aug 2022 13:31:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16542AC4D;
-        Tue, 30 Aug 2022 10:28:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E598215A22F;
+        Tue, 30 Aug 2022 10:28:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79362617C1;
-        Tue, 30 Aug 2022 17:26:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E868DC433C1;
-        Tue, 30 Aug 2022 17:26:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A33926172E;
+        Tue, 30 Aug 2022 17:26:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C702C433D6;
+        Tue, 30 Aug 2022 17:26:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880418;
-        bh=whvkUYJpp+OMkxLwPyh6AxZcY193wuz/Z41ppsLlUro=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b6nLol4WFFGCCJZfC6MOvBLmuG168aw1V4B5RgoEqvkk9eSgyotEOjHd9xc44UHgD
-         NgvQNxAUv0Dnfh+WCxFLTa1xa23iOz+R3gPN7rhDjlzp+TdAVD+NeIjvFLmhGrKIcp
-         wtwdQBpRcYqXw826VXF+rYmwESpoYtlPlPI7M7oChzxISBM6V8dB1u9l5Byxjuy6+n
-         9dMBq4AjG/OAXr2rsllBYofoNVioBkCM6qBDAMgfkLK03I/rIvY+avQh0DGxeOJEBW
-         Qcusi5bvMvXd42fVdpRaVwtRXk9VqqJs7zGTFmBR30n+5zvRlFTeJJej1NuCkFN6QU
-         wwbK6vTH7qVVQ==
+        s=k20201202; t=1661880394;
+        bh=Cx3NCVGl9rL1VmquS8ug9Pt3v1Kb/1dTU9gwmJuCk8U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SoMlJHN9IOvsVY/YPsZETuoLqjV5Gfg4aVQMlz9+KdwzQ/5fD307zcd2F2005dpIy
+         L7DUjE7kwYHAQWLrHYcz+rw19r+HYretvC+gt/jGWUMGpXfzv3AEGia56FKwP6jdGY
+         vnCEGQM9pLHwlwJrJnDYpF279RgmTS4khCCzFerivfS8WAGyTEdfNa5PmgXKGWoktp
+         4gdTVIZ5GfjNuh3mpnNW4H3ScRYX004Hc6sXXOuITUBI/G/p3XbXGDIcXreMeuIuOk
+         fYWcfbuJzEcX/FNcbpcbCwj8VhKe8NNG0GdryMdujjt0pCqamuMczEs7bFdZ8ooxmH
+         Rix0E/LyY00Pg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Letu Ren <fantasquex@gmail.com>, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        baihaowen@meizu.com, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 7/8] fbdev: fb_pm2fb: Avoid potential divide by zero error
-Date:   Tue, 30 Aug 2022 13:26:30 -0400
-Message-Id: <20220830172631.581969-7-sashal@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com
+Subject: [PATCH AUTOSEL 4.14 1/8] firmware: dmi: Use the proper accessor for the version field
+Date:   Tue, 30 Aug 2022 13:26:24 -0400
+Message-Id: <20220830172631.581969-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172631.581969-1-sashal@kernel.org>
-References: <20220830172631.581969-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,50 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Letu Ren <fantasquex@gmail.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 19f953e7435644b81332dd632ba1b2d80b1e37af ]
+[ Upstream commit d2139dfca361a1f5bfc4d4a23455b1a409a69cd4 ]
 
-In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
-copied from user, then go through `fb_set_var()` and
-`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
-Along the path, `var->pixclock` won't be modified. This function checks
-whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
-zero, there will be a divide by zero error. So, it is necessary to check
-whether denominator is zero to avoid crash. As this bug is found by
-Syzkaller, logs are listed below.
+The byte at offset 6 represents length. Don't take it and drop it
+immediately by using proper accessor, i.e. get_unaligned_be24().
 
-divide error in pm2fb_check_var
-Call Trace:
- <TASK>
- fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+[JD: Change the subject to something less frightening]
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Letu Ren <fantasquex@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Jean Delvare <jdelvare@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pm2fb.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/firmware/dmi_scan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/fbdev/pm2fb.c b/drivers/video/fbdev/pm2fb.c
-index bd6c2f5f6095d..a5375b09415a6 100644
---- a/drivers/video/fbdev/pm2fb.c
-+++ b/drivers/video/fbdev/pm2fb.c
-@@ -614,6 +614,11 @@ static int pm2fb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
- 		return -EINVAL;
- 	}
- 
-+	if (!var->pixclock) {
-+		DPRINTK("pixclock is zero\n");
-+		return -EINVAL;
-+	}
-+
- 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
- 		DPRINTK("pixclock too high (%ldKHz)\n",
- 			PICOS2KHZ(var->pixclock));
+diff --git a/drivers/firmware/dmi_scan.c b/drivers/firmware/dmi_scan.c
+index fe0d30340e963..d07a15462e252 100644
+--- a/drivers/firmware/dmi_scan.c
++++ b/drivers/firmware/dmi_scan.c
+@@ -582,7 +582,7 @@ static int __init dmi_smbios3_present(const u8 *buf)
+ {
+ 	if (memcmp(buf, "_SM3_", 5) == 0 &&
+ 	    buf[6] < 32 && dmi_checksum(buf, buf[6])) {
+-		dmi_ver = get_unaligned_be32(buf + 6) & 0xFFFFFF;
++		dmi_ver = get_unaligned_be24(buf + 7);
+ 		dmi_num = 0;			/* No longer specified */
+ 		dmi_len = get_unaligned_le32(buf + 12);
+ 		dmi_base = get_unaligned_le64(buf + 16);
 -- 
 2.35.1
 
