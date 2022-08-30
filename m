@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7DAECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F68EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:25:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231388AbiH3RZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46314 "EHLO
+        id S231514AbiH3RZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231443AbiH3RYh (ORCPT
+        with ESMTP id S230509AbiH3RYt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:24:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C227AE42EB;
-        Tue, 30 Aug 2022 10:22:39 -0700 (PDT)
+        Tue, 30 Aug 2022 13:24:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D499BDC5CD;
+        Tue, 30 Aug 2022 10:22:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D63F6179D;
-        Tue, 30 Aug 2022 17:22:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED4C7C433C1;
-        Tue, 30 Aug 2022 17:22:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AC60B81D0C;
+        Tue, 30 Aug 2022 17:22:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51DE4C433D6;
+        Tue, 30 Aug 2022 17:22:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880138;
-        bh=mbw7MSPR3g4EtRoj9xhwty39pKwBVqgVI8IGo4q1OC0=;
+        s=k20201202; t=1661880144;
+        bh=t/IuHrlcFJzD4wEDVvMD5tRh3tZgRHNPMtfF5B5TnTg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IF+2Y1sx24FtRDdhwmgYxZ3eGfKe008sG5nYQibJQUgTkEDpOhlGBPbi2iq5ewTjX
-         q2D6v9tEVH2X36A1+9Sb1gLgUi2QRG34bgMCks0YjYlf8/eBDDxK2EH9yKq9e8iRCz
-         rGzKYZX9bu0WTKOTc71qfPYCV6PbQEU0+LKgdJk38Ed105szXm2pKSTll7DJEG3uiH
-         tUEqL+1Q8JqyGS6gSRvk1rnFmQuqQMGpcsJjlXIavf/S5qjXsgYOoEepX/1Ywj614D
-         a6DL5RamroTmHEaA32yf/xdEdgtKIo8s1AJfmA/5aaTQBodaADLGaG4JN5vOzhpEnc
-         p8TTWw7NeIWBQ==
+        b=p8jKk2ywM/nByGACRW36tyvq783qteo2Yi7rOwbVSyZMfZOFe9w7M6stL99dR699P
+         uZTQPx2fFB6KHDOMVryMLZV0G5BKXaFIV0sWD+Q9C88RhB1+nGclC2dbrii5pz8YCK
+         gUUAh272Xh0hlsd1EljQdVlB2ZQKFuw9hM+f9ExjhEivvUIoK5jiX4W1k5/v2FC96/
+         sgJxTQnQ65bnEEoaTwZBSfROzr5glBRMv00svVSlNMqxOi9wLR/UFljbtzi26T92cS
+         ToZLBWQhZ5rZOu29EwgqDBOtPCMGDvO85WLpdWk4mpO+w4E/s9jMABfg7SQ5gj+TKi
+         AASH8B4I1kG2g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        Stanley Chu <stanley.chu@mediatek.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        matthias.bgg@gmail.com, beanhuo@micron.com, avri.altman@wdc.com,
-        adrian.hunter@intel.com, j-young.choi@samsung.com,
-        linux-scsi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 09/23] scsi: ufs: core: Reduce the power mode change timeout
-Date:   Tue, 30 Aug 2022 13:21:26 -0400
-Message-Id: <20220830172141.581086-9-sashal@kernel.org>
+Cc:     Li Qiong <liqiong@nfschina.com>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 11/23] parisc: ccio-dma: Handle kmalloc failure in ccio_init_resources()
+Date:   Tue, 30 Aug 2022 13:21:28 -0400
+Message-Id: <20220830172141.581086-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
 References: <20220830172141.581086-1-sashal@kernel.org>
@@ -56,52 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Li Qiong <liqiong@nfschina.com>
 
-[ Upstream commit 8f2c96420c6ec3dcb18c8be923e24c6feaa5ccf6 ]
+[ Upstream commit d46c742f827fa2326ab1f4faa1cccadb56912341 ]
 
-The current power mode change timeout (180 s) is so large that it can cause
-a watchdog timer to fire. Reduce the power mode change timeout to 10
-seconds.
+As the possible failure of the kmalloc(), it should be better
+to fix this error path, check and return '-ENOMEM' error code.
 
-Link: https://lore.kernel.org/r/20220811234401.1957911-1-bvanassche@acm.org
-Reviewed-by: Stanley Chu <stanley.chu@mediatek.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/parisc/ccio-dma.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 2f6468f22b489..dae1a85f1512c 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -8476,6 +8476,8 @@ static int ufshcd_set_dev_pwr_mode(struct ufs_hba *hba,
- 	struct scsi_device *sdp;
- 	unsigned long flags;
- 	int ret, retries;
-+	unsigned long deadline;
-+	int32_t remaining;
+diff --git a/drivers/parisc/ccio-dma.c b/drivers/parisc/ccio-dma.c
+index 9be007c9420f9..f69ab90b5e22d 100644
+--- a/drivers/parisc/ccio-dma.c
++++ b/drivers/parisc/ccio-dma.c
+@@ -1380,15 +1380,17 @@ ccio_init_resource(struct resource *res, char *name, void __iomem *ioaddr)
+ 	}
+ }
  
- 	spin_lock_irqsave(hba->host->host_lock, flags);
- 	sdp = hba->sdev_ufs_device;
-@@ -8508,9 +8510,14 @@ static int ufshcd_set_dev_pwr_mode(struct ufs_hba *hba,
- 	 * callbacks hence set the RQF_PM flag so that it doesn't resume the
- 	 * already suspended childs.
- 	 */
-+	deadline = jiffies + 10 * HZ;
- 	for (retries = 3; retries > 0; --retries) {
-+		ret = -ETIMEDOUT;
-+		remaining = deadline - jiffies;
-+		if (remaining <= 0)
-+			break;
- 		ret = scsi_execute(sdp, cmd, DMA_NONE, NULL, 0, NULL, &sshdr,
--				START_STOP_TIMEOUT, 0, 0, RQF_PM, NULL);
-+				   remaining / HZ, 0, 0, RQF_PM, NULL);
- 		if (!scsi_status_is_check_condition(ret) ||
- 				!scsi_sense_valid(&sshdr) ||
- 				sshdr.sense_key != UNIT_ATTENTION)
+-static void __init ccio_init_resources(struct ioc *ioc)
++static int __init ccio_init_resources(struct ioc *ioc)
+ {
+ 	struct resource *res = ioc->mmio_region;
+ 	char *name = kmalloc(14, GFP_KERNEL);
+-
++	if (unlikely(!name))
++		return -ENOMEM;
+ 	snprintf(name, 14, "GSC Bus [%d/]", ioc->hw_path);
+ 
+ 	ccio_init_resource(res, name, &ioc->ioc_regs->io_io_low);
+ 	ccio_init_resource(res + 1, name, &ioc->ioc_regs->io_io_low_hv);
++	return 0;
+ }
+ 
+ static int new_ioc_area(struct resource *res, unsigned long size,
+@@ -1543,7 +1545,10 @@ static int __init ccio_probe(struct parisc_device *dev)
+ 		return -ENOMEM;
+ 	}
+ 	ccio_ioc_init(ioc);
+-	ccio_init_resources(ioc);
++	if (ccio_init_resources(ioc)) {
++		kfree(ioc);
++		return -ENOMEM;
++	}
+ 	hppa_dma_ops = &ccio_ops;
+ 
+ 	hba = kzalloc(sizeof(*hba), GFP_KERNEL);
 -- 
 2.35.1
 
