@@ -2,109 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1236ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7278ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229457AbiH3PNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 11:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
+        id S230334AbiH3PN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 11:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbiH3PNM (ORCPT
+        with ESMTP id S229736AbiH3PNN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 11:13:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13281286E3
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:13:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45625615C5
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:13:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F28E1C433D6;
-        Tue, 30 Aug 2022 15:13:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661872389;
-        bh=Pgu0YF4oBMGHXYWgr2TFEwahMVgu94xHlgw22WwIyBU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fK9cBnGKjoVCbzqeVmKWBzw9/2/Tladl+REU5tEVU0MW5DMA2JK+EICuWAEaD3Ekg
-         jOLXpOo3PRDVzImqYVz0IC6i5iGXps49kYZ+sSoTo9lzF0ySMEw6Ort7P4x+fk2TeP
-         EXDJF1zCuBd6ZdEogQGN/ld1wXA34gYZTaaqC7H/klPGdivESDnFv6zcd8R8cRFCSG
-         Jqe4FYD/xS3/r9s+1jM+ayvQVEj+jJH5Rx0PAqF/d/wVls4vorBfXzepWbs0s52tAP
-         n4Xk+N96K8Ob/VnVgGAlbRG3ttWXFEdAUzD+8JV81vx2d92wBxemEnhckcFN3v4HBv
-         3mFu13UZGu/PA==
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Nicholas Piggin <npiggin@gmail.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Kajol Jain <kjain@linux.ibm.com>,
-        Vaibhav Jain <vaibhav@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, patches@lists.linux.dev,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH] powerpc/papr_scm: Ensure rc is always initialized in papr_scm_pmu_register()
-Date:   Tue, 30 Aug 2022 08:12:56 -0700
-Message-Id: <20220830151256.1473169-1-nathan@kernel.org>
-X-Mailer: git-send-email 2.37.2
+        Tue, 30 Aug 2022 11:13:13 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 049901286F7;
+        Tue, 30 Aug 2022 08:13:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661872392; x=1693408392;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wTIUsBF5sTdJ6JbPdR2fBQZlqEWSeLoC7AVXPmb6j1c=;
+  b=cF8HA9zl2aRv0tb2hi69bsC/kc7LoUHCIqOZw0PlDqFTRx5Ycjh1pm//
+   s/S4nbwW6s8MIXUnx6LjAtUMfFuUo/bkSWcy3cxti0Kx2vs5LTVsYDZjt
+   dT3Tg48bdx3J3UdJPCjGzzBqA397zGaRb+EnJ5uIy/DvJJfZcvwXfRuGk
+   jaHIM6pUQIY6ZJ/3B+DmXUBqfac/adfYDlHaw32AZqJ9mviKY/U0LmiHz
+   63uFowhgaJMjEThcMONk3+LNEQnQrlqvzySmCS+7LXhkzNI+aIxOY/Qy+
+   UOas9UPM8uNHLNejFcoxHQeAZoaacAwWIfnm264tIvUcX4zy0ZE8rF6Th
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="295984540"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="295984540"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 08:13:11 -0700
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="562682956"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 08:13:05 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oT2vF-0060PI-2k;
+        Tue, 30 Aug 2022 18:13:01 +0300
+Date:   Tue, 30 Aug 2022 18:13:01 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     ChiaEn Wu <peterwu.pub@gmail.com>
+Cc:     lee@kernel.org, daniel.thompson@linaro.org, jingoohan1@gmail.com,
+        pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, jic23@kernel.org, lars@metafoo.de, deller@gmx.de,
+        broonie@kernel.org, mazziesaccount@gmail.com,
+        chiaen_wu@richtek.com, alice_chen@richtek.com,
+        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, szunichen@gmail.com
+Subject: Re: [PATCH v9 00/10] Add MediaTek MT6370 PMIC support
+Message-ID: <Yw4o/Sx6frEtaFDp@smile.fi.intel.com>
+References: <20220830033729.9219-1-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830033729.9219-1-peterwu.pub@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clang warns:
+On Tue, Aug 30, 2022 at 11:37:20AM +0800, ChiaEn Wu wrote:
+> From: ChiaEn Wu <chiaen_wu@richtek.com>
+> 
+> This patch series add MediaTek MT6370 PMIC support and add a index macro
+> to <linear_range.h>. The MT6370 is a highly-integrated smart power
+> management IC, which includes a single cell Li-Ion/Li-Polymer switching
+> battery charger, a USB Type-C & Power Delivery (PD) controller, dual
+> Flash LED current sources, a RGB LED driver, a backlight WLED driver,
+> a display bias driver and a general LDO for portable devices.
+> 
+> First, in this series of patches,
+> 'dt-binding: mfd', 'mfd driver' has been applied by Lee in the v7.
+> https://lore.kernel.org/all/YvJdpq0MWNPQZw5c@google.com/
+> https://lore.kernel.org/all/YvJdxEpC2cB58Bq9@google.com/
+> 
+> 'tcpci driver' has been applied by Greg in the v8.
+> https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git/commit/?h=usb-next&id=c2a8ea5997fdfeb43eda259d5533234c3cae05d7
+> 
+> Second, the LED RGB driver is based on Andy's patch which moves
+> led_init_default_state_get() to the global header.
+> https://lore.kernel.org/all/20220805154907.32263-3-andriy.shevchenko@linux.intel.com/
+> 
+> In addition, we added a macro to the <linear_range.h> for declaring the
+> linear_range struct simply (see patch v9-0005) and made some changes for
+> MT6370 drivers (see v9 section of the change log below).
 
-  arch/powerpc/platforms/pseries/papr_scm.c:492:6: warning: variable 'rc' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-          if (!p->stat_buffer_len)
-              ^~~~~~~~~~~~~~~~~~~
-  arch/powerpc/platforms/pseries/papr_scm.c:523:64: note: uninitialized use occurs here
-          dev_info(&p->pdev->dev, "nvdimm pmu didn't register rc=%d\n", rc);
-                                                                        ^~
-  include/linux/dev_printk.h:150:67: note: expanded from macro 'dev_info'
-          dev_printk_index_wrap(_dev_info, KERN_INFO, dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                                                          ^~~~~~~~~~~
-  include/linux/dev_printk.h:110:23: note: expanded from macro 'dev_printk_index_wrap'
-                  _p_func(dev, fmt, ##__VA_ARGS__);                       \
-                                      ^~~~~~~~~~~
-  arch/powerpc/platforms/pseries/papr_scm.c:492:2: note: remove the 'if' if its condition is always false
-          if (!p->stat_buffer_len)
-          ^~~~~~~~~~~~~~~~~~~~~~~~
-  arch/powerpc/platforms/pseries/papr_scm.c:484:8: note: initialize the variable 'rc' to silence this warning
-          int rc, nodeid;
-                ^
-                = 0
-  1 warning generated.
+Your cover letter is dangling. Make sure you are using --cover-letter --thread
+when preparing the series.
 
-The call to papr_scm_pmu_check_events() was eliminated but a return code
-was not added to the if statement. Add the same return code from
-papr_scm_pmu_check_events() for this condition so there is no more
-warning.
-
-Fixes: 9b1ac04698a4 ("powerpc/papr_scm: Fix nvdimm event mappings")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1701
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
----
- arch/powerpc/platforms/pseries/papr_scm.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/arch/powerpc/platforms/pseries/papr_scm.c b/arch/powerpc/platforms/pseries/papr_scm.c
-index 54740af21557..2f8385523a13 100644
---- a/arch/powerpc/platforms/pseries/papr_scm.c
-+++ b/arch/powerpc/platforms/pseries/papr_scm.c
-@@ -489,8 +489,10 @@ static void papr_scm_pmu_register(struct papr_scm_priv *p)
- 		goto pmu_err_print;
- 	}
- 
--	if (!p->stat_buffer_len)
-+	if (!p->stat_buffer_len) {
-+		rc = -ENOENT;
- 		goto pmu_check_events_err;
-+	}
- 
- 	nd_pmu->pmu.task_ctx_nr = perf_invalid_context;
- 	nd_pmu->pmu.name = nvdimm_name(p->nvdimm);
-
-base-commit: 91926d8b7e71aaf5f84f0cf208fc5a8b7a761050
 -- 
-2.37.2
+With Best Regards,
+Andy Shevchenko
+
 
