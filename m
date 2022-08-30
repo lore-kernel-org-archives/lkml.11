@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0341AECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 643B5ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbiH3R0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
+        id S231431AbiH3R0V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:26:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231341AbiH3RZc (ORCPT
+        with ESMTP id S231495AbiH3RZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:25:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053BE1616B6;
-        Tue, 30 Aug 2022 10:22:58 -0700 (PDT)
+        Tue, 30 Aug 2022 13:25:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA12C1659;
+        Tue, 30 Aug 2022 10:23:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12905B81D16;
-        Tue, 30 Aug 2022 17:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0D8EC433D6;
-        Tue, 30 Aug 2022 17:22:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8116CB81C35;
+        Tue, 30 Aug 2022 17:22:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF56BC433C1;
+        Tue, 30 Aug 2022 17:22:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880157;
-        bh=jOv8v60wKjLg//lVQgOMfjenwYCSv7sZQmxfzg2d6BU=;
+        s=k20201202; t=1661880129;
+        bh=EAJCYjhkJNORUUDynnZRYb9oNFCXK83WLB1Yzw2xubg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MVGgHtZxJkMGG4w8RGQOlsQlY8SLmZ22IJ6t8Se68uQLKYiyedw9Us7IlZhpdz14x
-         GpHSjDS6ugXJyKWKn1PC3CIv9qC8+j4eFYrbzad6sOKp1smZGlNNNPAlTjA/2r1pra
-         GjNlpgsx/VE1dHBmnb1i+hncPvStdDEM+o43hpvroGtBBclGXSy+3OSb52T1BpTGv6
-         4LBOWC+H0C93YHGzS2CMR4YJqV4s0LxDRrblnTmG5lr0S8t5LI1GKnd90557FM7+Vn
-         sWQBMN7AYlx2alCyqeEgshxlOzl2JLHrDi0M3KFuIHrxk+UyO8To1bWCNAga+vduaS
-         htvVpy4k9YghQ==
+        b=tLKukZ6NWQNpRoDZK82kpAssbUTMdBWHLzUlQdGXsbwGzvgS0Mp0RGrevm1m1D2GQ
+         RdZov6WWVGq5gYoe5HjwiRujjHTdRtSRxRV8lCLDH7uyMxsRHg6Dq01bPoQfWXORqG
+         x+UtDsOsZ4357GawzG9iwA2QlgLthuqi3kCdoX0PskAIqynMmzzIgzkg2+3PAqyoZv
+         WNBtSop54C/QvkJPzJk15b5KbPguC4jz+6oGzYORrdDGYWpEZCe/I65C3lKONdTh/1
+         /c0S8shbj1IUS9wZrxZ0SPhc2wBW3budglvKO5+KPwMuMFNYUut1TGSetz2KLRW5Tx
+         Rq/E3yILoHdQg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        seanjc@google.com, mark.rutland@arm.com, elver@google.com,
-        david.engraf@sysgo.com, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 14/23] arm64/signal: Raise limit on stack frames
-Date:   Tue, 30 Aug 2022 13:21:31 -0400
-Message-Id: <20220830172141.581086-14-sashal@kernel.org>
+Cc:     Candice Li <candice.li@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        tao.zhou1@amd.com, YiPeng.Chai@amd.com, lijo.lazar@amd.com,
+        desowin@gmail.com, victor.skvortsov@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 07/23] drm/amdgpu: Check num_gfx_rings for gfx v9_0 rb setup.
+Date:   Tue, 30 Aug 2022 13:21:24 -0400
+Message-Id: <20220830172141.581086-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
 References: <20220830172141.581086-1-sashal@kernel.org>
@@ -53,42 +56,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Candice Li <candice.li@amd.com>
 
-[ Upstream commit 7ddcaf78e93c9282b4d92184f511b4d5bee75355 ]
+[ Upstream commit c351938350ab9b5e978dede2c321da43de7eb70c ]
 
-The signal code has a limit of 64K on the size of a stack frame that it
-will generate, if this limit is exceeded then a process will be killed if
-it receives a signal. Unfortunately with the advent of SME this limit is
-too small - the maximum possible size of the ZA register alone is 64K. This
-is not an issue for practical systems at present but is easily seen using
-virtual platforms.
+No need to set up rb when no gfx rings.
 
-Raise the limit to 256K, this is substantially more than could be used by
-any current architecture extension.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220817182324.638214-2-broonie@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Candice Li <candice.li@amd.com>
+Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/signal.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
-index b3e1beccf4588..8fdb89afd2b85 100644
---- a/arch/arm64/kernel/signal.c
-+++ b/arch/arm64/kernel/signal.c
-@@ -91,7 +91,7 @@ static size_t sigframe_size(struct rt_sigframe_user_layout const *user)
-  * not taken into account.  This limit is not a guarantee and is
-  * NOT ABI.
-  */
--#define SIGFRAME_MAXSZ SZ_64K
-+#define SIGFRAME_MAXSZ SZ_256K
+diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
+index db27fcf87cd04..16cbae04078ad 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
+@@ -2624,7 +2624,8 @@ static void gfx_v9_0_constants_init(struct amdgpu_device *adev)
  
- static int __sigframe_alloc(struct rt_sigframe_user_layout *user,
- 			    unsigned long *offset, size_t size, bool extend)
+ 	gfx_v9_0_tiling_mode_table_init(adev);
+ 
+-	gfx_v9_0_setup_rb(adev);
++	if (adev->gfx.num_gfx_rings)
++		gfx_v9_0_setup_rb(adev);
+ 	gfx_v9_0_get_cu_info(adev, &adev->gfx.cu_info);
+ 	adev->gfx.config.db_debug2 = RREG32_SOC15(GC, 0, mmDB_DEBUG2);
+ 
 -- 
 2.35.1
 
