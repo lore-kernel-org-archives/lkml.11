@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77605ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E50BC0502C
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiH3J4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39050 "EHLO
+        id S229947AbiH3J5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:57:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbiH3J4M (ORCPT
+        with ESMTP id S229767AbiH3J4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:56:12 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D523ECD8;
-        Tue, 30 Aug 2022 02:55:56 -0700 (PDT)
+        Tue, 30 Aug 2022 05:56:17 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5ED5A98ED;
+        Tue, 30 Aug 2022 02:56:02 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 0847B1BF209;
-        Tue, 30 Aug 2022 09:55:50 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5BB131BF20D;
+        Tue, 30 Aug 2022 09:55:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661853353;
+        t=1661853358;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=fNe7O3XpPrKWPRiBDZbqoQEmh7mC5aGWDTgnBM7l0Y4=;
-        b=X2eVFd1qvXvmNmg0+jyQHr4YkkmSfTlnrgKIXOpOJB/PPGW4SWQ9TB5gJxjYAntLFQWIXF
-        49cRvnWRdg/WeH3pnthiGwuOhHqGHjTFj/+sMKXrpYXccAiONmldTIOEnr8I0AOKU5Pjom
-        YFktlpPIZOO/8cJDutCi+tSMz2rnKtydUW4AckPeMqwpFZiQMsLp090DPj8uCBkOaY+J71
-        ceYhgbv8VQDTzyUiJ3inR/ezCuymXbgzHghEsonA99TS9an9jwCpmKV65aMV3WsKaY661x
-        kj6VqQ2c2ox521TZ80+I4hbzz3DH2GhmL+fL2tKVAuznw6UqKIY9Ynh1wEInaA==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ezfS+y0eNB9VvU5KNZjzsPfNJqrxQFdglyx3bDl252A=;
+        b=osJSM1axTnavZ2e5QNNqDjOkL2DxgX+gYalGr6PRaFJIl9DmUv4u/zxeWdUAwRv7TXElfh
+        INvWot3k/upJpWCl0LyH1BBvAdl4E2Xhf0Sy/47n9I58WG3uvEaWvoQGnwqbWATvWATcJp
+        N9+jg2d9aDDq7dRt2PR4247yREueoLwsjkEwShTm0kXDBczqoDOHulIsbA8NBuZURA6yEv
+        VJLoninaFpEMWEMG959tgPsbNd/PNAL98KA12OYQzw90nVWzYRVOKHbOs4cf4ALwZhPdjj
+        FqvbocPzXH+60AmqJr/4+dtLo1BYFGBOJQ3lg/4nTUowwwECLgWh5Y1LwVKAwQ==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -41,84 +42,283 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH net-next v2 0/5] net: altera: tse: phylink conversion
-Date:   Tue, 30 Aug 2022 11:55:44 +0200
-Message-Id: <20220830095549.120625-1-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next v2 3/5] net: pcs: add new PCS driver for altera TSE PCS
+Date:   Tue, 30 Aug 2022 11:55:47 +0200
+Message-Id: <20220830095549.120625-4-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220830095549.120625-1-maxime.chevallier@bootlin.com>
+References: <20220830095549.120625-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is V2 of a series converting the Altera TSE driver to phylink,
-introducing a new PCS driver along the way.
+The Altera Triple Speed Ethernet has a SGMII/1000BaseC PCS that can be
+integrated in several ways. It can either be part of the TSE MAC's
+address space, accessed through 32 bits accesses on the mapped mdio
+device 0, or through a dedicated 16 bits register set.
 
-The Altera TSE can be built with a SGMII/1000BaseX PCS, allowing to use
-SFP ports with this MAC, which is the end goal of adding phylink support
-and a proper PCS driver.
+This driver allows using the TSE PCS outside of altera TSE's driver,
+since it can be used standalone by other MACs.
 
-The PCS itself can either be mapped in the MAC's register space, in that
-case, it's accessed through 32 bits registers, with the higher 16 bits
-always 0. Alternatively, it can sit on its own register space, exposing
-16 bits registers, some of which ressemble the standard PHY registers.
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+---
+V1->V2 :
+  - Added a pcs_validate() callback to filter interface modes
+  - Added comments on the need for a soft reset at an_restart
 
-To tackle that rework, several things needs updating, starting by the DT
-binding, since we add support for a new register range for the PCS.
-
-Hence, the first patch of the series is a conversion to YAML of the
-existing binding.
-
-Then, patch 2 does a bit of simple cleanup to the TSE driver, using nice
-reverse xmas tree definitions.
-
-Patch 3 adds the actual PCS driver, as a standalone driver. Some future
-series will then reuse that PCS driver from the dwmac-socfpga driver,
-which implements support for this exact PCS too, allowing to share the
-code nicely.
-
-Patch 4 is then a phylink conversion of the altera_tse driver, to use
-this new PCS driver.
-
-Finally, patch 5 updates the newly converted DT binding to support the
-pcs register range.
-
-This series contains bits and pieces for this conversion, please tell me if
-you want me to send it as individual patches.
-
-Thanks,
-
-Maxime
-
-V2 Changes :
- - Fixed the binding after the YAML conversion
- - Added a pcs_validate() callback
- - Introduced a comment to justify a soft reset for the PCS
-
-Maxime Chevallier (5):
-  dt-bindings: net: Convert Altera TSE bindings to yaml
-  net: altera: tse: cosmetic change to use reverse xmas tree ordering
-  net: pcs: add new PCS driver for altera TSE PCS
-  net: altera: tse: convert to phylink
-  dt-bindings: net: altera: tse: add an optional pcs register range
-
- .../devicetree/bindings/net/altera_tse.txt    | 113 -----
- .../devicetree/bindings/net/altr,tse.yaml     | 183 +++++++
- MAINTAINERS                                   |   7 +
- drivers/net/ethernet/altera/Kconfig           |   2 +
- drivers/net/ethernet/altera/altera_tse.h      |  19 +-
- .../net/ethernet/altera/altera_tse_ethtool.c  |  22 +-
- drivers/net/ethernet/altera/altera_tse_main.c | 453 +++++-------------
- drivers/net/pcs/Kconfig                       |   6 +
- drivers/net/pcs/Makefile                      |   1 +
- drivers/net/pcs/pcs-altera-tse.c              | 171 +++++++
- include/linux/pcs-altera-tse.h                |  17 +
- 11 files changed, 547 insertions(+), 447 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/altera_tse.txt
- create mode 100644 Documentation/devicetree/bindings/net/altr,tse.yaml
+ MAINTAINERS                      |   7 ++
+ drivers/net/pcs/Kconfig          |   6 ++
+ drivers/net/pcs/Makefile         |   1 +
+ drivers/net/pcs/pcs-altera-tse.c | 171 +++++++++++++++++++++++++++++++
+ include/linux/pcs-altera-tse.h   |  17 +++
+ 5 files changed, 202 insertions(+)
  create mode 100644 drivers/net/pcs/pcs-altera-tse.c
  create mode 100644 include/linux/pcs-altera-tse.h
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ba954d5a9a2f..20bcfff8626d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -878,6 +878,13 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/net/ethernet/altera/
+ 
++ALTERA TSE PCS
++M:	Maxime Chevallier <maxime.chevallier@bootlin.com>
++L:	netdev@vger.kernel.org
++S:	Supported
++F:	drivers/net/pcs/pcs-altera-tse.c
++F:	include/linux/pcs-altera-tse.h
++
+ ALTERA UART/JTAG UART SERIAL DRIVERS
+ M:	Tobias Klauser <tklauser@distanz.ch>
+ L:	linux-serial@vger.kernel.org
+diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
+index 6289b7c765f1..6e7e6c346a3e 100644
+--- a/drivers/net/pcs/Kconfig
++++ b/drivers/net/pcs/Kconfig
+@@ -26,4 +26,10 @@ config PCS_RZN1_MIIC
+ 	  on RZ/N1 SoCs. This PCS converts MII to RMII/RGMII or can be set in
+ 	  pass-through mode for MII.
+ 
++config PCS_ALTERA_TSE
++	tristate
++	help
++	  This module provides helper functions for the Altera Triple Speed
++	  Ethernet SGMII PCS, that can be found on the Intel Socfpga family.
++
+ endmenu
+diff --git a/drivers/net/pcs/Makefile b/drivers/net/pcs/Makefile
+index 0ff5388fcdea..4c780d8f2e98 100644
+--- a/drivers/net/pcs/Makefile
++++ b/drivers/net/pcs/Makefile
+@@ -6,3 +6,4 @@ pcs_xpcs-$(CONFIG_PCS_XPCS)	:= pcs-xpcs.o pcs-xpcs-nxp.o
+ obj-$(CONFIG_PCS_XPCS)		+= pcs_xpcs.o
+ obj-$(CONFIG_PCS_LYNX)		+= pcs-lynx.o
+ obj-$(CONFIG_PCS_RZN1_MIIC)	+= pcs-rzn1-miic.o
++obj-$(CONFIG_PCS_ALTERA_TSE)	+= pcs-altera-tse.o
+diff --git a/drivers/net/pcs/pcs-altera-tse.c b/drivers/net/pcs/pcs-altera-tse.c
+new file mode 100644
+index 000000000000..ae7688ffc4d7
+--- /dev/null
++++ b/drivers/net/pcs/pcs-altera-tse.c
+@@ -0,0 +1,171 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2022 Bootlin
++ *
++ * Maxime Chevallier <maxime.chevallier@bootlin.com>
++ */
++
++#include <linux/netdevice.h>
++#include <linux/phy.h>
++#include <linux/phylink.h>
++#include <linux/pcs-altera-tse.h>
++
++/* SGMII PCS register addresses
++ */
++#define SGMII_PCS_SCRATCH	0x10
++#define SGMII_PCS_REV		0x11
++#define SGMII_PCS_LINK_TIMER_0	0x12
++#define   SGMII_PCS_LINK_TIMER_REG(x)		(0x12 + (x))
++#define SGMII_PCS_LINK_TIMER_1	0x13
++#define SGMII_PCS_IF_MODE	0x14
++#define   PCS_IF_MODE_SGMII_ENA		BIT(0)
++#define   PCS_IF_MODE_USE_SGMII_AN	BIT(1)
++#define   PCS_IF_MODE_SGMI_SPEED_MASK	GENMASK(3, 2)
++#define   PCS_IF_MODE_SGMI_SPEED_10	(0 << 2)
++#define   PCS_IF_MODE_SGMI_SPEED_100	(1 << 2)
++#define   PCS_IF_MODE_SGMI_SPEED_1000	(2 << 2)
++#define   PCS_IF_MODE_SGMI_HALF_DUPLEX	BIT(4)
++#define   PCS_IF_MODE_SGMI_PHY_AN	BIT(5)
++#define SGMII_PCS_DIS_READ_TO	0x15
++#define SGMII_PCS_READ_TO	0x16
++#define SGMII_PCS_SW_RESET_TIMEOUT 100 /* usecs */
++
++struct altera_tse_pcs {
++	struct phylink_pcs pcs;
++	void __iomem *base;
++	int reg_width;
++};
++
++static struct altera_tse_pcs *phylink_pcs_to_tse_pcs(struct phylink_pcs *pcs)
++{
++	return container_of(pcs, struct altera_tse_pcs, pcs);
++}
++
++static u16 tse_pcs_read(struct altera_tse_pcs *tse_pcs, int regnum)
++{
++	if (tse_pcs->reg_width == 4)
++		return readl(tse_pcs->base + regnum * 4);
++	else
++		return readw(tse_pcs->base + regnum * 2);
++}
++
++static void tse_pcs_write(struct altera_tse_pcs *tse_pcs, int regnum,
++			  u16 value)
++{
++	if (tse_pcs->reg_width == 4)
++		writel(value, tse_pcs->base + regnum * 4);
++	else
++		writew(value, tse_pcs->base + regnum * 2);
++}
++
++static int tse_pcs_reset(struct altera_tse_pcs *tse_pcs)
++{
++	int i = 0;
++	u16 bmcr;
++
++	/* Reset PCS block */
++	bmcr = tse_pcs_read(tse_pcs, MII_BMCR);
++	bmcr |= BMCR_RESET;
++	tse_pcs_write(tse_pcs, MII_BMCR, bmcr);
++
++	for (i = 0; i < SGMII_PCS_SW_RESET_TIMEOUT; i++) {
++		if (!(tse_pcs_read(tse_pcs, MII_BMCR) & BMCR_RESET))
++			return 0;
++		udelay(1);
++	}
++
++	return -ETIMEDOUT;
++}
++
++static int alt_tse_pcs_validate(struct phylink_pcs *pcs,
++				unsigned long *supported,
++				const struct phylink_link_state *state)
++{
++	if (state->interface == PHY_INTERFACE_MODE_SGMII ||
++	    state->interface == PHY_INTERFACE_MODE_1000BASEX)
++		return 1;
++
++	return -EINVAL;
++}
++
++static int alt_tse_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
++			      phy_interface_t interface,
++			      const unsigned long *advertising,
++			      bool permit_pause_to_mac)
++{
++	struct altera_tse_pcs *tse_pcs = phylink_pcs_to_tse_pcs(pcs);
++	u32 ctrl, if_mode;
++
++	ctrl = tse_pcs_read(tse_pcs, MII_BMCR);
++	if_mode = tse_pcs_read(tse_pcs, SGMII_PCS_IF_MODE);
++
++	/* Set link timer to 1.6ms, as per the MegaCore Function User Guide */
++	tse_pcs_write(tse_pcs, SGMII_PCS_LINK_TIMER_0, 0x0D40);
++	tse_pcs_write(tse_pcs, SGMII_PCS_LINK_TIMER_1, 0x03);
++
++	if (interface == PHY_INTERFACE_MODE_SGMII) {
++		if_mode |= PCS_IF_MODE_USE_SGMII_AN | PCS_IF_MODE_SGMII_ENA;
++	} else if (interface == PHY_INTERFACE_MODE_1000BASEX) {
++		if_mode &= ~(PCS_IF_MODE_USE_SGMII_AN | PCS_IF_MODE_SGMII_ENA);
++		if_mode |= PCS_IF_MODE_SGMI_SPEED_1000;
++	}
++
++	ctrl |= (BMCR_SPEED1000 | BMCR_FULLDPLX | BMCR_ANENABLE);
++
++	tse_pcs_write(tse_pcs, MII_BMCR, ctrl);
++	tse_pcs_write(tse_pcs, SGMII_PCS_IF_MODE, if_mode);
++
++	return tse_pcs_reset(tse_pcs);
++}
++
++static void alt_tse_pcs_get_state(struct phylink_pcs *pcs,
++				  struct phylink_link_state *state)
++{
++	struct altera_tse_pcs *tse_pcs = phylink_pcs_to_tse_pcs(pcs);
++	u16 bmsr, lpa;
++
++	bmsr = tse_pcs_read(tse_pcs, MII_BMSR);
++	lpa = tse_pcs_read(tse_pcs, MII_LPA);
++
++	phylink_mii_c22_pcs_decode_state(state, bmsr, lpa);
++}
++
++static void alt_tse_pcs_an_restart(struct phylink_pcs *pcs)
++{
++	struct altera_tse_pcs *tse_pcs = phylink_pcs_to_tse_pcs(pcs);
++	u16 bmcr;
++
++	bmcr = tse_pcs_read(tse_pcs, MII_BMCR);
++	bmcr |= BMCR_ANRESTART;
++	tse_pcs_write(tse_pcs, MII_BMCR, bmcr);
++
++	/* This PCS seems to require a soft reset to re-sync the AN logic */
++	tse_pcs_reset(tse_pcs);
++}
++
++static const struct phylink_pcs_ops alt_tse_pcs_ops = {
++	.pcs_validate = alt_tse_pcs_validate,
++	.pcs_get_state = alt_tse_pcs_get_state,
++	.pcs_config = alt_tse_pcs_config,
++	.pcs_an_restart = alt_tse_pcs_an_restart,
++};
++
++struct phylink_pcs *alt_tse_pcs_create(struct net_device *ndev,
++				       void __iomem *pcs_base, int reg_width)
++{
++	struct altera_tse_pcs *tse_pcs;
++
++	if (reg_width != 4 && reg_width != 2)
++		return ERR_PTR(-EINVAL);
++
++	tse_pcs = devm_kzalloc(&ndev->dev, sizeof(*tse_pcs), GFP_KERNEL);
++	if (!tse_pcs)
++		return ERR_PTR(-ENOMEM);
++
++	tse_pcs->pcs.ops = &alt_tse_pcs_ops;
++	tse_pcs->base = pcs_base;
++	tse_pcs->reg_width = reg_width;
++
++	return &tse_pcs->pcs;
++}
++EXPORT_SYMBOL_GPL(alt_tse_pcs_create);
+diff --git a/include/linux/pcs-altera-tse.h b/include/linux/pcs-altera-tse.h
+new file mode 100644
+index 000000000000..92ab9f08e835
+--- /dev/null
++++ b/include/linux/pcs-altera-tse.h
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2022 Bootlin
++ *
++ * Maxime Chevallier <maxime.chevallier@bootlin.com>
++ */
++
++#ifndef __LINUX_PCS_ALTERA_TSE_H
++#define __LINUX_PCS_ALTERA_TSE_H
++
++struct phylink_pcs;
++struct net_device;
++
++struct phylink_pcs *alt_tse_pcs_create(struct net_device *ndev,
++				       void __iomem *pcs_base, int reg_width);
++
++#endif /* __LINUX_PCS_ALTERA_TSE_H */
 -- 
 2.37.2
 
