@@ -2,102 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0085ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E77C0502E
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230289AbiH3G4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 02:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
+        id S230022AbiH3G57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 02:57:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229817AbiH3G4X (ORCPT
+        with ESMTP id S229535AbiH3G5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 02:56:23 -0400
-Received: from SHSQR01.spreadtrum.com (mx1.unisoc.com [222.66.158.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75E90BD113
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:56:13 -0700 (PDT)
-Received: from SHSend.spreadtrum.com (bjmbx01.spreadtrum.com [10.0.64.7])
-        by SHSQR01.spreadtrum.com with ESMTPS id 27U6tgxX028537
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NO);
-        Tue, 30 Aug 2022 14:55:42 +0800 (CST)
-        (envelope-from zhaoyang.huang@unisoc.com)
-Received: from bj03382pcu.spreadtrum.com (10.0.74.65) by
- BJMBX01.spreadtrum.com (10.0.64.7) with Microsoft SMTP Server (TLS) id
- 15.0.1497.23; Tue, 30 Aug 2022 14:55:43 +0800
-From:   "zhaoyang.huang" <zhaoyang.huang@unisoc.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Zhaoyang Huang <huangzhaoyang@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <ke.wang@unisoc.com>
-Subject: [PATCH] fs: use kvmalloc for big coredump file
-Date:   Tue, 30 Aug 2022 14:55:23 +0800
-Message-ID: <1661842523-26716-1-git-send-email-zhaoyang.huang@unisoc.com>
-X-Mailer: git-send-email 1.9.1
+        Tue, 30 Aug 2022 02:57:50 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA16FBFE8C
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:57:48 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id z25so14239257lfr.2
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:57:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=gCwpNLDMpXQSS7AiyBMzYy6/b6a5lM4AHUWEyRxEheE=;
+        b=RwL+hWZspNoAeIKIIerlBy1vzvjnmuMqwt4V941FymEbufeHzTvJsDNrL8ufJosAzO
+         aSVYjZx46D2WWv90IkfOtpI66OMcpn0YHcYR1SV4Xr/2ZEIJ9SxXJoRjGC8gHYFTnTvp
+         djMIT1ZjB+hp8djE/DoNznsnZ+cnes3cdyOtZfLso35ekQUOdyeMoi+l3PFbfSPzQOzO
+         aXMx6i4yRwL7Ou3gspuW9dT7EnLhmxOjBfgmo1WJnrTXqqDpLepXLI978+mC7ciZhzXA
+         MybZ04pLKbt1ukYLXIOW9Mv8n+1IBTa3npReU5oEGQ/bD6Ioy7lpfFeYvSrF2M1N7uz/
+         woWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=gCwpNLDMpXQSS7AiyBMzYy6/b6a5lM4AHUWEyRxEheE=;
+        b=QSA8Eedlfpeju54Im/n8nh0XpqBL7i1kR0M+eymdoFYpdDwDwQA9UBiN+A+Z7rdxXY
+         TwCfHiggnoVuFuDShXcoknr5ToIBoJRaEHw9KL5AdVedTadqrMe6h/RCipYf/+pdexzr
+         vuh6C8Wy5OTDGo+jJlFT4xnSUKYjji11rcwtKfqTTwGyFGUQMNssdBYjnnPte+r00oH+
+         dJ/L+UE0BM5GR+9K6mMeP/Qopykr/TrjTVdddvv9gLy3f5SYZxAdNrSF+ABusMXMbLS9
+         uDYqVJRimi0VQcoPFLDI8oa6OU6Ut3we638ZaaZXN7l/VcfHxVnKzsbK9IIXzNp2yFcj
+         Y1qw==
+X-Gm-Message-State: ACgBeo3vpNQolq0+pLcGZqKcKjtcjldqnkFsgGFovq7e2/bzq8S8OoO5
+        lYrgxfvkQ4/Bxe9w7rotpv4hXA==
+X-Google-Smtp-Source: AA6agR69nf0m+V8bp0uiBDVV8RuGuHrMT3v6x68EhNLM5xkk0p6YYDN5UHkGu4q0oHLjoHaT0bzzog==
+X-Received: by 2002:a19:6b03:0:b0:492:c560:b733 with SMTP id d3-20020a196b03000000b00492c560b733mr7483504lfa.320.1661842667095;
+        Mon, 29 Aug 2022 23:57:47 -0700 (PDT)
+Received: from krzk-bin.. (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id c1-20020a056512074100b00492cdba2903sm1515420lfs.97.2022.08.29.23.57.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 23:57:46 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v7 0/3] dt-bindings: arm: qcom: qcom,board-id and qcom,msm-id
+Date:   Tue, 30 Aug 2022 09:57:41 +0300
+Message-Id: <20220830065744.161163-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.0.74.65]
-X-ClientProxiedBy: SHCAS01.spreadtrum.com (10.0.1.201) To
- BJMBX01.spreadtrum.com (10.0.64.7)
-X-MAIL: SHSQR01.spreadtrum.com 27U6tgxX028537
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
+Hi,
 
-High order page allocation observed which even introduce kernel panic when generating
-coredump file, use kvmalloc_array instead of kmalloc_array
+Changes since v6
+================
+1. Rebase (new IDs).
+2. qcom_board_id2 -> qcom_board_id_named (Bjorn).
+3. Add Rb tags.
 
-[68058.982108] init: Untracked pid 3847 exited with status 0
-[68058.982343] init: Untracked pid 3847 did not have an associated service entry and will not be reaped
-[68059.038127] warn_alloc: 29 callbacks suppressed
-[68059.038132] TimerThread: page allocation failure: order:7, mode:0x40dc0(GFP_KERNEL|__GFP_COMP|__GFP_ZERO), nodemask=(null),cpuset=foreground,mems_allowed=0
-[68059.038155] CPU: 6 PID: 3597 Comm: TimerThread Tainted: G        W  OE     5.15.41-android13-8-01198-g03458ee9a090-ab000039 #1
-[68059.038159] Hardware name: Unisoc UMS9620-base Board (DT)
-[68059.038161] Call trace:
-[68059.038163]  dump_backtrace.cfi_jt+0x0/0x8
-[68059.038169]  dump_stack_lvl+0x98/0xe8
-[68059.038174]  warn_alloc+0x164/0x200
-[68059.038180]  __alloc_pages_slowpath+0x9d4/0xb64
-[68059.038183]  __alloc_pages+0x21c/0x39c
-[68059.038186]  kmalloc_order+0x4c/0x13c
-[68059.038189]  kmalloc_order_trace+0x34/0x154
-[68059.038192]  __kmalloc+0x600/0x8a8
-[68059.038196]  elf_core_dump+0x7c4/0x15d8
-[68059.038201]  do_coredump+0x680/0xe54
-[68059.038203]  get_signal+0x610/0x988
-[68059.038209]  do_signal+0xd4/0x2bc
-[68059.038213]  do_notify_resume+0xa0/0x1c8
-[68059.038216]  el0_svc+0x68/0x90
-[68059.038219]  el0t_64_sync_handler+0x88/0xec
-[68059.038222]  el0t_64_sync+0x1b4/0x1b8
+Changes since v5
+================
+1. Dual-license qcom,ids.h (Rob).
+2. Minor corrections in comments.
 
-Reported-by: Guanglu Xu <guanglu.xu@unisoc.com>
-Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
----
- fs/coredump.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes since v4
+================
+1. Change the qcom,board-id oneOf (oneOf at higher level) so newer dtschema is happy.
 
-diff --git a/fs/coredump.c b/fs/coredump.c
-index ebc43f9..ed9b191 100644
---- a/fs/coredump.c
-+++ b/fs/coredump.c
-@@ -213,7 +213,7 @@ static int format_corename(struct core_name *cn, struct coredump_params *cprm,
- 
- 	if (ispipe) {
- 		int argvs = sizeof(core_pattern) / 2;
--		(*argv) = kmalloc_array(argvs, sizeof(**argv), GFP_KERNEL);
-+		(*argv) = kvmalloc_array(argvs, sizeof(**argv), GFP_KERNEL);
- 		if (!(*argv))
- 			return -ENOMEM;
- 		(*argv)[(*argc)++] = 0;
-@@ -612,7 +612,7 @@ void do_coredump(const kernel_siginfo_t *siginfo)
- 			goto fail_dropcount;
- 		}
- 
--		helper_argv = kmalloc_array(argc + 1, sizeof(*helper_argv),
-+		helper_argv = kvmalloc_array(argc + 1, sizeof(*helper_argv),
- 					    GFP_KERNEL);
- 		if (!helper_argv) {
- 			printk(KERN_WARNING "%s failed to allocate memory\n",
+Changes since v3
+================
+1. Patch #1: Define all SoC IDs, based on Qualcomm socid driver (Konrad). Keep
+   Dmitry Rb tag, even though it is quite a change.
+2. New patch #2: use bindings in the socid driver.  The patch fails on checkpatch:
+   "Macros with complex values should be enclosed in parentheses"
+   but that's expected considering the macro contents.
+
+Changes since v2
+================
+1. Adjust description of new fields after review (Dmitry).
+2. Change name of msm8996 define (Dmitry).
+3. Add Rb tags.
+
+Changes since v1
+================
+1. Make the qcom,board-id and qcom,msm-id properties deprecated and limited to
+   certain SoCs (Rob).
+2. Extend the qcom,board-id schema to match OnePlus variant - four elements -
+   and drop DTS patches splitting four into two touples (Stephan).
+
+Description
+===========
+The discussion [1] brought several arguments for keeping the qcom,board-id and
+qcom,msm-id properties.  Keeping means we should document them, so the DT
+schema checks pass.
+
+I revived old patch [2] with several changes and improvements.  The commit msg
+hopefully collects feedback from the discussion.
+
+Best regards,
+Krzysztof
+
+[1] https://lore.kernel.org/r/a3c932d1-a102-ce18-deea-18cbbd05ecab@linaro.org/
+[2] https://lore.kernel.org/all/1425503602-24916-1-git-send-email-galak@codeaurora.org/
+
+Krzysztof Kozlowski (3):
+  dt-bindings: arm: qcom: document qcom,msm-id and qcom,board-id
+  soc: qcom: socinfo: create soc_id table from bindings
+  arm64: dts: qcom: msm8992-xiaomi-libra: split qcom,msm-id into tuples
+
+ .../devicetree/bindings/arm/qcom.yaml         | 120 ++++++++
+ .../boot/dts/qcom/msm8992-xiaomi-libra.dts    |   2 +-
+ drivers/soc/qcom/socinfo.c                    | 265 +++++++++---------
+ include/dt-bindings/arm/qcom,ids.h            | 155 ++++++++++
+ 4 files changed, 412 insertions(+), 130 deletions(-)
+ create mode 100644 include/dt-bindings/arm/qcom,ids.h
+
 -- 
-1.9.1
+2.34.1
 
