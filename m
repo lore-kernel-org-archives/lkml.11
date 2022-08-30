@@ -2,105 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE4EECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95F37ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbiH3Rpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43334 "EHLO
+        id S230417AbiH3Rqc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231564AbiH3RpU (ORCPT
+        with ESMTP id S230348AbiH3RqJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:45:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA68D5E92;
-        Tue, 30 Aug 2022 10:41:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77304617B3;
-        Tue, 30 Aug 2022 17:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFD4C4347C;
-        Tue, 30 Aug 2022 17:23:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880228;
-        bh=F4JNBWRRsruom+7qycrtF3bC1w50tyrEdpDUdXtc/3k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q70iufNtohXl6WhqNeFwjX8TPCeklAFGbS8bchj+rVaXRoGMVrtSX33o+71ZMuLT2
-         m+zPTKLIgcfNkwctCDbvwRMHoyO5DzpZPvCWkJLwi65XotuDKT9ljaLXmTaj/7ikJr
-         tWaulIRI3aAF+Y1kePgVW3w3ACPUS+ZBWyb+IaY9ngr0EuWOthZOW9gmWBPZqHhtJQ
-         KXX11w88uiyXraL/FgW4hl7c7I0fXOYYNdXxP55GiPVRAoKOQ2HqCQSAQiwuM13un5
-         KdaQEXTymD1bGFgq+2n9yidAWOfe8B7C/Sxsu1qQo/I1OFzN3TPOOYcNNGSgiMfTs5
-         IXOc99mH15ynw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Li Qiong <liqiong@nfschina.com>, Helge Deller <deller@gmx.de>,
-        Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 08/16] parisc: ccio-dma: Handle kmalloc failure in ccio_init_resources()
-Date:   Tue, 30 Aug 2022 13:23:09 -0400
-Message-Id: <20220830172317.581397-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
-References: <20220830172317.581397-1-sashal@kernel.org>
+        Tue, 30 Aug 2022 13:46:09 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924DF11BE11
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:42:42 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id p5so13408947lfc.6
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:42:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=SPZErG0x+ZK9rrrlDxAhzzz1P40khYHpqEnMJdQIlpg=;
+        b=Aeqk+pzLRJaZsQn/A3FQazeivNuwBJxb8TF5Dp3xsGry52OQSdmFztXUGSPNe+oMhh
+         Pjq7WcNiMWl+8Xqs6Orbdwo3D01TkCcpIE5RTOHeV05baWAt7zvHrZyLHp6iMw0MUkoc
+         5no4iwEuob+B6MwYsgtITrLzj5M4Z7AqrtnEjq3EoXAUINQmSBvoqoL5b04NUz2AjDGP
+         F78srdz2j1DFeVBCacA/NK+MojyHiBtXIB7DERihsg1k9XVfLaQyyr4wWxbtLZ8asWhD
+         asOHGIaz7n54Il1Ua11ALAG1JHECzl71RqjUaPbw6ngvXB6SaZCQ3QZNy2upeIsB46OS
+         xb6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=SPZErG0x+ZK9rrrlDxAhzzz1P40khYHpqEnMJdQIlpg=;
+        b=02Pe9t3ERN21eFhaJW8wS93JOdJJcKnkiXmFfZP8/Py0PqIfI7LRJbIDhXXRLwJOYe
+         UvMzGS/vWnhEvWvuXxbKixhXNTOaxltdwFX3UthD8jYdpgWmv6iBtoH3DyafaBzw5J8R
+         EM0a9GAulmMFBwGngxFr9dEhvVD6R3nQc/9Lh8RL2KaJwrtVAPMU8/8nZkuB1JydSe16
+         +F5cL/WgDLHjgvw/i8zBfV4jrBHEqfTIIGMIkVbCIJ7dB+vHGfxtjas9BUqm69Svh+92
+         5xCVCjDzcePmPerDl0bGVtqzf+FeJs7rTuFOaKFP4Pjk9VdVwfxhyxHy1u4bsP+z2tTL
+         LwyA==
+X-Gm-Message-State: ACgBeo3YYBMhyhn7hfYX92hwoOLpTszdMOnsbHlvCQNPmPo6OlCrzb2P
+        Ngc3lE9qckS1S2k1jy035inxmw==
+X-Google-Smtp-Source: AA6agR5THj416qIImWZcu8phGsY2vckuwc//b2D6s0MX0BNveAAKVZsHiaMQrYU2U1lbgc6BqylnRQ==
+X-Received: by 2002:a05:6512:138e:b0:47f:77cc:327a with SMTP id p14-20020a056512138e00b0047f77cc327amr8388674lfa.277.1661881359035;
+        Tue, 30 Aug 2022 10:42:39 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id h5-20020a2ea485000000b0025e6a3556ffsm1846822lji.22.2022.08.30.10.42.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 10:42:38 -0700 (PDT)
+Message-ID: <f91703eb-fa93-317a-246f-7e083372818b@linaro.org>
+Date:   Tue, 30 Aug 2022 20:42:36 +0300
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH net-next v4 7/7] net: pse-pd: add regulator based PSE
+ driver
+Content-Language: en-US
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-doc@vger.kernel.org, David Jander <david@protonic.nl>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+References: <20220828063021.3963761-1-o.rempel@pengutronix.de>
+ <20220828063021.3963761-8-o.rempel@pengutronix.de>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220828063021.3963761-8-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Qiong <liqiong@nfschina.com>
+On 28/08/2022 09:30, Oleksij Rempel wrote:
+> Add generic, regulator based PSE driver to support simple Power Sourcing
+> Equipment without automatic classification support.
+> 
+> This driver was tested on 10Bast-T1L switch with regulator based PoDL PSE.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+> changes v4:
+> - rename to pse_regulator
+> changes v2:
+> - add regulator_enable test to the probe
+> - migrate to the new PSE ethtool API
+> ---
+>  drivers/net/pse-pd/Kconfig         |  11 +++
+>  drivers/net/pse-pd/Makefile        |   2 +
+>  drivers/net/pse-pd/pse_regulator.c | 148 +++++++++++++++++++++++++++++
+>  3 files changed, 161 insertions(+)
+>  create mode 100644 drivers/net/pse-pd/pse_regulator.c
+> 
+> diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
+> index 49c7f0bcff526..73d163704068a 100644
+> --- a/drivers/net/pse-pd/Kconfig
+> +++ b/drivers/net/pse-pd/Kconfig
+> @@ -9,3 +9,14 @@ menuconfig PSE_CONTROLLER
+>  	  Generic Power Sourcing Equipment Controller support.
+>  
+>  	  If unsure, say no.
+> +
+> +if PSE_CONTROLLER
+> +
+> +config PSE_REGULATOR
+> +	tristate "Regulator based PSE controller"
+> +	help
+> +	  This module provides support for simple regulator based Ethernet Power
+> +	  Sourcing Equipment without automatic classification support. For
+> +	  example for basic implementation of PoDL (802.3bu) specification.
+> +
+> +endif
+> diff --git a/drivers/net/pse-pd/Makefile b/drivers/net/pse-pd/Makefile
+> index cfa780c7801dd..1b8aa4c70f0b9 100644
+> --- a/drivers/net/pse-pd/Makefile
+> +++ b/drivers/net/pse-pd/Makefile
+> @@ -2,3 +2,5 @@
+>  # Makefile for Linux PSE drivers
+>  
+>  obj-$(CONFIG_PSE_CONTROLLER) += pse_core.o
+> +
+> +obj-$(CONFIG_PSE_REGULATOR) += pse_regulator.o
+> diff --git a/drivers/net/pse-pd/pse_regulator.c b/drivers/net/pse-pd/pse_regulator.c
+> new file mode 100644
+> index 0000000000000..46ea5b8215dcd
+> --- /dev/null
+> +++ b/drivers/net/pse-pd/pse_regulator.c
+> @@ -0,0 +1,148 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +//
+> +// Driver for the regulator based Ethernet Power Sourcing Equipment, without
+> +// auto classification support.
+> +//
+> +// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
+> +//
+> +
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/pse-pd/pse.h>
+> +#include <linux/regulator/consumer.h>
+> +
+> +struct pse_reg_priv {
+> +	struct pse_controller_dev pcdev;
+> +	struct regulator *ps; /*power source */
+> +	enum ethtool_podl_pse_admin_state admin_state;
+> +};
+> +
+> +static struct pse_reg_priv *to_pse_reg(struct pse_controller_dev *pcdev)
+> +{
+> +	return container_of(pcdev, struct pse_reg_priv, pcdev);
+> +}
+> +
+> +static int
+> +pse_reg_ethtool_set_config(struct pse_controller_dev *pcdev, unsigned long id,
+> +			   struct netlink_ext_ack *extack,
+> +			   const struct pse_control_config *config)
+> +{
+> +	struct pse_reg_priv *priv = to_pse_reg(pcdev);
+> +	int ret;
+> +
+> +	if (priv->admin_state == config->admin_cotrol)
+> +		return 0;
+> +
+> +	switch (config->admin_cotrol) {
+> +	case ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED:
+> +		ret = regulator_enable(priv->ps);
+> +		break;
+> +	case ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED:
+> +		ret = regulator_disable(priv->ps);
+> +		break;
+> +	default:
+> +		dev_err(pcdev->dev, "Unknown admin state %i\n",
+> +			config->admin_cotrol);
+> +		ret = -ENOTSUPP;
+> +	}
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	priv->admin_state = config->admin_cotrol;
+> +
+> +	return 0;
+> +}
+> +
+> +static int
+> +pse_reg_ethtool_get_status(struct pse_controller_dev *pcdev, unsigned long id,
+> +			   struct netlink_ext_ack *extack,
+> +			   struct pse_control_status *status)
+> +{
+> +	struct pse_reg_priv *priv = to_pse_reg(pcdev);
+> +	int ret;
+> +
+> +	ret = regulator_is_enabled(priv->ps);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (!ret)
+> +		status->podl_pw_status = ETHTOOL_PODL_PSE_PW_D_STATUS_DISABLED;
+> +	else
+> +		status->podl_pw_status =
+> +			ETHTOOL_PODL_PSE_PW_D_STATUS_DELIVERING;
+> +
+> +	status->podl_admin_state = priv->admin_state;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct pse_controller_ops pse_reg_ops = {
+> +	.ethtool_get_status = pse_reg_ethtool_get_status,
+> +	.ethtool_set_config = pse_reg_ethtool_set_config,
+> +};
+> +
+> +static int
+> +pse_reg_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct pse_reg_priv *priv;
+> +	int ret;
+> +
+> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	if (!pdev->dev.of_node)
+> +		return -ENOENT;
+> +
+> +	priv->ps = devm_regulator_get_exclusive(dev, "pse");
+> +	if (IS_ERR(priv->ps)) {
+> +		dev_err(dev, "failed to get PSE regulator (%pe)\n", priv->ps);
 
-[ Upstream commit d46c742f827fa2326ab1f4faa1cccadb56912341 ]
+return dev_err_probe().
 
-As the possible failure of the kmalloc(), it should be better
-to fix this error path, check and return '-ENOMEM' error code.
+> +		return PTR_ERR(priv->ps);
+> +	}
+> +
+> +	platform_set_drvdata(pdev, priv);
+> +
+> +	ret = regulator_is_enabled(priv->ps);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (ret)
+> +		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED;
+> +	else
+> +		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED;
+> +
+> +	priv->pcdev.owner = THIS_MODULE;
+> +	priv->pcdev.ops = &pse_reg_ops;
+> +	priv->pcdev.dev = dev;
+> +	ret = devm_pse_controller_register(dev, &priv->pcdev);
+> +	if (ret) {
+> +		dev_err(dev, "failed to register PSE controller (%pe)\n",
+> +			ERR_PTR(ret));
 
-Signed-off-by: Li Qiong <liqiong@nfschina.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/parisc/ccio-dma.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+return dev_err_probe()
 
-diff --git a/drivers/parisc/ccio-dma.c b/drivers/parisc/ccio-dma.c
-index b916fab9b1618..ffd5000c23d39 100644
---- a/drivers/parisc/ccio-dma.c
-+++ b/drivers/parisc/ccio-dma.c
-@@ -1380,15 +1380,17 @@ ccio_init_resource(struct resource *res, char *name, void __iomem *ioaddr)
- 	}
- }
- 
--static void __init ccio_init_resources(struct ioc *ioc)
-+static int __init ccio_init_resources(struct ioc *ioc)
- {
- 	struct resource *res = ioc->mmio_region;
- 	char *name = kmalloc(14, GFP_KERNEL);
--
-+	if (unlikely(!name))
-+		return -ENOMEM;
- 	snprintf(name, 14, "GSC Bus [%d/]", ioc->hw_path);
- 
- 	ccio_init_resource(res, name, &ioc->ioc_regs->io_io_low);
- 	ccio_init_resource(res + 1, name, &ioc->ioc_regs->io_io_low_hv);
-+	return 0;
- }
- 
- static int new_ioc_area(struct resource *res, unsigned long size,
-@@ -1543,7 +1545,10 @@ static int __init ccio_probe(struct parisc_device *dev)
- 		return -ENOMEM;
- 	}
- 	ccio_ioc_init(ioc);
--	ccio_init_resources(ioc);
-+	if (ccio_init_resources(ioc)) {
-+		kfree(ioc);
-+		return -ENOMEM;
-+	}
- 	hppa_dma_ops = &ccio_ops;
- 
- 	hba = kzalloc(sizeof(*hba), GFP_KERNEL);
--- 
-2.35.1
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id pse_reg_of_match[] = {
+> +	{ .compatible = "podl-pse-regulator", },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, pse_reg_of_match);
+> +
+> +static struct platform_driver pse_reg_driver = {
+> +	.probe		= pse_reg_probe,
+> +	.driver		= {
+> +		.name		= "PSE regulator",
+> +		.of_match_table = of_match_ptr(pse_reg_of_match),
 
+You need to compile test it... No of_match_ptr() or add maybe_unused to
+the table.
+
+Best regards,
+Krzysztof
