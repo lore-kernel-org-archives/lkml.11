@@ -2,138 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 050FEECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:49:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66AA7ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231276AbiH3Ntu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37474 "EHLO
+        id S231363AbiH3Nu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:50:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231451AbiH3NtC (ORCPT
+        with ESMTP id S231303AbiH3NuD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:49:02 -0400
-Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5140B1037F5;
-        Tue, 30 Aug 2022 06:46:41 -0700 (PDT)
-Received: from [10.2.12.24] (unknown [10.2.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by 7of9.schinagl.nl (Postfix) with ESMTPSA id 5C7DE186AE54;
-        Tue, 30 Aug 2022 15:40:37 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
-        t=1661866837; bh=QkP2rkDehwBSgpkLqWhg0SK62w0hxaRkEmx2wFzDvpY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=f6ABrVy6bO3nlMdiBhuXoDGeIXTsdsKNSqq+xT3bRsvVp39Vb+AezWjHr2IjF9MDa
-         +wX7JY3ODlzt0oXnXVBkxEX/bkM1S4OUK0HvgISfKki9AiJSiYbkUi5egAJCld+PCp
-         2iJnOSari/WzosWMx/jJWLHcAvX9kgU2vVvoEnSA=
-Message-ID: <f9e6e452-0e00-785c-1f4f-43f7754ab720@schinagl.nl>
-Date:   Tue, 30 Aug 2022 15:40:36 +0200
+        Tue, 30 Aug 2022 09:50:03 -0400
+Received: from sonic304-27.consmr.mail.ne1.yahoo.com (sonic304-27.consmr.mail.ne1.yahoo.com [66.163.191.153])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1256C78BFC
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:48:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1661867280; bh=B5MGNwLw1R/K6iXbs2us17O4OX0icSuWFBTlB2a4F2M=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=O/uGPvRsEknq7kDFYpG4ZLOyXMCDSY7qYm+nYPE3v3Upx02++3uBgBlxQWiVHjFVRrz9Hffg15HIkUrBVzZLFMVR5o35Zws2Q3QQx96PDwPCKWnrggZyB2NtJEPIs1PkcFEiMiS7n98rcJrBolJ6296nrs1+Tm03aVxtTUHT27gjNfZk91VJGmURJp8vXFKxGwq1T816wJjhw4VEIG8TM+4B8Okdp6tArkTygvHbsL9Q2rK7lUIDYUpJ9NLktdQeOOdJNqkdbGxC+drUjQo4FKfp1UH/Z1V6sflOfg12yCW+kA8kHYx8U4vmd1wckLkesYiCpkoBuD2JMXNoRlLOjw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1661867280; bh=T2ZoFCGq3etlFB6RfXACydBhjBS2Jt+rn+43SIxk0ZO=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=BhCfnFQWlJf6PUaSAAZ4s1eno1TYL7AjnbIhyHaPcHMpCsDJvoQT6e2e7/k+JB21kQdF3/Rm2zdOAcUXaDcPao9KG21sJWLm/2nJw0jemLNLwgg29eQW05IgGb7b7vLoK8AQLqKO4Bx0AhWsPLPtIBw2dy9Bor8/TdW3h2Eiom68L0CHig5URKOiBEzqK+tUJU76dMeypLwko7rnuEwZMUJiJjqSSwFsxxAxIv0ZgrPwMW2HO9cmTB953H+z79BDBD6POwIntBbkLm9JVp8Dp82l1FCaLICj88IzQQef1M7iF6EETxceEHbtV3iuIuK9JpiZjSO6fC6eBIZkCJo75Q==
+X-YMail-OSG: 7J2QYA0VM1nJ7OTEJ1KfWJ3fpjEAB6rZCW0PyoNiqg_7rtbOHDvEFsoG_KVljvQ
+ FYgYoHDON.kTIyfxIrgRl9uMQ4INDiNV0hXGY_F_bQKm3fr2k5P03UztI6O4jNhDmo8d2.bvPxk7
+ .WL_DV4zu_WyDb3k3fpwdvozzsH9NlPKANuREtgTP8UbriRoqL.uKYUFUGWG.W5RJa.T62URv6.u
+ f2mKXcgZSP4MVaf4jgedwJ8.x48krFQLl2UQGPjqFq.ESzTi1aURtHXbkaTOboRXpI92iWW9ados
+ yYw9h5M0S7hIiqbX43G8nGCS.QR35FuVsQlt4eWo5s0iMIG6HNzL8UuXZqPqNe4fdGqqn1zPvw_H
+ SiA_b_dZUFHox1VXyhiR2xsqQ7YyIZ1ZMl.LkEyOZ5AxdyOuqRyby9NIBlRvH8dVZrbAuahTSWv0
+ LtMgD8HGSPEhfO9zqVAGYpPji8jKqs1oj_Ri0WoHFWVsj52UNDZDdTM.oqZXUZd_g32Jk732ifVa
+ rAdyrCUEQwXwKIZinTmQ6YBTYh7QJF9Ox3i08qaqaxeyvgNtYcQx2sLtEFKp8jUFgLN5zATprEiQ
+ _FuFk6tWZK8qfnLPflr8ZAPSD3Xgr.KrdkRI_DrDuWWV6I6xZeqNybpSJVBZIO2yPSMXm9M5mkoF
+ 5pYFjjqrnyQWX22k_HF7tXS_9RVIdzooJIikDFgOW67Aji.ya2KkFhc1Nun0vVMwcK4F_P40Yvpq
+ ddDlRPaOQkoPla6IxcHtqqFQ5GblrkAqtJTqXJd7kNnRwK2EviJzsE37hUPVh3dsM1oE1IGG7gMz
+ 09UoKwnjzz3zBAS.IGXpbhKqX6C75F95c1NskxWrf6Qm0N4JfYPLI4726ejPkSyUMrA3YsXhJDTi
+ IYrJI_bgf8RZGUykuWMUCxjE9KPQ0Q0HrQYeqmHAYMTwycNWV8F8j2PRuL1Ox8yND0e0IM3VOZrn
+ OLtjxRUcdFPVBcX4aLrQrpEr4vPGZ6tZTsAYADukMvx7RGkiRdCZ7iEosyzmDJS9vRfevXmBPn5r
+ KsUza5OONtWNGA8Jt5DNtOZzthaaf4T3j6pN_cPT1v0XzOctZd5zyW2fjSHaY2IsUH0fxxdrrc1y
+ bkVh2dG_x5bViiYzZR.LBl7ort5kuTUEX5WjiNnCeid9QlqLVoNU6H87sYMRjqdGnbMO0vNWSBJI
+ qTIzNYFm9PgaPL_dUt9GBVK37foiTju5Rh1buDNhC.0Ufz0En2ByK4vWpmDg0STVupiGM5M6UYij
+ BhXSHunir13cP3kDj0.lJpslwLdVX9VXDobvKD3RE0f9bBRechFp8kgQFV6yq7FKV32NDho9Ygtd
+ kM8mVoitvMZF0xajvIA.h65w5L2yzs9Yd0_9Fm49kyjLqVO0xbdG7oAVONBBn9dlMSD5ApG0bDVZ
+ OlBSDMXZLymVuKGfWif.TzRxbJnod8VbdVtUZwoOFeipGohgTIbg_gvFG.H4o5eDkYarxRHs6K2M
+ gjguGdjyuLe4XtUUpE5oGiXb9pOvkV9O_M_1GuYf56Na3SiHk5WSQi2PeSlP6p83MxhoKrEjbT4v
+ ddVtMF2AFBj8202KENjy2PhnTAZbawEYEsDNU8oldCGXluk8rTxCYD6SJMF92JLfZUI4TTik4K.J
+ qM_jy5dvOg4YWL4S8ETsbkSoTyXzG4stNB5K4VEMC183Ez5tj70e6ktJAimwpjQ9Rg0Lchdjs6k0
+ CBrZbm6oG7ttakJ7PnKVEeITfgdc3dBnTHlFYpj2vlcZ9U4lgVUipTl5oUNORfE3y.nIUSbb91z7
+ U.LW0iRi.pFn4VlkJKz2LEEKe_YXypfvxUPMLPLRkkKD8HHxK9JyVSEwrhXstVl4VJj.HCQ8poi3
+ acAttq82E4f2JXdBIbw2q.ntHRPGxnA0cXUwHTfxRUbdY6H85pR4HFxmZHXWFJf0Ng95shR6Jb8M
+ okT6O68sQOa60EZDtPyjGvi21YBrBk6BZ3Z140mGElMW3sHhRRNoxy1wPoiKbSr97Hma2lR3P092
+ X3v330zAoVLtH6H0qLMfOJbeH4TktlpLHWM7SeeH1Elgi72ThjR4yyGsoR_DgCKtqcbqFgCvkyYP
+ dYy9010OcbI_nNlFj.pUYOTxJBfN5Ffd7IXjak91udh90DAbQRsHpeNY_TN5V5uRNbtQ7I1am7yV
+ sEU6mX1Y8zl9_h7C5_lNnfrykgvdCw8O.gZryzERbdOw.HbJ6bAoJy3sLnyh8LfHWglLzYY1gCJk
+ t.sKjz4_4vrunpcC0A_peaTm5X25y97ZNOkQ-
+X-Sonic-MF: <casey@schaufler-ca.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic304.consmr.mail.ne1.yahoo.com with HTTP; Tue, 30 Aug 2022 13:48:00 +0000
+Received: by hermes--production-bf1-7586675c46-klczj (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 9d7aea0643af7036c6f2938b0344572d;
+          Tue, 30 Aug 2022 13:47:56 +0000 (UTC)
+Message-ID: <89548338-f716-c110-0f85-3ef880bbd723@schaufler-ca.com>
+Date:   Tue, 30 Aug 2022 06:47:52 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCHv2 resend] dt-bindings: leds: Expand LED_COLOR_ID
- definitions
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v4] vfs, security: Fix automount superblock LSM init
+ problem, preventing NFS sb sharing
 Content-Language: en-US
-To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Baolin Wang <baolin.wang@linaro.org>,
-        Daniel Mack <daniel@zonque.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Simon Shields <simon@lineageos.org>,
-        Olliver Schinagl <oliver+list@schinagl.nl>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220819152904.433514-1-oliver@schinagl.nl>
- <44eec926-b7d0-f8eb-f944-d28e3b35257a@gmail.com>
-From:   Olliver Schinagl <oliver@schinagl.nl>
-In-Reply-To: <44eec926-b7d0-f8eb-f944-d28e3b35257a@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     David Howells <dhowells@redhat.com>
+Cc:     Christian Brauner <brauner@kernel.org>, viro@zeniv.linux.org.uk,
+        Jeff Layton <jlayton@kernel.org>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna@kernel.org>,
+        Scott Mayhew <smayhew@redhat.com>,
+        Paul Moore <paul@paul-moore.com>, linux-nfs@vger.kernel.org,
+        selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, dwysocha@redhat.com,
+        linux-kernel@vger.kernel.org, casey@schaufler-ca.com
+References: <c648aa7c-a49c-a7e2-6a05-d1dfe44b8fdb@schaufler-ca.com>
+ <166133579016.3678898.6283195019480567275.stgit@warthog.procyon.org.uk>
+ <20220826082439.wdestxwkeccsyqtp@wittgenstein>
+ <1903709.1661849345@warthog.procyon.org.uk>
+From:   Casey Schaufler <casey@schaufler-ca.com>
+In-Reply-To: <1903709.1661849345@warthog.procyon.org.uk>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20595 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30-08-2022 12:28, Jacek Anaszewski wrote:
-> Hi Oliver,
+On 8/30/2022 1:49 AM, David Howells wrote:
+> Casey Schaufler <casey@schaufler-ca.com> wrote:
 >
-> On 8/19/22 17:29, Olliver Schinagl wrote:
->> In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
->> Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
->> added. However, there's a little more very common LED colors.
->>
->> While the documentation states 'add what is missing', engineers tend to
->> be lazy and will just use what currently exists. So this patch will take
->> (a) list from online retailers [0], [1], [2] and use the common LED colors
->> from there, this being reasonable as this is what is currently available to
->> purchase.
->>
->> Note, that LIME seems to be the modern take to 'Yellow-green' or
->> 'Yellowish-green' from some older datasheets.
->>
->> [0]: https://www.digikey.com/en/products/filter/led-lighting-color/125
->> [1]: https://eu.mouser.com/c/optoelectronics/led-lighting/led-emitters/standard-leds-smd
->> [2]: https://nl.farnell.com/en-NL/c/optoelectronics-displays/led-products/standard-single-colour-leds-under-75ma
->>
->> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
->> ---
->>
->> Changes since v1: Unbreak existing definitions.
->>
->>
->>    include/dt-bindings/leds/common.h | 28 ++++++++++++++++------------
->>    1 file changed, 16 insertions(+), 12 deletions(-)
->>
->> diff --git a/include/dt-bindings/leds/common.h b/include/dt-bindings/leds/common.h
->> index 3be89a7c20a9..04bf94523ea3 100644
->> --- a/include/dt-bindings/leds/common.h
->> +++ b/include/dt-bindings/leds/common.h
->> @@ -22,18 +22,22 @@
->>    #define LEDS_BOOST_FIXED	2
->>    
->>    /* Standard LED colors */
->> -#define LED_COLOR_ID_WHITE	0
->> -#define LED_COLOR_ID_RED	1
->> -#define LED_COLOR_ID_GREEN	2
->> -#define LED_COLOR_ID_BLUE	3
->> -#define LED_COLOR_ID_AMBER	4
->> -#define LED_COLOR_ID_VIOLET	5
->> -#define LED_COLOR_ID_YELLOW	6
->> -#define LED_COLOR_ID_IR		7
->> -#define LED_COLOR_ID_MULTI	8	/* For multicolor LEDs */
->> -#define LED_COLOR_ID_RGB	9	/* For multicolor LEDs that can do arbitrary color,
->> -					   so this would include RGBW and similar */
->> -#define LED_COLOR_ID_MAX	10
->> +#define LED_COLOR_ID_WHITE      0
->> +#define LED_COLOR_ID_RED        1
->> +#define LED_COLOR_ID_GREEN      2
->> +#define LED_COLOR_ID_BLUE       3
->> +#define LED_COLOR_ID_AMBER      4
->> +#define LED_COLOR_ID_VIOLET     5
->> +#define LED_COLOR_ID_YELLOW     6
->> +#define LED_COLOR_ID_IR         7
->> +#define LED_COLOR_ID_MULTI      8 /* For multicolor LEDs */
->> +#define LED_COLOR_ID_RGB        9 /* For multicolor LEDs that can do arbitrary color, including RGBW etc. */
->> +#define LED_COLOR_ID_PUPRPLE   10
-> typo - as already mentioned
-Sorry, I did not receive your earlier mail it seems, or it's not showing 
-up in the thread; well caught!
->
->> +#define LED_COLOR_ID_ORANGE    11
->> +#define LED_COLOR_ID_PINK      12
->> +#define LED_COLOR_ID_CYAN      13
->> +#define LED_COLOR_ID_LIME      14
->> +#define LED_COLOR_ID_MAX       15
->>    
->>    /* Standard LED functions */
->>    /* Keyboard LEDs, usually it would be input4::capslock etc. */
-> And it seems that change in spacing between definition name and value
-> is not required, is it? Without that change, it would be easier to
-> notice what really changes here.
->
-Yes, you are correct, I initially had LimeGreen there, which made it 
-longer, as I later found out, that LimeGreen could actually just be Lime 
-as much, I forgot to 're-shorten it. The fixed diff for v4 does look as 
-expected! thanks for that one.
+>> The authors of this version of the mount code failed to look
+>> especially closely at how Smack maintains label names. Once a
+>> label name is used in the kernel it is kept on a list forever.
+>> All the copies of smk_known here and in the rest of the mount
+>> infrastructure are unnecessary and wasteful. The entire set of
+>> Smack hooks that deal with mounting need to be reworked to remove
+>> that waste. It's on my list of Smack cleanups, but I'd be happy
+>> if someone else wanted a go at it.
+> I don't have time to overhaul Smack right now.  Should I drop the Smack part
+> of the patch?
 
+No. I appreciate that you're including Smack as part of the effort.
+I would much rather have the code working as you have it than have
+to go in later and do it all from scratch. With luck I should be able
+to get someone with a considerably lower level of expertise to work
+on it.
+
+> David
