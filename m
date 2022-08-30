@@ -2,216 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 714D5ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 925B7ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbiH3X5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:57:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
+        id S229720AbiH3X7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:59:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231717AbiH3X4j (ORCPT
+        with ESMTP id S231821AbiH3X7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:56:39 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7AF271BF8
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:55:54 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id q7-20020a63e947000000b004297f1e1f86so6197069pgj.12
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:55:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=Djp3CXhw97imusM87qiMQnhEDBYlX/mb/nkPMjzyLGc=;
-        b=RcXGoYFdqVscbUJ83ofAPJuLPdh5Y43S2GvyFTmMbuLk8YKjr2uRLfFJ2wKT+wkPFN
-         /3YVCWJMNvTZG0O3MDKPGMXfDmWGDfL+USqDAMoh/Ppzu8Pu5SzZrX3kNOvJ1MapzB50
-         eqnAyUGDpVcf+046aPpiiOEB6kLPzaOVRXBeCSmFY5cYmod+Klcuye1PDX89IjPB7ToF
-         XLxSesmFTk8WN6mlxXM1NTk0Atuu+3FCR72Owz3WpQ8SpOlewzb85nMOILh3BdEVgf9Z
-         j5z1C5o6h0IBW0Q2MVenfN2MSgSrOq0JFszq/3JpLyBjrFpsi/muF3iNopOwN9gXEPQe
-         hnOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=Djp3CXhw97imusM87qiMQnhEDBYlX/mb/nkPMjzyLGc=;
-        b=67JTfEtzzOGAOr42JskWYs1PNKd2zT/TCh7Du6T+5Tfe0ocx8745ujMkmDL8/D/Akc
-         IeGIvrLBUcvSCIorJfNiDPT1KnszlKvPyOoJPZJBjyj6c05sS0oSzvSIUR924VkoV6PE
-         7eavhaomjmJ7JuI/pAd83Wu7u0lY82CTWcpm3GAN6F1i24M3A+UFmir5o7Gzq9f+/y9t
-         o9w+aDy0rgmFT/p2fWRcefY7qOX/Wms/N0p8OtBRRZ3bin1yRR+fmJBa/29TgvlS7YZv
-         QTi1h6BrA8204bXG9qpcigSdj3UU3+eDuNIp182Xoqdx+0vPrTDvHHTxT+AbhlIZ0LWp
-         fcKA==
-X-Gm-Message-State: ACgBeo1ds6qaXLstw3xUG88DvQCHg4X+htP7lV3eULzigQ5z4DNYKh7o
-        QllN22cQSr16qpzUuWYmS2ZuMtiAuhY=
-X-Google-Smtp-Source: AA6agR5qvKfNO3A+YaO7bFe5xrcBFzFnWapEEKvmJAxGpy4+c5IU9DOBxOYlUNevzADEpUnEeymJXH35EoQ=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:902:e883:b0:175:22e8:f30a with SMTP id
- w3-20020a170902e88300b0017522e8f30amr4430989plg.127.1661903753536; Tue, 30
- Aug 2022 16:55:53 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 30 Aug 2022 23:55:36 +0000
-In-Reply-To: <20220830235537.4004585-1-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220830235537.4004585-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830235537.4004585-9-seanjc@google.com>
-Subject: [PATCH v4 8/9] KVM: x86/mmu: Add helper to convert SPTE value to its
- shadow page
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Matlack <dmatlack@google.com>,
-        Mingwei Zhang <mizhang@google.com>,
-        Yan Zhao <yan.y.zhao@intel.com>,
-        Ben Gardon <bgardon@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 30 Aug 2022 19:59:04 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA18C6A4A3;
+        Tue, 30 Aug 2022 16:58:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=+HJgGzdjoOCbPXQHd33i1N896ojtlMXsJVGIqbUOCQ8=; b=wLbgQIMvhs2qxhU2u+exycYzZ7
+        GhN4meGiLY2lUJcusxW0Z+E19B48T/KsvAoDqnHNoe7AG8wTN+7jMYK6DvYoy+QtHRqY02B8Hyy55
+        H92OqM7cgM4UlOwX9CwWCjMEWohnKfWEY2dz5OBAtuVPMvekxxA0H+b40eMZwftdqVwAiESOt8+hf
+        wie8TQLWt+9DB/1hsW5BPXMVfxsrH50twp90MBZL6BYZjyNM1dAnpFyHf5cN+hJ5nrnmOAgvfS5U9
+        2HLjHamkWgYN4tExun60r9dEs30pxImyjmndEZp0yrFNNJ+PY4+yu7JpYQpuhY0rvf+Xq4Un/y7km
+        ri0d60WQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oTB82-002arr-BT; Tue, 30 Aug 2022 23:58:46 +0000
+Message-ID: <74683697-df9f-6f8f-00eb-4bb25e1a1638@infradead.org>
+Date:   Tue, 30 Aug 2022 16:58:45 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH -next] fs/hfsplus: Fix some kernel-doc comments
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>, axboe@kernel.dk
+Cc:     hch@lst.de, bvanassche@acm.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+References: <20220830074223.20281-1-yang.lee@linux.alibaba.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220830074223.20281-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper to convert a SPTE to its shadow page to deduplicate a
-variety of flows and hopefully avoid future bugs, e.g. if KVM attempts to
-get the shadow page for a SPTE without dropping high bits.
 
-Opportunistically add a comment in mmu_free_root_page() documenting why
-it treats the root HPA as a SPTE.
 
-No functional change intended.
+On 8/30/22 00:42, Yang Li wrote:
+> Add the description of @opf and remove @op and @op_flags in
+> hfsplus_submit_bio() kernel-doc comment.
+> 
+> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=2013
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/mmu/mmu.c          | 17 ++++++++++-------
- arch/x86/kvm/mmu/mmu_internal.h | 12 ------------
- arch/x86/kvm/mmu/spte.h         | 17 +++++++++++++++++
- arch/x86/kvm/mmu/tdp_mmu.h      |  2 ++
- 4 files changed, 29 insertions(+), 19 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index de06c1f87635..4737da767a40 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -1808,7 +1808,7 @@ static int __mmu_unsync_walk(struct kvm_mmu_page *sp,
- 			continue;
- 		}
- 
--		child = to_shadow_page(ent & SPTE_BASE_ADDR_MASK);
-+		child = spte_to_child_sp(ent);
- 
- 		if (child->unsync_children) {
- 			if (mmu_pages_add(pvec, child, i))
-@@ -2367,7 +2367,7 @@ static void validate_direct_spte(struct kvm_vcpu *vcpu, u64 *sptep,
- 		 * so we should update the spte at this point to get
- 		 * a new sp with the correct access.
- 		 */
--		child = to_shadow_page(*sptep & SPTE_BASE_ADDR_MASK);
-+		child = spte_to_child_sp(*sptep);
- 		if (child->role.access == direct_access)
- 			return;
- 
-@@ -2388,7 +2388,7 @@ static int mmu_page_zap_pte(struct kvm *kvm, struct kvm_mmu_page *sp,
- 		if (is_last_spte(pte, sp->role.level)) {
- 			drop_spte(kvm, spte);
- 		} else {
--			child = to_shadow_page(pte & SPTE_BASE_ADDR_MASK);
-+			child = spte_to_child_sp(pte);
- 			drop_parent_pte(child, spte);
- 
- 			/*
-@@ -2827,7 +2827,7 @@ static int mmu_set_spte(struct kvm_vcpu *vcpu, struct kvm_memory_slot *slot,
- 			struct kvm_mmu_page *child;
- 			u64 pte = *sptep;
- 
--			child = to_shadow_page(pte & SPTE_BASE_ADDR_MASK);
-+			child = spte_to_child_sp(pte);
- 			drop_parent_pte(child, sptep);
- 			flush = true;
- 		} else if (pfn != spte_to_pfn(*sptep)) {
-@@ -3439,7 +3439,11 @@ static void mmu_free_root_page(struct kvm *kvm, hpa_t *root_hpa,
- 	if (!VALID_PAGE(*root_hpa))
- 		return;
- 
--	sp = to_shadow_page(*root_hpa & SPTE_BASE_ADDR_MASK);
-+	/*
-+	 * The "root" may be a special root, e.g. a PAE entry, treat it as a
-+	 * SPTE to ensure any non-PA bits are dropped.
-+	 */
-+	sp = spte_to_child_sp(*root_hpa);
- 	if (WARN_ON(!sp))
- 		return;
- 
-@@ -3924,8 +3928,7 @@ void kvm_mmu_sync_roots(struct kvm_vcpu *vcpu)
- 		hpa_t root = vcpu->arch.mmu->pae_root[i];
- 
- 		if (IS_VALID_PAE_ROOT(root)) {
--			root &= SPTE_BASE_ADDR_MASK;
--			sp = to_shadow_page(root);
-+			sp = spte_to_child_sp(root);
- 			mmu_sync_children(vcpu, sp, true);
- 		}
- 	}
-diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-index 22152241bd29..dbaf6755c5a7 100644
---- a/arch/x86/kvm/mmu/mmu_internal.h
-+++ b/arch/x86/kvm/mmu/mmu_internal.h
-@@ -133,18 +133,6 @@ struct kvm_mmu_page {
- 
- extern struct kmem_cache *mmu_page_header_cache;
- 
--static inline struct kvm_mmu_page *to_shadow_page(hpa_t shadow_page)
--{
--	struct page *page = pfn_to_page(shadow_page >> PAGE_SHIFT);
--
--	return (struct kvm_mmu_page *)page_private(page);
--}
--
--static inline struct kvm_mmu_page *sptep_to_sp(u64 *sptep)
--{
--	return to_shadow_page(__pa(sptep));
--}
--
- static inline int kvm_mmu_role_as_id(union kvm_mmu_page_role role)
- {
- 	return role.smm ? 1 : 0;
-diff --git a/arch/x86/kvm/mmu/spte.h b/arch/x86/kvm/mmu/spte.h
-index 7670c13ce251..7e5343339b90 100644
---- a/arch/x86/kvm/mmu/spte.h
-+++ b/arch/x86/kvm/mmu/spte.h
-@@ -219,6 +219,23 @@ static inline int spte_index(u64 *sptep)
-  */
- extern u64 __read_mostly shadow_nonpresent_or_rsvd_lower_gfn_mask;
- 
-+static inline struct kvm_mmu_page *to_shadow_page(hpa_t shadow_page)
-+{
-+	struct page *page = pfn_to_page((shadow_page) >> PAGE_SHIFT);
-+
-+	return (struct kvm_mmu_page *)page_private(page);
-+}
-+
-+static inline struct kvm_mmu_page *spte_to_child_sp(u64 spte)
-+{
-+	return to_shadow_page(spte & SPTE_BASE_ADDR_MASK);
-+}
-+
-+static inline struct kvm_mmu_page *sptep_to_sp(u64 *sptep)
-+{
-+	return to_shadow_page(__pa(sptep));
-+}
-+
- static inline bool is_mmio_spte(u64 spte)
- {
- 	return (spte & shadow_mmio_mask) == shadow_mmio_value &&
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.h b/arch/x86/kvm/mmu/tdp_mmu.h
-index c163f7cc23ca..d3714200b932 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.h
-+++ b/arch/x86/kvm/mmu/tdp_mmu.h
-@@ -5,6 +5,8 @@
- 
- #include <linux/kvm_host.h>
- 
-+#include "spte.h"
-+
- hpa_t kvm_tdp_mmu_get_vcpu_root_hpa(struct kvm_vcpu *vcpu);
- 
- __must_check static inline bool kvm_tdp_mmu_get_root(struct kvm_mmu_page *root)
+Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+
+Thanks.
+
+> ---
+>  fs/hfsplus/wrapper.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/fs/hfsplus/wrapper.c b/fs/hfsplus/wrapper.c
+> index 0b791adf02e5..6202e877f459 100644
+> --- a/fs/hfsplus/wrapper.c
+> +++ b/fs/hfsplus/wrapper.c
+> @@ -30,8 +30,7 @@ struct hfsplus_wd {
+>   * @sector: block to read or write, for blocks of HFSPLUS_SECTOR_SIZE bytes
+>   * @buf: buffer for I/O
+>   * @data: output pointer for location of requested data
+> - * @op: direction of I/O
+> - * @op_flags: request op flags
+> + * @opf: operation and flags for bio
+>   *
+>   * The unit of I/O is hfsplus_min_io_size(sb), which may be bigger than
+>   * HFSPLUS_SECTOR_SIZE, and @buf must be sized accordingly. On reads
+
 -- 
-2.37.2.672.g94769d06f0-goog
-
+~Randy
