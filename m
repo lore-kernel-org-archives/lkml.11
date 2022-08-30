@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B05BC0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF57ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:09:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230083AbiH3GJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 02:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
+        id S230090AbiH3GJe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 02:09:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230070AbiH3GJZ (ORCPT
+        with ESMTP id S230058AbiH3GJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 02:09:25 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0DDB6D1F;
-        Mon, 29 Aug 2022 23:09:22 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MGxd13LsmzlWbq;
-        Tue, 30 Aug 2022 14:05:57 +0800 (CST)
+        Tue, 30 Aug 2022 02:09:23 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 647C0B6D13;
+        Mon, 29 Aug 2022 23:09:21 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MGxcj3CfBz1N7K9;
+        Tue, 30 Aug 2022 14:05:41 +0800 (CST)
 Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Tue, 30 Aug 2022 14:09:18 +0800
 Received: from localhost.localdomain (10.69.192.56) by
  kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 14:09:17 +0800
+ 15.1.2375.24; Tue, 30 Aug 2022 14:09:18 +0800
 From:   Jie Hai <haijie1@huawei.com>
 To:     <vkoul@kernel.org>, <wangzhou1@hisilicon.com>
 CC:     <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [RESENT PATCH v5 4/7] dmaengine: hisilicon: Use macros instead of magic number
-Date:   Tue, 30 Aug 2022 14:05:52 +0800
-Message-ID: <20220830060555.50781-5-haijie1@huawei.com>
+Subject: [RESENT PATCH v5 7/7] MAINTAINERS: Add myself as maintainer for hisi_dma
+Date:   Tue, 30 Aug 2022 14:05:55 +0800
+Message-ID: <20220830060555.50781-8-haijie1@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220830060555.50781-1-haijie1@huawei.com>
 References: <20220830060555.50781-1-haijie1@huawei.com>
@@ -46,69 +46,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-readl_relaxed_poll_timeout() uses magic numbers 10 and 1000, which
-indicate maximum time to sleep between reads in us and timeout in us,
-respectively.
-
-Use macros HISI_DMA_POLL_Q_STS_DELAY_US and
-HISI_DMA_POLL_Q_STS_TIME_OUT_US instead of these two numbers.
+Add myself as a maintainer for hisi_dma.
 
 Signed-off-by: Jie Hai <haijie1@huawei.com>
 Acked-by: Zhou Wang <wangzhou1@hisilicon.com>
 ---
- drivers/dma/hisi_dma.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/dma/hisi_dma.c b/drivers/dma/hisi_dma.c
-index 0233b42143c7..5d62fe62ba00 100644
---- a/drivers/dma/hisi_dma.c
-+++ b/drivers/dma/hisi_dma.c
-@@ -36,6 +36,9 @@
+diff --git a/MAINTAINERS b/MAINTAINERS
+index af4848466a08..7bbc54c2fc08 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9116,6 +9116,7 @@ F:	net/dsa/tag_hellcreek.c
  
- #define PCI_BAR_2			2
- 
-+#define HISI_DMA_POLL_Q_STS_DELAY_US	10
-+#define HISI_DMA_POLL_Q_STS_TIME_OUT_US	1000
-+
- enum hisi_dma_mode {
- 	EP = 0,
- 	RC,
-@@ -185,15 +188,19 @@ static void hisi_dma_reset_or_disable_hw_chan(struct hisi_dma_chan *chan,
- {
- 	struct hisi_dma_dev *hdma_dev = chan->hdma_dev;
- 	u32 index = chan->qp_num, tmp;
-+	void __iomem *addr;
- 	int ret;
- 
- 	hisi_dma_pause_dma(hdma_dev, index, true);
- 	hisi_dma_enable_dma(hdma_dev, index, false);
- 	hisi_dma_mask_irq(hdma_dev, index);
- 
--	ret = readl_relaxed_poll_timeout(hdma_dev->base +
--		HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET, tmp,
--		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) != RUN, 10, 1000);
-+	addr = hdma_dev->base +
-+	       HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET;
-+
-+	ret = readl_relaxed_poll_timeout(addr, tmp,
-+		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) != RUN,
-+		HISI_DMA_POLL_Q_STS_DELAY_US, HISI_DMA_POLL_Q_STS_TIME_OUT_US);
- 	if (ret) {
- 		dev_err(&hdma_dev->pdev->dev, "disable channel timeout!\n");
- 		WARN_ON(1);
-@@ -208,9 +215,9 @@ static void hisi_dma_reset_or_disable_hw_chan(struct hisi_dma_chan *chan,
- 		hisi_dma_unmask_irq(hdma_dev, index);
- 	}
- 
--	ret = readl_relaxed_poll_timeout(hdma_dev->base +
--		HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET, tmp,
--		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) == IDLE, 10, 1000);
-+	ret = readl_relaxed_poll_timeout(addr, tmp,
-+		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) == IDLE,
-+		HISI_DMA_POLL_Q_STS_DELAY_US, HISI_DMA_POLL_Q_STS_TIME_OUT_US);
- 	if (ret) {
- 		dev_err(&hdma_dev->pdev->dev, "reset channel timeout!\n");
- 		WARN_ON(1);
+ HISILICON DMA DRIVER
+ M:	Zhou Wang <wangzhou1@hisilicon.com>
++M:	Jie Hai <haijie1@hisilicon.com>
+ L:	dmaengine@vger.kernel.org
+ S:	Maintained
+ F:	drivers/dma/hisi_dma.c
 -- 
 2.33.0
 
