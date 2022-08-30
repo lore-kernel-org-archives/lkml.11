@@ -2,93 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF58ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:00:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15975ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231254AbiH3RAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
+        id S229774AbiH3RDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231249AbiH3RAX (ORCPT
+        with ESMTP id S229873AbiH3RCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:00:23 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FFB3343C
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:59:50 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id f12so11537639plb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:59:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=7Z3u13rYQpnMB98SibwD18Rv6bC0Tn7F50N9xepOERw=;
-        b=sldTHnD1qgrZpMPHpc1hPZG8EsxLnZF132ClKRNUBn9xjfcdISQUHaSRPsK9Ez7dID
-         n/3DLtYZz6U94P7tTy8lIoUIeJmhhye099Y7QSnwkvm2Ps5EcSj/Uj3WJYiQfm9z78rF
-         CzJmqlgYAMidW9dafxB/dc2n4cHWdgFafkca2xIp9okVB/lNf/bvaa0Lcx0kODBRqo/B
-         WlVqg+vCj0qccdihUJ2pGwdfFz0//9UDH7JCz0e1jU1gYd9ykASqoV1X1NG/IUho3QiU
-         /p4fBEGQSaSprd7VWecqGwzwuJTxcS1DahcaE7vzE6JBBZh0dzsZ8DtLKQGAUOtJ21d8
-         bbnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=7Z3u13rYQpnMB98SibwD18Rv6bC0Tn7F50N9xepOERw=;
-        b=zBlaWULwqVIn44GbpocSModSAVBOy58O35yFr6WCjs0wY39iI/5TqHQyXdg6VmTThd
-         p95aVaMmaSsUJ8seVZkuiP3l3HI6oe2P89XZBO/c23t0PYKkGKDM28Uls9YcbudSaasN
-         BMKFeqqtxE2bGjq08z7/iz5JYiwFKmJgbveNJIJiRiQMrGjhO248Hi9LxcsAvsbIVPWQ
-         EC5XaitzVJYul8xVDBggv0giKMb01SR0TQBaORyJaSRGzq/ze6NdhVl9QTp72HGqrGqj
-         SfHqL53qaG3iBvRAdKJpRipeznhAgGnnZKnT0t4LQXXYTmKjgdX7wAthhl6WpTc0JFuw
-         ygmg==
-X-Gm-Message-State: ACgBeo2l4Ob4owgQSycBec6+2n5EVJkE6qaiqlFcGdb5qaHG2oUasLeg
-        vD+g0W4Pm78IZ8HD/l8n1gVQtUwzf8cb
-X-Google-Smtp-Source: AA6agR4ZLBvQrgM2XBFylZu8fxpCao63txCa2/kmk9jdO5RVB55e818vG7ukPztVNGo9hdb2mz+ZXA==
-X-Received: by 2002:a17:902:e382:b0:173:36e4:ede6 with SMTP id g2-20020a170902e38200b0017336e4ede6mr21241607ple.139.1661878784846;
-        Tue, 30 Aug 2022 09:59:44 -0700 (PDT)
-Received: from localhost.localdomain ([117.217.182.234])
-        by smtp.gmail.com with ESMTPSA id n59-20020a17090a5ac100b001f510175984sm8841261pji.41.2022.08.30.09.59.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 09:59:44 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     lpieralisi@kernel.org, robh@kernel.org, andersson@kernel.org
-Cc:     kw@linux.com, bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        konrad.dybcio@somainline.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
-        dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2 11/11] PCI: qcom-ep: Add support for SM8450 SoC
-Date:   Tue, 30 Aug 2022 22:28:17 +0530
-Message-Id: <20220830165817.183571-12-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220830165817.183571-1-manivannan.sadhasivam@linaro.org>
-References: <20220830165817.183571-1-manivannan.sadhasivam@linaro.org>
+        Tue, 30 Aug 2022 13:02:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F085564DC;
+        Tue, 30 Aug 2022 10:02:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1270DB81CE7;
+        Tue, 30 Aug 2022 17:02:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B40CBC433B5;
+        Tue, 30 Aug 2022 17:02:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661878935;
+        bh=zuE5tGcx5l76KiYALJlcPI3yxgrWlUht/PYPUm0d3Pc=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=rMMt+yf0YcS4YEGrBZB3F8AKE8BCcZVzmWFFz5+lOWh5M6+cnzxTA/5Ilr29ggpTd
+         LTm988Wa1stViNGxb3TSbRxMaU52eIyctqWYLZMWqtWNugkSZ+eCqdjwCkbbYYnUC3
+         FNym7noYDd09zQb/M0pWXTnT1+JCbkTWwgPkxWkcZEcOoeoEv5qMNvLu/adXRKJMFZ
+         2wefNSf3OAKwz1WBKSYA0MecFVgpkes/qc2riKV40RTnuaF4q4BaKXAJWjEwunPw8+
+         g16VRLATLmKPNQDaoAxu+JtNKgVC0Jt3ia4/ubETBpdjZCAz3dAe8W6/dMBVMBYLQ/
+         3ekIe/uXwGWTA==
+Received: by mail-ot1-f48.google.com with SMTP id t8-20020a9d5908000000b0063b41908168so441189oth.8;
+        Tue, 30 Aug 2022 10:02:15 -0700 (PDT)
+X-Gm-Message-State: ACgBeo2HqwhdyRBfB55CvNjdmqo94KnlBrB/8wlXCf3NFOhEyl/Qcsei
+        PSzkhgCUSJLbii0hVTSi+KbEt37Pi3EUhrl0A1E=
+X-Google-Smtp-Source: AA6agR6f59zdB8lJJrFAGXPCZn/Rpe0ho5wIpCSfjqQnPjR+27z8ENLOP8XFp8/Lw2qT/IwjRESPQOWObdDrjOI8nmU=
+X-Received: by 2002:a05:6830:b85:b0:605:4e76:f077 with SMTP id
+ a5-20020a0568300b8500b006054e76f077mr8547324otv.211.1661878934868; Tue, 30
+ Aug 2022 10:02:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220830084925.5608-1-ilpo.jarvinen@linux.intel.com> <20220830084925.5608-2-ilpo.jarvinen@linux.intel.com>
+In-Reply-To: <20220830084925.5608-2-ilpo.jarvinen@linux.intel.com>
+From:   Timur Tabi <timur@kernel.org>
+Date:   Tue, 30 Aug 2022 12:01:37 -0500
+X-Gmail-Original-Message-ID: <CAOZdJXXDaqG5uR-A3gC4qrFBwtbm7ZwFp0oXwUYGVDU=Ru-gPQ@mail.gmail.com>
+Message-ID: <CAOZdJXXDaqG5uR-A3gC4qrFBwtbm7ZwFp0oXwUYGVDU=Ru-gPQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/5] serial: ucc_uart: Remove custom frame size calculation
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-serial@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Timur Tabi <timur@kernel.org>,
+        PowerPC Mailing List <linuxppc-dev@lists.ozlabs.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for SM8450 SoC to the Qualcomm PCIe Endpoint Controller
-driver. The driver uses the same config as of the existing SDX55 chipset.
-So additional settings are not required.
+On Tue, Aug 30, 2022 at 3:49 AM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@linux.intel.com> wrote:
+>
+> The number of bits can be calculated using tty_get_frame_size(), no
+> need for the driver to do it on its own.
+>
+> Also remove a comment on number of bits that doesn't match the code nor
+> the comment on ucc_uart_pram's rx_length ("minus 1" part differs). That
+> comment seems a verbatim copy of that in cpm_uart/cpm_uart_core.c
+> anyway so perhaps it was just copied over w/o much thinking.
+>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/pci/controller/dwc/pcie-qcom-ep.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/pci/controller/dwc/pcie-qcom-ep.c b/drivers/pci/controller/dwc/pcie-qcom-ep.c
-index 4908f08bd90b..fa1819c9f667 100644
---- a/drivers/pci/controller/dwc/pcie-qcom-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom-ep.c
-@@ -775,6 +775,7 @@ static int qcom_pcie_ep_remove(struct platform_device *pdev)
- 
- static const struct of_device_id qcom_pcie_ep_match[] = {
- 	{ .compatible = "qcom,sdx55-pcie-ep", },
-+	{ .compatible = "qcom,sm8450-pcie-ep", },
- 	{ }
- };
- 
--- 
-2.25.1
-
+Acked-by: Timur Tabi <timur@kernel.org>
