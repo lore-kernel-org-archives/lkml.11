@@ -2,48 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDB6ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC609ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231698AbiH3R1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46554 "EHLO
+        id S231704AbiH3R1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231280AbiH3R0h (ORCPT
+        with ESMTP id S231215AbiH3R0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 13:26:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E43C642C7;
-        Tue, 30 Aug 2022 10:24:31 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E8813284E;
+        Tue, 30 Aug 2022 10:24:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37FA7617AE;
-        Tue, 30 Aug 2022 17:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E15C433C1;
-        Tue, 30 Aug 2022 17:24:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8F63B81D1A;
+        Tue, 30 Aug 2022 17:23:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C56C433C1;
+        Tue, 30 Aug 2022 17:23:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880263;
-        bh=kUrZhZopLYc41rgNuZ0oBSix0hPLFs3SNFxYJUMGocM=;
+        s=k20201202; t=1661880194;
+        bh=eLQysucWtbuQVmZ18poC/6s/zb/c7UUX3N6DVtbI0sQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C2gFsWaCyaRlgyXBX8NhULU2axPou0+iqJUlz6FRSHvkVgrTOZ+Vy8nMaKP6IJuyg
-         dkeS7DNoKETwuJGlaoUeXDcmsNV7EQBV1uAxw6zeU7kuEjdJV8nvuhThhAhF5+AqbW
-         DGAEtJEoi8Wp6Oygy9sHdrSGiPkyiwpKywEtkdNIbBrflTaSrc4I5SUWFdLc/1m1kv
-         HVV87yxFOr7V3/c1pJID/T9YUwsNCXSASCMHyVTBmTQN0lBfeW/TOiam6TTjys45Ps
-         YdmpueP9VrjYUu3xgrAOV76RLMr3RvsKrS7jS4O+uzcImhLiItl3Vd+u3bQlDUPKrj
-         gbjaHNbSgEdCg==
+        b=uLdFKg8Asg1AHw7o4u9TpXjjjjH+VFXEvitd3W2IZlytjC5eYrYaCyzTR2ZvIc0op
+         QPfLuVHFY3z2DWF0LNwJHkcDfTdvJWAk27QHIzxRZm0raz0hf1ktfiyVSs5x9YfX/U
+         G0cCH9YB3dKY1PNFoEALj1ePn11CrIXvIfi/ZrX0uiwectOv1K2etHH5hMHfM/Ir2H
+         d9VZ75CaGQ+dVc+g2EziMdGMOpBJQD/gf/zaCnrMGSPlD0BxWjzcODUUJsoQQVL2rp
+         wRx4kDwrJOkgO+lGhuEpq6sgpUQIoMWs7riQRfVmFJmYBYLSaYAhF95lkgRwO1eoCm
+         gvq9IkwkLdo1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Letu Ren <fantasquex@gmail.com>, Zheyu Ma <zheyuma97@gmail.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        baihaowen@meizu.com, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 14/16] fbdev: fb_pm2fb: Avoid potential divide by zero error
-Date:   Tue, 30 Aug 2022 13:23:15 -0400
-Message-Id: <20220830172317.581397-14-sashal@kernel.org>
+Cc:     Qu Huang <jinsdb@126.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Hawking.Zhang@amd.com, evan.quan@amd.com, guchun.chen@amd.com,
+        mario.limonciello@amd.com, YiPeng.Chai@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 23/23] drm/amdgpu: mmVM_L2_CNTL3 register not initialized correctly
+Date:   Tue, 30 Aug 2022 13:21:40 -0400
+Message-Id: <20220830172141.581086-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
-References: <20220830172317.581397-1-sashal@kernel.org>
+In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
+References: <20220830172141.581086-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,50 +55,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Letu Ren <fantasquex@gmail.com>
+From: Qu Huang <jinsdb@126.com>
 
-[ Upstream commit 19f953e7435644b81332dd632ba1b2d80b1e37af ]
+[ Upstream commit b8983d42524f10ac6bf35bbce6a7cc8e45f61e04 ]
 
-In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
-copied from user, then go through `fb_set_var()` and
-`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
-Along the path, `var->pixclock` won't be modified. This function checks
-whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
-zero, there will be a divide by zero error. So, it is necessary to check
-whether denominator is zero to avoid crash. As this bug is found by
-Syzkaller, logs are listed below.
+The mmVM_L2_CNTL3 register is not assigned an initial value
 
-divide error in pm2fb_check_var
-Call Trace:
- <TASK>
- fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
- do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
- fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
-
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Letu Ren <fantasquex@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Qu Huang <jinsdb@126.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/pm2fb.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/video/fbdev/pm2fb.c b/drivers/video/fbdev/pm2fb.c
-index 0642555289e06..c12d46e283598 100644
---- a/drivers/video/fbdev/pm2fb.c
-+++ b/drivers/video/fbdev/pm2fb.c
-@@ -616,6 +616,11 @@ static int pm2fb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
- 		return -EINVAL;
- 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c b/drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c
+index b3bede1dc41da..4259f623a9d7a 100644
+--- a/drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c
+@@ -176,6 +176,7 @@ static void mmhub_v1_0_init_cache_regs(struct amdgpu_device *adev)
+ 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL2, INVALIDATE_L2_CACHE, 1);
+ 	WREG32_SOC15(MMHUB, 0, mmVM_L2_CNTL2, tmp);
  
-+	if (!var->pixclock) {
-+		DPRINTK("pixclock is zero\n");
-+		return -EINVAL;
-+	}
-+
- 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
- 		DPRINTK("pixclock too high (%ldKHz)\n",
- 			PICOS2KHZ(var->pixclock));
++	tmp = mmVM_L2_CNTL3_DEFAULT;
+ 	if (adev->gmc.translate_further) {
+ 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL3, BANK_SELECT, 12);
+ 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL3,
 -- 
 2.35.1
 
