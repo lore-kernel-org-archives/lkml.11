@@ -2,63 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52037ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 07:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD72ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 07:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbiH3Hhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 03:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59238 "EHLO
+        id S231185AbiH3HiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 03:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbiH3Hhv (ORCPT
+        with ESMTP id S231196AbiH3HiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 03:37:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E53BC80B;
-        Tue, 30 Aug 2022 00:37:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34C96B816B3;
-        Tue, 30 Aug 2022 07:37:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D544C433C1;
-        Tue, 30 Aug 2022 07:37:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661845064;
-        bh=do/CEPvPzbL9rrFY1oLtzcW1Fx3Fax9iXYI3vbjDfOU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Rs/P+uFpB+j9/CvS5EAk2RxilWTBlp9SqjTiMNgz8CfIeXmazcFsQ8ubw1f9Ppii0
-         XI0jyulU7+LjmZJ1RKXdMR+LtJMXxpVZzfA4G5ZJSnExA2ba2yzkBZAoHgtjZsBP46
-         fl9Tvj/zDiTn9E4YGAD2qfRam8wKWfh3aumQJfuCpoarCkzP/v2vGwaAjLa0YGStI0
-         KvV1s/wP/skbOPBw5EM/ybW1ySH7ag3Gqi7NepyXeI2DXlOdz32NR2wIpJbYjDEFHm
-         5rW2JANX66F0QPC9Yjszd5wHf//UQq8g/yprnOWOkt9VJ4GP7mv9JVu+OFT+s8qDvQ
-         gIwXSXFr5/J4A==
-Date:   Tue, 30 Aug 2022 13:07:41 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] phy: qualcomm: phy-qcom-qmp: add support for combo
- USB3+DP phy on SDM845
-Message-ID: <Yw2+RSv0yG3XS+ji@matsya>
-References: <20220810030926.2794179-1-bjorn.andersson@linaro.org>
+        Tue, 30 Aug 2022 03:38:02 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B401BA15E
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 00:37:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661845070; x=1693381070;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4146rQbNgpJKmVBNz3ybM+Hn/wyGiAEsiucLmRjbNWI=;
+  b=hXSXDo0zxr8FQjTsgXbgW4ccI4lN4Hf6kAdVtNcXgtuT6iu1UYZzpYno
+   3GHj0Lm9nC+8CG0EsH7OBhxUVyOkHG+6dlKaPvq5sts2U6Flw+jJwdQJ8
+   WZsMTwcaBPNeKcZP0lOLHPRALgGBqzzaymkw8xX9VJyBCtCYVmXBsjsaz
+   1FpfrThFlgm40HMx/rnN9qLGgYgmFLcUCq2KFqQAeZUBzYCamw+pEl+u6
+   K+6A3xm2wVZ1VpfuNP3gpw4EPS8e5KgtcSzh4GYSZpsxqxN8YGqKW0Oy3
+   4HfQxpJopSvfieMwxdILnnZ1Fs0QrLTzDzzVXEjsVxEDsY+/hMHGqJzby
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="282078621"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="282078621"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:37:45 -0700
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="672734380"
+Received: from bard-ubuntu.sh.intel.com ([10.239.185.57])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:37:43 -0700
+From:   Bard Liao <yung-chuan.liao@linux.intel.com>
+To:     alsa-devel@alsa-project.org, vkoul@kernel.org, broonie@kernel.org
+Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
+        pierre-louis.bossart@linux.intel.com, bard.liao@intel.com
+Subject: [PATCH] soundwire: bus: conditionally recheck UNATTACHED status
+Date:   Tue, 30 Aug 2022 15:42:24 +0800
+Message-Id: <20220830074224.2924179-1-yung-chuan.liao@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220810030926.2794179-1-bjorn.andersson@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09-08-22, 22:09, Bjorn Andersson wrote:
-> From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> 
-> Define configuration to be used by combo USB3 + DisplayPort phy on
-> SDM845 SoC family. It closely follows sc7180, however like the main USB3
-> phy it uses the qmp_v3_usb3phy_cfg config.
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-Applied, thanks
+In configurations with two amplifiers on the same link, the Intel CI
+reports occasional enumeration/initialization timeouts during
+suspend-resume stress tests, where one of the two amplifiers becomes
+UNATTACHED immediately after being enumerated. This problem was
+reported both with Maxim and Realtek codecs, which pointed initially
+to a problem with status handling on the Intel side.
 
+The Cadence IP integrated on Intel platforms throws an interrupt when
+the status changes, and the information is kept with sticky bits until
+cleared. We initially added more checks to make sure the edge
+detection did not miss any transition, but that did not improve the
+results significantly.
+
+With the recent addition of the read_ping_status() callback, we were
+able to show that the status in sticky bits is shown as UNATTACHED
+even though the PING frames show the problematic device as
+ATTACHED. That completely breaks the entire logic where we assumed
+that a peripheral would always re-attach as device0. The resume
+timeouts make sense in that in those cases, the
+enumeration/initialization never happens a second time.
+
+One possible explanation is that this problem typically happens when a
+bus clash is reported, so it could very well be that the detection is
+fooled by a transient electrical issue or conflict between two
+peripherals.
+
+This patch conditionally double-checks the status reported in the
+sticky bits with the actual PING frame status. If the peripheral
+reports as attached in PING frames, the early detection based on
+sticky bits is discarded.
+
+Note that this patch only corrects issues of false positives on the
+manager side.
+
+If the peripheral lost and regain sync, then it would report as
+attached on Device0. A peripheral that would not reset its dev_num
+would not be compliant with the MIPI specification.
+
+BugLink: https://github.com/thesofproject/linux/issues/3638
+BugLink: https://github.com/thesofproject/linux/issues/3325
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+---
+Hi Vinod,
+
+You will need the "ASoC/soundwire: log actual PING status on resume issues"
+series which is applied at ASoC tree before appling this patch.
+
+---
+ drivers/soundwire/bus.c       | 19 +++++++++++++++++++
+ drivers/soundwire/intel.c     |  1 +
+ include/linux/soundwire/sdw.h |  3 +++
+ 3 files changed, 23 insertions(+)
+
+diff --git a/drivers/soundwire/bus.c b/drivers/soundwire/bus.c
+index 2772973eebb1..d0d486f07673 100644
+--- a/drivers/soundwire/bus.c
++++ b/drivers/soundwire/bus.c
+@@ -1767,6 +1767,25 @@ int sdw_handle_slave_status(struct sdw_bus *bus,
+ 		    slave->status != SDW_SLAVE_UNATTACHED) {
+ 			dev_warn(&slave->dev, "Slave %d state check1: UNATTACHED, status was %d\n",
+ 				 i, slave->status);
++
++			if (bus->recheck_unattached && bus->ops->read_ping_status) {
++				u32 ping_status;
++
++				mutex_lock(&bus->msg_lock);
++
++				ping_status = bus->ops->read_ping_status(bus);
++
++				mutex_unlock(&bus->msg_lock);
++
++				ping_status >>= (i * 2);
++				ping_status &= 0x3;
++
++				if (ping_status != 0) {
++					dev_warn(&slave->dev, "Slave %d state in PING frame is %d, ignoring earlier detection\n",
++						 i, ping_status);
++					continue;
++				}
++			}
+ 			sdw_modify_slave_status(slave, SDW_SLAVE_UNATTACHED);
+ 		}
+ 	}
+diff --git a/drivers/soundwire/intel.c b/drivers/soundwire/intel.c
+index 25ec9c272239..0c6e674dbf85 100644
+--- a/drivers/soundwire/intel.c
++++ b/drivers/soundwire/intel.c
+@@ -1311,6 +1311,7 @@ static int intel_link_probe(struct auxiliary_device *auxdev,
+ 
+ 	bus->link_id = auxdev->id;
+ 	bus->dev_num_ida_min = INTEL_DEV_NUM_IDA_MIN;
++	bus->recheck_unattached = true;
+ 
+ 	sdw_cdns_probe(cdns);
+ 
+diff --git a/include/linux/soundwire/sdw.h b/include/linux/soundwire/sdw.h
+index a2b31d25ea27..51ac71984260 100644
+--- a/include/linux/soundwire/sdw.h
++++ b/include/linux/soundwire/sdw.h
+@@ -892,6 +892,8 @@ struct sdw_master_ops {
+  * @dev_num_ida_min: if set, defines the minimum values for the IDA
+  * used to allocate system-unique device numbers. This value needs to be
+  * identical across all SoundWire bus in the system.
++ * @recheck_unattached: if set, double-check UNATTACHED status changes
++ * by reading PING frame status.
+  */
+ struct sdw_bus {
+ 	struct device *dev;
+@@ -917,6 +919,7 @@ struct sdw_bus {
+ 	bool multi_link;
+ 	int hw_sync_min_links;
+ 	int dev_num_ida_min;
++	bool recheck_unattached;
+ };
+ 
+ int sdw_bus_master_add(struct sdw_bus *bus, struct device *parent,
 -- 
-~Vinod
+2.25.1
+
