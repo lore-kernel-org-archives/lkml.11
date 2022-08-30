@@ -2,59 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79DFCECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 00:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4DE7ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 00:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229570AbiH3AyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 20:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51260 "EHLO
+        id S229451AbiH3AzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 20:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiH3AyN (ORCPT
+        with ESMTP id S229640AbiH3Ays (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 20:54:13 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86AE881B1C;
-        Mon, 29 Aug 2022 17:54:11 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MGpdM1R01zlWXW;
-        Tue, 30 Aug 2022 08:50:47 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 30 Aug
- 2022 08:54:09 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 0/2] net: sched: remove redundant resource cleanup when init() fails
-Date:   Tue, 30 Aug 2022 08:56:36 +0800
-Message-ID: <20220830005638.276584-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 29 Aug 2022 20:54:48 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0103E2B0;
+        Mon, 29 Aug 2022 17:54:45 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id p8-20020a17090ad30800b001fdfc8c7567so230297pju.1;
+        Mon, 29 Aug 2022 17:54:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=9w5o28hwrDqe0QsW8BZlUdSQHieqN4Nx6LcXamx5x18=;
+        b=EiLBeIHqvJoAudqbL4yAlVApZlIWLjdH178CBeKXweaA9SCnRjVaaKyMKqg8I12Ogx
+         4h0SrDZQb/1vAXPvnNcW7gQkEcLQ1recjCWNjgoQ2f/R5ROGfigyl7LBWP3MitSNztlS
+         02ad3XXbR3l7WLcM1rNrGvT6IckDKYhcHZk/ctqNmEqZ0buL5o3unTA5F8R8cIZTWTdE
+         FWsinZza++tUNTZbBzWwI7mQfyFmviVTGfPjy/vzvn83dyUbaj+BG0r4qW39AQtGTsJc
+         qZeqbXSLkM/8opd7nofkbmUmQ/WEcIzRKXEqk+a6dsyBnALf6IeLHvlHEcrwDsARgQeW
+         NQ1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=9w5o28hwrDqe0QsW8BZlUdSQHieqN4Nx6LcXamx5x18=;
+        b=KiI5WZ1mFNpLCL3hA6ThaC2GRfcJ7kQvgNbXcmktHIFCqKIBZaK4mlIX667rhwoKS1
+         x7rp3GhOcs5I/S4r+VCgkuONs3SJst4epfjlVQKg/bH68yiBoU+QDIUxdsCDlcNNVzjv
+         nPE7qQqK3Z2xWasTAHQif5R0VD+9OC38rz/Q9gCxFrYDZDxSFjZn9Zvmg2unFE+rz29h
+         oJWLmCBozMYx26Y9b+9diCBE5U+vMHe3agt0OqiNn0pEGQC/I13Cw20tSPqGPIzlDKFM
+         WzIPfy+WIoXeaIinKx2AuDrI0xOxqMYUSkoclGRvwkMBwBMf1IRznE0SnUFkk3rLoxfv
+         H7Mg==
+X-Gm-Message-State: ACgBeo0y4izDDJHFR91Ntrzz2t2ydeNVxofDIN5r9E9QB/JXUgiacAMY
+        wUnZ52R+ENczJs7IFpZ1oghzd/gd+0R3Eg==
+X-Google-Smtp-Source: AA6agR5Y7qOaPyFTw1lPoz2hCtx2SZR/djimo1SZhpJjxRETOzR8Ov1thInZml7PPUhNNmApdnhUKA==
+X-Received: by 2002:a17:90b:3c82:b0:1fb:8ef:5ddb with SMTP id pv2-20020a17090b3c8200b001fb08ef5ddbmr20587379pjb.11.1661820884171;
+        Mon, 29 Aug 2022 17:54:44 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id v10-20020a170902b7ca00b00172751a2fa4sm3687827plz.80.2022.08.29.17.54.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 17:54:43 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 29 Aug 2022 17:54:42 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.19 000/158] 5.19.6-rc1 review
+Message-ID: <20220830004843.GC3337218@roeck-us.net>
+References: <20220829105808.828227973@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829105808.828227973@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-qdisc_create() calls .init() to initialize qdisc. If the initialization
-fails, qdisc_create() will call .destroy() to release resources.
+On Mon, Aug 29, 2022 at 12:57:30PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.19.6 release.
+> There are 158 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 31 Aug 2022 10:57:37 +0000.
+> Anything received after that time might be too late.
+> 
 
-Zhengchao Shao (2):
-  net: sched: fq_codel: remove redundant resource cleanup in
-    fq_codel_init()
-  net: sched: htb: remove redundant resource cleanup in htb_init()
+Build results:
+	total: 150 pass: 150 fail: 0
+Qemu test results:
+	total: 489 pass: 489 fail: 0
 
- net/sched/sch_fq_codel.c | 17 ++++-------------
- net/sched/sch_htb.c      | 36 +++++++++---------------------------
- 2 files changed, 13 insertions(+), 40 deletions(-)
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
--- 
-2.17.1
-
+Guenter
