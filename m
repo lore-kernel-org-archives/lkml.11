@@ -2,70 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1882BECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60020ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231540AbiH3S3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
+        id S230112AbiH3S3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:29:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230166AbiH3S3e (ORCPT
+        with ESMTP id S230155AbiH3S3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:29:34 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3BB606B0;
+        Tue, 30 Aug 2022 14:29:35 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2381262AB1
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:29:34 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id h11-20020a17090a470b00b001fbc5ba5224so12684536pjg.2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:29:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=IVYpqdrEDbP/yo8j9YBCLt1dmps7l9gRH+pM/+p7PK0=;
+        b=YtBwXyopWXDWizaP52Wx5ett0W5ma68cdHKgYA/VnhL+UajdN+vvPmhpNDqwHZ9sPc
+         5DYqRxbypI8evgoIWu/JR7TWji1bf2rt0UooPbURH/FOXx9+nvYoiFpIKpz/SG0gKuKS
+         QgE30jPF3qg2lBhkJH5PkmSJlHps93SVXE1Zo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=IVYpqdrEDbP/yo8j9YBCLt1dmps7l9gRH+pM/+p7PK0=;
+        b=iPdY2cCTiAMjZsaPjEqHBmUlS4Nx+0zjVl7MnpGgPPgyBjVQnaNyogN6UVPwkjPuj/
+         dATwTRLwzFPpJ7cHL4C7oqedRf8UnbDIPTSG+GEiTCat5WtMC6mo4alEqpZcjkt4lhCU
+         xve1808wYAWPq6krBUOc1rus5orHr2Bp4tMf65iAiQRbFxq730gZd/pq3vkrPhAQ+uPR
+         SBcgcJo54QB4Gn1XSAnwtQn3NI4FuF26kSgJUE/0AVBu8VK0SL16aCqLCqikZ+7o8GTR
+         eXO1pyP2tb9WjQpmkZT7Tq1C+ThdC3UGi6kGt6By5VmnuOlAcaZr82b6J/vU5kzxrSZt
+         Gm/g==
+X-Gm-Message-State: ACgBeo18ImFQ6J0+0JavbGc6iOxpfz3yJ1X+bjwHesbpcfy7hGNpwoXl
+        jE9kVurtdxumW5i+k0Lq7ZaMAQ==
+X-Google-Smtp-Source: AA6agR6FFNo461tgdKd7kvBaIfB0Xng/tcC7Z0YghFdKfYMadyAPf1NmWkHj0sN8Ld41DQKlDokUtA==
+X-Received: by 2002:a17:90b:3511:b0:1f4:e0cd:1e04 with SMTP id ls17-20020a17090b351100b001f4e0cd1e04mr25365421pjb.154.1661884173694;
         Tue, 30 Aug 2022 11:29:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=UYQek+qMCToSnQsPHyu58B7DsB3xgc4kYQ4E/F+X1Yg=; b=iwhsstQSgNuQeT2obw6YbDQbow
-        /Z8XJYKHFp7BZ/adrMoekoeTPIi/AXS2k0dQGCt0n61y29e+3ryMkr9KXhd0COFBLGfK4iqxYleBd
-        7uL8HN+itar8OFux6DO0y8BwbMTYU1Gmr9nXP7pb27k4e0hWG/9sR55fYgZ7/I0ZEfu8EHlE7rS2t
-        KzbTj6DTfy+pcUKscMY/y32BhrnSWEhKnZCaZ+ah5QxLiZ8/pHwzeW98S3JQGpeNDQICKGF3e1M0M
-        +j+ACvY2O4mivtvCwA3Umu5l6oiPSuK3srW/LQ3UeUjeaPX8XiiOmt7RvXpnrWJ/VnbcNldrbUC04
-        7bTFnpvQ==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oT5zQ-001CSx-Gi; Tue, 30 Aug 2022 18:29:32 +0000
-Message-ID: <3d308d17-1c00-39ab-eb47-8fe1f62f9e7f@infradead.org>
-Date:   Tue, 30 Aug 2022 11:29:31 -0700
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:f016:d779:b6b0:fd9d])
+        by smtp.gmail.com with ESMTPSA id u202-20020a6279d3000000b0052e37b32618sm9596358pfc.132.2022.08.30.11.29.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 11:29:33 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Bjorn Andersson <andersson@kernel.org>
+Cc:     Sibi Sankar <quic_sibis@quicinc.com>,
+        Jimmy Chen <jinghung.chen3@hotmail.com>,
+        Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v9 2/3] arm64: dts: qcom: sc7280: Add herobrine-villager-r1
+Date:   Tue, 30 Aug 2022 11:29:22 -0700
+Message-Id: <20220830112818.v9.2.Iceba291b2b70eeca1fdf654a43f0484d34791024@changeid>
+X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
+In-Reply-To: <20220830182923.3720287-1-dianders@chromium.org>
+References: <20220830182923.3720287-1-dianders@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: linux-next: Tree for Aug 30 (net/ieee802154/nl802154.c:)
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20220830170121.74e5ed54@canb.auug.org.au>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220830170121.74e5ed54@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Jimmy Chen <jinghung.chen3@hotmail.com>
 
+This adds sc7280-herobrine-villager-r1.dts for villager device tree files.
+Herobrine-r1 is exactly the same as -r0 except that it uses a
+different audio solution (it uses the same one as the CRD).
 
-On 8/30/22 00:01, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Changes since 20220829:
-> 
+Signed-off-by: Jimmy Chen <jinghung.chen3@hotmail.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
-on i386 or x86_64:
+(no changes since v7)
 
-when # CONFIG_IEEE802154_NL802154_EXPERIMENTAL is not set
+Changes in v7:
+- Revise typo 'ARCG' to 'ARCH' in Makefile
 
-../net/ieee802154/nl802154.c:2503:26: error: ‘NL802154_CMD_DEL_SEC_LEVEL’ undeclared here (not in a function); did you mean ‘NL802154_CMD_SET_CCA_ED_LEVEL’?
- 2503 |         .resv_start_op = NL802154_CMD_DEL_SEC_LEVEL + 1,
-      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~
-      |                          NL802154_CMD_SET_CCA_ED_LEVEL
+Changes in v5:
+- Revise rev0+ to rev0
+- Add -r1 line to the Makefile
 
+Changes in v4:
+- ("...: Add herobrine-villager-r1") new for v4
 
+ arch/arm64/boot/dts/qcom/Makefile                  |  1 +
+ .../boot/dts/qcom/sc7280-herobrine-villager-r0.dts |  4 ++--
+ .../boot/dts/qcom/sc7280-herobrine-villager-r1.dts | 14 ++++++++++++++
+ 3 files changed, 17 insertions(+), 2 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+
+diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
+index fa8f8b66bb02..a62a56fd27cb 100644
+--- a/arch/arm64/boot/dts/qcom/Makefile
++++ b/arch/arm64/boot/dts/qcom/Makefile
+@@ -106,6 +106,7 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-r1-lte.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-crd.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-herobrine-r1.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r0.dtb
++dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-herobrine-villager-r1.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-idp2.dtb
+ dtb-$(CONFIG_ARCH_QCOM)	+= sc7280-crd-r3.dtb
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
+index 2cacafd8faa8..cbd8a2d1ef2a 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0.dts
+@@ -10,8 +10,8 @@
+ #include "sc7280-herobrine.dtsi"
+ 
+ / {
+-	model = "Google Villager (rev0+)";
+-	compatible = "google,villager", "qcom,sc7280";
++	model = "Google Villager (rev0)";
++	compatible = "google,villager-rev0", "qcom,sc7280";
+ };
+ 
+ /*
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+new file mode 100644
+index 000000000000..c03b3ae4de50
+--- /dev/null
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1.dts
+@@ -0,0 +1,14 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Google Villager board device tree source
++ *
++ * Copyright 2022 Google LLC.
++ */
++
++#include "sc7280-herobrine-villager-r0.dts"
++#include "sc7280-herobrine-audio-wcd9385.dtsi"
++
++/ {
++	model = "Google Villager (rev1+)";
++	compatible = "google,villager", "qcom,sc7280";
++};
 -- 
-~Randy
+2.37.2.672.g94769d06f0-goog
+
