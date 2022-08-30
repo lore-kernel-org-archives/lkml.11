@@ -2,72 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A49ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 14:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D32DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 14:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230221AbiH3OIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 10:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
+        id S230232AbiH3OIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 10:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiH3OI2 (ORCPT
+        with ESMTP id S229647AbiH3OIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 10:08:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79558F8244;
-        Tue, 30 Aug 2022 07:08:27 -0700 (PDT)
+        Tue, 30 Aug 2022 10:08:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A63F8265
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 07:08:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CE1861509;
-        Tue, 30 Aug 2022 14:08:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7504C433C1;
-        Tue, 30 Aug 2022 14:08:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661868506;
-        bh=ux4h3Llu3Xn8hcq4G08hx6TYSq1WAZloO+EsuQis5QA=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02954B81C15
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:08:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C147C433C1;
+        Tue, 30 Aug 2022 14:08:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661868526;
+        bh=m/u8XyF+U/qV44PkAv5tgc86ePYtwDWmP547g4BF5ZA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kSCQkPJGPWzIGcKEolE5zeH0J3N2NX+yq4V5Bfos9C3jmc9u4E+4vNZjs9Kz5ysCY
-         CsRFA37iNEE9D3UC3h6jDf4yz7UKom9t1fNa/DfNxHQuz16Wcn8+H/cKH24eNg2Bsa
-         g1SIRJeuG7368DsmalEt047R9xDQX2kzKHukhCMY=
-Date:   Tue, 30 Aug 2022 16:08:23 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Wesley Cheng <quic_wcheng@quicinc.com>
-Cc:     balbi@kernel.org, Thinh.Nguyen@synopsys.com,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        quic_jackp@quicinc.com
-Subject: Re: [PATCH v4 5/9] usb: dwc3: Avoid unmapping USB requests if
- endxfer is not complete
-Message-ID: <Yw4Z191jbRJc9EuR@kroah.com>
-References: <20220817182359.13550-1-quic_wcheng@quicinc.com>
- <20220817182359.13550-6-quic_wcheng@quicinc.com>
+        b=THhOWVfhqu7k9+uWQ3/WwmgdvA6rsqI7C9Ha5p76pC1c0YUwr84gcNNu7VCQaUaS6
+         eSb8tp0bzNc4rEqn54RSKGjUsXZkvn/sUF4T+DjFCGjoJosFmWbSY5/sWQCKvfmFyI
+         nS0a9QcMfocrWVCEMER6OEW+dHqqjkf0CKYNuQyG/EdEjFZhLfIFF9BOMUyVcO3n3i
+         /fq5qh2xrNPu0T5dUNvkXmjxsUgqX3V30Rks5rto1rk+yABEHAoUzIy8JprFlpGTVz
+         bsqM80r9rgxXCNZDsSLEoaYCNStmKNzY1aTOclPFX0ll0yWMXF2HZpSxnW5xElTB4j
+         NpbZE+K/gjgtg==
+Date:   Tue, 30 Aug 2022 21:59:30 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Conor.Dooley@microchip.com
+Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, ajones@ventanamicro.com
+Subject: Re: [PATCH v2] riscv: enable THP_SWAP for RV64
+Message-ID: <Yw4XwsVQBB1HRw04@xhacker>
+References: <20220827095815.698-1-jszhang@kernel.org>
+ <0256a458-440c-171c-2a6f-e88a50c16f82@microchip.com>
+ <YwzI7VmfFnOvYWgf@xhacker>
+ <4037b310-47c4-ca30-d4b6-a284e87da437@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220817182359.13550-6-quic_wcheng@quicinc.com>
+In-Reply-To: <4037b310-47c4-ca30-d4b6-a284e87da437@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 11:23:55AM -0700, Wesley Cheng wrote:
-> If DWC3_EP_DELAYED_STOP is set during stop active transfers, then do not
-> continue attempting to unmap request buffers during dwc3_remove_requests().
-> This can lead to SMMU faults, as the controller has not stopped the
-> processing of the TRB.  Defer this sequence to the EP0 out start, which
-> ensures that there are no pending SETUP transactions before issuing the
-> endxfer.
+On Mon, Aug 29, 2022 at 05:27:48PM +0000, Conor.Dooley@microchip.com wrote:
+> On 29/08/2022 15:10, Jisheng Zhang wrote:
+> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> > 
+> > On Sat, Aug 27, 2022 at 09:13:03PM +0000, Conor.Dooley@microchip.com wrote:
+> >> Hey Jisheng,
+> > 
+> > Hi Conor,
+> > 
+> >> On 27/08/2022 10:58, Jisheng Zhang wrote:
+> >>> I have a Sipeed Lichee RV dock board which only has 512MB DDR, so
+> >>> memory optimizations such as swap on zram are helpful. As is seen
+> >>> in commit d0637c505f8a ("arm64: enable THP_SWAP for arm64") and
+> >>> commit bd4c82c22c367e ("mm, THP, swap: delay splitting THP after
+> >>> swapped out"), THP_SWAP can improve the swap throughput significantly.
+> >>>
+> >>> Enable THP_SWAP for RV64, testing the micro-benchmark which is
+> >>> introduced by commit d0637c505f8a ("arm64: enable THP_SWAP for arm64")
+> >>> shows below numbers on the Lichee RV dock board:
+> >>>
+> >>> thp swp throughput w/o patch: 66908 bytes/ms (mean of 10 tests)
+> >>> thp swp throughput w/ patch: 322638 bytes/ms (mean of 10 tests)
+> >>
+> >> I know the original commit message contains this, but it's a little
+> >> odd. If the patch /enables/ THP then how would there be THP swap
+> >> prior to the patch?
+> > 
+> > hmm, it's swap I'll send a v3 to correct the description.
+> > 
+> >>
+> >>>
+> >>> Improved by 382%!
+> >>
+> >> I could not replicate the after numbers on my nezha, so I suspect
+> >> I am missing something in my config/setup. zswap is enabled and is
+> > 
+> > swap on zram rather than zswap ;)
 > 
-> Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
-> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
-> ---
->  drivers/usb/dwc3/core.h   | 3 +++
->  drivers/usb/dwc3/ep0.c    | 5 ++++-
->  drivers/usb/dwc3/gadget.c | 6 +++++-
->  3 files changed, 12 insertions(+), 2 deletions(-)
+> I think I tried about 30 different config variations, initially not
+> using zswap and later using it.
+> My zramctl looks like so (although I did try zstd too) after running
+> the demo application from that commit:
 > 
+> NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
+> /dev/zram0 lzo-rle       241M  22M  8.4M  9.1M       1 [SWAP]
+> 
+> I am using the default riscv defconfig + the following:
+> CONFIG_ZRAM=y
+> CONFIG_CRYPTO_DEFLATE=y
+> CONFIG_CRYPTO_LZO=y
+> CONFIG_CRYPTO_ZSTD=y
+> CONFIG_ZRAM_MEMORY_TRACKING=y
+> CONFIG_TRANSPARENT_HUGEPAGE=y
+> CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
+> CONFIG_THP_SWAP=y
+> 
+> Am I just missing something obvious here?
 
-This commit does not apply to my usb-testing branch.  I've taken the
-first 4, please rebase and resend the rest.
+similar config options here. what's your rootfs? Is your board busy
+with something? I used a minimal rootfs built from buildroot.
+can you plz show your numbers w/ and w/o the patch?
 
-thanks,
-
-greg k-h
+I also tried the simple benchmark on qemu(just for reference, since
+I have no other riscv boards except the lichee RV dock board):
+swp out w/o patch: 30066 bytes/ms (mean of 10 tests)
+swp out w/ patch: 130055 bytes/ms (mean of 10 tests)
+so improved by 332.7% 
