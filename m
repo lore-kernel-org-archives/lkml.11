@@ -2,69 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E34ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED418ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:08:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbiH3QIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:08:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53716 "EHLO
+        id S230510AbiH3QIS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:08:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230511AbiH3QIP (ORCPT
+        with ESMTP id S230513AbiH3QIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:08:15 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B9BFF7B07;
-        Tue, 30 Aug 2022 09:08:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661875694; x=1693411694;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Z0/Ubngx7Rd7BOFwF6Nv7y8NUPvSEx2rhy2J3cUSUqk=;
-  b=icGeuF+GCrIT6iD5/50/L9kqm/z1O+EApORnk9e5VBue5dJ+a/eM8OZg
-   YebevJNym6yXKQwjRzT9fWTCAr+RV1bf4LQi4oJFuY2VA84E0iVzdgOHq
-   QZgBqasWV6uY5ucAyTLfAnZ3yoWI+fqst+wzSm7mb/TxAF4xFvGKrmyX4
-   6Tzzszh1glmEGC1J0HM93b8n6FXTEynbD/BbDpzWjFONUvLYjPQLPkNss
-   c/10YQ8w8GHck7j1iSBzcN0jRGqRXJscykc1f7GkzZYU4o4Un+iKsiFjJ
-   tdJd3L4IM2UmMxBydc1JlUPBU6I2PEzdzxzRpHapI6U4eaxqJFBbPf8Tt
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="295218911"
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="295218911"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 09:05:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="680087910"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 30 Aug 2022 09:05:48 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-        id 13D11AD; Tue, 30 Aug 2022 19:06:02 +0300 (EEST)
-Date:   Tue, 30 Aug 2022 19:06:02 +0300
-From:   Mika Westerberg <mika.westerberg@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 2/2] ACPI: PMIC: Replace open coded be16_to_cpu()
-Message-ID: <Yw41ai0mYHIgtgs4@black.fi.intel.com>
-References: <20220830135532.28992-1-andriy.shevchenko@linux.intel.com>
- <20220830135532.28992-2-andriy.shevchenko@linux.intel.com>
+        Tue, 30 Aug 2022 12:08:12 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E893F7B1B
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:08:09 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id br21so10420023lfb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:08:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=PbzCLE7f0NU8ABR6EXH3xv26zLpKLKNRVyw1XV/T+Tc=;
+        b=Hf4uAEjakvrb7p03+qv6sa+T9fOUhx/0wTWJsLz+h78/fkQSdkhredb31ae5nkkpuG
+         G69KcPxN0MTOteLwWBixR4Eae+Azuzu4p0YGwjjgIjRVsfONxqg/empykAW40yPDpKvu
+         00bIDJc5Ps0MMndl7Nlnluj0YGATAKIN34MwiZAtsEpk1wyWGOPS9kWcOTdp+F0LlO+q
+         Nk5E/oHzrbqNCtVpW1ptt/Ik7OySOZn/688OzEUD8ckvrdZ7S1lqfVX+/Acgy7u1FnHp
+         JnBG7YRSK6Sj3l/nw2yHgtT0j2d5ChQfqeDItVd+6EYO6l62QxZkjZFmMFvprQANM/4w
+         5fCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=PbzCLE7f0NU8ABR6EXH3xv26zLpKLKNRVyw1XV/T+Tc=;
+        b=l0boyuL7iW+rPfpx8XTDNru9fcd5ZPi7Q1zwNL91a/BO9/yQMZldocT8WvFPswWcu/
+         0VSJS3aCg9PU31VnJJLJB6C7L0BqeQoT6p9ITikBOuHD37ZhnSKFbD9orW38zunuwEnE
+         aMG29GJ/60cZQML6ACiNtu5Tu+b5J6C62pIBgO+jy9c76yoSE/tLo7rJh7mwHk8+zI3W
+         mCkPLyBrQ2iHyuJ09L33yXUUKoecEPIbddihKLB5ZMxCgbQUh32bkcJVwcI/MLw8mvKA
+         uzEPNaqPfppfJZ0ru3+sVZBH7bueaBrThPdGqrDmuHCwWvxpKWnj8J2f0gRtUAtXt+C9
+         rjLA==
+X-Gm-Message-State: ACgBeo0abk23ELjZ7WBWokxujT+v+m467NukLW602ianycbnhv1fHlfl
+        +dme/OO8kG/HpExEF52IEWpE6rkPxEJtfG9fGaw=
+X-Google-Smtp-Source: AA6agR6V9tefD+e/XUudSef+jLlRW7RJZ3CjF9QC8V//zBs29Z99oU/n5dCS8ElYsO4/kzyHqOqJm7PDr+SJLghMDz4=
+X-Received: by 2002:a05:6512:104f:b0:494:736a:8332 with SMTP id
+ c15-20020a056512104f00b00494736a8332mr2090480lfb.683.1661875687922; Tue, 30
+ Aug 2022 09:08:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220830135532.28992-2-andriy.shevchenko@linux.intel.com>
+References: <20220830014356.5364-1-avagin@gmail.com> <20220830014356.5364-2-avagin@gmail.com>
+ <20220830095750.ljtdk7hekmmzhf2b@wittgenstein>
+In-Reply-To: <20220830095750.ljtdk7hekmmzhf2b@wittgenstein>
+From:   Andrei Vagin <avagin@gmail.com>
+Date:   Tue, 30 Aug 2022 09:07:56 -0700
+Message-ID: <CANaxB-x=77SDqvoj4vpg8uKvntK+ttHWQyq1gdOhp1LZfAvfsg@mail.gmail.com>
+Subject: Re: [PATCH 1/4] seccomp: don't use semaphore and wait_queue together
+To:     Christian Brauner <brauner@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Andy Lutomirski <luto@amacapital.net>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Kees Cook <keescook@chromium.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Oskolkov <posk@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Tycho Andersen <tycho@tycho.pizza>,
+        Will Drewry <wad@chromium.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Aug 30, 2022 at 2:57 AM Christian Brauner <brauner@kernel.org> wrote:
 
-On Tue, Aug 30, 2022 at 04:55:32PM +0300, Andy Shevchenko wrote:
-> +
-> +#include <asm/byteorder.h>
+> >
+> > +static bool notify_wakeup(struct seccomp_filter *filter)
+> > +{
+> > +     bool ret;
+> > +
+> > +     rcu_read_lock();
+> > +     ret = atomic_add_unless(&filter->notif->requests, -1, 0);
+>
+> Can you please spell out why the change to wait_event_interruptible()
+> below that calls notify_wakeup() makes it necessary to rcu protect
+> ->notif?
 
-Isn't there <linux/byteorder/*> as well? Is there something that
-prevents using it?
+This is my mistake. rcu is used here when I tried to implement notify_wakeup
+without introducing notif->request. The idea was to enumerate all elements of
+notif->notifications. Now, it doesn't matter. In this context, filter->notif
+can be dereferenced without any additional locks. Thanks for catching this.
 
-Otherwise looks good to me.
+>
+> Given that you're using rcu_read_lock() here and the
+> WRITE_ONCE(fitler->notify, NULL) + kfree_rcu() sequence in
+> seccomp_notify_free() it seems to imply that filter->notif could be NULL
+> here and so would need a non-NULL check on ->notif before incrementing?
+>
+> > +     rcu_read_unlock();
+> > +
+> > +     return ret;
+> > +}
+>
+>  static long seccomp_notify_recv(struct seccomp_filter *filter,
+>                               void __user *buf)
+> @@ -1467,7 +1479,7 @@ static long seccomp_notify_recv(struct seccomp_filter *filter,
+>
+>       memset(&unotif, 0, sizeof(unotif));
+>
+> -     ret = down_interruptible(&filter->notif->request);
+> +     ret = wait_event_interruptible(filter->wqh, notify_wakeup(filter));
+>       if (ret < 0)
+>               return ret;
+>
+
+Thanks,
+Andrei
