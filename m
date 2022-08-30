@@ -2,90 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20E42ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:12:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DE5ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiH3DMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 23:12:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43408 "EHLO
+        id S229882AbiH3DNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 23:13:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229802AbiH3DM3 (ORCPT
+        with ESMTP id S229908AbiH3DMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 23:12:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A9708F97D;
-        Mon, 29 Aug 2022 20:12:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9748C614CE;
-        Tue, 30 Aug 2022 03:12:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7832C433C1;
-        Tue, 30 Aug 2022 03:12:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661829147;
-        bh=nzCc4zxnmZ1AVayNfTK5umfHZuNG574BWi7DauR6Bmw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PU+G5iPJ+EIOyDM1BakmlsKxZm+S9tXxGHZOa8s66X1TKldF57d+UFx5GTyL6Y6E2
-         RTmcWqWH/NtLtqtVwMNYQbjEFdK8NGsTwq6Ihdflpxwk/rU0aUjxQL8FEKKkZnwbxt
-         bnVTx+1MTYhllJtf4U8QK9To36THtEXfffQfIz6aVUCLoWBzb7cWN6SyrMYWrjwwya
-         QANMwP9bHWXLsbpHcOzT04mF/z1o3aTXmkXb3oJpL6KtrLNg4tWi/TFhmzHTRRXr98
-         1IQ3flCMM0CQY6Y0hSDqgE32s5GPpnYuZV7aS2q6OAL2qTfaItvPBVJP3RdLtI6S8A
-         sScSwyaObN7+Q==
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     linux-sgx@vger.kernel.org
-Cc:     Haitao Huang <haitao.huang@linux.intel.com>,
-        Vijay Dhanraj <vijay.dhanraj@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 3/6] selftests/sgx: Ignore OpenSSL 3.0 deprecated functions warning
-Date:   Tue, 30 Aug 2022 06:12:03 +0300
-Message-Id: <20220830031206.13449-4-jarkko@kernel.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220830031206.13449-1-jarkko@kernel.org>
-References: <20220830031206.13449-1-jarkko@kernel.org>
+        Mon, 29 Aug 2022 23:12:41 -0400
+Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBEA9C2FE
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:12:33 -0700 (PDT)
+Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-334dc616f86so242180907b3.8
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:12:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=0Yo1WivuivvhRmPeZKwYl+1/Tm5Jx2AH00zX2jB5mOc=;
+        b=TynbUNWtUYNJa5m9EplRfTPwmEY6uCrrvhvjSX0uX/EBzaal5Mnc77gp8fYK5Abw4s
+         ATRMSzNXckcG0a9ZyvZm5/6CKzrQSJIQ+AC+UN6aCBXoazMeFQqfVc8+u9NJpH/LWKaQ
+         DKT6zrOfp4cqbyktN+/4o/QWs4uSW2rZPPpE45I1b0UtOtnPOP53DtnJWXHPVQNOw5Kw
+         +AppjWNtVCbDfyk5l0jF48f6hPODwHI/afKAwUq6D7bTnCdUf5peAnIWcmEVsvjxL+o6
+         Ek1R3yl+3BFFIV5mEpbpdh7PVkQhIcA74t8Jz41NxxgubcZjKfTIbojnOo47YkjzQXmK
+         O+AQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=0Yo1WivuivvhRmPeZKwYl+1/Tm5Jx2AH00zX2jB5mOc=;
+        b=u4DnQbqkQpwpk54XtdHdt/QxejhWNY6ttUq/UydmyiW9/PQwa1oj+CATNq3aP8uIuZ
+         3YDN2v2yh96+NFpVxu6Quf2QtAvjxbseLmEgvNNiF3koKXF2IlSbhm3nvvgBKd4ZaQPI
+         +t0KUFqSfXjsHruZ9lncOBwZCieSyWtQYVCWiat/yjiE8frlBW0d4klOYapK/AKlvkGQ
+         qLFPb/XxVZQSdT1jkPUcOLT9qZeeufpiKHZDHWEHNUSj+NAOka2FGHxNyCKKPvlhlJc+
+         neusoax1YXispNAj7yZnWG8j/Si7ABiQVpAa9MzVS4Auqlp54HWTxkGqrjDz8dXGMGuZ
+         Drcw==
+X-Gm-Message-State: ACgBeo1rV0zL53eMngBeIE8ZMR9ecwbz5GL8XqD7oFmOu6K4zZqdqzKy
+        LUwAnKvdvcSUiaNba1sSIR2bAciaQI8Waqv2oAL0Mw==
+X-Google-Smtp-Source: AA6agR5B++glpRuf4xCgZTvJW+5BPMjOrGjXDcd+1m+GQn+5AJNWmVwJf3dqNw1INuB10QqVbkBRP5/QfAw467HPSBM=
+X-Received: by 2002:a25:253:0:b0:696:4000:8844 with SMTP id
+ 80-20020a250253000000b0069640008844mr10778698ybc.619.1661829152701; Mon, 29
+ Aug 2022 20:12:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220819140250.3892995-1-ajones@ventanamicro.com>
+ <20220819140250.3892995-4-ajones@ventanamicro.com> <CAAhSdy0d8mjr5-5Um2DpLgnhPb3UnGggXvbu_=oqEHWYzMP1SQ@mail.gmail.com>
+ <20220829094739.pn7iltmtimpwpshf@kamzik>
+In-Reply-To: <20220829094739.pn7iltmtimpwpshf@kamzik>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Tue, 30 Aug 2022 08:42:20 +0530
+Message-ID: <CAAhSdy2OwNNq4PzFfHgVFYVGW3UQt3=geZGOGPojcA55c20rcA@mail.gmail.com>
+Subject: Re: [PATCH 3/4] riscv: KVM: Apply insn-def to hfence encodings
+To:     Andrew Jones <ajones@ventanamicro.com>
+Cc:     linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu,
+        mchitale@ventanamicro.com, heiko@sntech.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kristen Carlson Accardi <kristen@linux.intel.com>
+On Mon, Aug 29, 2022 at 3:17 PM Andrew Jones <ajones@ventanamicro.com> wrote:
+>
+> On Mon, Aug 29, 2022 at 02:07:59PM +0530, Anup Patel wrote:
+> > On Fri, Aug 19, 2022 at 7:32 PM Andrew Jones <ajones@ventanamicro.com> wrote:
+> > >
+> > > Introduce hfence instruction encodings and apply them to KVM's use.
+> > > With the self-documenting nature of the instruction encoding macros,
+> > > and a spec always within arm's reach, it's safe to remove the
+> > > comments, so we do that too.
+> > >
+> > > Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+> > > ---
+> > >  arch/riscv/include/asm/insn-def.h |   8 ++
+> > >  arch/riscv/kvm/tlb.c              | 117 ++++--------------------------
+> > >  2 files changed, 21 insertions(+), 104 deletions(-)
+> > >
+> > > diff --git a/arch/riscv/include/asm/insn-def.h b/arch/riscv/include/asm/insn-def.h
+> > > index 4cd0208068dd..cd1c0d365f47 100644
+> > > --- a/arch/riscv/include/asm/insn-def.h
+> > > +++ b/arch/riscv/include/asm/insn-def.h
+> > > @@ -79,4 +79,12 @@
+> > >  #define RS1(v)         __REG(v)
+> > >  #define RS2(v)         __REG(v)
+> > >
+> > > +#define OPCODE_SYSTEM  OPCODE(115)
+> > > +
+> > > +#define HFENCE_VVMA(vaddr, asid)       \
+> > > +       INSN_R(OPCODE_SYSTEM, FUNC3(0), FUNC7(17), RD(0), vaddr, asid)
+> > > +
+> > > +#define HFENCE_GVMA(gaddr, vmid)       \
+> > > +       INSN_R(OPCODE_SYSTEM, FUNC3(0), FUNC7(49), RD(0), gaddr, vmid)
+> > > +
+> > >  #endif /* __ASM_INSN_DEF_H */
+> > > diff --git a/arch/riscv/kvm/tlb.c b/arch/riscv/kvm/tlb.c
+> > > index 1a76d0b1907d..f742a0d888e1 100644
+> > > --- a/arch/riscv/kvm/tlb.c
+> > > +++ b/arch/riscv/kvm/tlb.c
+> > > @@ -12,22 +12,7 @@
+> > >  #include <linux/kvm_host.h>
+> > >  #include <asm/cacheflush.h>
+> > >  #include <asm/csr.h>
+> > > -
+> > > -/*
+> > > - * Instruction encoding of hfence.gvma is:
+> > > - * HFENCE.GVMA rs1, rs2
+> > > - * HFENCE.GVMA zero, rs2
+> > > - * HFENCE.GVMA rs1
+> > > - * HFENCE.GVMA
+> > > - *
+> > > - * rs1!=zero and rs2!=zero ==> HFENCE.GVMA rs1, rs2
+> > > - * rs1==zero and rs2!=zero ==> HFENCE.GVMA zero, rs2
+> > > - * rs1!=zero and rs2==zero ==> HFENCE.GVMA rs1
+> > > - * rs1==zero and rs2==zero ==> HFENCE.GVMA
+> > > - *
+> > > - * Instruction encoding of HFENCE.GVMA is:
+> > > - * 0110001 rs2(5) rs1(5) 000 00000 1110011
+> > > - */
+> > > +#include <asm/insn-def.h>
+> > >
+> > >  void kvm_riscv_local_hfence_gvma_vmid_gpa(unsigned long vmid,
+> > >                                           gpa_t gpa, gpa_t gpsz,
+> > > @@ -41,31 +26,14 @@ void kvm_riscv_local_hfence_gvma_vmid_gpa(unsigned long vmid,
+> > >         }
+> > >
+> > >         for (pos = gpa; pos < (gpa + gpsz); pos += BIT(order)) {
+> > > -               /*
+> > > -                * rs1 = a0 (GPA >> 2)
+> > > -                * rs2 = a1 (VMID)
+> > > -                * HFENCE.GVMA a0, a1
+> > > -                * 0110001 01011 01010 000 00000 1110011
+> > > -                */
+> > > -               asm volatile ("srli a0, %0, 2\n"
+> > > -                             "add a1, %1, zero\n"
+> > > -                             ".word 0x62b50073\n"
+> > > -                             :: "r" (pos), "r" (vmid)
+> > > -                             : "a0", "a1", "memory");
+> > > +               asm volatile (HFENCE_GVMA("%0", "%1")
+>
+> Thank you for the review, Anup! I'd also like to get opinions on whether
+> the caller should quote the register tokens or the call should be made as,
+> e.g. HFENCE_GVMA(%0, %1), and then do the quoting inside the macro for
+> C callers. I could go either way, but I'm starting to lean towards moving
+> the quoting into the macros.
 
-OpenSSL 3.0 deprecates some of the functions used in the SGX
-selftests, causing build errors on new distros. For now ignore
-the warnings until support for the functions is no longer
-available and mark FIXME so that it can be clear this should
-be removed at some point.
+I am fine with the current approach but doing quoting inside macors will
+certainly be more user friendly.
 
-Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
----
- tools/testing/selftests/sgx/sigstruct.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/tools/testing/selftests/sgx/sigstruct.c b/tools/testing/selftests/sgx/sigstruct.c
-index 50c5ab1aa6fa..a07896a46364 100644
---- a/tools/testing/selftests/sgx/sigstruct.c
-+++ b/tools/testing/selftests/sgx/sigstruct.c
-@@ -17,6 +17,12 @@
- #include "defines.h"
- #include "main.h"
- 
-+/*
-+ * FIXME: OpenSSL 3.0 has deprecated some functions. For now just ignore
-+ * the warnings.
-+ */
-+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-+
- struct q1q2_ctx {
- 	BN_CTX *bn_ctx;
- 	BIGNUM *m;
--- 
-2.37.2
-
+Regards,
+Anup
