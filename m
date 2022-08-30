@@ -2,105 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 924B7ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C4CECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiH3QjT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42588 "EHLO
+        id S229822AbiH3QkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiH3QjN (ORCPT
+        with ESMTP id S229507AbiH3QkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:39:13 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F98C6518
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:39:12 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id 145so11519315pfw.4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:39:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=M2Mp9f5DVJxTpoZI1oYE8MHOlo/U4X+ZxTmE6/qXS28=;
-        b=C2c7iQJMDRXzRJu2vklzu1zX6R7d9/ScH6eqBq4M7g1lEVX/Lfl6QDWOT0+HZ84nnU
-         w10Ds9iNb7xLiUsSlXwCb9TnpjDxATe85QlJ7WGgALbZ/OpifmoTfBsDDmB5KN4nb+BG
-         0e/kwN720QLQdIb8D7EgT3lM8z60UyJB63eLwdqYGoKxhyaI1NRx8A3uLXBejOmnYwyy
-         xUAUxGJp/xQ6lvMca5zI+fgQ0Sx/bg9lx4QRaG7SdyGNVvh2ZLeoLixQf/J2s32dKuL2
-         RmlhNLKZEcAbeMdC2p/7e2yUJkurgV7nauVkJqUtpjS5oPR4OkwU+6Ij1Xv7XOwOI3lJ
-         PGuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=M2Mp9f5DVJxTpoZI1oYE8MHOlo/U4X+ZxTmE6/qXS28=;
-        b=AE9mz2rnY+B0GdlfvHgZUAyT96n6KQUF+AC0C3OsHAkxX3qdSiy6jc0GyRQwz5rB9U
-         Q9QgbgAy8rRjEeim6PlXsFm2QRxX4E1DWeVmCuYYK25WXm43wf8lIh9DoqLDY1lloBMt
-         5S+TZdIXPQR+Xt1PoVLYUU+gB6UATm00bmmeL19edcTd10neuv58HnWAtqGiqnwOwLyo
-         AzquTug6HIz+eiltg9twKDdAMMvGIUqlS0fgjvKiL45d7u8TJUy4rPy5Qt6K9mULg3Jg
-         piujQ4H2QTFFeh6i4YFhbDC64RdcMGVgcuDOw+I2aO7zLFR91L3SvlphTZve7SUZbAWL
-         Ez1g==
-X-Gm-Message-State: ACgBeo29hp4sw91gSWCoo9IwUOHs+gJjgAQOfvDZfzV32XPW7i+jphd9
-        DOePuLr6FV3txeFTZsPZj+V51TtFL0eFAw==
-X-Google-Smtp-Source: AA6agR53IfXEN9fumeIPX3d8S1mf4AjvuydUxVyJ28R0nBXWbQXmOoHd0FrjDOEHUv5YYNTVrw7F8Q==
-X-Received: by 2002:a63:fa53:0:b0:42c:18d3:6a6 with SMTP id g19-20020a63fa53000000b0042c18d306a6mr8736105pgk.79.1661877551522;
-        Tue, 30 Aug 2022 09:39:11 -0700 (PDT)
-Received: from C02GD5ZHMD6R.bytedance.net ([139.177.225.250])
-        by smtp.gmail.com with ESMTPSA id h6-20020a170902680600b001749381ed8csm6303855plk.254.2022.08.30.09.39.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 09:39:09 -0700 (PDT)
-From:   Jinke Han <hanjinke.666@bytedance.com>
-X-Google-Original-From: Jinke Han <hnajinke.666@bytedance>
-To:     tytso@mit.edu, adilger.kernel@dilger.ca
-Cc:     linux-kernel@vger.kernel.org, linux-ext4@vger.kernel.org,
-        yi.zhang@huawei.com, Jinke Han <hanjinke.666@bytedance.com>
-Subject: [PATCH] ext4: place buffer head allocation before handle start
-Date:   Wed, 31 Aug 2022 00:38:55 +0800
-Message-Id: <20220830163855.87496-1-hanjinke.666@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+        Tue, 30 Aug 2022 12:40:12 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4BB1BEA6;
+        Tue, 30 Aug 2022 09:40:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661877611; x=1693413611;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+hMJfedZvdsmbwPRh9VykDs64eRMZZWjvzG9b69fVzo=;
+  b=bJsI0gf+Z4U6NQsLRyqfiJQWcA6f4c9U9ziBZnHHBCttbGR8t0nDQFMu
+   6guSWOhwpxKyJbwVLbpuFSQbQBAz6cs0TYpUvmzhgnZVs6h0V4n1XZZse
+   HZg8alqwDCKt4FJKszbe4O1ZzrWCdbb5MFOsfcOAd79Pma8B2lA02X5PQ
+   dnKhqVPP0CIDaAeH27vZEP2UERWlyEmaY1a6oIVWkj3wuNq8keXOvFuM7
+   AQDDstsYTz6YNZlb/ZL17K1Z9y+BTqXZwJZ6RfiCKXasjfscVZXXXYeCH
+   3xvPj3WRDTrXw8zbl8eWoBze9G/+Ua2ZcIOXEJkfTTwGetC9hDdiBpIUt
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="381533157"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="381533157"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 09:35:24 -0700
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="701056242"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 09:35:22 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1oT4Cu-00622y-0H;
+        Tue, 30 Aug 2022 19:35:20 +0300
+Date:   Tue, 30 Aug 2022 19:35:19 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        Brian Cain <bcain@quicinc.com>, linux-hexagon@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 2/2 v5] regmap: mmio: Support accelerared noinc operations
+Message-ID: <Yw48R+EBmmZYl9x+@smile.fi.intel.com>
+References: <20220816204832.265837-1-linus.walleij@linaro.org>
+ <20220816204832.265837-2-linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816204832.265837-2-linus.walleij@linaro.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinke Han <hanjinke.666@bytedance.com>
+On Tue, Aug 16, 2022 at 10:48:32PM +0200, Linus Walleij wrote:
+> Use the newly added callback for accelerated noinc MMIO
+> to provide writesb, writesw, writesl, writesq, readsb, readsw,
+> readsl and readsq.
+> 
+> A special quirk is needed to deal with big endian regmaps: there
+> are no accelerated operations defined for big endian, so fall
+> back to calling the big endian operations itereatively for this
+> case.
+> 
+> The Hexagon architecture turns out to have an incomplete
+> <asm/io.h>: writesb() is not implemented. Fix this by doing
+> what other architectures do: include <asm-generic/io.h> into
+> the <asm/io.h> file.
 
-On our online environment, we encounter some jbd hung waiting handles to
-stop while several writters were doing memory reclaim for buffer head
-allocation in delay alloc write path. Ext4 do buffer head allocation with
-holding transaction handle which may be blocked too long if the reclaim
-works not so smooth. This is more likely to happen considering docker
-environment.
+Wonderful!
 
-Just like page cache allocation, we should also place the buffer head
-allocation before startting the handle.
+So, I have seen a recent blow up by kernel bot due to Alpha issues on these
+accessors.
 
-After commit:cc883236b792, no nore need to do for delay alloc path, just
-do it for no delay alloc code.
+Also see below for the further followups.
 
-Signed-off-by: Jinke Han <hanjinke.666@bytedance.com>
----
- fs/ext4/inode.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+...
 
-diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
-index 601214453c3a..0d6c4ec7c840 100644
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -1188,6 +1188,13 @@ static int ext4_write_begin(struct file *file, struct address_space *mapping,
- 	page = grab_cache_page_write_begin(mapping, index);
- 	if (!page)
- 		return -ENOMEM;
-+	/*
-+	 * The same as page allocation, we prealloc buffer heads before
-+	 * starting the handle.
-+	 */
-+	if (!page_has_buffers(page))
-+		create_empty_buffers(page, inode->i_sb->s_blocksize, 0);
-+
- 	unlock_page(page);
- 
- retry_journal:
+> +	if (!IS_ERR(ctx->clk)) {
+> +		ret = clk_enable(ctx->clk);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+
+It's a new place of the duplicating check, can we have a helper for that?
+
+...
+
+> +	/*
+> +	 * There are no native, assembly-optimized write single register
+> +	 * operations for big endian, so fall back to emulation if this
+> +	 * is needed. (Single bytes are fine, they are not affected by
+> +	 * endianness.)
+> +	 */
+
+Wouldn't be faster to memdup() / swap / use corresponding IO accessor?
+
+...
+
+> +	/*
+> +	 * There are no native, assembly-optimized write single register
+> +	 * operations for big endian, so fall back to emulation if this
+> +	 * is needed. (Single bytes are fine, they are not affected by
+> +	 * endianness.)
+> +	 */
+> +	if (ctx->big_endian && (ctx->val_bytes > 1)) {
+> +		switch (ctx->val_bytes) {
+> +		case 2:
+> +		{
+> +			u16 *valp = (u16 *)val;
+> +			for (i = 0; i < val_count; i++)
+> +				valp[i] = swab16(valp[i]);
+> +			break;
+> +		}
+> +		case 4:
+> +		{
+> +			u32 *valp = (u32 *)val;
+> +			for (i = 0; i < val_count; i++)
+> +				valp[i] = swab32(valp[i]);
+> +			break;
+> +		}
+> +#ifdef CONFIG_64BIT
+> +		case 8:
+> +		{
+> +			u64 *valp = (u64 *)val;
+> +			for (i = 0; i < val_count; i++)
+> +				valp[i] = swab64(valp[i]);
+> +			break;
+> +		}
+> +#endif
+> +		default:
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +	}
+
+So, two questions here:
+
+1) can we use helpers from include/linux/byteorder/generic.h, such as
+   cpu_to_be32_array()/be32_to_cpu_array()?
+
+2) have you considered using memcpy_toio() / memcpy_fromio() and why
+   it's not okay to use them?
+
+...
+
+> +
+> +
+
+Single blank line is enough.
+
+> +out_clk:
+> +	if (!IS_ERR(ctx->clk))
+> +		clk_disable(ctx->clk);
+> +
+> +	return ret;
+> +
+> +	return 0;
+
+Seems like misrebase? I believe this has to be fixed.
+
 -- 
-2.20.1
+With Best Regards,
+Andy Shevchenko
+
 
