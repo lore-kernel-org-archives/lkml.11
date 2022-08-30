@@ -2,173 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8C26ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 04:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10707ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 04:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231844AbiHaEX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 00:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
+        id S231625AbiHaEXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 00:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232217AbiHaEXI (ORCPT
+        with ESMTP id S230350AbiHaEX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 00:23:08 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B9201CB0A
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 21:22:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661919774; x=1693455774;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=i65h1tDliA3+xye0o+BN5JUJBFbxoZVbV0uN2OpbmBY=;
-  b=fndPLLvMj9P1DgBQMrMZxdqs7xY+THJrDt2NjJZ2PtA8w4mdFTM+fJZe
-   L75x2DQPdWIug5XbvlGEmu2YxHch23iKVZ7vxIJUR+UuQ+BfBt8alIuMp
-   LphuJl7U6ixockrXkniEynWMGQF+gG+uV+dzNMSYtCML75fgXGeMefj9z
-   dGmUorqZy1tP4zrR9igPpE7smYAEKZgwAob5RbluJXfri5XZHxKt3KBD9
-   Ai4OlUt/yDXyGL/W/U8dPHNNiJuTjcIeyruKd7+urHSwpjvuyelubCS0p
-   CELDYm5v0jD9Z3vLDMfhN7p2PcTz9Iw5Z0Sbv9DPa2ovSXkzLxpW9SqQv
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="275771994"
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="275771994"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 21:22:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="940300772"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga005.fm.intel.com with ESMTP; 30 Aug 2022 21:22:53 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 30 Aug 2022 21:22:53 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 30 Aug 2022 21:22:52 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Tue, 30 Aug 2022 21:22:52 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.173)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Tue, 30 Aug 2022 21:22:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Sxv2rqNkYZ0eLcZgPe37sgmpPo8IhthNX9UonfnWa3p07G+fNf1hZJYzuHmBNtSeF63peD6xBugiRDHguSS2xEODp+ylOnrlQwzOb5v4uwaG7k9du4WAQ0s4cbmvSTRz5FW4WvhMM4tF5knBlPxY1Q/2r5TAwlg0wET7GQpZLQLrlxeYevY8JXRLUIMvay7whx1Isc7j4vt+0m5UTcR8JqQeUTRV0Ow3QPhXLUaaAxsnRdKOd1Va4unWc6Af0nN5X7ELUqaU4OHhNPHu4GHuZ5bF9UUf8XtRFJu3NCwd9TZfRzYr4GLDi+Ks70HJccC373AF4PtHXBNdpTXCkDMUKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QRPfTIltKjLcAYiPAVvb5Der9zgNhM92iPzz31SfVZs=;
- b=R34NdD/cdgLe8KN4hiltSA7cvSm1hXetKadX0hgj1Rl17qeTN3f+NO6whf0eHEDqhJjs+u2X+FH6+xHJXCLwsM54uVeF8mt/oV7NBmDasnmEDAbHUY2SPABH3Ijet44eKS3rixmw/QJnp6JdYwnRJKsrcVsSOGNH4T/FvsXfuRRiRy1ebeVdG/Qjaf8aVd72MJG9HcRgiFvLe5VP2fWqhSCjuPYtJPYeixQ1tzkWjjwmUL0dI0t+VDCTidSWgeE5IAWA3j1NbejacFRaxCyT0HZLpEYl88szvy/qESM1cNCCJ9T5JrIh4S/25DScb7Bwfn3c0UTvvPMJaP+zxjF+rA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
- (2603:10b6:301:53::18) by SJ1PR11MB6204.namprd11.prod.outlook.com
- (2603:10b6:a03:459::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Wed, 31 Aug
- 2022 04:22:51 +0000
-Received: from MWHPR1101MB2221.namprd11.prod.outlook.com
- ([fe80::e9a3:201:f95c:891e]) by MWHPR1101MB2221.namprd11.prod.outlook.com
- ([fe80::e9a3:201:f95c:891e%7]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
- 04:22:50 +0000
-Date:   Wed, 31 Aug 2022 12:22:45 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Robin Murphy <robin.murphy@arm.com>
-CC:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-        <hch@infradead.org>, <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] swiotlb: fix a typo
-Message-ID: <Yw7iFQGpStC6YodP@gao-cwp>
-References: <20220826095046.880626-1-chao.gao@intel.com>
- <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com>
-X-ClientProxiedBy: SG2PR01CA0126.apcprd01.prod.exchangelabs.com
- (2603:1096:4:40::30) To MWHPR1101MB2221.namprd11.prod.outlook.com
- (2603:10b6:301:53::18)
+        Wed, 31 Aug 2022 00:23:27 -0400
+X-Greylist: delayed 9861 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 30 Aug 2022 21:23:26 PDT
+Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [67.231.154.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE142E4E;
+        Tue, 30 Aug 2022 21:23:26 -0700 (PDT)
+Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 70EC524B059;
+        Tue, 30 Aug 2022 22:16:28 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.24])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CD4B1A0068;
+        Tue, 30 Aug 2022 22:16:26 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 68CB63C007B;
+        Tue, 30 Aug 2022 22:16:25 +0000 (UTC)
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 8DFE413C2B0;
+        Tue, 30 Aug 2022 15:16:24 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 8DFE413C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1661897784;
+        bh=lSb6iPlm/e00kQHUQGYl6VDRSpB7b+OgWRMKI9nT3uU=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=CP3ZuQEG4SgFmdfJdIVeZc0bTNf4qlGF8he8eFS1a4zwosC7aG/QtHDE64dPnl7Kx
+         1p4iZp4zW85Wt1Ln6PXqCh7R5DSv+Ov5Zkp2zDGjC/9WFa5uwhRs1umjDp2r9cdZ33
+         ZwRzmX6mUxYi3CGyPC75afd2uHxfYR/7DgzMG08s=
+Subject: Re: [PATCH 5.4 182/389] PCI/portdrv: Dont disable AER reporting in
+ get_port_device_capability()
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, bjorn@helgaas.com,
+        LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
+        Stefan Roese <sr@denx.de>, Bjorn Helgaas <bhelgaas@google.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Yao Hongbo <yaohongbo@linux.alibaba.com>,
+        Naveen Naidu <naveennaidu479@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+References: <20220823080115.331990024@linuxfoundation.org>
+ <20220823080123.228828362@linuxfoundation.org>
+ <CABhMZUVycsyy76j2Z=K+C6S1fwtzKE1Lx2povXKfB80o9g0MtQ@mail.gmail.com>
+ <YwXH/l37HaYQD66B@kroah.com>
+ <47b775c5-57fa-5edf-b59e-8a9041ffbee7@candelatech.com>
+ <20220830205832.g3lyysmgkarijkvj@pali>
+ <00735f18-11f9-c6c6-4abf-002d378957df@candelatech.com>
+ <20220830215532.6nnl6d4cfg55dmcl@pali>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <370dee6c-919a-2f98-1404-a3feda14d1ba@candelatech.com>
+Date:   Tue, 30 Aug 2022 15:16:24 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fbe31e7c-6445-4d12-51af-08da8b087778
-X-MS-TrafficTypeDiagnostic: SJ1PR11MB6204:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bxF1TJQQvT11JMW+8ScVL2N724TJw0KeYgl7jODOzOh2ItWLjpH7L8cDevrTGDsozxmsV46lB/xv+VDJrBIwS2xsEyHPY56twvtu7LKc7nunM1i8tf9eIdREd4949yFhmfJHQYRCS35ALF5ymjPVb9LLBnsou2zOPCcfIoNbKWUh8QAI0TwAd9wiJBGi9INSOWzDuUHe3m2wjpuoy8ANoUum/hujdAi33GzP2LTz8LvoKFwHMmFehzBsJDDJHaiigrYqanDa7aTaYVwjWCcAB1IA3KUtLHkbFDNPud8MUluFH5P5c8V8j+QUIM1/75WvTQGs/sKeN3Pm8HrSBPoQpyQVaeFZ/kqzKfxrROstqPCL0UjfwaDWOxRNpo19iKoWZlbytsEI8rSIHzvrMGND8PurokNpmzWfq5418CnFNtk0vn618YWA00G4Mhikk7GAuHiDEh73ubYvSXoEU/76wZHf0GvT6R9v1mpwbcsTXG80ruSXCRCsq+tkVcwWPwulZmWzQ8cvP3LU0ovDTatmDr+UwQbimh0uCnosLHqucvSqNeK4iGbKSYw7AX9eq6SpOIvBefN+WPRqeGDjFNUNgNf5JNq9qmoWnBr4hRvXJOErbyGgXrPh7mvKAo/0Rpkttv2rz51B2ugG4D+gUNN627EKwGkmpu3J+Laho0m0Fh8zePg65ZgxIGWsNYha9NF+0qGH5W8aWdyP5OnsJHviuA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1101MB2221.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(136003)(39860400002)(376002)(396003)(366004)(5660300002)(8936002)(41300700001)(6666004)(186003)(9686003)(86362001)(26005)(44832011)(6506007)(6512007)(2906002)(316002)(6916009)(66946007)(478600001)(66476007)(38100700002)(4326008)(82960400001)(6486002)(8676002)(66556008)(33716001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Fcg0b6wmxfXkOGi17fVoeZxr22GdX7gS0cFnluYHdzsHBaqtRZDX32DKqw7G?=
- =?us-ascii?Q?FnlKi8usNltuUuMh2OwwBvYaat7EwlG6mbNE2SyNrN7JHdEkBgFFRm6Fj1jd?=
- =?us-ascii?Q?rwo/g9x9+0tUAQNgr8qVdicA7aSihh8gAGQEcOV6TX+c7qICD8oDAA50syx4?=
- =?us-ascii?Q?ok0f3qiOjk8CO+Zeq3y38lE9gJvbkCS7glks9mwv0CwDfo3yvfuFldknlsY8?=
- =?us-ascii?Q?KlW1lPmi7oH9wbMnuSJdSwLY0SkrjH4g8APbbPCF+o8VYkmW1/KC7eFY3Kor?=
- =?us-ascii?Q?zTNGQ9T7KjVloW25OSsVLfkqQAfWgz4QV3fcnk35OxmO5SDTxjRNqUGUbNjK?=
- =?us-ascii?Q?j6SLaBYHAXRXdbHsynOfv1nAAtIuWiff/SkK1En42LHBoQ7M3TPNmXdh67jY?=
- =?us-ascii?Q?SCympYXaj94jV/UYervT1Rl92rAgGDHAXVBH2Ka12yEiKnkwqZfWl6eeVnkg?=
- =?us-ascii?Q?TtxEPP5uITg211cJ3JNbU2EWVnywobGWr8reCpGoZPU8B2PF7yWPwdk62RIj?=
- =?us-ascii?Q?x/jQqRA8eXKT5xEKoguND3BYyIYVMGu6IMpuunmKZJkOE4cjhk7ZgxlTKjGp?=
- =?us-ascii?Q?bvXdbUfbwrvsP8SsItNfQc0El2+tbhDyBTx+mr/Yn4kIVkxJIB9ug6rCD5l/?=
- =?us-ascii?Q?G4uKIN04lYzB+UES1oukgYq9UrcpVxEsCDEz080DXgGQaSGO5RxjchUobUez?=
- =?us-ascii?Q?12z9DoYL2U9kOhvgWDgkqKrD9oxrbhSg2fucj/CXJcVydE7fPlpqz/kcK0GI?=
- =?us-ascii?Q?/gVq0H2TCm+OmmgN075vzrmiAHcftzg9EPf7dQxRUV62JUqCUkPyoJQpjYGP?=
- =?us-ascii?Q?PQQWpYcrSUEwFuPsCffU25uzJ2shAMjPTfMBfFo0bbmK2ZwQwsgd5/NHhz1w?=
- =?us-ascii?Q?w/w4lZx5BXDQ+la6pCv4FkZC6f7L1nbrj75wjFYgzhZNXx1dWzb0D85nfzQF?=
- =?us-ascii?Q?zr0BvLLZOAyKoCTJFM6I/a0EnCN9Y9OCTWcn5q8SXHmnwKrPoZ3uDEseYiuq?=
- =?us-ascii?Q?++HFBueB7XFN9lPfcPiVv69Ty94z7ljFxgch8f9nxAmOjondel26X0c9EqIA?=
- =?us-ascii?Q?N0AER4LvL6pmFsWm0u1SiYpopWrI2K6qRGXLTgacaulGX0O+VET68X3dT4sY?=
- =?us-ascii?Q?B7jEvTZT97ebuElfhCRXcQja9l4+GCkWp/7i1Hwjx8tiiYc4hB9Oxg8dsjow?=
- =?us-ascii?Q?2lk5kVHyvZx+ykh/ad9AcUO526aIYlB4/0kWlQWLcZk72jAjWuY277efKIFk?=
- =?us-ascii?Q?XGznkoTe612hIu0QVU1UpEz4p4KQohprnQpt815wcfPaBefJz01TpojwUalF?=
- =?us-ascii?Q?0iuUCvoGtj6ImXBilWbmvMo3IspmIehioL+9aoRsVv3I2w+G4K5fhUIj4zX1?=
- =?us-ascii?Q?D3KZ0/bcOKNJGyZXxKYO27Q4cIZxpDbs6gv8RVaEszeFQeL5fGRGA9VtJ4Kn?=
- =?us-ascii?Q?1+GBtzBCLfZjSyune4W4I5/aCC5ewytZOKk6a+eNr+Dke8OVW19dMTC4KdAa?=
- =?us-ascii?Q?826rNPii/CzAqq2onQAroazhbxkWjyvLYOnP3vX4uD4DmJ0m4yjTnJylzbr9?=
- =?us-ascii?Q?VDKXo3gQQoOYj7ENCuoXQ1NNd4r5vKFkwYOiE3TY?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: fbe31e7c-6445-4d12-51af-08da8b087778
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2221.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 04:22:50.7969
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZDTiPWJtFLMdR91N2+qFrr5u4jXtjM4LL9OS3XuIOTsnoEuDpdVPPe6VjobRxYoJuBshqIaXBNqNUya95GnQKA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR11MB6204
-X-OriginatorOrg: intel.com
+In-Reply-To: <20220830215532.6nnl6d4cfg55dmcl@pali>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-MDID: 1661897787-3FcEtP5UB8oZ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 10:23:51AM +0100, Robin Murphy wrote:
->On 2022-08-26 10:50, Chao Gao wrote:
->> "overwirte" isn't a word. It should be "overwrite".
->> 
->> Signed-off-by: Chao Gao <chao.gao@intel.com>
->> ---
->> BTW, I am wondering if copying the original buffer to the tlb buffer
->> unconditionally will leak the original buffer to the VMM, especially
->> when VMM isn't trusted e.g., by confidential VMs. Would it be better
->> to zero the tlb buffer for dir == DMA_FROM_DEVICE?
->
->No, at the point of dma_map(), the buffer contents are owned by the caller,
->so if parts of that buffer are sensitive and shouldn't be exposed to DMA,
->then don't map the whole buffer for DMA. There are more DMA API
->implementations than SWIOTLB.
->
+On 8/30/22 2:55 PM, Pali Rohár wrote:
+> On Tuesday 30 August 2022 14:28:14 Ben Greear wrote:
+>> On 8/30/22 1:58 PM, Pali Rohár wrote:
+>>> On Tuesday 30 August 2022 13:47:48 Ben Greear wrote:
+>>>> On 8/23/22 11:41 PM, Greg Kroah-Hartman wrote:
+>>>>> On Tue, Aug 23, 2022 at 07:20:14AM -0500, Bjorn Helgaas wrote:
+>>>>>> On Tue, Aug 23, 2022, 6:35 AM Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>>>>> wrote:
+>>>>>>
+>>>>>>> From: Stefan Roese <sr@denx.de>
+>>>>>>>
+>>>>>>> [ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
+>>>>>>>
+>>>>>>
+>>>>>> There's an open regression related to this commit:
+>>>>>>
+>>>>>> https://bugzilla.kernel.org/show_bug.cgi?id=216373
+>>>>>
+>>>>> This is already in the following released stable kernels:
+>>>>> 	5.10.137 5.15.61 5.18.18 5.19.2
+>>>>>
+>>>>> I'll go drop it from the 4.19 and 5.4 queues, but when this gets
+>>>>> resolved in Linus's tree, make sure there's a cc: stable on the fix so
+>>>>> that we know to backport it to the above branches as well.  Or at the
+>>>>> least, a "Fixes:" tag.
+>>>>
+>>>> This is still in 5.19.5.  We saw some funny iwlwifi crashes in 5.19.3+
+>>>> that we did not see in 5.19.0+.  I just bisected the scary looking AER errors to this
+>>>> patch, though I do not know for certain if it causes the iwlwifi related crashes yet.
+>>>>
+>>>> In general, from reading the commit msg, this patch doesn't seem to be a great candidate
+>>>> for stable in general.  Does it fix some important problem?
+>>>>
+>>>> In case it helps, here is example of what I see in dmesg.  The kernel crashes in iwlwifi
+>>>> had to do with rx messages from the firmware, and some warnings lead me to believe that
+>>>> pci messages were slow coming back and/or maybe duplicated.  So maybe this AER patch changes
+>>>> timing or otherwise screws up the PCI adapter boards we use...
+>>>
+>>>   From that log I have feeling that issue is in that intel wifi card and
+>>> it was there also before that commit. Card is crashing (or something
+>>> other happens on PCIe bus) and because kernel had disabled Error
+>>> Reporting for this card, nobody spotted any issue. And that commit just
+>>> opened eye to kernel to see those errors.
+>>>
+>>> I think this issue should be reported to intel wifi card developers,
+>>> maybe they comment it, why card is reporting errors.
+>>
+>> My main concern is not that AER messages started showing up, but that there
+>> started being kernel NPE and WARNINGS showing up sometime after 5.19.0.
+>>
+>> Possibly this AER thing is mis-direction and the real bug is elsewhere,
+>> but since the bugzilla also indicated (different) driver crashes, then
+>> I am suspicious this changes things more significantly, at least in a subset
+>> of hardware out there.
+> 
+> Yea, of course, this is something needed to investigate.
+> 
+> Anyway, do you see driver crashes? Or just these AER errors? And are
+> your PCIe cards working, or after seeing these messages in dmesg they
+> stopped working? It is needed to know if you are just spammed by tons of
+> lines in dmesg and otherwise everything works. Or if after AER errors
+> your PCIe devices stop working and rebooting system is required.
 
-I am not sure if all existing drivers ensure that all buffers allocated
-for DMA_FROM_DEVICE are zeroed/poisoned so that they don't have sensitive
-data before dma_map(). If that isn't the case, bouncing the original contents
-(left by the previous user of the buffer) effectively makes the contents
-visible to host/VMM. I am afraid it may be a concern for confidential VMs.
+We did see higher frequency of weird crashes (accessing null-ish pointer) after upgrading to 5.19.3,
+I am building kernel now with 5.19.5 and that AER patch reverted.  We will
+test to see if that solves the crashes.
 
->The whole point of bouncing the original contents here is that doing anything
->else effectively corrupts any part of the mapping that the device may end up
->*not* writing to - see the whole sordid original discussion (but don't be
->confused by the fact that the caller's original data happened to be zeros in
->that particular case).
+>> Also, any idea what this error in my logs is actually indicating?
+> 
+> Your PCIe controller received non-fatal, but uncorrected error. There is
+> also indication of Unsupported Request Completion Status. Unsupported
+> Request is generated by PCIe device when controller / host / kernel try
+> to do something which is not supported by device; pretty generic error.
+> PCIe base spec describe lot of scenarios when card should return this
+> error. Maybe some more detailed information are in TLP Header hexdump,
+> but I cannot decode it now.
+> 
+> Basically it is PCIe card driver who could know how fatal it is that
+> issue and how to recover from it. But as you can see intel wifi driver
+> does not implement that callback.
 
-Got it. Thanks for the explanation.
+Odds of me getting a good answer on that are pretty small.
+
+Thanks,
+Ben
+
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
+
