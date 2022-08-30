@@ -2,168 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9EFECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:01:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2350ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231754AbiH3XBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:01:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
+        id S231720AbiH3XBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:01:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231667AbiH3XAn (ORCPT
+        with ESMTP id S231358AbiH3XAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:00:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F03095E71;
+        Tue, 30 Aug 2022 19:00:47 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F43F9675D;
         Tue, 30 Aug 2022 16:00:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EE2B8B81E3C;
-        Tue, 30 Aug 2022 23:00:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B2AC433D7;
-        Tue, 30 Aug 2022 23:00:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1661900437;
-        bh=cN2UArrEEjLgyw+ytEbcnL0Je4jmNbuPP7fQx642XoA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ohIDGa98EfP/vnDW70jHjDc/nd2xOxnSnu/mv2Jzjwe6cqIq+rV1Qhw/M4vnzrYOT
-         EwYTIPJTx/qLyv/h5cZ8xG+7o+dhtPCXzd/0q3GfwVuZ+LZ3GNljpMZgo4XBuJqAJ8
-         /Ti4orN80h+hji0IwOpWIihUD2Lh8l03kll5CWYI=
-Date:   Tue, 30 Aug 2022 16:00:35 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 04/44] x86: asm: instrument usercopy in get_user()
- and put_user()
-Message-Id: <20220830160035.8baf16a7f40cf09963e8bc55@linux-foundation.org>
-In-Reply-To: <CAOUHufZrb_gkxaWfCLuFodRtCwGGdYjo2wvFW7kTiTkRbg4XNQ@mail.gmail.com>
-References: <20220826150807.723137-1-glider@google.com>
-        <20220826150807.723137-5-glider@google.com>
-        <20220826211729.e65d52e7919fee5c34d22efc@linux-foundation.org>
-        <CAG_fn=Xpva_yx8oG-xi7jqJyM2YLcjNda+8ZyQPGBMV411XgMQ@mail.gmail.com>
-        <20220829122452.cce41f2754c4e063f3ae8b75@linux-foundation.org>
-        <CAG_fn=X6eZ6Cdrv5pivcROHi3D8uymdgh+EbnFasBap2a=0LQQ@mail.gmail.com>
-        <20220830150549.afa67340c2f5eb33ff9615f4@linux-foundation.org>
-        <CAOUHufZrb_gkxaWfCLuFodRtCwGGdYjo2wvFW7kTiTkRbg4XNQ@mail.gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661900441; x=1693436441;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=u24qmCxu/nmcxL/d7ko8eIbijaFgPKTEjucw9W1Ntz0=;
+  b=OYLR/1pJxRRuiN70byetv/jQlKVfyviU6k3Ff1U/RweAJITAWYH6j++1
+   SL86kR1FKZpb0F6l2KGS2ta+0egMpqKzPD27CR6QwfIrp22ipzKmscLwE
+   4d0lHWcojLAdbS3ZWcGT/2q6YezWFrbAm55UUmpS0J3W1qcXgQy997dlm
+   ETkuMqo7BGvQxB3z08YlUndDGpjjEkA4nVqzM73wtnDtpgFwNq+bQ6IHK
+   wasX++4zH2ClfZ8iDJRuhFb5+3bzr7zmUs2tHql74yS/zhhMnQkvAw4qR
+   cIp9c0EW//A3VqmQp9NfgvNTiPxtZvSbFWL7TGFaB6vuu4TI3n+t5cTw1
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="381622037"
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="381622037"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 16:00:39 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="715497511"
+Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
+  by fmsmga002.fm.intel.com with ESMTP; 30 Aug 2022 16:00:36 -0700
+Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTADj-0000iJ-28;
+        Tue, 30 Aug 2022 23:00:35 +0000
+Date:   Wed, 31 Aug 2022 07:00:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
+        gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        ilpo.jarvinen@linux.intel.com, andy.shevchenko@gmail.com,
+        u.kleine-koenig@pengutronix.de, johan@kernel.org,
+        wander@redhat.com, etremblay@distech-controls.com,
+        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
+        phil.edworthy@renesas.com, lukas@wunner.de
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-serial@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v1 tty-next 2/2] 8250: microchip: pci1xxxx: Add power
+ management functions to pci1xxxx's  quad-uart driver.
+Message-ID: <202208310603.ea8ISalW-lkp@intel.com>
+References: <20220830180054.1998296-3-kumaravel.thiagarajan@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830180054.1998296-3-kumaravel.thiagarajan@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022 16:25:24 -0600 Yu Zhao <yuzhao@google.com> wrote:
+Hi Kumaravel,
 
-> On Tue, Aug 30, 2022 at 4:05 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> >
-> > On Tue, 30 Aug 2022 16:23:44 +0200 Alexander Potapenko <glider@google.com> wrote:
-> >
-> > > >                  from init/do_mounts.c:2:
-> > > > ./include/linux/page-flags.h: In function ‘page_fixed_fake_head’:
-> > > > ./include/linux/page-flags.h:226:36: error: invalid use of undefined type ‘const struct page’
-> > > >   226 |             test_bit(PG_head, &page->flags)) {
-> > > >       |                                    ^~
-> > > > ./include/linux/bitops.h:50:44: note: in definition of macro ‘bitop’
-> > > >    50 |           __builtin_constant_p((uintptr_t)(addr) != (uintptr_t)NULL) && \
-> > > >       |                                            ^~~~
-> > > > ./include/linux/page-flags.h:226:13: note: in expansion of macro ‘test_bit’
-> > > >   226 |             test_bit(PG_head, &page->flags)) {
-> > > >       |             ^~~~~~~~
-> > > > ...
-> > >
-> > > Gotcha, this is a circular dependency: mm_types.h -> sched.h ->
-> > > kmsan.h -> gfp.h -> mmzone.h -> page-flags.h -> mm_types.h, where the
-> > > inclusion of sched.h into mm_types.h was only introduced in "mm:
-> > > multi-gen LRU: support page table walks" - that's why the problem was
-> > > missing in other trees.
-> >
-> > Ah, thanks for digging that out.
-> >
-> > Yu, that inclusion is regrettable.
-> 
-> Sorry for the trouble -- it's also superfluous because we don't call
-> lru_gen_use_mm() when switching to the kernel.
-> 
-> I've queued the following for now.
+I love your patch! Perhaps something to improve:
 
-Well, the rest of us want it too.
+[auto build test WARNING on tty/tty-testing]
+[also build test WARNING on linus/master v6.0-rc3 next-20220830]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -3,7 +3,6 @@
->  #define _LINUX_MM_TYPES_H
-> 
->  #include <linux/mm_types_task.h>
-> -#include <linux/sched.h>
-> 
->  #include <linux/auxvec.h>
->  #include <linux/kref.h>
-> @@ -742,8 +741,7 @@ static inline void lru_gen_init_mm(struct mm_struct *mm)
-> 
->  static inline void lru_gen_use_mm(struct mm_struct *mm)
->  {
-> -       if (!(current->flags & PF_KTHREAD))
-> -               WRITE_ONCE(mm->lru_gen.bitmap, -1);
-> +       WRITE_ONCE(mm->lru_gen.bitmap, -1);
->  }
+url:    https://github.com/intel-lab-lkp/linux/commits/Kumaravel-Thiagarajan/8250-microchip-pci1xxxx-Add-driver-for-the-pci1xxxx-s-quad-uart-function/20220831-020314
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220831/202208310603.ea8ISalW-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/a994946078a1bca8361d4f3245ad306515291b6e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Kumaravel-Thiagarajan/8250-microchip-pci1xxxx-Add-driver-for-the-pci1xxxx-s-quad-uart-function/20220831-020314
+        git checkout a994946078a1bca8361d4f3245ad306515291b6e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/tty/serial/8250/
 
-Doesn't apply.  I did:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
---- a/include/linux/mm_types.h~mm-multi-gen-lru-support-page-table-walks-fix
-+++ a/include/linux/mm_types.h
-@@ -3,7 +3,6 @@
- #define _LINUX_MM_TYPES_H
- 
- #include <linux/mm_types_task.h>
--#include <linux/sched.h>
- 
- #include <linux/auxvec.h>
- #include <linux/kref.h>
-@@ -742,11 +741,7 @@ static inline void lru_gen_init_mm(struc
- 
- static inline void lru_gen_use_mm(struct mm_struct *mm)
- {
--	/* unlikely but not a bug when racing with lru_gen_migrate_mm() */
--	VM_WARN_ON_ONCE(list_empty(&mm->lru_gen.list));
--
--	if (!(current->flags & PF_KTHREAD))
--		WRITE_ONCE(mm->lru_gen.bitmap, -1);
-+	WRITE_ONCE(mm->lru_gen.bitmap, -1);
- }
- 
- #else /* !CONFIG_LRU_GEN */
-_
+All warnings (new ones prefixed by >>):
 
+   drivers/tty/serial/8250/8250_pci1xxxx.c: In function 'mchp_pci1xxxx_setup':
+   drivers/tty/serial/8250/8250_pci1xxxx.c:293:32: error: assignment to 'void (*)(struct uart_port *, struct ktermios *, const struct ktermios *)' from incompatible pointer type 'void (*)(struct uart_port *, struct ktermios *, struct ktermios *)' [-Werror=incompatible-pointer-types]
+     293 |         port->port.set_termios = mchp_pci1xxxx_set_termios;
+         |                                ^
+   drivers/tty/serial/8250/8250_pci1xxxx.c: At top level:
+   drivers/tty/serial/8250/8250_pci1xxxx.c:305:6: warning: no previous prototype for 'mchp_pci1xxxx_irq_assign' [-Wmissing-prototypes]
+     305 | void mchp_pci1xxxx_irq_assign(struct pci1xxxx_8250 *priv,
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/tty/serial/8250/8250_pci1xxxx.c:475:6: warning: no previous prototype for 'pci1xxxx_port_resume' [-Wmissing-prototypes]
+     475 | void pci1xxxx_port_resume(int line)
+         |      ^~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/pci1xxxx_port_resume +475 drivers/tty/serial/8250/8250_pci1xxxx.c
+
+   474	
+ > 475	void pci1xxxx_port_resume(int line)
+   476	{
+   477		struct uart_8250_port *up = serial8250_get_port(line);
+   478		struct uart_port *port = &up->port;
+   479		unsigned long flags;
+   480	
+   481		writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
+   482	
+   483		if (port->suspended == 0) {
+   484			spin_lock_irqsave(&port->lock, flags);
+   485			port->mctrl |= TIOCM_OUT2;
+   486			port->ops->set_mctrl(port, port->mctrl);
+   487			spin_unlock_irqrestore(&port->lock, flags);
+   488		}
+   489	}
+   490	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
