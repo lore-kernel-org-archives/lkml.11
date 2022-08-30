@@ -2,100 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF73ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63106ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbiH3Lcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55048 "EHLO
+        id S230509AbiH3Lch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbiH3LaI (ORCPT
+        with ESMTP id S230315AbiH3LaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:30:08 -0400
+        Tue, 30 Aug 2022 07:30:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C292250C;
-        Tue, 30 Aug 2022 04:30:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B2C65E4;
+        Tue, 30 Aug 2022 04:30:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C168E61569;
-        Tue, 30 Aug 2022 11:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEA3C4FF86;
-        Tue, 30 Aug 2022 11:30:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 869BB61552;
+        Tue, 30 Aug 2022 11:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E5AADC43141;
+        Tue, 30 Aug 2022 11:30:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661859001;
-        bh=Pv8Z5nFehfkYoWXpSKjausYgRFbe7Dy5KlCi2l4pu0M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YDIpwEQXpU77+4zVabPJ0+ZbOss1edC7/3iVDntN+h9tLX955hIBMIx7CMx2SfiHS
-         Tcj8sCdJ6tSnRDjOI4cWhlMJ+Whx34h6SeegKCl2VWlS1INaRHqZmgpzqlX0Us3d0k
-         MSeXy8t/e0J7x7IAJ2v2YkN0c3xcQQjG4xsXtC5xYUIQ3Nyulu8hoHqSrEq0q8/UbO
-         d/jqxtzCcEr9l+7EUvayabrX+hxZcH1VZ3WJDg0F86npuDXqoH2Ezkekn/lqS8mdU8
-         fVR80IRnPrQt1G0J+QUrIICfx/m58CCkLaqpPu1cabwNKEOXWLXJSZjXvt6LIpNLm9
-         cZ9rmcR1M+cEw==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oSzRO-00010y-WB; Tue, 30 Aug 2022 13:29:59 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 24/30] dt-bindings: phy: qcom,qmp-usb3-dp: deprecate USB PIPE clock name
-Date:   Tue, 30 Aug 2022 13:29:17 +0200
-Message-Id: <20220830112923.3725-25-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830112923.3725-1-johan+linaro@kernel.org>
-References: <20220830112923.3725-1-johan+linaro@kernel.org>
+        s=k20201202; t=1661859014;
+        bh=ruXk2tsM+3zU/7j9rH8vwCINKwBg3nR3eA8tAAK1Xis=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ikk5doy/i5G3HoTWlzNrTAfGdPkRS/iHeFdCsmJvZt5Sw8tmqsum/Id/aDRgEKbat
+         22mAJfKShJLm1id9GG4Vj6OaOwVWmLHUSTqYl2+kazlACncKJ6RVafFiO80CCxkMYW
+         Fa6OqUIUDVS8eOGHPjcxSiPLHEmaCtDoIv4yfowxeE0tW9dJXGITaX2R9pydzJfmkr
+         WSKCis1FJjJsWWGn8p6DHvZHaVa4TLrm/kH6SEOXYcJtFhCaV6WPhCxw4y+s9EAIxz
+         bzE535JHvyZ6TdSDN3tgG0jthHXti2x+AP1a6hE+7Z7JzWmc7zDPDsGwZi7IeC5L58
+         JenCSAwCSttmQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CB0DCE924D8;
+        Tue, 30 Aug 2022 11:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: sched: using TCQ_MIN_PRIO_BANDS in prio_tune()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166185901482.4860.9328248852894519712.git-patchwork-notify@kernel.org>
+Date:   Tue, 30 Aug 2022 11:30:14 +0000
+References: <20220826041035.80129-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220826041035.80129-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, weiyongjun1@huawei.com, yuehaibing@huawei.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Deprecate the USB PHY node 'clock-names' property which specified that
-the PIPE clock name should have a bogus "lane" suffix.
+Hello:
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- .../devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml          | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-index da7d8dfc631c..abc29686dff6 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-@@ -98,6 +98,7 @@ patternProperties:
-           - description: pipe clock
- 
-       clock-names:
-+        deprecated: true
-         items:
-           - const: pipe0
- 
-@@ -114,7 +115,6 @@ patternProperties:
-     required:
-       - reg
-       - clocks
--      - clock-names
-       - '#clock-cells'
-       - '#phy-cells'
- 
-@@ -195,7 +195,6 @@ examples:
-             #clock-cells = <0>;
-             #phy-cells = <0>;
-             clocks = <&gcc GCC_USB3_PRIM_PHY_PIPE_CLK>;
--            clock-names = "pipe0";
-             clock-output-names = "usb3_phy_pipe_clk_src";
-         };
- 
+On Fri, 26 Aug 2022 12:10:35 +0800 you wrote:
+> Using TCQ_MIN_PRIO_BANDS instead of magic number in prio_tune().
+> 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  net/sched/sch_prio.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [net-next] net: sched: using TCQ_MIN_PRIO_BANDS in prio_tune()
+    https://git.kernel.org/netdev/net-next/c/4b7477f0921a
+
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
