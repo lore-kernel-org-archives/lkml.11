@@ -2,104 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B135FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8752ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229679AbiH3KGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50718 "EHLO
+        id S230129AbiH3KGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:06:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbiH3KGA (ORCPT
+        with ESMTP id S229840AbiH3KGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:06:00 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB6BF1B59;
-        Tue, 30 Aug 2022 03:03:14 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-33dba2693d0so259618567b3.12;
-        Tue, 30 Aug 2022 03:03:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=I3uyFklCX86QnaO4FGwtK3r174JBbykuqGUsbUF86CM=;
-        b=SvE6u95A8KIYBCs4xKxTiCYBbxBSN2iF5GZ9kH5C/9wkg0aMPTTH37wmp6hMOIWLtS
-         kC/9M7nTr3ZMa29TCkbg8BVblGpxJtPFxhnW8FJqUavlqEUtwodde3Xio4iCYWBbiz+z
-         hHvwesFhf9khHthd7cskM2WeM28No/t0xUfgmB4T+KGuP5CQTrgnZvlIHI7T9gdPywIU
-         tdb0UkPXOLOJwSGT6n2VUf/sjEKB0/gcO6ewRhMieGfTGS2g1d0Tl8nqGkj44st+zkfF
-         f3/s9my62nvIu2qVuPTxTwzHqj5p7ZazPXEyDGE/e08LSjCIVVwpX0hJFmgu9qKGUShC
-         NX8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=I3uyFklCX86QnaO4FGwtK3r174JBbykuqGUsbUF86CM=;
-        b=5RSdjygaB7xHVzgbopVulnnX5DmxLEc7cdUjHwN2zTnkZfRW7EKiVXjZZLR0eh9SCi
-         BmRclojWmrkTnRpbFrcHNKgWCAAR/hvE38XwgbxMpYsewja/OiRa9r6kNv8Z8YUxgfMS
-         3JYtzkjWC7GlV8jGXrUG4I1EK4Cg0npUmqZymUaRiOybamuop677VyPhEsvZRmJQaE+G
-         10nBych+G+11wpy6UjhIwxR7gg/PoTTIOIDS9dq/gEBGnVVQwpiWI+vTwwxjwD3qKapD
-         gqxPaAvR+vJP99ssnEzMdTgnDJ0yar3C3O24FC8yD3HX489su45y9p9WlUS6g5BYekSW
-         ssbA==
-X-Gm-Message-State: ACgBeo1Xttp4BuIx7QEZm2MBYAg2uizqCeZe2TxvxKDy5P4MTIHnglS1
-        c9apbUwTI3uM+bKmkQuDrp4+CiVDalY786gLJSI=
-X-Google-Smtp-Source: AA6agR7cJuSH4etKCu9hKCZHGR2bD5vDU9CYpMir88OlfN8Q5rHi5hJI+n41bex3eVce9XadXKx3EOprlFLuWLXffl4=
-X-Received: by 2002:a05:6902:1146:b0:699:ba1f:8934 with SMTP id
- p6-20020a056902114600b00699ba1f8934mr10959552ybu.354.1661853792903; Tue, 30
- Aug 2022 03:03:12 -0700 (PDT)
+        Tue, 30 Aug 2022 06:06:07 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E052CEE68A;
+        Tue, 30 Aug 2022 03:03:26 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 12:03:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1661853802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5Th0mQ/sNN9c18CVRxErzRPXBEZvcyeYzQkxhouGlyc=;
+        b=qMETC6v6RTxNCE90+XAWi3L/rz6zS3FsKcQe2Uj32rmKr8M0vVUZ0iD6iQ+/6v1YT62AKY
+        UfmzmDieJiYqyLxx1/XJ5g7u9AhVAEnynv1O2TYCk2buD7zFdf7cLeajft8SWRFT/GSImi
+        4yk5pfiCQ/1D6VWuafWjBidWdsrI9K/EhkUxNu9w2f7YxooeGv7Abv3FkWJr20P7zzZGHd
+        fnB4umkby03JJarue+rnpk+Xr1znNtRpX40Nk0OP63an3yDMYbaGJ2xWxsLO0sRjMKy96A
+        2pkLletIezeR4cPRY+qUHHMUYYACxtw2MEa+qqknEV5vGkbB/zXrJLB+x/jiYg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1661853802;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5Th0mQ/sNN9c18CVRxErzRPXBEZvcyeYzQkxhouGlyc=;
+        b=C3ReCx7C6MDZVd65vQy2DaG87J1pVM2D6Je302ILkOPzKilw0k3yrFc3iUYHAF7iR6GhCu
+        wLEcLJGk6gxrgSBA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dmitry Bogdanov <d.bogdanov@yadro.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "target-devel@vger.kernel.org" <target-devel@vger.kernel.org>
+Subject: Re: [PATCH v2 11/25] usb: gadget: f_tcm: Execute command on write
+ completion
+Message-ID: <Yw3gaLk24rPvRsAn@linutronix.de>
+References: <cover.1658192351.git.Thinh.Nguyen@synopsys.com>
+ <b030d10834c13aa09bbbba7b33b1957d5ba3664c.1658192351.git.Thinh.Nguyen@synopsys.com>
+ <YwhvmpdbG8WXhhZ0@linutronix.de>
+ <20220826183732.vxogtdlwqiqbcg2t@synopsys.com>
+ <Yw0YP1qUYAw6inMJ@linutronix.de>
+ <20220829214738.g4sazbxapgmlyksa@synopsys.com>
 MIME-Version: 1.0
-References: <20220829215816.6206-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <e455ebd7-7949-47d6-5f9b-9869dfdd601d@linaro.org>
-In-Reply-To: <e455ebd7-7949-47d6-5f9b-9869dfdd601d@linaro.org>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Tue, 30 Aug 2022 11:02:46 +0100
-Message-ID: <CA+V-a8so2GYf5PZAPmCzyZayYXVqnVZ7LBLbb-WUqSeWvVX_vA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: display: bridge: renesas,dw-hdmi: Fix
- 'unevaluatedProperties' warnings
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220829214738.g4sazbxapgmlyksa@synopsys.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
+On 2022-08-29 21:47:41 [+0000], Thinh Nguyen wrote:
+> Ok. Maybe we should make a change in the target_execute_cmd() then. It
+> seems unreasonable to force the caller to workaround this such as the
+> wait+complete construct you did (and I don't recall we have changes in
+> place to know/guarantee that interrupts are enabled before executing
+> target_execute_cmd() previously either).
 
-Thank you for the review.
+Sounds reasonable. Back then I wasn't sure if I'm putting all the puzzle
+pieces correctly together so I preferred this over a target change I
+wasn't sure was really needed. Anyway.
 
-On Tue, Aug 30, 2022 at 10:23 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 30/08/2022 00:58, Lad Prabhakar wrote:
-> > With 'unevaluatedProperties' support implemented, there's a number of
-> > warnings when running dtbs_check:
-> >
-> > arch/arm64/boot/dts/renesas/r8a774b1-hihope-rzg2n-rev2-ex-idk-1110wr.dtb: hdmi@fead0000: Unevaluated properties are not allowed ('resets' was unexpected)
-> >       From schema: Documentation/devicetree/bindings/display/bridge/renesas,dw-hdmi.yaml
-> >
-> > The main problem is that SoC DTSI's are including resets property, whereas
-> > the renesas,dw-hdmi.yaml has 'unevaluatedProperties: false'. So just add
-> > optional resets property to the binding.
->
-> This is not main problem. I already commented on two of your similar
-> patches, so same applies here. Please describe real problem.
->
-Sure will do that and send a v2 (and also for the reset of the patches).
+> For the dwc3, we masked the interrupt at this point, so interrupt won't
+> be asserted here.
 
-Cheers,
-Prabhakar
+dwc3 has a irqrestore() after calling the routine so that will avoid the
+splat. But lockdep should yell here.
+Anyway, other interrupts on that CPU (timer for instance) could trigger.
+
+> Thanks,
+> Thinh
+
+Sebastian
