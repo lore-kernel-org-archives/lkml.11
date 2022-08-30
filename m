@@ -2,98 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96FF4ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB0BC0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229788AbiH3UES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 16:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41760 "EHLO
+        id S230000AbiH3UEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 16:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231894AbiH3UD7 (ORCPT
+        with ESMTP id S229594AbiH3UEC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 16:03:59 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF9C80511;
-        Tue, 30 Aug 2022 13:02:46 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id n4so6976186qvt.7;
-        Tue, 30 Aug 2022 13:02:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=sKUb5B3iNP9JffwnPezxUr8DBbsDdDXj2jgeVcIymz0=;
-        b=A3OmI/NAKUxctLonPwyddHe16W4iMUhmCzfz5d7ui4tHfPU2KAupuIYIvihNmubfCx
-         U3vHOuKN0gXyrem202xA4EJJil22adqKJnpSLAQ+/vEzVns0fiAbnF0StHMOqRYoyPlX
-         p6MavOBNcnjfa2GrBNhEvPqowEdehgx5CSO5AQWshTW+tcES+lUq3iJ4oasuX972OtxP
-         JML0J+IljDep1TmtJea9Z+lYqrmsvFmX5qoTxyZuPCGtNdLlI7qrQpFa1nPyZV8IKnUi
-         EbFgOs8hJpOVeSTa/GoTXEyphH1U4KQWqo+dhrel8Qc5uKR05gZBZGfA+f2RckGKVzXy
-         I0Sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=sKUb5B3iNP9JffwnPezxUr8DBbsDdDXj2jgeVcIymz0=;
-        b=y4el+/MB/tFSi2K+JlgCXLBjzmEyTZk4nhbWHBpP7S556tx5jD71wwAiR7hU/J+f0i
-         1V9E+7GelegvlBEwBF+fH+O/nRjGxUQNfTrjlQ9HJbYybIcpxNAfvKeXbwSzPogIQYvt
-         97XP+itJkgVHbBhjC1m6HihN1ndZUV3PslQAsTF6wM4B1haHOVf1jXEL9GOqkFask3FL
-         8ek4wiVQb3UK7KOtRHzzFSdRtBwv83FUSIvN6TfRenJOC+3rszqAWtkgbELREt/ejfp5
-         j4b68/TYoHASU0aIuAjUBYrHyriw9psZh3gYvmRl7RCk9crzpuBzw+3uWirNXLq9GApN
-         csUA==
-X-Gm-Message-State: ACgBeo18LMqEVGz8Cltd2rLVrtPyGyWagQnLdTQ99/W8xL+d0PXAMMgz
-        iMc02Wd406cWPh0mGKfNOLvBS3NSz1exYgoc83c=
-X-Google-Smtp-Source: AA6agR6Q1ZPykvZNTAf+ebF6H58KCUdYQ+AG5QbdDvM+SLqBqlhLVQsL5sAJCupIpLaWn9he2SzgKpwrDmEvMkESArI=
-X-Received: by 2002:a05:6214:2022:b0:497:2c03:61 with SMTP id
- 2-20020a056214202200b004972c030061mr16994102qvf.11.1661889763980; Tue, 30 Aug
- 2022 13:02:43 -0700 (PDT)
+        Tue, 30 Aug 2022 16:04:02 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDF18050B;
+        Tue, 30 Aug 2022 13:02:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661889774; x=1693425774;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=g2RcCvs3gTcJdjLoDdcHmbRTjlqKmHEueIsD0OrLV1Y=;
+  b=VjoWghZOf9C6eMEO//kPBXfEMA4FNMHb3Ye5Zw231QiqVNPMzsbD2YZx
+   ZcrzFNXigAI6vh9BmHznDMs5OwOItkspC3xXt7aA9Fs7q3aLRgY1lcDO/
+   e2Rz2nhe/A5UkBesKEM8GPVDmtD3maWFqpf3FVevdayZcr0Au2GrWWeWW
+   sD5PU/UKmfD+LWRGV7dVqzknv/62vj+EJCStijkBG/A2RdgvKuyurNrPN
+   2Joqd6g154tsqXoo5WOx128UGad8JN+JFhB4zGwS9LLh4+/+qzfpkOneG
+   XwDdyHglTxVp1f2EOV9dvvCkFmjyBfk2CxzDmivOjnmd1TRP0dSOpfO+I
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="178376952"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 13:02:52 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 30 Aug 2022 13:02:46 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Tue, 30 Aug 2022 13:02:46 -0700
+Date:   Tue, 30 Aug 2022 22:07:02 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH v2 2/2] nvmem: lan9662-otp: add support.
+Message-ID: <20220830200702.noefi7q5syrsgh52@soft-dev3-1.localhost>
+References: <20220825204041.1485731-1-horatiu.vultur@microchip.com>
+ <20220825204041.1485731-3-horatiu.vultur@microchip.com>
+ <4788e399-b292-9da7-3d62-75bb0312d4b9@linaro.org>
 MIME-Version: 1.0
-References: <20220830110709.2037302-1-o.rempel@pengutronix.de> <20220830110709.2037302-3-o.rempel@pengutronix.de>
-In-Reply-To: <20220830110709.2037302-3-o.rempel@pengutronix.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 30 Aug 2022 23:02:08 +0300
-Message-ID: <CAHp75Vc-NNZfSaM8wwf+558aHKU9ZL0Fp3aJEop475mHTExKjw@mail.gmail.com>
-Subject: Re: [PATCH v1 3/3] iio: adc: tsc2046: silent spi_device_id warning
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <4788e399-b292-9da7-3d62-75bb0312d4b9@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 2:19 PM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
->
-> Add spi_device_id to silent following warning:
->  SPI driver tsc2046 has no spi_device_id for ti,tsc2046e-adc
+The 08/30/2022 13:08, Srinivas Kandagatla wrote:
+> 
+> > +static inline void lan9662_writel(void __iomem *addr, u32 val)
+> > +{
+> > +     writel(val, addr);
+> > +}
+> > +
+> > +static inline u32 lan9662_readl(void __iomem *addr)
+> > +{
+> > +     return readl(addr);
+> > +}
+> > +
+> 
+> Why these boiler plate functions?
 
-Missed period.
+It was more for the style purpose. I will remove these ones.
 
-...
+> 
+> > +static inline void lan9662_clrbits(void __iomem *addr, u32 clear)
+> > +{
+> > +     writel(readl(addr) & ~clear, addr);
+> > +}
+> > +
+> > +static inline void lan9662_setbits(void __iomem *addr, u32 set)
+> > +{
+> > +     writel(readl(addr) | set, addr);
+> > +}
+> 
+> These two functions are called just once and I see no point in having a
+> wrapper function for this, instead you could use them directly or use
+> ./include/linux/bitfield.h helper macros.
 
-> -       dcfg = device_get_match_data(dev);
+I will remove also these ones and use them directly.
 
-Why remove this and duplicate the check below with the inverted conditional?
+> 
+> > +
+> > +static bool lan9662_otp_wait_flag_clear(void __iomem *reg, u32 flag)
+> > +{
+> > +     u32 val;
+> > +
+> > +     return readl_poll_timeout(reg, val, !(val & flag),
+> > +                               OTP_SLEEP_US, OTP_TIMEOUT_US);
+> > +}
+> > +
+> > +static int lan9662_otp_power(struct lan9662_otp *otp, bool up)
+> > +{
+> > +     if (up) {
+> > +             lan9662_clrbits(OTP_OTP_PWR_DN(otp->base),
+> > +                             OTP_OTP_PWR_DN_OTP_PWRDN_N);
+> > +             if (lan9662_otp_wait_flag_clear(OTP_OTP_STATUS(otp->base),
+> > +                                             OTP_OTP_STATUS_OTP_CPUMPEN))
+> > +                     return -ETIMEDOUT;
+> > +     } else {
+> > +             lan9662_setbits(OTP_OTP_PWR_DN(otp->base),
+> > +                             OTP_OTP_PWR_DN_OTP_PWRDN_N);
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int lan9662_otp_execute(struct lan9662_otp *otp)
+> > +{
+> > +     if (lan9662_otp_wait_flag_clear(OTP_OTP_CMD_GO(otp->base),
+> > +                                     OTP_OTP_CMD_GO_OTP_GO))
+> > +             return -ETIMEDOUT;
+> > +
+> > +     if (lan9662_otp_wait_flag_clear(OTP_OTP_STATUS(otp->base),
+> > +                                     OTP_OTP_STATUS_OTP_BUSY))
+> > +             return -ETIMEDOUT;
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static void lan9662_otp_set_address(struct lan9662_otp *otp, u32 offset)
+> > +{
+> > +     WARN_ON(offset >= OTP_MEM_SIZE);
+> > +
+> would we ever hit this condition? looks like unecessary check.
 
-> +       if (!dev_fwnode(dev)) {
-> +               const struct spi_device_id *id;
-> +
-> +               id = spi_get_device_id(spi);
-> +               dcfg = (const struct tsc2046_adc_dcfg *)id->driver_data;
-> +       } else {
-> +               dcfg = device_get_match_data(dev);
-> +       }
+That is not the case. I will remove it.
 
-if (!dcfg) {
-  ...try SPI ID...
-}
-if (!dfg)
-  return -E...
+> 
+> 
+> 
 
 -- 
-With Best Regards,
-Andy Shevchenko
+/Horatiu
