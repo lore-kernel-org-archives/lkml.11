@@ -2,185 +2,267 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE0EECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC13ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231996AbiH3Re3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:34:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
+        id S232032AbiH3Ree (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbiH3RdJ (ORCPT
+        with ESMTP id S232058AbiH3Rdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:33:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E039E68FC;
-        Tue, 30 Aug 2022 10:29:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 498A761780;
-        Tue, 30 Aug 2022 17:22:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C80DC43142;
-        Tue, 30 Aug 2022 17:22:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880159;
-        bh=viUhvXnEZZVKzg1dyNtgpmWDjQnR4hg7f8HjVdysiwo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SZRzS73PExGaufjcFG/laMYE2T9Db0xe1h/GcN65p7Q1uxhK3IAhHuaxnsj7KO1Ku
-         PQ4mAbcCTeKqVdnN3IMIQt0NZtCBcUmAfV3HpI280ykrji6gR6HjAkhIG7kqwdq3iR
-         J9EfbyVd3m2V2S+kDNp2cKpYHwXn3iBNBpiEUCJMDVdPNUcyElLIIgMUahytMxjLgM
-         2oIjJ8RM/+CDH6mcUiAMLXeTCICrf03Zvqoiw1nsw5fA6gIQ6gOg9H/fgEfzM9jiXc
-         OkWKBFQ2VG5xphNa2YEXv3sO8DFjMyoaIg44xiNLbpdWff8ma3oDLjOOhPbkLwOSl4
-         OTLbi+aiEc+FA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, Sasha Levin <sashal@kernel.org>,
-        pablo@netfilter.org, kadlec@netfilter.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 15/23] netfilter: conntrack: work around exceeded receive window
-Date:   Tue, 30 Aug 2022 13:21:32 -0400
-Message-Id: <20220830172141.581086-15-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
-References: <20220830172141.581086-1-sashal@kernel.org>
+        Tue, 30 Aug 2022 13:33:33 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75B57FD3
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:29:40 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E6E31576;
+        Tue, 30 Aug 2022 10:26:55 -0700 (PDT)
+Received: from e121896.arm.com (unknown [10.57.15.35])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4B5603F7B4;
+        Tue, 30 Aug 2022 10:26:47 -0700 (PDT)
+From:   James Clark <james.clark@arm.com>
+To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        mathieu.poirier@linaro.org
+Cc:     mike.leach@linaro.org, leo.yan@linaro.org,
+        linux-kernel@vger.kernel.org, german.gomez@arm.com,
+        James Clark <james.clark@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH v2 5/5] coresight: Make new csdev_access offsets unsigned
+Date:   Tue, 30 Aug 2022 18:26:13 +0100
+Message-Id: <20220830172614.340962-6-james.clark@arm.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20220830172614.340962-1-james.clark@arm.com>
+References: <20220830172614.340962-1-james.clark@arm.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+New csdev_access functions were added as part of the previous
+refactor. In order to make them more consistent with the
+existing ones, change any signed offset types to be unsigned.
 
-[ Upstream commit cf97769c761abfeac8931b35fe0e1a8d5fabc9d8 ]
+Now that they are unsigned, stop using hi_off = -1 to signify
+a single 32bit access. Instead just call the existing 32bit
+accessors. This is also applied to other parts of the codebase,
+and the coresight_{read,write}_reg_pair() functions can be
+deleted.
 
-When a TCP sends more bytes than allowed by the receive window, all future
-packets can be marked as invalid.
-This can clog up the conntrack table because of 5-day default timeout.
-
-Sequence of packets:
- 01 initiator > responder: [S], seq 171, win 5840, options [mss 1330,sackOK,TS val 63 ecr 0,nop,wscale 1]
- 02 responder > initiator: [S.], seq 33211, ack 172, win 65535, options [mss 1460,sackOK,TS val 010 ecr 63,nop,wscale 8]
- 03 initiator > responder: [.], ack 33212, win 2920, options [nop,nop,TS val 068 ecr 010], length 0
- 04 initiator > responder: [P.], seq 172:240, ack 33212, win 2920, options [nop,nop,TS val 279 ecr 010], length 68
-
-Window is 5840 starting from 33212 -> 39052.
-
- 05 responder > initiator: [.], ack 240, win 256, options [nop,nop,TS val 872 ecr 279], length 0
- 06 responder > initiator: [.], seq 33212:34530, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
-
-This is fine, conntrack will flag the connection as having outstanding
-data (UNACKED), which lowers the conntrack timeout to 300s.
-
- 07 responder > initiator: [.], seq 34530:35848, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 08 responder > initiator: [.], seq 35848:37166, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 09 responder > initiator: [.], seq 37166:38484, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 10 responder > initiator: [.], seq 38484:39802, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
-
-Packet 10 is already sending more than permitted, but conntrack doesn't
-validate this (only seq is tested vs. maxend, not 'seq+len').
-
-38484 is acceptable, but only up to 39052, so this packet should
-not have been sent (or only 568 bytes, not 1318).
-
-At this point, connection is still in '300s' mode.
-
-Next packet however will get flagged:
- 11 responder > initiator: [P.], seq 39802:40128, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 326
-
-nf_ct_proto_6: SEQ is over the upper bound (over the window of the receiver) .. LEN=378 .. SEQ=39802 ACK=240 ACK PSH ..
-
-Now, a couple of replies/acks comes in:
-
- 12 initiator > responder: [.], ack 34530, win 4368,
-[.. irrelevant acks removed ]
- 16 initiator > responder: [.], ack 39802, win 8712, options [nop,nop,TS val 296201291 ecr 2982371892], length 0
-
-This ack is significant -- this acks the last packet send by the
-responder that conntrack considered valid.
-
-This means that ack == td_end.  This will withdraw the
-'unacked data' flag, the connection moves back to the 5-day timeout
-of established conntracks.
-
- 17 initiator > responder: ack 40128, win 10030, ...
-
-This packet is also flagged as invalid.
-
-Because conntrack only updates state based on packets that are
-considered valid, packet 11 'did not exist' and that gets us:
-
-nf_ct_proto_6: ACK is over upper bound 39803 (ACKed data not seen yet) .. SEQ=240 ACK=40128 WINDOW=10030 RES=0x00 ACK URG
-
-Because this received and processed by the endpoints, the conntrack entry
-remains in a bad state, no packets will ever be considered valid again:
-
- 30 responder > initiator: [F.], seq 40432, ack 2045, win 391, ..
- 31 initiator > responder: [.], ack 40433, win 11348, ..
- 32 initiator > responder: [F.], seq 2045, ack 40433, win 11348 ..
-
-... all trigger 'ACK is over bound' test and we end up with
-non-early-evictable 5-day default timeout.
-
-NB: This patch triggers a bunch of checkpatch warnings because of silly
-indent.  I will resend the cleanup series linked below to reduce the
-indent level once this change has propagated to net-next.
-
-I could route the cleanup via nf but that causes extra backport work for
-stable maintainers.
-
-Link: https://lore.kernel.org/netfilter-devel/20220720175228.17880-1-fw@strlen.de/T/#mb1d7147d36294573cc4f81d00f9f8dadfdd06cd8
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: James Clark <james.clark@arm.com>
 ---
- net/netfilter/nf_conntrack_proto_tcp.c | 31 ++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/hwtracing/coresight/coresight-catu.h |  8 ++---
+ drivers/hwtracing/coresight/coresight-core.c | 18 ++++++++--
+ drivers/hwtracing/coresight/coresight-priv.h | 35 +++++---------------
+ drivers/hwtracing/coresight/coresight-tmc.h  |  4 +--
+ include/linux/coresight.h                    | 27 +++++++++------
+ 5 files changed, 47 insertions(+), 45 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index 3cee5d8ee7027..1ecfdc4f23be8 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -671,6 +671,37 @@ static bool tcp_in_window(struct nf_conn *ct,
- 		    tn->tcp_be_liberal)
- 			res = true;
- 		if (!res) {
-+			bool seq_ok = before(seq, sender->td_maxend + 1);
+diff --git a/drivers/hwtracing/coresight/coresight-catu.h b/drivers/hwtracing/coresight/coresight-catu.h
+index 6160c2d75a56..442e034bbfba 100644
+--- a/drivers/hwtracing/coresight/coresight-catu.h
++++ b/drivers/hwtracing/coresight/coresight-catu.h
+@@ -70,24 +70,24 @@ struct catu_drvdata {
+ static inline u32							\
+ catu_read_##name(struct catu_drvdata *drvdata)				\
+ {									\
+-	return coresight_read_reg_pair(drvdata->base, offset, -1);	\
++	return csdev_access_relaxed_read32(&drvdata->csdev->access, offset); \
+ }									\
+ static inline void							\
+ catu_write_##name(struct catu_drvdata *drvdata, u32 val)		\
+ {									\
+-	coresight_write_reg_pair(drvdata->base, val, offset, -1);	\
++	csdev_access_relaxed_write32(&drvdata->csdev->access, val, offset); \
+ }
+ 
+ #define CATU_REG_PAIR(name, lo_off, hi_off)				\
+ static inline u64							\
+ catu_read_##name(struct catu_drvdata *drvdata)				\
+ {									\
+-	return coresight_read_reg_pair(drvdata->base, lo_off, hi_off);	\
++	return csdev_access_relaxed_read_pair(&drvdata->csdev->access, lo_off, hi_off); \
+ }									\
+ static inline void							\
+ catu_write_##name(struct catu_drvdata *drvdata, u64 val)		\
+ {									\
+-	coresight_write_reg_pair(drvdata->base, val, lo_off, hi_off);	\
++	csdev_access_relaxed_write_pair(&drvdata->csdev->access, val, lo_off, hi_off); \
+ }
+ 
+ CATU_REG32(control, CATU_CONTROL);
+diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
+index c63b2167a69f..d5dbc67bacb4 100644
+--- a/drivers/hwtracing/coresight/coresight-core.c
++++ b/drivers/hwtracing/coresight/coresight-core.c
+@@ -60,7 +60,7 @@ EXPORT_SYMBOL_GPL(coresight_barrier_pkt);
+ 
+ static const struct cti_assoc_op *cti_assoc_ops;
+ 
+-ssize_t coresight_simple_show(struct device *_dev,
++ssize_t coresight_simple_show_pair(struct device *_dev,
+ 			      struct device_attribute *attr, char *buf)
+ {
+ 	struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev);
+@@ -72,7 +72,21 @@ ssize_t coresight_simple_show(struct device *_dev,
+ 	pm_runtime_put_sync(_dev->parent);
+ 	return sysfs_emit(buf, "0x%llx\n", val);
+ }
+-EXPORT_SYMBOL_GPL(coresight_simple_show);
++EXPORT_SYMBOL_GPL(coresight_simple_show_pair);
 +
-+			if (!seq_ok) {
-+				u32 overshot = end - sender->td_maxend + 1;
-+				bool ack_ok;
++ssize_t coresight_simple_show32(struct device *_dev,
++			      struct device_attribute *attr, char *buf)
++{
++	struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev);
++	struct cs_off_attribute *cs_attr = container_of(attr, struct cs_off_attribute, attr);
++	u64 val;
 +
-+				ack_ok = after(sack, receiver->td_end - MAXACKWINDOW(sender) - 1);
++	pm_runtime_get_sync(_dev->parent);
++	val = csdev_access_relaxed_read32(&csdev->access, cs_attr->off);
++	pm_runtime_put_sync(_dev->parent);
++	return sysfs_emit(buf, "0x%llx\n", val);
++}
++EXPORT_SYMBOL_GPL(coresight_simple_show32);
+ 
+ void coresight_set_cti_ops(const struct cti_assoc_op *cti_op)
+ {
+diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
+index c211979deca5..595ce5862056 100644
+--- a/drivers/hwtracing/coresight/coresight-priv.h
++++ b/drivers/hwtracing/coresight/coresight-priv.h
+@@ -41,8 +41,8 @@
+ #define ETM_MODE_EXCL_USER	BIT(31)
+ struct cs_pair_attribute {
+ 	struct device_attribute attr;
+-	s32 lo_off;
+-	s32 hi_off;
++	u32 lo_off;
++	u32 hi_off;
+ };
+ 
+ struct cs_off_attribute {
+@@ -50,21 +50,23 @@ struct cs_off_attribute {
+ 	u32 off;
+ };
+ 
+-extern ssize_t coresight_simple_show(struct device *_dev,
++extern ssize_t coresight_simple_show32(struct device *_dev,
++				     struct device_attribute *attr, char *buf);
++extern ssize_t coresight_simple_show_pair(struct device *_dev,
+ 				     struct device_attribute *attr, char *buf);
+ 
+ #define coresight_simple_reg32(name, offset)				\
+-	(&((struct cs_pair_attribute[]) {				\
++	(&((struct cs_off_attribute[]) {				\
+ 	   {								\
+-		__ATTR(name, 0444, coresight_simple_show, NULL),	\
+-		offset, -1						\
++		__ATTR(name, 0444, coresight_simple_show32, NULL),	\
++		offset							\
+ 	   }								\
+ 	})[0].attr.attr)
+ 
+ #define coresight_simple_reg64(name, lo_off, hi_off)			\
+ 	(&((struct cs_pair_attribute[]) {				\
+ 	   {								\
+-		__ATTR(name, 0444, coresight_simple_show, NULL),	\
++		__ATTR(name, 0444, coresight_simple_show_pair, NULL),	\
+ 		lo_off, hi_off						\
+ 	   }								\
+ 	})[0].attr.attr)
+@@ -130,25 +132,6 @@ static inline void CS_UNLOCK(void __iomem *addr)
+ 	} while (0);
+ }
+ 
+-static inline u64
+-coresight_read_reg_pair(void __iomem *addr, s32 lo_offset, s32 hi_offset)
+-{
+-	u64 val;
+-
+-	val = readl_relaxed(addr + lo_offset);
+-	val |= (hi_offset < 0) ? 0 :
+-	       (u64)readl_relaxed(addr + hi_offset) << 32;
+-	return val;
+-}
+-
+-static inline void coresight_write_reg_pair(void __iomem *addr, u64 val,
+-						 s32 lo_offset, s32 hi_offset)
+-{
+-	writel_relaxed((u32)val, addr + lo_offset);
+-	if (hi_offset >= 0)
+-		writel_relaxed((u32)(val >> 32), addr + hi_offset);
+-}
+-
+ void coresight_disable_path(struct list_head *path);
+ int coresight_enable_path(struct list_head *path, u32 mode, void *sink_data);
+ struct coresight_device *coresight_get_sink(struct list_head *path);
+diff --git a/drivers/hwtracing/coresight/coresight-tmc.h b/drivers/hwtracing/coresight/coresight-tmc.h
+index 6bec20a392b3..66959557cf39 100644
+--- a/drivers/hwtracing/coresight/coresight-tmc.h
++++ b/drivers/hwtracing/coresight/coresight-tmc.h
+@@ -282,12 +282,12 @@ ssize_t tmc_etr_get_sysfs_trace(struct tmc_drvdata *drvdata,
+ static inline u64							\
+ tmc_read_##name(struct tmc_drvdata *drvdata)				\
+ {									\
+-	return coresight_read_reg_pair(drvdata->base, lo_off, hi_off);	\
++	return csdev_access_relaxed_read_pair(&drvdata->csdev->access, lo_off, hi_off); \
+ }									\
+ static inline void							\
+ tmc_write_##name(struct tmc_drvdata *drvdata, u64 val)			\
+ {									\
+-	coresight_write_reg_pair(drvdata->base, val, lo_off, hi_off);	\
++	csdev_access_relaxed_write_pair(&drvdata->csdev->access, val, lo_off, hi_off); \
+ }
+ 
+ TMC_REG_PAIR(rrp, TMC_RRP, TMC_RRPHI)
+diff --git a/include/linux/coresight.h b/include/linux/coresight.h
+index a47dd1f62216..1554021231f9 100644
+--- a/include/linux/coresight.h
++++ b/include/linux/coresight.h
+@@ -373,21 +373,26 @@ static inline u32 csdev_access_relaxed_read32(struct csdev_access *csa,
+ }
+ 
+ static inline u64 csdev_access_relaxed_read_pair(struct csdev_access *csa,
+-						 s32 lo_offset, s32 hi_offset)
++						 u32 lo_offset, u32 hi_offset)
+ {
+-	u64 val;
+-
+ 	if (likely(csa->io_mem)) {
+-		val = readl_relaxed(csa->base + lo_offset);
+-		val |= (hi_offset < 0) ? 0 :
+-		       (u64)readl_relaxed(csa->base + hi_offset) << 32;
+-		return val;
++		return readl_relaxed(csa->base + lo_offset) |
++			((u64)readl_relaxed(csa->base + hi_offset) << 32);
+ 	}
+ 
+-	val = csa->read(lo_offset, true, false);
+-	val |= (hi_offset < 0) ? 0 :
+-	       (u64)csa->read(hi_offset, true, false) << 32;
+-	return val;
++	return csa->read(lo_offset, true, false) | (csa->read(hi_offset, true, false) << 32);
++}
 +
-+				if (in_recv_win &&
-+				    ack_ok &&
-+				    overshot <= receiver->td_maxwin &&
-+				    before(sack, receiver->td_end + 1)) {
-+					/* Work around TCPs that send more bytes than allowed by
-+					 * the receive window.
-+					 *
-+					 * If the (marked as invalid) packet is allowed to pass by
-+					 * the ruleset and the peer acks this data, then its possible
-+					 * all future packets will trigger 'ACK is over upper bound' check.
-+					 *
-+					 * Thus if only the sequence check fails then do update td_end so
-+					 * possible ACK for this data can update internal state.
-+					 */
-+					sender->td_end = end;
-+					sender->flags |= IP_CT_TCP_FLAG_DATA_UNACKNOWLEDGED;
-+
-+					nf_ct_l4proto_log_invalid(skb, ct, hook_state,
-+								  "%u bytes more than expected", overshot);
-+					return res;
-+				}
-+			}
-+
- 			nf_ct_l4proto_log_invalid(skb, ct, hook_state,
- 			"%s",
- 			before(seq, sender->td_maxend + 1) ?
++static inline void csdev_access_relaxed_write_pair(struct csdev_access *csa, u64 val,
++						   u32 lo_offset, u32 hi_offset)
++{
++	if (likely(csa->io_mem)) {
++		writel_relaxed((u32)val, csa->base + lo_offset);
++		writel_relaxed((u32)(val >> 32), csa->base + hi_offset);
++	} else {
++		csa->write((u32)val, lo_offset, true, false);
++		csa->write((u32)(val >> 32), hi_offset, true, false);
++	}
+ }
+ 
+ static inline u32 csdev_access_read32(struct csdev_access *csa, u32 offset)
 -- 
-2.35.1
+2.28.0
 
