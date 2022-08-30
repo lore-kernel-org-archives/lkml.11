@@ -2,95 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0227DECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 022CAECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230245AbiH3VQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 17:16:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S231364AbiH3VQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 17:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiH3VQV (ORCPT
+        with ESMTP id S229788AbiH3VQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 17:16:21 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74E284EF2
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:16:20 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-11f11d932a8so11449306fac.3
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:16:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=QIzx4jr+4KB27xfkYmwQ1uaET1dYVTZcRm2qTQ+l5zs=;
-        b=8VXnPOAdmSTU8lKGtg1El42/CoEBkWOI1/bj99Lwgd0kMzBuMN4ixRwyqtuefr/9rE
-         SKHcG8wKE00HTyqnyjeLIq+5FE5LNmfpDcR8JEt9yxutl5IIYR2kAM1ptmWIKQLmXQZp
-         WoFbsQQdv/pHTvRfoWCMOOmt9xJuMS3fxNlFLADjtDPTuft95/nU6DIF/GAqAQTF5BlG
-         Tm5WRTSb8mGfDx/bBj6BpcmGhjnC+1Qqe3qrr8UcbIBlxiF9tnz2RJekzxgZs8v56cFj
-         w+QKtMmeMYLbugx7I0fDKVrYruuoNl9ZPd6AiShx6hKp7nKp2pVofyIn+b71h8aLtixt
-         pG4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=QIzx4jr+4KB27xfkYmwQ1uaET1dYVTZcRm2qTQ+l5zs=;
-        b=z6oIdriiFKc5CHHDEdLZHx+f3JRZLYBCWkRpyNjRFw/rmGt9Ta7gp4JGLUEilvUOfL
-         UA/JnBadwWVA6vlnvM7kNXYFx6VTWD7r6aPW0bguQjm+hgC1X6d7E7crwk34ozpZ8KMe
-         wAB0TYaLSup1ETsu0Sb9w56gprCWE3l42CFio0xA5pRH4s5P8bXTRHmYfiZco5OBzvNR
-         nIJYxu02L/tr3C/jJgLzFD5aT0GzdkvT1VQMXwGjJ8C7JGiVt2fkTTDRSNo2N44hDM98
-         8yTpWKcQZrn04U6X1KiB4zIV+CAxW5vclu9UtvCgT7HjdwTmI09IiZL8uKClZoBlRqgv
-         CRrg==
-X-Gm-Message-State: ACgBeo0dxGoF6ZpsfJj/zzcMCQXTZVVmI66y/5zUkKWND1asqpI87tk0
-        tY6a87MGnRVdfMMhgOAHYZZG8MSjEAwB3skgUKIX
-X-Google-Smtp-Source: AA6agR4PY0wH+DhCIemu3ZzjKv/dbXTQ97xMbd4BvrFn5a/ljMprJcT5rh3IbTlI8W2uFj1at8XmUb7mEx7H2E+2FoQ=
-X-Received: by 2002:a05:6808:bd1:b0:345:da59:d3ae with SMTP id
- o17-20020a0568080bd100b00345da59d3aemr69557oik.136.1661894180151; Tue, 30 Aug
- 2022 14:16:20 -0700 (PDT)
+        Tue, 30 Aug 2022 17:16:22 -0400
+Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B598606B;
+        Tue, 30 Aug 2022 14:16:20 -0700 (PDT)
+Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4MHKqR65VtzDrsL;
+        Tue, 30 Aug 2022 21:16:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1661894180; bh=2LJd07g7yK6u2XwvnyVnORNPFxUFZJkyUqJFurUTMrQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=BM5wux5WKOM8D76JkVaGsBkoeV/gdAdQ45z7BGR0hoE7EYDZsf+g7/KWHArdeF/Sw
+         6p0XCto3DIMm3TqP60WgKlNrQKgar338etQ2CMKwg2QleloSLBsKfQq1vrAs2Y4c3+
+         d4HFd37cqKDCR+yx3JzTPOSrihI/AQgSthLqrPAk=
+X-Riseup-User-ID: DB8C30363A75DDC5AAAB0D7668C8A89B53A1C6DDDE5383F9E75BDEF30F6F0259
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews2.riseup.net (Postfix) with ESMTPSA id 4MHKqK55TRz1ySR;
+        Tue, 30 Aug 2022 21:16:13 +0000 (UTC)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+To:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        David Gow <davidgow@google.com>, brendanhiggins@google.com,
+        Arthur Grillo <arthur.grillo@usp.br>,
+        michal.winiarski@intel.com,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Cc:     kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+Subject: [PATCH 1/2] drm/tests: Split drm_framebuffer_create_test into parameterized tests
+Date:   Tue, 30 Aug 2022 18:16:02 -0300
+Message-Id: <20220830211603.191734-1-mairacanal@riseup.net>
 MIME-Version: 1.0
-References: <20220830155253.19364-1-cgzones@googlemail.com>
-In-Reply-To: <20220830155253.19364-1-cgzones@googlemail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 30 Aug 2022 17:16:09 -0400
-Message-ID: <CAHC9VhRm468n-OEmBztymAi+ADHd1bnKNYXvt2-0S4oNk9OCAw@mail.gmail.com>
-Subject: Re: [PATCH] selinux: declare read-only parameters const
-To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
-Cc:     selinux@vger.kernel.org,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 11:53 AM Christian G=C3=B6ttsche
-<cgzones@googlemail.com> wrote:
->
-> Declare ebitmap, mls_level and mls_context parameters const where they
-> are only read from.  This allows callers to supply pointers to const
-> as arguments and increases readability.
->
-> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
-> ---
-> This patch is similar to userspace commits ("libsepol: mark read-only
-> parameters of ebitmap interfaces const") [1] and ("libsepol: mark
-> immutable mls and context parameter const") [2].
-> Pointers to const are for example used in the (for now userspace only)
-> policy validation code.
->
-> [1]: https://github.com/SELinuxProject/selinux/commit/390ec54d278a14d9c29=
-b80cc4fc5cb9ba504ed13
-> [2]: https://github.com/SELinuxProject/selinux/commit/6359946633507db1d98=
-b24638cf22eb5afdcd272
-> ---
->  security/selinux/ss/context.h   | 17 +++++++++--------
->  security/selinux/ss/ebitmap.c   | 21 +++++++++++----------
->  security/selinux/ss/ebitmap.h   | 18 +++++++++---------
->  security/selinux/ss/mls_types.h |  4 ++--
->  4 files changed, 31 insertions(+), 29 deletions(-)
+The igt_check_drm_framebuffer_create is based on a loop that executes
+tests for all createbuffer_tests test cases. This could be better
+represented by parameterized tests, provided by KUnit.
 
-Merged into selinux/next, thanks!
+So, convert the igt_check_drm_framebuffer_create test into parameterized tests.
 
---=20
-paul-moore.com
+Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+---
+ drivers/gpu/drm/tests/drm_framebuffer_test.c | 23 +++++++++-----------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/gpu/drm/tests/drm_framebuffer_test.c b/drivers/gpu/drm/tests/drm_framebuffer_test.c
+index ec7a08ba4056..3e46fd9f6615 100644
+--- a/drivers/gpu/drm/tests/drm_framebuffer_test.c
++++ b/drivers/gpu/drm/tests/drm_framebuffer_test.c
+@@ -25,7 +25,7 @@ struct drm_framebuffer_test {
+ 	const char *name;
+ };
+ 
+-static struct drm_framebuffer_test createbuffer_tests[] = {
++static const struct drm_framebuffer_test drm_framebuffer_create_cases[] = {
+ { .buffer_created = 1, .name = "ABGR8888 normal sizes",
+ 	.cmd = { .width = 600, .height = 600, .pixel_format = DRM_FORMAT_ABGR8888,
+ 		 .handles = { 1, 0, 0 }, .pitches = { 4 * 600, 0, 0 },
+@@ -340,28 +340,25 @@ static struct drm_device mock_drm_device = {
+ 	},
+ };
+ 
+-static int execute_drm_mode_fb_cmd2(struct drm_mode_fb_cmd2 *r)
++static void drm_framebuffer_create_test(struct kunit *test)
+ {
++	const struct drm_framebuffer_test *params = test->param_value;
+ 	int buffer_created = 0;
+ 
+ 	mock_drm_device.dev_private = &buffer_created;
+-	drm_internal_framebuffer_create(&mock_drm_device, r, NULL);
+-	return buffer_created;
++	drm_internal_framebuffer_create(&mock_drm_device, &params->cmd, NULL);
++	KUNIT_EXPECT_EQ(test, params->buffer_created, buffer_created);
+ }
+ 
+-static void igt_check_drm_framebuffer_create(struct kunit *test)
++static void drm_framebuffer_to_desc(const struct drm_framebuffer_test *t, char *desc)
+ {
+-	int i = 0;
+-
+-	for (i = 0; i < ARRAY_SIZE(createbuffer_tests); i++) {
+-		KUNIT_EXPECT_EQ_MSG(test, createbuffer_tests[i].buffer_created,
+-				    execute_drm_mode_fb_cmd2(&createbuffer_tests[i].cmd),
+-		     "Test %d: \"%s\" failed\n", i, createbuffer_tests[i].name);
+-	}
++	strcpy(desc, t->name);
+ }
+ 
++KUNIT_ARRAY_PARAM(drm_framebuffer_create, drm_framebuffer_create_cases, drm_framebuffer_to_desc);
++
+ static struct kunit_case drm_framebuffer_tests[] = {
+-	KUNIT_CASE(igt_check_drm_framebuffer_create),
++	KUNIT_CASE_PARAM(drm_framebuffer_create_test, drm_framebuffer_create_gen_params),
+ 	{ }
+ };
+ 
+-- 
+2.37.2
+
