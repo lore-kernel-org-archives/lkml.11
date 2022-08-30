@@ -2,111 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 006A0ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:17:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58755ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbiH3XRY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:17:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37858 "EHLO
+        id S229565AbiH3XRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231768AbiH3XQq (ORCPT
+        with ESMTP id S231779AbiH3XQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:16:46 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286C66B8C6
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:19 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id z72so10575137iof.12
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:19 -0700 (PDT)
+        Tue, 30 Aug 2022 19:16:47 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949886B8FE
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:21 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-33dd097f993so192159947b3.10
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=A3xTTsKZx/5fCLbOqrazlesBJJTiVoLwUz/jQe2gDwc=;
-        b=enSBMG0ikj2KVRid8ICGNrBLNn4mDnrczn9UDKjUzxD0GnYzzrVpmDo/yOottmAKUw
-         XdEytm0iTECUDxcQ0+a1t9pT8bZ6J1CZu3ZbUx2DQN0kMjOfgMXHg7iAQIHXcXHVo8No
-         x6/2xXo1E8a9bvUwMSSh9HPbQmCHsO5YiLHWw=
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:reply-to:from:to:cc;
+        bh=/leTTfx+tYGUV20b38Vn3CO6vARPbHwJ64uO0txcnTA=;
+        b=WLC90H12sf6WqFQfaKUgHPqCVgt+zRiHUQdeDttwimVBeBarQp+yBSLUEaGiUFUR//
+         +KsUCEknT8rhNqesVvp8PeQgjvnh8C3OpaQvnbqRwY/NqXNkB/u8iy+u4dDM9/4/e8Il
+         fGNTiWDY/+dlovqp96EsGC/xZtDcGzDNQXckiYyMFSL14y1SAVm6iriu1N8+dC9f9ZLv
+         ohbKHDDh9+vIjKBq3Vd7ebfFogGRFoUuExgre4AymuPvAF2VQEnjTqn9kZUXrKAv2+EB
+         TqcRPgz/CsyDpxZYSQ8qkf3nuH/cRWImDtsuEPiypEwceQsWcBI7IReVBMWKjilI4UCI
+         mTlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=A3xTTsKZx/5fCLbOqrazlesBJJTiVoLwUz/jQe2gDwc=;
-        b=fV8pdaH5ib3HdewnA6ddIN8KZlc5XMqio8P6LtQEhaxyfTrXtQJoWkcm2U4HXrcWPD
-         k0kezsQ3F+Y24E4QqMeVX2u+nlgB9k3EknKgDppFGhvpHO9VjM7VLuMicZ1GMxLGOK7p
-         RXgh/08I/0jTauNUiPApblHm1YcRd0S6b/DH5jawzzZQw9URwsJ1QR5o6Ve7i85gimBq
-         B5nV/kvXPizOIafi3i6AF6CdEPOq5rTrtE3xL51IoGiH+fOCNO5PzmGawi0tWzx9mZED
-         FPkBU1pxbP4dTChO76GdbTany9eiuEmPa3I8Ob9fWtHjmgImjhxXvPsHfXOoQuoP480Z
-         eRKw==
-X-Gm-Message-State: ACgBeo0A6FNU+nG9D4DJCsam1HFBs8kqvEG9kIYwIsbXLUWuierdCe8D
-        Zx6zzMY82hmGd7cDG/q3a9g9ew==
-X-Google-Smtp-Source: AA6agR6sWZgtFPbmAA1vaJWYl2qtrzuw360jdq0jUvuVKES+v1H37eSeKRiCfPEp7nZSSmyKKOGZYA==
-X-Received: by 2002:a05:6638:130c:b0:343:5bc5:7a45 with SMTP id r12-20020a056638130c00b003435bc57a45mr14017254jad.250.1661901378747;
-        Tue, 30 Aug 2022 16:16:18 -0700 (PDT)
-Received: from rrangel920.bld.corp.google.com (h24-56-189-219.arvdco.broadband.dynamic.tds.net. [24.56.189.219])
-        by smtp.gmail.com with ESMTPSA id z30-20020a056602081e00b0068b1858c81asm6165821iow.13.2022.08.30.16.16.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 16:16:18 -0700 (PDT)
-From:   Raul E Rangel <rrangel@chromium.org>
-To:     linux-acpi@vger.kernel.org, linux-input@vger.kernel.org
-Cc:     hdegoede@redhat.com, mario.limonciello@amd.com, timvp@google.com,
-        rafael@kernel.org, Raul E Rangel <rrangel@chromium.org>,
-        Len Brown <lenb@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH 8/8] ACPI: PM: Take wake IRQ into consideration when entering suspend-to-idle
-Date:   Tue, 30 Aug 2022 17:15:41 -0600
-Message-Id: <20220830171332.8.I7d9202463f08373feccd6e8fd87482c4f40ece5d@changeid>
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:reply-to:x-gm-message-state:from:to:cc;
+        bh=/leTTfx+tYGUV20b38Vn3CO6vARPbHwJ64uO0txcnTA=;
+        b=WMQQHfRxqJGqOSTA00cFV2236I0XFXFqJ7TgV8h6WXj2bjwV6qBsOspkN2nWuInHbS
+         MFUIjACGajuf9h46eNcpRFdc2EVoy2yiFh56i7H9CHYB8nJB/cHSeOy+W9pTZ+lemkcl
+         tWkS90SbVzVGiwTKhRi5qilhJ63uW4+5HP5w1i3uecm4sioWRp++tzh2BZz+woNG1LwR
+         7N/FF66bDtiHttVSmcTFWfGEPfuQTNh0yG66O/db3TpQnO4oIzO3sxkwIGkN25AEADxR
+         9zvYgQVYxwRhng4XDsViUlE+Ucx2bmQ/AsHrDRGhPhxV4RvZ/qc8eOESyE+MoRW3TLZp
+         WcZg==
+X-Gm-Message-State: ACgBeo3hf4YhbhUWaTgO9B3DbkP9bX8rnimU3rPt/UKeNLKh2p28W6px
+        hi8sGSjq1eCH2PSOY0ybFKruxYQL0mw=
+X-Google-Smtp-Source: AA6agR7wTFF2kwxnrSHkfUK9uKFIyJtRm5OhD26Vk649tRzd9fsQh0QhSqCS0giw3BAfZUUAxB9jIt9pfp8=
+X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
+ (user=seanjc job=sendgmr) by 2002:a81:b71f:0:b0:340:eb70:54c2 with SMTP id
+ v31-20020a81b71f000000b00340eb7054c2mr11812408ywh.404.1661901380159; Tue, 30
+ Aug 2022 16:16:20 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Tue, 30 Aug 2022 23:15:49 +0000
+In-Reply-To: <20220830231614.3580124-1-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220830231614.3580124-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-In-Reply-To: <20220830231541.1135813-1-rrangel@chromium.org>
-References: <20220830231541.1135813-1-rrangel@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <20220830231614.3580124-3-seanjc@google.com>
+Subject: [PATCH v5 02/27] KVM: VMX: Drop bits 31:16 when shoving exception
+ error code into VMCS
+From:   Sean Christopherson <seanjc@google.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Oliver Upton <oupton@google.com>,
+        Peter Shier <pshier@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change adds support for ACPI devices that use ExclusiveAndWake or
-SharedAndWake in their _CRS GpioInt definition (instead of using _PRW),
-and also provide power resources. Previously the ACPI subsystem had no
-idea if the device had a wake capable interrupt armed. This resulted
-in the ACPI device PM system placing the device into D3Cold, and thus
-cutting power to the device. With this change we will now query the
-_S0W method to figure out the appropriate wake capable D-state.
+Deliberately truncate the exception error code when shoving it into the
+VMCS (VM-Entry field for vmcs01 and vmcs02, VM-Exit field for vmcs12).
+Intel CPUs are incapable of handling 32-bit error codes and will never
+generate an error code with bits 31:16, but userspace can provide an
+arbitrary error code via KVM_SET_VCPU_EVENTS.  Failure to drop the bits
+on exception injection results in failed VM-Entry, as VMX disallows
+setting bits 31:16.  Setting the bits on VM-Exit would at best confuse
+L1, and at worse induce a nested VM-Entry failure, e.g. if L1 decided to
+reinject the exception back into L2.
 
-Signed-off-by: Raul E Rangel <rrangel@chromium.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Jim Mattson <jmattson@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
+ arch/x86/kvm/vmx/nested.c | 11 ++++++++++-
+ arch/x86/kvm/vmx/vmx.c    | 12 +++++++++++-
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
- drivers/acpi/device_pm.c | 19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/acpi/device_pm.c b/drivers/acpi/device_pm.c
-index 9dce1245689ca2..6bc81f525d5160 100644
---- a/drivers/acpi/device_pm.c
-+++ b/drivers/acpi/device_pm.c
-@@ -681,8 +681,23 @@ static int acpi_dev_pm_get_state(struct device *dev, struct acpi_device *adev,
- 		d_min = ret;
- 		wakeup = device_may_wakeup(dev) && adev->wakeup.flags.valid
- 			&& adev->wakeup.sleep_state >= target_state;
--	} else {
--		wakeup = adev->wakeup.flags.valid;
-+	} else if (acpi_device_can_wakeup(adev)) {
-+		/* ACPI GPE from specified by _PRW. */
-+		wakeup = true;
-+	} else if (device_may_wakeup(dev) && dev->power.wakeirq) {
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index ca07d4ce4383..2ca8f1ad9c59 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3827,7 +3827,16 @@ static void nested_vmx_inject_exception_vmexit(struct kvm_vcpu *vcpu,
+ 	u32 intr_info = nr | INTR_INFO_VALID_MASK;
+ 
+ 	if (vcpu->arch.exception.has_error_code) {
+-		vmcs12->vm_exit_intr_error_code = vcpu->arch.exception.error_code;
 +		/*
-+		 * The ACPI subsystem doesn't manage the wake bit for IRQs
-+		 * defined with ExclusiveAndWake and SharedAndWake. Instead we
-+		 * expect them to be managed via the PM subsystem. Drivers
-+		 * should call dev_pm_set_wake_irq to register an IRQ as a wake
-+		 * source.
-+		 *
-+		 * If a device has a wake IRQ attached we need to check the
-+		 * _S0W method to get the correct wake D-state. Otherwise we
-+		 * end up putting the device into D3Cold which will more than
-+		 * likely disable wake functionality.
++		 * Intel CPUs do not generate error codes with bits 31:16 set,
++		 * and more importantly VMX disallows setting bits 31:16 in the
++		 * injected error code for VM-Entry.  Drop the bits to mimic
++		 * hardware and avoid inducing failure on nested VM-Entry if L1
++		 * chooses to inject the exception back to L2.  AMD CPUs _do_
++		 * generate "full" 32-bit error codes, so KVM allows userspace
++		 * to inject exception error codes with bits 31:16 set.
 +		 */
-+		wakeup = true;
++		vmcs12->vm_exit_intr_error_code = (u16)vcpu->arch.exception.error_code;
+ 		intr_info |= INTR_INFO_DELIVER_CODE_MASK;
  	}
  
- 	/*
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index c9b49a09e6b5..7f3581960eb5 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1695,7 +1695,17 @@ static void vmx_queue_exception(struct kvm_vcpu *vcpu)
+ 	kvm_deliver_exception_payload(vcpu);
+ 
+ 	if (has_error_code) {
+-		vmcs_write32(VM_ENTRY_EXCEPTION_ERROR_CODE, error_code);
++		/*
++		 * Despite the error code being architecturally defined as 32
++		 * bits, and the VMCS field being 32 bits, Intel CPUs and thus
++		 * VMX don't actually supporting setting bits 31:16.  Hardware
++		 * will (should) never provide a bogus error code, but AMD CPUs
++		 * do generate error codes with bits 31:16 set, and so KVM's
++		 * ABI lets userspace shove in arbitrary 32-bit values.  Drop
++		 * the upper bits to avoid VM-Fail, losing information that
++		 * does't really exist is preferable to killing the VM.
++		 */
++		vmcs_write32(VM_ENTRY_EXCEPTION_ERROR_CODE, (u16)error_code);
+ 		intr_info |= INTR_INFO_DELIVER_CODE_MASK;
+ 	}
+ 
 -- 
 2.37.2.672.g94769d06f0-goog
 
