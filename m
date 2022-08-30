@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2462AECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF28ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231442AbiH3RZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:25:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
+        id S231253AbiH3RZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:25:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231375AbiH3RYt (ORCPT
+        with ESMTP id S231390AbiH3RZG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:24:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD587E1904;
-        Tue, 30 Aug 2022 10:22:52 -0700 (PDT)
+        Tue, 30 Aug 2022 13:25:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD4C1612A4;
+        Tue, 30 Aug 2022 10:23:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DCD30B81C55;
-        Tue, 30 Aug 2022 17:22:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0840C4314B;
-        Tue, 30 Aug 2022 17:22:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6C9C61798;
+        Tue, 30 Aug 2022 17:22:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D467C43140;
+        Tue, 30 Aug 2022 17:22:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880148;
-        bh=9BUB6F8qHCVRmkkXwqJ9eg/dFaiKKeYVazMEdqCcvko=;
+        s=k20201202; t=1661880161;
+        bh=clkQyZKh5bH63+URz0rVRixmIuxpZVkeNeCIrGtcjM0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xa0XDSdhkZCAAl//HLundR0LB2Un9W64Y1rUFomVmn8Z+wtag0hsMYsLAMVEB55q9
-         yTET/3UpkB2MscuzyotucDnLvXY80yXb8gpovA1USxGSKqN03lzWz3wCsHL0OHZZud
-         WOMb5p1qLiUE/QqlIAsU0VFzuwhNy259RkZqpqxfBoo9UMp7OEzqkAIthDtQEpWS2N
-         MjRwMcLzl9mcRq219kVvpgRKRt3Y9EY2nXj6Q9BF2vjmMb4J6N3MK9nOz4tWBsA1nZ
-         NSmzYzq31v4hhsCgbg621HZUKIvf47gko/Qpp9UooNVJ2jmqTUUSfURoFz861beX++
-         rGsEowrIJHb1g==
+        b=E+8FPJeb6zO8050kvyhlktdoVznUykcm4PEI2fpV5Ky2a7wt/Zm+q7PzJtdnbsY7j
+         0I/rfxW29W1HWFG8trS7+XYa0SWiU6yh2Oix7Ku8U2R3tLcKMyXl7OgRzJgCMaUVzI
+         Iuz2tHDkBfWyX1VSwTewzTExPY1W0z0j7MvFpfFH86Jw9ps/ZRhBip2DbuTTru+vFb
+         QXp3b0KlIyRwrX96tJ6rYZuEOWs105w1o1TdKo3y3vVWQ6oO6tXQvFHchzQRL/nro/
+         7Z5YVm+AcCgKMKGYu1UtmVKpEsl5H96XfOnQMA0Lkin+tEBc1/yR3z8VSsKnEx2Pqc
+         /ITU82X1HxKNA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 12/23] parisc: Add runtime check to prevent PA2.0 kernels on PA1.x machines
-Date:   Tue, 30 Aug 2022 13:21:29 -0400
-Message-Id: <20220830172141.581086-12-sashal@kernel.org>
+Cc:     Lukasz Luba <lukasz.luba@arm.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 16/23] cpufreq: check only freq_table in __resolve_freq()
+Date:   Tue, 30 Aug 2022 13:21:33 -0400
+Message-Id: <20220830172141.581086-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
 References: <20220830172141.581086-1-sashal@kernel.org>
@@ -51,81 +53,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Lukasz Luba <lukasz.luba@arm.com>
 
-[ Upstream commit 591d2108f3abc4db9f9073cae37cf3591fd250d6 ]
+[ Upstream commit 6ca7076fbfaeccce173aeab832d76b9e49e1034b ]
 
-If a 32-bit kernel was compiled for PA2.0 CPUs, it won't be able to run
-on machines with PA1.x CPUs. Add a check and bail out early if a PA1.x
-machine is detected.
+There is no need to check if the cpufreq driver implements callback
+cpufreq_driver::target_index. The logic in the __resolve_freq uses
+the frequency table available in the policy. It doesn't matter if the
+driver provides 'target_index' or 'target' callback. It just has to
+populate the 'policy->freq_table'.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
+Thus, check only frequency table during the frequency resolving call.
+
+Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/head.S | 43 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
+ drivers/cpufreq/cpufreq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/parisc/kernel/head.S b/arch/parisc/kernel/head.S
-index aa93d775c34db..598d0938449da 100644
---- a/arch/parisc/kernel/head.S
-+++ b/arch/parisc/kernel/head.S
-@@ -22,7 +22,7 @@
- #include <linux/init.h>
- #include <linux/pgtable.h>
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index cddf7e13c2322..799431d287ee8 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -532,7 +532,7 @@ static unsigned int __resolve_freq(struct cpufreq_policy *policy,
  
--	.level	PA_ASM_LEVEL
-+	.level	1.1
+ 	target_freq = clamp_val(target_freq, policy->min, policy->max);
  
- 	__INITDATA
- ENTRY(boot_args)
-@@ -69,6 +69,47 @@ $bss_loop:
- 	stw,ma          %arg2,4(%r1)
- 	stw,ma          %arg3,4(%r1)
+-	if (!cpufreq_driver->target_index)
++	if (!policy->freq_table)
+ 		return target_freq;
  
-+#if !defined(CONFIG_64BIT) && defined(CONFIG_PA20)
-+	/* This 32-bit kernel was compiled for PA2.0 CPUs. Check current CPU
-+	 * and halt kernel if we detect a PA1.x CPU. */
-+	ldi		32,%r10
-+	mtctl		%r10,%cr11
-+	.level 2.0
-+	mfctl,w		%cr11,%r10
-+	.level 1.1
-+	comib,<>,n	0,%r10,$cpu_ok
-+
-+	load32		PA(msg1),%arg0
-+	ldi		msg1_end-msg1,%arg1
-+$iodc_panic:
-+	copy		%arg0, %r10
-+	copy		%arg1, %r11
-+	load32		PA(init_stack),%sp
-+#define MEM_CONS 0x3A0
-+	ldw		MEM_CONS+32(%r0),%arg0	// HPA
-+	ldi		ENTRY_IO_COUT,%arg1
-+	ldw		MEM_CONS+36(%r0),%arg2	// SPA
-+	ldw		MEM_CONS+8(%r0),%arg3	// layers
-+	load32		PA(__bss_start),%r1
-+	stw		%r1,-52(%sp)		// arg4
-+	stw		%r0,-56(%sp)		// arg5
-+	stw		%r10,-60(%sp)		// arg6 = ptr to text
-+	stw		%r11,-64(%sp)		// arg7 = len
-+	stw		%r0,-68(%sp)		// arg8
-+	load32		PA(.iodc_panic_ret), %rp
-+	ldw		MEM_CONS+40(%r0),%r1	// ENTRY_IODC
-+	bv,n		(%r1)
-+.iodc_panic_ret:
-+	b .				/* wait endless with ... */
-+	or		%r10,%r10,%r10	/* qemu idle sleep */
-+msg1:	.ascii "Can't boot kernel which was built for PA8x00 CPUs on this machine.\r\n"
-+msg1_end:
-+
-+$cpu_ok:
-+#endif
-+
-+	.level	PA_ASM_LEVEL
-+
- 	/* Initialize startup VM. Just map first 16/32 MB of memory */
- 	load32		PA(swapper_pg_dir),%r4
- 	mtctl		%r4,%cr24	/* Initialize kernel root pointer */
+ 	idx = cpufreq_frequency_table_target(policy, target_freq, relation);
 -- 
 2.35.1
 
