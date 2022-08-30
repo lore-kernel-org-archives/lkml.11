@@ -2,80 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 824E6ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D64ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:01:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231801AbiH3SBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:01:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
+        id S229990AbiH3SBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231345AbiH3SBP (ORCPT
+        with ESMTP id S229888AbiH3SBV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:01:15 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B775A8BF;
-        Tue, 30 Aug 2022 11:01:01 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-11e7e0a63e2so17733239fac.4;
-        Tue, 30 Aug 2022 11:01:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=8M/7Lx16+OlBZKe+Y8q5TplQAj/xrxLLqahY/Z66u+I=;
-        b=aF/c7ossgPMUHWpfLPqpJQsHIW69LMkF+0mDwVyl02hsp7zIX9xb7PyjC25AJTLCU6
-         JLhFXvKPoNL6QCM5ZrJNjWs+BX+Nq0hUFVma+HhqzVq185gAudd3VY6RnuJACbJy6iN6
-         KrYjJHTlHNySTb7QJlmiOT6Wz6k8lUWA/NvcgD3wVA34EurMRaWIhDmG+ba9CqURPEm6
-         TzBAw6URAnMq3MJoRyGt6loXXPfa++xLRLt6OAvenqNYL5IZQCDmweAlxzRfue6hHyF1
-         GUYQg2REin15Qxu30pARQ+VAIX/a0Ki4wMGCgPpon9A4Awg3+Y9arzzuPHb73atALY29
-         7N/A==
-X-Gm-Message-State: ACgBeo0/wRaHgsS5jDUiimgk18SZTB3svEp5BJrXuLzA6kJhDVl23QSZ
-        mr4P56KcL3qOPiFAnYjeo8AlWd5c7A==
-X-Google-Smtp-Source: AA6agR7ZDsNAq6OLZ9Us1tI663luQbBgXmT2TSNrkZQM5o6zI6UitXxnefX1mp2lqzQ7fh4fH8qzRw==
-X-Received: by 2002:a05:6808:10c2:b0:345:c2da:79b9 with SMTP id s2-20020a05680810c200b00345c2da79b9mr8468377ois.298.1661882461042;
-        Tue, 30 Aug 2022 11:01:01 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o12-20020a4ae58c000000b0044afc1ba91asm7191960oov.44.2022.08.30.11.01.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 11:01:00 -0700 (PDT)
-Received: (nullmailer pid 1764917 invoked by uid 1000);
-        Tue, 30 Aug 2022 18:00:58 -0000
-Date:   Tue, 30 Aug 2022 13:00:58 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Robert Nelson <robertcnelson@gmail.com>
-Cc:     devicetree@vger.kernel.org, Nishanth Menon <nm@ti.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Jason Kridner <jkridner@beagleboard.org>,
-        Drew Fustini <drew@beagleboard.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: arm: ti: Add bindings for BeagleBone
- AI-64
-Message-ID: <20220830180058.GA1764859-robh@kernel.org>
-References: <20220822230304.2284952-1-robertcnelson@gmail.com>
+        Tue, 30 Aug 2022 14:01:21 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDABF83F0F;
+        Tue, 30 Aug 2022 11:01:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661882481; x=1693418481;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=S+0sT1gSA5uP8yZcYX5e+6AIBTfIqLir8Zo9XeEUKpM=;
+  b=E//fKxXC4SIvpXisNuwLpN0VcET07GI+UFPINmFX6Tbid+oE5yrfs4OW
+   WVpAzTDENNDnnB+oUPV12Kelr2E39tpLjsh3Iq+xyzhNJQIUKmsn6vEBW
+   oN9dfgpPXfTerhk25iKQR0x4IBSiy6hHns2Jx3e9ykKbjGKTUvxrNF9R+
+   p/B7xMdfpfIg2dAK0Sexyac8kQpPl/KOTPerG5f1yqM0IaoQhbRhWYQk4
+   fCXRY3KHK4RlQysmLW2xa7ajMLKhva2mk+bq0yZk11BfYVDQS88vie1sf
+   26YwUVD6Hxv9NFmEPIX8qbN4QaR3tcsY0sVfz1VEQeWGF1qdlNeTbd+Fp
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="178360180"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 11:01:16 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 30 Aug 2022 11:01:15 -0700
+Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 11:01:09 -0700
+From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
+To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
+        <ilpo.jarvinen@linux.intel.com>, <andy.shevchenko@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <johan@kernel.org>,
+        <wander@redhat.com>, <etremblay@distech-controls.com>,
+        <macro@orcam.me.uk>, <geert+renesas@glider.be>, <jk@ozlabs.org>,
+        <phil.edworthy@renesas.com>, <lukas@wunner.de>
+CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>
+Subject: [PATCH v1 tty-next 0/2] 8250: microchip: pci1xxxx: Add driver for the pci1xxxx's quad-uart function.
+Date:   Tue, 30 Aug 2022 23:30:52 +0530
+Message-ID: <20220830180054.1998296-1-kumaravel.thiagarajan@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822230304.2284952-1-robertcnelson@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022 18:03:03 -0500, Robert Nelson wrote:
-> This board is based on the ti,j721e
-> 
-> https://beagleboard.org/ai-64
-> https://git.beagleboard.org/beagleboard/beaglebone-ai-64
-> 
-> Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
-> CC: Rob Herring <robh@kernel.org>
-> CC: Nishanth Menon <nm@ti.com>
-> CC: Jason Kridner <jkridner@beagleboard.org>
-> CC: Drew Fustini <drew@beagleboard.org>
-> ---
-> Changes since v1:
->  - added documenation links
->  - add board in alphabetical order
-> ---
->  Documentation/devicetree/bindings/arm/ti/k3.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+pci1xxxx is a PCIe switch with a multi-function endpoint on one of its
+downstream ports. Quad-uart is one of the functions in the multi-function
+endpoint. This patch adds device driver for the quad-uart function and
+enumerates between 1 to 4 instances of uarts based on the PCIe subsystem
+device ID.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Kumaravel Thiagarajan (2):
+  8250: microchip: pci1xxxx: Add driver for the quad-uart function in
+    the  multi-function endpoint of pci1xxxx device.
+  8250: microchip: pci1xxxx: Add power management functions to
+    pci1xxxx's  quad-uart driver.
+
+ MAINTAINERS                             |   6 +
+ drivers/tty/serial/8250/8250_pci1xxxx.c | 585 ++++++++++++++++++++++++
+ drivers/tty/serial/8250/8250_port.c     |   8 +
+ drivers/tty/serial/8250/Kconfig         |   9 +
+ drivers/tty/serial/8250/Makefile        |   1 +
+ include/uapi/linux/serial_core.h        |   3 +
+ 6 files changed, 612 insertions(+)
+ create mode 100644 drivers/tty/serial/8250/8250_pci1xxxx.c
+
+-- 
+2.25.1
+
