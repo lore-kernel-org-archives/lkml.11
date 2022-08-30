@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA8ABC0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7571ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231320AbiH3RAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
+        id S231236AbiH3RAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231282AbiH3Q7i (ORCPT
+        with ESMTP id S231178AbiH3Q7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:59:38 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D989DC22A5
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:59:28 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id p18so11700909plr.8
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:59:28 -0700 (PDT)
+        Tue, 30 Aug 2022 12:59:44 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9F8DAA18
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:59:40 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id t129so11930959pfb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:59:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=LclRCur2+TmOph0Lw8Vjg5+TpaDfY+BX1hQtzMBpEmo=;
-        b=h07RNOiqIlifbVpVHPhKfocZqgUpN4BvEgeIwwO+HVIgjWt+AZh5u8gy7bLTmU5uxJ
-         NM7+dPKAfaGu5MM2RzTY1UANAfe1XiFA7G1YRTO0fWNgyOZPYgMa98O0R1K4qu6HI9UX
-         MS6Rnea3jJIGCC04cVEMVLRaNQAsGleKSMz5pb1CPwHufS2UQ6CV29dnga0JnQgNIqaA
-         Vm5+k48j5mGsQYBuRyNdmTqR0mrGlBQDjPot5rBL/iym1/6RN6lYnHktNMYf3kgnIkU0
-         yF+9WQRrUXWx61IGuHeTAWd7IFQcMVfwf+W7t9ly7APLAnL4lVK4HDFz6kgjRmKiSpZL
-         ESxA==
+        bh=2RJUahJy1CyyeYAGPRglH4WrcYkv62869DWyoQBcRWE=;
+        b=pcwKwURC2Ax+MN6ar7LnswMcMRwZPdCQFe65TAWQheKtwZO3XjYSU96z4atLSX3KjG
+         RJfnEsmo6Z/xpDrewSftEYfuSud4J6JLMW07mnT7sVXNXDi8lAf2l8Mej4hDEjcqsm7z
+         w4fpfQMxz8s7PYFdDI+ivUbzBhSble2UZ3lApsbcp3br9SwMfOi3+1c9rul5LYKDmcKo
+         P34EvaM7ccBRH4cyeFHuJ23e8LRRck8xsWnRn5kFxkuH/MQoWvcVGmz3jTVBE2UOmEZ0
+         ovr9w8doTI/v1P7R2qB6aOEKj8ij5A3N4lP3cs0mKjPEl2oqVYzjyhQz9qyZmGFlldtr
+         WfkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=LclRCur2+TmOph0Lw8Vjg5+TpaDfY+BX1hQtzMBpEmo=;
-        b=AH/Jx/AEnnSG4/Cklo4km8ba3s3uSnEg8a+6KyIYnKPGfW2pTiO/4UOkq/6uv/9c6X
-         WaI/Nkhq4LyJIPhl5RWH9kYMTJlnHhmL8J/LhONVBbdWodSsp6Zgqz5JPCIqiEf75n+2
-         AMp/M1dsZ/QF3+Ml/3ofsU/OrlvmLSm8irAOCih73Ki+UClUZa2LQisuoObtmtusVVCe
-         +YTlVNGqOQbWvbc2qPLEQBIE/REERrOMSiLDVhs8S62GdVcgqwjH7ui5mDXVkyVL8JKV
-         X8DcoXtuuxtrylrUaUOozPPntaneTxWXzBros/U34iOZeZ7pBLyZqWSr64swVJq0mu8R
-         LQ1A==
-X-Gm-Message-State: ACgBeo0bW1oAk/GpOd7bGPY4DmQ0m78seMuESu/XYYfnMYpoduy6oju6
-        TGN4Qn6EHPOw/98fEJRUd3+k
-X-Google-Smtp-Source: AA6agR7rYHw3fJyVkM6r7m08BcCDtw/6FDziPykL8Mdo2fq4v4sP4oTJABmGn0nQ4ZViDEeSi+xc4Q==
-X-Received: by 2002:a17:902:f651:b0:174:3c03:6be3 with SMTP id m17-20020a170902f65100b001743c036be3mr20369034plg.113.1661878767273;
-        Tue, 30 Aug 2022 09:59:27 -0700 (PDT)
+        bh=2RJUahJy1CyyeYAGPRglH4WrcYkv62869DWyoQBcRWE=;
+        b=Vvpkq1IhhT3etxYi6w/SBKkPRoj8KLaW6eZXCiSITUeCwe7MEutz2qkG3+qYIJIxeh
+         /b5Obr9N6eH1dnp5P6kD/02g1G9UJQsxa5f85U794UcaK25z8DWHFKqT8h60JtYXzrUQ
+         AIWtpo5HiEGZORsCbhL/kK2noC8bfay9O0PAjhJSUSqRmlyYwnlUHwM/LvN3QKXK3Cxi
+         6t1JAALslQLWB7AKcCI1nL1sJgEHMsZ3a8l9+lGa95AfB03g1pAZBueMl3KDDKlNfpjO
+         lFxYX4l8203t34Pxf4P2Rj32KkNHwbzwH11qFUA46z3rxpzk9g6gN0FnEYoPYu15Tz9T
+         ZOcQ==
+X-Gm-Message-State: ACgBeo0wvsLkeJixjBpNA6LIi+SJKgPOgxxekEG0daZiSM2fQNbL24A9
+        r+5RC8OgKUJHLTYRgB2mGgBP
+X-Google-Smtp-Source: AA6agR7tRwab7rC6G1UrdgVxC/KvXmYce/f4rJKit37JFaFDyfHI0nKDM3EUg7fR4CJ8kjOEPuV7qQ==
+X-Received: by 2002:aa7:8393:0:b0:537:701d:e7f3 with SMTP id u19-20020aa78393000000b00537701de7f3mr22351779pfm.50.1661878778765;
+        Tue, 30 Aug 2022 09:59:38 -0700 (PDT)
 Received: from localhost.localdomain ([117.217.182.234])
-        by smtp.gmail.com with ESMTPSA id n59-20020a17090a5ac100b001f510175984sm8841261pji.41.2022.08.30.09.59.22
+        by smtp.gmail.com with ESMTPSA id n59-20020a17090a5ac100b001f510175984sm8841261pji.41.2022.08.30.09.59.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 09:59:26 -0700 (PDT)
+        Tue, 30 Aug 2022 09:59:38 -0700 (PDT)
 From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 To:     lpieralisi@kernel.org, robh@kernel.org, andersson@kernel.org
 Cc:     kw@linux.com, bhelgaas@google.com, linux-pci@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc:     kw@linux.com, bhelgaas@google.com, linux-pci@vger.kernel.org,
         krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
         dmitry.baryshkov@linaro.org,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v2 08/11] PCI: qcom-ep: Make PERST separation optional
-Date:   Tue, 30 Aug 2022 22:28:14 +0530
-Message-Id: <20220830165817.183571-9-manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v2 10/11] dt-bindings: PCI: qcom-ep: Add support for SM8450 SoC
+Date:   Tue, 30 Aug 2022 22:28:16 +0530
+Message-Id: <20220830165817.183571-11-manivannan.sadhasivam@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220830165817.183571-1-manivannan.sadhasivam@linaro.org>
 References: <20220830165817.183571-1-manivannan.sadhasivam@linaro.org>
@@ -68,46 +68,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PERST separation is an optional debug feature used to collect the crash
-dump from the PCIe endpoint devices by the PCIe host when the endpoint
-crashes. This feature keeps the PCIe link up by separating the PCIe IP
-block from the SoC reset logic.
-
-Hence, make the property optional in the driver.
+Add devicetree bindings support for SM8450 SoC. Only the clocks are
+different on this platform, rest is same as SDX55.
 
 Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- drivers/pci/controller/dwc/pcie-qcom-ep.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/pci/qcom,pcie-ep.yaml | 40 +++++++++++++++++--
+ 1 file changed, 37 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom-ep.c b/drivers/pci/controller/dwc/pcie-qcom-ep.c
-index 54ac2fef8b88..4908f08bd90b 100644
---- a/drivers/pci/controller/dwc/pcie-qcom-ep.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom-ep.c
-@@ -216,8 +216,10 @@ static int qcom_pcie_ep_core_reset(struct qcom_pcie_ep *pcie_ep)
-  */
- static void qcom_pcie_ep_configure_tcsr(struct qcom_pcie_ep *pcie_ep)
- {
--	regmap_write(pcie_ep->perst_map, pcie_ep->perst_en, 0);
--	regmap_write(pcie_ep->perst_map, pcie_ep->perst_sep_en, 0);
-+	if (pcie_ep->perst_map) {
-+		regmap_write(pcie_ep->perst_map, pcie_ep->perst_en, 0);
-+		regmap_write(pcie_ep->perst_map, pcie_ep->perst_sep_en, 0);
-+	}
- }
+diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie-ep.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie-ep.yaml
+index a15e71491722..5902b45620ed 100644
+--- a/Documentation/devicetree/bindings/pci/qcom,pcie-ep.yaml
++++ b/Documentation/devicetree/bindings/pci/qcom,pcie-ep.yaml
+@@ -11,7 +11,9 @@ maintainers:
  
- static int qcom_pcie_dw_link_up(struct dw_pcie *pci)
-@@ -463,8 +465,8 @@ static int qcom_pcie_ep_get_io_resources(struct platform_device *pdev,
+ properties:
+   compatible:
+-    const: qcom,sdx55-pcie-ep
++    enum:
++      - qcom,sdx55-pcie-ep
++      - qcom,sm8450-pcie-ep
  
- 	syscon = of_parse_phandle(dev->of_node, "qcom,perst-regs", 0);
- 	if (!syscon) {
--		dev_err(dev, "Failed to parse qcom,perst-regs\n");
--		return -EINVAL;
-+		dev_dbg(dev, "PERST separation not available\n");
-+		return 0;
- 	}
+   reg:
+     items:
+@@ -32,10 +34,12 @@ properties:
+       - const: mmio
  
- 	pcie_ep->perst_map = syscon_node_to_regmap(syscon);
+   clocks:
+-    maxItems: 7
++    minItems: 7
++    maxItems: 8
+ 
+   clock-names:
+-    maxItems: 7
++    minItems: 7
++    maxItems: 8
+ 
+   qcom,perst-regs:
+     description: Reference to a syscon representing TCSR followed by the two
+@@ -125,6 +129,36 @@ allOf:
+             - const: sleep
+             - const: ref
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,sm8450-pcie-ep
++    then:
++      properties:
++        clocks:
++          maxItems: 8
++          items:
++            - description: PCIe Auxiliary clock
++            - description: PCIe CFG AHB clock
++            - description: PCIe Master AXI clock
++            - description: PCIe Slave AXI clock
++            - description: PCIe Slave Q2A AXI clock
++            - description: PCIe Reference clock
++            - description: PCIe DDRSS SF TBU clock
++            - description: PCIe AGGRE NOC AXI clock
++        clock-names:
++          items:
++            - const: aux
++            - const: cfg
++            - const: bus_master
++            - const: bus_slave
++            - const: slave_q2a
++            - const: ref
++            - const: ddrss_sf_tbu
++            - const: aggre_noc_axi
++
+ unevaluatedProperties: false
+ 
+ examples:
 -- 
 2.25.1
 
