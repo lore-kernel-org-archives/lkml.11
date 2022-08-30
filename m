@@ -2,411 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33F4ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0D0ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:47:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231269AbiH3NqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:46:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
+        id S231248AbiH3Nrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:47:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231222AbiH3Nph (ORCPT
+        with ESMTP id S231304AbiH3Nra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:45:37 -0400
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8AA510D4CA;
-        Tue, 30 Aug 2022 06:44:02 -0700 (PDT)
-Received: by mail-qt1-f177.google.com with SMTP id j17so8480023qtp.12;
-        Tue, 30 Aug 2022 06:44:02 -0700 (PDT)
+        Tue, 30 Aug 2022 09:47:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E8B11F196
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:45:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661867105;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=4TQ3D3Ecv0JVJq75Mysm7I94dQGdbTCqUokREWAuRr0=;
+        b=Y8Qmr3S67X+C9PLGjR+4v2mSjj/N0mZN3QYNGJp6hT8eYQ43ZSY/J/agbSqNNwi4IYcrtF
+        q7COhyLZ6SRwgAkWzf2QyynJtMiCO+IYSttgK8yHkTZGa7WtsRW5WDMfxxC1sF/h9BL/Vx
+        qDKmCn2TCtBJr/lz3L1v+VhRcNSkQA8=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-642-bQCEdZb6My-jrIRxhp9Iog-1; Tue, 30 Aug 2022 09:45:04 -0400
+X-MC-Unique: bQCEdZb6My-jrIRxhp9Iog-1
+Received: by mail-wr1-f71.google.com with SMTP id c25-20020adfa319000000b00226d3f6d28cso1313328wrb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:45:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=fZw8MYgngGPI91Wpn1EF1/MRfZ8I6Hgt/2EFyRqW+Ws=;
-        b=KuBz3msuxOniYLoXZ3Xm3WV6KAa1SadfXu2Yik86aMNUJajZMtFtrFuavxf/kzxno6
-         FiuRrPsjzGRVg80MIhXILQje0gcAumaAMMFpZcHaUVInuuvZWtBxKimQu5+5cTNp5Qi8
-         SM59AYXUxwxs1ohLCHftfE+GUxg0YxH50PlNzQ9ohW5oOlpKMHNakI7B/6huiV89APBg
-         zd4v7EE9bUoraO0/BVjUkQCoYqsWFtl9j1RiykqgbGusPFnpSUzQh4wjVSgbS98BJYui
-         ZpkS650kMAiMGjeU8fJX4cXrdTVYdVVifJOo2oR22YFiCiUR35yUVoiZCLCtyM7iWJ2S
-         rdUg==
-X-Gm-Message-State: ACgBeo1IpYGFP6hCR19JYK19SczuC8RwSbNrW+/ZY7u3lAgbHp8F78IG
-        P0ISJteE9nc4y0gmZeu8+RrqrZ5LszhdVGM7RoI=
-X-Google-Smtp-Source: AA6agR6AGnySxRHdF/fDDphgF6MQJALYPM3TRclgZ2yW3zQCyE7OnSdWPFBp0Q8xRUyGO9tbKFUWFw==
-X-Received: by 2002:ac8:57d6:0:b0:344:997f:557 with SMTP id w22-20020ac857d6000000b00344997f0557mr14594304qta.345.1661866959615;
-        Tue, 30 Aug 2022 06:42:39 -0700 (PDT)
-Received: from maniforge.dhcp.thefacebook.com ([2620:10d:c091:480::2341])
-        by smtp.gmail.com with ESMTPSA id q21-20020a05620a0d9500b006b555509398sm8160787qkl.136.2022.08.30.06.42.37
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=4TQ3D3Ecv0JVJq75Mysm7I94dQGdbTCqUokREWAuRr0=;
+        b=y8bb20CPGR2zIfINipXYirQVCNrly6rv7CmHrJPRcH1K6mSO5LW0XCp39XeO+lBPxq
+         1RiOSmTEDOTTO6/cFVod0lybKek/19daNXOGIDJREqSdEd4/ZA9HUoC7Nwt1qbV2f/ck
+         TdStm4bpqec/8ViAODQ5ohUjUb9LQUg7bA3kkrJuQABzOLo/P4c3H+O1MoI2Sf34Ab5c
+         xhzY1cNNy5hzf14aMPaARiqmSbWwwUpHSW8Qi36UXd00JQOS6SVEBiVoKeLfcN+SEY57
+         DBSKRxDPXMsRXQ5OzwSTpXCOFT1wKWoTj3uujfFOrwPyXFJDL5C/PR7phcrn9jGjBEHF
+         hQeg==
+X-Gm-Message-State: ACgBeo1XYYHTekGheObVISULluqfN33KsB3KXkjYjYp3QjX6qIVUpVnY
+        yfHzmglrcA/DWRrujKmFpRl+Qlinr+LtY/MnBP1UzcTk9HZC7wDeKzdmBURsSyOGskhxdZSdR1f
+        WNldQe7Wh3Gbmp1wsVRqJExcO
+X-Received: by 2002:a05:600c:ace:b0:3a5:b495:854d with SMTP id c14-20020a05600c0ace00b003a5b495854dmr9620571wmr.86.1661867102645;
+        Tue, 30 Aug 2022 06:45:02 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7kE0OkvnuES7vDthBiH8iXuZiew08diUgUfwuPstZZgb2cSBtaApqD4FeCYJF2b3SOm8jHEg==
+X-Received: by 2002:a05:600c:ace:b0:3a5:b495:854d with SMTP id c14-20020a05600c0ace00b003a5b495854dmr9620557wmr.86.1661867102326;
+        Tue, 30 Aug 2022 06:45:02 -0700 (PDT)
+Received: from redhat.com ([2.55.191.225])
+        by smtp.gmail.com with ESMTPSA id r8-20020a5d6948000000b00226a5187528sm9535421wrw.48.2022.08.30.06.45.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 06:42:38 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 08:42:36 -0500
-From:   David Vernet <void@manifault.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
-        daniel@iogearbox.net, kernel-team@fb.com, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, joannelkoong@gmail.com, tj@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] bpf: Add libbpf logic for user-space ring buffer
-Message-ID: <Yw4TzMPXL41YuZZ6@maniforge.dhcp.thefacebook.com>
-References: <20220818221212.464487-1-void@manifault.com>
- <20220818221212.464487-4-void@manifault.com>
- <CAEf4BzZkzZacR7ziFf2orNk2znNqhJhBTDGhSOtGNvB2z4moJQ@mail.gmail.com>
+        Tue, 30 Aug 2022 06:45:01 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 09:44:58 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Igor Skalkin <igor.skalkin@opensynergy.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        mgo@opensynergy.com
+Subject: Re: [PATCH] virtio_bt: Fix alignment in configuration struct
+Message-ID: <20220830094441-mutt-send-email-mst@kernel.org>
+References: <20220807221152.38948-1-Igor.Skalkin@opensynergy.com>
+ <20220807185846-mutt-send-email-mst@kernel.org>
+ <02222fcb-eaba-617a-c51c-f939678e3d74@opensynergy.com>
+ <20220808081054-mutt-send-email-mst@kernel.org>
+ <20220811035817-mutt-send-email-mst@kernel.org>
+ <CABBYNZKZGxbt=jdpBL77x1mCeTPdDE-p-Pt8JjZN+KoRgR3Ohw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzZkzZacR7ziFf2orNk2znNqhJhBTDGhSOtGNvB2z4moJQ@mail.gmail.com>
-User-Agent: Mutt/2.2.7 (2022-08-07)
+In-Reply-To: <CABBYNZKZGxbt=jdpBL77x1mCeTPdDE-p-Pt8JjZN+KoRgR3Ohw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 02:58:31PM -0700, Andrii Nakryiko wrote:
-
-[...]
-
-> > +LIBBPF_API struct user_ring_buffer *
-> > +user_ring_buffer__new(int map_fd, const struct user_ring_buffer_opts *opts);
-> > +LIBBPF_API void *user_ring_buffer__reserve(struct user_ring_buffer *rb,
-> > +                                          __u32 size);
-> > +
-> > +LIBBPF_API void *user_ring_buffer__reserve_blocking(struct user_ring_buffer *rb,
-> > +                                                   __u32 size,
-> > +                                                   int timeout_ms);
-> > +LIBBPF_API void user_ring_buffer__submit(struct user_ring_buffer *rb,
-> > +                                        void *sample);
-> > +LIBBPF_API void user_ring_buffer__discard(struct user_ring_buffer *rb,
-> > +                                         void *sample);
-> > +LIBBPF_API void user_ring_buffer__free(struct user_ring_buffer *rb);
-> > +
+On Thu, Aug 11, 2022 at 10:02:31AM -0700, Luiz Augusto von Dentz wrote:
+> Hi Michael,
 > 
-> Let's make sure that all the relevant comments and description of
-> inputs/outputs/errors are documented here. These doccomments go to
-> https://libbpf.readthedocs.io/en/latest/api.html
-
-No problem, I'll add these to the docs.
-
-> also, please make sure that declarations that fit within 100
-> characters stay on single line, it's much more readable that way
-
-My mistake, will fix.
-
-> >  /* Perf buffer APIs */
-> >  struct perf_buffer;
+> On Thu, Aug 11, 2022 at 1:00 AM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
-> > diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> > index 2b928dc21af0..40c83563f90a 100644
-> > --- a/tools/lib/bpf/libbpf.map
-> > +++ b/tools/lib/bpf/libbpf.map
-> > @@ -367,4 +367,10 @@ LIBBPF_1.0.0 {
+> > On Mon, Aug 08, 2022 at 08:16:11AM -0400, Michael S. Tsirkin wrote:
+> > > On Mon, Aug 08, 2022 at 02:04:43PM +0200, Igor Skalkin wrote:
+> > > > On 8/8/22 01:00, Michael S. Tsirkin wrote:
+> > > >
+> > > >     On Mon, Aug 08, 2022 at 12:11:52AM +0200, Igor Skalkin wrote:
+> > > >
+> > > >         According to specification [1], "For the device-specific configuration
+> > > >         space, the driver MUST use 8 bit wide accesses for 8 bit wide fields,
+> > > >         16 bit wide and aligned accesses for 16 bit wide fields and 32 bit wide
+> > > >         and aligned accesses for 32 and 64 bit wide fields.".
+> > > >
+> > > >         Current version of the configuration structure:
+> > > >
+> > > >             struct virtio_bt_config {
+> > > >                 __u8  type;
+> > > >                 __u16 vendor;
+> > > >                 __u16 msft_opcode;
+> > > >             } __attribute__((packed));
+> > > >
+> > > >         has both 16bit fields non-aligned.
+> > > >
+> > > >         This commit fixes it.
+> > > >
+> > > >         [1] https://ddec1-0-en-ctp.trendmicro.com:443/wis/clicktime/v1/query?url=https%3a%2f%2fdocs.oasis%2dopen.org%2fvirtio%2fvirtio%2fv1.1%2fvirtio%2dv1.1.pdf&umid=d1786ace-e8ea-40e8-9665-96c0949174e5&auth=53c7c7de28b92dfd96e93d9dd61a23e634d2fbec-39b15885ceebe9fda9357320aec1ccbac416a470
+> > > >
+> > > >         Signed-off-by: Igor Skalkin <Igor.Skalkin@opensynergy.com>
+> > > >
+> > > >     This is all true enough, but the problem is
+> > > >     1. changing uapi like this can't be done, will break userspace
+> > > >     2. the driver has more issues and no one seems to want to
+> > > >        maintain it.
+> > > >     I posted a patch "Bluetooth: virtio_bt: mark broken" and intend
+> > > >     to merge it for this release.
+> > > >
+> > > > This is very sad. We already use this driver in our projects.
+> > >
+> > > Really?  Can you step up to maintain it? Then we can fix the issues
+> > > and it won't be broken.
+> >
+> > Just a reminder that I'm waiting for a response on that.
+> > I just don't know enough about bluetooth.
 > 
-> now that 1.0 is released, this will have to go into a new LIBBPF_1.1.0
-> section (which inherits from LIBBPF_1.0.0)
+> Just a heads up that Marcel is on vacation, he did mention that he had
+> done some work to update virtio_bt thus why I didn't apply any of the
+> changes yet.
 
-Sounds good, I'll do that in v4.
+Any update? when does Marcel return?
 
-[...]
-
-> > +       /* Map read-write the producer page and data pages. We map the data
-> > +        * region as twice the total size of the ringbuffer to allow the simple
-> > +        * reading and writing of samples that wrap around the end of the
-> > +        * buffer.  See the kernel implementation for details.
-> > +        */
-> > +       tmp = mmap(NULL, rb->page_size + 2 * info.max_entries,
-> > +                  PROT_READ | PROT_WRITE, MAP_SHARED, map_fd, rb->page_size);
-> > +       if (tmp == MAP_FAILED) {
-> > +               err = -errno;
-> > +               pr_warn("user ringbuf: failed to mmap data pages for map fd=%d: %d\n",
-> > +                       map_fd, err);
-> > +               return libbpf_err(err);
-> > +       }
-> > +
-> > +       rb->producer_pos = tmp;
-> > +       rb->data = tmp + rb->page_size;
-> > +
-> > +       rb_epoll = &rb->event;
-> > +       rb_epoll->events = EPOLLOUT;
-> > +       if (epoll_ctl(rb->epoll_fd, EPOLL_CTL_ADD, map_fd, rb_epoll) < 0) {
-> > +               err = -errno;
-> > +               pr_warn("user ringbuf: failed to epoll add map fd=%d: %d\n", map_fd, err);
-> > +               return libbpf_err(err);
+> > --
+> > MST
+> >
 > 
-> this is internal helper function, so there is no need to use
-> libbpf_err() helpers, just return errors directly. Only user-facing
-> functions should make sure to set both errno and return error
-
-Will fix.
-
-> > +       }
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +struct user_ring_buffer *
-> > +user_ring_buffer__new(int map_fd, const struct user_ring_buffer_opts *opts)
-> > +{
-> > +       struct user_ring_buffer *rb;
-> > +       int err;
-> > +
-> > +       if (!OPTS_VALID(opts, ring_buffer_opts))
 > 
-> user_ring_buffer_opts
+> -- 
+> Luiz Augusto von Dentz
 
-Good catch, will fix.
-
-> > +static void user_ringbuf__commit(struct user_ring_buffer *rb, void *sample, bool discard)
-> > +{
-> > +       __u32 new_len;
-> > +       struct ringbuf_hdr *hdr;
-> > +
-> > +       /* All samples are aligned to 8 bytes, so the header will only ever
-> > +        * wrap around the back of the ringbuffer if the sample is at the
-> > +        * very beginning of the ringbuffer.
-> > +        */
-> > +       if (sample == rb->data)
-> > +               hdr = rb->data + (rb->mask - BPF_RINGBUF_HDR_SZ + 1);
-> > +       else
-> > +               hdr = sample - BPF_RINGBUF_HDR_SZ;
-> 
-> let's avoid extra if in a hot path?
-> 
-> hdr = rb->data + (rb->mask + 1 + (sample - rb->data) -
-> BPF_RINGBUF_HDR_SZ) & rb->mask;
-
-Nice idea, will do.
-
-> > +
-> > +       new_len = hdr->len & ~BPF_RINGBUF_BUSY_BIT;
-> > +       if (discard)
-> > +               new_len |= BPF_RINGBUF_DISCARD_BIT;
-> > +
-> > +       /* Synchronizes with smp_load_acquire() in __bpf_user_ringbuf_peek() in
-> > +        * the kernel.
-> > +        */
-> > +       __atomic_exchange_n(&hdr->len, new_len, __ATOMIC_ACQ_REL);
-> > +}
-> > +
-> > +/* Discard a previously reserved sample into the ring buffer.  It is not
-> > + * necessary to synchronize amongst multiple producers when invoking this
-> > + * function.
-> > + */
-> > +void user_ring_buffer__discard(struct user_ring_buffer *rb, void *sample)
-> > +{
-> > +       user_ringbuf__commit(rb, sample, true);
-> > +}
-> > +
-> > +/* Submit a previously reserved sample into the ring buffer. It is not
-> > + * necessary to synchronize amongst multiple producers when invoking this
-> > + * function.
-> > + */
-> > +void user_ring_buffer__submit(struct user_ring_buffer *rb, void *sample)
-> > +{
-> > +       user_ringbuf__commit(rb, sample, false);
-> > +}
-> > +
-> > +/* Reserve a pointer to a sample in the user ring buffer. This function is
-> > + * *not* thread safe, and callers must synchronize accessing this function if
-> > + * there are multiple producers.
-> > + *
-> > + * If a size is requested that is larger than the size of the entire
-> > + * ringbuffer, errno is set to E2BIG and NULL is returned. If the ringbuffer
-> > + * could accommodate the size, but currently does not have enough space, errno
-> > + * is set to ENODATA and NULL is returned.
-> 
-> ENOSPC seems more appropriate for such a situation?
-
-For the latter? Hmmm, yeah I suppose I agree, I'll make that adjustment.
-
-> > + *
-> > + * Otherwise, a pointer to the sample is returned. After initializing the
-> > + * sample, callers must invoke user_ring_buffer__submit() to post the sample to
-> > + * the kernel. Otherwise, the sample must be freed with
-> > + * user_ring_buffer__discard().
-> > + */
-> 
-> usual complaints about "ringbuffer", feels like a typo
-
-No problem, I'll fix that here and in the rest of the patch-set.
-
-> > +void *user_ring_buffer__reserve(struct user_ring_buffer *rb, __u32 size)
-> > +{
-> > +       __u32 avail_size, total_size, max_size;
-> > +       /* 64-bit to avoid overflow in case of extreme application behavior */
-> > +       __u64 cons_pos, prod_pos;
-> > +       struct ringbuf_hdr *hdr;
-> > +
-> > +       /* Synchronizes with smp_store_release() in __bpf_user_ringbuf_peek() in
-> > +        * the kernel.
-> > +        */
-> > +       cons_pos = smp_load_acquire(rb->consumer_pos);
-> > +       /* Synchronizes with smp_store_release() in user_ringbuf__commit() */
-> > +       prod_pos = smp_load_acquire(rb->producer_pos);
-> > +
-> > +       /* Round up size to a multiple of 8. */
-> > +       size = (size + 7) / 8 * 8;
-> > +       max_size = rb->mask + 1;
-> > +       avail_size = max_size - (prod_pos - cons_pos);
-> > +       total_size = size + BPF_RINGBUF_HDR_SZ;
-> > +
-> > +       if (total_size > max_size)
-> > +               return errno = E2BIG, NULL;
-> > +
-> > +       if (avail_size < total_size)
-> > +               return errno = ENODATA, NULL;
-> > +
-> > +       hdr = rb->data + (prod_pos & rb->mask);
-> > +       hdr->len = size | BPF_RINGBUF_BUSY_BIT;
-> 
-> so I double-checked what kernel ringbuf is doing with size. We still
-> record exact user-requested size in header, but all the logic knows
-> that it has to be rounded up to closest 8. I think that's best
-> behavior because it preserves user-supplied information exactly. So if
-> I wanted to reserve and communicate 4 byte sample to my producers,
-> they should see that there are 4 bytes of data available, not 8. So
-> let's do the same here?
-
-No problem, I'll do this in v4.
-
-> We still should validate that all the positions are multiples of 8, of
-> course, as you do in this revision.
-
-Ack.
-
-> > +       hdr->pad = 0;
-> > +
-> > +       /* Synchronizes with smp_load_acquire() in __bpf_user_ringbuf_peek() in
-> > +        * the kernel.
-> > +        */
-> > +       smp_store_release(rb->producer_pos, prod_pos + total_size);
-> > +
-> > +       return (void *)rb->data + ((prod_pos + BPF_RINGBUF_HDR_SZ) & rb->mask);
-> > +}
-> > +
-> > +static int ms_elapsed_timespec(const struct timespec *start, const struct timespec *end)
-> > +{
-> > +       int total, ns_per_ms = 1000000, ns_per_s = ns_per_ms * 1000;
-> > +
-> > +       if (end->tv_sec > start->tv_sec) {
-> > +               total = 1000 * (end->tv_sec - start->tv_sec);
-> > +               total += (end->tv_nsec + (ns_per_s - start->tv_nsec)) / ns_per_ms;
-> > +       } else {
-> > +               total = (end->tv_nsec - start->tv_nsec) / ns_per_ms;
-> > +       }
-> > +
-> 
-> hm... this seems overengineered, tbh
-> 
-> u64 start_ns = (u64)start->tv_sec * 1000000000 + start->tv_nsec;
-> u64 end_ns = (u64)end->tv_sec * 1000000000 + start->tv_nsec;
-> 
-> return (end_ns - start_ns) / 1000000;
-> 
-> ?
-
-Yeah, this is much simpler. Thanks for the suggestion.
-
-> > +       return total;
-> > +}
-> > +
-> > +/* Reserve a record in the ringbuffer, possibly blocking for up to @timeout_ms
-> > + * until a sample becomes available.  This function is *not* thread safe, and
-> > + * callers must synchronize accessing this function if there are multiple
-> > + * producers.
-> > + *
-> > + * If @timeout_ms is -1, the function will block indefinitely until a sample
-> > + * becomes available. Otherwise, @timeout_ms must be non-negative, or errno
-> > + * will be set to EINVAL, and NULL will be returned. If @timeout_ms is 0,
-> > + * no blocking will occur and the function will return immediately after
-> > + * attempting to reserve a sample.
-> > + *
-> > + * If @size is larger than the size of the entire ringbuffer, errno is set to
-> > + * E2BIG and NULL is returned. If the ringbuffer could accommodate @size, but
-> > + * currently does not have enough space, the caller will block until at most
-> > + * @timeout_ms has elapsed. If insufficient space is available at that time,
-> > + * errno will be set to ENODATA, and NULL will be returned.
-> 
-> ENOSPC?
-
-Ack.
-
-> > + *
-> > + * The kernel guarantees that it will wake up this thread to check if
-> > + * sufficient space is available in the ringbuffer at least once per invocation
-> > + * of the bpf_ringbuf_drain() helper function, provided that at least one
-> > + * sample is consumed, and the BPF program did not invoke the function with
-> > + * BPF_RB_NO_WAKEUP. A wakeup may occur sooner than that, but the kernel does
-> > + * not guarantee this.
-> > + *
-> > + * When a sample of size @size is found within @timeout_ms, a pointer to the
-> > + * sample is returned. After initializing the sample, callers must invoke
-> > + * user_ring_buffer__submit() to post the sample to the ringbuffer. Otherwise,
-> > + * the sample must be freed with user_ring_buffer__discard().
-> > + */
-> 
-> so comments like this should go into doccomments for this functions in libbpf.h
-
-Ack.
-
-> > +void *user_ring_buffer__reserve_blocking(struct user_ring_buffer *rb, __u32 size, int timeout_ms)
-> > +{
-> > +       int ms_elapsed = 0, err;
-> > +       struct timespec start;
-> > +
-> > +       if (timeout_ms < 0 && timeout_ms != -1)
-> > +               return errno = EINVAL, NULL;
-> > +
-> > +       if (timeout_ms != -1) {
-> > +               err = clock_gettime(CLOCK_MONOTONIC, &start);
-> > +               if (err)
-> > +                       return NULL;
-> > +       }
-> > +
-> > +       do {
-> > +               int cnt, ms_remaining = timeout_ms - ms_elapsed;
-> 
-> let's max(0, timeout_ms - ms_elapsed) to avoid negative ms_remaining
-> in some edge timing cases
-
-We actually want to have a negative ms_remaining if timeout_ms is -1. -1
-in epoll_wait() specifies an infinite timeout. If we were to round up to
-0, it wouldn't block at all.
-
-> > +               void *sample;
-> > +               struct timespec curr;
-> > +
-> > +               sample = user_ring_buffer__reserve(rb, size);
-> > +               if (sample)
-> > +                       return sample;
-> > +               else if (errno != ENODATA)
-> > +                       return NULL;
-> > +
-> > +               /* The kernel guarantees at least one event notification
-> > +                * delivery whenever at least one sample is drained from the
-> > +                * ringbuffer in an invocation to bpf_ringbuf_drain(). Other
-> > +                * additional events may be delivered at any time, but only one
-> > +                * event is guaranteed per bpf_ringbuf_drain() invocation,
-> > +                * provided that a sample is drained, and the BPF program did
-> > +                * not pass BPF_RB_NO_WAKEUP to bpf_ringbuf_drain().
-> > +                */
-> > +               cnt = epoll_wait(rb->epoll_fd, &rb->event, 1, ms_remaining);
-> > +               if (cnt < 0)
-> > +                       return NULL;
-> > +
-> > +               if (timeout_ms == -1)
-> > +                       continue;
-> > +
-> > +               err = clock_gettime(CLOCK_MONOTONIC, &curr);
-> > +               if (err)
-> > +                       return NULL;
-> > +
-> > +               ms_elapsed = ms_elapsed_timespec(&start, &curr);
-> > +       } while (ms_elapsed <= timeout_ms);
-> 
-> let's simplify all the time keeping to use nanosecond timestamps and
-> only convert to ms when calling epoll_wait()? Then you can just have a
-> tiny helper to convert timespec to nanosecond ts ((u64)ts.tv_sec *
-> 1000000000 + ts.tv_nsec) and compare u64s directly. WDYT?
-
-Sounds like an improvement to me!
-
-Thanks,
-David
