@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75658ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C70ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231474AbiH3RYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:24:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59988 "EHLO
+        id S231485AbiH3RYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:24:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231375AbiH3RYB (ORCPT
+        with ESMTP id S231370AbiH3RYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:24:01 -0400
+        Tue, 30 Aug 2022 13:24:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA51114FCB9;
-        Tue, 30 Aug 2022 10:21:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949A083F26;
+        Tue, 30 Aug 2022 10:22:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CBCBB81D17;
-        Tue, 30 Aug 2022 17:21:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0727C433C1;
-        Tue, 30 Aug 2022 17:21:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DFE1B81C55;
+        Tue, 30 Aug 2022 17:21:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7736BC433D6;
+        Tue, 30 Aug 2022 17:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880095;
-        bh=Yqxdf40p+eJDpXpCuGnwjuEkWmXRdjLdXOKmqXAAtIA=;
+        s=k20201202; t=1661880111;
+        bh=IcePTnMHihrsUWlbeyVz9D8TRa7GQlmOaSor87kg+Os=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iDsW7Ueja1xJnsh96iUplKVxt1HT1/71Je8rNCfW82fLYUm+SmOe2vFKneZYJrCwq
-         r6s/gQCtEueC5XjO1MSh/AShZU2mA0GEegjdGed1PqrZA+LFiiKd78oVJJScBX21Er
-         yCUa4SVhh9rngdhjExD+msGOSyEXazsG+bJ9gP+zXf5no94EiUgX910p9A5W9NyexD
-         xbevIPSCrIAa6z7bM/jMmQkW8SyXyveRbylQuHv+PgzXX0lIMkoLD2lWp3hW/sLkVg
-         wdae3aMAxgsEKtcItWilYjdPhHvPRCGbWdnm2nA72G8aFd/Jbc5ml0k2IykArTf+1j
-         gRafwwDc8XRaw==
+        b=URMp7UB+PHx09AM4ii0lQZWw3KVMyYnQgmqXi13tsT0O1ZmejMzT/zVudxNO54YNC
+         06Bi5HY+WQz9qk03TYD1qWrVI/2emqbeGKqqq0PYgM8vb6QhX/63c76WyhkhtmYlD9
+         AvyOE/tuT+PVeZQrB3R3zRt7Om/JeH5OA7SW/44TNAnGqNuKfRQv/VS7bBcglAdUrf
+         M/oBMU8Lc55fD/HmabXam0+D4i3MXosabyhujALajLItbh5mG/ipgE/Ve436eKlz5r
+         gM0wkGV+TV54u6UFfTU0vH7WfQtG//T4fUUesdZx0uaK1ZAa3AINiKc9+oIpljAEHM
+         BjiGyr2PDKQow==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qu Huang <jinsdb@126.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Hawking.Zhang@amd.com, evan.quan@amd.com, guchun.chen@amd.com,
-        mario.limonciello@amd.com, YiPeng.Chai@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 33/33] drm/amdgpu: mmVM_L2_CNTL3 register not initialized correctly
-Date:   Tue, 30 Aug 2022 13:18:24 -0400
-Message-Id: <20220830171825.580603-33-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Like Xu <likexu@tencent.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        acme@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 05/23] perf/x86/core: Set pebs_capable and PMU_FL_PEBS_ALL for the Baseline
+Date:   Tue, 30 Aug 2022 13:21:22 -0400
+Message-Id: <20220830172141.581086-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830171825.580603-1-sashal@kernel.org>
-References: <20220830171825.580603-1-sashal@kernel.org>
+In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
+References: <20220830172141.581086-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,31 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Huang <jinsdb@126.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit b8983d42524f10ac6bf35bbce6a7cc8e45f61e04 ]
+[ Upstream commit 7d3598868aaee05eb738d1c3115616b867e7530a ]
 
-The mmVM_L2_CNTL3 register is not assigned an initial value
+The SDM explicitly states that PEBS Baseline implies Extended PEBS.
+For cpu model forward compatibility (e.g. on ICX, SPR, ADL), it's
+safe to stop doing FMS table thing such as setting pebs_capable and
+PMU_FL_PEBS_ALL since it's already set in the intel_ds_init().
 
-Signed-off-by: Qu Huang <jinsdb@126.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The Goldmont Plus is the only platform which supports extended PEBS
+but doesn't have Baseline. Keep the status quo.
+
+Reported-by: Like Xu <likexu@tencent.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220816114057.51307-1-likexu@tencent.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/events/intel/core.c | 2 --
+ arch/x86/events/intel/ds.c   | 1 +
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c b/drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c
-index 3f44a099c52a4..3e51e773f92be 100644
---- a/drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/mmhub_v1_0.c
-@@ -176,6 +176,7 @@ static void mmhub_v1_0_init_cache_regs(struct amdgpu_device *adev)
- 	tmp = REG_SET_FIELD(tmp, VM_L2_CNTL2, INVALIDATE_L2_CACHE, 1);
- 	WREG32_SOC15(MMHUB, 0, mmVM_L2_CNTL2, tmp);
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index 588b83cc730d3..4fa4ee7fa6076 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -6122,7 +6122,6 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.pebs_block = true;
+ 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+ 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+-		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+ 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
+ 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
  
-+	tmp = mmVM_L2_CNTL3_DEFAULT;
- 	if (adev->gmc.translate_further) {
- 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL3, BANK_SELECT, 12);
- 		tmp = REG_SET_FIELD(tmp, VM_L2_CNTL3,
+@@ -6164,7 +6163,6 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.pebs_block = true;
+ 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+ 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+-		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+ 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
+ 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
+ 		x86_pmu.lbr_pt_coexist = true;
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index 4dbb55a43dad2..78d3050fbfb88 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -2211,6 +2211,7 @@ void __init intel_ds_init(void)
+ 					PERF_SAMPLE_BRANCH_STACK |
+ 					PERF_SAMPLE_TIME;
+ 				x86_pmu.flags |= PMU_FL_PEBS_ALL;
++				x86_pmu.pebs_capable = ~0ULL;
+ 				pebs_qual = "-baseline";
+ 				x86_get_pmu(smp_processor_id())->capabilities |= PERF_PMU_CAP_EXTENDED_REGS;
+ 			} else {
 -- 
 2.35.1
 
