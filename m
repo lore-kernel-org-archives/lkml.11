@@ -2,104 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1DAECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC96DECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229837AbiH3KmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:42:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
+        id S229899AbiH3KmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:42:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229605AbiH3Kl6 (ORCPT
+        with ESMTP id S229541AbiH3Kl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 06:41:58 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7316F9D8E2;
-        Tue, 30 Aug 2022 03:41:57 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id n17so13636078wrm.4;
-        Tue, 30 Aug 2022 03:41:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=Ur9LSE+726hU91hAgUo0OMhul68sy6ujWhk0uIeDHZI=;
-        b=qVlno9n5cb+TbqRZhshHrFOsqlASjw2EL6BzeYdAHoUWeF/DFR3SU+3VYhw72gJipp
-         ZqaoUXas/reQ8XDn0FgWkvs91x5P90UoHsmP3pQ0f/tEOlt6FyfdsNtJHgjqXpirTe9x
-         Fstc6wOQa9uzn43+ExCDV92sOtKiJEGGpj4fiePVVV+tjSFqTShXPzmBDt/ZSXB+suYZ
-         XEvGolSxDHQR1HZ+GrlX0CoLTaXg3tnnX1pmSImHajGEnk8P4TjuYRNVAMaindLqXu1m
-         hLXJzk8flUkTQXVL1pBS0Xf92ZxCByv1dnPS5BHCDoKrvmjQIq/uZoXwFC261LtGgWra
-         FG4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=Ur9LSE+726hU91hAgUo0OMhul68sy6ujWhk0uIeDHZI=;
-        b=usM9xNHAsuw/GHF0/Jq+GjNZGIkbaEr5x0A56b3jy2fwjIlG77A6znVhJf+SqQfX80
-         JRDqWVKYDXsnRA1kpJ4QAvbhM4qNvp97RkBY6LQRX9eXXwQKnRzlCTA1SNCviXcxvlzp
-         sYVifIl14YfLh5dz/9zfrrTBO+OgaGGdnyV7Cu/1cmLRevm83z070HIBc81t3+aq8DBs
-         VH75XGhFPlm0AEpqv+FUYAzzxt9KBFqEPeGCrqcvF0lXR+PRAgAs2e8vaAtZ7QKpx8EP
-         Mu/p09I7jx6n3G58GY3uEKDmZO5MXgJOdZcpPaRH4IHb7MaaBGhNzQeAXfWUioY06bZn
-         BVKA==
-X-Gm-Message-State: ACgBeo1nwtbJKEuEKby3HD2+FQ2EqXzoLTBrNJPhavet2wMa936hgyaI
-        p6n3HlAS83T5ojnUh3hg7jI=
-X-Google-Smtp-Source: AA6agR53FqQ8+jVD1Xwx/uc1sp8KKbMwx57GiifnN9mIZ/Hs1WNJDhbJtOmEKiHw+YlFBTbtdxh9Rw==
-X-Received: by 2002:a05:6000:1a8d:b0:226:dfe2:15ed with SMTP id f13-20020a0560001a8d00b00226dfe215edmr2896756wry.110.1661856115993;
-        Tue, 30 Aug 2022 03:41:55 -0700 (PDT)
-Received: from debian (host-78-150-37-98.as13285.net. [78.150.37.98])
-        by smtp.gmail.com with ESMTPSA id m3-20020a05600c4f4300b003a84375d0d1sm8670378wmq.44.2022.08.30.03.41.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 03:41:55 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 11:41:53 +0100
-From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.10 00/86] 5.10.140-rc1 review
-Message-ID: <Yw3pcSOJlmpBqqP9@debian>
-References: <20220829105756.500128871@linuxfoundation.org>
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FCF49D67C
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:41:57 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MH3gD6QBkzkWng;
+        Tue, 30 Aug 2022 18:38:16 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 18:41:55 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 18:41:54 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>
+Subject: [PATCH v2] mm: memory-failure: kill __soft_offline_page()
+Date:   Tue, 30 Aug 2022 18:46:54 +0800
+Message-ID: <20220830104654.28234-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
+Reply-To: <20220830071514.GA1106752@hori.linux.bs1.fc.nec.co.jp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+Squash the __soft_offline_page() into soft_offline_in_use_page() and kill
+__soft_offline_page().
 
-On Mon, Aug 29, 2022 at 12:58:26PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.140 release.
-> There are 86 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 31 Aug 2022 10:57:37 +0000.
-> Anything received after that time might be too late.
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Acked-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+---
+v2: update hpage when try_to_split_thp_page() success
 
-Build test (gcc version 11.3.1 20220819):
-mips: 63 configs -> no failure
-arm: 104 configs -> no failure
-arm64: 3 configs -> no failure
-x86_64: 4 configs -> no failure
-alpha allmodconfig -> no failure
-powerpc allmodconfig -> no failure
-riscv allmodconfig -> no failure
-s390 allmodconfig -> no failure
-xtensa allmodconfig -> no failure
+ mm/memory-failure.c | 25 ++++++++++---------------
+ 1 file changed, 10 insertions(+), 15 deletions(-)
 
-Boot test:
-x86_64: Booted on my test laptop. No regression.
-x86_64: Booted on qemu. No regression. [1]
-arm64: Booted on rpi4b (4GB model). No regression. [2]
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index b61f2de9f2a1..df54a6bc9bef 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -2434,11 +2434,11 @@ static bool isolate_page(struct page *page, struct list_head *pagelist)
+ }
+ 
+ /*
+- * __soft_offline_page handles hugetlb-pages and non-hugetlb pages.
++ * soft_offline_in_use_page handles hugetlb-pages and non-hugetlb pages.
+  * If the page is a non-dirty unmapped page-cache page, it simply invalidates.
+  * If the page is mapped, it migrates the contents over.
+  */
+-static int __soft_offline_page(struct page *page)
++static int soft_offline_in_use_page(struct page *page)
+ {
+ 	long ret = 0;
+ 	unsigned long pfn = page_to_pfn(page);
+@@ -2451,6 +2451,14 @@ static int __soft_offline_page(struct page *page)
+ 		.gfp_mask = GFP_USER | __GFP_MOVABLE | __GFP_RETRY_MAYFAIL,
+ 	};
+ 
++	if (!huge && PageTransHuge(hpage)) {
++		if (try_to_split_thp_page(page)) {
++			pr_info("soft offline: %#lx: thp split failed\n", pfn);
++			return -EBUSY;
++		}
++		hpage = page;
++	}
++
+ 	lock_page(page);
+ 	if (!PageHuge(page))
+ 		wait_on_page_writeback(page);
+@@ -2500,19 +2508,6 @@ static int __soft_offline_page(struct page *page)
+ 	return ret;
+ }
+ 
+-static int soft_offline_in_use_page(struct page *page)
+-{
+-	struct page *hpage = compound_head(page);
+-
+-	if (!PageHuge(page) && PageTransHuge(hpage))
+-		if (try_to_split_thp_page(page) < 0) {
+-			pr_info("soft offline: %#lx: thp split failed\n",
+-				page_to_pfn(page));
+-			return -EBUSY;
+-		}
+-	return __soft_offline_page(page);
+-}
+-
+ static void put_ref_page(struct page *page)
+ {
+ 	if (page)
+-- 
+2.35.3
 
-[1]. https://openqa.qa.codethink.co.uk/tests/1728
-[2]. https://openqa.qa.codethink.co.uk/tests/1732
-
-
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
-
---
-Regards
-Sudip
