@@ -2,167 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EA6C0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B19C0502F
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231206AbiH3Llf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
+        id S231285AbiH3LmR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231236AbiH3LlA (ORCPT
+        with ESMTP id S231216AbiH3Llz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:41:00 -0400
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D35314FC82;
-        Tue, 30 Aug 2022 04:39:26 -0700 (PDT)
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-334dc616f86so265484857b3.8;
-        Tue, 30 Aug 2022 04:39:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=uV5cfbuaLiTKcX8ebdpr5XbHeoGI6rysE5BbBclWCfI=;
-        b=zjsrBYCgzlhIsAkh7yQHqC7udor2hSvTI4ciFQ2THtTYcGCzifMhc4kkgrFo5/nPv9
-         /ieqy9lTL6DpUDLW+oXtwWCcHR2im1i/jZP3X3aB7zRNHF8NnTD6OOPTR6CY06qbjxOo
-         /nwWvUKNqWM3Eh7n00CETnRMc67Hv1RZlqF/DnOI5WLAuXvmJe8Zv9Efod+sEWT3fXO9
-         02XwZoyLUaRPRonWztVRGwUaBKnZgTMR7g3Ef7CswT+8NGDolmpQ3xn38NByizSBg/7k
-         UsLcRH8/JAo3+jFz5rb3HvEt2D/YzUyz3yVFNV6cR4qq0J36PCmdJ0KWZe+LuFu8z6El
-         MPPQ==
-X-Gm-Message-State: ACgBeo05EV14k3JjFCUbSlvmBJkIcoob+/YrZtBuVf/4p3MymKWQHPxa
-        diIQF9/WTIA26o6DVBjP4zPsGHhklS2n3QBPazTF7pVA
-X-Google-Smtp-Source: AA6agR4+KpbjY1aZb0VdgicXjYCJlvpgSIMRfqYob1yrYyrIGmJU1BotmLajKO2nBE3guHCl/eeE1pmLbzmU7/q+Cj8=
-X-Received: by 2002:a0d:da83:0:b0:329:9c04:fe6d with SMTP id
- c125-20020a0dda83000000b003299c04fe6dmr13902110ywe.196.1661859564844; Tue, 30
- Aug 2022 04:39:24 -0700 (PDT)
+        Tue, 30 Aug 2022 07:41:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956D55B7B0;
+        Tue, 30 Aug 2022 04:40:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEC9BB81A5C;
+        Tue, 30 Aug 2022 11:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C003C433D6;
+        Tue, 30 Aug 2022 11:40:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661859605;
+        bh=9U5YNZG5kGGVOkXBz5XYF4bS4GrVUMLFarYkV3ivBmI=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=LJGU2MlvihvbWDegzJW9x4zDzYfr4RuHN1avdf2LC/d0uILp5ZxoG8FZFFVC37yiC
+         zZ/k2xcy0WiPAfZhXY1pATPJqmDLFF2rR4+T4LT0HHIaLKuNbQ4o4FY+T2NtLmOAZv
+         DNHu8b6lkZjJU6fe+lHENGmYwS9JjFl6Tvr/A7puLdcTsrBc8w5UxI7qJUTUxVdGIs
+         NsH1AiofF7wbgJapwPcvITxWN2fyStNzOHWp+xq9dfReH1WzIibxnjxXqei4581RCt
+         kvzCCbkUpOXF+iA6klzKuW9BROz+ZHywvmfybrUpmqA2U/lGefISWYhJdJ5FRUAgYi
+         pddIxrdkoReoA==
+Message-ID: <f5c42c0d87dfa45188c2109ccf9baeb7a42aa27e.camel@kernel.org>
+Subject: Re: [PATCH v3 1/7] iversion: update comments with info about atime
+ updates
+From:   Jeff Layton <jlayton@kernel.org>
+To:     NeilBrown <neilb@suse.de>
+Cc:     Dave Chinner <david@fromorbit.com>, tytso@mit.edu,
+        adilger.kernel@dilger.ca, djwong@kernel.org,
+        trondmy@hammerspace.com, viro@zeniv.linux.org.uk,
+        zohar@linux.ibm.com, xiubli@redhat.com, chuck.lever@oracle.com,
+        lczerner@redhat.com, jack@suse.cz, brauner@kernel.org,
+        linux-api@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ceph@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-xfs@vger.kernel.org,
+        Colin Walters <walters@verbum.org>
+Date:   Tue, 30 Aug 2022 07:40:02 -0400
+In-Reply-To: <166181389550.27490.8200873228292034867@noble.neil.brown.name>
+References: <20220826214703.134870-1-jlayton@kernel.org>
+        , <20220826214703.134870-2-jlayton@kernel.org>
+        , <20220829075651.GS3600936@dread.disaster.area>
+        , <549776abfaddcc936c6de7800b6d8249d97d9f28.camel@kernel.org>
+         <166181389550.27490.8200873228292034867@noble.neil.brown.name>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-References: <20220829162953.5947-1-mario.limonciello@amd.com> <20220829162953.5947-2-mario.limonciello@amd.com>
-In-Reply-To: <20220829162953.5947-2-mario.limonciello@amd.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 30 Aug 2022 13:39:09 +0200
-Message-ID: <CAJZ5v0iF1_MUptawLL4DD0RqZpysH2B+Pk5sj_=gLv9AOVdy=Q@mail.gmail.com>
-Subject: Re: [PATCH v3 1/4] ACPI: s2idle: Add a new ->check() callback for platform_s2idle_ops
-To:     Mario Limonciello <mario.limonciello@amd.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Hans de Goede <hdegoede@redhat.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 6:29 PM Mario Limonciello
-<mario.limonciello@amd.com> wrote:
->
-> On some platforms it is found that Linux more aggressively enters s2idle
-> than Windows enters Modern Standby and this uncovers some synchronization
-> issues for the platform.  To aid in debugging this class of problems in
-> the future, add support for an extra optional callback intended for
-> drivers to emit extra debugging.
->
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+On Tue, 2022-08-30 at 08:58 +1000, NeilBrown wrote:
+> On Mon, 29 Aug 2022, Jeff Layton wrote:
+> > On Mon, 2022-08-29 at 17:56 +1000, Dave Chinner wrote:
+> > > On Fri, Aug 26, 2022 at 05:46:57PM -0400, Jeff Layton wrote:
+> > > > The i_version field in the kernel has had different semantics over
+> > > > the decades, but we're now proposing to expose it to userland via
+> > > > statx. This means that we need a clear, consistent definition of
+> > > > what it means and when it should change.
+> > > >=20
+> > > > Update the comments in iversion.h to describe how a conformant
+> > > > i_version implementation is expected to behave. This definition
+> > > > suits the current users of i_version (NFSv4 and IMA), but is
+> > > > loose enough to allow for a wide range of possible implementations.
+> > > >=20
+> > > > Cc: Colin Walters <walters@verbum.org>
+> > > > Cc: NeilBrown <neilb@suse.de>
+> > > > Cc: Trond Myklebust <trondmy@hammerspace.com>
+> > > > Cc: Dave Chinner <david@fromorbit.com>
+> > > > Link: https://lore.kernel.org/linux-xfs/166086932784.5425.171347126=
+94961326033@noble.neil.brown.name/#t
+> > > > Signed-off-by: Jeff Layton <jlayton@kernel.org>
+> > > > ---
+> > > >  include/linux/iversion.h | 23 +++++++++++++++++++++--
+> > > >  1 file changed, 21 insertions(+), 2 deletions(-)
+> > > >=20
+> > > > diff --git a/include/linux/iversion.h b/include/linux/iversion.h
+> > > > index 3bfebde5a1a6..45e93e1b4edc 100644
+> > > > --- a/include/linux/iversion.h
+> > > > +++ b/include/linux/iversion.h
+> > > > @@ -9,8 +9,19 @@
+> > > >   * ---------------------------
+> > > >   * The change attribute (i_version) is mandated by NFSv4 and is mo=
+stly for
+> > > >   * knfsd, but is also used for other purposes (e.g. IMA). The i_ve=
+rsion must
+> > > > - * appear different to observers if there was a change to the inod=
+e's data or
+> > > > - * metadata since it was last queried.
+> > > > + * appear different to observers if there was an explicit change t=
+o the inode's
+> > > > + * data or metadata since it was last queried.
+> > > > + *
+> > > > + * An explicit change is one that would ordinarily result in a cha=
+nge to the
+> > > > + * inode status change time (aka ctime). The version must appear t=
+o change, even
+> > > > + * if the ctime does not (since the whole point is to avoid missin=
+g updates due
+> > > > + * to timestamp granularity). If POSIX mandates that the ctime mus=
+t change due
+> > > > + * to an operation, then the i_version counter must be incremented=
+ as well.
+> > > > + *
+> > > > + * A conformant implementation is allowed to increment the counter=
+ in other
+> > > > + * cases, but this is not optimal. NFSv4 and IMA both use this val=
+ue to determine
+> > > > + * whether caches are up to date. Spurious increments can cause fa=
+lse cache
+> > > > + * invalidations.
+> > >=20
+> > > "not optimal", but never-the-less allowed - that's "unspecified
+> > > behaviour" if I've ever seen it. How is userspace supposed to
+> > > know/deal with this?
+> > >=20
+> > > Indeed, this loophole clause doesn't exist in the man pages that
+> > > define what statx.stx_ino_version means. The man pages explicitly
+> > > define that stx_ino_version only ever changes when stx_ctime
+> > > changes.
+> > >=20
+> >=20
+> > We can fix the manpage to make this more clear.
+> >=20
+> > > IOWs, the behaviour userspace developers are going to expect *does
+> > > not include* stx_ino_version changing it more often than ctime is
+> > > changed. Hence a kernel iversion implementation that bumps the
+> > > counter more often than ctime changes *is not conformant with the
+> > > statx version counter specification*. IOWs, we can't export such
+> > > behaviour to userspace *ever* - it is a non-conformant
+> > > implementation.
+> > >=20
+> >=20
+> > Nonsense. The statx version counter specification is *whatever we decid=
+e
+> > to make it*. If we define it to allow for spurious version bumps, then
+> > these implementations would be conformant.
+> >=20
+> > Given that you can't tell what or how much changed in the inode wheneve=
+r
+> > the value changes, allowing it to be bumped on non-observable changes i=
+s
+> > ok and the counter is still useful. When you see it change you need to
+> > go stat/read/getxattr etc, to see what actually happened anyway.
+> >=20
+> > Most applications won't be interested in every possible explicit change
+> > that can happen to an inode. It's likely these applications would check
+> > the parts of the inode they're interested in, and then go back to
+> > waiting for the next bump if the change wasn't significant to them.
+> >=20
+> >=20
+> > > Hence I think anything that bumps iversion outside the bounds of the
+> > > statx definition should be declared as such:
+> > >=20
+> > > "Non-conformant iversion implementations:
+> > > 	- MUST NOT be exported by statx() to userspace
+> > > 	- MUST be -tolerated- by kernel internal applications that
+> > > 	  use iversion for their own purposes."
+> > >=20
+> >=20
+> > I think this is more strict than is needed. An implementation that bump=
+s
+> > this value more often than is necessary is still useful. It's not
+> > _ideal_, but it still meets the needs of NFSv4, IMA and other potential
+> > users of it. After all, this is basically the definition of i_version
+> > today and it's still useful, even if atime update i_version bumps are
+> > currently harmful for performance.
+>=20
+> Why do you want to let it be OK?  Who is hurt by it being "more strict
+> than needed"?  There is an obvious cost in not being strict as an
+> implementation can be compliant but completely useless (increment every
+> nanosecond).  So there needs to be a clear benefit to balance this.  Who
+> benefits by not being strict?
+>=20
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Other filesystems that may not be able to provide the strict semantics
+required. I don't have any names to name here -- I'm just trying to
+ensure that we don't paint ourselves into a corner with rules that are
+more strict than we really need.
 
-and I'm assuming that this is for Hans.
+If the consensus is that we should keep the definition strict, then Ican
+live with that. That might narrow the number of filesystems that can
+provide this attribute though.
 
-> ---
-> v2->v3:
->  * Rename to *check
-> v1->v2:
->  * Add a prototype for `acpi_s2idle_enter`
->
->  drivers/acpi/sleep.h      |  1 +
->  drivers/acpi/x86/s2idle.c | 14 ++++++++++++++
->  include/linux/acpi.h      |  1 +
->  include/linux/suspend.h   |  1 +
->  kernel/power/suspend.c    |  3 +++
->  5 files changed, 20 insertions(+)
->
-> diff --git a/drivers/acpi/sleep.h b/drivers/acpi/sleep.h
-> index 7fe41ee489d6..d960a238be4e 100644
-> --- a/drivers/acpi/sleep.h
-> +++ b/drivers/acpi/sleep.h
-> @@ -18,6 +18,7 @@ static inline acpi_status acpi_set_waking_vector(u32 wakeup_address)
->  extern int acpi_s2idle_begin(void);
->  extern int acpi_s2idle_prepare(void);
->  extern int acpi_s2idle_prepare_late(void);
-> +extern void acpi_s2idle_check(void);
->  extern bool acpi_s2idle_wake(void);
->  extern void acpi_s2idle_restore_early(void);
->  extern void acpi_s2idle_restore(void);
-> diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
-> index f9ac12b778e6..474aa46f82f6 100644
-> --- a/drivers/acpi/x86/s2idle.c
-> +++ b/drivers/acpi/x86/s2idle.c
-> @@ -486,6 +486,19 @@ int acpi_s2idle_prepare_late(void)
->         return 0;
->  }
->
-> +void acpi_s2idle_check(void)
-> +{
-> +       struct acpi_s2idle_dev_ops *handler;
-> +
-> +       if (!lps0_device_handle || sleep_no_lps0)
-> +               return;
-> +
-> +       list_for_each_entry(handler, &lps0_s2idle_devops_head, list_node) {
-> +               if (handler->check)
-> +                       handler->check();
-> +       }
-> +}
-> +
->  void acpi_s2idle_restore_early(void)
->  {
->         struct acpi_s2idle_dev_ops *handler;
-> @@ -527,6 +540,7 @@ static const struct platform_s2idle_ops acpi_s2idle_ops_lps0 = {
->         .begin = acpi_s2idle_begin,
->         .prepare = acpi_s2idle_prepare,
->         .prepare_late = acpi_s2idle_prepare_late,
-> +       .check = acpi_s2idle_check,
->         .wake = acpi_s2idle_wake,
->         .restore_early = acpi_s2idle_restore_early,
->         .restore = acpi_s2idle_restore,
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 6f64b2f3dc54..acaa2ddc067d 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -1075,6 +1075,7 @@ acpi_status acpi_os_prepare_extended_sleep(u8 sleep_state,
->  struct acpi_s2idle_dev_ops {
->         struct list_head list_node;
->         void (*prepare)(void);
-> +       void (*check)(void);
->         void (*restore)(void);
->  };
->  int acpi_register_lps0_dev(struct acpi_s2idle_dev_ops *arg);
-> diff --git a/include/linux/suspend.h b/include/linux/suspend.h
-> index 70f2921e2e70..03ed42ed2c7f 100644
-> --- a/include/linux/suspend.h
-> +++ b/include/linux/suspend.h
-> @@ -191,6 +191,7 @@ struct platform_s2idle_ops {
->         int (*begin)(void);
->         int (*prepare)(void);
->         int (*prepare_late)(void);
-> +       void (*check)(void);
->         bool (*wake)(void);
->         void (*restore_early)(void);
->         void (*restore)(void);
-> diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-> index 827075944d28..c6272d466e58 100644
-> --- a/kernel/power/suspend.c
-> +++ b/kernel/power/suspend.c
-> @@ -136,6 +136,9 @@ static void s2idle_loop(void)
->                         break;
->                 }
->
-> +               if (s2idle_ops && s2idle_ops->check)
-> +                       s2idle_ops->check();
-> +
->                 s2idle_enter();
->         }
->
-> --
-> 2.34.1
->
+> Also: Your spec doesn't say it must increase, only it must be different.
+> So would as hash of all data and metadata be allowed (sysfs might be
+> able to provide that, but probably wouldn't bother).
+>=20
+> Also: if stray updates are still conformant, can occasional repeated
+> values be still conformant?  I would like for a high-precision ctime
+> timestamp to be acceptable, but as time can go backwards it is currently
+> not conformant (even though the xfs iversion which is less useful is
+> actually conformant).
+>=20
+
+Yes, saying only that it must be different is intentional. What we
+really want is for consumers to treat this as an opaque value for the
+most part [1]. Therefore an implementation based on hashing would
+conform to the spec, I'd think, as long as all of the relevant info is
+part of the hash.
+
+OTOH, hash collisions could be an issue here and I think we need to
+avoid allowing duplicate values. When it comes to watching for changes
+to an inode, false positives are generally ok since that should just
+affect performance but not functionality.
+
+False negatives are a different matter. They can lead to cache coherency
+issues with NFS, or missing remeasurements in IMA. Userland applications
+that use this could be subject to similar issues.
+--=20
+Jeff Layton <jlayton@kernel.org>
+
+
+[1]: which may not be reasonable in the case of write delegations on
+NFSv4, since the client is expected to increment it when it has cached
+local changes.
