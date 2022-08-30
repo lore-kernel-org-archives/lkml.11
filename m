@@ -2,111 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9037CECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BB8ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:21:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229502AbiH3LVc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:21:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
+        id S229989AbiH3LVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiH3LVW (ORCPT
+        with ESMTP id S229965AbiH3LVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:21:22 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D7CE42E7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:21:16 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id d12so10787924plr.6
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:21:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ecs-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=kcIm0U0ucDYNF4GdKdc+KO2BzaJqo9jU7lP+5SuHRBY=;
-        b=o3Qhqb60ks3ZGbk3LnWYih9PxTQeRFi5CUGT6HpFGm3te/u7Qmg2zV1jwm2ABOBTsC
-         fAFOMviQUg4FuF7Gt1gMWOcbsNyxrT/8olKDxebIDogYt46o5TPfxDXDtqUlLVBzIfZ3
-         7rTQUeoNMkaEEhZ4S86DY/9QVlbFroAPWvNH0SduWQvcTIvyBBIRj2gEj12Y7DLwCAwB
-         Jow3MQk3Y1ScRUEyXImyIF30DGCpRVhYLEOKfBXchNZBIVmce0ttlZah5LKyrw8fW9bH
-         Oiz62RTntZ/FD8HTbWnP0x2PRVIOfEG6btxjjfbHdpVhvVX6V4hW+hJv/ak8iAPu+Lm+
-         SMIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=kcIm0U0ucDYNF4GdKdc+KO2BzaJqo9jU7lP+5SuHRBY=;
-        b=2l4bNGkoy5WnTBvl6trPno6liDbUPDaGj6fTA/izCmQxLno/sF3IwnfgN4fw09BQNB
-         oG0oYuwZBZGU1VIX/eEOj0r4JcXotm+tfRKdA+r9l2/kAnC/mmKIt3AgXBCrlDKlw6gH
-         B1ghsuGwLMPk7wnjP8OuVXlOckQUWuekgbe8zIJdSrN/ml68W8IZJfHRXridUb2N4WSe
-         VgyRuy/saa86HpjbVLbto5W6NyOKSVd2e8gWXhw7aKpAbYATLXkIniMorVmVbNaKWjZI
-         PuX+edV6wQfRtsR3uYRL4maHW/SM80HoxetQdGYECQSYXAYv4WXm0V9defDuI5ZLv7+S
-         ub4A==
-X-Gm-Message-State: ACgBeo2MuzdmfRA7DLYw2t5EKhQs6OC6v6aGV05NAVa0oHs6ys9HWQYM
-        J8yI6UO75A+mifhZCGKhsb6b1l9qhy+Z3oKC
-X-Google-Smtp-Source: AA6agR5w0+dm/LQANqoxD2YgrMGVwPtnMfj/tMLYXpBoS0X+/vkd2UnS5ArjwV9S2gj9qh9KJ+lbrA==
-X-Received: by 2002:a17:903:40d2:b0:174:e086:c748 with SMTP id t18-20020a17090340d200b00174e086c748mr7479291pld.108.1661858475620;
-        Tue, 30 Aug 2022 04:21:15 -0700 (PDT)
-Received: from localhost.localdomain ([103.104.171.43])
-        by smtp.gmail.com with ESMTPSA id q41-20020a17090a17ac00b001f54fa41242sm8310957pja.42.2022.08.30.04.21.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 04:21:15 -0700 (PDT)
-From:   Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        Henry Sun <henrysun@google.com>,
-        Bob Moragues <moragues@chromium.org>,
-        Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Tue, 30 Aug 2022 07:21:33 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B2CB5FF48
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:21:32 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oSzJ7-0000k6-BY; Tue, 30 Aug 2022 13:21:25 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oSzJ5-002rKh-LL; Tue, 30 Aug 2022 13:21:23 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oSzJ5-008dgv-0q; Tue, 30 Aug 2022 13:21:23 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 1/2] dt-bindings: arm: qcom: Document additional skus for sc7180 pazquel360
-Date:   Tue, 30 Aug 2022 11:21:07 +0000
-Message-Id: <20220830112013.v2.1.Ic4d4e0777115011544dbc2ab07ed4d7b408c003a@changeid>
-X-Mailer: git-send-email 2.17.1
+        =?UTF-8?q?S=C3=B8ren=20Andersen?= <san@skov.dk>,
+        Sam Ravnborg <sam@ravnborg.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH v1 1/1] ARM: dts: imx6: skov: migrate to resistive-adc-touch
+Date:   Tue, 30 Aug 2022 13:21:21 +0200
+Message-Id: <20220830112121.2059062-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pazquel360 is an extension project based on pazquel.
-We create 3 sku on pazquel360:
-   sku 20 for LTE with physical SIM _and_ eSIM and WiFi
-   sku 21 for WiFi only
-   sku 22 for LTE with only a physical SIM
- Both sku20 and sku22 are LTE SKUs.
- One has the eSIM stuffed and one doesn't.
- There is a single shared device tree for the two.
+Start to use more generic resistive-adc-touch node. ti,tsc2046 is an ADC
+controller used for resistive touchscreen. So, define it as ADC and
+attach resistive-adc-touch to it.
 
-Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
+ arch/arm/boot/dts/imx6qdl-skov-cpu-revc.dtsi | 65 ++++++++++++++------
+ 1 file changed, 45 insertions(+), 20 deletions(-)
 
-(no changes since v1)
-
- Documentation/devicetree/bindings/arm/qcom.yaml | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index fb1d00bcc847..851cf5edb582 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -459,6 +459,17 @@ properties:
-           - const: google,pazquel-sku2
-           - const: qcom,sc7180
+diff --git a/arch/arm/boot/dts/imx6qdl-skov-cpu-revc.dtsi b/arch/arm/boot/dts/imx6qdl-skov-cpu-revc.dtsi
+index 8254bce1b8a22..b81799d7076aa 100644
+--- a/arch/arm/boot/dts/imx6qdl-skov-cpu-revc.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-skov-cpu-revc.dtsi
+@@ -2,35 +2,60 @@
+ //
+ // Copyright (C) 2020 Pengutronix, Ulrich Oelmann <kernel@pengutronix.de>
  
-+      - description: Google Pazquel360 with LTE (newest rev)
-+        items:
-+          - const: google,pazquel-sku22
-+          - const: google,pazquel-sku20
-+          - const: qcom,sc7180
++/ {
++	touchscreen {
++		compatible = "resistive-adc-touch";
++		io-channels = <&adc_ts 1>, <&adc_ts 3>, <&adc_ts 4>, <&adc_ts 5>;
++		io-channel-names = "y", "z1", "z2", "x";
++		touchscreen-min-pressure = <65000>;
++		touchscreen-inverted-y;
++		touchscreen-swapped-x-y;
++		touchscreen-x-plate-ohms = <300>;
++		touchscreen-y-plate-ohms = <800>;
++	};
++};
 +
-+      - description: Google Pazquel360 with WiFi (newest rev)
-+        items:
-+          - const: google,pazquel-sku21
-+          - const: qcom,sc7180
+ &ecspi4 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_ecspi4>;
+ 	cs-gpios = <&gpio3 20 GPIO_ACTIVE_LOW>;
+ 	status = "okay";
+ 
+-	touchscreen@0 {
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&pinctrl_touch>;
+-		compatible = "ti,tsc2046";
++	adc_ts: adc@0 {
++		compatible = "ti,tsc2046e-adc";
+ 		reg = <0>;
++		pinctrl-0 = <&pinctrl_touch>;
++		pinctrl-names ="default";
+ 		spi-max-frequency = <1000000>;
+ 		interrupts-extended = <&gpio3 19 IRQ_TYPE_LEVEL_LOW>;
+-		vcc-supply = <&reg_3v3>;
+-		pendown-gpio = <&gpio3 19 GPIO_ACTIVE_LOW>;
+-		ti,x-plate-ohms = /bits/ 16 <850>;
+-		ti,y-plate-ohms = /bits/ 16 <295>;
+-		ti,pressure-min = /bits/ 16 <2>;
+-		ti,pressure-max = /bits/ 16 <1500>;
+-		ti,vref-mv = /bits/ 16 <3300>;
+-		ti,settle-delay-usec = /bits/ 16 <15>;
+-		ti,vref-delay-usecs = /bits/ 16 <0>;
+-		ti,penirq-recheck-delay-usecs = /bits/ 16 <100>;
+-		ti,debounce-max = /bits/ 16 <100>;
+-		ti,debounce-tol = /bits/ 16 <(~0)>;
+-		ti,debounce-rep = /bits/ 16 <4>;
+-		touchscreen-swapped-x-y;
+-		touchscreen-inverted-y;
+-		wakeup-source;
++		#io-channel-cells = <1>;
 +
-       - description: Sharp Dynabook Chromebook C1 (rev1)
-         items:
-           - const: google,pompom-rev1
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		channel@1 {
++			reg = <1>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@3 {
++			reg = <3>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@4 {
++			reg = <4>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
++
++		channel@5 {
++			reg = <5>;
++			settling-time-us = <700>;
++			oversampling-ratio = <5>;
++		};
+ 	};
+ };
+ 
 -- 
-2.17.1
+2.30.2
 
