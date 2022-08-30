@@ -2,114 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C35FFECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EABFECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229953AbiH3L4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56988 "EHLO
+        id S230178AbiH3L47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbiH3L4d (ORCPT
+        with ESMTP id S230330AbiH3L4y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:56:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716CFD2B2D
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:56:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661860591;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=I8GvlrYVvupK3hOQqvOdht2sIf2McSZ1h3wdQgKQ4L8=;
-        b=APCi0o954C0tVuOoV3OoQQ8QbuOb+v4yge3UM9UjZQQWRWpzL+YYaEMC15NXT3JmmQMuH0
-        gTGWUlbyU5e/rIz38QDgFaFrCRwXRQBYOxdJX25qsG711zgB+LXVmNDKyz0dHLm+SqQp7z
-        6lbi7KkF8AQgmweaFEcNtwXzJgR/9Ok=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-350-dwg4RAN2PyadIkO29G1ziA-1; Tue, 30 Aug 2022 07:56:29 -0400
-X-MC-Unique: dwg4RAN2PyadIkO29G1ziA-1
-Received: by mail-pj1-f69.google.com with SMTP id a17-20020a17090abe1100b001fda49516e2so4676766pjs.2
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:56:29 -0700 (PDT)
+        Tue, 30 Aug 2022 07:56:54 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3214D8B0B
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:56:50 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id fa2so3208636pjb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:56:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=7yXaKsnP0ODtMHSK3xa0NyjfxvosTqnSzBxIBWoTewg=;
+        b=Bt82UCf8F8+6IR0fSl9Hq+ekNNU8enCID21or2aO9jzWwCCLyHWPiKl2F8Lo9k3q6R
+         pOC7miXL4WE7RsektcI0XwP5ucZquiXsdY+0H2ykinufOxw2XMT10ahC5XJj++nL0WkF
+         y7eBCgXgxukSrJzEHSDBGw34wmTl3TlYen8l1eQVNb3IUOJnMXGXaeAmJx4IIy1EAqmu
+         TFC/WO+mTVhDoe+d9Sh4no1DXfk/xL72BRC79Y8c8fgHJN+iSak8YZRp7hbjnqJlI/gx
+         K6xDjD7VnGHZqGU5SGRnoWuYzLAiXUeGfbsj68WktG1IVuA+aKId0fkufV2A6jsgkTsA
+         hVeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=I8GvlrYVvupK3hOQqvOdht2sIf2McSZ1h3wdQgKQ4L8=;
-        b=vBq1c35N5YOgQ/tGo3zLyksfoG7K5A8RAOAxoZIrAFhedRlZogCaT7EsAXIobXcfJJ
-         TuRX6Pw1Co23xjORouT0gH1grPpOtDefFJquPI3ihkoPW7SAuTCkAGF6dnq6j5wzorlL
-         emaGic5EgCix7PQTgKLncK9GK3/dhbVJt7wcTYSY6McjhM52xwFjqJ44SRv8quUJCBW8
-         21cOq7XofNWbFXKbr69qUQq5AvV2OLxoM20N9MzZb6kFfHF/+NEWVAMByge0A/bnmvN4
-         FEnrslejOBlaDvo9JYYtEZQS4DnAVBNSMz4R9mCN7j15+8tJvc7wffJbLUe3lggmKQjX
-         jYKg==
-X-Gm-Message-State: ACgBeo2udnfIo1KPXRCCNWF6UCMDZ2dqxnuTOr5ml0kdmtZ6hEGilGLn
-        3WwMGZHDFCtE0vE6zFKH4FRnv0jhwntMArxgoXpqeoqIMWrKDrZoZhew8aG/f8qkHrovF8CRQTc
-        M+AlkPcXT/YQKZCwQ+gO3MqsCQiC7E8cAhxrN8ppE
-X-Received: by 2002:a05:6a00:1705:b0:52f:6028:5c33 with SMTP id h5-20020a056a00170500b0052f60285c33mr21026169pfc.29.1661860588542;
-        Tue, 30 Aug 2022 04:56:28 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4qxUtpfFGljzWpROmYcOz2AJMFuKYBbL8Bx+4lKutjj90XsMterYYEJc9IMWzrnSPxCXHO1ShLAHjJfLxSqH4=
-X-Received: by 2002:a05:6a00:1705:b0:52f:6028:5c33 with SMTP id
- h5-20020a056a00170500b0052f60285c33mr21026154pfc.29.1661860588305; Tue, 30
- Aug 2022 04:56:28 -0700 (PDT)
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=7yXaKsnP0ODtMHSK3xa0NyjfxvosTqnSzBxIBWoTewg=;
+        b=S9mObOnWn2btlf7AWi6Da41oDKYH1Bvt+iX6qLB0Umf7yAs+PDpxksDXHSc4K0xtQG
+         AlswC5E1jrJBa6x7zM1lcLmwgdWrr6uT43U9bAudIYZwVMhjr58sR9hn/Ld6vUZHMI2D
+         TXDlCX39Bnhbs5+mNgtlY5cpjbhybvDNTcEuCJO1EVFTepQ0sfDkVk4bFm/TW10IfMWU
+         04//7QO95j2ppRqUCmkDiMUbNZSfBcSLmWgpD9B4YUZ+8m31MjD/gxMW6ggsvqIbEbR9
+         Fd/5EBlp68OWNVGSXk9J3SxuQ8l0hESHLoXd7shzgP679jMVTtRZ/sidD/UPr5cSLydK
+         buew==
+X-Gm-Message-State: ACgBeo1u4qFAcGVqaerbZWPzDnZv6AVrNn92la/yWQ5vSycauYYwOPiP
+        dEjAbAqEewfs6pCqLR6qLsjr
+X-Google-Smtp-Source: AA6agR53rvKvchcIFuOoaSkHx7i/ftfAYGl03OXOxdaMHuD2/IxrisPpudtStL0yM7Ioz6h++XbVYQ==
+X-Received: by 2002:a17:902:c651:b0:174:36ce:49ce with SMTP id s17-20020a170902c65100b0017436ce49cemr20733934pls.87.1661860609266;
+        Tue, 30 Aug 2022 04:56:49 -0700 (PDT)
+Received: from thinkpad ([117.217.182.234])
+        by smtp.gmail.com with ESMTPSA id z124-20020a626582000000b00537e328bc11sm7313942pfb.31.2022.08.30.04.56.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 04:56:48 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 17:26:42 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     lpieralisi@kernel.org, robh@kernel.org, andersson@kernel.org,
+        kw@linux.com, bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        konrad.dybcio@somainline.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        dmitry.baryshkov@linaro.org
+Subject: Re: [PATCH 09/11] dt-bindings: PCI: qcom-ep: Define clocks per
+ platform
+Message-ID: <20220830115642.GE135982@thinkpad>
+References: <20220826181923.251564-1-manivannan.sadhasivam@linaro.org>
+ <20220826181923.251564-10-manivannan.sadhasivam@linaro.org>
+ <b188b3fe-cc35-f902-b316-0c1632893e9d@linaro.org>
 MIME-Version: 1.0
-References: <6ee2132c415db2fc90e7fa2106db427a914cc566.1655563907.git.christophe.jaillet@wanadoo.fr>
- <nycvar.YFH.7.76.2208251126010.19850@cbobk.fhfr.pm>
-In-Reply-To: <nycvar.YFH.7.76.2208251126010.19850@cbobk.fhfr.pm>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Tue, 30 Aug 2022 13:56:17 +0200
-Message-ID: <CAO-hwJJfncQ3jgtS=HO0atbzrTNOT_rzU66oG2yRTWTSY-L8KA@mail.gmail.com>
-Subject: Re: [PATCH] HID: cp2112: Remove some dead code
-To:     Jiri Kosina <jikos@kernel.org>
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        lkml <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b188b3fe-cc35-f902-b316-0c1632893e9d@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:26 AM Jiri Kosina <jikos@kernel.org> wrote:
->
-> On Sat, 18 Jun 2022, Christophe JAILLET wrote:
->
-> > Commit 13de9cca514e ("HID: cp2112: add IRQ chip handling") has introduced
-> > cp2112_allocate_irq() that seems to be unused since 2016.
-> >
-> > Remove it, remove the associated resources and part of the remove()
-> > function that frees the resources allocated in cp2112_allocate_irq().
-> >
-> > Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+On Sun, Aug 28, 2022 at 06:20:21PM +0300, Krzysztof Kozlowski wrote:
+> On 26/08/2022 21:19, Manivannan Sadhasivam wrote:
+> > In preparation of adding the bindings for future SoCs, let's define the
+> > clocks per platform.
+> > 
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 > > ---
-> > Compile tested only.
-> >
-> > Maybe the issue is completely elsewhere and the probe() should call
-> > cp2112_allocate_irq() in some cases.
->
-> Benjamin, could you please take a look? Apparently you were aware of the
-> code being dead due to the __maybe_unused annotation ... :) What was the
-> point?
->
+> >  .../devicetree/bindings/pci/qcom,pcie-ep.yaml | 46 +++++++++++--------
+> >  1 file changed, 27 insertions(+), 19 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie-ep.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie-ep.yaml
+> > index b728ede3f09f..83a2cfc63bc1 100644
+> > --- a/Documentation/devicetree/bindings/pci/qcom,pcie-ep.yaml
+> > +++ b/Documentation/devicetree/bindings/pci/qcom,pcie-ep.yaml
+> > @@ -9,9 +9,6 @@ title: Qualcomm PCIe Endpoint Controller binding
+> >  maintainers:
+> >    - Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> >  
+> > -allOf:
+> > -  - $ref: "pci-ep.yaml#"
+> > -
+> >  properties:
+> >    compatible:
+> >      const: qcom,sdx55-pcie-ep
+> > @@ -35,24 +32,12 @@ properties:
+> >        - const: mmio
+> >  
+> >    clocks:
+> > -    items:
+> > -      - description: PCIe Auxiliary clock
+> > -      - description: PCIe CFG AHB clock
+> > -      - description: PCIe Master AXI clock
+> > -      - description: PCIe Slave AXI clock
+> > -      - description: PCIe Slave Q2A AXI clock
+> > -      - description: PCIe Sleep clock
+> > -      - description: PCIe Reference clock
+> > +    minItems: 7
+> > +    maxItems: 7
+> >  
+> >    clock-names:
+> > -    items:
+> > -      - const: aux
+> > -      - const: cfg
+> > -      - const: bus_master
+> > -      - const: bus_slave
+> > -      - const: slave_q2a
+> > -      - const: sleep
+> > -      - const: ref
+> > +    minItems: 7
+> > +    maxItems: 7
+> >  
+> >    qcom,perst-regs:
+> >      description: Reference to a syscon representing TCSR followed by the two
+> > @@ -112,6 +97,29 @@ required:
+> >    - reset-names
+> >    - power-domains
+> >  
+> > +allOf:
+> > +  - $ref: "pci-ep.yaml#"
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          contains:
+> > +            enum:
+> > +              - qcom,sdx55-pcie-ep
+> > +    then:
+> > +      properties:
+> > +        clocks:
+> > +          minItems: 7
+> > +          maxItems: 7
+> 
+> One more thing - the previous way of describing items is more readable
+> instead of names followed by a comment, so I propose to keep it. This
+> applies also to patch 10.
+> 
 
-Looks like I kept that code around for the CI I am running on HID patches.
+Okay.
 
-IIRC, I left the code in the tree because it might have been useful to
-others when they need to declare IRQs on the board. So yes, it is
-entirely dead code upstream :/
+Thanks,
+Mani
 
-I am applying the following 3 patches on the current master tree to be
-able to declare hid-cp2112 as an i2c-hid transport:
-https://gitlab.freedesktop.org/bentiss/gitlab-kernel-ci/-/tree/master/VM
+> Best regards,
+> Krzysztof
 
-Those 3 patches can not be upstreamed because platform drivers are a
-dead thing, but I have no other ideas on how I can declare an i2c-hid
-device on top of hid-cp2112.  Given that we don't have DT on x86_64
-vm, I can not rely on that to have my custom sensor (or maybe I can
-but I am not aware of it).
-
-So unless anybody has a better idea, I won't fight against removing
-that code, but it's more convenient for me to have it.
-
-Cheers,
-Benjamin
-
+-- 
+மணிவண்ணன் சதாசிவம்
