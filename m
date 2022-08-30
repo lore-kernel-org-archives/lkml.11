@@ -2,228 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 422A7ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FE1ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:02:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbiH3SCN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:02:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47646 "EHLO
+        id S229888AbiH3SCu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:02:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbiH3SBg (ORCPT
+        with ESMTP id S231232AbiH3SCY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:01:36 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F82B81E1;
-        Tue, 30 Aug 2022 11:01:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661882494; x=1693418494;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FyggbpqorrMc8GLbvcRrEkWiM/E5tR2cnCbtt20Xe40=;
-  b=mUxKuMfNkv0Cu8S2wJj+wx8wzq1lFLpNy4DoBkhTJJVkyVmcG6Ox/erZ
-   d5KtnFyrB1AqfAGTminD+WRHLfXR9PAY+FEJMxTCOEG0M/za6MgN5x/aY
-   f1SBQO3/xbR62YVsQcnUzIdmqL/nD2QzO6Q1cNHnfUB+yS+vgReHxmFtq
-   wbCROxm8R+WAmP4d0RD5BPu2kxHLLtLCxQAHRhghA8jBG46z4bu0rh9iB
-   JUF+NLIGgAD9CK8Vx3DU4llxXCR05NTgu+0RilS+VuhVtnGKpEurZfLlf
-   eLt7Whibys2qO6n4bU7Sisht6TVK+tOHsHA89CuXWaoIQQpy1jsV8Nkp4
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="178360340"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 11:01:33 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 30 Aug 2022 11:01:31 -0700
-Received: from CHE-LT-UNGSOFTWARE.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 11:01:26 -0700
-From:   Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
-To:     <gregkh@linuxfoundation.org>, <jirislaby@kernel.org>,
-        <ilpo.jarvinen@linux.intel.com>, <andy.shevchenko@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <johan@kernel.org>,
-        <wander@redhat.com>, <etremblay@distech-controls.com>,
-        <macro@orcam.me.uk>, <geert+renesas@glider.be>, <jk@ozlabs.org>,
-        <phil.edworthy@renesas.com>, <lukas@wunner.de>
-CC:     <linux-kernel@vger.kernel.org>, <linux-serial@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>
-Subject: [PATCH v1 tty-next 2/2] 8250: microchip: pci1xxxx: Add power management functions to pci1xxxx's  quad-uart driver.
-Date:   Tue, 30 Aug 2022 23:30:54 +0530
-Message-ID: <20220830180054.1998296-3-kumaravel.thiagarajan@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220830180054.1998296-1-kumaravel.thiagarajan@microchip.com>
-References: <20220830180054.1998296-1-kumaravel.thiagarajan@microchip.com>
+        Tue, 30 Aug 2022 14:02:24 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E430ED34FC
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:01:59 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id s15so7073390ljp.5
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:01:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc;
+        bh=al+Xtg+cfhLeP0/zAYTi1riRGZYXian07ih5lmqeHsI=;
+        b=Pm5Qif4vSyD2VTwBU1s73gBXVtU0WTNoG4UCg6TSCXxTcsJNnpK75qIlpbi8TFKx4M
+         1lbjnpAkwuK0/a2vRI214LWtY66+U+LUsfLCNSb3wZcdZfbpY0YCxrWQTnzcw2DpBl/R
+         yFRgMzV6ItMEl8iG+J2hu3T3nqm5yuOKaUg80VlfrB85b8y9eqqWjSnhILSKLi8Wq/6T
+         Q8U9PZg22vQ9OPgzmDZk2QGta51kInCdXEcBWJ19c67Y3nIWdVgdLcHzkQENxSIq+5XX
+         +2IgoSvkL6/gljpJJCrOFK1pHv7AJLVSDqRQS+tY5FXGU/Y/MHaLAADvj2tv+72HDTDT
+         +b5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc;
+        bh=al+Xtg+cfhLeP0/zAYTi1riRGZYXian07ih5lmqeHsI=;
+        b=btrgeh25WM9KDqFli/nSJN05sWLhhkMPTY/KgoZpmugXvJJh6a8ck1h5Dw2J43/v8n
+         b0JNyoq48ECGofASTv6ZfGMdq4fKmeaK1/E/46lpRXvINc4a19AzMlTjGRHWRHGwhqOH
+         PjPabJkOuEkK4r+ODYRiv+UHZ0quQiaIo1FNnNGzTBqwDrAe48+w9WmCg3I2UfCj47Se
+         9EAFKc1B1a0ThM5Ak3M2rCZAB1KlvNFdM7VHuOcrwuFVm6dqSIQ+A0L7kP1SuHUzmzDq
+         O3Sr8GOGy7kV/ktwTw5ELBLwfV1cIOeJ3+quYyaLFiKsLpOk+kmiDSoOOry4T4OxRFpT
+         gGfw==
+X-Gm-Message-State: ACgBeo0f61K+NfrAdyh+BWLM+NtG0DgY25pIS9qdWhvN8TG1fS5A1HQ/
+        FoUEQe2FjqFe+OUMgUCjjx9eIHxi2qBXIJzT
+X-Google-Smtp-Source: AA6agR522yCw3HpoWy/h+YuQykZosQn1end89kl6tikcdKJnEc62U93C9wFOvKLx/YuNPGBUHOdRAA==
+X-Received: by 2002:a2e:1613:0:b0:267:8c60:148f with SMTP id w19-20020a2e1613000000b002678c60148fmr1136172ljd.262.1661882517049;
+        Tue, 30 Aug 2022 11:01:57 -0700 (PDT)
+Received: from krzk-bin.. (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id n25-20020a05651203f900b0048abf3a550asm1676499lfq.224.2022.08.30.11.01.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 11:01:56 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     linux-kernel@vger.kernel.org, tony@atomide.com,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        linux-omap@vger.kernel.org, krzysztof.kozlowski@linaro.org,
+        krzysztof.kozlowski+dt@linaro.org, bcousson@baylibre.com
+Subject: Re: [PATCH] ARM: dts: am335x: drop panel endpoint unit address
+Date:   Tue, 30 Aug 2022 21:01:53 +0300
+Message-Id: <166188251000.15253.8711282037817342680.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220810130212.400371-1-krzysztof.kozlowski@linaro.org>
+References: <20220810130212.400371-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pci1xxxx's quad-uart function has the capability to wake up the host from
-suspend state. Enable wakeup before entering into suspend and disable
-wakeup upon resume.
+On Wed, 10 Aug 2022 16:02:12 +0300, Krzysztof Kozlowski wrote:
+> The endpoint in panel port node should not have unit address:
+> 
+>   am335x-evmsk.dtb: panel: port:endpoint@0: 'reg' is a required property
+> 
+> 
 
-Signed-off-by: Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>
----
- drivers/tty/serial/8250/8250_pci1xxxx.c | 122 ++++++++++++++++++++++++
- 1 file changed, 122 insertions(+)
+Applied, thanks!
 
-diff --git a/drivers/tty/serial/8250/8250_pci1xxxx.c b/drivers/tty/serial/8250/8250_pci1xxxx.c
-index 56852ae0585e..38c2a6a9e5d5 100644
---- a/drivers/tty/serial/8250/8250_pci1xxxx.c
-+++ b/drivers/tty/serial/8250/8250_pci1xxxx.c
-@@ -70,6 +70,7 @@
- 
- #define UART_PCI_CTRL_REG		0x80
- #define UART_PCI_CTRL_SET_MULTIPLE_MSI	BIT(4)
-+#define UART_PCI_CTRL_D3_CLK_ENABLE	BIT(0)
- 
- #define UART_WAKE_REG			0x8C
- #define UART_WAKE_MASK_REG		0x90
-@@ -78,6 +79,9 @@
- #define UART_WAKE_INT			BIT(0)
- #define UART_WAKE_SRCS			(UART_WAKE_N_PIN | UART_WAKE_NCTS | UART_WAKE_INT)
- 
-+#define UART_RESET_REG			0x94
-+#define UART_RESET_D3_RESET_DISABLE	BIT(16)
-+
- #define UART_BIT_SAMPLE_CNT 16
- 
- struct pci1xxxx_8250 {
-@@ -439,6 +443,121 @@ static void pci1xxxx_serial_remove(struct pci_dev *dev)
- 		serial8250_unregister_port(priv->line[i]);
- }
- 
-+#ifdef CONFIG_PM_SLEEP
-+
-+static char pci1xxxx_port_suspend(int line)
-+{
-+	struct uart_8250_port *up = serial8250_get_port(line);
-+	struct uart_port *port = &up->port;
-+	unsigned long flags;
-+	u8 wakeup_mask;
-+	char ret = 0;
-+
-+	if (port->suspended == 0 && port->dev) {
-+		wakeup_mask = readb(up->port.membase + UART_WAKE_MASK_REG);
-+
-+		spin_lock_irqsave(&port->lock, flags);
-+		port->mctrl &= ~TIOCM_OUT2;
-+		port->ops->set_mctrl(port, port->mctrl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+
-+		if ((wakeup_mask & UART_WAKE_SRCS) != UART_WAKE_SRCS)
-+			ret = 0x01;
-+		else
-+			ret = 0x00;
-+	}
-+
-+	writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
-+
-+	return ret;
-+}
-+
-+void pci1xxxx_port_resume(int line)
-+{
-+	struct uart_8250_port *up = serial8250_get_port(line);
-+	struct uart_port *port = &up->port;
-+	unsigned long flags;
-+
-+	writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
-+
-+	if (port->suspended == 0) {
-+		spin_lock_irqsave(&port->lock, flags);
-+		port->mctrl |= TIOCM_OUT2;
-+		port->ops->set_mctrl(port, port->mctrl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+	}
-+}
-+
-+static int pci1xxxx_suspend(struct device *dev)
-+{
-+	struct pci1xxxx_8250 *priv = dev_get_drvdata(dev);
-+	struct pci_dev *pcidev = to_pci_dev(dev);
-+	unsigned int data;
-+	void __iomem *p;
-+	char wakeup = 0;
-+	int i;
-+
-+	for (i = 0; i < priv->nr; i++) {
-+		if (priv->line[i] >= 0) {
-+			serial8250_suspend_port(priv->line[i]);
-+			wakeup |= pci1xxxx_port_suspend(priv->line[i]);
-+		}
-+	}
-+
-+	p = pci_ioremap_bar(pcidev, 0);
-+	if (!p) {
-+		dev_err(dev, "remapping of bar 0 memory failed");
-+		return -ENOMEM;
-+	}
-+
-+	data = readl(p + UART_RESET_REG);
-+	writel(data | UART_RESET_D3_RESET_DISABLE, p + UART_RESET_REG);
-+
-+	if (wakeup)
-+		writeb(UART_PCI_CTRL_D3_CLK_ENABLE, (p + UART_PCI_CTRL_REG));
-+
-+	iounmap(p);
-+
-+	device_set_wakeup_enable(dev, true);
-+
-+	pci_wake_from_d3(pcidev, true);
-+
-+	return 0;
-+}
-+
-+static int pci1xxxx_resume(struct device *dev)
-+{
-+	struct pci1xxxx_8250 *priv = dev_get_drvdata(dev);
-+	struct pci_dev *pcidev = to_pci_dev(dev);
-+	unsigned int data;
-+	void __iomem *p;
-+	int i;
-+
-+	p = pci_ioremap_bar(pcidev, 0);
-+	if (!p) {
-+		dev_err(dev, "remapping of bar 0 memory failed");
-+		return -ENOMEM;
-+	}
-+
-+	data = readl(p + UART_RESET_REG);
-+	writel(data & ~UART_RESET_D3_RESET_DISABLE, p + UART_RESET_REG);
-+	iounmap(p);
-+
-+	for (i = 0; i < priv->nr; i++) {
-+		if (priv->line[i] >= 0) {
-+			pci1xxxx_port_resume(priv->line[i]);
-+			serial8250_resume_port(priv->line[i]);
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(pci1xxxx_pm_ops, pci1xxxx_suspend,
-+			 pci1xxxx_resume);
-+
- static const struct pci_device_id pci1xxxx_pci_tbl[] = {
- 	{ PCI_DEVICE(PCI_VENDOR_ID_MCHP_PCI1XXXX, PCI_DEVICE_ID_MCHP_PCI11010) },
- 	{ PCI_DEVICE(PCI_VENDOR_ID_MCHP_PCI1XXXX, PCI_DEVICE_ID_MCHP_PCI11101) },
-@@ -453,6 +572,9 @@ static struct pci_driver pci1xxxx_pci_driver = {
- 	.name		= "pci1xxxx serial",
- 	.probe		= pci1xxxx_serial_probe,
- 	.remove	= pci1xxxx_serial_remove,
-+	.driver	= {
-+		.pm     = &pci1xxxx_pm_ops,
-+	},
- 	.id_table	= pci1xxxx_pci_tbl,
- };
- 
+[1/1] ARM: dts: am335x: drop panel endpoint unit address
+      https://git.kernel.org/krzk/linux-dt/c/007cf8d4cbbbf467c9d4ef318fc32a592af32a83
+
+Best regards,
 -- 
-2.25.1
-
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
