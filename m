@@ -2,186 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 949D0ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCB2ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbiH3SAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
+        id S230055AbiH3SAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231144AbiH3R7b (ORCPT
+        with ESMTP id S230006AbiH3SAX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:59:31 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D1B2C12B
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:59:25 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id 73so2994248pga.1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:59:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=/+D2Tln40Mx/WAH0Ico3syAwQZZ8lLnlPBkmPzh1zz8=;
-        b=RQZzWkEcevIVTT+KYPoXriMijj9PxtAFdQlty4WGXqmOHESCAe8GmWtZBvLvpxHhsS
-         9HSBiG5ywBhQzuwuDYQATXZ57jFXWzftMFUiwdSpx/StJT/KsZKxpJxmRYPX6EOV/+SU
-         KrRs03zaxV6+z736jnba0Ufz+S0/8pPQBh3qv6rfKB9xpZRQDYAkBbj2YsKLNzeox+Hm
-         YLzPB7Al9l2Lf8ynUaBnwDFT+k46UbtrjweROi3U9udsiaaJrlctaU1cYZ/iT9OT6hxI
-         hqnu454VhoiUzzj3TnGY/73edDBgfXXcQMezKe/GKvh5lntf6IUZkBewXUgqsmqjV0KP
-         4vhw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=/+D2Tln40Mx/WAH0Ico3syAwQZZ8lLnlPBkmPzh1zz8=;
-        b=bmZWB8ABB1oTPtZrLG4EIPS4RwdpCifQGY6xBImiUG+4PUQHH37yrjw4hGrswTBDh1
-         E+UCEJNwHCi2cYt5l0I0cvlwFMyIAXyAhqyjIhxslAK9QzYsL3Dclf6PI5sjwh1d0frM
-         g/IV/RvS654oOSz2IfvGvXLxgR/PYtxRfH1akaoDbJdsJIaFPIPcPmEOOJCCNR4dfqQB
-         EvpbXDNx1aXuh7cRQRauZi1+IAfUeiYpW8CUrruSbSBDaaF3aGJiu2c/QuUWWKl5aCDb
-         xYNI6o9SIw5WCdLjied65JuaH8tqGQTmJ4qAE8y+rbY46p8fmyiOFuRhoIZ8zBOg5f8A
-         HXJw==
-X-Gm-Message-State: ACgBeo1bneSC5L6IT/LjV8XXHwaEQx3i7QwQpiy/uFrQ8Iq1GM6er63V
-        19VRFDDtwzxJcJ+dup2Rgdyn7g==
-X-Google-Smtp-Source: AA6agR7ABHMc3AUNfVWIljR4WBT9M2pCoBIN1rtf9rRj/Y5zNRUWm1RfbFczEegYA3fW4+M4tCx9Ww==
-X-Received: by 2002:a05:6a00:1910:b0:52f:13d7:44c4 with SMTP id y16-20020a056a00191000b0052f13d744c4mr21741073pfi.32.1661882364637;
-        Tue, 30 Aug 2022 10:59:24 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id j64-20020a625543000000b0050dc76281e0sm9627945pfb.186.2022.08.30.10.59.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 10:59:24 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 17:59:20 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>
-Subject: Re: [PATCH RESEND v2 6/8] KVM: x86/pmu: Defer counter emulated
- overflow via pmc->stale_counter
-Message-ID: <Yw5P+COQIf/UPNuY@google.com>
-References: <20220823093221.38075-1-likexu@tencent.com>
- <20220823093221.38075-7-likexu@tencent.com>
+        Tue, 30 Aug 2022 14:00:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A8418E3B;
+        Tue, 30 Aug 2022 11:00:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DC17B81D21;
+        Tue, 30 Aug 2022 17:24:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B97EC433D7;
+        Tue, 30 Aug 2022 17:24:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661880270;
+        bh=UyC6EuVYNPcXw2t8mig7weYbNDvzVVaZ6wLDTuTmYIk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lcxianBDPHmZ9ZfzGcyfv9n/OqV5tyo0OjvHHU1npelBq9+Wr9NwKFBOB+U1D+ktr
+         TB5E4iWQIDvG1yJVqcLD5/xr35TYxoGqz59vyWlDOzQIuvGv6Jr4PMwnSr8P1F7Op3
+         z44i0CqcdtfIKI75MDOelZvG6RpcPpB5dRLJHxtsL/Lsk9jjLpxM/sYLDjOH5AZFaG
+         MgCsF6+mgPPz3ygKs91xOGnNJ1JpwxooUVwNl3rv3c3G3UYsK1iya8qd8gjpUzs8li
+         1OEt280E+twfRV528rVdf3Iis4F4EW78yDHJjfcY7wsBhtsevgmzXboLwcfe2iWBlH
+         5MPrMUCCwTyeA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        christophe.leroy@csgroup.eu, mpe@ellerman.id.au,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 15/16] fbdev: chipsfb: Add missing pci_disable_device() in chipsfb_pci_init()
+Date:   Tue, 30 Aug 2022 13:23:16 -0400
+Message-Id: <20220830172317.581397-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
+References: <20220830172317.581397-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823093221.38075-7-likexu@tencent.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022, Like Xu wrote:
-> From: Like Xu <likexu@tencent.com>
-> 
-> There are contextual restrictions on the functions that can be called
-> in the *_exit_handlers_fastpath path, for example calling
-> pmc_reprogram_counter() brings up a host complaint like:
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-State the actual problem instead of forcing the reader to decipher that from the
-stacktrace.
+[ Upstream commit 07c55c9803dea748d17a054000cbf1913ce06399 ]
 
->  [*] BUG: sleeping function called from invalid context at kernel/locking/mutex.c:580
->  [*] in_atomic(): 1, irqs_disabled(): 1, non_block: 0, pid: 2981888, name: CPU 15/KVM
->  [*] preempt_count: 1, expected: 0
->  [*] RCU nest depth: 0, expected: 0
->  [*] INFO: lockdep is turned off.
->  [*] irq event stamp: 0
->  [*] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
->  [*] hardirqs last disabled at (0): [<ffffffff8121222a>] copy_process+0x146a/0x62d0
->  [*] softirqs last  enabled at (0): [<ffffffff81212269>] copy_process+0x14a9/0x62d0
->  [*] softirqs last disabled at (0): [<0000000000000000>] 0x0
->  [*] Preemption disabled at:
->  [*] [<ffffffffc2063fc1>] vcpu_enter_guest+0x1001/0x3dc0 [kvm]
->  [*] CPU: 17 PID: 2981888 Comm: CPU 15/KVM Kdump: 5.19.0-rc1-g239111db364c-dirty #2
->  [*] Call Trace:
->  [*]  <TASK>
->  [*]  dump_stack_lvl+0x6c/0x9b
->  [*]  __might_resched.cold+0x22e/0x297
->  [*]  __mutex_lock+0xc0/0x23b0
->  [*]  perf_event_ctx_lock_nested+0x18f/0x340
->  [*]  perf_event_pause+0x1a/0x110
->  [*]  reprogram_counter+0x2af/0x1490 [kvm]
->  [*]  kvm_pmu_trigger_event+0x429/0x950 [kvm]
->  [*]  kvm_skip_emulated_instruction+0x48/0x90 [kvm]
->  [*]  handle_fastpath_set_msr_irqoff+0x349/0x3b0 [kvm]
->  [*]  vmx_vcpu_run+0x268e/0x3b80 [kvm_intel]
->  [*]  vcpu_enter_guest+0x1d22/0x3dc0 [kvm]
-> 
-> A new stale_counter field is introduced to keep this part of the semantics
-> invariant. It records the current counter value and it's used to determine
-> whether to inject an emulated overflow interrupt in the later
-> kvm_pmu_handle_event(), given that the internal count value from its
-> perf_event has not been added to pmc->counter in time, or the guest
-> will update the value of a running counter directly.
+Add missing pci_disable_device() in error path in chipsfb_pci_init().
 
-Describe what the change is at a high level, don't give a play-by-play of the
-code changes.
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/fbdev/chipsfb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-  Defer reprogramming counters and handling overflow via KVM_REQ_PMU
-  when incrementing counters.  KVM skips emulated WRMSR in the VM-Exit
-  fastpath, the fastpath runs with IRQs disabled, skipping instructions
-  can increment and reprogram counters, reprogramming counters can
-  sleep, and sleeping is disallowed while IRQs are disabled.
+diff --git a/drivers/video/fbdev/chipsfb.c b/drivers/video/fbdev/chipsfb.c
+index 393894af26f84..2b00a9d554fc0 100644
+--- a/drivers/video/fbdev/chipsfb.c
++++ b/drivers/video/fbdev/chipsfb.c
+@@ -430,6 +430,7 @@ static int chipsfb_pci_init(struct pci_dev *dp, const struct pci_device_id *ent)
+  err_release_fb:
+ 	framebuffer_release(p);
+  err_disable:
++	pci_disable_device(dp);
+  err_out:
+ 	return rc;
+ }
+-- 
+2.35.1
 
-  <stack trace>
-
-  Add a field to kvm_pmc to track the previous counter value in order
-  to defer overflow detection to kvm_pmu_handle_event() (reprogramming
-  must be done before handling overflow).
-
-> Opportunistically shrink sizeof(struct kvm_pmc) a bit.
-> 
-> Suggested-by: Wanpeng Li <wanpengli@tencent.com>
-> Fixes: 9cd803d496e7 ("KVM: x86: Update vPMCs when retiring instructions")
-> Signed-off-by: Like Xu <likexu@tencent.com>
-> ---
->  arch/x86/include/asm/kvm_host.h |  5 +++--
->  arch/x86/kvm/pmu.c              | 15 ++++++++-------
->  arch/x86/kvm/svm/pmu.c          |  2 +-
->  arch/x86/kvm/vmx/pmu_intel.c    |  4 ++--
->  4 files changed, 14 insertions(+), 12 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index 4e568a7ef464..ffd982bf015d 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -488,7 +488,10 @@ enum pmc_type {
->  struct kvm_pmc {
->  	enum pmc_type type;
->  	u8 idx;
-> +	bool is_paused;
-> +	bool intr;
->  	u64 counter;
-> +	u64 stale_counter;
-
-Use "prev_counter", "stale" makes it sound like a flag, e.g. "this counter is
-stale".
-
->  	u64 eventsel;
->  	struct perf_event *perf_event;
->  	struct kvm_vcpu *vcpu;
-> @@ -498,8 +501,6 @@ struct kvm_pmc {
->  	 * ctrl value for fixed counters.
->  	 */
->  	u64 current_config;
-> -	bool is_paused;
-> -	bool intr;
->  };
->  
->  #define KVM_PMC_MAX_FIXED	3
-> diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-> index 6940cbeee54d..45d062cb1dd5 100644
-> --- a/arch/x86/kvm/pmu.c
-> +++ b/arch/x86/kvm/pmu.c
-> @@ -350,6 +350,12 @@ void kvm_pmu_handle_event(struct kvm_vcpu *vcpu)
->  		}
->  
->  		__reprogram_counter(pmc);
-> +
-> +		if (pmc->stale_counter) {
-
-This check is unnecessary.  The values are unsigned, so counter can't be less than
-the previous value if the previous value was '0'.
-
-> +			if (pmc->counter < pmc->stale_counter)
-> +				__kvm_perf_overflow(pmc, false);
-> +			pmc->stale_counter = 0;
-> +		}
