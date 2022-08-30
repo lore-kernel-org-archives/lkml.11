@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7950ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170ABECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232227AbiH3XTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:19:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
+        id S232262AbiH3XT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232037AbiH3XSa (ORCPT
+        with ESMTP id S232080AbiH3XSo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:18:30 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05AD8A2DA1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:53 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-3328a211611so188935867b3.5
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:53 -0700 (PDT)
+        Tue, 30 Aug 2022 19:18:44 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D951FA3D11
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:59 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id s8-20020a170902ea0800b00172e456031eso8731743plg.3
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=nT/9uc77S8ExzdP0GdRk6lyVALBCe6fSmVkqSwOQXNM=;
-        b=XoKFew2JGd5KCvlvH+4g/133oGG/6QUoMdKIxe00im2NLbBSuVDpGkWJRC+RJcQnUL
-         A8nOT7BgGYh1cVo/ldPYIkQGSvyyEgCgZtzf9XtxgH6upHVMQ/EM6yUIn4BGMVjPTEai
-         7flsFDcWWsMN3wyE1p94AwN/ACoUmW5toTfj76h/STU4jq1ujDox4OvuZJp3mrmY63RD
-         7gIZcn7z0X/HkTaL/3e4OMCywsO+TZIe7djX4uIdTMka54m2ZQ4/QN5V5FaiRiaKhhB2
-         Cb9yNaeAFVGOsmfjyx1J4/becTlZ7wA2cRET7+dVoS43jPCLKKedooSY0Y4u0m7+ETMN
-         cWCA==
+        bh=tYq9YcAwjLBbsPBl3g4Rt11xEJcHY89Bgh5mNj3EW+c=;
+        b=F1HnI1LbZZGh+1iwnFz0bwwP/9HlRp8aSE9s5qTo2KlgDmgpTWstPBqoW7+Ojn0dg1
+         xdZRTxVA8HvFy8Uqhzo+8R4I3wtHvZHRAPbOryN1nprBqtdnjiSzeR5Rq6Wp4GpC3XvG
+         Y9wHkpv8IftQG6UPjRvd3Gd+XcdgjL81dsTkaLZMD2LS8/9Ju/TQv0B62AwUf8hYRYgA
+         D4fcqkjRBiP7JU2zL9coQ1FlF+2fFjlBAHl9gNy3URmlkWOO0lqqtsrQ2qemAbho7xQF
+         PFlkhVX+Q/WTvnJavNm0P8W7lwYFk7CcNXK6N2KZU0KzIoWgu8djZ6SHU77Kkz3tAh2R
+         1wkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=nT/9uc77S8ExzdP0GdRk6lyVALBCe6fSmVkqSwOQXNM=;
-        b=gv5Tys42sOLxlCaADp+DKkIk+W1lKYhgDyI406LqfEgBb9pmQH2Ue5YQfV+nZhQM4T
-         gM6uLudaueVKGIwSmqsdFbMYLXlSc5KLITs8Y1UzUEO9oUfwN2cURy+r/j1sK60cVrNC
-         x2lXddKr3vxeTtumtQjhuwNoC0kNriEvC5MjeR1sXPFXvB4E9SKGNkWLXPBXCu/EDrW3
-         b5kR4s8vgGfkW/cLqcFXfXhTyJD2x087UcsStqQfEZAN+EUqSANUd2cInH1Jfym6IDCk
-         Hcgx4R9PuwOfbdYeHC+epSqkMnKRoxGJioNVJDWGh+6oN4D9tr9sy4J/kn/TtsLBNYzY
-         op/g==
-X-Gm-Message-State: ACgBeo17x6AKcwgqQX/JOOs+P8QR/L4lYqOL/ctTfVUhRYNl8X7YrlzC
-        vCG4QTaJpD0sHnNDncZMieWEO2NJnIY=
-X-Google-Smtp-Source: AA6agR77gN34mCj9Uhtb58dxv41yVm9aD+Pz4eIF+jNcpoQDR1cK7eBAdLL7t4wrCoYGVKN/aYVpiHd1oLk=
+        bh=tYq9YcAwjLBbsPBl3g4Rt11xEJcHY89Bgh5mNj3EW+c=;
+        b=yn08GeR6jbhQ7lA8XwwYxVClGO+1kG2csx/LdxLiPi5pGUl2b1czMP/cc1CzTGxsdm
+         3lmZbzm8jnpInnh/juajK7i/t6IY5V7EOr7SfzRaJxqsrkJC/irCI987F6c58t4HDoFx
+         Q9whumivvivDyK2ohQW3mAqsMZxk52Kf8fMJktTsOoXS6itcSU1LAa2mLvrspyPmIhvo
+         nCswPbH6vbxdVXhw1SC6A/d3eBWL21MmQnY5CM9Cgem3QNjHJxUI4BceSi6DL9jS/h+9
+         m3Fui6m5xum1uyan0c5xq1SiS9Sort5FK2xf7aDn2kECUT8AL+t4AsABPXKcsntlp/Bi
+         pI0g==
+X-Gm-Message-State: ACgBeo0uFEbKei/LPJy5dr/Pkwoeflt+3zHqi81osCqenWo6lxMbZUPf
+        EU7tA+Abz4mKfsND0gtaJRuRV6eKO+E=
+X-Google-Smtp-Source: AA6agR6RHeCjSt+01YIz5kfeURH9q9hI3n0T4/icOqjmk3Zb8GUCUC+P264qqPI2xAk/yG/uDuMJXZaXR1M=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a25:e90e:0:b0:695:64cf:5d2 with SMTP id
- n14-20020a25e90e000000b0069564cf05d2mr13184768ybd.541.1661901404187; Tue, 30
- Aug 2022 16:16:44 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:4b0c:b0:1f4:ffac:699a with SMTP id
+ lx12-20020a17090b4b0c00b001f4ffac699amr333294pjb.145.1661901415663; Tue, 30
+ Aug 2022 16:16:55 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 30 Aug 2022 23:16:03 +0000
+Date:   Tue, 30 Aug 2022 23:16:10 +0000
 In-Reply-To: <20220830231614.3580124-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220830231614.3580124-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830231614.3580124-17-seanjc@google.com>
-Subject: [PATCH v5 16/27] KVM: x86: Use kvm_queue_exception_e() to queue #DF
+Message-ID: <20220830231614.3580124-24-seanjc@google.com>
+Subject: [PATCH v5 23/27] KVM: VMX: Update MTF and ICEBP comments to document
+ KVM's subtle behavior
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,58 +68,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Queue #DF by recursing on kvm_multiple_exception() by way of
-kvm_queue_exception_e() instead of open coding the behavior.  This will
-allow KVM to Just Work when a future commit moves exception interception
-checks (for L2 => L1) into kvm_multiple_exception().
+Document the oddities of ICEBP interception (trap-like #DB is intercepted
+as a fault-like exception), and how using VMX's inner "skip" helper
+deliberately bypasses the pending MTF and single-step #DB logic.
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/x86.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ arch/x86/kvm/vmx/vmx.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index bed42a75b515..c19658b7be23 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -667,25 +667,22 @@ static void kvm_multiple_exception(struct kvm_vcpu *vcpu,
- 	}
- 	class1 = exception_class(prev_nr);
- 	class2 = exception_class(nr);
--	if ((class1 == EXCPT_CONTRIBUTORY && class2 == EXCPT_CONTRIBUTORY)
--		|| (class1 == EXCPT_PF && class2 != EXCPT_BENIGN)) {
-+	if ((class1 == EXCPT_CONTRIBUTORY && class2 == EXCPT_CONTRIBUTORY) ||
-+	    (class1 == EXCPT_PF && class2 != EXCPT_BENIGN)) {
- 		/*
--		 * Generate double fault per SDM Table 5-5.  Set
--		 * exception.pending = true so that the double fault
--		 * can trigger a nested vmexit.
-+		 * Synthesize #DF.  Clear the previously injected or pending
-+		 * exception so as not to incorrectly trigger shutdown.
- 		 */
--		vcpu->arch.exception.pending = true;
- 		vcpu->arch.exception.injected = false;
--		vcpu->arch.exception.has_error_code = true;
--		vcpu->arch.exception.vector = DF_VECTOR;
--		vcpu->arch.exception.error_code = 0;
--		vcpu->arch.exception.has_payload = false;
--		vcpu->arch.exception.payload = 0;
--	} else
-+		vcpu->arch.exception.pending = false;
-+
-+		kvm_queue_exception_e(vcpu, DF_VECTOR, 0);
-+	} else {
- 		/* replace previous exception with a new one in a hope
- 		   that instruction re-execution will regenerate lost
- 		   exception */
- 		goto queue;
-+	}
- }
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index c6fc37415fc6..8875d9c448c2 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1652,9 +1652,13 @@ static void vmx_update_emulated_instruction(struct kvm_vcpu *vcpu)
  
- void kvm_queue_exception(struct kvm_vcpu *vcpu, unsigned nr)
+ 	/*
+ 	 * Per the SDM, MTF takes priority over debug-trap exceptions besides
+-	 * T-bit traps. As instruction emulation is completed (i.e. at the
+-	 * instruction boundary), any #DB exception pending delivery must be a
+-	 * debug-trap. Record the pending MTF state to be delivered in
++	 * TSS T-bit traps and ICEBP (INT1).  KVM doesn't emulate T-bit traps
++	 * or ICEBP (in the emulator proper), and skipping of ICEBP after an
++	 * intercepted #DB deliberately avoids single-step #DB and MTF updates
++	 * as ICEBP is higher priority than both.  As instruction emulation is
++	 * completed at this point (i.e. KVM is at the instruction boundary),
++	 * any #DB exception pending delivery must be a debug-trap of lower
++	 * priority than MTF.  Record the pending MTF state to be delivered in
+ 	 * vmx_check_nested_events().
+ 	 */
+ 	if (nested_cpu_has_mtf(vmcs12) &&
+@@ -5165,8 +5169,10 @@ static int handle_exception_nmi(struct kvm_vcpu *vcpu)
+ 			 * instruction.  ICEBP generates a trap-like #DB, but
+ 			 * despite its interception control being tied to #DB,
+ 			 * is an instruction intercept, i.e. the VM-Exit occurs
+-			 * on the ICEBP itself.  Note, skipping ICEBP also
+-			 * clears STI and MOVSS blocking.
++			 * on the ICEBP itself.  Use the inner "skip" helper to
++			 * avoid single-step #DB and MTF updates, as ICEBP is
++			 * higher priority.  Note, skipping ICEBP still clears
++			 * STI and MOVSS blocking.
+ 			 *
+ 			 * For all other #DBs, set vmcs.PENDING_DBG_EXCEPTIONS.BS
+ 			 * if single-step is enabled in RFLAGS and STI or MOVSS
 -- 
 2.37.2.672.g94769d06f0-goog
 
