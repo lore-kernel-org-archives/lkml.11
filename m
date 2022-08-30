@@ -2,160 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F44ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BD1C54EE9
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbiH3PVz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 11:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
+        id S229735AbiH3PWE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 11:22:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiH3PVx (ORCPT
+        with ESMTP id S229594AbiH3PVz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 11:21:53 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D539FB69D4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:21:51 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-33dce2d4bc8so281499767b3.4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:21:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=uqfm/6R6fkKJnneVeLdLuiqY/mudrNlydjep/s3PwB8=;
-        b=YBKdHJyH76npWUrSAFcUV5WdHEmW7p6mf76VnDUTwkYdX1Ctop0BxBlxjtklfAUy+L
-         kGBJ/XLJfJkHwuol0EPZKeoZF4lnqtdCIt56B6sQCWHGkC8wz5dxGgeyn00uZPAjHoaV
-         zx05izzXoEEVDbWnPO7oxx6V+hor5z4Eahig2z9dPJucnHAUz/Xxi52JnxQQpnLrPlt4
-         9RzApL6ulclDreuMV+yNVhRPd+Lqt22wNVo1grU99eXMre0PbMwYrp832TA+MkW/Nfeu
-         fOfUuTNN7im+QkWFHQNh4Rexf2f4yOxB+nNzGhhY3RR0Q/LqPfKH/r3/yKosz34QywEy
-         ooJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=uqfm/6R6fkKJnneVeLdLuiqY/mudrNlydjep/s3PwB8=;
-        b=oJceRwnCt/qz82VGEfHKEHAacJNglmfk19ybAoTgnLRSnf6faPsYgNjQ+KQ9H3GWwp
-         Cm0HO/bBAq5WTmKjJ9yHBLYtkiBohTJAakOnFO8P7KlXTnRfWco7aylX/AL8c5H895F/
-         +XdTprlTs3GVDDH6PQpLH1IHY2wJOYEetmzLsOlWQxC/kYE8c+jCr1Iw4KwvbO6R0KiM
-         wQzipZ02l1qg4Nrcgq0QyLmgpsAb1If52LOc9y+aij06zY7FnapK4YVFDhQx6YyBugfe
-         rcU7GZBSXkIQ2e653Q6xo7LDKvSKd9jVMj2lKpjzgtXel1zAJiHLeyK6lZwCWBmlLDnn
-         vB0Q==
-X-Gm-Message-State: ACgBeo0x0YdUDDXDrDiV6TpRD+5cIrBZLixWgCmE+eqhy5F4QeWkkdlw
-        t5H0RQuGs+CyY8Xkapf9WUCU6ETpPrD0B4D8p1EmhQ==
-X-Google-Smtp-Source: AA6agR76ifppksQ4LEuS/e9x46ItocAdXbDDSCTZn2SNIVT/gChusn8HH9OwXZXE65iVWnOTgRgUrmp5Y+UCuFj8ldc=
-X-Received: by 2002:a81:b71c:0:b0:340:bb98:fb38 with SMTP id
- v28-20020a81b71c000000b00340bb98fb38mr12971069ywh.428.1661872910913; Tue, 30
- Aug 2022 08:21:50 -0700 (PDT)
+        Tue, 30 Aug 2022 11:21:55 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB01B728D;
+        Tue, 30 Aug 2022 08:21:53 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27UFLcf6048474;
+        Tue, 30 Aug 2022 10:21:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661872898;
+        bh=secVNftM85ekE/jpsmMFiAgn/cbSg5ncZ9m6WYwQ3NM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=V4aiv4Jh40ZUNx7p3k3jtu0akJbkFGWt+ZJTAiILaYJQPEccCUUKr9wkqeKCn4vXa
+         oMMq13PMHz/SkRkv0tK0W6oRQ6696ycO2Hyay3tgAufsWJI/J2Sw+o6ZVYPZFxTOkr
+         6Qd6MWYJBSeDBZWHUKigvGhzNvts7qYWLcyarDUI=
+Received: from DFLE107.ent.ti.com (dfle107.ent.ti.com [10.64.6.28])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27UFLcSK018000
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 30 Aug 2022 10:21:38 -0500
+Received: from DFLE106.ent.ti.com (10.64.6.27) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 30
+ Aug 2022 10:21:38 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE106.ent.ti.com
+ (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 30 Aug 2022 10:21:38 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27UFLcf5022771;
+        Tue, 30 Aug 2022 10:21:38 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+CC:     Tero Kristo <kristo@kernel.org>, Nishanth Menon <nm@ti.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCH 4/4] arm64: dts: ti: am64*: Define aliases in board files
+Date:   Tue, 30 Aug 2022 10:21:32 -0500
+Message-ID: <20220830152132.23916-5-nm@ti.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220830152132.23916-1-nm@ti.com>
+References: <20220830152132.23916-1-nm@ti.com>
 MIME-Version: 1.0
-References: <20220826150807.723137-1-glider@google.com> <20220826150807.723137-5-glider@google.com>
- <51077555-5341-cf53-78bb-842d2e39d1ec@csgroup.eu>
-In-Reply-To: <51077555-5341-cf53-78bb-842d2e39d1ec@csgroup.eu>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Tue, 30 Aug 2022 17:21:14 +0200
-Message-ID: <CAG_fn=V6aQZGkq0HdhzXFCm1Qbn6GHdQd0dYESBup4Lz7hXV5Q@mail.gmail.com>
-Subject: Re: [PATCH v5 04/44] x86: asm: instrument usercopy in get_user() and put_user()
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 5:06 PM Christophe Leroy
-<christophe.leroy@csgroup.eu> wrote:
->
->
->
-> Le 26/08/2022 =C3=A0 17:07, Alexander Potapenko a =C3=A9crit :
-> > Use hooks from instrumented.h to notify bug detection tools about
-> > usercopy events in variations of get_user() and put_user().
-> >
-> > Signed-off-by: Alexander Potapenko <glider@google.com>
-> > ---
-> > v5:
-> >   -- handle put_user(), make sure to not evaluate pointer/value twice
-> >
-> > Link: https://linux-review.googlesource.com/id/Ia9f12bfe5832623250e20f1=
-859fdf5cc485a2fce
-> > ---
-> >   arch/x86/include/asm/uaccess.h | 22 +++++++++++++++-------
-> >   1 file changed, 15 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uacc=
-ess.h
-> > index 913e593a3b45f..c1b8982899eca 100644
-> > --- a/arch/x86/include/asm/uaccess.h
-> > +++ b/arch/x86/include/asm/uaccess.h
-> > @@ -5,6 +5,7 @@
-> >    * User space memory access functions
-> >    */
-> >   #include <linux/compiler.h>
-> > +#include <linux/instrumented.h>
-> >   #include <linux/kasan-checks.h>
-> >   #include <linux/string.h>
-> >   #include <asm/asm.h>
-> > @@ -103,6 +104,7 @@ extern int __get_user_bad(void);
-> >                    : "=3Da" (__ret_gu), "=3Dr" (__val_gu),             =
-   \
-> >                       ASM_CALL_CONSTRAINT                             \
-> >                    : "0" (ptr), "i" (sizeof(*(ptr))));                \
-> > +     instrument_get_user(__val_gu);                                  \
->
-> Where is that instrument_get_user() defined ? I can't find it neither in
-> v6.0-rc3 nor in linux-next.
->
-> >       (x) =3D (__force __typeof__(*(ptr))) __val_gu;                   =
- \
-> >       __builtin_expect(__ret_gu, 0);                                  \
-> >   })
->
-> Christophe
+Define aliases in board files, instead of in the SoC dtsi file.
 
-Yeah, as mentioned above, I should've put an empty declaration of it
-in include/linux/instrumented.h, but failed to. I'll fix this in v6.
-The "real" implementation of instrument_get_user() will appear in
-"instrumented.h: add KMSAN support"
+Reported-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+---
+ arch/arm64/boot/dts/ti/k3-am64.dtsi     | 16 ----------------
+ arch/arm64/boot/dts/ti/k3-am642-evm.dts | 16 ++++++++++++++++
+ arch/arm64/boot/dts/ti/k3-am642-sk.dts  | 16 ++++++++++++++++
+ 3 files changed, 32 insertions(+), 16 deletions(-)
 
---=20
-Alexander Potapenko
-Software Engineer
+diff --git a/arch/arm64/boot/dts/ti/k3-am64.dtsi b/arch/arm64/boot/dts/ti/k3-am64.dtsi
+index 016dd8511ca6..ffe7578e553b 100644
+--- a/arch/arm64/boot/dts/ti/k3-am64.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-am64.dtsi
+@@ -18,22 +18,6 @@ / {
+ 	#address-cells = <2>;
+ 	#size-cells = <2>;
+ 
+-	aliases {
+-		serial0 = &mcu_uart0;
+-		serial1 = &mcu_uart1;
+-		serial2 = &main_uart0;
+-		serial3 = &main_uart1;
+-		serial4 = &main_uart2;
+-		serial5 = &main_uart3;
+-		serial6 = &main_uart4;
+-		serial7 = &main_uart5;
+-		serial8 = &main_uart6;
+-		ethernet0 = &cpsw_port1;
+-		ethernet1 = &cpsw_port2;
+-		mmc0 = &sdhci0;
+-		mmc1 = &sdhci1;
+-	};
+-
+ 	chosen { };
+ 
+ 	firmware {
+diff --git a/arch/arm64/boot/dts/ti/k3-am642-evm.dts b/arch/arm64/boot/dts/ti/k3-am642-evm.dts
+index ad150c704623..076e21e3d261 100644
+--- a/arch/arm64/boot/dts/ti/k3-am642-evm.dts
++++ b/arch/arm64/boot/dts/ti/k3-am642-evm.dts
+@@ -16,6 +16,22 @@ / {
+ 	compatible = "ti,am642-evm", "ti,am642";
+ 	model = "Texas Instruments AM642 EVM";
+ 
++	aliases {
++		serial0 = &mcu_uart0;
++		serial1 = &mcu_uart1;
++		serial2 = &main_uart0;
++		serial3 = &main_uart1;
++		serial4 = &main_uart2;
++		serial5 = &main_uart3;
++		serial6 = &main_uart4;
++		serial7 = &main_uart5;
++		serial8 = &main_uart6;
++		ethernet0 = &cpsw_port1;
++		ethernet1 = &cpsw_port2;
++		mmc0 = &sdhci0;
++		mmc1 = &sdhci1;
++	};
++
+ 	chosen {
+ 		stdout-path = "serial2:115200n8";
+ 		bootargs = "console=ttyS2,115200n8 earlycon=ns16550a,mmio32,0x02800000";
+diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
+index 2620469a7517..70432a9ac485 100644
+--- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
++++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
+@@ -15,6 +15,22 @@ / {
+ 	compatible = "ti,am642-sk", "ti,am642";
+ 	model = "Texas Instruments AM642 SK";
+ 
++	aliases {
++		serial0 = &mcu_uart0;
++		serial1 = &mcu_uart1;
++		serial2 = &main_uart0;
++		serial3 = &main_uart1;
++		serial4 = &main_uart2;
++		serial5 = &main_uart3;
++		serial6 = &main_uart4;
++		serial7 = &main_uart5;
++		serial8 = &main_uart6;
++		ethernet0 = &cpsw_port1;
++		ethernet1 = &cpsw_port2;
++		mmc0 = &sdhci0;
++		mmc1 = &sdhci1;
++	};
++
+ 	chosen {
+ 		stdout-path = "serial2:115200n8";
+ 		bootargs = "console=ttyS2,115200n8 earlycon=ns16550a,mmio32,0x02800000";
+-- 
+2.31.1
 
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
