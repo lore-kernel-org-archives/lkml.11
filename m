@@ -2,92 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C3AECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D406AECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231815AbiH3J3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:29:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42380 "EHLO
+        id S231434AbiH3Jai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:30:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiH3J3V (ORCPT
+        with ESMTP id S231287AbiH3Jab (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:29:21 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EA1DDA8A
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:29:12 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso17329923pjk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:29:12 -0700 (PDT)
+        Tue, 30 Aug 2022 05:30:31 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF7C5F137
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:30:29 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id z25so14696400lfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:30:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=8hn22DiKT6B2qAXWtehvZaaB/0iSzkXCb8vTs5kctVc=;
-        b=XuvigDUjsTlew5QByyid0KyBITvNUqJn6IcfgWkQV7zAGAl3UMoMtTDzftEhlP45tn
-         FMWBDAJQivrINusQeWrFv12BU/n9lkyS+L/PWPne5BKo+U6omVTBfU60EwAZjN/tx30i
-         ULMBCCtdiOT/NlPnfEyCq+6pMn88BFC1a5Ke68UMctEY+82Ufuk35IiR4/pOHj+LY9E5
-         BKA/MC97VPtvymxh4RApDtCRokkLv/HgiWyNT/pQVoGgbzCkEPngQYQxYORjY0ddFs6e
-         lnPNT2gHKD5B3Z1xSYopZJOBWcFx+CF4GjeBxg23kJSZldS1qrGCX+RdUmQaFeuTLF5a
-         0zyQ==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=7vyYZz9KgFNVi0JvWBzSGayrcz6ixg7MEp1UEYlRptU=;
+        b=WaP/NHshvX6sNiRPPVuzIhwJZTulhNUEpAapYrefGstvj4/cZkFXxJhDVzktI28ZpI
+         i13FUs6UZxue3hmF/BV7BD3jM0wwIIGE7upNTxSC/Ox2B8JC0mYapGDwQ4wIntCI7ez5
+         r1DcSYENqx6DYD4O9UqOhO7YaJ05HbV5pROeEZVTRNEBoa8NgnuTEwgF42VrKnuoXBqr
+         zkY3vDTGgRpoZIOturtJmRcXexP/zqfWiUxN3dL6lJpBRO/UT4JlpFjaGSswCgC2z+co
+         NVy/GbTQNPGSMf8ESEhDPyOlT7sK/RBLFmjkATy+tUwBe16aVWdKQRQrXk2Avwk5zhQy
+         N0WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=8hn22DiKT6B2qAXWtehvZaaB/0iSzkXCb8vTs5kctVc=;
-        b=su3tKDqtvZfN4By6hBrwgGKu3WtbmqY2a6S1bWwfJ0iizQd9u3kZQkti6K6jdw74dg
-         EKb86kXrM4LYv/nB+0c+vcAEC4UpaLZp2XCw2XRQ9OLejGj3lXYvCLrwapGM4JZU7u0T
-         /P5P6znNHMqRPYRkfkqkGqbDnhMwqtmMD39gn+H6kPltYstE44VIwfNZAoK1zqdrECTF
-         8uFkqi1Kn6u8zCLeHoQfPDPU3uS4xEJJVprn48hhIXGPJVHmh0d2K/fIHNZzEgO731D6
-         UrGGOp0K3wVoOCOOMw8FODzpL7hSwHWKcz/o8jaHmaUq1hGvlwrZLZTKu0u5nUu6HdDL
-         IgcQ==
-X-Gm-Message-State: ACgBeo1bpqJ2ZhSv/mkonOiVGWSrXvXKMiM16WyP3ssUtRZcc1lqViQy
-        zR5464xxnFQZ9Q6CXC08Yx8=
-X-Google-Smtp-Source: AA6agR7gbfq0fmmwAEUpk3k1Mfq5iKb3ZA3FowaWJdaJ2BGUzjQPfWAwZs1PK7bMi0Wk9ZrJIY9mfg==
-X-Received: by 2002:a17:90a:4042:b0:1fa:a752:9e1c with SMTP id k2-20020a17090a404200b001faa7529e1cmr22409877pjg.117.1661851751402;
-        Tue, 30 Aug 2022 02:29:11 -0700 (PDT)
-Received: from localhost.localdomain ([118.235.15.129])
-        by smtp.gmail.com with ESMTPSA id z10-20020a17090a1fca00b001fd7cde9990sm6485500pjz.0.2022.08.30.02.29.06
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 30 Aug 2022 02:29:10 -0700 (PDT)
-From:   Levi Yun <ppbuk5246@gmail.com>
-To:     bhe@redhat.com, will@kernel.org, nramas@linux.microsoft.com,
-        thunder.leizhen@huawei.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kexec@lists.infradead.org, Levi Yun <ppbuk5246@gmail.com>
-Subject: [PATCH v2] arm64/kexec: Fix missing extra range for crashkres_low.
-Date:   Tue, 30 Aug 2022 18:28:39 +0900
-Message-Id: <20220830092839.3197-1-ppbuk5246@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <CAM7-yPTdihLsPjDKM-0OEszxNd8n0bgeRseiEkCsSZW-uuaRvw@mail.gmail.com>
-References: <CAM7-yPTdihLsPjDKM-0OEszxNd8n0bgeRseiEkCsSZW-uuaRvw@mail.gmail.com>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=7vyYZz9KgFNVi0JvWBzSGayrcz6ixg7MEp1UEYlRptU=;
+        b=mBo8UbE2EAXKjWap2gSlZg1tSAVZwsocKqBplm6cWhtSUgZyoaARo8S9iSa540bAku
+         VN3ux6KM70x+EYxpLNJfU7iwFBPWEwg12DOjVitg48vurCrKKGn1IiQmwVt5PUIjxrnc
+         6c8s3J7yvKC1ko+IxgAhQBgk322NdJVLTtmwu97YisTJgt5HMz51Q1KxpIVJDHTgTMk+
+         wsgNpTJ5UtktcdOIndZPhE9cCREw9AFjW7IDTqhrQoRwp8AfCUk3MCwHW631N99yQdkh
+         GePaN1E7erhWUvRuqT0erka+cAWq9Xn8QIZl33Uu4Zzq4k/wKf/6lQDFQeFaMzlON1Q5
+         8MHw==
+X-Gm-Message-State: ACgBeo1p/QdHtrwBi2pVMLsaSN+PspaSQVeK88Uuys67p7Qy5aMvk4y/
+        w8io8NNg4H8NOYzbR4I+pQvslA==
+X-Google-Smtp-Source: AA6agR4MJMvkWWr8MBhEZ8xVFUYxKK0ZPWsAy0YaBRPQ7YBUtTJXE1tDr4axCvoe0Qh+3CfytsxMjQ==
+X-Received: by 2002:a05:6512:281a:b0:494:813e:53fa with SMTP id cf26-20020a056512281a00b00494813e53famr255193lfb.305.1661851827598;
+        Tue, 30 Aug 2022 02:30:27 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id s4-20020ac25fe4000000b0048aef1abb06sm1554987lfg.69.2022.08.30.02.30.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 02:30:27 -0700 (PDT)
+Message-ID: <bbff0ffe-d555-ab10-7a0b-d4369dac14e1@linaro.org>
+Date:   Tue, 30 Aug 2022 12:30:26 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v7 3/3] arm64: dts: qcom: msm8992-xiaomi-libra: split
+ qcom,msm-id into tuples
+Content-Language: en-US
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+References: <20220830065744.161163-1-krzysztof.kozlowski@linaro.org>
+ <20220830065744.161163-4-krzysztof.kozlowski@linaro.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220830065744.161163-4-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like crashk_res, Calling crash_exclude_mem_range function with
-crashk_low_res area would need extra crash_mem range too.
+On 30/08/2022 09:57, Krzysztof Kozlowski wrote:
+> The qcom,msm-id is an uint32 matrix, so a list of tuples.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  arch/arm64/boot/dts/qcom/msm8992-xiaomi-libra.dts | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Add one more extra cmem range slot in case of crashk_low_res is used.
+This patch can be ignored. I missed that v6 was applied (there were no
+changes between v6 and v7 here).
 
-Signed-off-by: Levi Yun <ppbuk5246@gmail.com>
----
- arch/arm64/kernel/machine_kexec_file.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/kernel/machine_kexec_file.c b/arch/arm64/kernel/machine_kexec_file.c
-index 889951291cc0..a11a6e14ba89 100644
---- a/arch/arm64/kernel/machine_kexec_file.c
-+++ b/arch/arm64/kernel/machine_kexec_file.c
-@@ -47,7 +47,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
- 	u64 i;
- 	phys_addr_t start, end;
- 
--	nr_ranges = 1; /* for exclusion of crashkernel region */
-+	nr_ranges = 2; /* for exclusion of crashkernel region */
- 	for_each_mem_range(i, &start, &end)
- 		nr_ranges++;
- 
--- 
-2.35.1
-
+Best regards,
+Krzysztof
