@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B79B9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1C85ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231150AbiH3Lb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55172 "EHLO
+        id S230426AbiH3LcF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbiH3LaK (ORCPT
+        with ESMTP id S230165AbiH3LaK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 07:30:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A0E17E17;
-        Tue, 30 Aug 2022 04:30:07 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1B82618;
+        Tue, 30 Aug 2022 04:30:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 48F95CE1AA1;
-        Tue, 30 Aug 2022 11:30:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E44C43146;
-        Tue, 30 Aug 2022 11:30:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 829C8B81A65;
+        Tue, 30 Aug 2022 11:30:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EB23C43144;
+        Tue, 30 Aug 2022 11:30:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661859001;
-        bh=rSg12kEuWS2O2FPCoPpZ3ZokcSUHOv1wererebey3pg=;
+        s=k20201202; t=1661859000;
+        bh=weaKifnS4ySesCA3aDiMG1xC5D2wnsitBfiCDd6gCnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rxg6mR2devwTXYEMS7dUmNKKBexRyNFdB+fjFB1IqBOoZ/oRvAcfoz64FiFudgRov
-         Q9ZBqbWUYE5OeqzICbzN/t6yOnYEVc9usVtdSp0bv71WawUSsGlwK+r7rOyJF4LC1n
-         bOJRhduADe0QWkWkAwiQUjOkGwg4DbImiwKQx+aQ7AUwkwKi86tzHSNhZ04j9wsbK9
-         vuufSwQEykyaJdT6uUMiO4SPUbEa/zxiLcNUTWJ+DgKYGgMe5Zk22plwRcD9AM3tyG
-         issfTVOp/ameJSI+ARBYex/Sntc7BSgOMoJHlLFeEv6BX7hvcbAhkoVOHa5O1p+mtT
-         IiK3RFMpcmNXw==
+        b=mC2xdtMMI0OacUUDcVSz+yJG7dZFdb0cCrOIYCtj9SbEgaK4sKwXpjhUglzEneeMA
+         ArDN3jKnHaBI52Ouc0HYTAmLXo5lJTF+h8Qomvfi8E6xbfpvTFf+SqdYGXdrsOhyyS
+         I7NqxploUPqKVHJhHIen9nCURjKFyVFbfqxK6dEoKXQXy/zsSB9GlTWpkt6Zg8C+G5
+         zu/WV//XUXPz3QjndYMH261IjnvTMAXKTyqmhci6tW64XZdVloPcC0e63kFG79d61T
+         owlxmTs9moH/Yuvxl0bwZJ4Re4meREY6kZRqjs9++LTGntbSF1ygpVbgXIXISnJVWc
+         HM5JH2u+Non5A==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oSzRP-00011A-AM; Tue, 30 Aug 2022 13:29:59 +0200
+        id 1oSzRO-00010g-Dk; Tue, 30 Aug 2022 13:29:58 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -47,9 +47,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 28/30] phy: qcom-qmp-pcie-msm8996: drop pipe clock lane suffix
-Date:   Tue, 30 Aug 2022 13:29:21 +0200
-Message-Id: <20220830112923.3725-29-johan+linaro@kernel.org>
+Subject: [PATCH v4 18/30] dt-bindings: phy: qcom,qmp-ufs: add missing child node schema
+Date:   Tue, 30 Aug 2022 13:29:11 +0200
+Message-Id: <20220830112923.3725-19-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830112923.3725-1-johan+linaro@kernel.org>
 References: <20220830112923.3725-1-johan+linaro@kernel.org>
@@ -59,33 +59,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pipe clock is defined in the "lane" node so there's no need to keep
-adding a redundant lane-number suffix to the clock name.
+Add the missing the description of the PHY-provider child node which was
+ignored when converting to DT schema.
 
-Update driver to support the new binding where the pipe clock name has
-been deprecated by instead requesting the clock by index.
-
+Fixes: ccf51c1cedfd ("dt-bindings: phy: qcom,qmp: Convert QMP PHY bindings to yaml")
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ .../bindings/phy/qcom,qmp-ufs-phy.yaml        | 72 +++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-index be6a94439b6c..7b893c66cf75 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-@@ -892,8 +892,7 @@ int qcom_qmp_phy_pcie_msm8996_create(struct device *dev, struct device_node *np,
- 	if (!qphy->pcs_misc)
- 		dev_vdbg(dev, "PHY pcs_misc-reg not used\n");
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+index 0e76256e5636..6e3c186b9972 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+@@ -68,6 +68,19 @@ patternProperties:
+   "^phy@[0-9a-f]+$":
+     type: object
+     description: single PHY-provider child node
++    properties:
++      reg:
++        minItems: 3
++        maxItems: 6
++
++      "#phy-cells":
++        const: 0
++
++    required:
++      - reg
++      - "#phy-cells"
++
++    additionalProperties: false
  
--	snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
--	qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
-+	qphy->pipe_clk = devm_get_clk_from_child(dev, np, NULL);
- 	if (IS_ERR(qphy->pipe_clk)) {
- 		return dev_err_probe(dev, PTR_ERR(qphy->pipe_clk),
- 				     "failed to get lane%d pipe clock\n", id);
+ required:
+   - compatible
+@@ -136,6 +149,65 @@ allOf:
+             - const: ref_aux
+             - const: qref
+ 
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,msm8998-qmp-ufs-phy
++              - qcom,sc8280xp-qmp-ufs-phy
++              - qcom,sdm845-qmp-ufs-phy
++              - qcom,sm6350-qmp-ufs-phy
++              - qcom,sm8150-qmp-ufs-phy
++              - qcom,sm8250-qmp-ufs-phy
++              - qcom,sm8350-qmp-ufs-phy
++              - qcom,sm8450-qmp-ufs-phy
++    then:
++      patternProperties:
++        "^phy@[0-9a-f]+$":
++          properties:
++            reg:
++              items:
++                - description: TX lane 1
++                - description: RX lane 1
++                - description: PCS
++                - description: TX lane 2
++                - description: RX lane 2
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,sc8180x-qmp-ufs-phy
++              - qcom,sm6115-qmp-ufs-phy
++    then:
++      patternProperties:
++        "^phy@[0-9a-f]+$":
++          properties:
++            reg:
++              items:
++                - description: TX
++                - description: RX
++                - description: PCS
++                - description: PCS_MISC
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,msm8996-qmp-ufs-phy
++    then:
++      patternProperties:
++        "^phy@[0-9a-f]+$":
++          properties:
++            reg:
++              items:
++                - description: TX
++                - description: RX
++                - description: PCS
++
+ examples:
+   - |
+     #include <dt-bindings/clock/qcom,gcc-sc8280xp.h>
 -- 
 2.35.1
 
