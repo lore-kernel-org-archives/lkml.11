@@ -2,224 +2,221 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C68ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:21:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA2DECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232272AbiH3WVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 18:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
+        id S232201AbiH3WVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 18:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232133AbiH3WUf (ORCPT
+        with ESMTP id S232137AbiH3WUg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 18:20:35 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F866520A9
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:19 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id bq11so15969887wrb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:19 -0700 (PDT)
+        Tue, 30 Aug 2022 18:20:36 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4635244B
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:20 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id w1-20020a63d741000000b0042c254a4ccdso3375762pgi.15
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=HPrbJ+vQ4o+fFD/423VJ+T5YmPm3lPQCBpQHSndaOWk=;
-        b=BmZbDD+CmNe77coREpWAp5PxrknVqRJCdZ7TB5b+lKhL/T2cQ+KQshuF5ZFE478uUM
-         SjwF1n0TW1/TBbIb3XMokYSDeJ8SqEAUywLe2yhwSmajq+uT0DR8azDtSNj6UTg4KWC7
-         VLDpuutcOeOcsOTbveoBk5PqnOPoaeUi6roKqthPPwuo6obEz0PdNwc7r02blAfv2CIJ
-         gY+fPBXvNI4SGCjGA6YrC/4agzYiUv8YoJWSfnXPBz7ICGkEitmWWBdiH8q+UIlaMvFd
-         jeCENyhUM6LTfiwBe9EZGcpxGaSSCY2Z/71+cQYkoBI2+sn1omeTb44tdJuddoxLkPsh
-         hlWw==
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date;
+        bh=ZKZyychf2ckUAiVIKhV5N5UZMfwgcYI+ar1kxk3E/L4=;
+        b=EApviBTvewlHWbvbESqFcFdkFYfHnAVWK/NKIk8LewMSDM8v9kNk/x3ajoUqcjYrIi
+         flTf9vFfA3VRfld7AapqlhyC6ac7BhSmpLyRq5FRDcH07mjcgdM5tFQy6e+nmXHbknDX
+         97ykUwvGQ6BDAtBFkJX3cgf87ZBhPYHXYV1cIeEH6gQWDkvbfq37IvDTgNX3bNgG1vFa
+         myR9YHb1sOhKoPNyNSkvToAFa1ijO+sTHKeIEluMZI0XR6UgJEG72KpAwUwBd/FPJPPQ
+         HEmwn51NHQPeWtEHTXH+M+HVZEcxdnywlVv/L1lBhetPph+3AWUopPOTUULyIDolyFNn
+         ILCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=HPrbJ+vQ4o+fFD/423VJ+T5YmPm3lPQCBpQHSndaOWk=;
-        b=GNSkhRCjwVbzWWrU/hId4Ggj0YHA2a2jT2cSFZQW4/THYb3lcaGpIBc9ou5K8Zibcu
-         CkUvnEvNufWK1XMb0gvJU1nxkwWJskdvkQhUt9QU2cCSEylVXcAL1GJfWTUFd5cgbhPp
-         oc975dtW1xoiclCh8t6pjXYh0lfCL/WT98q/i/5y5/DayWSS0CRKP1uhupmi1EMGCBY7
-         qtXpL8fziDvW05OCdzeuyozkrA3Bwnd6y/DKCbSanGkf7dIddknlpjkk9pcpApaX22Dm
-         pmzBOTrYkbCgc5pSfcwSUHR5cppGppXmKieRj3VeDEeYC5SJi7bqH+m2ym2vcKQhFgfu
-         E+iA==
-X-Gm-Message-State: ACgBeo0oC+5YNJv6oCXVQcAfDKjEBNv8eTfskXhvJYIa24lcY4zkaxVC
-        d20eEl/mt8k2/RwiODIHTBZ5BVddANJZvKIwy9GZTA==
-X-Google-Smtp-Source: AA6agR6AHK3n/oQ6l8SIk21SqNa4hPOU8qFm/SkR6osnTCJcO6g82JPZIqMp1m8voh/gkX3ZK9OD3+FxbsH5RuCdkq4=
-X-Received: by 2002:a5d:64ab:0:b0:226:d997:ad5c with SMTP id
- m11-20020a5d64ab000000b00226d997ad5cmr6974773wrp.602.1661898017406; Tue, 30
- Aug 2022 15:20:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220829201254.1814484-1-cmllamas@google.com> <20220829201254.1814484-4-cmllamas@google.com>
-In-Reply-To: <20220829201254.1814484-4-cmllamas@google.com>
-From:   Todd Kjos <tkjos@google.com>
-Date:   Tue, 30 Aug 2022 15:20:06 -0700
-Message-ID: <CAHRSSEzCUcmAO4SDeUtAutRSkhV9pOX9Ea7Q0uaeGcf_Mj9NRw@mail.gmail.com>
-Subject: Re: [PATCH 3/7] binder: rename alloc->vma_vm_mm to alloc->mm
-To:     Carlos Llamas <cmllamas@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        =?UTF-8?B?QXJ2ZSBIasO4bm5ldsOlZw==?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date;
+        bh=ZKZyychf2ckUAiVIKhV5N5UZMfwgcYI+ar1kxk3E/L4=;
+        b=MOj5sGcX50XjZbiAgWKtLeNAG53nl2KBsk4Csm/WAL1WghFnPqtNhKO2faOSz9lhnk
+         KKThRM+xYn26Sb+LZIBEaEnm5z3y0YJKmj4+XJzykyt4fT/ADoxudw5z0ZU6ZzEizqLb
+         A/3aKwzyzU9tgZokVS3ddK/vOZ5bMYw+spv7W9aIIQ/Isu5HFgWjf45nlV+xyKbfeD7O
+         wSCMCEZwsSmld9tiy0mplJi12RNJwA7fTtEa3npDkeosZoynlEUC7iqCJRghrjRfcuw4
+         pf/wvq5FWoPBJLMEbc/bPuXfQ/wo2y8UJgXWmw1my6b0YF0yRzTXyGxf5luFCFeKgNH3
+         X1eA==
+X-Gm-Message-State: ACgBeo3IFZs4ec1Nhr+b6gbjkRLqXE506YQ12wOW4VmeHzuI1ltAfCag
+        zplzK9WVxlDyx3pRSdc1IDlzoTttgg==
+X-Google-Smtp-Source: AA6agR6/HMwaZBuWZDYIYWsY99pC+WePM1T6/CYJuVaTJ/QGT5UGOgcVVjOBVq5tri8Ty1s0OI+J3PSXhw==
+X-Received: from sagi.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:241b])
+ (user=sagis job=sendgmr) by 2002:a17:90a:e558:b0:1fb:c4b7:1a24 with SMTP id
+ ei24-20020a17090ae55800b001fbc4b71a24mr995pjb.1.1661898018970; Tue, 30 Aug
+ 2022 15:20:18 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 22:19:51 +0000
+In-Reply-To: <20220830222000.709028-1-sagis@google.com>
+Mime-Version: 1.0
+References: <20220830222000.709028-1-sagis@google.com>
+X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
+Message-ID: <20220830222000.709028-9-sagis@google.com>
+Subject: [RFC PATCH v2 08/17] KVM: selftest: TDX: Add TDX IO writes test
+From:   Sagi Shahar <sagis@google.com>
+To:     linux-kselftest@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
+        Sagi Shahar <sagis@google.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Ryan Afranji <afranji@google.com>,
+        Roger Wang <runanwang@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Jones <drjones@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Ben Gardon <bgardon@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Peter Xu <peterx@redhat.com>, Oliver Upton <oupton@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Yang Zhong <yang.zhong@intel.com>,
+        Wei Wang <wei.w.wang@intel.com>,
+        Xiaoyao Li <xiaoyao.li@intel.com>,
+        Peter Gonda <pgonda@google.com>, Marc Orr <marcorr@google.com>,
+        Emanuele Giuseppe Esposito <eesposit@redhat.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Yanan Wang <wangyanan55@huawei.com>,
+        Aaron Lewis <aaronlewis@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Peter Shier <pshier@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Zhenzhong Duan <zhenzhong.duan@intel.com>,
+        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>,
+        Like Xu <like.xu@linux.intel.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 1:13 PM 'Carlos Llamas' via kernel-team
-<kernel-team@android.com> wrote:
->
-> Rename ->vma_vm_mm to ->mm to reflect the fact that we no longer cache
-> this reference from vma->vm_mm but from current->mm instead.
->
-> No functional changes in this patch.
->
-> Signed-off-by: Carlos Llamas <cmllamas@google.com>
+The test verifies IO writes of various sizes from the guest to the host.
 
-Acked-by: Todd Kjos <tkjos@google.com>
+Google-Bug-Id: 235407183
 
-> ---
->  drivers/android/binder_alloc.c | 34 +++++++++++++++++-----------------
->  drivers/android/binder_alloc.h |  4 ++--
->  2 files changed, 19 insertions(+), 19 deletions(-)
->
-> diff --git a/drivers/android/binder_alloc.c b/drivers/android/binder_alloc.c
-> index 9b1778c00610..749a4cd30a83 100644
-> --- a/drivers/android/binder_alloc.c
-> +++ b/drivers/android/binder_alloc.c
-> @@ -208,8 +208,8 @@ static int binder_update_page_range(struct binder_alloc *alloc, int allocate,
->                 }
->         }
->
-> -       if (need_mm && mmget_not_zero(alloc->vma_vm_mm))
-> -               mm = alloc->vma_vm_mm;
-> +       if (need_mm && mmget_not_zero(alloc->mm))
-> +               mm = alloc->mm;
->
->         if (mm) {
->                 mmap_read_lock(mm);
-> @@ -322,9 +322,9 @@ static inline void binder_alloc_set_vma(struct binder_alloc *alloc,
->          */
->         if (vma) {
->                 vm_start = vma->vm_start;
-> -               mmap_assert_write_locked(alloc->vma_vm_mm);
-> +               mmap_assert_write_locked(alloc->mm);
->         } else {
-> -               mmap_assert_locked(alloc->vma_vm_mm);
-> +               mmap_assert_locked(alloc->mm);
->         }
->
->         alloc->vma_addr = vm_start;
-> @@ -336,7 +336,7 @@ static inline struct vm_area_struct *binder_alloc_get_vma(
->         struct vm_area_struct *vma = NULL;
->
->         if (alloc->vma_addr)
-> -               vma = vma_lookup(alloc->vma_vm_mm, alloc->vma_addr);
-> +               vma = vma_lookup(alloc->mm, alloc->vma_addr);
->
->         return vma;
->  }
-> @@ -401,15 +401,15 @@ static struct binder_buffer *binder_alloc_new_buf_locked(
->         size_t size, data_offsets_size;
->         int ret;
->
-> -       mmap_read_lock(alloc->vma_vm_mm);
-> +       mmap_read_lock(alloc->mm);
->         if (!binder_alloc_get_vma(alloc)) {
-> -               mmap_read_unlock(alloc->vma_vm_mm);
-> +               mmap_read_unlock(alloc->mm);
->                 binder_alloc_debug(BINDER_DEBUG_USER_ERROR,
->                                    "%d: binder_alloc_buf, no vma\n",
->                                    alloc->pid);
->                 return ERR_PTR(-ESRCH);
->         }
-> -       mmap_read_unlock(alloc->vma_vm_mm);
-> +       mmap_read_unlock(alloc->mm);
->
->         data_offsets_size = ALIGN(data_size, sizeof(void *)) +
->                 ALIGN(offsets_size, sizeof(void *));
-> @@ -823,7 +823,7 @@ void binder_alloc_deferred_release(struct binder_alloc *alloc)
->         buffers = 0;
->         mutex_lock(&alloc->mutex);
->         BUG_ON(alloc->vma_addr &&
-> -              vma_lookup(alloc->vma_vm_mm, alloc->vma_addr));
-> +              vma_lookup(alloc->mm, alloc->vma_addr));
->
->         while ((n = rb_first(&alloc->allocated_buffers))) {
->                 buffer = rb_entry(n, struct binder_buffer, rb_node);
-> @@ -873,8 +873,8 @@ void binder_alloc_deferred_release(struct binder_alloc *alloc)
->                 kfree(alloc->pages);
->         }
->         mutex_unlock(&alloc->mutex);
-> -       if (alloc->vma_vm_mm)
-> -               mmdrop(alloc->vma_vm_mm);
-> +       if (alloc->mm)
-> +               mmdrop(alloc->mm);
->
->         binder_alloc_debug(BINDER_DEBUG_OPEN_CLOSE,
->                      "%s: %d buffers %d, pages %d\n",
-> @@ -931,13 +931,13 @@ void binder_alloc_print_pages(struct seq_file *m,
->          * read inconsistent state.
->          */
->
-> -       mmap_read_lock(alloc->vma_vm_mm);
-> +       mmap_read_lock(alloc->mm);
->         if (binder_alloc_get_vma(alloc) == NULL) {
-> -               mmap_read_unlock(alloc->vma_vm_mm);
-> +               mmap_read_unlock(alloc->mm);
->                 goto uninitialized;
->         }
->
-> -       mmap_read_unlock(alloc->vma_vm_mm);
-> +       mmap_read_unlock(alloc->mm);
->         for (i = 0; i < alloc->buffer_size / PAGE_SIZE; i++) {
->                 page = &alloc->pages[i];
->                 if (!page->page_ptr)
-> @@ -1020,7 +1020,7 @@ enum lru_status binder_alloc_free_page(struct list_head *item,
->         index = page - alloc->pages;
->         page_addr = (uintptr_t)alloc->buffer + index * PAGE_SIZE;
->
-> -       mm = alloc->vma_vm_mm;
-> +       mm = alloc->mm;
->         if (!mmget_not_zero(mm))
->                 goto err_mmget;
->         if (!mmap_read_trylock(mm))
-> @@ -1089,8 +1089,8 @@ static struct shrinker binder_shrinker = {
->  void binder_alloc_init(struct binder_alloc *alloc)
->  {
->         alloc->pid = current->group_leader->pid;
-> -       alloc->vma_vm_mm = current->mm;
-> -       mmgrab(alloc->vma_vm_mm);
-> +       alloc->mm = current->mm;
-> +       mmgrab(alloc->mm);
->         mutex_init(&alloc->mutex);
->         INIT_LIST_HEAD(&alloc->buffers);
->  }
-> diff --git a/drivers/android/binder_alloc.h b/drivers/android/binder_alloc.h
-> index 0c37935ff7a2..fe80cc405707 100644
-> --- a/drivers/android/binder_alloc.h
-> +++ b/drivers/android/binder_alloc.h
-> @@ -78,7 +78,7 @@ struct binder_lru_page {
->   *                      (invariant after mmap)
->   * @tsk:                tid for task that called init for this proc
->   *                      (invariant after init)
-> - * @vma_vm_mm:          copy of vma->vm_mm (invariant after mmap)
-> + * @mm:                 copy of task->mm (invariant after open)
->   * @buffer:             base of per-proc address space mapped via mmap
->   * @buffers:            list of all buffers for this proc
->   * @free_buffers:       rb tree of buffers available for allocation
-> @@ -101,7 +101,7 @@ struct binder_lru_page {
->  struct binder_alloc {
->         struct mutex mutex;
->         unsigned long vma_addr;
-> -       struct mm_struct *vma_vm_mm;
-> +       struct mm_struct *mm;
->         void __user *buffer;
->         struct list_head buffers;
->         struct rb_root free_buffers;
-> --
-> 2.37.2.672.g94769d06f0-goog
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an email to kernel-team+unsubscribe@android.com.
->
+Signed-off-by: Sagi Shahar <sagis@google.com>
+---
+ tools/testing/selftests/kvm/lib/x86_64/tdx.h  |  3 +
+ .../selftests/kvm/x86_64/tdx_vm_tests.c       | 85 +++++++++++++++++++
+ 2 files changed, 88 insertions(+)
+
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/tdx.h b/tools/testing/selftests/kvm/lib/x86_64/tdx.h
+index 39b000118e26..f1f44c2ad40e 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/tdx.h
++++ b/tools/testing/selftests/kvm/lib/x86_64/tdx.h
+@@ -51,6 +51,9 @@
+ #define _PAGE_RW            (1UL<<1)       /* writeable */
+ #define _PAGE_PS            (1UL<<7)       /* page size bit*/
+ 
++#define TDX_VMCALL_SUCCESS 0x0000000000000000
++#define TDX_VMCALL_INVALID_OPERAND 0x8000000000000000
++
+ #define TDX_GET_TD_VM_CALL_INFO 0x10000
+ #define TDX_REPORT_FATAL_ERROR 0x10003
+ #define TDX_INSTRUCTION_IO 30
+diff --git a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
+index cf8260db1f5b..ee60f77fe38e 100644
+--- a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
++++ b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
+@@ -489,6 +489,90 @@ void verify_get_td_vmcall_info(void)
+ 	printf("\t ... PASSED\n");
+ }
+ 
++/*
++ * Verifies IO functionality by writing values of different sizes
++ * to the host.
++ */
++TDX_GUEST_FUNCTION(guest_io_writes)
++{
++	uint64_t byte_1 = 0xAB;
++	uint64_t byte_2 = 0xABCD;
++	uint64_t byte_4 = 0xFFABCDEF;
++	uint64_t ret;
++
++	ret = tdvmcall_io(TDX_TEST_PORT, 1, TDX_IO_WRITE, &byte_1);
++	if (ret)
++		tdvmcall_fatal(ret);
++
++	ret = tdvmcall_io(TDX_TEST_PORT, 2, TDX_IO_WRITE, &byte_2);
++	if (ret)
++		tdvmcall_fatal(ret);
++
++	ret = tdvmcall_io(TDX_TEST_PORT, 4, TDX_IO_WRITE, &byte_4);
++	if (ret)
++		tdvmcall_fatal(ret);
++
++	// Write an invalid number of bytes.
++	ret = tdvmcall_io(TDX_TEST_PORT, 5, TDX_IO_WRITE, &byte_4);
++	if (ret)
++		tdvmcall_fatal(ret);
++
++	tdvmcall_success();
++}
++
++void verify_guest_writes(void)
++{
++	struct kvm_vcpu *vcpu;
++	struct kvm_vm *vm;
++	uint8_t byte_1;
++	uint16_t byte_2;
++	uint32_t byte_4;
++
++	printf("Verifying guest writes:\n");
++	/* Create a TD VM with no memory.*/
++	vm = vm_create_tdx();
++
++	/* Allocate TD guest memory and initialize the TD.*/
++	initialize_td(vm);
++
++	/* Initialize the TD vcpu and copy the test code to the guest memory.*/
++	vcpu = vm_vcpu_add_tdx(vm, 0);
++
++	/* Setup and initialize VM memory */
++	prepare_source_image(vm, guest_io_writes,
++			     TDX_FUNCTION_SIZE(guest_io_writes), 0);
++	finalize_td_memory(vm);
++
++	vcpu_run(vcpu);
++	CHECK_GUEST_FAILURE(vcpu);
++	CHECK_IO(vcpu, TDX_TEST_PORT, 1, TDX_IO_WRITE);
++	byte_1 = *(uint8_t *)((void *)vcpu->run + vcpu->run->io.data_offset);
++
++	vcpu_run(vcpu);
++	CHECK_GUEST_FAILURE(vcpu);
++	CHECK_IO(vcpu, TDX_TEST_PORT, 2, TDX_IO_WRITE);
++	byte_2 = *(uint16_t *)((void *)vcpu->run + vcpu->run->io.data_offset);
++
++	vcpu_run(vcpu);
++	CHECK_GUEST_FAILURE(vcpu);
++	CHECK_IO(vcpu, TDX_TEST_PORT, 4, TDX_IO_WRITE);
++	byte_4 = *(uint32_t *)((void *)vcpu->run + vcpu->run->io.data_offset);
++
++	ASSERT_EQ(byte_1, 0xAB);
++	ASSERT_EQ(byte_2, 0xABCD);
++	ASSERT_EQ(byte_4, 0xFFABCDEF);
++
++	vcpu_run(vcpu);
++	ASSERT_EQ(vcpu->run->exit_reason, KVM_EXIT_SYSTEM_EVENT);
++	ASSERT_EQ(vcpu->run->system_event.data[1], TDX_VMCALL_INVALID_OPERAND);
++
++	vcpu_run(vcpu);
++	CHECK_GUEST_COMPLETION(vcpu);
++
++	kvm_vm_free(vm);
++	printf("\t ... PASSED\n");
++}
++
+ int main(int argc, char **argv)
+ {
+ 	if (!is_tdx_enabled()) {
+@@ -501,6 +585,7 @@ int main(int argc, char **argv)
+ 	run_in_new_process(&verify_td_ioexit);
+ 	run_in_new_process(&verify_td_cpuid);
+ 	run_in_new_process(&verify_get_td_vmcall_info);
++	run_in_new_process(&verify_guest_writes);
+ 
+ 	return 0;
+ }
+-- 
+2.37.2.789.g6183377224-goog
+
