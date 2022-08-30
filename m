@@ -2,82 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C82CECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14119ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231518AbiH3Rci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:32:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
+        id S231908AbiH3Rcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:32:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbiH3Rbp (ORCPT
+        with ESMTP id S231937AbiH3Rbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:31:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E598215A22F;
-        Tue, 30 Aug 2022 10:28:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A33926172E;
-        Tue, 30 Aug 2022 17:26:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C702C433D6;
-        Tue, 30 Aug 2022 17:26:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880394;
-        bh=Cx3NCVGl9rL1VmquS8ug9Pt3v1Kb/1dTU9gwmJuCk8U=;
-        h=From:To:Cc:Subject:Date:From;
-        b=SoMlJHN9IOvsVY/YPsZETuoLqjV5Gfg4aVQMlz9+KdwzQ/5fD307zcd2F2005dpIy
-         L7DUjE7kwYHAQWLrHYcz+rw19r+HYretvC+gt/jGWUMGpXfzv3AEGia56FKwP6jdGY
-         vnCEGQM9pLHwlwJrJnDYpF279RgmTS4khCCzFerivfS8WAGyTEdfNa5PmgXKGWoktp
-         4gdTVIZ5GfjNuh3mpnNW4H3ScRYX004Hc6sXXOuITUBI/G/p3XbXGDIcXreMeuIuOk
-         fYWcfbuJzEcX/FNcbpcbCwj8VhKe8NNG0GdryMdujjt0pCqamuMczEs7bFdZ8ooxmH
-         Rix0E/LyY00Pg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jean Delvare <jdelvare@suse.de>,
-        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com
-Subject: [PATCH AUTOSEL 4.14 1/8] firmware: dmi: Use the proper accessor for the version field
-Date:   Tue, 30 Aug 2022 13:26:24 -0400
-Message-Id: <20220830172631.581969-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Tue, 30 Aug 2022 13:31:46 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CB14D8B3C
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:28:08 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DD0121042;
+        Tue, 30 Aug 2022 10:26:41 -0700 (PDT)
+Received: from e121896.arm.com (unknown [10.57.15.35])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A4DE33F7B4;
+        Tue, 30 Aug 2022 10:26:33 -0700 (PDT)
+From:   James Clark <james.clark@arm.com>
+To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        mathieu.poirier@linaro.org
+Cc:     mike.leach@linaro.org, leo.yan@linaro.org,
+        linux-kernel@vger.kernel.org, german.gomez@arm.com,
+        James Clark <james.clark@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH v2 1/5] coresight: Remove unused function parameter
+Date:   Tue, 30 Aug 2022 18:26:09 +0100
+Message-Id: <20220830172614.340962-2-james.clark@arm.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20220830172614.340962-1-james.clark@arm.com>
+References: <20220830172614.340962-1-james.clark@arm.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The ability to use a custom function in this sysfs show function isn't
+used so remove it.
 
-[ Upstream commit d2139dfca361a1f5bfc4d4a23455b1a409a69cd4 ]
+No functional changes.
 
-The byte at offset 6 represents length. Don't take it and drop it
-immediately by using proper accessor, i.e. get_unaligned_be24().
-
-[JD: Change the subject to something less frightening]
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: James Clark <james.clark@arm.com>
 ---
- drivers/firmware/dmi_scan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hwtracing/coresight/coresight-priv.h | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/firmware/dmi_scan.c b/drivers/firmware/dmi_scan.c
-index fe0d30340e963..d07a15462e252 100644
---- a/drivers/firmware/dmi_scan.c
-+++ b/drivers/firmware/dmi_scan.c
-@@ -582,7 +582,7 @@ static int __init dmi_smbios3_present(const u8 *buf)
- {
- 	if (memcmp(buf, "_SM3_", 5) == 0 &&
- 	    buf[6] < 32 && dmi_checksum(buf, buf[6])) {
--		dmi_ver = get_unaligned_be32(buf + 6) & 0xFFFFFF;
-+		dmi_ver = get_unaligned_be24(buf + 7);
- 		dmi_num = 0;			/* No longer specified */
- 		dmi_len = get_unaligned_le32(buf + 12);
- 		dmi_base = get_unaligned_le64(buf + 16);
+diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
+index ff1dd2092ac5..f2458b794ef3 100644
+--- a/drivers/hwtracing/coresight/coresight-priv.h
++++ b/drivers/hwtracing/coresight/coresight-priv.h
+@@ -40,31 +40,23 @@
+ #define ETM_MODE_EXCL_KERN	BIT(30)
+ #define ETM_MODE_EXCL_USER	BIT(31)
+ 
+-typedef u32 (*coresight_read_fn)(const struct device *, u32 offset);
+-#define __coresight_simple_func(type, func, name, lo_off, hi_off)	\
++#define __coresight_simple_show(type, name, lo_off, hi_off)		\
+ static ssize_t name##_show(struct device *_dev,				\
+ 			   struct device_attribute *attr, char *buf)	\
+ {									\
+ 	type *drvdata = dev_get_drvdata(_dev->parent);			\
+-	coresight_read_fn fn = func;					\
+ 	u64 val;							\
+ 	pm_runtime_get_sync(_dev->parent);				\
+-	if (fn)								\
+-		val = (u64)fn(_dev->parent, lo_off);			\
+-	else								\
+-		val = coresight_read_reg_pair(drvdata->base,		\
+-						 lo_off, hi_off);	\
++	val = coresight_read_reg_pair(drvdata->base, lo_off, hi_off);	\
+ 	pm_runtime_put_sync(_dev->parent);				\
+ 	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", val);		\
+ }									\
+ static DEVICE_ATTR_RO(name)
+ 
+-#define coresight_simple_func(type, func, name, offset)			\
+-	__coresight_simple_func(type, func, name, offset, -1)
+ #define coresight_simple_reg32(type, name, offset)			\
+-	__coresight_simple_func(type, NULL, name, offset, -1)
++	__coresight_simple_show(type, name, offset, -1)
+ #define coresight_simple_reg64(type, name, lo_off, hi_off)		\
+-	__coresight_simple_func(type, NULL, name, lo_off, hi_off)
++	__coresight_simple_show(type, name, lo_off, hi_off)
+ 
+ extern const u32 coresight_barrier_pkt[4];
+ #define CORESIGHT_BARRIER_PKT_SIZE (sizeof(coresight_barrier_pkt))
 -- 
-2.35.1
+2.28.0
 
