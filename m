@@ -2,120 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68AA6C0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:02:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AE2BC0502C
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231371AbiH3ICA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:02:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44854 "EHLO
+        id S231375AbiH3ICO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbiH3IB5 (ORCPT
+        with ESMTP id S229814AbiH3ICF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:01:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06EF19D11F;
-        Tue, 30 Aug 2022 01:01:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94303B81629;
-        Tue, 30 Aug 2022 08:01:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C20E3C433D6;
-        Tue, 30 Aug 2022 08:01:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661846513;
-        bh=ht4Zb7xny/jU85fv7zKRsCxM3zyAR48FezEpPUUfMrg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=C0lqN22g0FEIFVPmdUDewu7idrLTy5lvQq1ak0rhRTi1K5PV4hH0Se+i8+pKPeynW
-         kGSlcn0/mSos+bwADVsjUVgE3F1znICkDnst2LdAvMtcpeG6ZpXhERqNiBNHd8lkE1
-         XjjrytdP2vNgPjhxTZf7A8Pzhhh+7O+vum6rEmYmpe0STVoNGkCJkuNjtzFBvQl4p1
-         03zVuveOwu0+kIVIK5waxr1t8Ny3BRNOM9Losl+l8MUmD9Gj3VK4HqjDEB5ySWFO9E
-         iqmtPoYEZSUyltFzMGI97om3L6OMADoGHqLE7uGkBe8XZVawJG/zFIPLCEEBf8W5Mj
-         71Id5ok+Awg0Q==
-Date:   Tue, 30 Aug 2022 11:01:49 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jinpu Wang <jinpu.wang@ionos.com>, Christoph Hellwig <hch@lst.de>
-Cc:     jgg@ziepe.ca, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] RDMA: dma-mapping: Return an unsigned int from
- ib_dma_map_sg{,_attrs}
-Message-ID: <Yw3D7TVgkANv7PDI@unreal>
-References: <20220826095615.74328-1-jinpu.wang@ionos.com>
- <20220826095615.74328-3-jinpu.wang@ionos.com>
- <YwtM+/nB1F6p1Ey3@unreal>
- <CAMGffEmffkW0fHrjx84gQ6FnWuwriRUg=HSdwzU4W_sZLdiT7g@mail.gmail.com>
- <Ywyr0+b350SZrznw@unreal>
- <CAMGffE=m_Na9n-oHkxm6C2C1sC3U9LkN_7k8Xx9g9SG2ifDjrw@mail.gmail.com>
+        Tue, 30 Aug 2022 04:02:05 -0400
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903C9D25FD;
+        Tue, 30 Aug 2022 01:02:03 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id se27so12744264ejb.8;
+        Tue, 30 Aug 2022 01:02:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ydfrnuw+55leI10v9SJBVImy0rWUjcTdkZR1kZGXwFw=;
+        b=sCZHtuEJbBNTCPPXnFKl1I/vDNoEd4x6jEQ/dfUciIobmxcR/mka6M4ftEPzmZkT6h
+         DPpIUmDGkn6nRWj3T/vmNKaH1F59vdUmDKFczzUqZ43ZBsoJ6VCd/TDz9pDI9YDjAhrO
+         fW2bCiW5nNrZAUAFXTIaZdb5UW2FoKClEBBBaYYOJbfCvz1iwKuU3wdQx7QpnBhuB2qP
+         O6kNEELllG4+3XxhKvOls6EUXKAp29KTOfm3CJ8STllBKTkMeHbPgfD4zN56GxA4J7Lt
+         /i02ys49bs8iWtcf2NJhpAn/zVJ8L4SwlxYvISf1pW9qzoYDA5WOaUXj63D/mBca/+I2
+         L+vw==
+X-Gm-Message-State: ACgBeo2zHnlL5tdbvH9rR7q6RMlFhyNV7G1mndAhxx1QAPBT+cWUsC+R
+        8mKRm2t183oQdAvEECrEEVo=
+X-Google-Smtp-Source: AA6agR5gDrSS4cPDXB6O0pPRBT0lOuKdfVV/ExsAVlNsE2XddNhK40qAq02POdSU0t1LhaH7OI+8WQ==
+X-Received: by 2002:a17:906:ee89:b0:73d:70c5:1a4e with SMTP id wt9-20020a170906ee8900b0073d70c51a4emr15397045ejb.683.1661846522007;
+        Tue, 30 Aug 2022 01:02:02 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id h3-20020a056402094300b00445e037345csm6832470edz.14.2022.08.30.01.02.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 01:02:01 -0700 (PDT)
+Message-ID: <1068ad37-d80c-6e63-6cd9-6ecf6c256d46@kernel.org>
+Date:   Tue, 30 Aug 2022 10:01:59 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMGffE=m_Na9n-oHkxm6C2C1sC3U9LkN_7k8Xx9g9SG2ifDjrw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 4/4] serial: Add kserial_rs485 to avoid wasted space
+ due to .padding
+Content-Language: en-US
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Cc:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+References: <20220830072956.3630-1-ilpo.jarvinen@linux.intel.com>
+ <20220830072956.3630-5-ilpo.jarvinen@linux.intel.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220830072956.3630-5-ilpo.jarvinen@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 03:19:14PM +0200, Jinpu Wang wrote:
-> On Mon, Aug 29, 2022 at 2:06 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Mon, Aug 29, 2022 at 11:40:40AM +0200, Jinpu Wang wrote:
-> > > On Sun, Aug 28, 2022 at 1:09 PM Leon Romanovsky <leon@kernel.org> wrote:
-> > > >
-> > > > On Fri, Aug 26, 2022 at 11:56:15AM +0200, Jack Wang wrote:
-> > > > > Following 2a047e0662ae ("dma-mapping: return an unsigned int from dma_map_sg{,_attrs}")
-> > > > > change the return value of ib_dma_map_sg{,attrs} to unsigned int.
-> > > > >
-> > > > > Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> > > > > Cc: Leon Romanovsky <leon@kernel.org>
-> > > > > Cc: Christoph Hellwig <hch@lst.de>
-> > > > > Cc: linux-rdma@vger.kernel.org
-> > > > > Cc: linux-kernel@vger.kernel.org
-> > > > >
-> > > > > Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
-> > > > > ---
-> > > > >  drivers/infiniband/core/device.c | 2 +-
-> > > > >  include/rdma/ib_verbs.h          | 6 +++---
-> > > > >  2 files changed, 4 insertions(+), 4 deletions(-)
-> > > >
-> > > > You forgot to change ib_dma_map_sgtable_attrs() and various
-> > > > ib_dma_map_sg*() callers.
-> > > No, they are different.
-> > > ib_dma_map_sgtable_attrs and dma_map_sgtable return negative on errors.
-> >
-> > It is not the point. You changed ib_dma_virt_map_sg() to be unsigned,
-> > so now the following lines are not correct:
-> >
-> >   4138         int nents;
-> >   4139
-> >   4140         if (ib_uses_virt_dma(dev)) {
-> >   4141                 nents = ib_dma_virt_map_sg(dev, sgt->sgl, sgt->orig_nents);
-> >
-> > "int nents" should be changed to "unsigned int".
-> >
-> > Thanks
-> ok, I can do it.
-> just to check if we are on the same page:
-> For all the callers of ib_dma_map_sg,  would it be better to fix it
-> one patch per driver or do it in a single bigger patch.
-> I feel it's better to do it per driver, and there are drivers from
-> different subsystems e.g. nvme/rds/etc.
+On 30. 08. 22, 9:29, Ilpo Järvinen wrote:
+> --- a/include/linux/serial_core.h
+> +++ b/include/linux/serial_core.h
+> @@ -31,6 +31,29 @@ struct serial_struct;
+...
+> + * Must match with struct serial_rs485 in include/uapi/linux/serial.h excluding
+> + * the padding.
 
-I don't know, everything here looks not nice to me.
+Have you considered BUILD_BUG_ON() checks with few offset_of()s to 
+enforce the above?
 
-After commit 2a047e0662ae ("dma-mapping: return an unsigned int from dma_map_sg{,_attrs}"),
-all callers left in limbo state where they expect that dma_map_sg{,_attrs} will return
-upto INT_MAX. However now, the API can return upto UINT_MAX, which is not the case now
-due to internal implementation of dma_map_sg_*(), but can be changed any second.
+> +struct kserial_rs485 {
+> +	__u32	flags;
+> +	__u32	delay_rts_before_send;
+> +	__u32	delay_rts_after_send;
+> +	struct {
+> +		__u8    addr_recv;
+> +		__u8    addr_dest;
+> +	};
+> +};
 
-Can we simply revert that commit and restore the "int" return type?
-I don't see any benefit in having "unsigned int" if compiler doesn't enforce it.
+thanks,
+-- 
+js
+suse labs
 
-Thanks
-
-> 
-> Thx!
-> 
-> 
-> >
-> > > >
-> > > > Thanks
-> > > Thanks!
