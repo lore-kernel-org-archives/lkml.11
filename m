@@ -2,119 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F83BECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30506ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231483AbiH3JSH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48954 "EHLO
+        id S231570AbiH3JTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231387AbiH3JRz (ORCPT
+        with ESMTP id S231384AbiH3JSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:17:55 -0400
-X-Greylist: delayed 1804 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 30 Aug 2022 02:17:53 PDT
-Received: from mail.gnudd.com (mail.gnudd.com [93.91.132.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFD9D2E95;
-        Tue, 30 Aug 2022 02:17:53 -0700 (PDT)
-Received: from dciminaghi by mail.gnudd.com with local (Exim 4.94.2)
-        (envelope-from <dciminaghi@arcana.gnudd.com>)
-        id 1oSw8m-0002Aa-Tn; Tue, 30 Aug 2022 09:58:32 +0200
-Date:   Tue, 30 Aug 2022 09:58:32 +0200
-From:   Davide Ciminaghi <ciminaghi@gnudd.com>
-Sender: ciminaghi@gnudd.com
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandre Courbot <gnurou@gmail.com>,
-        Alexandre Courbot <acourbot@nvidia.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
-        <linux-arch@vger.kernel.org>, Alessandro Rubini <rubini@gnudd.com>
-Subject: Re: [PATCH] gpio: Allow user to customise maximum number of GPIOs
-Message-ID: <Yw3DKCuDoPkCaqxE@arcana.i.gnudd.com>
-References: <CAK8P3a0j-54_OkXC7x3NSNaHhwJ+9umNgbpsrPxUB4dwewK63A@mail.gmail.com>
- <CACRpkda0+iy8H0YmyowSDn8RbYgnVbC1k+o5F67inXg4Qb934Q@mail.gmail.com>
- <CAK8P3a0uuJ_z8wmNmQTW_qPNqzz7XoxZdHgqbzmK+ydtjraeHg@mail.gmail.com>
- <CACRpkdb5ow4hD3td6agCuKWvuxptm5AV4rsCrcxNStNdXnBzrA@mail.gmail.com>
- <87f2ff4c-3426-201c-df86-2d06d3587a20@csgroup.eu>
- <CACRpkdYizQhiJXzXNHg7TXUVHzhkwXHFN5+e58kH4udGm1ziEA@mail.gmail.com>
- <f76dbc49-526f-6dc7-2ef1-558baea5848b@csgroup.eu>
- <CACRpkdZpwdP+1VitohznqRfhFGcLT2f+sQnmsRWwMBB3bobwAw@mail.gmail.com>
- <515364a9-33a1-fafa-fdce-dc7dbd5bb7fb@csgroup.eu>
- <CAK8P3a36qbRW8hd+1Uhi88kh+-KTjDMT-Zr8Jq9h_G3zQLfzgw@mail.gmail.com>
+        Tue, 30 Aug 2022 05:18:52 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29AAD5701;
+        Tue, 30 Aug 2022 02:18:47 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id d12-20020a05600c34cc00b003a83d20812fso4159288wmq.1;
+        Tue, 30 Aug 2022 02:18:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc;
+        bh=AGaSWYBJDgKfuNXBk/rMpd9HzYqxQJNCfvux8aOnciU=;
+        b=OkWDZIa6FOObDPg4K064OvXgsu/npv0Y459BFnvrGpjZtayryIOXm//bV7VtE+O6Ku
+         Z6wd2miesiJN/ppW2YMSP9cBRqmBKexlGpHQAjEv+y2Eu6lkXXKdYMdSo3EKWztpsW5n
+         LDeMJBGtmITWQY6Ini2sc9A4VU7633IBYInTPbSFNVnazdFOhBgmWg49tISF8q2xXT3L
+         zZhoSBvCa4634fkQJ++bWj41wbFXDwaxLDCo1mbSHQSoFPQTMB9SDOth0gHv/HUV/AWQ
+         VsZZGRgDrYBEB/ip4uuvUBsJkrOnk9bvsp/Dtd8p6BMdIvup4DP62ymW9/8+WGIDGIxX
+         zRzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=AGaSWYBJDgKfuNXBk/rMpd9HzYqxQJNCfvux8aOnciU=;
+        b=truJ8s3yLhtpS5qCWbrtXoEDl1SQ/kw7Lj8gQ8lquEl1chVEm1VUYv5U/tvIt1C94l
+         q6njMxU8Pb09dEJoQy02U2FmkUbZ4Jvdmyc5+GlQ7osfORvzk4Sjv4iigPRS7sM1poZY
+         oWTTE7bas8KYniKQnYtZ+GVERbIIsIyFdnYIuGDYBpPtgA24ymd3m0hrcPxWh0zfFNPX
+         awdqN+g1i0WOSwiiZAjlsi0JqF29DyLHEd3nUsYEk4CXzOG2t4n5jlyOr209a/8w5I2o
+         QmonfXta3ibp++Gx1x2QVk2JxbxHh0W7yy4p0i3lkA0x682wAiYr6fPtLP/tzEQsqG+d
+         IVAg==
+X-Gm-Message-State: ACgBeo3aK1Jnv139HH+CV/YfL5Nu4Uvq4ZPFePl3xiOsvrb5MYV6lGzb
+        /p1FQdLg4AiWQFDgNVsNqHs=
+X-Google-Smtp-Source: AA6agR5QPnPnzmdDQ8z8WSYvFsJyyoFZG9CQ43BYjg2K03qhgWNqHPOigcjYhoX/TqbT6IEa4NyRmQ==
+X-Received: by 2002:a05:600c:1f05:b0:3a5:c789:1d9c with SMTP id bd5-20020a05600c1f0500b003a5c7891d9cmr9138971wmb.26.1661851125988;
+        Tue, 30 Aug 2022 02:18:45 -0700 (PDT)
+Received: from debian (host-78-150-37-98.as13285.net. [78.150.37.98])
+        by smtp.gmail.com with ESMTPSA id h15-20020a5d548f000000b0020e6ce4dabdsm9040737wrv.103.2022.08.30.02.18.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 02:18:45 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 10:18:43 +0100
+From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        Nathan Chancellor <nathan@kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>
+Subject: build failure of next-20220830 due to 5f8cdece42ff ("drm/msm/dsi:
+ switch to DRM_PANEL_BRIDGE")
+Message-ID: <Yw3V8yJgAnPD8o6P@debian>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a36qbRW8hd+1Uhi88kh+-KTjDMT-Zr8Jq9h_G3zQLfzgw@mail.gmail.com>
-X-Face: #Q;A)@_4.#>0+_%y]7aBr:c"ndLp&#+2?]J;lkse\^)FP^Lr5@O0{)J;'nny4%74.fM'n)M
- >ISCj.KmsL/HTxz!:Ju'pnj'Gz&.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi All,
 
-tl;dr: sta2x11 support can be removed.
+The builds of arm64 allmodconfig with clang have failed to build
+next-20220830 with the error:
 
-On Sun, Aug 28, 2022 at 12:04:29PM +0200, Arnd Bergmann wrote:
-> On Sun, Aug 28, 2022 at 11:06 AM Christophe Leroy
-> <christophe.leroy@csgroup.eu> wrote:
-> > Le 26/08/2022 ?? 23:54, Linus Walleij a ??crit :
+drivers/gpu/drm/msm/dsi/dsi_host.c:1903:14: error: variable 'device_node' is uninitialized when used here [-Werror,-Wuninitialized]
+        of_node_put(device_node);
+                    ^~~~~~~~~~~
+drivers/gpu/drm/msm/dsi/dsi_host.c:1870:44: note: initialize the variable 'device_node' to silence this warning
+        struct device_node *endpoint, *device_node;
+                                                  ^
+                                                   = NULL
 
-....
+git bisect pointed to 5f8cdece42ff ("drm/msm/dsi: switch to DRM_PANEL_BRIDGE")
 
->
-> I think that just means the code that one would have to modify
-> is in vendor kernels of devices using this chip, but there is no
-> way to fix those if they are not in mainline. The last meaningful
-> patches on this SoC support were in 2012 by  Davide Ciminaghi
-> and Alessandro Rubini, though they still Acked patches after that.
-> 
-> I wonder if I was missing the interesting bit about it, if the driver
-> is just obsolete and can be removed, or if there is something
-> that is still worth fixing here.
->
-Hi,
-
-the sta2x11 was a chip containing AMBA peripherals and a PCIe to AMBA bridge
-(it is still in production as far as I know, but deprecated for new designs).
-It would typically be installed on x86 machines, so you needed to build and
-run AMBA drivers in an x86 environment. The original drivers we started from
-had platform data, but then we were told to switch to DTS.
-
-Device trees, though, were not very common under x86 at the time and,
-perhaps most important, we had a bunch of amba peripherals "behind" a
-pci bus, which is a dynamic thing. Our idea was to build a device
-tree at runtime (in user space) and then booting a second kernel via
-kexec with the correct DTB, but this was not a complete solution.
-For instance we needed to patch the device tree at runtime to
-take dynamically assigned IRQ numbers into account.
-Also the clocks tree had to be dynamically instantiated, once for each sta2x11
-chip. Finally, there were some problems allocating dma buffers because
-the AMBA side of the bridge could only reach some ranges of physical
-addresses.
-
-We had a more or less working prototype, and you may want to have a look
-at some of our work:
-
-https://lore.kernel.org/lkml/5202C655.6050609@zytor.com/t/
-
-Nevertheless the upstreaming effort was eventually too big for Alessandro
-and myself.
-So the sta2x11 drivers upstreaming project has been abandoned (even though
-I like to think of it as one of the funniest failures of my life).
-Sta2x11 related drivers can of course be removed.
+I will be happy to test any patch or provide any extra log if needed.
 
 
-Thanks and regards
-Davide
+-- 
+Regards
+Sudip
