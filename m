@@ -2,119 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 079E4ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8192BECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbiH3GXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 02:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52220 "EHLO
+        id S229971AbiH3GZi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 02:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229981AbiH3GXM (ORCPT
+        with ESMTP id S229764AbiH3GZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 02:23:12 -0400
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69DA075CD0
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:23:08 -0700 (PDT)
-Received: by mail-lj1-x22a.google.com with SMTP id by6so10247405ljb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:23:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=gjDGsH3K0hav1h9g3C72Xj3//qxC6le1H42uGY/mBiM=;
-        b=Pf/XffTBOaSOvmodI3nui/CvjpQihOA8COvcUp5kjW91REX+FKBaRP1Mzs6+TIj0KP
-         FsSod0D25SEuL8mzXy/Zr6/hQ/4DhiM3M4CPNMZGZ19aX6W3qH/Ctxe4YdGJA5TxoD6L
-         mBbtxBDyyXq7/5kuUo3VABPrkVzcUkQOJrZ8+d/evSJqq2lTivv91eaQmUYDktL/b1Pr
-         +C7rgoZLi+Wgb5VvgVrdm9dtzLx3np2a4XO1Pc/xtHhQPTPPEavmzntzEGGwoNu8sx0o
-         vrMP+PfhkPoVMoobUnHn4a1zKkDIMwPEj98zj8hSb2wBbJqqUzIF0FsG3uda+0jPqR+D
-         gmzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=gjDGsH3K0hav1h9g3C72Xj3//qxC6le1H42uGY/mBiM=;
-        b=26cqz9/oGU7PBLWNCl4PQNxJxhFtEEfF/mRh56gjxDfZ2H+gHPFmiKV2AcrxFyTGBU
-         G2fWFoPL9LH0coQEKqSWdpG8Rt/oeVTZU0MRuU4lMGrhX61UhubhT8Pk/XTGxE4aLsBN
-         RO1hescN3Y8mNiZoP3hxld3RsCMkw2g/1wbyiiiLbn42FWVdcqkSZiqvXz7qWBn0qd6+
-         JTyrbf5wctVwc+rdW22nY+UhBxHmSmSwCVZ9r0u8Iy8xHwI6F/QixLX5nljGyabbSrEX
-         m5v49Z5dD0PSn8gQSoeQiSeHALboy7LVwOiWMrefxm9dswVaY7K6cmGjaCAqiZ8h+D6N
-         FKUA==
-X-Gm-Message-State: ACgBeo1vO826OF+HtJKnQD0iGRaYAKQcyJJwloTAFeIgI6kIwPmmA2va
-        xwrxeYif6K8YAtQ+7+XAi509kg==
-X-Google-Smtp-Source: AA6agR7fe8InFzc2jm/fK/Xk2GRf49YPHz4tkTRjfGWj4cnI8Q9eDvrkyq/7cIRuQZLll6lXAz2T4g==
-X-Received: by 2002:a2e:954a:0:b0:264:9f50:a407 with SMTP id t10-20020a2e954a000000b002649f50a407mr2610512ljh.374.1661840586801;
-        Mon, 29 Aug 2022 23:23:06 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id bk37-20020a05651c23a500b00261ca006158sm349288ljb.54.2022.08.29.23.23.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 23:23:05 -0700 (PDT)
-Message-ID: <dbbef6f3-cf47-a921-fd89-e940af3e2f85@linaro.org>
-Date:   Tue, 30 Aug 2022 09:23:04 +0300
+        Tue, 30 Aug 2022 02:25:33 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D034CA33;
+        Mon, 29 Aug 2022 23:25:31 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MGxzd6st6zlWXK;
+        Tue, 30 Aug 2022 14:22:05 +0800 (CST)
+Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 14:25:28 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 14:25:28 +0800
+From:   Jie Hai <haijie1@huawei.com>
+To:     <vkoul@kernel.org>, <wangzhou1@hisilicon.com>
+CC:     <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [RESEND PATCH v5 0/7] dmaengine: hisilicon: Add support for hisi dma driver
+Date:   Tue, 30 Aug 2022 14:22:44 +0800
+Message-ID: <20220830062251.52993-1-haijie1@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 2/3] dt-bindings: pci: QCOM Adding sc7280 aggre0,
- aggre1 clocks
-Content-Language: en-US
-To:     Krishna Chaitanya Chundru <quic_krichai@quicinc.com>,
-        helgaas@kernel.org
-Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mka@chromium.org,
-        quic_vbadigan@quicinc.com, quic_hemantk@quicinc.com,
-        quic_nitegupt@quicinc.com, quic_skananth@quicinc.com,
-        quic_ramkri@quicinc.com, manivannan.sadhasivam@linaro.org,
-        swboyd@chromium.org, dmitry.baryshkov@linaro.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-References: <1656062391-14567-1-git-send-email-quic_krichai@quicinc.com>
- <1656691899-21315-1-git-send-email-quic_krichai@quicinc.com>
- <1656691899-21315-3-git-send-email-quic_krichai@quicinc.com>
- <1fb5f0c6-ff72-b9ba-175a-b5197ed658a7@linaro.org>
- <9de4c3a0-eb95-f4e9-b828-2343241fff41@quicinc.com>
- <75f8b257-7e0a-d871-ab30-37a72f7da56e@linaro.org>
- <3dd98ae4-8b19-e241-3b64-fe24509d2cb4@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <3dd98ae4-8b19-e241-3b64-fe24509d2cb4@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600007.china.huawei.com (7.193.23.208)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/08/2022 20:45, Krishna Chaitanya Chundru wrote:
-> Sorry for very late reply.
-> 
-> If we increase the common definitions of clocks properties to "13" it is 
-> sufficient right.
-> 
-> 
-> diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml 
-> b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-> index 92402f1..c9e268d 100644
-> --- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-> +++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
-> @@ -53,11 +53,11 @@ properties:
->     # Platform constraints are described later.
->     clocks:
->       minItems: 3
-> -    maxItems: 12
-> +    maxItems: 13
-> 
->     clock-names:
->       minItems: 3
-> -    maxItems: 12
-> +    maxItems: 13
-> 
+The HiSilicon IP08 and HiSilicon IP09 are DMA iEPs, they share the
+same pci device id but different pci revision and register layouts.
 
-Yes.
+The original version supports HiSilicon IP08 but not HiSilicon IP09.
+This series support DMA driver for HIP08 and HIP09:
+1. Fix bugs for HIP08 DMA driver
+	- Disable hardware channels when driver detached
+	- Update cq_head whenever accessed it
+	- Support multi-thread for one DMA channel
+2. Use macros instead of magic number
+3. Add support for HIP09 DMA driver
+4. Add debugfs for HIP08 and HIP09 DMA driver
+5. Add myself as maintainer of hisi_dma.c
 
-Best regards,
-Krzysztof
+Changes since version 4:
+ - Fix hdma_dev->base to hdma_dev->queue_base in hisi_dma_reset_or_disable_hw_chan
+
+Changes since version 3:
+ - remove reduldant braces
+ - add "Acked-by: Zhou Wang <wangzhou1@hisilicon.com>" in commit log
+
+Changes since version 2:
+ - fix unnecessary line breaks
+ - fix register bit with BIT/GENMASK and adjust hisi_dma_update_bit to it
+ - remove "Reported-by" in commit message
+ - use dmaengine root instead of hisi_dma root
+ - ignore errors for creating debugfs
+
+Changes since version 1:
+ - remove error changes casuse compile failure
+ - remove reduldant "*" in comment
+ - remove debugfs-hisi-dma doc and path in MAINTAINERS
+
+Jie Hai (7):
+  dmaengine: hisilicon: Disable channels when unregister hisi_dma
+  dmaengine: hisilicon: Fix CQ head update
+  dmaengine: hisilicon: Add multi-thread support for a DMA channel
+  dmaengine: hisilicon: Use macros instead of magic number
+  dmaengine: hisilicon: Adapt DMA driver to HiSilicon IP09
+  dmaengine: hisilicon: Dump regs to debugfs
+  MAINTAINERS: Add myself as maintainer for hisi_dma
+
+ MAINTAINERS            |   1 +
+ drivers/dma/hisi_dma.c | 650 +++++++++++++++++++++++++++++++++++------
+ 2 files changed, 555 insertions(+), 96 deletions(-)
+
+-- 
+2.33.0
+
