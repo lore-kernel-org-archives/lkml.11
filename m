@@ -2,111 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9FAECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC512ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbiH3PMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 11:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
+        id S229823AbiH3PNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 11:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiH3PMt (ORCPT
+        with ESMTP id S230232AbiH3PND (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 11:12:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3C0122BD3;
-        Tue, 30 Aug 2022 08:12:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44645615AE;
-        Tue, 30 Aug 2022 15:12:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95EBCC433C1;
-        Tue, 30 Aug 2022 15:12:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661872367;
-        bh=GVovB5ughtpp8DMMikXepA1SW5sxU5d03vidqk/2iPI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=MGnXhRDK/2qQC5fi6PX/EnoYnr19wpX+OpopnKR8vvH5mPaP6T2hRgqEgZsKoL+LP
-         6VEAMh4oG7NwcKVFgd+6omkfdLERxobWWcmtbYDrLl1Yl8Wa5djES/1skJXoNH5r3v
-         gTGjf+hQtkORLy2+UmhJ8t+8UcZjvYnNJqucECpQilxkYZeaNLOD50ghvhyoGm9ASK
-         LJA/IhGahPI2FbRXqDN3aUikmL0afZBFIOY2Uem2VXt7jGWRoBn1qiZ5hH6bjnniM6
-         tGuRImNgYflGAob8J1shoxNgAzaTvJMqOhjvjBmkBhgIIBVX22GCg2Hwz6H5fUlBxO
-         MzsetNoBGwtvg==
-Date:   Tue, 30 Aug 2022 08:12:47 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Zeng Heng <zengheng4@huawei.com>
-Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next 2/2] xfs: simplify if-else condition in
- xfs_reflink_trim_around_shared
-Message-ID: <Yw4o7yug91RORMD3@magnolia>
-References: <20220830133939.2726749-1-zengheng4@huawei.com>
- <20220830133939.2726749-3-zengheng4@huawei.com>
+        Tue, 30 Aug 2022 11:13:03 -0400
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2211286F2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:12:59 -0700 (PDT)
+Received: by mail-il1-x12c.google.com with SMTP id v15so3335604iln.6
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:12:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:date:message-id:subject
+         :references:in-reply-to:cc:to:from:from:to:cc;
+        bh=jB+HPX2oArApFPJU2cCo5o8zJ4MyZs1p/xij1A0cJxU=;
+        b=rWn/3C6DnRYx5a6tE9CRjUj0cU4gDoBTpMDPqJ+B8ACW/xPyDJLXQWtPZCw+gbp976
+         e0Fg26HAZUwK+LXlVPhl/QDuTwDlhTMoJ5KXVTTmovkh1KZ0adwnG+U9ImYBeF31Z7dY
+         UiNhUnu2L9Shg0ti7FZGWBnw8SNDDJDUmLmgUMdMqO3CflBJNpoKh2oIMpH5TNRCqkxA
+         +3W5m0LpJ+HMu1casdu0o3pA25TixILkc8CKn3QgzCFCqt/THTpYFGA2PK2qtwfKfRRt
+         fChYslS3pZBd6iy7VmOj2kObSJqHZpnrA/3MjKFXp0G3xwO657i9ht7L6JhcMugaJIj0
+         irtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:date:message-id:subject
+         :references:in-reply-to:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=jB+HPX2oArApFPJU2cCo5o8zJ4MyZs1p/xij1A0cJxU=;
+        b=Tn5+HUc7qBaeZ69+t2YskuBV0aqVZ4dDnzdQK/IiHfE69tYHHdLJ08QiF9wm5LmTly
+         61F6P1ZsKIoF3sbASzGkKqx7m/rJu2QaklyAhdNo/UI8xyYZXYla+ZgGHxPHppkZvAmX
+         wJhQcTk5sxZtIjtFdf4a5IUfEuUIAjgCLIpH20+z5Mv3ggpT1j0Ff+FzeJ4F1PyJzY5B
+         qSqydazxAfpxB0WsRLpsXAAcsOkGY1tlR7JYYYSGwwLfRa1pfIJgw5YAJtz80UonLKp+
+         WvgLDC4xlFjG8WEyIZj5RFP6cIqGgu4RnSBPItURml6bNKq9aAqpSP40hNeXhshmBvfM
+         RgJQ==
+X-Gm-Message-State: ACgBeo2M7oNW8mRw4CqQ7CWN7CA2UeE/JqwS19ExdwKmxWK1kbo3aQCK
+        VYznCwXXAeuuX4qnK9K0VFYnKw==
+X-Google-Smtp-Source: AA6agR5LNjG4uM5ZYU/ORSrfrN1ADrAYwEnovVHtxsd8HU8mSR07F4iTWrCeR8Z3EK3z7qdNuy6eYQ==
+X-Received: by 2002:a92:130f:0:b0:2e4:22c9:7721 with SMTP id 15-20020a92130f000000b002e422c97721mr13053524ilt.34.1661872379302;
+        Tue, 30 Aug 2022 08:12:59 -0700 (PDT)
+Received: from [127.0.0.1] ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id z2-20020a02cea2000000b003476640caf8sm5696012jaq.173.2022.08.30.08.12.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 08:12:58 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Dylan Yudaken <dylany@fb.com>, bcrl@kvack.org,
+        viro@zeniv.linux.org.uk
+Cc:     Kernel-team@fb.com, linux-fsdevel@vger.kernel.org,
+        linux-aio@kvack.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220816135959.1490641-1-dylany@fb.com>
+References: <20220816135959.1490641-1-dylany@fb.com>
+Subject: Re: [PATCH] eventfd: guard wake_up in eventfd fs calls as well
+Message-Id: <166187237835.55711.10817834766770223688.b4-ty@kernel.dk>
+Date:   Tue, 30 Aug 2022 09:12:58 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220830133939.2726749-3-zengheng4@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-65ba7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 09:39:39PM +0800, Zeng Heng wrote:
-> "else" is not generally useful after a return,
-> so remove it for clean code.
+On Tue, 16 Aug 2022 06:59:59 -0700, Dylan Yudaken wrote:
+> Guard wakeups that the user can trigger, and that may end up triggering a
+> call back into eventfd_signal. This is in addition to the current approach
+> that only guards in eventfd_signal.
 > 
-> There is no logical changes.
+> Rename in_eventfd_signal -> in_eventfd at the same time to reflect this.
 > 
-> Signed-off-by: Zeng Heng <zengheng4@huawei.com>
+> Without this there would be a deadlock in the following code using libaio:
+> 
+> [...]
 
-Looks correct to me,
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Applied, thanks!
 
---D
+[1/1] eventfd: guard wake_up in eventfd fs calls as well
+      commit: 07106d2635a6d1eb55bb13e6c89c92ae5483b050
 
-> ---
->  fs/xfs/xfs_reflink.c | 22 ++++++++++++----------
->  1 file changed, 12 insertions(+), 10 deletions(-)
-> 
-> diff --git a/fs/xfs/xfs_reflink.c b/fs/xfs/xfs_reflink.c
-> index 251f20ddd368..93bdd25680bc 100644
-> --- a/fs/xfs/xfs_reflink.c
-> +++ b/fs/xfs/xfs_reflink.c
-> @@ -200,7 +200,9 @@ xfs_reflink_trim_around_shared(
->  	if (fbno == NULLAGBLOCK) {
->  		/* No shared blocks at all. */
->  		return 0;
-> -	} else if (fbno == agbno) {
-> +	}
-> +
-> +	if (fbno == agbno) {
->  		/*
->  		 * The start of this extent is shared.  Truncate the
->  		 * mapping at the end of the shared region so that a
-> @@ -210,16 +212,16 @@ xfs_reflink_trim_around_shared(
->  		irec->br_blockcount = flen;
->  		*shared = true;
->  		return 0;
-> -	} else {
-> -		/*
-> -		 * There's a shared extent midway through this extent.
-> -		 * Truncate the mapping at the start of the shared
-> -		 * extent so that a subsequent iteration starts at the
-> -		 * start of the shared region.
-> -		 */
-> -		irec->br_blockcount = fbno - agbno;
-> -		return 0;
->  	}
-> +
-> +	/*
-> +	 * There's a shared extent midway through this extent.
-> +	 * Truncate the mapping at the start of the shared
-> +	 * extent so that a subsequent iteration starts at the
-> +	 * start of the shared region.
-> +	 */
-> +	irec->br_blockcount = fbno - agbno;
-> +	return 0;
->  }
->  
->  int
-> -- 
-> 2.25.1
-> 
+Best regards,
+-- 
+Jens Axboe
+
+
