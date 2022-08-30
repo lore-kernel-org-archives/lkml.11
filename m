@@ -2,115 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E58ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE836ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230244AbiH3JjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:39:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
+        id S231127AbiH3Jjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231389AbiH3Jid (ORCPT
+        with ESMTP id S230387AbiH3JjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:38:33 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386FBE868A
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:36:35 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id s15so5577498ljp.5
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:36:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=kCi8L1+oD+4JTBvg0D7KspDhAid2IOnvW3ckVIUBt9U=;
-        b=YO/VLJYgQtWvyKOuDYePVhu0MG9qTHHNwyrER5jP7xrz5Ovu8sFTgTrT9hUTRdyN3+
-         4TFLgf2CI3a5HHtqwqZ/JiUdBvEVWGpzZBskvMxHeqBgofR6zQjMX+YCXZevj+KiQj5Z
-         Q1unqYNIZPZEVMqv8FrAEl7qK38tahod0e5h3d+ECr9O1oMkNGId9Oviz7MsvZUJwVOt
-         1NF497u1MgpgtGPjqkVGj3GGumW0HBKkE2S3x3tAwK8XgJ6oyVgF09DpwatmEyCHYFEs
-         FALpdbKoWv3Kr/BmJ+mDTqr8a5WOoGXvutD/GcI/HUrqfzyLnqQd4Jwuddr8bkVAXRpY
-         biGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=kCi8L1+oD+4JTBvg0D7KspDhAid2IOnvW3ckVIUBt9U=;
-        b=UosOygUr/5Oc6YQczIw9r3sAqKAI0teTgDuDAd5hbltI5tmUXHUKOnn4X9Wv7qAlwX
-         VjoULxLXt+ms2ecapaUZpHYAqvV8yKIo1RlcQobLajiNOocIuLVE9IjqD+oFDpjiKxre
-         uxmTmbxbsoQD4wO/giT8v9L0hpTFuSQN+Rtq3zGhT7CiCMMVz0UW+36TH+Ix343+p+pu
-         q6OBEhO4CiLXRngBKQweaASndfzNc1glds1G5NsrDg5uiyxC/7hf+1WcVmsHw9ErIJUB
-         9h6ULvkWUkkUV3VuUnFl4+sfvQZmRi9DxLqEOcfQj/9JHv2gCTr0Pp5k+9+7EOZKS3MV
-         cSTA==
-X-Gm-Message-State: ACgBeo2+GiPEUlzppkBnncu17AERsQW6P9w8T1AyIB1WZXr/wqFpyZPJ
-        xkFddRV/I8c5jeIxnY4W/ZLe0A==
-X-Google-Smtp-Source: AA6agR4d1/sQGxXZPNDK/31Tjg9grm6UsSbjOwAS5Sq/aDGVQCp4oN3d9PYLjMqb5EjZ0bcCmPIeQg==
-X-Received: by 2002:a2e:3006:0:b0:266:6677:5125 with SMTP id w6-20020a2e3006000000b0026666775125mr1872362ljw.352.1661852193294;
-        Tue, 30 Aug 2022 02:36:33 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id c9-20020a05651c014900b0025e15fe421bsm1705374ljd.17.2022.08.30.02.36.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 02:36:32 -0700 (PDT)
-Message-ID: <1c9cb6c2-2030-257d-a50d-dada0ab4449e@linaro.org>
-Date:   Tue, 30 Aug 2022 12:36:31 +0300
+        Tue, 30 Aug 2022 05:39:13 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545FFF32F7;
+        Tue, 30 Aug 2022 02:37:15 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPv6:2405:201:10:389d:42df:ae4c:c047:294c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6B4B76601BF7;
+        Tue, 30 Aug 2022 10:37:11 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661852233;
+        bh=b5EMCAqklGR1n0mJHp5xybG1xU4cd1JVpNMDf92YVuw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EESiaD3LrZwZ9y2nz6qqZgxhvdx9xDoCCINMgc+1v7rnk/1HZ0zO3eUYeyCHBn+qm
+         deJpl3nOBWIsbDMIWl5ZCh1oUprkqb6Cjw3XkEYxFrCiy97EkBrWl7W/LWdbezQRkG
+         unqgNDO3H/lR2n/inW5PeitcMCcjYkBaX9+gEDuUAJpFRkLgu7zpcHZ9Z02ynRwlyN
+         1+LqpCKAiA+Q08E9ubHbt79+rFBMKCwsAhFLkqXPIx3qNGCD+r3A+mebq4IaR41JuI
+         +iIrDURS24PeOcDHp/5aZ4aCVxntZ2T1iBLK1b+LYkAjPBVg+qgVWUWlQBTwWo67uJ
+         FFSugDG1v1VwA==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     broonie@kernel.org, sanju.mehta@amd.com
+Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, krisman@collabora.com,
+        alvaro.soliverez@collabora.com,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH] spi: amd: Fix speed selection
+Date:   Tue, 30 Aug 2022 15:06:07 +0530
+Message-Id: <20220830093607.45484-1-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 1/3] dt-bindings: i2c: mv64xxx: Document DMA properties
-Content-Language: en-US
-To:     Samuel Holland <samuel@sholland.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>
-Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
-References: <20220830020824.62288-1-samuel@sholland.org>
- <20220830020824.62288-2-samuel@sholland.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220830020824.62288-2-samuel@sholland.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/08/2022 05:08, Samuel Holland wrote:
-> Allwinner's I2C offload engine includes bidirectional DMA support. Add
-> the properties for describing this in the devicetree. "dmas" is optional
-> because not all instances of the controller have their DRQs hooked up.
-> For example, R_I2C0 and R_I2C1 on V536 have no DRQ number assigned.
-> 
-> Signed-off-by: Samuel Holland <samuel@sholland.org>
+If the current speed is equal to the requested speed by the device
+then return success.
+This patch fixes a bug introduced by the commit 3fe26121dc3a
+("spi: amd: Configure device speed") which checks speed_hz instead
+of amd_spi->speed_hz.
 
-Thank you for your patch. There is something to discuss/improve.
+Fixes: 3fe26121dc3a ("spi: amd: Configure device speed")
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+---
+ drivers/spi/spi-amd.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-> ---
-> 
->  .../bindings/i2c/marvell,mv64xxx-i2c.yaml           | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/marvell,mv64xxx-i2c.yaml b/Documentation/devicetree/bindings/i2c/marvell,mv64xxx-i2c.yaml
-> index 0ec033e48830..63d665a4f9bb 100644
-> --- a/Documentation/devicetree/bindings/i2c/marvell,mv64xxx-i2c.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/marvell,mv64xxx-i2c.yaml
-> @@ -66,6 +66,19 @@ properties:
->    resets:
->      maxItems: 1
->  
-> +  dmas:
-> +    items:
-> +      - description: RX DMA Channel
-> +      - description: TX DMA Channel
-> +
-> +  dma-names:
-> +    items:
-> +      - const: rx
-> +      - const: tx
-> +
-> +dependencies:
-> +  dmas: [ dma-names ]
+diff --git a/drivers/spi/spi-amd.c b/drivers/spi/spi-amd.c
+index 264633c5ce0b..e23121456c70 100644
+--- a/drivers/spi/spi-amd.c
++++ b/drivers/spi/spi-amd.c
+@@ -240,9 +240,6 @@ static int amd_set_spi_freq(struct amd_spi *amd_spi, u32 speed_hz)
+ {
+ 	unsigned int i, spd7_val, alt_spd;
+ 
+-	if (speed_hz == amd_spi->speed_hz)
+-		return 0;
+-
+ 	if (speed_hz < AMD_SPI_MIN_HZ)
+ 		return -EINVAL;
+ 
+@@ -250,7 +247,7 @@ static int amd_set_spi_freq(struct amd_spi *amd_spi, u32 speed_hz)
+ 		if (speed_hz >= amd_spi_freq[i].speed_hz)
+ 			break;
+ 
+-	if (speed_hz == amd_spi_freq[i].speed_hz)
++	if (amd_spi->speed_hz == amd_spi_freq[i].speed_hz)
+ 		return 0;
+ 
+ 	amd_spi->speed_hz = amd_spi_freq[i].speed_hz;
+-- 
+2.30.2
 
-Dependency is not needed. meta-schema has it.
-
-Best regards,
-Krzysztof
