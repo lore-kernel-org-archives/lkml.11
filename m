@@ -2,116 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A560DECAAD3
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 02:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD8A5ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 02:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiH3CFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 22:05:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46456 "EHLO
+        id S229778AbiH3CHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 22:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229808AbiH3CFB (ORCPT
+        with ESMTP id S229447AbiH3CHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 22:05:01 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A35646E;
-        Mon, 29 Aug 2022 19:04:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661825099; x=1693361099;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FkO4gN2dO3Abru4zYAilXuwSzG3zRLA+wKTAv2BwfCM=;
-  b=aDVcs7uvl/EzFNPzgYxayBrMesANV7uoEYjmzqhUrlQdfwZD3Mzn6tX4
-   K/yy8K6OUMoVfznBIS3x/z3wv/3GceqDQkyrMfUlJ77+k0jWqwyHJbExM
-   B9Jf0V3KWs8YohmnznghGFRR3LqAleNKcGPZtm4yzxd2M4V0xlI7LQU7u
-   xhYr7KpGJYKJoqvQtVbmKJH9JbywnygBCjIpUSqwsA3Mtilvwrntdcjyu
-   6xr+RkR+2WbO6xR+bnRiLKRLFNx1EII3SEKyVif/GvoMlGV3R/1QxeX6d
-   UDeEPuAPmzYQFQrEJxRquBjZ162/nSOLeqPoXQ0mQnVepd/j5XZl5PTDu
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="282025444"
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="282025444"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 19:04:59 -0700
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="672627356"
-Received: from hhuan14-mobl1.ccr.corp.intel.com (HELO [10.254.215.208]) ([10.254.215.208])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 19:04:54 -0700
-Message-ID: <4911af2a-134c-bb3b-dfa4-3dc7b69e11a3@linux.intel.com>
-Date:   Tue, 30 Aug 2022 10:04:52 +0800
+        Mon, 29 Aug 2022 22:07:40 -0400
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8BE285FE8
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 19:07:36 -0700 (PDT)
+Received: by mail-io1-f71.google.com with SMTP id n23-20020a056602341700b00689fc6dbfd6so5759250ioz.8
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 19:07:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=/susuB4bWTEj0QkQMkfrXYQFqQbxx9j42ERlkoMdKqY=;
+        b=ztkcZVpPWCKIXgSeDyLl0wA4wMGpzBWF6wXSVq0HE8yy4tozSfU4EMHCaEElceKUbd
+         OElpeRxE/juG8rBqx47CeErjfca2liCJNs5Mg43qx6fYiwEJ7DdCwkdxa1SqO4rnkkXH
+         K3DHYtwcUZEnjnRD7Z8FCyT6mg8Sxc5j8/l1f4eljkiSYNqFPxODFWsGLXeCKHk7g3mM
+         OWRpACdSVUEVHrbLCfugsfn9RIngE0BKFTvg6Un0UF+4sstIuvzPgkNYpjJnpaRVPn/S
+         PvFk7oh9faQmPXZWzxdwzZ8f25diDVGx/RAafEK2vh5PvU7aIL1PqBuQ06q8P0E+O4w2
+         6xvg==
+X-Gm-Message-State: ACgBeo0H7FH2HVW5ZNOgRnEmWstavdHxvI99Ges8k7z4Wh+zLGs0Efpx
+        Uhd63PUhSfe7/n5yXC8w85Hkh0AaNIVPGefzGGa/7+zv1T9B
+X-Google-Smtp-Source: AA6agR6H583WZokxgJup7/CfnPNDFN7QkuKD6mT2r7o0ST4USxCKmDQkfZyE0F0jTRh8jiryV2z3gsJ3sDZapLxH3plWYP83CiYt
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v12 12/17] arm-smmu-v3/sva: Add SVA domain support
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220826121141.50743-1-baolu.lu@linux.intel.com>
- <20220826121141.50743-13-baolu.lu@linux.intel.com>
- <YwjfKsvKyXLdCJ/Z@nvidia.com>
- <fe5c459e-9992-73b6-35b4-59ef815f1f9a@linux.intel.com>
- <Ywz3aQ57PthSYycN@nvidia.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Ywz3aQ57PthSYycN@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6602:2d0d:b0:689:8260:e11d with SMTP id
+ c13-20020a0566022d0d00b006898260e11dmr10252556iow.153.1661825256152; Mon, 29
+ Aug 2022 19:07:36 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 19:07:36 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000001266a205e76bd8a7@google.com>
+Subject: [syzbot] WARNING in blocking_notifier_chain_register
+From:   syzbot <syzbot+737584027829ab465c9f@syzkaller.appspotmail.com>
+To:     bigeasy@linutronix.de, bp@suse.de, dmitry.osipenko@collabora.com,
+        linux-kernel@vger.kernel.org, mirq-linux@rere.qmqm.pl,
+        rafael.j.wysocki@intel.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/8/30 01:29, Jason Gunthorpe wrote:
-> On Sun, Aug 28, 2022 at 09:57:21PM +0800, Baolu Lu wrote:
->> On 2022/8/26 22:56, Jason Gunthorpe wrote:
->>> On Fri, Aug 26, 2022 at 08:11:36PM +0800, Lu Baolu wrote:
->>>
->>>> +static const struct iommu_domain_ops arm_smmu_sva_domain_ops = {
->>>> +	.set_dev_pasid		= arm_smmu_sva_set_dev_pasid,
->>> Do we want to permit drivers to not allow a SVA domain to be set on a
->>> RID?
->>>
->>> It seems like a weird restriction to me
->> Conceptually as long as the page table is compatible and user pages are
->> pinned (or I/O page fault is supported), the device drivers are valid to
->> set SVA domain to a RID. But I don't see a real use case as far as I can
->> see.
-> It may be interesting for something like DPDK type applications where
-> having the entire process address space mapped SVA to the device could
-> be quite nice.
-> 
-> You, currently, give up interrupts, but perhaps that is solvable in some
-> way.
-> 
-> So, IDK.. I wouldn't dismiss it entirely but I wouldn't do a bunch of
-> work to support it either.
+Hello,
 
-Then we can do this through the set_dev callback, as it's the right
-callback to set a domain to the RID, right? Not sure whether it worth a
-new type of domain. The current implementation doesn't prevent us from
-achieving this in the future anyway.
+syzbot found the following issue on:
 
-> 
->> A reasonable use case is sharing EPT between KVM and IOMMU. That demands
->> a new type of domain and implements its own .set_dev for page table
->> attachment.
-> Not everything is virtualization:)
+HEAD commit:    a41a877bc12d Merge branch 'for-next/fixes' into for-kernelci
+git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git for-kernelci
+console output: https://syzkaller.appspot.com/x/log.txt?x=16517dad080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5cea15779c42821c
+dashboard link: https://syzkaller.appspot.com/bug?extid=737584027829ab465c9f
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: arm64
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10dc7ac7080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13525513080000
 
-Yes. Fair enough. :-)
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+737584027829ab465c9f@syzkaller.appspotmail.com
 
-Best regards,
-baolu
+------------[ cut here ]------------
+notifier callback hci_suspend_notifier already registered
+WARNING: CPU: 0 PID: 7032 at kernel/notifier.c:29 notifier_chain_register kernel/notifier.c:28 [inline]
+WARNING: CPU: 0 PID: 7032 at kernel/notifier.c:29 __blocking_notifier_chain_register kernel/notifier.c:266 [inline]
+WARNING: CPU: 0 PID: 7032 at kernel/notifier.c:29 blocking_notifier_chain_register+0xa4/0x188 kernel/notifier.c:284
+Modules linked in:
+CPU: 0 PID: 7032 Comm: syz-executor176 Not tainted 6.0.0-rc2-syzkaller-16455-ga41a877bc12d #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+pc : notifier_chain_register kernel/notifier.c:28 [inline]
+pc : __blocking_notifier_chain_register kernel/notifier.c:266 [inline]
+pc : blocking_notifier_chain_register+0xa4/0x188 kernel/notifier.c:284
+lr : notifier_chain_register kernel/notifier.c:28 [inline]
+lr : __blocking_notifier_chain_register kernel/notifier.c:266 [inline]
+lr : blocking_notifier_chain_register+0xa4/0x188 kernel/notifier.c:284
+sp : ffff800014c83c70
+x29: ffff800014c83c70 x28: 00000000002e0003 x27: 0000000000000000
+x26: ffff0000ca608ea0 x25: 0000000000000000 x24: ffff0000cb0a1108
+x23: ffff0000c9313110 x22: 0000000000000000 x21: ffff0000cb0a1108
+x20: ffff0000cb0a1108 x19: ffff80000d3c1040 x18: 0000000000000169
+x17: ffff80000c04d6bc x16: ffff80000dbb8658 x15: ffff0000c10f8000
+x14: 0000000000000000 x13: 00000000ffffffff x12: ffff0000c10f8000
+x11: ff808000081c39dc x10: 0000000000000000 x9 : 98b98071cf41c600
+x8 : 98b98071cf41c600 x7 : ffff800008197c8c x6 : 0000000000000000
+x5 : 0000000000000080 x4 : 0000000000000001 x3 : 0000000000000000
+x2 : 0000000000000000 x1 : 0000000100000000 x0 : 0000000000000039
+Call trace:
+ notifier_chain_register kernel/notifier.c:28 [inline]
+ __blocking_notifier_chain_register kernel/notifier.c:266 [inline]
+ blocking_notifier_chain_register+0xa4/0x188 kernel/notifier.c:284
+ register_pm_notifier+0x28/0x38 kernel/power/main.c:73
+ hci_register_suspend_notifier+0x48/0x64 net/bluetooth/hci_core.c:2749
+ hci_sock_release+0x1a8/0x360 net/bluetooth/hci_sock.c:890
+ __sock_release net/socket.c:650 [inline]
+ sock_close+0x50/0xf0 net/socket.c:1365
+ __fput+0x198/0x3bc fs/file_table.c:320
+ ____fput+0x20/0x30 fs/file_table.c:353
+ task_work_run+0xc4/0x208 kernel/task_work.c:177
+ resume_user_mode_work include/linux/resume_user_mode.h:49 [inline]
+ do_notify_resume+0x174/0x1d0 arch/arm64/kernel/signal.c:1127
+ prepare_exit_to_user_mode arch/arm64/kernel/entry-common.c:137 [inline]
+ exit_to_user_mode arch/arm64/kernel/entry-common.c:142 [inline]
+ el0_svc+0x9c/0x150 arch/arm64/kernel/entry-common.c:625
+ el0t_64_sync_handler+0x84/0xf0 arch/arm64/kernel/entry-common.c:642
+ el0t_64_sync+0x18c/0x190
+irq event stamp: 1032
+hardirqs last  enabled at (1031): [<ffff8000081c1c48>] __up_console_sem+0xb0/0xfc kernel/printk/printk.c:264
+hardirqs last disabled at (1032): [<ffff80000bffe9cc>] el1_dbg+0x24/0x5c arch/arm64/kernel/entry-common.c:395
+softirqs last  enabled at (1006): [<ffff8000080102e4>] _stext+0x2e4/0x37c
+softirqs last disabled at (985): [<ffff800008104658>] do_softirq_own_stack include/asm-generic/softirq_stack.h:10 [inline]
+softirqs last disabled at (985): [<ffff800008104658>] invoke_softirq+0x70/0xbc kernel/softirq.c:452
+---[ end trace 0000000000000000 ]---
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
