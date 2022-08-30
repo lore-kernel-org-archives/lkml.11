@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF659ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D941CECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231145AbiH3R2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
+        id S231712AbiH3R2P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:28:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231490AbiH3R1g (ORCPT
+        with ESMTP id S231636AbiH3R1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:27:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B9C8161296;
-        Tue, 30 Aug 2022 10:24:55 -0700 (PDT)
+        Tue, 30 Aug 2022 13:27:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73884DFC9;
+        Tue, 30 Aug 2022 10:25:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95B8961796;
-        Tue, 30 Aug 2022 17:23:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDC7EC433D7;
-        Tue, 30 Aug 2022 17:23:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3504B81D15;
+        Tue, 30 Aug 2022 17:23:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 960D7C433D7;
+        Tue, 30 Aug 2022 17:23:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880202;
-        bh=eDajPw9Ie1LQQuiHq/lytkZaVPZCbjL0hqdGqGCO2kQ=;
+        s=k20201202; t=1661880234;
+        bh=9BUB6F8qHCVRmkkXwqJ9eg/dFaiKKeYVazMEdqCcvko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=An1rI/r/eclg+o3oIUMf/GxjEaGwyf1MGYiCjTsgwNWqrMVkNl1YGeCiwSum+3NzQ
-         u49VQehOloZAdOaIzXjCBvtsdkyPpKJXQu5L3MUGLCmsuw161u5oMamRD9F05AffQM
-         INdnlblY5QW0wRDlzo2lMP/2SMB9yA3uM0PxsOqBwRsFgheWpCeldHkfy/+gjjGuIX
-         vu04oQWt18pqEw8MwFMZ16nHfgbA7elstTKLhtcZUUNH4myiavqmGZeTANNQKXk1uu
-         uDRznLjm4YFZoNF6USzd8En22Uc83jwc5B2giBMf5xF0AIHjK0T8slVdrN8pXWQSfl
-         9zUFYvcJM6EWw==
+        b=e+C3uUTKjJWPEc1Yh3MLWKewRkfwOaz3fOlBmVZ+6bEy5MW1r0kP1ruoQMTk7LvTo
+         SY1Ar3z5s/RvImNgHxmswXvFK4Q+WqKNeUFMhy6pJMTItx1EMGdDzitchBhj7GvuUy
+         h9oF409pP2vOXt/CHfVrfSt2S7h/aJ5sc364PiVZ9CZ4Gd17dSRig0MDIfx0//e1sl
+         0Pb7M8tMqTnrgo5Lj/M/ht+Wx7nKC0Vm1RMmR9UW1b0JAWKZJf/5IMgJKH6/pgsGAs
+         9JgJ5VwWJZ1pKk2GHgP+aiH5kj7qEGvVl5XdoOolW6OcFkxe5u4swg7ikkddGdeFOP
+         JAl0WPsKZF6Bw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tony Battersby <tonyb@cybernetics.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>,
-        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 02/16] scsi: qla2xxx: Disable ATIO interrupt coalesce for quad port ISP27XX
-Date:   Tue, 30 Aug 2022 13:23:03 -0400
-Message-Id: <20220830172317.581397-2-sashal@kernel.org>
+Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
+        linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 09/16] parisc: Add runtime check to prevent PA2.0 kernels on PA1.x machines
+Date:   Tue, 30 Aug 2022 13:23:10 -0400
+Message-Id: <20220830172317.581397-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
 References: <20220830172317.581397-1-sashal@kernel.org>
@@ -55,52 +51,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Battersby <tonyb@cybernetics.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 53661ded2460b414644532de6b99bd87f71987e9 ]
+[ Upstream commit 591d2108f3abc4db9f9073cae37cf3591fd250d6 ]
 
-This partially reverts commit d2b292c3f6fd ("scsi: qla2xxx: Enable ATIO
-interrupt handshake for ISP27XX")
+If a 32-bit kernel was compiled for PA2.0 CPUs, it won't be able to run
+on machines with PA1.x CPUs. Add a check and bail out early if a PA1.x
+machine is detected.
 
-For some workloads where the host sends a batch of commands and then
-pauses, ATIO interrupt coalesce can cause some incoming ATIO entries to be
-ignored for extended periods of time, resulting in slow performance,
-timeouts, and aborted commands.
-
-Disable interrupt coalesce and re-enable the dedicated ATIO MSI-X
-interrupt.
-
-Link: https://lore.kernel.org/r/97dcf365-89ff-014d-a3e5-1404c6af511c@cybernetics.com
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Reviewed-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_target.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+ arch/parisc/kernel/head.S | 43 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 42 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
-index ba823e8eb902b..ecb30c2738b8b 100644
---- a/drivers/scsi/qla2xxx/qla_target.c
-+++ b/drivers/scsi/qla2xxx/qla_target.c
-@@ -6817,14 +6817,8 @@ qlt_24xx_config_rings(struct scsi_qla_host *vha)
+diff --git a/arch/parisc/kernel/head.S b/arch/parisc/kernel/head.S
+index aa93d775c34db..598d0938449da 100644
+--- a/arch/parisc/kernel/head.S
++++ b/arch/parisc/kernel/head.S
+@@ -22,7 +22,7 @@
+ #include <linux/init.h>
+ #include <linux/pgtable.h>
  
- 	if (ha->flags.msix_enabled) {
- 		if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
--			if (IS_QLA2071(ha)) {
--				/* 4 ports Baker: Enable Interrupt Handshake */
--				icb->msix_atio = 0;
--				icb->firmware_options_2 |= cpu_to_le32(BIT_26);
--			} else {
--				icb->msix_atio = cpu_to_le16(msix->entry);
--				icb->firmware_options_2 &= cpu_to_le32(~BIT_26);
--			}
-+			icb->msix_atio = cpu_to_le16(msix->entry);
-+			icb->firmware_options_2 &= cpu_to_le32(~BIT_26);
- 			ql_dbg(ql_dbg_init, vha, 0xf072,
- 			    "Registering ICB vector 0x%x for atio que.\n",
- 			    msix->entry);
+-	.level	PA_ASM_LEVEL
++	.level	1.1
+ 
+ 	__INITDATA
+ ENTRY(boot_args)
+@@ -69,6 +69,47 @@ $bss_loop:
+ 	stw,ma          %arg2,4(%r1)
+ 	stw,ma          %arg3,4(%r1)
+ 
++#if !defined(CONFIG_64BIT) && defined(CONFIG_PA20)
++	/* This 32-bit kernel was compiled for PA2.0 CPUs. Check current CPU
++	 * and halt kernel if we detect a PA1.x CPU. */
++	ldi		32,%r10
++	mtctl		%r10,%cr11
++	.level 2.0
++	mfctl,w		%cr11,%r10
++	.level 1.1
++	comib,<>,n	0,%r10,$cpu_ok
++
++	load32		PA(msg1),%arg0
++	ldi		msg1_end-msg1,%arg1
++$iodc_panic:
++	copy		%arg0, %r10
++	copy		%arg1, %r11
++	load32		PA(init_stack),%sp
++#define MEM_CONS 0x3A0
++	ldw		MEM_CONS+32(%r0),%arg0	// HPA
++	ldi		ENTRY_IO_COUT,%arg1
++	ldw		MEM_CONS+36(%r0),%arg2	// SPA
++	ldw		MEM_CONS+8(%r0),%arg3	// layers
++	load32		PA(__bss_start),%r1
++	stw		%r1,-52(%sp)		// arg4
++	stw		%r0,-56(%sp)		// arg5
++	stw		%r10,-60(%sp)		// arg6 = ptr to text
++	stw		%r11,-64(%sp)		// arg7 = len
++	stw		%r0,-68(%sp)		// arg8
++	load32		PA(.iodc_panic_ret), %rp
++	ldw		MEM_CONS+40(%r0),%r1	// ENTRY_IODC
++	bv,n		(%r1)
++.iodc_panic_ret:
++	b .				/* wait endless with ... */
++	or		%r10,%r10,%r10	/* qemu idle sleep */
++msg1:	.ascii "Can't boot kernel which was built for PA8x00 CPUs on this machine.\r\n"
++msg1_end:
++
++$cpu_ok:
++#endif
++
++	.level	PA_ASM_LEVEL
++
+ 	/* Initialize startup VM. Just map first 16/32 MB of memory */
+ 	load32		PA(swapper_pg_dir),%r4
+ 	mtctl		%r4,%cr24	/* Initialize kernel root pointer */
 -- 
 2.35.1
 
