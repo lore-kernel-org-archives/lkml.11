@@ -2,115 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EBAECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:43:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69676ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbiH3Uns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 16:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48694 "EHLO
+        id S230183AbiH3Urg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 16:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiH3Uno (ORCPT
+        with ESMTP id S229675AbiH3Ure (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 16:43:44 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7AF27FE0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 13:43:42 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id bq23so17168470lfb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 13:43:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=zpTPbh+6FTpWjU33//CbUrbH55r5RpLUSqoVVWTiTkg=;
-        b=pQd2svsP6AiR6HSTgGGNL7C2Z41Cr+giRe+jvUNzgWqXWB5gyTRpD6hQ7QjxyBDLmk
-         kEZm17wyCgjgSJ0qaTchdgwTlPDbgUUbirEHP7JMYPqEIHKII68IzTj73W/6GOsVlasC
-         1kOU/omAvQMJtW0F/QBVyDRwyf1fsyVXl+Wc0wuuAzFb/XnvdmTsHkZIaAVDJVMTTNtt
-         4FrxcOZbOtlYVKL96zhHt1Uow8Z175SmbPyGDcbVW6ZOM1yGpDi23R9WaRO/iSwmgT+b
-         2zw4zmuFI1782Vt03Hy5crt3m1VTjSG6rUZ4FhJzjjLVKiMILaIR3Q/wrEq6+moXIHDh
-         XWhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=zpTPbh+6FTpWjU33//CbUrbH55r5RpLUSqoVVWTiTkg=;
-        b=EdZ5aDtc6lXVnj9V9JjSoEWS8OAxYZxdlA2pm/I76/NQgA30HGO3OPz7sSqW2qlicb
-         eo5maHCJiO3nf9I8Br39yHMak2V1c+1jJdiMRuRBtdXvcAEgKOxC5Fuknwvqyw3YNyKl
-         Cx5w279zQILEA2DEdd54KMK2BhjVu4eLw6fFQC0rA5C/Ewd00DsAKQLjAPDgE1Akym+Z
-         Fpx68lnC42mcNLxpaG/LBUWvwJo+jxO8YJEmTeXd8GgxAoNZwdXpLXl8K9in8h2MUA98
-         FKrMqkZgUOcnNQHvA2OrbL0DML/eGWpRbBaUIyadLkJ6qlx5kzvJniyd5h6M8f21bS6f
-         +Atw==
-X-Gm-Message-State: ACgBeo3kCaAX/5vPqLwH6kgcvZo1yYr/701s9+yPL+gXZZPEtHUGzplB
-        FBHx5w4Y6IJ9zC42OkPLSKoTqQ==
-X-Google-Smtp-Source: AA6agR5TQdXplaX1+ZJ7P+5UuosDsU+hXEk3qfcGOu4a7qmInmeR6MkJlKrM6t5jZHhl01ECVVOaig==
-X-Received: by 2002:ac2:5fb2:0:b0:492:ea4f:b73c with SMTP id s18-20020ac25fb2000000b00492ea4fb73cmr9008383lfe.296.1661892221227;
-        Tue, 30 Aug 2022 13:43:41 -0700 (PDT)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id f13-20020ac251ad000000b0048d1101d0d6sm1720449lfk.121.2022.08.30.13.43.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 13:43:40 -0700 (PDT)
-Message-ID: <c2559d11-3169-454f-8376-e4500c4e7de9@linaro.org>
-Date:   Tue, 30 Aug 2022 23:43:40 +0300
+        Tue, 30 Aug 2022 16:47:34 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7927B61727
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 13:47:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661892453; x=1693428453;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=gDzm1XLBuTLbUNhYNDG0QOKV+fs5prMh9MVxqkOSecU=;
+  b=QVpj2GUgMAkZNF1K23XYLT8x8wS2cuQZzw4VLn8XgtIrBCyMfrRZm8cz
+   2notyIJUOQjIwXq4OIqTm0xIf8wHD3+2zpGKXfKJLlwkLX/HS4ibwvJgV
+   NPjlsDi+FvWD2Cpr1wHSWiM1hpwCucT0RgMCfUkJhBJ7S0M+BHnun5Xx+
+   VTsTv6U4/TH3m/SZyH+r0lVUcyq1bi/OvKIMPZ/KXZirGYR2bhF5g3t2d
+   +sIGplLnCLkn8sTkJExWFejRhMWqcT2r6OInmgVYSr+ud4Z/a9MSQCJXM
+   Jn+91EV3OrJXt06TxdaJ9mxyxp8UkfjwdjLM1Nz1r5hxPGNseCKz6yCXx
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="282269259"
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="282269259"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 13:47:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="680184467"
+Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 30 Aug 2022 13:47:31 -0700
+Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oT88w-0000af-23;
+        Tue, 30 Aug 2022 20:47:30 +0000
+Date:   Wed, 31 Aug 2022 04:47:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kalesh Singh <kaleshsingh@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Fuad Tabba <tabba@google.com>
+Subject: arch/arm64/kvm/hyp/nvhe/stacktrace.c:46:6: warning: no previous
+ prototype for function 'kvm_nvhe_prepare_backtrace'
+Message-ID: <202208310413.eqNpIobb-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: build failure of next-20220830 due to 5f8cdece42ff ("drm/msm/dsi:
- switch to DRM_PANEL_BRIDGE")
-Content-Language: en-GB
-To:     Nathan Chancellor <nathan@kernel.org>,
-        "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Cc:     Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        clang-built-linux <llvm@lists.linux.dev>
-References: <Yw3V8yJgAnPD8o6P@debian> <Yw4FQm6V7d3MuMKG@dev-arch.thelio-3990X>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <Yw4FQm6V7d3MuMKG@dev-arch.thelio-3990X>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Kalesh,
 
-On 30/08/2022 15:40, Nathan Chancellor wrote:
-> Hi Sudip,
-> 
-> On Tue, Aug 30, 2022 at 10:18:43AM +0100, Sudip Mukherjee (Codethink) wrote:
->> Hi All,
->>
->> The builds of arm64 allmodconfig with clang have failed to build
->> next-20220830 with the error:
->>
->> drivers/gpu/drm/msm/dsi/dsi_host.c:1903:14: error: variable 'device_node' is uninitialized when used here [-Werror,-Wuninitialized]
->>          of_node_put(device_node);
->>                      ^~~~~~~~~~~
->> drivers/gpu/drm/msm/dsi/dsi_host.c:1870:44: note: initialize the variable 'device_node' to silence this warning
->>          struct device_node *endpoint, *device_node;
->>                                                    ^
->>                                                     = NULL
->>
->> git bisect pointed to 5f8cdece42ff ("drm/msm/dsi: switch to DRM_PANEL_BRIDGE")
->>
->> I will be happy to test any patch or provide any extra log if needed.
-> 
-> Thanks for the report. I noticed this yesterday and sent a patch:
-> 
-> https://lore.kernel.org/20220829165450.217628-1-nathan@kernel.org/
-> https://github.com/ClangBuiltLinux/linux/issues/1700
+FYI, the error/warning still remains.
 
-Updated and pushed the branch to unbreak the linux-next. Thank you!
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   dcf8e5633e2e69ad60b730ab5905608b756a032f
+commit: 879e5ac7b2e4db05799a905b5a07fc9e5dedf651 KVM: arm64: Prepare non-protected nVHE hypervisor stacktrace
+date:   5 weeks ago
+config: arm64-randconfig-r011-20220830 (https://download.01.org/0day-ci/archive/20220831/202208310413.eqNpIobb-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project c7df82e4693c19e3fd2e25c83eb04d9deb7b7b59)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=879e5ac7b2e4db05799a905b5a07fc9e5dedf651
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 879e5ac7b2e4db05799a905b5a07fc9e5dedf651
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
 
-> 
-> Cheers,
-> Nathan
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/arm64/kvm/hyp/nvhe/stacktrace.c:46:6: warning: no previous prototype for function 'kvm_nvhe_prepare_backtrace' [-Wmissing-prototypes]
+   void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)
+        ^
+   arch/arm64/kvm/hyp/nvhe/stacktrace.c:46:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/kvm_nvhe_prepare_backtrace +46 arch/arm64/kvm/hyp/nvhe/stacktrace.c
+
+    36	
+    37	/*
+    38	 * kvm_nvhe_prepare_backtrace - prepare to dump the nVHE backtrace
+    39	 *
+    40	 * @fp : frame pointer at which to start the unwinding.
+    41	 * @pc : program counter at which to start the unwinding.
+    42	 *
+    43	 * Saves the information needed by the host to dump the nVHE hypervisor
+    44	 * backtrace.
+    45	 */
+  > 46	void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)
 
 -- 
-With best wishes
-Dmitry
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
