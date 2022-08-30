@@ -2,97 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E2DECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6069FC0502C
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231485AbiH3SLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48292 "EHLO
+        id S231319AbiH3SOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:14:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229876AbiH3SLJ (ORCPT
+        with ESMTP id S229753AbiH3SOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:11:09 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20CB313F3C
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:11:08 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id m2so12871684lfp.11
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:11:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=0jx9VNj/HcW0dooShctB6tlNBtRfv946EPoOPim3t0E=;
-        b=IdHkGy3kZluHn+s1pCS1fWDIsltwMDgJ5SLNDPu4jLO5nDxOv7HtdjosNkKuyV0DmG
-         eUVjPmcsRIc71d5lUiyCBv5yz5iwuKITxlkI2CCTrVITfLANq+620vJrpokgFTnjMf65
-         PPqxsSS+0cG9/10Su2NyJ/PoPuhyRXxyjcg+WLJwi+0JwWn4830Atw3YAVd9seGZ8bBd
-         pQb455HbnE8H9AyoNrefVsPmjpWDZYG8ji2B4reou+a4cddd1nX5+NK/Opneeh+VVpgv
-         0tybYtY7AnI1k1Wc5+hDcL2lPd/zK924fpvX3KRBLJpdU13SX0L3NR2Wv2HkylcGhsWw
-         6Kig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=0jx9VNj/HcW0dooShctB6tlNBtRfv946EPoOPim3t0E=;
-        b=yg5qrv14AsZK3suEg78FM4nC28zU7HTieLB477101LQKbWrXrMbgxyYyxVTf7KYX3p
-         Ir/eGUmDAMHHYug6THcMcGOqJivOOd+lIRLGea/j4HhtaDo2rOiBGC2Ol9i57mbZFOQt
-         AmjsUy71ymVQqgJO5IPmN7s/ZtsI037z+iCsTNG0iAUGDKUrq/1P0tWjvcQuper4Usk+
-         Oswa4/Qouy6/giiXUdnXLi9eBbEYI3VKlte42QvNoqKRHvPaIWzCQ1v0j5kCv9hTnUz5
-         zGjwX9utCNveZKSchcGJeo8PMV7gw3eCzJo5jDp+1t7S91p0u63yM23TbaM8TDOUIxVe
-         4HYQ==
-X-Gm-Message-State: ACgBeo3uQ3PGKKLPMplPvarswmZn43MvZ5LgVnO8PczslnUAbvlwnj8k
-        9vWNeCva360oQhkyk8SuMTxa7w==
-X-Google-Smtp-Source: AA6agR4LS54/XWSxpR5JM4CrvVaGHIeYIc+KzFnzxBcHugfK4mmyTYOXAfXMhla6rcSZpaiqZFIh6g==
-X-Received: by 2002:a05:6512:3503:b0:481:4470:4128 with SMTP id h3-20020a056512350300b0048144704128mr7794471lfs.303.1661883066495;
-        Tue, 30 Aug 2022 11:11:06 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id o17-20020ac24e91000000b00492ef074fc1sm1683629lfr.183.2022.08.30.11.11.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 11:11:05 -0700 (PDT)
-Message-ID: <ce096b36-b678-63e1-e98c-7549f3df357f@linaro.org>
-Date:   Tue, 30 Aug 2022 21:11:03 +0300
+        Tue, 30 Aug 2022 14:14:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E97298D12;
+        Tue, 30 Aug 2022 11:14:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6559B81D0C;
+        Tue, 30 Aug 2022 18:14:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42DCEC433C1;
+        Tue, 30 Aug 2022 18:14:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661883245;
+        bh=VKzLFiP5mB24ZQikYwTCSQzw6IlGtjNBLJRJ3/f8DN4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VoQzTTQT6IaJUZCXQsb10J+JwgNfoHg0nCI4uVecJ+sh6iaQo7idU22k+xf0mHwYS
+         TFZKdr5oKf0jcULLavtJGByELsx0GZkjE9faQNyttS2enX7z82jrvOXNuAWuXgrIsr
+         FSTZ79v5BU1XcqhAu/4Z3n7fxoY4Z11RrpeND7WGSnLvGmmFs+8NFnIZ31u3mcuUsV
+         gV54BfP4OHnFpyW3BHvjKHpN7AkVx3obiekUh0Li925PI7GgIXwGbyEfDtB8Dmkgba
+         zVOe12BdnPNYGrusd8noWIFxQPqsx5pi++zxAj5Scux/M6AyzTH2FXwNJKMdi/D/SR
+         j9XYn+qb8aw1A==
+Date:   Tue, 30 Aug 2022 19:14:03 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org
+Subject: Re: [PATCH -next 2/4] spi: mockup: Add writeable tracepoint for spi
+ transfer
+Message-ID: <Yw5Ta8sO3fMsPLDY@sirena.org.uk>
+References: <20220826144341.532265-1-weiyongjun1@huawei.com>
+ <20220826144341.532265-3-weiyongjun1@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v9 2/2] ASoC: sun50i-dmic: dt-bindings: add DT bindings
- for DMIC controller
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Ban Tao <fengzheng923@gmail.com>, lgirdwood@gmail.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        wens@csie.org, jernej.skrabec@gmail.com, samuel@sholland.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <1661872039-40174-1-git-send-email-fengzheng923@gmail.com>
- <25072fba-64e2-df11-c8f0-a274037141f0@linaro.org>
- <Yw5Qd7ZNPIc/o7+6@sirena.org.uk>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <Yw5Qd7ZNPIc/o7+6@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="NrO7SSyXeKA+hN76"
+Content-Disposition: inline
+In-Reply-To: <20220826144341.532265-3-weiyongjun1@huawei.com>
+X-Cookie: Necessity is a mother.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/08/2022 21:01, Mark Brown wrote:
-> On Tue, Aug 30, 2022 at 08:35:09PM +0300, Krzysztof Kozlowski wrote:
->> On 30/08/2022 18:07, Ban Tao wrote:
->>> DT binding documentation for this new ASoC driver.
-> 
->>> +properties:
->>> +  "#sound-dai-cells":
->>> +    const: 0
->>> +
->>> +  compatible:
->>> +    const: allwinner,sun50i-h6-dmic
-> 
->> Put compatible first in the list of properties (also in required:).
-> 
-> Can the tooling be taught about this?
 
-Probably could save me some time in writing reviews... Let me look.
+--NrO7SSyXeKA+hN76
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-Krzysztof
+On Fri, Aug 26, 2022 at 02:43:39PM +0000, Wei Yongjun wrote:
+
+> +#define SPI_BUFSIZ_MAX		0x1000
+> +
+> +struct spi_msg_ctx {
+> +	int ret;
+> +	__u8 data[SPI_BUFSIZ_MAX];
+> +};
+
+This has a hard limit on the size of messages of only 4k on the
+size of messages, that seems a bit on the low side especially
+considering that the example is for a flash device.  There's also
+things like firmware downloads which can easily exceed 4k.  The
+driver should at the very least report this limit via the SPI
+API, and probably also complain loudly if the limit is exceeded
+since it's unlikely that most drivers will actually be checking
+for such a low limit given how rare they are.=20
+
+--NrO7SSyXeKA+hN76
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMOU2oACgkQJNaLcl1U
+h9Dh1Af9GdUHS58zJBE+b0BdW2/c+ovfh36z1nrwxcJmGcLx+PFKfGGpTnk+7BX0
+oBKAI50N9F0ah3pROKYTAwz7jKW92dHXakjR14zsPG2TnOX3mb3ZBcellJ+LveNQ
+HTGjT+XX7Ggc1ZvjzTyTQ/FlSGRCOviRpem61IzIxvbdB2XDPFETQS0sbfNkvWxC
+YRKyVg/yFMLQAQ49pEeoJnUOU4Cxe0PxagFAvjbeav8tiOrGxsBchmzb8opSVTGD
+p8wF1d0tZnMyzrCGyklWblniXO7oiUsf/3Dc5+QwHCTqEu+KOgTTLM3AbLWYcEXt
+zVUPTPuxfCQv4cPJk//ZJolyfz9Y7w==
+=RqoT
+-----END PGP SIGNATURE-----
+
+--NrO7SSyXeKA+hN76--
