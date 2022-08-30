@@ -2,142 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7174ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C24CCECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbiH3J2v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:28:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41302 "EHLO
+        id S231869AbiH3J3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231854AbiH3J2h (ORCPT
+        with ESMTP id S231812AbiH3J3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:28:37 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13848D99C0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:28:36 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id z6so14674434lfu.9
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:28:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=FmzIDD4Pa7+MmcfVJAwljvGaSQDMssbd6GqQpiHG2xs=;
-        b=l/RBizF6kzePEfcYyZqRb6nMeIozE3Plc6MK0BE1z9FSW6eEoTADB7lH50rjVtKVQq
-         aTqmCKBtnm6wV5Kxht5W+Ewwq+uFCzHlcHlgGiTPkWOJdSETsWYLh61oYlnGg5owVOt4
-         gTgRcao62+Di9UQGpr8ywKs/U7T16LOlJPS3gfiRUCGgQ1t+mGhWOrabo3LCkRdrlRhV
-         LGOm4OsQsPsCD1yoyrc1650LghtiO8wVRy/t2PRKP/bbZ8GUCFO4sCcWknY7m03qo9ei
-         zhMZEP9GT1iqij0GtA82IvCC+xLVClsJgUcZzL92rTS+HteejrYHKWXXwNnafYTLpewu
-         Yppg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=FmzIDD4Pa7+MmcfVJAwljvGaSQDMssbd6GqQpiHG2xs=;
-        b=NDDrRz+Gyb+v+TDgbN/PV/0yB2Dpb5HaudIEms1qLNWASUSEJhFHJwIKcFgiG8nW8Z
-         l1sbtf0rKHLIt/d4Cf8up1Ef//ogeioVlGqJcF74ZzBjK0wetP3S4rEiMuJOLgi13Ngu
-         4wBAlLp071UIY9ul98tTATk3GVDMBFguTLlY2JPrTUQLnpb6xGC21b2WWDqQ1V04bz9c
-         eXVNwlAqSbP6nigTzgA2C6fwyoqFBZFO2vw08lQam0kbnbraXKtUTqGYe1IugbAJxJxT
-         sGQi3jm6WfttycOuznoZ80G+ZDXQ3R4mUpuowbvAxpcnyPqT44W1NEVqcltkm3Y2WpN0
-         aIXg==
-X-Gm-Message-State: ACgBeo0XgejvRGmIJEXgGiFEvDYsvL5UVXYv7E+dlwfgG7gOTmZZ0ALh
-        abSdBexg119wGm+F6BqdiOLJHQ==
-X-Google-Smtp-Source: AA6agR4+KSqYDLnziLnnQeT1r6I0LXNAxazi5IGv/j87wuVt+YLGrV9a67iwU0YcX+hsxrZFnxmBBw==
-X-Received: by 2002:a05:6512:10d4:b0:492:ede1:ec75 with SMTP id k20-20020a05651210d400b00492ede1ec75mr7014503lfg.146.1661851713946;
-        Tue, 30 Aug 2022 02:28:33 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id t28-20020a056512031c00b00492e4c97ca3sm85446lfp.246.2022.08.30.02.28.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 02:28:33 -0700 (PDT)
-Message-ID: <f614f968-baf4-6b4d-507e-29221e1469bc@linaro.org>
-Date:   Tue, 30 Aug 2022 12:28:32 +0300
+        Tue, 30 Aug 2022 05:29:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60FCDEA7C
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:29:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661851739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ah8/qz4A6ZAu9RX3bIj/W9IVTkE4sUTVT6VwswPKF2w=;
+        b=OoXD4reHmEpETLN+bDFmWwixapkAECSKnYwjQTZP2pS8AjfUvoWfjN6+gHG2QhC4XA3yih
+        7/Nh6baN13moZRGOu2GbRsomxnXIL1HRAsTqSukpn0uk76uJ5EKarKvIgB5HvKtcZgrtEs
+        vWH1l2i1L8slmaQXfIhrOZI1W04fsHs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-570-PIpoL6fwM5mAdxFx-_D3dA-1; Tue, 30 Aug 2022 05:28:56 -0400
+X-MC-Unique: PIpoL6fwM5mAdxFx-_D3dA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 133568039A1;
+        Tue, 30 Aug 2022 09:28:56 +0000 (UTC)
+Received: from starship (unknown [10.40.194.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 17F34492C3B;
+        Tue, 30 Aug 2022 09:28:53 +0000 (UTC)
+Message-ID: <bd59ecdaadfb5d515a487cf235f5339ce8808f9c.camel@redhat.com>
+Subject: Re: Commit 'r8152: fix a WOL issue' makes Ethernet port on Lenovo
+ Thunderbolt 3 dock go crazy
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, Hayes Wang <hayeswang@realtek.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Date:   Tue, 30 Aug 2022 12:28:52 +0300
+In-Reply-To: <d88838ed-f49a-ac9f-5b4c-8e58cabf76fb@leemhuis.info>
+References: <3745745afedb2eff890277041896356149a8f2bf.camel@redhat.com>
+         <339e2f94-213c-d707-b792-86d53329b3e5@leemhuis.info>
+         <8c214c0b-4b8f-5e62-5aef-76668987e8fd@leemhuis.info>
+         <20220825091343.2e5f99dd@kernel.org>
+         <d88838ed-f49a-ac9f-5b4c-8e58cabf76fb@leemhuis.info>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 1/5] ASoC: dt-bindings: fsl_rpmsg: Add a property to
- assign platform driver name
-Content-Language: en-US
-To:     Chancel Liu <chancel.liu@nxp.com>, lgirdwood@gmail.com,
-        broonie@kernel.org, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shengjiu.wang@nxp.com,
-        Xiubo.Lee@gmail.com, festevam@gmail.com, nicoleotsuka@gmail.com,
-        linuxppc-dev@lists.ozlabs.org
-References: <20220829075144.2405000-1-chancel.liu@nxp.com>
- <20220829075144.2405000-2-chancel.liu@nxp.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220829075144.2405000-2-chancel.liu@nxp.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/08/2022 10:51, Chancel Liu wrote:
-> Add a string property to assign ASoC platform driver name. It also
-> represents the rpmsg channel this sound card sits on. This property
-> can be omitted if there is only one sound card and it sits on
-> "rpmsg-audio-channel".
-> 
-> Signed-off-by: Chancel Liu <chancel.liu@nxp.com>
-> ---
->  .../devicetree/bindings/sound/fsl,rpmsg.yaml  | 34 +++++++++++++++++--
->  1 file changed, 32 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml b/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
-> index d370c98a62c7..35e3cb9f768b 100644
-> --- a/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
-> +++ b/Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml
-> @@ -11,8 +11,11 @@ maintainers:
->  
->  description: |
->    fsl_rpmsg is a virtual audio device. Mapping to real hardware devices
-> -  are SAI, DMA controlled by Cortex M core. What we see from Linux
-> -  side is a device which provides audio service by rpmsg channel.
-> +  are SAI, MICFIL, DMA controlled by Cortex M core. What we see from
-> +  Linux side is a device which provides audio service by rpmsg channel.
-> +  We can create different sound cards which access different hardwares
-> +  such as SAI, MICFIL, .etc through building rpmsg channels between
-> +  Cortex-A and Cortex-M.
->  
->  properties:
->    compatible:
-> @@ -85,6 +88,14 @@ properties:
->        This is a boolean property. If present, the receiving function
->        will be enabled.
->  
-> +  fsl,platform:
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    description: |
-> +      A string property to assign ASoC platform driver name. 
+On Fri, 2022-08-26 at 09:49 +0200, Thorsten Leemhuis wrote:
+> On 25.08.22 18:13, Jakub Kicinski wrote:
+> > On Thu, 25 Aug 2022 09:26:21 +0200 Thorsten Leemhuis wrote:
+> > > On 24.08.22 13:16, Thorsten Leemhuis wrote:
+> > > > Hi, this is your Linux kernel regression tracker.
+> > > > 
+> > > > Quick note before the boilerplate: there is another report about issues
+> > > > caused by cdf0b86b250fd3 also involving a dock, but apparently it's
+> > > > ignored so far:
+> > > > https://bugzilla.kernel.org/show_bug.cgi?id=216333  
+> > > 
+> > > TWIMC, apparently it's the same problem.
+> > > 
+> > > Fun fact: Hayes discussed this in privately with the bug reporter
+> > > according to this comment:
+> > > https://bugzilla.kernel.org/show_bug.cgi?id=216333#c3
+> > > 
+> > > Well, that's not how things normally should be handled, but whatever, he
+> > > in the end recently submitted a patch to fix it that is already merged
+> > > to net.git:
+> > > 
+> > > https://lore.kernel.org/lkml/20220818080620.14538-394-nic_swsd@realtek.com/
+> > 
+> > Yup, it will be part of 6.0-rc3. 
 
-No, this is not a property of hardware. Naming of some drivers in some
-systems does not fit DTS and bindings.
-
-> It also
-> +      represents the rpmsg channel this sound card sits on. This property
-> +      can be omitted if there is only one sound card and it sits on
-> +      "rpmsg-audio-channel".
-> +
->  required:
->    - compatible
->    - model
-> @@ -107,3 +118,22 @@ examples:
->                   <&clk IMX8MN_AUDIO_PLL2_OUT>;
->          clock-names = "ipg", "mclk", "dma", "pll8k", "pll11k";
->      };
-> +
-> +  - |
-> +    #include <dt-bindings/clock/imx8mm-clock.h>
-> +
-> +    rpmsg_micfil: rpmsg_micfil {
-
-Node names should be generic.
-https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
-
-Also: no underscores in node names.
+Thank you all very much! -rc3 indeed works for me!
 
 Best regards,
-Krzysztof
+	Maxim Levitsky
+
+> 
+> Great. BTW, a small note for Hayes and reviewers: The commit
+> b75d61201444 ("r8152: fix the RX FIFO settings when suspending") links
+> to the report with a "BugLink" tag. You want to use plain "Link:" tags
+> instead, as explained in the documentation. Also: a "BugLink" tag not
+> that long ago made Linus write:
+> 
+> ```
+> please stop making up random tags that make no sense.
+> 
+> Just use "Link:"
+> ```
+> 
+> Quote from:
+> https://lore.kernel.org/all/CAHk-=wgs38ZrfPvy=nOwVkVzjpM3VFU1zobP37Fwd_h9iAD5JQ@mail.gmail.com/
+> 
+> Ciao, Thorsten
+> 
+
+
