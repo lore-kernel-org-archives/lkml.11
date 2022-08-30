@@ -2,162 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B70ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34611C3DA6B
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230259AbiH3RPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54164 "EHLO
+        id S229848AbiH3RSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbiH3RO6 (ORCPT
+        with ESMTP id S229498AbiH3RSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:14:58 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5431582A
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:14:56 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id z6so16425811lfu.9
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:14:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=wqM8poQSBkP5+AJNOGOym7LP5PEFsyVQuT3qGSt/MeQ=;
-        b=t8SfeBC0CMrKUskuld6g6k95a+OrKLt1l4p4i4wYP5WfVoRA9m4tYKjPyeefFS2Sth
-         W1k3LmTakdmvBcyR4Of4koYIRweWQg1g2QJ4DIBUy63ug74x8XdiZhKyg5c8s9mnL3w2
-         OMf8+BGfeuk97J9Kb/7Bciy1t29Izl5eUd7Qfwrs+K2XPZlN3lCL1uoP3U+yPLarKhbI
-         j3hiitXgHkTlYj/jZcEyCynSBMBxjlotKnR9RFOh5Z8i37jEyurjLHMi7qvxxj4/VDl9
-         rN1+tbMgUjAexZWmGr9d34icgOVS3D99IvFNGEc29Q7A7JRku2sQ4VSnOgO7GnRMm0bX
-         UwqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=wqM8poQSBkP5+AJNOGOym7LP5PEFsyVQuT3qGSt/MeQ=;
-        b=AxSFqoqLgQvLlagrrTXoJazcPVwehVZZl4hL6c6pT1MjFOuVKwvqXc8crLK0FlQYe2
-         a1R7X0ONgEY/GNPQwVR/vgCot8YH3nfzHeTshw8nZQaMPW8Mo1KuMzzLeDhWPyO8j1ns
-         uxF+pP9AcYLYISakf/m5VQJqWoAX0EPs1iZsmNbRI1X9E3C72tcs2gjgP0lgkISmcrVX
-         ix34M7Lnb/ZtUrjrqAAsoU5MGqCAxnFTjK9EEp52JTKHfM8ghbpArSFvfTTEEV/RBxGD
-         S5QthS7U5YqRhKcVHz7TyeNsNtHHAGwTA0xYblvzQibxa28NOM5L4JpakpW2mpFU66j5
-         N5ww==
-X-Gm-Message-State: ACgBeo2kNctkaXU8oVEwls7KGrFNrmjYQVbMFjp+neaFe233aSffUkP7
-        2BLJftp3rVnwGTLqwGEEvobLBQ==
-X-Google-Smtp-Source: AA6agR7f3qJImjMtLOVfjApYz2NAbNuJJj7Daybtc1K7dNVuZS10wfEilsUloLI82Iu8FA5wnfynyQ==
-X-Received: by 2002:a05:6512:159b:b0:492:c1c0:5aab with SMTP id bp27-20020a056512159b00b00492c1c05aabmr7875077lfb.523.1661879694642;
-        Tue, 30 Aug 2022 10:14:54 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id c17-20020a05651200d100b00492ea54beeasm384652lfp.306.2022.08.30.10.14.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 10:14:53 -0700 (PDT)
-Message-ID: <c8236663-055c-d6da-64ed-ae3f7fb2e690@linaro.org>
-Date:   Tue, 30 Aug 2022 20:14:52 +0300
+        Tue, 30 Aug 2022 13:18:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A64CD34EC;
+        Tue, 30 Aug 2022 10:18:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54CCDB81CD3;
+        Tue, 30 Aug 2022 17:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11C93C433C1;
+        Tue, 30 Aug 2022 17:18:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661879910;
+        bh=LGBCI1tqWJ+ulcALgf4eeEU+udgwAdW2D6addDAKkQU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MEzSO/28a85mkleNfmP0PRTc2J0jxOI3zm57m9WfE1C5Y6tcau4SgEUggZ+b2YpQG
+         s8MmFWAzYvWb+G72Y0jIQ53mUlj7RGvjAScyJxQnMIc/WOueHYQR9ReDu6GifTDNnd
+         f8T3K/tjyV38FFjqK9nzcXx+dhDPFolEVYrZOKtn9PCnORT/VkOCYyaEuFOfhLKtrs
+         LBYlZEWfr7cMPBYH4pVVZ705CFNMaOFK7QOfY4s+9vZlZSRr//rpBtWLsmo9AyPjAw
+         jqsibO/c6MGN92++0l2+jsJnaRZj24QzHPX2UhzjAWfx8JcoBU/xPbY+qL8jrCxJnH
+         lGV4/LYtY73tg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Tony Battersby <tonyb@cybernetics.com>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Nilesh Javali <njavali@marvell.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>,
+        GR-QLogic-Storage-Upstream@marvell.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 02/33] scsi: qla2xxx: Disable ATIO interrupt coalesce for quad port ISP27XX
+Date:   Tue, 30 Aug 2022 13:17:53 -0400
+Message-Id: <20220830171825.580603-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220830171825.580603-1-sashal@kernel.org>
+References: <20220830171825.580603-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH net-next v2 5/5] dt-bindings: net: altera: tse: add an
- optional pcs register range
-Content-Language: en-US
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-References: <20220830095549.120625-1-maxime.chevallier@bootlin.com>
- <20220830095549.120625-6-maxime.chevallier@bootlin.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220830095549.120625-6-maxime.chevallier@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/08/2022 12:55, Maxime Chevallier wrote:
-> Some implementations of the TSE have their PCS as an external bloc,
-> exposed at its own register range. Document this, and add a new example
-> showing a case using the pcs and the new phylink conversion to connect
-> an sfp port to a TSE mac.
-> 
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> ---
-> V1->V2 :
->  - Fixed example
-> 
->  .../devicetree/bindings/net/altr,tse.yaml     | 29 ++++++++++++++++++-
->  1 file changed, 28 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/altr,tse.yaml b/Documentation/devicetree/bindings/net/altr,tse.yaml
-> index 1676e13b8c64..4b314861a831 100644
-> --- a/Documentation/devicetree/bindings/net/altr,tse.yaml
-> +++ b/Documentation/devicetree/bindings/net/altr,tse.yaml
-> @@ -39,6 +39,7 @@ allOf:
->        properties:
->          reg:
->            minItems: 6
-> +          maxItems: 7
->          reg-names:
->            minItems: 6
->            items:
-> @@ -48,6 +49,7 @@ allOf:
->              - const: rx_resp
->              - const: tx_csr
->              - const: tx_desc
-> +            - const: pcs
->  
->  properties:
->    compatible:
-> @@ -58,7 +60,7 @@ properties:
->  
->    reg:
->      minItems: 4
-> -    maxItems: 6
-> +    maxItems: 7
->  
->    reg-names:
->      minItems: 4
-> @@ -69,6 +71,7 @@ properties:
->        - const: rx_resp
->        - const: tx_csr
->        - const: tx_desc
-> +      - const: pcs
->        - const: s1
->  
+From: Tony Battersby <tonyb@cybernetics.com>
 
-So now 8 items?
+[ Upstream commit 53661ded2460b414644532de6b99bd87f71987e9 ]
 
->    interrupts:
-> @@ -122,6 +125,30 @@ required:
->  unevaluatedProperties: false
->  
->  examples:
-> +  - |
-> +    tse_sub_0: ethernet@c0100000 {
-> +        compatible = "altr,tse-msgdma-1.0";
-> +        reg = <0xc0100000 0x00000400>,
-> +              <0xc0101000 0x00000020>,
-> +              <0xc0102000 0x00000020>,
-> +              <0xc0103000 0x00000008>,
-> +              <0xc0104000 0x00000020>,
-> +              <0xc0105000 0x00000020>,
-> +              <0xc0106000 0x00000100>;
-> +        reg-names = "control_port", "rx_csr", "rx_desc", "rx_resp", "tx_csr", "tx_desc", "pcs";
-> +        interrupt-parent = <&intc>;
-> +        interrupts = <0 44 4>,<0 45 4>;
-> +        interrupt-names = "rx_irq","tx_irq";
-> +        rx-fifo-depth = <2048>;
-> +        tx-fifo-depth = <2048>;
-> +        max-frame-size = <1500>;
-> +        local-mac-address = [ 00 0C ED 00 00 02 ];
+This partially reverts commit d2b292c3f6fd ("scsi: qla2xxx: Enable ATIO
+interrupt handshake for ISP27XX")
 
-00 00 00 00 00 00
-(easier to spot that it is invalid)
+For some workloads where the host sends a batch of commands and then
+pauses, ATIO interrupt coalesce can cause some incoming ATIO entries to be
+ignored for extended periods of time, resulting in slow performance,
+timeouts, and aborted commands.
 
-Best regards,
-Krzysztof
+Disable interrupt coalesce and re-enable the dedicated ATIO MSI-X
+interrupt.
+
+Link: https://lore.kernel.org/r/97dcf365-89ff-014d-a3e5-1404c6af511c@cybernetics.com
+Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
+Reviewed-by: Nilesh Javali <njavali@marvell.com>
+Signed-off-by: Tony Battersby <tonyb@cybernetics.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/qla2xxx/qla_target.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/scsi/qla2xxx/qla_target.c b/drivers/scsi/qla2xxx/qla_target.c
+index 2b2f682883752..62666df1a59eb 100644
+--- a/drivers/scsi/qla2xxx/qla_target.c
++++ b/drivers/scsi/qla2xxx/qla_target.c
+@@ -6935,14 +6935,8 @@ qlt_24xx_config_rings(struct scsi_qla_host *vha)
+ 
+ 	if (ha->flags.msix_enabled) {
+ 		if (IS_QLA83XX(ha) || IS_QLA27XX(ha) || IS_QLA28XX(ha)) {
+-			if (IS_QLA2071(ha)) {
+-				/* 4 ports Baker: Enable Interrupt Handshake */
+-				icb->msix_atio = 0;
+-				icb->firmware_options_2 |= cpu_to_le32(BIT_26);
+-			} else {
+-				icb->msix_atio = cpu_to_le16(msix->entry);
+-				icb->firmware_options_2 &= cpu_to_le32(~BIT_26);
+-			}
++			icb->msix_atio = cpu_to_le16(msix->entry);
++			icb->firmware_options_2 &= cpu_to_le32(~BIT_26);
+ 			ql_dbg(ql_dbg_init, vha, 0xf072,
+ 			    "Registering ICB vector 0x%x for atio que.\n",
+ 			    msix->entry);
+-- 
+2.35.1
+
