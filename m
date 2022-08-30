@@ -2,56 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E14ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E2C7ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229498AbiH3QlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48174 "EHLO
+        id S230076AbiH3QlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiH3QlG (ORCPT
+        with ESMTP id S229950AbiH3QlI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:41:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F8A9DB50
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:41:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90B7E6170C
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:41:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CCC8C433C1;
-        Tue, 30 Aug 2022 16:41:03 +0000 (UTC)
-Date:   Tue, 30 Aug 2022 17:40:59 +0100
-From:   Catalin Marinas <catalin.marinas@arm.com>
-To:     Levi Yun <ppbuk5246@gmail.com>
-Cc:     bhe@redhat.com, will@kernel.org, nramas@linux.microsoft.com,
-        thunder.leizhen@huawei.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kexec@lists.infradead.org
-Subject: Re: [PATCH v2] arm64/kexec: Fix missing extra range for
- crashkres_low.
-Message-ID: <Yw49m7Hpq+NIZYWw@arm.com>
-References: <CAM7-yPTdihLsPjDKM-0OEszxNd8n0bgeRseiEkCsSZW-uuaRvw@mail.gmail.com>
- <20220830092839.3197-1-ppbuk5246@gmail.com>
+        Tue, 30 Aug 2022 12:41:08 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 760DAA50CF;
+        Tue, 30 Aug 2022 09:41:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661877667; x=1693413667;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Ry8/6c1jhzg+tAE0icVZIgeSJDHu/T4hEJBLEUslJHs=;
+  b=b90sHZ85HqyOi0ISUx2J/v2GjNN2ngviIY/qcpTWN3q+xEoriJvX/zPk
+   IJaCKOdjM26yDsbO+yR+YX4f9HsfrWShyz05JgdeewsfAzkegttG3uaLI
+   L+4YXJ4z/gRD3N27Zpqm58FbFiIhTdPZsFe5Pv/Ifc+97FTnaMYUyG16h
+   ItYlqOFGyQSh0fiQW8dlcXX+fwPM1xACkM7CuEDhhU3Z7jkdOq5J3rpNR
+   wLgZqqz75qtbSArbo+4kWb+fkLmg3zL6yHfzMEZmqGp62to7SlHNzAeHJ
+   nV/Jn8vCwrXavOo9+S4CVuiqQkGcJEnnkttMZ/08PB64ed5la7RO6ZVC7
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="296514300"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="296514300"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 09:37:37 -0700
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="562720029"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 09:37:35 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oT4F2-00625J-1T;
+        Tue, 30 Aug 2022 19:37:32 +0300
+Date:   Tue, 30 Aug 2022 19:37:32 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mika Westerberg <mika.westerberg@linux.intel.com>
+Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 2/2] ACPI: PMIC: Replace open coded be16_to_cpu()
+Message-ID: <Yw48zDlSGCbquPSb@smile.fi.intel.com>
+References: <20220830135532.28992-1-andriy.shevchenko@linux.intel.com>
+ <20220830135532.28992-2-andriy.shevchenko@linux.intel.com>
+ <Yw41ai0mYHIgtgs4@black.fi.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220830092839.3197-1-ppbuk5246@gmail.com>
+In-Reply-To: <Yw41ai0mYHIgtgs4@black.fi.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 06:28:39PM +0900, Levi Yun wrote:
-> Like crashk_res, Calling crash_exclude_mem_range function with
-> crashk_low_res area would need extra crash_mem range too.
+On Tue, Aug 30, 2022 at 07:06:02PM +0300, Mika Westerberg wrote:
+> On Tue, Aug 30, 2022 at 04:55:32PM +0300, Andy Shevchenko wrote:
+> > +
+> > +#include <asm/byteorder.h>
 > 
-> Add one more extra cmem range slot in case of crashk_low_res is used.
-> 
-> Signed-off-by: Levi Yun <ppbuk5246@gmail.com>
+> Isn't there <linux/byteorder/*> as well? Is there something that
+> prevents using it?
 
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Nothing. Actually above is my local stuff, that has not to be used.
 
-Does this need a Fixes tag and cc stable?
+> Otherwise looks good to me.
 
 -- 
-Catalin
+With Best Regards,
+Andy Shevchenko
+
+
