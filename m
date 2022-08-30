@@ -2,146 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D64ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C03ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231814AbiH3SEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:04:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
+        id S232108AbiH3SEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232333AbiH3SDt (ORCPT
+        with ESMTP id S232351AbiH3SDy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:03:49 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24288696CC
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:03:48 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bq23so16625523lfb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:03:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=Ch7MLzjtjxDAnl8q0BHET3tRA6bodCqHcVbiwE3Oe4g=;
-        b=a5a22/m+UPenjdNvSoivou/95cRPjfTAPUYrIwBXwARzbxJLoro/WeeY8LDQd6q54C
-         qa/4rKjYPpFmKABxLFYD6+GqbRSw239JMtGCCpENJee6kxgwleR9bFASo8vbocoaKvZo
-         NxPtfOMJhglebUZD60i7VcvHhIoQrXcPRnEgHCIcCJq4RAJZjdKXx2XqkJV1NtjdCusZ
-         vGMoGhF4M9o1qrBsplW3YgNaF3TfVW4Cn52w1iUK9YyqfvaaEyaEj6gRF54UnmKDtE1k
-         vN3ZqnRcRV9O7K+dLttZh6PS8W1l4k6FdylGCVeXDhuGXAQgGODepmMOmjQritmJ1iPq
-         Ku4w==
+        Tue, 30 Aug 2022 14:03:54 -0400
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E74D11C2C;
+        Tue, 30 Aug 2022 11:03:53 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-3321c2a8d4cso286406447b3.5;
+        Tue, 30 Aug 2022 11:03:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=Ch7MLzjtjxDAnl8q0BHET3tRA6bodCqHcVbiwE3Oe4g=;
-        b=WEKtu70u5JXsIvxmofnMwScj06aCIFIBNuuNFHALTE+sIiPHnnoMLeRF9uMKa76dHc
-         OeA3LNm+xw/VVEoGqRiXmds3b5n0ubDV+nK5lwqsLBTLRbYoU+5zz9gRCi8TYncx1upE
-         Cg2AqlWnlzj9I3casBJIDVMDcYdio6l6/5a7XiwIAJEiyXvRjsR+uM1P0MaadP/hF/3s
-         Mj70LWsgXxLiyoICn+vPglFqcl5UlbKW/MfeStZ4LgLBG0s/P4E5ca9e1MmgHkYlLCoP
-         WsRyE+kFnnMTWVcpWOgcLUQ2SX4ObsrqmClW6NWga9nTLgd1E/f2hAlGS7tnUwWRvM21
-         gQDA==
-X-Gm-Message-State: ACgBeo0hwe9XSmihEQ2fSY/LJH2Dq5neauDx5CmcWY8UCH757JF6LP2g
-        gn3j8KjXVchdhX7mlhlFj4LYkUgykXizI0aK
-X-Google-Smtp-Source: AA6agR4B6RPmmBpqIqWQK+WQ/FHVm/qy/0Kjy1i5/ymIBnlMsgywlvPmZo+HlEf7Ejw2wE9vzxYgQA==
-X-Received: by 2002:ac2:4c4f:0:b0:48b:1358:67e3 with SMTP id o15-20020ac24c4f000000b0048b135867e3mr7689493lfk.441.1661882626425;
-        Tue, 30 Aug 2022 11:03:46 -0700 (PDT)
-Received: from krzk-bin.. (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id c14-20020a056512324e00b0047255d211b2sm505298lfr.225.2022.08.30.11.03.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 11:03:45 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RESEND PATCH] ARM: dts: aspeed: align SPI node name with dtschema
-Date:   Tue, 30 Aug 2022 21:03:44 +0300
-Message-Id: <20220830180344.15657-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=hV3AGddn06sxt4caikAmHiPA4bN2Ao0tbE5Dqa+wW0E=;
+        b=irNhI4Te29UCVvYzgQ5fruwaeGqqJgjp9Sx83vjWmk5iirjwKBsLximmWHbUvbq7P3
+         f/gSTdrOEMjhORKNTdy1fJFpAZSgs6X7jMhE3S2SAJmF/MZ9RFGwA9uAxe079i2+5BI/
+         iJ+H2HtMhCNySJZxOwHeAzu4G+oIh+Q79IxVedAtmsLoprCMbbJD9TgYuFIUnSyj4pPf
+         9Fj4u9+lHb3SyO/GDGeUoj6dwW0FHobaVBLexK9j5Q7/+ODpdnICCiqoyUsPOJsJZuqp
+         VsFbCoDx1s4D3zGbnLPfzMAbQUbSUQmNXogD3syO8eHZPgX6KaIFA2PIE0h4U3jVFAu8
+         AKZQ==
+X-Gm-Message-State: ACgBeo1v3RcbispnmvBTUeY+ZnKL63sZhMXvCMn/+F7Jr/2H5zMPYJE4
+        0wp6YxU4Bcp8/25+QcYhLth0Cn9pP1WA5ML/cks=
+X-Google-Smtp-Source: AA6agR6JtWnMBLuVBL0N1uHwD/zxtbziKQ4N71wZSDieIyyjzEOuAm64yeA00ZhyZtn/7wAClG7NECKHO7qYEPDAb8A=
+X-Received: by 2002:a0d:df92:0:b0:340:b90d:fb75 with SMTP id
+ i140-20020a0ddf92000000b00340b90dfb75mr13844627ywe.149.1661882632474; Tue, 30
+ Aug 2022 11:03:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAJZ5v0jL812FKOJsmijE7gx5GEYp0hQ9+3UtQ_WUr-Uf5pgxAg@mail.gmail.com>
+ <20220830173723.GA109210@bhelgaas>
+In-Reply-To: <20220830173723.GA109210@bhelgaas>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 30 Aug 2022 20:03:41 +0200
+Message-ID: <CAJZ5v0iHckqia4OywKzSNWFCaq7eOkJcm5yXJdT2_sNdd36gDw@mail.gmail.com>
+Subject: Re: [RESEND PATCH v3 2/2] PCI/PTM: fix to maintain pci_dev->ptm_enabled
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rajvi Jingar <rajvi.jingar@linux.intel.com>,
+        Rafael Wysocki <rafael.j.wysocki@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Box <david.e.box@linux.intel.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The node names should be generic and DT schema expects certain pattern.
+On Tue, Aug 30, 2022 at 7:37 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> On Tue, Aug 30, 2022 at 06:58:20PM +0200, Rafael J. Wysocki wrote:
+> > On Tue, Aug 30, 2022 at 6:25 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > On Tue, Aug 30, 2022 at 03:49:13AM -0700, Rajvi Jingar wrote:
+> > > > pci_dev->ptm_enabled needs to be maintained to reflect the current PTM
+> > > > state of the device. In pci_ptm_disable(), clear ptm_enabled from
+> > > > 'struct pci_dev' on disabling PTM state for the device.
+> > > > In pci_restore_ptm_state(), set dev->ptm_enabled based on the restored
+> > > > PTM state of the device.
+> > > >
+> > > > In pci_ptm_disable(), perform ptm_enabled check to avoid config space
+> > > > access in case if PTM is already disabled for the device. ptm_enabled
+> > > > won't be set for non-PCIe devices so pci_is_pcie(dev) check is not
+> > > > needed anymore.
+> > >
+> > > This one sounds like it's supposed to fix something, but I'm not clear
+> > > exactly what.
+> > >
+> > > I have a vague memory of config accesses messing up a low power state.
+> > > But this is still completely magical and unmaintainable since AFAIK
+> > > there is nothing in the PCIe spec about avoiding config accesses when
+> > > PTM is disabled.
+>
+> I'm remembering this, which seemed like an ancestor of this patch:
+> https://lore.kernel.org/r/CAJZ5v0gNy6YJA+RNTEyHBdoJK-jqKN60oU_k_LX4=cTuyoO2mg@mail.gmail.com
+>
+> This patch is queued up and does something similar (disabling PTM on
+> all devices before suspend):
+> https://git.kernel.org/cgit/linux/kernel/git/helgaas/pci.git/commit/?id=d878400c7d98
+>
+> Is d878400c7d98 enough to solve the functional issue, and this patch
+> is basically a cleanup?  I think it's a nice cleanup and worth doing.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts | 2 +-
- arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts      | 2 +-
- arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts        | 2 +-
- arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts    | 2 +-
- arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+This patch is independent of d878400c7d98.  We've been working on a
+d878400c7d98 counterpart on top of this patch.
 
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts
-index 9c6271a17ae8..5cd060029ea9 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-cloudripper.dts
-@@ -77,7 +77,7 @@ aliases {
- 		i2c55 = &imux55;
- 	};
- 
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		num-chipselects = <2>;
- 		cs-gpios = <&gpio0 ASPEED_GPIO(X, 0) GPIO_ACTIVE_LOW>,
- 			   <&gpio0 ASPEED_GPIO(X, 1) GPIO_ACTIVE_HIGH>;
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-index 27b43fe099f1..4b520d7ce3e1 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-elbert.dts
-@@ -44,7 +44,7 @@ chosen {
- 		stdout-path = &uart5;
- 	};
- 
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		num-chipselects = <1>;
- 		cs-gpios = <&gpio0 ASPEED_GPIO(X, 0) GPIO_ACTIVE_LOW>;
- 	};
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts
-index af58a73bbc49..6b319f34a9b9 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-fuji.dts
-@@ -207,7 +207,7 @@ aliases {
- 		i2c143 = &imux143;
- 	};
- 
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		num-chipselects = <3>;
- 		cs-gpios = <&gpio0 ASPEED_GPIO(X, 0) GPIO_ACTIVE_LOW>,
- 			   <0>,	/* device reg=<1> does not exist */
-diff --git a/arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts b/arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts
-index a901c8be49b9..ed305948386f 100644
---- a/arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts
-+++ b/arch/arm/boot/dts/aspeed-bmc-facebook-wedge400.dts
-@@ -67,7 +67,7 @@ ast-adc-hwmon {
- 	 * full-duplex SPI transactions are not supported by ASPEED SPI
- 	 * Controllers.
- 	 */
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		status = "okay";
- 		compatible = "spi-gpio";
- 		#address-cells = <1>;
-diff --git a/arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi b/arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi
-index 051de5bec345..31590d3186a2 100644
---- a/arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi
-+++ b/arch/arm/boot/dts/ast2600-facebook-netbmc-common.dtsi
-@@ -25,7 +25,7 @@ memory@80000000 {
- 	 * full-duplex SPI transactions are not supported by ASPEED SPI
- 	 * Controllers.
- 	 */
--	spi_gpio: spi-gpio {
-+	spi_gpio: spi {
- 		status = "okay";
- 		compatible = "spi-gpio";
- 		#address-cells = <1>;
--- 
-2.34.1
+There is a problem with d878400c7d98 that disabling PTM from
+pci_prepare_to_sleep() is not enough, because that function is not
+called for some endpoints where we also want to disable PTM on system
+suspend.
 
+IMV the most suitable place to disable PTM (temporarily) on
+system-wide suspend is in pci_pm_suspend_noirq(, because it is the
+last piece of generic PCI code running for all PCI devices regardless
+of what their drivers do.
+
+> I'm just trying to figure out the "avoid config space access" in the
+> commit log.  If avoiding config space access is necessary, it needs
+> more explanation.
+>
+> > Because ptm_enabled is expected to always reflect the hardware state,
+> > pci_disable_ptm() needs to be amended to clear it.  Also it is prudent
+> > to explicitly make it reflect the new hardware state in
+> > pci_restore_ptm_state().
+> >
+> > Then, pci_disable_ptm() can be made bail out if ptm_enabled is clear,
+> > because it has nothing to do then and the pci_is_pcie() check in there
+> > is not necessary, because ptm_enabled will never be set for devices
+> > that are not PCIe.
+> >
+> > > At the very least, we would need more details in the commit log and
+> > > a hint in the code about this.
+> > >
+> > > > Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
+> > > > Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > > ---
+> > > >  v1->v2:
+> > > >    - add ptm_enabled check in pci_ptm_disable().
+> > > >    - set the dev->ptm_enabled value in pci_restore_ptm_state().
+> > > >  v2->v3:
+> > > >    - remove pci_is_pcie(dev) check in pci_ptm_disable().
+> > > >    - add Reviewed-by tag in commit message
+> > > > ---
+> > > >  drivers/pci/pcie/ptm.c | 4 +++-
+> > > >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
+> > > > index 368a254e3124..1ce241d4538f 100644
+> > > > --- a/drivers/pci/pcie/ptm.c
+> > > > +++ b/drivers/pci/pcie/ptm.c
+> > > > @@ -34,7 +34,7 @@ void pci_disable_ptm(struct pci_dev *dev)
+> > > >       int ptm;
+> > > >       u16 ctrl;
+> > > >
+> > > > -     if (!pci_is_pcie(dev))
+> > > > +     if (!dev->ptm_enabled)
+> > > >               return;
+> > >
+> > > This will conflict with a change Kai-Heng Feng and I have been working
+> > > on, but I can resolve it when applying.
+> > >
+> > > >       ptm = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_PTM);
+> > > > @@ -44,6 +44,7 @@ void pci_disable_ptm(struct pci_dev *dev)
+> > > >       pci_read_config_word(dev, ptm + PCI_PTM_CTRL, &ctrl);
+> > > >       ctrl &= ~(PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT);
+> > > >       pci_write_config_word(dev, ptm + PCI_PTM_CTRL, ctrl);
+> > > > +     dev->ptm_enabled = 0;
+> > > >  }
+> > > >
+> > > >  void pci_save_ptm_state(struct pci_dev *dev)
+> > > > @@ -83,6 +84,7 @@ void pci_restore_ptm_state(struct pci_dev *dev)
+> > > >
+> > > >       cap = (u16 *)&save_state->cap.data[0];
+> > > >       pci_write_config_word(dev, ptm + PCI_PTM_CTRL, *cap);
+> > > > +     dev->ptm_enabled = !!(*cap & PCI_PTM_CTRL_ENABLE);
+> > > >  }
+> > > >
+> > > >  void pci_ptm_init(struct pci_dev *dev)
+> > > > --
+> > > > 2.25.1
+> > > >
