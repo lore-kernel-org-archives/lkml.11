@@ -2,87 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B9C4ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4382EECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbiH3XAi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43486 "EHLO
+        id S231272AbiH3XAp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiH3XAd (ORCPT
+        with ESMTP id S230205AbiH3XAf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:00:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F3594EC3;
-        Tue, 30 Aug 2022 16:00:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 30 Aug 2022 19:00:35 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A3A94EE8;
+        Tue, 30 Aug 2022 16:00:32 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65EA7B81DFD;
-        Tue, 30 Aug 2022 23:00:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05FC2C433B5;
-        Tue, 30 Aug 2022 23:00:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661900429;
-        bh=0mF3WeREdxfLanSbcau1tiUcnV31EVHGqWeXuYMj6NM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rpGy/AMtSAn+HdVaQW3eBPtP3Er2o0Zb7De0VP4AiuCrElIzbDKGU/KYT9JayRNvX
-         UT8+r8Lw3vUb1kpeMceP+hqEq9aCZPMbu3uK5cK4eFae9nyyoNNNKJqUoe8JlBpBq4
-         40QGjDe+g1TlTYRdZKQLhNvvBc5GcCP0nm3Snjp44TsyRSGk3k8M8MlGjhfKCQ0I1F
-         jadGksW0lC5pftJgOflyC05imd/RgKy8BMs5ikrJAttRcQr4T2TLMwj72bKMuEhAqx
-         NGTdb4wvQX6TNFl684MKN8DWcNelpkU+3Nn0eHgRCgsoowe2MsbbeB9JSTbNFptq2K
-         7jZISz8ODLd6g==
-Received: by pali.im (Postfix)
-        id 3CD7F834; Wed, 31 Aug 2022 01:00:26 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH v2 1/3] dt-bindings: reset: syscon-reboot: Add priority property
-Date:   Wed, 31 Aug 2022 01:00:10 +0200
-Message-Id: <20220830230012.9429-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220820102925.29476-1-pali@kernel.org>
-References: <20220820102925.29476-1-pali@kernel.org>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MHN7c497Yz4xG6;
+        Wed, 31 Aug 2022 09:00:28 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1661900428;
+        bh=nE0WEQfnKDXBwm/+0D7dRm2n1Xi9E32uQ4lYG6IirkE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DE4/T3ojyedyVuNVt8m9+GuuACl2DIKfc/EEh0vXdNiYO4cXjLrptwkR9aZtdxBMh
+         f3NL39gG0UQvvf8FJjTXhTXqjUEt8wEuMaHbkgfuJ0FiSw6TrBAhGjgKMTIqp7JWq3
+         PUv1O0UgJpX5EwSizhD6ZYtGMfmAk8W+DDZCaugOZNGnmkqv4NGqhvC0LP3Jewuhuk
+         rd1ejomR5dH4Sq5ZSWo5bRuRHJx77lbSIfsZVYKO7vhFFmIc5AiR1t+RaUBG9noVnl
+         PU0JBCA+B2r9AwOTqhKuHy2Nd8wPRCRm4k9EaYLjLILsaC781TLYtuosuDQruWPpxr
+         WSVgPizYED0aQ==
+Date:   Wed, 31 Aug 2022 09:00:26 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alex Deucher <alexdeucher@gmail.com>
+Cc:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warnings after merge of the amdgpu tree
+Message-ID: <20220831090026.2e6b57ac@canb.auug.org.au>
+In-Reply-To: <20220811121050.0da83776@canb.auug.org.au>
+References: <20220811121050.0da83776@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/tTkT0.sZmTTKPObn2kXxfth";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This new optional priority property allows to specify custom priority level
-of reset device. Default level was always 192.
+--Sig_/tTkT0.sZmTTKPObn2kXxfth
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
+Hi all,
 
----
-Changes in v2:
-* Change sint32 to int32
-* Add default
----
- .../devicetree/bindings/power/reset/syscon-reboot.yaml       | 5 +++++
- 1 file changed, 5 insertions(+)
+On Thu, 11 Aug 2022 12:10:49 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> After merging the amdgpu tree, today's linux-next build (htmldocs)
+> produced these warnings:
+>=20
+> drivers/gpu/drm/amd/display/dc/dc.h:465: warning: Enum value 'MPC_SPLIT_A=
+VOID' not described in enum 'pipe_split_policy'
+> drivers/gpu/drm/amd/display/dc/dc.h:465: warning: Enum value 'MPC_SPLIT_A=
+VOID_MULT_DISP' not described in enum 'pipe_split_policy'
+>=20
+> Introduced by commit
+>=20
+>   a2b3b9d57bdb ("drm/amd/display: Document pipe split policy")
 
-diff --git a/Documentation/devicetree/bindings/power/reset/syscon-reboot.yaml b/Documentation/devicetree/bindings/power/reset/syscon-reboot.yaml
-index da2509724812..4c8b0d0a0111 100644
---- a/Documentation/devicetree/bindings/power/reset/syscon-reboot.yaml
-+++ b/Documentation/devicetree/bindings/power/reset/syscon-reboot.yaml
-@@ -42,6 +42,11 @@ properties:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     description: The reset value written to the reboot register (32 bit access).
- 
-+  priority:
-+    $ref: /schemas/types.yaml#/definitions/int32
-+    description: Priority level of this syscon reset device.
-+    default: 192
-+
- required:
-   - compatible
-   - offset
--- 
-2.20.1
+I am still seeing these warnings.
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/tTkT0.sZmTTKPObn2kXxfth
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMOlosACgkQAVBC80lX
+0GzZ5Qf/bM3zEdfIHo6hsYGNHDO2SlqPgO2cKKrCYEI+knlRPnaSVrjSBkSpSEt2
+DMhJO8QrBgtOphBKDdVtHshz1ArrsRibjNo58t7dqcNh/tzLPYxUYqTdrpLEH1KT
+V+gdUN4kTtEgvwdq5olhNw2JtzMJv5Yno/+1eml5SuHN6MCztIYq7aQQVoa/ysgT
+KSjXWHbqgh5781g6cIXRl0W7vGKZ5rXb0t8ZMiNQJzt2M71qTx1COwD4MUGL6VmY
+e/oArXcAF+1GipFUa0oxMfN3BHQsw7ZmbrlJDwKy/tbgQ20WFP37ZCQ5yP1vCbGe
+8vsrzTo5vYEPas0dXMToWVtj/yksaA==
+=IFam
+-----END PGP SIGNATURE-----
+
+--Sig_/tTkT0.sZmTTKPObn2kXxfth--
