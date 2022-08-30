@@ -2,93 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B937ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD56ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbiH3LjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44214 "EHLO
+        id S230274AbiH3LjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:39:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbiH3LiN (ORCPT
+        with ESMTP id S231160AbiH3Lie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:38:13 -0400
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4E01636DC;
-        Tue, 30 Aug 2022 04:36:36 -0700 (PDT)
-Received: (Authenticated sender: hadess@hadess.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3943E40009;
-        Tue, 30 Aug 2022 11:36:22 +0000 (UTC)
-From:   Bastien Nocera <hadess@hadess.net>
-To:     linux-input@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        "Peter F . Patel-Schneider" <pfpschneider@gmail.com>,
-        =?UTF-8?q?Filipe=20La=C3=ADns?= <lains@riseup.net>,
-        Nestor Lopez Casado <nlopezcasad@logitech.com>
-Subject: [v2 5/5] HID: logitech-hidpp: Remove hard-coded "Sw. Id." for HID++ 2.0 commands
-Date:   Tue, 30 Aug 2022 13:36:15 +0200
-Message-Id: <20220830113615.4414-5-hadess@hadess.net>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220830113615.4414-1-hadess@hadess.net>
-References: <20220830113615.4414-1-hadess@hadess.net>
+        Tue, 30 Aug 2022 07:38:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7577228E30;
+        Tue, 30 Aug 2022 04:37:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A84AFB81A60;
+        Tue, 30 Aug 2022 11:37:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40DC5C433C1;
+        Tue, 30 Aug 2022 11:37:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661859435;
+        bh=EYBRvvBGDd6OFvpW88VMSSaRRt5bbgJi+wdWKcCg88M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bcTzFLWNeGw294xYrs5lPduDPIgiOiXr5GIlpOknRxEry/14FwMDYggldm2YTI2B2
+         CdFHbLcVlHQvtSfofi/JPsZ2zFfldHLZs3q0vm+ECP/cnRJSmv7wyLn1TyIPYilZgy
+         T1PGV0dCM1EN4LFWT6m7jJBL5+mZiWZHeE1llodoMR2b/iGfrwGWIZ6+l3q4y1LxR6
+         ya2X+psVY5Hj7xguBvllrp9omFUKjoc+i/MN4d8QyG0CXkOIzzT32OvM5CfF96IF6o
+         8Q5cSZHv1r1+wq11XL9GaWs49D/8SebazGxE/8SUoC0rgYSZQjIyYW8FRexAUFVpGH
+         TKDCkX7RcBjSw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oSzYO-0008Sb-M5; Tue, 30 Aug 2022 13:37:12 +0200
+Date:   Tue, 30 Aug 2022 13:37:12 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Vinod Koul <vkoul@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 00/30] phy: qcom,qmp: fix dt-bindings and deprecate
+ lane suffix
+Message-ID: <Yw32aOuN3rkTBJAy@hovoldconsulting.com>
+References: <20220714124333.27643-1-johan+linaro@kernel.org>
+ <Yw2a44l9a6zz5qTJ@matsya>
+ <Yw21t1SUGjCcUuuw@hovoldconsulting.com>
+ <aeec2729-e610-f266-f336-847675cf85ec@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aeec2729-e610-f266-f336-847675cf85ec@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some HID++ 2.0 commands had correctly set a non-zero software identifier
-directly as part of their function identifiers, but it's more correct to
-define the function identifier and the software identifier separately
-before combined them when the command is sent.
+On Tue, Aug 30, 2022 at 12:32:04PM +0300, Dmitry Baryshkov wrote:
+> On 30/08/2022 10:01, Johan Hovold wrote:
+> > On Tue, Aug 30, 2022 at 10:36:43AM +0530, Vinod Koul wrote:
+> >> On 14-07-22, 14:43, Johan Hovold wrote:
+> 
+> [skipped]
+> 
+> >>> The final patches add support for the updated binding to the (recently
+> >>> split up) PHY drivers. Included is also a related combo PHY cleanup.
+> >>
+> >> This fails at patch 2 for me on v6.0-rc1, please rebase and resend
+> > 
+> > Are you sure you haven't applied anything to your local tree that causes
+> > this?
+> 
+> When doing the QMP split, we ended up in a similar situation if I 
+> remember correctly. Most probably the easiest way is to provide a branch 
+> for Vinod to pull in addition to the patches being sent to ML.
 
-As this is now done in the previous commit, remove the hard-coded 0x1
-software identifiers in the function definitions.
+Hopefully v4 will just work now.
 
-Signed-off-by: Bastien Nocera <hadess@hadess.net>
----
- drivers/hid/hid-logitech-hidpp.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+> > I just tried fetching the v3 series from lore and it applies just fine
+> > on top of 6.0-rc1.
+> > 
+> > Note that if you've added a new compatible string locally, the second
+> > patch which sorts the compatible strings is likely to fail to apply.
 
-diff --git a/drivers/hid/hid-logitech-hidpp.c b/drivers/hid/hid-logitech-hidpp.c
-index 9c8088d8879e..31e2ca97e0ad 100644
---- a/drivers/hid/hid-logitech-hidpp.c
-+++ b/drivers/hid/hid-logitech-hidpp.c
-@@ -859,8 +859,8 @@ static int hidpp_unifying_init(struct hidpp_device *hidpp)
- #define HIDPP_PAGE_ROOT					0x0000
- #define HIDPP_PAGE_ROOT_IDX				0x00
- 
--#define CMD_ROOT_GET_FEATURE				0x01
--#define CMD_ROOT_GET_PROTOCOL_VERSION			0x11
-+#define CMD_ROOT_GET_FEATURE				0x00
-+#define CMD_ROOT_GET_PROTOCOL_VERSION			0x10
- 
- static int hidpp_root_get_feature(struct hidpp_device *hidpp, u16 feature,
- 	u8 *feature_index, u8 *feature_type)
-@@ -937,9 +937,9 @@ static int hidpp_root_get_protocol_version(struct hidpp_device *hidpp)
- 
- #define HIDPP_PAGE_GET_DEVICE_NAME_TYPE			0x0005
- 
--#define CMD_GET_DEVICE_NAME_TYPE_GET_COUNT		0x01
--#define CMD_GET_DEVICE_NAME_TYPE_GET_DEVICE_NAME	0x11
--#define CMD_GET_DEVICE_NAME_TYPE_GET_TYPE		0x21
-+#define CMD_GET_DEVICE_NAME_TYPE_GET_COUNT		0x00
-+#define CMD_GET_DEVICE_NAME_TYPE_GET_DEVICE_NAME	0x10
-+#define CMD_GET_DEVICE_NAME_TYPE_GET_TYPE		0x20
- 
- static int hidpp_devicenametype_get_count(struct hidpp_device *hidpp,
- 	u8 feature_index, u8 *nameLength)
-@@ -1969,8 +1969,8 @@ static int hidpp_touchpad_fw_items_set(struct hidpp_device *hidpp,
- 
- #define HIDPP_PAGE_TOUCHPAD_RAW_XY			0x6100
- 
--#define CMD_TOUCHPAD_GET_RAW_INFO			0x01
--#define CMD_TOUCHPAD_SET_RAW_REPORT_STATE		0x21
-+#define CMD_TOUCHPAD_GET_RAW_INFO			0x00
-+#define CMD_TOUCHPAD_SET_RAW_REPORT_STATE		0x20
- 
- #define EVENT_TOUCHPAD_RAW_XY				0x00
- 
--- 
-2.37.2
-
+Johan
