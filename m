@@ -2,119 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D05CECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8F8ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232184AbiH3Rr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
+        id S229867AbiH3RsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:48:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232040AbiH3Rre (ORCPT
+        with ESMTP id S232164AbiH3Rri (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:47:34 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0225F9B5
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:43:58 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id m2so12776847lfp.11
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:43:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=gNZdcqkFwpNa2I0ZP3eEeP6iX1q8vNso/HI+NR+Wx8E=;
-        b=K8NWIl4eTtxKMgxcHr0MIzPzdVgYSCUCp81ghSu7meddtK3chMXIKr+qwyWbPJGzmG
-         8W3xXxN/B51i//ogBN8MeRMD1mToPV2S7fIdmrWGHthGbGQQVaE+LvCi9YmHAnelefy/
-         TmfXzAeyUnlChV7q9cYDO5sL8XsU6HiMfyNLN7Vo0YHxcj6trabCeHTss65VulL76M9b
-         X1p+mVUnZBCMN6lTnUa7SR14LqISxxeEJmj7dw0rlWcmMdHUNK0fp4q8qHoSTtokjWOV
-         8WLvrLA3MTAMEb/eFPgmmQfnlWXo1Z9B//6B2lGFbGKsX96lem68ssvamyYoeJNlBmZs
-         uQ/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=gNZdcqkFwpNa2I0ZP3eEeP6iX1q8vNso/HI+NR+Wx8E=;
-        b=DTgIS4W/jizg4cgSDxO0NUez5HDMWAzMW5yuH5QkWRp+2/UVTVdcJbG+vqo2roCfyI
-         kRG3I3xhj8sn0zOG0XuKF0E+YuYryEqSZ0KkC+Kkef7gp6DC8a0OhuMbz85vkvxyBPnO
-         uRnX/X2OAbnqLw414cxM30UyrIyjaO7aH6qb9AqUt80rqQRm9NiPMYoxITF/FM/qdPE1
-         lpr3QF7PUTfxDXeh8EKeFUPQtQU6my/pNkIFAE1N550u6GzrkAg6esQL9dlqlTMDU3nP
-         bMHxYhu+Xu3yTQ6ArmMpblF9PxTa5pCCy/Rwinpu444RWYIk2fWXOmWhTm9AatOGEJzF
-         ySBQ==
-X-Gm-Message-State: ACgBeo0ixolqm6NPddJF7rWjEpM2eKrxzdTy0ki0cEXp9PO28xzfGL3T
-        P62rJSfUPEEl/YOahBqAzSMMYwUzPqnRhgFA
-X-Google-Smtp-Source: AA6agR6TqO5OOu79KvMsRgImLRyvGwihNJE/dbXQVJ4Zf+PE3vnSCPfDI1eQNKvWu0egoLgfX/vldA==
-X-Received: by 2002:a05:6512:1686:b0:491:3199:d407 with SMTP id bu6-20020a056512168600b004913199d407mr8192887lfb.476.1661880911305;
-        Tue, 30 Aug 2022 10:35:11 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id m6-20020a056512114600b0048b12c4c7e6sm636622lfg.12.2022.08.30.10.35.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 10:35:10 -0700 (PDT)
-Message-ID: <25072fba-64e2-df11-c8f0-a274037141f0@linaro.org>
-Date:   Tue, 30 Aug 2022 20:35:09 +0300
+        Tue, 30 Aug 2022 13:47:38 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA8723BED;
+        Tue, 30 Aug 2022 10:44:13 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27UHcCrg080481;
+        Tue, 30 Aug 2022 12:38:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661881092;
+        bh=76Q7cq/AR/+iJyWKEKNDDgUJpWOaO+SHwO2XSEGZ4h0=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=IzfFP6MrvdxpXcmxYeE1V8Q4JS38TTWejMIJQrRMKWDJ3ZH5sKreY02nrFIAn+gKi
+         TG05ngCr7GmcwriybH/I2NFCYllesuVY8+1rACGQB+RwDMeoPx4vwJg3P20zjLcObd
+         Xq364P74xmBlfdJRLqdZCSyBkM5z3RdwJqqrgsoE=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27UHcCld029103
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 30 Aug 2022 12:38:12 -0500
+Received: from DFLE114.ent.ti.com (10.64.6.35) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 30
+ Aug 2022 12:38:12 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 30 Aug 2022 12:38:12 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27UHcC3h015049;
+        Tue, 30 Aug 2022 12:38:12 -0500
+Date:   Tue, 30 Aug 2022 12:38:12 -0500
+From:   Nishanth Menon <nm@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH 1/2] dt-bindings: arm: ti: k3: Sort the am654 board enums
+Message-ID: <20220830173812.knnavya6uud56wsa@unrefined>
+References: <20220830160507.7726-1-nm@ti.com>
+ <20220830160507.7726-2-nm@ti.com>
+ <6d558914-2667-9e48-b662-980b9c7ca094@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v9 2/2] ASoC: sun50i-dmic: dt-bindings: add DT bindings
- for DMIC controller
-Content-Language: en-US
-To:     Ban Tao <fengzheng923@gmail.com>, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
-        jernej.skrabec@gmail.com, samuel@sholland.org,
-        alsa-devel@alsa-project.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <1661872039-40174-1-git-send-email-fengzheng923@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1661872039-40174-1-git-send-email-fengzheng923@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <6d558914-2667-9e48-b662-980b9c7ca094@linaro.org>
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/08/2022 18:07, Ban Tao wrote:
-> DT binding documentation for this new ASoC driver.
-
-Thank you for your patch. There is something to discuss/improve.
-
+On 19:50-20220830, Krzysztof Kozlowski wrote:
+> On 30/08/2022 19:05, Nishanth Menon wrote:
+> > Use alphabetical sort to organize the am654 board names.
+> > 
+> > Reported-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 > 
-
->  .../bindings/sound/allwinner,sun50i-h6-dmic.yaml   | 79 ++++++++++++++++++++++
->  1 file changed, 79 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/sound/allwinner,sun50i-h6-dmic.yaml
+> It's not a bug, so it should be rather "Suggested-by".
 > 
-> diff --git a/Documentation/devicetree/bindings/sound/allwinner,sun50i-h6-dmic.yaml b/Documentation/devicetree/bindings/sound/allwinner,sun50i-h6-dmic.yaml
-> new file mode 100644
-> index 0000000..0cfc07f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/sound/allwinner,sun50i-h6-dmic.yaml
-> @@ -0,0 +1,79 @@
-> +# SPDX-License-Identifier: (GPL-2.0+ OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/sound/allwinner,sun50i-h6-dmic.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Allwinner H6 DMIC Device Tree Bindings
+> > Signed-off-by: Nishanth Menon <nm@ti.com>
+> > ---
+> >  Documentation/devicetree/bindings/arm/ti/k3.yaml | 6 +++---
+> >  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> 
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> Best regards,
+> Krzysztof
 
-s/Device Tree Bindings//
+Thanks - Vignesh: let me know if you'd like a v2 with
+s/Reported-by/Suggested-by update.
 
-> +
-> +maintainers:
-> +  - Ban Tao <fengzheng923@gmail.com>
-> +
-> +properties:
-> +  "#sound-dai-cells":
-> +    const: 0
-> +
-> +  compatible:
-> +    const: allwinner,sun50i-h6-dmic
-
-Put compatible first in the list of properties (also in required:).
-
-Rest is ok, so keep the Rb-tags you already got.
-
-Best regards,
-Krzysztof
+-- 
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
