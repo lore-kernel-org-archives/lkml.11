@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F0F9ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 19:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F12CC0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 19:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231435AbiH3Tml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 15:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36382 "EHLO
+        id S231659AbiH3Tmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 15:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231477AbiH3TmW (ORCPT
+        with ESMTP id S231555AbiH3Tmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 15:42:22 -0400
-Received: from out1.migadu.com (out1.migadu.com [91.121.223.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6685C7C30F;
-        Tue, 30 Aug 2022 12:42:16 -0700 (PDT)
+        Tue, 30 Aug 2022 15:42:38 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598047B7AF;
+        Tue, 30 Aug 2022 12:42:24 -0700 (PDT)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1661888534;
+        t=1661888542;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yispcYoWHwz6WUZiyFc9UJ/2hA2X4vwfQ9rtB9AplkE=;
-        b=QKKwh0mZHI3VDDYssNZqIJUh8qzZEqcGK2T3WlXJOjZzzlmkUOBcLFJw1Cstm2IhK1GFIz
-        0JosO5MJyt2ok6BmAv66t0Zcb9QGbJ1ROXv1n/pZjIFhAB7qdZSTbe5HfblFcESL/uykDN
-        qbUixnxPOgyPrKiBk/pc54SO8HjqpOI=
+        bh=PAa+cBkl9mtwNYK8/w+PcWpN4aBBuzKZQpA5735hA3U=;
+        b=ZLs5MEMDu72sPbf1oddAbPXFBK5HqyrH0LLuSMgJABWcVJhbffI94ChKh6fxlG4PUKb7Vt
+        fp76TAzFIbxRDAKaCkX+hrkh4G3NnP0ojf+1rETVa0eO6qJqWT0Ozz+ovLennkecVRUXjy
+        TzWk0l+KpUzy6uyX60KuJjkrZ/YIBkM=
 From:   Oliver Upton <oliver.upton@linux.dev>
 To:     Marc Zyngier <maz@kernel.org>, James Morse <james.morse@arm.com>,
         Alexandru Elisei <alexandru.elisei@arm.com>,
@@ -43,9 +43,9 @@ To:     Marc Zyngier <maz@kernel.org>, James Morse <james.morse@arm.com>,
         Oliver Upton <oliver.upton@linux.dev>
 Cc:     linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
         kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 06/14] KVM: arm64: Return next table from map callbacks
-Date:   Tue, 30 Aug 2022 19:41:24 +0000
-Message-Id: <20220830194132.962932-7-oliver.upton@linux.dev>
+Subject: [PATCH 08/14] KVM: arm64: Protect page table traversal with RCU
+Date:   Tue, 30 Aug 2022 19:41:26 +0000
+Message-Id: <20220830194132.962932-9-oliver.upton@linux.dev>
 In-Reply-To: <20220830194132.962932-1-oliver.upton@linux.dev>
 References: <20220830194132.962932-1-oliver.upton@linux.dev>
 MIME-Version: 1.0
@@ -56,68 +56,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The map walkers install new page tables during their traversal. Return
-the newly-installed table PTE from the map callbacks to point the walker
-at the new table w/o rereading the ptep.
+The use of RCU is necessary to change the paging structures in parallel.
+Acquire and release an RCU read lock when traversing the page tables.
 
 Signed-off-by: Oliver Upton <oliver.upton@linux.dev>
 ---
- arch/arm64/kvm/hyp/pgtable.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ arch/arm64/include/asm/kvm_pgtable.h | 19 ++++++++++++++++++-
+ arch/arm64/kvm/hyp/pgtable.c         |  7 ++++++-
+ 2 files changed, 24 insertions(+), 2 deletions(-)
 
+diff --git a/arch/arm64/include/asm/kvm_pgtable.h b/arch/arm64/include/asm/kvm_pgtable.h
+index 78fbb7be1af6..7d2de0a98ccb 100644
+--- a/arch/arm64/include/asm/kvm_pgtable.h
++++ b/arch/arm64/include/asm/kvm_pgtable.h
+@@ -578,9 +578,26 @@ enum kvm_pgtable_prot kvm_pgtable_stage2_pte_prot(kvm_pte_t pte);
+  */
+ enum kvm_pgtable_prot kvm_pgtable_hyp_pte_prot(kvm_pte_t pte);
+ 
++#if defined(__KVM_NVHE_HYPERVISOR___)
++
++static inline void kvm_pgtable_walk_begin(void) {}
++static inline void kvm_pgtable_walk_end(void) {}
++
++#define kvm_dereference_ptep rcu_dereference_raw
++
++#else	/* !defined(__KVM_NVHE_HYPERVISOR__) */
++
++#define kvm_pgtable_walk_begin	rcu_read_lock
++#define kvm_pgtable_walk_end	rcu_read_unlock
++#define kvm_dereference_ptep	rcu_dereference
++
++#endif	/* defined(__KVM_NVHE_HYPERVISOR__) */
++
+ static inline kvm_pte_t kvm_pte_read(kvm_pte_t *ptep)
+ {
+-	return READ_ONCE(*ptep);
++	kvm_pte_t __rcu *p = (kvm_pte_t __rcu *)ptep;
++
++	return READ_ONCE(*kvm_dereference_ptep(p));
+ }
+ 
+ #endif	/* __ARM64_KVM_PGTABLE_H__ */
 diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
-index 331f6e3b2c20..f911509e6512 100644
+index f911509e6512..215a14c434ed 100644
 --- a/arch/arm64/kvm/hyp/pgtable.c
 +++ b/arch/arm64/kvm/hyp/pgtable.c
-@@ -202,13 +202,12 @@ static inline int __kvm_pgtable_visit(struct kvm_pgtable_walk_data *data,
- 	if (!table && (flags & KVM_PGTABLE_WALK_LEAF)) {
- 		ret = kvm_pgtable_visitor_cb(data, addr, level, ptep, &pte,
- 					     KVM_PGTABLE_WALK_LEAF);
--		pte = *ptep;
--		table = kvm_pte_table(pte, level);
- 	}
+@@ -284,8 +284,13 @@ int kvm_pgtable_walk(struct kvm_pgtable *pgt, u64 addr, u64 size,
+ 		.end	= PAGE_ALIGN(walk_data.addr + size),
+ 		.walker	= walker,
+ 	};
++	int r;
  
- 	if (ret)
- 		goto out;
- 
-+	table = kvm_pte_table(pte, level);
- 	if (!table) {
- 		data->addr = ALIGN_DOWN(data->addr, kvm_granule_size(level));
- 		data->addr += kvm_granule_size(level);
-@@ -427,6 +426,7 @@ static int hyp_map_walker(u64 addr, u64 end, u32 level, kvm_pte_t *ptep, kvm_pte
- 	new = kvm_init_table_pte(childp, mm_ops);
- 	mm_ops->get_page(ptep);
- 	smp_store_release(ptep, new);
-+	*old = new;
- 
- 	return 0;
- }
-@@ -768,7 +768,7 @@ static int stage2_map_walker_try_leaf(u64 addr, u64 end, u32 level,
+-	return _kvm_pgtable_walk(&walk_data);
++	kvm_pgtable_walk_begin();
++	r = _kvm_pgtable_walk(&walk_data);
++	kvm_pgtable_walk_end();
++
++	return r;
  }
  
- static int stage2_map_walk_leaf(u64 addr, u64 end, u32 level, kvm_pte_t *ptep,
--				struct stage2_map_data *data);
-+				kvm_pte_t *old, struct stage2_map_data *data);
- 
- static int stage2_map_walk_table_pre(u64 addr, u64 end, u32 level,
- 				     kvm_pte_t *ptep, kvm_pte_t *old,
-@@ -791,7 +791,7 @@ static int stage2_map_walk_table_pre(u64 addr, u64 end, u32 level,
- 	 */
- 	kvm_call_hyp(__kvm_tlb_flush_vmid, data->mmu);
- 
--	ret = stage2_map_walk_leaf(addr, end, level, ptep, data);
-+	ret = stage2_map_walk_leaf(addr, end, level, ptep, old, data);
- 
- 	mm_ops->put_page(ptep);
- 	mm_ops->free_removed_table(childp, level + 1, pgt);
-@@ -832,6 +832,7 @@ static int stage2_map_walk_leaf(u64 addr, u64 end, u32 level, kvm_pte_t *ptep,
- 	new = kvm_init_table_pte(childp, mm_ops);
- 	mm_ops->get_page(ptep);
- 	smp_store_release(ptep, new);
-+	*old = new;
- 
- 	return 0;
- }
+ struct leaf_walk_data {
 -- 
 2.37.2.672.g94769d06f0-goog
 
