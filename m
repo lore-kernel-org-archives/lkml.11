@@ -2,71 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC17ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:35:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64B7AECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232367AbiH3Xdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:33:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
+        id S232010AbiH3Xff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232268AbiH3Xct (ORCPT
+        with ESMTP id S232105AbiH3Xcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:32:49 -0400
+        Tue, 30 Aug 2022 19:32:52 -0400
 Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DF774DC5
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:32:12 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id s15-20020a5b044f000000b00680c4eb89f1so869069ybp.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:32:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0DD83F15
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:32:18 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id n16-20020a258d10000000b0068df1e297c0so879956ybl.15
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:32:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
          :date:from:to:cc:subject:date;
-        bh=saKNbXZ+fTVa0JCRlEDSkii0PaJZv4EakgrTZQbxYqs=;
-        b=XD92pfvmT5UHG/QrlG3x9hvk0uRfqb5LlQMcyxwpxG4Wvm3LMrD9fBN4uRw0cmd3JZ
-         rQk27V3ud6PA9klM89vVveRJNcYRNPoK7Smg/GRjHzNs/qpH/lsfOue6qoG0E0W5XAbS
-         LCVsvBBxhKptrcXE6zTxH2Kf84TnwhrfYIDVjUuW6MFXkh+8IGAFDG7Lv0amG9+3O5u9
-         NVHPeZM5EZcwXMZOdETU513PilVsaSsHeHh1ncLczWvvfxqefmwikXbsa0jLUPtuklss
-         vGdKBOFJndYV593TOqZikma2MqAvRxnESnGVJQPpfozUl9huam1HsjXgxZyh3MRsMjBe
-         UxEw==
+        bh=QaAhiBNrHu6GYkLFA3B7rG1GS8UtnkRvQfTpKHPiaFU=;
+        b=Uzu0hS7fYpQn9SuqY6pJYAs0mwU+Cbcm7VfqttztC5Y7vvGMMQbw4wbd/rsgMajhX8
+         hCYkTHXcE5WgpL526ftRFAS1iaJreodEJpABN25rLzozJPt3fTcwLmVcYcs0vcC1nhlH
+         yp59OC26/dM0xfLKycIeelmnMx/ctiemiWAngqrglcx45erw27Nl2sLJAj1c3kLUftM8
+         0iSFHBjA1GYjEC6cZmd4UeYpgAKFk2VTxcYmGZKFX6zgfodGL620Sb3emlMY85C3OcAo
+         bE5fs06VNU0/03FLltVrwNWpMmfeDGopu8w2Crj1CckQW60JmF6IEikz1fcox97zq9e0
+         FlXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=saKNbXZ+fTVa0JCRlEDSkii0PaJZv4EakgrTZQbxYqs=;
-        b=yjww8G+u6j15a2qnYcTVma9yz8/zNISMTDrDqmXKXVP5KU2HJOtNqA5egodnd89mbI
-         w6Hu+ehNOo1T2+Ncd9quOod74UjZYcZr3YUXwNNmUl+IFmTizpugolytrIn6gii8sSqW
-         pD8REXHNW53OeSiN5WuKR+0dUxR7byfhYeCA0V/v1wYXo+lQJWDsaMlKG2zjBa3LLYAE
-         sVjZzmr1rs+41V//3190l5cGQhh4ImzULvhbCPXIFc1jJauprSLL9nV58j7jS4J1xiJg
-         RlxMbGPw2wJQXx9tVnTuuJAkQZ9tFyPyJB7PwwqAN8xHx6iJhdV44Q3P4tDs+NipcZL+
-         P2uw==
-X-Gm-Message-State: ACgBeo2Z/VL8AjKD678Te+8bRdnnyJuXbsq6Bt2HAooglk+gQNCuqrbf
-        Cs3D3Id2Df/O0gYBBrg6guhsMQXGGp+JP9NKnhpF/kskNsEYzmGN8edpUNjpYboWzooU/LCvZDW
-        mCUflSkifNDzJZWW3bzL6kHKlLIq5dk2UO445Q954l4fI6UVFETgcWb3+nmMxiva7B/52nmcpHd
-        CgvJudOg2r9A==
-X-Google-Smtp-Source: AA6agR6xEQ5EyMbo66xRDA8vDW84e9YQyrHtWQROUp4QlR4E9NAmiWv98pKaF1InZnqVuSE2D/OjJElxp+jjP0RZeUM=
+        bh=QaAhiBNrHu6GYkLFA3B7rG1GS8UtnkRvQfTpKHPiaFU=;
+        b=0uY+SQU35VEKHPMz6EeX4DWAgqFTTFdzU6/fD2ECOla3GrYpdTr5pHQkFwwyr/YyLZ
+         OXJ+0Tui8gZP/Hu2hMLMaT1cL+H9yy8GtzG/DAFOC4Im1S7CNhNmxBwfzEFQTETA/Qhq
+         BPtEF5FB0nitzuZWJbGkTkM1d96w2f20sCE0CfWeehe0ry62DlizKRCt0+KIyp/6FgQk
+         9EeneDm1B8gouqzgt35SotgIOv7VVapX38mKnTM20qOc5MLy78n/lev05W6o0RRujFuD
+         AsaLmH32Y07yX3be9yiUFwMoCDzJrufJCvUcaW4vbYITV5osFzRk9AbY/+fEF2qurik+
+         Mw0w==
+X-Gm-Message-State: ACgBeo2HkE3K+KKbuGVIn1ZD8ZQejnByqRToaS7uGz1vDwkjr7RpaD0T
+        a7HO4Vln9Er0vkkApa52v/F5ITuBqRlOLYog76XIVDTLB8nK4IrT9mVlggyEFf46b2xCOY7hDo3
+        ppx71cws4VUYeL5/WEbeN1r3F0VQGEYSIUZh1qWpCr7XVwrMr9zYM0iZXTkiHtjaepaWIWvRibk
+        nu+2NnPAnZsw==
+X-Google-Smtp-Source: AA6agR4FDK+ca8ExoQOJuxzStWcPg0UmoHQzTdwmwi9npQMvWgOYplZw4nRfd6yLznTzYg9mNTUtUOCVf41ZKmBVqKc=
 X-Received: from samitolvanen1.mtv.corp.google.com ([2620:15c:201:2:54d9:7143:6a7d:91d])
- (user=samitolvanen job=sendgmr) by 2002:a0d:cb0a:0:b0:337:1dbc:4c21 with SMTP
- id n10-20020a0dcb0a000000b003371dbc4c21mr16082798ywd.297.1661902331345; Tue,
- 30 Aug 2022 16:32:11 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 16:31:22 -0700
+ (user=samitolvanen job=sendgmr) by 2002:a0d:d850:0:b0:340:d2c0:b022 with SMTP
+ id a77-20020a0dd850000000b00340d2c0b022mr13497429ywe.469.1661902336610; Tue,
+ 30 Aug 2022 16:32:16 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 16:31:24 -0700
 In-Reply-To: <20220830233129.30610-1-samitolvanen@google.com>
-Message-Id: <20220830233129.30610-15-samitolvanen@google.com>
+Message-Id: <20220830233129.30610-17-samitolvanen@google.com>
 Mime-Version: 1.0
 References: <20220830233129.30610-1-samitolvanen@google.com>
 X-Developer-Key: i=samitolvanen@google.com; a=openpgp; fpr=35CCFB63B283D6D3AEB783944CB5F6848BBC56EE
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2540; i=samitolvanen@google.com;
- h=from:subject; bh=47sy+JmGHjJvxG1HdOlerjFJI0LNv5ITm57Sshi6/KQ=;
- b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBjDp3OJuw0Lbmu9DwQiB41MJWv7pYFcmThxoyhKmDF
- NnpHdLuJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYw6dzgAKCRBMtfaEi7xW7jjTC/
- 9XfHgdD1uKnJRuMbjXkORu2FVPpFXBG9howb+XjW5cmmpsWsNswLD9oHgViYcRhjWfDHHYgZP4EiGe
- exmmrQD/bheC7yEI76RUsyoKy7XIrIslXoDfK0tk3+pAJfxHy9yH+PXmqpiRgcW9CkutyukbhRqjZe
- aSLk9lpH0fEfgJjVQdmyjRS5YchkeuDU7qX8EMlwEVLIJxw/x+T8iSHWSIAISM/oG9zZMiYY7i9hCb
- bR0reU9bLkR69p4txll9OqqyyUyiGiLVdosVn48XtYoIEz7TZD6BN19C9xs4Y0CLFNGm5v0SxdH2wj
- oLjogYcicWo3Z9EuIianekHBQKoGpsBcsb6vbar2WcSCxG6wYSI/cXWhiGp9G/ryiIUDMtdP6pl1rS
- Y0NjFq7PgfDgWWNCzrREiqHzewWSIkMozSXjAoVf21npOgOLsXp6YtqNGh3XdNOpi52ZGaNR/+VTIZ
- xGyGb1/j/VcMvuAloU0xVvqPRyjHv8kDkr7ydi/mDSyDo=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1745; i=samitolvanen@google.com;
+ h=from:subject; bh=jQm92I9xQfCJPH6jkHCDpzvvJGb/s+FwIZvLF3ZcxmA=;
+ b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBjDp3OLXWXp4dv7z7QEAEH5wDVXEoy6vQwE4MAgTih
+ TKcGqJ2JAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYw6dzgAKCRBMtfaEi7xW7uhuC/
+ 4mLD2OTFFRM6dzC+U3G8nSByx2EP7YNHOfYlhOKl0Gv/CfgBF/GmPU6h3gd2FYTdIVAmx+Jt5i7jod
+ yHHS4gZDl8y9ik+cOIJfaq9PCplP1qzBI5UZveW67TQSOg6aWHjQltgyelJnFQOdFAyzVFhcjo1ZT4
+ RasjgLDZdDZaCQZXWXBTkwjmqg7yGU6nx6FTkZor6xheRDX2kEOcxc/tAIWc/F3tCwLKZO3b2OacxU
+ kLhRFXfTjDHGI8CEMPaaAiF2HgUeJEAfx8o4vhL4zMeTDaKFmRQlmf7F9COJc6E7kag2I6rBVTMLaT
+ FWl2SlSRnYF0zOFsCumLTWzpoCgAijPhDKp/uWc4Bl+x2WAveRz8IYR1rkvZSXXc/Y0/ys9658hItd
+ QLTUDCSGboZ0fd2TFzIbCfImlNrGKDomVDfTKP6XcarqWEI1dc/zyJKjcz0KqduDH2E4Ieu9sxhkpl
+ Xw4LrtrfDpSWz1SEU4GR+7wRiD1adQkP+R3N0lIVY4BnU=
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Subject: [PATCH v4 14/21] treewide: Drop WARN_ON_FUNCTION_MISMATCH
+Subject: [PATCH v4 16/21] objtool: Disable CFI warnings
 From:   Sami Tolvanen <samitolvanen@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -88,72 +88,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CONFIG_CFI_CLANG no longer breaks cross-module function address
-equality, which makes WARN_ON_FUNCTION_MISMATCH unnecessary. Remove
-the definition and switch back to WARN_ON_ONCE.
+The __cfi_ preambles contain a mov instruction that embeds the KCFI
+type identifier in the following format:
+
+  ; type preamble
+  __cfi_function:
+    mov <id>, %eax
+  function:
+    ...
+
+While the preamble symbols are STT_FUNC and contain valid
+instructions, they are never executed and always fall through. Skip
+the warning for them.
+
+.kcfi_traps sections point to CFI traps in text sections. Also skip
+the warning about them referencing !ENDBR instructions.
 
 Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
 ---
- include/asm-generic/bug.h | 16 ----------------
- kernel/kthread.c          |  3 +--
- kernel/workqueue.c        |  2 +-
- 3 files changed, 2 insertions(+), 19 deletions(-)
+ tools/objtool/check.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/asm-generic/bug.h b/include/asm-generic/bug.h
-index ba1f860af38b..4050b191e1a9 100644
---- a/include/asm-generic/bug.h
-+++ b/include/asm-generic/bug.h
-@@ -220,22 +220,6 @@ extern __printf(1, 2) void __warn_printk(const char *fmt, ...);
- # define WARN_ON_SMP(x)			({0;})
- #endif
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index e55fdf952a3a..48e18737a2d1 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -3316,6 +3316,10 @@ static int validate_branch(struct objtool_file *file, struct symbol *func,
+ 		next_insn = next_insn_to_validate(file, insn);
  
--/*
-- * WARN_ON_FUNCTION_MISMATCH() warns if a value doesn't match a
-- * function address, and can be useful for catching issues with
-- * callback functions, for example.
-- *
-- * With CONFIG_CFI_CLANG, the warning is disabled because the
-- * compiler replaces function addresses taken in C code with
-- * local jump table addresses, which breaks cross-module function
-- * address equality.
-- */
--#if defined(CONFIG_CFI_CLANG) && defined(CONFIG_MODULES)
--# define WARN_ON_FUNCTION_MISMATCH(x, fn) ({ 0; })
--#else
--# define WARN_ON_FUNCTION_MISMATCH(x, fn) WARN_ON_ONCE((x) != (fn))
--#endif
--
- #endif /* __ASSEMBLY__ */
+ 		if (func && insn->func && func != insn->func->pfunc) {
++			/* Ignore KCFI type preambles, which always fall through */
++			if (!strncmp(func->name, "__cfi_", 6))
++				return 0;
++
+ 			WARN("%s() falls through to next function %s()",
+ 			     func->name, insn->func->name);
+ 			return 1;
+@@ -4113,7 +4117,8 @@ static int validate_ibt(struct objtool_file *file)
+ 		    !strcmp(sec->name, "__bug_table")			||
+ 		    !strcmp(sec->name, "__ex_table")			||
+ 		    !strcmp(sec->name, "__jump_table")			||
+-		    !strcmp(sec->name, "__mcount_loc"))
++		    !strcmp(sec->name, "__mcount_loc")			||
++		    !strcmp(sec->name, ".kcfi_traps"))
+ 			continue;
  
- #endif
-diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 3c677918d8f2..28a6b7ab4a0f 100644
---- a/kernel/kthread.c
-+++ b/kernel/kthread.c
-@@ -1050,8 +1050,7 @@ static void __kthread_queue_delayed_work(struct kthread_worker *worker,
- 	struct timer_list *timer = &dwork->timer;
- 	struct kthread_work *work = &dwork->work;
- 
--	WARN_ON_FUNCTION_MISMATCH(timer->function,
--				  kthread_delayed_work_timer_fn);
-+	WARN_ON_ONCE(timer->function != kthread_delayed_work_timer_fn);
- 
- 	/*
- 	 * If @delay is 0, queue @dwork->work immediately.  This is for
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index aeea9731ef80..16df315d2a3d 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -1651,7 +1651,7 @@ static void __queue_delayed_work(int cpu, struct workqueue_struct *wq,
- 	struct work_struct *work = &dwork->work;
- 
- 	WARN_ON_ONCE(!wq);
--	WARN_ON_FUNCTION_MISMATCH(timer->function, delayed_work_timer_fn);
-+	WARN_ON_ONCE(timer->function != delayed_work_timer_fn);
- 	WARN_ON_ONCE(timer_pending(timer));
- 	WARN_ON_ONCE(!list_empty(&work->entry));
- 
+ 		list_for_each_entry(reloc, &sec->reloc->reloc_list, list)
 -- 
 2.37.2.672.g94769d06f0-goog
 
