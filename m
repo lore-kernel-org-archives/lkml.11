@@ -2,93 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1F7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B410C0502C
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbiH3IbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
+        id S231547AbiH3Ibu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:31:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231517AbiH3IbI (ORCPT
+        with ESMTP id S231534AbiH3Ibp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:31:08 -0400
-Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 843C87B2B6;
-        Tue, 30 Aug 2022 01:30:56 -0700 (PDT)
-Received: from [10.2.12.24] (unknown [10.2.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by 7of9.schinagl.nl (Postfix) with ESMTPSA id E4FFE186AC12;
-        Tue, 30 Aug 2022 10:30:51 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
-        t=1661848252; bh=oiFQlJQtobHEs9OmPUlyusY32kGmWaoxtESk1Cuu4ow=;
-        h=Date:Subject:To:References:From:In-Reply-To;
-        b=ID0cpzuLuFIU4XsfJtqGQHHrUVqItfYKy57lWb/zv6NvkqP+/Z/1YKqT7df8Qd06O
-         Eix8jzGHdGQJASRF82BTy/lA9Y8frOeX9107QF1cqhH21jsyW3S2LTEn/IlhyY7qUw
-         X6YkTr3WDmhfE1oc3ff4byIM469M2diGWIo9LADQ=
-Message-ID: <59a3b7d9-1886-f237-8a6a-374de17da1b5@schinagl.nl>
-Date:   Tue, 30 Aug 2022 10:30:51 +0200
+        Tue, 30 Aug 2022 04:31:45 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF25A54C97;
+        Tue, 30 Aug 2022 01:31:44 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id n8-20020a17090a73c800b001fd832b54f6so8488856pjk.0;
+        Tue, 30 Aug 2022 01:31:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=6wSm7CzeHPLuNMxq4EplKaDfOIoJeWhbi58gJYRctKU=;
+        b=dsiCilVvOxsiRBtAhowtVXumcDgdpHbJpbaY45ERv05CGgaM8Zw1x2908VeRZAxKbo
+         ZWdatgbTVXH6GeqzBmvDdHrt6NLa4iK4TKisLAQqhtfwxMIxK2J49JF68Dx4IX0qD1PB
+         ksPx6+l+RxA4jT/dkK+HnzV7RGa9/hZMifzXcuIUdQ685f1W8TBog99w+Mo6gQ8MPY1Q
+         MY0uhQlO8x45jYcz1xhyYrzh/H0MKyHlyIqd2kb13TYIspl+NTB3wzkDFAdYCcWJRuOY
+         1APutMI4eib9c1oyZ8xL3MFYNsV+uwT6ghvxdAOuKSLwEqZUktxMzz9+c9EWJdQ7Sxa0
+         LzKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=6wSm7CzeHPLuNMxq4EplKaDfOIoJeWhbi58gJYRctKU=;
+        b=JT9b7/yDKUhLGNQWM3phNjwBVz2phMIXvv2qMTQMyw87FE6MkbMfQfwVaIp5ZKhpU5
+         cB7JFYCZaeB0NCUo/MEon82X1TkU1cRoxn5hBo8DbPh8S65GubMkca97aAuawNAtsAwY
+         /HYtsowZ53fJJ6Bv+y5l+JAjboEA6MJX+pQgSvjcRlunGmxVw+0CukMqa6aBc7eHVOAm
+         5cOU0o6CMcvguRKsH35k71NV4cw59C8R41ZKUMAT5R76Z51qEEryywdxNdqpN3Ze/UrY
+         RwpX8tL6mJh6QMSmjOGiD5xp6fLiNtZYlFNUpOCmsfor9S7eEphi/YFhKiSHv1tVN4oZ
+         snCg==
+X-Gm-Message-State: ACgBeo0l6muXVWjBa9PgAdejnpzSqerZGWd79xKaQxspj3CGTpD2QpCj
+        AOs+ZimTbEqpJMAkvTJbc8tAQeC5N1k=
+X-Google-Smtp-Source: AA6agR54KJ1clIMF917ybQExo4l070oIELL3x/tQEsifxGrmwFq/eXLuuG8djq3gc3DK6cXnDlfHJg==
+X-Received: by 2002:a17:902:e741:b0:175:2ffe:9280 with SMTP id p1-20020a170902e74100b001752ffe9280mr521225plf.153.1661848304204;
+        Tue, 30 Aug 2022 01:31:44 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id m1-20020a170902db0100b00172f1d0825esm1352100plx.113.2022.08.30.01.31.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 01:31:43 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     james.smart@broadcom.com
+Cc:     dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] scsi: lpfc: Remove the unneeded result variable 'n'
+Date:   Tue, 30 Aug 2022 08:31:36 +0000
+Message-Id: <20220830083136.276473-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCHv2 resend] dt-bindings: leds: Expand LED_COLOR_ID
- definitions
-Content-Language: nl
-To:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Baolin Wang <baolin.wang@linaro.org>,
-        Daniel Mack <daniel@zonque.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Simon Shields <simon@lineageos.org>,
-        Olliver Schinagl <oliver+list@schinagl.nl>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220819152904.433514-1-oliver@schinagl.nl>
- <YwzJMAaYT/frJLaT@ada.ifak-system.com>
- <20220829151334.GA1596856-robh@kernel.org>
-From:   Olliver Schinagl <oliver@schinagl.nl>
-In-Reply-To: <20220829151334.GA1596856-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey all,
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-On 29-08-2022 17:13, Rob Herring wrote:
-> On Mon, Aug 29, 2022 at 04:12:00PM +0200, Alexander Dahl wrote:
->> Hei Olliver,
->>
->> Am Fri, Aug 19, 2022 at 05:29:04PM +0200 schrieb Olliver Schinagl:
->>> In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
->>> Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
->>> added. However, there's a little more very common LED colors.
->>>
->>> While the documentation states 'add what is missing', engineers tend to
->>> be lazy and will just use what currently exists. So this patch will take
->>> (a) list from online retailers [0], [1], [2] and use the common LED colors
->>> from there, this being reasonable as this is what is currently available to
->>> purchase.
->>>
->>> Note, that LIME seems to be the modern take to 'Yellow-green' or
->>> 'Yellowish-green' from some older datasheets.
->> Just noticed you did not send this to neither linux-leds mailing list
->> nor the LED subsystem maintainer. Maybe you want to do this in v3?
-> Yes, please do. If Pavel doesn't pick up v3 in a timely manor, then I
-> will.
->
-> Rob
+Return the value scnprintf() directly instead of storing it in another
+redundant variable.
 
-Sorry to both, get_maintainers didn't pop those up!
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+---
+ drivers/scsi/lpfc/lpfc_ct.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-As Krzyzstof Acked the v2, and no comments for a v3 have been proposed, 
-would that be a changeless v3 just to involve all parties?
-
-Thanks,
-
-
-Olliver
-
+diff --git a/drivers/scsi/lpfc/lpfc_ct.c b/drivers/scsi/lpfc/lpfc_ct.c
+index 13dfe285493d..f1e533794fad 100644
+--- a/drivers/scsi/lpfc/lpfc_ct.c
++++ b/drivers/scsi/lpfc/lpfc_ct.c
+@@ -1797,15 +1797,12 @@ int
+ lpfc_vport_symbolic_port_name(struct lpfc_vport *vport, char *symbol,
+ 	size_t size)
+ {
+-	int n;
+-
+ 	/*
+ 	 * Use the lpfc board number as the Symbolic Port
+ 	 * Name object.  NPIV is not in play so this integer
+ 	 * value is sufficient and unique per FC-ID.
+ 	 */
+-	n = scnprintf(symbol, size, "%d", vport->phba->brd_no);
+-	return n;
++	return scnprintf(symbol, size, "%d", vport->phba->brd_no);
+ }
+ 
+ 
+-- 
+2.25.1
