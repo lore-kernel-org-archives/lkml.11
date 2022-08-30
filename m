@@ -2,96 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B50ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D73ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230327AbiH3RFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:05:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39916 "EHLO
+        id S231164AbiH3RGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiH3RFl (ORCPT
+        with ESMTP id S229850AbiH3RGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:05:41 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 883F82A95D
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:05:37 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id p7so5269968lfu.3
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:05:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=lYF9MfFRrV4XpO3M6oKX5MFynoiXFXl2xfJRMlgcOXs=;
-        b=rB3ailKFlhr99Dkue6ZGBuSHO9P3bwRGe2PybLNl5asBy4gk90PC+I8SZ7UYBGHtnf
-         GTKvRRMbww2USQdgxG5P1qHbHdDZMp4NJ0dGuk0Mj8S5QmXpH3f/o3Yg7olp5XkMwgI+
-         kqiFkgPMOOZ+5qXlpQ5h0BnUxsZY3/OJE0xJGn7SwtfSK0ZMgn/U4AFoADbLehvIMEcK
-         mL/+51NGwtJ3I1KgxqC14NKhNpBFjdjeDFGblMYhvQp4ZkSVYlcxKQPICVvEloEybmTj
-         M+8NwZkZDBVExXZcuPCAwcU31pzNAjPvcUUqbTDTP/cmr2Oz3m0o5yUlVuX6cQCi4uqP
-         0tyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=lYF9MfFRrV4XpO3M6oKX5MFynoiXFXl2xfJRMlgcOXs=;
-        b=1Czw8A57pPgWFD2Q650kNf+TAiRcrboidh5tPW1JlIQyOt/HJgw/yBaTv8vHtBk47X
-         gTrlQvLJdAWBAE00z/e0UxkINlEcN+MBHmp/RfElO89sTvxJ1M6zMB9Y55fOJCNLuBYz
-         MYxsGnoUx8zqUXOCbw2Q2DolHWRu24VsB3+INgA1wwNc+022alo1TYdY4QqilN/C9d9b
-         zQhgF2IU4NUJLkVOp6kkQK6kr5HN2qCZcJGaxMdAea/qs/AXEgwJe2NkUrR1N+/g1P+D
-         89xcEpuNQvfSlmgKEVQ8AhEEoDAPbZ1fwUn2ET4Gd6yod64y5JvItjNv5WixZ/Z78BSq
-         crvg==
-X-Gm-Message-State: ACgBeo03Emuggw+WU+ET1OzqmU3p+IjvkKMcCaHWEsWDYAmDYxs8ho+M
-        KjUdpHiKXvgu77MzeGfTB8GkKg==
-X-Google-Smtp-Source: AA6agR5zsSe2GoY9FGRHRGqwJpl24jp7i1Y4rLceq6QeFcpwm/RG2tjItVfcPEQK/WUD7mvmIZ4gFw==
-X-Received: by 2002:ac2:4f02:0:b0:481:43a8:e368 with SMTP id k2-20020ac24f02000000b0048143a8e368mr7672885lfr.65.1661879135404;
-        Tue, 30 Aug 2022 10:05:35 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id b22-20020a056512071600b0049467f0194csm960467lfs.265.2022.08.30.10.05.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 10:05:34 -0700 (PDT)
-Message-ID: <8b9f49c6-86fa-b072-9cd0-5e363596593c@linaro.org>
-Date:   Tue, 30 Aug 2022 20:05:32 +0300
+        Tue, 30 Aug 2022 13:06:07 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3303D8168C
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:06:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661879166; x=1693415166;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WGjrEl22Aq56liEypn1scjKGRY/wkDI6MWC1UBsr848=;
+  b=CzGvE9rW4WaXT7TlLTKD76LUSE1Pb0yXgIBo7z9RSj3qJVmPkjqgX/lM
+   hR5Am54Bxqpt5+jrK/6r+20oCOU04vN2IbFP37D4R1oPUc9kujQiebM+r
+   eT5+lAlPTEMr8q1Qe/ljtBTwSfMllShMF9lWg0brFGc6AQm0QQB2k/ZqO
+   LPDIYPgWJ3etBanCl6gpa6uM1DzoY9N/rnuM1Tzj/5Y86iAyghhaIGOmY
+   Yn7hoY6Wk6a3h4A70jAdE1AGGDrB8aYYa73E84gMTvo53DSCRcJqmvA9Z
+   R7qxCkIQopcqnBxgfAZswuBnQuXWDTnD4n5S5T9+8+jsR7wQA66dC2ism
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="356961281"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="356961281"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 10:05:33 -0700
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="737807762"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.198.157])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 10:05:33 -0700
+Date:   Tue, 30 Aug 2022 10:08:49 -0700
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev,
+        x86@kernel.org, Joerg Roedel <joro@8bytes.org>,
+        "Lu Baolu" <baolu.lu@linux.intel.com>
+Cc:     Raj Ashok <ashok.raj@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Borislav Petkov" <bp@alien8.de>, "Ingo Molnar" <mingo@redhat.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 0/2] Use the correct page tables for SVA under PTI
+Message-ID: <20220830100849.63751271@jacob-builder>
+In-Reply-To: <20220822201213.352289-1-jacob.jun.pan@linux.intel.com>
+References: <20220822201213.352289-1-jacob.jun.pan@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: at24: add new optional power-supply
- property
-Content-Language: en-US
-To:     "Farber, Eliav" <farbere@amazon.com>, Rob Herring <robh@kernel.org>
-Cc:     brgl@bgdev.pl, mark.rutland@arm.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        talel@amazon.com, hhhawa@amazon.com, jonnyc@amazon.com,
-        hanochu@amazon.com, ronenk@amazon.com, itamark@amazon.com,
-        shellykz@amazon.com, shorer@amazon.com, amitlavi@amazon.com,
-        almogbs@amazon.com, dkl@amazon.com, dwmw@amazon.co.uk
-References: <20220822105830.22790-1-farbere@amazon.com>
- <20220822105830.22790-2-farbere@amazon.com>
- <20220822214623.GA907654-robh@kernel.org>
- <9e8a39d0-6267-cbac-da29-00e41871e14b@amazon.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <9e8a39d0-6267-cbac-da29-00e41871e14b@amazon.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/08/2022 18:45, Farber, Eliav wrote:
-> On 8/23/2022 12:46 AM, Rob Herring wrote:
->>>  Documentation/devicetree/bindings/eeprom/at24.txt | 3 +++
->>>  1 file changed, 3 insertions(+)
->>
->> This file doesn't exist any more. Use the latest -rc1 kernel unless
->> there is a reason you need a different (even later) base.
-> I applied the change on top of v6.0-rc1
+Hi Baolu/Joerg,
 
-Not really. The file is gone since v5.5-rc1 as you can easily see in the
-sources.
+Just wondering if you have any comments? Thanks.
 
-Since you did not Cc-me, it's another proof you based your work on some
-old kernel.
+On Mon, 22 Aug 2022 13:12:11 -0700, Jacob Pan
+<jacob.jun.pan@linux.intel.com> wrote:
 
-Best regards,
-Krzysztof
+> Shared virtual addressing allows DMA to user virtual address, But the
+> x86 IOMMU drivers are using the kernel copy of the process page tables
+> when PTI is enabled. This patchset tightens the security intended by
+> PTI by performing SVA binding with the appropriate process PGDs.
+> 
+> I have tested on Intel platform only, would appreciate itif someone
+> could help with testing SVA-KPTI on an AMD system.
+> 
+> Jacob Pan (2):
+>   x86: mm: Allow PTI helpers to be used outside x86/mm
+>   iommu: Use the user PGD for SVA if PTI is enabled
+> 
+>  arch/x86/include/asm/pgtable.h | 5 +++++
+>  drivers/iommu/amd/iommu_v2.c   | 4 +++-
+>  drivers/iommu/intel/svm.c      | 5 ++++-
+>  3 files changed, 12 insertions(+), 2 deletions(-)
+> 
+
+
+Thanks,
+
+Jacob
