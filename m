@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EB1C0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A5EECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiH3Kxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:53:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
+        id S230006AbiH3Kxl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:53:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229875AbiH3Kxd (ORCPT
+        with ESMTP id S229983AbiH3Kxg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:53:33 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF4A61B3C;
-        Tue, 30 Aug 2022 03:53:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661856811; x=1693392811;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=3JtcZwD8ykfZwltMBZg2Y5mHojyWHZBx52LH+LqU5qU=;
-  b=i9Iq2HTPW9om5KJ41RLiywtBmNGflLfPq2Pmq2kHVgel4j/pJnuAtSKH
-   36P/BIaaReJwiP/BrbfqtBpCFChSjdeU0mpj+Nbo1oRG/lAYqU5LMtG7M
-   kRMmxh3slbemT8IXaEgiZnfm68UF+YJRyOO6HISLHFOhx1jNWeW1mJ50B
-   xC2SdJnn+Iw/ngalDuEqomqnd2uHDc8/XGEsEr2sa6uxlcNrhaosJbwQy
-   ncyaK0OUZOm8sS81ZLN9W9FipbH//7KBGVFnH1s817jGXgSmpFzVTui4c
-   L3bT/xOLp1ieYXWfbADrpOns7+zOTm9bSJ7p18tUcfPXNnS0uiCgQKIiW
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="188626311"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 03:53:30 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 30 Aug 2022 03:53:29 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 03:53:24 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-Subject: [RFC Patch net-next v3 1/3] net: dsa: microchip: use dev_ops->reset instead of exit in ksz_switch_register
-Date:   Tue, 30 Aug 2022 16:23:01 +0530
-Message-ID: <20220830105303.22067-2-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220830105303.22067-1-arun.ramadoss@microchip.com>
-References: <20220830105303.22067-1-arun.ramadoss@microchip.com>
+        Tue, 30 Aug 2022 06:53:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4C32AE13;
+        Tue, 30 Aug 2022 03:53:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9683B80CAE;
+        Tue, 30 Aug 2022 10:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2E70C433D6;
+        Tue, 30 Aug 2022 10:53:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661856807;
+        bh=ofan/VoCA8fQBPr7dkw1KzvWzkg3kfS1WZRBqvhhND8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Xw104m072l6dL7s5Whkjd8J+vTSXkgEqjZ9EVm7G3jtX1oR3lJdEsJOvQza/mfa/R
+         ylSfefsM3HsyQcRnf3NeoBByXzgLWXhO8V5NhnYXszNSnxW5dBxRkroRrLjLcYwEz7
+         eGV64yfb6ymytIuvrqHit8J6TTsyU/IMnEUI6nDxNq6p2/WiLc5lLO6KzjhODK37+Y
+         mhZAf+ieQM4bhP/AoW3VQLlm+v6u+oH/68H1OA+5+47i4gcJpZj8WZidacbgefCpK+
+         +Mm6/oB86objx0QEdsYbn+RWtfKVQvu50VNKfFADxOD3joTDr8r6KomsQmd3KX6n5s
+         UHutHLLcvY8bA==
+Date:   Tue, 30 Aug 2022 12:53:24 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Joel Fernandes <joel@joelfernandes.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Rushikesh S Kadam <rushikesh.s.kadam@intel.com>,
+        "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
+        Neeraj upadhyay <neeraj.iitr10@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        rcu <rcu@vger.kernel.org>,
+        Vineeth Pillai <vineeth@bitbyteword.org>
+Subject: Re: [PATCH v4 00/14] Implement call_rcu_lazy() and miscellaneous
+ fixes
+Message-ID: <20220830105324.GA71266@lothringen>
+References: <20220819204857.3066329-1-joel@joelfernandes.org>
+ <20220829134045.GA54589@lothringen>
+ <1f7dd31b-f4d0-5c1c-ce28-c27f75c17f05@joelfernandes.org>
+ <20220829194622.GA58291@lothringen>
+ <CAEXW_YS593n8Gget+REaD-c8vT8Ht_AzOY0kXA_uc674LOyvVw@mail.gmail.com>
+ <20220829204202.GQ6159@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829204202.GQ6159@paulmck-ThinkPad-P17-Gen-1>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ksz8_switch_exit, ksz9477_switch_exit and lan937x_switch_exit functions
-all call the reset function which is assigned to dev_ops->reset hooks.
-So instead of calling the dev_ops->exit in ksz_switch_register during
-the error condition of dsa_register_switch, dev_ops->reset is used now.
-The dev_ops->exit can be extended in lan937x for freeing up the irq
-during the ksz_spi_remove. If we add the irq remove in the exit function
-and it is called during the dsa_switch_register error condition, kernel
-panic happens since irq is setup only in setup operation. To avoid the
-kernel panic, dev_ops->reset is used instead of exit.
+On Mon, Aug 29, 2022 at 01:42:02PM -0700, Paul E. McKenney wrote:
+> On Mon, Aug 29, 2022 at 04:36:40PM -0400, Joel Fernandes wrote:
+> > On Mon, Aug 29, 2022 at 3:46 PM Frederic Weisbecker <frederic@kernel.org> wrote:
+> > > On Mon, Aug 29, 2022 at 12:45:40PM -0400, Joel Fernandes wrote:
+> > > > On 8/29/2022 9:40 AM, Frederic Weisbecker wrote:
+> 
+> [ . .  . ]
+> 
+> > > > > 2) NOCB implies performance issues.
+> > > >
+> > > > Which kinds of? There is slightly worse boot times, but I'm guessing that's do
+> > > > with the extra scheduling overhead of the extra threads which is usually not a
+> > > > problem except that RCU is used in the critical path of boot up (on ChromeOS).
+> > >
+> > > I never measured it myself but executing callbacks on another CPUs, with
+> > > context switches and locking can only involve significant performance issues if callbacks
+> > > are frequent. So it's a tradeoff between power and performance.
+> > 
+> > In my testing of benchmarks on real systems with 8-16 CPUs, the
+> > performance hit is down in the noise. It is possible though that maybe
+> > one can write a non-realistic synthetic test to force the performance
+> > issues, but I've not seen it in the real world. Maybe on
+> > networking-heavy servers with lots of cores, you'll see it but their
+> > batteries if any would be pretty big :-).
+> 
+> To Frederic's point, if you have enough servers, even a 1% decrease in
+> power consumption is a very big deal.  ;-)
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz_common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 6bd69a7e6809..da9bdf753f7a 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -1963,7 +1963,7 @@ int ksz_switch_register(struct ksz_device *dev)
- 
- 	ret = dsa_register_switch(dev->ds);
- 	if (ret) {
--		dev->dev_ops->exit(dev);
-+		dev->dev_ops->reset(dev);
- 		return ret;
- 	}
- 
--- 
-2.36.1
-
+The world has enough servers, for that matters ;-)
