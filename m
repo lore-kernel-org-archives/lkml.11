@@ -2,155 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A923ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E91D0ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:49:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229524AbiH3Ksp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
+        id S229951AbiH3KtA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229833AbiH3Ksh (ORCPT
+        with ESMTP id S229904AbiH3Ksz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:48:37 -0400
-Received: from xry111.site (xry111.site [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35399DC5D0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:48:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1661856514;
-        bh=DRSUwEoTCztac7oUAw8Om3bUbvawDARF481p3R69yCc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TGxo0Hi8qz0Y7QGlB7/VaZv0/oO9yWi2zVUih/Pvf+NR7U0pTtqNod7V6Ikvrcpff
-         4Uu3N1LkA3jRVWhXQeydtMgsTcrUOlrersduah/KbtMbA4+/JpH0xGjPENqGRHgC9E
-         U2/EcZHVhwy0iyxtDNnhZZMl/WYUxU9FDJqB0lE4=
-Received: from xry111-x57s1.. (unknown [IPv6:240e:358:11dd:1900:dc73:854d:832e:5])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id 726BD65927;
-        Tue, 30 Aug 2022 06:48:28 -0400 (EDT)
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     loongarch@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Youling Tang <tangyouling@loongson.cn>,
-        Jinyang He <hejinyang@loongson.cn>,
-        Xi Ruoyao <xry111@xry111.site>
-Subject: [PATCH v7 0/5] LoongArch: Support toolchain with new relocation types
-Date:   Tue, 30 Aug 2022 18:48:01 +0800
-Message-Id: <20220830104806.128365-1-xry111@xry111.site>
-X-Mailer: git-send-email 2.37.2
+        Tue, 30 Aug 2022 06:48:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DFFDEA7D
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:48:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661856528;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Sz4srs09/QpWeixG0gmN9bILh9AJeJA7X0RTBdy8P7Y=;
+        b=ccgaK4vLHvTdh6x39X6cUAACEqppGTB9eopomzx5f6iLlbXrpNKejwtL8dykZjWPQHI61p
+        bffqD91hqaVE2pK/v2R11VXWsGWXrWZgVs/0vnATlyVeMsXHWfKxisrs3wmhyk9Wqc9HbZ
+        VY8K6FzSEyq8WkzjDjFGeSjiVCPVRuM=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-439-9y8loiVFNKu60_mEmdlSGQ-1; Tue, 30 Aug 2022 06:48:47 -0400
+X-MC-Unique: 9y8loiVFNKu60_mEmdlSGQ-1
+Received: by mail-wm1-f69.google.com with SMTP id m22-20020a7bca56000000b003a652939bd1so1850755wml.9
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:48:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=Sz4srs09/QpWeixG0gmN9bILh9AJeJA7X0RTBdy8P7Y=;
+        b=HfVomhEkJBLmHYEM+jwudyv76gdapL3FGYnybODv8uIZ+1iLiPSleokjV2EaGYaS8L
+         Zx47OQMYwy/gUy4Ga7i7nsdgGl1XMhhT/fl1gNtsl/UVLBlMcj16cm3FYLlJp29Y4Jb2
+         lJnbYQRGbZvzWyiIRl1Q8SFVdBczpVv8BkyY5dQ26DgRXfjsDQzrGF3gGfobmIDWohR2
+         KHtmNysUvmVU9ZAPRsdY0sba0AC6wRgAxhUeLSl9Qqdsq7m4xhyJjah88kFWi2d6tMwO
+         O59dEbVmnye8xEhX/Lj6pripQYhgcYSsrnGGuSPkbvjdU4/hPMvfdZkzJnBDhXpV/SlV
+         oA5w==
+X-Gm-Message-State: ACgBeo3HRqD1mPM0Ki5V018Y37APo6MV7+ko9qEn/Kz5S3RDvNXlnnlk
+        bM3DDora8ejHRTlgvZsmNlvME4k77TsI9w0rnLXHCsx0CyIwJFgeagIxhSp6SReZDpBI3x/MgNq
+        B/8OiLMByXaaX//Ba9uRqzEx8
+X-Received: by 2002:a5d:5e89:0:b0:226:d149:25e3 with SMTP id ck9-20020a5d5e89000000b00226d14925e3mr8696814wrb.597.1661856526033;
+        Tue, 30 Aug 2022 03:48:46 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5K0SsZxQvvhMWnX/ASH1Felv6+t/7b/gE74TKt0G5s+NX3VFZ2KHV3NfUz8w/YGJYCKedISQ==
+X-Received: by 2002:a5d:5e89:0:b0:226:d149:25e3 with SMTP id ck9-20020a5d5e89000000b00226d14925e3mr8696804wrb.597.1661856525804;
+        Tue, 30 Aug 2022 03:48:45 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70a:1000:ecb4:919b:e3d3:e20b? (p200300cbc70a1000ecb4919be3d3e20b.dip0.t-ipconnect.de. [2003:cb:c70a:1000:ecb4:919b:e3d3:e20b])
+        by smtp.gmail.com with ESMTPSA id f13-20020a05600c154d00b003a8434530bbsm9301002wmg.13.2022.08.30.03.48.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 03:48:45 -0700 (PDT)
+Message-ID: <e7840af3-4d8f-5f3d-65fb-3e580ba8c7f1@redhat.com>
+Date:   Tue, 30 Aug 2022 12:48:44 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] mm: kill is_memblock_offlined()
+Content-Language: en-US
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220827112043.187028-1-wangkefeng.wang@huawei.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220827112043.187028-1-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The version 2.00 of LoongArch ELF ABI specification introduced new
-relocation types, and the development tree of Binutils and GCC has
-started to use them.  If the kernel is built with the latest snapshot of
-Binutils or GCC, it will fail to load the modules because of unrecognized
-relocation types in modules.
+On 27.08.22 13:20, Kefeng Wang wrote:
+> Directly check state of struct memory_block, no need a single function.
+> 
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> ---
+>  drivers/base/memory.c          | 6 ------
+>  include/linux/memory_hotplug.h | 2 --
+>  mm/memory_hotplug.c            | 3 +--
+>  3 files changed, 1 insertion(+), 10 deletions(-)
+> 
+> diff --git a/drivers/base/memory.c b/drivers/base/memory.c
+> index bc60c9cd3230..9aa0da991cfb 100644
+> --- a/drivers/base/memory.c
+> +++ b/drivers/base/memory.c
+> @@ -869,12 +869,6 @@ void remove_memory_block_devices(unsigned long start, unsigned long size)
+>  	}
+>  }
+>  
+> -/* return true if the memory block is offlined, otherwise, return false */
+> -bool is_memblock_offlined(struct memory_block *mem)
+> -{
+> -	return mem->state == MEM_OFFLINE;
+> -}
+> -
+>  static struct attribute *memory_root_attrs[] = {
+>  #ifdef CONFIG_ARCH_MEMORY_PROBE
+>  	&dev_attr_probe.attr,
+> diff --git a/include/linux/memory_hotplug.h b/include/linux/memory_hotplug.h
+> index 409196ef8038..de87545eabe9 100644
+> --- a/include/linux/memory_hotplug.h
+> +++ b/include/linux/memory_hotplug.h
+> @@ -11,7 +11,6 @@ struct page;
+>  struct zone;
+>  struct pglist_data;
+>  struct mem_section;
+> -struct memory_block;
+>  struct memory_group;
+>  struct resource;
+>  struct vmem_altmap;
+> @@ -352,7 +351,6 @@ extern void move_pfn_range_to_zone(struct zone *zone, unsigned long start_pfn,
+>  extern void remove_pfn_range_from_zone(struct zone *zone,
+>  				       unsigned long start_pfn,
+>  				       unsigned long nr_pages);
+> -extern bool is_memblock_offlined(struct memory_block *mem);
+>  extern int sparse_add_section(int nid, unsigned long pfn,
+>  		unsigned long nr_pages, struct vmem_altmap *altmap,
+>  		struct dev_pagemap *pgmap);
+> diff --git a/mm/memory_hotplug.c b/mm/memory_hotplug.c
+> index 2fd45ccbce45..9ae1f98548b1 100644
+> --- a/mm/memory_hotplug.c
+> +++ b/mm/memory_hotplug.c
+> @@ -1969,11 +1969,10 @@ int __ref offline_pages(unsigned long start_pfn, unsigned long nr_pages,
+>  
+>  static int check_memblock_offlined_cb(struct memory_block *mem, void *arg)
+>  {
+> -	int ret = !is_memblock_offlined(mem);
+>  	int *nid = arg;
+>  
+>  	*nid = mem->nid;
+> -	if (unlikely(ret)) {
+> +	if (unlikely(mem->state != MEM_OFFLINE)) {
+>  		phys_addr_t beginpa, endpa;
+>  
+>  		beginpa = PFN_PHYS(section_nr_to_pfn(mem->start_section_nr));
 
-Add support for GOT and new relocation types for the module loader, so
-the kernel (with modules) can be built with the "normal" code model and
-function properly.
-
-This series does not break the compatibility with old toolchain using
-stack-based relocation types, so with the patches applied the kernel can
-be be built with both old and new toolchains.  But, the combination of
-"new" Binutils and "old" GCC is not supported.
-
-Tested by building the kernel with the following combinations:
-
-- GCC 12 and Binutils 2.39
-- GCC trunk and Binutils trunk
-
-and running the builds with 35 in-tree modules loaded, and loading one
-module with 20 GOT loads and a per-CPU variable (loaded addresses
-verified by comparing with /proc/kallsyms).
-
-Changes from v6 to v7:
-
-- Simplify apply_r_larch_pcala.
-- Remove a build check only for excluding early GCC 13 dev snapshots.
-- Squash model attribute addition into the previous patch.
-- Retain "-fplt".
-
-Changes from v5 to v6:
-
-- Restore version number.
-- Rename CONFIG_CC_HAS_EXPLICIT_RELOCS to CONFIG_AS_HAS_EXPLICIT_RELOCS.
-  It now only checks assembler.
-- No longer support "old GCC with new Binutils", so R_LARCH_ABS* is
-  dropped.
-  - "Old GCC with old Binutils" is still supported until Arnd ack.
-  - "New GCC with old Binutils" is still supported as it does not
-    require additional code.
-- Remove "cc-option" around "-mexplicit-relocs".  For unsupported
-  "old GCC with new Binutils" combination, forcing -mexplicit-relocs
-  makes assembling fail, instead of silently producing unloadable
-  modules.
-- Move the error report for "lacking model attribute" into Makefile.
-- Squash the two patches for R_LARCH_B26 and R_LARCH_PCALA* into one.
-
-Changes from v4 to v5 ("v5" missed in the subject):
-
-- Change subject.
-- Introduce CONFIG_CC_HAS_EXPLICIT_RELOCS.
-- Retain -Wa,-mla-* options for old toolchains
-  (!CONFIG_CC_HAS_EXPLICIT_RELOCS).
-- Use __attribute__((model("extreme"))) in PER_CPU_ATTRIBUTES, to fix
-  a breakage with per-CPU variables defined in modules.
-- Handle R_LARCH_PCALA64_{HI12,LO12} for extreme model.
-- Handle R_LARCH_ABS* for "old GCC with new Binutils".
-- Separate the last patch into more small patches.
-- Avoid BUG_ON() for the handling of GOT.
-
-Changes from v3 to v4:
-
-- No code change.  Reword the commit message of the 3rd patch again
-  based on suggestion from Huacai.
-
-Changes from v2 to v3:
-
-- Use `union loongarch_instruction` instead of explicit bit shifts
-  applying the relocation.  Suggested by Youling.
-- For R_LARCH_B26, move the alignment check before the range check to be
-  consistent with stack pop relocations.  Suggested by Youling.
-- Reword the commit message of the 3rd patch.  Suggested by Huacai.
-
-Changes from v1 to v2:
-
-- Fix a stupid programming error (confusion between the number of PLT
-  entries and the number of GOT entries).  (Bug spotted by Youling).
-- Synthesize the _GLOBAL_OFFSET_TABLE_ symbol with module.lds, instead
-  of faking it at runtime.  The 3rd patch from V1 is now merged into
-  the 1st patch because it would be a one-line change.  (Suggested by
-  Jinyang).
-- Keep reloc_rela_handlers[] ordered by the relocation type ID.
-  (Suggested by Youling).
-- Remove -fplt along with -Wa,-mla-* options because it's the default.
-  (Suggested by Youling).
-
-Xi Ruoyao (5):
-  LoongArch: Add CONFIG_AS_HAS_EXPLICIT_RELOCS
-  LoongArch: Adjust symbol addressing for CONFIG_AS_HAS_EXPLICIT_RELOCS
-  LoongArch: Define ELF relocation types added in v2.00 ABI
-  LoongArch: Support PC-relative relocations in modules
-  LoongArch: Support R_LARCH_GOT_PC* in modules
-
- arch/loongarch/Kconfig                  |  3 +
- arch/loongarch/Makefile                 | 17 +++++
- arch/loongarch/include/asm/elf.h        | 37 ++++++++++
- arch/loongarch/include/asm/module.h     | 23 ++++++
- arch/loongarch/include/asm/module.lds.h |  1 +
- arch/loongarch/include/asm/percpu.h     |  8 +++
- arch/loongarch/kernel/head.S            | 10 +--
- arch/loongarch/kernel/module-sections.c | 56 +++++++++++++--
- arch/loongarch/kernel/module.c          | 93 ++++++++++++++++++++++++-
- 9 files changed, 238 insertions(+), 10 deletions(-)
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
 -- 
-2.37.0
+Thanks,
+
+David / dhildenb
 
