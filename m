@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAFFBECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:41:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE755ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiH3Nlm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
+        id S230452AbiH3Nlu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:41:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231168AbiH3Nku (ORCPT
+        with ESMTP id S229838AbiH3NlM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:40:50 -0400
+        Tue, 30 Aug 2022 09:41:12 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41BE15C78A
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:39:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280EDFBA74
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:39:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661866730;
+        s=mimecast20190719; t=1661866729;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FOt93qaFZyGHM3bS6yprWKlmEjd91A7jA18n75/j8XE=;
-        b=VKiY8A07ZTAx3gSUGKwTSISSChUTlLAavJE9SZZTUF4R6X2UEaM9DwhgmS9wIMXyUDJMAw
-        bnmX558nkkrku/3h6PVMSiBok5ZmH4XWYXixqXZAkLQ4Y8G55GNcRwNqFqKwGPmCHtQE7B
-        TYVyInvbmDCXCI7bz5l5uklkdMfWnm8=
+        bh=ppxBvNBPIPgVe6xpKz5mkcug3vVW5FWLaNZHpD9dNCo=;
+        b=DNi1jelaH/WXDmKBATsZp+fqMSnhChl5q5k4EU0a+GBahL19n4nNvVnh1ERncSfHGUcrMq
+        aikTCziEZaZA1EPR4cM0KrwxpHX+7zus0pPvcxdUsqniCnJdUi0YG2GKnS/VVz0UgGf/72
+        jtqtzPPx9gyV2zF0YjGcNMihFu7c5eA=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-308-30NGISCaODKzD-nSbb4x1Q-1; Tue, 30 Aug 2022 09:38:47 -0400
-X-MC-Unique: 30NGISCaODKzD-nSbb4x1Q-1
+ us-mta-650-zY9Dk9rHMvWObm9oPkwpVg-1; Tue, 30 Aug 2022 09:38:45 -0400
+X-MC-Unique: zY9Dk9rHMvWObm9oPkwpVg-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 37247811768;
-        Tue, 30 Aug 2022 13:38:47 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A11D2166B26;
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A2F75185A7B2;
         Tue, 30 Aug 2022 13:38:44 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.232])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 25EDA2166B26;
+        Tue, 30 Aug 2022 13:38:42 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -47,9 +47,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v6 26/33] KVM: VMX: Add missing CPU based VM execution controls to vmcs_config
-Date:   Tue, 30 Aug 2022 15:37:30 +0200
-Message-Id: <20220830133737.1539624-27-vkuznets@redhat.com>
+Subject: [PATCH v6 25/33] KVM: VMX: Add missing VMEXIT controls to vmcs_config
+Date:   Tue, 30 Aug 2022 15:37:29 +0200
+Message-Id: <20220830133737.1539624-26-vkuznets@redhat.com>
 In-Reply-To: <20220830133737.1539624-1-vkuznets@redhat.com>
 References: <20220830133737.1539624-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,9 +61,9 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 As a preparation to reusing the result of setup_vmcs_config() in
-nested VMX MSR setup, add the CPU based VM execution controls which KVM
-doesn't use but supports for nVMX to KVM_OPT_VMX_CPU_BASED_VM_EXEC_CONTROL
-and filter them out in vmx_exec_control().
+nested VMX MSR setup, add the VMEXIT controls which KVM doesn't
+use but supports for nVMX to KVM_OPT_VMX_VM_EXIT_CONTROLS and
+filter them out in vmx_vmexit_ctrl().
 
 No functional change intended.
 
@@ -72,49 +72,43 @@ Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/vmx/vmx.c | 9 +++++++++
- arch/x86/kvm/vmx/vmx.h | 6 +++++-
- 2 files changed, 14 insertions(+), 1 deletion(-)
+ arch/x86/kvm/vmx/vmx.c | 7 +++++++
+ arch/x86/kvm/vmx/vmx.h | 3 +++
+ 2 files changed, 10 insertions(+)
 
 diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 779377380399..be69fc3a57a3 100644
+index 2e0deac5570f..779377380399 100644
 --- a/arch/x86/kvm/vmx/vmx.c
 +++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4326,6 +4326,15 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
+@@ -4279,6 +4279,13 @@ static u32 vmx_vmexit_ctrl(void)
  {
- 	u32 exec_control = vmcs_config.cpu_based_exec_ctrl;
+ 	u32 vmexit_ctrl = vmcs_config.vmexit_ctrl;
  
 +	/*
-+	 * Not used by KVM, but fully supported for nesting, i.e. are allowed in
-+	 * vmcs12 and propagated to vmcs02 when set in vmcs12.
++	 * Not used by KVM and never set in vmcs01 or vmcs02, but emulated for
++	 * nested virtualization and thus allowed to be set in vmcs12.
 +	 */
-+	exec_control &= ~(CPU_BASED_RDTSC_EXITING |
-+			  CPU_BASED_USE_IO_BITMAPS |
-+			  CPU_BASED_MONITOR_TRAP_FLAG |
-+			  CPU_BASED_PAUSE_EXITING);
++	vmexit_ctrl &= ~(VM_EXIT_SAVE_IA32_PAT | VM_EXIT_SAVE_IA32_EFER |
++			 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER);
 +
- 	/* INTR_WINDOW_EXITING and NMI_WINDOW_EXITING are toggled dynamically */
- 	exec_control &= ~(CPU_BASED_INTR_WINDOW_EXITING |
- 			  CPU_BASED_NMI_WINDOW_EXITING);
+ 	if (vmx_pt_mode_is_system())
+ 		vmexit_ctrl &= ~(VM_EXIT_PT_CONCEAL_PIP |
+ 				 VM_EXIT_CLEAR_IA32_RTIT_CTL);
 diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index 200a17ca9406..a3da84f4ea45 100644
+index e927d35bece5..200a17ca9406 100644
 --- a/arch/x86/kvm/vmx/vmx.h
 +++ b/arch/x86/kvm/vmx/vmx.h
-@@ -549,9 +549,13 @@ static inline u8 vmx_get_rvi(void)
+@@ -508,7 +508,10 @@ static inline u8 vmx_get_rvi(void)
  #endif
- 
- #define KVM_OPTIONAL_VMX_CPU_BASED_VM_EXEC_CONTROL			\
--	(CPU_BASED_TPR_SHADOW |						\
-+	(CPU_BASED_RDTSC_EXITING |					\
-+	 CPU_BASED_TPR_SHADOW |						\
-+	 CPU_BASED_USE_IO_BITMAPS |					\
-+	 CPU_BASED_MONITOR_TRAP_FLAG |					\
- 	 CPU_BASED_USE_MSR_BITMAPS |					\
- 	 CPU_BASED_NMI_WINDOW_EXITING |					\
-+	 CPU_BASED_PAUSE_EXITING |					\
- 	 CPU_BASED_ACTIVATE_SECONDARY_CONTROLS |			\
- 	 CPU_BASED_ACTIVATE_TERTIARY_CONTROLS)
- 
+ #define KVM_OPTIONAL_VMX_VM_EXIT_CONTROLS				\
+ 	      (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |			\
++	       VM_EXIT_SAVE_IA32_PAT |					\
+ 	       VM_EXIT_LOAD_IA32_PAT |					\
++	       VM_EXIT_SAVE_IA32_EFER |					\
++	       VM_EXIT_SAVE_VMX_PREEMPTION_TIMER |			\
+ 	       VM_EXIT_LOAD_IA32_EFER |					\
+ 	       VM_EXIT_CLEAR_BNDCFGS |					\
+ 	       VM_EXIT_PT_CONCEAL_PIP |					\
 -- 
 2.37.2
 
