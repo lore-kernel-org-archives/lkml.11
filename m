@@ -2,84 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 024B2ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 07:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C70FC0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbiH3H71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 03:59:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38148 "EHLO
+        id S230224AbiH3IAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:00:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231338AbiH3H7W (ORCPT
+        with ESMTP id S231375AbiH3H7o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 03:59:22 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973E1D25E7;
-        Tue, 30 Aug 2022 00:59:17 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=3;SR=0;TI=SMTPD_---0VNk9CQA_1661846328;
-Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VNk9CQA_1661846328)
-          by smtp.aliyun-inc.com;
-          Tue, 30 Aug 2022 15:59:14 +0800
-From:   Liu Song <liusong@linux.alibaba.com>
-To:     axboe@kernel.dk
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH] block: remove bio_check_ro
-Date:   Tue, 30 Aug 2022 15:58:48 +0800
-Message-Id: <1661846328-107799-1-git-send-email-liusong@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        Tue, 30 Aug 2022 03:59:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F7F9D276A
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 00:59:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661846380;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KCfrLsUUliFZAsT7cuTFQ+KKBb55P+r5AzSlUp1Nkos=;
+        b=V/nX782znauQJCKsfwuDTU6icvwpBC0Z+5Ve94Rj6Cx+SjgKkI6WaqK61tAxbhzBtRKMek
+        yNeglz02H37459h2+e4eLLHXuOoj//yZw20MB9ZrYMJroAZC5dr8JMtkng0GxRL/hVNihg
+        9XdgfodtdsdfRJUwJlmmJc5wVZKvZ0E=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-128-20ZX4OesOfa0xoWUl8dOag-1; Tue, 30 Aug 2022 03:59:35 -0400
+X-MC-Unique: 20ZX4OesOfa0xoWUl8dOag-1
+Received: by mail-wm1-f70.google.com with SMTP id m22-20020a7bca56000000b003a652939bd1so1802718wml.9
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 00:59:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc;
+        bh=KCfrLsUUliFZAsT7cuTFQ+KKBb55P+r5AzSlUp1Nkos=;
+        b=xVV80RHRiXAYo4CYBGT4bi1eVcOyooR7wNaUaMIEVJb7SPojCEXEA8Lc902ZpXkbNR
+         I/ukAryO89jAyS5wDuTSuFE9XYMWFQldDmn9AsPHlqo6o9rqKhwWceKFdsyZM6a7F0TB
+         efPCfHUuz05aZW9BhgYh1jIUHz0KSJowPj8T58wSyaCa3U8zwUkI2/V/5JeU432k9+F6
+         glZws+ZyHP6MBEBpY49S6Hbe6n/zGrGwBJGhDc09plEUxKrxjmFEsQyfGfa4qDdqhiy0
+         ihPz6oEVsSzIiiEXA1tEtW1a8ImaGO91AmooweBE0KOyzphynVzxMH0Xs28M8e1LNExY
+         4jTA==
+X-Gm-Message-State: ACgBeo3ZFWG+GRZ8M0TtdAJ+JBzdQxGffcuAHEyEPsEEIfJ8GlWkq/FF
+        xKTVyHri3tZlPlyubpnxYk0YSNRkO4DWRbb9TTBoYHqCa39KGdMvgUD7F1Ajmg4qYYVuBK4/4Br
+        tVquhskhmybyo73+FEroTK2h8
+X-Received: by 2002:a05:600c:1992:b0:3a6:23f6:8417 with SMTP id t18-20020a05600c199200b003a623f68417mr8373207wmq.14.1661846374816;
+        Tue, 30 Aug 2022 00:59:34 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6G+HNENoZbk/kP0Upti13ajYwcNsvPHgO3ZJjPM9lTCEmTs9Are0AGapPE11SllUCzKZrfKw==
+X-Received: by 2002:a05:600c:1992:b0:3a6:23f6:8417 with SMTP id t18-20020a05600c199200b003a623f68417mr8373198wmq.14.1661846374508;
+        Tue, 30 Aug 2022 00:59:34 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c70a:1000:ecb4:919b:e3d3:e20b? (p200300cbc70a1000ecb4919be3d3e20b.dip0.t-ipconnect.de. [2003:cb:c70a:1000:ecb4:919b:e3d3:e20b])
+        by smtp.gmail.com with ESMTPSA id l14-20020a05600c4f0e00b003a83d5f3678sm11136280wmq.7.2022.08.30.00.59.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 00:59:34 -0700 (PDT)
+Message-ID: <39145649-c378-d027-8856-81b4f09050fc@redhat.com>
+Date:   Tue, 30 Aug 2022 09:59:33 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] vfio/type1: Unpin zero pages
+Content-Language: en-US
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lpivarc@redhat.com
+References: <166182871735.3518559.8884121293045337358.stgit@omen>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <166182871735.3518559.8884121293045337358.stgit@omen>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liu Song <liusong@linux.alibaba.com>
+On 30.08.22 05:05, Alex Williamson wrote:
+> There's currently a reference count leak on the zero page.  We increment
+> the reference via pin_user_pages_remote(), but the page is later handled
+> as an invalid/reserved page, therefore it's not accounted against the
+> user and not unpinned by our put_pfn().
+> 
+> Introducing special zero page handling in put_pfn() would resolve the
+> leak, but without accounting of the zero page, a single user could
+> still create enough mappings to generate a reference count overflow.
+> 
+> The zero page is always resident, so for our purposes there's no reason
+> to keep it pinned.  Therefore, add a loop to walk pages returned from
+> pin_user_pages_remote() and unpin any zero pages.
+> 
+> Cc: David Hildenbrand <david@redhat.com>
+> Cc: stable@vger.kernel.org
+> Reported-by: Luboslav Pivarc <lpivarc@redhat.com>
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c |   12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index db516c90a977..8706482665d1 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -558,6 +558,18 @@ static int vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
+>  	ret = pin_user_pages_remote(mm, vaddr, npages, flags | FOLL_LONGTERM,
+>  				    pages, NULL, NULL);
+>  	if (ret > 0) {
+> +		int i;
+> +
+> +		/*
+> +		 * The zero page is always resident, we don't need to pin it
+> +		 * and it falls into our invalid/reserved test so we don't
+> +		 * unpin in put_pfn().  Unpin all zero pages in the batch here.
+> +		 */
+> +		for (i = 0 ; i < ret; i++) {
+> +			if (unlikely(is_zero_pfn(page_to_pfn(pages[i]))))
+> +				unpin_user_page(pages[i]);
+> +		}
+> +
+>  		*pfn = page_to_pfn(pages[0]);
+>  		goto done;
+>  	}
+> 
+> 
 
-Partially revert make "bio_check_ro" only return false, and may generate
-at most one warning print.
+As discussed offline, for the shared zeropage (that's not even
+refcounted when mapped into a process), this makes perfect sense to me.
 
-From the commit log of a32e236eb9, it has been stated that it is
-compatible with the old lvm tool, so there is a high probability that
-this alarm will not really be noticed, so it is better to remove it
-directly.
+Good question raised by Sean if ZONE_DEVICE pages might similarly be
+problematic. But for them, we cannot simply always unpin here.
 
-Signed-off-by: Liu Song <liusong@linux.alibaba.com>
----
- block/blk-core.c | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
+Reviewed-by: David Hildenbrand <david@redhat.com>
 
-diff --git a/block/blk-core.c b/block/blk-core.c
-index a0d1104..811c2dc 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -487,20 +487,6 @@ static int __init fail_make_request_debugfs(void)
- late_initcall(fail_make_request_debugfs);
- #endif /* CONFIG_FAIL_MAKE_REQUEST */
- 
--static inline bool bio_check_ro(struct bio *bio)
--{
--	if (op_is_write(bio_op(bio)) && bdev_read_only(bio->bi_bdev)) {
--		if (op_is_flush(bio->bi_opf) && !bio_sectors(bio))
--			return false;
--		pr_warn("Trying to write to read-only block-device %pg\n",
--			bio->bi_bdev);
--		/* Older lvm-tools actually trigger this */
--		return false;
--	}
--
--	return false;
--}
--
- static noinline int should_fail_bio(struct bio *bio)
- {
- 	if (should_fail_request(bdev_whole(bio->bi_bdev), bio->bi_iter.bi_size))
-@@ -722,8 +708,7 @@ void submit_bio_noacct(struct bio *bio)
- 
- 	if (should_fail_bio(bio))
- 		goto end_io;
--	if (unlikely(bio_check_ro(bio)))
--		goto end_io;
-+
- 	if (!bio_flagged(bio, BIO_REMAPPED)) {
- 		if (unlikely(bio_check_eod(bio)))
- 			goto end_io;
 -- 
-1.8.3.1
+Thanks,
+
+David / dhildenb
 
