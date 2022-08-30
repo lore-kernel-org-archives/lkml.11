@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD6AECAAD3
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24360ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:06:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229481AbiH3DGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 23:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
+        id S229594AbiH3DGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 23:06:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiH3DGN (ORCPT
+        with ESMTP id S229731AbiH3DGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 29 Aug 2022 23:06:13 -0400
 Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635B871BC7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:06:11 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MGsYH5VbXzkWnH;
-        Tue, 30 Aug 2022 11:02:27 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5956C719AF;
+        Mon, 29 Aug 2022 20:06:11 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MGsXv5VCkzkWmW;
+        Tue, 30 Aug 2022 11:02:07 +0800 (CST)
+Received: from [10.174.178.165] (10.174.178.165) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 11:06:04 +0800
-Received: from [10.174.178.55] (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 11:06:04 +0800
-Subject: Re: [PATCH] ARM: 9220/1: amba: Add sanity check for dev->periphid in
- amba_probe()
-To:     Linus Walleij <linus.walleij@linaro.org>
-CC:     Russell King <linux@armlinux.org.uk>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <patches@armlinux.org.uk>,
-        Saravana Kannan <saravanak@google.com>,
-        "Kefeng Wang" <wangkefeng.wang@huawei.com>
-References: <20220827101853.353-1-thunder.leizhen@huawei.com>
- <CACRpkdZC-GxhWN_+LpBg3W1xxR2YE6gknwroE3CWSGHeFSOfhQ@mail.gmail.com>
-From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <98beaa03-6eb5-c6e3-411d-7e76fb8f0936@huawei.com>
-Date:   Tue, 30 Aug 2022 11:06:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+ 15.1.2375.24; Tue, 30 Aug 2022 11:05:45 +0800
+Subject: Re: [PATCH -next 3/4] spi: mockup: Add runtime device tree overlay
+ interface
+To:     Frank Rowand <frowand.list@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+References: <20220826144341.532265-1-weiyongjun1@huawei.com>
+ <20220826144341.532265-4-weiyongjun1@huawei.com>
+ <8c436553-e35c-4e46-1407-24184fd113ba@gmail.com>
+From:   "weiyongjun (A)" <weiyongjun1@huawei.com>
+Message-ID: <4eab3d1a-199f-fdfe-8d8f-3369eeefde47@huawei.com>
+Date:   Tue, 30 Aug 2022 11:05:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdZC-GxhWN_+LpBg3W1xxR2YE6gknwroE3CWSGHeFSOfhQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
+In-Reply-To: <8c436553-e35c-4e46-1407-24184fd113ba@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500006.china.huawei.com (7.185.36.236)
+X-Originating-IP: [10.174.178.165]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500009.china.huawei.com (7.192.105.203)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -56,168 +53,169 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 2022/8/30 5:00, Linus Walleij wrote:
-> On Sat, Aug 27, 2022 at 12:22 PM Zhen Lei <thunder.leizhen@huawei.com> wrote:
+On 2022/8/30 5:29, Frank Rowand wrote:
+> comment inline below, plus adding to cc: and to: list
 > 
->> Commit f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
->> forcibly invokes device_add() even if dev->periphid is not ready. Although
->> it will be remedied in amba_match(): dev->periphid will be initialized
->> if everything is in place; Otherwise, return -EPROBE_DEFER to block
->> __driver_attach() from further execution. But not all drivers have .match
->> hook, such as pl031, the dev->bus->probe will be called directly in
->> __driver_attach(). Unfortunately, if dev->periphid is still not
->> initialized, the following exception will be triggered.
->>
->> 8<--- cut here ---
->> Unable to handle kernel NULL pointer dereference at virtual address 00000008
->> [00000008] *pgd=00000000
->> Internal error: Oops: 5 [#1] SMP ARM
->> Modules linked in:
->> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc2+ #7
->> Hardware name: ARM-Versatile Express
->> PC is at pl031_probe+0x8/0x208
->> LR is at amba_probe+0xf0/0x160
->> pc : 80698df8  lr : 8050eb54  psr: 80000013
->> sp : c0825df8  ip : 00000000  fp : 811fda38
->> r10: 00000000  r9 : 80d72470  r8 : fffffdfb
->> r7 : 811fd800  r6 : be7eb330  r5 : 00000000  r4 : 811fd900
->> r3 : 80698df0  r2 : 37000000  r1 : 00000000  r0 : 811fd800
->> Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
->> Control: 10c5387d  Table: 6000406a  DAC: 00000051
->> ... ...
->>  pl031_probe from amba_probe+0xf0/0x160
->>  amba_probe from really_probe+0x118/0x290
->>  really_probe from __driver_probe_device+0x84/0xe4
->>  __driver_probe_device from driver_probe_device+0x30/0xd0
->>  driver_probe_device from __driver_attach+0x8c/0xfc
->>  __driver_attach from bus_for_each_dev+0x70/0xb0
->>  bus_for_each_dev from bus_add_driver+0x168/0x1f4
->>  bus_add_driver from driver_register+0x7c/0x118
->>  driver_register from do_one_initcall+0x44/0x1ec
->>  do_one_initcall from kernel_init_freeable+0x238/0x288
->>  kernel_init_freeable from kernel_init+0x18/0x12c
->>  kernel_init from ret_from_fork+0x14/0x2c
->> ... ...
->> ---[ end trace 0000000000000000 ]---
->>
->> Therefore, take the same action as in amba_match(): return -EPROBE_DEFER
->> if dev->periphid is not ready in amba_probe().
->>
->> Fixes: f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
->> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> On 8/26/22 09:43, Wei Yongjun wrote:
+>> Add a runtime device tree overlay interface for device need dts file.
+>> With it its possible to use device tree overlays without having to use
+>> a per-platform overlay manager.
 > 
-> For the record, this makes Vexpress QEMU boot again for me, so
-> Tested-by: Linus Walleij <linus.walleij@linaro.org>
-> 
-> The problem on QEMU is however not that the device is "not ready"
-> the device is simply not there, the implementation in QEMU
-> is incomplete. What platform are you getting this on? If it's QEMU
-> you probably need to alter the commit message. I made this similar patch:
+> Why is an overlay needed?  The documentation in patch 4 shows providing
+> a dtb as an argument to the qemu-system-x86_64 command, which should be
+> sufficient to supply the appropriate dtb.
 
-Also on QEMU. But your conclusion may be wrong, The problem on QEMU is really
-because of pl031 is not ready. With my patch, pl031_probe() is called, so that
-its ID is implemented on QEMU.
+Fist, we are aimed to build a device driver regression testsuit. Without
+overlay, lots of the dtb fragments must be combined to a very big one, it
+may different to maintainence. overlay makes easily to attach/detech as
+the device's requirement.
 
-+++ b/drivers/base/driver.c
-@@ -217,6 +217,9 @@ int driver_register(struct device_driver *drv)
- {
-        int ret;
-        struct device_driver *other;
-+       static int seq;
-+
-+       printk("%d: drv=%s, bus=%s\n", ++seq, drv->name, drv->bus->name);
+Seconds, overlay dts may be used to found or verification issues related
+to of_node_put or others, such as patches like:
 
-Add the above print, we can see:
-50: drv=rtc-pl031, bus=amba
-51: drv=vexpress-reset, bus=platform
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?qt=grep&q=node_put
 
-I didn't go to further verify. I think the driver vexpress-reset makes the
-clock available. After that, rtc-pl031's periphid can be read successfully.
+many of them may found by static check tool, which may leak of tesing.
 
+The documentation I post does not use overlay dts, but when overlay
+dts[1] is used, we can found the of node leak:
 
-> 
->>From 561e9c5a80183223613a2cfe225a900dd28c1cd5 Mon Sep 17 00:00:00 2001
-> From: Linus Walleij <linus.walleij@linaro.org>
-> Date: Mon, 29 Aug 2022 22:26:11 +0200
-> Subject: [PATCH] amba: Don't probe devices without valid match ID
-> 
-> After the recent changes to the AMBA bus core, QEMU Versatile
-> Express (and probably other machines) refuse to boot properly
-> in the v6.0-rc1 thru -rc3 kernels.
-> 
-> After enabling earlydebug this kind of stuff comes out:
-> 
-> Unable to handle kernel NULL pointer dereference at virtual address 00000008
-> [00000008] *pgd=00000000
-> Internal error: Oops: 5 [#1] SMP ARM
-> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1+ #474
-> Hardware name: ARM-Versatile Express
-> PC is at pl031_probe+0x18/0x224
-> LR is at amba_probe+0xf0/0x174
-> 
-> This is because the AMBA driver probe call is called with an id
-> argument that is NULL while drivers often directly dereference
-> this ID to get to the match data.
-> 
-> This happens when an AMBA device exist in the device tree, but
-> it is lacking any PrimceCell ID in hardware so there is no match
-> data.
-> 
-> This happens most typically in QEMU which tries to mimic e.g.
-> Versatile Express, but several PrimeCells that exist in the
-> physical platform are not implemented or incomplete in the
-> QEMU model so only zeroes are returned when reading the PrimeCell
-> ID and thus there is no match data.
-> 
-> Fix this by not probing the device if there is no ID.
-> 
-> This print from QEMU after applying the patch shows clearly
-> what blocks are missing from QEMU:
-> 
-> 1c0f0000.watchdog: no ID for device, skipping probe
->   (QEMU incomplete device?)
-> 2b0a0000.memory-controller: no ID for device, skipping probe
->   (QEMU incomplete device?)
-> 7ffd0000.memory-controller: no ID for device, skipping probe
->   (QEMU incomplete device?)
-> 7ffb0000.dma: no ID for device, skipping probe
->   (QEMU incomplete device?)
-> 
-> Fixes: f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
-> Cc: Saravana Kannan <saravanak@google.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: qemu-devel@nongnu.org
-> Cc: Peter Maydell <peter.maydell@linaro.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  drivers/amba/bus.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-> index 32b0e0b930c1..6a1bffc60169 100644
-> --- a/drivers/amba/bus.c
-> +++ b/drivers/amba/bus.c
-> @@ -300,9 +300,14 @@ static int amba_probe(struct device *dev)
->          pm_runtime_set_active(dev);
->          pm_runtime_enable(dev);
-> 
-> -        ret = pcdrv->probe(pcdev, id);
-> -        if (ret == 0)
-> -            break;
-> +        if (!id) {
-> +            pr_err("%s: no ID for device, skipping probe (QEMU
-> incomplete device?)\n",
-> +                   dev_name(dev));
-> +        } else {
-> +            ret = pcdrv->probe(pcdev, id);
-> +            if (ret == 0)
-> +                break;
-> +        }
-> 
->          pm_runtime_disable(dev);
->          pm_runtime_set_suspended(dev);
-> 
+$ python3 -m kddv.cmds.mock -b spi -d mchp23k256
+create spi device mchp23k256 success!
+$ ls /sys/bus/spi/drivers/mchp23k256/spi0.0/mtd/
+mtd0  mtd0ro
+$ python3 -m kddv.cmds.mock -b spi -d mchp23k256 -r
+[  233.508565] Deleting MTD partitions on "spi0.0":
+[  233.516784] OF: ERROR: memory leak, expected refcount 1 instead of 2,
+  of_node_get()/of_node_put() unbalanced - destroy cset entry: attach
+  overlay node /spi/spi-sram@0
+remove spi device mchp23k256 success!
 
--- 
+Not sure it is worth to fix issues like this, but at least, we can
+tesing them now.
+
+-[1]---------------------------------------------------------
+/dts-v1/;
+/plugin/;
+
+&{/spi} {
+	spi-sram@0 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		compatible = "microchip,mchp23k256";
+		reg = <0>;
+		spi-max-frequency = <20000000>;
+	};
+};
+
+-------------------------------------------------------
+
 Regards,
-  Zhen Lei
+Wei Yongjun
+
+> 
+> -Frank
+> 
+>>
+>> Add a new device by command:
+>> $ cat test.dtbo > /sys/class/spi_master/spi0/overlay_fdto
+>>
+>> Remove the device by command:
+>> $ echo remove > /sys/class/spi_master/spi0/overlay_fdto
+>>
+>> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+>> ---
+>>   drivers/spi/Kconfig      |  2 ++
+>>   drivers/spi/spi-mockup.c | 48 ++++++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 50 insertions(+)
+>>
+>> diff --git a/drivers/spi/Kconfig b/drivers/spi/Kconfig
+>> index e0f0fa2746ad..4b7c84ddb367 100644
+>> --- a/drivers/spi/Kconfig
+>> +++ b/drivers/spi/Kconfig
+>> @@ -1161,6 +1161,8 @@ config SPI_TLE62X0
+>>   config SPI_MOCKUP
+>>   	tristate "SPI controller Testing Driver"
+>>   	depends on OF
+>> +	select OF_EARLY_FLATTREE
+>> +	select OF_RESOLVE
+>>   	select BPF_EVENTS
+>>   	help
+>>   	  This enables SPI controller testing driver, which provides a way to
+>> diff --git a/drivers/spi/spi-mockup.c b/drivers/spi/spi-mockup.c
+>> index 7a93b194ee53..404ad821bf6a 100644
+>> --- a/drivers/spi/spi-mockup.c
+>> +++ b/drivers/spi/spi-mockup.c
+>> @@ -21,6 +21,9 @@
+>>   struct mockup_spi {
+>>   	struct mutex lock;
+>>   	struct spi_device *devs[MOCKUP_CHIPSELECT_MAX];
+>> +
+>> +	void *fdto;
+>> +	int ovcs_id;
+>>   };
+>>   
+>>   static struct spi_master *to_spi_master(struct device *dev)
+>> @@ -145,9 +148,53 @@ delete_device_store(struct device *dev, struct device_attribute *attr,
+>>   }
+>>   static DEVICE_ATTR_WO(delete_device);
+>>   
+>> +static ssize_t
+>> +overlay_fdto_store(struct device *dev, struct device_attribute *attr,
+>> +		   const char *buf, size_t count)
+>> +{
+>> +	struct spi_master *master = to_spi_master(dev);
+>> +	struct mockup_spi *mock = spi_master_get_devdata(master);
+>> +	int ret;
+>> +
+>> +	mutex_lock(&mock->lock);
+>> +
+>> +	if (strncmp(buf, "remove\n", count) == 0) {
+>> +		if (mock->ovcs_id < 0) {
+>> +			ret = -ENOENT;
+>> +			goto out_unlock;
+>> +		}
+>> +		of_overlay_remove(&mock->ovcs_id);
+>> +		kfree(mock->fdto);
+>> +		mock->ovcs_id = -1;
+>> +		mock->fdto = NULL;
+>> +	} else {
+>> +		if (mock->ovcs_id >= 0) {
+>> +			ret = -EINVAL;
+>> +			goto out_unlock;
+>> +		}
+>> +		mock->fdto = kmemdup(buf, count, GFP_KERNEL);
+>> +		if (!mock->fdto) {
+>> +			ret = -ENOMEM;
+>> +			goto out_unlock;
+>> +		}
+>> +		ret = of_overlay_fdt_apply(mock->fdto, count, &mock->ovcs_id);
+>> +		if (ret < 0)
+>> +			goto out_unlock;
+>> +	}
+>> +
+>> +	mutex_unlock(&mock->lock);
+>> +	return count;
+>> +
+>> +out_unlock:
+>> +	mutex_unlock(&mock->lock);
+>> +	return ret;
+>> +}
+>> +static DEVICE_ATTR_WO(overlay_fdto);
+>> +
+>>   static struct attribute *spi_mockup_attrs[] = {
+>>   	&dev_attr_new_device.attr,
+>>   	&dev_attr_delete_device.attr,
+>> +	&dev_attr_overlay_fdto.attr,
+>>   	NULL
+>>   };
+>>   ATTRIBUTE_GROUPS(spi_mockup);
+>> @@ -227,6 +274,7 @@ static int spi_mockup_probe(struct platform_device *pdev)
+>>   
+>>   	mock = spi_master_get_devdata(master);
+>>   	mutex_init(&mock->lock);
+>> +	mock->ovcs_id = -1;
+>>   
+>>   	ret = spi_register_master(master);
+>>   	if (ret) {
+> 
