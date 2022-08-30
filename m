@@ -2,352 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D584ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E5AECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:56:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiH3L4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
+        id S230245AbiH3L4e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:56:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiH3L4G (ORCPT
+        with ESMTP id S230005AbiH3L4a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:56:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0168B32C
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:56:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661860563;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Elx50XoN9DppxGV5Vt9IVOHnJZPbvJDnCiSoJg+LDfA=;
-        b=OK8yAc35efhUFWGJ2ZQJwsGuhvMUSqdwHRQb3BJDa7xi493Hwj5aOxlzUNydSZkCtkYS9i
-        lW3xzQq9Wc1pgNZs9t6opwVU254b5RmAfDzjmFLOSj/XgM8LtQuP22wszIr2MjbVVr7aXU
-        DJmKQMNTBrp+3btW5B9V5/dQWimR7So=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-591-DCCp-wZdPFON4wo9q_xUcg-1; Tue, 30 Aug 2022 07:56:02 -0400
-X-MC-Unique: DCCp-wZdPFON4wo9q_xUcg-1
-Received: by mail-wm1-f72.google.com with SMTP id a17-20020a05600c349100b003a545125f6eso9973071wmq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:56:02 -0700 (PDT)
+        Tue, 30 Aug 2022 07:56:30 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DB7C650D
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:56:28 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso17688490pjk.0
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:56:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=heitbaum.com; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=X9CW8YAhOwoOytehiYWVX/AikhedsoBMovFs0QzoOmg=;
+        b=TsgU0/0bOWOVRrdyXneVObc3RrxfDqYg5hM1CTRWChk9ZPYjiBBVvd6nZftmt+zE/f
+         HQfmmviEyBxCwPXq2vipCAJnwvr3bbugsdplSTxyFXd81f3iljsa8PWNWl9uiP61FJCx
+         zn7ttAOb60S0rTbKyXPYxjOEurvgGelyUqluQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :references:to:content-language:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=Elx50XoN9DppxGV5Vt9IVOHnJZPbvJDnCiSoJg+LDfA=;
-        b=U7/l+HRnLNC87lw5cPkG3vLVXFEPY/toVAN36ZF6ACWaGXCDF2xCVAWikaUknMBHW4
-         bID/rN0lh9jiS7GGiIJKjhIXvsCL41+rx76GS240UCWN96q6//IWrpxDZWsoX41OvjlZ
-         QiJlKkdjHaoLMMnSD6B3FIqPZxbm00ys6nA+eB5Eie0VxRUfHFFVo6tcirLBIcJYs43P
-         4XBjPSNuoBSNDkozlSe+HaB8qnTTT6MVWY6q8ixV6t5lj/OrGPbkX9CRw5iwFddX2THM
-         K2a4nQhxphiYT8VSNKurRP4VnxYyBU5aUos5Fo/sRMD9I4C37SaSFeUTFGEPFOYz5R9N
-         mMXw==
-X-Gm-Message-State: ACgBeo3/dgCezFStEIE626vWz/yQF3+mYI+exSp4Z2+S4fv7QXr4visF
-        EuZ+PqH2kXfI/KePFyRUMOjWK6sb/2ZYPFvfd1iPAigb8CoZ/4CuYTk8gFDtKKMcd+Mb6sx8ogl
-        3JZniXnka/XwnVlFKHrm8XgIS
-X-Received: by 2002:adf:dd0d:0:b0:225:8759:a35a with SMTP id a13-20020adfdd0d000000b002258759a35amr9424838wrm.615.1661860561598;
-        Tue, 30 Aug 2022 04:56:01 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4m2j8SRCyEXL+bBlTJd5xqNbeiS5J9dqK/yLRFrGsg6IMvGUI/OjzpQ6utEhh74qXtwbtAsw==
-X-Received: by 2002:adf:dd0d:0:b0:225:8759:a35a with SMTP id a13-20020adfdd0d000000b002258759a35amr9424818wrm.615.1661860561212;
-        Tue, 30 Aug 2022 04:56:01 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c70a:1000:ecb4:919b:e3d3:e20b? (p200300cbc70a1000ecb4919be3d3e20b.dip0.t-ipconnect.de. [2003:cb:c70a:1000:ecb4:919b:e3d3:e20b])
-        by smtp.gmail.com with ESMTPSA id v20-20020a05600c15d400b003a331c6bffdsm11197314wmf.47.2022.08.30.04.56.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 04:56:00 -0700 (PDT)
-Message-ID: <6f61b669-e89f-6615-6b80-088940221858@redhat.com>
-Date:   Tue, 30 Aug 2022 13:56:00 +0200
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=X9CW8YAhOwoOytehiYWVX/AikhedsoBMovFs0QzoOmg=;
+        b=eyFTs87VJJKsmaufiHUhsqRDUznj4NmFNv8ncGTNuOuG6h3GC0gzFm5GeOXZGYS7nZ
+         5Ll7e+oAyErVTqKoBarqZdkOw5bAjPbIUkBAQO+g8/se0AEzWhoApD92HrNBIwckwIRU
+         kWT5h35VT8r9wZqtN4+TnVC9WRz0IUEViJ71djIC2+YWWkj0cv1A0udkiXLCyXWWC1tE
+         HsQDW2t+nlrM0PZmYRxBaSYo6vVsIj+m26+niamVJnRCkKwT25s6A9WNRfJrMmh2QOpI
+         0x0Lf8x0tMcxTBPrcdRKkT8YwT3fFWJyt1t/F9YjVrJWp7Oa5gWIfyid+QpFSyPx9hXg
+         OFdw==
+X-Gm-Message-State: ACgBeo0/mpuWTKmnOkw0NhsYCVlPDlBKp5Bvlqoa/e/O4pMO2DmCbfrT
+        nkV0QGulpQVHiPl5VSptKUunww==
+X-Google-Smtp-Source: AA6agR4xPEavXHEOSuKBU2QTD+CkULAsUVC6EVfzYSgRRYBbSV1tLCOq5B3MjFrpu5jNzjMCbadKOQ==
+X-Received: by 2002:a17:902:7689:b0:170:8b17:37f4 with SMTP id m9-20020a170902768900b001708b1737f4mr21179438pll.42.1661860587991;
+        Tue, 30 Aug 2022 04:56:27 -0700 (PDT)
+Received: from a1173f985c48 ([203.220.223.63])
+        by smtp.gmail.com with ESMTPSA id l2-20020a17090af8c200b001f8b3f7cc16sm8601962pjd.57.2022.08.30.04.56.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 04:56:27 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 11:56:18 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 00/86] 5.10.140-rc1 review
+Message-ID: <20220830115618.GA1105413@a1173f985c48>
+References: <20220829105756.500128871@linuxfoundation.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Content-Language: en-US
-To:     Rebecca Mckeever <remckee0@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1660897864.git.remckee0@gmail.com>
- <957966f06474e3885796247ad1beaa6b3841ebd1.1660897864.git.remckee0@gmail.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v2 2/4] memblock tests: add top-down NUMA tests for
- memblock_alloc_try_nid*
-In-Reply-To: <957966f06474e3885796247ad1beaa6b3841ebd1.1660897864.git.remckee0@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829105756.500128871@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 19.08.22 11:05, Rebecca Mckeever wrote:
-> Add tests for memblock_alloc_try_nid() and memblock_alloc_try_nid_raw()
-> where the simulated physical memory is set up with multiple NUMA nodes.
-> Additionally, all of these tests set nid != NUMA_NO_NODE. These tests are
-> run with a top-down allocation direction.
+On Mon, Aug 29, 2022 at 12:58:26PM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.140 release.
+> There are 86 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 > 
-> The tested scenarios are:
-> 
-> Range unrestricted:
-> - region can be allocated in the specific node requested:
->       + there are no previously reserved regions
->       + the requested node is partially reserved but has enough space
-> - the specific node requested cannot accommodate the request, but the
->   region can be allocated in a different node:
->       + there are no previously reserved regions, but node is too small
->       + the requested node is fully reserved
->       + the requested node is partially reserved and does not have
->         enough space
-> 
-> Range restricted:
-> - region can be allocated in the specific node requested after dropping
->   min_addr:
->       + range partially overlaps with two different nodes, where the first
->         node is the requested node
->       + range partially overlaps with two different nodes, where the
->         requested node ends before min_addr
-> - region cannot be allocated in the specific node requested, but it can be
->   allocated in the requested range:
->       + range overlaps with multiple nodes along node boundaries, and the
->         requested node ends before min_addr
->       + range overlaps with multiple nodes along node boundaries, and the
->         requested node starts after max_addr
-> - region cannot be allocated in the specific node requested, but it can be
->   allocated after dropping min_addr:
->       + range partially overlaps with two different nodes, where the
->         second node is the requested node
-> 
-> Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
-> ---
->  tools/testing/memblock/tests/alloc_nid_api.c | 702 ++++++++++++++++++-
->  tools/testing/memblock/tests/alloc_nid_api.h |  16 +
->  tools/testing/memblock/tests/common.h        |  18 +
->  3 files changed, 725 insertions(+), 11 deletions(-)
-> 
-> diff --git a/tools/testing/memblock/tests/alloc_nid_api.c b/tools/testing/memblock/tests/alloc_nid_api.c
-> index 2c1d5035e057..a410f1318402 100644
-> --- a/tools/testing/memblock/tests/alloc_nid_api.c
-> +++ b/tools/testing/memblock/tests/alloc_nid_api.c
-> @@ -1102,7 +1102,7 @@ static int alloc_try_nid_bottom_up_cap_min_check(void)
->  	return 0;
->  }
->  
-> -/* Test case wrappers */
-> +/* Test case wrappers for range tests */
->  static int alloc_try_nid_simple_check(void)
->  {
->  	test_print("\tRunning %s...\n", __func__);
-> @@ -1234,17 +1234,10 @@ static int alloc_try_nid_low_max_check(void)
->  	return 0;
->  }
->  
-> -static int memblock_alloc_nid_checks_internal(int flags)
-> +static int memblock_alloc_nid_range_checks(void)
->  {
-> -	const char *func = get_func_testing(flags);
-> -
-> -	alloc_nid_test_flags = flags;
-> -	prefix_reset();
-> -	prefix_push(func);
-> -	test_print("Running %s tests...\n", func);
-> -
-> -	reset_memblock_attributes();
-> -	dummy_physical_memory_init();
-> +	test_print("Running %s range tests...\n",
-> +		   get_func_testing(alloc_nid_test_flags));
->  
->  	alloc_try_nid_simple_check();
->  	alloc_try_nid_misaligned_check();
-> @@ -1261,6 +1254,693 @@ static int memblock_alloc_nid_checks_internal(int flags)
->  	alloc_try_nid_reserved_all_check();
->  	alloc_try_nid_low_max_check();
->  
-> +	return 0;
-> +}
-> +
-> +/*
-> + * A test that tries to allocate a memory region in a specific NUMA node that
-> + * has enough memory to allocate a region of the requested size.
-> + * Expect to allocate an aligned region at the end of the requested node.
-> + */
-> +static int alloc_try_nid_top_down_numa_simple_check(void)
-> +{
-> +	int nid_req = 3;
-> +	struct memblock_region *new_rgn = &memblock.reserved.regions[0];
-> +	struct memblock_region *req_node = &memblock.memory.regions[nid_req];
-> +	void *allocated_ptr = NULL;
-> +
-> +	PREFIX_PUSH();
-> +
-> +	phys_addr_t size;
-> +	phys_addr_t min_addr;
-> +	phys_addr_t max_addr;
+> Responses should be made by Wed, 31 Aug 2022 10:57:37 +0000.
+> Anything received after that time might be too late.
 
-Usually we define variables in a single block. So, before the
-PREFIX_PUSH(). Same applies to the other functions.
+Hi Greg,
 
-> +
-> +	setup_numa_memblock();
-> +
-> +	ASSERT_LE(SZ_4, req_node->size);
-> +	size = req_node->size / SZ_4;
-> +	min_addr = memblock_start_of_DRAM();
-> +	max_addr = memblock_end_of_DRAM();
-> +
-> +	allocated_ptr = run_memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
-> +						   min_addr, max_addr, nid_req);
-> +
-> +	ASSERT_NE(allocated_ptr, NULL);
-> +	verify_mem_content(allocated_ptr, size, alloc_nid_test_flags);
-> +
-> +	ASSERT_EQ(new_rgn->size, size);
-> +	ASSERT_EQ(new_rgn->base, region_end(req_node) - size);
-> +	ASSERT_LE(req_node->base, new_rgn->base);
-> +
-> +	ASSERT_EQ(memblock.reserved.cnt, 1);
-> +	ASSERT_EQ(memblock.reserved.total_size, size);
-> +
-> +	test_pass_pop();
-> +
-> +	return 0;
-> +}
-> +
+5.10.140-rc1 tested.
 
-[...]
+Run tested on:
+- Intel Skylake x86_64 (nuc6 i5-6260U)
 
-> +
-> +/*
-> + * A test that tries to allocate a memory region that spans over the min_addr
-> + * and max_addr range and overlaps with two different nodes, where the first
-> + * node is the requested node:
-> + *
-> + *                                min_addr
-> + *                                |           max_addr
-> + *                                |           |
-> + *                                v           v
-> + *  |           +-----------------------+-----------+              |
-> + *  |           |       requested       |   node3   |              |
-> + *  +-----------+-----------------------+-----------+--------------+
-> + *                                +           +
-> + *  |                       +-----------+                          |
-> + *  |                       |    rgn    |                          |
-> + *  +-----------------------+-----------+--------------------------+
-> + *
-> + * Expect to drop the lower limit and allocate a cleared memory region that
-> + * ends at the end of the requested node.
+In addition - build tested for:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- Allwinner H6
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
 
-Interesting, allocating out-of-range is expected behavior? At least to
-me that wasn't immediately clear :)
-
-[...]
-
-> +
-> +/*
-> + * A test that tries to allocate a memory region that spans over the min_addr
-> + * and max_addr range and overlaps with two different nodes, where the second
-> + * node is the requested node:
-> + *
-> + *                               min_addr
-> + *                               |         max_addr
-> + *                               |         |
-> + *                               v         v
-> + *  |      +--------------------------+---------+                |
-> + *  |      |         expected         |requested|                |
-> + *  +------+--------------------------+---------+----------------+
-> + *                               +         +
-> + *  |                       +---------+                          |
-> + *  |                       |   rgn   |                          |
-> + *  +-----------------------+---------+--------------------------+
-> + *
-> + * Expect to drop the lower limit and allocate a cleared memory region that
-
-Does the "cleared memory region" part still apply? Or would we also end
-up calling the raw variant from run_memblock_alloc_try_nid() ?
-
-> + * ends at the end of the first node that overlaps with the range.
-> + */
-> +static int alloc_try_nid_top_down_numa_split_range_high_check(void)
-> +{
-> +	int nid_req = 3;
-> +	int nid_exp = nid_req - 1;
-> +	struct memblock_region *new_rgn = &memblock.reserved.regions[0];
-> +	struct memblock_region *exp_node = &memblock.memory.regions[nid_exp];
-> +	void *allocated_ptr = NULL;
-> +
-> +	PREFIX_PUSH();
-> +
-> +	phys_addr_t size = SZ_512;
-> +	phys_addr_t min_addr;
-> +	phys_addr_t max_addr;
-> +	phys_addr_t exp_node_end;
-> +
-> +	setup_numa_memblock();
-> +
-> +	exp_node_end = region_end(exp_node);
-> +	min_addr = exp_node_end - SZ_256;
-> +	max_addr = min_addr + size;
-> +
-> +	allocated_ptr = run_memblock_alloc_try_nid(size, SMP_CACHE_BYTES,
-> +						   min_addr, max_addr, nid_req);
-> +
-> +	ASSERT_NE(allocated_ptr, NULL);
-> +	verify_mem_content(allocated_ptr, size, alloc_nid_test_flags);
-> +
-> +	ASSERT_EQ(new_rgn->size, size);
-> +	ASSERT_EQ(new_rgn->base, exp_node_end - size);
-> +	ASSERT_LE(exp_node->base, new_rgn->base);
-> +
-> +	ASSERT_EQ(memblock.reserved.cnt, 1);
-> +	ASSERT_EQ(memblock.reserved.total_size, size);
-> +
-> +	test_pass_pop();
-> +
-> +	return 0;
-> +}
-
-
-[...]
-
-> +int __memblock_alloc_nid_numa_checks(void)
-> +{
-> +	test_print("Running %s NUMA tests...\n",
-> +		   get_func_testing(alloc_nid_test_flags));
-> +
-> +	alloc_try_nid_numa_simple_check();
-> +	alloc_try_nid_numa_small_node_check();
-> +	alloc_try_nid_numa_node_reserved_check();
-> +	alloc_try_nid_numa_part_reserved_check();
-> +	alloc_try_nid_numa_part_reserved_fallback_check();
-> +	alloc_try_nid_numa_split_range_low_check();
-> +	alloc_try_nid_numa_split_range_high_check();
-> +
-> +	alloc_try_nid_numa_no_overlap_split_check();
-> +	alloc_try_nid_numa_no_overlap_low_check();
-> +	alloc_try_nid_numa_no_overlap_high_check();
-> +
-> +	return 0;
-> +}
-> +
-> +static int memblock_alloc_nid_checks_internal(int flags)
-> +{
-> +	alloc_nid_test_flags = flags;
-
-Empty line missing
-
-> +	prefix_reset();
-> +	prefix_push(get_func_testing(flags));
-> +
-> +	reset_memblock_attributes();
-> +	dummy_physical_memory_init();
-> +
-> +	memblock_alloc_nid_range_checks();
-> +	memblock_alloc_nid_numa_checks();
-> +
->  	dummy_physical_memory_cleanup();
->  
->  	prefix_pop();
-
-
--- 
-Thanks,
-
-David / dhildenb
-
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
+--
+Rudi
