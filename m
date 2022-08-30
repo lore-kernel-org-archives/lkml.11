@@ -2,87 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB2C6ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 07:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF88AECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 07:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbiH3HT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 03:19:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
+        id S230241AbiH3HUc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 03:20:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiH3HT4 (ORCPT
+        with ESMTP id S230266AbiH3HU3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 03:19:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C37631D;
-        Tue, 30 Aug 2022 00:19:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FEB861466;
-        Tue, 30 Aug 2022 07:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E168BC433C1;
-        Tue, 30 Aug 2022 07:19:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661843993;
-        bh=cNl2q6IwhNO1r/WX6/JP3SlN458v5wTt/geQej7BrCw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cTqkeBK2Wg4Rjz1Qdp1w2nJSsduJhiCv9dfwLA5MTJbuLRYnz3vtqKk3Ldhsq8yHt
-         SLjbHymv3AUeKCudBUL0w9+QrRSGhOp0Pe+G1dU+OyZXinKR/qYKdn+u+0aMu2UjoM
-         kClNAemEplLWLVZj8OZiYKcakpRJmDoVBnOiEbjLi2BWvWRSascb7QAbZRgGpLBx8g
-         E69cPMRPj5GnhVphavfGEp2IF/7TpKG9KRDaMqR6XZnRVBGsEX9whTEaBJDGqKJxYA
-         PXn3EqzZEabPnnBGZYXwnDXnAv+iiBKANwm5sTNPFCkrS7bTnADuBdzxAMtyp0pbFM
-         HPw0ydz2KqMLA==
-Date:   Tue, 30 Aug 2022 12:49:49 +0530
-From:   Vinod Koul <vkoul@kernel.org>
-To:     williamsukatube@163.com
-Cc:     linux-phy@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jckuo@nvidia.com, kishon@ti.com,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        William Dean <williamsukatube@gmail.com>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: Re: [PATCH] phy: tegra: xusb: check the return value of
- devm_kzalloc() in tegra_xusb_setup_usb_role_switch()
-Message-ID: <Yw26FXFyb3GwQaux@matsya>
-References: <20220723034130.2952016-1-williamsukatube@163.com>
+        Tue, 30 Aug 2022 03:20:29 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDFE5004C;
+        Tue, 30 Aug 2022 00:20:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661844028; x=1693380028;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version:content-id;
+  bh=axUyRkQDEujGll+U4gNW9NGbIqhXvci7jUZVzKU+b8k=;
+  b=XaeWYzd6ovApkXvJrbc3owRwl6Torv9LDkkSUYVU/dOhHXhSQSQuGT6e
+   eK7gXiPogyOVBYU6xymhW/XaLo/5UgHIoVHV4JHie7AWlWInz3nrQsVKx
+   DnDJpNlmwFHrFpZ+uxZ+eZy5MM2WmvwNwvhuWVqlJeE+J5EpMZ9Ia6Snk
+   KhnUM+QW4AJvjLYNYjX1LQyg6/BVP/ufjbH2F1MuKIZKXGUVVLkCopRaC
+   hfjukD293rmIc/vIAOOWDXV6TKE7p3s8l6awfYealJOUnn35bdbG3K5rJ
+   kFw99rLDyDs5UOr65zqQJZ7ol4OmhTWXXQYMGIqt0ewz87VWhPV7Sykqh
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="321231777"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="321231777"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:20:27 -0700
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="672728650"
+Received: from arnesgom-mobl.ger.corp.intel.com ([10.252.54.235])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 00:20:25 -0700
+Date:   Tue, 30 Aug 2022 10:20:20 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Li Zhong <floridsleeves@gmail.com>
+cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: Re: [PATCH v2] drivers/tty/serial: check the return value of
+ uart_port_check()
+In-Reply-To: <CAMEuxRq6wn+wakYHGtnS_vSgpcw6aNOir=KyXWb12vPrOr76pA@mail.gmail.com>
+Message-ID: <40e16474-99d2-2359-a545-4a437f555ec1@linux.intel.com>
+References: <20220826083612.1699194-1-floridsleeves@gmail.com> <CAHp75VcdqL4wYnhEi8LrxqJktA2uDzP3a6-08suJRghX=1UZsg@mail.gmail.com> <CAMEuxRqBEMdva3qEphvuYkFLpRjp=xg7vpqQT1oqb2AgkkG2+w@mail.gmail.com> <2033d06d-10a4-5a57-d650-7541c39990ee@linux.intel.com>
+ <CAMEuxRq6wn+wakYHGtnS_vSgpcw6aNOir=KyXWb12vPrOr76pA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220723034130.2952016-1-williamsukatube@163.com>
+Content-Type: multipart/mixed; BOUNDARY="8323329-68519279-1661842936=:1864"
+Content-ID: <2edbf640-1cd7-a490-7077-b3c91cf8135f@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23-07-22, 11:41, williamsukatube@163.com wrote:
-> From: William Dean <williamsukatube@gmail.com>
-> 
-> The function devm_kzalloc() in tegra_xusb_setup_usb_role_switch()
-> can fail, so its return value should be checked.
-> 
-> Fixes: f67213cee2b35 ("phy: tegra: xusb: Add usb-role-switch support")
-> Reported-by: Hacash Robot <hacashRobot@santino.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Where is this bug report?
+--8323329-68519279-1661842936=:1864
+Content-Type: text/plain; CHARSET=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
+Content-ID: <7768bd39-e4a3-2d53-551f-1d81a45711d3@linux.intel.com>
 
-> Signed-off-by: William Dean <williamsukatube@gmail.com>
-> ---
->  drivers/phy/tegra/xusb.c | 2 ++
->  1 file changed, 2 insertions(+)
+On Mon, 29 Aug 2022, Li Zhong wrote:
+
+> On Mon, Aug 29, 2022 at 12:09 AM Ilpo Järvinen
+> <ilpo.jarvinen@linux.intel.com> wrote:
+> >
+> > On Sun, 28 Aug 2022, Li Zhong wrote:
+> >
+> > > On Fri, Aug 26, 2022 at 9:01 AM Andy Shevchenko
+> > > <andy.shevchenko@gmail.com> wrote:
+> > > >
+> > > > On Fri, Aug 26, 2022 at 11:38 AM Li Zhong <floridsleeves@gmail.com> wrote:
+> > > > >
+> > > > > uart_port_check() will return NULL pointer when state->uart_port is
+> > > > > NULL. Check the return value before dereference it to avoid
+> > > > > null-pointer-dereference error.
+> > > >
+> > > > Have you taken the locking into consideration?
+> > > > If no, please do, if yes, expand your commit message to explain why
+> > > > the current locking scheme doesn't prevent an error from happening.
+> > > >
+> > >
+> > > The locking is taken into consideration but these three checks do not need to
+> > > unlock in error-handling because unlock() will be called in the callers. Will
+> > > add the comment in v2 patch.
+> >
+> > I think he meant you should indicate why the current locking doesn't cover
+> > the case you're fixing, not whether this function should call unlock() or
+> > not.
+> >
 > 
-> diff --git a/drivers/phy/tegra/xusb.c b/drivers/phy/tegra/xusb.c
-> index aa5237eacd29..e3611fb4c779 100644
-> --- a/drivers/phy/tegra/xusb.c
-> +++ b/drivers/phy/tegra/xusb.c
-> @@ -668,6 +668,8 @@ static int tegra_xusb_setup_usb_role_switch(struct tegra_xusb_port *port)
->  	port->dev.driver = devm_kzalloc(&port->dev,
->  					sizeof(struct device_driver),
->  					GFP_KERNEL);
-> +	if (!port->dev.driver)
-> +		return -ENOMEM;
->  	port->dev.driver->owner	 = THIS_MODULE;
->  
->  	port->usb_role_sw = usb_role_switch_register(&port->dev,
-> -- 
-> 2.25.1
+> Thanks for clarifications. The locking does not guarantee the return value of
+> uart_port_check()  is not NULL.
+
+Please put such explanation into the commit message like Andy was asking, 
+thank you.
+
+And make sure you properly mention what has changed for any new version 
+of any patch you send so that Greg don't need to auto-mail you about it 
+(and end up ignoring your patch).
+
+> Actually in line 773 of this file
+> (drivers/tty/serial/serial_core.c), uart_port_check() is also called in
+> critical section but still there is check on whether the return value is NULL.
+
+Existance of such a check elsewhere alone isn't enough to guarantee that 
+the check is necessary (and not even that the check in that other place 
+would be necessary). You need a deeper analysis than that. I'm not 
+claiming its either way here, just pointing out to the direction/details 
+you should consider while writing the analysis of the problem.
+
 
 -- 
-~Vinod
+ i.
+--8323329-68519279-1661842936=:1864--
