@@ -2,78 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F4EECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0227DECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230487AbiH3VPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 17:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
+        id S230245AbiH3VQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 17:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229788AbiH3VPL (ORCPT
+        with ESMTP id S229591AbiH3VQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 17:15:11 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8F3DFE6;
-        Tue, 30 Aug 2022 14:15:10 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id d12so12304658plr.6;
-        Tue, 30 Aug 2022 14:15:10 -0700 (PDT)
+        Tue, 30 Aug 2022 17:16:21 -0400
+Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74E284EF2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:16:20 -0700 (PDT)
+Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-11f11d932a8so11449306fac.3
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:16:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=m/8CrKbaAp1qGMsp5T1xBhJHX7yXjrPm1mj6smU4pgU=;
-        b=P0tlImlODw4BbVrdArUTrQcHNGJP/zCE6S1BoCUN8Hw7vB6p/vFK+Y3ckI+v77ohco
-         84HA04JVxnAnwFLwDF/8gAoV+FR9Aa3Qx+hEL2rNivcwHHS6tT+ipt91oKVqw5xQqRww
-         TqBR7u5C9KRPU84g321vu+ZkqnHEN+eZqlqV9ookOYx6lv1c8A5CoyEH49xdrHMyW++g
-         LpbqVD2OqU6sbumzq0CFh9niXsilmjzszvtXi4leYbDM8D3iQ1D1baax/zki06DIeW7L
-         J3MkZl3bkam/SsdwbIIdjwKEQkQtHx1NNjhXClj5nY3dPGqOMS0Jv4pbrehJ1Pp/jnpa
-         ReWg==
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=QIzx4jr+4KB27xfkYmwQ1uaET1dYVTZcRm2qTQ+l5zs=;
+        b=8VXnPOAdmSTU8lKGtg1El42/CoEBkWOI1/bj99Lwgd0kMzBuMN4ixRwyqtuefr/9rE
+         SKHcG8wKE00HTyqnyjeLIq+5FE5LNmfpDcR8JEt9yxutl5IIYR2kAM1ptmWIKQLmXQZp
+         WoFbsQQdv/pHTvRfoWCMOOmt9xJuMS3fxNlFLADjtDPTuft95/nU6DIF/GAqAQTF5BlG
+         Tm5WRTSb8mGfDx/bBj6BpcmGhjnC+1Qqe3qrr8UcbIBlxiF9tnz2RJekzxgZs8v56cFj
+         w+QKtMmeMYLbugx7I0fDKVrYruuoNl9ZPd6AiShx6hKp7nKp2pVofyIn+b71h8aLtixt
+         pG4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=m/8CrKbaAp1qGMsp5T1xBhJHX7yXjrPm1mj6smU4pgU=;
-        b=sPsKEslZ8evwSwuBvbyz1Sb5bp0N4nwBjviYufphdH7uIs26RJzdA5IRFcxnmtGx2N
-         JL6YAFUTlxNv//TUlwEdYybb7XTakUr9xWftaxAkcUXDusUJmMYypiGwEH+i45XkLHeS
-         DRFVNyHHaWrfTNDoBedsa3jOBT5uTnDw1eV6WQE4C5TeHjt88A1ZgK9jqFjwW+S7QfqH
-         /FMCwxHqP7vxF59qPZHP/29VB7ivQiUj9Kb326OhUSGV5+6x0LRFk+RkW3hoNfarBAqd
-         46R2gRMflOK49OjAFrS54t7xXKV2L2vG0ux/AnbySvyp1rtF4XrvRmeyuFD0pNEIjlgl
-         CiOA==
-X-Gm-Message-State: ACgBeo1s3rT+KrqeA1q4iopXqx6l7UEGPHUPLdkPD1stIt0wp0vWSh6y
-        IqtbO1h1gypT7xBvulnLnQg=
-X-Google-Smtp-Source: AA6agR40BOFdjNshHRJCiGj+sNqWY1XxSbdkUTlIQ830Y31mDN154qjp0XoVv6XXffNrBMi8yumRhA==
-X-Received: by 2002:a17:902:8e88:b0:172:d1f8:efcb with SMTP id bg8-20020a1709028e8800b00172d1f8efcbmr22191892plb.27.1661894109561;
-        Tue, 30 Aug 2022 14:15:09 -0700 (PDT)
-Received: from google.com ([2620:15c:202:201:2488:79db:897a:5de7])
-        by smtp.gmail.com with ESMTPSA id n7-20020a170902e54700b0016d1bee1519sm968591plf.102.2022.08.30.14.15.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 14:15:06 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 14:15:03 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Alexander Shiyan <shc_work@mail.ru>
-Subject: Re: [PATCH v1 1/1] Input: clps711x-keypad - get rid of OF_GPIO
- dependency
-Message-ID: <Yw5910pp0tUjNBJE@google.com>
-References: <20220830182839.47965-1-andriy.shevchenko@linux.intel.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=QIzx4jr+4KB27xfkYmwQ1uaET1dYVTZcRm2qTQ+l5zs=;
+        b=z6oIdriiFKc5CHHDEdLZHx+f3JRZLYBCWkRpyNjRFw/rmGt9Ta7gp4JGLUEilvUOfL
+         UA/JnBadwWVA6vlnvM7kNXYFx6VTWD7r6aPW0bguQjm+hgC1X6d7E7crwk34ozpZ8KMe
+         wAB0TYaLSup1ETsu0Sb9w56gprCWE3l42CFio0xA5pRH4s5P8bXTRHmYfiZco5OBzvNR
+         nIJYxu02L/tr3C/jJgLzFD5aT0GzdkvT1VQMXwGjJ8C7JGiVt2fkTTDRSNo2N44hDM98
+         8yTpWKcQZrn04U6X1KiB4zIV+CAxW5vclu9UtvCgT7HjdwTmI09IiZL8uKClZoBlRqgv
+         CRrg==
+X-Gm-Message-State: ACgBeo0dxGoF6ZpsfJj/zzcMCQXTZVVmI66y/5zUkKWND1asqpI87tk0
+        tY6a87MGnRVdfMMhgOAHYZZG8MSjEAwB3skgUKIX
+X-Google-Smtp-Source: AA6agR4PY0wH+DhCIemu3ZzjKv/dbXTQ97xMbd4BvrFn5a/ljMprJcT5rh3IbTlI8W2uFj1at8XmUb7mEx7H2E+2FoQ=
+X-Received: by 2002:a05:6808:bd1:b0:345:da59:d3ae with SMTP id
+ o17-20020a0568080bd100b00345da59d3aemr69557oik.136.1661894180151; Tue, 30 Aug
+ 2022 14:16:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220830182839.47965-1-andriy.shevchenko@linux.intel.com>
+References: <20220830155253.19364-1-cgzones@googlemail.com>
+In-Reply-To: <20220830155253.19364-1-cgzones@googlemail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 30 Aug 2022 17:16:09 -0400
+Message-ID: <CAHC9VhRm468n-OEmBztymAi+ADHd1bnKNYXvt2-0S4oNk9OCAw@mail.gmail.com>
+Subject: Re: [PATCH] selinux: declare read-only parameters const
+To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 09:28:39PM +0300, Andy Shevchenko wrote:
-> There is no such dependency in the driver, but it's implicitly
-> used to have OF property APIs available. Replace that by device
-> property API and get rid of OF_GPIO dependency.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+On Tue, Aug 30, 2022 at 11:53 AM Christian G=C3=B6ttsche
+<cgzones@googlemail.com> wrote:
+>
+> Declare ebitmap, mls_level and mls_context parameters const where they
+> are only read from.  This allows callers to supply pointers to const
+> as arguments and increases readability.
+>
+> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
+> ---
+> This patch is similar to userspace commits ("libsepol: mark read-only
+> parameters of ebitmap interfaces const") [1] and ("libsepol: mark
+> immutable mls and context parameter const") [2].
+> Pointers to const are for example used in the (for now userspace only)
+> policy validation code.
+>
+> [1]: https://github.com/SELinuxProject/selinux/commit/390ec54d278a14d9c29=
+b80cc4fc5cb9ba504ed13
+> [2]: https://github.com/SELinuxProject/selinux/commit/6359946633507db1d98=
+b24638cf22eb5afdcd272
+> ---
+>  security/selinux/ss/context.h   | 17 +++++++++--------
+>  security/selinux/ss/ebitmap.c   | 21 +++++++++++----------
+>  security/selinux/ss/ebitmap.h   | 18 +++++++++---------
+>  security/selinux/ss/mls_types.h |  4 ++--
+>  4 files changed, 31 insertions(+), 29 deletions(-)
 
-Applied, thank you.
+Merged into selinux/next, thanks!
 
--- 
-Dmitry
+--=20
+paul-moore.com
