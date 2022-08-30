@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D45CCECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:52:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25A27C65C0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232148AbiH3Vw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 17:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
+        id S231934AbiH3Vww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 17:52:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232086AbiH3Vvl (ORCPT
+        with ESMTP id S231978AbiH3Vvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 17:51:41 -0400
+        Tue, 30 Aug 2022 17:51:55 -0400
 Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09B39402F4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:50:10 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id i6-20020a259786000000b0069648392979so715712ybo.11
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:50:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52B68C03B
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:50:16 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id j11-20020a05690212cb00b006454988d225so723559ybu.10
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:50:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=PaZc/ErQmIz9CmZWuOwZKmMvFAFDhrfR0u4+oqULyqs=;
-        b=hebs9Ab4jQ13PLVsrCINOWSpgoH5EATUTa9Cks3Eg1nmkxH7qE2oRwCx7AF5BNZXTH
-         AHzIFQ24Or2oJnVcja+AOnCs2XgXBCldmNcsagLkjdyOLpIpceU0bsUf62DWg4fCi92e
-         s30PWdmXxABwFMNU1JgUL6Fp0h2PBQ5hgdc0oQExPZeqJt/0xfqCgMF0cTxAmuBThoZJ
-         frR4uwNwpRrRdJWEew4t7LzoFroWP+hLZBEH0mT+P1Yv4GgQEDG37uiXZMEF+0m6Voke
-         PgoPiZ8qXrLB1DY6fUVv3gddg9c6Rea7O2e0xIyCiy2p7GROj3EzsKBaYmh74I5z0+5s
-         1/pA==
+        bh=vjjGk6pymrjMSyrfbdxQ3/p6O8Kus1ISFMk96O5o39I=;
+        b=OXRgptnZ7i+ICNigJkBWT2cSYFZtaNbBth28h0zoZMO0yy1KlhLJWbOL/agYd17Ge+
+         H8eygOzvmZZ/skvQrD81gmRZiypc2lcG0QHZKUmUE/ni+JmGucTrUU1yExVGKLt9MJij
+         ftmKNsJcjdyi4dhaD13stFQzNJ1xbGRin4GkFtVHsn7nMBn5wS02jls3bfzzV07WlYsq
+         mi9CGSRXCSnkh+sEnyExpA/okvKqytcPBHSo0PnRH7aCU5Q1xfzVqiAqvHEkIxcqVnHs
+         2oBNbQXE+ro549f5zm45uHNrO1sona3NzY/FqJ45DQDnvKS22ifnzF7B5XwlNd/5xlfX
+         M9KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=PaZc/ErQmIz9CmZWuOwZKmMvFAFDhrfR0u4+oqULyqs=;
-        b=Yu7SxnbfIrlqNvcYKeksXmSy9CUU6u+O77BSkLf21S3MwsDBJktLyV3Fy0Noj5Qhvk
-         AjkaFRtNb0vU+WPb0lm23K0vPBcZNQOG2nCyqklNpzNDfNqKUH6JM7tGuknP8ZKSqHkc
-         6c7otw4VJeyrVqkHYlapRgKmlAo4DwO+ao0/AKecEeiTCzzi3rq7G4RZ57oqNbhOpSwz
-         LxtfMvt6jilfD7LNz4C5BkcXQwDewb/G5oiaRWTZiqUZrX4SMMcI2LuWfIUsF24j+ZNG
-         uTa4scCTX0vGZU34X978Tniec7LJ/gpfbu2C0e76e+vRUS6kBtcbIoIck6THajZPBNH3
-         ZMKg==
-X-Gm-Message-State: ACgBeo2/N5ct4PR9SBqVG91dQOJu9/ex6feFlOTQbAetJfbGurNCpodm
-        rM45A5DWgO1WuEFUZVfCJ9BRB3gE4BI=
-X-Google-Smtp-Source: AA6agR60bKzipuEg+9xXy+Pee21QZvBbTBPOhKhJO0fVzuHKtaTXE6dCUM7Zh4tN5bptU+EiRysnFAQW6po=
+        bh=vjjGk6pymrjMSyrfbdxQ3/p6O8Kus1ISFMk96O5o39I=;
+        b=ovsoj+ZpcY82RafU+dpqdhTUthDzCVAV+a3EQJpFDQq0yjTideA4U9jTP04sqjuzJV
+         hgtksmWhvt2TuhU7B5L63L616u6faKDpOWPmQn3FkZ+kZnnxHTCMi3weFicETOieB+PR
+         8ryCsHFR+J0yDBzBm59+SrawHH9Vn44fZoI/xhkSgq+/Vq0Ri7SKqL/ShdVVbh5IcUKR
+         +52NPuqNdXxllfkbkbDQriTYR7AOZec6Be8qnwZ/T6ULaV2jYYJnWKjhA8bfKmbSSJc9
+         51sP72IFIGL3M234MYFvGN/QdqjWc+60xrovR6avW2z57sDcZ7PUWrcu5AkrVxbvET3I
+         uh/Q==
+X-Gm-Message-State: ACgBeo12cGuoFfpXHuLwnH7emwHRCJk3mQYZ98bF+jF5Via8rNkvdtBK
+        d8sK1LsuK5/21CxFok2CK0s5kfs9i7A=
+X-Google-Smtp-Source: AA6agR4vIoEARtwRV51vchZbtFRCbo5XPnJmQ5jWl1WbEyyresfSAVBl15tPztqHAfgzavikcDXhMgmO3BY=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:a005:55b3:6c26:b3e4])
- (user=surenb job=sendgmr) by 2002:a25:31d5:0:b0:677:28b:1451 with SMTP id
- x204-20020a2531d5000000b00677028b1451mr13217805ybx.437.1661896208990; Tue, 30
- Aug 2022 14:50:08 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 14:49:06 -0700
+ (user=surenb job=sendgmr) by 2002:a81:f47:0:b0:31f:434b:5ee with SMTP id
+ 68-20020a810f47000000b0031f434b05eemr15734874ywp.383.1661896214287; Tue, 30
+ Aug 2022 14:50:14 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 14:49:08 -0700
 In-Reply-To: <20220830214919.53220-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220830214919.53220-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830214919.53220-18-surenb@google.com>
-Subject: [RFC PATCH 17/30] lib/string.c: strsep_no_empty()
+Message-ID: <20220830214919.53220-20-surenb@google.com>
+Subject: [RFC PATCH 19/30] move stack capture functionality into a separate
+ function for reuse
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
@@ -79,59 +80,228 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kent Overstreet <kent.overstreet@linux.dev>
+Make save_stack() function part of stackdepot API to be used outside of
+page_owner. Also rename task_struct's in_page_owner to in_capture_stack
+flag to better convey the wider use of this flag.
 
-This adds a new helper which is like strsep, except that it skips empty
-tokens.
-
-Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/string.h |  1 +
- lib/string.c           | 19 +++++++++++++++++++
- 2 files changed, 20 insertions(+)
+ include/linux/sched.h      |  6 ++--
+ include/linux/stackdepot.h |  3 ++
+ lib/stackdepot.c           | 68 ++++++++++++++++++++++++++++++++++++++
+ mm/page_owner.c            | 52 ++---------------------------
+ 4 files changed, 77 insertions(+), 52 deletions(-)
 
-diff --git a/include/linux/string.h b/include/linux/string.h
-index 61ec7e4f6311..b950ac9cfa56 100644
---- a/include/linux/string.h
-+++ b/include/linux/string.h
-@@ -96,6 +96,7 @@ extern char * strpbrk(const char *,const char *);
- #ifndef __HAVE_ARCH_STRSEP
- extern char * strsep(char **,const char *);
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index e7b2f8a5c711..d06cad6c14bd 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -930,9 +930,9 @@ struct task_struct {
+ 	/* Stalled due to lack of memory */
+ 	unsigned			in_memstall:1;
  #endif
-+extern char *strsep_no_empty(char **, const char *);
- #ifndef __HAVE_ARCH_STRSPN
- extern __kernel_size_t strspn(const char *,const char *);
+-#ifdef CONFIG_PAGE_OWNER
+-	/* Used by page_owner=on to detect recursion in page tracking. */
+-	unsigned			in_page_owner:1;
++#ifdef CONFIG_STACKDEPOT
++	/* Used by stack_depot_capture_stack to detect recursion. */
++	unsigned			in_capture_stack:1;
  #endif
-diff --git a/lib/string.c b/lib/string.c
-index 6f334420f687..6939f5b751f2 100644
---- a/lib/string.c
-+++ b/lib/string.c
-@@ -596,6 +596,25 @@ char *strsep(char **s, const char *ct)
- EXPORT_SYMBOL(strsep);
- #endif
+ #ifdef CONFIG_EVENTFD
+ 	/* Recursion prevention for eventfd_signal() */
+diff --git a/include/linux/stackdepot.h b/include/linux/stackdepot.h
+index bc2797955de9..8dc9fdb2c4dd 100644
+--- a/include/linux/stackdepot.h
++++ b/include/linux/stackdepot.h
+@@ -64,4 +64,7 @@ int stack_depot_snprint(depot_stack_handle_t handle, char *buf, size_t size,
  
-+/**
-+ * strsep_no_empt - Split a string into tokens, but don't return empty tokens
-+ * @s: The string to be searched
-+ * @ct: The characters to search for
-+ *
-+ * strsep() updates @s to point after the token, ready for the next call.
-+ */
-+char *strsep_no_empty(char **s, const char *ct)
+ void stack_depot_print(depot_stack_handle_t stack);
+ 
++bool stack_depot_capture_init(void);
++depot_stack_handle_t stack_depot_capture_stack(gfp_t flags);
++
+ #endif
+diff --git a/lib/stackdepot.c b/lib/stackdepot.c
+index e73fda23388d..c8615bd6dc25 100644
+--- a/lib/stackdepot.c
++++ b/lib/stackdepot.c
+@@ -514,3 +514,71 @@ depot_stack_handle_t stack_depot_save(unsigned long *entries,
+ 	return __stack_depot_save(entries, nr_entries, alloc_flags, true);
+ }
+ EXPORT_SYMBOL_GPL(stack_depot_save);
++
++static depot_stack_handle_t recursion_handle;
++static depot_stack_handle_t failure_handle;
++
++static __always_inline depot_stack_handle_t create_custom_stack(void)
 +{
-+	char *ret;
++	unsigned long entries[4];
++	unsigned int nr_entries;
 +
-+	do {
-+		ret = strsep(s, ct);
-+	} while (ret && !*ret);
-+
-+	return ret;
++	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 0);
++	return stack_depot_save(entries, nr_entries, GFP_KERNEL);
 +}
-+EXPORT_SYMBOL_GPL(strsep_no_empty);
 +
- #ifndef __HAVE_ARCH_MEMSET
- /**
-  * memset - Fill a region of memory with the given value
++static noinline void register_recursion_stack(void)
++{
++	recursion_handle = create_custom_stack();
++}
++
++static noinline void register_failure_stack(void)
++{
++	failure_handle = create_custom_stack();
++}
++
++bool stack_depot_capture_init(void)
++{
++	static DEFINE_MUTEX(stack_depot_capture_init_mutex);
++	static bool utility_stacks_ready;
++
++	mutex_lock(&stack_depot_capture_init_mutex);
++	if (!utility_stacks_ready) {
++		register_recursion_stack();
++		register_failure_stack();
++		utility_stacks_ready = true;
++	}
++	mutex_unlock(&stack_depot_capture_init_mutex);
++
++	return utility_stacks_ready;
++}
++
++/* TODO: teach stack_depot_capture_stack to use off stack temporal storage */
++#define CAPTURE_STACK_DEPTH (16)
++
++depot_stack_handle_t stack_depot_capture_stack(gfp_t flags)
++{
++	unsigned long entries[CAPTURE_STACK_DEPTH];
++	depot_stack_handle_t handle;
++	unsigned int nr_entries;
++
++	/*
++	 * Avoid recursion.
++	 *
++	 * Sometimes page metadata allocation tracking requires more
++	 * memory to be allocated:
++	 * - when new stack trace is saved to stack depot
++	 * - when backtrace itself is calculated (ia64)
++	 */
++	if (current->in_capture_stack)
++		return recursion_handle;
++	current->in_capture_stack = 1;
++
++	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 2);
++	handle = stack_depot_save(entries, nr_entries, flags);
++	if (!handle)
++		handle = failure_handle;
++
++	current->in_capture_stack = 0;
++	return handle;
++}
+diff --git a/mm/page_owner.c b/mm/page_owner.c
+index fd4af1ad34b8..c3173e34a779 100644
+--- a/mm/page_owner.c
++++ b/mm/page_owner.c
+@@ -15,12 +15,6 @@
+ 
+ #include "internal.h"
+ 
+-/*
+- * TODO: teach PAGE_OWNER_STACK_DEPTH (__dump_page_owner and save_stack)
+- * to use off stack temporal storage
+- */
+-#define PAGE_OWNER_STACK_DEPTH (16)
+-
+ struct page_owner {
+ 	unsigned short order;
+ 	short last_migrate_reason;
+@@ -37,8 +31,6 @@ struct page_owner {
+ static bool page_owner_enabled __initdata;
+ DEFINE_STATIC_KEY_FALSE(page_owner_inited);
+ 
+-static depot_stack_handle_t dummy_handle;
+-static depot_stack_handle_t failure_handle;
+ static depot_stack_handle_t early_handle;
+ 
+ static void init_early_allocated_pages(void);
+@@ -68,16 +60,6 @@ static __always_inline depot_stack_handle_t create_dummy_stack(void)
+ 	return stack_depot_save(entries, nr_entries, GFP_KERNEL);
+ }
+ 
+-static noinline void register_dummy_stack(void)
+-{
+-	dummy_handle = create_dummy_stack();
+-}
+-
+-static noinline void register_failure_stack(void)
+-{
+-	failure_handle = create_dummy_stack();
+-}
+-
+ static noinline void register_early_stack(void)
+ {
+ 	early_handle = create_dummy_stack();
+@@ -88,8 +70,7 @@ static __init void init_page_owner(void)
+ 	if (!page_owner_enabled)
+ 		return;
+ 
+-	register_dummy_stack();
+-	register_failure_stack();
++	stack_depot_capture_init();
+ 	register_early_stack();
+ 	static_branch_enable(&page_owner_inited);
+ 	init_early_allocated_pages();
+@@ -106,33 +87,6 @@ static inline struct page_owner *get_page_owner(struct page_ext *page_ext)
+ 	return (void *)page_ext + page_owner_ops.offset;
+ }
+ 
+-static noinline depot_stack_handle_t save_stack(gfp_t flags)
+-{
+-	unsigned long entries[PAGE_OWNER_STACK_DEPTH];
+-	depot_stack_handle_t handle;
+-	unsigned int nr_entries;
+-
+-	/*
+-	 * Avoid recursion.
+-	 *
+-	 * Sometimes page metadata allocation tracking requires more
+-	 * memory to be allocated:
+-	 * - when new stack trace is saved to stack depot
+-	 * - when backtrace itself is calculated (ia64)
+-	 */
+-	if (current->in_page_owner)
+-		return dummy_handle;
+-	current->in_page_owner = 1;
+-
+-	nr_entries = stack_trace_save(entries, ARRAY_SIZE(entries), 2);
+-	handle = stack_depot_save(entries, nr_entries, flags);
+-	if (!handle)
+-		handle = failure_handle;
+-
+-	current->in_page_owner = 0;
+-	return handle;
+-}
+-
+ void __reset_page_owner(struct page *page, unsigned short order)
+ {
+ 	int i;
+@@ -145,7 +99,7 @@ void __reset_page_owner(struct page *page, unsigned short order)
+ 	if (unlikely(!page_ext))
+ 		return;
+ 
+-	handle = save_stack(GFP_NOWAIT | __GFP_NOWARN);
++	handle = stack_depot_capture_stack(GFP_NOWAIT | __GFP_NOWARN);
+ 	for (i = 0; i < (1 << order); i++) {
+ 		__clear_bit(PAGE_EXT_OWNER_ALLOCATED, &page_ext->flags);
+ 		page_owner = get_page_owner(page_ext);
+@@ -189,7 +143,7 @@ noinline void __set_page_owner(struct page *page, unsigned short order,
+ 	if (unlikely(!page_ext))
+ 		return;
+ 
+-	handle = save_stack(gfp_mask);
++	handle = stack_depot_capture_stack(gfp_mask);
+ 	__set_page_owner_handle(page_ext, handle, order, gfp_mask);
+ }
+ 
 -- 
 2.37.2.672.g94769d06f0-goog
 
