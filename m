@@ -2,115 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC29C0502F
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:49:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6192BECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229932AbiH3KtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50262 "EHLO
+        id S229848AbiH3Ktf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbiH3KtS (ORCPT
+        with ESMTP id S229775AbiH3Kta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:49:18 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEDB4DF4C2;
-        Tue, 30 Aug 2022 03:49:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661856556; x=1693392556;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=TUQ7avMuLxhf37gvjWMg7acpWzikzJL0j5/UqprSQsU=;
-  b=asj4GmMeODMHhG6VJQAf4xzI3RmH/Temr/drCTi9YVraDXsfpENwcKCq
-   JTKkvi+XpqXTJH80gVCtLU11WWCGb3I9tWzX4UhKkmZHpR9R98APbqmJo
-   3wM0bvAfbbgierXJPl+tb4FXQUHKJJV7hn4ccQB/TCj28IKzN1B1D8XMf
-   KqfxHcXIkikK8hSdA+09prU7HUGpRYMKDKVIvwAFXsfP2behE+jSBAtwC
-   j3sJjnBPHtHd2AWvLdxarfIrNbT8EgV4AFlbfbdCFYas6cUcywo69ACDL
-   DBRcVLdemPKOKnvlYfsX9uLv/QPlLnZYMB199hWQmNGQcKMJaR3UU9R6V
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="278160876"
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="278160876"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 03:49:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="607795711"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga007.jf.intel.com with ESMTP; 30 Aug 2022 03:49:16 -0700
-Received: from rjingar-desk5.amr.corp.intel.com (bdsebast-mobl2.amr.corp.intel.com [10.209.149.131])
-        by linux.intel.com (Postfix) with ESMTP id 0BBCF5808F0;
-        Tue, 30 Aug 2022 03:49:16 -0700 (PDT)
-From:   Rajvi Jingar <rajvi.jingar@linux.intel.com>
-To:     rafael.j.wysocki@intel.com, bhelgaas@google.com
-Cc:     rajvi.jingar@linux.intel.com, david.e.box@linux.intel.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [RESEND PATCH v3 2/2] PCI/PTM: fix to maintain pci_dev->ptm_enabled
-Date:   Tue, 30 Aug 2022 03:49:13 -0700
-Message-Id: <20220830104913.1620539-2-rajvi.jingar@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220830104913.1620539-1-rajvi.jingar@linux.intel.com>
-References: <20220830104913.1620539-1-rajvi.jingar@linux.intel.com>
+        Tue, 30 Aug 2022 06:49:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F23E343F;
+        Tue, 30 Aug 2022 03:49:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA6A661508;
+        Tue, 30 Aug 2022 10:49:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7543C433D6;
+        Tue, 30 Aug 2022 10:49:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661856565;
+        bh=hN4IvqLBUwQ7LA2EASNAfcsy15aflmpkS+M3B+PyQbA=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=BGnjqLXZ93XxFzw3bOsPTLNxqBkFUkOfGzLocWniOUzIY9hEr6OgjETiJqhlQPFU5
+         msPaD2phFgaFY9f1KMA9iHokmReJcHod3g+08+in04V4cJ33N3AJ/J5OP16wbp0AdJ
+         CT9RFxgLuKLop7Zu/lgGVyKgWIX+K7tlqDvHNb3lzRO/Vo7cxKb/ewUuQG425+W2Ir
+         AH/fqszLfgCIpRduolgFeeExfIM5bYkAJKBN/9ND1fMcr/7+sxsmHhQAtsPNU6rctO
+         6SvgggVyWgz0NhE3HyZ89PXKHuQ/ILXOZOZNnK7ETVlWIz5FJAFnSDhjaD8l0n7uPs
+         jyKMB47LmX+Eg==
+From:   Mark Brown <broonie@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Prabhakar <prabhakar.csengg@gmail.com>, linux-spi@vger.kernel.org
+In-Reply-To: <20220829220334.6379-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220829220334.6379-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: Re: [PATCH v2] dt-bindings: spi: renesas,sh-msiof: Fix 'unevaluatedProperties' warnings
+Message-Id: <166185656353.1130408.6017479791067634652.b4-ty@kernel.org>
+Date:   Tue, 30 Aug 2022 11:49:23 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-65ba7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pci_dev->ptm_enabled needs to be maintained to reflect the current PTM
-state of the device. In pci_ptm_disable(), clear ptm_enabled from
-'struct pci_dev' on disabling PTM state for the device.
-In pci_restore_ptm_state(), set dev->ptm_enabled based on the restored
-PTM state of the device.
+On Mon, 29 Aug 2022 23:03:34 +0100, Lad Prabhakar wrote:
+> With 'unevaluatedProperties' support implemented, there's a number of
+> warnings when running dtbs_check:
+> 
+> arch/arm64/boot/dts/renesas/r8a77951-ulcb-kf.dtb: spi@e6e90000: Unevaluated properties are not allowed ('power-domains', 'resets' were unexpected)
+> 	From schema: Documentation/devicetree/bindings/spi/renesas,sh-msiof.yaml
+> 
+> The main problem is that SoC DTSI's include power-domains and resets
+> property, whereas the renesas,sh-msiof.yaml has 'unevaluatedProperties:
+> false'. So just add optional power-domains and resets properties.
+> 
+> [...]
 
-In pci_ptm_disable(), perform ptm_enabled check to avoid config space
-access in case if PTM is already disabled for the device. ptm_enabled
-won't be set for non-PCIe devices so pci_is_pcie(dev) check is not
-needed anymore.
+Applied to
 
-Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- v1->v2:
-   - add ptm_enabled check in pci_ptm_disable().
-   - set the dev->ptm_enabled value in pci_restore_ptm_state().
- v2->v3:
-   - remove pci_is_pcie(dev) check in pci_ptm_disable().
-   - add Reviewed-by tag in commit message
----
- drivers/pci/pcie/ptm.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+   broonie/spi.git for-next
 
-diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
-index 368a254e3124..1ce241d4538f 100644
---- a/drivers/pci/pcie/ptm.c
-+++ b/drivers/pci/pcie/ptm.c
-@@ -34,7 +34,7 @@ void pci_disable_ptm(struct pci_dev *dev)
- 	int ptm;
- 	u16 ctrl;
- 
--	if (!pci_is_pcie(dev))
-+	if (!dev->ptm_enabled)
- 		return;
- 
- 	ptm = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_PTM);
-@@ -44,6 +44,7 @@ void pci_disable_ptm(struct pci_dev *dev)
- 	pci_read_config_word(dev, ptm + PCI_PTM_CTRL, &ctrl);
- 	ctrl &= ~(PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT);
- 	pci_write_config_word(dev, ptm + PCI_PTM_CTRL, ctrl);
-+	dev->ptm_enabled = 0;
- }
- 
- void pci_save_ptm_state(struct pci_dev *dev)
-@@ -83,6 +84,7 @@ void pci_restore_ptm_state(struct pci_dev *dev)
- 
- 	cap = (u16 *)&save_state->cap.data[0];
- 	pci_write_config_word(dev, ptm + PCI_PTM_CTRL, *cap);
-+	dev->ptm_enabled = !!(*cap & PCI_PTM_CTRL_ENABLE);
- }
- 
- void pci_ptm_init(struct pci_dev *dev)
--- 
-2.25.1
+Thanks!
 
+[1/1] dt-bindings: spi: renesas,sh-msiof: Fix 'unevaluatedProperties' warnings
+      commit: f4d381038700361f92d157288b0e18d87fab6c6d
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
