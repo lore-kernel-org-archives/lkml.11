@@ -2,89 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66259ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F94ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbiH3RwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
+        id S231741AbiH3Rw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231232AbiH3Rv6 (ORCPT
+        with ESMTP id S231583AbiH3RwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:51:58 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D1E11CF94
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:48:27 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id k18so5772215lji.13
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:48:26 -0700 (PDT)
+        Tue, 30 Aug 2022 13:52:05 -0400
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE7A6165
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:48:37 -0700 (PDT)
+Received: by mail-oo1-xc2e.google.com with SMTP id t15-20020a4a96cf000000b0044e0142ec24so834713ooi.8
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:48:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=PSuf5+uKyRCAUiI+NXml1CeEx283tkYLDjiJC0rmPIc=;
-        b=Pa38oV3EVhdVuxDZfh0mLFLLZj0UBeyf9wUuaxsSKLBOQMSwP/+JXnyg/+1bYSvB6P
-         clumNFaYdbLtvk3RCoO7z7tXkfk3qhapicwWk09WHdnxzWc6l/jfpXnmuEU6KnrEz6Kt
-         VofAZ3ldyFZosiRqzUpeLIlIMVS5EmYCySQI7+EOvU+4cABLf/SL19ENqRy7bEdgXjgl
-         v1/C7lRGBdGDQM+im6QASqFK3eALWIvAwXYcsU/o7jVMguTS3WO9LcyxT/iQR3MKPL/T
-         5U0Lw0y9tdW7IwO+/VcodE8+Mip00rT3Vv6Vl3fb1N3QUAG1skvdmwM8K6uAuldeB38q
-         PIPQ==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=QOHQdT3OVUHpaukm+t85KBAiboEat0T162RdVG0MMRc=;
+        b=ic2UsMvdh43Vh89r7gu68/5vS8Gc7ct2j4Rov7GrexcQ9s16/wXTD1ymMp1y6SR3aV
+         Jh2sexQ5LADumerYJDxpJk0EJ1AiZ07QkeB0n6zBSGwAqDJGm1oQ20+7KRjGiYxY65VP
+         0hcbTfHGfgIbtrWpk7s6DgceZhnxQc8Z/b2b/KDIdabS2V/wIYca0xqNKhksoli2+BJj
+         ZINYb9N1UkQ418SNClE0gKC2YGQfAl8IvArpO5hk9t6Az5FYaP1sxl/UMPJZcIHVoO27
+         GiDt6a72zGXNlCEyx0Dejn0NzQbRW9luawE9d9riQwmoNMDdCdkIwdslQEMyt6W1yNq1
+         buww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=PSuf5+uKyRCAUiI+NXml1CeEx283tkYLDjiJC0rmPIc=;
-        b=OY56XUw43zaY6S5dGYg8LxY+nHefeYA/XQZX6icSOWZ8UnwUQJ0SQkf8WYXRXsYW1c
-         B/k0tVDXLaWuFc/jMQz+TtWGamELLDwzh3mzGlDuMhydKgYTOYPRt2fWgTUlo00Lp94I
-         8myRD1Esu49JHBszPOIGUlCYJ3tCKdrKc110sFXNMT2rjRghac6eReyaP5Ymhmxvw930
-         rYEkxA/naJgxMoB4g7WHTv39Kf510YY0lWDHl9mpywLfcw1WRvY2Qew4os4MZreFWpLU
-         W8ePbGooX5xy/yWHPplZ8lZIYVcAkN5fvaryGCEGrXjD7hUhMB380f6SVucEVXAN6T0C
-         5Wbg==
-X-Gm-Message-State: ACgBeo3YoBu53XvuYIgEvcPwOMM8MrCaTmDmIkH5APKSRa1NFpZiXaTs
-        YV1DcJwBZLOXoAZejp9/q4T8pw==
-X-Google-Smtp-Source: AA6agR7HZ6jJHiaVODBD57pgKGHlsu+AMUYygh3v4y+9xL4VMk3jrHV/vfKt6fcZwoaqiu0Yk7UBwg==
-X-Received: by 2002:a05:651c:905:b0:261:d00c:e71 with SMTP id e5-20020a05651c090500b00261d00c0e71mr7370638ljq.407.1661881702529;
-        Tue, 30 Aug 2022 10:48:22 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id n2-20020a05651203e200b0048a757d1303sm997253lfq.217.2022.08.30.10.48.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 10:48:22 -0700 (PDT)
-Message-ID: <3c319873-72c9-632c-7c32-4ee909aa1e64@linaro.org>
-Date:   Tue, 30 Aug 2022 20:48:21 +0300
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=QOHQdT3OVUHpaukm+t85KBAiboEat0T162RdVG0MMRc=;
+        b=afqbxBsG4Jupw+pX7Uj1r8ur7nM0w/OJlqnzkN16Nnyd8iF3yb4sbchYBRpK6TMmjX
+         Ec/ACaI7h3ahVILWuBTAnT0vctR3lE/uAEMFTnFrDen5mGaxQ+8zmglwd56A3ooTQBkP
+         khBPt6+4SBAvsv0Ks6GS1S03AV2owpHRI/xpEMD8bSu+XN2z/Vvw/+VoRyOmKuIjl3eb
+         AGGPAa/NkkwFNF4pjuoqcjcmt4u/bvXmLYPi1su8H1SyNwhJni2X8gGHIoYY2v15jl00
+         oYF3LHWI7Dl+LcrYsheGIIpp4/7gRdaA1Zm3iDZ6W9O+IZMkm3pYEUT1ago2c+aqH0p5
+         71dw==
+X-Gm-Message-State: ACgBeo0M9aQwCqGEsOz2TA1NrVqB16raCYTrr82N5zbmMHbWNhxFX4Fp
+        tk+OmEBR75hYPuMQ2kBsHxyNsYArMlbIFQ3nNSQfpnhSAnutCg==
+X-Google-Smtp-Source: AA6agR5myCVhW84r+QnDSTVy/jqy/jK/lcmeHgeFWiCsfy/GwPMSD184FpXqLE+yTKCnYkkikETTKuY42+Rb2QyDVOg=
+X-Received: by 2002:a0d:fd05:0:b0:329:3836:53ac with SMTP id
+ n5-20020a0dfd05000000b00329383653acmr15412080ywf.455.1661880907756; Tue, 30
+ Aug 2022 10:35:07 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 1/3] slimbus: qcom-ngd: use correct error in message of
- pdr_add_lookup() failure
-Content-Language: en-US
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-References: <20220830121359.634344-1-krzysztof.kozlowski@linaro.org>
- <a437b91a-281d-56b3-41bf-15d9593ece74@quicinc.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <a437b91a-281d-56b3-41bf-15d9593ece74@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220830065413.638-1-thunder.leizhen@huawei.com>
+ <CAGETcx8hfzAthF_gCMrmnVOgwgFJEPE=bwRuVeXaiB7ywUkWkg@mail.gmail.com>
+ <Yw3cs6wb4PvnDN/7@shell.armlinux.org.uk> <b120e94b-4b43-6d8a-a136-41417cb250cc@huawei.com>
+ <Yw3hfGV4DYyJ0Gno@shell.armlinux.org.uk> <2452e7b0-d4fd-2e27-a336-bf87b85a8d50@huawei.com>
+ <Yw3oR6WhM0O5LQX5@shell.armlinux.org.uk>
+In-Reply-To: <Yw3oR6WhM0O5LQX5@shell.armlinux.org.uk>
+From:   Saravana Kannan <saravanak@google.com>
+Date:   Tue, 30 Aug 2022 10:34:31 -0700
+Message-ID: <CAGETcx_GB-r+H96hWHfoKSZjK9hodqe-+FWh6rve0E09pz0nXA@mail.gmail.com>
+Subject: Re: [PATCH v2] ARM: Add sanity check for dev->periphid in amba_probe()
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        patches@armlinux.org.uk, Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/08/2022 20:33, Jeff Johnson wrote:
-> On 8/30/2022 5:13 AM, Krzysztof Kozlowski wrote:
->> Use cprrect error code, instead of previous 'ret' value, when printing
-> 
-> s/cprrect/correct/
-> 
+On Tue, Aug 30, 2022 at 3:36 AM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> On Tue, Aug 30, 2022 at 06:31:14PM +0800, Leizhen (ThunderTown) wrote:
+> > On 2022/8/30 18:07, Russell King (Oracle) wrote:
+> > > For an amba driver, drv->bus will always be pointing at amba_bustype.
+> > > That always has a "match" operation. Therefore, the default of '1'
+> > > above will *never* be used for an AMBA driver.
+> > >
+> > > If drv->bus does not point at amba_bustype, then amba_probe() will
+> > > not be called for "drv".
+> > >
+> > > Therefore, amba_match() must always be called before amba_probe().
+> >
+> > Oh, I was careless. I think it's drv->match. But the processing flow
+> > will continue to go to "dev->bus->probe".
+> >
+> > __driver_attach():
+> >         ret = driver_match_device(drv, dev);
+> >         if (ret == 0) {
+> >                 /* no match */
+> >                 return 0;
+> >         } else if (ret == -EPROBE_DEFER) {               <------no return in this branch
+> >                 dev_dbg(dev, "Device match requests probe deferral\n");
+> >                 dev->can_match = true;
+> >                 driver_deferred_probe_add(dev);
+> >         } else if (ret < 0) {
+> >                 dev_dbg(dev, "Bus failed to match device: %d\n", ret);
+> >                 return ret;
+> >         } /* ret > 0 means positive match */
+> >
+> >         ... ...
+> >         driver_probe_device(drv, dev);
+> >              ......
+> >                   dev->bus->probe
+>
+> And that makes no sense, is an already known issue, and there is a patch
+> to fix it:
+>
+> https://lore.kernel.org/all/20220817184026.3468620-1-isaacmanjarres@google.com/
 
-Thanks. I'll fix it.
+Russell,
 
-Best regards,
-Krzysztof
+Thanks for discussing this further and pointing out the other fix. I
+assumed Leizhen was talking about an instance of
+device_driver_attach() which allows probe to be called without match.
+Thankfully that function is used only by some specific
+frameworks/buses types. I did a cursory check and I don't see any
+intersection with we amba.
+
+-Saravana
+P.S: I hate that function exists, as it just throws a wrench in the
+whole driver core design and adds corner cases to a lot of generic
+driver core design.
