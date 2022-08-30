@@ -2,82 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B17FBECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A776ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231320AbiH3Nwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37918 "EHLO
+        id S230483AbiH3NxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231263AbiH3NwL (ORCPT
+        with ESMTP id S231171AbiH3Nw6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:52:11 -0400
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2931EF9D3;
-        Tue, 30 Aug 2022 06:50:33 -0700 (PDT)
-Received: by mail-qv1-f44.google.com with SMTP id n4so6125591qvt.7;
-        Tue, 30 Aug 2022 06:50:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=user-agent:in-reply-to:content-disposition:mime-version:references
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=KbHJHL8dnzmWMykR3oF9Hjfnh7AuBxlSpbgtqcM9Duo=;
-        b=Iyj3hfyDqlssN9M8PypqLprSaNFNdRD45siazwjPwvWpHSbcmB0HwAKHYzQN0rIdZ9
-         AAnxyGb0M7zICqdV4mU9ZLn5MD8SkXYbzy9SW2ndUJWmW+P5HxmHUsE3jM+aJ/XQQQCI
-         rfjyt0OgC7+dj5Mgvh2ib6tx2GUWnkX3upHvyrVbbq+3YbxySJiDMtsCLAjP7oloDCns
-         O10/Htl6X2Nva9d2oJRP9F4/wzHWyflAKrM8Z2qdZmX+06SbH97YkZ9kpfwj8P5pgH7s
-         ouLy9fWKLfSqc8CJZjkcdQ7w4t3un+P7vDuIVhcCx3d274ZhIqYf2tNJbRVkot/3SRPP
-         +3uw==
-X-Gm-Message-State: ACgBeo3+3lATKaRkXYaGYfr9gcDPYmIT2mmetl/rS6W2aSE83emow2q0
-        qdom48SPr6RG6TKshrQe6AA=
-X-Google-Smtp-Source: AA6agR7Em/vAoQjas0z6sIqnGUR9ui9eHGr5NAV6irCM3/O6sVuQU2EhEsRJ75OxZ1lCZfgiD7v38g==
-X-Received: by 2002:a0c:90a2:0:b0:47b:6b36:f94a with SMTP id p31-20020a0c90a2000000b0047b6b36f94amr15208351qvp.26.1661867431513;
-        Tue, 30 Aug 2022 06:50:31 -0700 (PDT)
-Received: from maniforge.dhcp.thefacebook.com ([2620:10d:c091:480::2341])
-        by smtp.gmail.com with ESMTPSA id e8-20020ac84908000000b0031ef67386a5sm6934907qtq.68.2022.08.30.06.50.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 06:50:30 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 08:50:33 -0500
-From:   David Vernet <void@manifault.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
-        kernel-team@fb.com, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        sdf@google.com, haoluo@google.com, jolsa@kernel.org,
-        joannelkoong@gmail.com, tj@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/4] bpf: Add user-space-publisher ringbuffer map type
-Message-ID: <Yw4VqWs4BLU/mVcN@maniforge.dhcp.thefacebook.com>
-References: <20220818221212.464487-1-void@manifault.com>
- <81eff27a-652b-4b55-7a4a-31c421b7f0bb@iogearbox.net>
+        Tue, 30 Aug 2022 09:52:58 -0400
+Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC4327E;
+        Tue, 30 Aug 2022 06:51:41 -0700 (PDT)
+Received: from [10.2.12.24] (unknown [10.2.12.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by 7of9.schinagl.nl (Postfix) with ESMTPSA id 460C5186AE58;
+        Tue, 30 Aug 2022 15:42:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
+        t=1661866978; bh=VGw2Qzyj3OF2DuUcVdIgndrfA7vp4cP/flSebzN5Nhw=;
+        h=Date:Subject:To:References:From:In-Reply-To;
+        b=FrDLdcWtc/a0geROqdLM6MqQbXUDZWXwWK1rBR9Q5J9CzRNuL6X1XpYfL49GqULLG
+         hpzweGZUX/tshrvI4tLDgW/vBKqFINnUAcrvxFO9ljf2VLQZeN7/SM/hdDRWeiM1bJ
+         LalZzZAOcK3/1Ik4q/CsRJiZT8JkiIfIQrZEQzx8=
+Message-ID: <81566e5b-297a-4db4-b741-3a80dbf875ac@schinagl.nl>
+Date:   Tue, 30 Aug 2022 15:42:57 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <81eff27a-652b-4b55-7a4a-31c421b7f0bb@iogearbox.net>
-User-Agent: Mutt/2.2.7 (2022-08-07)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3] dt-bindings: leds: Expand LED_COLOR_ID definitions
+Content-Language: nl
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-leds@vger.kernel.org, Daniel Mack <daniel@zonque.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Olliver Schinagl <oliver+list@schinagl.nl>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220830084454.1133369-1-oliver@schinagl.nl>
+ <Yw37exBark8pCE2p@ada.ifak-system.com>
+From:   Olliver Schinagl <oliver@schinagl.nl>
+In-Reply-To: <Yw37exBark8pCE2p@ada.ifak-system.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 07:38:34PM +0200, Daniel Borkmann wrote:
+On 30-08-2022 13:58, Alexander Dahl wrote:
+> Hello Olliver,
+>
+> Am Tue, Aug 30, 2022 at 10:44:54AM +0200 schrieb Olliver Schinagl:
+>> In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
+>> Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
+>> added. However, there's a little more very common LED colors.
+>>
+>> While the documentation states 'add what is missing', engineers tend to
+>> be lazy and will just use what currently exists. So this patch will take
+>> (a) list from online retailers [0], [1], [2] and use the common LED colors from
+>> there, this being reasonable as this is what is currently available to purchase.
+>>
+>> Note, that LIME seems to be the modern take to 'Yellow-green' or
+>> 'Yellowish-green' from some older datasheets.
+>>
+>> [0]: https://www.digikey.com/en/products/filter/led-lighting-color/125
+>> [1]: https://eu.mouser.com/c/optoelectronics/led-lighting/led-emitters/standard-leds-smd
+>> [2]: https://nl.farnell.com/en-NL/c/optoelectronics-displays/led-products/standard-single-colour-leds-under-75ma
+>>
+>> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
+>> ---
+>> No chances since v2: Re-send with the proper e-mails.
+>> Changes since v1: Unbreak existing definitions.
+>>
+>>   include/dt-bindings/leds/common.h | 28 ++++++++++++++++------------
+>>   1 file changed, 16 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/include/dt-bindings/leds/common.h b/include/dt-bindings/leds/common.h
+>> index 3be89a7c20a9..04bf94523ea3 100644
+>> --- a/include/dt-bindings/leds/common.h
+>> +++ b/include/dt-bindings/leds/common.h
+>> @@ -22,18 +22,22 @@
+>>   #define LEDS_BOOST_FIXED	2
+>>   
+>>   /* Standard LED colors */
+>> -#define LED_COLOR_ID_WHITE	0
+>> -#define LED_COLOR_ID_RED	1
+>> -#define LED_COLOR_ID_GREEN	2
+>> -#define LED_COLOR_ID_BLUE	3
+>> -#define LED_COLOR_ID_AMBER	4
+>> -#define LED_COLOR_ID_VIOLET	5
+>> -#define LED_COLOR_ID_YELLOW	6
+>> -#define LED_COLOR_ID_IR		7
+>> -#define LED_COLOR_ID_MULTI	8	/* For multicolor LEDs */
+>> -#define LED_COLOR_ID_RGB	9	/* For multicolor LEDs that can do arbitrary color,
+>> -					   so this would include RGBW and similar */
+>> -#define LED_COLOR_ID_MAX	10
+>> +#define LED_COLOR_ID_WHITE      0
+>> +#define LED_COLOR_ID_RED        1
+>> +#define LED_COLOR_ID_GREEN      2
+>> +#define LED_COLOR_ID_BLUE       3
+>> +#define LED_COLOR_ID_AMBER      4
+>> +#define LED_COLOR_ID_VIOLET     5
+>> +#define LED_COLOR_ID_YELLOW     6
+>> +#define LED_COLOR_ID_IR         7
+>> +#define LED_COLOR_ID_MULTI      8 /* For multicolor LEDs */
+>> +#define LED_COLOR_ID_RGB        9 /* For multicolor LEDs that can do arbitrary color, including RGBW etc. */
+>> +#define LED_COLOR_ID_PUPRPLE   10
+> This is still a typo, isn't it? Purple?
+Yes sir, And the spacing too, as you mentioned on the v2;
+>
+> Greets
+> Alex
+>
+>> +#define LED_COLOR_ID_ORANGE    11
+>> +#define LED_COLOR_ID_PINK      12
+>> +#define LED_COLOR_ID_CYAN      13
+>> +#define LED_COLOR_ID_LIME      14
+>> +#define LED_COLOR_ID_MAX       15
+>>   
+>>   /* Standard LED functions */
+>>   /* Keyboard LEDs, usually it would be input4::capslock etc. */
+>> -- 
+>> 2.37.2
+>>
 
-Hey Daniel,
-
-> On 8/19/22 12:12 AM, David Vernet wrote:
-> > This patch set defines a new map type, BPF_MAP_TYPE_USER_RINGBUF, which
-> > provides single-user-space-producer / single-kernel-consumer semantics over
-> > a ringbuffer.  Along with the new map type, a helper function called
-> > bpf_user_ringbuf_drain() is added which allows a BPF program to specify a
-> > callback with the following signature, to which samples are posted by the
-> > helper:
-> 
-> Looks like this series fail BPF CI, ptal:
-> 
-> https://github.com/kernel-patches/bpf/runs/7996821883?check_suite_focus=true
-
-Thanks for the heads up. I'll make sure these are fixed these before
-submitting v4 by following the instructions in [0].
-
-[0]: https://github.com/qmonnet/whirl-offload/blob/wip/bpf-ci-check/_posts/2022-08-05-bpf-ci-check.md#running-the-bpf-ci-on-your-own-github-linux-fork.
-
-Thanks,
-David
