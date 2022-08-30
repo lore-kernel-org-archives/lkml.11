@@ -2,71 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F38FC0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F02C3ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbiH3JqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:46:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
+        id S229883AbiH3Jqc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:46:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbiH3JqS (ORCPT
+        with ESMTP id S229824AbiH3Jq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:46:18 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7A26A2DA1;
-        Tue, 30 Aug 2022 02:46:16 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id C5ACD6601BF7;
-        Tue, 30 Aug 2022 10:46:14 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661852775;
-        bh=yjC89saAgBju8ExXt9nwpmDQQR18E9xc86/sSTGhJEQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=AddUnld3tR1MuhWklJh9cxZbTR0S+J3RifWNZeGGGLhVFmcYSHF1zPBERasbYg8uN
-         nxo1Mu92N1gD7OLNFVmCQ0aQV/o/+8bDqhHwHt4boW1gIEhHwQsd/AJmoW2HZZEP1T
-         LI4jeTLXV2F7hvbYf6eGChkbWyi0fTFpivZt42XKQR/K59b7xtQlAofjYQijtWtkvv
-         Jq1HEqkVE4IfUeUTE4TISKWbnoGYlGBJKrmhYkxuds42KygoG3eLOQkOcDGs61UJ41
-         0txWtrYR1/UujPChcQVQSk+xxth56j0rqCPnGGkQqBeqW4A1Mo7BnmVrMyN9umw8hs
-         fDhQkmniXhTTQ==
-Message-ID: <a0396687-f27e-a601-1bb6-daa6fa210ea5@collabora.com>
-Date:   Tue, 30 Aug 2022 11:46:11 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/4] spi: mt7621: Fix an error message in
- mt7621_spi_probe()
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        broonie@kernel.org, matthias.bgg@gmail.com,
-        gregkh@linuxfoundation.org, neil@brown.name, blogic@openwrt.org
-Cc:     linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <cover.1661599671.git.christophe.jaillet@wanadoo.fr>
- <928f3fb507d53ba0774df27cea0bbba4b055993b.1661599671.git.christophe.jaillet@wanadoo.fr>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <928f3fb507d53ba0774df27cea0bbba4b055993b.1661599671.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Tue, 30 Aug 2022 05:46:27 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A05A8CFB;
+        Tue, 30 Aug 2022 02:46:23 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=3;SR=0;TI=SMTPD_---0VNkne02_1661852747;
+Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VNkne02_1661852747)
+          by smtp.aliyun-inc.com;
+          Tue, 30 Aug 2022 17:46:21 +0800
+From:   Liu Song <liusong@linux.alibaba.com>
+To:     axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH] blk-mq: change bio_set_ioprio to inline
+Date:   Tue, 30 Aug 2022 17:45:46 +0800
+Message-Id: <1661852746-117244-1-git-send-email-liusong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 27/08/22 13:42, Christophe JAILLET ha scritto:
-> 'status' is known to be 0 at this point. The expected error code is
-> PTR_ERR(clk).
-> 
-> Switch to dev_err_probe() in order to display the expected error code (in a
-> human readable way).
-> This also filters -EPROBE_DEFER cases, should it happen.
-> 
-> Fixes: 1ab7f2a43558 ("staging: mt7621-spi: add mt7621 support")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+From: Liu Song <liusong@linux.alibaba.com>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Change "bio_set_ioprio" to inline to avoid calling overhead.
+
+Signed-off-by: Liu Song <liusong@linux.alibaba.com>
+---
+ block/blk-mq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index c96c8c4..a17bc83 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2766,7 +2766,7 @@ static inline struct request *blk_mq_get_cached_request(struct request_queue *q,
+ 	return rq;
+ }
+ 
+-static void bio_set_ioprio(struct bio *bio)
++static inline void bio_set_ioprio(struct bio *bio)
+ {
+ 	/* Nobody set ioprio so far? Initialize it based on task's nice value */
+ 	if (IOPRIO_PRIO_CLASS(bio->bi_ioprio) == IOPRIO_CLASS_NONE)
+-- 
+1.8.3.1
+
