@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21104ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E25FFECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231921AbiH3XTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40848 "EHLO
+        id S232168AbiH3XT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbiH3XST (ORCPT
+        with ESMTP id S232021AbiH3XS0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:18:19 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AC01A00D0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:49 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-32a115757b6so191764797b3.13
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:49 -0700 (PDT)
+        Tue, 30 Aug 2022 19:18:26 -0400
+Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAA8A2D90
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:53 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id a21-20020a62bd15000000b005360da6b25aso5226962pff.23
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=0/AOaEGMOEnLVXpdVz+tnbQ5CU/MJUfDeOnF55UijTA=;
-        b=jQsCyEnKs5hrZxLo6apERPwi2BNAmod0kshAu73HyV4Kd5qazKYLn/Syy8pMB2nLuQ
-         czINm+nAC3Mk8VYCnx1hVrMv6qklB8pbRIWFpguRbfwrUWZEnvGx0WR8e/3fmprxG2ky
-         XqqjWsC0cYVtsn7HlPoEmnl/oaLEnB0CAdg/x/mas5xbpO8AtgF5nxfrYc+q4sO4RvUG
-         lDmfQJ/ttD9lwts7AFVRiVLCvJsBcLqwvFllWL+t4Cs+nh4DImNOOnJTIHqLKMwHUqfy
-         H21HQMkA4+f6TdA3hkOOgKvk3kB/5z/T7K6AfoZiQJxuoL29pHoiD41iMBcb+R04/J73
-         e/Rg==
+        bh=iFnSRJpXZ6ws+enk3niGAa+sQbQbq4VBntoKsU5VXE4=;
+        b=J8t21ciPb4uclzBy8RdolHh16L4uHjSPlAR3W96eGY1NRgq0bwUnGyIb7/xB0zD6Mm
+         t/Ekl8MwSi7XCmEjDayXQ66uLNr8dGluPrZS3VFbzGyvmcWjXi9ghNIf+szUOS7yv96Y
+         ocFW1euJKtywYavEfbL0oQzuzrI8Q9YxOfyRl1dU/vxjJzyM7YV3K14yHzyLRLQPt12Q
+         QpopCaiT9/frav6Jc0lR+u4VUsuCI0t3+brnQiGsxhf5Zfi4WHZjxYU2U5t7op40WobX
+         hcgV/BsLdyyDtBPvyOoGr3A+jRCIYyLKCudgDC0XkCtx9uutRUd3A2fU4CVhGS8Tl4hZ
+         ObdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=0/AOaEGMOEnLVXpdVz+tnbQ5CU/MJUfDeOnF55UijTA=;
-        b=CPMKdDZ/VaGozwjSqI5ZxihvA1JLrC8RoRTEoCKRRl7vsqr3b5ugSJoLqo5sjARp1c
-         SjPbxbMiRgNYBzaJxrgDqBCmGgrF9g3Y9U2Y8Zf3ch9xvY5cRyR0/RaWLDwWOZX5ybSO
-         1n4DxZeExCTGIIDNxINsGY2vT8QQ5GL0J9z7tX6y1vJ+FTGfK09vrtIm87vnCTjMyrpG
-         nkZEs7HhuaQxkNKbzTBU17L5Qac7pfddUcWjWWB/zkkXh5cOkpeMRZKQImd5Z63FqqHW
-         +Lqx/cgBxjpp84W0iGRqC1Hx77IAA76EHOsSbxAd78gDq6hyHKNz88H++d0yDQmmgfeE
-         IgPw==
-X-Gm-Message-State: ACgBeo3Rh0Bw0z8cH5ROK3NhFrk7xIG7J4oYbsN4X0ZXW+AfBf8o2buN
-        w87oFeNOpg2r8p0lJS2vwSHczsiO3qA=
-X-Google-Smtp-Source: AA6agR79fTtCYzmzR8E9SiUtgFrrMHPTvZrTGe3eji+9gZAiFbPGV4RpLl0m2jL2z9s7ZeKPXEDeVUpg51s=
+        bh=iFnSRJpXZ6ws+enk3niGAa+sQbQbq4VBntoKsU5VXE4=;
+        b=Nl1CHXWnTpTG1dibOezP83RTbfwzSSKBoO4qCMDBoZOMZpgZYzCajH3cEAI37KmRqE
+         Nhts8iLSL14iEWJEBsGV62qiS5m9NmT0m26P1KAPls0vjqy6vaZbeUchbBAHQV9RsJU2
+         FwLED/+hCDkaSriRrJ5ZfBTr/SIojXVk6TtJpRcllkJOA4aRbMdwDd1YaRsMiaT2Ekad
+         GhZ3mYB8CB+bR2FoyVZHjj0XdWu755eA/q/+wPACyOSmWvSHdUEU0xvksvXyZQkmqGam
+         SVULG7eXEaytl5pbIESBmuLx7whPA5efzF+XD2dZy7bis2ZcpFQ5j0GY7A9noCHqPIcG
+         6rVw==
+X-Gm-Message-State: ACgBeo16381DWyXWdeIW9m2SM1L7pDDgEALyz751b7DMWCPHAq+DpxHj
+        oKnvlw83LS3ayoNPhrIfLU2k06J/UyM=
+X-Google-Smtp-Source: AA6agR5R7oF/e8SX6fs9t5XZLnurDaJZQwlYr9DoRuTdAPN9YKHOa5hFo6PDErSi/a1WPPTEyT8/sEFd4qw=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a25:c106:0:b0:695:9412:2f0e with SMTP id
- r6-20020a25c106000000b0069594122f0emr13900907ybf.206.1661901408989; Tue, 30
- Aug 2022 16:16:48 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:aa03:b0:172:9b18:ebb1 with SMTP id
+ be3-20020a170902aa0300b001729b18ebb1mr22182966plb.24.1661901402413; Tue, 30
+ Aug 2022 16:16:42 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 30 Aug 2022 23:16:06 +0000
+Date:   Tue, 30 Aug 2022 23:16:02 +0000
 In-Reply-To: <20220830231614.3580124-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220830231614.3580124-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830231614.3580124-20-seanjc@google.com>
-Subject: [PATCH v5 19/27] KVM: nVMX: Add a helper to identify low-priority #DB traps
+Message-ID: <20220830231614.3580124-16-seanjc@google.com>
+Subject: [PATCH v5 15/27] KVM: x86: Formalize blocking of nested pending exceptions
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,74 +67,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper to identify "low"-priority #DB traps, i.e. trap-like #DBs
-that aren't TSS T flag #DBs, and tweak the related code to operate on any
-queued exception.  A future commit will separate exceptions that are
-intercepted by L1, i.e. cause nested VM-Exit, from those that do NOT
-trigger nested VM-Exit.  I.e. there will be multiple exception structs
-and multiple invocations of the helpers.
+Capture nested_run_pending as block_pending_exceptions so that the logic
+of why exceptions are blocked only needs to be documented once instead of
+at every place that employs the logic.
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/vmx/nested.c | 23 +++++++++++++++++------
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ arch/x86/kvm/svm/nested.c | 26 ++++++++++++++++----------
+ arch/x86/kvm/vmx/nested.c | 29 ++++++++++++++++++-----------
+ 2 files changed, 34 insertions(+), 21 deletions(-)
 
+diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
+index 8f991592d277..a6111392985c 100644
+--- a/arch/x86/kvm/svm/nested.c
++++ b/arch/x86/kvm/svm/nested.c
+@@ -1356,10 +1356,22 @@ static inline bool nested_exit_on_init(struct vcpu_svm *svm)
+ 
+ static int svm_check_nested_events(struct kvm_vcpu *vcpu)
+ {
+-	struct vcpu_svm *svm = to_svm(vcpu);
+-	bool block_nested_events =
+-		kvm_event_needs_reinjection(vcpu) || svm->nested.nested_run_pending;
+ 	struct kvm_lapic *apic = vcpu->arch.apic;
++	struct vcpu_svm *svm = to_svm(vcpu);
++	/*
++	 * Only a pending nested run blocks a pending exception.  If there is a
++	 * previously injected event, the pending exception occurred while said
++	 * event was being delivered and thus needs to be handled.
++	 */
++	bool block_nested_exceptions = svm->nested.nested_run_pending;
++	/*
++	 * New events (not exceptions) are only recognized at instruction
++	 * boundaries.  If an event needs reinjection, then KVM is handling a
++	 * VM-Exit that occurred _during_ instruction execution; new events are
++	 * blocked until the instruction completes.
++	 */
++	bool block_nested_events = block_nested_exceptions ||
++				   kvm_event_needs_reinjection(vcpu);
+ 
+ 	if (lapic_in_kernel(vcpu) &&
+ 	    test_bit(KVM_APIC_INIT, &apic->pending_events)) {
+@@ -1372,13 +1384,7 @@ static int svm_check_nested_events(struct kvm_vcpu *vcpu)
+ 	}
+ 
+ 	if (vcpu->arch.exception.pending) {
+-		/*
+-		 * Only a pending nested run can block a pending exception.
+-		 * Otherwise an injected NMI/interrupt should either be
+-		 * lost or delivered to the nested hypervisor in the EXITINTINFO
+-		 * vmcb field, while delivering the pending exception.
+-		 */
+-		if (svm->nested.nested_run_pending)
++		if (block_nested_exceptions)
+                         return -EBUSY;
+ 		if (!nested_exit_on_exception(svm))
+ 			return 0;
 diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 4bc2250502ea..b76c69c50649 100644
+index cbbe62a84493..4bc2250502ea 100644
 --- a/arch/x86/kvm/vmx/nested.c
 +++ b/arch/x86/kvm/vmx/nested.c
-@@ -3866,14 +3866,24 @@ static void nested_vmx_inject_exception_vmexit(struct kvm_vcpu *vcpu,
-  * from the emulator (because such #DBs are fault-like and thus don't trigger
-  * actions that fire on instruction retire).
-  */
--static inline unsigned long vmx_get_pending_dbg_trap(struct kvm_vcpu *vcpu)
-+static unsigned long vmx_get_pending_dbg_trap(struct kvm_queued_exception *ex)
+@@ -3899,11 +3899,23 @@ static bool nested_vmx_preemption_timer_pending(struct kvm_vcpu *vcpu)
+ 
+ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
  {
--	if (!vcpu->arch.exception.pending ||
--	    vcpu->arch.exception.vector != DB_VECTOR)
-+	if (!ex->pending || ex->vector != DB_VECTOR)
- 		return 0;
+-	struct vcpu_vmx *vmx = to_vmx(vcpu);
+-	unsigned long exit_qual;
+-	bool block_nested_events =
+-	    vmx->nested.nested_run_pending || kvm_event_needs_reinjection(vcpu);
+ 	struct kvm_lapic *apic = vcpu->arch.apic;
++	struct vcpu_vmx *vmx = to_vmx(vcpu);
++	unsigned long exit_qual;
++	/*
++	 * Only a pending nested run blocks a pending exception.  If there is a
++	 * previously injected event, the pending exception occurred while said
++	 * event was being delivered and thus needs to be handled.
++	 */
++	bool block_nested_exceptions = vmx->nested.nested_run_pending;
++	/*
++	 * New events (not exceptions) are only recognized at instruction
++	 * boundaries.  If an event needs reinjection, then KVM is handling a
++	 * VM-Exit that occurred _during_ instruction execution; new events are
++	 * blocked until the instruction completes.
++	 */
++	bool block_nested_events = block_nested_exceptions ||
++				   kvm_event_needs_reinjection(vcpu);
  
- 	/* General Detect #DBs are always fault-like. */
--	return vcpu->arch.exception.payload & ~DR6_BD;
-+	return ex->payload & ~DR6_BD;
-+}
-+
-+/*
-+ * Returns true if there's a pending #DB exception that is lower priority than
-+ * a pending Monitor Trap Flag VM-Exit.  TSS T-flag #DBs are not emulated by
-+ * KVM, but could theoretically be injected by userspace.  Note, this code is
-+ * imperfect, see above.
-+ */
-+static bool vmx_is_low_priority_db_trap(struct kvm_queued_exception *ex)
-+{
-+	return vmx_get_pending_dbg_trap(ex) & ~DR6_BT;
- }
- 
- /*
-@@ -3885,8 +3895,9 @@ static inline unsigned long vmx_get_pending_dbg_trap(struct kvm_vcpu *vcpu)
-  */
- static void nested_vmx_update_pending_dbg(struct kvm_vcpu *vcpu)
- {
--	unsigned long pending_dbg = vmx_get_pending_dbg_trap(vcpu);
-+	unsigned long pending_dbg;
- 
-+	pending_dbg = vmx_get_pending_dbg_trap(&vcpu->arch.exception);
- 	if (pending_dbg)
- 		vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS, pending_dbg);
- }
-@@ -3956,7 +3967,7 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+ 	if (lapic_in_kernel(vcpu) &&
+ 		test_bit(KVM_APIC_INIT, &apic->pending_events)) {
+@@ -3942,15 +3954,10 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+ 	 * for TSS T flag #DBs).  KVM also doesn't save/restore pending MTF
+ 	 * across SMI/RSM as it should; that needs to be addressed in order to
  	 * prioritize SMI over MTF and trap-like #DBs.
+-	 *
+-	 * Note that only a pending nested run can block a pending exception.
+-	 * Otherwise an injected NMI/interrupt should either be
+-	 * lost or delivered to the nested hypervisor in the IDT_VECTORING_INFO,
+-	 * while delivering the pending exception.
  	 */
  	if (vcpu->arch.exception.pending &&
--	    !(vmx_get_pending_dbg_trap(vcpu) & ~DR6_BT)) {
-+	    !vmx_is_low_priority_db_trap(&vcpu->arch.exception)) {
- 		if (block_nested_exceptions)
+ 	    !(vmx_get_pending_dbg_trap(vcpu) & ~DR6_BT)) {
+-		if (vmx->nested.nested_run_pending)
++		if (block_nested_exceptions)
  			return -EBUSY;
  		if (!nested_vmx_check_exception(vcpu, &exit_qual))
+ 			goto no_vmexit;
+@@ -3967,7 +3974,7 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+ 	}
+ 
+ 	if (vcpu->arch.exception.pending) {
+-		if (vmx->nested.nested_run_pending)
++		if (block_nested_exceptions)
+ 			return -EBUSY;
+ 		if (!nested_vmx_check_exception(vcpu, &exit_qual))
+ 			goto no_vmexit;
 -- 
 2.37.2.672.g94769d06f0-goog
 
