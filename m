@@ -2,110 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36268ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:21:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03740C54EE9
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229775AbiH3RVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60044 "EHLO
+        id S231215AbiH3RVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231161AbiH3RU3 (ORCPT
+        with ESMTP id S231279AbiH3RUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:20:29 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26E916585
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:19:51 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id w8so7404609lft.12
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:19:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Jg6jD+CrZfA3+ErsJegtnFyWel1/wg6TBa1uQnpYkRk=;
-        b=WaIC5OO9eshVf6BBCqhHQeOCg7yAkPDaJ88dkCrizU24wDn+NJORKY5EZxxa4LAAB8
-         VOWto4Sl4pFLdVEHBmNE4+lbugz5Kd99gyFm8hsGWv7RioRLj4MxHLoP4JZ6BtDUS6pu
-         T6KdxyVxEOaZ2vtrW2hyUIgrv00n7knWGipMO6lPCBd5+dyrjecZBsIGrpBb6bsS2aV2
-         aEeE8xShfrZ24KEx/Zju1SgylZ8YViLbYULR4gsE+Xg/xkSJE3ntGluUNOmeroVkzFhU
-         xX/TNr2hZ7203joOlAVn67Ovn3qWnA/VBJ9jbLGsjmv4kAFBzR2asTosXhvgICO1vWp1
-         v/FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Jg6jD+CrZfA3+ErsJegtnFyWel1/wg6TBa1uQnpYkRk=;
-        b=pdpWyBvAvOSdeW4zcuUefC3e8lH/MI0I7CgDK4ZNgnjFa+kafvn1wy4D/wwm3faCdG
-         86igOO0vwXKUjWAnyF1hY2G0idb435n8v5J71viIPyI6dyEC0nAB2vMCo6+7EISsfq/Y
-         DsUV3k4gQHNUIa4XU7kDvtkRVo9mMJCH1usTUakVATG5yjU7JfCaOR7V2oYnCpG0l8eD
-         aK4RNGGv37ZON+H7JmR8VcBUZuDRixe1JVDqk6c/TbC2DhlRG3kPHBAgzRqwNZw23Xyg
-         H6SyT/iGUjGNs41dWNra7tF0OOLLDm236SWxyeQqW3IrrONVmDhx/PrDWd62jHltCG8C
-         yKag==
-X-Gm-Message-State: ACgBeo2xj6sJXLDjRIfGQoVrf33ItHPczIG/ezKhVG2HdmrB8Dn6tlTD
-        yIJBMKAbt3V9BPL6kEKeJG8qVQ==
-X-Google-Smtp-Source: AA6agR5jQT5br8ySZXEzSuLI6UszqeyyUvObvZcBRyykloe0v1NhNfv4SgXtPIKFHfDQo3EkpSorYQ==
-X-Received: by 2002:a05:6512:6cc:b0:48d:acaa:8a66 with SMTP id u12-20020a05651206cc00b0048dacaa8a66mr8786986lff.272.1661879988498;
-        Tue, 30 Aug 2022 10:19:48 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id u14-20020a2eb80e000000b002647530f3b6sm1035235ljo.137.2022.08.30.10.19.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 10:19:47 -0700 (PDT)
-Message-ID: <a3a93acc-434e-4a94-6ba6-6a71f2da8736@linaro.org>
-Date:   Tue, 30 Aug 2022 20:19:46 +0300
+        Tue, 30 Aug 2022 13:20:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D13E24BF0;
+        Tue, 30 Aug 2022 10:19:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA6216178B;
+        Tue, 30 Aug 2022 17:19:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89F08C433B5;
+        Tue, 30 Aug 2022 17:19:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661879994;
+        bh=y3Y5g5RO47iod1MXAA3F9GaMjTHJamxs9vmHWmTV2mc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RfqsWsMZ1MkWHTzcfo/zTbcFaYV7B3BjqJM/xvpPczCj6RXo4VmfxfZa8SnhkcN70
+         fOMjZ6V5p3aOn3ApQGBGgCIzt9n6CsTjkDAYYVbeKY2c2Wt97roN+Bd36tLy13GcEO
+         LDb5XWAYqT8yxocVbjpi1xTDOs6nxxOt3xBfztIxGSgrAO8X7fXCO/U5S51fMLHFrT
+         +mvzI5xaSVSFcIxlX3HIRpNCaVcKjwdWU/yvbazJPex7zUEp3khKmFi46//4BxPbcw
+         6MkM/lnxfA6Y4hT7sXJALiqo3ugRrl36uCqzQSIAvdr3oZGc1kfFtOv3vbBEgE8z2x
+         ORVRE5kYfcDXA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
+        linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 17/33] parisc: Add runtime check to prevent PA2.0 kernels on PA1.x machines
+Date:   Tue, 30 Aug 2022 13:18:08 -0400
+Message-Id: <20220830171825.580603-17-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220830171825.580603-1-sashal@kernel.org>
+References: <20220830171825.580603-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v14 2/3] dt-bindings: edac: nuvoton: Add document for NPCM
- memory controller
-Content-Language: en-US
-To:     Marvin Lin <milkfafa@gmail.com>, linux-edac@vger.kernel.org,
-        rric@kernel.org, james.morse@arm.com, tony.luck@intel.com,
-        mchehab@kernel.org, bp@alien8.de, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
-        benjaminfair@google.com, yuenn@google.com, venture@google.com,
-        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
-        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
-        tali.perry1@gmail.com, ctcchien@nuvoton.com, kflin@nuvoton.com
-References: <20220830022238.28379-1-milkfafa@gmail.com>
- <20220830022238.28379-3-milkfafa@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220830022238.28379-3-milkfafa@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/08/2022 05:22, Marvin Lin wrote:
-> Add dt-bindings document for Nuvoton NPCM memory controller.
-> 
-> Signed-off-by: Marvin Lin <milkfafa@gmail.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../edac/nuvoton,npcm-memory-controller.yaml  | 54 +++++++++++++++++++
->  1 file changed, 54 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml b/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
-> new file mode 100644
-> index 000000000000..d5ef7e7a65f9
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/edac/nuvoton,npcm-memory-controller.yaml
-> @@ -0,0 +1,54 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/edac/nuvoton,npcm-memory-controller.yaml#
+From: Helge Deller <deller@gmx.de>
 
-This should be in memory-controllers directory.
+[ Upstream commit 591d2108f3abc4db9f9073cae37cf3591fd250d6 ]
 
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Nuvoton NPCM Memory Controller Device Tree Bindings
+If a 32-bit kernel was compiled for PA2.0 CPUs, it won't be able to run
+on machines with PA1.x CPUs. Add a check and bail out early if a PA1.x
+machine is detected.
 
-s/Device Tree Bindings//
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/parisc/kernel/head.S | 43 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 42 insertions(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/arch/parisc/kernel/head.S b/arch/parisc/kernel/head.S
+index e0a9e96576221..fd15fd4bbb61b 100644
+--- a/arch/parisc/kernel/head.S
++++ b/arch/parisc/kernel/head.S
+@@ -22,7 +22,7 @@
+ #include <linux/init.h>
+ #include <linux/pgtable.h>
+ 
+-	.level	PA_ASM_LEVEL
++	.level	1.1
+ 
+ 	__INITDATA
+ ENTRY(boot_args)
+@@ -70,6 +70,47 @@ $bss_loop:
+ 	stw,ma          %arg2,4(%r1)
+ 	stw,ma          %arg3,4(%r1)
+ 
++#if !defined(CONFIG_64BIT) && defined(CONFIG_PA20)
++	/* This 32-bit kernel was compiled for PA2.0 CPUs. Check current CPU
++	 * and halt kernel if we detect a PA1.x CPU. */
++	ldi		32,%r10
++	mtctl		%r10,%cr11
++	.level 2.0
++	mfctl,w		%cr11,%r10
++	.level 1.1
++	comib,<>,n	0,%r10,$cpu_ok
++
++	load32		PA(msg1),%arg0
++	ldi		msg1_end-msg1,%arg1
++$iodc_panic:
++	copy		%arg0, %r10
++	copy		%arg1, %r11
++	load32		PA(init_stack),%sp
++#define MEM_CONS 0x3A0
++	ldw		MEM_CONS+32(%r0),%arg0	// HPA
++	ldi		ENTRY_IO_COUT,%arg1
++	ldw		MEM_CONS+36(%r0),%arg2	// SPA
++	ldw		MEM_CONS+8(%r0),%arg3	// layers
++	load32		PA(__bss_start),%r1
++	stw		%r1,-52(%sp)		// arg4
++	stw		%r0,-56(%sp)		// arg5
++	stw		%r10,-60(%sp)		// arg6 = ptr to text
++	stw		%r11,-64(%sp)		// arg7 = len
++	stw		%r0,-68(%sp)		// arg8
++	load32		PA(.iodc_panic_ret), %rp
++	ldw		MEM_CONS+40(%r0),%r1	// ENTRY_IODC
++	bv,n		(%r1)
++.iodc_panic_ret:
++	b .				/* wait endless with ... */
++	or		%r10,%r10,%r10	/* qemu idle sleep */
++msg1:	.ascii "Can't boot kernel which was built for PA8x00 CPUs on this machine.\r\n"
++msg1_end:
++
++$cpu_ok:
++#endif
++
++	.level	PA_ASM_LEVEL
++
+ 	/* Initialize startup VM. Just map first 16/32 MB of memory */
+ 	load32		PA(swapper_pg_dir),%r4
+ 	mtctl		%r4,%cr24	/* Initialize kernel root pointer */
+-- 
+2.35.1
+
