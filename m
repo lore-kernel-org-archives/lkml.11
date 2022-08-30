@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3260C0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C5BECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231458AbiH3RZK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46154 "EHLO
+        id S231448AbiH3RZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:25:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231436AbiH3RYc (ORCPT
+        with ESMTP id S230457AbiH3RYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:24:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0133F7B0C;
-        Tue, 30 Aug 2022 10:22:10 -0700 (PDT)
+        Tue, 30 Aug 2022 13:24:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFF416168C;
+        Tue, 30 Aug 2022 10:22:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C12EB81D1A;
-        Tue, 30 Aug 2022 17:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E494C433B5;
-        Tue, 30 Aug 2022 17:21:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E1A461781;
+        Tue, 30 Aug 2022 17:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D88CFC4314E;
+        Tue, 30 Aug 2022 17:22:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880109;
-        bh=rWYNn6AX8qGZFR6CUEwmBFpxhkx5iTNWaMTbeQLzUWA=;
+        s=k20201202; t=1661880130;
+        bh=V/y6vfSDcUetwyJjbM6hcPYtOEU327f2QJuNariEauc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TmwJY3CEBr0TAdiFuj9FsmLqyyRmgLYX24DLUTLkSgtzNDZhCq/pc95od/VYXSfYk
-         EFlweBeE0LD78dl6va4c9CDpqxtHt1c93tUXHwT3BoMFU6xIm5pkowkcDrSpG7ARDR
-         WrFfXPTX1a4zOYYK38sdWbO8drSYzGjrETuzEWGq3MYL98dlIil4zCjEgJX6R6xmJ7
-         MdsMfZr2ISK0IVIhb6v66Lv4EPU0UeGum6WXOajeQ+kbPzTPN2owB3bpVRBhPi47lG
-         ht1ZilOvGriiP2v0HAkxnexGUCuIoQbM9wT+J37ZunuFhEJccEc+n2Jw2di+AuReN1
-         hn21SPY/G/oYA==
+        b=VACfEL0ZpA/L/Vja9AZEfZGIPXyYD7A3jM1fXAaOowzgyRnVva5AlM9KH+hVqtTXK
+         EdL/FRXOnTLOcvnvEzjTK9Xh9X/MF0J8bau7IyzUVQclW/vhwStMej5jQtJ8BjQclZ
+         VrycihYKUdDYAFXQEvaXNahZ6HQbL2bcNq+OhMSAqb27l2Z7przYS9qgWor9a+atpD
+         /qkvXrkMInnjoX02vMKPW4rveNZI83MoJBdoxip9iJYviN6dpEQw2k8Kvl5jpa/lSt
+         PJPIXNsm8oMTUAcs1z6cZHQb+j5t5M+A37FWqTz8XuKTan3hqHNX1ugEbN7MkRXPLw
+         sXrriMdvJFKXQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jeffy Chen <jeffy.chen@rock-chips.com>,
+Cc:     Zhenneng Li <lizhenneng@kylinos.cn>,
         =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Sasha Levin <sashal@kernel.org>,
-        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        sumit.semwal@linaro.org, dri-devel@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org
-Subject: [PATCH AUTOSEL 5.15 04/23] drm/gem: Fix GEM handle release errors
-Date:   Tue, 30 Aug 2022 13:21:21 -0400
-Message-Id: <20220830172141.581086-4-sashal@kernel.org>
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 08/23] drm/radeon: add a force flush to delay work when radeon
+Date:   Tue, 30 Aug 2022 13:21:25 -0400
+Message-Id: <20220830172141.581086-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
 References: <20220830172141.581086-1-sashal@kernel.org>
@@ -56,132 +55,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffy Chen <jeffy.chen@rock-chips.com>
+From: Zhenneng Li <lizhenneng@kylinos.cn>
 
-[ Upstream commit ea2aa97ca37a9044ade001aef71dbc06318e8d44 ]
+[ Upstream commit f461950fdc374a3ada5a63c669d997de4600dffe ]
 
-Currently we are assuming a one to one mapping between dmabuf and
-GEM handle when releasing GEM handles.
+Although radeon card fence and wait for gpu to finish processing current batch rings,
+there is still a corner case that radeon lockup work queue may not be fully flushed,
+and meanwhile the radeon_suspend_kms() function has called pci_set_power_state() to
+put device in D3hot state.
+Per PCI spec rev 4.0 on 5.3.1.4.1 D3hot State.
+> Configuration and Message requests are the only TLPs accepted by a Function in
+> the D3hot state. All other received Requests must be handled as Unsupported Requests,
+> and all received Completions may optionally be handled as Unexpected Completions.
+This issue will happen in following logs:
+Unable to handle kernel paging request at virtual address 00008800e0008010
+CPU 0 kworker/0:3(131): Oops 0
+pc = [<ffffffff811bea5c>]  ra = [<ffffffff81240844>]  ps = 0000 Tainted: G        W
+pc is at si_gpu_check_soft_reset+0x3c/0x240
+ra is at si_dma_is_lockup+0x34/0xd0
+v0 = 0000000000000000  t0 = fff08800e0008010  t1 = 0000000000010000
+t2 = 0000000000008010  t3 = fff00007e3c00000  t4 = fff00007e3c00258
+t5 = 000000000000ffff  t6 = 0000000000000001  t7 = fff00007ef078000
+s0 = fff00007e3c016e8  s1 = fff00007e3c00000  s2 = fff00007e3c00018
+s3 = fff00007e3c00000  s4 = fff00007fff59d80  s5 = 0000000000000000
+s6 = fff00007ef07bd98
+a0 = fff00007e3c00000  a1 = fff00007e3c016e8  a2 = 0000000000000008
+a3 = 0000000000000001  a4 = 8f5c28f5c28f5c29  a5 = ffffffff810f4338
+t8 = 0000000000000275  t9 = ffffffff809b66f8  t10 = ff6769c5d964b800
+t11= 000000000000b886  pv = ffffffff811bea20  at = 0000000000000000
+gp = ffffffff81d89690  sp = 00000000aa814126
+Disabling lock debugging due to kernel taint
+Trace:
+[<ffffffff81240844>] si_dma_is_lockup+0x34/0xd0
+[<ffffffff81119610>] radeon_fence_check_lockup+0xd0/0x290
+[<ffffffff80977010>] process_one_work+0x280/0x550
+[<ffffffff80977350>] worker_thread+0x70/0x7c0
+[<ffffffff80977410>] worker_thread+0x130/0x7c0
+[<ffffffff80982040>] kthread+0x200/0x210
+[<ffffffff809772e0>] worker_thread+0x0/0x7c0
+[<ffffffff80981f8c>] kthread+0x14c/0x210
+[<ffffffff80911658>] ret_from_kernel_thread+0x18/0x20
+[<ffffffff80981e40>] kthread+0x0/0x210
+ Code: ad3e0008  43f0074a  ad7e0018  ad9e0020  8c3001e8  40230101
+ <88210000> 4821ed21
+So force lockup work queue flush to fix this problem.
 
-But that is not always true, since we would create extra handles for the
-GEM obj in cases like gem_open() and getfb{,2}().
-
-A similar issue was reported at:
-https://lore.kernel.org/all/20211105083308.392156-1-jay.xu@rock-chips.com/
-
-Another problem is that the imported dmabuf might not always have
-gem_obj->dma_buf set, which would cause leaks in
-drm_gem_remove_prime_handles().
-
-Let's fix these for now by using handle to find the exact map to remove.
-
-Signed-off-by: Jeffy Chen <jeffy.chen@rock-chips.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220819072834.17888-1-jeffy.chen@rock-chips.com
+Acked-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_gem.c      | 17 +----------------
- drivers/gpu/drm/drm_internal.h |  4 ++--
- drivers/gpu/drm/drm_prime.c    | 20 ++++++++++++--------
- 3 files changed, 15 insertions(+), 26 deletions(-)
+ drivers/gpu/drm/radeon/radeon_device.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/drm_gem.c b/drivers/gpu/drm/drm_gem.c
-index 6410563a9cb6f..dbd19a34b517b 100644
---- a/drivers/gpu/drm/drm_gem.c
-+++ b/drivers/gpu/drm/drm_gem.c
-@@ -167,21 +167,6 @@ void drm_gem_private_object_init(struct drm_device *dev,
- }
- EXPORT_SYMBOL(drm_gem_private_object_init);
- 
--static void
--drm_gem_remove_prime_handles(struct drm_gem_object *obj, struct drm_file *filp)
--{
--	/*
--	 * Note: obj->dma_buf can't disappear as long as we still hold a
--	 * handle reference in obj->handle_count.
--	 */
--	mutex_lock(&filp->prime.lock);
--	if (obj->dma_buf) {
--		drm_prime_remove_buf_handle_locked(&filp->prime,
--						   obj->dma_buf);
--	}
--	mutex_unlock(&filp->prime.lock);
--}
--
- /**
-  * drm_gem_object_handle_free - release resources bound to userspace handles
-  * @obj: GEM object to clean up.
-@@ -252,7 +237,7 @@ drm_gem_object_release_handle(int id, void *ptr, void *data)
- 	if (obj->funcs->close)
- 		obj->funcs->close(obj, file_priv);
- 
--	drm_gem_remove_prime_handles(obj, file_priv);
-+	drm_prime_remove_buf_handle(&file_priv->prime, id);
- 	drm_vma_node_revoke(&obj->vma_node, file_priv);
- 
- 	drm_gem_object_handle_put_unlocked(obj);
-diff --git a/drivers/gpu/drm/drm_internal.h b/drivers/gpu/drm/drm_internal.h
-index 17f3548c8ed25..d05e6a5b66873 100644
---- a/drivers/gpu/drm/drm_internal.h
-+++ b/drivers/gpu/drm/drm_internal.h
-@@ -74,8 +74,8 @@ int drm_prime_fd_to_handle_ioctl(struct drm_device *dev, void *data,
- 
- void drm_prime_init_file_private(struct drm_prime_file_private *prime_fpriv);
- void drm_prime_destroy_file_private(struct drm_prime_file_private *prime_fpriv);
--void drm_prime_remove_buf_handle_locked(struct drm_prime_file_private *prime_fpriv,
--					struct dma_buf *dma_buf);
-+void drm_prime_remove_buf_handle(struct drm_prime_file_private *prime_fpriv,
-+				 uint32_t handle);
- 
- /* drm_drv.c */
- struct drm_minor *drm_minor_acquire(unsigned int minor_id);
-diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
-index d6c7f4f9a7a29..a350310b65d89 100644
---- a/drivers/gpu/drm/drm_prime.c
-+++ b/drivers/gpu/drm/drm_prime.c
-@@ -187,29 +187,33 @@ static int drm_prime_lookup_buf_handle(struct drm_prime_file_private *prime_fpri
- 	return -ENOENT;
- }
- 
--void drm_prime_remove_buf_handle_locked(struct drm_prime_file_private *prime_fpriv,
--					struct dma_buf *dma_buf)
-+void drm_prime_remove_buf_handle(struct drm_prime_file_private *prime_fpriv,
-+				 uint32_t handle)
- {
- 	struct rb_node *rb;
- 
--	rb = prime_fpriv->dmabufs.rb_node;
-+	mutex_lock(&prime_fpriv->lock);
-+
-+	rb = prime_fpriv->handles.rb_node;
- 	while (rb) {
- 		struct drm_prime_member *member;
- 
--		member = rb_entry(rb, struct drm_prime_member, dmabuf_rb);
--		if (member->dma_buf == dma_buf) {
-+		member = rb_entry(rb, struct drm_prime_member, handle_rb);
-+		if (member->handle == handle) {
- 			rb_erase(&member->handle_rb, &prime_fpriv->handles);
- 			rb_erase(&member->dmabuf_rb, &prime_fpriv->dmabufs);
- 
--			dma_buf_put(dma_buf);
-+			dma_buf_put(member->dma_buf);
- 			kfree(member);
--			return;
--		} else if (member->dma_buf < dma_buf) {
-+			break;
-+		} else if (member->handle < handle) {
- 			rb = rb->rb_right;
- 		} else {
- 			rb = rb->rb_left;
+diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
+index 4f0fbf6674316..92905ebb7b459 100644
+--- a/drivers/gpu/drm/radeon/radeon_device.c
++++ b/drivers/gpu/drm/radeon/radeon_device.c
+@@ -1617,6 +1617,9 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
+ 		if (r) {
+ 			/* delay GPU reset to resume */
+ 			radeon_fence_driver_force_completion(rdev, i);
++		} else {
++			/* finish executing delayed work */
++			flush_delayed_work(&rdev->fence_drv[i].lockup_work);
  		}
  	}
-+
-+	mutex_unlock(&prime_fpriv->lock);
- }
  
- void drm_prime_init_file_private(struct drm_prime_file_private *prime_fpriv)
 -- 
 2.35.1
 
