@@ -2,130 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E5B7ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 14:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9340DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 14:40:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229477AbiH3OkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 10:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38836 "EHLO
+        id S229862AbiH3Okl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 10:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230270AbiH3OkM (ORCPT
+        with ESMTP id S229616AbiH3Oki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 10:40:12 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B331E12D00;
-        Tue, 30 Aug 2022 07:40:10 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id c24so10849267pgg.11;
-        Tue, 30 Aug 2022 07:40:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=4LpW3pBq4YCMnGCeoHBb6AhvMm53b5+mcPk8hEFGdFk=;
-        b=YcB6giRBioWHgdR0J3FejlbwSNcysVfeLaPUcpzrbXVBUHz0GvCqovIeciA+JlHo5B
-         4GPgLUyM+khMRZwPjMRG2sEjzi5tuUPrCuewAiBNFZSNA4uwtj/CeZMJEGIyTM8+EYsl
-         rqjnKowNEXJ/SxFo2+DVQGk4+o7mM6E/+Y+y+o7dSNkBaJ5KrP0K9ldFObP+VGcE5XYX
-         jlwBFC76a5O7IDT3R+7I3q/5olBrAuGKiGou8zMOE2q+nM5PQPOw65xZqihVnNc/EbC/
-         e1ZU7HpuAKeWENxKxmATS35pGlkYo1gJI4kOUET2meBV9If6wouinmlI6fhcFmSn1CnN
-         SLJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=4LpW3pBq4YCMnGCeoHBb6AhvMm53b5+mcPk8hEFGdFk=;
-        b=fgGCmNEhZXwoPNyCt3F9B7+OexfPy9reMpelMwl+zOPQeAHcfeW0/GOlfJZ4VzGP/e
-         PaX4cpwQ55LpyuuovcxTYRuTaLh7FQ3HhNP3fiNhGg9Z0FRULFryXOjlPbUroSkNrvAM
-         XDaeSkQ2ONhi0eiaY9blvbO9oCLEq7fXqp3TbaIh84FzOAqDd7rx0YT0nROa4XKOacww
-         lTUn0vLMhZhvrVlFX1KP3oeCumV3KfxPqVHqRYbkABpBH83UigFFik8Z2GPNaBPoKbcv
-         CN6oG/JmLafYTNUb2ZqU6rbNR4mLAufu9XFIJeBN83A8xTQ4wsE3LEq4DonHaBCcnoER
-         27Og==
-X-Gm-Message-State: ACgBeo1dPxtW14ozdyBCMmyWmAgmWRl+LWs7oOrr+USKb/EDUYuKz2bS
-        nl1uvmT4aG/zkEqR6SHZ9kI=
-X-Google-Smtp-Source: AA6agR53rkweOQcXv7pg1HcvympT5QGJO3ia7ENGgkw+wGggX7tRcF0jok0kUK6ydRmtIoFMuZYyaw==
-X-Received: by 2002:a05:6a00:16c4:b0:535:890:d4a with SMTP id l4-20020a056a0016c400b0053508900d4amr21704709pfc.0.1661870410235;
-        Tue, 30 Aug 2022 07:40:10 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id q12-20020a170902a3cc00b0016d8d277c02sm9740711plb.25.2022.08.30.07.40.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 07:40:09 -0700 (PDT)
-From:   xu xin <cgel.zte@gmail.com>
-X-Google-Original-From: xu xin <xu.xin16@zte.com.cn>
-To:     akpm@linux-foundation.org, adobriyan@gmail.com, willy@infradead.org
-Cc:     bagasdotme@gmail.com, hughd@google.com,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, xu xin <xu.xin16@zte.com.cn>,
-        Xiaokai Ran <ran.xiaokai@zte.com.cn>,
-        Yang Yang <yang.yang29@zte.com.cn>
-Subject: [PATCH v5 2/2] ksm: add profit monitoring documentation
-Date:   Tue, 30 Aug 2022 14:40:03 +0000
-Message-Id: <20220830144003.299870-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220830143731.299702-1-xu.xin16@zte.com.cn>
-References: <20220830143731.299702-1-xu.xin16@zte.com.cn>
+        Tue, 30 Aug 2022 10:40:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795E12C12C
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 07:40:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FC0FB80EF4
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:40:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF8B0C433C1;
+        Tue, 30 Aug 2022 14:40:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661870434;
+        bh=/3OQPzQeZByYa7GYP7YBcP1lmtBiXFL2ZTsz2biZiMY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SU6LkW2gWKLtQ2bdjJbMq9unFMwkSW5i2oGhdrR7tO4HHRFH0MOYX2/pNxUyvQj5l
+         Qn22IxSF5P7xPR6c7IBtGlQ2sM/fmzaQJPIwdAnTpPACmhciLhaoM9d7vFmaKNMSek
+         1NggdkYRXC3FvqIHI3RjEODHfHjnV3SLEzMXpzVckeYNGYNiUdIDQoLdf7RsblEH/d
+         KRTCFLDeFPGBg0Yq8x0bCa7N1TXxbQNcUSTdg9XyP/X9xKideuC6s2v2gJ3di/E4BK
+         c2MwQUEOwMwyQd9+zVn5XVwtWqsTcZ/TBhQCBatkoWDAte8IwHU/HKF3n9lEeKIJHr
+         vilyXuSpAHu8Q==
+Date:   Tue, 30 Aug 2022 22:31:19 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Conor.Dooley@microchip.com
+Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, ajones@ventanamicro.com
+Subject: Re: [PATCH v2] riscv: enable THP_SWAP for RV64
+Message-ID: <Yw4fN/9L2yAsCgXk@xhacker>
+References: <20220827095815.698-1-jszhang@kernel.org>
+ <0256a458-440c-171c-2a6f-e88a50c16f82@microchip.com>
+ <YwzI7VmfFnOvYWgf@xhacker>
+ <4037b310-47c4-ca30-d4b6-a284e87da437@microchip.com>
+ <Yw4XwsVQBB1HRw04@xhacker>
+ <d9331af0-58bc-ed3b-10f5-8509795e3198@microchip.com>
+ <22c254ae-2b84-1342-4b2d-f532f34e2c94@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <22c254ae-2b84-1342-4b2d-f532f34e2c94@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the description of KSM profit and how to determine it separately
-in system-wide range and inner a single process.
+On Tue, Aug 30, 2022 at 02:26:38PM +0000, Conor.Dooley@microchip.com wrote:
+> On 30/08/2022 15:15, Conor Dooley - M52691 wrote:
+> > On 30/08/2022 14:59, Jisheng Zhang wrote:
+> >> On Mon, Aug 29, 2022 at 05:27:48PM +0000, Conor.Dooley@microchip.com wrote:
+> >>> On 29/08/2022 15:10, Jisheng Zhang wrote:
+> >>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> >>>>
+> >>>> On Sat, Aug 27, 2022 at 09:13:03PM +0000, Conor.Dooley@microchip.com wrote:
+> >>>>> Hey Jisheng,
+> >>>>
+> >>>> Hi Conor,
+> >>>>
+> >>>>> On 27/08/2022 10:58, Jisheng Zhang wrote:
+> >>>>>> I have a Sipeed Lichee RV dock board which only has 512MB DDR, so
+> >>>>>> memory optimizations such as swap on zram are helpful. As is seen
+> >>>>>> in commit d0637c505f8a ("arm64: enable THP_SWAP for arm64") and
+> >>>>>> commit bd4c82c22c367e ("mm, THP, swap: delay splitting THP after
+> >>>>>> swapped out"), THP_SWAP can improve the swap throughput significantly.
+> >>>>>>
+> >>>>>> Enable THP_SWAP for RV64, testing the micro-benchmark which is
+> >>>>>> introduced by commit d0637c505f8a ("arm64: enable THP_SWAP for arm64")
+> >>>>>> shows below numbers on the Lichee RV dock board:
+> >>>>>>
+> >>>>>> thp swp throughput w/o patch: 66908 bytes/ms (mean of 10 tests)
+> >>>>>> thp swp throughput w/ patch: 322638 bytes/ms (mean of 10 tests)
+> >>>>>
+> >>>>> I know the original commit message contains this, but it's a little
+> >>>>> odd. If the patch /enables/ THP then how would there be THP swap
+> >>>>> prior to the patch?
+> >>>>
+> >>>> hmm, it's swap I'll send a v3 to correct the description.
+> >>>>
+> >>>>>
+> >>>>>>
+> >>>>>> Improved by 382%!
+> >>>>>
+> >>>>> I could not replicate the after numbers on my nezha, so I suspect
+> >>>>> I am missing something in my config/setup. zswap is enabled and is
+> >>>>
+> >>>> swap on zram rather than zswap ;)
+> >>>
+> >>> I think I tried about 30 different config variations, initially not
+> >>> using zswap and later using it.
+> >>> My zramctl looks like so (although I did try zstd too) after running
+> >>> the demo application from that commit:
+> >>>
+> >>> NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
+> >>> /dev/zram0 lzo-rle       241M  22M  8.4M  9.1M       1 [SWAP]
+> >>>
+> >>> I am using the default riscv defconfig + the following:
+> >>> CONFIG_ZRAM=y
+> >>> CONFIG_CRYPTO_DEFLATE=y
+> >>> CONFIG_CRYPTO_LZO=y
+> >>> CONFIG_CRYPTO_ZSTD=y
+> >>> CONFIG_ZRAM_MEMORY_TRACKING=y
+> >>> CONFIG_TRANSPARENT_HUGEPAGE=y
+> >>> CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
+> >>> CONFIG_THP_SWAP=y
+> >>>
+> >>> Am I just missing something obvious here?
+> >>
+> >> similar config options here. what's your rootfs? Is your board busy
+> >> with something? I used a minimal rootfs built from buildroot.
+> >> can you plz show your numbers w/ and w/o the patch?
+> > 
+> > I was using fedora for the testing, downloaded directly from
+> > koji. My before/after numbers varied, but were around 80,000
+> > bytes/ms most of the time.
+> > 
+> > If I increased the size to 500 * 1024 * 1024 I got around 130k.
+> 
+> 130k before & after.**
+> 
+> > 
+> > Before/after the patch, the numbers did not really change, but
+> > things did fluctuate quite wildly - from about 50k to 90k using
+> > the 400 size.
+> 
+> What I mean is: before/after the patch had visible performance
+> difference because it was always flucuating in the same range.
 
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
-Reviewed-by: Xiaokai Ran <ran.xiaokai@zte.com.cn>
-Reviewed-by: Yang Yang <yang.yang29@zte.com.cn>
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/admin-guide/mm/ksm.rst | 36 ++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+I see the difference -- w/ minial buildroot rootfs, the numbers isn't
+kept the same but the difference is trivial, I even got two or three
+the same numbers during 10 times of testing. But your numbers were
+always flucuating, so I guess your system maybe busy with with
+something in a shore period, I.E the os env is full of noise. 
 
-diff --git a/Documentation/admin-guide/mm/ksm.rst b/Documentation/admin-guide/mm/ksm.rst
-index b244f0202a03..fb6ba2002a4b 100644
---- a/Documentation/admin-guide/mm/ksm.rst
-+++ b/Documentation/admin-guide/mm/ksm.rst
-@@ -184,6 +184,42 @@ The maximum possible ``pages_sharing/pages_shared`` ratio is limited by the
- ``max_page_sharing`` tunable. To increase the ratio ``max_page_sharing`` must
- be increased accordingly.
- 
-+Monitoring KSM profit
-+=====================
-+
-+KSM can save memory by merging identical pages, but also can consume
-+additional memory, because it needs to generate a number of rmap_items to
-+save each scanned page's brief rmap information. Some of these pages may
-+be merged, but some may not be abled to be merged after being checked
-+several times, which are unprofitable memory consumed.
-+
-+1) How to determine whether KSM save memory or consume memory in system-wide
-+   range? Here is a simple approximate calculation for reference::
-+
-+	general_profit =~ pages_sharing * sizeof(page) - (all_rmap_items) *
-+			  sizeof(rmap_item);
-+
-+   where all_rmap_items can be easily obtained by summing ``pages_sharing``,
-+   ``pages_shared``, ``pages_unshared`` and ``pages_volatile``.
-+
-+2) The KSM profit inner a single process can be similarly obtained by the
-+   following approximate calculation::
-+
-+	process_profit =~ ksm_merging_pages * sizeof(page) -
-+			  ksm_rmap_items * sizeof(rmap_item).
-+
-+   where ksm_merging_pages is shown under the directory ``/proc/<pid>/``,
-+   and ksm_rmap_items is shown in ``/proc/<pid>/ksm_stat``.
-+
-+From the perspective of application, a high ratio of ``ksm_rmap_items`` to
-+``ksm_merging_pages`` means a bad madvise-applied policy, so developers or
-+administrators have to rethink how to change madvise policy. Giving an example
-+for reference, a page's size is usually 4K, and the rmap_item's size is
-+separately 32B on 32-bit CPU architecture and 64B on 64-bit CPU architecture.
-+so if the ``ksm_rmap_items/ksm_merging_pages`` ratio exceeds 64 on 64-bit CPU
-+or exceeds 128 on 32-bit CPU, then the app's madvise policy should be dropped,
-+because the ksm profit is approximately zero or negative.
-+
- Monitoring KSM events
- =====================
- 
--- 
-2.25.1
-
+I guess you may get similar improvement percentage when trying buildroot
+> 
+> > 
+> >>
+> >> I also tried the simple benchmark on qemu(just for reference, since
+> >> I have no other riscv boards except the lichee RV dock board):
+> >> swp out w/o patch: 30066 bytes/ms (mean of 10 tests)
+> >> swp out w/ patch: 130055 bytes/ms (mean of 10 tests)
+> >> so improved by 332.7% 
+> > 
+> > I'll give QEMU a go so :)
+> 
