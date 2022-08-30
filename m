@@ -2,124 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33A95ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD62ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230358AbiH3Nhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:37:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
+        id S230137AbiH3NiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229777AbiH3Nhp (ORCPT
+        with ESMTP id S230177AbiH3Nhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:37:45 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C35A6612A
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:37:44 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id k9so14309914wri.0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:37:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=eJwvPnyxYM+rkWN/B5T3u9GVEhfio+TrUX3WU5XcQn0=;
-        b=eJ8Q9S1/vCT7cijJVAWN8HR5xnr4XG/bT9gfNLUDKdyxQxPABjo+s4Y6pUxKK4Tl4O
-         jPc2/lY4v59LZSUGa9aKxBb01w/WAWEog2r8xqVxzlhi7sYloua5sSMoo8h1Ju3qINN/
-         3avwaD6Hws/C4g+njGzPWYxF+RusS9DNMyl9nt2y5ZJnNdOG5bGLLNdGTXWMMHpi5f2E
-         IIjR87c/vXSr0+OPP2cwmM1pzjUy5FHA+vG4pvTZWF9oCnm1SdWfv32yZASc1o+ERboZ
-         XMrCHtZPBtVNx/gkiYGlNPnexb2ABfjXNmkHIEWQAhFq4YntlmA92bdCXkafb7r0LXVd
-         7Eiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=eJwvPnyxYM+rkWN/B5T3u9GVEhfio+TrUX3WU5XcQn0=;
-        b=PYG/bUuxVD86hxp1AwCPX33hKVvjsNIRDJtBFwzXv3l342UbaFDJA9ODxK0YGXaw26
-         2NQ7K+7MvvzhAZyyOLIolooaHZHYE2d+xfMF/MopPTR86CYXbqy8bf57dLOcQXHqNI4b
-         haS4rfFOsr+TasMsj+Eg99IswmuXi5U4AmjbJEfdBce93RdUMEoKNqTG0nBVsmAf4ccv
-         uSKMt7Jml4Ihpo2pEd2o3I6ioAcfn0V/9BYe8ofkgKs++Q9E8tll4hrFFd08j9bmXMK/
-         2SroJ4HUYDIOKCpbGV2x23mDw4LTMC3OorwdqV5EqexlRrOENfT3jF6MQH5mh6nBaqeq
-         QfFg==
-X-Gm-Message-State: ACgBeo1tK+o+M+unyK3Kf9UKXNk3lpYTjQPM20G6k8LufahCKzvG458O
-        //RCAkewBNf+MofYOn0Ci0OGaw==
-X-Google-Smtp-Source: AA6agR4QHq093VZ3/eQb0FJDYlUt9A1Mn1xHd/D1qdIE2cMIfLfOMQUBjFLqXGMVXyoshwbgON+EAQ==
-X-Received: by 2002:adf:dec9:0:b0:226:e033:c048 with SMTP id i9-20020adfdec9000000b00226e033c048mr3225813wrn.577.1661866663228;
-        Tue, 30 Aug 2022 06:37:43 -0700 (PDT)
-Received: from [192.168.86.238] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id n8-20020a5d4848000000b00226d01a4635sm9658965wrs.35.2022.08.30.06.37.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 06:37:42 -0700 (PDT)
-Message-ID: <791ea3b6-c326-9e71-e23b-93206e305c85@linaro.org>
-Date:   Tue, 30 Aug 2022 14:37:41 +0100
+        Tue, 30 Aug 2022 09:37:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140B9E190A
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:37:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661866665;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=9UTBAFUbAYHYUBau1lZ/BOUOjtud9XWZ2JTu1H1Jhfs=;
+        b=dF7dHPY4KoOX7YYv8/kKyM4+Uc60hP7ZA6v9NIHDP97OVcUbwda9pSN3tbFatVKY7pDI8G
+        DrZyOF5MKHIc1qEF0GzebTWbth4g29EA5T0WI85P2WA3P6LNPQ7/6w9OEuEs0gKEX08gB+
+        976l6+QGTsZVJVtH1ymA75Apav4Wf/Y=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-646-GJ2Yd-HCPhaqHHQBf1RBgQ-1; Tue, 30 Aug 2022 09:37:42 -0400
+X-MC-Unique: GJ2Yd-HCPhaqHHQBf1RBgQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7904585A585;
+        Tue, 30 Aug 2022 13:37:40 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.232])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 65DD52166B26;
+        Tue, 30 Aug 2022 13:37:38 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v6 00/33] KVM: VMX: Support updated eVMCSv1 revision + use vmcs_config for L1 VMX MSRs
+Date:   Tue, 30 Aug 2022 15:37:04 +0200
+Message-Id: <20220830133737.1539624-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v1 00/14] nvmem: core: introduce NVMEM layouts
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-References: <20220825214423.903672-1-michael@walle.cc>
- <768ff63a-54f5-9cde-e888-206cdf018df3@milecki.pl>
- <267821eee5dcab79fd0ecebe0d9f8b0c@walle.cc>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <267821eee5dcab79fd0ecebe0d9f8b0c@walle.cc>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks Michael for the work.
+Changes since "[RFC PATCH v6 00/36] KVM: x86: eVMCS rework":
+- Drop the most controversial TSC_SCALING enablement for Hyper-V on KVM:
+  - "KVM: nVMX: Enforce unsupported eVMCS in VMX MSRs for host accesses" patch dropped.
+  - "KVM: nVMX: Support TSC scaling with enlightened VMCS" patch dropped.
+  - "KVM: selftests: Enable TSC scaling in evmcs selftest" patch dropped.
 
-On 29/08/2022 09:22, Michael Walle wrote:
-> 
->> One thing I believe you need to handle is replacing "cell_post_process"
->> callback with your layout thing.
->>
->> I find it confusing to have
->> 1. cell_post_process() CB at NVMEM device level
->> 2. post_process() CB at NVMEM cell level
-> 
-> What is wrong with having a callback at both levels?
+Original description:
 
-we should converge this tbh, its more than one code paths to deal with 
-similar usecases.
+Enlightened VMCS v1 definition was updates to include fields for the
+following features:
+    - PerfGlobalCtrl
+    - EnclsExitingBitmap
+    - TSC scaling
+    - GuestLbrCtl
+    - CET
+    - SSP
+While the information is missing in the publicly available TLFS, the
+updated definition comes with a new feature bit in CPUID.0x4000000A.EBX
+(BIT 0) for PerfGlobalCtrl.
 
-I have put down some thoughts in "[PATCH v1 06/14] nvmem: core: 
-introduce NVMEM layouts" and "[PATCH v1 07/14] nvmem: core: add per-cell 
-post processing" review.
+Add support for the new revision to KVM. SSP, CET and GuestLbrCtl
+features are not currently supported by KVM. Note: for Hyper-V on KVM,
+only PerfGlobalCtrl is added as it has a dedicated CPUID bit. The way
+how to enable different layouts of eVMSC in a VMM friendly way is still
+under discussion.
 
+While on it, implement Sean's idea to use vmcs_config for setting up
+L1 VMX control MSRs instead of re-reading host MSRs.
 
---srini
-> 
-> Granted, in this particular case (it is just used at one place), I still
-> think that it is the wrong approach to add this transformation in the
-> driver (in this particular case). The driver is supposed to give you
-> access to the SoC's fuse box, but it will magically change the content
-> of a cell if the nvmem consumer named this cell "mac-address" (which
-> you also found confusing the last time and I do too!).
-> 
-> The driver itself doesn't add any cells on its own, so I cannot register
-> a .post_process hook there. Therefore, you'd need that post_process hook
-> on every cell, which is equivalent to have a post_process hook at
-> device level.
-> 
-> Unless you have a better idea. I'll leave that up to NXP to fix that (or
-> leave it like that).
-> 
-> -michael
+Jim Mattson (1):
+  KVM: x86: VMX: Replace some Intel model numbers with mnemonics
+
+Sean Christopherson (9):
+  KVM: x86: Check for existing Hyper-V vCPU in kvm_hv_vcpu_init()
+  KVM: x86: Report error when setting CPUID if Hyper-V allocation fails
+  KVM: nVMX: Treat eVMCS as enabled for guest iff Hyper-V is also
+    enabled
+  KVM: nVMX: Use CC() macro to handle eVMCS unsupported controls checks
+  KVM: nVMX: WARN once and fail VM-Enter if eVMCS sees VMFUNC[63:32] !=
+    0
+  KVM: nVMX: Don't propagate vmcs12's PERF_GLOBAL_CTRL settings to
+    vmcs02
+  KVM: nVMX: Always emulate PERF_GLOBAL_CTRL VM-Entry/VM-Exit controls
+  KVM: VMX: Don't toggle VM_ENTRY_IA32E_MODE for 32-bit kernels/KVM
+  KVM: VMX: Adjust CR3/INVPLG interception for EPT=y at runtime, not
+    setup
+
+Vitaly Kuznetsov (23):
+  x86/hyperv: Fix 'struct hv_enlightened_vmcs' definition
+  x86/hyperv: Update 'struct hv_enlightened_vmcs' definition
+  KVM: x86: Zero out entire Hyper-V CPUID cache before processing
+    entries
+  KVM: nVMX: Refactor unsupported eVMCS controls logic to use 2-d array
+  KVM: VMX: Define VMCS-to-EVMCS conversion for the new fields
+  KVM: nVMX: Support several new fields in eVMCSv1
+  KVM: x86: hyper-v: Cache HYPERV_CPUID_NESTED_FEATURES CPUID leaf
+  KVM: selftests: Add ENCLS_EXITING_BITMAP{,HIGH} VMCS fields
+  KVM: selftests: Switch to updated eVMCSv1 definition
+  KVM: nVMX: Support PERF_GLOBAL_CTRL with enlightened VMCS
+  KVM: VMX: Get rid of eVMCS specific VMX controls sanitization
+  KVM: VMX: Check VM_ENTRY_IA32E_MODE in setup_vmcs_config()
+  KVM: VMX: Check CPU_BASED_{INTR,NMI}_WINDOW_EXITING in
+    setup_vmcs_config()
+  KVM: VMX: Tweak the special handling of SECONDARY_EXEC_ENCLS_EXITING
+    in setup_vmcs_config()
+  KVM: VMX: Extend VMX controls macro shenanigans
+  KVM: VMX: Move CPU_BASED_CR8_{LOAD,STORE}_EXITING filtering out of
+    setup_vmcs_config()
+  KVM: VMX: Add missing VMEXIT controls to vmcs_config
+  KVM: VMX: Add missing CPU based VM execution controls to vmcs_config
+  KVM: VMX: Move LOAD_IA32_PERF_GLOBAL_CTRL errata handling out of
+    setup_vmcs_config()
+  KVM: nVMX: Always set required-1 bits of pinbased_ctls to
+    PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR
+  KVM: nVMX: Use sanitized allowed-1 bits for VMX control MSRs
+  KVM: VMX: Cache MSR_IA32_VMX_MISC in vmcs_config
+  KVM: nVMX: Use cached host MSR_IA32_VMX_MISC value for setting up
+    nested MSR
+
+ arch/x86/include/asm/hyperv-tlfs.h            |  22 +-
+ arch/x86/include/asm/kvm_host.h               |   2 +
+ arch/x86/kvm/cpuid.c                          |  18 +-
+ arch/x86/kvm/hyperv.c                         |  70 +++--
+ arch/x86/kvm/hyperv.h                         |   6 +-
+ arch/x86/kvm/vmx/capabilities.h               |  14 +-
+ arch/x86/kvm/vmx/evmcs.c                      | 192 ++++++++-----
+ arch/x86/kvm/vmx/evmcs.h                      |  10 +-
+ arch/x86/kvm/vmx/nested.c                     |  94 ++++---
+ arch/x86/kvm/vmx/nested.h                     |   2 +-
+ arch/x86/kvm/vmx/vmx.c                        | 259 ++++++++----------
+ arch/x86/kvm/vmx/vmx.h                        | 172 ++++++++++--
+ .../selftests/kvm/include/x86_64/evmcs.h      |  45 ++-
+ .../selftests/kvm/include/x86_64/vmx.h        |   2 +
+ 14 files changed, 584 insertions(+), 324 deletions(-)
+
+-- 
+2.37.2
+
