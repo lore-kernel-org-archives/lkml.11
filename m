@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD5D9C54EE9
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F42ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:27:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231564AbiH3R05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46222 "EHLO
+        id S231676AbiH3R07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:26:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231598AbiH3R0U (ORCPT
+        with ESMTP id S231563AbiH3R0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:26:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3657F11F1BF;
-        Tue, 30 Aug 2022 10:24:27 -0700 (PDT)
+        Tue, 30 Aug 2022 13:26:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E04FD75B1;
+        Tue, 30 Aug 2022 10:24:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B23C8617B4;
-        Tue, 30 Aug 2022 17:24:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D7BDC433C1;
-        Tue, 30 Aug 2022 17:24:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9818761782;
+        Tue, 30 Aug 2022 17:22:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 151C1C433D6;
+        Tue, 30 Aug 2022 17:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880256;
-        bh=yAp8ZMi8qH8KS1kr4ogQHHKmeUCwzaZ840SmHCAlZ8E=;
+        s=k20201202; t=1661880176;
+        bh=P2yKcHcxOGwRoKPf3QkD6WvUqMKsj5wWrzv5nK7cFBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OtrajiZ/+tiA9vKaBmLcdr3vjgD1TdGpjT3pk+arJiKvPYKU+cdF6PccfS7Fz1Ctg
-         Mh33iWNo9PChvWzeTtWtQ2LOimkHqozX3KS5Hw86XD4XPFNIK/lZVB6b3RpaDOgk/l
-         3UErOLS+dql3ynrSTkYvg1D03H+djj3vImaifIK2NKM8vNbNfrfHD5Rm6GVAogED4+
-         hKwjqm6nYV/g3Qltur+hmLtTjgkLf4RNcNybU5Q7XR2Qt8vfVBtTBt7w3KVOn6XUtY
-         4i7VcPHoPcdp9BAOPcrLBTaCQ3N99I6z01yz2oa65Qdx/GSVqD8e8kd9S/yMqpT3c7
-         LcK0SLu0sDWuQ==
+        b=FC2pPcrk/PQmD/8Ad9qCXqBsGKC2MCCiq3P1nYvksfQYZ3zbxEkQ5QlxAR9OzyvX6
+         8kJv+tgRsgNBpi+NFGyxqcNZ/HLGCgutvQoJAl8ikrwztGvkHslWlVrw4/v+JPm0CV
+         wf/YyaswSSF012d1GZeVGaM2G5lUOnMLcHdSCv9rnxTuajYEZpsVohRSTXb1uJZddq
+         uDi6/WBTtnEXqPFr6d2fhFAtHdfUur3yUod1+su47nXHeO/mXZDR/PIchTfTFntKil
+         MqHZKynR1CEkQJywo60H3I4dZ3EyFEjPbxWHNaSc6GH5hWJBga8z/dPdzBsmlviwXO
+         nsZcgPjY+v5vg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     lily <floridsleeves@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, asml.silence@gmail.com,
-        imagedong@tencent.com, luiz.von.dentz@intel.com,
-        vasily.averin@linux.dev, jk@codeconstruct.com.au,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 13/16] net/core/skbuff: Check the return value of skb_copy_bits()
-Date:   Tue, 30 Aug 2022 13:23:14 -0400
-Message-Id: <20220830172317.581397-13-sashal@kernel.org>
+Cc:     Letu Ren <fantasquex@gmail.com>, Zheyu Ma <zheyuma97@gmail.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        baihaowen@meizu.com, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 20/23] fbdev: fb_pm2fb: Avoid potential divide by zero error
+Date:   Tue, 30 Aug 2022 13:21:37 -0400
+Message-Id: <20220830172141.581086-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
-References: <20220830172317.581397-1-sashal@kernel.org>
+In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
+References: <20220830172141.581086-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,36 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lily <floridsleeves@gmail.com>
+From: Letu Ren <fantasquex@gmail.com>
 
-[ Upstream commit c624c58e08b15105662b9ab9be23d14a6b945a49 ]
+[ Upstream commit 19f953e7435644b81332dd632ba1b2d80b1e37af ]
 
-skb_copy_bits() could fail, which requires a check on the return
-value.
+In `do_fb_ioctl()` of fbmem.c, if cmd is FBIOPUT_VSCREENINFO, var will be
+copied from user, then go through `fb_set_var()` and
+`info->fbops->fb_check_var()` which could may be `pm2fb_check_var()`.
+Along the path, `var->pixclock` won't be modified. This function checks
+whether reciprocal of `var->pixclock` is too high. If `var->pixclock` is
+zero, there will be a divide by zero error. So, it is necessary to check
+whether denominator is zero to avoid crash. As this bug is found by
+Syzkaller, logs are listed below.
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+divide error in pm2fb_check_var
+Call Trace:
+ <TASK>
+ fb_set_var+0x367/0xeb0 drivers/video/fbdev/core/fbmem.c:1015
+ do_fb_ioctl+0x234/0x670 drivers/video/fbdev/core/fbmem.c:1110
+ fb_ioctl+0xdd/0x130 drivers/video/fbdev/core/fbmem.c:1189
+
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Letu Ren <fantasquex@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/video/fbdev/pm2fb.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 48b6438f2a3d9..548f1adc14284 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3986,9 +3986,8 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
- 				SKB_GSO_CB(nskb)->csum_start =
- 					skb_headroom(nskb) + doffset;
- 			} else {
--				skb_copy_bits(head_skb, offset,
--					      skb_put(nskb, len),
--					      len);
-+				if (skb_copy_bits(head_skb, offset, skb_put(nskb, len), len))
-+					goto err;
- 			}
- 			continue;
- 		}
+diff --git a/drivers/video/fbdev/pm2fb.c b/drivers/video/fbdev/pm2fb.c
+index c68725eebee3b..cbcf112c88d30 100644
+--- a/drivers/video/fbdev/pm2fb.c
++++ b/drivers/video/fbdev/pm2fb.c
+@@ -617,6 +617,11 @@ static int pm2fb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
+ 		return -EINVAL;
+ 	}
+ 
++	if (!var->pixclock) {
++		DPRINTK("pixclock is zero\n");
++		return -EINVAL;
++	}
++
+ 	if (PICOS2KHZ(var->pixclock) > PM2_MAX_PIXCLOCK) {
+ 		DPRINTK("pixclock too high (%ldKHz)\n",
+ 			PICOS2KHZ(var->pixclock));
 -- 
 2.35.1
 
