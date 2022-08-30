@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03740C54EE9
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA92ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231215AbiH3RVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:21:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
+        id S229959AbiH3RVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231279AbiH3RUj (ORCPT
+        with ESMTP id S231282AbiH3RUk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:20:39 -0400
+        Tue, 30 Aug 2022 13:20:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D13E24BF0;
-        Tue, 30 Aug 2022 10:19:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E38971839B;
+        Tue, 30 Aug 2022 10:19:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA6216178B;
-        Tue, 30 Aug 2022 17:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89F08C433B5;
-        Tue, 30 Aug 2022 17:19:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1513761785;
+        Tue, 30 Aug 2022 17:19:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9F0DC433C1;
+        Tue, 30 Aug 2022 17:19:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661879994;
-        bh=y3Y5g5RO47iod1MXAA3F9GaMjTHJamxs9vmHWmTV2mc=;
+        s=k20201202; t=1661879988;
+        bh=xGNcFDDt6V15LLpcLKZBhSPZxEQpN6bnSJ9NyfqZQE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RfqsWsMZ1MkWHTzcfo/zTbcFaYV7B3BjqJM/xvpPczCj6RXo4VmfxfZa8SnhkcN70
-         fOMjZ6V5p3aOn3ApQGBGgCIzt9n6CsTjkDAYYVbeKY2c2Wt97roN+Bd36tLy13GcEO
-         LDb5XWAYqT8yxocVbjpi1xTDOs6nxxOt3xBfztIxGSgrAO8X7fXCO/U5S51fMLHFrT
-         +mvzI5xaSVSFcIxlX3HIRpNCaVcKjwdWU/yvbazJPex7zUEp3khKmFi46//4BxPbcw
-         6MkM/lnxfA6Y4hT7sXJALiqo3ugRrl36uCqzQSIAvdr3oZGc1kfFtOv3vbBEgE8z2x
-         ORVRE5kYfcDXA==
+        b=hF84J7lNPgipjo99f7oG/hZDyL9DQ+IBqLY/GxPXMp/SxnO3KQN22N3MbW4B23K9v
+         fH9nXXSCo4XhhSMRMAvuW8p+OjuZNDbqH4Elbp7DXG48bCZ7bZCW+FVQdYpxJz2vsC
+         VyR+BZHlXb9IOcd9BFRuaf0DLmiVwntHP1DLP4oG1NYFTOm3dJmE/Or4aRzOidi6Qc
+         LZZQR3ju5sE54nDxMFStnwEDUQiUfLKw4qN8VNl4mXywkHXGHWz8dewFRfkYzyEvz1
+         bXAuiIgvR9LonzrjxQsvU/g4SWfTCYXX8gtELaB6SKXAHNpI5zVM49j6KJ+KeGtfK7
+         H3MTfUkiNa6Jg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 17/33] parisc: Add runtime check to prevent PA2.0 kernels on PA1.x machines
-Date:   Tue, 30 Aug 2022 13:18:08 -0400
-Message-Id: <20220830171825.580603-17-sashal@kernel.org>
+        James.Bottomley@HansenPartnership.com, yury.norov@gmail.com,
+        geert@linux-m68k.org, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 15/33] Revert "parisc: Show error if wrong 32/64-bit compiler is being used"
+Date:   Tue, 30 Aug 2022 13:18:06 -0400
+Message-Id: <20220830171825.580603-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830171825.580603-1-sashal@kernel.org>
 References: <20220830171825.580603-1-sashal@kernel.org>
@@ -53,79 +53,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 591d2108f3abc4db9f9073cae37cf3591fd250d6 ]
+[ Upstream commit b4b18f47f4f9682fbf5827682645da7c8dde8f80 ]
 
-If a 32-bit kernel was compiled for PA2.0 CPUs, it won't be able to run
-on machines with PA1.x CPUs. Add a check and bail out early if a PA1.x
-machine is detected.
+This reverts commit b160628e9ebcdc85d0db9d7f423c26b3c7c179d0.
+
+There is no need any longer to have this sanity check, because the
+previous commit ("parisc: Make CONFIG_64BIT available for ARCH=parisc64
+only") prevents that CONFIG_64BIT is set if ARCH==parisc.
 
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/head.S | 43 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
+ arch/parisc/include/asm/bitops.h | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/arch/parisc/kernel/head.S b/arch/parisc/kernel/head.S
-index e0a9e96576221..fd15fd4bbb61b 100644
---- a/arch/parisc/kernel/head.S
-+++ b/arch/parisc/kernel/head.S
-@@ -22,7 +22,7 @@
- #include <linux/init.h>
- #include <linux/pgtable.h>
+diff --git a/arch/parisc/include/asm/bitops.h b/arch/parisc/include/asm/bitops.h
+index 56ffd260c669b..0ec9cfc5131fc 100644
+--- a/arch/parisc/include/asm/bitops.h
++++ b/arch/parisc/include/asm/bitops.h
+@@ -12,14 +12,6 @@
+ #include <asm/barrier.h>
+ #include <linux/atomic.h>
  
--	.level	PA_ASM_LEVEL
-+	.level	1.1
- 
- 	__INITDATA
- ENTRY(boot_args)
-@@ -70,6 +70,47 @@ $bss_loop:
- 	stw,ma          %arg2,4(%r1)
- 	stw,ma          %arg3,4(%r1)
- 
-+#if !defined(CONFIG_64BIT) && defined(CONFIG_PA20)
-+	/* This 32-bit kernel was compiled for PA2.0 CPUs. Check current CPU
-+	 * and halt kernel if we detect a PA1.x CPU. */
-+	ldi		32,%r10
-+	mtctl		%r10,%cr11
-+	.level 2.0
-+	mfctl,w		%cr11,%r10
-+	.level 1.1
-+	comib,<>,n	0,%r10,$cpu_ok
-+
-+	load32		PA(msg1),%arg0
-+	ldi		msg1_end-msg1,%arg1
-+$iodc_panic:
-+	copy		%arg0, %r10
-+	copy		%arg1, %r11
-+	load32		PA(init_stack),%sp
-+#define MEM_CONS 0x3A0
-+	ldw		MEM_CONS+32(%r0),%arg0	// HPA
-+	ldi		ENTRY_IO_COUT,%arg1
-+	ldw		MEM_CONS+36(%r0),%arg2	// SPA
-+	ldw		MEM_CONS+8(%r0),%arg3	// layers
-+	load32		PA(__bss_start),%r1
-+	stw		%r1,-52(%sp)		// arg4
-+	stw		%r0,-56(%sp)		// arg5
-+	stw		%r10,-60(%sp)		// arg6 = ptr to text
-+	stw		%r11,-64(%sp)		// arg7 = len
-+	stw		%r0,-68(%sp)		// arg8
-+	load32		PA(.iodc_panic_ret), %rp
-+	ldw		MEM_CONS+40(%r0),%r1	// ENTRY_IODC
-+	bv,n		(%r1)
-+.iodc_panic_ret:
-+	b .				/* wait endless with ... */
-+	or		%r10,%r10,%r10	/* qemu idle sleep */
-+msg1:	.ascii "Can't boot kernel which was built for PA8x00 CPUs on this machine.\r\n"
-+msg1_end:
-+
-+$cpu_ok:
-+#endif
-+
-+	.level	PA_ASM_LEVEL
-+
- 	/* Initialize startup VM. Just map first 16/32 MB of memory */
- 	load32		PA(swapper_pg_dir),%r4
- 	mtctl		%r4,%cr24	/* Initialize kernel root pointer */
+-/* compiler build environment sanity checks: */
+-#if !defined(CONFIG_64BIT) && defined(__LP64__)
+-#error "Please use 'ARCH=parisc' to build the 32-bit kernel."
+-#endif
+-#if defined(CONFIG_64BIT) && !defined(__LP64__)
+-#error "Please use 'ARCH=parisc64' to build the 64-bit kernel."
+-#endif
+-
+ /* See http://marc.theaimsgroup.com/?t=108826637900003 for discussion
+  * on use of volatile and __*_bit() (set/clear/change):
+  *	*_bit() want use of volatile.
 -- 
 2.35.1
 
