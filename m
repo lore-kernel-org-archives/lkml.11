@@ -2,93 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89968ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:49:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 050FEECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231241AbiH3Ntp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
+        id S231276AbiH3Ntu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231386AbiH3Nsx (ORCPT
+        with ESMTP id S231451AbiH3NtC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:48:53 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B831037F6;
-        Tue, 30 Aug 2022 06:46:42 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MH7mg5DSGzlWYp;
-        Tue, 30 Aug 2022 21:43:15 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
- (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 30 Aug
- 2022 21:46:38 +0800
-From:   Zeng Heng <zengheng4@huawei.com>
-To:     <djwong@kernel.org>
-CC:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <zengheng4@huawei.com>
-Subject: [PATCH -next] xfs: remove "%Ld" which doesn't meet C standard
-Date:   Tue, 30 Aug 2022 21:54:22 +0800
-Message-ID: <20220830135422.2734749-1-zengheng4@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 30 Aug 2022 09:49:02 -0400
+Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5140B1037F5;
+        Tue, 30 Aug 2022 06:46:41 -0700 (PDT)
+Received: from [10.2.12.24] (unknown [10.2.12.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by 7of9.schinagl.nl (Postfix) with ESMTPSA id 5C7DE186AE54;
+        Tue, 30 Aug 2022 15:40:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
+        t=1661866837; bh=QkP2rkDehwBSgpkLqWhg0SK62w0hxaRkEmx2wFzDvpY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=f6ABrVy6bO3nlMdiBhuXoDGeIXTsdsKNSqq+xT3bRsvVp39Vb+AezWjHr2IjF9MDa
+         +wX7JY3ODlzt0oXnXVBkxEX/bkM1S4OUK0HvgISfKki9AiJSiYbkUi5egAJCld+PCp
+         2iJnOSari/WzosWMx/jJWLHcAvX9kgU2vVvoEnSA=
+Message-ID: <f9e6e452-0e00-785c-1f4f-43f7754ab720@schinagl.nl>
+Date:   Tue, 30 Aug 2022 15:40:36 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500022.china.huawei.com (7.185.36.162)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCHv2 resend] dt-bindings: leds: Expand LED_COLOR_ID
+ definitions
+Content-Language: en-US
+To:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Baolin Wang <baolin.wang@linaro.org>,
+        Daniel Mack <daniel@zonque.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Simon Shields <simon@lineageos.org>,
+        Olliver Schinagl <oliver+list@schinagl.nl>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220819152904.433514-1-oliver@schinagl.nl>
+ <44eec926-b7d0-f8eb-f944-d28e3b35257a@gmail.com>
+From:   Olliver Schinagl <oliver@schinagl.nl>
+In-Reply-To: <44eec926-b7d0-f8eb-f944-d28e3b35257a@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "%Ld" specifier, which represents long long unsigned,
-doesn't meet C language standard, and even more,
-it makes people easily mistake with "%ld", which represent
-long unsigned. So replace "%Ld" with "lld".
-
-Do the same with "%Lu".
-
-Signed-off-by: Zeng Heng <zengheng4@huawei.com>
----
- fs/xfs/xfs_inode_item_recover.c | 4 ++--
- fs/xfs/xfs_stats.c              | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/fs/xfs/xfs_inode_item_recover.c b/fs/xfs/xfs_inode_item_recover.c
-index d28ffaebd067..0e5dba2343ea 100644
---- a/fs/xfs/xfs_inode_item_recover.c
-+++ b/fs/xfs/xfs_inode_item_recover.c
-@@ -321,7 +321,7 @@ xlog_recover_inode_commit_pass2(
- 	 */
- 	if (XFS_IS_CORRUPT(mp, !xfs_verify_magic16(bp, dip->di_magic))) {
- 		xfs_alert(mp,
--	"%s: Bad inode magic number, dip = "PTR_FMT", dino bp = "PTR_FMT", ino = %Ld",
-+	"%s: Bad inode magic number, dip = "PTR_FMT", dino bp = "PTR_FMT", ino = %lld",
- 			__func__, dip, bp, in_f->ilf_ino);
- 		error = -EFSCORRUPTED;
- 		goto out_release;
-@@ -329,7 +329,7 @@ xlog_recover_inode_commit_pass2(
- 	ldip = item->ri_buf[1].i_addr;
- 	if (XFS_IS_CORRUPT(mp, ldip->di_magic != XFS_DINODE_MAGIC)) {
- 		xfs_alert(mp,
--			"%s: Bad inode log record, rec ptr "PTR_FMT", ino %Ld",
-+			"%s: Bad inode log record, rec ptr "PTR_FMT", ino %lld",
- 			__func__, item, in_f->ilf_ino);
- 		error = -EFSCORRUPTED;
- 		goto out_release;
-diff --git a/fs/xfs/xfs_stats.c b/fs/xfs/xfs_stats.c
-index 70d38b77682b..90a77cd3ebad 100644
---- a/fs/xfs/xfs_stats.c
-+++ b/fs/xfs/xfs_stats.c
-@@ -74,7 +74,7 @@ int xfs_stats_format(struct xfsstats __percpu *stats, char *buf)
- 		defer_relog += per_cpu_ptr(stats, i)->s.defer_relog;
- 	}
- 
--	len += scnprintf(buf + len, PATH_MAX-len, "xpc %Lu %Lu %Lu\n",
-+	len += scnprintf(buf + len, PATH_MAX-len, "xpc %llu %llu %llu\n",
- 			xs_xstrat_bytes, xs_write_bytes, xs_read_bytes);
- 	len += scnprintf(buf + len, PATH_MAX-len, "defer_relog %llu\n",
- 			defer_relog);
--- 
-2.25.1
+On 30-08-2022 12:28, Jacek Anaszewski wrote:
+> Hi Oliver,
+>
+> On 8/19/22 17:29, Olliver Schinagl wrote:
+>> In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
+>> Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
+>> added. However, there's a little more very common LED colors.
+>>
+>> While the documentation states 'add what is missing', engineers tend to
+>> be lazy and will just use what currently exists. So this patch will take
+>> (a) list from online retailers [0], [1], [2] and use the common LED colors
+>> from there, this being reasonable as this is what is currently available to
+>> purchase.
+>>
+>> Note, that LIME seems to be the modern take to 'Yellow-green' or
+>> 'Yellowish-green' from some older datasheets.
+>>
+>> [0]: https://www.digikey.com/en/products/filter/led-lighting-color/125
+>> [1]: https://eu.mouser.com/c/optoelectronics/led-lighting/led-emitters/standard-leds-smd
+>> [2]: https://nl.farnell.com/en-NL/c/optoelectronics-displays/led-products/standard-single-colour-leds-under-75ma
+>>
+>> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
+>> ---
+>>
+>> Changes since v1: Unbreak existing definitions.
+>>
+>>
+>>    include/dt-bindings/leds/common.h | 28 ++++++++++++++++------------
+>>    1 file changed, 16 insertions(+), 12 deletions(-)
+>>
+>> diff --git a/include/dt-bindings/leds/common.h b/include/dt-bindings/leds/common.h
+>> index 3be89a7c20a9..04bf94523ea3 100644
+>> --- a/include/dt-bindings/leds/common.h
+>> +++ b/include/dt-bindings/leds/common.h
+>> @@ -22,18 +22,22 @@
+>>    #define LEDS_BOOST_FIXED	2
+>>    
+>>    /* Standard LED colors */
+>> -#define LED_COLOR_ID_WHITE	0
+>> -#define LED_COLOR_ID_RED	1
+>> -#define LED_COLOR_ID_GREEN	2
+>> -#define LED_COLOR_ID_BLUE	3
+>> -#define LED_COLOR_ID_AMBER	4
+>> -#define LED_COLOR_ID_VIOLET	5
+>> -#define LED_COLOR_ID_YELLOW	6
+>> -#define LED_COLOR_ID_IR		7
+>> -#define LED_COLOR_ID_MULTI	8	/* For multicolor LEDs */
+>> -#define LED_COLOR_ID_RGB	9	/* For multicolor LEDs that can do arbitrary color,
+>> -					   so this would include RGBW and similar */
+>> -#define LED_COLOR_ID_MAX	10
+>> +#define LED_COLOR_ID_WHITE      0
+>> +#define LED_COLOR_ID_RED        1
+>> +#define LED_COLOR_ID_GREEN      2
+>> +#define LED_COLOR_ID_BLUE       3
+>> +#define LED_COLOR_ID_AMBER      4
+>> +#define LED_COLOR_ID_VIOLET     5
+>> +#define LED_COLOR_ID_YELLOW     6
+>> +#define LED_COLOR_ID_IR         7
+>> +#define LED_COLOR_ID_MULTI      8 /* For multicolor LEDs */
+>> +#define LED_COLOR_ID_RGB        9 /* For multicolor LEDs that can do arbitrary color, including RGBW etc. */
+>> +#define LED_COLOR_ID_PUPRPLE   10
+> typo - as already mentioned
+Sorry, I did not receive your earlier mail it seems, or it's not showing 
+up in the thread; well caught!
+>
+>> +#define LED_COLOR_ID_ORANGE    11
+>> +#define LED_COLOR_ID_PINK      12
+>> +#define LED_COLOR_ID_CYAN      13
+>> +#define LED_COLOR_ID_LIME      14
+>> +#define LED_COLOR_ID_MAX       15
+>>    
+>>    /* Standard LED functions */
+>>    /* Keyboard LEDs, usually it would be input4::capslock etc. */
+> And it seems that change in spacing between definition name and value
+> is not required, is it? Without that change, it would be easier to
+> notice what really changes here.
+>
+Yes, you are correct, I initially had LimeGreen there, which made it 
+longer, as I later found out, that LimeGreen could actually just be Lime 
+as much, I forgot to 're-shorten it. The fixed diff for v4 does look as 
+expected! thanks for that one.
 
