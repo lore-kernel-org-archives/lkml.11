@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE523ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D72B4ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:03:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbiH3MDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 08:03:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
+        id S230429AbiH3MD1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 08:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230438AbiH3MCQ (ORCPT
+        with ESMTP id S229756AbiH3MCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 08:02:16 -0400
+        Tue, 30 Aug 2022 08:02:36 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B672AEEC73;
-        Tue, 30 Aug 2022 05:02:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4B2EF9D8;
+        Tue, 30 Aug 2022 05:02:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661860926; x=1693396926;
+  t=1661860928; x=1693396928;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kP8Ku5Lv8rqfw0Nma82+ZaeLrsDvE/lPJOPwAOWO6Gg=;
-  b=V6VroCoJ2xHmV7u8ZVWMZVnx1fu9SvSLRyl3dYPdAlHo72FbO/hevdqG
-   CeGrtJZLIOQytEKZKrlbYRt8WbhTZBccHubrmAKNnRt8ylWx+d1ozLioZ
-   vIQxY/jR5XeIYnRRKBZY5IrX9e8mqfnPKlRMcS+FCjXJCjOYj9xRAEjBa
-   PvJzNOgJFLbo3Ml8Q6/Q1SIWOlmLaWLr3oCw+f0lHMqw+DSP8EewhDj5J
-   /jKfdeZhnaZOSQDT8NHjP2iz9ZAEfmWNpvmbg9GIui+dwWsLaQ0vnnx/u
-   8VbOkse7G09jft4n5i4DwMUXixfrgeFV6KM4BCRMKavxv7vR0QDAd1aa6
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="356871002"
+  bh=eeD6WJYKHUyfZ/PXC4poyF6VyKFe0V4LAqKVsAEhnLI=;
+  b=CSqQfYURJd8rkqxNgLXcQ2YySp2cJZ49YZsXvGQmTFM47UqF307o167C
+   M2AIfIJ/pzLxJek3sDX3iPRlkxmtgL+sIM9BEPH64jl9u5ceeAs/ASjxg
+   EkqHM6eyfxM0cGi2PHkgZhD4tyb86Ncd4AmetbaeheQWTnEn3Kea/wJkl
+   cCRUjXbpCocUB7kZEcz3VwxhptAomNQillKi/ZEw/wsR/dGITbodYYnup
+   tBJcCOj2zchOhjndqlsFXQZM8eDzqC9S1hQLsXr1jDeuaR+wGTb+u7YcB
+   wp3o83Y4AZjiNJp0Mnkkl06v0GnvaI0mO3fkPRXB9GViL0tIbGaxjSxNz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="356871006"
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="356871002"
+   d="scan'208";a="356871006"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:02:00 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:02:01 -0700
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="787469668"
+   d="scan'208";a="787469680"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:02:00 -0700
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:02:01 -0700
 From:   isaku.yamahata@intel.com
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
@@ -44,9 +44,9 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Sean Christopherson <seanjc@google.com>,
         Kai Huang <kai.huang@intel.com>, Chao Gao <chao.gao@intel.com>,
         Will Deacon <will@kernel.org>
-Subject: [PATCH v2 17/19] KVM: Add config to not compile kvm_arch.c
-Date:   Tue, 30 Aug 2022 05:01:32 -0700
-Message-Id: <b89b9f7b9ec8aaca981c9d8e09cc0816adac4481.1661860550.git.isaku.yamahata@intel.com>
+Subject: [PATCH v2 19/19] RFC: KVM: Remove cpus_hardware_enabled and related sanity check
+Date:   Tue, 30 Aug 2022 05:01:34 -0700
+Message-Id: <21b2efeb4b43605a8c1a327a3656650d96be0968.1661860550.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1661860550.git.isaku.yamahata@intel.com>
 References: <cover.1661860550.git.isaku.yamahata@intel.com>
@@ -58,74 +58,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Isaku Yamahata <isaku.yamahata@intel.com>
 
-So that kvm_arch_hardware_enable/disable() aren't defined.
+cpus_hardware_enabled mask seems incomplete protection against other kernel
+component using CPU virtualization feature.  Because it's obscure and
+incomplete, remove the check.
 
-Once the conversion of all KVM archs is done, this config and kvm_arch.c
-should be removed.
-
-Suggested-by: Sean Christopherson <seanjc@google.com>
 Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
 ---
- arch/x86/kvm/Kconfig     | 1 +
- include/linux/kvm_host.h | 2 ++
- virt/kvm/Kconfig         | 3 +++
- virt/kvm/Makefile.kvm    | 5 ++++-
- 4 files changed, 10 insertions(+), 1 deletion(-)
+ virt/kvm/kvm_arch.c | 16 ++--------------
+ 1 file changed, 2 insertions(+), 14 deletions(-)
 
-diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-index e3cbd7706136..e2e16205425d 100644
---- a/arch/x86/kvm/Kconfig
-+++ b/arch/x86/kvm/Kconfig
-@@ -25,6 +25,7 @@ config KVM
- 	depends on X86_LOCAL_APIC
- 	select PREEMPT_NOTIFIERS
- 	select MMU_NOTIFIER
-+	select HAVE_KVM_OVERRIDE_HARDWARE_ENABLE
- 	select HAVE_KVM_IRQCHIP
- 	select HAVE_KVM_PFNCACHE
- 	select HAVE_KVM_IRQFD
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 8abbf7a1773b..74111118db42 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1434,8 +1434,10 @@ void kvm_arch_create_vcpu_debugfs(struct kvm_vcpu *vcpu, struct dentry *debugfs_
- static inline void kvm_create_vcpu_debugfs(struct kvm_vcpu *vcpu) {}
- #endif
+diff --git a/virt/kvm/kvm_arch.c b/virt/kvm/kvm_arch.c
+index 8f2d920a2a8f..cbad0181c177 100644
+--- a/virt/kvm/kvm_arch.c
++++ b/virt/kvm/kvm_arch.c
+@@ -12,22 +12,16 @@
  
-+#ifndef CONFIG_HAVE_KVM_OVERRIDE_HARDWARE_ENABLE
- int kvm_arch_hardware_enable(void);
- void kvm_arch_hardware_disable(void);
-+#endif
- int kvm_arch_hardware_setup(void *opaque);
- void kvm_arch_pre_hardware_unsetup(void);
- void kvm_arch_hardware_unsetup(void);
-diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
-index a8c5c9f06b3c..917314a87696 100644
---- a/virt/kvm/Kconfig
-+++ b/virt/kvm/Kconfig
-@@ -72,3 +72,6 @@ config KVM_XFER_TO_GUEST_WORK
+ #include <linux/kvm_host.h>
  
- config HAVE_KVM_PM_NOTIFIER
-        bool
-+
-+config HAVE_KVM_OVERRIDE_HARDWARE_ENABLE
-+	def_bool n
-diff --git a/virt/kvm/Makefile.kvm b/virt/kvm/Makefile.kvm
-index c4210acabd35..c0187ec4f83c 100644
---- a/virt/kvm/Makefile.kvm
-+++ b/virt/kvm/Makefile.kvm
-@@ -5,7 +5,10 @@
+-static cpumask_t cpus_hardware_enabled = CPU_MASK_NONE;
+-
+ static int __hardware_enable(void)
+ {
+-	int cpu = raw_smp_processor_id();
+ 	int r;
  
- KVM ?= ../../../virt/kvm
+ 	WARN_ON_ONCE(preemptible());
  
--kvm-y := $(KVM)/kvm_main.o $(KVM)/kvm_arch.o $(KVM)/eventfd.o $(KVM)/binary_stats.o
-+kvm-y := $(KVM)/kvm_main.o $(KVM)/eventfd.o $(KVM)/binary_stats.o
-+ifneq ($(CONFIG_HAVE_KVM_OVERRIDE_HARDWARE_ENABLE), y)
-+kvm-y += $(KVM)/kvm_arch.o
-+endif
- kvm-$(CONFIG_KVM_VFIO) += $(KVM)/vfio.o
- kvm-$(CONFIG_KVM_MMIO) += $(KVM)/coalesced_mmio.o
- kvm-$(CONFIG_KVM_ASYNC_PF) += $(KVM)/async_pf.o
+-	if (cpumask_test_cpu(cpu, &cpus_hardware_enabled))
+-		return 0;
+ 	r = kvm_arch_hardware_enable();
+ 	if (r)
+-		pr_info("kvm: enabling virtualization on CPU%d failed\n", cpu);
+-	else
+-		cpumask_set_cpu(cpu, &cpus_hardware_enabled);
++		pr_info("kvm: enabling virtualization on CPU%d failed\n",
++			smp_processor_id());
+ 	return r;
+ }
+ 
+@@ -41,13 +35,7 @@ static void hardware_enable(void *arg)
+ 
+ static void hardware_disable(void *junk)
+ {
+-	int cpu = raw_smp_processor_id();
+-
+ 	WARN_ON_ONCE(preemptible());
+-
+-	if (!cpumask_test_cpu(cpu, &cpus_hardware_enabled))
+-		return;
+-	cpumask_clear_cpu(cpu, &cpus_hardware_enabled);
+ 	kvm_arch_hardware_disable();
+ }
+ 
 -- 
 2.25.1
 
