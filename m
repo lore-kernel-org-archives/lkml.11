@@ -2,130 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9197ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 11:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D95CFECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 11:04:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229717AbiHaLCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 07:02:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
+        id S230313AbiHaLEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 07:04:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229556AbiHaLCN (ORCPT
+        with ESMTP id S229449AbiHaLES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 07:02:13 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C17A9F8D4
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 04:02:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=MIME-Version:Content-Type:References:In-Reply-To:Date:Cc:To:
-        From:Subject:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=VnuzXvi/r6r6IliU1js/OsrQoTnENR453xGhcd9X4ts=; b=P0iVndoLG0wOrIgh9DfoeYddIq
-        BaKbwUYrEKwGGvM1ZuJp544fR5V2ur3rYLY4BNzLICFPFwFvMd1ZN76nPHi/pFTTGskiIfv+jcr+D
-        s2TNT4n71M41CJ3cnbSwLhJRf6Tw3UqjHSmgVjDBTNjvv4qHKs8wJbmPdQn/26NKmG+tiCXEDtBlZ
-        gftcX3YvBSa9nIN7fuK7KSo0Nhiw2VGZyNdZUuGz5+NVxg412A4MZDrRa6y5Qg5o3Y+6PQy2raBN1
-        HUwsB5xOmRXQbZ1luwc+oyThp9DfL7t7bkx/TemRdTMSioA1xcynKnmcsBxJzHuPBxzkYapKTGsrV
-        Jp0hMY9Q==;
-Received: from 1.pool85-50-22.dynamic.orange.es ([85.50.22.1] helo=[192.168.1.125])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oTLTh-005yGW-CX; Wed, 31 Aug 2022 13:01:49 +0200
-Message-ID: <16e141fc3d9cce0f46718ffb9e861e5d3b9da6ab.camel@igalia.com>
-Subject: Re: [PATCH] ipack: Check dev_set_name() return value
-From:   Samuel Iglesias =?ISO-8859-1?Q?Gons=E1lvez?= 
-        <siglesias@igalia.com>
-To:     Bo Liu <liubo03@inspur.com>, jens.taprogge@taprogge.org,
-        gregkh@linuxfoundation.org
-Cc:     industrypack-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 31 Aug 2022 13:01:38 +0200
-In-Reply-To: <20220805091057.19951-1-liubo03@inspur.com>
-References: <20220805091057.19951-1-liubo03@inspur.com>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-42SrFaz+DLoXKjPro8/p"
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
-MIME-Version: 1.0
+        Wed, 31 Aug 2022 07:04:18 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEA29F8D4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 04:04:17 -0700 (PDT)
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27V8ja3C006870;
+        Wed, 31 Aug 2022 11:03:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : from :
+ date : subject : to : cc; s=corp-2022-7-12;
+ bh=6SXXBybf0Upt3qTKeZCZXzMIP41uMlfYtChskMKRoLE=;
+ b=Bn6rmefh+Fe7KRGWxCg+8R8qDL1eYnbDZovH+H4fqQzTMY/ApklmASX0SvzKeWuFyAmM
+ DilACgs1usNEqE8NcH71X+akcCgiF5ZksMFEi1oBHCHUAAmlDd9isyJOdD9/0P30N+JG
+ M6X8bq5HxwByCQbmhL1IPf/8E11MJiDlspw1r9c+CUXexb+dkB6zd3JkQu06D3I2tRtM
+ DmL5cVdzsHOwI+ru07kH9SwensQYVxB1kISgNG148kpJ8IamPSBOXV4F5SlPMqTI0mC0
+ O5ktjX3wTjDsgGFBqP9kP7h/UYUlE02t95I/0vyKT6NpU4utVoQMAFtpebZTrkZMnc4/ Tg== 
+Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j7btt8v6m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 31 Aug 2022 11:03:37 +0000
+Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27VAruCR013034;
+        Wed, 31 Aug 2022 11:03:36 GMT
+Received: from oracle.com (dhcp-10-175-18-16.vpn.oracle.com [10.175.18.16])
+        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3j79q501j0-1;
+        Wed, 31 Aug 2022 11:03:36 +0000
+Message-Id: <ed7a508717bb8bec6273c2740418f0dc2df9eeba.1661943721.git.julian.pidancet@oracle.com>
+From:   Julian Pidancet <julian.pidancet@oracle.com>
+Date:   Tue, 30 Aug 2022 09:42:37 +0200
+Subject: [PATCH] x86/alternative: Consistently patch SMP locks in vmlinux and
+ modules
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-31_06,2022-08-31_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 mlxscore=0
+ spamscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208310054
+X-Proofpoint-ORIG-GUID: uZtfzGXumc8d34qbDwPJcrd5nVm3r1GL
+X-Proofpoint-GUID: uZtfzGXumc8d34qbDwPJcrd5nVm3r1GL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The alternatives_smp_module_add() function restricts patching of SMP
+lock prefixes to the text address range passed as an argument.
 
---=-42SrFaz+DLoXKjPro8/p
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+For vmlinux, patching all the instructions located between the _text and
+_etext symbols is allowed. That includes the .text section but also
+other sections such as .text.hot and .text.unlikely.
 
-Hi Bo,
+As per the comment inside the 'struct smp_alt_module' definition, the
+original purpose of this restriction is to avoid patching the init code
+which may have been deallocated when the alternatives code run.
 
-Thanks for your contribution!
+For modules, the current code only allows patching instructions located
+inside the .text segment, excluding other sections such as .text.hot or
+.text.unlikely, which may need patching.
 
-Patch is,
+This change aims to make patching of the kernel core and modules more
+consistent, by allowing all text sections of modules except .init.text
+to be patched in module_finalize().
 
-Acked-by: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
+For that we use mod->core_layout.base/mod->core_layout.text_size as the
+address range allowed to be patched, which include all the code sections
+except the init code.
 
-Greg, Would you mind picking this patch series through your char-misc
-tree?
+Signed-off-by: Julian Pidancet <julian.pidancet@oracle.com>
+---
+Public tests: https://gist.github.com/jpidancet/1ee457623426f3e3902a28edaf2c80d0 
+Related thread: https://marc.info/?t=130864398400006
 
-Thanks!
+ arch/x86/kernel/module.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-Sam
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index b1abf663417c..da22193eb5e0 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -251,14 +251,12 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		    const Elf_Shdr *sechdrs,
+ 		    struct module *me)
+ {
+-	const Elf_Shdr *s, *text = NULL, *alt = NULL, *locks = NULL,
+-		*para = NULL, *orc = NULL, *orc_ip = NULL,
+-		*retpolines = NULL, *returns = NULL, *ibt_endbr = NULL;
++	const Elf_Shdr *s, *alt = NULL, *locks = NULL, *para = NULL,
++		*orc = NULL, *orc_ip = NULL, *retpolines = NULL,
++		*returns = NULL, *ibt_endbr = NULL;
+ 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
+ 
+ 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+-		if (!strcmp(".text", secstrings + s->sh_name))
+-			text = s;
+ 		if (!strcmp(".altinstructions", secstrings + s->sh_name))
+ 			alt = s;
+ 		if (!strcmp(".smp_locks", secstrings + s->sh_name))
+@@ -302,12 +300,13 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		void *iseg = (void *)ibt_endbr->sh_addr;
+ 		apply_ibt_endbr(iseg, iseg + ibt_endbr->sh_size);
+ 	}
+-	if (locks && text) {
++	if (locks) {
+ 		void *lseg = (void *)locks->sh_addr;
+-		void *tseg = (void *)text->sh_addr;
++		void *text = me->core_layout.base;
++		void *text_end = text + me->core_layout.text_size;
+ 		alternatives_smp_module_add(me, me->name,
+ 					    lseg, lseg + locks->sh_size,
+-					    tseg, tseg + text->sh_size);
++					    text, text_end);
+ 	}
+ 
+ 	if (orc && orc_ip)
+-- 
+2.37.1
 
-On Fri, 2022-08-05 at 05:10 -0400, Bo Liu wrote:
-> It's possible that dev_set_name() returns -ENOMEM, catch and handle
-> this.
->=20
-> Signed-off-by: Bo Liu <liubo03@inspur.com>
-> ---
-> =C2=A0drivers/ipack/ipack.c | 5 ++++-
-> =C2=A01 file changed, 4 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/ipack/ipack.c b/drivers/ipack/ipack.c
-> index b1c3198355e7..74d449858a61 100644
-> --- a/drivers/ipack/ipack.c
-> +++ b/drivers/ipack/ipack.c
-> @@ -429,8 +429,11 @@ int ipack_device_init(struct ipack_device *dev)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0dev->dev.bus =3D &ipack_b=
-us_type;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0dev->dev.release =3D ipac=
-k_device_release;
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0dev->dev.parent =3D dev->=
-bus->parent;
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0dev_set_name(&dev->dev,
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ret =3D dev_set_name(&dev->dev=
-,
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "ipack-dev.%u.%u", dev->bu=
-s->bus_nr, dev->slot);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (ret)
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0return ret;
-> +
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0device_initialize(&dev->d=
-ev);
-> =C2=A0
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (dev->bus->ops->set_cl=
-ockrate(dev, 8))
-
-
---=-42SrFaz+DLoXKjPro8/p
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEQP+ZAvaXWkfuKXiEf/S6MvF9w0MFAmMPP5IACgkQf/S6MvF9
-w0PxkRAAv1Lv7TRm2HxWebuQY4XSlDQIM0y9z5xmw4S8GipFj/K1LWrHVa9G+Ua4
-NMVBAKm5wW31AsrAIfNlEUhwYB3UTfz3wGPdKX2fUCBVjPdUz1pjcgL+MOF3Kdj8
-ZhCYwhnhvXp5MRNTKw/UPK25Y54hux6QBllc8WddM9zvnC2ZhI+2lov6a4QIqTgh
-6fl4KQ6Pbf2u27VcNzy07X6lgQt2M2I908nG5RedjTAgd4CiiCDN7CO0ckjHRWO/
-w8Z7BxzaCTS9cQsQu0zX3IOyXHvyEWmBYGcIdjOKKOFk/+dW1J11C5MJySW4iddn
-WhNh7b/cAV6N1ohtRFHsKsSZ9T4fWxPsxQvDjtSDHnkP/cdZ+XCSs6K3+f0Bhd9b
-ijtnOkek0GDdsaNr+AX0S3jDQLevHUyf52hVadXYOEJhPZbjRLcYN6SavmeU40nv
-G0B8CtAyrDfySkJ8usq5SFkZ1fl6/MRsUhyjOoMfE1I7Wck/ZLpxIfLQbYXpoa71
-oNR7d2Lgsj3XHaVHxxE7Hn0uMSdxT6pzDhbHS7JF4c1BZI/Zjti9tkyb/uRuPlgk
-i276LneUe8/2J3TCGauV8wH6b07avppKKC7vMEogjdDMmGfX/ISa9wmVCtsh/N5M
-gVDYur8B4xXOlBQW/kcfFoWaKi6hyrUS+g/klJN8HL42lvqAJkY=
-=2Yrp
------END PGP SIGNATURE-----
-
---=-42SrFaz+DLoXKjPro8/p--
