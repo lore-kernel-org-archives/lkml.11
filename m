@@ -2,124 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EA5C0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:20:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDAF7ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231829AbiH3JUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50558 "EHLO
+        id S231834AbiH3JVZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231761AbiH3JUU (ORCPT
+        with ESMTP id S231764AbiH3JVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:20:20 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AD7E2A712
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:20:01 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id n65-20020a17090a5ac700b001fbb4fad865so11230892pji.1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:20:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc;
-        bh=1stEK7orHgTbYEfwbeXC8fEwW/r5cq766TAqvkrU7s8=;
-        b=nmk9fHCkrfrblpy/7kg08OX3ped77vmORbwkjjnbEVvUoXKOEKmX0Y1VGcflg+qh+d
-         X5tuUyECrJp6R8RxGK62QsdF+fQbRQzNyCiGISzE5m5StPKqzt0BZ7Glg//ELPo5oSVG
-         etz+NTjXyBz9fyw10DCx3yIeBzqheARABobLgWEFIgvMnpni+6W7Y8HuUMHy2YNYqJHY
-         m9emxannnhCC1uNXxj8tgTkk/x5/54Y8WlBugCyPUt6MTgXTeO99BmfTb1wvKi4O0XP4
-         9fnghGoemu9Z13rG/mPuPrqOM5DJ8YuChJLBsl3tIg+uxjn5TpFRQH9ubuzE0FRZUxDL
-         RPnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=1stEK7orHgTbYEfwbeXC8fEwW/r5cq766TAqvkrU7s8=;
-        b=7KZrsnfxrLVQOmScrKpuVsMa9UsQV8t/64G0zEX7ofh0GiMxgIW7+649gZNux/FAbf
-         C6ZTF40xOpUW8BZegy4XdY6YiVpzmi/dMYXDgAV7k1QhgAtlxDLlkFTvNqIrH/pKSmDe
-         XTKIC2TIfl6eLkgDgBySj4CLz+cP7wcLkXKQKNlmKUcVgxHPUf0FVqZbxtUyhRPS/l5l
-         dlkPfmIY3VzXONKq1w1cCUajAgABKtuDksqGxxIzgJMWVtTKgRci3GPbUXwREKIUz1U0
-         CN4QJBOfGt5odVRkFkesMOrtppRvKMH3dlFJYWgAvpl3YgW7AgsAwXgYmYacdluTNV2t
-         TVtw==
-X-Gm-Message-State: ACgBeo1IQpvvJ/WZ7XVTVqEoW1u2mrUhxDttvQYXc+e9UNv+z9fFJAHW
-        G9261vYRCdLL7XSNoTnJTViLOnMTU9PY
-X-Google-Smtp-Source: AA6agR71f7NK6QRTQvMbVYh6yrfXsyqBOXunCOCPdx/lBWuvieJpGZ4JeK25bmov9unRjiB3MYANpA==
-X-Received: by 2002:a17:902:f64a:b0:172:7576:2124 with SMTP id m10-20020a170902f64a00b0017275762124mr19856760plg.155.1661851200915;
-        Tue, 30 Aug 2022 02:20:00 -0700 (PDT)
-Received: from thinkpad ([117.193.209.245])
-        by smtp.gmail.com with ESMTPSA id q10-20020a170902eb8a00b001749e8eee4fsm5100555plg.226.2022.08.30.02.19.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 02:20:00 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 14:49:53 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     linus.walleij@linaro.org, bjorn.andersson@linaro.org,
-        robimarko@gmail.com, linux-arm-msm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        johan+linaro@kernel.org, steev@kali.org
-Subject: Re: [PATCH v2] pinctrl: qcom: spmi-gpio: Make IRQCHIP immutable
-Message-ID: <20220830091953.GC135982@thinkpad>
-References: <20220830081212.164709-1-manivannan.sadhasivam@linaro.org>
- <e20dabe02d88f28fc933b596dee8b69d@kernel.org>
- <20220830084441.GB135982@thinkpad>
- <61371efca85fbbd360b3ede9a258ee69@kernel.org>
+        Tue, 30 Aug 2022 05:21:00 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C996FB84F;
+        Tue, 30 Aug 2022 02:20:31 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MH1vR3WwrzHnYj;
+        Tue, 30 Aug 2022 17:18:43 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 30 Aug
+ 2022 17:20:29 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH net-next,v3 2/2] net: sched: gred/red: remove unused variables in struct red_stats
+Date:   Tue, 30 Aug 2022 17:22:55 +0800
+Message-ID: <20220830092255.281330-3-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220830092255.281330-1-shaozhengchao@huawei.com>
+References: <20220830092255.281330-1-shaozhengchao@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <61371efca85fbbd360b3ede9a258ee69@kernel.org>
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 09:48:28AM +0100, Marc Zyngier wrote:
-> On 2022-08-30 09:44, Manivannan Sadhasivam wrote:
-> > On Tue, Aug 30, 2022 at 09:26:51AM +0100, Marc Zyngier wrote:
-> > > On 2022-08-30 09:12, Manivannan Sadhasivam wrote:
-> > > > The IRQCHIP implementation used inside the gpiochips are not supposed to
-> > > 
-> > > lower case
-> > > 
-> > > > be changed during runtime. So let's make the one inside the spmi-gpio
-> > > > gpiochip immutable.
-> > > >
-> > > > This fixes the below warning during boot:
-> > > > gpio gpiochip0: (c440000.spmi:pmic@0:gpio@c000): not an immutable
-> > > > chip, please consider fixing it!
-> > > >
-> > > > Separate callbacks need to be provided for irq_{mask/unmask} pointers
-> > > > since
-> > > > the callbacks are supposed to mask/unmask the corresponding parent IRQ
-> > > > in
-> > > > addition to changing the gpio_desc flags.
-> > > 
-> > > This is all part of the existing documentation, so I don't think
-> > > this is really needed.
-> > > 
-> > 
-> > Yes it is documented, but developers usually refer the commits doing the
-> > similar
-> > thing while doing these kind of conversions. For them, this text serves
-> > as a
-> > quick documentation.
-> 
-> If they can't be bothered to read the documentation, why would they
-> consider reading unrelated commits?
-> 
-> > 
-> > So I prefer to keep it in the commit message.
-> 
-> I still think this is pointless.
-> 
+The variable "other" in the struct red_stats is not used. Remove it.
 
-Okay. I'll remove it in v3.
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+v2: don't remove a field in UAPI
+v1: qdisc_drop() already counts drops, unnecessary to use "other" to duplicate the same information.
+---
+ include/net/red.h    | 1 -
+ net/sched/sch_gred.c | 3 ---
+ net/sched/sch_red.c  | 1 -
+ 3 files changed, 5 deletions(-)
 
-Thanks,
-Mani
-
->         M.
-> -- 
-> Jazz is not dead. It just smells funny...
-
+diff --git a/include/net/red.h b/include/net/red.h
+index be11dbd26492..454ac2b65d8c 100644
+--- a/include/net/red.h
++++ b/include/net/red.h
+@@ -122,7 +122,6 @@ struct red_stats {
+ 	u32		forced_drop;	/* Forced drops, qavg > max_thresh */
+ 	u32		forced_mark;	/* Forced marks, qavg > max_thresh */
+ 	u32		pdrop;          /* Drops due to queue limits */
+-	u32		other;          /* Drops due to drop() calls */
+ };
+ 
+ struct red_parms {
+diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
+index 1073c76d05c4..e7af53f607bb 100644
+--- a/net/sched/sch_gred.c
++++ b/net/sched/sch_gred.c
+@@ -829,7 +829,6 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 		opt.Wlog	= q->parms.Wlog;
+ 		opt.Plog	= q->parms.Plog;
+ 		opt.Scell_log	= q->parms.Scell_log;
+-		opt.other	= q->stats.other;
+ 		opt.early	= q->stats.prob_drop;
+ 		opt.forced	= q->stats.forced_drop;
+ 		opt.pdrop	= q->stats.pdrop;
+@@ -895,8 +894,6 @@ static int gred_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 			goto nla_put_failure;
+ 		if (nla_put_u32(skb, TCA_GRED_VQ_STAT_PDROP, q->stats.pdrop))
+ 			goto nla_put_failure;
+-		if (nla_put_u32(skb, TCA_GRED_VQ_STAT_OTHER, q->stats.other))
+-			goto nla_put_failure;
+ 
+ 		nla_nest_end(skb, vq);
+ 	}
+diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
+index f1e013e3f04a..f7ac40c0335e 100644
+--- a/net/sched/sch_red.c
++++ b/net/sched/sch_red.c
+@@ -461,7 +461,6 @@ static int red_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
+ 	}
+ 	st.early = q->stats.prob_drop + q->stats.forced_drop;
+ 	st.pdrop = q->stats.pdrop;
+-	st.other = q->stats.other;
+ 	st.marked = q->stats.prob_mark + q->stats.forced_mark;
+ 
+ 	return gnet_stats_copy_app(d, &st, sizeof(st));
 -- 
-மணிவண்ணன் சதாசிவம்
+2.17.1
+
