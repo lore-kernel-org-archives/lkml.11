@@ -2,93 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4382EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:00:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A46EFECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231272AbiH3XAp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43620 "EHLO
+        id S231653AbiH3XAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbiH3XAf (ORCPT
+        with ESMTP id S231402AbiH3XAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:00:35 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8A3A94EE8;
-        Tue, 30 Aug 2022 16:00:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 30 Aug 2022 19:00:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2F194EF2;
+        Tue, 30 Aug 2022 16:00:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MHN7c497Yz4xG6;
-        Wed, 31 Aug 2022 09:00:28 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1661900428;
-        bh=nE0WEQfnKDXBwm/+0D7dRm2n1Xi9E32uQ4lYG6IirkE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DE4/T3ojyedyVuNVt8m9+GuuACl2DIKfc/EEh0vXdNiYO4cXjLrptwkR9aZtdxBMh
-         f3NL39gG0UQvvf8FJjTXhTXqjUEt8wEuMaHbkgfuJ0FiSw6TrBAhGjgKMTIqp7JWq3
-         PUv1O0UgJpX5EwSizhD6ZYtGMfmAk8W+DDZCaugOZNGnmkqv4NGqhvC0LP3Jewuhuk
-         rd1ejomR5dH4Sq5ZSWo5bRuRHJx77lbSIfsZVYKO7vhFFmIc5AiR1t+RaUBG9noVnl
-         PU0JBCA+B2r9AwOTqhKuHy2Nd8wPRCRm4k9EaYLjLILsaC781TLYtuosuDQruWPpxr
-         WSVgPizYED0aQ==
-Date:   Wed, 31 Aug 2022 09:00:26 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warnings after merge of the amdgpu tree
-Message-ID: <20220831090026.2e6b57ac@canb.auug.org.au>
-In-Reply-To: <20220811121050.0da83776@canb.auug.org.au>
-References: <20220811121050.0da83776@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD1E6615F7;
+        Tue, 30 Aug 2022 23:00:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C239C433D6;
+        Tue, 30 Aug 2022 23:00:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661900434;
+        bh=WsFP+jr/JWJOetQbqvy3jJUBEs3QY1vpJJXVmKgr98I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DCQd396YFLgvuF4XThnikjVixCDiSZOaINBCx35IpPqiz5QbcT7s26bFCXwG0c21e
+         PXYKnc9IzRbYzQLOu4MHgp3h7yMs2KlNhf3ctwmo+y+NjN6n+VV/418wj5hCxyxRU8
+         anvOsHeViJNMXcuVXZqZGz2Y0rbQ86vampAqqeUm/jL8Td0ydG0famYqt05Say96n2
+         tvzCiQ0wM72LNF0wRA7nz36tYg5K2577ZzpDQKqpctjzxxue5JOkhKRfWgWmMwUH8W
+         87dXenm3LoEKrhWxMRzObcGi1TAJYg6TIj2Zl4qpC1OW/KSFDP5WQbks1FIIYPKQlW
+         7Qtad5T7pPRQw==
+Received: by pali.im (Postfix)
+        id 72ECD834; Wed, 31 Aug 2022 01:00:31 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH v2 2/3] power: reset: syscon-reboot: Add support for specifying priority
+Date:   Wed, 31 Aug 2022 01:00:11 +0200
+Message-Id: <20220830230012.9429-2-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220830230012.9429-1-pali@kernel.org>
+References: <20220820102925.29476-1-pali@kernel.org>
+ <20220830230012.9429-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/tTkT0.sZmTTKPObn2kXxfth";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/tTkT0.sZmTTKPObn2kXxfth
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Read new optional device tree property priority for specifying priority
+level of reset handler. Default value is 192 as before.
 
-Hi all,
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ drivers/power/reset/syscon-reboot.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-On Thu, 11 Aug 2022 12:10:49 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> After merging the amdgpu tree, today's linux-next build (htmldocs)
-> produced these warnings:
->=20
-> drivers/gpu/drm/amd/display/dc/dc.h:465: warning: Enum value 'MPC_SPLIT_A=
-VOID' not described in enum 'pipe_split_policy'
-> drivers/gpu/drm/amd/display/dc/dc.h:465: warning: Enum value 'MPC_SPLIT_A=
-VOID_MULT_DISP' not described in enum 'pipe_split_policy'
->=20
-> Introduced by commit
->=20
->   a2b3b9d57bdb ("drm/amd/display: Document pipe split policy")
+diff --git a/drivers/power/reset/syscon-reboot.c b/drivers/power/reset/syscon-reboot.c
+index 510e363381ca..45e34e6885f7 100644
+--- a/drivers/power/reset/syscon-reboot.c
++++ b/drivers/power/reset/syscon-reboot.c
+@@ -44,6 +44,7 @@ static int syscon_reboot_probe(struct platform_device *pdev)
+ 	struct syscon_reboot_context *ctx;
+ 	struct device *dev = &pdev->dev;
+ 	int mask_err, value_err;
++	int priority;
+ 	int err;
+ 
+ 	ctx = devm_kzalloc(&pdev->dev, sizeof(*ctx), GFP_KERNEL);
+@@ -57,6 +58,9 @@ static int syscon_reboot_probe(struct platform_device *pdev)
+ 			return PTR_ERR(ctx->map);
+ 	}
+ 
++	if (of_property_read_s32(pdev->dev.of_node, "priority", &priority))
++		priority = 192;
++
+ 	if (of_property_read_u32(pdev->dev.of_node, "offset", &ctx->offset))
+ 		return -EINVAL;
+ 
+@@ -77,7 +81,7 @@ static int syscon_reboot_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ctx->restart_handler.notifier_call = syscon_restart_handle;
+-	ctx->restart_handler.priority = 192;
++	ctx->restart_handler.priority = priority;
+ 	err = register_restart_handler(&ctx->restart_handler);
+ 	if (err)
+ 		dev_err(dev, "can't register restart notifier (err=%d)\n", err);
+-- 
+2.20.1
 
-I am still seeing these warnings.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/tTkT0.sZmTTKPObn2kXxfth
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMOlosACgkQAVBC80lX
-0GzZ5Qf/bM3zEdfIHo6hsYGNHDO2SlqPgO2cKKrCYEI+knlRPnaSVrjSBkSpSEt2
-DMhJO8QrBgtOphBKDdVtHshz1ArrsRibjNo58t7dqcNh/tzLPYxUYqTdrpLEH1KT
-V+gdUN4kTtEgvwdq5olhNw2JtzMJv5Yno/+1eml5SuHN6MCztIYq7aQQVoa/ysgT
-KSjXWHbqgh5781g6cIXRl0W7vGKZ5rXb0t8ZMiNQJzt2M71qTx1COwD4MUGL6VmY
-e/oArXcAF+1GipFUa0oxMfN3BHQsw7ZmbrlJDwKy/tbgQ20WFP37ZCQ5yP1vCbGe
-8vsrzTo5vYEPas0dXMToWVtj/yksaA==
-=IFam
------END PGP SIGNATURE-----
-
---Sig_/tTkT0.sZmTTKPObn2kXxfth--
