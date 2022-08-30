@@ -2,267 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 607A6C0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98F0ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbiH3MyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 08:54:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48584 "EHLO
+        id S230252AbiH3MyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 08:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229759AbiH3Mxw (ORCPT
+        with ESMTP id S230078AbiH3Mxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 08:53:52 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E132E153D2F;
-        Tue, 30 Aug 2022 05:53:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661864024; x=1693400024;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=BOymteiUYS1PQ8HpYB6Q2qGyorrx+Ezs6Euf1b5luVQ=;
-  b=16IRoRAOZSZ6aas0ag9N4KgAFavuL93aF3Rpz+R6ygC3ilQLwsuMx3Ax
-   0NjU4Ud0YhxXIAlnzJeyHD10HZhALJMVvee6hXBsEtzjPWyBbgwUIRhkQ
-   QO2EJOjW6cdSQit3x3shBEV9dmVzK3NZOgzEd8zAd1yZUMMyTIsD46ZlO
-   2N24tXC+cf8a2gCq/h/0LXMM0gAXCkBh9m/m64XvYIVQHbkj37XNXbwkP
-   jT5V6TiqYF2sXrZy6WtVy32VmjAz6Osqjy/L9xPdMObS8SqJLz9UjJPY9
-   mHFnoMrnHUm00WJYZVzgpjnvRtC75oFQFYE9eDNyojRgOuOjawMNTgLUY
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="188645764"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 05:53:44 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+        Tue, 30 Aug 2022 08:53:53 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835A614FC96;
+        Tue, 30 Aug 2022 05:53:45 -0700 (PDT)
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MH6ft0wyhz687Jl;
+        Tue, 30 Aug 2022 20:53:10 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 30 Aug 2022 05:53:41 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 30 Aug 2022 05:53:39 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v4 09/13] clk: microchip: mpfs: simplify control reg access
-Date:   Tue, 30 Aug 2022 13:52:46 +0100
-Message-ID: <20220830125249.2373416-9-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220830125110.2372514-1-conor.dooley@microchip.com>
-References: <20220830125110.2372514-1-conor.dooley@microchip.com>
+ 15.1.2375.31; Tue, 30 Aug 2022 14:53:42 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 30 Aug
+ 2022 13:53:41 +0100
+Date:   Tue, 30 Aug 2022 13:53:40 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Ira Weiny <ira.weiny@intel.com>
+CC:     Dan Williams <dan.j.williams@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alison Schofield <alison.schofield@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Ben Widawsky <bwidawsk@kernel.org>,
+        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH V2 1/2] PCI: Allow drivers to request exclusive config
+ regions
+Message-ID: <20220830135340.00000e6f@huawei.com>
+In-Reply-To: <YweZjRYVcT5uCg2i@iweiny-desk3>
+References: <20220824232450.723179-1-ira.weiny@intel.com>
+        <20220824232450.723179-2-ira.weiny@intel.com>
+        <20220825160658.000051a6@huawei.com>
+        <YweZjRYVcT5uCg2i@iweiny-desk3>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The control reg addresses are known when the clocks are registered, so
-we can, instead of assigning a base pointer to the structs, assign the
-control reg addresses directly. Accordingly, remove the interim
-variables used during reads/writes to those registers.
+On Thu, 25 Aug 2022 08:47:25 -0700
+Ira Weiny <ira.weiny@intel.com> wrote:
 
-Reviewed-by: Daire McNamara <daire.mcnamara@microchip.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/clk/microchip/clk-mpfs.c | 42 +++++++++++++-------------------
- 1 file changed, 17 insertions(+), 25 deletions(-)
+> On Thu, Aug 25, 2022 at 04:06:58PM +0100, Jonathan Cameron wrote:
+> > On Wed, 24 Aug 2022 16:24:49 -0700
+> > ira.weiny@intel.com wrote:
+> >   
+> > > From: Ira Weiny <ira.weiny@intel.com>
+> > > 
+> > > PCI config space access from user space has traditionally been
+> > > unrestricted with writes being an understood risk for device operation.
+> > > 
+> > > Unfortunately, device breakage or odd behavior from config writes lacks
+> > > indicators that can leave driver writers confused when evaluating
+> > > failures.  This is especially true with the new PCIe Data Object
+> > > Exchange (DOE) mailbox protocol where backdoor shenanigans from user
+> > > space through things such as vendor defined protocols may affect device
+> > > operation without complete breakage.
+> > > 
+> > > A prior proposal restricted read and writes completely.[1]  Greg and
+> > > Bjorn pointed out that proposal is flawed for a couple of reasons.
+> > > First, lspci should always be allowed and should not interfere with any
+> > > device operation.  Second, setpci is a valuable tool that is sometimes
+> > > necessary and it should not be completely restricted.[2]  Finally
+> > > methods exist for full lock of device access if required.
+> > > 
+> > > Even though access should not be restricted it would be nice for driver
+> > > writers to be able to flag critical parts of the config space such that
+> > > interference from user space can be detected.
+> > > 
+> > > Introduce pci_request_config_region_exclusive() to mark exclusive config
+> > > regions.  Such regions trigger a warning and kernel taint if accessed
+> > > via user space.
+> > > 
+> > > Create pci_warn_once() to restrict the user from spamming the log.
+> > > 
+> > > [1] https://lore.kernel.org/all/161663543465.1867664.5674061943008380442.stgit@dwillia2-desk3.amr.corp.intel.com/
+> > > [2] https://lore.kernel.org/all/YF8NGeGv9vYcMfTV@kroah.com/
+> > > 
+> > > Cc: Bjorn Helgaas <bhelgaas@google.com>
+> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > Suggested-by: Dan Williams <dan.j.williams@intel.com>
+> > > Signed-off-by: Ira Weiny <ira.weiny@intel.com>  
+> > One comment inline.
+> > 
+> > I'm not totally convinced of the necessity of this, but done this way
+> > it has very little impact so I'm fine with it.
+> > 
+> > Other than the comment about not realigning things...
+> > 
+> > Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>  
+> 
+> Thanks!
+> 
+> [snip]
+> 
+> > >  /* drivers/pci/bus.c */
+> > >  void pci_add_resource(struct list_head *resources, struct resource *res);
+> > >  void pci_add_resource_offset(struct list_head *resources, struct resource *res,
+> > > @@ -2486,14 +2502,15 @@ void pci_uevent_ers(struct pci_dev *pdev, enum  pci_ers_result err_type);
+> > >  #define pci_printk(level, pdev, fmt, arg...) \
+> > >  	dev_printk(level, &(pdev)->dev, fmt, ##arg)
+> > >  
+> > > -#define pci_emerg(pdev, fmt, arg...)	dev_emerg(&(pdev)->dev, fmt, ##arg)
+> > > -#define pci_alert(pdev, fmt, arg...)	dev_alert(&(pdev)->dev, fmt, ##arg)
+> > > -#define pci_crit(pdev, fmt, arg...)	dev_crit(&(pdev)->dev, fmt, ##arg)
+> > > -#define pci_err(pdev, fmt, arg...)	dev_err(&(pdev)->dev, fmt, ##arg)
+> > > -#define pci_warn(pdev, fmt, arg...)	dev_warn(&(pdev)->dev, fmt, ##arg)
+> > > -#define pci_notice(pdev, fmt, arg...)	dev_notice(&(pdev)->dev, fmt, ##arg)
+> > > -#define pci_info(pdev, fmt, arg...)	dev_info(&(pdev)->dev, fmt, ##arg)
+> > > -#define pci_dbg(pdev, fmt, arg...)	dev_dbg(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_emerg(pdev, fmt, arg...)	 dev_emerg(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_alert(pdev, fmt, arg...)	 dev_alert(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_crit(pdev, fmt, arg...)	 dev_crit(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_err(pdev, fmt, arg...)	 dev_err(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_warn(pdev, fmt, arg...)	 dev_warn(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_warn_once(pdev, fmt, arg...) dev_warn_once(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_notice(pdev, fmt, arg...)	 dev_notice(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_info(pdev, fmt, arg...)	 dev_info(&(pdev)->dev, fmt, ##arg)
+> > > +#define pci_dbg(pdev, fmt, arg...)	 dev_dbg(&(pdev)->dev, fmt, ##arg)  
+> > 
+> > This realignment is a lot of noise.  Do we really care about one diffentlyu
+> > aligned entry? + if you are going to do it two tabs rather than a space
+> > following the tab (I think that's what you have here?)  
+> 
+> I struggled a bit on this.  Not aligning makes the final code look odd while
+> the patch looks good.  Aligning with 2 tabs pushes everything past the 80 col
+> standard.
 
-diff --git a/drivers/clk/microchip/clk-mpfs.c b/drivers/clk/microchip/clk-mpfs.c
-index 845658751690..60e1e82912fe 100644
---- a/drivers/clk/microchip/clk-mpfs.c
-+++ b/drivers/clk/microchip/clk-mpfs.c
-@@ -52,6 +52,7 @@ struct mpfs_msspll_hw_clock {
- #define to_mpfs_msspll_clk(_hw) container_of(_hw, struct mpfs_msspll_hw_clock, hw)
- 
- struct mpfs_cfg_clock {
-+	void __iomem *reg;
- 	const struct clk_div_table *table;
- 	u8 shift;
- 	u8 width;
-@@ -60,7 +61,6 @@ struct mpfs_cfg_clock {
- 
- struct mpfs_cfg_hw_clock {
- 	struct mpfs_cfg_clock cfg;
--	void __iomem *sys_base;
- 	struct clk_hw hw;
- 	struct clk_init_data init;
- 	unsigned int id;
-@@ -70,12 +70,12 @@ struct mpfs_cfg_hw_clock {
- #define to_mpfs_cfg_clk(_hw) container_of(_hw, struct mpfs_cfg_hw_clock, hw)
- 
- struct mpfs_periph_clock {
-+	void __iomem *reg;
- 	u8 shift;
- };
- 
- struct mpfs_periph_hw_clock {
- 	struct mpfs_periph_clock periph;
--	void __iomem *sys_base;
- 	struct clk_hw hw;
- 	unsigned int id;
- };
-@@ -214,14 +214,13 @@ static int mpfs_clk_register_msspll(struct device *dev, struct mpfs_msspll_hw_cl
- static int mpfs_clk_register_mssplls(struct device *dev, struct mpfs_msspll_hw_clock *msspll_hws,
- 				     unsigned int num_clks, struct mpfs_clock_data *data)
- {
--	void __iomem *base = data->msspll_base;
- 	unsigned int i;
- 	int ret;
- 
- 	for (i = 0; i < num_clks; i++) {
- 		struct mpfs_msspll_hw_clock *msspll_hw = &msspll_hws[i];
- 
--		ret = mpfs_clk_register_msspll(dev, msspll_hw, base);
-+		ret = mpfs_clk_register_msspll(dev, msspll_hw, data->msspll_base);
- 		if (ret)
- 			return dev_err_probe(dev, ret, "failed to register msspll id: %d\n",
- 					     CLK_MSSPLL);
-@@ -240,10 +239,9 @@ static unsigned long mpfs_cfg_clk_recalc_rate(struct clk_hw *hw, unsigned long p
- {
- 	struct mpfs_cfg_hw_clock *cfg_hw = to_mpfs_cfg_clk(hw);
- 	struct mpfs_cfg_clock *cfg = &cfg_hw->cfg;
--	void __iomem *base_addr = cfg_hw->sys_base;
- 	u32 val;
- 
--	val = readl_relaxed(base_addr + cfg_hw->reg_offset) >> cfg->shift;
-+	val = readl_relaxed(cfg->reg) >> cfg->shift;
- 	val &= clk_div_mask(cfg->width);
- 
- 	return divider_recalc_rate(hw, prate, val, cfg->table, cfg->flags, cfg->width);
-@@ -261,7 +259,6 @@ static int mpfs_cfg_clk_set_rate(struct clk_hw *hw, unsigned long rate, unsigned
- {
- 	struct mpfs_cfg_hw_clock *cfg_hw = to_mpfs_cfg_clk(hw);
- 	struct mpfs_cfg_clock *cfg = &cfg_hw->cfg;
--	void __iomem *base_addr = cfg_hw->sys_base;
- 	unsigned long flags;
- 	u32 val;
- 	int divider_setting;
-@@ -272,10 +269,10 @@ static int mpfs_cfg_clk_set_rate(struct clk_hw *hw, unsigned long rate, unsigned
- 		return divider_setting;
- 
- 	spin_lock_irqsave(&mpfs_clk_lock, flags);
--	val = readl_relaxed(base_addr + cfg_hw->reg_offset);
-+	val = readl_relaxed(cfg->reg);
- 	val &= ~(clk_div_mask(cfg->width) << cfg_hw->cfg.shift);
- 	val |= divider_setting << cfg->shift;
--	writel_relaxed(val, base_addr + cfg_hw->reg_offset);
-+	writel_relaxed(val, cfg->reg);
- 
- 	spin_unlock_irqrestore(&mpfs_clk_lock, flags);
- 
-@@ -318,9 +315,9 @@ static struct mpfs_cfg_hw_clock mpfs_cfg_clks[] = {
- };
- 
- static int mpfs_clk_register_cfg(struct device *dev, struct mpfs_cfg_hw_clock *cfg_hw,
--				 void __iomem *sys_base)
-+				 void __iomem *base)
- {
--	cfg_hw->sys_base = sys_base;
-+	cfg_hw->cfg.reg = base + cfg_hw->reg_offset;
- 
- 	return devm_clk_hw_register(dev, &cfg_hw->hw);
- }
-@@ -328,14 +325,13 @@ static int mpfs_clk_register_cfg(struct device *dev, struct mpfs_cfg_hw_clock *c
- static int mpfs_clk_register_cfgs(struct device *dev, struct mpfs_cfg_hw_clock *cfg_hws,
- 				  unsigned int num_clks, struct mpfs_clock_data *data)
- {
--	void __iomem *sys_base = data->base;
- 	unsigned int i, id;
- 	int ret;
- 
- 	for (i = 0; i < num_clks; i++) {
- 		struct mpfs_cfg_hw_clock *cfg_hw = &cfg_hws[i];
- 
--		ret = mpfs_clk_register_cfg(dev, cfg_hw, sys_base);
-+		ret = mpfs_clk_register_cfg(dev, cfg_hw, data->base);
- 		if (ret)
- 			return dev_err_probe(dev, ret, "failed to register clock id: %d\n",
- 					     cfg_hw->id);
-@@ -355,15 +351,14 @@ static int mpfs_periph_clk_enable(struct clk_hw *hw)
- {
- 	struct mpfs_periph_hw_clock *periph_hw = to_mpfs_periph_clk(hw);
- 	struct mpfs_periph_clock *periph = &periph_hw->periph;
--	void __iomem *base_addr = periph_hw->sys_base;
- 	u32 reg, val;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&mpfs_clk_lock, flags);
- 
--	reg = readl_relaxed(base_addr + REG_SUBBLK_CLOCK_CR);
-+	reg = readl_relaxed(periph->reg);
- 	val = reg | (1u << periph->shift);
--	writel_relaxed(val, base_addr + REG_SUBBLK_CLOCK_CR);
-+	writel_relaxed(val, periph->reg);
- 
- 	spin_unlock_irqrestore(&mpfs_clk_lock, flags);
- 
-@@ -374,15 +369,14 @@ static void mpfs_periph_clk_disable(struct clk_hw *hw)
- {
- 	struct mpfs_periph_hw_clock *periph_hw = to_mpfs_periph_clk(hw);
- 	struct mpfs_periph_clock *periph = &periph_hw->periph;
--	void __iomem *base_addr = periph_hw->sys_base;
- 	u32 reg, val;
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&mpfs_clk_lock, flags);
- 
--	reg = readl_relaxed(base_addr + REG_SUBBLK_CLOCK_CR);
-+	reg = readl_relaxed(periph->reg);
- 	val = reg & ~(1u << periph->shift);
--	writel_relaxed(val, base_addr + REG_SUBBLK_CLOCK_CR);
-+	writel_relaxed(val, periph->reg);
- 
- 	spin_unlock_irqrestore(&mpfs_clk_lock, flags);
- }
-@@ -391,10 +385,9 @@ static int mpfs_periph_clk_is_enabled(struct clk_hw *hw)
- {
- 	struct mpfs_periph_hw_clock *periph_hw = to_mpfs_periph_clk(hw);
- 	struct mpfs_periph_clock *periph = &periph_hw->periph;
--	void __iomem *base_addr = periph_hw->sys_base;
- 	u32 reg;
- 
--	reg = readl_relaxed(base_addr + REG_SUBBLK_CLOCK_CR);
-+	reg = readl_relaxed(periph->reg);
- 	if (reg & (1u << periph->shift))
- 		return 1;
- 
-@@ -462,9 +455,9 @@ static struct mpfs_periph_hw_clock mpfs_periph_clks[] = {
- };
- 
- static int mpfs_clk_register_periph(struct device *dev, struct mpfs_periph_hw_clock *periph_hw,
--				    void __iomem *sys_base)
-+				    void __iomem *base)
- {
--	periph_hw->sys_base = sys_base;
-+	periph_hw->periph.reg = base + REG_SUBBLK_CLOCK_CR;
- 
- 	return devm_clk_hw_register(dev, &periph_hw->hw);
- }
-@@ -472,14 +465,13 @@ static int mpfs_clk_register_periph(struct device *dev, struct mpfs_periph_hw_cl
- static int mpfs_clk_register_periphs(struct device *dev, struct mpfs_periph_hw_clock *periph_hws,
- 				     int num_clks, struct mpfs_clock_data *data)
- {
--	void __iomem *sys_base = data->base;
- 	unsigned int i, id;
- 	int ret;
- 
- 	for (i = 0; i < num_clks; i++) {
- 		struct mpfs_periph_hw_clock *periph_hw = &periph_hws[i];
- 
--		ret = mpfs_clk_register_periph(dev, periph_hw, sys_base);
-+		ret = mpfs_clk_register_periph(dev, periph_hw, data->base);
- 		if (ret)
- 			return dev_err_probe(dev, ret, "failed to register clock id: %d\n",
- 					     periph_hw->id);
--- 
-2.36.1
+If you really want to do this then break the 80 char limit.  Weird space + tab combinations
+are a bad idea longer term.  Maybe do reformat as precursor 'no functional change' patch
+to make it all readable?
+
+> 
+> This seemed like a good compromise.
+> 
+> Thanks for the review,
+> Ira
+> 
+> 
 
