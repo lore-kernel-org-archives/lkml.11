@@ -2,267 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC13ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:34:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D04B5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232032AbiH3Ree (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:34:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34046 "EHLO
+        id S232101AbiH3Rel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232058AbiH3Rdd (ORCPT
+        with ESMTP id S232391AbiH3ReI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:33:33 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75B57FD3
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:29:40 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E6E31576;
-        Tue, 30 Aug 2022 10:26:55 -0700 (PDT)
-Received: from e121896.arm.com (unknown [10.57.15.35])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4B5603F7B4;
-        Tue, 30 Aug 2022 10:26:47 -0700 (PDT)
-From:   James Clark <james.clark@arm.com>
-To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        mathieu.poirier@linaro.org
-Cc:     mike.leach@linaro.org, leo.yan@linaro.org,
-        linux-kernel@vger.kernel.org, german.gomez@arm.com,
-        James Clark <james.clark@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH v2 5/5] coresight: Make new csdev_access offsets unsigned
-Date:   Tue, 30 Aug 2022 18:26:13 +0100
-Message-Id: <20220830172614.340962-6-james.clark@arm.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20220830172614.340962-1-james.clark@arm.com>
-References: <20220830172614.340962-1-james.clark@arm.com>
+        Tue, 30 Aug 2022 13:34:08 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F49232A99
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:30:14 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id f4so11264829pgc.12
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:30:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=YQ8ZcpbXRjUN1AF+PorHGIrk4GnuSWoX8YJ2o7FF8qA=;
+        b=e7cMo785PTbK7lQdEBG57/gp/Ipq1BCKVCh1ENIlKVPAr+BYXoS4rDG2wsGGbBey3p
+         eNKJLDnb5eg3GNHnV/ST9qvvevVcnoXr1vIIeGVn8USdr0bPIJxl83j3yzK40VNlQnHl
+         rzrf58riSAvaYykXGoY6MevmEyT2jHsUfCg2yAddhRE7t2qiuR10DKSK7KPVPC4hbd/w
+         9IfFKWUvIbcCEizv+7h4CwiR/2SGHVZTDlyDneaMxhBTflzZhFoMfM163EpS+sneyDAC
+         YMNsTJi2sDBUp2VkXt7/EoE1e6P7Gj6fAnc69RbT+XAtYdhiR2F28yNTTIESbHPLD5Z3
+         HqHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=YQ8ZcpbXRjUN1AF+PorHGIrk4GnuSWoX8YJ2o7FF8qA=;
+        b=tlUsa18Px5HyTAqyBlee89iG0DqA+2bySTLgFD0m+HT/CBGnAzy5M33E8F14coiYTY
+         Evq5XhLXxpZYcmguzd5Ic9w+Lzd2jZIgh5n1A+DOH0Dwgh73SZxue4h4H/CcyRnaBQL6
+         0fwRgZbZ4R74Q2VRsbNdNFN+czolqx2uvm7C9cDpIQOx6+2KL4zGj1O7jG7GVBavWOGT
+         74Lw1X0pcbkK+L+K/9p+vbaEeYOok0cizCDexT8oamWxDkg7B/we92H6KWccXvt/C1G6
+         vXuLhs7WPJGWBuVkQxHK3rUivFJ+KtnSC4TDIJ6OtudWbV+c9QaV+ek8ezs0zLXDKraO
+         LFSA==
+X-Gm-Message-State: ACgBeo1lYbG2uxlOosTW8VyvSjQji2kP6A7FwaoWVfVaCj79LDIfYYmD
+        C4GkuGPKXgsbnDyDOu7KJ8DVQQ==
+X-Google-Smtp-Source: AA6agR6ahQC3OgKadAHRpGKGebHE8Y2/JSHi4S1bjD4R//knQWK67U9OFqK0gXSTU9JortNXulmakQ==
+X-Received: by 2002:a63:8143:0:b0:42b:9e2f:548e with SMTP id t64-20020a638143000000b0042b9e2f548emr13267763pgd.548.1661880544516;
+        Tue, 30 Aug 2022 10:29:04 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id g8-20020a17090a290800b001fb398e5e6esm8754499pjd.55.2022.08.30.10.29.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 10:29:04 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 17:29:00 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH RESEND v2 0/8] x86/pmu: Corner cases fixes and
+ optimization
+Message-ID: <Yw5I3P4Vs5GGBtuJ@google.com>
+References: <20220823093221.38075-1-likexu@tencent.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823093221.38075-1-likexu@tencent.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-New csdev_access functions were added as part of the previous
-refactor. In order to make them more consistent with the
-existing ones, change any signed offset types to be unsigned.
+On Tue, Aug 23, 2022, Like Xu wrote:
+> Good well-designed tests can help us find more bugs, especially when
+> the test steps differ from the Linux kernel behaviour in terms of the
+> timing of access to virtualized hw resources.
+> 
+> In this patch series, there are three small optimization (006/007/008),
+> one hardware surprise (001), and most of these fixes have stepped
+> on my little toes.
+> 
+> Please feel free to run tests, add more or share comments.
+> 
+> Previous:
+> https://lore.kernel.org/kvm/20220721103549.49543-1-likexu@tencent.com/
+> https://lore.kernel.org/kvm/20220803130124.72340-1-likexu@tencent.com/
+> 
+> V2 -> V2 RESEND Changelog:
+> - The "pebs_capable" fix has been merged into tip/perf/tree tree;
+> - Move the other two AMD vPMU optimization here;
 
-Now that they are unsigned, stop using hi_off = -1 to signify
-a single 32bit access. Instead just call the existing 32bit
-accessors. This is also applied to other parts of the codebase,
-and the coresight_{read,write}_reg_pair() functions can be
-deleted.
+This is not a RESEND.  These things very much matter because I'm sitting here
+trying to figure out whether I need to review this "v2", which is really v3, or
+whether I can just review the real v2.
 
-Signed-off-by: James Clark <james.clark@arm.com>
----
- drivers/hwtracing/coresight/coresight-catu.h |  8 ++---
- drivers/hwtracing/coresight/coresight-core.c | 18 ++++++++--
- drivers/hwtracing/coresight/coresight-priv.h | 35 +++++---------------
- drivers/hwtracing/coresight/coresight-tmc.h  |  4 +--
- include/linux/coresight.h                    | 27 +++++++++------
- 5 files changed, 47 insertions(+), 45 deletions(-)
-
-diff --git a/drivers/hwtracing/coresight/coresight-catu.h b/drivers/hwtracing/coresight/coresight-catu.h
-index 6160c2d75a56..442e034bbfba 100644
---- a/drivers/hwtracing/coresight/coresight-catu.h
-+++ b/drivers/hwtracing/coresight/coresight-catu.h
-@@ -70,24 +70,24 @@ struct catu_drvdata {
- static inline u32							\
- catu_read_##name(struct catu_drvdata *drvdata)				\
- {									\
--	return coresight_read_reg_pair(drvdata->base, offset, -1);	\
-+	return csdev_access_relaxed_read32(&drvdata->csdev->access, offset); \
- }									\
- static inline void							\
- catu_write_##name(struct catu_drvdata *drvdata, u32 val)		\
- {									\
--	coresight_write_reg_pair(drvdata->base, val, offset, -1);	\
-+	csdev_access_relaxed_write32(&drvdata->csdev->access, val, offset); \
- }
- 
- #define CATU_REG_PAIR(name, lo_off, hi_off)				\
- static inline u64							\
- catu_read_##name(struct catu_drvdata *drvdata)				\
- {									\
--	return coresight_read_reg_pair(drvdata->base, lo_off, hi_off);	\
-+	return csdev_access_relaxed_read_pair(&drvdata->csdev->access, lo_off, hi_off); \
- }									\
- static inline void							\
- catu_write_##name(struct catu_drvdata *drvdata, u64 val)		\
- {									\
--	coresight_write_reg_pair(drvdata->base, val, lo_off, hi_off);	\
-+	csdev_access_relaxed_write_pair(&drvdata->csdev->access, val, lo_off, hi_off); \
- }
- 
- CATU_REG32(control, CATU_CONTROL);
-diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
-index c63b2167a69f..d5dbc67bacb4 100644
---- a/drivers/hwtracing/coresight/coresight-core.c
-+++ b/drivers/hwtracing/coresight/coresight-core.c
-@@ -60,7 +60,7 @@ EXPORT_SYMBOL_GPL(coresight_barrier_pkt);
- 
- static const struct cti_assoc_op *cti_assoc_ops;
- 
--ssize_t coresight_simple_show(struct device *_dev,
-+ssize_t coresight_simple_show_pair(struct device *_dev,
- 			      struct device_attribute *attr, char *buf)
- {
- 	struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev);
-@@ -72,7 +72,21 @@ ssize_t coresight_simple_show(struct device *_dev,
- 	pm_runtime_put_sync(_dev->parent);
- 	return sysfs_emit(buf, "0x%llx\n", val);
- }
--EXPORT_SYMBOL_GPL(coresight_simple_show);
-+EXPORT_SYMBOL_GPL(coresight_simple_show_pair);
-+
-+ssize_t coresight_simple_show32(struct device *_dev,
-+			      struct device_attribute *attr, char *buf)
-+{
-+	struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev);
-+	struct cs_off_attribute *cs_attr = container_of(attr, struct cs_off_attribute, attr);
-+	u64 val;
-+
-+	pm_runtime_get_sync(_dev->parent);
-+	val = csdev_access_relaxed_read32(&csdev->access, cs_attr->off);
-+	pm_runtime_put_sync(_dev->parent);
-+	return sysfs_emit(buf, "0x%llx\n", val);
-+}
-+EXPORT_SYMBOL_GPL(coresight_simple_show32);
- 
- void coresight_set_cti_ops(const struct cti_assoc_op *cti_op)
- {
-diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
-index c211979deca5..595ce5862056 100644
---- a/drivers/hwtracing/coresight/coresight-priv.h
-+++ b/drivers/hwtracing/coresight/coresight-priv.h
-@@ -41,8 +41,8 @@
- #define ETM_MODE_EXCL_USER	BIT(31)
- struct cs_pair_attribute {
- 	struct device_attribute attr;
--	s32 lo_off;
--	s32 hi_off;
-+	u32 lo_off;
-+	u32 hi_off;
- };
- 
- struct cs_off_attribute {
-@@ -50,21 +50,23 @@ struct cs_off_attribute {
- 	u32 off;
- };
- 
--extern ssize_t coresight_simple_show(struct device *_dev,
-+extern ssize_t coresight_simple_show32(struct device *_dev,
-+				     struct device_attribute *attr, char *buf);
-+extern ssize_t coresight_simple_show_pair(struct device *_dev,
- 				     struct device_attribute *attr, char *buf);
- 
- #define coresight_simple_reg32(name, offset)				\
--	(&((struct cs_pair_attribute[]) {				\
-+	(&((struct cs_off_attribute[]) {				\
- 	   {								\
--		__ATTR(name, 0444, coresight_simple_show, NULL),	\
--		offset, -1						\
-+		__ATTR(name, 0444, coresight_simple_show32, NULL),	\
-+		offset							\
- 	   }								\
- 	})[0].attr.attr)
- 
- #define coresight_simple_reg64(name, lo_off, hi_off)			\
- 	(&((struct cs_pair_attribute[]) {				\
- 	   {								\
--		__ATTR(name, 0444, coresight_simple_show, NULL),	\
-+		__ATTR(name, 0444, coresight_simple_show_pair, NULL),	\
- 		lo_off, hi_off						\
- 	   }								\
- 	})[0].attr.attr)
-@@ -130,25 +132,6 @@ static inline void CS_UNLOCK(void __iomem *addr)
- 	} while (0);
- }
- 
--static inline u64
--coresight_read_reg_pair(void __iomem *addr, s32 lo_offset, s32 hi_offset)
--{
--	u64 val;
--
--	val = readl_relaxed(addr + lo_offset);
--	val |= (hi_offset < 0) ? 0 :
--	       (u64)readl_relaxed(addr + hi_offset) << 32;
--	return val;
--}
--
--static inline void coresight_write_reg_pair(void __iomem *addr, u64 val,
--						 s32 lo_offset, s32 hi_offset)
--{
--	writel_relaxed((u32)val, addr + lo_offset);
--	if (hi_offset >= 0)
--		writel_relaxed((u32)(val >> 32), addr + hi_offset);
--}
--
- void coresight_disable_path(struct list_head *path);
- int coresight_enable_path(struct list_head *path, u32 mode, void *sink_data);
- struct coresight_device *coresight_get_sink(struct list_head *path);
-diff --git a/drivers/hwtracing/coresight/coresight-tmc.h b/drivers/hwtracing/coresight/coresight-tmc.h
-index 6bec20a392b3..66959557cf39 100644
---- a/drivers/hwtracing/coresight/coresight-tmc.h
-+++ b/drivers/hwtracing/coresight/coresight-tmc.h
-@@ -282,12 +282,12 @@ ssize_t tmc_etr_get_sysfs_trace(struct tmc_drvdata *drvdata,
- static inline u64							\
- tmc_read_##name(struct tmc_drvdata *drvdata)				\
- {									\
--	return coresight_read_reg_pair(drvdata->base, lo_off, hi_off);	\
-+	return csdev_access_relaxed_read_pair(&drvdata->csdev->access, lo_off, hi_off); \
- }									\
- static inline void							\
- tmc_write_##name(struct tmc_drvdata *drvdata, u64 val)			\
- {									\
--	coresight_write_reg_pair(drvdata->base, val, lo_off, hi_off);	\
-+	csdev_access_relaxed_write_pair(&drvdata->csdev->access, val, lo_off, hi_off); \
- }
- 
- TMC_REG_PAIR(rrp, TMC_RRP, TMC_RRPHI)
-diff --git a/include/linux/coresight.h b/include/linux/coresight.h
-index a47dd1f62216..1554021231f9 100644
---- a/include/linux/coresight.h
-+++ b/include/linux/coresight.h
-@@ -373,21 +373,26 @@ static inline u32 csdev_access_relaxed_read32(struct csdev_access *csa,
- }
- 
- static inline u64 csdev_access_relaxed_read_pair(struct csdev_access *csa,
--						 s32 lo_offset, s32 hi_offset)
-+						 u32 lo_offset, u32 hi_offset)
- {
--	u64 val;
--
- 	if (likely(csa->io_mem)) {
--		val = readl_relaxed(csa->base + lo_offset);
--		val |= (hi_offset < 0) ? 0 :
--		       (u64)readl_relaxed(csa->base + hi_offset) << 32;
--		return val;
-+		return readl_relaxed(csa->base + lo_offset) |
-+			((u64)readl_relaxed(csa->base + hi_offset) << 32);
- 	}
- 
--	val = csa->read(lo_offset, true, false);
--	val |= (hi_offset < 0) ? 0 :
--	       (u64)csa->read(hi_offset, true, false) << 32;
--	return val;
-+	return csa->read(lo_offset, true, false) | (csa->read(hi_offset, true, false) << 32);
-+}
-+
-+static inline void csdev_access_relaxed_write_pair(struct csdev_access *csa, u64 val,
-+						   u32 lo_offset, u32 hi_offset)
-+{
-+	if (likely(csa->io_mem)) {
-+		writel_relaxed((u32)val, csa->base + lo_offset);
-+		writel_relaxed((u32)(val >> 32), csa->base + hi_offset);
-+	} else {
-+		csa->write((u32)val, lo_offset, true, false);
-+		csa->write((u32)(val >> 32), hi_offset, true, false);
-+	}
- }
- 
- static inline u32 csdev_access_read32(struct csdev_access *csa, u32 offset)
--- 
-2.28.0
-
+  Don't add "RESEND" when you are submitting a modified version of your
+  patch or patch series - "RESEND" only applies to resubmission of a
+  patch or patch series which have not been modified in any way from the
+  previous submission.       
