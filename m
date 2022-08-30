@@ -2,94 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC63ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB374ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229699AbiH3KPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41218 "EHLO
+        id S229883AbiH3KRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230019AbiH3KNX (ORCPT
+        with ESMTP id S230077AbiH3KQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:13:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BE92DED;
-        Tue, 30 Aug 2022 03:09:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87577B811B3;
-        Tue, 30 Aug 2022 10:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD727C433D6;
-        Tue, 30 Aug 2022 10:09:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661854152;
-        bh=0GgQSfiovxbB6DlRH1/NdKZX2aHBw5Zag6bneKmYBJY=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=B6J2RmE3b6y2cRIRMNi1f8wV0jciD7CxkwjjVWXNProlo5pvQEGBpq1/2Chl1N7yX
-         jni8dMRa5VpsyBwz/wvxM40nOveqTbavwKNdzpslr8FKI0nnY/j0PeWHPv1QZYHfK4
-         f6p3aKXQuThtqgJT1/tyhNigUiFbDEKkJ3CHHMmsgGf3HmAk8L5pFKXQyVdRbKjwyj
-         OfikAdOlOPAmw0/1iWjVH8S3F+TQXRXAsTxmmaPlD3AaZZ9HdTkTHMK7rJTY1Dmpx9
-         /vmDMV3x8BxRqsjPWFr+3RNHL5mlFJdnjkxDEWvalxa7QRDaAJHaTmc+yKGcqTnLkS
-         59zkbokSBOzCQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     linux-renesas-soc@vger.kernel.org,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220824094327.33685-1-wsa+renesas@sang-engineering.com>
-References: <20220824094327.33685-1-wsa+renesas@sang-engineering.com>
-Subject: Re: [PATCH 0/3] spi: add generic R-Car Gen4 and specific r8a779f0 support
-Message-Id: <166185415042.1099942.6942703458061199839.b4-ty@kernel.org>
-Date:   Tue, 30 Aug 2022 11:09:10 +0100
+        Tue, 30 Aug 2022 06:16:39 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554D9F8260
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:13:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661854425; x=1693390425;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=6z+he6W5PM2UZdejK5EeZjXD+k1l6Ef9YraX41eHvS8=;
+  b=lhAoHaAQRzySk3O/BIQdcEqTtcsS4sMF9LpGQI/wkuygt8M9zYQveFIO
+   UaUgmYsbR7Y4tfIuglxf0XkqnGFB4N6qsYWgmaPR2lBiSarnoAf/n28wx
+   aPUUTEmXavydIddH3MXEseL3IDtogx9/vChYW4UiR7jA0Z7hHMWUe/04N
+   p4xEPwTt+3ZPC3a5/5kK/DGJ6D43T+YVnto7qeORMWk2Mo/09G+cR9efn
+   fol2VE2m72j5dWKFkQ7XGGeNUuGD1I46is3AUTwaxpuOuiQde9jZI6t1p
+   TysS8fgEHvqwaeVqF6w7o5Eut8U6iF08jQt2wNPG8tXDsAahq6qUHo6TC
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="359099940"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="359099940"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 03:13:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="700934087"
+Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 30 Aug 2022 03:13:03 -0700
+Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oSyEw-0000Am-1C;
+        Tue, 30 Aug 2022 10:13:02 +0000
+Date:   Tue, 30 Aug 2022 18:12:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [linux-stable-rc:linux-4.19.y 437/3764] net/core/sock.c:1090: Error:
+ unrecognized opcode `csrs sstatus,s9'
+Message-ID: <202208301804.Vok0kvBk-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-65ba7
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 24 Aug 2022 11:43:23 +0200, Wolfram Sang wrote:
-> Here are the patches to enable MSIOF on R-Car S4-8. They also introduce
-> generic Gen4 support and move V3U to Gen4 (which it really is).
-> 
-> Wolfram Sang (3):
->   spi: renesas,sh-msiof: Add generic Gen4 and r8a779f0 support
->   spi: sh-msiof: add generic Gen4 binding
->   spi: renesas,sh-msiof: R-Car V3U is R-Car Gen4
-> 
-> [...]
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+head:   cbdeb714075662db12b9a4819f15f1856e8ed7ec
+commit: 0512a9aede6e4417c4fa6e0042a7ca8bc7e06b86 [437/3764] af_unix: fix races in sk_peer_pid and sk_peer_cred accesses
+config: riscv-randconfig-c042-20220829 (https://download.01.org/0day-ci/archive/20220830/202208301804.Vok0kvBk-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=0512a9aede6e4417c4fa6e0042a7ca8bc7e06b86
+        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        git fetch --no-tags linux-stable-rc linux-4.19.y
+        git checkout 0512a9aede6e4417c4fa6e0042a7ca8bc7e06b86
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash net/core/
 
-Applied to
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-   broonie/spi.git for-next
+All errors (new ones prefixed by >>):
 
-Thanks!
+   net/core/sock.c: Assembler messages:
+   net/core/sock.c:673: Error: unrecognized opcode `csrs sstatus,a4'
+   net/core/sock.c:673: Error: unrecognized opcode `csrc sstatus,a4'
+   net/core/sock.c:1112: Error: unrecognized opcode `csrs sstatus,a4'
+   net/core/sock.c:1112: Error: unrecognized opcode `csrc sstatus,a4'
+   net/core/sock.c:1267: Error: unrecognized opcode `csrs sstatus,a4'
+   net/core/sock.c:1267: Error: unrecognized opcode `csrc sstatus,a4'
+>> net/core/sock.c:1090: Error: unrecognized opcode `csrs sstatus,s9'
+>> net/core/sock.c:1090: Error: unrecognized opcode `csrc sstatus,s9'
+   net/core/sock.c:1420: Error: unrecognized opcode `csrs sstatus,a4'
+   net/core/sock.c:1420: Error: unrecognized opcode `csrc sstatus,a4'
 
-[1/3] spi: renesas,sh-msiof: Add generic Gen4 and r8a779f0 support
-      commit: e1e62f05d5d9d7726349e00562299d829e478ce9
-[2/3] spi: sh-msiof: add generic Gen4 binding
-      commit: ea9d001550abaf2f4c75cf4fcd936ea19f932b84
-[3/3] spi: renesas,sh-msiof: R-Car V3U is R-Car Gen4
-      commit: b076fdd02133e6a31db167f8acc368edc2530cc0
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
+vim +1090 net/core/sock.c
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
+3f551f9436c05a3 Eric W. Biederman 2010-06-13  1083  
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1084  static int groups_to_user(gid_t __user *dst, const struct group_info *src)
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1085  {
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1086  	struct user_namespace *user_ns = current_user_ns();
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1087  	int i;
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1088  
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1089  	for (i = 0; i < src->ngroups; i++)
+28b5ba2aa0f55d8 David Herrmann    2017-06-21 @1090  		if (put_user(from_kgid_munged(user_ns, src->gid[i]), dst + i))
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1091  			return -EFAULT;
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1092  
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1093  	return 0;
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1094  }
+28b5ba2aa0f55d8 David Herrmann    2017-06-21  1095  
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+:::::: The code at line 1090 was first introduced by commit
+:::::: 28b5ba2aa0f55d80adb2624564ed2b170c19519e net: introduce SO_PEERGROUPS getsockopt
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+:::::: TO: David Herrmann <dh.herrmann@gmail.com>
+:::::: CC: David S. Miller <davem@davemloft.net>
 
-Thanks,
-Mark
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
