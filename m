@@ -2,89 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FAC2ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 681B0ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:04:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230024AbiH3KEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48712 "EHLO
+        id S230086AbiH3KEd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:04:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiH3KCl (ORCPT
+        with ESMTP id S230102AbiH3KDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:02:41 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F95D7CD8
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:00:51 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id k18so4382349lji.13
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:00:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=qDIhNkRJpY0zIqLvOcBvjOAemNokXD1mo0hvIa/wH90=;
-        b=OQ3mmQBYHhAd69bT5cNYFcJRUHQKdp+s3J1NohDx42YDP64HWn8wMsR/vGNXS0tKlL
-         ys35MdecxfKaoP1cNLmwIop5D8GDktAERCdO2WMfPq8OCR4cMj4fkUI6HBb18KcfbbcR
-         2Y7S4xQoWjvc9KWs+fmI4n9g5SzYeT7BlQapS51INbWRngIFDv7LsMQVeGMJ1EoIUGaL
-         xWQ5PPxXLcO/2kr32Y30tZJkQLVA9keDmgvB1pXm29WXG0r6arXCasEu2v2xcuKpHb2n
-         AhiS1JbK8NDJx5VmbUaOj8wU8MesgIWT+6clHY4Lvyq2ptBNGmxwLHCcAv/GZwlIYsqq
-         iPew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=qDIhNkRJpY0zIqLvOcBvjOAemNokXD1mo0hvIa/wH90=;
-        b=1v5iE0EXgeESpGU6eLXUpugwtePKte6W+4/u2OsK220YOAPZjSJojmZtKm/NnI3FSo
-         HbBVauOrkhf4OtXzjvasU8TNTXKu0pdl75sAfyTviVu1YPr3UaDMrtlcqzgewe22wBwX
-         QCACv17qCMthrxHF2pKyeJjFBFIZ8G3/hEH88FUEImoCJn1g8yjQBlupyBI8CTr+00tQ
-         JjhtWRYtJgcw3Q7xgcbBQo7LCXbm2YkGR02uUSxxpFIh4SAOPh0MUxvbFEkSglSUf+r1
-         8IdRW2dIb1qHd9iAxgrkO3H5C6wUJNgHDS4Dv9uozWMhOVGCgR/WDwVKo2Frwef9q4vz
-         fEoQ==
-X-Gm-Message-State: ACgBeo2alN9j4cmRuVSsebk1vf1EgG9zrovcLKKI8HxzM0K7ZTo5SPeg
-        PUKm3imLFR9SP2xYjmX9SERbGg==
-X-Google-Smtp-Source: AA6agR4V48JSDjw5vfjVGos0ruqfM/zbNheM3UU9XdSMDVN2inT8jBGsiWxBdE4dINkH3wb+jmBe6w==
-X-Received: by 2002:a05:651c:b2c:b0:25e:6e68:ff51 with SMTP id b44-20020a05651c0b2c00b0025e6e68ff51mr6563202ljr.349.1661853649602;
-        Tue, 30 Aug 2022 03:00:49 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id e7-20020a05651236c700b004947a57722esm140010lfs.26.2022.08.30.03.00.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 03:00:48 -0700 (PDT)
-Message-ID: <ab678365-fb69-6aa5-75b2-865cfbdf0dea@linaro.org>
-Date:   Tue, 30 Aug 2022 13:00:47 +0300
+        Tue, 30 Aug 2022 06:03:46 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2284B499;
+        Tue, 30 Aug 2022 03:01:45 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27UA1P1n072699;
+        Tue, 30 Aug 2022 05:01:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661853685;
+        bh=rA0l0kMxcWsrdBCeVjS7sz/SB9EJAgl9ijOnOgpt8IM=;
+        h=Date:Subject:To:References:From:In-Reply-To;
+        b=cjlEMu5KXVIhDxBUD+Sjna5+nc+4G8L5ivvJzO/jbd2hYZJpHo6U8lohN7JtSv0yu
+         W9BTeMcVvqi6X3YR+KQgkAhqu3zkgzE906aBEsqi64oD8OWYYDzAVbo2a1zN4YrV/u
+         ejCnKap4nUCvHLzosSwzrsLs5ZWXCJyfPH/AJzbU=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27UA1Poj115432
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 30 Aug 2022 05:01:25 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 30
+ Aug 2022 05:01:24 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 30 Aug 2022 05:01:24 -0500
+Received: from [172.24.145.136] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27UA1L0G020617;
+        Tue, 30 Aug 2022 05:01:22 -0500
+Message-ID: <c6285157-480d-d8f6-f11f-25604455ece0@ti.com>
+Date:   Tue, 30 Aug 2022 15:31:21 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v4 3/4] dt-bindings: arm: qcom: Add Xiaomi Poco F1 EBBG
- variant bindings
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 3/4] arm64: dts: ti: k3-am65-main: Do not exclusively
+ claim SA2UL
 Content-Language: en-US
-To:     Joel Selvaraj <joelselvaraj.oss@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
+To:     Andrew Davis <afd@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
-References: <20220828205723.20834-1-joelselvaraj.oss@gmail.com>
- <20220828205723.20834-4-joelselvaraj.oss@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220828205723.20834-4-joelselvaraj.oss@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220823001136.10944-1-afd@ti.com>
+ <20220823001136.10944-3-afd@ti.com>
+From:   Jayesh Choudhary <j-choudhary@ti.com>
+In-Reply-To: <20220823001136.10944-3-afd@ti.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/08/2022 23:57, Joel Selvaraj wrote:
-> Add documentation for "xiaomi,beryllium-ebbg" device.
+
+
+On 23/08/22 05:41, Andrew Davis wrote:
+> The SA2UL hardware is also used by SYSFW and OP-TEE. It should be
+> requested using the shared TI-SCI flags instead of the exclusive
+> flags or the request will fail.
 > 
-> Signed-off-by: Joel Selvaraj <joelselvaraj.oss@gmail.com>
+> Signed-off-by: Andrew Davis <afd@ti.com>
+> ---
+>   arch/arm64/boot/dts/ti/k3-am65-main.dtsi | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> index 165f53bd058b..4005a73cfea9 100644
+> --- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> +++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> @@ -112,7 +112,7 @@ main_uart2: serial@2820000 {
+>   	crypto: crypto@4e00000 {
+>   		compatible = "ti,am654-sa2ul";
+>   		reg = <0x0 0x4e00000 0x0 0x1200>;
+> -		power-domains = <&k3_pds 136 TI_SCI_PD_EXCLUSIVE>;
+> +		power-domains = <&k3_pds 136 TI_SCI_PD_SHARED>;
+>   		#address-cells = <2>;
+>   		#size-cells = <2>;
+>   		ranges = <0x0 0x04e00000 0x00 0x04e00000 0x0 0x30000>;
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Jayesh Choudhary <j-choudhary@ti.com>
 
-
-Best regards,
-Krzysztof
