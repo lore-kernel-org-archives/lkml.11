@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A3B4ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCE6ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:20:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231819AbiH3XU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:20:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
+        id S232300AbiH3XUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:20:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231771AbiH3XTM (ORCPT
+        with ESMTP id S232139AbiH3XTM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 19:19:12 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 662B9A3D58
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:17:04 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-33e1114437fso190632177b3.19
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:17:04 -0700 (PDT)
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DE597B2B
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:17:05 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id u14-20020a170902e5ce00b00174b2ad8435so5042620plf.12
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:17:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=19wpStpWgjciG3Cnonw3gTfd1FpuXzvtxhmxo4kcyWo=;
-        b=QuhmWsK4UlqQbc8jWk0gJKIwhBoOrSZEb3GpvJXgUlj/Fjm2/3wTkU2exiwLaIsVRK
-         eyoT0Qxr/wA6WYH6074LA1x4nUBl1bPMdb83s1zqUQ/uAf5rhVHxQePUoyQZ9nbQzo76
-         6w6HHeKUc6nVm15OUP5Dqidpt656uV4Vb0A/r49hf7xApsF9bqRNI4VJQmhDw0teGzbU
-         U0IVbXAeC0IHu+rqqvl9l/q/LW/uDU0UmBP/7+molaMmPvQz2vvGMuKBTr3JlnC+O/Gv
-         Wj6z1676sq9rClwaFpYaWv6QR+MNXNmokkDCGkeA7tuzPnBorqyDrcP+a8J9QvVyGbKa
-         4t5Q==
+        bh=7hcgE+3kLvfteqMqTOqZFsuXwWUwlLmJNQ6fU1SyGZw=;
+        b=b4dE2Vhv8nSNaxaXbjIEuN3T/poWlkjAUIEj1Rn0G0mxHCgj31H/wQBsHtIi/ucSk5
+         +fT9aNMFDIHFrTu//xQUfLvzdlwSRAzu0gFKUvGXYlBqUXZAOydYBSRjtQ4KCuNc5Fi0
+         UHvFcgeF34kgihUR6V0l85BEW05UIJ2nK/qP2pQzrT5pVeH2HUJLck5vdwpM/DiOwpNe
+         H1UVd5MYfva+oWp0yeeJMD/A/p1MP0hhu4MHWXwYVsDXjqe/9Elc/0qgYoD7vD5+qP5b
+         5wQ6t7ph6ADB/GmzSsa3GhioYEIfKp+5biRXYxcYnC6KxPLpvrygRtCMNMMnin/x48Cb
+         m+bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=19wpStpWgjciG3Cnonw3gTfd1FpuXzvtxhmxo4kcyWo=;
-        b=Tk1UedULWiX1qv8y/UXZeInLR4jvkR4FSGOLBH3TqgaeZIGGCvyLqv/F6/ylXD9+4k
-         nmUsGdeLnzUkicnEJ628z4F737KW2eXYbGSA8QYPw+eY7NKbOfKQuFu5jp+l8lHeMYc8
-         7zQN3E4otaGfUNH4yj/R0uufzH8bhB7/xo5NXUBejFeunG/a3bG7zzgEufjT6jU/U6rl
-         FXDuZe8P512CNIhNGtNdDB7xRbNAsTkgmXT3gv21aGIEiKr4imZ3N5VD5avSDNAcdA2J
-         pmAz50i5A0lxqPkySjsCVTIjJs/6yQVAIWO1hTrL8b9UoRKSdg0323K81uacTcuyzVEe
-         CFZg==
-X-Gm-Message-State: ACgBeo2twyFHe939zjMfeXm4jIJdLYbiV+RRbR+JSca8fedXIwPH8V64
-        gDLGhls3joB0PJO3k67q2bNhSSRfvNQ=
-X-Google-Smtp-Source: AA6agR56twy6OZVHnzIYAie76XeVBifGue4TfnX2tu4ywJqWqbTemGxxRZX5qCD4BYL7ogNAiir9PTwDilM=
+        bh=7hcgE+3kLvfteqMqTOqZFsuXwWUwlLmJNQ6fU1SyGZw=;
+        b=DrNIviFV6K2DeIPQu+x7CgiiN09CmBfnEbzCtzVqDWDyzOIPnazrj9orNceVNc+ES8
+         is38X/EqHjRQQ9+17kCMwz9Qs1z99fp/hbSvX/j6M7D4J7yMxCfyUx3ebsFDrMocb3Nr
+         8k7Im9Sx9uMiI1AXTDLvpVve/06yfxO/hEZ58JMRmF+ql1lF4p4/gR8S5rHLN4uPjJMK
+         fdD7GbvrgIc8luG7A9wrYZNRcz015cFTzmy6M4N7qXuJUME7jYQ0Qnv0Z0PfXkIzvU3j
+         YQxj4HTm1jKpVQrPcwiqZTLd8/G9xcCwXKNgobVY0i3iNroUw07HrVCXA/bZ2v9rzhkT
+         PgCQ==
+X-Gm-Message-State: ACgBeo0y6BjlUtzdpy69wqpDmvkCOthaJhHgwfhwUB4nWCzSo7GNq3Gg
+        GmR+dycJ9L63GKpoZYimiL2xODhCEt8=
+X-Google-Smtp-Source: AA6agR7YO3t+S1zeEHDnbWyLng/WBHSvcO1sLUs4OX3LjmLgIOmsdJV/rf7DFe/k7o6NdHgNrfQf5Iw3a1Y=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a25:23d4:0:b0:695:65fb:bf66 with SMTP id
- j203-20020a2523d4000000b0069565fbbf66mr13671172ybj.3.1661901418977; Tue, 30
- Aug 2022 16:16:58 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:6808:b0:174:617b:1147 with SMTP id
+ h8-20020a170902680800b00174617b1147mr19028713plk.102.1661901422175; Tue, 30
+ Aug 2022 16:17:02 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 30 Aug 2022 23:16:12 +0000
+Date:   Tue, 30 Aug 2022 23:16:14 +0000
 In-Reply-To: <20220830231614.3580124-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220830231614.3580124-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830231614.3580124-26-seanjc@google.com>
-Subject: [PATCH v5 25/27] KVM: selftests: Use uapi header to get VMX and SVM
- exit reasons/codes
+Message-ID: <20220830231614.3580124-28-seanjc@google.com>
+Subject: [PATCH v5 27/27] KVM: x86: Allow force_emulation_prefix to be written
+ without a reload
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -68,107 +68,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include the vmx.h and svm.h uapi headers that KVM so kindly provides
-instead of manually defining all the same exit reasons/code.
+Allow force_emulation_prefix to be written by privileged userspace
+without reloading KVM.  The param does not have any persistent affects
+and is trivial to snapshot.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- .../selftests/kvm/include/x86_64/svm_util.h   |  7 +--
- .../selftests/kvm/include/x86_64/vmx.h        | 51 +------------------
- 2 files changed, 4 insertions(+), 54 deletions(-)
+ arch/x86/kvm/x86.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-index a339b537a575..7aee6244ab6a 100644
---- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-@@ -9,15 +9,12 @@
- #ifndef SELFTEST_KVM_SVM_UTILS_H
- #define SELFTEST_KVM_SVM_UTILS_H
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 45f295d35cc9..329998e9ee7a 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -179,7 +179,7 @@ EXPORT_SYMBOL_GPL(enable_vmware_backdoor);
+  */
+ #define KVM_FEP_CLEAR_RFLAGS_RF	BIT(1)
+ static int __read_mostly force_emulation_prefix;
+-module_param(force_emulation_prefix, int, 0444);
++module_param(force_emulation_prefix, int, 0644);
  
-+#include <asm/svm.h>
-+
- #include <stdint.h>
- #include "svm.h"
- #include "processor.h"
+ int __read_mostly pi_inject_timer = -1;
+ module_param(pi_inject_timer, bint, S_IRUGO | S_IWUSR);
+@@ -7287,6 +7287,7 @@ static int kvm_can_emulate_insn(struct kvm_vcpu *vcpu, int emul_type,
+ int handle_ud(struct kvm_vcpu *vcpu)
+ {
+ 	static const char kvm_emulate_prefix[] = { __KVM_EMULATE_PREFIX };
++	int fep_flags = READ_ONCE(force_emulation_prefix);
+ 	int emul_type = EMULTYPE_TRAP_UD;
+ 	char sig[5]; /* ud2; .ascii "kvm" */
+ 	struct x86_exception e;
+@@ -7294,11 +7295,11 @@ int handle_ud(struct kvm_vcpu *vcpu)
+ 	if (unlikely(!kvm_can_emulate_insn(vcpu, emul_type, NULL, 0)))
+ 		return 1;
  
--#define SVM_EXIT_EXCP_BASE	0x040
--#define SVM_EXIT_HLT		0x078
--#define SVM_EXIT_MSR		0x07c
--#define SVM_EXIT_VMMCALL	0x081
--
- struct svm_test_data {
- 	/* VMCB */
- 	struct vmcb *vmcb; /* gva */
-diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
-index 99fa1410964c..e4206f69b716 100644
---- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
-@@ -8,6 +8,8 @@
- #ifndef SELFTEST_KVM_VMX_H
- #define SELFTEST_KVM_VMX_H
- 
-+#include <asm/vmx.h>
-+
- #include <stdint.h>
- #include "processor.h"
- #include "apic.h"
-@@ -100,55 +102,6 @@
- #define VMX_EPT_VPID_CAP_AD_BITS		0x00200000
- 
- #define EXIT_REASON_FAILED_VMENTRY	0x80000000
--#define EXIT_REASON_EXCEPTION_NMI	0
--#define EXIT_REASON_EXTERNAL_INTERRUPT	1
--#define EXIT_REASON_TRIPLE_FAULT	2
--#define EXIT_REASON_INTERRUPT_WINDOW	7
--#define EXIT_REASON_NMI_WINDOW		8
--#define EXIT_REASON_TASK_SWITCH		9
--#define EXIT_REASON_CPUID		10
--#define EXIT_REASON_HLT			12
--#define EXIT_REASON_INVD		13
--#define EXIT_REASON_INVLPG		14
--#define EXIT_REASON_RDPMC		15
--#define EXIT_REASON_RDTSC		16
--#define EXIT_REASON_VMCALL		18
--#define EXIT_REASON_VMCLEAR		19
--#define EXIT_REASON_VMLAUNCH		20
--#define EXIT_REASON_VMPTRLD		21
--#define EXIT_REASON_VMPTRST		22
--#define EXIT_REASON_VMREAD		23
--#define EXIT_REASON_VMRESUME		24
--#define EXIT_REASON_VMWRITE		25
--#define EXIT_REASON_VMOFF		26
--#define EXIT_REASON_VMON		27
--#define EXIT_REASON_CR_ACCESS		28
--#define EXIT_REASON_DR_ACCESS		29
--#define EXIT_REASON_IO_INSTRUCTION	30
--#define EXIT_REASON_MSR_READ		31
--#define EXIT_REASON_MSR_WRITE		32
--#define EXIT_REASON_INVALID_STATE	33
--#define EXIT_REASON_MWAIT_INSTRUCTION	36
--#define EXIT_REASON_MONITOR_INSTRUCTION 39
--#define EXIT_REASON_PAUSE_INSTRUCTION	40
--#define EXIT_REASON_MCE_DURING_VMENTRY	41
--#define EXIT_REASON_TPR_BELOW_THRESHOLD 43
--#define EXIT_REASON_APIC_ACCESS		44
--#define EXIT_REASON_EOI_INDUCED		45
--#define EXIT_REASON_EPT_VIOLATION	48
--#define EXIT_REASON_EPT_MISCONFIG	49
--#define EXIT_REASON_INVEPT		50
--#define EXIT_REASON_RDTSCP		51
--#define EXIT_REASON_PREEMPTION_TIMER	52
--#define EXIT_REASON_INVVPID		53
--#define EXIT_REASON_WBINVD		54
--#define EXIT_REASON_XSETBV		55
--#define EXIT_REASON_APIC_WRITE		56
--#define EXIT_REASON_INVPCID		58
--#define EXIT_REASON_PML_FULL		62
--#define EXIT_REASON_XSAVES		63
--#define EXIT_REASON_XRSTORS		64
--#define LAST_EXIT_REASON		64
- 
- enum vmcs_field {
- 	VIRTUAL_PROCESSOR_ID		= 0x00000000,
+-	if (force_emulation_prefix &&
++	if (fep_flags &&
+ 	    kvm_read_guest_virt(vcpu, kvm_get_linear_rip(vcpu),
+ 				sig, sizeof(sig), &e) == 0 &&
+ 	    memcmp(sig, kvm_emulate_prefix, sizeof(sig)) == 0) {
+-		if (force_emulation_prefix & KVM_FEP_CLEAR_RFLAGS_RF)
++		if (fep_flags & KVM_FEP_CLEAR_RFLAGS_RF)
+ 			kvm_set_rflags(vcpu, kvm_get_rflags(vcpu) & ~X86_EFLAGS_RF);
+ 		kvm_rip_write(vcpu, kvm_rip_read(vcpu) + sizeof(sig));
+ 		emul_type = EMULTYPE_TRAP_UD_FORCED;
 -- 
 2.37.2.672.g94769d06f0-goog
 
