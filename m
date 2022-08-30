@@ -2,120 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D32DECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 14:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E904ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 14:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230232AbiH3OIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 10:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
+        id S229629AbiH3OI4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 10:08:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229647AbiH3OIu (ORCPT
+        with ESMTP id S229850AbiH3OIx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 10:08:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A63F8265
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 07:08:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02954B81C15
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:08:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C147C433C1;
-        Tue, 30 Aug 2022 14:08:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661868526;
-        bh=m/u8XyF+U/qV44PkAv5tgc86ePYtwDWmP547g4BF5ZA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=THhOWVfhqu7k9+uWQ3/WwmgdvA6rsqI7C9Ha5p76pC1c0YUwr84gcNNu7VCQaUaS6
-         eSb8tp0bzNc4rEqn54RSKGjUsXZkvn/sUF4T+DjFCGjoJosFmWbSY5/sWQCKvfmFyI
-         nS0a9QcMfocrWVCEMER6OEW+dHqqjkf0CKYNuQyG/EdEjFZhLfIFF9BOMUyVcO3n3i
-         /fq5qh2xrNPu0T5dUNvkXmjxsUgqX3V30Rks5rto1rk+yABEHAoUzIy8JprFlpGTVz
-         bsqM80r9rgxXCNZDsSLEoaYCNStmKNzY1aTOclPFX0ll0yWMXF2HZpSxnW5xElTB4j
-         NpbZE+K/gjgtg==
-Date:   Tue, 30 Aug 2022 21:59:30 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Conor.Dooley@microchip.com
-Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, ajones@ventanamicro.com
-Subject: Re: [PATCH v2] riscv: enable THP_SWAP for RV64
-Message-ID: <Yw4XwsVQBB1HRw04@xhacker>
-References: <20220827095815.698-1-jszhang@kernel.org>
- <0256a458-440c-171c-2a6f-e88a50c16f82@microchip.com>
- <YwzI7VmfFnOvYWgf@xhacker>
- <4037b310-47c4-ca30-d4b6-a284e87da437@microchip.com>
+        Tue, 30 Aug 2022 10:08:53 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E084D6B66E;
+        Tue, 30 Aug 2022 07:08:51 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so6215782wms.5;
+        Tue, 30 Aug 2022 07:08:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=y8NRn56TTNghGF267n9YhDLoRC0D+RKLzmBK9wVjOtc=;
+        b=pOMRqM6He7s3vzVohn3MDfxZtYu5fFgYKqU8WsUBlLAf3iKoSSYLgdxCSVMrmFmB/N
+         +5dmTERwu3gvxPimjo/k0tbCqbMWExLd5u+VnDZlekNWwVoHRRq8+M1EME22j4ozynWs
+         sEENdBsF4+N/81AUBeKGBZ4PnhjrxTk6cfv3a1gumm50YrRKDho9Pae1pFtY4BYdicRW
+         MdXXH4cJIghykeL2O19r33cLB4nEddpFB5T5hoRICTyQoRJad2Iaqf/crWEL9SG9YqUq
+         ZNRGvvO3YBtZGEwuWt72pGTysUC4oUPwA7bsDYuE+Pi0k2dSeooxH8Bi9wPmHumGclPD
+         FCJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=y8NRn56TTNghGF267n9YhDLoRC0D+RKLzmBK9wVjOtc=;
+        b=JT9NHZ6/XG3unWUnHPQGYnrvhKZFBrwtOv4wMH3zB5Uyf194nj8PwTYm5o19K9koNN
+         NoSaUE9odT9F8ZH61ttWXjhOG6j20t9LMlxI+ewuJkItkJNo/wQafCe7cb676rchdmvv
+         yc6IuKk/0H6fEIWUuYV9SeVyfT3HvcKm40XUhWKHC+BGYOSa/FXM1IgtXnPwcIVbYHj7
+         97hM/WZdVW7RdmCKDoGio19gGSn5RWVX0rGAfcr3WS98otV6AVRDb/TTae0RDBh6jeT4
+         PEyLRBCBp5507yt0NM7SVVPlzTy8mPAmqGx77mmn/RhMbgJtkIxTb1EaSt6N23yOiZZX
+         o5zA==
+X-Gm-Message-State: ACgBeo2KiXo3M4Q3h48ZDzJN6tcF1EUwLhe3h1w+uqGC/658sQ1DlNuy
+        shZIKh2qkJ0ZeDbt8ohLT7vEkLhA4+GSQsscluk=
+X-Google-Smtp-Source: AA6agR5nsFK6ujOw2YPzLMclmkfXMZvvDGTRj+t3d9VLtjZXsOQ4PTDb8eJ9Ht0wuApnxWtm91zGhRRS2Q4ACxeoScg=
+X-Received: by 2002:a05:600c:3488:b0:3a8:52f7:b869 with SMTP id
+ a8-20020a05600c348800b003a852f7b869mr1524842wmq.36.1661868530379; Tue, 30 Aug
+ 2022 07:08:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <4037b310-47c4-ca30-d4b6-a284e87da437@microchip.com>
+References: <00000000000016512d05e76bd837@google.com>
+In-Reply-To: <00000000000016512d05e76bd837@google.com>
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+Date:   Tue, 30 Aug 2022 22:08:38 +0800
+Message-ID: <CAJhGHyDPN0CWZD8PxFHoB66f6QBNFGx8Lwz9EG-kSB8Q2yriQw@mail.gmail.com>
+Subject: Re: [syzbot] upstream test error: WARNING in __queue_work
+To:     syzbot <syzbot+243b7d89777f90f7613b@syzkaller.appspotmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        syzkaller-bugs@googlegroups.com, Tejun Heo <tj@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 05:27:48PM +0000, Conor.Dooley@microchip.com wrote:
-> On 29/08/2022 15:10, Jisheng Zhang wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > On Sat, Aug 27, 2022 at 09:13:03PM +0000, Conor.Dooley@microchip.com wrote:
-> >> Hey Jisheng,
-> > 
-> > Hi Conor,
-> > 
-> >> On 27/08/2022 10:58, Jisheng Zhang wrote:
-> >>> I have a Sipeed Lichee RV dock board which only has 512MB DDR, so
-> >>> memory optimizations such as swap on zram are helpful. As is seen
-> >>> in commit d0637c505f8a ("arm64: enable THP_SWAP for arm64") and
-> >>> commit bd4c82c22c367e ("mm, THP, swap: delay splitting THP after
-> >>> swapped out"), THP_SWAP can improve the swap throughput significantly.
-> >>>
-> >>> Enable THP_SWAP for RV64, testing the micro-benchmark which is
-> >>> introduced by commit d0637c505f8a ("arm64: enable THP_SWAP for arm64")
-> >>> shows below numbers on the Lichee RV dock board:
-> >>>
-> >>> thp swp throughput w/o patch: 66908 bytes/ms (mean of 10 tests)
-> >>> thp swp throughput w/ patch: 322638 bytes/ms (mean of 10 tests)
-> >>
-> >> I know the original commit message contains this, but it's a little
-> >> odd. If the patch /enables/ THP then how would there be THP swap
-> >> prior to the patch?
-> > 
-> > hmm, it's swap I'll send a v3 to correct the description.
-> > 
-> >>
-> >>>
-> >>> Improved by 382%!
-> >>
-> >> I could not replicate the after numbers on my nezha, so I suspect
-> >> I am missing something in my config/setup. zswap is enabled and is
-> > 
-> > swap on zram rather than zswap ;)
-> 
-> I think I tried about 30 different config variations, initially not
-> using zswap and later using it.
-> My zramctl looks like so (although I did try zstd too) after running
-> the demo application from that commit:
-> 
-> NAME       ALGORITHM DISKSIZE DATA COMPR TOTAL STREAMS MOUNTPOINT
-> /dev/zram0 lzo-rle       241M  22M  8.4M  9.1M       1 [SWAP]
-> 
-> I am using the default riscv defconfig + the following:
-> CONFIG_ZRAM=y
-> CONFIG_CRYPTO_DEFLATE=y
-> CONFIG_CRYPTO_LZO=y
-> CONFIG_CRYPTO_ZSTD=y
-> CONFIG_ZRAM_MEMORY_TRACKING=y
-> CONFIG_TRANSPARENT_HUGEPAGE=y
-> CONFIG_TRANSPARENT_HUGEPAGE_MADVISE=y
-> CONFIG_THP_SWAP=y
-> 
-> Am I just missing something obvious here?
+CC: BLUETOOTH SUBSYSTEM
 
-similar config options here. what's your rootfs? Is your board busy
-with something? I used a minimal rootfs built from buildroot.
-can you plz show your numbers w/ and w/o the patch?
-
-I also tried the simple benchmark on qemu(just for reference, since
-I have no other riscv boards except the lichee RV dock board):
-swp out w/o patch: 30066 bytes/ms (mean of 10 tests)
-swp out w/ patch: 130055 bytes/ms (mean of 10 tests)
-so improved by 332.7% 
+It seems that hci_cmd_timeout() queues a work to a destroyed workqueue.
