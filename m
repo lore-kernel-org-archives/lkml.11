@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF67ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B20ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231963AbiH3RcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:32:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
+        id S231971AbiH3RcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231913AbiH3RbU (ORCPT
+        with ESMTP id S231845AbiH3RbX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:31:20 -0400
+        Tue, 30 Aug 2022 13:31:23 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F97A15A202;
-        Tue, 30 Aug 2022 10:28:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9767655C;
+        Tue, 30 Aug 2022 10:28:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EC03B81D1D;
-        Tue, 30 Aug 2022 17:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC190C433C1;
-        Tue, 30 Aug 2022 17:26:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CE4BB81D11;
+        Tue, 30 Aug 2022 17:26:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E0EC43140;
+        Tue, 30 Aug 2022 17:26:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880371;
-        bh=gU0OH3XIhcADfT31F2l53Sglvesw+5FFs/Nss/7JBTg=;
+        s=k20201202; t=1661880402;
+        bh=H1P1NwpBXrSvgn+FJ8rzFmWgOGTpyB2pK1CIh8lw4H0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JOVfmauowjA0ckbgiO/BU/0E6X6WoVX+qrI6GuWQ76pLMIyKLHlxZJoUYyiiuetPG
-         5nl8WEGVaCmT96h3rSowEqsajggPdbpVkBVAytB2yrLKyfHXnU3ZN4pfjWU6U9ij8A
-         QfBWkJL7pYSf2Y5xYQZxeob3ghEjHGX/mSA5mFG+F/awo8/4C+oI9lfDtQrp/JyMHt
-         q0RSYU1ycfhHHjEuJRjoGC7lErqfa9VBrd+weqi+0a6QBO1InoCSI8ssYpcIqEgDuq
-         wW+BuI7HwEWlnB0U0wLixpNS5SFBH4ExYkQjmd5DuCLmoT+LphTWhzUu7DqhTD2hdM
-         JM98YhfZ4Fkvw==
+        b=S8gkTZlI/bjzeR5ZclU4GtBqlhzhBLs3ufPra5kFmcF1CQSkwkFu4MMVGcll56ybc
+         rhnwrUFIVFIuPTu/ETbflipRgvDNjE2Pv2cVyUtB5/4cJaSvLcu6MONu3D29L3bZDk
+         Dk9lwIwBGqGGY69sFczYSnJIm61H0N5zqnun3HRvUhkIxAgRZM2J92MOeTrOJ+BDyO
+         Y5cNFJlEbPIe6uRk1GhriRdWCx6emN14GzMjTnLYb9A8gQoroBxfc7tU0/hAQy7BOV
+         Ha7CEBAPwlRVTTY6ttMMOXRdn60/H4iMfgajZpSyVtgZLg4CYbux40J0xTKVmNGGtR
+         9mca6e+07DfrQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Brown <broonie@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        ebiederm@xmission.com, elver@google.com, mark.rutland@arm.com,
-        david.engraf@sysgo.com, seanjc@google.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 07/10] arm64/signal: Raise limit on stack frames
-Date:   Tue, 30 Aug 2022 13:25:38 -0400
-Message-Id: <20220830172541.581820-7-sashal@kernel.org>
+Cc:     Zhenneng Li <lizhenneng@kylinos.cn>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.14 3/8] drm/radeon: add a force flush to delay work when radeon
+Date:   Tue, 30 Aug 2022 13:26:26 -0400
+Message-Id: <20220830172631.581969-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172541.581820-1-sashal@kernel.org>
-References: <20220830172541.581820-1-sashal@kernel.org>
+In-Reply-To: <20220830172631.581969-1-sashal@kernel.org>
+References: <20220830172631.581969-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,42 +55,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+From: Zhenneng Li <lizhenneng@kylinos.cn>
 
-[ Upstream commit 7ddcaf78e93c9282b4d92184f511b4d5bee75355 ]
+[ Upstream commit f461950fdc374a3ada5a63c669d997de4600dffe ]
 
-The signal code has a limit of 64K on the size of a stack frame that it
-will generate, if this limit is exceeded then a process will be killed if
-it receives a signal. Unfortunately with the advent of SME this limit is
-too small - the maximum possible size of the ZA register alone is 64K. This
-is not an issue for practical systems at present but is easily seen using
-virtual platforms.
+Although radeon card fence and wait for gpu to finish processing current batch rings,
+there is still a corner case that radeon lockup work queue may not be fully flushed,
+and meanwhile the radeon_suspend_kms() function has called pci_set_power_state() to
+put device in D3hot state.
+Per PCI spec rev 4.0 on 5.3.1.4.1 D3hot State.
+> Configuration and Message requests are the only TLPs accepted by a Function in
+> the D3hot state. All other received Requests must be handled as Unsupported Requests,
+> and all received Completions may optionally be handled as Unexpected Completions.
+This issue will happen in following logs:
+Unable to handle kernel paging request at virtual address 00008800e0008010
+CPU 0 kworker/0:3(131): Oops 0
+pc = [<ffffffff811bea5c>]  ra = [<ffffffff81240844>]  ps = 0000 Tainted: G        W
+pc is at si_gpu_check_soft_reset+0x3c/0x240
+ra is at si_dma_is_lockup+0x34/0xd0
+v0 = 0000000000000000  t0 = fff08800e0008010  t1 = 0000000000010000
+t2 = 0000000000008010  t3 = fff00007e3c00000  t4 = fff00007e3c00258
+t5 = 000000000000ffff  t6 = 0000000000000001  t7 = fff00007ef078000
+s0 = fff00007e3c016e8  s1 = fff00007e3c00000  s2 = fff00007e3c00018
+s3 = fff00007e3c00000  s4 = fff00007fff59d80  s5 = 0000000000000000
+s6 = fff00007ef07bd98
+a0 = fff00007e3c00000  a1 = fff00007e3c016e8  a2 = 0000000000000008
+a3 = 0000000000000001  a4 = 8f5c28f5c28f5c29  a5 = ffffffff810f4338
+t8 = 0000000000000275  t9 = ffffffff809b66f8  t10 = ff6769c5d964b800
+t11= 000000000000b886  pv = ffffffff811bea20  at = 0000000000000000
+gp = ffffffff81d89690  sp = 00000000aa814126
+Disabling lock debugging due to kernel taint
+Trace:
+[<ffffffff81240844>] si_dma_is_lockup+0x34/0xd0
+[<ffffffff81119610>] radeon_fence_check_lockup+0xd0/0x290
+[<ffffffff80977010>] process_one_work+0x280/0x550
+[<ffffffff80977350>] worker_thread+0x70/0x7c0
+[<ffffffff80977410>] worker_thread+0x130/0x7c0
+[<ffffffff80982040>] kthread+0x200/0x210
+[<ffffffff809772e0>] worker_thread+0x0/0x7c0
+[<ffffffff80981f8c>] kthread+0x14c/0x210
+[<ffffffff80911658>] ret_from_kernel_thread+0x18/0x20
+[<ffffffff80981e40>] kthread+0x0/0x210
+ Code: ad3e0008  43f0074a  ad7e0018  ad9e0020  8c3001e8  40230101
+ <88210000> 4821ed21
+So force lockup work queue flush to fix this problem.
 
-Raise the limit to 256K, this is substantially more than could be used by
-any current architecture extension.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
-Link: https://lore.kernel.org/r/20220817182324.638214-2-broonie@kernel.org
-Signed-off-by: Will Deacon <will@kernel.org>
+Acked-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/signal.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/radeon/radeon_device.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
-index ca565853dea64..bd9b36ab35f0f 100644
---- a/arch/arm64/kernel/signal.c
-+++ b/arch/arm64/kernel/signal.c
-@@ -101,7 +101,7 @@ static size_t sigframe_size(struct rt_sigframe_user_layout const *user)
-  * not taken into account.  This limit is not a guarantee and is
-  * NOT ABI.
-  */
--#define SIGFRAME_MAXSZ SZ_64K
-+#define SIGFRAME_MAXSZ SZ_256K
+diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
+index 58488eac84627..906547b229a9a 100644
+--- a/drivers/gpu/drm/radeon/radeon_device.c
++++ b/drivers/gpu/drm/radeon/radeon_device.c
+@@ -1655,6 +1655,9 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
+ 		if (r) {
+ 			/* delay GPU reset to resume */
+ 			radeon_fence_driver_force_completion(rdev, i);
++		} else {
++			/* finish executing delayed work */
++			flush_delayed_work(&rdev->fence_drv[i].lockup_work);
+ 		}
+ 	}
  
- static int __sigframe_alloc(struct rt_sigframe_user_layout *user,
- 			    unsigned long *offset, size_t size, bool extend)
 -- 
 2.35.1
 
