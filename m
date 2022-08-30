@@ -2,157 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B8FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A58ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbiH3JXz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:23:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51604 "EHLO
+        id S231611AbiH3JYQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231818AbiH3JXP (ORCPT
+        with ESMTP id S231925AbiH3JXr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:23:15 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC2C64D4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:22:44 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id j5so6642816plj.5
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:22:44 -0700 (PDT)
+        Tue, 30 Aug 2022 05:23:47 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1AA26D4
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:23:45 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id j14so4334336lfu.4
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:23:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=+U60seGTOydiyz6oR/jREabSqhPquiKvw8g0tMTrRtQ=;
-        b=zIxXa2VH8ANmX3KY1/XhZRyRzuHTetN5tp0wgh8FcMfB9/B5snNt+j861IJKnJbBEA
-         eCFdx+aljfu0y4Y4yNucOfsPFYbSpn69PqjFuNsqYjOFY7CP1aRH8mLhPwdeC8ygX0LY
-         YsZqlIWu4ScClRyQ+TssKCAejiJGqiMh1x+o3zx/2X02cLisN3jP5UBk3BzfPw/1JiZr
-         LQOSQsVkc7dHSFHOBMfK/i4CoRTJuVyAUrumx/P9WrwDfNx33nPpDKNqYAzV5j6vtsI4
-         FpIFQ0o0YGrRvHJ3TIgwnBpBOjEH2b58hPMVHCbc21rXft153Xh0VDiisPr4Ssn3RVWb
-         pEMw==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=P3jHDFf6ZF+eC8L7gPkS3nO/hYBt1WKKSDQdwcqbM1g=;
+        b=ro7d5377lQTowObZV1r5vVfKkJrhWz3A2GZD1czofP56rGrxWgIkvq/uDSV/wfiX8o
+         wC1r5NrB8aG89lxXz7q8/wFkSqWyaLgn0PAM+y9znsmg+f+IeV/ZaHwy7LRLWB/z+Xaz
+         RLl2KnYdbjNELU8jqx89db3PTYyKp8j/lzKW1fv+Dk4Jrb3mkSM8ti5AWHwYQRGwXRRU
+         HDr1I0GTI8/DTnNIo9A1TZ4XwgHW98XuJZnPYvrAyxbpmD86JtBcg9mBz+aFF6W2cC7w
+         lEaPFlms3BH5KoEJ6V2129cwHbHd+kteFPE0ht7gXMGMdDs3MAIG8R0e0jb3oPlEoGrX
+         Axtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=+U60seGTOydiyz6oR/jREabSqhPquiKvw8g0tMTrRtQ=;
-        b=QYaYRpUpvf02sMy8doz/2+Szv66lLtlX+Kacf2DrM2Y6NdgxIv2+lwFkx1dKALHplZ
-         kEdwBzyBzPDHHQufyOxtEt7i4sxTRgQKgiBxr137IlzdDibddWtR/9RfFlgchTzn69Yg
-         /0TI9plWFgJjRfS7SHGOgSgTItaTNTQcp/XjGUWav6xOPbFf2Itu9rKiChbtliVHVOQn
-         ZgnzHOhGZ/ObMaSNlxPmV4ZL/ThRCx/2npguBpkGZ/iOAMcBFNjW/jOIIGy1jGbWPFz7
-         shy3hNbvibHnts3wiFD9YE8yeQ72BNoU3Lfs2SQ24M3DS55qF5gx7bEHQzhMqCyRBMyk
-         qNEQ==
-X-Gm-Message-State: ACgBeo30vBHlZM4mbWCY6aW4uxUqOOAUAMh2wOQ+y7I3MezVt2+yfklp
-        jt1t5IWuHWCPipoTAglXMQfN
-X-Google-Smtp-Source: AA6agR5DWSeVAOgb/ctNGxABzCisuwfrKRzfZSHb7Bh07cx8KRIQ+4N8eJrXcWPL1CD/wBhawBtejA==
-X-Received: by 2002:a17:903:41c6:b0:174:3acf:8294 with SMTP id u6-20020a17090341c600b001743acf8294mr19851863ple.118.1661851364086;
-        Tue, 30 Aug 2022 02:22:44 -0700 (PDT)
-Received: from localhost.localdomain ([117.193.209.245])
-        by smtp.gmail.com with ESMTPSA id f17-20020a170902ab9100b0016dc78d0153sm9094488plr.296.2022.08.30.02.22.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 02:22:43 -0700 (PDT)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     linus.walleij@linaro.org, bjorn.andersson@linaro.org
-Cc:     robimarko@gmail.com, linux-arm-msm@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        maz@kernel.org, johan+linaro@kernel.org, steev@kali.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v3] pinctrl: qcom: spmi-gpio: Make irqchip immutable
-Date:   Tue, 30 Aug 2022 14:52:32 +0530
-Message-Id: <20220830092232.168561-1-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=P3jHDFf6ZF+eC8L7gPkS3nO/hYBt1WKKSDQdwcqbM1g=;
+        b=5Fy7+mSkh/5lOu6t5xfcaNvefTWenjivIFRaLfv4o+D/M93JAHdUEi9i3Cp5Zjs5wv
+         dlU+z/amT7shX5mlcb4vuS9FZZokWuVyHWYZqSMZ5Pmr1oLZobB9HB1hZvwwC+zEyQve
+         P333/Y+GkPBI/S4JOxcCutDxtidCg9CDWdf/T615dbOFFQ6+dBeYfarNAf+7hKy9J6/F
+         NybmHL+shzVfl7jlKroOIBpcoRtcl16ki/JIojg7LmalpMznN1UcCdIMw05xril64oP/
+         MTIQywjESvaNG30UJWwkXShm/iaGMMI+YiYKXuoMg42PR3vxZ49gOf/UmdL58cQJXM+m
+         NMjQ==
+X-Gm-Message-State: ACgBeo3DjrwQOsWpeTx4T6w2b22FfY+YunYMJNJPKMOvjXq2yVM2AEId
+        86exjvcOwQMVuQuZVwNm1eNNZA==
+X-Google-Smtp-Source: AA6agR6coigoibJ+B2ksKkaYEzr/2jSNslM78cgAgVd2xOmffVB501Xp5K5bVDHQxYg/RB+HGi2ehA==
+X-Received: by 2002:a05:6512:32c9:b0:492:f53d:9c1 with SMTP id f9-20020a05651232c900b00492f53d09c1mr7151142lfg.127.1661851424008;
+        Tue, 30 Aug 2022 02:23:44 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id c19-20020a056512325300b0048cdf54a44dsm1544581lfr.266.2022.08.30.02.23.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 02:23:43 -0700 (PDT)
+Message-ID: <e455ebd7-7949-47d6-5f9b-9869dfdd601d@linaro.org>
+Date:   Tue, 30 Aug 2022 12:23:42 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH] dt-bindings: display: bridge: renesas,dw-hdmi: Fix
+ 'unevaluatedProperties' warnings
+Content-Language: en-US
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220829215816.6206-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220829215816.6206-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The irqchip implementation used inside the gpiochips are not supposed to
-be changed during runtime. So let's make the one inside the spmi-gpio
-gpiochip immutable.
+On 30/08/2022 00:58, Lad Prabhakar wrote:
+> With 'unevaluatedProperties' support implemented, there's a number of
+> warnings when running dtbs_check:
+> 
+> arch/arm64/boot/dts/renesas/r8a774b1-hihope-rzg2n-rev2-ex-idk-1110wr.dtb: hdmi@fead0000: Unevaluated properties are not allowed ('resets' was unexpected)
+> 	From schema: Documentation/devicetree/bindings/display/bridge/renesas,dw-hdmi.yaml
+> 
+> The main problem is that SoC DTSI's are including resets property, whereas
+> the renesas,dw-hdmi.yaml has 'unevaluatedProperties: false'. So just add
+> optional resets property to the binding.
 
-This fixes the below warning during boot:
-gpio gpiochip0: (c440000.spmi:pmic@0:gpio@c000): not an immutable chip, please consider fixing it!
+This is not main problem. I already commented on two of your similar
+patches, so same applies here. Please describe real problem.
 
-Acked-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
-
-Changes in v3:
-
-* Added Ack from Marc
-* Removed the text that was mimicking the documentation
-
-Changes in v2:
-
-* Added new callbacks for irq_{mask/unmask} for masking/unmasking the parent
-  IRQ that was missing in v1. (Thanks to Marc)
-* Modified the commit message accordingly.
-
- drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 38 +++++++++++++++++-------
- 1 file changed, 28 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-index ccaf40a9c0e6..d40e3b2d38cc 100644
---- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-+++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-@@ -171,7 +171,6 @@ struct pmic_gpio_state {
- 	struct regmap	*map;
- 	struct pinctrl_dev *ctrl;
- 	struct gpio_chip chip;
--	struct irq_chip irq;
- 	u8 usid;
- 	u8 pid_base;
- };
-@@ -985,6 +984,33 @@ static int pmic_gpio_populate_parent_fwspec(struct gpio_chip *chip,
- 	return 0;
- }
- 
-+static void pmic_gpio_irq_mask(struct irq_data *data)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+
-+	irq_chip_mask_parent(data);
-+	gpiochip_disable_irq(gc, data->hwirq);
-+}
-+
-+static void pmic_gpio_irq_unmask(struct irq_data *data)
-+{
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+
-+	irq_chip_unmask_parent(data);
-+	gpiochip_enable_irq(gc, data->hwirq);
-+}
-+
-+static const struct irq_chip spmi_gpio_irq_chip = {
-+	.name		= "spmi-gpio",
-+	.irq_ack	= irq_chip_ack_parent,
-+	.irq_mask	= pmic_gpio_irq_mask,
-+	.irq_unmask	= pmic_gpio_irq_unmask,
-+	.irq_set_type	= irq_chip_set_type_parent,
-+	.irq_set_wake	= irq_chip_set_wake_parent,
-+	.flags		= IRQCHIP_IMMUTABLE | IRQCHIP_MASK_ON_SUSPEND,
-+	GPIOCHIP_IRQ_RESOURCE_HELPERS,
-+};
-+
- static int pmic_gpio_probe(struct platform_device *pdev)
- {
- 	struct irq_domain *parent_domain;
-@@ -1078,16 +1104,8 @@ static int pmic_gpio_probe(struct platform_device *pdev)
- 	if (!parent_domain)
- 		return -ENXIO;
- 
--	state->irq.name = "spmi-gpio",
--	state->irq.irq_ack = irq_chip_ack_parent,
--	state->irq.irq_mask = irq_chip_mask_parent,
--	state->irq.irq_unmask = irq_chip_unmask_parent,
--	state->irq.irq_set_type = irq_chip_set_type_parent,
--	state->irq.irq_set_wake = irq_chip_set_wake_parent,
--	state->irq.flags = IRQCHIP_MASK_ON_SUSPEND,
--
- 	girq = &state->chip.irq;
--	girq->chip = &state->irq;
-+	gpio_irq_chip_set_chip(girq, &spmi_gpio_irq_chip);
- 	girq->default_type = IRQ_TYPE_NONE;
- 	girq->handler = handle_level_irq;
- 	girq->fwnode = of_node_to_fwnode(state->dev->of_node);
--- 
-2.25.1
-
+Best regards,
+Krzysztof
