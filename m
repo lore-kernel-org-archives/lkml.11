@@ -2,120 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2287DECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 484CFECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbiH3QK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
+        id S231134AbiH3QRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiH3QK4 (ORCPT
+        with ESMTP id S229698AbiH3QRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:10:56 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CF5B5148
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:10:56 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b16so14868372edd.4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=HeI9CTL7SZ6WtLybLU9iLg/U6rZRWLnwHzWBSTQbFU4=;
-        b=fOyeEvOk2ivf1c403sCJD1/oW4ZOI511YvYZ/dcWVeWy6S0yfWiiroHc+RJ4MaEOKF
-         y+cOf0WhLss9aFOYCvJO1z02hiL+gs87EwC+9eQqEa4G0OqsnoBtj7OULZfNGg9Zxo3M
-         ojnGHlkGffIxH5/S4UAzo1njCwKy1UHn731VM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=HeI9CTL7SZ6WtLybLU9iLg/U6rZRWLnwHzWBSTQbFU4=;
-        b=7X4NqKSNQqfyORUCk451ctsT1cGqXKAjHD4JvTAtQdIry25LBn2+UqZylN5vK4/eJ1
-         iAPqRUCrNGIeb6xModkU+LcVPwwM9ViNfeFiTrGiZNIALC40kqJUurWMk5MPVxFXaHAd
-         xb6jzvAQdDejQwvrQ85mxlV0+W2pFqgotAH1vx9/5ipeFh0E5fKjimG6JgytmvbCFpQ1
-         r4Cum9tQjHwnYe4yB/dpHg8gBYurbBOUoAoxAfsXzozjgHBRs17whtAlLzvxhV5TTe5F
-         MhwnuiwyxzRy9OFU9/3dr2FEoguomqYc5/PZ2b5lOJwXzJBTRLT1jUTW0JytPK3oEHRg
-         qpqw==
-X-Gm-Message-State: ACgBeo1+kVCy2LkWEjou0jZti4bFRUmOVyVvANb4FfCZTolSKjOdLz4U
-        RR/+lrVMa5pjz85c7JnX9/oUpsWH6xGSiOej
-X-Google-Smtp-Source: AA6agR5ADT6Uufylys1ZojV6yhfDw4LsVbj/xnc2FvAjMSgCw6dlTx+NYP+PbQtJ4WnFVfKYftRuZA==
-X-Received: by 2002:a05:6402:2b88:b0:43a:6c58:6c64 with SMTP id fj8-20020a0564022b8800b0043a6c586c64mr21514696edb.348.1661875854208;
-        Tue, 30 Aug 2022 09:10:54 -0700 (PDT)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id u2-20020a1709061da200b0071cbc7487e1sm5967944ejh.69.2022.08.30.09.10.52
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 09:10:52 -0700 (PDT)
-Received: by mail-wm1-f50.google.com with SMTP id v7-20020a1cac07000000b003a6062a4f81so10233768wme.1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:10:52 -0700 (PDT)
-X-Received: by 2002:a05:600c:42c3:b0:3a6:431:91bf with SMTP id
- j3-20020a05600c42c300b003a6043191bfmr9703680wme.188.1661875852435; Tue, 30
- Aug 2022 09:10:52 -0700 (PDT)
+        Tue, 30 Aug 2022 12:17:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B3CD9A965;
+        Tue, 30 Aug 2022 09:17:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33964B81CD4;
+        Tue, 30 Aug 2022 16:17:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAFCCC433C1;
+        Tue, 30 Aug 2022 16:17:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661876262;
+        bh=DSrVqL1VD3WM18Xm2UsNFG860qRy8Dj2FnWp76OHsZ8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=pjYn6czElsD94jyIbkijnC7xpBdqszyie5eTJWsdxwH4hXVGkAh4lkJbRPoWRwWqV
+         R3WwWajEbk/uJo+Nr2fBCDrHKRyQWk0oPq6XhsWDNpINX4PjTiZ8I6JrrUskXJZlap
+         XNX0wqhzibFIRfQLgSQ5pqhbs8/mHKrx54gHUc7TlA9ATD7V6STEL3Ipgb5KFUi6h2
+         T9SxrdZr5V8EoxrddAjdmR724ii7QJuglAUJ+vI1tuNoMh0D9tKaXPMi4GNNttzavU
+         daJCUHPk78+pFtYt+9CGgByExF10rzrAjFpxjC0KpoNWnVUVw9oXrBE9Xal78j17nX
+         C4W0d6MtGfifQ==
+Date:   Tue, 30 Aug 2022 11:17:41 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Rajvi Jingar <rajvi.jingar@linux.intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rafael Wysocki <rafael.j.wysocki@intel.com>,
+        David Box <david.e.box@linux.intel.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Subject: Re: [RESEND PATCH v3 1/2] PCI/PM: refactor pci_pm_suspend_noirq()
+Message-ID: <20220830161741.GA105724@bhelgaas>
 MIME-Version: 1.0
-References: <20220830053307.3997495-1-sheng-liang.pan@quanta.corp-partner.google.com>
- <20220830133300.1.I7dd7a79c4cc5fe91c3feb004473feb3b34b7b2d8@changeid> <184d4ff5-e80c-6a24-8071-0b0a69710685@linaro.org>
-In-Reply-To: <184d4ff5-e80c-6a24-8071-0b0a69710685@linaro.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 30 Aug 2022 09:10:38 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VorVNKHgybGAH=dD5ob+1RYoguczycjOYu-5VPu=9Jkw@mail.gmail.com>
-Message-ID: <CAD=FV=VorVNKHgybGAH=dD5ob+1RYoguczycjOYu-5VPu=9Jkw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] arm64: dts: qcom: sc7280: Add device tree for
- herobrine evoker
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0hhc+n+WbLCxbJ2VPSWj0RAy4AM+pvqy8eiAJVtBecVWg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Aug 30, 2022 at 01:44:43PM +0200, Rafael J. Wysocki wrote:
+> Hi Bjorn,
+> 
+> On Tue, Aug 30, 2022 at 12:49 PM Rajvi Jingar
+> <rajvi.jingar@linux.intel.com> wrote:
+> >
+> > The state of the device is saved during pci_pm_suspend_noirq(), if it
+> > has not already been saved, regardless of the skip_bus_pm flag value. So
+> > skip_bus_pm check is removed before saving the device state.
+> >
+> > Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
+> > Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> 
+> I have reviewed this and the [2/2] already and they are clear
+> improvements to me.
+> 
+> Do you have any concerns regarding any of them?
 
-On Tue, Aug 30, 2022 at 2:33 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> > +};
-> > +
-> > +/*
-> > + * ADDITIONS TO FIXED REGULATORS DEFINED IN PARENT DEVICE TREE FILES
->
-> What does it mean and why it's SCREAMING?
-> > + *
-> > + * Sort order matches the order in the parent files (parents before children).
->
-> Why? Sorting should be rather alphabetical.
+Since the log doesn't mention fixing a problem, I guess this one is
+only a simplification, right?  It looks functionally equivalent to me.
 
-We've had this discussion on the lists in the past. See, for instance:
+> If not, do you want me to pick them up or do you plan to take care of
+> them yourself?
 
-https://lore.kernel.org/r/CAD=FV=U2C1W+JHWyGRfyRB=WiPKLYvtjO90UDoJ9p+Xwe09+ow@mail.gmail.com/
+Let me take them; I want to at least wrap the comment to align with
+the rest of the file.
 
-The tl;dr summary is:
+> > ---
+> >  v1->v2: no change
+> >  v2->v3: no change
 
-* Going with exclusively alphabetical sort ordering tends to make
-things more confusing when there's a mix of things that are overridden
-vs. things that are fully defined from scratch.
+Why are we bumping the version numbers if there's truly no change?
 
-* If we accept that some ordering isn't alphabetical then it makes
-sense to have some sort of section headers to define when sort
-ordering changes. Otherwise people are constantly confused and putting
-things in the wrong place. Certainly there are lots of styles of
-section headers, some of which use all caps.
-
-* What's in this patch with regards to section headers and sort orders
-matches other herobrine-related files. If you want to propose a new
-way to organize files then perhaps you can submit a patch to do so and
-we can evaluate whether it's cleaner or not. If you want to propose a
-different organization, perhaps propose it on sc7180-trogdor files so
-we can see how it looks on a fully fleshed out family. That will help
-us evaluate whether it's easier or harder to understand.
-
--Doug
+> > ---
+> >  drivers/pci/pci-driver.c | 18 ++++++------------
+> >  1 file changed, 6 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+> > index 49238ddd39ee..1f64de3e5280 100644
+> > --- a/drivers/pci/pci-driver.c
+> > +++ b/drivers/pci/pci-driver.c
+> > @@ -867,20 +867,14 @@ static int pci_pm_suspend_noirq(struct device *dev)
+> >                 }
+> >         }
+> >
+> > -       if (pci_dev->skip_bus_pm) {
+> > +       if (!pci_dev->state_saved) {
+> > +               pci_save_state(pci_dev);
+> >                 /*
+> > -                * Either the device is a bridge with a child in D0 below it, or
+> > -                * the function is running for the second time in a row without
+> > -                * going through full resume, which is possible only during
+> > -                * suspend-to-idle in a spurious wakeup case.  The device should
+> > -                * be in D0 at this point, but if it is a bridge, it may be
+> > -                * necessary to save its state.
+> > +                * If the device is a bridge with a child in D0 below it, it needs to
+> > +                * stay in D0, so check skip_bus_pm to avoid putting it into a
+> > +                * low-power state in that case.
+> >                  */
+> > -               if (!pci_dev->state_saved)
+> > -                       pci_save_state(pci_dev);
+> > -       } else if (!pci_dev->state_saved) {
+> > -               pci_save_state(pci_dev);
+> > -               if (pci_power_manageable(pci_dev))
+> > +               if (!pci_dev->skip_bus_pm && pci_power_manageable(pci_dev))
+> >                         pci_prepare_to_sleep(pci_dev);
+> >         }
+> >
+> > --
+> > 2.25.1
+> >
