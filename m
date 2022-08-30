@@ -2,88 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF53ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB948ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231808AbiH3RcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:32:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60716 "EHLO
+        id S231935AbiH3RcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiH3Rbj (ORCPT
+        with ESMTP id S230262AbiH3Rbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:31:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7546C742;
-        Tue, 30 Aug 2022 10:28:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DCF5DB81D1C;
-        Tue, 30 Aug 2022 17:26:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D366C433D6;
-        Tue, 30 Aug 2022 17:26:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880400;
-        bh=pVGX3lUAokxnhXBJdkUrS/2va8kh1ON7b6FM2FZm/c0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B8ih82nwZRVXfs0yyFn8Tw4IYdPK8j5hwC8BTssGhAQRqiovMvjdjM7DW1TBqTq0M
-         Rn1iJZaCWdAnByod1iiYvQalXUM2LQ50d2L1q19OH3+0tJ62fGCEPwKtgD/pexz2Ri
-         63xuu0Q17IziF072E/0vSGvZpd3i1tHNMF5AKEHb9jXkWbNZ8GvoDc53INat3CcrYO
-         z8N5i9+5OEcyQLjRArLp/ByY7X4RePWGwbH/2yr1J3v/SvKK0WtyC5Y/t4FdzS2xtj
-         y6/ZbfPj89mwn9VsZDhFO8a026Cp07I0W+sAIGh6YiHnlNztcKQ0NnRW4PXu19UecA
-         dqu1bVdRXEhYQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Candice Li <candice.li@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        tao.zhou1@amd.com, YiPeng.Chai@amd.com, ricetons@gmail.com,
-        desowin@gmail.com, victor.skvortsov@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 2/8] drm/amdgpu: Check num_gfx_rings for gfx v9_0 rb setup.
-Date:   Tue, 30 Aug 2022 13:26:25 -0400
-Message-Id: <20220830172631.581969-2-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172631.581969-1-sashal@kernel.org>
-References: <20220830172631.581969-1-sashal@kernel.org>
+        Tue, 30 Aug 2022 13:31:40 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5CC4E15A205
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:28:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0AC9B1570;
+        Tue, 30 Aug 2022 10:26:52 -0700 (PDT)
+Received: from e121896.arm.com (unknown [10.57.15.35])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CB1563F7B4;
+        Tue, 30 Aug 2022 10:26:43 -0700 (PDT)
+From:   James Clark <james.clark@arm.com>
+To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        mathieu.poirier@linaro.org
+Cc:     mike.leach@linaro.org, leo.yan@linaro.org,
+        linux-kernel@vger.kernel.org, german.gomez@arm.com,
+        James Clark <james.clark@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH v2 4/5] coresight: cti-sysfs: Re-use same functions for similar sysfs register accessors
+Date:   Tue, 30 Aug 2022 18:26:12 +0100
+Message-Id: <20220830172614.340962-5-james.clark@arm.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20220830172614.340962-1-james.clark@arm.com>
+References: <20220830172614.340962-1-james.clark@arm.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Candice Li <candice.li@amd.com>
+Currently each accessor macro creates an identical function which wastes
+space in the text area and pollutes the ftrace function name list.
+Change it so that the same function is used, but the register to access
+is passed in as parameter rather than baked into each function.
 
-[ Upstream commit c351938350ab9b5e978dede2c321da43de7eb70c ]
+Note that only the single accessor is used here and not
+csdev_access_relaxed_read_pair() like in the previous commit, so
+so a single unsigned offset value is stored instead.
 
-No need to set up rb when no gfx rings.
-
-Signed-off-by: Candice Li <candice.li@amd.com>
-Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: James Clark <james.clark@arm.com>
 ---
- drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../hwtracing/coresight/coresight-cti-sysfs.c | 213 +++++++-----------
+ drivers/hwtracing/coresight/coresight-priv.h  |   5 +
+ 2 files changed, 91 insertions(+), 127 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-index 53186c5e1066b..bb0d32b4be74d 100644
---- a/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gfx_v9_0.c
-@@ -1514,7 +1514,8 @@ static void gfx_v9_0_gpu_init(struct amdgpu_device *adev)
+diff --git a/drivers/hwtracing/coresight/coresight-cti-sysfs.c b/drivers/hwtracing/coresight/coresight-cti-sysfs.c
+index 7ff7e7780bbf..478b8d38b744 100644
+--- a/drivers/hwtracing/coresight/coresight-cti-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-cti-sysfs.c
+@@ -163,48 +163,82 @@ static struct attribute *coresight_cti_attrs[] = {
  
- 	gfx_v9_0_tiling_mode_table_init(adev);
+ /* register based attributes */
  
--	gfx_v9_0_setup_rb(adev);
-+	if (adev->gfx.num_gfx_rings)
-+		gfx_v9_0_setup_rb(adev);
- 	gfx_v9_0_get_cu_info(adev, &adev->gfx.cu_info);
+-/* macro to access RO registers with power check only (no enable check). */
+-#define coresight_cti_reg(name, offset)			\
+-static ssize_t name##_show(struct device *dev,				\
+-			   struct device_attribute *attr, char *buf)	\
+-{									\
+-	struct cti_drvdata *drvdata = dev_get_drvdata(dev->parent);	\
+-	u32 val = 0;							\
+-	pm_runtime_get_sync(dev->parent);				\
+-	spin_lock(&drvdata->spinlock);					\
+-	if (drvdata->config.hw_powered)					\
+-		val = readl_relaxed(drvdata->base + offset);		\
+-	spin_unlock(&drvdata->spinlock);				\
+-	pm_runtime_put_sync(dev->parent);				\
+-	return sprintf(buf, "0x%x\n", val);				\
+-}									\
+-static DEVICE_ATTR_RO(name)
++/* Read registers with power check only (no enable check). */
++static ssize_t coresight_cti_reg_show(struct device *dev,
++			   struct device_attribute *attr, char *buf)
++{
++	struct cti_drvdata *drvdata = dev_get_drvdata(dev->parent);
++	struct cs_off_attribute *cti_attr = container_of(attr, struct cs_off_attribute, attr);
++	u32 val = 0;
  
- 	/* XXX SH_MEM regs */
+-/* coresight management registers */
+-coresight_cti_reg(devaff0, CTIDEVAFF0);
+-coresight_cti_reg(devaff1, CTIDEVAFF1);
+-coresight_cti_reg(authstatus, CORESIGHT_AUTHSTATUS);
+-coresight_cti_reg(devarch, CORESIGHT_DEVARCH);
+-coresight_cti_reg(devid, CORESIGHT_DEVID);
+-coresight_cti_reg(devtype, CORESIGHT_DEVTYPE);
+-coresight_cti_reg(pidr0, CORESIGHT_PERIPHIDR0);
+-coresight_cti_reg(pidr1, CORESIGHT_PERIPHIDR1);
+-coresight_cti_reg(pidr2, CORESIGHT_PERIPHIDR2);
+-coresight_cti_reg(pidr3, CORESIGHT_PERIPHIDR3);
+-coresight_cti_reg(pidr4, CORESIGHT_PERIPHIDR4);
++	pm_runtime_get_sync(dev->parent);
++	spin_lock(&drvdata->spinlock);
++	if (drvdata->config.hw_powered)
++		val = readl_relaxed(drvdata->base + cti_attr->off);
++	spin_unlock(&drvdata->spinlock);
++	pm_runtime_put_sync(dev->parent);
++	return sysfs_emit(buf, "0x%x\n", val);
++}
++
++/* Write registers with power check only (no enable check). */
++static ssize_t coresight_cti_reg_store(struct device *dev,
++				       struct device_attribute *attr,
++				       const char *buf, size_t size)
++{
++	struct cti_drvdata *drvdata = dev_get_drvdata(dev->parent);
++	struct cs_off_attribute *cti_attr = container_of(attr, struct cs_off_attribute, attr);
++	unsigned long val = 0;
++
++	if (kstrtoul(buf, 0, &val))
++		return -EINVAL;
+ 
++	pm_runtime_get_sync(dev->parent);
++	spin_lock(&drvdata->spinlock);
++	if (drvdata->config.hw_powered)
++		cti_write_single_reg(drvdata, cti_attr->off, val);
++	spin_unlock(&drvdata->spinlock);
++	pm_runtime_put_sync(dev->parent);
++	return size;
++}
++
++#define coresight_cti_reg(name, offset)					\
++	(&((struct cs_off_attribute[]) {				\
++	   {								\
++		__ATTR(name, 0444, coresight_cti_reg_show, NULL),	\
++		offset							\
++	   }								\
++	})[0].attr.attr)
++
++#define coresight_cti_reg_rw(name, offset)				\
++	(&((struct cs_off_attribute[]) {				\
++	   {								\
++		__ATTR(name, 0644, coresight_cti_reg_show,		\
++		       coresight_cti_reg_store),			\
++		offset							\
++	   }								\
++	})[0].attr.attr)
++
++#define coresight_cti_reg_wo(name, offset)				\
++	(&((struct cs_off_attribute[]) {				\
++	   {								\
++		__ATTR(name, 0200, NULL, coresight_cti_reg_store),	\
++		offset							\
++	   }								\
++	})[0].attr.attr)
++
++/* coresight management registers */
+ static struct attribute *coresight_cti_mgmt_attrs[] = {
+-	&dev_attr_devaff0.attr,
+-	&dev_attr_devaff1.attr,
+-	&dev_attr_authstatus.attr,
+-	&dev_attr_devarch.attr,
+-	&dev_attr_devid.attr,
+-	&dev_attr_devtype.attr,
+-	&dev_attr_pidr0.attr,
+-	&dev_attr_pidr1.attr,
+-	&dev_attr_pidr2.attr,
+-	&dev_attr_pidr3.attr,
+-	&dev_attr_pidr4.attr,
++	coresight_cti_reg(devaff0, CTIDEVAFF0),
++	coresight_cti_reg(devaff1, CTIDEVAFF1),
++	coresight_cti_reg(authstatus, CORESIGHT_AUTHSTATUS),
++	coresight_cti_reg(devarch, CORESIGHT_DEVARCH),
++	coresight_cti_reg(devid, CORESIGHT_DEVID),
++	coresight_cti_reg(devtype, CORESIGHT_DEVTYPE),
++	coresight_cti_reg(pidr0, CORESIGHT_PERIPHIDR0),
++	coresight_cti_reg(pidr1, CORESIGHT_PERIPHIDR1),
++	coresight_cti_reg(pidr2, CORESIGHT_PERIPHIDR2),
++	coresight_cti_reg(pidr3, CORESIGHT_PERIPHIDR3),
++	coresight_cti_reg(pidr4, CORESIGHT_PERIPHIDR4),
+ 	NULL,
+ };
+ 
+@@ -454,86 +488,11 @@ static ssize_t apppulse_store(struct device *dev,
+ }
+ static DEVICE_ATTR_WO(apppulse);
+ 
+-coresight_cti_reg(triginstatus, CTITRIGINSTATUS);
+-coresight_cti_reg(trigoutstatus, CTITRIGOUTSTATUS);
+-coresight_cti_reg(chinstatus, CTICHINSTATUS);
+-coresight_cti_reg(choutstatus, CTICHOUTSTATUS);
+-
+ /*
+  * Define CONFIG_CORESIGHT_CTI_INTEGRATION_REGS to enable the access to the
+  * integration control registers. Normally only used to investigate connection
+  * data.
+  */
+-#ifdef CONFIG_CORESIGHT_CTI_INTEGRATION_REGS
+-
+-/* macro to access RW registers with power check only (no enable check). */
+-#define coresight_cti_reg_rw(name, offset)				\
+-static ssize_t name##_show(struct device *dev,				\
+-			   struct device_attribute *attr, char *buf)	\
+-{									\
+-	struct cti_drvdata *drvdata = dev_get_drvdata(dev->parent);	\
+-	u32 val = 0;							\
+-	pm_runtime_get_sync(dev->parent);				\
+-	spin_lock(&drvdata->spinlock);					\
+-	if (drvdata->config.hw_powered)					\
+-		val = readl_relaxed(drvdata->base + offset);		\
+-	spin_unlock(&drvdata->spinlock);				\
+-	pm_runtime_put_sync(dev->parent);				\
+-	return sprintf(buf, "0x%x\n", val);				\
+-}									\
+-									\
+-static ssize_t name##_store(struct device *dev,				\
+-			    struct device_attribute *attr,		\
+-			    const char *buf, size_t size)		\
+-{									\
+-	struct cti_drvdata *drvdata = dev_get_drvdata(dev->parent);	\
+-	unsigned long val = 0;						\
+-	if (kstrtoul(buf, 0, &val))					\
+-		return -EINVAL;						\
+-									\
+-	pm_runtime_get_sync(dev->parent);				\
+-	spin_lock(&drvdata->spinlock);					\
+-	if (drvdata->config.hw_powered)					\
+-		cti_write_single_reg(drvdata, offset, val);		\
+-	spin_unlock(&drvdata->spinlock);				\
+-	pm_runtime_put_sync(dev->parent);				\
+-	return size;							\
+-}									\
+-static DEVICE_ATTR_RW(name)
+-
+-/* macro to access WO registers with power check only (no enable check). */
+-#define coresight_cti_reg_wo(name, offset)				\
+-static ssize_t name##_store(struct device *dev,				\
+-			    struct device_attribute *attr,		\
+-			    const char *buf, size_t size)		\
+-{									\
+-	struct cti_drvdata *drvdata = dev_get_drvdata(dev->parent);	\
+-	unsigned long val = 0;						\
+-	if (kstrtoul(buf, 0, &val))					\
+-		return -EINVAL;						\
+-									\
+-	pm_runtime_get_sync(dev->parent);				\
+-	spin_lock(&drvdata->spinlock);					\
+-	if (drvdata->config.hw_powered)					\
+-		cti_write_single_reg(drvdata, offset, val);		\
+-	spin_unlock(&drvdata->spinlock);				\
+-	pm_runtime_put_sync(dev->parent);				\
+-	return size;							\
+-}									\
+-static DEVICE_ATTR_WO(name)
+-
+-coresight_cti_reg_rw(itchout, ITCHOUT);
+-coresight_cti_reg_rw(ittrigout, ITTRIGOUT);
+-coresight_cti_reg_rw(itctrl, CORESIGHT_ITCTRL);
+-coresight_cti_reg_wo(itchinack, ITCHINACK);
+-coresight_cti_reg_wo(ittriginack, ITTRIGINACK);
+-coresight_cti_reg(ittrigin, ITTRIGIN);
+-coresight_cti_reg(itchin, ITCHIN);
+-coresight_cti_reg(itchoutack, ITCHOUTACK);
+-coresight_cti_reg(ittrigoutack, ITTRIGOUTACK);
+-
+-#endif /* CORESIGHT_CTI_INTEGRATION_REGS */
+-
+ static struct attribute *coresight_cti_regs_attrs[] = {
+ 	&dev_attr_inout_sel.attr,
+ 	&dev_attr_inen.attr,
+@@ -544,20 +503,20 @@ static struct attribute *coresight_cti_regs_attrs[] = {
+ 	&dev_attr_appset.attr,
+ 	&dev_attr_appclear.attr,
+ 	&dev_attr_apppulse.attr,
+-	&dev_attr_triginstatus.attr,
+-	&dev_attr_trigoutstatus.attr,
+-	&dev_attr_chinstatus.attr,
+-	&dev_attr_choutstatus.attr,
++	coresight_cti_reg(triginstatus, CTITRIGINSTATUS),
++	coresight_cti_reg(trigoutstatus, CTITRIGOUTSTATUS),
++	coresight_cti_reg(chinstatus, CTICHINSTATUS),
++	coresight_cti_reg(choutstatus, CTICHOUTSTATUS),
+ #ifdef CONFIG_CORESIGHT_CTI_INTEGRATION_REGS
+-	&dev_attr_itctrl.attr,
+-	&dev_attr_ittrigin.attr,
+-	&dev_attr_itchin.attr,
+-	&dev_attr_ittrigout.attr,
+-	&dev_attr_itchout.attr,
+-	&dev_attr_itchoutack.attr,
+-	&dev_attr_ittrigoutack.attr,
+-	&dev_attr_ittriginack.attr,
+-	&dev_attr_itchinack.attr,
++	coresight_cti_reg_rw(itctrl, CORESIGHT_ITCTRL),
++	coresight_cti_reg(ittrigin, ITTRIGIN),
++	coresight_cti_reg(itchin, ITCHIN),
++	coresight_cti_reg_rw(ittrigout, ITTRIGOUT),
++	coresight_cti_reg_rw(itchout, ITCHOUT),
++	coresight_cti_reg(itchoutack, ITCHOUTACK),
++	coresight_cti_reg(ittrigoutack, ITTRIGOUTACK),
++	coresight_cti_reg_wo(ittriginack, ITTRIGINACK),
++	coresight_cti_reg_wo(itchinack, ITCHINACK),
+ #endif
+ 	NULL,
+ };
+diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
+index 07b392bfdbcd..c211979deca5 100644
+--- a/drivers/hwtracing/coresight/coresight-priv.h
++++ b/drivers/hwtracing/coresight/coresight-priv.h
+@@ -45,6 +45,11 @@ struct cs_pair_attribute {
+ 	s32 hi_off;
+ };
+ 
++struct cs_off_attribute {
++	struct device_attribute attr;
++	u32 off;
++};
++
+ extern ssize_t coresight_simple_show(struct device *_dev,
+ 				     struct device_attribute *attr, char *buf);
+ 
 -- 
-2.35.1
+2.28.0
 
