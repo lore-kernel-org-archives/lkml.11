@@ -2,105 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 358F5ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:14:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5887CECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:15:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231699AbiH3SOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50888 "EHLO
+        id S231518AbiH3SPt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbiH3SOL (ORCPT
+        with ESMTP id S229888AbiH3SPr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:14:11 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F8798D12;
-        Tue, 30 Aug 2022 11:14:10 -0700 (PDT)
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27UFx86p001451;
-        Tue, 30 Aug 2022 18:14:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=Ptp6lUe9nsKYl0kW5xnrFUHhLtp7FtLC9xKOZrhuvpg=;
- b=GbbomZcHwQueWS41sAp8akENeBoVE7TGinTCF3mOUjiwxoEeW33jsuDW0Dcf97IYO6/2
- PD5dVWuwPWeL0WB4NqsXKV63QIdEDYkbxXrs/07dOCwtMStOtBzHMYNpW7PkNAmIJ5YG
- p4HkHQU2GW+Z/AhOSK8egGJAv3cRTAGVwjf/fS5MrtXZCvAMrnejRshAIi/wD380AB3C
- w5Low/9p2WkicmGDXNsPqYQoBe/opYfl8C1hUouAUOIYhPSVCOecaeSNLBDIDHQVv8Lr
- hDKVHv4TCEeLt65up4gxN7T/h4sTK/EmG/W4Ke8p2oCjYOzkRwdy/3Esz+4BU4ubX9SA Kw== 
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j9n860jn9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 30 Aug 2022 18:14:06 +0000
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-        by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 27UIE55g006699
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 30 Aug 2022 18:14:05 GMT
-Received: from [10.110.18.131] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Tue, 30 Aug
- 2022 11:14:05 -0700
-Message-ID: <91415092-e622-a636-3bc4-d81fb56b2f66@quicinc.com>
-Date:   Tue, 30 Aug 2022 11:13:59 -0700
+        Tue, 30 Aug 2022 14:15:47 -0400
+Received: from cloudserver094114.home.pl (cloudserver094114.home.pl [79.96.170.134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 567A01C124;
+        Tue, 30 Aug 2022 11:15:41 -0700 (PDT)
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 5.0.0)
+ id d80d4b748d72c08a; Tue, 30 Aug 2022 20:15:39 +0200
+Received: from kreacher.localnet (unknown [213.134.183.102])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id DF57466D26F;
+        Tue, 30 Aug 2022 20:15:38 +0200 (CEST)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux PM <linux-pm@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: [PATCH] thermal: gov_user_space: Do not lock thermal zone mutex
+Date:   Tue, 30 Aug 2022 20:15:38 +0200
+Message-ID: <12067136.O9o76ZdvQC@kreacher>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 5/9] usb: dwc3: Avoid unmapping USB requests if endxfer
- is not complete
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-CC:     <balbi@kernel.org>, <Thinh.Nguyen@synopsys.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <quic_jackp@quicinc.com>
-References: <20220817182359.13550-1-quic_wcheng@quicinc.com>
- <20220817182359.13550-6-quic_wcheng@quicinc.com> <Yw4Z191jbRJc9EuR@kroah.com>
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-In-Reply-To: <Yw4Z191jbRJc9EuR@kroah.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: yKkWE4tlyRYBkQxQa85TT1mCzwMKUUn6
-X-Proofpoint-ORIG-GUID: yKkWE4tlyRYBkQxQa85TT1mCzwMKUUn6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-30_10,2022-08-30_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=0 impostorscore=0 adultscore=0 mlxlogscore=799 spamscore=0
- clxscore=1015 phishscore=0 bulkscore=0 priorityscore=1501 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208300083
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.183.102
+X-CLIENT-HOSTNAME: 213.134.183.102
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekfedguddvfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpeffffffkefgheehffelteeiveeffeevhfelteejvddvieejjeelvdeiheeuveeuffenucfkphepvddufedrudefgedrudekfedruddtvdenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudefrddufeegrddukeefrddutddvpdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhnsggprhgtphhtthhopeehpdhrtghpthhtoheplhhinhhugidqphhmsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprhhuihdriihhrghnghesihhnthgvlhdrtghomhdprhgtphhtthhopehsrhhinhhivhgrshdrphgrnhgurhhuvhgruggrsehlihhnuhigrdhinhhtvghlrdgt
+ ohhmpdhrtghpthhtohepuggrnhhivghlrdhlvgiitggrnhhosehlihhnrghrohdrohhrgh
+X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-On 8/30/2022 7:08 AM, Greg KH wrote:
-> On Wed, Aug 17, 2022 at 11:23:55AM -0700, Wesley Cheng wrote:
->> If DWC3_EP_DELAYED_STOP is set during stop active transfers, then do not
->> continue attempting to unmap request buffers during dwc3_remove_requests().
->> This can lead to SMMU faults, as the controller has not stopped the
->> processing of the TRB.  Defer this sequence to the EP0 out start, which
->> ensures that there are no pending SETUP transactions before issuing the
->> endxfer.
->>
->> Reviewed-by: Thinh Nguyen <Thinh.Nguyen@synopsys.com>
->> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
->> ---
->>   drivers/usb/dwc3/core.h   | 3 +++
->>   drivers/usb/dwc3/ep0.c    | 5 ++++-
->>   drivers/usb/dwc3/gadget.c | 6 +++++-
->>   3 files changed, 12 insertions(+), 2 deletions(-)
->>
-> 
-> This commit does not apply to my usb-testing branch.  I've taken the
-> first 4, please rebase and resend the rest.
-> 
+Commit 670a5e356cb6 ("thermal/core: Move the thermal zone lock out of
+the governors") moved thermal zone locking away from governors, but it
+forgot about the user space one which deadlocks now.
 
-Sure resubmit it later today.  Sorry about that and thanks for the heads up.
+Fix this by removing the thermal zone locking from the user space
+governor.
 
-Thanks
-Wesley Cheng
+Fixes: 670a5e356cb6 ("thermal/core: Move the thermal zone lock out of the governors")
+Tested-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+---
+
+linux-next material
+
+---
+ drivers/thermal/gov_user_space.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+Index: linux-pm/drivers/thermal/gov_user_space.c
+===================================================================
+--- linux-pm.orig/drivers/thermal/gov_user_space.c
++++ linux-pm/drivers/thermal/gov_user_space.c
+@@ -34,7 +34,8 @@ static int notify_user_space(struct ther
+ 	char *thermal_prop[5];
+ 	int i;
+ 
+-	mutex_lock(&tz->lock);
++	lockdep_assert_held(&tz->lock);
++
+ 	thermal_prop[0] = kasprintf(GFP_KERNEL, "NAME=%s", tz->type);
+ 	thermal_prop[1] = kasprintf(GFP_KERNEL, "TEMP=%d", tz->temperature);
+ 	thermal_prop[2] = kasprintf(GFP_KERNEL, "TRIP=%d", trip);
+@@ -43,7 +44,7 @@ static int notify_user_space(struct ther
+ 	kobject_uevent_env(&tz->device.kobj, KOBJ_CHANGE, thermal_prop);
+ 	for (i = 0; i < 4; ++i)
+ 		kfree(thermal_prop[i]);
+-	mutex_unlock(&tz->lock);
++
+ 	return 0;
+ }
+ 
+
+
+
