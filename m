@@ -2,416 +2,405 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8232C0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:17:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99FC3ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231410AbiH3IRn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
+        id S231426AbiH3ISU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230160AbiH3IRk (ORCPT
+        with ESMTP id S230055AbiH3ISS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:17:40 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2082.outbound.protection.outlook.com [40.107.22.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D927BC04E0;
-        Tue, 30 Aug 2022 01:17:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jTJpK+6S5AAFqgHAMLaACJ/88yF9qnHl9oLLAmV6gyNYsLt7Z6JfjXjkF8hxLGKFrJNK2/vFWcr6e5RBnp5/L9oV/VHJ0KCO4EWgiK/B4ZhWqklMGzMP6KyMwYZkGv+wTiBf0/fpz+SFMvNnOHhQavIaPERlEfhvIup+SGYyXLf8dXm2UqOLbRzUUeNT/n1ZiLTLm9y9gN7l1sCfPOBtSiGS1Eqcom3siWkGhKKZpK/Rzji1fdJUZJqwFCf2cEEMefEPLPdlCzaB0Jl0A4ess9Hd5Z1YB6OFqZz2abBTJ6qyfoz3jjiWaYMf8NOWhu820sCRxqpUFEFsigNy0KyBXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=N5/mF1q/gaHy3KjXpOkLy83ssrXXpHYJTBBgLzglGYA=;
- b=MADOPjePZZk1jM2iVL0g+3PmCL336AKJCk9w+QW91SQ+AHnFtDxacXW64b9t2h9jh4Oz0TH1QniRPWBw4eJkMFM9QNBlRx5i3oh2S4mT2vNlqfIlRTAeUwptsGVrKqXwbf9KuE3g5X5LHCnWIhSXTqsU+jV7E8RDd/sB007Zuh8LPg9oC5MGyv6FX+8VFA3oApKKn+eohvY1CBdc6iWk4BeF1BmpKiS68Vr81AqOQIeQxSYdS5uhIsNKnb8aONbJ2sXKZqpLSfWHtqImwXp/x4vZeScFauGCqnkxMbVpeDF7Ve/C2hxSV14CnUxDc0V6K6GRO4IRbvRGeIPEIW2/4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N5/mF1q/gaHy3KjXpOkLy83ssrXXpHYJTBBgLzglGYA=;
- b=EzGYMM78o9NqjgLT557KifR2xWDHq3OxvzIshx55fZV7AlWmPm0VKX/pGMHMX33N2XXap5rH3ehg9x6WRpTNsnLTW3uUeKou3JrYrVW53Ue4SeC5rBVjHUsKzgQDIVTt2PtDPmae7k1S7uF8poOeG0zrnhGJoV7uxePOCCtbUT8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5936.eurprd04.prod.outlook.com (2603:10a6:803:e1::18)
- by PA4PR04MB7645.eurprd04.prod.outlook.com (2603:10a6:102:eb::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Tue, 30 Aug
- 2022 08:17:31 +0000
-Received: from VI1PR04MB5936.eurprd04.prod.outlook.com
- ([fe80::41bc:4ee:98cf:efcb]) by VI1PR04MB5936.eurprd04.prod.outlook.com
- ([fe80::41bc:4ee:98cf:efcb%5]) with mapi id 15.20.5566.021; Tue, 30 Aug 2022
- 08:17:31 +0000
-From:   Joy Zou <joy.zou@nxp.com>
-To:     krzysztof.kozlowski@linaro.org
-Cc:     shengjiu.wang@nxp.com, vkoul@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, dmaengine@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V3 1/2] dt-bindings: fsl-imx-sdma: Convert imx sdma to DT schema
-Date:   Tue, 30 Aug 2022 16:18:39 +0800
-Message-Id: <20220830081839.1201720-1-joy.zou@nxp.com>
-X-Mailer: git-send-email 2.37.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0129.apcprd02.prod.outlook.com
- (2603:1096:4:188::19) To VI1PR04MB5936.eurprd04.prod.outlook.com
- (2603:10a6:803:e1::18)
+        Tue, 30 Aug 2022 04:18:18 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDD680F43
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:18:16 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27U8E5Xx005811;
+        Tue, 30 Aug 2022 08:17:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=pp1;
+ bh=7u5zUT4sbhunsdX1IerE3lK6WYlfWvuAJsPf7w9nKMQ=;
+ b=N5yHOXVT5L4M58PxkIZNEAwC0L8mQ5JJXfC3CddIwHJpghI5E2Tp2FM34y0Zk0RT+gep
+ 7aaC4+KDhZSThSoFm7IxiM0e9xwVn2LEGIFLDPbk4k5ghl5zZLGqfzsM5uznjp25ypQ6
+ /RHX7paAI/ZC/lpd7nudcCWe8Uz4rm7BaO27FcRBYGkURa4w27MKpLGp3JDI3ub+rCDK
+ Ql5AiGKBVfMWNvS8lEAd78REZCMp4Ntawk1UPIyr0mecOR2qO6F0bcaERFNxw0lK0yMb
+ 9+1OBZHzQfbxEzDeDNDJmMI/wIaMxhMsEfo8Cd2EZ8ZP7msRuVVH9OygBPxP1BO68x45 sw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j9euu03mc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 30 Aug 2022 08:17:47 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27U8FjET011658;
+        Tue, 30 Aug 2022 08:17:47 GMT
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j9euu03kv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 30 Aug 2022 08:17:46 +0000
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27U85aFP007095;
+        Tue, 30 Aug 2022 08:17:46 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma03wdc.us.ibm.com with ESMTP id 3j7aw9af3r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 30 Aug 2022 08:17:46 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27U8Hj9q60752342
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 30 Aug 2022 08:17:45 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C1AECAC05B;
+        Tue, 30 Aug 2022 08:17:45 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EE706AC059;
+        Tue, 30 Aug 2022 08:17:39 +0000 (GMT)
+Received: from skywalker.ibmuc.com (unknown [9.43.77.247])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 30 Aug 2022 08:17:39 +0000 (GMT)
+From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
+        Bharata B Rao <bharata@amd.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v3 updated] mm/demotion: Expose memory tier details via sysfs
+Date:   Tue, 30 Aug 2022 13:47:36 +0530
+Message-Id: <20220830081736.119281-1-aneesh.kumar@linux.ibm.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: db50176f-6436-4c8b-0428-08da8a6015b3
-X-MS-TrafficTypeDiagnostic: PA4PR04MB7645:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: i91GN/UNoKBDbD2rhdf448u/mn+thZzMeDNrqqHaSVli76Tzm0Oz3m+AodCllzGyZgydH3vPOmJWkRKVkrlbzsoU6nBPLj0zb/WWFdeluMGQbFzYemEa4gfwdhLdQ/qQ3vfUxG41Y4te2rRFURxqZh0jcbEwi1TYsHLr4yI+mV1RQtNOi64HQqpXLWcfLw3ow5gwjPnY07sJo8CMMMg5fz341g/YlVD/ZfF5faGAFpW4+wDILljvIQKbCrGp58CsVSxN3o2smj0P6wJLyCEPiIDrGq3s587qspI0i4Vm6xruq0HvUkzcmZ+wR0XxT1+ZAefizyoYTDPY6mtbb44tz4iBqZYx2hwho+N4sRa5s4lzgFfS1PkVCGHhmAG5oWPC/4NZBq09KOMjnt8u4NYH97nMrUtW5E8vWdnNihj0IlUduqsS3qh2/KcEfrVFsUDdPwWWATEAqsojK/BEfIM2C0jfIa9o6WQbs1fwLu7XxOmRkHE1RfgqSYq2ObGoA4ZhDi548Fy9Ht0KLPg+Ru7bUkuk5amdMqFTwIgi+b8YhEIqQWWqCVTskqrQCXK2nSLaQ0jiferv6KpmlVydkTzPI7uDiHm1pEQsPpU0414qi9rQWPSsA7Z8mxL9wV9enlQV6/bFhHhqrxqek32w9woaWAS/MCI84PvwYtGxcDvooaThpii2IEbAugNOoaBsRMBGszIze40rJAl6Nhobh+E1e/PWhkJW8IXp3hEe+pEUOq+bwyM70utoxyG5T2ffgisEuHVMcyiiaTUIO8ujUT8GFnigofCYceouLp7X7hde4F1KjG5yOlheyBlJjS9pqZ2aUWRWp5F8jqKSNj8OAuYvEw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5936.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(136003)(366004)(376002)(396003)(6916009)(38100700002)(26005)(6512007)(38350700002)(316002)(41300700001)(44832011)(7416002)(5660300002)(478600001)(86362001)(8936002)(6506007)(6486002)(2906002)(966005)(8676002)(4326008)(66476007)(52116002)(66946007)(66556008)(2616005)(186003)(83380400001)(36756003)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5XWW2Izh+Lfe5HS5ttTnsEuR/D62xyxbi49OsAu6mO09lWWj+kDYONCBXi3j?=
- =?us-ascii?Q?qUgim4XVOzEK0dTWoT55SnU2c0NhHhx4J342dkVn8K9wCP63EinqLcWsLpnC?=
- =?us-ascii?Q?HPZ+lYDEVsUW+xIO8dVrgAYclQPf3nblgW3iZ4CMmots0OTODYJrPghVr8yv?=
- =?us-ascii?Q?XXoaXsTSxJG8ITokqlVq18MPTh/RpHKfR9y2YruQnRhx+3cW5NuYEILsZZqG?=
- =?us-ascii?Q?8oXc8zEMLGEtvWVt08n2caU0NRFTVYJF14CyjxEdymMBce4ZPPWsCpnQRxpG?=
- =?us-ascii?Q?oHbFpvWOGURCWm78ZCMoD6dkmCVlJIplhB40Mr9Vth5vEUJWtH2Kxr1V5o75?=
- =?us-ascii?Q?uwPu1/oZT0TzAxvzg91Wt7P4tA3eO6JGhj76Fb51IxJVjrySVzmxQEY+mZfD?=
- =?us-ascii?Q?MhVlXmcnrJqJAZuuieg4ZEUYD+kh58HDgGtV90DJakTZ/eq5wxNu0kvplhia?=
- =?us-ascii?Q?MUXlo8KsPxdIxMzZoZjXTKRSTtbfAsM36IzidmuxA8o4r69WoLlMc48wond4?=
- =?us-ascii?Q?b1FYjfO6Em8Gt1d4TARrN1SjrEvI+2Yzn5/1EqMUzkRBptA4rDgxq8iT7o0h?=
- =?us-ascii?Q?mpB2pa+pKFAjjr/G0Y0A4fsrk82SWQ7pRFys6VXvIj8uIfqYvqg21r4pUsV7?=
- =?us-ascii?Q?6d9X7gwe98PQNhFy+OaMpdAHBOz3sKN26W26uiEMliyDXb0N1/7R4uzM9+B2?=
- =?us-ascii?Q?hZhukkx8ZbNlONZVALsADi0qmdPpR9wgDM2CyVsRnhqAxXp3BJxh+8bA0nUP?=
- =?us-ascii?Q?cCWbDkxU9NvJ8DNAXd267SAWUYBwdkqPtQ/EQYwMLm9kLB3VXamghyhpqpdn?=
- =?us-ascii?Q?m067C60OvPzKI4OVhOrasehR69q8K/FB2364bdE13kmktw/xumJb/sa+zdwl?=
- =?us-ascii?Q?dL659V2K7EaXAmYMR4+ckGI1cRHup0NYEu8PyGXO4x4u40+iep7LfSeKi4iD?=
- =?us-ascii?Q?KN8gFm4PTyJddYil776vwyxqkFdpBstHV3jP9SDZyhpBLUcXrExL43AQ7Gr9?=
- =?us-ascii?Q?mD2biNJN6bCqGnkqiMTYAntYPRx2uBGMeJBfC9u8dtkJ7iS1bM50kNO3HRqA?=
- =?us-ascii?Q?7zHVF5qNcfC+ysPBPFlZR1mnhOa++kS/6yd/MxJwmKuZZ85DV9iqYp0UNBkw?=
- =?us-ascii?Q?z6YUJ+dt4lz34jXl2s5egQ/veKq8pIOAbiUFrugcfzdTLOW8KnHTfHQ1O5Bl?=
- =?us-ascii?Q?dbhXpDMmlau+mAdNoiUIPMq3Q7jEURnoOAsDPvL4Mse6iO7D227D8cPlltsz?=
- =?us-ascii?Q?KE27yUfGVORr7rhBw20LO8GWswYZ3GFD24TRpkfpt9ilUR5s8U0TfQM7E2Dz?=
- =?us-ascii?Q?acWZ8gqRaNr1y60oVN7i9tPfaW8xI2RE8L8YZ1FbHgR9GZhOYw00TrAL5e+o?=
- =?us-ascii?Q?wscb8M2zalifIJr/RmRD3ZHH9RhokloNvj2OPWdthBl7PTDP+2oaVSsvB288?=
- =?us-ascii?Q?YyH4I4Z9YEDsHe0pExx2LnhxQFEO4itkLuQk5sAu05E+OAsAXFCRPn9cPB9I?=
- =?us-ascii?Q?dFcvV+IWoxUoBDiJIFARxLxLqe+9N90c0s9yEBXC/ICj7EtgRAX1Q1o3DPzV?=
- =?us-ascii?Q?EvRcCKonrE6AdU4viZbD6U/TG2czdX0hIcdohYmp?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db50176f-6436-4c8b-0428-08da8a6015b3
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5936.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2022 08:17:31.5018
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zBaPrg1eae3JfeldokAQR6UeKfY6RRN3oY8EQBeJySAO/xdCupmnGHp5wv0wle47
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB7645
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: C89u5Jk2lA5Mnp_Zc2FvrOmMqfgxWrtI
+X-Proofpoint-ORIG-GUID: SNnAyl334nShH01UtFGTrk74QoGg2Iwm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-30_04,2022-08-25_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ priorityscore=1501 bulkscore=0 suspectscore=0 adultscore=0
+ lowpriorityscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
+ impostorscore=0 mlxscore=0 clxscore=1015 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208300036
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the i.MX SDMA binding to DT schema format using
-json-schema. In addition, add new peripheral types HDMI
-Audio.
+This patch adds /sys/devices/virtual/memory_tiering/ where all memory tier
+related details can be found. All allocated memory tiers will be listed
+there as /sys/devices/virtual/memory_tiering/memory_tierN/
 
-when run dtbs_check will occur nodename not match issue
-because the old dts nodename can't match new rule. I have
-modified thoes old dts, and will upstream in the near future.
+The nodes which are part of a specific memory tier can be listed via
+/sys/devices/virtual/memory_tiering/memory_tierN/nodes
 
-Signed-off-by: Joy Zou <joy.zou@nxp.com>
+A directory hierarchy looks like
+:/sys/devices/virtual/memory_tiering$ tree memory_tier4/
+memory_tier4/
+├── nodes
+├── subsystem -> ../../../../bus/memory_tiering
+└── uevent
+
+All toptier nodes are listed via
+/sys/devices/virtual/memory_tiering/toptier_nodes
+
+:/sys/devices/virtual/memory_tiering$ cat toptier_nodes
+0,2
+:/sys/devices/virtual/memory_tiering$ cat memory_tier4/nodes
+0,2
+
+Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 ---
-Changes since (implicit) v2:
-modify the commit message in patch v3.
-modify the filename in patch v3.
-modify the maintainer in patch v3.
-delete the unnecessary comment in patch v3.
-modify the compatible and run dt_binding_check and
-dtbs_check in patch v3.
-add clocks and clock-names property in patch v3.
-delete the reg description and add maxItems in patch v3.
-delete the interrupts description and add maxItems in patch v3.
-add ref for gpr property.
-modify the fsl,sdma-event-remap ref type and add items
-in patch v3.
-delete consumer example in patch v3.
----
- .../devicetree/bindings/dma/fsl,imx-sdma.yaml | 142 ++++++++++++++++++
- .../devicetree/bindings/dma/fsl-imx-sdma.txt  | 118 ---------------
- 2 files changed, 142 insertions(+), 118 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/dma/fsl,imx-sdma.yaml
- delete mode 100644 Documentation/devicetree/bindings/dma/fsl-imx-sdma.txt
 
-diff --git a/Documentation/devicetree/bindings/dma/fsl,imx-sdma.yaml b/Documentation/devicetree/bindings/dma/fsl,imx-sdma.yaml
+Changes from v2:
+* update macro to static inline
+* Fix build error with CONFIG_MIGRATION disabled
+* drop abstract_distance
+* update commit message
+
+
+ .../ABI/testing/sysfs-kernel-mm-memory-tiers  |  35 ++++
+ mm/memory-tiers.c                             | 154 +++++++++++++++---
+ 2 files changed, 167 insertions(+), 22 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
+
+diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers b/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
 new file mode 100644
-index 000000000000..54cd99ae127f
+index 000000000000..55051fcf5502
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/dma/fsl,imx-sdma.yaml
-@@ -0,0 +1,142 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/dma/fsl,imx-sdma.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/Documentation/ABI/testing/sysfs-kernel-mm-memory-tiers
+@@ -0,0 +1,35 @@
++What:		/sys/devices/virtual/memory_tiering/
++Date:		August 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	A collection of all the memory tiers allocated.
 +
-+title: Freescale Smart Direct Memory Access (SDMA) Controller for i.MX
++		Individual memory tier details are contained in subdirectories
++		named by the abstract distance of the memory tier.
 +
-+maintainers:
-+  - Joy Zou <joy.zou@nxp.com>
++		/sys/devices/virtual/memory_tiering/memory_tierN/
 +
-+allOf:
-+  - $ref: "dma-controller.yaml#"
 +
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - fsl,imx50-sdma
-+              - fsl,imx51-sdma
-+              - fsl,imx53-sdma
-+              - fsl,imx6q-sdma
-+              - fsl,imx7d-sdma
-+          - const: fsl,imx35-sdma
-+      - items:
-+          - enum:
-+              - fsl,imx6sx-sdma
-+              - fsl,imx6ul-sdma
-+              - fsl,imx6sl-sdma
-+          - const: fsl,imx6q-sdma
-+      - items:
-+          - const: fsl,imx6ul-sdma
-+          - const: fsl,imx6q-sdma
-+          - const: fsl,imx35-sdma
-+      - items:
-+          - const: fsl,imx6sll-sdma
-+          - const: fsl,imx6ul-sdma
-+      - items:
-+          - const: fsl,imx8mq-sdma
-+          - const: fsl,imx7d-sdma
-+      - items:
-+          - enum:
-+              - fsl,imx8mp-sdma
-+              - fsl,imx8mn-sdma
-+              - fsl,imx8mm-sdma
-+          - const: fsl,imx8mq-sdma
-+      - items:
-+          - const: fsl,imx25-sdma
-+      - items:
-+          - const: fsl,imx31-sdma
-+      - items:
-+          - const: fsl,imx35-sdma
-+  reg:
-+    maxItems: 1
++What:		/sys/devices/virtual/memory_tiering/memory_tierN/
++		/sys/devices/virtual/memory_tiering/memory_tierN/nodes
++Date:		August 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Directory with details of a specific memory tier
 +
-+  interrupts:
-+    maxItems: 1
++		This is the directory containing information about a particular
++		memory tier, memtierN, where N is derived based on abstract distance.
 +
-+  fsl,sdma-ram-script-name:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: Should contain the full path of SDMA RAM scripts firmware.
++		A smaller value of N implies a higher (faster) memory tier in the
++		hierarchy.
 +
-+  "#dma-cells":
-+    const: 3
-+    description: |
-+      The first cell: request/event ID
++		nodes: NUMA nodes that are part of this memory tier.
 +
-+      The second cell: peripheral types ID
-+        enum:
-+          - MCU domain SSI: 0
-+          - Shared SSI: 1
-+          - MMC: 2
-+          - SDHC: 3
-+          - MCU domain UART: 4
-+          - Shared UART: 5
-+          - FIRI: 6
-+          - MCU domain CSPI: 7
-+          - Shared CSPI: 8
-+          - SIM: 9
-+          - ATA: 10
-+          - CCM: 11
-+          - External peripheral: 12
-+          - Memory Stick Host Controller: 13
-+          - Shared Memory Stick Host Controller: 14
-+          - DSP: 15
-+          - Memory: 16
-+          - FIFO type Memory: 17
-+          - SPDIF: 18
-+          - IPU Memory: 19
-+          - ASRC: 20
-+          - ESAI: 21
-+          - SSI Dual FIFO: 22
-+              description: needs firmware more than ver 2
-+          - Shared ASRC: 23
-+          - SAI: 24
-+          - HDMI Audio: 25
 +
-+       The third cell: transfer priority ID
-+         enum:
-+           - High: 0
-+           - Medium: 1
-+           - Low: 2
++What:		/sys/devices/virtual/memory_tiering/toptier_nodes
++Date:		August 2022
++Contact:	Linux memory management mailing list <linux-mm@kvack.org>
++Description:	Toptier node mask
 +
-+  gpr:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: The phandle to the General Purpose Register (GPR) node
++		A toptier is defined as the memory tier from which memory promotion
++		is not done by the kernel.
 +
-+  fsl,sdma-event-remap:
-+    $ref: /schemas/types.yaml#/definitions/uint32-matrix
-+    items:
-+      - description: The GPR register offset, shift and value for RX
-+      - description: The GPR register offset, shift and value for TX
-+    description: |
-+      Register bits of sdma event remap, the format is <reg shift val>.
++		toptier_nodes: Union of NUMA nodes that are part of each toptier.
+diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+index c82eb0111383..33673ed9b3dc 100644
+--- a/mm/memory-tiers.c
++++ b/mm/memory-tiers.c
+@@ -19,6 +19,7 @@ struct memory_tier {
+ 	 * adistance_start .. adistance_start + MEMTIER_CHUNK_SIZE
+ 	 */
+ 	int adistance_start;
++	struct device dev;
+ 	/* All the nodes that are part of all the lower memory tiers. */
+ 	nodemask_t lower_tier_mask;
+ };
+@@ -36,6 +37,12 @@ static DEFINE_MUTEX(memory_tier_lock);
+ static LIST_HEAD(memory_tiers);
+ static struct node_memory_type_map node_memory_types[MAX_NUMNODES];
+ static struct memory_dev_type *default_dram_type;
 +
-+  clocks:
-+    maxItems: 2
++static struct bus_type memory_tier_subsys = {
++	.name = "memory_tiering",
++	.dev_name = "memory_tier",
++};
 +
-+  clock-names:
-+    maxItems: 2
+ #ifdef CONFIG_MIGRATION
+ static int top_tier_adistance;
+ /*
+@@ -98,8 +105,63 @@ static int top_tier_adistance;
+ static struct demotion_nodes *node_demotion __read_mostly;
+ #endif /* CONFIG_MIGRATION */
+ 
++static inline struct memory_tier *to_memory_tier(struct device *device)
++{
++	return container_of(device, struct memory_tier, dev);
++}
 +
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - fsl,sdma-ram-script-name
-+  - "#dma-cells"
++static __always_inline nodemask_t get_memtier_nodemask(struct memory_tier *memtier)
++{
++	nodemask_t nodes = NODE_MASK_NONE;
++	struct memory_dev_type *memtype;
 +
-+unevaluatedProperties: false
++	list_for_each_entry(memtype, &memtier->memory_types, tier_sibiling)
++		nodes_or(nodes, nodes, memtype->nodes);
 +
-+examples:
-+  - |
-+    sdma: dma-controller@83fb0000 {
-+      compatible = "fsl,imx51-sdma", "fsl,imx35-sdma";
-+      reg = <0x83fb0000 0x4000>;
-+      interrupts = <6>;
-+      #dma-cells = <3>;
-+      fsl,sdma-ram-script-name = "sdma-imx51.bin";
-+    };
++	return nodes;
++}
 +
-+...
-diff --git a/Documentation/devicetree/bindings/dma/fsl-imx-sdma.txt b/Documentation/devicetree/bindings/dma/fsl-imx-sdma.txt
-deleted file mode 100644
-index 12c316ff4834..000000000000
---- a/Documentation/devicetree/bindings/dma/fsl-imx-sdma.txt
-+++ /dev/null
-@@ -1,118 +0,0 @@
--* Freescale Smart Direct Memory Access (SDMA) Controller for i.MX
++static void memory_tier_device_release(struct device *dev)
++{
++	struct memory_tier *tier = to_memory_tier(dev);
++	/*
++	 * synchronize_rcu in clear_node_memory_tier makes sure
++	 * we don't have rcu access to this memory tier.
++	 */
++	kfree(tier);
++}
++
++static ssize_t nodes_show(struct device *dev,
++			  struct device_attribute *attr, char *buf)
++{
++	int ret;
++	nodemask_t nmask;
++
++	mutex_lock(&memory_tier_lock);
++	nmask = get_memtier_nodemask(to_memory_tier(dev));
++	ret = sysfs_emit(buf, "%*pbl\n", nodemask_pr_args(&nmask));
++	mutex_unlock(&memory_tier_lock);
++	return ret;
++}
++static DEVICE_ATTR_RO(nodes);
++
++static struct attribute *memtier_dev_attrs[] = {
++	&dev_attr_nodes.attr,
++	NULL
++};
++
++static const struct attribute_group memtier_dev_group = {
++	.attrs = memtier_dev_attrs,
++};
++
++static const struct attribute_group *memtier_dev_groups[] = {
++	&memtier_dev_group,
++	NULL
++};
++
+ static struct memory_tier *find_create_memory_tier(struct memory_dev_type *memtype)
+ {
++	int ret;
+ 	bool found_slot = false;
+ 	struct memory_tier *memtier, *new_memtier;
+ 	int adistance = memtype->adistance;
+@@ -123,15 +185,14 @@ static struct memory_tier *find_create_memory_tier(struct memory_dev_type *memty
+ 
+ 	list_for_each_entry(memtier, &memory_tiers, list) {
+ 		if (adistance == memtier->adistance_start) {
+-			list_add(&memtype->tier_sibiling, &memtier->memory_types);
+-			return memtier;
++			goto link_memtype;
+ 		} else if (adistance < memtier->adistance_start) {
+ 			found_slot = true;
+ 			break;
+ 		}
+ 	}
+ 
+-	new_memtier = kmalloc(sizeof(struct memory_tier), GFP_KERNEL);
++	new_memtier = kzalloc(sizeof(struct memory_tier), GFP_KERNEL);
+ 	if (!new_memtier)
+ 		return ERR_PTR(-ENOMEM);
+ 
+@@ -142,8 +203,23 @@ static struct memory_tier *find_create_memory_tier(struct memory_dev_type *memty
+ 		list_add_tail(&new_memtier->list, &memtier->list);
+ 	else
+ 		list_add_tail(&new_memtier->list, &memory_tiers);
+-	list_add(&memtype->tier_sibiling, &new_memtier->memory_types);
+-	return new_memtier;
++
++	new_memtier->dev.id = adistance >> MEMTIER_CHUNK_BITS;
++	new_memtier->dev.bus = &memory_tier_subsys;
++	new_memtier->dev.release = memory_tier_device_release;
++	new_memtier->dev.groups = memtier_dev_groups;
++
++	ret = device_register(&new_memtier->dev);
++	if (ret) {
++		list_del(&memtier->list);
++		put_device(&memtier->dev);
++		return ERR_PTR(ret);
++	}
++	memtier = new_memtier;
++
++link_memtype:
++	list_add(&memtype->tier_sibiling, &memtier->memory_types);
++	return memtier;
+ }
+ 
+ static struct memory_tier *__node_get_memory_tier(int node)
+@@ -275,17 +351,6 @@ static void disable_all_demotion_targets(void)
+ 	synchronize_rcu();
+ }
+ 
+-static __always_inline nodemask_t get_memtier_nodemask(struct memory_tier *memtier)
+-{
+-	nodemask_t nodes = NODE_MASK_NONE;
+-	struct memory_dev_type *memtype;
 -
--Required properties:
--- compatible : Should be one of
--      "fsl,imx25-sdma"
--      "fsl,imx31-sdma", "fsl,imx31-to1-sdma", "fsl,imx31-to2-sdma"
--      "fsl,imx35-sdma", "fsl,imx35-to1-sdma", "fsl,imx35-to2-sdma"
--      "fsl,imx51-sdma"
--      "fsl,imx53-sdma"
--      "fsl,imx6q-sdma"
--      "fsl,imx7d-sdma"
--      "fsl,imx6ul-sdma"
--      "fsl,imx8mq-sdma"
--      "fsl,imx8mm-sdma"
--      "fsl,imx8mn-sdma"
--      "fsl,imx8mp-sdma"
--  The -to variants should be preferred since they allow to determine the
--  correct ROM script addresses needed for the driver to work without additional
--  firmware.
--- reg : Should contain SDMA registers location and length
--- interrupts : Should contain SDMA interrupt
--- #dma-cells : Must be <3>.
--  The first cell specifies the DMA request/event ID.  See details below
--  about the second and third cell.
--- fsl,sdma-ram-script-name : Should contain the full path of SDMA RAM
--  scripts firmware
+-	list_for_each_entry(memtype, &memtier->memory_types, tier_sibiling)
+-		nodes_or(nodes, nodes, memtype->nodes);
 -
--The second cell of dma phandle specifies the peripheral type of DMA transfer.
--The full ID of peripheral types can be found below.
+-	return nodes;
+-}
 -
--	ID	transfer type
--	---------------------
--	0	MCU domain SSI
--	1	Shared SSI
--	2	MMC
--	3	SDHC
--	4	MCU domain UART
--	5	Shared UART
--	6	FIRI
--	7	MCU domain CSPI
--	8	Shared CSPI
--	9	SIM
--	10	ATA
--	11	CCM
--	12	External peripheral
--	13	Memory Stick Host Controller
--	14	Shared Memory Stick Host Controller
--	15	DSP
--	16	Memory
--	17	FIFO type Memory
--	18	SPDIF
--	19	IPU Memory
--	20	ASRC
--	21	ESAI
--	22	SSI Dual FIFO	(needs firmware ver >= 2)
--	23	Shared ASRC
--	24	SAI
--
--The third cell specifies the transfer priority as below.
--
--	ID	transfer priority
--	-------------------------
--	0	High
--	1	Medium
--	2	Low
--
--Optional properties:
--
--- gpr : The phandle to the General Purpose Register (GPR) node.
--- fsl,sdma-event-remap : Register bits of sdma event remap, the format is
--  <reg shift val>.
--    reg is the GPR register offset.
--    shift is the bit position inside the GPR register.
--    val is the value of the bit (0 or 1).
--
--Examples:
--
--sdma@83fb0000 {
--	compatible = "fsl,imx51-sdma", "fsl,imx35-sdma";
--	reg = <0x83fb0000 0x4000>;
--	interrupts = <6>;
--	#dma-cells = <3>;
--	fsl,sdma-ram-script-name = "sdma-imx51.bin";
--};
--
--DMA clients connected to the i.MX SDMA controller must use the format
--described in the dma.txt file.
--
--Examples:
--
--ssi2: ssi@70014000 {
--	compatible = "fsl,imx51-ssi", "fsl,imx21-ssi";
--	reg = <0x70014000 0x4000>;
--	interrupts = <30>;
--	clocks = <&clks 49>;
--	dmas = <&sdma 24 1 0>,
--	       <&sdma 25 1 0>;
--	dma-names = "rx", "tx";
--	fsl,fifo-depth = <15>;
--};
--
--Using the fsl,sdma-event-remap property:
--
--If we want to use SDMA on the SAI1 port on a MX6SX:
--
--&sdma {
--	gpr = <&gpr>;
--	/* SDMA events remap for SAI1_RX and SAI1_TX */
--	fsl,sdma-event-remap = <0 15 1>, <0 16 1>;
--};
--
--The fsl,sdma-event-remap property in this case has two values:
--- <0 15 1> means that the offset is 0, so GPR0 is the register of the
--SDMA remap. Bit 15 of GPR0 selects between UART4_RX and SAI1_RX.
--Setting bit 15 to 1 selects SAI1_RX.
--- <0 16 1> means that the offset is 0, so GPR0 is the register of the
--SDMA remap. Bit 16 of GPR0 selects between UART4_TX and SAI1_TX.
--Setting bit 16 to 1 selects SAI1_TX.
+ /*
+  * Find an automatic demotion target for all memory
+  * nodes. Failing here is OK.  It might just indicate
+@@ -433,11 +498,7 @@ static struct memory_tier *set_node_memory_tier(int node)
+ static void destroy_memory_tier(struct memory_tier *memtier)
+ {
+ 	list_del(&memtier->list);
+-	/*
+-	 * synchronize_rcu in clear_node_memory_tier makes sure
+-	 * we don't have rcu access to this memory tier.
+-	 */
+-	kfree(memtier);
++	device_unregister(&memtier->dev);
+ }
+ 
+ static bool clear_node_memory_tier(int node)
+@@ -564,11 +625,60 @@ static int __meminit memtier_hotplug_callback(struct notifier_block *self,
+ 	return notifier_from_errno(0);
+ }
+ 
++#ifdef CONFIG_MIGRATION
++static ssize_t toptier_nodes_show(struct device *dev,
++				     struct device_attribute *attr, char *buf)
++{
++	int ret;
++	nodemask_t nmask, top_tier_mask = NODE_MASK_NONE;
++	struct memory_tier *memtier = to_memory_tier(dev);
++
++	mutex_lock(&memory_tier_lock);
++	list_for_each_entry(memtier, &memory_tiers, list) {
++		if (memtier->adistance_start > top_tier_adistance)
++			break;
++		nmask = get_memtier_nodemask(memtier);
++		nodes_or(top_tier_mask, top_tier_mask, nmask);
++	}
++
++	ret = sysfs_emit(buf, "%*pbl\n", nodemask_pr_args(&top_tier_mask));
++	mutex_unlock(&memory_tier_lock);
++	return ret;
++}
++#else
++static ssize_t toptier_nodes_show(struct device *dev,
++				  struct device_attribute *attr, char *buf)
++{
++	nodemask_t top_tier_mask = node_states[N_MEMORY];
++
++	return sysfs_emit(buf, "%*pbl\n", nodemask_pr_args(&top_tier_mask));
++}
++#endif
++static DEVICE_ATTR_RO(toptier_nodes);
++
++static struct attribute *memtier_subsys_attrs[] = {
++	&dev_attr_toptier_nodes.attr,
++	NULL
++};
++
++static const struct attribute_group memtier_subsys_group = {
++	.attrs = memtier_subsys_attrs,
++};
++
++static const struct attribute_group *memtier_subsys_groups[] = {
++	&memtier_subsys_group,
++	NULL
++};
++
+ static int __init memory_tier_init(void)
+ {
+-	int node;
++	int ret, node;
+ 	struct memory_tier *memtier;
+ 
++	ret = subsys_virtual_register(&memory_tier_subsys, memtier_subsys_groups);
++	if (ret)
++		panic("%s() failed to register memory tier subsystem\n", __func__);
++
+ #ifdef CONFIG_MIGRATION
+ 	node_demotion = kcalloc(nr_node_ids, sizeof(struct demotion_nodes),
+ 				GFP_KERNEL);
 -- 
-2.37.1
+2.37.2
 
