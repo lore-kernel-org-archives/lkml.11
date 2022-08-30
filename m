@@ -2,73 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4954CECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 891FBECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231157AbiH3LiB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:38:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
+        id S231166AbiH3LiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:38:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230398AbiH3Lhg (ORCPT
+        with ESMTP id S229752AbiH3Lhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:37:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 602ACF7B2B;
-        Tue, 30 Aug 2022 04:36:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 651C5CE179E;
-        Tue, 30 Aug 2022 11:35:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A539C433C1;
-        Tue, 30 Aug 2022 11:35:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661859310;
-        bh=4x1wLad4lxqLcbPeEX3pXTHar7BXU+tX9ogUCdd1sS8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=l08TrNv4ZslTuo3zNpM5NDtTTcdAPtKu64zQnnDDfiqMo6RUICldc5ojANYH7aPRT
-         pN8xYy5oyeusKKIGYzK1EWG/at5VoW+uJbj7lPjAG8gop2o+oeoDTeUw6EprOQg0Va
-         QmyTDvfXr89f2sznYUbZjRV7fVzxWlGnOLuBUgtI=
-Date:   Tue, 30 Aug 2022 13:35:07 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     tuo cao <91tuocao@gmail.com>
-Cc:     alcooperx@gmail.com, bcm-kernel-feedback-list@broadcom.com,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RESEND] serial: 8250_bcm7271: move spin_lock_irqsave to
- spin_lock in interrupt handler
-Message-ID: <Yw316/3zuIXvm/Ty@kroah.com>
-References: <20220822141110.17199-1-91tuocao@gmail.com>
- <YwORy3QMbRUSlBZE@kroah.com>
- <CAEVeK2AiYFK9eopn1Uzp+osA-j22e1KbfUohJ+hRVmLNsq0gpQ@mail.gmail.com>
+        Tue, 30 Aug 2022 07:37:40 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774CEFE043;
+        Tue, 30 Aug 2022 04:36:24 -0700 (PDT)
+Received: (Authenticated sender: hadess@hadess.net)
+        by mail.gandi.net (Postfix) with ESMTPSA id D87AA40004;
+        Tue, 30 Aug 2022 11:36:20 +0000 (UTC)
+From:   Bastien Nocera <hadess@hadess.net>
+To:     linux-input@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        "Peter F . Patel-Schneider" <pfpschneider@gmail.com>,
+        =?UTF-8?q?Filipe=20La=C3=ADns?= <lains@riseup.net>,
+        Nestor Lopez Casado <nlopezcasad@logitech.com>
+Subject: [v2 4/5] HID: logitech-hidpp: Fix "Sw. Id." for HID++ 2.0 commands
+Date:   Tue, 30 Aug 2022 13:36:14 +0200
+Message-Id: <20220830113615.4414-4-hadess@hadess.net>
+X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220830113615.4414-1-hadess@hadess.net>
+References: <20220830113615.4414-1-hadess@hadess.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAEVeK2AiYFK9eopn1Uzp+osA-j22e1KbfUohJ+hRVmLNsq0gpQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 27, 2022 at 05:42:19PM +0800, tuo cao wrote:
-> No, whether it's spin_lock_irqsave() or spin_lock(), the security is
-> the same. Since this commit:e58aa3d2d0cc01ad8d6f7f640a0670433f794922,
-> interrupt nesting is disabled, which means interrupts has disabled in
-> the interrupt handlers. So, it is unnecessary to call
-> spin_lock_irqsave in a interrupt handler. And it takes less time
-> obviously to use spin_lock()，so I think this change is needed.
+Always set a non-zero "Sw. Id." in the lower nibble of the Function/ASE
+and Software Identifier byte in HID++ 2.0 commands.
 
-I have no context at all here, please never top-post :(
+As per the "Protocol HID++2.0 essential features" section in
+https://lekensteyn.nl/files/logitech/logitech_hidpp_2.0_specification_draft_2012-06-04.pdf
+"
+Software identifier (4 bits, unsigned)
 
-And have you measured the time difference?  Is it a real thing?
+A number uniquely defining the software that sends a request. The
+firmware must copy the software identifier in the response but does
+not use it in any other ways.
 
-> Finally, I'm sorry I lacked real hardware to verify it and can't
-> provide changelog text.
+0 Do not use (allows to distinguish a notification from a response).
+"
 
-Try to never do changes for drivers for functionality like this where
-you do not have the hardware to test for, until you get a lot more
-experience.
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215699
+Signed-off-by: Bastien Nocera <hadess@hadess.net>
+---
+ drivers/hid/hid-logitech-hidpp.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-good luck!
+diff --git a/drivers/hid/hid-logitech-hidpp.c b/drivers/hid/hid-logitech-hidpp.c
+index 98ebedb73d98..9c8088d8879e 100644
+--- a/drivers/hid/hid-logitech-hidpp.c
++++ b/drivers/hid/hid-logitech-hidpp.c
+@@ -41,6 +41,9 @@ module_param(disable_tap_to_click, bool, 0644);
+ MODULE_PARM_DESC(disable_tap_to_click,
+ 	"Disable Tap-To-Click mode reporting for touchpads (only on the K400 currently).");
+ 
++/* Define a non-zero software ID to identify our own requests */
++#define LINUX_KERNEL_SW_ID			0x06
++
+ #define REPORT_ID_HIDPP_SHORT			0x10
+ #define REPORT_ID_HIDPP_LONG			0x11
+ #define REPORT_ID_HIDPP_VERY_LONG		0x12
+@@ -343,7 +346,7 @@ static int hidpp_send_fap_command_sync(struct hidpp_device *hidpp,
+ 	else
+ 		message->report_id = REPORT_ID_HIDPP_LONG;
+ 	message->fap.feature_index = feat_index;
+-	message->fap.funcindex_clientid = funcindex_clientid;
++	message->fap.funcindex_clientid = funcindex_clientid | LINUX_KERNEL_SW_ID;
+ 	memcpy(&message->fap.params, params, param_count);
+ 
+ 	ret = hidpp_send_message_sync(hidpp, message, response);
+-- 
+2.37.2
 
-greg k-h
