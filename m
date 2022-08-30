@@ -2,85 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4462ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EA6C0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231250AbiH3LlQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:41:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43930 "EHLO
+        id S231206AbiH3Llf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:41:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230444AbiH3Lki (ORCPT
+        with ESMTP id S231236AbiH3LlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:40:38 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED2786042;
-        Tue, 30 Aug 2022 04:39:15 -0700 (PDT)
-Received: (Authenticated sender: hadess@hadess.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id C991120000F;
-        Tue, 30 Aug 2022 11:39:12 +0000 (UTC)
-From:   Bastien Nocera <hadess@hadess.net>
-To:     linux-input@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        "Peter F . Patel-Schneider" <pfpschneider@gmail.com>,
-        =?UTF-8?q?Filipe=20La=C3=ADns?= <lains@riseup.net>,
-        Nestor Lopez Casado <nlopezcasad@logitech.com>
-Subject: [v3 4/5] HID: logitech-hidpp: Fix "Sw. Id." for HID++ 2.0 commands
-Date:   Tue, 30 Aug 2022 13:39:06 +0200
-Message-Id: <20220830113907.4886-4-hadess@hadess.net>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220830113907.4886-1-hadess@hadess.net>
-References: <20220830113907.4886-1-hadess@hadess.net>
+        Tue, 30 Aug 2022 07:41:00 -0400
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D35314FC82;
+        Tue, 30 Aug 2022 04:39:26 -0700 (PDT)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-334dc616f86so265484857b3.8;
+        Tue, 30 Aug 2022 04:39:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=uV5cfbuaLiTKcX8ebdpr5XbHeoGI6rysE5BbBclWCfI=;
+        b=zjsrBYCgzlhIsAkh7yQHqC7udor2hSvTI4ciFQ2THtTYcGCzifMhc4kkgrFo5/nPv9
+         /ieqy9lTL6DpUDLW+oXtwWCcHR2im1i/jZP3X3aB7zRNHF8NnTD6OOPTR6CY06qbjxOo
+         /nwWvUKNqWM3Eh7n00CETnRMc67Hv1RZlqF/DnOI5WLAuXvmJe8Zv9Efod+sEWT3fXO9
+         02XwZoyLUaRPRonWztVRGwUaBKnZgTMR7g3Ef7CswT+8NGDolmpQ3xn38NByizSBg/7k
+         UsLcRH8/JAo3+jFz5rb3HvEt2D/YzUyz3yVFNV6cR4qq0J36PCmdJ0KWZe+LuFu8z6El
+         MPPQ==
+X-Gm-Message-State: ACgBeo05EV14k3JjFCUbSlvmBJkIcoob+/YrZtBuVf/4p3MymKWQHPxa
+        diIQF9/WTIA26o6DVBjP4zPsGHhklS2n3QBPazTF7pVA
+X-Google-Smtp-Source: AA6agR4+KpbjY1aZb0VdgicXjYCJlvpgSIMRfqYob1yrYyrIGmJU1BotmLajKO2nBE3guHCl/eeE1pmLbzmU7/q+Cj8=
+X-Received: by 2002:a0d:da83:0:b0:329:9c04:fe6d with SMTP id
+ c125-20020a0dda83000000b003299c04fe6dmr13902110ywe.196.1661859564844; Tue, 30
+ Aug 2022 04:39:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220829162953.5947-1-mario.limonciello@amd.com> <20220829162953.5947-2-mario.limonciello@amd.com>
+In-Reply-To: <20220829162953.5947-2-mario.limonciello@amd.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 30 Aug 2022 13:39:09 +0200
+Message-ID: <CAJZ5v0iF1_MUptawLL4DD0RqZpysH2B+Pk5sj_=gLv9AOVdy=Q@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] ACPI: s2idle: Add a new ->check() callback for platform_s2idle_ops
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Hans de Goede <hdegoede@redhat.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Always set a non-zero "Sw. Id." in the lower nibble of the Function/ASE
-and Software Identifier byte in HID++ 2.0 commands.
+On Mon, Aug 29, 2022 at 6:29 PM Mario Limonciello
+<mario.limonciello@amd.com> wrote:
+>
+> On some platforms it is found that Linux more aggressively enters s2idle
+> than Windows enters Modern Standby and this uncovers some synchronization
+> issues for the platform.  To aid in debugging this class of problems in
+> the future, add support for an extra optional callback intended for
+> drivers to emit extra debugging.
+>
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 
-As per the "Protocol HID++2.0 essential features" section in
-https://lekensteyn.nl/files/logitech/logitech_hidpp_2.0_specification_draft_2012-06-04.pdf
-"
-Software identifier (4 bits, unsigned)
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-A number uniquely defining the software that sends a request. The
-firmware must copy the software identifier in the response but does
-not use it in any other ways.
+and I'm assuming that this is for Hans.
 
-0 Do not use (allows to distinguish a notification from a response).
-"
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215699
-Signed-off-by: Bastien Nocera <hadess@hadess.net>
----
- drivers/hid/hid-logitech-hidpp.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/hid/hid-logitech-hidpp.c b/drivers/hid/hid-logitech-hidpp.c
-index 98ebedb73d98..9c8088d8879e 100644
---- a/drivers/hid/hid-logitech-hidpp.c
-+++ b/drivers/hid/hid-logitech-hidpp.c
-@@ -41,6 +41,9 @@ module_param(disable_tap_to_click, bool, 0644);
- MODULE_PARM_DESC(disable_tap_to_click,
- 	"Disable Tap-To-Click mode reporting for touchpads (only on the K400 currently).");
- 
-+/* Define a non-zero software ID to identify our own requests */
-+#define LINUX_KERNEL_SW_ID			0x06
-+
- #define REPORT_ID_HIDPP_SHORT			0x10
- #define REPORT_ID_HIDPP_LONG			0x11
- #define REPORT_ID_HIDPP_VERY_LONG		0x12
-@@ -343,7 +346,7 @@ static int hidpp_send_fap_command_sync(struct hidpp_device *hidpp,
- 	else
- 		message->report_id = REPORT_ID_HIDPP_LONG;
- 	message->fap.feature_index = feat_index;
--	message->fap.funcindex_clientid = funcindex_clientid;
-+	message->fap.funcindex_clientid = funcindex_clientid | LINUX_KERNEL_SW_ID;
- 	memcpy(&message->fap.params, params, param_count);
- 
- 	ret = hidpp_send_message_sync(hidpp, message, response);
--- 
-2.37.2
-
+> ---
+> v2->v3:
+>  * Rename to *check
+> v1->v2:
+>  * Add a prototype for `acpi_s2idle_enter`
+>
+>  drivers/acpi/sleep.h      |  1 +
+>  drivers/acpi/x86/s2idle.c | 14 ++++++++++++++
+>  include/linux/acpi.h      |  1 +
+>  include/linux/suspend.h   |  1 +
+>  kernel/power/suspend.c    |  3 +++
+>  5 files changed, 20 insertions(+)
+>
+> diff --git a/drivers/acpi/sleep.h b/drivers/acpi/sleep.h
+> index 7fe41ee489d6..d960a238be4e 100644
+> --- a/drivers/acpi/sleep.h
+> +++ b/drivers/acpi/sleep.h
+> @@ -18,6 +18,7 @@ static inline acpi_status acpi_set_waking_vector(u32 wakeup_address)
+>  extern int acpi_s2idle_begin(void);
+>  extern int acpi_s2idle_prepare(void);
+>  extern int acpi_s2idle_prepare_late(void);
+> +extern void acpi_s2idle_check(void);
+>  extern bool acpi_s2idle_wake(void);
+>  extern void acpi_s2idle_restore_early(void);
+>  extern void acpi_s2idle_restore(void);
+> diff --git a/drivers/acpi/x86/s2idle.c b/drivers/acpi/x86/s2idle.c
+> index f9ac12b778e6..474aa46f82f6 100644
+> --- a/drivers/acpi/x86/s2idle.c
+> +++ b/drivers/acpi/x86/s2idle.c
+> @@ -486,6 +486,19 @@ int acpi_s2idle_prepare_late(void)
+>         return 0;
+>  }
+>
+> +void acpi_s2idle_check(void)
+> +{
+> +       struct acpi_s2idle_dev_ops *handler;
+> +
+> +       if (!lps0_device_handle || sleep_no_lps0)
+> +               return;
+> +
+> +       list_for_each_entry(handler, &lps0_s2idle_devops_head, list_node) {
+> +               if (handler->check)
+> +                       handler->check();
+> +       }
+> +}
+> +
+>  void acpi_s2idle_restore_early(void)
+>  {
+>         struct acpi_s2idle_dev_ops *handler;
+> @@ -527,6 +540,7 @@ static const struct platform_s2idle_ops acpi_s2idle_ops_lps0 = {
+>         .begin = acpi_s2idle_begin,
+>         .prepare = acpi_s2idle_prepare,
+>         .prepare_late = acpi_s2idle_prepare_late,
+> +       .check = acpi_s2idle_check,
+>         .wake = acpi_s2idle_wake,
+>         .restore_early = acpi_s2idle_restore_early,
+>         .restore = acpi_s2idle_restore,
+> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+> index 6f64b2f3dc54..acaa2ddc067d 100644
+> --- a/include/linux/acpi.h
+> +++ b/include/linux/acpi.h
+> @@ -1075,6 +1075,7 @@ acpi_status acpi_os_prepare_extended_sleep(u8 sleep_state,
+>  struct acpi_s2idle_dev_ops {
+>         struct list_head list_node;
+>         void (*prepare)(void);
+> +       void (*check)(void);
+>         void (*restore)(void);
+>  };
+>  int acpi_register_lps0_dev(struct acpi_s2idle_dev_ops *arg);
+> diff --git a/include/linux/suspend.h b/include/linux/suspend.h
+> index 70f2921e2e70..03ed42ed2c7f 100644
+> --- a/include/linux/suspend.h
+> +++ b/include/linux/suspend.h
+> @@ -191,6 +191,7 @@ struct platform_s2idle_ops {
+>         int (*begin)(void);
+>         int (*prepare)(void);
+>         int (*prepare_late)(void);
+> +       void (*check)(void);
+>         bool (*wake)(void);
+>         void (*restore_early)(void);
+>         void (*restore)(void);
+> diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
+> index 827075944d28..c6272d466e58 100644
+> --- a/kernel/power/suspend.c
+> +++ b/kernel/power/suspend.c
+> @@ -136,6 +136,9 @@ static void s2idle_loop(void)
+>                         break;
+>                 }
+>
+> +               if (s2idle_ops && s2idle_ops->check)
+> +                       s2idle_ops->check();
+> +
+>                 s2idle_enter();
+>         }
+>
+> --
+> 2.34.1
+>
