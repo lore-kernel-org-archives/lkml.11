@@ -2,126 +2,324 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B20ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFF7ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231971AbiH3RcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60204 "EHLO
+        id S231596AbiH3RcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231845AbiH3RbX (ORCPT
+        with ESMTP id S231921AbiH3RbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:31:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9767655C;
-        Tue, 30 Aug 2022 10:28:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CE4BB81D11;
-        Tue, 30 Aug 2022 17:26:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E0EC43140;
-        Tue, 30 Aug 2022 17:26:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880402;
-        bh=H1P1NwpBXrSvgn+FJ8rzFmWgOGTpyB2pK1CIh8lw4H0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S8gkTZlI/bjzeR5ZclU4GtBqlhzhBLs3ufPra5kFmcF1CQSkwkFu4MMVGcll56ybc
-         rhnwrUFIVFIuPTu/ETbflipRgvDNjE2Pv2cVyUtB5/4cJaSvLcu6MONu3D29L3bZDk
-         Dk9lwIwBGqGGY69sFczYSnJIm61H0N5zqnun3HRvUhkIxAgRZM2J92MOeTrOJ+BDyO
-         Y5cNFJlEbPIe6uRk1GhriRdWCx6emN14GzMjTnLYb9A8gQoroBxfc7tU0/hAQy7BOV
-         Ha7CEBAPwlRVTTY6ttMMOXRdn60/H4iMfgajZpSyVtgZLg4CYbux40J0xTKVmNGGtR
-         9mca6e+07DfrQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhenneng Li <lizhenneng@kylinos.cn>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 4.14 3/8] drm/radeon: add a force flush to delay work when radeon
-Date:   Tue, 30 Aug 2022 13:26:26 -0400
-Message-Id: <20220830172631.581969-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172631.581969-1-sashal@kernel.org>
-References: <20220830172631.581969-1-sashal@kernel.org>
+        Tue, 30 Aug 2022 13:31:22 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 854AC12EC5D
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:28:08 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 442C3106F;
+        Tue, 30 Aug 2022 10:26:45 -0700 (PDT)
+Received: from e121896.arm.com (unknown [10.57.15.35])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 105033F7B4;
+        Tue, 30 Aug 2022 10:26:36 -0700 (PDT)
+From:   James Clark <james.clark@arm.com>
+To:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
+        mathieu.poirier@linaro.org
+Cc:     mike.leach@linaro.org, leo.yan@linaro.org,
+        linux-kernel@vger.kernel.org, german.gomez@arm.com,
+        James Clark <james.clark@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH v2 2/5] coresight: Simplify sysfs accessors by using csdev_access abstraction
+Date:   Tue, 30 Aug 2022 18:26:10 +0100
+Message-Id: <20220830172614.340962-3-james.clark@arm.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20220830172614.340962-1-james.clark@arm.com>
+References: <20220830172614.340962-1-james.clark@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhenneng Li <lizhenneng@kylinos.cn>
+The coresight_device struct is available in the sysfs accessor, and this
+contains a csdev_access struct which can be used to access registers.
+Use this instead of passing in the type of each drvdata so that a common
+function can be shared between all the cs drivers.
 
-[ Upstream commit f461950fdc374a3ada5a63c669d997de4600dffe ]
+No functional changes.
 
-Although radeon card fence and wait for gpu to finish processing current batch rings,
-there is still a corner case that radeon lockup work queue may not be fully flushed,
-and meanwhile the radeon_suspend_kms() function has called pci_set_power_state() to
-put device in D3hot state.
-Per PCI spec rev 4.0 on 5.3.1.4.1 D3hot State.
-> Configuration and Message requests are the only TLPs accepted by a Function in
-> the D3hot state. All other received Requests must be handled as Unsupported Requests,
-> and all received Completions may optionally be handled as Unexpected Completions.
-This issue will happen in following logs:
-Unable to handle kernel paging request at virtual address 00008800e0008010
-CPU 0 kworker/0:3(131): Oops 0
-pc = [<ffffffff811bea5c>]  ra = [<ffffffff81240844>]  ps = 0000 Tainted: G        W
-pc is at si_gpu_check_soft_reset+0x3c/0x240
-ra is at si_dma_is_lockup+0x34/0xd0
-v0 = 0000000000000000  t0 = fff08800e0008010  t1 = 0000000000010000
-t2 = 0000000000008010  t3 = fff00007e3c00000  t4 = fff00007e3c00258
-t5 = 000000000000ffff  t6 = 0000000000000001  t7 = fff00007ef078000
-s0 = fff00007e3c016e8  s1 = fff00007e3c00000  s2 = fff00007e3c00018
-s3 = fff00007e3c00000  s4 = fff00007fff59d80  s5 = 0000000000000000
-s6 = fff00007ef07bd98
-a0 = fff00007e3c00000  a1 = fff00007e3c016e8  a2 = 0000000000000008
-a3 = 0000000000000001  a4 = 8f5c28f5c28f5c29  a5 = ffffffff810f4338
-t8 = 0000000000000275  t9 = ffffffff809b66f8  t10 = ff6769c5d964b800
-t11= 000000000000b886  pv = ffffffff811bea20  at = 0000000000000000
-gp = ffffffff81d89690  sp = 00000000aa814126
-Disabling lock debugging due to kernel taint
-Trace:
-[<ffffffff81240844>] si_dma_is_lockup+0x34/0xd0
-[<ffffffff81119610>] radeon_fence_check_lockup+0xd0/0x290
-[<ffffffff80977010>] process_one_work+0x280/0x550
-[<ffffffff80977350>] worker_thread+0x70/0x7c0
-[<ffffffff80977410>] worker_thread+0x130/0x7c0
-[<ffffffff80982040>] kthread+0x200/0x210
-[<ffffffff809772e0>] worker_thread+0x0/0x7c0
-[<ffffffff80981f8c>] kthread+0x14c/0x210
-[<ffffffff80911658>] ret_from_kernel_thread+0x18/0x20
-[<ffffffff80981e40>] kthread+0x0/0x210
- Code: ad3e0008  43f0074a  ad7e0018  ad9e0020  8c3001e8  40230101
- <88210000> 4821ed21
-So force lockup work queue flush to fix this problem.
-
-Acked-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: James Clark <james.clark@arm.com>
 ---
- drivers/gpu/drm/radeon/radeon_device.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/hwtracing/coresight/coresight-catu.c  | 18 +++++-----
+ drivers/hwtracing/coresight/coresight-etb10.c | 19 +++++------
+ .../coresight/coresight-etm3x-sysfs.c         | 23 ++++++-------
+ drivers/hwtracing/coresight/coresight-priv.h  | 14 ++++----
+ .../coresight/coresight-replicator.c          |  7 ++--
+ drivers/hwtracing/coresight/coresight-stm.c   | 27 +++++++--------
+ .../hwtracing/coresight/coresight-tmc-core.c  | 33 ++++++++-----------
+ include/linux/coresight.h                     | 18 ++++++++++
+ 8 files changed, 79 insertions(+), 80 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
-index 58488eac84627..906547b229a9a 100644
---- a/drivers/gpu/drm/radeon/radeon_device.c
-+++ b/drivers/gpu/drm/radeon/radeon_device.c
-@@ -1655,6 +1655,9 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
- 		if (r) {
- 			/* delay GPU reset to resume */
- 			radeon_fence_driver_force_completion(rdev, i);
-+		} else {
-+			/* finish executing delayed work */
-+			flush_delayed_work(&rdev->fence_drv[i].lockup_work);
- 		}
- 	}
+diff --git a/drivers/hwtracing/coresight/coresight-catu.c b/drivers/hwtracing/coresight/coresight-catu.c
+index e0740c6dbd54..9d89c4054046 100644
+--- a/drivers/hwtracing/coresight/coresight-catu.c
++++ b/drivers/hwtracing/coresight/coresight-catu.c
+@@ -365,16 +365,14 @@ static const struct etr_buf_operations etr_catu_buf_ops = {
+ 	.get_data = catu_get_data_etr_buf,
+ };
  
+-coresight_simple_reg32(struct catu_drvdata, devid, CORESIGHT_DEVID);
+-coresight_simple_reg32(struct catu_drvdata, control, CATU_CONTROL);
+-coresight_simple_reg32(struct catu_drvdata, status, CATU_STATUS);
+-coresight_simple_reg32(struct catu_drvdata, mode, CATU_MODE);
+-coresight_simple_reg32(struct catu_drvdata, axictrl, CATU_AXICTRL);
+-coresight_simple_reg32(struct catu_drvdata, irqen, CATU_IRQEN);
+-coresight_simple_reg64(struct catu_drvdata, sladdr,
+-		       CATU_SLADDRLO, CATU_SLADDRHI);
+-coresight_simple_reg64(struct catu_drvdata, inaddr,
+-		       CATU_INADDRLO, CATU_INADDRHI);
++coresight_simple_reg32(devid, CORESIGHT_DEVID);
++coresight_simple_reg32(control, CATU_CONTROL);
++coresight_simple_reg32(status, CATU_STATUS);
++coresight_simple_reg32(mode, CATU_MODE);
++coresight_simple_reg32(axictrl, CATU_AXICTRL);
++coresight_simple_reg32(irqen, CATU_IRQEN);
++coresight_simple_reg64(sladdr, CATU_SLADDRLO, CATU_SLADDRHI);
++coresight_simple_reg64(inaddr, CATU_INADDRLO, CATU_INADDRHI);
+ 
+ static struct attribute *catu_mgmt_attrs[] = {
+ 	&dev_attr_devid.attr,
+diff --git a/drivers/hwtracing/coresight/coresight-etb10.c b/drivers/hwtracing/coresight/coresight-etb10.c
+index efa39820acec..405bb3355cb1 100644
+--- a/drivers/hwtracing/coresight/coresight-etb10.c
++++ b/drivers/hwtracing/coresight/coresight-etb10.c
+@@ -655,17 +655,14 @@ static const struct file_operations etb_fops = {
+ 	.llseek		= no_llseek,
+ };
+ 
+-#define coresight_etb10_reg(name, offset)		\
+-	coresight_simple_reg32(struct etb_drvdata, name, offset)
+-
+-coresight_etb10_reg(rdp, ETB_RAM_DEPTH_REG);
+-coresight_etb10_reg(sts, ETB_STATUS_REG);
+-coresight_etb10_reg(rrp, ETB_RAM_READ_POINTER);
+-coresight_etb10_reg(rwp, ETB_RAM_WRITE_POINTER);
+-coresight_etb10_reg(trg, ETB_TRG);
+-coresight_etb10_reg(ctl, ETB_CTL_REG);
+-coresight_etb10_reg(ffsr, ETB_FFSR);
+-coresight_etb10_reg(ffcr, ETB_FFCR);
++coresight_simple_reg32(rdp, ETB_RAM_DEPTH_REG);
++coresight_simple_reg32(sts, ETB_STATUS_REG);
++coresight_simple_reg32(rrp, ETB_RAM_READ_POINTER);
++coresight_simple_reg32(rwp, ETB_RAM_WRITE_POINTER);
++coresight_simple_reg32(trg, ETB_TRG);
++coresight_simple_reg32(ctl, ETB_CTL_REG);
++coresight_simple_reg32(ffsr, ETB_FFSR);
++coresight_simple_reg32(ffcr, ETB_FFCR);
+ 
+ static struct attribute *coresight_etb_mgmt_attrs[] = {
+ 	&dev_attr_rdp.attr,
+diff --git a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+index 68fcbf4ce7a8..12f8e8176c7e 100644
+--- a/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-etm3x-sysfs.c
+@@ -1252,19 +1252,16 @@ static struct attribute *coresight_etm_attrs[] = {
+ 	NULL,
+ };
+ 
+-#define coresight_etm3x_reg(name, offset)			\
+-	coresight_simple_reg32(struct etm_drvdata, name, offset)
+-
+-coresight_etm3x_reg(etmccr, ETMCCR);
+-coresight_etm3x_reg(etmccer, ETMCCER);
+-coresight_etm3x_reg(etmscr, ETMSCR);
+-coresight_etm3x_reg(etmidr, ETMIDR);
+-coresight_etm3x_reg(etmcr, ETMCR);
+-coresight_etm3x_reg(etmtraceidr, ETMTRACEIDR);
+-coresight_etm3x_reg(etmteevr, ETMTEEVR);
+-coresight_etm3x_reg(etmtssvr, ETMTSSCR);
+-coresight_etm3x_reg(etmtecr1, ETMTECR1);
+-coresight_etm3x_reg(etmtecr2, ETMTECR2);
++coresight_simple_reg32(etmccr, ETMCCR);
++coresight_simple_reg32(etmccer, ETMCCER);
++coresight_simple_reg32(etmscr, ETMSCR);
++coresight_simple_reg32(etmidr, ETMIDR);
++coresight_simple_reg32(etmcr, ETMCR);
++coresight_simple_reg32(etmtraceidr, ETMTRACEIDR);
++coresight_simple_reg32(etmteevr, ETMTEEVR);
++coresight_simple_reg32(etmtssvr, ETMTSSCR);
++coresight_simple_reg32(etmtecr1, ETMTECR1);
++coresight_simple_reg32(etmtecr2, ETMTECR2);
+ 
+ static struct attribute *coresight_etm_mgmt_attrs[] = {
+ 	&dev_attr_etmccr.attr,
+diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
+index f2458b794ef3..cf8ae768106e 100644
+--- a/drivers/hwtracing/coresight/coresight-priv.h
++++ b/drivers/hwtracing/coresight/coresight-priv.h
+@@ -40,23 +40,23 @@
+ #define ETM_MODE_EXCL_KERN	BIT(30)
+ #define ETM_MODE_EXCL_USER	BIT(31)
+ 
+-#define __coresight_simple_show(type, name, lo_off, hi_off)		\
++#define __coresight_simple_show(name, lo_off, hi_off)		\
+ static ssize_t name##_show(struct device *_dev,				\
+ 			   struct device_attribute *attr, char *buf)	\
+ {									\
+-	type *drvdata = dev_get_drvdata(_dev->parent);			\
++	struct coresight_device *csdev = container_of(_dev, struct coresight_device, dev); \
+ 	u64 val;							\
+ 	pm_runtime_get_sync(_dev->parent);				\
+-	val = coresight_read_reg_pair(drvdata->base, lo_off, hi_off);	\
++	val = csdev_access_relaxed_read_pair(&csdev->access, lo_off, hi_off);	\
+ 	pm_runtime_put_sync(_dev->parent);				\
+ 	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", val);		\
+ }									\
+ static DEVICE_ATTR_RO(name)
+ 
+-#define coresight_simple_reg32(type, name, offset)			\
+-	__coresight_simple_show(type, name, offset, -1)
+-#define coresight_simple_reg64(type, name, lo_off, hi_off)		\
+-	__coresight_simple_show(type, name, lo_off, hi_off)
++#define coresight_simple_reg32(name, offset)			\
++	__coresight_simple_show(name, offset, -1)
++#define coresight_simple_reg64(name, lo_off, hi_off)		\
++	__coresight_simple_show(name, lo_off, hi_off)
+ 
+ extern const u32 coresight_barrier_pkt[4];
+ #define CORESIGHT_BARRIER_PKT_SIZE (sizeof(coresight_barrier_pkt))
+diff --git a/drivers/hwtracing/coresight/coresight-replicator.c b/drivers/hwtracing/coresight/coresight-replicator.c
+index b86acbc74cf0..7cffcbb2ec42 100644
+--- a/drivers/hwtracing/coresight/coresight-replicator.c
++++ b/drivers/hwtracing/coresight/coresight-replicator.c
+@@ -196,11 +196,8 @@ static const struct coresight_ops replicator_cs_ops = {
+ 	.link_ops	= &replicator_link_ops,
+ };
+ 
+-#define coresight_replicator_reg(name, offset) \
+-	coresight_simple_reg32(struct replicator_drvdata, name, offset)
+-
+-coresight_replicator_reg(idfilter0, REPLICATOR_IDFILTER0);
+-coresight_replicator_reg(idfilter1, REPLICATOR_IDFILTER1);
++coresight_simple_reg32(idfilter0, REPLICATOR_IDFILTER0);
++coresight_simple_reg32(idfilter1, REPLICATOR_IDFILTER1);
+ 
+ static struct attribute *replicator_mgmt_attrs[] = {
+ 	&dev_attr_idfilter0.attr,
+diff --git a/drivers/hwtracing/coresight/coresight-stm.c b/drivers/hwtracing/coresight/coresight-stm.c
+index bb14a3a8a921..4a31905604fe 100644
+--- a/drivers/hwtracing/coresight/coresight-stm.c
++++ b/drivers/hwtracing/coresight/coresight-stm.c
+@@ -634,21 +634,18 @@ static ssize_t traceid_store(struct device *dev,
+ }
+ static DEVICE_ATTR_RW(traceid);
+ 
+-#define coresight_stm_reg(name, offset)	\
+-	coresight_simple_reg32(struct stm_drvdata, name, offset)
+-
+-coresight_stm_reg(tcsr, STMTCSR);
+-coresight_stm_reg(tsfreqr, STMTSFREQR);
+-coresight_stm_reg(syncr, STMSYNCR);
+-coresight_stm_reg(sper, STMSPER);
+-coresight_stm_reg(spter, STMSPTER);
+-coresight_stm_reg(privmaskr, STMPRIVMASKR);
+-coresight_stm_reg(spscr, STMSPSCR);
+-coresight_stm_reg(spmscr, STMSPMSCR);
+-coresight_stm_reg(spfeat1r, STMSPFEAT1R);
+-coresight_stm_reg(spfeat2r, STMSPFEAT2R);
+-coresight_stm_reg(spfeat3r, STMSPFEAT3R);
+-coresight_stm_reg(devid, CORESIGHT_DEVID);
++coresight_simple_reg32(tcsr, STMTCSR);
++coresight_simple_reg32(tsfreqr, STMTSFREQR);
++coresight_simple_reg32(syncr, STMSYNCR);
++coresight_simple_reg32(sper, STMSPER);
++coresight_simple_reg32(spter, STMSPTER);
++coresight_simple_reg32(privmaskr, STMPRIVMASKR);
++coresight_simple_reg32(spscr, STMSPSCR);
++coresight_simple_reg32(spmscr, STMSPMSCR);
++coresight_simple_reg32(spfeat1r, STMSPFEAT1R);
++coresight_simple_reg32(spfeat2r, STMSPFEAT2R);
++coresight_simple_reg32(spfeat3r, STMSPFEAT3R);
++coresight_simple_reg32(devid, CORESIGHT_DEVID);
+ 
+ static struct attribute *coresight_stm_attrs[] = {
+ 	&dev_attr_hwevent_enable.attr,
+diff --git a/drivers/hwtracing/coresight/coresight-tmc-core.c b/drivers/hwtracing/coresight/coresight-tmc-core.c
+index d0276af82494..781d213526b7 100644
+--- a/drivers/hwtracing/coresight/coresight-tmc-core.c
++++ b/drivers/hwtracing/coresight/coresight-tmc-core.c
+@@ -251,25 +251,20 @@ static enum tmc_mem_intf_width tmc_get_memwidth(u32 devid)
+ 	return memwidth;
+ }
+ 
+-#define coresight_tmc_reg(name, offset)			\
+-	coresight_simple_reg32(struct tmc_drvdata, name, offset)
+-#define coresight_tmc_reg64(name, lo_off, hi_off)	\
+-	coresight_simple_reg64(struct tmc_drvdata, name, lo_off, hi_off)
+-
+-coresight_tmc_reg(rsz, TMC_RSZ);
+-coresight_tmc_reg(sts, TMC_STS);
+-coresight_tmc_reg(trg, TMC_TRG);
+-coresight_tmc_reg(ctl, TMC_CTL);
+-coresight_tmc_reg(ffsr, TMC_FFSR);
+-coresight_tmc_reg(ffcr, TMC_FFCR);
+-coresight_tmc_reg(mode, TMC_MODE);
+-coresight_tmc_reg(pscr, TMC_PSCR);
+-coresight_tmc_reg(axictl, TMC_AXICTL);
+-coresight_tmc_reg(authstatus, TMC_AUTHSTATUS);
+-coresight_tmc_reg(devid, CORESIGHT_DEVID);
+-coresight_tmc_reg64(rrp, TMC_RRP, TMC_RRPHI);
+-coresight_tmc_reg64(rwp, TMC_RWP, TMC_RWPHI);
+-coresight_tmc_reg64(dba, TMC_DBALO, TMC_DBAHI);
++coresight_simple_reg32(rsz, TMC_RSZ);
++coresight_simple_reg32(sts, TMC_STS);
++coresight_simple_reg32(trg, TMC_TRG);
++coresight_simple_reg32(ctl, TMC_CTL);
++coresight_simple_reg32(ffsr, TMC_FFSR);
++coresight_simple_reg32(ffcr, TMC_FFCR);
++coresight_simple_reg32(mode, TMC_MODE);
++coresight_simple_reg32(pscr, TMC_PSCR);
++coresight_simple_reg32(axictl, TMC_AXICTL);
++coresight_simple_reg32(authstatus, TMC_AUTHSTATUS);
++coresight_simple_reg32(devid, CORESIGHT_DEVID);
++coresight_simple_reg64(rrp, TMC_RRP, TMC_RRPHI);
++coresight_simple_reg64(rwp, TMC_RWP, TMC_RWPHI);
++coresight_simple_reg64(dba, TMC_DBALO, TMC_DBAHI);
+ 
+ static struct attribute *coresight_tmc_mgmt_attrs[] = {
+ 	&dev_attr_rsz.attr,
+diff --git a/include/linux/coresight.h b/include/linux/coresight.h
+index 9f445f09fcfe..a47dd1f62216 100644
+--- a/include/linux/coresight.h
++++ b/include/linux/coresight.h
+@@ -372,6 +372,24 @@ static inline u32 csdev_access_relaxed_read32(struct csdev_access *csa,
+ 	return csa->read(offset, true, false);
+ }
+ 
++static inline u64 csdev_access_relaxed_read_pair(struct csdev_access *csa,
++						 s32 lo_offset, s32 hi_offset)
++{
++	u64 val;
++
++	if (likely(csa->io_mem)) {
++		val = readl_relaxed(csa->base + lo_offset);
++		val |= (hi_offset < 0) ? 0 :
++		       (u64)readl_relaxed(csa->base + hi_offset) << 32;
++		return val;
++	}
++
++	val = csa->read(lo_offset, true, false);
++	val |= (hi_offset < 0) ? 0 :
++	       (u64)csa->read(hi_offset, true, false) << 32;
++	return val;
++}
++
+ static inline u32 csdev_access_read32(struct csdev_access *csa, u32 offset)
+ {
+ 	if (likely(csa->io_mem))
 -- 
-2.35.1
+2.28.0
 
