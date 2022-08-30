@@ -2,126 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D579CC0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3EEC0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230024AbiH3Mvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 08:51:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45326 "EHLO
+        id S230076AbiH3MwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 08:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230023AbiH3Mvr (ORCPT
+        with ESMTP id S230057AbiH3MwL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 08:51:47 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AD1F72D5;
-        Tue, 30 Aug 2022 05:51:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661863907; x=1693399907;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=DTTjAQM5wpLyoGhClhwQfqS/j8yy+6odf1fye7DwaoE=;
-  b=J2SRf2AVAT2T8Okko4iFvbK38EY8gZCpAAUr98mAZCZ43oArmLrFcaYL
-   DlQ8nA7VBMCPuKVtQcwSrsEMgNKkrOVYvYPGQaE/vnEUCR5pymct53169
-   AhLIlVh/9bJnM0QRZytoOLGwoSFzq4+jAJ0lM0yqAhkynPFddBh9qCSsR
-   EKjNnqYdTkYdGaB2BHuqtL2K1HfDYdnQVxCcHg/a6PEbqG+CkpvgyI8ck
-   1wF7162iWHU+0I7gsgk1OuynsMIEe88fC+Kx19casCowSIy7/UnrxWzIO
-   SI8tvDMZcAY+9XUPXwosGIemge4TmBdLY6w9rYox42sWwqHaUpafp7L/F
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="178300984"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 05:51:47 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 30 Aug 2022 05:51:45 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 30 Aug 2022 05:51:42 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v4 00/13] PolarFire SoC reset controller & clock cleanups
-Date:   Tue, 30 Aug 2022 13:50:58 +0100
-Message-ID: <20220830125110.2372514-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Tue, 30 Aug 2022 08:52:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CEC132864;
+        Tue, 30 Aug 2022 05:52:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1870DCE1B34;
+        Tue, 30 Aug 2022 12:51:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0593EC433D6;
+        Tue, 30 Aug 2022 12:51:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661863917;
+        bh=uQwsjOEEvKxUtN5MGCda/ZtMmO941N6I7Hy3e+MegMs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LGLfRsRANz+s3vvjGZfhqJI5QTM5lGUQOE2d93wko531Qlf9kY6diihD0vLELQ3op
+         igHWYSR/PR9HOyQf/o7Jg1RwEIWfePRHi/ppUkLGjQa1/fQA8MBEn/5EgwKeGd44FP
+         8IutILw5rzuYEYVRQTVL5L9aIGYU8rxpCs1nMB4Q=
+Date:   Tue, 30 Aug 2022 14:51:54 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Linyu Yuan <quic_linyyuan@quicinc.com>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [REGRESSION 5.19] NULL dereference by ucsi_acpi driver
+Message-ID: <Yw4H6rbVcu7Aaaa/@kroah.com>
+References: <87r11cmbx0.wl-tiwai@suse.de>
+ <YwEqtGB2WldUeiEN@kroah.com>
+ <09f1204c-1256-e737-b769-be899870c946@quicinc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <09f1204c-1256-e737-b769-be899870c946@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey all,
+On Mon, Aug 22, 2022 at 10:44:26AM +0800, Linyu Yuan wrote:
+> 
+> On 8/21/2022 2:40 AM, Greg Kroah-Hartman wrote:
+> > On Fri, Aug 19, 2022 at 06:32:43PM +0200, Takashi Iwai wrote:
+> > > Hi,
+> > > 
+> > > we've got multiple reports about 5.19 kernel starting crashing after
+> > > some time, and this turned out to be triggered by ucsi_acpi driver.
+> > > The details are found in:
+> > >    https://bugzilla.suse.com/show_bug.cgi?id=1202386
+> > > 
+> > > The culprit seems to be the commit 87d0e2f41b8c
+> > >      usb: typec: ucsi: add a common function ucsi_unregister_connectors()
+> > Adding Heikki to the thread...
+> > 
+> > > This commit looks as if it were a harmless cleanup, but this failed in
+> > > a subtle way.  Namely, in the error scenario, the driver gets an error
+> > > at ucsi_register_altmodes(), and goes to the error handling to release
+> > > the resources.  Through this refactoring, the release part was unified
+> > > to a funciton ucsi_unregister_connectors().  And there, it has a NULL
+> > > check of con->wq, and it bails out the loop if it's NULL.
+> > > Meanwhile, ucsi_register_port() itself still calls destroy_workqueue()
+> > > and clear con->wq at its error path.  This ended up in the leftover
+> > > power supply device with the uninitialized / cleared device.
+> > > 
+> > > It was confirmed that the problem could be avoided by a simple
+> > > revert.
+> > I'll be glad to revert this now, unless Heikki thinks:
+> > 
+> > > I guess another fix could be removing the part clearing con->wq, i.e.
+> > > 
+> > > --- a/drivers/usb/typec/ucsi/ucsi.c
+> > > +++ b/drivers/usb/typec/ucsi/ucsi.c
+> > > @@ -1192,11 +1192,6 @@ static int ucsi_register_port(struct ucsi *ucsi, int index)
+> > >   out_unlock:
+> > >   	mutex_unlock(&con->lock);
+> > > -	if (ret && con->wq) {
+> > > -		destroy_workqueue(con->wq);
+> > > -		con->wq = NULL;
+> > > -	}
+> > > -
+> > >   	return ret;
+> > >   }
+> > > 
+> > > ... but it's totally untested and I'm not entirely sure whether it's
+> > > better.
+> 
+> this part is original code, yes, but when I make the change you mentioned,
+> 
+> as in the function ucsi_unregister_connectors(),  just use con->wq to
+> represent which connector initialized previous,
+> 
+> indeed if we clear it in ucsi_register_port(), something will left unclear.
+> 
+> please send a patch to fix it.
+> 
+> I think your change is good.
 
-Kinda two things happening in this series, but I sent it together to
-ensure the second part would apply correctly.
+Ok, can someone send me a patch to apply to the tree for this?
 
-The first is the reset controller that I promised after discovering the
-issue triggered by CONFIG_PM & the phy not coming up correctly. I have
-now removed all the messing with resets from clock enable/disable
-functions & now use the aux bus to set up a reset controller driver.
-Since I needed something to test it, I hooked up the reset for the
-Cadence MACB on PolarFire SoC. This has been split into a second series
-for v2 (and is now in v6.0-rcN):
-https://lore.kernel.org/all/20220704114511.1892332-1-conor.dooley@microchip.com/
+thanks,
 
-The second part adds rate control for the MSS PLL clock, followed by
-some simplifications to the driver & conversions of some custom structs
-to the corresponding structs in the framework.
-
-I'll take the dts patch myself when the rest of this is okay-ed.
-Thanks,
-Conor.
-
-Changes since v3:
-- return results directly in probe() & reset_controller_register()
-
-Changes since v2:
-- reorder reset Makefile/Kconfig entries
-- fix a pre-existing bug exposed by clang with this series applied
-- add Padmarao who co-authored the original driver to the authors
-
-Conor Dooley (13):
-  clk: microchip: mpfs: fix clk_cfg array bounds violation
-  dt-bindings: clk: microchip: mpfs: add reset controller support
-  clk: microchip: mpfs: add reset controller
-  reset: add polarfire soc reset support
-  MAINTAINERS: add polarfire soc reset controller
-  riscv: dts: microchip: add mpfs specific macb reset support
-  clk: microchip: mpfs: add MSS pll's set & round rate
-  clk: microchip: mpfs: move id & offset out of clock structs
-  clk: microchip: mpfs: simplify control reg access
-  clk: microchip: mpfs: delete 2 line mpfs_clk_register_foo()
-  clk: microchip: mpfs: convert cfg_clk to clk_divider
-  clk: microchip: mpfs: convert periph_clk to clk_gate
-  clk: microchip: mpfs: update module authorship & licencing
-
- .../bindings/clock/microchip,mpfs.yaml        |  17 +-
- MAINTAINERS                                   |   1 +
- arch/riscv/boot/dts/microchip/mpfs.dtsi       |   7 +-
- drivers/clk/microchip/Kconfig                 |   1 +
- drivers/clk/microchip/clk-mpfs.c              | 380 +++++++++---------
- drivers/reset/Kconfig                         |   7 +
- drivers/reset/Makefile                        |   2 +-
- drivers/reset/reset-mpfs.c                    | 157 ++++++++
- include/soc/microchip/mpfs.h                  |   8 +
- 9 files changed, 384 insertions(+), 196 deletions(-)
- create mode 100644 drivers/reset/reset-mpfs.c
-
-
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
--- 
-2.36.1
-
+greg k-h
