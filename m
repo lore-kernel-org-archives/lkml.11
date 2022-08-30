@@ -2,118 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB88ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C44C1ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229697AbiH3KMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34454 "EHLO
+        id S230237AbiH3KMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbiH3KLx (ORCPT
+        with ESMTP id S230142AbiH3KLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 06:11:53 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB9EEFB0CC
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871D6EA885
         for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:07:35 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CAF231474;
-        Tue, 30 Aug 2022 03:07:41 -0700 (PDT)
-Received: from usa.arm.com (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6F8F93F766;
-        Tue, 30 Aug 2022 03:07:34 -0700 (PDT)
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Bonnici <marc.bonnici@arm.com>,
-        Achin Gupta <achin.gupta@arm.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>,
-        Valentin Laurent <valentin.laurent@trustonic.com>,
-        Lukas Hanel <lukas.hanel@trustonic.com>,
-        Coboy Chen <coboy.chen@mediatek.com>
-Subject: [PATCH 6/9] firmware: arm_ffa: Make memory apis ffa_device independent
-Date:   Tue, 30 Aug 2022 11:06:57 +0100
-Message-Id: <20220830100700.344594-7-sudeep.holla@arm.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220830100700.344594-1-sudeep.holla@arm.com>
-References: <20220830100700.344594-1-sudeep.holla@arm.com>
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4MH2xk49lDzHnVM;
+        Tue, 30 Aug 2022 18:05:46 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 18:07:32 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 18:07:32 +0800
+Subject: Re: [PATCH v2] ARM: Add sanity check for dev->periphid in
+ amba_probe()
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <patches@armlinux.org.uk>,
+        Saravana Kannan <saravanak@google.com>,
+        "Kefeng Wang" <wangkefeng.wang@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+References: <20220830065413.638-1-thunder.leizhen@huawei.com>
+ <Yw3ddyxCpPH5U4kN@shell.armlinux.org.uk>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <4236a152-c848-a8f9-45db-4b6b7b4b586a@huawei.com>
+Date:   Tue, 30 Aug 2022 18:07:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yw3ddyxCpPH5U4kN@shell.armlinux.org.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a requirement to make memory APIs independent of the ffa_device.
-One of the use-case is to have a common memory driver that manages the
-memory for all the ffa_devices. That commom memory driver won't be a
-ffa_driver or won't have any ffa_device associated with it. So having
-these memory APIs accessible without a ffa_device is needed and should
-be possible as most of these are handled by the partition manager(SPM
-or hypervisor).
 
-Drop the ffa_device argument to the memory APIs and make them ffa_device
-independent.
 
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
----
- drivers/firmware/arm_ffa/driver.c | 6 ++----
- drivers/tee/optee/ffa_abi.c       | 2 +-
- include/linux/arm_ffa.h           | 6 ++----
- 3 files changed, 5 insertions(+), 9 deletions(-)
+On 2022/8/30 17:50, Russell King (Oracle) wrote:
+> Please don't send the patch system patches that have not had any chance
+> of review. The patch system is supposed to be for patches that are to
+> be applied.
 
-diff --git a/drivers/firmware/arm_ffa/driver.c b/drivers/firmware/arm_ffa/driver.c
-index 5f02b670e964..5c8484b05c50 100644
---- a/drivers/firmware/arm_ffa/driver.c
-+++ b/drivers/firmware/arm_ffa/driver.c
-@@ -640,8 +640,7 @@ static int ffa_sync_send_receive(struct ffa_device *dev,
- 				       dev->mode_32bit, data);
- }
- 
--static int
--ffa_memory_share(struct ffa_device *dev, struct ffa_mem_ops_args *args)
-+static int ffa_memory_share(struct ffa_mem_ops_args *args)
- {
- 	if (drv_info->mem_ops_native)
- 		return ffa_memory_ops(FFA_FN_NATIVE(MEM_SHARE), args);
-@@ -649,8 +648,7 @@ ffa_memory_share(struct ffa_device *dev, struct ffa_mem_ops_args *args)
- 	return ffa_memory_ops(FFA_MEM_SHARE, args);
- }
- 
--static int
--ffa_memory_lend(struct ffa_device *dev, struct ffa_mem_ops_args *args)
-+static int ffa_memory_lend(struct ffa_mem_ops_args *args)
- {
- 	/* Note that upon a successful MEM_LEND request the caller
- 	 * must ensure that the memory region specified is not accessed
-diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
-index 4c3b5d0008dd..7ec0a2f9a63b 100644
---- a/drivers/tee/optee/ffa_abi.c
-+++ b/drivers/tee/optee/ffa_abi.c
-@@ -294,7 +294,7 @@ static int optee_ffa_shm_register(struct tee_context *ctx, struct tee_shm *shm,
- 	if (rc)
- 		return rc;
- 	args.sg = sgt.sgl;
--	rc = ffa_ops->memory_share(ffa_dev, &args);
-+	rc = ffa_ops->memory_share(&args);
- 	sg_free_table(&sgt);
- 	if (rc)
- 		return rc;
-diff --git a/include/linux/arm_ffa.h b/include/linux/arm_ffa.h
-index 556f50f27fb1..eafab07c9f58 100644
---- a/include/linux/arm_ffa.h
-+++ b/include/linux/arm_ffa.h
-@@ -262,10 +262,8 @@ struct ffa_dev_ops {
- 	int (*sync_send_receive)(struct ffa_device *dev,
- 				 struct ffa_send_direct_data *data);
- 	int (*memory_reclaim)(u64 g_handle, u32 flags);
--	int (*memory_share)(struct ffa_device *dev,
--			    struct ffa_mem_ops_args *args);
--	int (*memory_lend)(struct ffa_device *dev,
--			   struct ffa_mem_ops_args *args);
-+	int (*memory_share)(struct ffa_mem_ops_args *args);
-+	int (*memory_lend)(struct ffa_mem_ops_args *args);
- };
- 
- #endif /* _LINUX_ARM_FFA_H */
+Okay, I get it now.
+
+> 
+> Sending patches that are yet to be reviewed makes extra work for me.
+
+I'm so sorry.
+
+> 
+> Thanks.
+> 
+> On Tue, Aug 30, 2022 at 02:54:13PM +0800, Zhen Lei wrote:
+>> Commit f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
+>> forcibly invokes device_add() even if dev->periphid is not ready. Although
+>> it will be remedied in amba_match(): dev->periphid will be initialized
+>> if everything is in place; Otherwise, return -EPROBE_DEFER to block
+>> __driver_attach() from further execution. But not all drivers have .match
+>> hook, such as pl031, the dev->bus->probe will be called directly in
+>> __driver_attach(). Unfortunately, if dev->periphid is still not
+>> initialized, the following exception will be triggered.
+>>
+>> 8<--- cut here ---
+>> Unable to handle kernel NULL pointer dereference at virtual address 00000008
+>> [00000008] *pgd=00000000
+>> Internal error: Oops: 5 [#1] SMP ARM
+>> Modules linked in:
+>> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc2+ #7
+>> Hardware name: ARM-Versatile Express
+>> PC is at pl031_probe+0x8/0x208
+>> LR is at amba_probe+0xf0/0x160
+>> pc : 80698df8  lr : 8050eb54  psr: 80000013
+>> sp : c0825df8  ip : 00000000  fp : 811fda38
+>> r10: 00000000  r9 : 80d72470  r8 : fffffdfb
+>> r7 : 811fd800  r6 : be7eb330  r5 : 00000000  r4 : 811fd900
+>> r3 : 80698df0  r2 : 37000000  r1 : 00000000  r0 : 811fd800
+>> Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+>> Control: 10c5387d  Table: 6000406a  DAC: 00000051
+>> ... ...
+>>  pl031_probe from amba_probe+0xf0/0x160
+>>  amba_probe from really_probe+0x118/0x290
+>>  really_probe from __driver_probe_device+0x84/0xe4
+>>  __driver_probe_device from driver_probe_device+0x30/0xd0
+>>  driver_probe_device from __driver_attach+0x8c/0xfc
+>>  __driver_attach from bus_for_each_dev+0x70/0xb0
+>>  bus_for_each_dev from bus_add_driver+0x168/0x1f4
+>>  bus_add_driver from driver_register+0x7c/0x118
+>>  driver_register from do_one_initcall+0x44/0x1ec
+>>  do_one_initcall from kernel_init_freeable+0x238/0x288
+>>  kernel_init_freeable from kernel_init+0x18/0x12c
+>>  kernel_init from ret_from_fork+0x14/0x2c
+>> ... ...
+>> ---[ end trace 0000000000000000 ]---
+>>
+>> Therefore, take the same action as in amba_match(): return -EPROBE_DEFER
+>> if dev->periphid is not ready in amba_probe().
+>>
+>> Fixes: f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+>> ---
+>> KernelVersion: v6.0-rc3
+>>  drivers/amba/bus.c | 24 +++++++++++++++++++++---
+>>  1 file changed, 21 insertions(+), 3 deletions(-)
+>>
+>> v1 --> v2:
+>> 1. Update this patch based on:
+>>    https://lore.kernel.org/lkml/20220818172852.3548-1-isaacmanjarres@google.com/
+>> 2. Move the operations of sanity checking and reading dev->periphid,
+>>    updating uevent into new function amba_prepare_periphid().
+>>
+>> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+>> index 110a535648d2e1f..8e4c7e190880206 100644
+>> --- a/drivers/amba/bus.c
+>> +++ b/drivers/amba/bus.c
+>> @@ -204,10 +204,9 @@ static int amba_read_periphid(struct amba_device *dev)
+>>  	return ret;
+>>  }
+>>  
+>> -static int amba_match(struct device *dev, struct device_driver *drv)
+>> +static int amba_prepare_periphid(struct device *dev)
+>>  {
+>>  	struct amba_device *pcdev = to_amba_device(dev);
+>> -	struct amba_driver *pcdrv = to_amba_driver(drv);
+>>  
+>>  	mutex_lock(&pcdev->periphid_lock);
+>>  	if (!pcdev->periphid) {
+>> @@ -228,6 +227,19 @@ static int amba_match(struct device *dev, struct device_driver *drv)
+>>  	}
+>>  	mutex_unlock(&pcdev->periphid_lock);
+>>  
+>> +	return 0;
+>> +}
+>> +
+>> +static int amba_match(struct device *dev, struct device_driver *drv)
+>> +{
+>> +	struct amba_device *pcdev = to_amba_device(dev);
+>> +	struct amba_driver *pcdrv = to_amba_driver(drv);
+>> +	int ret;
+>> +
+>> +	ret = amba_prepare_periphid(dev);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>>  	/* When driver_override is set, only bind to the matching driver */
+>>  	if (pcdev->driver_override)
+>>  		return !strcmp(pcdev->driver_override, drv->name);
+>> @@ -278,9 +290,15 @@ static int amba_probe(struct device *dev)
+>>  {
+>>  	struct amba_device *pcdev = to_amba_device(dev);
+>>  	struct amba_driver *pcdrv = to_amba_driver(dev->driver);
+>> -	const struct amba_id *id = amba_lookup(pcdrv->id_table, pcdev);
+>> +	const struct amba_id *id;
+>>  	int ret;
+>>  
+>> +	ret = amba_prepare_periphid(dev);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	id = amba_lookup(pcdrv->id_table, pcdev);
+>> +
+>>  	do {
+>>  		ret = of_amba_device_decode_irq(pcdev);
+>>  		if (ret)
+>> -- 
+>> 2.25.1
+>>
+>>
+> 
+
 -- 
-2.37.2
-
+Regards,
+  Zhen Lei
