@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2976AECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:30:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E235AECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230296AbiH3Lax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54826 "EHLO
+        id S230433AbiH3La5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230054AbiH3LaE (ORCPT
+        with ESMTP id S230111AbiH3LaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:30:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772E165E4;
-        Tue, 30 Aug 2022 04:30:02 -0700 (PDT)
+        Tue, 30 Aug 2022 07:30:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F2C205CC;
+        Tue, 30 Aug 2022 04:30:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07037B81A5C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDD4F61567;
         Tue, 30 Aug 2022 11:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE5D0C433D6;
-        Tue, 30 Aug 2022 11:29:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42E6EC43470;
+        Tue, 30 Aug 2022 11:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661858999;
-        bh=dcH24rq3fWIG9NT0rAyGvQ9ewBW5xky0rFZzKzDMh3A=;
+        s=k20201202; t=1661859001;
+        bh=yWn0mchADNb4i5UW1sCKqU+i2ZXlFqRzep42z3Q8y7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HgjT2DF6oKx7s040ndeCTkNyZB4XXzQWsiDeuV0cats3XeH6h08ImTlBj8m49KT1D
-         oPp2PH58adQkwyXbswCTJy7mAZLEyxBaQAdRL2yBNuVL3FzPUHUUUyLxi2ivNjFh93
-         ILJqRK9B8zycFOF9SGADoAyUGegLTwu+YhddnxAHzNOmylVuoQ0dOgebvjDbiZrrcB
-         c3EZCK++uNT2H9fPAQwdPqaw3d0/n9Icw2NDiNuZH5hBgDT8J/x8wGxektLzWlzP93
-         3FqcBJ82nOA9XMAK0VNqblOaNkTbEn4Ok5N+Nn3iNUqtMy+bW05joGMKPyRZbdrGwB
-         17I/417oiMnHA==
+        b=RuiSR07ow1+wX+R9+72Uf6S+Sp3GOR5GCPBx5PRbUKcScjo8Nu2iG6K1v/nARvoEQ
+         JN5lam3e3XRDaSYTfmFNlRGYQZY7plhvx/1HqewWE3Azi9412RlSYBKnqxC8jdvyLO
+         f1zCLZZcRidAdE9ELwLPMm0HTDLewrHscsCx4xu9M9WzjRi6HVitnmy/CNobpvMSKJ
+         E0DrIWJr8SDGDAvem6Ou/6OuZG6MiTRneNWu9N5fJY/b+/cR/dsJ8skhjvATG/Rkbj
+         BA3iM6jgvLfPFwoz6haD2wk5vpZRDklwBFvIYhHoKIMa8N0w8f63J5tcdjVyyrqIgl
+         YIB8zss16h8eg==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oSzRM-0000zp-V1; Tue, 30 Aug 2022 13:29:56 +0200
+        id 1oSzRO-00010v-Sk; Tue, 30 Aug 2022 13:29:58 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -47,9 +47,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 01/30] dt-bindings: phy: qcom,qmp: fix bogus clock-cells property
-Date:   Tue, 30 Aug 2022 13:28:54 +0200
-Message-Id: <20220830112923.3725-2-johan+linaro@kernel.org>
+Subject: [PATCH v4 23/30] dt-bindings: phy: qcom,qmp-usb3-dp: fix bogus clock-cells property
+Date:   Tue, 30 Aug 2022 13:29:16 +0200
+Message-Id: <20220830112923.3725-24-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830112923.3725-1-johan+linaro@kernel.org>
 References: <20220830112923.3725-1-johan+linaro@kernel.org>
@@ -62,20 +62,20 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 The QMP PHY wrapper node is not a clock provider so drop the bogus
 '#clock-cells' property that was added when converting to DT schema.
 
-Fixes: ccf51c1cedfd ("dt-bindings: phy: qcom,qmp: Convert QMP PHY bindings to yaml")
+Fixes: 59351049ad15 ("dt-bindings: phy: qcom,qmp-usb3-dp: Add dt bindings for USB3 DP PHY")
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 5 -----
+ .../devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml        | 5 -----
  1 file changed, 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-index d8a9c205f039..edb53576fc0d 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-@@ -68,9 +68,6 @@ properties:
-       - description: Address and length of PHY's common serdes block.
-       - description: Address and length of PHY's DP_COM control block.
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
+index 31f3ad2ee683..da7d8dfc631c 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
+@@ -31,9 +31,6 @@ properties:
+       - const: dp_com
+       - const: dp
  
 -  "#clock-cells":
 -    enum: [ 1, 2 ]
@@ -83,7 +83,7 @@ index d8a9c205f039..edb53576fc0d 100644
    "#address-cells":
      enum: [ 1, 2 ]
  
-@@ -118,7 +115,6 @@ patternProperties:
+@@ -150,7 +147,6 @@ patternProperties:
  required:
    - compatible
    - reg
@@ -91,14 +91,14 @@ index d8a9c205f039..edb53576fc0d 100644
    - "#address-cells"
    - "#size-cells"
    - ranges
-@@ -472,7 +468,6 @@ examples:
-     usb_2_qmpphy: phy-wrapper@88eb000 {
-         compatible = "qcom,sdm845-qmp-usb3-uni-phy";
-         reg = <0x088eb000 0x18c>;
+@@ -172,7 +168,6 @@ examples:
+               <0x088e8000 0x10>,
+               <0x088ea000 0x40>;
+         reg-names = "usb", "dp_com", "dp";
 -        #clock-cells = <1>;
          #address-cells = <1>;
          #size-cells = <1>;
-         ranges = <0x0 0x088eb000 0x2000>;
+         ranges = <0x0 0x088e9000 0x2000>;
 -- 
 2.35.1
 
