@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA01ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 01:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1458ECAAD2
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 01:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiH3BoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 21:44:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48598 "EHLO
+        id S229785AbiH3BoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 21:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiH3BoH (ORCPT
+        with ESMTP id S229550AbiH3BoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 21:44:07 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F157C1C2
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 18:44:06 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id p8-20020a17090ad30800b001fdfc8c7567so294905pju.1
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 18:44:06 -0700 (PDT)
+        Mon, 29 Aug 2022 21:44:12 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CD47C305
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 18:44:11 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id f12so9505914plb.11
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 18:44:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=4G45J5/wbH8CJ9lkE1Iii44KzFmB6q2uZP6UhKMt5F0=;
-        b=hme/xCx/PdWfI+daRrW3BOD4RhkV7SbDD/dzQtAIJm3N9y6A0v2eTJXbzhQRklZ33N
-         MNb27S+7PWwZ+54cwchHFCS64G6NXu64y3i+aQuZIYPMffL0uSdT1ragDchYw2qk9+DO
-         NirXWwVaPO1mu0DWrmpUVGRHbl1dnNKLCxMbJYk7NyiUh0HXBhLP8jw8expuxco0Hroi
-         iJriviALZehlN7lEgZa/8X9jTN5vNX3NHJlHKV3d1/iWQMHQIwUTrhmVAtJn1SDZGH7F
-         I5Up7tKTClddctA6Ad3bXIRGJJpxlKgKGUMa/1iZxUGxS6bpVNH5d2i+KWAYhMb1u5id
-         89zA==
+        bh=kOzfBRq5yYox21NuVDXabEwbFujCa1I2u3nF6XVE7w8=;
+        b=pALGE31EpvVdTowSCgZZehs0ki4m1NmuCM1sr1es6ml8MaL/52724cy15yzQP5whVd
+         68iSA+kCAF7QSWQ8LXV+4CzxQqrURBMQenvhYTGAM/j50cvmQNQ95O8FsnDsCJQWUUZS
+         7P2P8i2loOMvXPBVzMF74+5w+460YR5fCMLiv0XbwLl3HCPQH0Chk3kpoEcFDYiCgZx0
+         cza7/UTXI3BO++IJY5iQ23tjCRotz1pY96OVtp+OjRZah694J+9f+oGtKCZNz1YOQlJW
+         kd/vsmHxHbKU1nyf+tHWvvmDX7xPvEqhbDPGafupJVsrUAvmMQvBUkTDo3mqPE9OXOyE
+         kzyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=4G45J5/wbH8CJ9lkE1Iii44KzFmB6q2uZP6UhKMt5F0=;
-        b=bt11qfNg4EPJ37/whk+DHrCi0ovOEPeD0q7c1W0Lbj/9h4xcouCyxelUxNRdO/JGVt
-         jWtnUXDb3b1v1JECwhXWyTlEXvdkVzv+UVV658OEDS1FzVHtU4aVjNJVnwo+0fQLHGHw
-         QVha//E9xcdG0/PityOKr+ujNMnW67S2KgXRe051+QqlQGpQf1QA1I0qeleoq7Btf8xF
-         1MhampTduh7Cd97mQ/ObzKU6hNZ+i512HywGWxqgQnw20xQe/jjEaT/Towfsx6Dwv0m4
-         16ggwvvzwOZl49hmJ1BkV9DX+Lrk0IgsFAC3+JpB3IkTBUvoKOmylJ99TuIZnNEqXQjh
-         YyEw==
-X-Gm-Message-State: ACgBeo2u7H2AmKXPkJOygHFBAY3DcXIpxvBxG6uD8N3tl6PbLqqkXuUm
-        SpRbtdEeR0oZihx9rVFdC7TxXrJx+Oo=
-X-Google-Smtp-Source: AA6agR4GNeZem4U6gjMW7sBQ700KlnJNkMGpLWafUK2syMDcnXqz4HabgHHGrcE9a5qv1yfg4bRBjg==
-X-Received: by 2002:a17:902:d708:b0:172:f24e:2e59 with SMTP id w8-20020a170902d70800b00172f24e2e59mr19018781ply.169.1661823845456;
-        Mon, 29 Aug 2022 18:44:05 -0700 (PDT)
+        bh=kOzfBRq5yYox21NuVDXabEwbFujCa1I2u3nF6XVE7w8=;
+        b=T2B/r9Zs5go9iSD2qEyCRHfExXRBdSZ8a6inyVgKYIMaUwcoZsbfSmS+FdbWFAoiEX
+         V6a5yiAlwXE7pmZO4QWrodKnMhIJzajx7Rjj6D2tqHHA1zRBtqJ1JKbSEWXp/rUjk4zX
+         /zJWXiH8WdoSxOM5hcsWHCvepVN67BSoFxS0+cBjVl76nazt9YCR9bOEsIyGtDdU08f+
+         XRz1/Ex2eyWuppqclsyAsJ1jFhr9PVvv6FI+JlifR19vuc2di5tUCDJKUnB4xTE8T7Fq
+         HONz5cfCNsJqnbi1Xj8Ko4r+aQzCr0BO8WT4kzDnZGHZUjFuAYA+Pd7CLpUCyklnS82K
+         +mPQ==
+X-Gm-Message-State: ACgBeo22Qz3RoHZkhbDVC2b4JH6UliItxQ9BegEMRVh2+CfqwmyDOxIL
+        l6eDiT5eH1RjWNh/uOrwQOPDkCEte58=
+X-Google-Smtp-Source: AA6agR7QiP0eFqOebRee1dD781w80C77xiKWy9iQB4xkY+dihUOKld3Mgvzh8S9FY+JhrkhghWbuVg==
+X-Received: by 2002:a17:90a:cb14:b0:1fd:c964:f708 with SMTP id z20-20020a17090acb1400b001fdc964f708mr8311210pjt.62.1661823849855;
+        Mon, 29 Aug 2022 18:44:09 -0700 (PDT)
 Received: from laptop.hsd1.wa.comcast.net ([2601:600:8500:5f14:d627:c51e:516e:a105])
-        by smtp.gmail.com with ESMTPSA id v14-20020aa799ce000000b00535faa9d6f2sm7976038pfi.53.2022.08.29.18.44.04
+        by smtp.gmail.com with ESMTPSA id v14-20020aa799ce000000b00535faa9d6f2sm7976038pfi.53.2022.08.29.18.44.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 18:44:04 -0700 (PDT)
+        Mon, 29 Aug 2022 18:44:09 -0700 (PDT)
 From:   Andrei Vagin <avagin@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Andrei Vagin <avagin@gmail.com>,
@@ -62,130 +62,143 @@ Cc:     Andrei Vagin <avagin@gmail.com>,
         Tycho Andersen <tycho@tycho.pizza>,
         Will Drewry <wad@chromium.org>,
         Vincent Guittot <vincent.guittot@linaro.org>
-Subject: [PATCH 1/4] seccomp: don't use semaphore and wait_queue together
-Date:   Mon, 29 Aug 2022 18:43:53 -0700
-Message-Id: <20220830014356.5364-2-avagin@gmail.com>
+Subject: [PATCH 4/4] seccomp: add the synchronous mode for seccomp_unotify
+Date:   Mon, 29 Aug 2022 18:43:56 -0700
+Message-Id: <20220830014356.5364-5-avagin@gmail.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220830014356.5364-1-avagin@gmail.com>
 References: <20220830014356.5364-1-avagin@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Here is no reason to use two different primitives that do similar things.
+seccomp_unotify allows more privileged processes does actions on behalf
+of less privileged processes.
+
+In many cases, the workflow is fully synchronous. It means a target
+process triggers a system call and passes controls to a supervisor
+process that handles the system call and returns controls to the target
+process. In this context, "synchronous" means that only one process is
+running and another one is waiting.
+
+There is the WF_CURRENT_CPU flag that is used to advise the scheduler to
+move the wakee to the current CPU. For such synchronous workflows, it
+makes context switches a few times faster.
+
+Right now, each interaction takes 12µs. With this patch, it takes about
+3µs.
+
+This change introduce the SECCOMP_USER_NOTIF_FD_SYNC_WAKE_UP flag that
+it used to enable the sync mode.
 
 Signed-off-by: Andrei Vagin <avagin@gmail.com>
 ---
- kernel/seccomp.c | 38 ++++++++++++++++++++++++++------------
- 1 file changed, 26 insertions(+), 12 deletions(-)
+ include/uapi/linux/seccomp.h |  4 ++++
+ kernel/seccomp.c             | 35 +++++++++++++++++++++++++++++++++--
+ 2 files changed, 37 insertions(+), 2 deletions(-)
 
+diff --git a/include/uapi/linux/seccomp.h b/include/uapi/linux/seccomp.h
+index 0fdc6ef02b94..dbfc9b37fcae 100644
+--- a/include/uapi/linux/seccomp.h
++++ b/include/uapi/linux/seccomp.h
+@@ -115,6 +115,8 @@ struct seccomp_notif_resp {
+ 	__u32 flags;
+ };
+ 
++#define SECCOMP_USER_NOTIF_FD_SYNC_WAKE_UP (1UL << 0)
++
+ /* valid flags for seccomp_notif_addfd */
+ #define SECCOMP_ADDFD_FLAG_SETFD	(1UL << 0) /* Specify remote fd */
+ #define SECCOMP_ADDFD_FLAG_SEND		(1UL << 1) /* Addfd and return it, atomically */
+@@ -150,4 +152,6 @@ struct seccomp_notif_addfd {
+ #define SECCOMP_IOCTL_NOTIF_ADDFD	SECCOMP_IOW(3, \
+ 						struct seccomp_notif_addfd)
+ 
++#define SECCOMP_IOCTL_NOTIF_SET_FLAGS	SECCOMP_IOW(4, __u64)
++
+ #endif /* _UAPI_LINUX_SECCOMP_H */
 diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-index e9852d1b4a5e..667fd2d89464 100644
+index 667fd2d89464..c24900eb8ced 100644
 --- a/kernel/seccomp.c
 +++ b/kernel/seccomp.c
-@@ -145,7 +145,7 @@ struct seccomp_kaddfd {
+@@ -143,11 +143,14 @@ struct seccomp_kaddfd {
+  *           filter->notify_lock.
+  * @next_id: The id of the next request.
   * @notifications: A list of struct seccomp_knotif elements.
++ * @flags: A set of SECCOMP_USER_NOTIF_FD_* flags.
   */
++
  struct notification {
--	struct semaphore request;
-+	atomic_t requests;
+ 	atomic_t requests;
  	u64 next_id;
  	struct list_head notifications;
++	int flags;
  };
-@@ -1116,7 +1116,7 @@ static int seccomp_do_user_notification(int this_syscall,
- 	list_add_tail(&n.list, &match->notif->notifications);
+ 
+ #ifdef SECCOMP_ARCH_NATIVE
+@@ -1117,7 +1120,10 @@ static int seccomp_do_user_notification(int this_syscall,
  	INIT_LIST_HEAD(&n.addfd);
  
--	up(&match->notif->request);
-+	atomic_add(1, &match->notif->requests);
- 	wake_up_poll(&match->wqh, EPOLLIN | EPOLLRDNORM);
+ 	atomic_add(1, &match->notif->requests);
+-	wake_up_poll(&match->wqh, EPOLLIN | EPOLLRDNORM);
++	if (match->notif->flags & SECCOMP_USER_NOTIF_FD_SYNC_WAKE_UP)
++		wake_up_poll_on_current_cpu(&match->wqh, EPOLLIN | EPOLLRDNORM);
++	else
++		wake_up_poll(&match->wqh, EPOLLIN | EPOLLRDNORM);
  
  	/*
-@@ -1388,8 +1388,10 @@ static long seccomp_set_mode_strict(void)
- #ifdef CONFIG_SECCOMP_FILTER
- static void seccomp_notify_free(struct seccomp_filter *filter)
- {
--	kfree(filter->notif);
--	filter->notif = NULL;
-+	struct notification *notif = filter->notif;
-+
-+	WRITE_ONCE(filter->notif, NULL);
-+	kfree_rcu(notif);
- }
- 
- static void seccomp_notify_detach(struct seccomp_filter *filter)
-@@ -1450,6 +1452,16 @@ find_notification(struct seccomp_filter *filter, u64 id)
- 	return NULL;
- }
- 
-+static bool notify_wakeup(struct seccomp_filter *filter)
-+{
-+	bool ret;
-+
-+	rcu_read_lock();
-+	ret = atomic_add_unless(&filter->notif->requests, -1, 0);
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
- 
- static long seccomp_notify_recv(struct seccomp_filter *filter,
- 				void __user *buf)
-@@ -1467,7 +1479,7 @@ static long seccomp_notify_recv(struct seccomp_filter *filter,
- 
- 	memset(&unotif, 0, sizeof(unotif));
- 
--	ret = down_interruptible(&filter->notif->request);
-+	ret = wait_event_interruptible(filter->wqh, notify_wakeup(filter));
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1515,7 +1527,8 @@ static long seccomp_notify_recv(struct seccomp_filter *filter,
- 			if (should_sleep_killable(filter, knotif))
- 				complete(&knotif->ready);
- 			knotif->state = SECCOMP_NOTIFY_INIT;
--			up(&filter->notif->request);
-+			atomic_add(1, &filter->notif->requests);
-+			wake_up_poll(&filter->wqh, EPOLLIN | EPOLLRDNORM);
- 		}
- 		mutex_unlock(&filter->notify_lock);
- 	}
-@@ -1771,15 +1784,15 @@ static const struct file_operations seccomp_notify_ops = {
- static struct file *init_listener(struct seccomp_filter *filter)
- {
- 	struct file *ret;
-+	struct notification *notif;
- 
- 	ret = ERR_PTR(-ENOMEM);
--	filter->notif = kzalloc(sizeof(*(filter->notif)), GFP_KERNEL);
--	if (!filter->notif)
-+	notif = kzalloc(sizeof(*notif), GFP_KERNEL);
-+	if (!notif)
- 		goto out;
- 
--	sema_init(&filter->notif->request, 0);
--	filter->notif->next_id = get_random_u64();
--	INIT_LIST_HEAD(&filter->notif->notifications);
-+	notif->next_id = get_random_u64();
-+	INIT_LIST_HEAD(&notif->notifications);
- 
- 	ret = anon_inode_getfile("seccomp notify", &seccomp_notify_ops,
- 				 filter, O_RDWR);
-@@ -1788,10 +1801,11 @@ static struct file *init_listener(struct seccomp_filter *filter)
- 
- 	/* The file has a reference to it now */
- 	__get_seccomp_filter(filter);
-+	WRITE_ONCE(filter->notif, notif);
- 
- out_notif:
- 	if (IS_ERR(ret))
--		seccomp_notify_free(filter);
-+		kfree(notif);
+ 	 * This is where we wait for a reply from userspace.
+@@ -1574,7 +1580,10 @@ static long seccomp_notify_send(struct seccomp_filter *filter,
+ 	knotif->error = resp.error;
+ 	knotif->val = resp.val;
+ 	knotif->flags = resp.flags;
+-	complete(&knotif->ready);
++	if (filter->notif->flags & SECCOMP_USER_NOTIF_FD_SYNC_WAKE_UP)
++		complete_on_current_cpu(&knotif->ready);
++	else
++		complete(&knotif->ready);
  out:
+ 	mutex_unlock(&filter->notify_lock);
+ 	return ret;
+@@ -1604,6 +1613,26 @@ static long seccomp_notify_id_valid(struct seccomp_filter *filter,
  	return ret;
  }
+ 
++static long seccomp_notify_set_flags(struct seccomp_filter *filter,
++				    void __user *buf)
++{
++	u64 flags;
++	long ret;
++
++	if (copy_from_user(&flags, buf, sizeof(flags)))
++		return -EFAULT;
++
++	if (flags & ~SECCOMP_USER_NOTIF_FD_SYNC_WAKE_UP)
++		return -EINVAL;
++
++	ret = mutex_lock_interruptible(&filter->notify_lock);
++	if (ret < 0)
++		return ret;
++	filter->notif->flags = flags;
++	mutex_unlock(&filter->notify_lock);
++	return ret;
++}
++
+ static long seccomp_notify_addfd(struct seccomp_filter *filter,
+ 				 struct seccomp_notif_addfd __user *uaddfd,
+ 				 unsigned int size)
+@@ -1733,6 +1762,8 @@ static long seccomp_notify_ioctl(struct file *file, unsigned int cmd,
+ 	case SECCOMP_IOCTL_NOTIF_ID_VALID_WRONG_DIR:
+ 	case SECCOMP_IOCTL_NOTIF_ID_VALID:
+ 		return seccomp_notify_id_valid(filter, buf);
++	case SECCOMP_IOCTL_NOTIF_SET_FLAGS:
++		return seccomp_notify_set_flags(filter, buf);
+ 	}
+ 
+ 	/* Extensible Argument ioctls */
 -- 
 2.37.2
 
