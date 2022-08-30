@@ -2,125 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C634ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:05:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64039ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbiH3GFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 02:05:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
+        id S230032AbiH3GFq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 02:05:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiH3GFT (ORCPT
+        with ESMTP id S230036AbiH3GFj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 02:05:19 -0400
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9DC3C8C9;
-        Mon, 29 Aug 2022 23:05:13 -0700 (PDT)
-Received: from [10.18.29.47] (10.18.29.47) by mail-sh.amlogic.com (10.18.11.5)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.9; Tue, 30 Aug
- 2022 14:05:11 +0800
-Message-ID: <72631035-58a6-23b5-1f7e-f1643b120432@amlogic.com>
-Date:   Tue, 30 Aug 2022 14:05:11 +0800
+        Tue, 30 Aug 2022 02:05:39 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B0B6DF86
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:05:36 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id z6so14094046lfu.9
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:05:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=SPCLsnkZZX4iCGdMrI0NRyhLebv9iz4yOZkGgAlJE2s=;
+        b=fy/6Ry4OvY1VBJ9B3BON3QiioEsaarY3fntjpXHYlBWb/KACVwsMzvdX93VIPDX69c
+         I6yZ+P5FmcJSIT0aC/d27ZiNuuGx21Y6gTWSLEXYT6/pSpHc2XeqFSqGClAQIuqeO5h0
+         JaRNs8frE0QkXebQipE0ilYQ6L+mXYS1l3n+22ifu/r0Yw67Jb083X6i/eTaMGi1IPlV
+         Kogt7mu6/+mbMjj5SxxL5QZRrB6lL7ctWnh5uCZndq0xPo+LAoNsRcG+k+VIShZsroTK
+         +8hSGKxtOL+O4O+93eliN0l/e8S+cQBf3rCyP8XUZsJCyBXUYXfkUOaFssefgDV2wZqE
+         Ij5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=SPCLsnkZZX4iCGdMrI0NRyhLebv9iz4yOZkGgAlJE2s=;
+        b=MVQOsfqu6MasMl4I2TzCcd0u68wgI+I9ap/9hfokk0UFWAG+MBoQr2KTgWfWaN1P1G
+         xHCWuZ0YBCkClc4aCYLgZNU5UM5/rbJd/kz1zUGmq/NcGC4G8Ki+CckV42c9FK8QFmbN
+         REYdZqJfRmol1oimayjHIe8pZuQNuQxN1gr+4wwbnDConrufT/r+08OoJ69UdKim7xtW
+         JJJdUdK/ZWmVJP27xwe0RGI0kLvQGQSve+/UrNjj9LdWv92RutpvVQcMib5WZBIELgDJ
+         B0riBgyc272QghvrdiYn2/bDXb7pNUbWw4NCVLkbWwXletck30oOoiny+rj5bggZIjD6
+         UO1Q==
+X-Gm-Message-State: ACgBeo2HeTwuN9L78a0Ez5MvwHFGeVg5aj73agOExwHl6057YKKwSZ96
+        9tU8upPXdygueh9D+4zzGWtPUA==
+X-Google-Smtp-Source: AA6agR6ce+/d6pmsFPtQExEpEdeRmNNuqmCJ0m/vL4bFvetG3QQzMfrjRGyTohY7QzAoirf9loMFgw==
+X-Received: by 2002:a05:6512:234c:b0:492:d9fd:da59 with SMTP id p12-20020a056512234c00b00492d9fdda59mr6849371lfu.63.1661839534020;
+        Mon, 29 Aug 2022 23:05:34 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id e20-20020a196914000000b0048b17852938sm1027643lfc.162.2022.08.29.23.05.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 23:05:33 -0700 (PDT)
+Message-ID: <c36a4b78-241e-8c0d-f2b7-3844fa709be1@linaro.org>
+Date:   Tue, 30 Aug 2022 09:05:31 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH V3 2/6] arm64: dts: meson: add S4 Soc PLL clock controller
- in DT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: arm: qcom: Document additional skus
+ for sc7180 pazquel360
 Content-Language: en-US
-To:     Jerome Brunet <jbrunet@baylibre.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+To:     Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Henry Sun <henrysun@google.com>,
+        Bob Moragues <moragues@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220805085716.5635-1-yu.tu@amlogic.com>
- <20220805085716.5635-3-yu.tu@amlogic.com>
- <19654574-bdc0-9fa5-6465-fc88b20e20c5@linaro.org>
- <c223a85a-b76e-0e82-9a8c-6b60588dc03a@amlogic.com>
- <1jmtccz0f4.fsf@starbuckisacylon.baylibre.com>
- <edc9b0bd-6c69-0562-05ca-db0496897cf1@amlogic.com>
- <1j1qszv0wa.fsf@starbuckisacylon.baylibre.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <1j1qszv0wa.fsf@starbuckisacylon.baylibre.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.18.29.47]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+References: <20220830025438.v2.1.Ic4d4e0777115011544dbc2ab07ed4d7b408c003a@changeid>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220830025438.v2.1.Ic4d4e0777115011544dbc2ab07ed4d7b408c003a@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 30/08/2022 05:55, Yunlong Jia wrote:
+> pazquel360 is an extension project based on pazquel.
+> We create 3 sku on pazquel360:
+>    sku 20 for LTE with physical SIM _and_ eSIM and WiFi
+>    sku 21 for WiFi only
+>    sku 22 for LTE with only a physical SIM
+>  Both sku20 and sku22 are LTE SKUs.
+>  One has the eSIM stuffed and one doesn't.
+>  There is a single shared device tree for the two.
+> 
+> Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
+> 
 
+No need for such blank lines. Do you see them in the code?
 
-On 2022/8/29 17:43, Jerome Brunet wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> 
-> On Mon 15 Aug 2022 at 14:17, Yu Tu <yu.tu@amlogic.com> wrote:
-> 
->> Hi Jerome，
->>
->> On 2022/8/10 21:32, Jerome Brunet wrote:
->>> [ EXTERNAL EMAIL ]
->>> On Fri 05 Aug 2022 at 17:39, Yu Tu <yu.tu@amlogic.com> wrote:
->>>
->>>> Hi Krzysztof,
->>>>       Thank you for your reply.
->>>>
->>>> On 2022/8/5 17:16, Krzysztof Kozlowski wrote:
->>>>> [ EXTERNAL EMAIL ]
->>>>> On 05/08/2022 10:57, Yu Tu wrote:
->>>>>> Added information about the S4 SOC PLL Clock controller in DT.
->>>>>>
->>>>>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->>>>>> ---
->>>>>>     arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 8 ++++++++
->>>>>>     1 file changed, 8 insertions(+)
->>>>>>
->>>>>> diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
->>>>>> index ff213618a598..a816b1f7694b 100644
->>>>>> --- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
->>>>>> +++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
->>>>>> @@ -92,6 +92,14 @@ apb4: apb4@fe000000 {
->>>>>>     			#size-cells = <2>;
->>>>>>     			ranges = <0x0 0x0 0x0 0xfe000000 0x0 0x480000>;
->>>>>>     +			clkc_pll: pll-clock-controller@8000 {
->>>>> Node names should be generic - clock-controller.
->>>>> https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
->>>>>
->>>> I will change to clkc_pll: clock-controller@8000, in next version.
->>> Same comment applies to the binding doc.
->> OKay.
->>> Also it would be nice to split this in two series.
->>> Bindings and drivers in one, arm64 dt in the other. These changes goes
->>> in through different trees.
->> At present, Bindings, DTS and drivers are three series. Do you mean to put
->> Bindings and drivers together? If so, checkpatch.pl will report a warning.
-> 
-> Yes because patches are not in yet so there is a good reason to ignore
-> the warning. Warning will never show up on the actual tree if the
-> patches are correctly ordered.
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
-I think Binding, DTS and drivers use three series and you said two 
-series is not a big problem. Three series are recommended for 
-checkpatch.pl, I think it should be easy for that to separate and merge。
-
-I've sent it to V4. Please look at V4 and give some comments.
-
-> 
->>
->>>
->>>>> Best regards,
->>>>> Krzysztof
->>>>> .
->>> .
-> 
-> .
+Best regards,
+Krzysztof
