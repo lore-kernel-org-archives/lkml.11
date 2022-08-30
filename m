@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0622ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:43:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0563ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbiH3Wnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 18:43:32 -0400
+        id S232492AbiH3Wnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 18:43:49 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231653AbiH3WnT (ORCPT
+        with ESMTP id S231567AbiH3Wn1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 18:43:19 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23D074CDE
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:43:17 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id v65-20020a626144000000b0052f89472f54so5186535pfb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:43:17 -0700 (PDT)
+        Tue, 30 Aug 2022 18:43:27 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08F7680B65
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:43:25 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id k13-20020a056902024d00b0066fa7f50b97so793439ybs.6
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:43:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=2fODE+rP/n4IhsKmyo9TrmeTKfUIF5nKP0v2EkUrneo=;
-        b=gbNNPUBOKBKap2s5shHHjkVzc/iNv8XHjMpvm09nylSEQ3SOdpxMf259plptLgOyhm
-         qtBnC5ARhX9mqeSUEQxwbwuiVXzeMEEAIsNqGvXWYo4cqOY+Vq10bLL0/E/u117bHK1I
-         BppB22ajOfm+RKivJWNiOP4n6ezKLNCsf/eBjzeNYmUBoiTwWRYoGrABmFQhHfdANFR8
-         xc1V/n47Al7DVl2uTC7HoRXD3hwb0eWA8BBGtjplkqwmjVe1rbwtJJdWIr9ER/UOLK8x
-         BsStvO82puuasYylYs10rEkZa8kjaQb1W/tseZoyMgSIsRHmFNCCa5zWJT5GNmRtA45f
-         3i6g==
+        bh=FnC2MODp1Ilbo/3qVuV673Djb8hUYYAKXHPp7uV/l3U=;
+        b=QPd795t1C0ahrsS55brxetoonol6V2jAppY01knmBO6dTEexYKdxvNbkTSQcIcPS0g
+         2kVquW8pntnzZ8ayf2KGc74LWg1ImA0LODvDVKrQ5RNE9iPAZqoluWZufVPBUn48fc67
+         kW1IFw4yDbnloy5QQ/STgOmCIxz9plIKPFM0HDvfvRd0xIR/a+XXnVcrsaDE4dXMXlvp
+         2IrquyFJf8Ta/3dM4DHzEUE06trbxbXXW3PUtdEzPpNE9l9jhx85/6oghBZ5fuiPnSIa
+         HihGAukLvraBpoNRHwoZwUflCiTPtuG2KVmnc5uUF0aSGnXsPpEIuWMW3HwQM/7lAwtJ
+         qghA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=2fODE+rP/n4IhsKmyo9TrmeTKfUIF5nKP0v2EkUrneo=;
-        b=AhDjBhcN80UQ++nkp4AHw7GuzhoVUW4wlJevHwzNGVOFBhvmosNoftWwjx3Ga6/hUz
-         yCZEm+TSFG98QkxRAf4M40DoPzSIdP9BnbkStVv+tv4FTQCoH9XB+I7KOxU22oREopXX
-         V4ayq9xtsXisNoEZcwWfP3xeYjh6xJw3zcJ2zPC81phvwCEr7pnJPX4YRCJ5DfK/tQPJ
-         uVbTCsPsFk3s5l2DZHWvXLvzmF9fsKBGtyAn5Zn8Tr+XFjPicSieBwMBbCzHulIKiaLz
-         79pKEqQmVAVtnRw1ORdwF3UYdEVvRDDiaeQszruDkZ5XzMzPTwgBCq+BUTeQsUhWwvfi
-         FoYA==
-X-Gm-Message-State: ACgBeo3+JcAcLYZ4W0aRImX7Pj8Lei06PymadvKGo6PykhisP931ylR1
-        fgvO7K32p/N+N1jVJToTLV6cwH1P0zQevyqW
-X-Google-Smtp-Source: AA6agR6s8cwIw86sUzfNeW1dAbiwVvALjW5Jj3PJi8QbYI7h65XJwdYYtjA2IhmoCKLUNMKH83DOkyjt1ks1NcY1
+        bh=FnC2MODp1Ilbo/3qVuV673Djb8hUYYAKXHPp7uV/l3U=;
+        b=JYl+ROJ7RqIhLG1N7lJU8G++rlYpvb+7QWKi0+lBVf3fEniViLS2yukMtUsCWCJIfV
+         xyEhODDRyGB1PxroV3Qz6mHSgMDlpzfWQ5DJus7HRRCHUi5HfnSYSF/yCnZ+adm/c5Td
+         HBkwsDtM9X9uAS0azmsAO6fqJy2kX7014n3JD9Sr9yMJ4w2tWtflkL8s/PelFvojaa4F
+         J6U2AMXH/67gwkzUYZvyzWJ7Z9EgRn9gCVY6nxmGDA9ljSsAxWwp8H5LYAc59J0euVBK
+         7Z3KITJOJCr1uQEPIwb6HjrtsudixXzp7O0ib4QoqiRgRuvmRu77t9lY0lMFhjpyyTSa
+         GtRA==
+X-Gm-Message-State: ACgBeo27nh4DDJauRgMSgG1XpAMmB9qhL1zKoJbnYNLQ+sZf8exaXoCo
+        MMmNrpc7MhXLZr44sRJGKdJ9/Pt3wWVWWSxW
+X-Google-Smtp-Source: AA6agR7J2g4yWWCjTXSW8bJGJNJQDF4Q6cZWWSd4WOmEIBPpC8PfIDGdBXAbKzkcTBd8rZjpqBovURMzodQSv4dn
 X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f8])
- (user=vannapurve job=sendgmr) by 2002:a17:902:e883:b0:175:22e8:f30a with SMTP
- id w3-20020a170902e88300b0017522e8f30amr4205183plg.127.1661899397359; Tue, 30
- Aug 2022 15:43:17 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 22:42:53 +0000
+ (user=vannapurve job=sendgmr) by 2002:a81:bb43:0:b0:33d:cdd9:aa56 with SMTP
+ id a3-20020a81bb43000000b0033dcdd9aa56mr15659487ywl.240.1661899403835; Tue,
+ 30 Aug 2022 15:43:23 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 22:42:55 +0000
 In-Reply-To: <20220830224259.412342-1-vannapurve@google.com>
 Mime-Version: 1.0
 References: <20220830224259.412342-1-vannapurve@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830224259.412342-3-vannapurve@google.com>
-Subject: [RFC V2 PATCH 2/8] kvm: Add HVA range operator
+Message-ID: <20220830224259.412342-5-vannapurve@google.com>
+Subject: [RFC V2 PATCH 4/8] selftests: kvm: sev: Support memslots with private memory
 From:   Vishal Annapurve <vannapurve@google.com>
 To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-kselftest@vger.kernel.org
@@ -79,91 +79,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce HVA range operator so that other KVM subsystems
-can operate on HVA range.
+Introduce an additional helper API to create a SEV VM with private
+memory memslots.
 
 Signed-off-by: Vishal Annapurve <vannapurve@google.com>
 ---
- include/linux/kvm_host.h |  6 +++++
- virt/kvm/kvm_main.c      | 48 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 54 insertions(+)
+ tools/testing/selftests/kvm/include/x86_64/sev.h |  2 ++
+ tools/testing/selftests/kvm/lib/x86_64/sev.c     | 15 ++++++++++++---
+ 2 files changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 4508fa0e8fb6..c860e6d6408d 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1398,6 +1398,12 @@ void *kvm_mmu_memory_cache_alloc(struct kvm_mmu_memory_cache *mc);
- void kvm_mmu_updating_begin(struct kvm *kvm, gfn_t start, gfn_t end);
- void kvm_mmu_updating_end(struct kvm *kvm, gfn_t start, gfn_t end);
+diff --git a/tools/testing/selftests/kvm/include/x86_64/sev.h b/tools/testing/selftests/kvm/include/x86_64/sev.h
+index b6552ea1c716..628801707917 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/sev.h
++++ b/tools/testing/selftests/kvm/include/x86_64/sev.h
+@@ -38,6 +38,8 @@ void kvm_sev_ioctl(struct sev_vm *sev, int cmd, void *data);
+ struct kvm_vm *sev_get_vm(struct sev_vm *sev);
+ uint8_t sev_get_enc_bit(struct sev_vm *sev);
  
-+typedef int (*kvm_hva_range_op_t)(struct kvm *kvm,
-+				struct kvm_gfn_range *range, void *data);
-+
-+int kvm_vm_do_hva_range_op(struct kvm *kvm, unsigned long hva_start,
-+		unsigned long hva_end, kvm_hva_range_op_t handler, void *data);
-+
- long kvm_arch_dev_ioctl(struct file *filp,
- 			unsigned int ioctl, unsigned long arg);
- long kvm_arch_vcpu_ioctl(struct file *filp,
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 7597949fe031..16cb9ab59143 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -647,6 +647,54 @@ static __always_inline int __kvm_handle_hva_range(struct kvm *kvm,
- 	return (int)ret;
++struct sev_vm *sev_vm_create_with_flags(uint32_t policy, uint64_t npages,
++	uint32_t memslot_flags);
+ struct sev_vm *sev_vm_create(uint32_t policy, uint64_t npages);
+ void sev_vm_free(struct sev_vm *sev);
+ void sev_vm_launch(struct sev_vm *sev);
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/sev.c b/tools/testing/selftests/kvm/lib/x86_64/sev.c
+index 44b5ce5cd8db..6a329ea17f9f 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/sev.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/sev.c
+@@ -171,7 +171,8 @@ void sev_vm_free(struct sev_vm *sev)
+ 	free(sev);
  }
  
-+int kvm_vm_do_hva_range_op(struct kvm *kvm, unsigned long hva_start,
-+		unsigned long hva_end, kvm_hva_range_op_t handler, void *data)
-+{
-+	int ret = 0;
-+	struct kvm_gfn_range gfn_range;
-+	struct kvm_memory_slot *slot;
-+	struct kvm_memslots *slots;
-+	int i, idx;
-+
-+	if (WARN_ON_ONCE(hva_end <= hva_start))
-+		return -EINVAL;
-+
-+	idx = srcu_read_lock(&kvm->srcu);
-+
-+	for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++) {
-+		struct interval_tree_node *node;
-+
-+		slots = __kvm_memslots(kvm, i);
-+		kvm_for_each_memslot_in_hva_range(node, slots,
-+					  hva_start, hva_end - 1) {
-+			unsigned long start, end;
-+
-+			slot = container_of(node, struct kvm_memory_slot,
-+				hva_node[slots->node_idx]);
-+			start = max(hva_start, slot->userspace_addr);
-+			end = min(hva_end, slot->userspace_addr +
-+						  (slot->npages << PAGE_SHIFT));
-+
-+			/*
-+			 * {gfn(page) | page intersects with [hva_start, hva_end)} =
-+			 * {gfn_start, gfn_start+1, ..., gfn_end-1}.
-+			 */
-+			gfn_range.start = hva_to_gfn_memslot(start, slot);
-+			gfn_range.end = hva_to_gfn_memslot(end + PAGE_SIZE - 1, slot);
-+			gfn_range.slot = slot;
-+
-+			ret = handler(kvm, &gfn_range, data);
-+			if (ret)
-+				goto e_ret;
-+		}
+-struct sev_vm *sev_vm_create(uint32_t policy, uint64_t npages)
++struct sev_vm *sev_vm_create_with_flags(uint32_t policy, uint64_t npages,
++	uint32_t memslot_flags)
+ {
+ 	struct sev_vm *sev;
+ 	struct kvm_vm *vm;
+@@ -188,9 +189,12 @@ struct sev_vm *sev_vm_create(uint32_t policy, uint64_t npages)
+ 	vm->vpages_mapped = sparsebit_alloc();
+ 	vm_set_memory_encryption(vm, true, true, sev->enc_bit);
+ 	pr_info("SEV cbit: %d\n", sev->enc_bit);
+-	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, 0, 0, npages, 0);
+-	sev_register_user_region(sev, addr_gpa2hva(vm, 0),
++	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS, 0, 0, npages,
++		memslot_flags);
++	if (!(memslot_flags & KVM_MEM_PRIVATE)) {
++		sev_register_user_region(sev, addr_gpa2hva(vm, 0),
+ 				 npages * vm->page_size);
 +	}
-+
-+e_ret:
-+	srcu_read_unlock(&kvm->srcu, idx);
-+
-+	return ret;
+ 
+ 	pr_info("SEV guest created, policy: 0x%x, size: %lu KB\n",
+ 		sev->sev_policy, npages * vm->page_size / 1024);
+@@ -198,6 +202,11 @@ struct sev_vm *sev_vm_create(uint32_t policy, uint64_t npages)
+ 	return sev;
+ }
+ 
++struct sev_vm *sev_vm_create(uint32_t policy, uint64_t npages)
++{
++	return sev_vm_create_with_flags(policy, npages, 0);
 +}
 +
- static __always_inline int kvm_handle_hva_range(struct mmu_notifier *mn,
- 						unsigned long start,
- 						unsigned long end,
+ void sev_vm_launch(struct sev_vm *sev)
+ {
+ 	struct kvm_sev_launch_start ksev_launch_start = {0};
 -- 
 2.37.2.672.g94769d06f0-goog
 
