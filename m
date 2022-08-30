@@ -2,126 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1D66ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9379BECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbiH3WSr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 18:18:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49590 "EHLO
+        id S231877AbiH3WUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 18:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbiH3WSp (ORCPT
+        with ESMTP id S229565AbiH3WUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 18:18:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083316D9E7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:18:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661897923;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TSSAWMfY5IhOGMsl4sCR/Sqq+wVCREXXNdNLZqAgz7E=;
-        b=SlbKa74lYPJssd8c/BRasmJh/BCMoFRnl+LKFu990Im56H2r9rlfnBx/pOVX2WeyD+cO3o
-        FYv9Aq3OVjO0cCeb16LKkwvyDQSzcG9QtFHmy/Qqt2/f0jWBkgt7YcdOlSmwj0HlMHgXb+
-        EhLsUhL3sgVDc+T6UkwIx9stxfQlMAg=
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
- [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-453-8uZ9sd4qOtqzvjUReITHDg-1; Tue, 30 Aug 2022 18:18:42 -0400
-X-MC-Unique: 8uZ9sd4qOtqzvjUReITHDg-1
-Received: by mail-io1-f71.google.com with SMTP id y10-20020a5d914a000000b00688fa7b2252so7542822ioq.0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:18:41 -0700 (PDT)
+        Tue, 30 Aug 2022 18:20:09 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F9B220E1
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:06 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id f16-20020a17090a4a9000b001f234757bbbso5200238pjh.6
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date;
+        bh=UI4OmQmR9sQA7gmj1l+KCwWtd2GoCQ+O3NdQp7yrdNo=;
+        b=Y2OIwO5LuS2HwhMYuCBYf0GYwKgdpiShKssh+aazZImIauEqH6JXAftS3gtKk9/LnQ
+         NBmgdT1OIICuONG4IFO7Eb49mhSttApoTZy+JK9wATYKy+b3wPGIgx3E21JuIAIdDzwS
+         9WPXD+b6jWGMwiB7vpZNFpimGl8LXSjbUkkwVblWgmll9j//5mI7OCKrqS+0hExal78Z
+         RKEheQl5WqfD8/xJyQDTR6QiwL3rwl0jo7vHe7lZFztEJLAGcy1NYvDLWEOVuqaYSZQf
+         ByDZQqUcdub0BN/1mv/F0EjecxKyltRpbAqHOnWMGyCLyOHnPS+BRbDsODC0xQOODBfA
+         XXsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc;
-        bh=TSSAWMfY5IhOGMsl4sCR/Sqq+wVCREXXNdNLZqAgz7E=;
-        b=0V+4mC32oIDaeOjyLYNbcveucbM5zyuzckq6P0P6Ep0tnXyTkUC4G4+jyNs+batQ6S
-         d37itlK6Yzreeg/6bVdNG8hkCy5sf6mULl2rYP/ZVibkBL15ozItVXXOPOd/yJcwgAnv
-         ZHB8FybDdP8zff8gGfnLukUGC9ajPpfY54lf0HSzgPu/trby70BmmZZ+X+f+C/azu5pc
-         w8ZdLupgsR8Dl6pDYmXMPtsgx5vxK+lN12jCh1dD/G2YVcwV9Yc5eiTSL8Z6a0AXeiyQ
-         bmGeDFWiLI+vnRxDd0K6fU8UJvlXG7r1xi5QGvyUwF1y7QB8EAyU99TyqfZhhZe9H18K
-         iYHw==
-X-Gm-Message-State: ACgBeo1+QmPyazwlLXC/VFvF2BCWglM9054Azkger7DroZDck90soOrC
-        BYrUtHRTv8rLgDCyQD+QXp9NotfQ6nqgB0OFLMEUmJAnF0cgjdquRYjWQu1cj/A51zQivQzpECc
-        ys2S+baqGzR3vvcziJynyQAVt
-X-Received: by 2002:a05:6602:1c4:b0:689:2db5:ea0f with SMTP id w4-20020a05660201c400b006892db5ea0fmr11509838iot.197.1661897921390;
-        Tue, 30 Aug 2022 15:18:41 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR73OWrrAXNYUM7X5f/RFjdmLhOTn+HRSKcgl5cCW81jvTLPZGl1q1ozpKM9lFAFywZRpg27UQ==
-X-Received: by 2002:a05:6602:1c4:b0:689:2db5:ea0f with SMTP id w4-20020a05660201c400b006892db5ea0fmr11509822iot.197.1661897921151;
-        Tue, 30 Aug 2022 15:18:41 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id z30-20020a056602081e00b0068b1858c81asm6110858iow.13.2022.08.30.15.18.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 15:18:40 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 16:18:38 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Kevin Tian <kevin.tian@intel.com>
-Cc:     Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Eric Farman <farman@linux.ibm.com>,
-        Matthew Rosato <mjrosato@linux.ibm.com>,
-        Halil Pasic <pasic@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Tony Krowiak <akrowiak@linux.ibm.com>,
-        Jason Herne <jjherne@linux.ibm.com>,
-        Harald Freudenberger <freude@linux.ibm.com>,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Longfang Liu <liulongfang@huawei.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Yishai Hadas <yishaih@nvidia.com>,
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=UI4OmQmR9sQA7gmj1l+KCwWtd2GoCQ+O3NdQp7yrdNo=;
+        b=jGKvDrV4PJcsIdZ8P7W0/glcZbZGZxYnGlmhRmGMHLhU+vyV3R+zi2q/oYB5TS3A0f
+         ucMmF3hv+qV4pWkwd9Ud1uXOYcB1EYdiuGtfs5ubaCk6NhIiuaz4vW2IhLQDgI1+q50y
+         6090RtVlTPxBSCGumrMxitlEefWcX/CTPDL2qPP1gEL/LJwfucoGFVc8lrC8HXupzjlc
+         OXVZy12NsIejiYyahqwx772wabmXSMP387qqjD1JpE1MXE6yxynC7DSoQuXajNq/gKgA
+         QDqU8Pxbjg30pGmEb/9cWxRjXwZsj/w+4FSrHGEM6ebaRtyn92FWMrf0T08eUQalld+U
+         2RCQ==
+X-Gm-Message-State: ACgBeo21E9dB337YSC5ZGzLE57EQIIyrUXi5YmQrM4aNpLgjLHX5W0y8
+        bScK5rh79BKt24O/V7C5vlMyh6h1CQ==
+X-Google-Smtp-Source: AA6agR6Uzvh0P1N76w4nQ1rBpLF+zuxzX4pnDRJPPty9seQHvvtRyVj+1CTXhTL90+PuLdcTGp65xHvyhw==
+X-Received: from sagi.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:241b])
+ (user=sagis job=sendgmr) by 2002:a05:6a00:21c5:b0:52b:fc9c:295b with SMTP id
+ t5-20020a056a0021c500b0052bfc9c295bmr23563210pfj.56.1661898005406; Tue, 30
+ Aug 2022 15:20:05 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 22:19:43 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
+Message-ID: <20220830222000.709028-1-sagis@google.com>
+Subject: [RFC PATCH v2 00/17] TDX KVM selftests
+From:   Sagi Shahar <sagis@google.com>
+To:     linux-kselftest@vger.kernel.org
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
+        Sagi Shahar <sagis@google.com>,
+        Erdem Aktas <erdemaktas@google.com>,
+        Ryan Afranji <afranji@google.com>,
+        Roger Wang <runanwang@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Jones <drjones@redhat.com>,
+        Marc Zyngier <maz@kernel.org>, Ben Gardon <bgardon@google.com>,
+        Jim Mattson <jmattson@google.com>,
+        David Matlack <dmatlack@google.com>,
+        Peter Xu <peterx@redhat.com>, Oliver Upton <oupton@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Yang Zhong <yang.zhong@intel.com>,
+        Wei Wang <wei.w.wang@intel.com>,
+        Xiaoyao Li <xiaoyao.li@intel.com>,
+        Peter Gonda <pgonda@google.com>, Marc Orr <marcorr@google.com>,
+        Emanuele Giuseppe Esposito <eesposit@redhat.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
         Eric Auger <eric.auger@redhat.com>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Abhishek Sahu <abhsahu@nvidia.com>,
-        intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        kvm@vger.kernel.org, Yi Liu <yi.l.liu@intel.com>
-Subject: Re: [PATCH 15/15] vfio: Add struct device to vfio_device
-Message-ID: <20220830161838.4aa47045.alex.williamson@redhat.com>
-In-Reply-To: <20220827171037.30297-16-kevin.tian@intel.com>
-References: <20220827171037.30297-1-kevin.tian@intel.com>
-        <20220827171037.30297-16-kevin.tian@intel.com>
-Organization: Red Hat
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Yanan Wang <wangyanan55@huawei.com>,
+        Aaron Lewis <aaronlewis@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Peter Shier <pshier@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Zhenzhong Duan <zhenzhong.duan@intel.com>,
+        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>,
+        Like Xu <like.xu@linux.intel.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 28 Aug 2022 01:10:37 +0800
-Kevin Tian <kevin.tian@intel.com> wrote:
+Hello,
 
-> From: Yi Liu <yi.l.liu@intel.com>
-> 
-> and replace kref. With it a 'vfio-dev/vfioX' node is created under the
-> sysfs path of the parent, indicating the device is bound to a vfio
-> driver, e.g.:
-> 
-> /sys/devices/pci0000\:6f/0000\:6f\:01.0/vfio-dev/vfio0
-> 
-> It is also a preparatory step toward adding cdev for supporting future
-> device-oriented uAPI.
+This is v2 of the patch series for TDX selftests.
 
-Shall we start Documentation/ABI/testing/vfio-dev now?  Thanks.
+It is based on v5.19-rc8 and Intel's V8 of the TDX host patches which
+was proposed in https://lkml.org/lkml/2022/8/8/877
 
-Alex
+The tree can be found at
+https://github.com/googleprodkernel/linux-cc/tree/selftests
+
+Major changes vrom v1:
+- rebased to v5.19
+- added helpers for success and failure reporting
+- added additional test cases
+
+---
+TDX stands for Trust Domain Extensions which isolates VMs from the
+virtual-machine manager (VMM)/hypervisor and any other software on the
+platform.
+
+Intel has recently submitted a set of RFC patches for KVM support for
+TDX and more information can be found on the latest TDX Support
+Patches: https://lkml.org/lkml/2022/8/8/877
+
+Due to the nature of the confidential computing environment that TDX
+provides, it is very difficult to verify/test the KVM support. TDX
+requires UEFI and the guest kernel to be enlightened which are all under
+development.
+
+We are working on a set of selftests to close this gap and be able to
+verify the KVM functionality to support TDX lifecycle and GHCI [1]
+interface.
+
+We are looking for any feedback on:
+- Patch series itself
+- Any suggestion on how we should approach testing TDX functionality.
+Does selftests seems reasonable or should we switch to using KVM
+unit tests. I would be happy to get some perspective on how KVM unit
+tests can help us more.
+- Any test case or scenario that we should add.
+- Anything else I have not thought of yet.
+
+Current patch series provide the following capabilities:
+
+- Provide helper functions to create a TD (Trusted Domain) using the KVM
+  ioctls
+- Provide helper functions to create a guest image that can include any
+  testing code
+- Provide helper functions and wrapper functions to write testing code
+  using GHCI interface
+- Add a test case that verifies TDX life cycle
+- Add a test case that verifies TDX GHCI port IO
+
+TODOs:
+- Use existing function to create page tables dynamically
+  (ie __virt_pg_map())
+- Remove arbitrary defined magic numbers for data structure offsets
+- Add TDVMCALL for error reporting
+- Add additional test cases as some listed below
+- Add #VE handlers to help testing more complicated test cases
+
+---
+Erdem Aktas (4):
+  KVM: selftests: Add support for creating non-default type VMs
+  KVM: selftest: Add helper functions to create TDX VMs
+  KVM: selftest: Adding TDX life cycle test.
+  KVM: selftest: Adding test case for TDX port IO
+
+Roger Wang (1):
+  KVM: selftest: TDX: Add TDG.VP.INFO test
+
+Ryan Afranji (2):
+  KVM: selftest: TDX: Verify the behavior when host consumes a TD
+    private memory
+  KVM: selftest: TDX: Add shared memory test
+
+Sagi Shahar (10):
+  KVM: selftest: TDX: Add report_fatal_error test
+  KVM: selftest: TDX: Add basic TDX CPUID test
+  KVM: selftest: TDX: Add basic get_td_vmcall_info test
+  KVM: selftest: TDX: Add TDX IO writes test
+  KVM: selftest: TDX: Add TDX IO reads test
+  KVM: selftest: TDX: Add TDX MSR read/write tests
+  KVM: selftest: TDX: Add TDX HLT exit test
+  KVM: selftest: TDX: Add TDX MMIO reads test
+  KVM: selftest: TDX: Add TDX MMIO writes test
+  KVM: selftest: TDX: Add TDX CPUID TDVMCALL test
+
+ tools/testing/selftests/kvm/Makefile          |    2 +
+ .../selftests/kvm/include/kvm_util_base.h     |   12 +-
+ .../selftests/kvm/include/x86_64/processor.h  |    1 +
+ tools/testing/selftests/kvm/lib/kvm_util.c    |    6 +-
+ .../selftests/kvm/lib/x86_64/processor.c      |   27 +
+ tools/testing/selftests/kvm/lib/x86_64/tdx.h  |  495 +++++
+ .../selftests/kvm/lib/x86_64/tdx_lib.c        |  373 ++++
+ .../selftests/kvm/x86_64/tdx_vm_tests.c       | 1666 +++++++++++++++++
+ 8 files changed, 2577 insertions(+), 5 deletions(-)
+ create mode 100644 tools/testing/selftests/kvm/lib/x86_64/tdx.h
+ create mode 100644 tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c
+ create mode 100644 tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
+
+-- 
+2.37.2.789.g6183377224-goog
 
