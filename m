@@ -2,194 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A268ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A347BECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:06:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229682AbiH3KFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
+        id S230176AbiH3KGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:06:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiH3KEP (ORCPT
+        with ESMTP id S230166AbiH3KFT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:04:15 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DDD2E9935
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:02:10 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id z6so14784734lfu.9
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:02:09 -0700 (PDT)
+        Tue, 30 Aug 2022 06:05:19 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DBCEEF26
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:03:03 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id by6so10781681ljb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:03:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rasmusvillemoes.dk; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=XTo3q+mYdw/9PjZFiZ4r8XFtLJMcNPoTEDIQJX2GN1A=;
-        b=PMtleank1JlxTB9xtAYWSLgzJx5+N0S3rWQGvBrc4xHau8uCKKBNcWiA+YGgNIwucg
-         kFZfewjJDI7yS5rnFe+t3TeYIhNsg6LOgI7Q5IhxYkqNdmEdQ6XBX7LtgSNmNtUUCrSy
-         ZAqxYx/T+io8wNiFniaem6BXmx90apn8Fczns=
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=+Rmf6Ay/5f9NnZwdZRewRAWeUIFEVxm3g3aQu9VQRg4=;
+        b=P0J8K0R7ZZqi6Jsr1dj02/aY0fuWShyfs2bZj+MZZ8gPn5iVvSjI/79ZsYMxzinfwz
+         MNndVVaIsJPtL70GXStzlwNXHj6K0gb74SLgWUT7RRwbmIPbnxAWsQ8gHlbJQ2JB2KSL
+         6BpZpoKnYD6w6pOeM2AadeKBziK+hYOF9M7aeNgKTFhLBn0CtVBwYvvSocucy81J3X5B
+         CZgKUSS31ZUTr6353s+0CeKI1VoZ3OpZAhZd0f4X+vnloGG816uQ0HD+L+oD2uT28Bdn
+         6L3FPQ+pDIepyo5QdJdXtYa7l6z+Ko9L3l01QBe4RxhHNNuzBdszogrMrL59ug3B+NVC
+         rgwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=XTo3q+mYdw/9PjZFiZ4r8XFtLJMcNPoTEDIQJX2GN1A=;
-        b=yVQh0Na6z0RWBeKQOrCGHcLE8uGvNL3O+4LY2ZRMc7toWxGEe/j/+G6HY+ZwHhI9xc
-         cJIlIVkspc4nHwCQcOaITqEG9b4Dq08rC3qBsFtPV/+OaKhYwGxfweoSMSPK9v+pVn/Z
-         MsL79G2E8alyFn0SHftNBhhDhF/io9+v5hbkvfzw78JJ/pAkVFLEZTtPM0swLEKep9z3
-         Yn1L9GVy+sVYND/EAh0mStjtv/DXSC3h/RKXR1izM9nIGSUavxURxAN1n35EX/8XGJsT
-         +ZCxw6PfPlwcXl78YGWDTVQdGe3NwhbMKWbj3jciCnoKVHCnPIr8IUNU/38/6JHXpxtX
-         /aEQ==
-X-Gm-Message-State: ACgBeo3hPyBdnx/e1yizQG2XS1tgEVUZdca7eDKB44FYWmaBnSGaZUSJ
-        pnHQa5OiMRB9I6tfB+m533qGTw==
-X-Google-Smtp-Source: AA6agR7OkZ+mkz0MOg8POSt7JBF/h6f019AHL8Fu93/UAdUMpZ4aQjBCUvnFmcihuv0hxXKUkzv5kg==
-X-Received: by 2002:ac2:4c55:0:b0:492:d91d:363f with SMTP id o21-20020ac24c55000000b00492d91d363fmr8463727lfk.116.1661853729576;
-        Tue, 30 Aug 2022 03:02:09 -0700 (PDT)
-Received: from prevas-ravi.prevas.se ([81.216.59.226])
-        by smtp.gmail.com with ESMTPSA id m6-20020a056512114600b0048af6242892sm1573435lfg.14.2022.08.30.03.02.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 03:02:08 -0700 (PDT)
-From:   Rasmus Villemoes <linux@rasmusvillemoes.dk>
-To:     Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org
-Subject: [PATCH 6/6] rtc: isl12022: add support for temperature sensor
-Date:   Tue, 30 Aug 2022 12:01:52 +0200
-Message-Id: <20220830100152.698506-7-linux@rasmusvillemoes.dk>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220830100152.698506-1-linux@rasmusvillemoes.dk>
-References: <20220830100152.698506-1-linux@rasmusvillemoes.dk>
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=+Rmf6Ay/5f9NnZwdZRewRAWeUIFEVxm3g3aQu9VQRg4=;
+        b=sUT+0g48QRqhpydzzqrm5q8A8LgfhaAWn662f2J/fWiWcAxjxPW0NpfyAGi9NS5Fv0
+         wXzzoIr0krvLjH4Iv2RZA6IUiamskvI1KFz5si5xcW0rS2HMwri/zguBLqQuJVYbY4KL
+         8XDS/OMQF7S37gNdgCI0qN80hiGXxiA7UWwl7xwatN8GtwFzUKgVkP5UZi1/xKr1f0Em
+         G/sbZGyERDNYq+sX7Gyw5kGL08nFLJyxe9L9dkAZqIpolm8+18uS0uUFaAH9LlPXuFDq
+         ton1hA0OByQA1OE7BTwk95LZiGaaSwJDnlkJ7zuvJjjUw6z66dQDXt3Wv2y/JNiJ65Yv
+         Lzvw==
+X-Gm-Message-State: ACgBeo342fKl+8lQChfO/4lXnbSB5/8DPEf+xpgTIbll7VQCkG0MBhLp
+        Q5Z95ApbOysQrFwscAA3B1A3Pw==
+X-Google-Smtp-Source: AA6agR7gmsLtXHKiV5/+nl4hdZyDBOEekrdwrl2N0/Dt19xwRjqcrEz1LF6+TNZhAHJwBOXqhHa8Hg==
+X-Received: by 2002:a2e:b282:0:b0:25e:46b6:ff33 with SMTP id 2-20020a2eb282000000b0025e46b6ff33mr6645589ljx.503.1661853781591;
+        Tue, 30 Aug 2022 03:03:01 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id p9-20020a2eba09000000b0025df5f38da8sm1707002lja.119.2022.08.30.03.03.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 03:03:01 -0700 (PDT)
+Message-ID: <6f5183b9-7979-b71d-6051-23752cd9580e@linaro.org>
+Date:   Tue, 30 Aug 2022 13:02:59 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v5 5/6] dt-bindings: drm/msm/gpu: Add optional resets
+Content-Language: en-US
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        Rob Clark <robdclark@gmail.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, Sean Paul <sean@poorly.run>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1661714479-28981-1-git-send-email-quic_akhilpo@quicinc.com>
+ <20220829005035.v5.5.Ieffadd08a071a233213ced4406bf84bb5922ab9a@changeid>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220829005035.v5.5.Ieffadd08a071a233213ced4406bf84bb5922ab9a@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Signed-off-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
----
- drivers/rtc/rtc-isl12022.c | 81 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 81 insertions(+)
+On 28/08/2022 22:21, Akhil P Oommen wrote:
+> Add an optional reference to GPUCC reset which can be used to ensure cx
+> gdsc collapse during gpu recovery.
+> 
+> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+> ---
+> 
+> Changes in v5:
+> - Nit: Remove a duplicate blank line (Krzysztof)
 
-diff --git a/drivers/rtc/rtc-isl12022.c b/drivers/rtc/rtc-isl12022.c
-index b295ec92ee17..1bd72f436318 100644
---- a/drivers/rtc/rtc-isl12022.c
-+++ b/drivers/rtc/rtc-isl12022.c
-@@ -17,6 +17,8 @@
- #include <linux/of.h>
- #include <linux/of_device.h>
- #include <linux/regmap.h>
-+#include <linux/hwmon.h>
-+#include <linux/hwmon-sysfs.h>
- 
- /* ISL register offsets */
- #define ISL12022_REG_SC		0x00
-@@ -30,6 +32,9 @@
- #define ISL12022_REG_SR		0x07
- #define ISL12022_REG_INT	0x08
- 
-+#define ISL12022_REG_BETA	0x0d
-+#define ISL12022_REG_TEMP_L	0x28
-+
- /* ISL register bits */
- #define ISL12022_HR_MIL		(1 << 7)	/* military or 24 hour time */
- 
-@@ -38,6 +43,7 @@
- 
- #define ISL12022_INT_WRTC	(1 << 6)
- 
-+#define ISL12022_BETA_TSE	(1 << 7)
- 
- static struct i2c_driver isl12022_driver;
- 
-@@ -48,6 +54,79 @@ struct isl12022 {
- 	bool write_enabled;	/* true if write enable is set */
- };
- 
-+/*
-+ * A user-initiated temperature conversion is not started by this function,
-+ * so the temperature is updated once every ~60 seconds.
-+ */
-+static int isl12022_hwmon_read_temp(struct device *dev, s32 *mC)
-+{
-+	struct isl12022 *isl12022 = dev_get_drvdata(dev);
-+	struct regmap *regmap = isl12022->regmap;
-+	u8 temp_buf[2];
-+	s32 temp;
-+	int ret;
-+
-+	ret = regmap_bulk_read(regmap, ISL12022_REG_TEMP_L,
-+			       temp_buf, sizeof(temp_buf));
-+	if (ret)
-+		return ret;
-+	/*
-+	 * Temperature is represented as a 10-bit number, unit half-Kelvins.
-+	 */
-+	temp = (temp_buf[1] << 8) | temp_buf[0];
-+	temp *= 500;
-+	temp -= 273000;
-+
-+	*mC = temp;
-+
-+	return 0;
-+}
-+
-+static ssize_t
-+isl12022_hwmon_show_temp(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	int ret;
-+	s32 temp;
-+
-+	ret = isl12022_hwmon_read_temp(dev, &temp);
-+	if (ret)
-+		return ret;
-+
-+	return sprintf(buf, "%d\n", temp);
-+}
-+static SENSOR_DEVICE_ATTR(temp1_input, 0444, isl12022_hwmon_show_temp,
-+			  NULL, 0);
-+
-+static struct attribute *isl12022_hwmon_attrs[] = {
-+	&sensor_dev_attr_temp1_input.dev_attr.attr,
-+	NULL,
-+};
-+ATTRIBUTE_GROUPS(isl12022_hwmon);
-+
-+static void isl12022_hwmon_register(struct device *dev)
-+{
-+	struct isl12022 *isl12022;
-+	struct device *hwmon;
-+	int ret;
-+
-+	if (!IS_REACHABLE(CONFIG_HWMON))
-+		return;
-+
-+	isl12022 = dev_get_drvdata(dev);
-+
-+	ret = regmap_update_bits(isl12022->regmap, ISL12022_REG_BETA,
-+				 ISL12022_BETA_TSE, ISL12022_BETA_TSE);
-+	if (ret) {
-+		dev_warn(dev, "unable to enable temperature sensor\n");
-+		return;
-+	}
-+
-+	hwmon = devm_hwmon_device_register_with_groups(dev, "isl12022", isl12022,
-+						       isl12022_hwmon_groups);
-+	if (IS_ERR(hwmon))
-+		dev_warn(dev, "unable to register hwmon device: %pe\n", hwmon);
-+}
-+
- /*
-  * In the routines that deal directly with the isl12022 hardware, we use
-  * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
-@@ -179,6 +258,8 @@ static int isl12022_probe(struct i2c_client *client)
- 		return PTR_ERR(isl12022->regmap);
- 	}
- 
-+	isl12022_hwmon_register(&client->dev);
-+
- 	isl12022->rtc = devm_rtc_allocate_device(&client->dev);
- 	if (IS_ERR(isl12022->rtc))
- 		return PTR_ERR(isl12022->rtc);
--- 
-2.37.2
+FWIW:
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
