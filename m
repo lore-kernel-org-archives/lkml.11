@@ -2,227 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D253ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 383D5ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229481AbiH3NTo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:19:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36184 "EHLO
+        id S230024AbiH3NUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiH3NTl (ORCPT
+        with ESMTP id S229959AbiH3NUC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:19:41 -0400
-Received: from corp-front08-corp.i.nease.net (corp-front08-corp.i.nease.net [59.111.134.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAEED83DC;
-        Tue, 30 Aug 2022 06:19:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
-        Date:Message-Id:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding; bh=H6P2wgLWIp5yNMxykpRUGtpzFAdWl9bhHK
-        xCsyU70W0=; b=ZVAkTSVzo2Qri69gXRveThlo0hgeXDBboPJzU5w/a+Rbd/zT6k
-        v0+pfDeqqUazHFFBQeS4BjATcckNahlMGgdkG+fgekprIG7m6APqDvTGatU3s5yA
-        jn31N4jgqXZc72KPVA+Qq1Q7uZ1iSfVggJw2YJfn4/H0m5uEYrkZW0H8Q=
-Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
-        by corp-front08-corp.i.nease.net (Coremail) with SMTP id nhDICgBXvppTDg5jy+8UAA--.19890S2;
-        Tue, 30 Aug 2022 21:19:15 +0800 (HKT)
-From:   liuyacan@corp.netease.com
-To:     wintera@linux.ibm.com
-Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, liuyacan@corp.netease.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        tonylu@linux.alibaba.com, wenjia@linux.ibm.com,
-        ubraun@linux.vnet.ibm.com
-Subject: [PATCH net v3] net/smc: Fix possible access to freed memory in link clear
-Date:   Tue, 30 Aug 2022 21:19:05 +0800
-Message-Id: <20220830131905.286785-1-liuyacan@corp.netease.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <b3245c33-125c-7483-318a-a78dfbdac5ee@linux.ibm.com>
-References: <b3245c33-125c-7483-318a-a78dfbdac5ee@linux.ibm.com>
+        Tue, 30 Aug 2022 09:20:02 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4B1223BEE;
+        Tue, 30 Aug 2022 06:19:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661865595; x=1693401595;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=/ijE9BGuWCakQ1nusZPEmzMxKtmth5A9VqsOhZVOJpM=;
+  b=JFbT/thbs2ot8K62D2yNjQ+1STQQ1pVThRPmTkvw+PHBwt9tkmdTFc0+
+   +TEt4I04BodsA+Xw3f2pdhzkwIuhGNtJ8mrHjIQk4eNqhLXMNRKiwRTA8
+   RLpFCO3vNHwDnqwTkj3jTT1jxsQ4XjftIDvVUZ9abW4QOx6z/kNUcYC+u
+   z1yiY63/WE5y6uVg0eDJTBYv7WbWsJbYMGTGX1nqT4N1GWt1Ctw3R0FdG
+   z9Dpwp3wDp8pHzlK+xrhHB99AqDGJ9afMe0exKmPrimSGK3ACZSxnZGlO
+   he+OOdIA5CAND1Rju2at9/BPOfvBGXindlT1x49HPRbWKBT9Lm3JOiOho
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="293915245"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="293915245"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 06:19:42 -0700
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="641370618"
+Received: from arnesgom-mobl.ger.corp.intel.com ([10.252.54.235])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 06:19:41 -0700
+Date:   Tue, 30 Aug 2022 16:19:40 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+cc:     linux-serial <linux-serial@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 0/3] serial: Add uart_xmit_advance() + fixes part (of
+ a larger patch series)
+In-Reply-To: <20220830131343.25968-1-ilpo.jarvinen@linux.intel.com>
+Message-ID: <c83d6b94-b589-ebbf-303f-1de084bc5676@linux.intel.com>
+References: <20220830131343.25968-1-ilpo.jarvinen@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: nhDICgBXvppTDg5jy+8UAA--.19890S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3ArWUKF15AF18XFy8Gw1kGrg_yoWxXFWfpF
-        W7Gr1xCr48Jr1kWFn5CFy7Z3W5t3WIkF1rG34avr95ZFnrGw18tF1Sgr12vF98JF4qga4S
-        vrW8Xw1xKrn8JaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUULYb7IF0VCFI7km07C26c804VAKzcIF0wAFF20E14v26r4j6ryU
-        M7CY07I20VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2
-        IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84AC
-        jcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84
-        ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC6x9vy-n0Xa0_Xr1Utr1k
-        JwI_Jr4ln4vE4IxY62xKV4CY8xCE548m6r4UJryUGwAS0I0E0xvYzxvE52x082IY62kv04
-        87Mc804VCqF7xvr2I5Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
-        JVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
-        AKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwAKzVCY
-        07xG64k0F24l7I0Y64k_MxkI7II2jI8vz4vEwIxGrwCF04k20xvY0x0EwIxGrwCF72vEw2
-        IIxxk0rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7vE0wC20s026c02F40E14v26r1j6r18
-        MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr4
-        1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l
-        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
-        A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRp6wAUUUUU=
-X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQAOCVt77xO05QAQsf
+Content-Type: multipart/mixed; boundary="8323329-122507739-1661865583=:1864"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yacan Liu <liuyacan@corp.netease.com>
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-After modifying the QP to the Error state, all RX WR would be completed
-with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
-wait for it is done, but destroy the QP and free the link group directly.
-So there is a risk that accessing the freed memory in tasklet context.
+--8323329-122507739-1661865583=:1864
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Here is a crash example:
+On Tue, 30 Aug 2022, Ilpo Järvinen wrote:
 
- BUG: unable to handle page fault for address: ffffffff8f220860
- #PF: supervisor write access in kernel mode
- #PF: error_code(0x0002) - not-present page
- PGD f7300e067 P4D f7300e067 PUD f7300f063 PMD 8c4e45063 PTE 800ffff08c9df060
- Oops: 0002 [#1] SMP PTI
- CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Tainted: G S         OE     5.10.0-0607+ #23
- Hardware name: Inspur NF5280M4/YZMB-00689-101, BIOS 4.1.20 07/09/2018
- RIP: 0010:native_queued_spin_lock_slowpath+0x176/0x1b0
- Code: f3 90 48 8b 32 48 85 f6 74 f6 eb d5 c1 ee 12 83 e0 03 83 ee 01 48 c1 e0 05 48 63 f6 48 05 00 c8 02 00 48 03 04 f5 00 09 98 8e <48> 89 10 8b 42 08 85 c0 75 09 f3 90 8b 42 08 85 c0 74 f7 48 8b 32
- RSP: 0018:ffffb3b6c001ebd8 EFLAGS: 00010086
- RAX: ffffffff8f220860 RBX: 0000000000000246 RCX: 0000000000080000
- RDX: ffff91db1f86c800 RSI: 000000000000173c RDI: ffff91db62bace00
- RBP: ffff91db62bacc00 R08: 0000000000000000 R09: c00000010000028b
- R10: 0000000000055198 R11: ffffb3b6c001ea58 R12: ffff91db80e05010
- R13: 000000000000000a R14: 0000000000000006 R15: 0000000000000040
- FS:  0000000000000000(0000) GS:ffff91db1f840000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: ffffffff8f220860 CR3: 00000001f9580004 CR4: 00000000003706e0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- Call Trace:
-  <IRQ>
-  _raw_spin_lock_irqsave+0x30/0x40
-  mlx5_ib_poll_cq+0x4c/0xc50 [mlx5_ib]
-  smc_wr_rx_tasklet_fn+0x56/0xa0 [smc]
-  tasklet_action_common.isra.21+0x66/0x100
-  __do_softirq+0xd5/0x29c
-  asm_call_irq_on_stack+0x12/0x20
-  </IRQ>
-  do_softirq_own_stack+0x37/0x40
-  irq_exit_rcu+0x9d/0xa0
-  sysvec_call_function_single+0x34/0x80
-  asm_sysvec_call_function_single+0x12/0x20
+> Add uart_xmit_advance() helper to handle circular xmit buffer
+> advancement + accounting of Tx'ed bytes. Use it to fix a few drivers
+> that previously lacked to accounting for DMA Tx.
+> 
+> Greg,
+> I've a another series on top this which is tty-next material making the
+> rest of the drivers to use uart_xmit_advance(). That series obviously
+> depends on the patch 1/3 of this series so if you end up putting these
+> 3 patches into tty-linus, I'll need it to be merged into tty-next at
+> some point (I'm not in a big hurry with this so if you choose to delay
+> the merge, it's not a big deal).
 
-Fixes: bd4ad57718cc ("smc: initialize IB transport incl. PD, MR, QP, CQ, event, WR")
-Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
+This merge, btw, is no longer that important because I agreed with Jiri to 
+wait for his tx loop rewrite series.
 
----
-Change in v3:
-  -- Tune commit message (Signed-Off tag, Fixes tag)
-     Tune code to avoid column length exceeding
-Change in v2:
-  -- Fix some compile warnings and errors
----
- net/smc/smc_core.c |  2 ++
- net/smc/smc_core.h |  2 ++
- net/smc/smc_wr.c   | 13 +++++++++++++
- net/smc/smc_wr.h   |  3 +++
- 4 files changed, 20 insertions(+)
-
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index ff49a11f5..b632a33f1 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -752,6 +752,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
- 	atomic_inc(&lnk->smcibdev->lnk_cnt);
- 	refcount_set(&lnk->refcnt, 1); /* link refcnt is set to 1 */
- 	lnk->clearing = 0;
-+	lnk->rx_drained = 0;
- 	lnk->path_mtu = lnk->smcibdev->pattr[lnk->ibport - 1].active_mtu;
- 	lnk->link_id = smcr_next_link_id(lgr);
- 	lnk->lgr = lgr;
-@@ -1269,6 +1270,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
- 	smcr_buf_unmap_lgr(lnk);
- 	smcr_rtoken_clear_link(lnk);
- 	smc_ib_modify_qp_error(lnk);
-+	smc_wr_drain_cq(lnk);
- 	smc_wr_free_link(lnk);
- 	smc_ib_destroy_queue_pair(lnk);
- 	smc_ib_dealloc_protection_domain(lnk);
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index fe8b524ad..0a469a3e7 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -117,6 +117,7 @@ struct smc_link {
- 	u64			wr_rx_id;	/* seq # of last recv WR */
- 	u32			wr_rx_cnt;	/* number of WR recv buffers */
- 	unsigned long		wr_rx_tstamp;	/* jiffies when last buf rx */
-+	wait_queue_head_t       wr_rx_drain_wait; /* wait for WR drain */
- 
- 	struct ib_reg_wr	wr_reg;		/* WR register memory region */
- 	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
-@@ -138,6 +139,7 @@ struct smc_link {
- 	u8			link_idx;	/* index in lgr link array */
- 	u8			link_is_asym;	/* is link asymmetric? */
- 	u8			clearing : 1;	/* link is being cleared */
-+	u8                      rx_drained : 1; /* link is drained */
- 	refcount_t		refcnt;		/* link reference count */
- 	struct smc_link_group	*lgr;		/* parent link group */
- 	struct work_struct	link_down_wrk;	/* wrk to bring link down */
-diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-index 26f8f240d..958f4b78a 100644
---- a/net/smc/smc_wr.c
-+++ b/net/smc/smc_wr.c
-@@ -465,6 +465,11 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
- 			case IB_WC_RNR_RETRY_EXC_ERR:
- 			case IB_WC_WR_FLUSH_ERR:
- 				smcr_link_down_cond_sched(link);
-+				if (link->clearing &&
-+				    wc[i].wr_id == link->wr_rx_id) {
-+					link->rx_drained = 1;
-+					wake_up(&link->wr_rx_drain_wait);
-+				}
- 				break;
- 			default:
- 				smc_wr_rx_post(link); /* refill WR RX */
-@@ -631,6 +636,13 @@ static void smc_wr_init_sge(struct smc_link *lnk)
- 	lnk->wr_reg.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE;
- }
- 
-+void smc_wr_drain_cq(struct smc_link *lnk)
-+{
-+	wait_event_interruptible_timeout(lnk->wr_rx_drain_wait,
-+					 (lnk->rx_drained == 1),
-+					 SMC_WR_RX_WAIT_DRAIN_TIME);
-+}
-+
- void smc_wr_free_link(struct smc_link *lnk)
- {
- 	struct ib_device *ibdev;
-@@ -889,6 +901,7 @@ int smc_wr_create_link(struct smc_link *lnk)
- 	atomic_set(&lnk->wr_tx_refcnt, 0);
- 	init_waitqueue_head(&lnk->wr_reg_wait);
- 	atomic_set(&lnk->wr_reg_refcnt, 0);
-+	init_waitqueue_head(&lnk->wr_rx_drain_wait);
- 	return rc;
- 
- dma_unmap:
-diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
-index a54e90a11..2a7ebdba3 100644
---- a/net/smc/smc_wr.h
-+++ b/net/smc/smc_wr.h
-@@ -27,6 +27,8 @@
- 
- #define SMC_WR_TX_PEND_PRIV_SIZE 32
- 
-+#define SMC_WR_RX_WAIT_DRAIN_TIME       (2 * HZ)
-+
- struct smc_wr_tx_pend_priv {
- 	u8			priv[SMC_WR_TX_PEND_PRIV_SIZE];
- };
-@@ -101,6 +103,7 @@ static inline int smc_wr_rx_post(struct smc_link *link)
- int smc_wr_create_link(struct smc_link *lnk);
- int smc_wr_alloc_link_mem(struct smc_link *lnk);
- int smc_wr_alloc_lgr_mem(struct smc_link_group *lgr);
-+void smc_wr_drain_cq(struct smc_link *lnk);
- void smc_wr_free_link(struct smc_link *lnk);
- void smc_wr_free_link_mem(struct smc_link *lnk);
- void smc_wr_free_lgr_mem(struct smc_link_group *lgr);
 -- 
-2.20.1
+ i.
 
+> v2:
+> - Correct tags
+> 
+> Ilpo Järvinen (3):
+>   serial: Create uart_xmit_advance()
+>   serial: tegra: Use uart_xmit_advance(), fixes icount.tx accounting
+>   serial: tegra-tcu: Use uart_xmit_advance(), fixes icount.tx accounting
+> 
+>  drivers/tty/serial/serial-tegra.c |  5 ++---
+>  drivers/tty/serial/tegra-tcu.c    |  2 +-
+>  include/linux/serial_core.h       | 17 +++++++++++++++++
+>  3 files changed, 20 insertions(+), 4 deletions(-)
+> 
+> 
+--8323329-122507739-1661865583=:1864--
