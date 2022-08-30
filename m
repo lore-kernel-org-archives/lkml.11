@@ -2,100 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 874E6ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:05:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD6AECAAD3
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbiH3DFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 23:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35498 "EHLO
+        id S229481AbiH3DGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 23:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiH3DFq (ORCPT
+        with ESMTP id S229784AbiH3DGN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 23:05:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 990BC28704
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661828744;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5ztsqq+Cpr3ONWup9F41dO8g+K5tgkK5hLut9gytdfk=;
-        b=i8yoxaUWtP7oY9NZauYBtLeqaAXs6cULB5axXYe8HzKk5d/IV2gvbMAcU5SOsl86coA55w
-        FL6vsfcAq4Wcn+jvnI2gZ8KtUY7u0f1UWFCAQDrtfaMX4Onn7Qnpyv3pwgvrqCBaBQt5QJ
-        mnLiwfbHoYwoHPXnnYLLRG9jwileDqQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-119-SrmQDBtyPiCxTIUf-D_lIw-1; Mon, 29 Aug 2022 23:05:41 -0400
-X-MC-Unique: SrmQDBtyPiCxTIUf-D_lIw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C302329AA2E9;
-        Tue, 30 Aug 2022 03:05:40 +0000 (UTC)
-Received: from [172.30.41.16] (unknown [10.22.18.188])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6675BC15BB3;
-        Tue, 30 Aug 2022 03:05:40 +0000 (UTC)
-Subject: [PATCH] vfio/type1: Unpin zero pages
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     alex.williamson@redhat.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        david@redhat.com, lpivarc@redhat.com
-Date:   Mon, 29 Aug 2022 21:05:40 -0600
-Message-ID: <166182871735.3518559.8884121293045337358.stgit@omen>
-User-Agent: StGit/1.5.dev2+g9ce680a52bd9
+        Mon, 29 Aug 2022 23:06:13 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635B871BC7
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:06:11 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MGsYH5VbXzkWnH;
+        Tue, 30 Aug 2022 11:02:27 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 11:06:04 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 11:06:04 +0800
+Subject: Re: [PATCH] ARM: 9220/1: amba: Add sanity check for dev->periphid in
+ amba_probe()
+To:     Linus Walleij <linus.walleij@linaro.org>
+CC:     Russell King <linux@armlinux.org.uk>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <patches@armlinux.org.uk>,
+        Saravana Kannan <saravanak@google.com>,
+        "Kefeng Wang" <wangkefeng.wang@huawei.com>
+References: <20220827101853.353-1-thunder.leizhen@huawei.com>
+ <CACRpkdZC-GxhWN_+LpBg3W1xxR2YE6gknwroE3CWSGHeFSOfhQ@mail.gmail.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <98beaa03-6eb5-c6e3-411d-7e76fb8f0936@huawei.com>
+Date:   Tue, 30 Aug 2022 11:06:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
+In-Reply-To: <CACRpkdZC-GxhWN_+LpBg3W1xxR2YE6gknwroE3CWSGHeFSOfhQ@mail.gmail.com>
 Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's currently a reference count leak on the zero page.  We increment
-the reference via pin_user_pages_remote(), but the page is later handled
-as an invalid/reserved page, therefore it's not accounted against the
-user and not unpinned by our put_pfn().
 
-Introducing special zero page handling in put_pfn() would resolve the
-leak, but without accounting of the zero page, a single user could
-still create enough mappings to generate a reference count overflow.
 
-The zero page is always resident, so for our purposes there's no reason
-to keep it pinned.  Therefore, add a loop to walk pages returned from
-pin_user_pages_remote() and unpin any zero pages.
+On 2022/8/30 5:00, Linus Walleij wrote:
+> On Sat, Aug 27, 2022 at 12:22 PM Zhen Lei <thunder.leizhen@huawei.com> wrote:
+> 
+>> Commit f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
+>> forcibly invokes device_add() even if dev->periphid is not ready. Although
+>> it will be remedied in amba_match(): dev->periphid will be initialized
+>> if everything is in place; Otherwise, return -EPROBE_DEFER to block
+>> __driver_attach() from further execution. But not all drivers have .match
+>> hook, such as pl031, the dev->bus->probe will be called directly in
+>> __driver_attach(). Unfortunately, if dev->periphid is still not
+>> initialized, the following exception will be triggered.
+>>
+>> 8<--- cut here ---
+>> Unable to handle kernel NULL pointer dereference at virtual address 00000008
+>> [00000008] *pgd=00000000
+>> Internal error: Oops: 5 [#1] SMP ARM
+>> Modules linked in:
+>> CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc2+ #7
+>> Hardware name: ARM-Versatile Express
+>> PC is at pl031_probe+0x8/0x208
+>> LR is at amba_probe+0xf0/0x160
+>> pc : 80698df8  lr : 8050eb54  psr: 80000013
+>> sp : c0825df8  ip : 00000000  fp : 811fda38
+>> r10: 00000000  r9 : 80d72470  r8 : fffffdfb
+>> r7 : 811fd800  r6 : be7eb330  r5 : 00000000  r4 : 811fd900
+>> r3 : 80698df0  r2 : 37000000  r1 : 00000000  r0 : 811fd800
+>> Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+>> Control: 10c5387d  Table: 6000406a  DAC: 00000051
+>> ... ...
+>>  pl031_probe from amba_probe+0xf0/0x160
+>>  amba_probe from really_probe+0x118/0x290
+>>  really_probe from __driver_probe_device+0x84/0xe4
+>>  __driver_probe_device from driver_probe_device+0x30/0xd0
+>>  driver_probe_device from __driver_attach+0x8c/0xfc
+>>  __driver_attach from bus_for_each_dev+0x70/0xb0
+>>  bus_for_each_dev from bus_add_driver+0x168/0x1f4
+>>  bus_add_driver from driver_register+0x7c/0x118
+>>  driver_register from do_one_initcall+0x44/0x1ec
+>>  do_one_initcall from kernel_init_freeable+0x238/0x288
+>>  kernel_init_freeable from kernel_init+0x18/0x12c
+>>  kernel_init from ret_from_fork+0x14/0x2c
+>> ... ...
+>> ---[ end trace 0000000000000000 ]---
+>>
+>> Therefore, take the same action as in amba_match(): return -EPROBE_DEFER
+>> if dev->periphid is not ready in amba_probe().
+>>
+>> Fixes: f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
+>> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> 
+> For the record, this makes Vexpress QEMU boot again for me, so
+> Tested-by: Linus Walleij <linus.walleij@linaro.org>
+> 
+> The problem on QEMU is however not that the device is "not ready"
+> the device is simply not there, the implementation in QEMU
+> is incomplete. What platform are you getting this on? If it's QEMU
+> you probably need to alter the commit message. I made this similar patch:
 
-Cc: David Hildenbrand <david@redhat.com>
-Cc: stable@vger.kernel.org
-Reported-by: Luboslav Pivarc <lpivarc@redhat.com>
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
----
- drivers/vfio/vfio_iommu_type1.c |   12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Also on QEMU. But your conclusion may be wrong, The problem on QEMU is really
+because of pl031 is not ready. With my patch, pl031_probe() is called, so that
+its ID is implemented on QEMU.
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index db516c90a977..8706482665d1 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -558,6 +558,18 @@ static int vaddr_get_pfns(struct mm_struct *mm, unsigned long vaddr,
- 	ret = pin_user_pages_remote(mm, vaddr, npages, flags | FOLL_LONGTERM,
- 				    pages, NULL, NULL);
- 	if (ret > 0) {
-+		int i;
++++ b/drivers/base/driver.c
+@@ -217,6 +217,9 @@ int driver_register(struct device_driver *drv)
+ {
+        int ret;
+        struct device_driver *other;
++       static int seq;
 +
-+		/*
-+		 * The zero page is always resident, we don't need to pin it
-+		 * and it falls into our invalid/reserved test so we don't
-+		 * unpin in put_pfn().  Unpin all zero pages in the batch here.
-+		 */
-+		for (i = 0 ; i < ret; i++) {
-+			if (unlikely(is_zero_pfn(page_to_pfn(pages[i]))))
-+				unpin_user_page(pages[i]);
-+		}
-+
- 		*pfn = page_to_pfn(pages[0]);
- 		goto done;
- 	}
++       printk("%d: drv=%s, bus=%s\n", ++seq, drv->name, drv->bus->name);
+
+Add the above print, we can see:
+50: drv=rtc-pl031, bus=amba
+51: drv=vexpress-reset, bus=platform
+
+I didn't go to further verify. I think the driver vexpress-reset makes the
+clock available. After that, rtc-pl031's periphid can be read successfully.
 
 
+> 
+>>From 561e9c5a80183223613a2cfe225a900dd28c1cd5 Mon Sep 17 00:00:00 2001
+> From: Linus Walleij <linus.walleij@linaro.org>
+> Date: Mon, 29 Aug 2022 22:26:11 +0200
+> Subject: [PATCH] amba: Don't probe devices without valid match ID
+> 
+> After the recent changes to the AMBA bus core, QEMU Versatile
+> Express (and probably other machines) refuse to boot properly
+> in the v6.0-rc1 thru -rc3 kernels.
+> 
+> After enabling earlydebug this kind of stuff comes out:
+> 
+> Unable to handle kernel NULL pointer dereference at virtual address 00000008
+> [00000008] *pgd=00000000
+> Internal error: Oops: 5 [#1] SMP ARM
+> CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1+ #474
+> Hardware name: ARM-Versatile Express
+> PC is at pl031_probe+0x18/0x224
+> LR is at amba_probe+0xf0/0x174
+> 
+> This is because the AMBA driver probe call is called with an id
+> argument that is NULL while drivers often directly dereference
+> this ID to get to the match data.
+> 
+> This happens when an AMBA device exist in the device tree, but
+> it is lacking any PrimceCell ID in hardware so there is no match
+> data.
+> 
+> This happens most typically in QEMU which tries to mimic e.g.
+> Versatile Express, but several PrimeCells that exist in the
+> physical platform are not implemented or incomplete in the
+> QEMU model so only zeroes are returned when reading the PrimeCell
+> ID and thus there is no match data.
+> 
+> Fix this by not probing the device if there is no ID.
+> 
+> This print from QEMU after applying the patch shows clearly
+> what blocks are missing from QEMU:
+> 
+> 1c0f0000.watchdog: no ID for device, skipping probe
+>   (QEMU incomplete device?)
+> 2b0a0000.memory-controller: no ID for device, skipping probe
+>   (QEMU incomplete device?)
+> 7ffd0000.memory-controller: no ID for device, skipping probe
+>   (QEMU incomplete device?)
+> 7ffb0000.dma: no ID for device, skipping probe
+>   (QEMU incomplete device?)
+> 
+> Fixes: f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
+> Cc: Saravana Kannan <saravanak@google.com>
+> Cc: Sudeep Holla <sudeep.holla@arm.com>
+> Cc: qemu-devel@nongnu.org
+> Cc: Peter Maydell <peter.maydell@linaro.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  drivers/amba/bus.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+> index 32b0e0b930c1..6a1bffc60169 100644
+> --- a/drivers/amba/bus.c
+> +++ b/drivers/amba/bus.c
+> @@ -300,9 +300,14 @@ static int amba_probe(struct device *dev)
+>          pm_runtime_set_active(dev);
+>          pm_runtime_enable(dev);
+> 
+> -        ret = pcdrv->probe(pcdev, id);
+> -        if (ret == 0)
+> -            break;
+> +        if (!id) {
+> +            pr_err("%s: no ID for device, skipping probe (QEMU
+> incomplete device?)\n",
+> +                   dev_name(dev));
+> +        } else {
+> +            ret = pcdrv->probe(pcdev, id);
+> +            if (ret == 0)
+> +                break;
+> +        }
+> 
+>          pm_runtime_disable(dev);
+>          pm_runtime_set_suspended(dev);
+> 
+
+-- 
+Regards,
+  Zhen Lei
