@@ -2,243 +2,440 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A4FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F22D7ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230207AbiH3SxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
+        id S229829AbiH3S4O convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiH3SxO (ORCPT
+        with ESMTP id S229565AbiH3S4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:53:14 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107D04D148
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:53:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661885592;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3ghkL3HWufEx19QvN7xz+8k8R4rKZfYVWdUF1YonDVk=;
-        b=hptJfB/kOzF2NCivboJv/P4WzuaiAYj33e7U+XIfaMMgbEMDJSc1jutdN0yqSDOzX7eIQf
-        hibglyeHsrkJ0Yl3L/w6fOwyoHyy3GzSyLMylVuUxxujxKNdIhB9ZIYkQKH7zNWe0mkPjM
-        KGCyZANqqXWi+Tv86tw8QDUvXwkRuVc=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-428-tThSsHwAP5644HQRa_mAyg-1; Tue, 30 Aug 2022 14:53:09 -0400
-X-MC-Unique: tThSsHwAP5644HQRa_mAyg-1
-Received: by mail-wm1-f72.google.com with SMTP id v3-20020a1cac03000000b003a7012c430dso7750884wme.3
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:53:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:organization:from
-         :references:cc:to:content-language:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc;
-        bh=3ghkL3HWufEx19QvN7xz+8k8R4rKZfYVWdUF1YonDVk=;
-        b=os1L19bq5/zyBOYfOYbBxGbDSS3GUI1moUaKZGS5YinupF9m/647CwElXE9C7QVNSH
-         lp3BgVS8veRV9FmrzreXJ1zTbiBIxplA12EY5k0cu57rAExL9MUabdxYo/M+jXnqf2K3
-         r2I7ZKGQxJkUkPuoZa64kibRXsQsPkwJOuvi/m4JD8izPFvyDE1W+UDimwvbnHyfWA9U
-         cigeNr7v3OjrgvumSJo0CavBQ/8oL3fhIRLa3rYWBqfrZRjA8xrH9v/j8CAG6VYRbQfa
-         tWhVNKl2m6Ut97oIn+SMhqreVHl149/dmuiNoto0zny9yCpv4OqB/k2ssUYvSYd2/wPQ
-         U+iQ==
-X-Gm-Message-State: ACgBeo1lMpaPZbdMl8EaBpA8kF8brnr4sPivC3hePOVzmg2ZQ+Y/UdFp
-        tCCkMIAlTT1YUbF2WHFN7bdsLKclR+xxUvfdgW3rbXKn/GiDqnHY28SI88yIS0ghC1Su9UO/CA0
-        MVP86UN/oBo7iFKuFLPqSfb7t
-X-Received: by 2002:a05:600c:4e49:b0:3a5:dd23:90d7 with SMTP id e9-20020a05600c4e4900b003a5dd2390d7mr10542412wmq.41.1661885588414;
-        Tue, 30 Aug 2022 11:53:08 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6xPd1ofzTGAMjW/LlczuN37PG9NBD6QwEUuSCHZVsEQen/hctS0Csc6k5meeHh9wWVX8hZVA==
-X-Received: by 2002:a05:600c:4e49:b0:3a5:dd23:90d7 with SMTP id e9-20020a05600c4e4900b003a5dd2390d7mr10542396wmq.41.1661885588108;
-        Tue, 30 Aug 2022 11:53:08 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c70a:1000:ecb4:919b:e3d3:e20b? (p200300cbc70a1000ecb4919be3d3e20b.dip0.t-ipconnect.de. [2003:cb:c70a:1000:ecb4:919b:e3d3:e20b])
-        by smtp.gmail.com with ESMTPSA id i9-20020adfefc9000000b002251c75c09csm11972556wrp.90.2022.08.30.11.53.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 11:53:07 -0700 (PDT)
-Message-ID: <9ce3aaaa-71a6-5a81-16a3-36e6763feb91@redhat.com>
-Date:   Tue, 30 Aug 2022 20:53:06 +0200
+        Tue, 30 Aug 2022 14:56:11 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9688A75FF9
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:56:09 -0700 (PDT)
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27UFq8Vf006559
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:56:08 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3j9ae4cr7c-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:56:08 -0700
+Received: from snc-exhub201.TheFacebook.com (2620:10d:c085:21d::7) by
+ snc-exhub104.TheFacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 30 Aug 2022 11:56:08 -0700
+Received: from twshared29104.24.frc3.facebook.com (2620:10d:c085:208::11) by
+ mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 30 Aug 2022 11:56:07 -0700
+Received: by devbig932.frc1.facebook.com (Postfix, from userid 4523)
+        id DA586C3FD850; Tue, 30 Aug 2022 11:53:14 -0700 (PDT)
+From:   Song Liu <song@kernel.org>
+To:     <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jpoimboe@kernel.org>, <jikos@kernel.org>, <mbenes@suse.cz>,
+        <pmladek@suse.com>, <x86@kernel.org>, <joe.lawrence@redhat.com>,
+        <linuxppc-dev@lists.ozlabs.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Song Liu" <song@kernel.org>
+Subject: [PATCH v5] livepatch: Clear relocation targets on a module removal
+Date:   Tue, 30 Aug 2022 11:53:13 -0700
+Message-ID: <20220830185313.76402-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: TSVHyyjdZbsnwAufzVl9mL59zJHO5NEZ
+X-Proofpoint-GUID: TSVHyyjdZbsnwAufzVl9mL59zJHO5NEZ
+Content-Transfer-Encoding: 8BIT
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        John Hubbard <jhubbard@nvidia.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Hugh Dickins <hughd@google.com>, Peter Xu <peterx@redhat.com>
-References: <20220825164659.89824-1-david@redhat.com>
- <20220825164659.89824-3-david@redhat.com>
- <1892f6de-fd22-0e8b-3ff6-4c8641e1c68e@redhat.com>
- <2e20c90d-4d1f-dd83-aa63-9d8d17021263@redhat.com>
- <Yw5a1paQJ9MNdgmW@nvidia.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH v1 2/3] mm/gup: use gup_can_follow_protnone() also in
- GUP-fast
-In-Reply-To: <Yw5a1paQJ9MNdgmW@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-30_10,2022-08-30_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30.08.22 20:45, Jason Gunthorpe wrote:
-> On Tue, Aug 30, 2022 at 08:23:52PM +0200, David Hildenbrand wrote:
->> ... and looking into the details of TLB flush and GUP-fast interaction
->> nowadays, that case is no longer relevant. A TLB flush is no longer
->> sufficient to stop concurrent GUP-fast ever since we introduced generic
->> RCU GUP-fast.
-> 
-> Yes, we've had RCU GUP fast for a while, and it is more widely used
-> now, IIRC.
-> 
-> It has been a bit, but if I remember, GUP fast in RCU mode worked on a
-> few principles:
-> 
->  - The PTE page must not be freed without RCU
->  - The PTE page content must be convertable to a struct page using the
->    usual rules (eg PTE Special)
->  - That struct page refcount may go from 0->1 inside the RCU
->  - In the case the refcount goes from 0->1 there must be sufficient
->    barriers such that GUP fast observing the refcount of 1 will also
->    observe the PTE entry has changed. ie before the refcount is
->    dropped in the zap it has to clear the PTE entry, the refcount
->    decr has to be a 'release' and the refcount incr in gup fast has be
->    to be an 'acquire'.
->  - The rest of the system must tolerate speculative refcount
->    increments from GUP on any random page
-> > The basic idea being that if GUP fast obtains a valid reference on a
-> page *and* the PTE entry has not changed then everything is fine.
-> 
-> The tricks with TLB invalidation are just a "poor mans" RCU, and
-> arguably these days aren't really needed since I think we could make
-> everything use real RCU always without penalty if we really wanted.
-> 
-> Today we can create a unique 'struct pagetable_page' as Matthew has
-> been doing in other places that guarentees a rcu_head is always
-> available for every page used in a page table. Using that we could
-> drop the code in the TLB flusher that allocates memory for the
-> rcu_head and hopes for the best. (Or even is the common struct page
-> rcu_head already guarenteed to exist for pagetable pages now a days?)
-> 
-> IMHO that is the main reason we still have the non-RCU mode at all..
+From: Miroslav Benes <mbenes@suse.cz>
 
+Josh reported a bug:
 
-Good, I managed to attract the attention of someone who understands that machinery :)
+  When the object to be patched is a module, and that module is
+  rmmod'ed and reloaded, it fails to load with:
 
-While validating whether GUP-fast and PageAnonExclusive code work correctly,
-I started looking at the whole RCU GUP-fast machinery. I do have a patch to
-improve PageAnonExclusive clearing (I think we're missing memory barriers to
-make it work as expected in any possible case), but I also stumbled eventually
-over a more generic issue that might need memory barriers.
+  module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+  livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+  livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
 
-Any thoughts whether I am missing something or this is actually missing
-memory barriers?
+  The livepatch module has a relocation which references a symbol
+  in the _previous_ loading of nfsd. When apply_relocate_add()
+  tries to replace the old relocation with a new one, it sees that
+  the previous one is nonzero and it errors out.
 
+  On ppc64le, we have a similar issue:
 
-From ce8c941c11d1f60cea87a3e4d941041dc6b79900 Mon Sep 17 00:00:00 2001
-From: David Hildenbrand <david@redhat.com>
-Date: Mon, 29 Aug 2022 16:57:07 +0200
-Subject: [PATCH] mm/gup: update refcount+pincount before testing if the PTE
- changed
+  module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+  livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+  livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
 
-mm/ksm.c:write_protect_page() has to make sure that no unknown
-references to a mapped page exist and that no additional ones with write
-permissions are possible -- unknown references could have write permissions
-and modify the page afterwards.
+He also proposed three different solutions. We could remove the error
+check in apply_relocate_add() introduced by commit eda9cec4c9a1
+("x86/module: Detect and skip invalid relocations"). However the check
+is useful for detecting corrupted modules.
 
-Conceptually, mm/ksm.c:write_protect_page() consists of:
-  (1) Clear/invalidate PTE
-  (2) Check if there are unknown references; back off if so.
-  (3) Update PTE (e.g., map it R/O)
+We could also deny the patched modules to be removed. If it proved to be
+a major drawback for users, we could still implement a different
+approach. The solution would also complicate the existing code a lot.
 
-Conceptually, GUP-fast code consists of:
-  (1) Read the PTE
-  (2) Increment refcount/pincount of the mapped page
-  (3) Check if the PTE changed by re-reading it; back off if so.
+We thus decided to reverse the relocation patching (clear all relocation
+targets on x86_64). The solution is not
+universal and is too much arch-specific, but it may prove to be simpler
+in the end.
 
-To make sure GUP-fast won't be able to grab additional references after
-clearing the PTE, but will properly detect the change and back off, we
-need a memory barrier between updating the recount/pincount and checking
-if it changed.
+Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+Signed-off-by: Song Liu <song@kernel.org>
 
-try_grab_folio() doesn't necessarily imply a memory barrier, so add an
-explicit smp_mb__after_atomic() after the atomic RMW operation to
-increment the refcount and pincount.
-
-ptep_clear_flush() used to clear the PTE and flush the TLB should imply
-a memory barrier for flushing the TLB, so don't add another one for now.
-
-PageAnonExclusive handling requires further care and will be handled
-separately.
-
-Fixes: 2667f50e8b81 ("mm: introduce a general RCU get_user_pages_fast()")
-Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- mm/gup.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index 5abdaf487460..0008b808f484 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -2392,6 +2392,14 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
- 			goto pte_unmap;
- 		}
+NOTE: powerpc code has not be tested.
+
+Changes v4 = v5:
+1. Fix compile with powerpc.
+
+Changes v3 = v4:
+1. Reuse __apply_relocate_add to make it more reliable in long term.
+   (Josh Poimboeuf)
+2. Add back ppc64 logic from v2, with changes to match current code.
+   (Josh Poimboeuf)
+
+Changes v2 => v3:
+1. Rewrite x86 changes to match current code style.
+2. Remove powerpc changes as there is no test coverage in v3.
+3. Only keep 1/3 of v2.
+
+v2: https://lore.kernel.org/all/20190905124514.8944-1-mbenes@suse.cz/T/#u
+---
+ arch/powerpc/kernel/module_64.c |  49 +++++++++++++++
+ arch/s390/kernel/module.c       |   8 +++
+ arch/x86/kernel/module.c        | 102 +++++++++++++++++++++++---------
+ include/linux/moduleloader.h    |   7 +++
+ kernel/livepatch/core.c         |  41 ++++++++++++-
+ 5 files changed, 179 insertions(+), 28 deletions(-)
+
+diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module_64.c
+index 7e45dc98df8a..6aaf5720070d 100644
+--- a/arch/powerpc/kernel/module_64.c
++++ b/arch/powerpc/kernel/module_64.c
+@@ -739,6 +739,55 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+ 	return 0;
+ }
  
++#ifdef CONFIG_LIVEPATCH
++void clear_relocate_add(Elf64_Shdr *sechdrs,
++		       const char *strtab,
++		       unsigned int symindex,
++		       unsigned int relsec,
++		       struct module *me)
++{
++	unsigned int i;
++	Elf64_Rela *rela = (void *)sechdrs[relsec].sh_addr;
++	Elf64_Sym *sym;
++	unsigned long *location;
++	const char *symname;
++	u32 *instruction;
++
++	pr_debug("Clearing ADD relocate section %u to %u\n", relsec,
++		 sechdrs[relsec].sh_info);
++
++	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rela); i++) {
++		location = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr
++			+ rela[i].r_offset;
++		sym = (Elf64_Sym *)sechdrs[symindex].sh_addr
++			+ ELF64_R_SYM(rela[i].r_info);
++		symname = me->core_kallsyms.strtab
++			+ sym->st_name;
++
++		if (ELF64_R_TYPE(rela[i].r_info) != R_PPC_REL24)
++			continue;
 +		/*
-+		 * Update refcount/pincount before testing for changed PTE. This
-+		 * is required for code like mm/ksm.c:write_protect_page() that
-+		 * wants to make sure that a page has no unknown references
-+		 * after clearing the PTE.
++		 * reverse the operations in apply_relocate_add() for case
++		 * R_PPC_REL24.
 +		 */
-+		smp_mb__after_atomic();
++		if (sym->st_shndx != SHN_UNDEF &&
++		    sym->st_shndx != SHN_LIVEPATCH)
++			continue;
 +
- 		if (unlikely(pte_val(pte) != pte_val(*ptep))) {
- 			gup_put_folio(folio, 1, flags);
- 			goto pte_unmap;
-@@ -2577,6 +2585,9 @@ static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
- 	if (!folio)
- 		return 0;
++		instruction = (u32 *)location;
++		if (is_mprofile_ftrace_call(symname))
++			continue;
++
++		if (!instr_is_relative_link_branch(ppc_inst(*instruction)))
++			continue;
++
++		instruction += 1;
++		*instruction = PPC_RAW_NOP();
++	}
++
++}
++#endif
++
+ #ifdef CONFIG_DYNAMIC_FTRACE
+ int module_trampoline_target(struct module *mod, unsigned long addr,
+ 			     unsigned long *target)
+diff --git a/arch/s390/kernel/module.c b/arch/s390/kernel/module.c
+index 2d159b32885b..cc6784fbc1ac 100644
+--- a/arch/s390/kernel/module.c
++++ b/arch/s390/kernel/module.c
+@@ -500,6 +500,14 @@ static int module_alloc_ftrace_hotpatch_trampolines(struct module *me,
+ }
+ #endif /* CONFIG_FUNCTION_TRACER */
  
-+	/* See gup_pte_range(). */
-+	smp_mb__after_atomic();
++#ifdef CONFIG_LIVEPATCH
++void clear_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
++			unsigned int symindex, unsigned int relsec,
++			struct module *me)
++{
++}
++#endif
 +
- 	if (unlikely(pte_val(pte) != pte_val(*ptep))) {
- 		gup_put_folio(folio, refs, flags);
- 		return 0;
-@@ -2643,6 +2654,9 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
- 	if (!folio)
- 		return 0;
+ int module_finalize(const Elf_Ehdr *hdr,
+ 		    const Elf_Shdr *sechdrs,
+ 		    struct module *me)
+diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
+index b1abf663417c..f9632afbb84c 100644
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -128,18 +128,20 @@ int apply_relocate(Elf32_Shdr *sechdrs,
+ 	return 0;
+ }
+ #else /*X86_64*/
+-static int __apply_relocate_add(Elf64_Shdr *sechdrs,
++static int __apply_clear_relocate_add(Elf64_Shdr *sechdrs,
+ 		   const char *strtab,
+ 		   unsigned int symindex,
+ 		   unsigned int relsec,
+ 		   struct module *me,
+-		   void *(*write)(void *dest, const void *src, size_t len))
++		   void *(*write)(void *dest, const void *src, size_t len),
++		   bool clear)
+ {
+ 	unsigned int i;
+ 	Elf64_Rela *rel = (void *)sechdrs[relsec].sh_addr;
+ 	Elf64_Sym *sym;
+ 	void *loc;
+ 	u64 val;
++	u64 zero = 0ULL;
  
-+	/* See gup_pte_range(). */
-+	smp_mb__after_atomic();
-+
- 	if (unlikely(pmd_val(orig) != pmd_val(*pmdp))) {
- 		gup_put_folio(folio, refs, flags);
- 		return 0;
-@@ -2683,6 +2697,9 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
- 	if (!folio)
- 		return 0;
+ 	DEBUGP("Applying relocate section %u to %u\n",
+ 	       relsec, sechdrs[relsec].sh_info);
+@@ -163,40 +165,60 @@ static int __apply_relocate_add(Elf64_Shdr *sechdrs,
+ 		case R_X86_64_NONE:
+ 			break;
+ 		case R_X86_64_64:
+-			if (*(u64 *)loc != 0)
+-				goto invalid_relocation;
+-			write(loc, &val, 8);
++			if (!clear) {
++				if (*(u64 *)loc != 0)
++					goto invalid_relocation;
++				write(loc, &val, 8);
++			} else {
++				write(loc, &zero, 8);
++			}
+ 			break;
+ 		case R_X86_64_32:
+-			if (*(u32 *)loc != 0)
+-				goto invalid_relocation;
+-			write(loc, &val, 4);
+-			if (val != *(u32 *)loc)
+-				goto overflow;
++			if (!clear) {
++				if (*(u32 *)loc != 0)
++					goto invalid_relocation;
++				write(loc, &val, 4);
++				if (val != *(u32 *)loc)
++					goto overflow;
++			} else {
++				write(loc, &zero, 4);
++			}
+ 			break;
+ 		case R_X86_64_32S:
+-			if (*(s32 *)loc != 0)
+-				goto invalid_relocation;
+-			write(loc, &val, 4);
+-			if ((s64)val != *(s32 *)loc)
+-				goto overflow;
++			if (!clear) {
++				if (*(s32 *)loc != 0)
++					goto invalid_relocation;
++				write(loc, &val, 4);
++				if ((s64)val != *(s32 *)loc)
++					goto overflow;
++			} else {
++				write(loc, &zero, 4);
++			}
+ 			break;
+ 		case R_X86_64_PC32:
+ 		case R_X86_64_PLT32:
+-			if (*(u32 *)loc != 0)
+-				goto invalid_relocation;
+-			val -= (u64)loc;
+-			write(loc, &val, 4);
++			if (!clear) {
++				if (*(u32 *)loc != 0)
++					goto invalid_relocation;
++				val -= (u64)loc;
++				write(loc, &val, 4);
+ #if 0
+-			if ((s64)val != *(s32 *)loc)
+-				goto overflow;
++				if ((s64)val != *(s32 *)loc)
++					goto overflow;
+ #endif
++			} else {
++				write(loc, &zero, 4);
++			}
+ 			break;
+ 		case R_X86_64_PC64:
+-			if (*(u64 *)loc != 0)
+-				goto invalid_relocation;
+-			val -= (u64)loc;
+-			write(loc, &val, 8);
++			if (!clear) {
++				if (*(u64 *)loc != 0)
++					goto invalid_relocation;
++				val -= (u64)loc;
++				write(loc, &val, 8);
++			} else {
++				write(loc, &zero, 8);
++			}
+ 			break;
+ 		default:
+ 			pr_err("%s: Unknown rela relocation: %llu\n",
+@@ -234,8 +256,8 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+ 		mutex_lock(&text_mutex);
+ 	}
  
-+	/* See gup_pte_range(). */
-+	smp_mb__after_atomic();
+-	ret = __apply_relocate_add(sechdrs, strtab, symindex, relsec, me,
+-				   write);
++	ret = __apply_clear_relocate_add(sechdrs, strtab, symindex, relsec, me,
++					 write, false /* clear */);
+ 
+ 	if (!early) {
+ 		text_poke_sync();
+@@ -245,6 +267,32 @@ int apply_relocate_add(Elf64_Shdr *sechdrs,
+ 	return ret;
+ }
+ 
++#ifdef CONFIG_LIVEPATCH
 +
- 	if (unlikely(pud_val(orig) != pud_val(*pudp))) {
- 		gup_put_folio(folio, refs, flags);
- 		return 0;
++void clear_relocate_add(Elf64_Shdr *sechdrs,
++			const char *strtab,
++			unsigned int symindex,
++			unsigned int relsec,
++			struct module *me)
++{
++	bool early = me->state == MODULE_STATE_UNFORMED;
++	void *(*write)(void *, const void *, size_t) = memcpy;
++
++	if (!early) {
++		write = text_poke;
++		mutex_lock(&text_mutex);
++	}
++
++	__apply_clear_relocate_add(sechdrs, strtab, symindex, relsec, me,
++				   write, true /* clear */);
++
++	if (!early) {
++		text_poke_sync();
++		mutex_unlock(&text_mutex);
++	}
++}
++#endif
++
+ #endif
+ 
+ int module_finalize(const Elf_Ehdr *hdr,
+diff --git a/include/linux/moduleloader.h b/include/linux/moduleloader.h
+index 9e09d11ffe5b..d22b36b84b4b 100644
+--- a/include/linux/moduleloader.h
++++ b/include/linux/moduleloader.h
+@@ -72,6 +72,13 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
+ 		       unsigned int symindex,
+ 		       unsigned int relsec,
+ 		       struct module *mod);
++#ifdef CONFIG_LIVEPATCH
++void clear_relocate_add(Elf64_Shdr *sechdrs,
++		   const char *strtab,
++		   unsigned int symindex,
++		   unsigned int relsec,
++		   struct module *me);
++#endif
+ #else
+ static inline int apply_relocate_add(Elf_Shdr *sechdrs,
+ 				     const char *strtab,
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index bc475e62279d..5c0d8a4eba13 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -316,6 +316,45 @@ int klp_apply_section_relocs(struct module *pmod, Elf_Shdr *sechdrs,
+ 	return apply_relocate_add(sechdrs, strtab, symndx, secndx, pmod);
+ }
+ 
++static void klp_clear_object_relocations(struct module *pmod,
++					struct klp_object *obj)
++{
++	int i, cnt;
++	const char *objname, *secname;
++	char sec_objname[MODULE_NAME_LEN];
++	Elf_Shdr *sec;
++
++	objname = klp_is_module(obj) ? obj->name : "vmlinux";
++
++	/* For each klp relocation section */
++	for (i = 1; i < pmod->klp_info->hdr.e_shnum; i++) {
++		sec = pmod->klp_info->sechdrs + i;
++		secname = pmod->klp_info->secstrings + sec->sh_name;
++		if (!(sec->sh_flags & SHF_RELA_LIVEPATCH))
++			continue;
++
++		/*
++		 * Format: .klp.rela.sec_objname.section_name
++		 * See comment in klp_resolve_symbols() for an explanation
++		 * of the selected field width value.
++		 */
++		secname = pmod->klp_info->secstrings + sec->sh_name;
++		cnt = sscanf(secname, ".klp.rela.%55[^.]", sec_objname);
++		if (cnt != 1) {
++			pr_err("section %s has an incorrectly formatted name\n",
++			       secname);
++			continue;
++		}
++
++		if (strcmp(objname, sec_objname))
++			continue;
++
++		clear_relocate_add(pmod->klp_info->sechdrs,
++				   pmod->core_kallsyms.strtab,
++				   pmod->klp_info->symndx, i, pmod);
++	}
++}
++
+ /*
+  * Sysfs Interface
+  *
+@@ -1154,7 +1193,7 @@ static void klp_cleanup_module_patches_limited(struct module *mod,
+ 			klp_unpatch_object(obj);
+ 
+ 			klp_post_unpatch_callback(obj);
+-
++			klp_clear_object_relocations(patch->mod, obj);
+ 			klp_free_object_loaded(obj);
+ 			break;
+ 		}
 -- 
-2.37.1
-
-
-
-
--- 
-Thanks,
-
-David / dhildenb
+2.30.2
 
