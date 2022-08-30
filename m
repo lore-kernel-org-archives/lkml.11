@@ -2,72 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C39ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC17ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231666AbiH3XeY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
+        id S232367AbiH3Xdc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:33:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232389AbiH3Xdn (ORCPT
+        with ESMTP id S232268AbiH3Xct (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:33:43 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09591A2ABE
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:32:35 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id k126-20020a253d84000000b0068bb342010dso872255yba.1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:32:35 -0700 (PDT)
+        Tue, 30 Aug 2022 19:32:49 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DF774DC5
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:32:12 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id s15-20020a5b044f000000b00680c4eb89f1so869069ybp.7
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:32:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:from:subject:references
-         :mime-version:message-id:in-reply-to:date:from:to:cc:subject:date;
-        bh=muitaXVvYj1YXYeJfyrYZvippOQN3ekQHC+LkfXxbLc=;
-        b=qZpclqQ6MsBQZUyMbRHl5nEFHLKVNuncCaq+7Pxg2KT6XNS9xA08pBlGHG3JYut1v1
-         TRvpdM8IY5fuCJoqsdbv+sWXvtCe0pTC8mj6QL8JS54ZIaAga8BWb6ikSMZwyF8wo1Mp
-         1IzskPITy3h8+PbYnC19RDCtSEjS9+naLaqxPL38hvyOcW+Wjjnkp5Vu6l4DRpZa2MVw
-         /qLkeHfR5fxAiGbQ3ASQz7tXDU/Ojm5437GZxvJMzZGw2uZgFS6bO7kXNuCOzB8SUj8u
-         ve7L7kOPTIzBNV8TWMg8uLMQMD4aJ+E2OFqj7Rzu0cUj+dVwgYL7lld5b1V4BmU78331
-         S9yg==
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:from:to:cc:subject:date;
+        bh=saKNbXZ+fTVa0JCRlEDSkii0PaJZv4EakgrTZQbxYqs=;
+        b=XD92pfvmT5UHG/QrlG3x9hvk0uRfqb5LlQMcyxwpxG4Wvm3LMrD9fBN4uRw0cmd3JZ
+         rQk27V3ud6PA9klM89vVveRJNcYRNPoK7Smg/GRjHzNs/qpH/lsfOue6qoG0E0W5XAbS
+         LCVsvBBxhKptrcXE6zTxH2Kf84TnwhrfYIDVjUuW6MFXkh+8IGAFDG7Lv0amG9+3O5u9
+         NVHPeZM5EZcwXMZOdETU513PilVsaSsHeHh1ncLczWvvfxqefmwikXbsa0jLUPtuklss
+         vGdKBOFJndYV593TOqZikma2MqAvRxnESnGVJQPpfozUl9huam1HsjXgxZyh3MRsMjBe
+         UxEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:from:subject:references
-         :mime-version:message-id:in-reply-to:date:x-gm-message-state:from:to
-         :cc:subject:date;
-        bh=muitaXVvYj1YXYeJfyrYZvippOQN3ekQHC+LkfXxbLc=;
-        b=0n5/IroqiDPoerO0zzjFiiQMAPkkYfOuZJOjTkjdhlY1q6pMJxEBXLpDhuB/0zcUR6
-         /P6jT4JRobCYZEdwbflbPL243gu8DHFZdajDBPQRpJVPKyWo5PI+r5yD+yupKD0dwIjb
-         FKKvQACVD6oJds9Mm+ZmhyLnnKtlIZMpqP73ba56uub4njxkrUOEpwlnyZYDdRZFdSC4
-         jqu3Ho1/gFNYWU5Rl4P6BtXnoYxwG/ybKHmDiHX9+93klKc9XnuTxGollzAHfMQmz0MK
-         V8xAaGcZhbGrX0arGADWJRJC7ZO5DFF/0eyG9X2X55jL3q76Rf27Bu2r5YZ0zfbhPbY2
-         5HhA==
-X-Gm-Message-State: ACgBeo1W/1OmhdV2UMmVRoqzztgEVQQ1oGxJOKhdxZF9X279AUN93F7W
-        xVVpgFN2M07TjDfW4/yJblTB5KAJiqp0sZUed1hTizVAUfOdD9oMTImSKEKPRJyGaobr80SojmL
-        YnduyDA4Nmzf8KB2r6l8eJiY9xftd/5kfJy08t8mEaW3gUBMTZ2Ro2OoeZXDmUdF3Kh+vXKOpjr
-        02i7svZRRj8g==
-X-Google-Smtp-Source: AA6agR5mmw1lyTMjEbXO+bj0XMfoKQXjrA7x+3+LfFFUJRrRakcxIdBjBJC8pQKjP8yP5Cacc+4B59TMcKFo3CTBMQ8=
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date;
+        bh=saKNbXZ+fTVa0JCRlEDSkii0PaJZv4EakgrTZQbxYqs=;
+        b=yjww8G+u6j15a2qnYcTVma9yz8/zNISMTDrDqmXKXVP5KU2HJOtNqA5egodnd89mbI
+         w6Hu+ehNOo1T2+Ncd9quOod74UjZYcZr3YUXwNNmUl+IFmTizpugolytrIn6gii8sSqW
+         pD8REXHNW53OeSiN5WuKR+0dUxR7byfhYeCA0V/v1wYXo+lQJWDsaMlKG2zjBa3LLYAE
+         sVjZzmr1rs+41V//3190l5cGQhh4ImzULvhbCPXIFc1jJauprSLL9nV58j7jS4J1xiJg
+         RlxMbGPw2wJQXx9tVnTuuJAkQZ9tFyPyJB7PwwqAN8xHx6iJhdV44Q3P4tDs+NipcZL+
+         P2uw==
+X-Gm-Message-State: ACgBeo2Z/VL8AjKD678Te+8bRdnnyJuXbsq6Bt2HAooglk+gQNCuqrbf
+        Cs3D3Id2Df/O0gYBBrg6guhsMQXGGp+JP9NKnhpF/kskNsEYzmGN8edpUNjpYboWzooU/LCvZDW
+        mCUflSkifNDzJZWW3bzL6kHKlLIq5dk2UO445Q954l4fI6UVFETgcWb3+nmMxiva7B/52nmcpHd
+        CgvJudOg2r9A==
+X-Google-Smtp-Source: AA6agR6xEQ5EyMbo66xRDA8vDW84e9YQyrHtWQROUp4QlR4E9NAmiWv98pKaF1InZnqVuSE2D/OjJElxp+jjP0RZeUM=
 X-Received: from samitolvanen1.mtv.corp.google.com ([2620:15c:201:2:54d9:7143:6a7d:91d])
- (user=samitolvanen job=sendgmr) by 2002:a25:2c8:0:b0:695:feaa:871f with SMTP
- id 191-20020a2502c8000000b00695feaa871fmr14222519ybc.471.1661902350818; Tue,
- 30 Aug 2022 16:32:30 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 16:31:29 -0700
+ (user=samitolvanen job=sendgmr) by 2002:a0d:cb0a:0:b0:337:1dbc:4c21 with SMTP
+ id n10-20020a0dcb0a000000b003371dbc4c21mr16082798ywd.297.1661902331345; Tue,
+ 30 Aug 2022 16:32:11 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 16:31:22 -0700
 In-Reply-To: <20220830233129.30610-1-samitolvanen@google.com>
-Message-Id: <20220830233129.30610-22-samitolvanen@google.com>
+Message-Id: <20220830233129.30610-15-samitolvanen@google.com>
 Mime-Version: 1.0
 References: <20220830233129.30610-1-samitolvanen@google.com>
 X-Developer-Key: i=samitolvanen@google.com; a=openpgp; fpr=35CCFB63B283D6D3AEB783944CB5F6848BBC56EE
-X-Developer-Signature: v=1; a=openpgp-sha256; l=10374; i=samitolvanen@google.com;
- h=from:subject; bh=xx8wjcYE8Du0racyo2HoO5M6w+PYgPKqDWnfLGl3DjU=;
- b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBjDp3PPFzSBxPnL1McANFd1sNHrlLrdWSxt2cbevI6
- OTWO0UqJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYw6dzwAKCRBMtfaEi7xW7uukC/
- 9uM+7HvXyQ67VflXgAsC/YncRdBoq4yhl8rYfT2i05OWqPjoWHJG8Ya/UI5iY6oAeiaG49tfhTVdrJ
- pUyR3viQo7OIVPeVuzfeHP0eguun9EReYSQcKQGYAV4XfwQ4hFEKT254SvMUfU/M/3EWaS7HN4mNz4
- QJK4XkW4SPhA7RBnDLN3EQJPwljXDQ7+t5wNksrguQOfmbffYUJPcP/HC8oNr1lIRstWm3BrwbIJaD
- MAsUDvpax1bIHiYl6DHoiFijKWm88sHuPFQFFnxGE0U4g/pm+dzy+wirAFnCNNK/RGdmP3fdBqzLSI
- Ul3ndBsIwZACrYvIZ37KXR82etUCnuTGSvqwWPAnY4rizeCV8SEBvqmVV2EWIAClYLSj6ICZQJRyeX
- rzdvbADWzQdLSvLP7rGWgi5MQSYwwYbc15tpgtuhFe0HwpsWbo8jxfrJUVzM4T5CXHBy3OqY/UZZrp
- 0/EHk1+pMYKAO0vzlUhH3g28B4J9GI5syiuW13VGIgv/E=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2540; i=samitolvanen@google.com;
+ h=from:subject; bh=47sy+JmGHjJvxG1HdOlerjFJI0LNv5ITm57Sshi6/KQ=;
+ b=owEB7QES/pANAwAKAUy19oSLvFbuAcsmYgBjDp3OJuw0Lbmu9DwQiB41MJWv7pYFcmThxoyhKmDF
+ NnpHdLuJAbMEAAEKAB0WIQQ1zPtjsoPW0663g5RMtfaEi7xW7gUCYw6dzgAKCRBMtfaEi7xW7jjTC/
+ 9XfHgdD1uKnJRuMbjXkORu2FVPpFXBG9howb+XjW5cmmpsWsNswLD9oHgViYcRhjWfDHHYgZP4EiGe
+ exmmrQD/bheC7yEI76RUsyoKy7XIrIslXoDfK0tk3+pAJfxHy9yH+PXmqpiRgcW9CkutyukbhRqjZe
+ aSLk9lpH0fEfgJjVQdmyjRS5YchkeuDU7qX8EMlwEVLIJxw/x+T8iSHWSIAISM/oG9zZMiYY7i9hCb
+ bR0reU9bLkR69p4txll9OqqyyUyiGiLVdosVn48XtYoIEz7TZD6BN19C9xs4Y0CLFNGm5v0SxdH2wj
+ oLjogYcicWo3Z9EuIianekHBQKoGpsBcsb6vbar2WcSCxG6wYSI/cXWhiGp9G/ryiIUDMtdP6pl1rS
+ Y0NjFq7PgfDgWWNCzrREiqHzewWSIkMozSXjAoVf21npOgOLsXp6YtqNGh3XdNOpi52ZGaNR/+VTIZ
+ xGyGb1/j/VcMvuAloU0xVvqPRyjHv8kDkr7ydi/mDSyDo=
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Subject: [PATCH v4 21/21] x86: Add support for CONFIG_CFI_CLANG
+Subject: [PATCH v4 14/21] treewide: Drop WARN_ON_FUNCTION_MISMATCH
 From:   Sami Tolvanen <samitolvanen@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Kees Cook <keescook@chromium.org>,
@@ -85,315 +84,76 @@ Cc:     Kees Cook <keescook@chromium.org>,
         linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev,
         Sami Tolvanen <samitolvanen@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With CONFIG_CFI_CLANG, the compiler injects a type preamble immediately
-before each function and a check to validate the target function type
-before indirect calls:
-
-  ; type preamble
-  __cfi_function:
-    mov <id>, %eax
-  function:
-    ...
-  ; indirect call check
-    mov     -<id>,%r10d
-    add     -0x4(%r11),%r10d
-    je      .Ltmp1
-    ud2
-  .Ltmp1:
-    call    __x86_indirect_thunk_r11
-
-Define the __CFI_TYPE helper macro for manually annotating indirectly
-called assembly function with the identical premable, add error handling
-code for the ud2 traps emitted for indirect call checks, and allow
-CONFIG_CFI_CLANG to be selected on x86_64.
-
-This produces the following oops on CFI failure (generated using lkdtm):
-
-[   21.441706] CFI failure at lkdtm_indirect_call+0x16/0x20 [lkdtm]
-(target: lkdtm_increment_int+0x0/0x10 [lkdtm]; expected type: 0x7e0c52a)
-[   21.444579] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
-[   21.445296] CPU: 0 PID: 132 Comm: sh Not tainted
-5.19.0-rc8-00020-g9f27360e674c #1
-[   21.445296] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-[   21.445296] RIP: 0010:lkdtm_indirect_call+0x16/0x20 [lkdtm]
-[   21.445296] Code: 52 1c c0 48 c7 c1 c5 50 1c c0 e9 25 48 2a cc 0f 1f
-44 00 00 49 89 fb 48 c7 c7 50 b4 1c c0 41 ba 5b ad f3 81 45 03 53 f8
-[   21.445296] RSP: 0018:ffffa9f9c02ffdc0 EFLAGS: 00000292
-[   21.445296] RAX: 0000000000000027 RBX: ffffffffc01cb300 RCX: 385cbbd2e07=
-0a700
-[   21.445296] RDX: 0000000000000000 RSI: c0000000ffffdfff RDI: ffffffffc01=
-cb450
-[   21.445296] RBP: 0000000000000006 R08: 0000000000000000 R09: ffffffff8d0=
-81610
-[   21.445296] R10: 00000000bcc90825 R11: ffffffffc01c2fc0 R12: 00000000000=
-00000
-[   21.445296] R13: ffffa31b827a6000 R14: 0000000000000000 R15: 00000000000=
-00002
-[   21.445296] FS:  00007f08b42216a0(0000) GS:ffffa31b9f400000(0000)
-knlGS:0000000000000000
-[   21.445296] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   21.445296] CR2: 0000000000c76678 CR3: 0000000001940000 CR4: 00000000000=
-006f0
-[   21.445296] Call Trace:
-[   21.445296]  <TASK>
-[   21.445296]  lkdtm_CFI_FORWARD_PROTO+0x30/0x50 [lkdtm]
-[   21.445296]  direct_entry+0x12d/0x140 [lkdtm]
-[   21.445296]  full_proxy_write+0x5d/0xb0
-[   21.445296]  vfs_write+0x144/0x460
-[   21.445296]  ? __x64_sys_wait4+0x5a/0xc0
-[   21.445296]  ksys_write+0x69/0xd0
-[   21.445296]  do_syscall_64+0x51/0xa0
-[   21.445296]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-[   21.445296] RIP: 0033:0x7f08b41a6fe1
-[   21.445296] Code: be 07 00 00 00 41 89 c0 e8 7e ff ff ff 44 89 c7 89
-04 24 e8 91 c6 02 00 8b 04 24 48 83 c4 68 c3 48 63 ff b8 01 00 00 03
-[   21.445296] RSP: 002b:00007ffcdf65c2e8 EFLAGS: 00000246 ORIG_RAX: 000000=
-0000000001
-[   21.445296] RAX: ffffffffffffffda RBX: 00007f08b4221690 RCX: 00007f08b41=
-a6fe1
-[   21.445296] RDX: 0000000000000012 RSI: 0000000000c738f0 RDI: 00000000000=
-00001
-[   21.445296] RBP: 0000000000000001 R08: fefefefefefefeff R09: fefefefeffc=
-5ff4e
-[   21.445296] R10: 00007f08b42222b0 R11: 0000000000000246 R12: 0000000000c=
-738f0
-[   21.445296] R13: 0000000000000012 R14: 00007ffcdf65c401 R15: 0000000000c=
-70450
-[   21.445296]  </TASK>
-[   21.445296] Modules linked in: lkdtm
-[   21.445296] Dumping ftrace buffer:
-[   21.445296]    (ftrace buffer empty)
-[   21.471442] ---[ end trace 0000000000000000 ]---
-[   21.471811] RIP: 0010:lkdtm_indirect_call+0x16/0x20 [lkdtm]
-[   21.472467] Code: 52 1c c0 48 c7 c1 c5 50 1c c0 e9 25 48 2a cc 0f 1f
-44 00 00 49 89 fb 48 c7 c7 50 b4 1c c0 41 ba 5b ad f3 81 45 03 53 f8
-[   21.474400] RSP: 0018:ffffa9f9c02ffdc0 EFLAGS: 00000292
-[   21.474735] RAX: 0000000000000027 RBX: ffffffffc01cb300 RCX: 385cbbd2e07=
-0a700
-[   21.475664] RDX: 0000000000000000 RSI: c0000000ffffdfff RDI: ffffffffc01=
-cb450
-[   21.476471] RBP: 0000000000000006 R08: 0000000000000000 R09: ffffffff8d0=
-81610
-[   21.477127] R10: 00000000bcc90825 R11: ffffffffc01c2fc0 R12: 00000000000=
-00000
-[   21.477959] R13: ffffa31b827a6000 R14: 0000000000000000 R15: 00000000000=
-00002
-[   21.478657] FS:  00007f08b42216a0(0000) GS:ffffa31b9f400000(0000)
-knlGS:0000000000000000
-[   21.479577] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   21.480307] CR2: 0000000000c76678 CR3: 0000000001940000 CR4: 00000000000=
-006f0
-[   21.481460] Kernel panic - not syncing: Fatal exception
+CONFIG_CFI_CLANG no longer breaks cross-module function address
+equality, which makes WARN_ON_FUNCTION_MISMATCH unnecessary. Remove
+the definition and switch back to WARN_ON_ONCE.
 
 Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- arch/x86/Kconfig               |  2 +
- arch/x86/include/asm/cfi.h     | 22 +++++++++
- arch/x86/include/asm/linkage.h |  9 ++++
- arch/x86/kernel/Makefile       |  2 +
- arch/x86/kernel/cfi.c          | 85 ++++++++++++++++++++++++++++++++++
- arch/x86/kernel/traps.c        |  4 +-
- 6 files changed, 123 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/include/asm/cfi.h
- create mode 100644 arch/x86/kernel/cfi.c
+ include/asm-generic/bug.h | 16 ----------------
+ kernel/kthread.c          |  3 +--
+ kernel/workqueue.c        |  2 +-
+ 3 files changed, 2 insertions(+), 19 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index f9920f1341c8..1fe6a83dac05 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -107,6 +107,8 @@ config X86
- 	select ARCH_SUPPORTS_PAGE_TABLE_CHECK	if X86_64
- 	select ARCH_SUPPORTS_NUMA_BALANCING	if X86_64
- 	select ARCH_SUPPORTS_KMAP_LOCAL_FORCE_MAP	if NR_CPUS <=3D 4096
-+	select ARCH_SUPPORTS_CFI_CLANG		if X86_64
-+	select ARCH_USES_CFI_TRAPS		if X86_64 && CFI_CLANG
- 	select ARCH_SUPPORTS_LTO_CLANG
- 	select ARCH_SUPPORTS_LTO_CLANG_THIN
- 	select ARCH_USE_BUILTIN_BSWAP
-diff --git a/arch/x86/include/asm/cfi.h b/arch/x86/include/asm/cfi.h
-new file mode 100644
-index 000000000000..58dacd90daef
---- /dev/null
-+++ b/arch/x86/include/asm/cfi.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_X86_CFI_H
-+#define _ASM_X86_CFI_H
-+
-+/*
-+ * Clang Control Flow Integrity (CFI) support.
-+ *
-+ * Copyright (C) 2022 Google LLC
-+ */
-+
-+#include <linux/cfi.h>
-+
-+#ifdef CONFIG_CFI_CLANG
-+enum bug_trap_type handle_cfi_failure(struct pt_regs *regs);
-+#else
-+static inline enum bug_trap_type handle_cfi_failure(struct pt_regs *regs)
-+{
-+	return BUG_TRAP_TYPE_NONE;
-+}
-+#endif /* CONFIG_CFI_CLANG */
-+
-+#endif /* _ASM_X86_CFI_H */
-diff --git a/arch/x86/include/asm/linkage.h b/arch/x86/include/asm/linkage.=
-h
-index 73ca20049835..ebfa05973312 100644
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -29,6 +29,15 @@
+diff --git a/include/asm-generic/bug.h b/include/asm-generic/bug.h
+index ba1f860af38b..4050b191e1a9 100644
+--- a/include/asm-generic/bug.h
++++ b/include/asm-generic/bug.h
+@@ -220,22 +220,6 @@ extern __printf(1, 2) void __warn_printk(const char *fmt, ...);
+ # define WARN_ON_SMP(x)			({0;})
  #endif
- #endif /* CONFIG_RETPOLINE */
-=20
-+#ifdef CONFIG_CFI_CLANG
-+#define __CFI_TYPE(name)					\
-+	SYM_START(__cfi_##name, SYM_L_LOCAL, SYM_A_NONE)	\
-+	.fill 11, 1, 0x90 ASM_NL				\
-+	.byte 0xb8 ASM_NL					\
-+	.long __kcfi_typeid_##name ASM_NL			\
-+	SYM_FUNC_END(__cfi_##name)
-+#endif
-+
- #else /* __ASSEMBLY__ */
-=20
- #if defined(CONFIG_RETHUNK) && !defined(__DISABLE_EXPORTS) && !defined(BUI=
-LD_VDSO)
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index a20a5ebfacd7..1286a73ebdbc 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -139,6 +139,8 @@ obj-$(CONFIG_UNWINDER_GUESS)		+=3D unwind_guess.o
-=20
- obj-$(CONFIG_AMD_MEM_ENCRYPT)		+=3D sev.o
-=20
-+obj-$(CONFIG_CFI_CLANG)			+=3D cfi.o
-+
- ###
- # 64 bit specific files
- ifeq ($(CONFIG_X86_64),y)
-diff --git a/arch/x86/kernel/cfi.c b/arch/x86/kernel/cfi.c
-new file mode 100644
-index 000000000000..e642c1af2678
---- /dev/null
-+++ b/arch/x86/kernel/cfi.c
-@@ -0,0 +1,85 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Clang Control Flow Integrity (CFI) support.
-+ *
-+ * Copyright (C) 2022 Google LLC
-+ */
-+#include <asm/cfi.h>
-+#include <asm/insn.h>
-+#include <asm/insn-eval.h>
-+
-+/*
-+ * Returns the target address and the expected type when regs->ip points
-+ * to a compiler-generated CFI trap.
-+ */
-+static bool decode_cfi_insn(struct pt_regs *regs, unsigned long *target,
-+			    u32 *type)
-+{
-+	char buffer[MAX_INSN_SIZE];
-+	struct insn insn;
-+	int offset =3D 0;
-+
-+	*target =3D *type =3D 0;
-+
-+	/*
-+	 * The compiler generates the following instruction sequence
-+	 * for indirect call checks:
-+	 *
-+	 * =C2=A0 movl    -<id>, %r10d       ; 6 bytes
-+	 *   addl    -4(%reg), %r10d    ; 4 bytes
-+	 *   je      .Ltmp1             ; 2 bytes
-+	 *   ud2                        ; <- regs->ip
-+	 *   .Ltmp1:
-+	 *
-+	 * We can decode the expected type and the target address from the
-+	 * movl/addl instructions.
-+	 */
-+	if (copy_from_kernel_nofault(buffer, (void *)regs->ip - 12, MAX_INSN_SIZE=
-))
-+		return false;
-+	if (insn_decode_kernel(&insn, &buffer[offset]))
-+		return false;
-+	if (insn.opcode.value !=3D 0xBA)
-+		return false;
-+
-+	*type =3D -(u32)insn.immediate.value;
-+
-+	if (copy_from_kernel_nofault(buffer, (void *)regs->ip - 6, MAX_INSN_SIZE)=
-)
-+		return false;
-+	if (insn_decode_kernel(&insn, &buffer[offset]))
-+		return false;
-+	if (insn.opcode.value !=3D 0x3)
-+		return false;
-+
-+	/* Read the target address from the register. */
-+	offset =3D insn_get_modrm_rm_off(&insn, regs);
-+	if (offset < 0)
-+		return false;
-+
-+	*target =3D *(unsigned long *)((void *)regs + offset);
-+
-+	return true;
-+}
-+
-+/*
-+ * Checks if a ud2 trap is because of a CFI failure, and handles the trap
-+ * if needed. Returns a bug_trap_type value similarly to report_bug.
-+ */
-+enum bug_trap_type handle_cfi_failure(struct pt_regs *regs)
-+{
-+	unsigned long target;
-+	u32 type;
-+
-+	if (!is_cfi_trap(regs->ip))
-+		return BUG_TRAP_TYPE_NONE;
-+
-+	if (!decode_cfi_insn(regs, &target, &type))
-+		return report_cfi_failure_noaddr(regs, regs->ip);
-+
-+	return report_cfi_failure(regs, regs->ip, &target, type);
-+}
-+
-+/*
-+ * Ensure that __kcfi_typeid_ symbols are emitted for functions that may
-+ * not be indirectly called with all configurations.
-+ */
-+__ADDRESSABLE(memcpy)
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index d62b2cb85cea..178015a820f0 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -63,6 +63,7 @@
- #include <asm/insn-eval.h>
- #include <asm/vdso.h>
- #include <asm/tdx.h>
-+#include <asm/cfi.h>
-=20
- #ifdef CONFIG_X86_64
- #include <asm/x86_init.h>
-@@ -313,7 +314,8 @@ static noinstr bool handle_bug(struct pt_regs *regs)
- 	 */
- 	if (regs->flags & X86_EFLAGS_IF)
- 		raw_local_irq_enable();
--	if (report_bug(regs->ip, regs) =3D=3D BUG_TRAP_TYPE_WARN) {
-+	if (report_bug(regs->ip, regs) =3D=3D BUG_TRAP_TYPE_WARN ||
-+	    handle_cfi_failure(regs) =3D=3D BUG_TRAP_TYPE_WARN) {
- 		regs->ip +=3D LEN_UD2;
- 		handled =3D true;
- 	}
---=20
+ 
+-/*
+- * WARN_ON_FUNCTION_MISMATCH() warns if a value doesn't match a
+- * function address, and can be useful for catching issues with
+- * callback functions, for example.
+- *
+- * With CONFIG_CFI_CLANG, the warning is disabled because the
+- * compiler replaces function addresses taken in C code with
+- * local jump table addresses, which breaks cross-module function
+- * address equality.
+- */
+-#if defined(CONFIG_CFI_CLANG) && defined(CONFIG_MODULES)
+-# define WARN_ON_FUNCTION_MISMATCH(x, fn) ({ 0; })
+-#else
+-# define WARN_ON_FUNCTION_MISMATCH(x, fn) WARN_ON_ONCE((x) != (fn))
+-#endif
+-
+ #endif /* __ASSEMBLY__ */
+ 
+ #endif
+diff --git a/kernel/kthread.c b/kernel/kthread.c
+index 3c677918d8f2..28a6b7ab4a0f 100644
+--- a/kernel/kthread.c
++++ b/kernel/kthread.c
+@@ -1050,8 +1050,7 @@ static void __kthread_queue_delayed_work(struct kthread_worker *worker,
+ 	struct timer_list *timer = &dwork->timer;
+ 	struct kthread_work *work = &dwork->work;
+ 
+-	WARN_ON_FUNCTION_MISMATCH(timer->function,
+-				  kthread_delayed_work_timer_fn);
++	WARN_ON_ONCE(timer->function != kthread_delayed_work_timer_fn);
+ 
+ 	/*
+ 	 * If @delay is 0, queue @dwork->work immediately.  This is for
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index aeea9731ef80..16df315d2a3d 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -1651,7 +1651,7 @@ static void __queue_delayed_work(int cpu, struct workqueue_struct *wq,
+ 	struct work_struct *work = &dwork->work;
+ 
+ 	WARN_ON_ONCE(!wq);
+-	WARN_ON_FUNCTION_MISMATCH(timer->function, delayed_work_timer_fn);
++	WARN_ON_ONCE(timer->function != delayed_work_timer_fn);
+ 	WARN_ON_ONCE(timer_pending(timer));
+ 	WARN_ON_ONCE(!list_empty(&work->entry));
+ 
+-- 
 2.37.2.672.g94769d06f0-goog
 
