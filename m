@@ -2,147 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE34ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 017F5ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229888AbiH3UHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 16:07:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54306 "EHLO
+        id S230407AbiH3UHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 16:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiH3UHA (ORCPT
+        with ESMTP id S230255AbiH3UHI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 16:07:00 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B3974DE4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 13:06:58 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id b16so8015953wru.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 13:06:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=quPrc0QIsuz1NKdESYuLftRz7jRQA9QoPFRh/8Iokok=;
-        b=ItJACpqJn+un8MmB1oaVNotCCyq8RQ4xPF6dBt1VRVv0ETdWFC95NwxR2LcTv7r2S6
-         GAoZ0BBJ/vPjFKGZeVrjUpP1BrgZrMpVTG/ne7Uux2JpIM3WqT/Cc4yMBwAEMpkWEKhd
-         eyKuPLiN9QzvlGqpSw58vEuFRgOks9L623kAbAOHLpV4Sq8Vkkw8tNCFv1RKmQoA6+B3
-         tTdlCipGfI5WXXXKiOWEVyvE5Oxy2AeMRqMtiy49/iSLivwtRGkEAn8v/qcH1uCchz3v
-         ra9HsSkGrzYJyzjh7S6Xu6/MRblZymR7SpfnnDOHu5/FViVYH6Ye+Yj6/IAnUprh01DQ
-         kFRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=quPrc0QIsuz1NKdESYuLftRz7jRQA9QoPFRh/8Iokok=;
-        b=xsnUPx3NqXnY8mguj+UqLx6OQf/NXpmsL20SwMu0C6N02kUUieCx2f2gjVIbmMFRPt
-         PVxbeGSOLabvTPN8mMiRGKUc6daObPMAxi/D8mfxwAYxNx4XRrRNkQhK+n3RLEsYr+QZ
-         eTAQaWCpAOw8ZqwCttmTYnHQul+nvl+H3boAR6kGYDcpf6NQi+bLGDcoWi3u/SOeT+k2
-         YLRKrPc5ex5GCrqtIAFuMVl4d54VNdYKe3aRv632kLmVQ+QBm5XG/JiZ4A8plaJLypvN
-         BMEXMsF9kys48H3Ciiu8ryQBA94oBB6UeaXtRXjzGexffDZPkmjV6INwOtNE0yQVpmK+
-         BYsw==
-X-Gm-Message-State: ACgBeo2MqqfP9V7sXVNCucnMazPnMJrNBQbqkkQXr5zEtlSare7nyTfp
-        UEADK64SRvVSpmjzQjnBcSM=
-X-Google-Smtp-Source: AA6agR5HLvAHkx1e6748LuYIDVeH3GMrvVPWnUmBdS/sV+yDv3vrCIxtQ/50OS4HDxutgYtDsL3NmA==
-X-Received: by 2002:a5d:4d12:0:b0:226:d878:e096 with SMTP id z18-20020a5d4d12000000b00226d878e096mr7374164wrt.377.1661890017093;
-        Tue, 30 Aug 2022 13:06:57 -0700 (PDT)
-Received: from opensuse.localnet (host-87-1-103-238.retail.telecomitalia.it. [87.1.103.238])
-        by smtp.gmail.com with ESMTPSA id l8-20020a5d4108000000b0021eed2414c9sm10405186wrp.40.2022.08.30.13.06.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 13:06:55 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>, Sagi Grimberg <sagi@grimberg.me>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        James Smart <james.smart@broadcom.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>
-Subject: Re: [PATCH v3 1/1] nvmet-tcp: Don't kmap() pages which can't come from HIGHMEM
-Date:   Tue, 30 Aug 2022 22:06:54 +0200
-Message-ID: <1924196.usQuhbGJ8B@opensuse>
-In-Reply-To: <Ywkf3NJQ7/8SSV+e@ZenIV>
-References: <20220822142438.5954-1-fmdefrancesco@gmail.com> <2887364.VdNmn5OnKV@opensuse> <Ywkf3NJQ7/8SSV+e@ZenIV>
+        Tue, 30 Aug 2022 16:07:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF469754B1;
+        Tue, 30 Aug 2022 13:07:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E34A617C9;
+        Tue, 30 Aug 2022 20:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A24D5C433C1;
+        Tue, 30 Aug 2022 20:07:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661890023;
+        bh=GjZuCVubdGfBGAy1tO+YfYRaULtpFbUgYBOf98neQH8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=LlxBq1BhJaqq3JColJ2FFAgCSxP7PN23KPz697Ua2ozUObW+vt5V1qPnhYw1zLojr
+         /UkXw/AOuxfZLwtu3ZVBUSRxc1flHI1lry6T5hisnZaR/qPV1t7aRxGxkREPUyciLt
+         RRiYrH1xqsAPiplKMZzsWMgHcW1CNk2OTsIC4ODgiNPgl5XwlayP1Le/QHmlAsAOFL
+         c2WFXzjb+nlnlTK3JPLqdaDJaxZczuIa8vQJYxyDZGgWeerXzmYfny3LOfzHUR9qij
+         bz3JV31/Ui/lla/MV7rh0HAHuG52R/ayl6xlhI6YYh857DBD+fIIHvBA/DcF+PhyKu
+         2F+9niLoNLPFA==
+Date:   Tue, 30 Aug 2022 15:07:02 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Steven J Abner <pheonix.sja@att.net>, linux-kernel@vger.kernel.org,
+        PCI <linux-pci@vger.kernel.org>
+Subject: Re: pcieport bug?
+Message-ID: <20220830200702.GA122616@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <dd8fb085-76dc-f2b0-6101-f84c93b8a0af@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On venerd=C3=AC 26 agosto 2022 21:32:44 CEST Al Viro wrote:
-> On Fri, Aug 26, 2022 at 08:16:59PM +0200, Fabio M. De Francesco wrote:
-> > As you may have already read, I'm so new to kernel development that I=20
-still
-> > know very little about many subsystems and drivers. I am not currently
-> > able to tell the difference between BVEC and KVEC. I could probably try=
- to
-> > switch from one to the other (after learning from other code), however I
-> > won't be able to explain in the commit message why users should better =
-use
-> > BVEC in this case.
->=20
-> struct kvec: pairs of form <kernel address, length>
-> struct bio_vec: triples of form <page, offset, length>
->=20
-> Either is a way to refer to a chunk of memory; the former obviously has it
-> already mapped (you don't get kernel addresses otherwise), the latter=20
-doesn't
-> need to.
->=20
-> iov_iter instances might be backed by different things, including
-> arrays of kvec (iov_iter_kvec() constructs such) and arrays of
-> bio_vec (iov_iter_bvec() is the constructor for those).
->=20
-> iov_iter primitives (copy_to_iter/copy_from_iter/copy_page_to_iter/etc.)
-> work with either variant - they look at the flavour and act accordingly.
->=20
-> ITER_BVEC ones tend to do that kmap_local_page() + copy + kunmap_local().
-> ITER_KVEC obviously use memcpy() for copying and that's it.
->=20
-> If you need e.g. to send some subranges of some pages you could kmap them,
-> form kvec array, make msg.msg_iter a KVEC-backed iterator over those and
-> feed it to sendmsg().  Or you could take a bio_vec array instead, make
-> msg.msg_iter a BVEC-backed iterator over that and feed to sendmsg().
->=20
-> The difference is, in the latter case kmap_local() will be done on demand
-> *inside* ->sendmsg() instance, when it gets around to copying some data
-> from the source and calls something like csum_and_copy_from_iter() or
-> whichever primitive it chooses to use.
->=20
-> Why bother with mapping the damn thing in the caller and having it pinned
-> all along whatever ->sendmsg() you end up calling?  Just give it
-> page/offset/length instead of address/length and let lib/iov_iter.c
-> do the right thing...
+On Mon, Aug 29, 2022 at 03:14:23PM -0700, Randy Dunlap wrote:
+> On 8/29/22 10:59, Steven J Abner wrote:
+> > Hi
+> > Building a kernel tailored for AMD 2400g on ASRock B450 using 5.18.12 as base, OS
+> > is Elementary 6.1 on top of Ubuntu 20.04.5.
+> > In a config I changed some which lead to this query,'cause not sure what it means.
+> > So up to you see if it is of concern. Notation igpu# refers to build sequence tests.
+> > Also note that pcieport may affect other drivers?
 
-Hi Al,
+igpu32 is built with CONFIG_PCIEPORTBUS=y and igpu33 is built with
+CONFIG_PCIEPORTBUS not set.  Both are built from the same kernel
+version.  Right?
 
-Thanks so much for the time you spent writing this detailed explanation. I=
-=20
-really appreciated that you spend time for teaching newcomers with kindness=
-=20
-and patience.
+And you see some lspci differences bewteen igpu32 and igpu33?
 
-I apologize for this late response, but for the past few days I've been out=
- of=20
-city with no PC to email the lists (therefore, the lists would have rejecte=
-d=20
-my messages from phone with a Gmail app).
+Is there something that does not work as you expect it to work?
 
-Yesterday I saw that Sagi sent an reworked version of my patch according to=
-=20
-your suggestions. This evening I will send it again as a patch v4 and with =
-the=20
-cover letter it had in the previous version.
+Obviously with CONFIG_PCIEPORTBUS not set, we expect things that
+depend on PCIEPORTBUS will not work.  This includes AER, hotplug, PME,
+DPC, etc.
 
-You will be acknowledged with a "Suggested by" tag. Instead Sagi with a "Co-
-developed-by" and, of course, with a "Signed-off-by" immediately after the=
-=20
-previous tag. There will be more information after the three dashes.=20
+If you're seeing something unexpected, can you collect the complete
+dmesg log and complete "sudo lspci -vv" output for both cases?  If
+they're too big for email, you can open a report at
+https://bugzilla.kernel.org and attach them there.
 
-Again thanks,
-
-=46abio
-
-
-
+> > config differences
+> > igpu33
+> > # CONFIG_PCIEPORTBUS is not set
+> > # CONFIG_PCI_IOV is not set
+> > # CONFIG_VGA_ARB is not set
+> > # CONFIG_HOTPLUG_PCI is not set
+> > igpu32
+> > CONFIG_PCIEPORTBUS=y
+> > CONFIG_HOTPLUG_PCI_PCIE=y
+> > CONFIG_PCIEAER=y
+> > # CONFIG_PCIEAER_INJECT is not set
+> > # CONFIG_PCIE_ECRC is not set
+> > CONFIG_PCIE_PME=y
+> > CONFIG_PCIE_DPC=y
+> > # CONFIG_PCIE_EDR is not set
+> > CONFIG_PCI_REALLOC_ENABLE_AUTO=y
+> > # CONFIG_PCI_PF_STUB is not set
+> > CONFIG_PCI_IOV=y
+> > CONFIG_VGA_ARB=y
+> > CONFIG_VGA_ARB_MAX_GPUS=16
+> > CONFIG_HOTPLUG_PCI=y
+> > CONFIG_HOTPLUG_PCI_ACPI=y
+> > # CONFIG_HOTPLUG_PCI_ACPI_IBM is not set
+> > CONFIG_HOTPLUG_PCI_CPCI=y
+> > # CONFIG_HOTPLUG_PCI_CPCI_ZT5550 is not set
+> > # CONFIG_HOTPLUG_PCI_CPCI_GENERIC is not set
+> > CONFIG_HOTPLUG_PCI_SHPC=y
+> > # CONFIG_RAPIDIO_TSI721 is not set
+> > # CONFIG_EEEPC_LAPTOP is not set
+> > 
+> > lspci differences:
+> > start with identical:
+> > 00:00.0 Host bridge
+> > 00:00.2 IOMMU
+> > 00:01.0 Host bridge
+> > 
+> > kernel builds after igpu33 stable flags, only irq differences
+> > kernel builds upto igpu32 flags differ including non-pcieport drivers,
+> > there was a few builds where flags matched out of 32 different builds
+> > I thought was normal that flags changed prior to 33-37 being very stable.
+> > 
+> > under 00:01.1 PCI bridge:
+> > igpu33
+> > Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx-
+> > DevCtl: CorrErr- NonFatalErr- FatalErr- UnsupReq-
+> > RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- PMEIntEna- CRSVisible+
+> > Capabilities: [a0] MSI: Enable- Count=1/1 Maskable- 64bit+
+> >  Address: 0000000000000000 Data: 0000
+> > RootCmd: CERptEn- NFERptEn- FERptEn-
+> > 
+> > igpu32
+> > Control: I/O+ Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR- FastB2B- DisINTx+
+> > Interrupt: pin ? routed to IRQ 26
+> > DevCtl: CorrErr+ NonFatalErr+ FatalErr+ UnsupReq+
+> > RootCtl: ErrCorrectable- ErrNon-Fatal- ErrFatal- PMEIntEna+ CRSVisible+
+> > Capabilities: [a0] MSI: Enable+ Count=1/1 Maskable- 64bit+
+> >  Address: 00000000fee00000 Data: 0000
+> > RootCmd: CERptEn+ NFERptEn+ FERptEn+
+> > Kernel driver in use: pcieport
+> > 
+> > under these, nearly same readout as above (32vs33 use of pcieport)
+> > 00:01.6 PCI bridge
+> > 00:08.1 PCI bridge
+> > 00:08.2 PCI bridge
+> > 11:01.0 PCI bridge
+> > 11:02.0 PCI bridge
+> > 15:00.2 PCI bridge
+> > 1d:00.0 PCI bridge
+> > 1d:01.0 PCI bridge
+> > 1d:04.0 PCI bridge
+> > 1d:05.0 PCI bridge
+> > 1d:06.0 PCI bridge
+> > 1d:07.0 PCI bridge
+> > 
+> > on non-pcieport drivers minor differences in +- states
+> > on nvme added line:
+> > Physical Slot: 0
+> > but +- state can change like others
+> > 
+> > dmesg differences (alphabetical):
+> > igu33
+> > acpi PNP0A08:00: PCIe port services disabled; not requesting _OSC control
+> > igpu32
+> > acpiphp: ACPI Hot Plug PCI Controller Driver version: 0.5
+> > acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME AER PCIeCapability]
+> > acpi PNP0A08:00: _OSC: platform does not support [SHPCHotplug LTR]
+> > amdgpu 0000:38:00.0: vgaarb: deactivate vga console
+> > pci 0000:38:00.0: vgaarb: bridge control possible
+> > pci 0000:38:00.0: vgaarb: setting as boot VGA device
+> > pci 0000:38:00.0: vgaarb: VGA device added: decodes=io+mem,owns=none,locks=none
+> > pcieport 0000:00:01.1: AER: enabled with IRQ 26
+> > pcieport 0000:00:01.1: PME: Signaling with IRQ 26
+> > pcieport 0000:00:01.2: AER: enabled with IRQ 27
+> > pcieport 0000:00:01.2: PME: Signaling with IRQ 27
+> > pcieport 0000:00:01.6: AER: enabled with IRQ 28
+> > pcieport 0000:00:01.6: pciehp: Slot #0 AttnBtn- PwrCtrl- MRL- AttnInd- PwrInd- HotPlug+ Surprise- Interlock- NoCompl+ IbPresDis- LLActRep+
+> > pcieport 0000:00:01.6: PME: Signaling with IRQ 28
+> > pcieport 0000:00:08.1: PME: Signaling with IRQ 29
+> > pcieport 0000:00:08.2: PME: Signaling with IRQ 30
+> > shpchp: Standard Hot Plug PCI Controller Driver version: 0.4
+> > vgaarb: loaded
+> > 
+> > Steve
+> > 
+> > I wish to be personally CC'ed the answers/comments posted to the list
+> > in response to your posting, please.
+> -- 
+> ~Randy
