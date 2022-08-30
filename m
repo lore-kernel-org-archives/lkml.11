@@ -2,67 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980D1ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B951ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:59:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbiH3R7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42604 "EHLO
+        id S230043AbiH3R7s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:59:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232004AbiH3R7J (ORCPT
+        with ESMTP id S232014AbiH3R7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:59:09 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FE92676
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:58:54 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id p18so8870891ljc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:58:54 -0700 (PDT)
+        Tue, 30 Aug 2022 13:59:10 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB48426E1
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:58:55 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id y10so9058824ljq.0
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:58:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=zOi9kFOde5m40Z0kzt7eejwPpj0TyHiFN0Epj0E8EcY=;
-        b=kOSsVdTVsCPhkycrz9pFHCagY9vhvZ/ZsHKsO5/WpC2KatVlstdZC08p4rRCGwGnlI
-         vvMTass1nOfPlNAGL9Trvt+FHMNNL7Qh2MzuJ8CqKER9ItW1mo6hIDF7t4D+lvlbJRJM
-         rwZGQV18MmjoPqeP1qNb3zT8C9aHqzsQ9F3uXBaEMUDEJYzA6Mn8HSdI2Cm4L5LR6TOE
-         QC0prfswFQK60mYEimHhLstNDjvG79CMdJd13Xbb9Hbaa+857gKoePXq3i1OXGPD16FH
-         eaLK/BIKs1UvuaajzvE6hn8fEg7e8WMWUbGpiGOI0e8kml4OBsZQO3TYsDM7Qezz3RFa
-         lqWA==
+         :message-id:date:subject:to:from:from:to:cc;
+        bh=fFHSYBHtp1mvsz+IAjz2NGyNU51T7wG7r3Us+Us+0Vw=;
+        b=Mz+XBr4i91zmayQTLDcg5nbqbzzFaxast2esKZcLiLJmvssU6wnfIVf9n1AD3xLKX8
+         Dk60Q2Drb3tsY4ppP2WLs7M7vu9aBP9n+cNA1jHXyPHEOov3PGT/OaBhG/iP07ioX4I1
+         rv0Y1LZEh4mjzb2Zb5gZGvSPyK4uL4xLrLPbl+76erVp5Ijdi9TWITsx+o/bZBmiJ1ma
+         fYOmjbe6oTev9ddJbGEF/YaJ23El1QksBEv6dItigIKGp8Vvy7NJL+uDgc/RArKRikml
+         CIwJUjrfn2jVIXXZMFt4yvD1P5XykKIjuyk9bfu5vIwdY2tuRNOYv2o0Se8A1XC6l7uF
+         h1IA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=zOi9kFOde5m40Z0kzt7eejwPpj0TyHiFN0Epj0E8EcY=;
-        b=X38lYHmw2W5vSyuPtHOQmNFJdntDX1OH3kZv20Au/lKjPFsc+YS1ONhdySi3TqYEN7
-         qBV5vQ+fhw9PN60MpjQmPTPeEHV7ZZucg/PjbKkD0F73kJIhDfGylbj6DOROUNshAx1I
-         nrIeTiNNL3De3T9FpCTpnmPXn7aJqpe3mYiaalteVtJ6QiCDGv6P8xNIh5ulmqeYFKYl
-         BCIsZfnlzZkwHw++VPU1tb2vMNuv9qAlutf6suKJP/CEa6Bd1x88Y8G+skkBWEmgCbct
-         aH42+DEr1dFpaUfvPMizhqWubZOAaeC/5x3ACcDTE4TjOLpbGXE9pdSFkpYD9HDDKT1q
-         jXXg==
-X-Gm-Message-State: ACgBeo2/V8TvNiU3RDkM9HxwyFOwdcEqSZZTEgHcvUXIMp1DKM52MlBU
-        ilzNeeGpfeQmwkt01ELnWMdg6w==
-X-Google-Smtp-Source: AA6agR5fB8tcI6nebScGu9KgPYQP+YMJ6wrIkqasj8/WnuIm+BOxrAGCTs+OgaoBOeK4z79Jb3aqmw==
-X-Received: by 2002:a2e:be9b:0:b0:25f:e027:4999 with SMTP id a27-20020a2ebe9b000000b0025fe0274999mr7477279ljr.395.1661882332908;
-        Tue, 30 Aug 2022 10:58:52 -0700 (PDT)
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc;
+        bh=fFHSYBHtp1mvsz+IAjz2NGyNU51T7wG7r3Us+Us+0Vw=;
+        b=h0t/90ukcP7plS3sRhzUie60pPh4R5rXr/oYrzetqpLvw0apUT13MaJKR3249d2/O4
+         5Ee5jJPmYhQdBcYHJlX6cx6+RgadfV4agQOUNS/XPwlFNA1ipY/mPZB96pw3kCtO8vQ1
+         3KlVv6JY46NlSBcE84V4sBVrC0YxFSSRC3ENV+esk78OMpuo4DyezNDrdPR6K7O6gBWo
+         RDkiJWcY9pYmEA9AbGE8vP2xvRZgaSAnhUletf93t+3J+G34WbzfYtDCU38cOJEZy/LX
+         bI+M1tWDxROni7TemYB9+Py/Aca7qwDCckpl7VoYBvvuMfPFzE9DKB0ACPKPXw9e+eEU
+         wCeQ==
+X-Gm-Message-State: ACgBeo1oiyERRWjG4eoQfwx6/PevKKsTUDFL7ypgvNjCEVAbaVb7DWv6
+        tMKWAA9ORLON4PcDXv+3ZQOUig==
+X-Google-Smtp-Source: AA6agR45uW8uWrJR4EMgmEiWctiQg92imuC4b8KqOElTDpw7sCyn5YFBnhPT4NSyjt3tUL58uJToVA==
+X-Received: by 2002:a2e:a548:0:b0:261:c647:1d86 with SMTP id e8-20020a2ea548000000b00261c6471d86mr7955807ljn.237.1661882334138;
+        Tue, 30 Aug 2022 10:58:54 -0700 (PDT)
 Received: from krzk-bin.. (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id h5-20020a2ea485000000b0025e6a3556ffsm1851394lji.22.2022.08.30.10.58.51
+        by smtp.gmail.com with ESMTPSA id h5-20020a2ea485000000b0025e6a3556ffsm1851394lji.22.2022.08.30.10.58.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 10:58:52 -0700 (PDT)
+        Tue, 30 Aug 2022 10:58:53 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     matthias.bgg@gmail.com, robh+dt@kernel.org, yong.wu@mediatek.com,
-        chengci.xu@mediatek.com
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        devicetree@vger.kernel.org, yi.kuo@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        anthony.huang@mediatek.com, wendy-st.lin@mediatek.com,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v5 0/4] MT8188 SMI SUPPORT
-Date:   Tue, 30 Aug 2022 20:58:49 +0300
-Message-Id: <166188232676.14577.13660349538278549218.b4-ty@linaro.org>
+To:     devicetree@vger.kernel.org, festevam@gmail.com, peng.fan@nxp.com,
+        krzysztof.kozlowski+dt@linaro.org, krzysztof.kozlowski@linaro.org,
+        Sascha Hauer <s.hauer@pengutronix.de>, robh+dt@kernel.org,
+        djakov@kernel.org, linux-imx@nxp.com, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, shawnguo@kernel.org,
+        kernel@pengutronix.de, linux-pm@vger.kernel.org
+Subject: Re: (subset) [PATCH 2/2] dt-bindings: memory-controllers: fsl,imx8m-ddrc: drop Leonard Crestez
+Date:   Tue, 30 Aug 2022 20:58:50 +0300
+Message-Id: <166188232677.14577.9890180783714533041.b4-ty@linaro.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220817124608.10062-1-chengci.xu@mediatek.com>
-References: <20220817124608.10062-1-chengci.xu@mediatek.com>
+In-Reply-To: <20220817065946.24303-2-krzysztof.kozlowski@linaro.org>
+References: <20220817065946.24303-1-krzysztof.kozlowski@linaro.org> <20220817065946.24303-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -70,26 +68,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 17 Aug 2022 20:46:04 +0800, Chengci.Xu wrote:
-> This patchset adds MT8188 SMI support.
+On Wed, 17 Aug 2022 09:59:46 +0300, Krzysztof Kozlowski wrote:
+> Emails to Leonard Crestez bounce ("550 5.4.1 Recipient address rejected:
+> Access denied:), so change maintainer to Peng Fan from NXP.
 > 
-> MT8188, similar to mt8195, there are two SMI-common HW, one is for
-> VDO(video output), the other is for VPP(video processing pipe). They
-> connect with different SMI-larbs, then some setting(bus_sel) is
-> different.
 > 
-> [...]
 
 Applied, thanks!
 
-[1/4] dt-bindings: memory: mediatek: Add mt8188 smi binding
-      https://git.kernel.org/krzk/linux-mem-ctrl/c/9d9fde47430298455544b283cffa390c40d58bfc
-[2/4] memory: mtk-smi: Add return value for configure port function
-      https://git.kernel.org/krzk/linux-mem-ctrl/c/8c1561edc0692fa8e321daf2777c3c32454b5748
-[3/4] memory: mtk-smi: Add enable IOMMU SMC command for MM master
-      https://git.kernel.org/krzk/linux-mem-ctrl/c/4e508b259ed02f5fa608cdd83b817a7f49c22271
-[4/4] memory: mtk-smi: mt8188: Add SMI Support
-      https://git.kernel.org/krzk/linux-mem-ctrl/c/673e71df5ccfaefeb32bb5b3130a5d397b742194
+[2/2] dt-bindings: memory-controllers: fsl,imx8m-ddrc: drop Leonard Crestez
+      https://git.kernel.org/krzk/linux-mem-ctrl/c/c941e6305958fb85e0e4d6c632c8a7a489c76f88
 
 Best regards,
 -- 
