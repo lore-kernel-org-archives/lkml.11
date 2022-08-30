@@ -2,94 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07022ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA0B4ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:33:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiH3Scv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
+        id S231162AbiH3SdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiH3Scq (ORCPT
+        with ESMTP id S230438AbiH3SdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:32:46 -0400
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331B46C768;
-        Tue, 30 Aug 2022 11:32:45 -0700 (PDT)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 74CEF61B2; Tue, 30 Aug 2022 14:32:44 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 74CEF61B2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1661884364;
-        bh=t6A49DAKcUjYnrJBqtDT4iG90zCiYbqrgUVgWSnHASc=;
-        h=Date:To:Cc:Subject:References:In-Reply-To:From:From;
-        b=Od1O16flgP0Xp/wDCethqQnKUDrZ/sWnO/vOOWYf37FPP5PkOCwcJa40y5RAbAirz
-         JnR6g9bJ10IVnbL21iyJz9nAZIDFZp7aoMH6NlbE5+7FAF6klH1QMd19Cw6jU5N0il
-         1yC+/0/77oqMetI0uoA7CU1QDEGDRrplh24MXNb0=
-Date:   Tue, 30 Aug 2022 14:32:44 -0400
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     Trond Myklebust <trondmy@hammerspace.com>,
-        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
-        "djwong@kernel.org" <djwong@kernel.org>,
-        "xiubli@redhat.com" <xiubli@redhat.com>,
-        "brauner@kernel.org" <brauner@kernel.org>,
-        "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "neilb@suse.de" <neilb@suse.de>,
-        "david@fromorbit.com" <david@fromorbit.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "linux-ceph@vger.kernel.org" <linux-ceph@vger.kernel.org>,
-        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "tytso@mit.edu" <tytso@mit.edu>,
-        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>,
-        "jack@suse.cz" <jack@suse.cz>,
-        "linux-ext4@vger.kernel.org" <linux-ext4@vger.kernel.org>,
-        "linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "lczerner@redhat.com" <lczerner@redhat.com>,
-        "adilger.kernel@dilger.ca" <adilger.kernel@dilger.ca>,
-        "walters@verbum.org" <walters@verbum.org>
-Subject: Re: [PATCH v3 1/7] iversion: update comments with info about atime
- updates
-Message-ID: <20220830183244.GG26330@fieldses.org>
-References: <549776abfaddcc936c6de7800b6d8249d97d9f28.camel@kernel.org>
- <166181389550.27490.8200873228292034867@noble.neil.brown.name>
- <f5c42c0d87dfa45188c2109ccf9baeb7a42aa27e.camel@kernel.org>
- <20220830132443.GA26330@fieldses.org>
- <a07686e7e1d1ef15720194be2abe5681f6a6c78e.camel@kernel.org>
- <20220830144430.GD26330@fieldses.org>
- <e4815337177c74a9928098940dfdcb371017a40c.camel@hammerspace.com>
- <20220830151715.GE26330@fieldses.org>
- <3e8c7af5d39870c5b0dc61736a79bd134be5a9b3.camel@hammerspace.com>
- <4adb2abd1890b147dbc61a06413f35d2f147c43a.camel@kernel.org>
+        Tue, 30 Aug 2022 14:33:01 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74DE6D56E;
+        Tue, 30 Aug 2022 11:33:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661884380; x=1693420380;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XXGsy3iHg2TGWxhTSUsEXSInjBFqhM73CeJFq+RRHnI=;
+  b=D491yvbJBVAKmD2w2RRpDOrwBDE3synaWHE3T6K4szirt7xagndnB/wH
+   lwDLlvTzspn0O7vhqv4idEJG3tnQCNNZdmVGzOJk9cJd8Ccrp8iDvEgmp
+   +a5OkuSxCv6icOTDttnP6QV1/9dkCnusodFqv4pyQzk/ZeWixhM+Q3o3O
+   QSHGRFxN6Rdf2LhdPf/AVO1z0N48mG9m801L6Pg3nm9TQyM/71roj1p3F
+   Z/4pFHouCFJwiHORM/k5U0umiySo3ueurvpTxaAbgI2dXT4J/4W5s7yqH
+   rRqgcPrjlHO69weWeOnkqY5LADjMHjpApUIPMN0qkIT+jzVNEIlYJk1YF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="282241956"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="282241956"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 11:33:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="701099213"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by FMSMGA003.fm.intel.com with ESMTP; 30 Aug 2022 11:32:57 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 99E77174; Tue, 30 Aug 2022 21:33:11 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Xiaowei Song <songxiaowei@hisilicon.com>,
+        Binghui Wang <wangbinghui@hisilicon.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] PCI: dwc: Replace of_gpio_named_count() by gpiod_count()
+Date:   Tue, 30 Aug 2022 21:33:10 +0300
+Message-Id: <20220830183310.48541-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4adb2abd1890b147dbc61a06413f35d2f147c43a.camel@kernel.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-From:   bfields@fieldses.org (J. Bruce Fields)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 01:02:50PM -0400, Jeff Layton wrote:
-> The fact that NFS kept this more loosely-defined is what allowed us to
-> elide some of the i_version bumps and regain a fair bit of performance
-> for local filesystems [1]. If the change attribute had been more
-> strictly defined like you mention, then that particular optimization
-> would not have been possible.
-> 
-> This sort of thing is why I'm a fan of not defining this any more
-> strictly than we require. Later on, maybe we'll come up with a way for
-> filesystems to advertise that they can offer stronger guarantees.
+As a preparation to unexport of_gpio_named_count(), convert the
+driver to use gpiod_count() instead.
 
-Yeah, the afs change-attribute-as-counter thing seems ambitious--I
-wouldn't even know how to define what exactly you're counting.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pci/controller/dwc/pcie-kirin.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-My one question is whether it'd be worth just defining the thing as
-*increasing*.  That's a lower bar.
+diff --git a/drivers/pci/controller/dwc/pcie-kirin.c b/drivers/pci/controller/dwc/pcie-kirin.c
+index 7f67aad71df4..3bde045e20ad 100644
+--- a/drivers/pci/controller/dwc/pcie-kirin.c
++++ b/drivers/pci/controller/dwc/pcie-kirin.c
+@@ -366,12 +366,11 @@ static int kirin_pcie_get_gpio_enable(struct kirin_pcie *pcie,
+ 				      struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+-	struct device_node *np = dev->of_node;
+ 	char name[32];
+ 	int ret, i;
+ 
+ 	/* This is an optional property */
+-	ret = of_gpio_named_count(np, "hisilicon,clken-gpios");
++	ret = gpiod_count(dev, "hisilicon,clken");
+ 	if (ret < 0)
+ 		return 0;
+ 
+-- 
+2.35.1
 
-(Though admittedly we don't quite manage it now--see again 1631087ba872
-"Revert "nfsd4: support change_attr_type attribute"".)
-
---b.
