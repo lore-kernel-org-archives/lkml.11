@@ -2,98 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3C6ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF32ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:29:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbiH3R2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:28:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45496 "EHLO
+        id S231789AbiH3R2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:28:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231652AbiH3R1n (ORCPT
+        with ESMTP id S231742AbiH3R2H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:27:43 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B60D372695
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:25:03 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id y17so985646ilb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:25:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=SmSdpqqfvhuzBeG/p+7mNhDOexI5aI2aAxoNsJihLIw=;
-        b=MwDNBXN8YnULPfgN5yg8hA/ERoe4PKJ3NdV4H3LBuK3diQMkKr9cIVUpBkhp0GFul7
-         xFM3eJ+klfy1CjKvDD1Do+ILnhEFPDprBhHlJ3Xr7sCEauXpNsnplfq6tPGAs3ejXHNH
-         8lfx2cndEqpo6Na7ga1peK96Bzlgck8g6Ahbw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=SmSdpqqfvhuzBeG/p+7mNhDOexI5aI2aAxoNsJihLIw=;
-        b=XualzDoardxWbhhRkoBgJjB70B+2tATzfu7eyvi7HB7g6e6cKca73f5btptFBTVFd4
-         RNab5/0iUm51XrN/JCdgkuSo1ippY5s0iBS1D9dwZA4V1USozTapv9wt3Ycg0HmQleTI
-         08Q62Rmt21BgatZ9O3lYmn3hz2xZHRWvahchFfglZRjbKDWbXLctYTM59kLBde1LopU9
-         dkLkfbx5Dggd92992yUXX5o+G+/GHokc3r5flNZ/4m3edG/2QOast5hsTgDZmWQaQecq
-         cNbhsyEUoLS/g9y5U+05ty/7nLeX3c+dAx5y/XyXRkXpQKrnIqUgN+jp7J3zDM0WPfpW
-         WW7A==
-X-Gm-Message-State: ACgBeo1MJlYhzygDgcY3PZIshmUcxwWezQIIbgcaq3h0RK0QNwSeVWSu
-        oJyMjazCClDYQSRd0IhWuMM7RF4jYs6gOC7U
-X-Google-Smtp-Source: AA6agR7yQq40MWmvDDqMdsRkq3Zb+PaDLbh+zAABeP/N+WCIr4VrKNq1fl6qtMSjFfXlhiZyGTH0xg==
-X-Received: by 2002:a92:ca08:0:b0:2eb:626b:dc2a with SMTP id j8-20020a92ca08000000b002eb626bdc2amr1613510ils.127.1661880237005;
-        Tue, 30 Aug 2022 10:23:57 -0700 (PDT)
-Received: from mail-io1-f52.google.com (mail-io1-f52.google.com. [209.85.166.52])
-        by smtp.gmail.com with ESMTPSA id i25-20020a056e021d1900b002eb2b6323ebsm1984204ila.16.2022.08.30.10.23.56
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 10:23:56 -0700 (PDT)
-Received: by mail-io1-f52.google.com with SMTP id 10so9825950iou.2
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:23:56 -0700 (PDT)
-X-Received: by 2002:a05:6638:14d0:b0:349:d176:d376 with SMTP id
- l16-20020a05663814d000b00349d176d376mr12105487jak.58.1661880236045; Tue, 30
- Aug 2022 10:23:56 -0700 (PDT)
+        Tue, 30 Aug 2022 13:28:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D9398A43;
+        Tue, 30 Aug 2022 10:25:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5DD3B81D18;
+        Tue, 30 Aug 2022 17:24:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37291C433D7;
+        Tue, 30 Aug 2022 17:24:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661880247;
+        bh=HXfZo6doQzz9VapJaBP8Fx6rQF3F4A3r+CJnHaVGpWM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cpZXTejoEmts2mk2oV7+gtKPftEB6vVTX0prtb6ZXg6plsR4xQIVmvKqWPJUGsdO5
+         GPO7WRWp8gVnQsBjGroLN3m0m06+ST3Fvg7nPgxYDM5Ugkb8wIGkBQEQsTUgtNNVJN
+         i9vtCWeOd0c5tsiVkNtTe3P98OQxUfaRP+Jvk1VCmk/36OEXEV2KmE+LTuyzrq8k+Y
+         hoTGVFofqskSg3bmXKNY0p10p8t8y3IbZytWUrL7dEgA71459JeYy55qFz79x/qshE
+         xPlx7+HjXM+awJhj11WAnE/cTgDNmgIXguYmrjcw7r423x8yHAgz7dPSxtkuyLWSwd
+         5drqikev/xoGw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Mark Brown <broonie@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de, ebiederm@xmission.com, seanjc@google.com,
+        mark.rutland@arm.com, david.engraf@sysgo.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 11/16] arm64/signal: Raise limit on stack frames
+Date:   Tue, 30 Aug 2022 13:23:12 -0400
+Message-Id: <20220830172317.581397-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
+References: <20220830172317.581397-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220830053307.3997495-1-sheng-liang.pan@quanta.corp-partner.google.com>
-In-Reply-To: <20220830053307.3997495-1-sheng-liang.pan@quanta.corp-partner.google.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 30 Aug 2022 10:23:44 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=XXV4x-Hpa9-GUzkwS+cxfvpL93HBCUrn_bvMK8hBAaBA@mail.gmail.com>
-Message-ID: <CAD=FV=XXV4x-Hpa9-GUzkwS+cxfvpL93HBCUrn_bvMK8hBAaBA@mail.gmail.com>
-Subject: Re: [PATCH 0/1] Add a new board device tree named 'evoker' for
- herobrine variant.
-To:     Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Mark Brown <broonie@kernel.org>
 
-On Mon, Aug 29, 2022 at 10:33 PM Sheng-Liang Pan
-<sheng-liang.pan@quanta.corp-partner.google.com> wrote:
->
-> This patch add the initial dts file for new board 'evoker'.
->
->
->
-> Sheng-Liang Pan (1):
->   arm64: dts: qcom: sc7280: Add device tree for herobrine evoker
->
->  arch/arm64/boot/dts/qcom/Makefile             |   1 +
->  .../dts/qcom/sc7280-herobrine-evoker-r0.dts   | 333 ++++++++++++++++++
->  2 files changed, 334 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-evoker-r0.dts
+[ Upstream commit 7ddcaf78e93c9282b4d92184f511b4d5bee75355 ]
 
-Just as a heads up, usually you don't need a cover letter if you're
-just sending one patch.
+The signal code has a limit of 64K on the size of a stack frame that it
+will generate, if this limit is exceeded then a process will be killed if
+it receives a signal. Unfortunately with the advent of SME this limit is
+too small - the maximum possible size of the ZA register alone is 64K. This
+is not an issue for practical systems at present but is easily seen using
+virtual platforms.
 
--Doug
+Raise the limit to 256K, this is substantially more than could be used by
+any current architecture extension.
+
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/20220817182324.638214-2-broonie@kernel.org
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/kernel/signal.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/kernel/signal.c b/arch/arm64/kernel/signal.c
+index 0dab5679a97d5..c42089ce089f7 100644
+--- a/arch/arm64/kernel/signal.c
++++ b/arch/arm64/kernel/signal.c
+@@ -91,7 +91,7 @@ static size_t sigframe_size(struct rt_sigframe_user_layout const *user)
+  * not taken into account.  This limit is not a guarantee and is
+  * NOT ABI.
+  */
+-#define SIGFRAME_MAXSZ SZ_64K
++#define SIGFRAME_MAXSZ SZ_256K
+ 
+ static int __sigframe_alloc(struct rt_sigframe_user_layout *user,
+ 			    unsigned long *offset, size_t size, bool extend)
+-- 
+2.35.1
+
