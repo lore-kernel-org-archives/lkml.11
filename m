@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82770ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5DBECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231898AbiH3WUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 18:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51904 "EHLO
+        id S231790AbiH3WUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 18:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231788AbiH3WUL (ORCPT
+        with ESMTP id S231776AbiH3WUN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 18:20:11 -0400
+        Tue, 30 Aug 2022 18:20:13 -0400
 Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67C225EBB
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:07 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id rj3-20020a17090b3e8300b001fae0be4dc4so11810616pjb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BF1220E1
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:11 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id r13-20020a17090a454d00b001f04dfc6195so5412140pjm.2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date;
-        bh=/1/sdSVljrZtE+cOlvr7FEjtfDcy2AsBCQfMmau9WfQ=;
-        b=Hl5NJHIIf9AjxMn6KkyCTnFp1wbi9nT9TChdGDiN1QnlBXWMcbuTu/orvkNm/XT6X6
-         x+yi9M5RODBfwi/1eZg7fqFXu8DstSIpVwVVk1PZHjDV8IhyrpZvy2K4WYJft72eyPfZ
-         AnwR8ehdBDS5R5ohZHvImQuYc3s6Nj3pMj5WlsPhC9RssJcPIZkhF+OODAeStTz2b/iJ
-         1yN1+NJPHEf+wblVhbTKJ1CAbiPm7LtWcpo8+sfVTLwsded6UwMxIrSmWG35wtNUiMAq
-         DNUn2AjMXNEWMoAfEivES+z26jvGelo4VfDMKN/KRE7q0o66Vbgg7cGEXiaWnk3g7+jK
-         dKMA==
+        bh=T9yOZxwNH1Vwea4FbMMjM8N2gmoqmFgTmVLKZvXCyGw=;
+        b=eOlvFAgZHsItzGfjv1tWpFsZXrOJO22R3iWXR8OZBM91PKIkAjTfnCHMDNUvt+SdhZ
+         Bm6lmB7UOemd4FkIOLnGeMo6bCoB6YH2EvQJiroRFzf8w0AfjL8GSBHSQDD1a7Q084dB
+         2LHamFKzMB7cIe94d4EsxfRHbl0zxq7TTcNYGFq2r2o5TJWSQkMVnMxPxEuoPYgKpCQ9
+         ST35fHZqFlS03jmaCfdmYLlJJchkR4S+iPX+2JSVH2IKBkdMPPod97mx5tS3rgEWa3kd
+         GY08Y4z9mbP5elCtcrPjQPNzQbKoZsjDT0/qh7F5wRv2WKNtye4tdGj/3cp0R0E+iedR
+         00Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=/1/sdSVljrZtE+cOlvr7FEjtfDcy2AsBCQfMmau9WfQ=;
-        b=gfSx85FuV5fiK+7NqdcUjA0jObXQekQ9+0spoxyXrjou1IBXwnfcKYvL45yi2Ru+Pi
-         nRsCMn4i5Os19ViuVos9fnyAi6oU0lTpKXD13EgXMHbHztwSsENZdZ46Jn3qrJuSiFot
-         uKeWDu2UNU//QHHwbArglIP9adIVfSimddtuwrageKFn/srjmcdWhT0lHGHzDicAvK7v
-         oYpjefbZpUlH/+D6frH53jmr4cywwCvxnRV7uaYCQKxXbTnmIiYqNdBDNybGxJuYXV0d
-         iTBz1/9gCtWZoSZQ0wUvIwu340/iqnnuBQsclAgYBuYJY7cVxAeFZDNSUnw0WJYcUp2m
-         HgMg==
-X-Gm-Message-State: ACgBeo1bc81tEQku3v7/Ab1hCX0BSzXA6r7QyPMUGg8GoTNiWCyamloj
-        WRDcoLWiJGLR5J27nquaslBTDibFmg==
-X-Google-Smtp-Source: AA6agR6eeDtQGXqnkPM1B1p4L+32NSn7HTIayprlj+H2vAC0mW1iQTGm+kZwcup5REG0kEuCvw/zSq/9hQ==
+        bh=T9yOZxwNH1Vwea4FbMMjM8N2gmoqmFgTmVLKZvXCyGw=;
+        b=ukPRkdXSjvHFV2NVNHilJGDDnWJuCWkOjdJUFZHdqkNBwWvw78gqe9KTw3/Tp69CGR
+         EOZKXS/5z6eO/ZdRJ0DUv6GgRHnborNTre6rnT/NZpXFMWdeuYFpsjm8YRaP9H3dXNsP
+         VsQI0fLu4jmYGG+0Myzkf4Cl3iaQTb3Eiqa1CKUVVRGmsbSKYgKdVacMYM3WAz8ec328
+         myy3FYsloj6K7MhexrCuHUK6gIiIr7kCEiRgYkKdwQeOG7iqh8YshPIoLKX5/4j7yq6w
+         h+j/Wp+rmqFFUDQ8esrBP79olCWbR3cHU/5i1tYeR3lWLZNS8r/V6gDjgkLw4Fy9hpvi
+         vaKA==
+X-Gm-Message-State: ACgBeo16aC5sBNTIO8XIMYPGYe8it5ajaLCK04Wl2CZBlPSOzjhntdip
+        yvAoxHybHzDmdJXKaN4J4vE8Hj+mZQ==
+X-Google-Smtp-Source: AA6agR49dftSu7HryzIxwzZ7zqElJ1O/VcP3iP5eNArJd97RI7PeT9sdyt8bgBBm02Y5j1XhYfDwyGnqGA==
 X-Received: from sagi.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:241b])
- (user=sagis job=sendgmr) by 2002:a17:902:c613:b0:174:7a32:f76 with SMTP id
- r19-20020a170902c61300b001747a320f76mr15784815plr.165.1661898007252; Tue, 30
- Aug 2022 15:20:07 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 22:19:44 +0000
+ (user=sagis job=sendgmr) by 2002:a63:fb56:0:b0:429:983f:b91e with SMTP id
+ w22-20020a63fb56000000b00429983fb91emr19753498pgj.399.1661898010578; Tue, 30
+ Aug 2022 15:20:10 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 22:19:46 +0000
 In-Reply-To: <20220830222000.709028-1-sagis@google.com>
 Mime-Version: 1.0
 References: <20220830222000.709028-1-sagis@google.com>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220830222000.709028-2-sagis@google.com>
-Subject: [RFC PATCH v2 01/17] KVM: selftests: Add support for creating
- non-default type VMs
+Message-ID: <20220830222000.709028-4-sagis@google.com>
+Subject: [RFC PATCH v2 03/17] KVM: selftest: Adding TDX life cycle test.
 From:   Sagi Shahar <sagis@google.com>
 To:     linux-kselftest@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -93,77 +92,306 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Erdem Aktas <erdemaktas@google.com>
 
-Currently vm_create function only creates KVM_VM_TYPE_DEFAULT type VMs.
-Adding type parameter to ____vm_create to create new VM types.
+Adding a test to verify TDX lifecycle by creating a TD and running a
+dummy TDVMCALL<INSTRUCTION.IO> inside it.
 
 Signed-off-by: Erdem Aktas <erdemaktas@google.com>
 Signed-off-by: Sagi Shahar <sagis@google.com>
 Signed-off-by: Ryan Afranji <afranji@google.com>
 ---
- tools/testing/selftests/kvm/include/kvm_util_base.h | 6 ++++--
- tools/testing/selftests/kvm/lib/kvm_util.c          | 6 +++---
- 2 files changed, 7 insertions(+), 5 deletions(-)
+ tools/testing/selftests/kvm/Makefile          |   1 +
+ tools/testing/selftests/kvm/lib/x86_64/tdx.h  | 149 ++++++++++++++++++
+ .../selftests/kvm/x86_64/tdx_vm_tests.c       | 104 ++++++++++++
+ 3 files changed, 254 insertions(+)
+ create mode 100644 tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
 
-diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
-index 24fde97f6121..2de7a7a2e56b 100644
---- a/tools/testing/selftests/kvm/include/kvm_util_base.h
-+++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
-@@ -26,6 +26,8 @@
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index ad4d60dadc06..208e0cc30048 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -140,6 +140,7 @@ TEST_GEN_PROGS_x86_64 += set_memory_region_test
+ TEST_GEN_PROGS_x86_64 += steal_time
+ TEST_GEN_PROGS_x86_64 += kvm_binary_stats_test
+ TEST_GEN_PROGS_x86_64 += system_counter_offset_test
++TEST_GEN_PROGS_x86_64 += x86_64/tdx_vm_tests
  
- #define NSEC_PER_SEC 1000000000L
+ # Compiled outputs used by test targets
+ TEST_GEN_PROGS_EXTENDED_x86_64 += x86_64/nx_huge_pages_test
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/tdx.h b/tools/testing/selftests/kvm/lib/x86_64/tdx.h
+index 61b997dfc420..d5de52657112 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/tdx.h
++++ b/tools/testing/selftests/kvm/lib/x86_64/tdx.h
+@@ -51,6 +51,12 @@
+ #define _PAGE_RW            (1UL<<1)       /* writeable */
+ #define _PAGE_PS            (1UL<<7)       /* page size bit*/
  
-+#define KVM_VM_TYPE_DEFAULT	0
++#define TDX_INSTRUCTION_IO 30
 +
- typedef uint64_t vm_paddr_t; /* Virtual Machine (Guest) physical address */
- typedef uint64_t vm_vaddr_t; /* Virtual Machine (Guest) virtual address */
++#define TDX_SUCCESS_PORT 0x30
++#define TDX_IO_READ 0
++#define TDX_IO_WRITE 1
++
+ #define GDT_ENTRY(flags, base, limit)				\
+ 		((((base)  & 0xff000000ULL) << (56-24)) |	\
+ 		 (((flags) & 0x0000f0ffULL) << 40) |		\
+@@ -83,4 +89,147 @@ void prepare_source_image(struct kvm_vm *vm, void *guest_code,
+ 			  size_t guest_code_size,
+ 			  uint64_t guest_code_signature);
  
-@@ -642,13 +644,13 @@ vm_paddr_t vm_alloc_page_table(struct kvm_vm *vm);
-  * __vm_create() does NOT create vCPUs, @nr_runnable_vcpus is used purely to
-  * calculate the amount of memory needed for per-vCPU data, e.g. stacks.
-  */
--struct kvm_vm *____vm_create(enum vm_guest_mode mode, uint64_t nr_pages);
-+struct kvm_vm *____vm_create(enum vm_guest_mode mode, uint64_t nr_pages, int type);
- struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint32_t nr_runnable_vcpus,
- 			   uint64_t nr_extra_pages);
- 
- static inline struct kvm_vm *vm_create_barebones(void)
- {
--	return ____vm_create(VM_MODE_DEFAULT, 0);
-+	return ____vm_create(VM_MODE_DEFAULT, 0, KVM_VM_TYPE_DEFAULT);
- }
- 
- static inline struct kvm_vm *vm_create(uint32_t nr_runnable_vcpus)
-diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
-index 9889fe0d8919..ac10ad8919a6 100644
---- a/tools/testing/selftests/kvm/lib/kvm_util.c
-+++ b/tools/testing/selftests/kvm/lib/kvm_util.c
-@@ -143,7 +143,7 @@ const struct vm_guest_mode_params vm_guest_mode_params[] = {
- _Static_assert(sizeof(vm_guest_mode_params)/sizeof(struct vm_guest_mode_params) == NUM_VM_MODES,
- 	       "Missing new mode params?");
- 
--struct kvm_vm *____vm_create(enum vm_guest_mode mode, uint64_t nr_pages)
-+struct kvm_vm *____vm_create(enum vm_guest_mode mode, uint64_t nr_pages, int type)
- {
- 	struct kvm_vm *vm;
- 
-@@ -159,7 +159,7 @@ struct kvm_vm *____vm_create(enum vm_guest_mode mode, uint64_t nr_pages)
- 	hash_init(vm->regions.slot_hash);
- 
- 	vm->mode = mode;
--	vm->type = 0;
-+	vm->type = type;
- 
- 	vm->pa_bits = vm_guest_mode_params[mode].pa_bits;
- 	vm->va_bits = vm_guest_mode_params[mode].va_bits;
-@@ -294,7 +294,7 @@ struct kvm_vm *__vm_create(enum vm_guest_mode mode, uint32_t nr_runnable_vcpus,
- 						 nr_extra_pages);
- 	struct kvm_vm *vm;
- 
--	vm = ____vm_create(mode, nr_pages);
-+	vm = ____vm_create(mode, nr_pages, KVM_VM_TYPE_DEFAULT);
- 
- 	kvm_vm_elf_load(vm, program_invocation_name);
- 
++/*
++ * Generic TDCALL function that can be used to communicate with TDX module or
++ * VMM.
++ * Input operands: rax, rbx, rcx, rdx, r8-r15, rbp, rsi, rdi
++ * Output operands: rax, r8-r15, rbx, rdx, rdi, rsi
++ * rcx is actually a bitmap to tell TDX module which register values will be
++ * exposed to the VMM.
++ * XMM0-XMM15 registers can be used as input operands but the current
++ * implementation does not support it yet.
++ */
++static inline void tdcall(struct kvm_regs *regs)
++{
++	asm volatile (
++			"mov %13, %%rax;\n\t"
++			"mov %14, %%rbx;\n\t"
++			"mov %15, %%rcx;\n\t"
++			"mov %16, %%rdx;\n\t"
++			"mov %17, %%r8;\n\t"
++			"mov %18, %%r9;\n\t"
++			"mov %19, %%r10;\n\t"
++			"mov %20, %%r11;\n\t"
++			"mov %21, %%r12;\n\t"
++			"mov %22, %%r13;\n\t"
++			"mov %23, %%r14;\n\t"
++			"mov %24, %%r15;\n\t"
++			"mov %25, %%rbp;\n\t"
++			"mov %26, %%rsi;\n\t"
++			"mov %27, %%rdi;\n\t"
++			".byte 0x66, 0x0F, 0x01, 0xCC;\n\t"
++			"mov %%rax, %0;\n\t"
++			"mov %%rbx, %1;\n\t"
++			"mov %%rdx, %2;\n\t"
++			"mov %%r8, %3;\n\t"
++			"mov %%r9, %4;\n\t"
++			"mov %%r10, %5;\n\t"
++			"mov %%r11, %6;\n\t"
++			"mov %%r12, %7;\n\t"
++			"mov %%r13, %8;\n\t"
++			"mov %%r14, %9;\n\t"
++			"mov %%r15, %10;\n\t"
++			"mov %%rsi, %11;\n\t"
++			"mov %%rdi, %12;\n\t"
++			: "=m" (regs->rax), "=m" (regs->rbx), "=m" (regs->rdx),
++			"=m" (regs->r8), "=m" (regs->r9), "=m" (regs->r10),
++			"=m" (regs->r11), "=m" (regs->r12), "=m" (regs->r13),
++			"=m" (regs->r14), "=m" (regs->r15), "=m" (regs->rsi),
++			"=m" (regs->rdi)
++			: "m" (regs->rax), "m" (regs->rbx), "m" (regs->rcx),
++			"m" (regs->rdx), "m" (regs->r8), "m" (regs->r9),
++			"m" (regs->r10), "m" (regs->r11), "m" (regs->r12),
++			"m" (regs->r13), "m" (regs->r14), "m" (regs->r15),
++			"m" (regs->rbp), "m" (regs->rsi), "m" (regs->rdi)
++			: "rax", "rbx", "rcx", "rdx", "r8", "r9", "r10", "r11",
++			"r12", "r13", "r14", "r15", "rbp", "rsi", "rdi");
++}
++
++
++/*
++ * Do a TDVMCALL IO request
++ *
++ * Input Args:
++ *  port - IO port to do read/write
++ *  size - Number of bytes to read/write. 1=1byte, 2=2bytes, 4=4bytes.
++ *  write - 1=IO write 0=IO read
++ *  data - pointer for the data to write
++ *
++ * Output Args:
++ *  data - pointer for data to be read
++ *
++ * Return:
++ *   On success, return 0. For Invalid-IO-Port error, returns -1.
++ *
++ * Does an IO operation using the following tdvmcall interface.
++ *
++ * TDG.VP.VMCALL<Instruction.IO>-Input Operands
++ * R11 30 for IO
++ *
++ * R12 Size of access. 1=1byte, 2=2bytes, 4=4bytes.
++ * R13 Direction. 0=Read, 1=Write.
++ * R14 Port number
++ * R15 Data to write, if R13 is 1.
++ *
++ * TDG.VP.VMCALL<Instruction.IO>-Output Operands
++ * R10 TDG.VP.VMCALL-return code.
++ * R11 Data to read, if R13 is 0.
++ *
++ * TDG.VP.VMCALL<Instruction.IO>-Status Codes
++ * Error Code Value Description
++ * TDG.VP.VMCALL_SUCCESS 0x0 TDG.VP.VMCALL is successful
++ * TDG.VP.VMCALL_INVALID_OPERAND 0x80000000 00000000 Invalid-IO-Port access
++ */
++static inline uint64_t tdvmcall_io(uint64_t port, uint64_t size,
++				   uint64_t write, uint64_t *data)
++{
++	struct kvm_regs regs;
++
++	memset(&regs, 0, sizeof(regs));
++	regs.r11 = TDX_INSTRUCTION_IO;
++	regs.r12 = size;
++	regs.r13 = write;
++	regs.r14 = port;
++	if (write) {
++		regs.r15 = *data;
++		regs.rcx = 0xFC00;
++	} else {
++		regs.rcx = 0x7C00;
++	}
++	tdcall(&regs);
++	if (!write)
++		*data = regs.r11;
++	return regs.r10;
++}
++
++/*
++ * Report test success to user space.
++ */
++static inline void tdvmcall_success(void)
++{
++	uint64_t code = 0;
++
++	tdvmcall_io(TDX_SUCCESS_PORT, /*size=*/4, TDX_IO_WRITE, &code);
++}
++
++
++#define TDX_FUNCTION_SIZE(name) ((uint64_t)&__stop_sec_ ## name -\
++			   (uint64_t)&__start_sec_ ## name) \
++
++#define TDX_GUEST_FUNCTION__(name, section_name) \
++extern char *__start_sec_ ## name ; \
++extern char *__stop_sec_ ## name ; \
++static void \
++__attribute__((__flatten__, section(section_name))) name(void *arg)
++
++
++#define STRINGIFY2(x) #x
++#define STRINGIFY(x) STRINGIFY2(x)
++#define CONCAT2(a, b) a##b
++#define CONCAT(a, b) CONCAT2(a, b)
++
++
++#define TDX_GUEST_FUNCTION(name) \
++TDX_GUEST_FUNCTION__(name, STRINGIFY(CONCAT(sec_, name)))
++
+ #endif  // KVM_LIB_TDX_H_
+diff --git a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
+new file mode 100644
+index 000000000000..590e45aa7570
+--- /dev/null
++++ b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
+@@ -0,0 +1,104 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <fcntl.h>
++#include <limits.h>
++#include <kvm_util.h>
++#include "../lib/x86_64/tdx.h"
++#include <linux/kvm.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/ioctl.h>
++#include <sys/types.h>
++#include <test_util.h>
++#include <unistd.h>
++#include <processor.h>
++#include <time.h>
++#include <sys/mman.h>
++#include<sys/wait.h>
++
++#define CHECK_GUEST_COMPLETION(VCPU)								\
++	(TEST_ASSERT(										\
++		((VCPU)->run->exit_reason == KVM_EXIT_IO) &&					\
++		((VCPU)->run->io.port == TDX_SUCCESS_PORT) &&					\
++		((VCPU)->run->io.size == 4) &&							\
++		((VCPU)->run->io.direction == TDX_IO_WRITE),					\
++		"Unexpected exit values while waiting for test complition: %u (%s) %d %d %d\n",	\
++		(VCPU)->run->exit_reason, exit_reason_str((VCPU)->run->exit_reason),		\
++		(VCPU)->run->io.port, (VCPU)->run->io.size, (VCPU)->run->io.direction))
++
++/*
++ * There might be multiple tests we are running and if one test fails, it will
++ * prevent the subsequent tests to run due to how tests are failing with
++ * TEST_ASSERT function. The run_in_new_process function will run a test in a
++ * new process context and wait for it to finish or fail to prevent TEST_ASSERT
++ * to kill the main testing process.
++ */
++void run_in_new_process(void (*func)(void))
++{
++	if (fork() == 0) {
++		func();
++		exit(0);
++	}
++	wait(NULL);
++}
++
++/*
++ * Verify that the TDX  is supported by the KVM.
++ */
++bool is_tdx_enabled(void)
++{
++	return !!(kvm_check_cap(KVM_CAP_VM_TYPES) & BIT(KVM_X86_TDX_VM));
++}
++
++/*
++ * Do a dummy io exit to verify that the TD has been initialized correctly and
++ * guest can run some code inside.
++ */
++TDX_GUEST_FUNCTION(guest_dummy_exit)
++{
++	tdvmcall_success();
++}
++
++/*
++ * TD lifecycle test will create a TD which runs a dumy IO exit to verify that
++ * the guest TD has been created correctly.
++ */
++void verify_td_lifecycle(void)
++{
++	struct kvm_vcpu *vcpu;
++	struct kvm_vm *vm;
++
++	printf("Verifying TD lifecycle:\n");
++	/* Create a TD VM with no memory.*/
++	vm = vm_create_tdx();
++
++	/* Allocate TD guest memory and initialize the TD.*/
++	initialize_td(vm);
++
++	/* Initialize the TD vcpu and copy the test code to the guest memory.*/
++	vcpu = vm_vcpu_add_tdx(vm, 0);
++
++	/* Setup and initialize VM memory */
++	prepare_source_image(vm, guest_dummy_exit,
++			     TDX_FUNCTION_SIZE(guest_dummy_exit), 0);
++	finalize_td_memory(vm);
++
++	vcpu_run(vcpu);
++	CHECK_GUEST_COMPLETION(vcpu);
++
++	kvm_vm_free(vm);
++	printf("\t ... PASSED\n");
++}
++
++int main(int argc, char **argv)
++{
++	if (!is_tdx_enabled()) {
++		print_skip("TDX is not supported by the KVM");
++		exit(KSFT_SKIP);
++	}
++
++	run_in_new_process(&verify_td_lifecycle);
++
++	return 0;
++}
 -- 
 2.37.2.789.g6183377224-goog
 
