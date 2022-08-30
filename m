@@ -2,112 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B453C0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 376D3C0502C
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 09:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiH3Jxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 05:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32856 "EHLO
+        id S229723AbiH3Jyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 05:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiH3Jxn (ORCPT
+        with ESMTP id S229536AbiH3Jyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 05:53:43 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33799A99E6
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:53:42 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id bx38so10743213ljb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 02:53:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=WzU0qOlWug57JVpS5AGaeSKleZya1eqzbthcaN0TYiA=;
-        b=d0anH1LiPZQubvfhzwbeIASyA2xV2YkOQAZSfpTuXafG+qc+CZZ56iYW5RAbSGfA/C
-         ZfRm4ps3PTkNcBSFPkCoW+fUp/q4wt9cGkDSX1+glKepA74Ngu1jpdsQ+h50hc+unB0c
-         Xe84Tse1xb3DdLrviuVd94At20gPbidV9eeKmAyWsj0fzkmju8MFMWSu0psn+zjdDBUh
-         Apg+KOiv9cv4ZqsjMWqBCDGUqi0EOmPUoACncds8oBbKF91z3eJC09ngs+Ykp/PXxpli
-         i3T4gtQCIhT90ioatqdfxp7Oj3wP4ePYUfwu+p1tdpgGEL0MGttaBBvNHhKS3J3laJzv
-         Rf6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=WzU0qOlWug57JVpS5AGaeSKleZya1eqzbthcaN0TYiA=;
-        b=xsN9PsWrbLXEiScr0MtUwbqm5rp7cj9BYmxZc+1lJrfGKec63AY4SqY+mWf4DnqRjT
-         o5bkzb/ngtUa6sujAom+Hfc8NRuKcfLR8jHnFkr2rprCxjnMprCGqfz7K8vlt/oakmHG
-         XUu3C5nWvUIMBtovgZSJS5rJpPCIFbmxQRT1C923a+gPvJjYNouXY5gl5lMmY0gkJsaz
-         TPSrR4UfewGW3WLZUJlF3gLjVvcTiXIqtYILi7VAAu+NdPpmi7InEv3iSH9uSAqbcUnf
-         nhHF9zwgZqbilyf2lUvPmkDctpFjWhK5LFX/jUHIALgO2Bc8L++hSbdPlqbCvP0psRTc
-         LPxA==
-X-Gm-Message-State: ACgBeo0DTyzKEoH9CNntR+UnXKIlRk9/ZNOfPRIG68dlKZtkyXo27huv
-        jIIPztYYJxniBnOtdOjGIqVSVA==
-X-Google-Smtp-Source: AA6agR5ubGa3oiKwgsmb923gHZhlcPCP4QoyO+/v+uL7uPfay5OdunMd1GM8dDWvcBEC5Xcgh3VBpg==
-X-Received: by 2002:a05:651c:2112:b0:261:b9c1:509 with SMTP id a18-20020a05651c211200b00261b9c10509mr7186701ljq.39.1661853220611;
-        Tue, 30 Aug 2022 02:53:40 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id be19-20020a056512251300b00492edc64d08sm795273lfb.32.2022.08.30.02.53.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 02:53:40 -0700 (PDT)
-Message-ID: <4001e0eb-f370-7bf4-89d0-ceed6d22e492@linaro.org>
-Date:   Tue, 30 Aug 2022 12:53:39 +0300
+        Tue, 30 Aug 2022 05:54:32 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CD0C0E6E;
+        Tue, 30 Aug 2022 02:54:30 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27U9sG2Z104476;
+        Tue, 30 Aug 2022 04:54:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661853256;
+        bh=RmNV7HcetEbUAooGy8C1avwiLm6r1H5yjogMVC6bEww=;
+        h=Date:Subject:To:References:From:In-Reply-To;
+        b=sCK5iK5S6F3BV7Zc1DNRvkHJeHoFTAeuX6c2vWDzbIo5f6nH45TEV/3koF0wIriGE
+         tMKUZ+mFbjON43tSp42l5NfYgJUaG1jg4N56HTLrk8kx3tzYVjaKpDgSx8QtrSn53w
+         BwEKPbcn8Qv+BO4PzEbn6xvb7ejdwEzRYRuHrguY=
+Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27U9sGh5011546
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 30 Aug 2022 04:54:16 -0500
+Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 30
+ Aug 2022 04:54:15 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 30 Aug 2022 04:54:15 -0500
+Received: from [172.24.145.136] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27U9sCA0094080;
+        Tue, 30 Aug 2022 04:54:13 -0500
+Message-ID: <420e481d-0c91-1f0b-ea72-3a505a04330d@ti.com>
+Date:   Tue, 30 Aug 2022 15:24:12 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 2/4] dt-bindings: pinctrl: k3: Introduce pinmux
- definitions for AM62A
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/4] arm64: dts: ti: k3-am65-main: Disable RNG node
 Content-Language: en-US
-To:     Vignesh Raghavendra <vigneshr@ti.com>, Nishanth Menon <nm@ti.com>,
+To:     Andrew Davis <afd@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Tero Kristo <kristo@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        Bryan Brattlof <bb@ti.com>
-References: <20220829082200.241653-1-vigneshr@ti.com>
- <20220829082200.241653-3-vigneshr@ti.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220829082200.241653-3-vigneshr@ti.com>
-Content-Type: text/plain; charset=UTF-8
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20220823001136.10944-1-afd@ti.com>
+From:   Jayesh Choudhary <j-choudhary@ti.com>
+In-Reply-To: <20220823001136.10944-1-afd@ti.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 29/08/2022 11:21, Vignesh Raghavendra wrote:
-> Add pinctrl macros for AM62AX SoCs. These macro definitions are similar
-> to that of previous platforms, but adding new definitions to avoid any
-> naming confusions in the SoC dts files.
+
+
+On 23/08/22 05:41, Andrew Davis wrote:
+> The hardware random number generator is used by OP-TEE and is access is
+> denied to other users with SoC level bus firewalls. Any access to this
+> device from Linux will result in firewall errors.
 > 
-> checkpatch insists the following error exists:
-> ERROR: Macros with complex values should be enclosed in parentheses
+> We could remove this node, but it is still valid device description,
+> and it is possible it could be re-enabled in the bootloader if OP-TEE
+> is not used. So only disable this node for now.
 > 
-> However, we do not need parentheses enclosing the values for this
-> macro as we do intend it to generate two separate values as has been
-> done for other similar platforms.
-> 
-> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+> Signed-off-by: Andrew Davis <afd@ti.com>
 > ---
->  include/dt-bindings/pinctrl/k3.h | 2 ++
->  1 file changed, 2 insertions(+)
 > 
-> diff --git a/include/dt-bindings/pinctrl/k3.h b/include/dt-bindings/pinctrl/k3.h
-> index a5204ab91d3e..97cd2e39efa4 100644
-> --- a/include/dt-bindings/pinctrl/k3.h
-> +++ b/include/dt-bindings/pinctrl/k3.h
-> @@ -44,4 +44,6 @@
->  #define AM62X_IOPAD(pa, val, muxmode)		(((pa) & 0x1fff)) ((val) | (muxmode))
->  #define AM62X_MCU_IOPAD(pa, val, muxmode)	(((pa) & 0x1fff)) ((val) | (muxmode))
->  
-> +#define AM62AX_IOPAD(pa, val, muxmode)		(((pa) & 0x1fff)) ((val) | (muxmode))
-> +#define AM62AX_MCU_IOPAD(pa, val, muxmode)	(((pa) & 0x1fff)) ((val) | (muxmode))
+> Changes from v1:
+>   - Added comment in DT
+>   - Explained why it is only disabled in commit message
+> 
+>   arch/arm64/boot/dts/ti/k3-am65-main.dtsi | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> index 8919fede3cd7..b3e714e1abed 100644
+> --- a/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> +++ b/arch/arm64/boot/dts/ti/k3-am65-main.dtsi
+> @@ -127,6 +127,7 @@ rng: rng@4e10000 {
+>   			reg = <0x0 0x4e10000 0x0 0x7d>;
+>   			interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
+>   			clocks = <&k3_clks 136 1>;
+> +			status = "disabled"; /* Used by OP-TEE */
+>   		};
+>   	};
+>   
 
-Alphabetical order, so maybe before AM642?
+Reviewed-by: Jayesh Choudhary <j-choudhary@ti.com>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-Best regards,
-Krzysztof
