@@ -2,145 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75000C0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB677C0502C
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbiH3L0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51168 "EHLO
+        id S229637AbiH3L3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiH3L0B (ORCPT
+        with ESMTP id S229481AbiH3L3d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:26:01 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 525ACBB01F;
-        Tue, 30 Aug 2022 04:26:00 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2A4EA23A;
-        Tue, 30 Aug 2022 04:26:06 -0700 (PDT)
-Received: from [10.57.13.45] (unknown [10.57.13.45])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0A5443F71A;
-        Tue, 30 Aug 2022 04:25:55 -0700 (PDT)
-Message-ID: <2db3b103-7034-6c0d-4ec8-caae7654b264@arm.com>
-Date:   Tue, 30 Aug 2022 12:25:49 +0100
+        Tue, 30 Aug 2022 07:29:33 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A793F2D63;
+        Tue, 30 Aug 2022 04:29:30 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MH4kP2zWBzlWS5;
+        Tue, 30 Aug 2022 19:26:05 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 19:29:28 +0800
+Received: from thunder-town.china.huawei.com (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 19:29:28 +0800
+From:   Zhen Lei <thunder.leizhen@huawei.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Petr Mladek <pmladek@suse.com>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        <live-patching@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH] livepatch: Add a missing newline character in klp_module_coming()
+Date:   Tue, 30 Aug 2022 19:28:55 +0800
+Message-ID: <20220830112855.749-1-thunder.leizhen@huawei.com>
+X-Mailer: git-send-email 2.26.0.windows.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [RFC PATCH v2 2/6] bus/cdx: add the cdx bus driver
-Content-Language: en-GB
-To:     "Gupta, Nipun" <Nipun.Gupta@amd.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saravana Kannan <saravanak@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "eric.auger@redhat.com" <eric.auger@redhat.com>,
-        "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-        "cohuck@redhat.com" <cohuck@redhat.com>,
-        "Gupta, Puneet (DCG-ENG)" <puneet.gupta@amd.com>,
-        "song.bao.hua@hisilicon.com" <song.bao.hua@hisilicon.com>,
-        "mchehab+huawei@kernel.org" <mchehab+huawei@kernel.org>,
-        "maz@kernel.org" <maz@kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "jeffrey.l.hugo@gmail.com" <jeffrey.l.hugo@gmail.com>,
-        "Michael.Srba@seznam.cz" <Michael.Srba@seznam.cz>,
-        "mani@kernel.org" <mani@kernel.org>,
-        "yishaih@nvidia.com" <yishaih@nvidia.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "okaya@kernel.org" <okaya@kernel.org>,
-        "Anand, Harpreet" <harpreet.anand@amd.com>,
-        "Agarwal, Nikhil" <nikhil.agarwal@amd.com>,
-        "Simek, Michal" <michal.simek@amd.com>,
-        "git (AMD-Xilinx)" <git@amd.com>
-References: <20220817150542.483291-3-nipun.gupta@amd.com>
- <Yv0KHROjESUI59Pd@kroah.com>
- <DM6PR12MB3082D966CFC0FA1C2148D8FAE8719@DM6PR12MB3082.namprd12.prod.outlook.com>
- <YwOEv6107RfU5p+H@kroah.com>
- <DM6PR12MB3082B4BDD39632264E7532B8E8739@DM6PR12MB3082.namprd12.prod.outlook.com>
- <YwYVhJCSAuYcgj1/@kroah.com> <20220824233122.GA4068@nvidia.com>
- <CAGETcx846Pomh_DUToncbaOivHMhHrdt-MTVYqkfLUKvM8b=6w@mail.gmail.com>
- <a6ca5a5a-8424-c953-6f76-c9212db88485@arm.com>
- <DM6PR12MB30824C5129A7251C589F1461E8769@DM6PR12MB3082.namprd12.prod.outlook.com>
- <Ywzb4RmbgbnQYTIl@nvidia.com>
- <MN2PR12MB30870CE2759A9ABE652FAFD8E8799@MN2PR12MB3087.namprd12.prod.outlook.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <MN2PR12MB30870CE2759A9ABE652FAFD8E8799@MN2PR12MB3087.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-30 08:06, Gupta, Nipun wrote:
-> [AMD Official Use Only - General]
-> 
-> 
-> 
->> -----Original Message-----
->> From: Jason Gunthorpe <jgg@nvidia.com>
->> Sent: Monday, August 29, 2022 9:02 PM
->> To: Gupta, Nipun <Nipun.Gupta@amd.com>
->> Cc: Robin Murphy <robin.murphy@arm.com>; Saravana Kannan
->> <saravanak@google.com>; Greg KH <gregkh@linuxfoundation.org>;
->> robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org; rafael@kernel.org;
->> eric.auger@redhat.com; alex.williamson@redhat.com; cohuck@redhat.com;
->> Gupta, Puneet (DCG-ENG) <puneet.gupta@amd.com>;
->> song.bao.hua@hisilicon.com; mchehab+huawei@kernel.org;
->> maz@kernel.org; f.fainelli@gmail.com; jeffrey.l.hugo@gmail.com;
->> Michael.Srba@seznam.cz; mani@kernel.org; yishaih@nvidia.com; linux-
->> kernel@vger.kernel.org; devicetree@vger.kernel.org; kvm@vger.kernel.org;
->> okaya@kernel.org; Anand, Harpreet <harpreet.anand@amd.com>; Agarwal,
->> Nikhil <nikhil.agarwal@amd.com>; Simek, Michal <michal.simek@amd.com>;
->> git (AMD-Xilinx) <git@amd.com>
->> Subject: Re: [RFC PATCH v2 2/6] bus/cdx: add the cdx bus driver
->>
->> [CAUTION: External Email]
->>
->> On Mon, Aug 29, 2022 at 04:49:02AM +0000, Gupta, Nipun wrote:
->>
->>> Devices are created in FPFGA with a CDX wrapper, and CDX
->> controller(firmware)
->>> reads that CDX wrapper to find out new devices. Host driver then interacts
->> with
->>> firmware to find newly discovered devices. This bus aligns with PCI
->> infrastructure.
->>> It happens to be an embedded interface as opposed to off-chip
->> connection.
->>
->> Why do you need an FW in all of this?
->>
->> And why do you need DT at all?
-> 
-> We need DT to describe the CDX controller only, similar to
-> how PCI controller is described in DT. PCI devices are
-> never enumerated in DT. All children are to be dynamically
-> discovered.
-> 
-> Children devices do not require DT as they will be discovered
-> by the bus driver.
-> 
-> Like PCI controller talks to PCI device over PCI spec defined channel,
-> we need CDX controller to talk to CDX device over a custom
-> defined (FW managed) channel.
+The error message is not printed immediately because it does not end with
+a newline character.
 
-OK, thanks for clarifying - it actually sounds quite cool :)
+Before:
+root@localhost:~# insmod vmlinux.ko
+insmod: ERROR: could not insert module vmlinux.ko: Invalid parameters
 
-I think it's clear now that this should be a a full-fledged bus 
-implementation. Note that if the CDX interface provides a way to query 
-arbitrary properties beyond standard resources then you may well also 
-want your own fwnode type to hook into the device_property APIs too. 
-Yes, it then means a bit more work adapting individual drivers too, but 
-that should be far cleaner in the long run, and there's already plenty 
-of precedent for IPs which exist with multiple standard interfaces for 
-PCI/USB/SDIO/platform MMIO/etc.
+After:
+root@localhost:~# insmod vmlinux.ko
+[   43.982558] livepatch: vmlinux.ko: invalid module name
+insmod: ERROR: could not insert module vmlinux.ko: Invalid parameters
 
-Plus it means that if CDX ever makes its way into PCIe-attached FPGA 
-cards which can be used on non-OF systems, you've not painted yourself 
-into a corner.
+Fixes: dcf550e52f56 ("livepatch: Disallow vmlinux.ko")
+Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+---
+ kernel/livepatch/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Robin.
+diff --git a/kernel/livepatch/core.c b/kernel/livepatch/core.c
+index bc475e62279d2a3..42f7e716d56bf72 100644
+--- a/kernel/livepatch/core.c
++++ b/kernel/livepatch/core.c
+@@ -1171,7 +1171,7 @@ int klp_module_coming(struct module *mod)
+ 		return -EINVAL;
+ 
+ 	if (!strcmp(mod->name, "vmlinux")) {
+-		pr_err("vmlinux.ko: invalid module name");
++		pr_err("vmlinux.ko: invalid module name\n");
+ 		return -EINVAL;
+ 	}
+ 
+-- 
+2.25.1
+
