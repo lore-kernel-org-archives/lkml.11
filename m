@@ -2,118 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71695ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1882BECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231351AbiH3S3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51236 "EHLO
+        id S231540AbiH3S3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230112AbiH3S3e (ORCPT
+        with ESMTP id S230166AbiH3S3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 14:29:34 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA9E65276
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:29:32 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id l3so11926394plb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:29:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=NF3x2ZuQmc7E5ZKV3Bzdu/rI94Ot3GBmPnTGqOsq+uk=;
-        b=cTeCi1YNZNnhxjJF/bb5tz/6qdHQ8eGVvhqFmNlqm9j9s3imudLob1H3teCiWaNidD
-         vJKF3mF7/Mwqj7ArNNKTylqd3p25F0vT9cD0A5uUEvvFjJOVWjKG+C4K2PFB8mQL8VzT
-         4qUgBmaWXcOEagw+nvwqw3+f+WnTMF3KXEWKE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=NF3x2ZuQmc7E5ZKV3Bzdu/rI94Ot3GBmPnTGqOsq+uk=;
-        b=Lt+UOgWT6pp03f2eCV4Tb9qOluv5m53IBgF5lPuD6TkGxoJxc6M/5PtjkB8K41FpPp
-         IbIWJP75fpfjWoC0kyLZg78n8U/dZSFpgD6VOjWuJeGulqES9l2SKfmToOAj7byYPQ+K
-         8JzYhj+FHq4WhOsZqrghNIxlUH+AibubX1ZCrDd9c6rU0wJcVihsSa1IRTjJi9m4dVIB
-         d2/ueLJuyY4r8lpFYYoJnXy5jjlAJ3GvqroL2IE9p+hNJOv2ozNf45aXTzsobXEfx1Zr
-         tQOnFU+kEegLyN3s+/gmHpY9Mg7Pyl5yFFV2yjL60VSwolT+au6a6K/aP0rdFn483KsB
-         cT5w==
-X-Gm-Message-State: ACgBeo2oyio/v2/IigFlfaBfc/NxnlSGdtBnuDI5/MMDlhllFgJvQcqf
-        9W1QGd4kLT/1KJXb4t+v74NLJA==
-X-Google-Smtp-Source: AA6agR4VzJf1HvOrQa9ExROd+6qMHu90X2VEe7IDxB74ZUaD42s7MsURvnaw4mJYuZQOfHzc0yCLdw==
-X-Received: by 2002:a17:902:ec8c:b0:175:14e5:9ab7 with SMTP id x12-20020a170902ec8c00b0017514e59ab7mr4710363plg.141.1661884171931;
-        Tue, 30 Aug 2022 11:29:31 -0700 (PDT)
-Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:f016:d779:b6b0:fd9d])
-        by smtp.gmail.com with ESMTPSA id u202-20020a6279d3000000b0052e37b32618sm9596358pfc.132.2022.08.30.11.29.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 11:29:31 -0700 (PDT)
-From:   Douglas Anderson <dianders@chromium.org>
-To:     Bjorn Andersson <andersson@kernel.org>
-Cc:     Sibi Sankar <quic_sibis@quicinc.com>,
-        Jimmy Chen <jinghung.chen3@hotmail.com>,
-        Rob Herring <robh@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v9 1/3] dt-bindings: arm: qcom: document sc7280 and villager board
-Date:   Tue, 30 Aug 2022 11:29:21 -0700
-Message-Id: <20220830112818.v9.1.I4fa927a776951095d55c41ddb64149c8c0eae57c@changeid>
-X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-In-Reply-To: <20220830182923.3720287-1-dianders@chromium.org>
-References: <20220830182923.3720287-1-dianders@chromium.org>
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3BB606B0;
+        Tue, 30 Aug 2022 11:29:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=UYQek+qMCToSnQsPHyu58B7DsB3xgc4kYQ4E/F+X1Yg=; b=iwhsstQSgNuQeT2obw6YbDQbow
+        /Z8XJYKHFp7BZ/adrMoekoeTPIi/AXS2k0dQGCt0n61y29e+3ryMkr9KXhd0COFBLGfK4iqxYleBd
+        7uL8HN+itar8OFux6DO0y8BwbMTYU1Gmr9nXP7pb27k4e0hWG/9sR55fYgZ7/I0ZEfu8EHlE7rS2t
+        KzbTj6DTfy+pcUKscMY/y32BhrnSWEhKnZCaZ+ah5QxLiZ8/pHwzeW98S3JQGpeNDQICKGF3e1M0M
+        +j+ACvY2O4mivtvCwA3Umu5l6oiPSuK3srW/LQ3UeUjeaPX8XiiOmt7RvXpnrWJ/VnbcNldrbUC04
+        7bTFnpvQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oT5zQ-001CSx-Gi; Tue, 30 Aug 2022 18:29:32 +0000
+Message-ID: <3d308d17-1c00-39ab-eb47-8fe1f62f9e7f@infradead.org>
+Date:   Tue, 30 Aug 2022 11:29:31 -0700
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: linux-next: Tree for Aug 30 (net/ieee802154/nl802154.c:)
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20220830170121.74e5ed54@canb.auug.org.au>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220830170121.74e5ed54@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jimmy Chen <jinghung.chen3@hotmail.com>
 
-This adds a LTE skus for Chromebook Villager to the yaml.
 
-Signed-off-by: Jimmy Chen <jinghung.chen3@hotmail.com>
-Acked-by: Rob Herring <robh@kernel.org>
-[dianders: adjust LTE as SKU 512; remove two variants of -rev0]
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
----
+On 8/30/22 00:01, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Changes since 20220829:
+> 
 
-Changes in v9:
-- Squash https://lore.kernel.org/r/20220829084732.1.I9ef7f8b909a7afbef9ff2251a98c67033f37b516@changeid
+on i386 or x86_64:
 
-Changes in v2:
-- ("...: document sc7280 and villager board") new for v2.
+when # CONFIG_IEEE802154_NL802154_EXPERIMENTAL is not set
 
- Documentation/devicetree/bindings/arm/qcom.yaml | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+../net/ieee802154/nl802154.c:2503:26: error: ‘NL802154_CMD_DEL_SEC_LEVEL’ undeclared here (not in a function); did you mean ‘NL802154_CMD_SET_CCA_ED_LEVEL’?
+ 2503 |         .resv_start_op = NL802154_CMD_DEL_SEC_LEVEL + 1,
+      |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                          NL802154_CMD_SET_CCA_ED_LEVEL
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index c9b71dc97758..c2e1cbf12a03 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -575,11 +575,21 @@ properties:
-           - const: google,herobrine
-           - const: qcom,sc7280
- 
-+      - description: Google Villager (rev0)
-+        items:
-+          - const: google,villager-rev0
-+          - const: qcom,sc7280
-+
-       - description: Google Villager (newest rev)
-         items:
-           - const: google,villager
-           - const: qcom,sc7280
- 
-+      - description: Google Villager with LTE (newest rev)
-+        items:
-+          - const: google,villager-sku512
-+          - const: qcom,sc7280
-+
-       - items:
-           - enum:
-               - lenovo,flex-5g
+
 -- 
-2.37.2.672.g94769d06f0-goog
-
+~Randy
