@@ -2,121 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C6CECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 704DFECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbiH3Qux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35810 "EHLO
+        id S230394AbiH3Qv3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:51:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230312AbiH3Qug (ORCPT
+        with ESMTP id S230323AbiH3QvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:50:36 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B177D123
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:50:07 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id v5-20020a2583c5000000b006964324be8cso171965ybm.14
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:50:06 -0700 (PDT)
+        Tue, 30 Aug 2022 12:51:06 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72EB62E9EE
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:50:39 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id k22so11992500ljg.2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:50:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=hBJ0yO7Shj4BOGRLl4iwSJQIsSnhkgtQ+YJ6SsJa66s=;
-        b=qLhpv1pwxbgqPpQ/o53COjLTCFhozgslqRyNRpITJlmata42GDlLUxhGoYQs+ODC1t
-         8fT2Qshih9HmV/rWmz320OxcWmiHAJlyFWeZ5ZZn4bUQGNUiZxotR1stKeFzbnY5ZpIN
-         G1LthDIugdVVlBwJdWdv8C82rIECXtDmSp/0giPmpiEUEjNGrzUuFYbIfD8TSbz2xNY2
-         5rNgIWjMoUwCnoAvub4HPlmth9XcXSQTkKdox5kgwDqjedAvR0y9GZ1kwpn+kwLDOvJ1
-         ce94hLNJDKiOEWOnbzsy7bmCxCMeRv4ML+AsMNiPHUh2+SWedFGS8Bp8+2tkZBmA5Z/H
-         YYQg==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=LB0Usrjlkh7xslzohdKjOqDIh+FnkR8rdofoomTFePo=;
+        b=V/TUBW29W2rTZvSqJpprSsVXCH2sHzwElfnaQ6Yrh446l4m7mD1WCPJhyMGGmW6A/W
+         RqSFRqFBVuiPaCQf0/qTQCPh34InMJQgs4KdqMswdLrdOUcERJjjbaspE8Peg7IXIg2n
+         PEgQe3ZWZHvg1vzID9MvWL6/xIoTWFXXYZ1e0mVN9lHWSoLQIR8RICThpRAFw6W16Jkf
+         q4FzEaO1plKFIr9+btGjQuJQ30RC5Y5HTAszHP0AqBoribTg84wmd+3N0TJ1I64mQkPx
+         0+7dEGNeP2P3yHzXxTgU73H+YIYf2AsyOjmjpdL93nEXtBxJArroBN1d425fbWABNVvi
+         s2UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=hBJ0yO7Shj4BOGRLl4iwSJQIsSnhkgtQ+YJ6SsJa66s=;
-        b=2jBkVGlMBX2CrJwDxJ/y58D6orwS5i/DKDySaCBAlmp+xP3erpH0/byHqETn92drUk
-         PAV60xlc9OOToYEnW+dqD67AROn0nFLKQJBMj5nyu5JC4S1+x4ckvJp4dMrk++rGBdKy
-         k9tpcBc3+FY4jW808HUYJP7NfCQ7Fml53uz033XAZ8uXIWAY/NsXXnq5wjGPm6EmCyVe
-         eeaulQB7pJP3i2yJ6xQUI//jLNUVmbyl3GKeNz7MqVsD1/LgL8JkUVF4C2eiIhUhWxGg
-         8wgdoe07KCMZ2sdkeCi5bG17Ix/9M/Z4J7ZIsqpShdxJWCuqWJtNQVge9LrZmXRjBd/m
-         EG4A==
-X-Gm-Message-State: ACgBeo1V5L78KYbYujshvXWUL7C/z7Bu1nJCNcbNQ4fQ7wgVrjs9y/zd
-        5z232uhSPpemMkmZmFbkl7KiEdrU2Euk
-X-Google-Smtp-Source: AA6agR7UyxomsBLPG4p8omYHrO7FAUbdartUodh6cv14m+BTaKEMB043Thyn84iNKaNbktnxPEd7cmy4vJq+
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:902c:b0fa:dec9:8767])
- (user=irogers job=sendgmr) by 2002:a25:3207:0:b0:69a:ba91:9dd with SMTP id
- y7-20020a253207000000b0069aba9109ddmr9781255yby.34.1661878191610; Tue, 30 Aug
- 2022 09:49:51 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 09:48:46 -0700
-In-Reply-To: <20220830164846.401143-1-irogers@google.com>
-Message-Id: <20220830164846.401143-9-irogers@google.com>
-Mime-Version: 1.0
-References: <20220830164846.401143-1-irogers@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Subject: [PATCH v1 8/8] perf test: Add basic core_wide expression test
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        John Garry <john.garry@huawei.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        perry.taylor@intel.com, caleb.biggers@intel.com,
-        kshipra.bopardikar@intel.com
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=LB0Usrjlkh7xslzohdKjOqDIh+FnkR8rdofoomTFePo=;
+        b=AefiEen197IQmUqqypOEjxnERnrBxm5uSOyVNSgViUcOwZILQq98gx0QxkTmSYZ6Dm
+         9cQDzEmBNuQQdKRGd5TQpQBvy2q0TYXHTFZqlk8rewmXY1XT1dkKBUcZ4sr+wstsH/ZW
+         TB8jxwL0Cjr4Kmo8Y1EVtTuGe8pdaBQD0YJwfYknv/NVoOAY1+OOwtwp7rKqVkG5yg/t
+         7AjSMcV6wxzEJsFncSR5ZHbyr/yd/EKO85PhlBEF6yeVKs+f/+U6vVbPu9CdqHvdpg8V
+         MpED/QMTvo+kKGFW0U+xAIBnSwm4JQqODf0yxWy9HdXfqqEQpOCTuLC21LYxdEDXSoNd
+         GeCA==
+X-Gm-Message-State: ACgBeo3dllSFEdRjq6z/KHHEMw53YvByeX37rjwP38NR2PSQvIVCB/Ex
+        bm45gSV4EXq5J8mIX63+sLPlyQ==
+X-Google-Smtp-Source: AA6agR6EG3IyFUzxbWsyDhOmCP0vEkHv/lutNKfgPiYH8yyy2ff3ijld/cBf9iwIC9R5chRy65sWaQ==
+X-Received: by 2002:a05:651c:10bc:b0:264:8e6c:f618 with SMTP id k28-20020a05651c10bc00b002648e6cf618mr3584131ljn.154.1661878227394;
+        Tue, 30 Aug 2022 09:50:27 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id t22-20020a056512209600b0048af4dc964asm1028074lfr.73.2022.08.30.09.50.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 09:50:26 -0700 (PDT)
+Message-ID: <bc707091-3417-bc89-70bf-3a2496a11196@linaro.org>
+Date:   Tue, 30 Aug 2022 19:50:25 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 1/1] arm64: dts: qcom: sc7280: Add device tree for
+ herobrine evoker
+Content-Language: en-US
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Sheng-Liang Pan <sheng-liang.pan@quanta.corp-partner.google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+References: <20220830053307.3997495-1-sheng-liang.pan@quanta.corp-partner.google.com>
+ <20220830133300.1.I7dd7a79c4cc5fe91c3feb004473feb3b34b7b2d8@changeid>
+ <184d4ff5-e80c-6a24-8071-0b0a69710685@linaro.org>
+ <CAD=FV=VorVNKHgybGAH=dD5ob+1RYoguczycjOYu-5VPu=9Jkw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAD=FV=VorVNKHgybGAH=dD5ob+1RYoguczycjOYu-5VPu=9Jkw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add basic test for coverage, similar to #smt_on.
+On 30/08/2022 19:10, Doug Anderson wrote:
+> Hi,
+> 
+> On Tue, Aug 30, 2022 at 2:33 AM Krzysztof Kozlowski
+> <krzysztof.kozlowski@linaro.org> wrote:
+>>
+>>> +};
+>>> +
+>>> +/*
+>>> + * ADDITIONS TO FIXED REGULATORS DEFINED IN PARENT DEVICE TREE FILES
+>>
+>> What does it mean and why it's SCREAMING?
+>>> + *
+>>> + * Sort order matches the order in the parent files (parents before children).
+>>
+>> Why? Sorting should be rather alphabetical.
+> 
+> We've had this discussion on the lists in the past. See, for instance:
+> 
+> https://lore.kernel.org/r/CAD=FV=U2C1W+JHWyGRfyRB=WiPKLYvtjO90UDoJ9p+Xwe09+ow@mail.gmail.com/
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/tests/expr.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Good explanation, such sorting rule is quite nice. The part about
+regulators is still a bit confusing, I guess it is about some other
+pieces in some other place? But isn't this kind of obvious from
+including other DTSI?
 
-diff --git a/tools/perf/tests/expr.c b/tools/perf/tests/expr.c
-index db736ed49556..8bd719766814 100644
---- a/tools/perf/tests/expr.c
-+++ b/tools/perf/tests/expr.c
-@@ -158,6 +158,9 @@ static int test__expr(struct test_suite *t __maybe_unused, int subtest __maybe_u
- 	{
- 		struct cpu_topology *topology = cpu_topology__new();
- 		bool smton = smt_on(topology);
-+		bool corewide = core_wide(/*system_wide=*/false,
-+					  /*user_requested_cpus=*/false,
-+					  topology);
- 
- 		cpu_topology__delete(topology);
- 		expr__ctx_clear(ctx);
-@@ -168,6 +171,16 @@ static int test__expr(struct test_suite *t __maybe_unused, int subtest __maybe_u
- 		TEST_ASSERT_VAL("find ids", hashmap__find(ctx->ids,
- 							  smton ? "EVENT1" : "EVENT2",
- 							  (void **)&val_ptr));
-+
-+		expr__ctx_clear(ctx);
-+		TEST_ASSERT_VAL("find ids",
-+				expr__find_ids("EVENT1 if #core_wide else EVENT2",
-+					NULL, ctx) == 0);
-+		TEST_ASSERT_VAL("find ids", hashmap__size(ctx->ids) == 1);
-+		TEST_ASSERT_VAL("find ids", hashmap__find(ctx->ids,
-+							  corewide ? "EVENT1" : "EVENT2",
-+							  (void **)&val_ptr));
-+
- 	}
- 	/* The expression is a constant 1.0 without needing to evaluate EVENT1. */
- 	expr__ctx_clear(ctx);
--- 
-2.37.2.672.g94769d06f0-goog
-
+Best regards,
+Krzysztof
