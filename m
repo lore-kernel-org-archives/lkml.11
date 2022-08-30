@@ -2,191 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 064CCECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 14:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5050ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 14:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230133AbiH3OVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 10:21:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
+        id S229922AbiH3OV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 10:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbiH3OVD (ORCPT
+        with ESMTP id S230189AbiH3OVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 10:21:03 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52D5642C5;
-        Tue, 30 Aug 2022 07:20:57 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id F400B121;
-        Tue, 30 Aug 2022 16:20:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661869255;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ufgo92+9MD8lMZnJHj9JynwICztvJiv6z2nBDKJvsyU=;
-        b=2yILkXih+cAfHWb8i3cp/6iRnfOrNCytTMCkSciINo9wWDbNKv1Fn9jWenJYKua0/vjE04
-        aoxqLXbBcB2/Oe+kW78QNsAXD1pkHlJTv3M1V/5vjJ0/eJmyi29tWbDb4VMT4DgIDX7eta
-        KdP7m8cj1Yh0ELjMnqleaTCEeMFKRunCmPsdLK8Otxp31CgWKGxF/W4EaZgv/zi4roTt6E
-        1NvmXNqWYyzwysYs4OMlGxbQvDH0Dj950OCe1aikpPAv3gOh13SlHizqbeoPoP/Pcd5lMs
-        3oB+zX+iWMm0Q+RgQM64NoGQFLpTP2We4OEIkQchlA3alLQ+/Sowy7OkqYM9GQ==
+        Tue, 30 Aug 2022 10:21:22 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889F3979DB;
+        Tue, 30 Aug 2022 07:21:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661869280; x=1693405280;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=rjwIVGsdxHy5+YyoJ770LrZUeVdLx2t+acz27CFaO8Q=;
+  b=1F0hkdywvbJoYqsl1wRxwVXHu0FE5jwIsp+/0pO2wrGVCqn2INRWuJPI
+   M/fAGL7Zkt9Z9aCDCDWchXlO58ERE8GFwaxJK12b/X6gzbPqyPqtyhJFT
+   NnVf+4is4F2iPKOrWHXSHSqwV4kiIaalV8MYjoDSatUV7iTpkuh+AW78m
+   Jav8Q2P0iXc4egqZ0MVO7GABjuRfojyzDAqc2MgH3lKGjht7ejXvI06PN
+   lG0W8dAfbS2QOXSbUIRdx1N9FrW402J2z7A0eVKmpS2ZoSNqaBw5hTd4b
+   ELlv0PyiwWwz3zl37i3HrB5u/E4D0Tm6mVyPStsa8ODmlel7jxSfJvrPm
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="174821305"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 07:21:19 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 30 Aug 2022 07:21:19 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 07:21:19 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FZ7K2//UNUtYCd18JArWNjuvegviwI5wEvXOCm11vfkz4bBMeV1PSyL/Va7TDKAznebPiWGu7JG8nzskk/lwk8Et/2iP/jE7zegFucClPZEEIpfGGFwQ3/yWG7mn4IUDdtJ8Gsnv98adeInhL/+DT0Nx8BYSJePOKJ0VjFgIUZ0nxmHqS42ty+7xh/fMrW4Ywye2yWrP5B7LwsCGBymH7b3xrtPyuwNLAtClHGiKEoMZBb+XE6T1BrwS3XEKvpHhhmeXbHbOA4UcqQ57B7+TDOpAS73U8W3r/tKOSdOLgOPBehPZSW/FB3CXhtXS9UowEU2AOMRHccj3/PupDHySHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rjwIVGsdxHy5+YyoJ770LrZUeVdLx2t+acz27CFaO8Q=;
+ b=fhz2SK+qR/U17uBBmtJ8iPA3RLoMROxXrGxKJxLCQhD4pNVKxL3u9TNxHKtYmiKsG40gCLlLECtqc8+H9liY85Re20cFqnoZnTE9Nc84QcEa/tv8TKET0SUUnrx5BqUO+Ntjvp+q7X4IsRiNnea+zJ3kzmW0Dp+gXNniHSyiC+Hkpra59dBXlGNXHTaym4keo5jFHxbBbHRXkbP2xkVLlB9HGGe1qGQq05AgxYMwoqRHN39iI41aPKSW9ScvyGJhCiK+6V3CW+Oq8IYTgf0C5b7eJjprSuB1Mvx80hLNhYcFwVTAwR80UWICgxpUvM0PapM/2zxqJtChm1/Rr8pveA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rjwIVGsdxHy5+YyoJ770LrZUeVdLx2t+acz27CFaO8Q=;
+ b=j40lo/gib0y/45DYjgxCyLvJqXRko3du+QNfQP2USz+EVmcxe2xqoX16MisrU7dGCS+zMUid/W5NNmrWv96Zkf/0RkziI/mCfS37xvGNcqMIcRl3sy3afkqwJmLIz4axEjxlDzStTPDxQg4t2xhHn9wHXjrEbz/Ski+AcNUrzl4=
+Received: from PH0PR11MB5096.namprd11.prod.outlook.com (2603:10b6:510:3c::5)
+ by DM5PR11MB1673.namprd11.prod.outlook.com (2603:10b6:4:c::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5566.15; Tue, 30 Aug 2022 14:21:14 +0000
+Received: from PH0PR11MB5096.namprd11.prod.outlook.com
+ ([fe80::ce2:c2e7:3373:fd42]) by PH0PR11MB5096.namprd11.prod.outlook.com
+ ([fe80::ce2:c2e7:3373:fd42%5]) with mapi id 15.20.5566.021; Tue, 30 Aug 2022
+ 14:21:14 +0000
+From:   <Tharunkumar.Pasumarthi@microchip.com>
+To:     <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <krzysztof.kozlowski@linaro.org>, <wsa@kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>,
+        <andriy.shevchenko@linux.intel.com>, <robh@kernel.org>,
+        <jsd@semihalf.com>, <olof@lixom.net>,
+        <jarkko.nikula@linux.intel.com>, <semen.protsenko@linaro.org>,
+        <sven@svenpeter.dev>, <rafal@milecki.pl>, <arnd@arndb.de>
+Subject: Re: [PATCH RFC i2c-master] i2c: microchip: pci1xxxx: Add driver for
+ I2C host controller in multifunction endpoint of pci1xxxx switch
+Thread-Topic: [PATCH RFC i2c-master] i2c: microchip: pci1xxxx: Add driver for
+ I2C host controller in multifunction endpoint of pci1xxxx switch
+Thread-Index: AQHYttI9ItE0vA92WES0jroLXsIOYq28ST0AgAtA/AA=
+Date:   Tue, 30 Aug 2022 14:21:14 +0000
+Message-ID: <3e23a746cd0819757cef648e0320db6b680ffd07.camel@microchip.com>
+References: <20220823145603.2606475-1-tharunkumar.pasumarthi@microchip.com>
+         <8712b866-af22-d9ac-fd84-7d77c2628682@linaro.org>
+In-Reply-To: <8712b866-af22-d9ac-fd84-7d77c2628682@linaro.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8a653e13-5375-40ff-3053-08da8a92e542
+x-ms-traffictypediagnostic: DM5PR11MB1673:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 6Yd2Eyx21QFydMzmwo3mak50EBKHCQhj7zGiJckO6KHHVFlShT4rgggfUWJ/rsPlpHMet5JL79kDjqbCd3mp79kEa/EU8kO+nGjEhfvN0o6ZEkAvKNWkTp0lhJH7g2nbfqYyYftaXmoKTu67X0iWhdQ7SvkUa6UXj3gNBgk071DuHdf4UFTUbNEYJRbzo7SENwM2AVDkygs9JFjzVdLqUVNO/+YbPfBz7AoZIhPdzIvO2wUtQsuzX2aewC9ZMJHn+RxWeY1OsTJihDXHW0chMG0uO7OgLTqs2w2EoMdMoruDqIPXF56lvHPkf58xit3rs46nLaJYoOKgMhgxYHQqqqDVqXU1ZGHMC1B+20LaFEsVNbA0OXhavnvIm4qNJQdaHRqdFLv5+mnuC+2y7YcMuXqJkg1ksgb7aH4pvwq/SOk8MGb0DCS4UUHN4Kkso+TnTnfm8gwUjRJqWdmsiUOING8KdZt0xQdgnDg/F4r3AFsnFwq3Mp9S3SVmkqVAhpz7f/omE8iWcShAs17FWO3r0Gm/5pOAq9614I9e/N4iynnMXEw1+lK5DYGXGZNYTQZxE8HlPIbI896KS2T2B+SalbYOBvpzdtRKuJPWde7MsdDjqfXeP+kTjSyTvlRsRAXGW1w+qke+L2yJsf60Rl0njYK2fiw5ZQMOJRfLmgRAlR6j5QXGKaWk7YNwERFrRG4BYiGLb+OcECt5qZ8LxLocRMtYZdYvKG9P54Z+mEJMNk4jESvukLJTrvdsg/9Qwx3NC9umbbQT4ihYDAphoyz5iamBNMlPo8nQlfL69yFOEUc=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5096.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(366004)(39860400002)(376002)(346002)(8936002)(38100700002)(6506007)(36756003)(122000001)(2906002)(66446008)(5660300002)(7416002)(186003)(91956017)(478600001)(76116006)(6486002)(6512007)(4326008)(4744005)(316002)(64756008)(66556008)(54906003)(86362001)(66476007)(110136005)(41300700001)(38070700005)(66946007)(26005)(71200400001)(2616005)(8676002)(32563001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?enNoSlJWNFAzZGhKTzg3cjZNVWNPSkdGd2kvK09Ga0FDamdodFFGeVhUdEdT?=
+ =?utf-8?B?S0F3dWovdk5sTE9qVEFySzNIaWFtcEhSVlRNTHFmcUJkNHZ2UnhkUG5HcURF?=
+ =?utf-8?B?UHJ1UmYvOHBNazIrYmFFVVpjUDcxOGd1aWY1R0dZUkJ1N093WEhWQ0VBTDlW?=
+ =?utf-8?B?OVFSRDRVN1JsYXpXTFhkSm5ZTVJHSG9MOTVjUXBTbkhpdUZWTDczNWc5OVFn?=
+ =?utf-8?B?N2tUVU5yS2lLWTdqck9BSG05QkRrSUp6cjRXQ2dncWFzVU1ZVTZjeHRxTEt1?=
+ =?utf-8?B?Vkp2N2QvV2QvdlBzaG42VVRzR1YrN3BOTDd6cUwvS2lYbmJPOUJpcXAwdnZR?=
+ =?utf-8?B?MmV3bUdPZGhFa3JadUZTc3JOaFd2ZXVJY0V5dmRwZU5Icnl1SHRtejJsL1dx?=
+ =?utf-8?B?T3Jad0VNZWhCYzRlL3dFd0swMThLT09xL2VBUzN3MnNmVTlzUzFremhlRm05?=
+ =?utf-8?B?TC9DL20wVjFoODY0VFl6SW92SC9RTXd6QXBoSlhsTVh6R0IxQ1NLSXlNV1RI?=
+ =?utf-8?B?VnN2S1RqSCsrTHRjeC91YVlLa09OVTExdk1XbHd5VEszTW5JS1JiUlRiVXRy?=
+ =?utf-8?B?NWVsOWpFRnNQSkkyOVVIOFJqS3VhWkk0amJETDhrejRzOFM3UnF4b0xLZUor?=
+ =?utf-8?B?VU04MjA1ZkQ5OUpaRnFWalRnVWp2bGZETHFNV0VLR0RRQWNBSUlnRDVmVzVp?=
+ =?utf-8?B?eis3RHJZam9ZK2haSDljWENaUEVjZ0h5cjFwdEFGMXh0NlFCZUY3b3FtQnhj?=
+ =?utf-8?B?V3lCUFZLQzFpQkpPTXRFVXU0TGRVQjY2WU03dW1OY2JmV3hmcXI4OWJxN0hw?=
+ =?utf-8?B?N2cyOGhRei9jSEN1TE9ZSysydCtvZUhkNGxFOWtsWU94R2YyMmtCSHpIdzUy?=
+ =?utf-8?B?UkdTaGlFSUx6YmRDbTNEdDFjN05DYUllbWZXc2drSURBQ1Q3VVNDS2dRSjlh?=
+ =?utf-8?B?N0hHUEsxa3lXZ21kUkV6T0FxT3Aza0d4RWl4Z3RZUCtxNUtraUxiSEtoVm9Y?=
+ =?utf-8?B?dWpyU3BlVThQc2lkTWtSdWNIbmdZR2cwOG1WWFpEamZwcktCTGFBaGxESTRs?=
+ =?utf-8?B?Sm1vTHFCZkxzdllCZ2N4WG90aEFJQnVnQW1tQmQwRGQ5RHNGTXZlM3QwL1Uw?=
+ =?utf-8?B?NElabXdtVFRLa0tiRWcwT29oNDFSTWVnVlFXVGQvNFBnNUdBMTRVeDU1S3Jn?=
+ =?utf-8?B?a1RmWWpLZUJYZVI0L1FyaDZyZjVQSkVtV1ZIZVVjOEdjVE9vQ2p6YTJreE9a?=
+ =?utf-8?B?cTQ0SXBWZ3RaZUJleFkvQnN1bklGeko2UlNIcWpNZGNJZ1hqWGhWOTFKUEx5?=
+ =?utf-8?B?M2VYY0lPYXBzN0FOU2V4eU44QWdmM2hJeVRtWDVZaFB0d21uM3JVZGV6TzJY?=
+ =?utf-8?B?elA2dmVjcWtCaVcwZWh5V2Z5T0VLa25aK2VHSHFaNGdDa1o2WHNxOUk4MzhR?=
+ =?utf-8?B?RFBmZ0tpbEtsSlh6SEZHbHFvVTZxNVB0dnJxYzBVNFg5azBUWkplY2F3QWt2?=
+ =?utf-8?B?cmxkME4xNHdGd3gxd1VCNHgrcDlUT0ZHQjJZSXRrZE9FalVWU1lwd2hIY0dV?=
+ =?utf-8?B?aVVNOWxQZElla2JWMEd0bUFyaVZCMkF3MVFXaEVISlBkZWYyNUpQU1VVSXNo?=
+ =?utf-8?B?citOeXRWTUhzRmJwWkQxblVTdm5QR2xycnJFSFJhbzE2K0NILzJPNVBvS29O?=
+ =?utf-8?B?YU80bGw1YXdjZHk4Qkg0cEx0blYrNTRFOUtyK1pHOXc0cG5HaDZjUFdId3FN?=
+ =?utf-8?B?dElGOElTUWtqMEFkcXNNb3U3Q1RmOHU3cEppTGtxWWpiTGtxYUZyZ3lCZm5Q?=
+ =?utf-8?B?RDFWeDR1anQwNW1MK1ZBKzlUVmF3THVlY3pEaStadkx2QTVWZXNxdElSVk8w?=
+ =?utf-8?B?L2RTcnRINHRJcDdIN2JxSU5kZVpENHJ2UTZlQzdRTWJkM2tEYzRvNWhlV09j?=
+ =?utf-8?B?MW5kbVU0L2NPdmZzd3N4U3F6aVAxYVlyQUpPNmxiMHBSZVFIWCtBVXgvRG1Z?=
+ =?utf-8?B?VXdWaGhMcDRhTjNwbnRKcHFIT05jL1BUcjVwRkJreGIxbVcva1RSQzZsNXcy?=
+ =?utf-8?B?SldESkdoR3NuM2lZT1VIZTBIV05ER3dKdjhlR3B2VDN2VVRER3BrNkhkL2Jk?=
+ =?utf-8?B?SHF6cWtDS0UzejRqVk42Y0gxK0NDN2V1SG1JeU14aEZGVWpzcjNHazFLamZI?=
+ =?utf-8?Q?TUMYiqPUF/IEVTvZnEle6D11ECrH0hZDjeXDFyUPY5hC?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2BF177DC53D28C4AB391E90A965B887F@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Date:   Tue, 30 Aug 2022 16:20:54 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH v1 07/14] nvmem: core: add per-cell post processing
-In-Reply-To: <ddae21bf-a51b-7266-60ba-8a10c293888a@linaro.org>
-References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-8-michael@walle.cc>
- <ddae21bf-a51b-7266-60ba-8a10c293888a@linaro.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <9592f45176ae77799836391df92bb29e@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5096.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a653e13-5375-40ff-3053-08da8a92e542
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2022 14:21:14.1900
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KhCup9pI9Yu87mEyH4p45ORo0qE/ubKSX7LZudM0wdq9KVcTqimXR9ABuENuigesEhpJDQGVU1wMHxwhxXFJn/eZ0kbQUPHhTXmb49A3zNvQmTm2JP1bRONpvbFN9jSr
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1673
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-Am 2022-08-30 15:37, schrieb Srinivas Kandagatla:
-> On 25/08/2022 22:44, Michael Walle wrote:
->> Instead of relying on the name the consumer is using for the cell, 
->> like
->> it is done for the nvmem .cell_post_process configuration parameter,
->> provide a per-cell post processing hook. This can then be populated by
->> the NVMEM provider (or the NVMEM layout) when adding the cell.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
->> ---
->>   drivers/nvmem/core.c           | 16 ++++++++++++++++
->>   include/linux/nvmem-consumer.h |  5 +++++
->>   2 files changed, 21 insertions(+)
->> 
->> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
->> index 5357fc378700..cbfbe6264e6c 100644
->> --- a/drivers/nvmem/core.c
->> +++ b/drivers/nvmem/core.c
->> @@ -52,6 +52,7 @@ struct nvmem_cell_entry {
->>   	int			bytes;
->>   	int			bit_offset;
->>   	int			nbits;
->> +	nvmem_cell_post_process_t post_process;
-> 
-> 
-> two post_processing callbacks for cells is confusing tbh, we could
-> totally move to use of cell->post_process.
-> 
-> one idea is to point cell->post_process to nvmem->cell_post_process
-> during cell creation time which should clean this up a bit.
-
-You'll then trigger the read-only check below for all the cells
-if nvmem->cell_post_process is set.
-
-> Other option is to move to using layouts for every thing.
-
-As mentioned in a previous reply, I can't see how it could be
-achieved. The problem here is that:
-  (1) the layout isn't creating the cells, the OF parser is
-  (2) even if we would create the cells, we wouldn't know
-      which cell needs the post_process. So we are back to
-      the situation above, were we have to add it to all
-      the cells, making them read-only. [We depend on the
-      name of the nvmem-consumer to apply the hook.
-
-> prefixing post_process with read should also make it explicit that
-> this callback is very specific to reads only.
-
-good idea.
-
--michael
-
->>   	struct device_node	*np;
->>   	struct nvmem_device	*nvmem;
->>   	struct list_head	node;
->> @@ -468,6 +469,7 @@ static int 
->> nvmem_cell_info_to_nvmem_cell_entry_nodup(struct nvmem_device *nvmem,
->>   	cell->offset = info->offset;
->>   	cell->bytes = info->bytes;
->>   	cell->name = info->name;
->> +	cell->post_process = info->post_process;
->>     	cell->bit_offset = info->bit_offset;
->>   	cell->nbits = info->nbits;
->> @@ -1500,6 +1502,13 @@ static int __nvmem_cell_read(struct 
->> nvmem_device *nvmem,
->>   	if (cell->bit_offset || cell->nbits)
->>   		nvmem_shift_read_buffer_in_place(cell, buf);
->>   +	if (cell->post_process) {
->> +		rc = cell->post_process(nvmem->priv, id, index,
->> +					cell->offset, buf, cell->bytes);
->> +		if (rc)
->> +			return rc;
->> +	}
->> +
->>   	if (nvmem->cell_post_process) {
->>   		rc = nvmem->cell_post_process(nvmem->priv, id, index,
->>   					      cell->offset, buf, cell->bytes);
->> @@ -1608,6 +1617,13 @@ static int __nvmem_cell_entry_write(struct 
->> nvmem_cell_entry *cell, void *buf, si
->>   	    (cell->bit_offset == 0 && len != cell->bytes))
->>   		return -EINVAL;
->>   +	/*
->> +	 * Any cells which have a post_process hook are read-only because we
->> +	 * cannot reverse the operation and it might affect other cells, 
->> too.
->> +	 */
->> +	if (cell->post_process)
->> +		return -EINVAL;
-> 
-> Post process was always implicitly for reads only, this check should
-> also tie the loose ends of cell_post_processing callback.
-> 
-> 
-> --srini
->> +
->>   	if (cell->bit_offset || cell->nbits) {
->>   		buf = nvmem_cell_prepare_write_buffer(cell, buf, len);
->>   		if (IS_ERR(buf))
->> diff --git a/include/linux/nvmem-consumer.h 
->> b/include/linux/nvmem-consumer.h
->> index 980f9c9ac0bc..761b8ef78adc 100644
->> --- a/include/linux/nvmem-consumer.h
->> +++ b/include/linux/nvmem-consumer.h
->> @@ -19,6 +19,10 @@ struct device_node;
->>   struct nvmem_cell;
->>   struct nvmem_device;
->>   +/* duplicated from nvmem-provider.h */
->> +typedef int (*nvmem_cell_post_process_t)(void *priv, const char *id, 
->> int index,
->> +					 unsigned int offset, void *buf, size_t bytes);
->> +
->>   struct nvmem_cell_info {
->>   	const char		*name;
->>   	unsigned int		offset;
->> @@ -26,6 +30,7 @@ struct nvmem_cell_info {
->>   	unsigned int		bit_offset;
->>   	unsigned int		nbits;
->>   	struct device_node	*np;
->> +	nvmem_cell_post_process_t post_process;
->>   };
->>     /**
+T24gVHVlLCAyMDIyLTA4LTIzIGF0IDEzOjMxICswMzAwLCBLcnp5c3p0b2YgS296bG93c2tpIHdy
+b3RlOg0KPiA+ICtzdGF0aWMgdm9pZCBwY2kxeHh4eF9pMmNfcmVtb3ZlX3BjaShzdHJ1Y3QgcGNp
+X2RldiAqcGRldikNCj4gPiArew0KPiA+ICvCoMKgwqDCoCBzdHJ1Y3QgcGNpMXh4eHhfaTJjICpp
+MmMgPSBwY2lfZ2V0X2RydmRhdGEocGRldik7DQo+IA0KPiBObyBuZWVkIGZvciBwY2lfZnJlZV9p
+cnFfdmVjdG9ycygpPw0KPiANCg0KcGNpX2ZyZWVfaXJxX3ZlY3RvcnMgQVBJIGlzIG5vdCBuZWVk
+ZWQgc2luY2UgcGNpbV9lbmFibGVfZGV2aWNlIEFQSSBpcyB1c2VkIGluDQp0aGUgY29kZS4gSSB3
+aWxsIHJlbW92ZSAncGNpX2ZyZWVfaXJxX3ZlY3RvcnMnIGluIGFsbCB0aGUgcGxhY2VzIGluIHVw
+Y29taW5nDQp2ZXJzaW9uIG9mIHRoZSBwYXRjaC4NCg0KVGhhbmtzLA0KVGhhcnVuIEt1bWFyIFAN
+Cj4gDQoNCg==
