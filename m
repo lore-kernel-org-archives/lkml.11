@@ -2,234 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F95ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 19:46:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C651FC0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 19:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231418AbiH3TqN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 15:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
+        id S231451AbiH3Tqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 15:46:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiH3TqH (ORCPT
+        with ESMTP id S230093AbiH3Tqn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 15:46:07 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F335F6CF61;
-        Tue, 30 Aug 2022 12:46:04 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id bt10so16983605lfb.1;
-        Tue, 30 Aug 2022 12:46:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=StwtrRo41Q02kq4392RIAvwdz46GplrH2vSGAt0nUXg=;
-        b=BlRUPU4UIkeSNpc47ExwZ1yYCzf5rZtwrGcCNlMv0ncDh2kkBhEnYjEqan/q68hoA2
-         R+GKANoLKpsVg+YZEtFLV315YVo8ano+jygioVbFcwVh7VzppzWBLnrfUBfmm3c/nJuB
-         ZoHMuJ3rXr+j67kW6zgzBibwREVusZMo2oAgwCcgYyzhP220JHc5Po0GfotTVNOdE/I4
-         uXBGNF0bMWxtPO31D5ciaLV9bwRS5n3U1/oHrxnMZkZ0snLxDMwjj5tNZC4IcoETQpf4
-         YGnH/7w4B8FEa0MYdlXA9orsbLbvRIBXjETxGNteGu+M5cx8x57oIz/UyKdvSQPvSwLW
-         3nhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=StwtrRo41Q02kq4392RIAvwdz46GplrH2vSGAt0nUXg=;
-        b=mzONbHWZ2tSJTNYEmZHO5ScyUM2gxZnZvxW+N3omG8bNM4EULZP3JY77V3LB4vyla6
-         jj0dPmgJIG6MUxDBL8Idx71aWb2FqdbvdpKP8d3drhJgmQD+mXP01BKhCPndDr1QfP7x
-         9TDBNmbdPqDFVJwwjUBgpKI1/8Ohekjgw2aNquYMnu1Q4P6jm8W/O5E0A3wOUOyzXu24
-         zQQx0WPpz/Z2tSWWvGMzNWK7/p+uOUA3aUVGjV7T5KoJSMATrWz5JI42hHAOjwpRQX3e
-         ZPNxZHQRJsH4kPouzVreAu4OMnnn/ps5d6iKbqn/QVa96pxxNkTcUVzogFh8rqrTTrLT
-         W9ZA==
-X-Gm-Message-State: ACgBeo0ROCYCvInedGdUP5SLZt1uhpHHQCGn9o1lFXR0JmQhS8PiTj+M
-        +ycyh2z2Te93mxKRxtyki2DzycFVS0o=
-X-Google-Smtp-Source: AA6agR60F2b2j2MMUdo1tHPJmFq5KZwHFivwiIzQK491Kn221YlIC+Ab1SZqoqNwUcJTaPVtxrFF0g==
-X-Received: by 2002:a05:6512:32aa:b0:494:653b:765c with SMTP id q10-20020a05651232aa00b00494653b765cmr4390917lfe.337.1661888762371;
-        Tue, 30 Aug 2022 12:46:02 -0700 (PDT)
-Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id g20-20020a05651222d400b004948b61f780sm1036lfu.144.2022.08.30.12.46.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 12:46:01 -0700 (PDT)
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     benjamin.tissoires@redhat.com, jikos@kernel.org,
-        marcus.folkesson@gmail.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] HID: Add driver for VRC-2 Car Controller
-Date:   Tue, 30 Aug 2022 21:50:55 +0200
-Message-Id: <20220830195055.1812192-2-marcus.folkesson@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220830195055.1812192-1-marcus.folkesson@gmail.com>
-References: <20220830195055.1812192-1-marcus.folkesson@gmail.com>
+        Tue, 30 Aug 2022 15:46:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3660412A88;
+        Tue, 30 Aug 2022 12:46:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6F53B81D94;
+        Tue, 30 Aug 2022 19:46:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DC87C433D6;
+        Tue, 30 Aug 2022 19:46:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661888799;
+        bh=2iej/NrvEH9C0b/djxI7NXpFu8DvkbovX2F/5tUXV/E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=UdoGBJL1xdtyQmWjK09RxQs0YM9aFlNj5xiPEnavVS8y0Y+QhmaE2owrDDV8vtMNY
+         iuZVWOINhB830oL/UUuY7GFOjh8oR52dJZTqIkev66k2X86MLRaGX0V1tjH6mmwl9n
+         QXKG9reyDqahPjaAWj8Wrye3khFqDP4gqg86tKBZeU35L/bH6H9lOFcYB1dZZok08/
+         jSJWDapOvFuWTWqGYg6oTi+yU9fZdGDX5DGk6QUOtLBKal4IZUuqDh8Q5Nj8A16UIu
+         BSGvZtpm2CAnejdOGBdMYKuQn4NoWC4vvmm7o5IfVGkTbPVXNs24Rs29stlCTOvW7j
+         XRi2xHmEdXDdQ==
+Date:   Tue, 30 Aug 2022 14:46:37 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Rajvi Jingar <rajvi.jingar@linux.intel.com>,
+        Rafael Wysocki <rafael.j.wysocki@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        David Box <david.e.box@linux.intel.com>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: Re: [RESEND PATCH v3 2/2] PCI/PTM: fix to maintain
+ pci_dev->ptm_enabled
+Message-ID: <20220830194637.GA118760@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0iHckqia4OywKzSNWFCaq7eOkJcm5yXJdT2_sNdd36gDw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VRC-2 is 2-axis controller often used in car simulators.
+On Tue, Aug 30, 2022 at 08:03:41PM +0200, Rafael J. Wysocki wrote:
+> On Tue, Aug 30, 2022 at 7:37 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > On Tue, Aug 30, 2022 at 06:58:20PM +0200, Rafael J. Wysocki wrote:
+> > > On Tue, Aug 30, 2022 at 6:25 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+> > > > On Tue, Aug 30, 2022 at 03:49:13AM -0700, Rajvi Jingar wrote:
+> > > > > pci_dev->ptm_enabled needs to be maintained to reflect the current PTM
+> > > > > state of the device. In pci_ptm_disable(), clear ptm_enabled from
+> > > > > 'struct pci_dev' on disabling PTM state for the device.
+> > > > > In pci_restore_ptm_state(), set dev->ptm_enabled based on the restored
+> > > > > PTM state of the device.
+> > > > >
+> > > > > In pci_ptm_disable(), perform ptm_enabled check to avoid config space
+> > > > > access in case if PTM is already disabled for the device. ptm_enabled
+> > > > > won't be set for non-PCIe devices so pci_is_pcie(dev) check is not
+> > > > > needed anymore.
+> > > >
+> > > > This one sounds like it's supposed to fix something, but I'm not clear
+> > > > exactly what.
+> > > >
+> > > > I have a vague memory of config accesses messing up a low power state.
+> > > > But this is still completely magical and unmaintainable since AFAIK
+> > > > there is nothing in the PCIe spec about avoiding config accesses when
+> > > > PTM is disabled.
+> >
+> > I'm remembering this, which seemed like an ancestor of this patch:
+> > https://lore.kernel.org/r/CAJZ5v0gNy6YJA+RNTEyHBdoJK-jqKN60oU_k_LX4=cTuyoO2mg@mail.gmail.com
+> >
+> > This patch is queued up and does something similar (disabling PTM on
+> > all devices before suspend):
+> > https://git.kernel.org/cgit/linux/kernel/git/helgaas/pci.git/commit/?id=d878400c7d98
+> >
+> > Is d878400c7d98 enough to solve the functional issue, and this patch
+> > is basically a cleanup?  I think it's a nice cleanup and worth doing.
+> 
+> This patch is independent of d878400c7d98.  We've been working on a
+> d878400c7d98 counterpart on top of this patch.
+> 
+> There is a problem with d878400c7d98 that disabling PTM from
+> pci_prepare_to_sleep() is not enough, because that function is not
+> called for some endpoints where we also want to disable PTM on system
+> suspend.
+> 
+> IMV the most suitable place to disable PTM (temporarily) on
+> system-wide suspend is in pci_pm_suspend_noirq(, because it is the
+> last piece of generic PCI code running for all PCI devices regardless
+> of what their drivers do.
+>
+> > I'm just trying to figure out the "avoid config space access" in the
+> > commit log.  If avoiding config space access is necessary, it needs
+> > more explanation.
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
----
- MAINTAINERS            |   6 +++
- drivers/hid/Kconfig    |   9 ++++
- drivers/hid/Makefile   |   1 +
- drivers/hid/hid-vrc2.c | 100 +++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 116 insertions(+)
- create mode 100644 drivers/hid/hid-vrc2.c
+AFAICT, these are great cleanups but neither of these patches is
+really a functional change.  If that's true, the "avoid config space
+access" should be removed from the commit log.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 216b9f021f72..33010f93c993 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8919,6 +8919,12 @@ F:	drivers/hid/hid-sensor-*
- F:	drivers/iio/*/hid-*
- F:	include/linux/hid-sensor-*
- 
-+HID VRC-2 CAR CONTROLLER DRIVER
-+M:	Marcus Folkesson <marcus.folkesson@gmail.com>
-+L:	linux-input@vger.kernel.org
-+S:	Maintained
-+F:	drivers/hid/hid-vrc2.c
-+
- HID WACOM DRIVER
- M:	Ping Cheng <ping.cheng@wacom.com>
- M:	Jason Gerecke  <jason.gerecke@wacom.com>
-diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
-index d8313d36086c..518e0a5a7852 100644
---- a/drivers/hid/Kconfig
-+++ b/drivers/hid/Kconfig
-@@ -481,6 +481,15 @@ config HID_VIEWSONIC
- 	help
- 	  Support for ViewSonic/Signotec PD1011 signature pad.
- 
-+config HID_VRC2
-+	tristate "VRC-2 Car Controller"
-+	depends on HID
-+	help
-+        Support for VRC-2 2-axis Car Controller
-+
-+        To compile this driver as a module, choose M here: the
-+        module will be called hid-vrc2.
-+
- config HID_XIAOMI
- 	tristate "Xiaomi"
- 	depends on HID
-diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
-index 85d50ab352ee..32ab85b1a776 100644
---- a/drivers/hid/Makefile
-+++ b/drivers/hid/Makefile
-@@ -137,6 +137,7 @@ obj-$(CONFIG_HID_XINMO)		+= hid-xinmo.o
- obj-$(CONFIG_HID_ZEROPLUS)	+= hid-zpff.o
- obj-$(CONFIG_HID_ZYDACRON)	+= hid-zydacron.o
- obj-$(CONFIG_HID_VIEWSONIC)	+= hid-viewsonic.o
-+obj-$(CONFIG_HID_VRC2)		+= hid-vrc2.o
- 
- wacom-objs			:= wacom_wac.o wacom_sys.o
- obj-$(CONFIG_HID_WACOM)		+= wacom.o
-diff --git a/drivers/hid/hid-vrc2.c b/drivers/hid/hid-vrc2.c
-new file mode 100644
-index 000000000000..43c98607b837
---- /dev/null
-+++ b/drivers/hid/hid-vrc2.c
-@@ -0,0 +1,100 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * HID driver for VRC-2 2-axis Car controller
-+ *
-+ * Copyright (C) 2022 Marcus Folkesson <marcus.folkesson@gmail.com>
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/hid.h>
-+#include <linux/module.h>
-+
-+/*
-+ * VID/PID are probably "borrowed", so keep them locally and
-+ * do not populate hid-ids.h with those.
-+ */
-+#define USB_VENDOR_ID_VRC2	(0x07c0)
-+#define USB_DEVICE_ID_VRC2	(0x1125)
-+
-+static __u8 vrc2_rdesc_fixed[] = {
-+	0x05, 0x01,        // Usage Page (Generic Desktop Ctrls)
-+	0x09, 0x04,        // Usage (Joystick)
-+	0xA1, 0x01,        // Collection (Application)
-+	0x09, 0x01,        //   Usage (Pointer)
-+	0xA1, 0x00,        //   Collection (Physical)
-+	0x09, 0x30,        //     Usage (X)
-+	0x09, 0x31,        //     Usage (Y)
-+	0x15, 0x00,        //     Logical Minimum (0)
-+	0x26, 0xFF, 0x07,  //     Logical Maximum (2047)
-+	0x35, 0x00,        //     Physical Minimum (0)
-+	0x46, 0xFF, 0x00,  //     Physical Maximum (255)
-+	0x75, 0x10,        //     Report Size (16)
-+	0x95, 0x02,        //     Report Count (2)
-+	0x81, 0x02,        //     Input (Data,Var,Abs,No Wrap,Linear,Preferred State,No Null Position)
-+	0xC0,              //   End Collection
-+	0x75, 0x08,        //   Report Size (8)
-+	0x95, 0x03,        //   Report Count (3)
-+	0x81, 0x03,        //   Input (Cnst,Var,Abs)
-+	0xC0,              // End Collection
-+};
-+
-+static __u8 *vrc2_report_fixup(struct hid_device *hdev, __u8 *rdesc,
-+				unsigned int *rsize)
-+{
-+	if (*rsize == 23)
-+		return rdesc;
-+
-+	hid_info(hdev, "fixing up VRC-2 report descriptor\n");
-+	*rsize = sizeof(vrc2_rdesc_fixed);
-+	return vrc2_rdesc_fixed;
-+}
-+
-+static int vrc2_probe(struct hid_device *hdev, const struct hid_device_id *id)
-+{
-+	int ret;
-+
-+	/*
-+	 * The device gives us 2 separate USB endpoints.
-+	 * One of those (the one with report descriptor size of 23) is just bogus so ignore it
-+	 */
-+	if (hdev->dev_rsize == 23)
-+		return -ENODEV;
-+
-+	ret = hid_parse(hdev);
-+	if (ret) {
-+		hid_err(hdev, "parse failed\n");
-+		return ret;
-+	}
-+
-+	ret = hid_hw_start(hdev, HID_CONNECT_DEFAULT);
-+	if (ret) {
-+		hid_err(hdev, "hw start failed\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void vrc2_remove(struct hid_device *hdev)
-+{
-+	hid_hw_stop(hdev);
-+}
-+
-+static const struct hid_device_id vrc2_devices[] = {
-+	{ HID_USB_DEVICE(USB_VENDOR_ID_VRC2, USB_DEVICE_ID_VRC2) },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(hid, vrc2_devices);
-+
-+static struct hid_driver vrc2_driver = {
-+	.name = "vrc2",
-+	.id_table = vrc2_devices,
-+	.report_fixup = vrc2_report_fixup,
-+	.probe = vrc2_probe,
-+	.remove = vrc2_remove,
-+};
-+module_hid_driver(vrc2_driver);
-+
-+MODULE_AUTHOR("Marcus Folkesson <marcus.folkesson@gmail.com>");
-+MODULE_DESCRIPTION("HID driver for VRC-2 2-axis Car controller");
-+MODULE_LICENSE("GPL");
--- 
-2.37.1
+I dropped d878400c7d98 for now and updated my pci/pm branch with just
+these two patches with updates as attached below.
 
+Then we can rework d878400c7d98 so it disables PTM unconditionally in
+pci_pm_suspend_noirq() instead of in pci_prepare_to_sleep().
+
+Currently, or with d878400c7d98, we only call pci_prepare_to_sleep()
+when (!skip_bus_pm && !state_saved && pci_power_manageable()), so if a
+driver saves its own state, we won't disable PTM, which seems like a
+problem.
+
+I assume we also want to move the pci_disable_ptm() from
+pci_finish_runtime_suspend() to pci_pm_runtime_suspend() to keep it
+parallel with pci_pm_suspend_noirq().
+
+Is this making sense?
+
+> > > Because ptm_enabled is expected to always reflect the hardware state,
+> > > pci_disable_ptm() needs to be amended to clear it.  Also it is prudent
+> > > to explicitly make it reflect the new hardware state in
+> > > pci_restore_ptm_state().
+> > >
+> > > Then, pci_disable_ptm() can be made bail out if ptm_enabled is clear,
+> > > because it has nothing to do then and the pci_is_pcie() check in there
+> > > is not necessary, because ptm_enabled will never be set for devices
+> > > that are not PCIe.
+> > >
+> > > > At the very least, we would need more details in the commit log and
+> > > > a hint in the code about this.
+
+commit 22b07d9ddd02 ("PCI/PTM: Update pdev->ptm_enabled to track hardware state")
+Author: Rajvi Jingar <rajvi.jingar@linux.intel.com>
+Date:   Tue Aug 30 03:49:13 2022 -0700
+
+    PCI/PTM: Update pdev->ptm_enabled to track hardware state
+    
+    Update pdev->ptm_enabled to track hardware state when we disable or restore
+    PTM state.
+    
+    No functional change intended, since 'ptm_enabled' was previously only
+    tested during enumeration and pci_disable_ptm() is only used during
+    suspend.
+    
+    [bhelgaas: commit log]
+    Link: https://lore.kernel.org/r/20220830104913.1620539-2-rajvi.jingar@linux.intel.com
+    Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
+    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+    Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+diff --git a/drivers/pci/pcie/ptm.c b/drivers/pci/pcie/ptm.c
+index 368a254e3124..1ce241d4538f 100644
+--- a/drivers/pci/pcie/ptm.c
++++ b/drivers/pci/pcie/ptm.c
+@@ -34,7 +34,7 @@ void pci_disable_ptm(struct pci_dev *dev)
+ 	int ptm;
+ 	u16 ctrl;
+ 
+-	if (!pci_is_pcie(dev))
++	if (!dev->ptm_enabled)
+ 		return;
+ 
+ 	ptm = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_PTM);
+@@ -44,6 +44,7 @@ void pci_disable_ptm(struct pci_dev *dev)
+ 	pci_read_config_word(dev, ptm + PCI_PTM_CTRL, &ctrl);
+ 	ctrl &= ~(PCI_PTM_CTRL_ENABLE | PCI_PTM_CTRL_ROOT);
+ 	pci_write_config_word(dev, ptm + PCI_PTM_CTRL, ctrl);
++	dev->ptm_enabled = 0;
+ }
+ 
+ void pci_save_ptm_state(struct pci_dev *dev)
+@@ -83,6 +84,7 @@ void pci_restore_ptm_state(struct pci_dev *dev)
+ 
+ 	cap = (u16 *)&save_state->cap.data[0];
+ 	pci_write_config_word(dev, ptm + PCI_PTM_CTRL, *cap);
++	dev->ptm_enabled = !!(*cap & PCI_PTM_CTRL_ENABLE);
+ }
+ 
+ void pci_ptm_init(struct pci_dev *dev)
+
+commit 6e594f65471b ("PCI/PM: Simplify pci_pm_suspend_noirq()")
+Author: Rajvi Jingar <rajvi.jingar@linux.intel.com>
+Date:   Tue Aug 30 03:49:12 2022 -0700
+
+    PCI/PM: Simplify pci_pm_suspend_noirq()
+    
+    We always want to save the device state unless the driver has already done
+    it.  Rearrange the checking in pci_pm_suspend_noirq() to make this more
+    clear.  No functional change intended.
+    
+    [bhelgaas: commit log, rewrap comment]
+    Link: https://lore.kernel.org/r/20220830104913.1620539-1-rajvi.jingar@linux.intel.com
+    Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
+    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+    Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 49238ddd39ee..2815922ac525 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -867,20 +867,15 @@ static int pci_pm_suspend_noirq(struct device *dev)
+ 		}
+ 	}
+ 
+-	if (pci_dev->skip_bus_pm) {
++	if (!pci_dev->state_saved) {
++		pci_save_state(pci_dev);
++
+ 		/*
+-		 * Either the device is a bridge with a child in D0 below it, or
+-		 * the function is running for the second time in a row without
+-		 * going through full resume, which is possible only during
+-		 * suspend-to-idle in a spurious wakeup case.  The device should
+-		 * be in D0 at this point, but if it is a bridge, it may be
+-		 * necessary to save its state.
++		 * If the device is a bridge with a child in D0 below it,
++		 * it needs to stay in D0, so check skip_bus_pm to avoid
++		 * putting it into a low-power state in that case.
+ 		 */
+-		if (!pci_dev->state_saved)
+-			pci_save_state(pci_dev);
+-	} else if (!pci_dev->state_saved) {
+-		pci_save_state(pci_dev);
+-		if (pci_power_manageable(pci_dev))
++		if (!pci_dev->skip_bus_pm && pci_power_manageable(pci_dev))
+ 			pci_prepare_to_sleep(pci_dev);
+ 	}
+ 
