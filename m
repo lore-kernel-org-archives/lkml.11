@@ -2,112 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 604E1ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D17D0ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231682AbiH3R3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:29:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        id S231722AbiH3R33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231844AbiH3R2t (ORCPT
+        with ESMTP id S231875AbiH3R2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:28:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D064D31FD;
-        Tue, 30 Aug 2022 10:25:52 -0700 (PDT)
+        Tue, 30 Aug 2022 13:28:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501A71670C1;
+        Tue, 30 Aug 2022 10:26:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13E48B81C55;
-        Tue, 30 Aug 2022 17:23:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88337C43470;
-        Tue, 30 Aug 2022 17:23:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D91D9617B2;
+        Tue, 30 Aug 2022 17:24:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D12C4347C;
+        Tue, 30 Aug 2022 17:24:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880218;
-        bh=4KRIZt60OYvPDJXSjhi2ESW3KUFxGrgOB5pvP03ikz4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kQuxwDZuIsup9GQpBY99nuLwCokXhxAfs5a2K/aCwIUkG5mefc3XFT5pImIJg65YI
-         c7NXAf19OH9o3HEixlG0YL/DmVYrSWQYVyDpVxk0fXOUghxBySf5ZZZA7+M6sT84QZ
-         B7PPhgE2Oz1kSxC0RXjJNNuFY109hRd/Cb35aO7U2I4TLhVI8oldGoAA0JM1lc+D93
-         pfM7gM/Dda8SBR5RUSYvivPHAGFHNo6xEFnucWu0mjLOtqaCrQMff0syAdnfJeVd64
-         b0gBq3mPac1NoP5w74vs5lO2rzI2oMYuorgMRWIUoSkzrzcsKoEakWNOvuTfhww+E8
-         9f8Vq+bggwOjg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YiPeng Chai <YiPeng.Chai@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        john.clements@amd.com, Likun.Gao@amd.com, candice.li@amd.com,
-        tao.zhou1@amd.com, guchun.chen@amd.com, Bokun.Zhang@amd.com,
-        andrey.grodzovsky@amd.com, bernard@vivo.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 05/16] drm/amdgpu: Move psp_xgmi_terminate call from amdgpu_xgmi_remove_device to psp_hw_fini
-Date:   Tue, 30 Aug 2022 13:23:06 -0400
-Message-Id: <20220830172317.581397-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
-References: <20220830172317.581397-1-sashal@kernel.org>
+        s=k20201202; t=1661880290;
+        bh=6JmD2+JK8pwdRoPXDm6ONoHrQ/7bSyaKr0JerEnY4Rs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=bFuWWnaqFPON02rz7uU2CAczrW+/GoCDFV8ePY47z/2L+m6q0/q7M1Evc/Pby+cKu
+         KsYKrcMi8vKQ4+YrMZ+KxiDZ4zqMTdvC5LAM320k5bJSQMbx6eZTNC4NL73jbboVg2
+         lRNQxPHsotXE8pFeOCar54RQNeqpMEQo96LUPOjHaGQfiZL6YpFludXm5i4qqfsmfP
+         u651Is2xB4DYRca/KsXBfk2Dl5z3op4MM9XZgWPPIRFISWBoDdIOhnFWxwA3iGjI5k
+         0yonpSwpbcodjzWqD0xeeFFDjQE1jWZMvZFPfHLM0kTf7kimstlTyp3aCcQn7Y+10i
+         lxCxwYy7Mm66Q==
+Date:   Tue, 30 Aug 2022 12:24:44 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] uapi: net/ipv4: Use __DECLARE_FLEX_ARRAY() helper
+Message-ID: <Yw5H3E3a6mmpuTeT@work>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: YiPeng Chai <YiPeng.Chai@amd.com>
+We now have a cleaner way to keep compatibility with user-space
+(a.k.a. not breaking it) when we need to keep in place a one-element
+array (for its use in user-space) together with a flexible-array
+member (for its use in kernel-space) without making it hard to read
+at the source level. This is through the use of the new
+__DECLARE_FLEX_ARRAY() helper macro.
 
-[ Upstream commit 9d705d7741ae70764f3d6d87e67fad3b5c30ffd0 ]
+The size and memory layout of the structure is preserved after the
+changes. See below.
 
-V1:
-The amdgpu_xgmi_remove_device function will send unload command
-to psp through psp ring to terminate xgmi, but psp ring has been
-destroyed in psp_hw_fini.
+Before changes:
 
-V2:
-1. Change the commit title.
-2. Restore amdgpu_xgmi_remove_device to its original calling location.
-   Move psp_xgmi_terminate call from amdgpu_xgmi_remove_device to
-   psp_hw_fini.
+$ pahole -C ip_msfilter net/ipv4/igmp.o
+struct ip_msfilter {
+	union {
+		struct {
+			__be32     imsf_multiaddr_aux;   /*     0     4 */
+			__be32     imsf_interface_aux;   /*     4     4 */
+			__u32      imsf_fmode_aux;       /*     8     4 */
+			__u32      imsf_numsrc_aux;      /*    12     4 */
+			__be32     imsf_slist[1];        /*    16     4 */
+		};                                       /*     0    20 */
+		struct {
+			__be32     imsf_multiaddr;       /*     0     4 */
+			__be32     imsf_interface;       /*     4     4 */
+			__u32      imsf_fmode;           /*     8     4 */
+			__u32      imsf_numsrc;          /*    12     4 */
+			__be32     imsf_slist_flex[0];   /*    16     0 */
+		};                                       /*     0    16 */
+	};                                               /*     0    20 */
 
-Signed-off-by: YiPeng Chai <YiPeng.Chai@amd.com>
-Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+	/* size: 20, cachelines: 1, members: 1 */
+	/* last cacheline: 20 bytes */
+};
+
+After changes:
+
+$ pahole -C ip_msfilter net/ipv4/igmp.o
+struct ip_msfilter {
+	struct {
+		__be32             imsf_multiaddr;       /*     0     4 */
+		__be32             imsf_interface;       /*     4     4 */
+		__u32              imsf_fmode;           /*     8     4 */
+		__u32              imsf_numsrc;          /*    12     4 */
+		union {
+			__be32     imsf_slist[1];        /*    16     4 */
+			struct {
+				struct {
+				} __empty_imsf_slist_flex; /*    16     0 */
+				__be32 imsf_slist_flex[0]; /*    16     0 */
+			};                               /*    16     0 */
+		};                                       /*    16     4 */
+	};                                               /*     0    20 */
+
+	/* size: 20, cachelines: 1, members: 1 */
+	/* last cacheline: 20 bytes */
+};
+
+In the past, we had to duplicate the whole original structure within
+a union, and update the names of all the members. Now, we just need to
+declare the flexible-array member to be used in kernel-space through
+the __DECLARE_FLEX_ARRAY() helper together with the one-element array,
+within a union. This makes the source code more clean and easier to read.
+
+Link: https://github.com/KSPP/linux/issues/193
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c  | 3 +++
- drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c | 2 +-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ include/uapi/linux/in.h | 20 +++++++-------------
+ 1 file changed, 7 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-index 2f47f81a74a57..ae84d3b582aa5 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-@@ -2146,6 +2146,9 @@ static int psp_hw_fini(void *handle)
- 		psp_rap_terminate(psp);
- 		psp_dtm_terminate(psp);
- 		psp_hdcp_terminate(psp);
-+
-+		if (adev->gmc.xgmi.num_physical_nodes > 1)
-+			psp_xgmi_terminate(psp);
- 	}
+diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+index 14168225cecd..fa4dc8f8f081 100644
+--- a/include/uapi/linux/in.h
++++ b/include/uapi/linux/in.h
+@@ -188,20 +188,14 @@ struct ip_mreq_source {
+ };
  
- 	psp_asd_unload(psp);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c
-index 042c85fc528bb..def0b7092438f 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c
-@@ -622,7 +622,7 @@ int amdgpu_xgmi_remove_device(struct amdgpu_device *adev)
- 		amdgpu_put_xgmi_hive(hive);
- 	}
- 
--	return psp_xgmi_terminate(&adev->psp);
-+	return 0;
- }
- 
- int amdgpu_xgmi_ras_late_init(struct amdgpu_device *adev)
+ struct ip_msfilter {
+-	union {
+-		struct {
+-			__be32		imsf_multiaddr_aux;
+-			__be32		imsf_interface_aux;
+-			__u32		imsf_fmode_aux;
+-			__u32		imsf_numsrc_aux;
++	struct {
++		__be32		imsf_multiaddr;
++		__be32		imsf_interface;
++		__u32		imsf_fmode;
++		__u32		imsf_numsrc;
++		union {
+ 			__be32		imsf_slist[1];
+-		};
+-		struct {
+-			__be32		imsf_multiaddr;
+-			__be32		imsf_interface;
+-			__u32		imsf_fmode;
+-			__u32		imsf_numsrc;
+-			__be32		imsf_slist_flex[];
++			__DECLARE_FLEX_ARRAY(__be32, imsf_slist_flex);
+ 		};
+ 	};
+ };
 -- 
-2.35.1
+2.34.1
 
