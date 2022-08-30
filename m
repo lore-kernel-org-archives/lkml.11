@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B52ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C023EECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232012AbiH3XSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40808 "EHLO
+        id S232036AbiH3XSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231349AbiH3XRp (ORCPT
+        with ESMTP id S231954AbiH3XR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:17:45 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCCBA0638
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:31 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-32a115757b6so191759857b3.13
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:31 -0700 (PDT)
+        Tue, 30 Aug 2022 19:17:58 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770F0A1D4F
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:39 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id h5-20020a636c05000000b00429fa12cb65so6216346pgc.21
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=UFryeljcs8yQ8P4nGe9cXbKFWzMUyn5inoM+2kTYTzE=;
-        b=EtVUiRa6EYAYdMJY9HfkJeXfOfiZiT4gT4+hiB9cNcvjsBLonDBCQ25vkcPRblbiw3
-         blpZpdKD90K9BUSKxGL4lNYR9+Ds0LZa/DbOby02tQoFffneL8QzRZZkQHEro02d9s0b
-         oZ+n6ytcHPci31xeQg4NEs8/i2imOB7ud9FFZB3WcAh0i57fTxgiV+Oi767cVJG0BktE
-         pPCHhg1FPtYixEgnG2dKEMHTAKDR3QgGCWQF24sEl8dttoG4dtBqdMzf/fE0yXLK7f/K
-         TrOTKGQS9RL1g4nBLPkKH99liVpygVyE+ARO6U1xWmQoU4CfTQTz/gOzgrAo+XXUDlM1
-         lqSg==
+        bh=yHBXyjuddZA0FtZxUuLwswfl5TgUYOyURvfnTVyRG1I=;
+        b=g3u3SzNGQyYsW/HvOKTnjTobfUSMtxKIIwXr4GOoPY9xa5lrtiZ7K8mV2OnLnGeFtq
+         +WcD60MaanYsLmteb7PWxw7jQ1VbLvPyDlOTBpyth6nRg1lL1mMeUdIyb2LZKS37TkjN
+         qqhzPmmJYmkpuCyje8Tx8vx2WRmqLBs44Qc/0iVcJKpg5p/Gg70XdvyOvVyU7Ep4kAfE
+         xiV22ilsA3TtmvUImdSXl6lQHMYJlAXIgn4Rm92lLVSnYhGJH3xIjwcEsL02S2MZeLa7
+         KzCMxzWfPTwRWCdEc+rsuCvMuYy3iWp0D3FF8S8JaNGZ07+stOdbrt3B1MODUGPsKb7I
+         IkBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=UFryeljcs8yQ8P4nGe9cXbKFWzMUyn5inoM+2kTYTzE=;
-        b=hbRW/AX0O79vYIfjweHIIEp09xS9vOuwrtBgla2DtQ1rfB+2bTcrJFK5NbX+LE8DpT
-         JMb2B/N+rhAj8HBIDSfm6LdhXpBfZ2Sv6F29JsKoLeDAvNeqLyrbuw8CDthtNOFrI0AS
-         ntiiDdux7zuyHqfTAq9JIKqYge3v/NX14zp13tJPEtKBGfhwdG5dVn/bwRVac790stAR
-         uHNGazSxSDhRW6fVArPdCk7/cc+l8F9UoXGfnFIx6mA5BY7tGAT7V3Kq9ioQ8C+3ryTq
-         lE/bfK/Bshk0fhe9/RqU5k8JhysK4g6CXSbu0W1V8uPdrY2osPhtEHY3gBR/q3OiIT5g
-         FxaQ==
-X-Gm-Message-State: ACgBeo26vNdTew5N3+Gm/58pqTDwjgGT88MTsAqN5ppdXU803Wvn1xw9
-        2pdHCzrsyOvBy9wAltaQDvDFtUG2Xxo=
-X-Google-Smtp-Source: AA6agR7uWZY2ecbTO1BssBcoMyC7CW18mv5KMlHRCii6+M29k+np2dM/cluhSbv8k7TUgk+wPkXCIQY7gCk=
+        bh=yHBXyjuddZA0FtZxUuLwswfl5TgUYOyURvfnTVyRG1I=;
+        b=y8Jiz54Ao47Fz5fvibOtsG9UHfM1TesE0NZ5sxyFX5pgCcQyMSvA7+aZjhVVLbTM9k
+         ofsua+8zG5LFUjdbOASrzRhXpOIetBpuGP6ykLwQjSsPm5z98VGoUMeNHvRe7cMNBrFV
+         J3hMqK45LKsBT4KvjT1JON8Taj2JE0s6qmZ8lY8WpDsm5wyUxoUug5MRtCpuVqwlbpVT
+         dN+ZQAS2+R3eUnxcszMGC/p66aRp6Zj3v3vJZ89x2JCuqBF9KMMtHaaZupb+hfMMT7sr
+         VwGY9lRuev8r1hxjxn7Ccu4EPuKpYMlgpo1IsqNfbGYzkPgeQO1udld1NLLby372uoTu
+         MtmQ==
+X-Gm-Message-State: ACgBeo1W7hnXILPqKguzpIhmcGPzPNIoXRGmrmhEeVdDIeqa3PIQEAvM
+        pjB9M+n4lhjye23RHbkt/dddXlRRArM=
+X-Google-Smtp-Source: AA6agR7d6N9CT5D77KX6PME7R5fE0PdmC0Ng3N1TKCPTVk5cGRVHpLA1hZRdYgOLiiP8HGL7h7b+lq6GKfo=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a25:add1:0:b0:691:3523:13c8 with SMTP id
- d17-20020a25add1000000b00691352313c8mr14033133ybe.52.1661901390052; Tue, 30
- Aug 2022 16:16:30 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1c86:b0:538:b52:b494 with SMTP id
+ y6-20020a056a001c8600b005380b52b494mr15505950pfw.49.1661901398839; Tue, 30
+ Aug 2022 16:16:38 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 30 Aug 2022 23:15:55 +0000
+Date:   Tue, 30 Aug 2022 23:16:00 +0000
 In-Reply-To: <20220830231614.3580124-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220830231614.3580124-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830231614.3580124-9-seanjc@google.com>
-Subject: [PATCH v5 08/27] KVM: x86: Treat #DBs from the emulator as fault-like
- (code and DR7.GD=1)
+Message-ID: <20220830231614.3580124-14-seanjc@google.com>
+Subject: [PATCH v5 13/27] KVM: x86: Rename kvm_x86_ops.queue_exception to inject_exception
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -68,91 +67,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a dedicated "exception type" for #DBs, as #DBs can be fault-like or
-trap-like depending the sub-type of #DB, and effectively defer the
-decision of what to do with the #DB to the caller.
+Rename the kvm_x86_ops hook for exception injection to better reflect
+reality, and to align with pretty much every other related function name
+in KVM.
 
-For the emulator's two calls to exception_type(), treat the #DB as
-fault-like, as the emulator handles only code breakpoint and general
-detect #DBs, both of which are fault-like.
+No functional change intended.
 
-For event injection, which uses exception_type() to determine whether to
-set EFLAGS.RF=1 on the stack, keep the current behavior of not setting
-RF=1 for #DBs.  Intel and AMD explicitly state RF isn't set on code #DBs,
-so exempting by failing the "== EXCPT_FAULT" check is correct.  The only
-other fault-like #DB is General Detect, and despite Intel and AMD both
-strongly implying (through omission) that General Detect #DBs should set
-RF=1, hardware (multiple generations of both Intel and AMD), in fact does
-not.  Through insider knowledge, extreme foresight, sheer dumb luck, or
-some combination thereof, KVM correctly handled RF for General Detect #DBs.
-
-Fixes: 38827dbd3fb8 ("KVM: x86: Do not update EFLAGS on faulting emulation")
-Cc: stable@vger.kernel.org
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/x86.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/kvm-x86-ops.h | 2 +-
+ arch/x86/include/asm/kvm_host.h    | 2 +-
+ arch/x86/kvm/svm/svm.c             | 4 ++--
+ arch/x86/kvm/vmx/vmx.c             | 4 ++--
+ arch/x86/kvm/x86.c                 | 2 +-
+ 5 files changed, 7 insertions(+), 7 deletions(-)
 
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 51f777071584..82ba4a564e58 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -67,7 +67,7 @@ KVM_X86_OP(get_interrupt_shadow)
+ KVM_X86_OP(patch_hypercall)
+ KVM_X86_OP(inject_irq)
+ KVM_X86_OP(inject_nmi)
+-KVM_X86_OP(queue_exception)
++KVM_X86_OP(inject_exception)
+ KVM_X86_OP(cancel_injection)
+ KVM_X86_OP(interrupt_allowed)
+ KVM_X86_OP(nmi_allowed)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 2c96c43c313a..71b65b8bb8cc 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1523,7 +1523,7 @@ struct kvm_x86_ops {
+ 				unsigned char *hypercall_addr);
+ 	void (*inject_irq)(struct kvm_vcpu *vcpu, bool reinjected);
+ 	void (*inject_nmi)(struct kvm_vcpu *vcpu);
+-	void (*queue_exception)(struct kvm_vcpu *vcpu);
++	void (*inject_exception)(struct kvm_vcpu *vcpu);
+ 	void (*cancel_injection)(struct kvm_vcpu *vcpu);
+ 	int (*interrupt_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
+ 	int (*nmi_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index f3813dbacb9f..a9d3d5a5137f 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -461,7 +461,7 @@ static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
+ 	return 0;
+ }
+ 
+-static void svm_queue_exception(struct kvm_vcpu *vcpu)
++static void svm_inject_exception(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	unsigned nr = vcpu->arch.exception.nr;
+@@ -4798,7 +4798,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+ 	.patch_hypercall = svm_patch_hypercall,
+ 	.inject_irq = svm_inject_irq,
+ 	.inject_nmi = svm_inject_nmi,
+-	.queue_exception = svm_queue_exception,
++	.inject_exception = svm_inject_exception,
+ 	.cancel_injection = svm_cancel_injection,
+ 	.interrupt_allowed = svm_interrupt_allowed,
+ 	.nmi_allowed = svm_nmi_allowed,
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 7f3581960eb5..be4348fa176c 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1684,7 +1684,7 @@ static void vmx_clear_hlt(struct kvm_vcpu *vcpu)
+ 		vmcs_write32(GUEST_ACTIVITY_STATE, GUEST_ACTIVITY_ACTIVE);
+ }
+ 
+-static void vmx_queue_exception(struct kvm_vcpu *vcpu)
++static void vmx_inject_exception(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_vmx *vmx = to_vmx(vcpu);
+ 	unsigned nr = vcpu->arch.exception.nr;
+@@ -8080,7 +8080,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
+ 	.patch_hypercall = vmx_patch_hypercall,
+ 	.inject_irq = vmx_inject_irq,
+ 	.inject_nmi = vmx_inject_nmi,
+-	.queue_exception = vmx_queue_exception,
++	.inject_exception = vmx_inject_exception,
+ 	.cancel_injection = vmx_cancel_injection,
+ 	.interrupt_allowed = vmx_interrupt_allowed,
+ 	.nmi_allowed = vmx_nmi_allowed,
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 013580c355d7..39d3eadc43a2 100644
+index 39d3eadc43a2..24b538b8b0ee 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -533,6 +533,7 @@ static int exception_class(int vector)
- #define EXCPT_TRAP		1
- #define EXCPT_ABORT		2
- #define EXCPT_INTERRUPT		3
-+#define EXCPT_DB		4
+@@ -9713,7 +9713,7 @@ static void kvm_inject_exception(struct kvm_vcpu *vcpu)
  
- static int exception_type(int vector)
- {
-@@ -543,8 +544,14 @@ static int exception_type(int vector)
+ 	if (vcpu->arch.exception.error_code && !is_protmode(vcpu))
+ 		vcpu->arch.exception.error_code = false;
+-	static_call(kvm_x86_queue_exception)(vcpu);
++	static_call(kvm_x86_inject_exception)(vcpu);
+ }
  
- 	mask = 1 << vector;
- 
--	/* #DB is trap, as instruction watchpoints are handled elsewhere */
--	if (mask & ((1 << DB_VECTOR) | (1 << BP_VECTOR) | (1 << OF_VECTOR)))
-+	/*
-+	 * #DBs can be trap-like or fault-like, the caller must check other CPU
-+	 * state, e.g. DR6, to determine whether a #DB is a trap or fault.
-+	 */
-+	if (mask & (1 << DB_VECTOR))
-+		return EXCPT_DB;
-+
-+	if (mask & ((1 << BP_VECTOR) | (1 << OF_VECTOR)))
- 		return EXCPT_TRAP;
- 
- 	if (mask & ((1 << DF_VECTOR) | (1 << MC_VECTOR)))
-@@ -8832,6 +8839,12 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 		unsigned long rflags = static_call(kvm_x86_get_rflags)(vcpu);
- 		toggle_interruptibility(vcpu, ctxt->interruptibility);
- 		vcpu->arch.emulate_regs_need_sync_to_vcpu = false;
-+
-+		/*
-+		 * Note, EXCPT_DB is assumed to be fault-like as the emulator
-+		 * only supports code breakpoints and general detect #DB, both
-+		 * of which are fault-like.
-+		 */
- 		if (!ctxt->have_exception ||
- 		    exception_type(ctxt->exception.vector) == EXCPT_TRAP) {
- 			kvm_pmu_trigger_event(vcpu, PERF_COUNT_HW_INSTRUCTIONS);
-@@ -9755,6 +9768,16 @@ static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
- 
- 	/* try to inject new event if pending */
- 	if (vcpu->arch.exception.pending) {
-+		/*
-+		 * Fault-class exceptions, except #DBs, set RF=1 in the RFLAGS
-+		 * value pushed on the stack.  Trap-like exception and all #DBs
-+		 * leave RF as-is (KVM follows Intel's behavior in this regard;
-+		 * AMD states that code breakpoint #DBs excplitly clear RF=0).
-+		 *
-+		 * Note, most versions of Intel's SDM and AMD's APM incorrectly
-+		 * describe the behavior of General Detect #DBs, which are
-+		 * fault-like.  They do _not_ set RF, a la code breakpoints.
-+		 */
- 		if (exception_type(vcpu->arch.exception.nr) == EXCPT_FAULT)
- 			__kvm_set_rflags(vcpu, kvm_get_rflags(vcpu) |
- 					     X86_EFLAGS_RF);
+ static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
 -- 
 2.37.2.672.g94769d06f0-goog
 
