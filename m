@@ -2,121 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0BBECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48045C0502C
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:13:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229671AbiH3LNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:13:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58370 "EHLO
+        id S230134AbiH3LNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiH3LN1 (ORCPT
+        with ESMTP id S229507AbiH3LNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:13:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 226EAD9D40;
-        Tue, 30 Aug 2022 04:13:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9641B61515;
-        Tue, 30 Aug 2022 11:13:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A89BC433C1;
-        Tue, 30 Aug 2022 11:13:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661858006;
-        bh=jNG2gCWSllTupgHvGrYYT7PSUlHkq8MWcYG0y8EZTnE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=VR/Gg2PqVwxfODQVdOPHed+GMSCt5kWnEOktkTVShuBRbNw4+W2AdvwACXwYlXtUy
-         yKhhnDH3iUR4R1Ln8FBX9pW+2qIRzQHA0XTmbVvAPvLIhc3wzYt2gdqh96O2M5JwDP
-         bq2j+W2pWJ9ThC8IhytZUcY53oBRlq4qlQB0FJ+YAAvesw8IGKKRWs/NBWtFwqg69K
-         5adafvTT6LbEuBFaPXC7M4edfbdCHQUDkl85dfEAWvSvUMVDdWB0fcqIF8lqmcX9PJ
-         oGSeUx41CIJ9ldgBbO0fx8ms722Axin+RFflkcu1yWi8YGc0VxkgQU//oGEpNJVYW/
-         wkH91MtjMrKwQ==
-Message-ID: <7dff961e-908d-48de-fff1-8b6029d28eed@kernel.org>
-Date:   Tue, 30 Aug 2022 14:13:20 +0300
+        Tue, 30 Aug 2022 07:13:48 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F80DD4E6;
+        Tue, 30 Aug 2022 04:13:47 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4MH4PM70B0znTTq;
+        Tue, 30 Aug 2022 19:11:19 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 19:13:45 +0800
+Received: from localhost.localdomain (10.69.192.56) by
+ kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 30 Aug 2022 19:13:44 +0800
+From:   Guangbin Huang <huangguangbin2@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lipeng321@huawei.com>, <lanhao@huawei.com>
+Subject: [PATCH net-next 0/4] net: hns3: updates for -next
+Date:   Tue, 30 Aug 2022 19:11:13 +0800
+Message-ID: <20220830111117.47865-1-huangguangbin2@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3 2/2] phy: ti: gmii-sel: Add support for CPSW5G GMII SEL
- in J7200
-Content-Language: en-US
-To:     Siddharth Vadapalli <s-vadapalli@ti.com>
-Cc:     robh+dt@kernel.org, lee.jones@linaro.org,
-        krzysztof.kozlowski@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        kishon@ti.com, vkoul@kernel.org, dan.carpenter@oracle.com,
-        grygorii.strashko@ti.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org
-References: <20220822065631.27933-1-s-vadapalli@ti.com>
- <20220822065631.27933-3-s-vadapalli@ti.com>
- <655c39a3-cf5f-6dd7-3c1a-61ebeae915bd@kernel.org>
- <7dd27795-11d0-3147-ed86-959ff3e89df4@ti.com>
- <8ef8b2f8-a1c1-b277-22b1-6e951e8dfc72@kernel.org>
- <533a4186-62b1-ce7b-e097-9fb04be8f018@ti.com>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <533a4186-62b1-ce7b-e097-9fb04be8f018@ti.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.69.192.56]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Siddharth,
+This series includes some updates for the HNS3 ethernet driver.
 
-On 30/08/2022 07:31, Siddharth Vadapalli wrote:
-> Hello Roger,
-> 
-> On 29/08/22 18:13, Roger Quadros wrote:
->> Siddharth,
->>
->> On 29/08/2022 07:53, Siddharth Vadapalli wrote:
->>> Hello Roger,
->>>
->>> On 25/08/22 13:11, Roger Quadros wrote:
->>>> Hi Siddharth,
->>>>
->>>> On 22/08/2022 09:56, Siddharth Vadapalli wrote:
->>>>> Each of the CPSW5G ports in J7200 support additional modes like QSGMII.
->>>>> Add a new compatible for J7200 to support the additional modes.
->>>>>
->>>>> In TI's J7200, each of the CPSW5G ethernet interfaces can act as a
->>>>> QSGMII or QSGMII-SUB port. The QSGMII interface is responsible for
->>>>> performing auto-negotiation between the MAC and the PHY while the rest of
->>>>> the interfaces are designated as QSGMII-SUB interfaces, indicating that
->>>>> they will not be taking part in the auto-negotiation process.
->>>>>
->>>>> To indicate the interface which will serve as the main QSGMII interface,
->>>>> add a property "ti,qsgmii-main-ports", whose value indicates the
->>>>> port number of the interface which shall serve as the main QSGMII
->>>>> interface. The rest of the interfaces are then assigned QSGMII-SUB mode by
->>>>> default.
->>>>
->>>> Can you please describe here why you are using "ti,qsgmii-main-ports" instead
->>>> of "ti,qsgmii-main-port" as there can be only one main port per PHY instance?
->>>
->>> Thank you for reviewing the patch. I am using "ports" instead of "port"
->>> because I plan to add support for CPSW9G on TI's J721e device in the
->>> future patches. CPSW9G (8 external ports) supports up to two QSGMII main
->>> ports. For CPSW9G, by specifying the two main ports in the device tree,
->>> it is possible to configure the CTRLMMR_ENETx_CTRL register for each of
->>> the 8 ports, with the two QSGMII main ports being configured as main
->>> ports in the CTRLMMR_ENETx_CTRL register and the rest of them being
->>> configured as sub ports. Since I will be using the same property
->>> "ti,qsgmii-main-ports" for CPSW9G as well, the property will be an array
->>> of 2 values for CPSW9G. Therefore, I am using "ports" instead of "port".
->>> Please let me know if this is fine.
->>>
->>
->> OK. Please mention this in commit message.
-> 
-> I will mention that the property ti,qsgmii-main-ports is used to
-> configure the CTRLMMR_ENETx_CTRL register and that it is possible
-> depending on the device for there to be more than one main port which is
-> why the property is an array of values.
-> 
-> Would it be sufficient to mention the above in the commit message?
-> Please let me know.
+Guangbin Huang (3):
+  net: hns3: add getting capabilities of gro offload and fd from
+    firmware
+  net: hns3: add querying fec ability from firmware
+  net: hns3: net: hns3: add querying and setting fec off mode from
+    firmware
 
-This is fine. Thanks.
+Hao Lan (1):
+  net: hns3: add querying and setting fec llrs mode from firmware
 
-cheers,
--roger
+ drivers/net/ethernet/hisilicon/hns3/hnae3.h   | 10 +-
+ .../hns3/hns3_common/hclge_comm_cmd.c         | 12 ++-
+ .../hns3/hns3_common/hclge_comm_cmd.h         |  3 +
+ .../net/ethernet/hisilicon/hns3/hns3_enet.c   |  7 +-
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    | 15 +--
+ .../hisilicon/hns3/hns3pf/hclge_cmd.h         |  4 +-
+ .../hisilicon/hns3/hns3pf/hclge_debugfs.c     |  5 +-
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 92 ++++++++++++++-----
+ .../hisilicon/hns3/hns3vf/hclgevf_main.c      |  2 +-
+ 9 files changed, 105 insertions(+), 45 deletions(-)
+
+-- 
+2.33.0
+
