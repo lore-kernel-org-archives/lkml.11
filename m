@@ -2,137 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6550FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33DA8ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbiH3RyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58568 "EHLO
+        id S231232AbiH3RyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231487AbiH3Rx2 (ORCPT
+        with ESMTP id S232201AbiH3Rxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:53:28 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB59AA1D35
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:50:54 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id z187so12050091pfb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:50:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=YV/f5sqbKEGWBuvtfcm8tiZZc5uH22weT2bMAIJ+E6o=;
-        b=ZMdpOak96virr1fYYhL/yKe+y0694FCFTHASlf+g2MT2vqnWV2UlratX4rqVrcYi8n
-         Cx30bnwgOdk9t1/GVvWA5X1AVpPU8i6ONiSQvIzCqpyTCI580nuKZI9TOnzzeDu159B7
-         I7tURtKM7JulRI6tfitCB7brGnvvKqQfl/+zHmac3Av9yblW4Vstj7sEzNOE5DRk2kHR
-         gmSPjnrgsPX6u5fD3IC+bfouEdjsw0h+GFDUjmy47NeQSjCzQYl6meA+DAwarqoujl+P
-         rWJzboEX7l4chW3OZGlVHziGIOLOUG2h2bXncMXIAyHlM6HZMGoIW+2wf1mRLw8OL9nK
-         z9iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=YV/f5sqbKEGWBuvtfcm8tiZZc5uH22weT2bMAIJ+E6o=;
-        b=PAew7EE1O5ZfMBzcwoaDUSsjTPaM1L/qxPCJyAUiM71z7WuiOgL3pwZg3RTTnRZZyI
-         mB0LaQEiyUOgNQkuaKOss5GrNlzi6i9aWJOmGEAGDd3iOw/idQoYJwPTskSHxPM8WIja
-         E+xjX3lUZkl2+QkKs3Rj3c/LElMIv552RlaKo8/R9QfPFjIM+ilDeel3QnSgHgBzOetA
-         +vnkTcWAAQDSrddgcvvvk+1L0yKGDbqFbF1T0EKt/YvS9pB2U0eUyccUEoZpljIJ5VOP
-         lC78fRrPyt81x8E3WunTcwDV5YCoK2NjaLpNfMmhdq1XXAof6q6h3SeeklZDfknYgjuR
-         Se2g==
-X-Gm-Message-State: ACgBeo2RSf75rkpozTtdPZ4uNddBFdDo/wJGpKzH7yTTdg91vqf9Z9lp
-        79/zJwzSUgBSrAPOUkaFmaKykA==
-X-Google-Smtp-Source: AA6agR7qc1K9kDv0X0SZZtIw5hC84df7zBBoNGZqaC4KZQb3eZkQzVTWu8J3CrDvrLyuL7nxaLXATw==
-X-Received: by 2002:a63:4f24:0:b0:429:aee9:f59a with SMTP id d36-20020a634f24000000b00429aee9f59amr18155504pgb.180.1661881853427;
-        Tue, 30 Aug 2022 10:50:53 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id u123-20020a626081000000b0053813de1fdasm5869347pfb.28.2022.08.30.10.50.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 10:50:52 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 17:50:49 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [PATCH RESEND v2 5/8] KVM: x86/pmu: Defer reprogram_counter() to
- kvm_pmu_handle_event()
-Message-ID: <Yw5N+eGfOsCgtHpw@google.com>
-References: <20220823093221.38075-1-likexu@tencent.com>
- <20220823093221.38075-6-likexu@tencent.com>
+        Tue, 30 Aug 2022 13:53:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93AD40E1C;
+        Tue, 30 Aug 2022 10:51:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2B93617C6;
+        Tue, 30 Aug 2022 17:25:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 987D7C433D6;
+        Tue, 30 Aug 2022 17:25:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661880344;
+        bh=a+jGllAZSwuc0+0coQ7c2Fzy/wkOd3gtKfjUe6cEIzY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=d960gE/o0rp1cJc3eIVane+De61+Rx7FaYgJ+WQWQtcJJl9KDL90PvlLU1P2pM+LF
+         /gID/GywXL9aZ8kCxr70uzT22feZ02WUlvHNz1G0gYO/Xk7xKEaAEhJ/nT4dZ4W2Qz
+         2kJIi6E/EBnSFewpF7WADMZTRuXDF0qQRalyypIGeFebRgELsaoBHg52BurJzPiyMY
+         ExySvM/o6/apYFcmX367vqZC6VV8hW+W8sbc9mw06tTIDAXv+PFRbnhGD1Pt+s+OYC
+         NnlQAjYaVqNBv0MZTvakwfPPp+zOARXvw7Ko4IPXs5fxW+2B9bEx46E9xbsD/3ygLd
+         qwbbBTzYSl2Sw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jean Delvare <jdelvare@suse.de>,
+        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com
+Subject: [PATCH AUTOSEL 4.19 01/10] firmware: dmi: Use the proper accessor for the version field
+Date:   Tue, 30 Aug 2022 13:25:32 -0400
+Message-Id: <20220830172541.581820-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823093221.38075-6-likexu@tencent.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022, Like Xu wrote:
-> From: Like Xu <likexu@tencent.com>
-> 
-> During a KVM-trap from vm-exit to vm-entry, requests from different
-> sources will try to create one or more perf_events via reprogram_counter(),
-> which will allow some predecessor actions to be undone posteriorly,
-> especially repeated calls to some perf subsystem interfaces. These
-> repetitive calls can be omitted because only the final state of the
-> perf_event and the hardware resources it occupies will take effect
-> for the guest right before the vm-entry.
-> 
-> To realize this optimization, KVM marks the creation requirements via
-> an inline version of reprogram_counter(), and then defers the actual
-> execution with the help of vcpu KVM_REQ_PMU request.
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Use imperative mood and state what change is being made, not what KVM's behavior
-is as a result of the change.
+[ Upstream commit d2139dfca361a1f5bfc4d4a23455b1a409a69cd4 ]
 
-And this is way more complicated than it needs to be, and it also neglects to
-call out that the deferred logic is needed for a bug fix.  IIUC:
+The byte at offset 6 represents length. Don't take it and drop it
+immediately by using proper accessor, i.e. get_unaligned_be24().
 
-  Batch reprogramming PMU counters by setting KVM_REQ_PMU and thus deferring
-  reprogramming kvm_pmu_handle_event() to avoid reprogramming a counter
-  multiple times during a single VM-Exit.
+[JD: Change the subject to something less frightening]
 
-  Deferring programming will also allow KVM to fix a bug where immediately
-  reprogramming a counter can result in sleeping (taking a mutex) while
-  interrupts are disabled in the VM-Exit fastpath.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Jean Delvare <jdelvare@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/firmware/dmi_scan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Opportunistically update related comments to avoid misunderstandings.
-> 
-> diff --git a/arch/x86/kvm/pmu.c b/arch/x86/kvm/pmu.c
-> index d9b9a0f0db17..6940cbeee54d 100644
-> --- a/arch/x86/kvm/pmu.c
-> +++ b/arch/x86/kvm/pmu.c
-> @@ -101,7 +101,7 @@ static inline void __kvm_perf_overflow(struct kvm_pmc *pmc, bool in_pmi)
->  	struct kvm_pmu *pmu = pmc_to_pmu(pmc);
->  	bool skip_pmi = false;
->  
-> -	/* Ignore counters that have been reprogrammed already. */
-> +	/* Ignore counters that have not been reprogrammed. */
+diff --git a/drivers/firmware/dmi_scan.c b/drivers/firmware/dmi_scan.c
+index 0dc0c78f1fdb2..c47680adbf367 100644
+--- a/drivers/firmware/dmi_scan.c
++++ b/drivers/firmware/dmi_scan.c
+@@ -595,7 +595,7 @@ static int __init dmi_smbios3_present(const u8 *buf)
+ {
+ 	if (memcmp(buf, "_SM3_", 5) == 0 &&
+ 	    buf[6] < 32 && dmi_checksum(buf, buf[6])) {
+-		dmi_ver = get_unaligned_be32(buf + 6) & 0xFFFFFF;
++		dmi_ver = get_unaligned_be24(buf + 7);
+ 		dmi_num = 0;			/* No longer specified */
+ 		dmi_len = get_unaligned_le32(buf + 12);
+ 		dmi_base = get_unaligned_le64(buf + 16);
+-- 
+2.35.1
 
-Eh, just drop this comment, it's fairly obvious what the code is doing and your
-suggested comment is wrong in the sense that the counters haven't actually been
-reprogrammed, i.e. it should be:
-
-	/* Ignore counters that don't need to be reprogrammed. */
-
-but IMO that's pretty obvious.
-
->  	if (test_and_set_bit(pmc->idx, pmu->reprogram_pmi))
->  		return;
->  
-> @@ -293,7 +293,7 @@ static bool check_pmu_event_filter(struct kvm_pmc *pmc)
->  	return allow_event;
->  }
->  
-> -void reprogram_counter(struct kvm_pmc *pmc)
-> +static void __reprogram_counter(struct kvm_pmc *pmc)
-
-This is misleading.  Double-underscore variants are usually inner helpers, whereas
-these have a different relationship.
-
-Instaed of renaming reprogram_counter(), how about introcuing
-
-	kvm_pmu_request_counter_reprogam()
-
-to make it obvious that KVM is _requesting_ a reprogram and not actually doing
-the reprogram.
