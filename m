@@ -2,180 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD422ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE47ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229999AbiH3Qln (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:41:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
+        id S229735AbiH3QmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230099AbiH3Qld (ORCPT
+        with ESMTP id S229522AbiH3QmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:41:33 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668A1AB4CC;
-        Tue, 30 Aug 2022 09:41:30 -0700 (PDT)
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27UFxLf6021056;
-        Tue, 30 Aug 2022 09:41:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=YQWMvv73ewq94/MYy9Z9O6tZEZ8CWiIFUI7gsQ2259c=;
- b=C/N2ugmPc9uayDn0BD/tIE+EreGCrR5R9NvfPei5DyDuH0zT5nXaoCejeEm4X/0+EIEZ
- XjT4Y2dPe4fNJ60H9ZBQ/HyMPdfdOUTJdrKtfkUGftwueroTERXNgHRU8Yh9ySFiQ9B6
- MJDZNzsLFkZGe/OC8fwbATveVzVppUl3XZ8= 
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2104.outbound.protection.outlook.com [104.47.55.104])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3j7jk4shex-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 30 Aug 2022 09:41:11 -0700
+        Tue, 30 Aug 2022 12:42:18 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF9882D23;
+        Tue, 30 Aug 2022 09:42:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661877737; x=1693413737;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=LTuZNOnTP+P7/gVyHhoMMVVMW7lU7Mk0Fa6ZOwh/1ug=;
+  b=jzDsptGgmwO6LqAxWDrjAv7HGm0J6Vqy7DyaTQSwJWJf1opAOO7Ab1EG
+   JcMdq3ES1bXfWh0jTc/NxLReJETn0jXAnU28IfQuRPRIPfwcxHbiFfa2p
+   V3fj+KhLOC0/WcQhjWkl/NgbiHsAdML4msRCtlQX1kvlaCT8K0Q4Q3KfI
+   xrKL2iHFOsAPEJkTGy+s7QcCNvlZS0zOZDuisTLcb9p+CCAyYOAACBND4
+   Z+sxcIH/8Vhp8LiO4u7ht3hCSuJ7EjeGprblj2SXu5lxN6cXC4kkCDEDh
+   jN5WhHz6LPvJbTzsuTsudq5wU97PTcsGdp1BVmVPiIoo2rSSoHqUkyaDJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="274986788"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="274986788"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 09:39:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="611777144"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga002.jf.intel.com with ESMTP; 30 Aug 2022 09:39:44 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 30 Aug 2022 09:39:43 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 30 Aug 2022 09:39:43 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 30 Aug 2022 09:39:43 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.102)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 30 Aug 2022 09:39:42 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EyMZ1ss/LlD5Sw0sroaUzvC/rKGQYGM+Z8Sz+iDdxzHjbGpIZ5dGlyFDD0HyPDuFyMLVNrqWPH9bWscbF8o949/aRfpkZrQZWU4HU49E2z8BV3ElBl7wqdoYS8MaCaZ8EHeJ/s8cHfwU60qtwbATxAtuLl5dmDAy9B3gLUfq+VqujIXNVWtze4LzHqr7XY3+VAYEhjkyZsZm+dtZOK8xNsPpE4VXucZzTRbBH/hDFyGHbFAacLU2EMkByM/S8L/VDeJmHnYKze44BNwJD/7YFY38Rx9nWxGNAE1FxvS0yyVXa3p4eJaNnerG3xi61ElxQ4bqS7fPnvlttPu86JxbyA==
+ b=b/tsWE2PaTJLQGmR7dPcRvsL6VoYtQ/rrq6Ux2OM4rQMMDDRSISfP6DDTTT9+Vme0JUBnW78DmvyZRevMtXHrIi1o0D5ZHvpjrGiyX4JHQk6oqIxagnLHg0oRlNEpw7hkpuUR2mTBfXZ9HrF4lIaDeXTV0lR5+5PLFUZ8aM6SxA9mzuLq4F4VxNLZWoSqAf3VE83GVvasqVxxVc1H/Cr9Xt9aoZQ6yJue82+S5AaZR7mZtDIi2M5VNhErlVC7Exh/VRbzJuEifPnj29QXen8WA3c4DW9+6Xci/tnjSeRGl/OEaYH3/hUsPu5g43Wk2OKoVn1bJM/I0JG6IZNyhdL9Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YQWMvv73ewq94/MYy9Z9O6tZEZ8CWiIFUI7gsQ2259c=;
- b=fY+aJHx0qsbKq8jtW3XcfootFaQGQdi7Oh9v99e1x7a38pwf6bvSOrxRSZimM3HOefVeZs43LchRhaZgTVGLV/d5u58N2Ku3JuAVZ8LuZOz4aaUg5OSVpZzpNb1vePowXM9RTXSZQ5edaU/LxMyPnLrCz4UMwMEm9gt1NGq/BS7DFOGlj7t+i7QOeZ9qmcivhHQqkBgq8IzpFIH58T+8dbD3sJ1j8qi2yNvxTzIpC1jhKBtOOwuaLZQEkQ1lHTVAFc9wfl+asY3TP3XYhce1r6b3GOdtTLwieuMOZPyCVhlO1IOGNjxHQKCvBDWgIlhEl+YcPH1Iz+hif5Eh+obNXQ==
+ bh=8sWVicqTzFI68R39QDPgdbYehNX3+EpTMG3sLTJeTbc=;
+ b=cwqE20nUxAVjq4d3EJxdT0ls/wdzGyJ0vbMqXYVPsqvDg3NumS5heSEZq8vpVb3S3kFvz4R6Vsaq9E5UKAiiQViijrD6uNWZi1gvLwS68Wt6W1S9UJCOvrxu8nDZKucvEPP2oxVGGkeP+5qMWVOStIb1tza4BPsjXlv44BqQ2/8SY9rECzNnmQhl99LTdH9hEj9cO90ZFghkgKYmxnyo99YsL0ge76kmpxxf74kERj40mxYCk6+L5VGzhv4Sb2ly7rOtDZOUvqbBgk8eIyvftuhSGjS12eJmHwjJvxNXIiQmRPD+fl8iOM/OdBn8G+v/IPfGTGZuoO9tZ0RlQTgADw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by MWHPR15MB1584.namprd15.prod.outlook.com (2603:10b6:300:bd::22) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from CY4PR11MB1862.namprd11.prod.outlook.com (2603:10b6:903:124::18)
+ by MWHPR11MB0080.namprd11.prod.outlook.com (2603:10b6:301:68::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Tue, 30 Aug
- 2022 16:41:09 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::dde5:25a3:a125:7bc7]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::dde5:25a3:a125:7bc7%2]) with mapi id 15.20.5566.021; Tue, 30 Aug 2022
- 16:41:09 +0000
-Message-ID: <c84fa46d-8f37-c449-06ea-5da795f091e8@fb.com>
-Date:   Tue, 30 Aug 2022 09:41:06 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH bpf-next v1] bpftool: Add support for querying cgroup_iter
- link
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Tue, 30 Aug
+ 2022 16:39:40 +0000
+Received: from CY4PR11MB1862.namprd11.prod.outlook.com
+ ([fe80::a824:112:52f7:5743]) by CY4PR11MB1862.namprd11.prod.outlook.com
+ ([fe80::a824:112:52f7:5743%11]) with mapi id 15.20.5566.021; Tue, 30 Aug 2022
+ 16:39:40 +0000
+Message-ID: <59259155-6c51-a750-216a-ebbb0702d200@intel.com>
+Date:   Tue, 30 Aug 2022 09:39:37 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.2.0
+Subject: Re: [PATCH v3 02/10] x86/cpufeatures: Add Slow Memory Bandwidth
+ Allocation feature flag
+To:     Babu Moger <babu.moger@amd.com>
+CC:     <bagasdotme@gmail.com>, <bp@alien8.de>, <corbet@lwn.net>,
+        <dave.hansen@linux.intel.com>, <eranian@google.com>,
+        <fenghua.yu@intel.com>, <hpa@zytor.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <mingo@redhat.com>, <tglx@linutronix.de>, <tony.luck@intel.com>,
+        <x86@kernel.org>
+References: <9965edff-c558-2962-4aad-3342480026bc@intel.com>
+ <20220829232554.53763-1-babu.moger@amd.com>
 Content-Language: en-US
-To:     Hao Luo <haoluo@google.com>, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Quentin Monnet <quentin@isovalent.com>
-References: <20220829231828.1016835-1-haoluo@google.com>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <20220829231828.1016835-1-haoluo@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From:   Reinette Chatre <reinette.chatre@intel.com>
+In-Reply-To: <20220829232554.53763-1-babu.moger@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SJ0PR03CA0383.namprd03.prod.outlook.com
- (2603:10b6:a03:3a1::28) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+X-ClientProxiedBy: BYAPR11CA0044.namprd11.prod.outlook.com
+ (2603:10b6:a03:80::21) To CY4PR11MB1862.namprd11.prod.outlook.com
+ (2603:10b6:903:124::18)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 71ad9c88-afb2-4d64-e378-08da8aa670bb
-X-MS-TrafficTypeDiagnostic: MWHPR15MB1584:EE_
-X-FB-Source: Internal
+X-MS-Office365-Filtering-Correlation-Id: db89522b-32c7-4892-1bda-08da8aa63c0c
+X-MS-TrafficTypeDiagnostic: MWHPR11MB0080:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cSOSvXxIklYtadC2rncQXOf7z/gTVJxw2MTB44eiy6xs97Oe5eI585OAXXgSL6JSo8x4hN+EzWE+RDCbJwOHNHSS2OA4dfaidz+w5yz2+GSYBT0JNNf6CrwK5rojKqIJF1kNdpGxVV4hacM4T1c2X/NFHzJIWNKyLWAuiScQZXVmUz3DgXhhRXU04FlQ34XyVRfiFuwJ9jgZmqWOcRMB4gL8/id2rQUYw4xODhxa5bCc+EVhkdbP2FCbHykr3evVexgHDunzojjs+rY6JYGTTL4F7DEdB5JN/Tkw+7vx3mz+5YO/Rw+zBhn5ZqiG5JGlQ5MefxiimSsvUXIaEPqFWMDF6VZ8NbEYkhes0k3L1wlPFx0v5MC/93ksJqT5lhyDeDlXKBPQpgJa2N+Wxl51tpD7YMQnJby9W3JYTh/tZO3KnhB1Bfp1UAXrrJNlWvBou1U0VYJ4DtEiZnQLGoHHLgxGOv4fuYQtF06JHGrZkbupPC204YTnQmHTRVzNtHjEypODctkXPinyARBSCsMX98wsl0OGikNrP0+P+TGPgWluWU5MgFF4QyLZIIM0SkEGHB0xcH6yYwUgSdYLa/miw7ULZZnzAm2jf67q0cThtOYR2vA1LWSORhCnmlpOuDqWdYSC6EKlD++GL34GCbUI6omqAfnfhdBEVj12oDdyY2LxT2MYSkwEz42w4ZetsKBvkpMgDh7rSzDOy9vw3Af9qVlvXZCn0yrNgWo0AC/wi3u4LqEkD0v2YA0wauX0A2rrD+tIdioezLjoXoa6u+F9eyOl/4W7W65Xc/Jm4o/bZQw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(366004)(396003)(136003)(6512007)(4744005)(2906002)(38100700002)(6666004)(53546011)(2616005)(6506007)(83380400001)(186003)(31696002)(54906003)(31686004)(8676002)(66476007)(6486002)(66556008)(4326008)(316002)(66946007)(41300700001)(36756003)(86362001)(7416002)(8936002)(5660300002)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 42Bn4AsJbCQSt5rR6oYz28Dob1WT9bt0C0Ch3mj0vA1aBZQmWzsRqOnRMmAzyWzX7d1BMhP1B78qTNzq8PFvduxizsXX9X4BPBNEeWGHWTexlQwwy5U9Lkb1fNYvXgdn0L8jAY34gUHQ1ZER6EaNJx0ifLSX2UxvofGkiqzZyRdu4qbwB3xVEN2CSx/8gjTIS3QexMWNpfxiAM4ZcBeW8gB/+IUyV90PwUs1fh94d1HOLCsflgp6rTxa1w5MYJ3wBlf3QoXTKDXfXtdeudyzpCy3ohbXGscarAhGIRR3YQtVROE5c/qDOh6ATTr/2GytRUlgDx9G8yYYflmNeDUDo2h7LA5PxjO1pOpLnXxJGpEtMJrw47RqWCeQiPevGpSf6q7625waPxYZX35+USM3czul8UvagWdptXyjNGQC9T5rNUS5ZJSe2/52KZQORPqzfkhvPSUKh3v0HF5B4U+vmqQGuv39sjucHkx0sSguf3YkXVIy4icd71/pwyq7wHprohrBvce/43nlf2tSo/OahPSLnnKqcKlFn+cto8dvWpT9ZZORegfUPHESGW1fzAVz0w0kX+39eP0TSvBZDl2GCpfMbOrYMtpDmRG4Hloz4+EBEk5QST09yisW39GxhixcsnsUWcTG1fuQ6n8T1dcza5GFHItvX22ToRRPekdJjYI6uRxp1kpBD8KtDXCjJd3ByrkeD+c8XkFccrTmlxEluqI3x5K7taT90qI1ULfjrK5l9iboLWuFePE/T5Um4jCZCg1ugXXapGhxSV3btXiy3lFF8Ips00evPbWhChDiHz3RDFYSavdQsX1JmJhRecSxzOSccMN7Q36gzRg/buAnWZGoSuR9Df98QYfOugeJ4gA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR11MB1862.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(396003)(39860400002)(376002)(346002)(8936002)(966005)(8676002)(66946007)(316002)(66476007)(66556008)(4326008)(31696002)(31686004)(6486002)(86362001)(6916009)(478600001)(5660300002)(36756003)(41300700001)(7416002)(82960400001)(53546011)(6506007)(2616005)(6512007)(26005)(2906002)(6666004)(44832011)(38100700002)(83380400001)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?amI3Z0FGYVoycTUxV2lIVHBKRUlHdzBvSHRTVHZKdmZCZG9MK01uUnIwNnNJ?=
- =?utf-8?B?N3RiTkJiREdXUnlhV1YvWU9HVTNJU1Nvb3pEM1NEYXFjdzZiMHFLVURZMXNq?=
- =?utf-8?B?d2lRT3RlV3AycEVucCtaZVVKdXBuOVBPWG90UURRaGI4b3NUdldKR1hJSTBq?=
- =?utf-8?B?MzRnZk5vQXc1T1NHd3FkWWVQSlAzWEJBeERTM1BNWHZWUHFBTUpZZDdVTHQ5?=
- =?utf-8?B?b25EUXc3dXBUcDdtREhidHo2aHptMHJkd1J5QjRlejNYaGpDM1BLa1BmNis3?=
- =?utf-8?B?cTdkdmVxMDFxVUJCSUZHRmNaK241ZFFxbzdKRmRKbkQ1QXdoa0FGeEFaMVZY?=
- =?utf-8?B?YnZqd3RJNUNjOFJ6UG1VZ3NOdXZmWTkxQlhIcFNGaTJ2aUE3MkhVREhPb0hp?=
- =?utf-8?B?SVpqWHhVRlBac2RuWkFtQUNsTkVkUXBFbEx0bXhCKzZGalJmdGROWjlKb3Ux?=
- =?utf-8?B?Ny9mdGtZUnNjSUtsWXA1ckVDMnNxUTIzQ1h4ZVJRNTNqSTVQblkzSHd5djJE?=
- =?utf-8?B?SW9CdGZZQ2VtMVdvSUFIKzNIMmpKcXZBOUVIcHgvT2MyUGN3a05PMVdhWEsx?=
- =?utf-8?B?aFU5YWNQNEMvSUVzOHdCSUVXTjd0L3hPUXlXZnFKUWxOQURYMzZScXFUOVVw?=
- =?utf-8?B?UXZ3WVllSzVPOVJYNDNXQm5FWE1sYUxteWl3YnJIK1N2aEp2b0REdCtLOXN5?=
- =?utf-8?B?TmVVbWVKNm9hVjduWXR6TUpsMnhFZGw3UGV0SjlaZU52cTVpLzdScW5NN0dv?=
- =?utf-8?B?a3hFOHBGWWhOWitHbmd4S2VZNTZqZzcvazg5UEhQV0Zsd2tROWNxcjRubWo1?=
- =?utf-8?B?LzJlNm1MS1hSTE1QZERVQmJrZnBYQXA4cG1WOTRCbG1zdy9lLzZnNnpxaFk2?=
- =?utf-8?B?TCt4MCtUMENOT1J3eW56dHFTUGJKN1VLa2dmR05YVjVnWWNnWlcyVHFSTTY3?=
- =?utf-8?B?emFhMjFRYVE5aFppdFlyT1g3N2ZNdnlhMm1iTFhqQ0hWQ2Q1MmpMemw1OEUw?=
- =?utf-8?B?cGw1SjkrQXgwRWkvUk5uVUYxa1FyQ1lHeENIcnZnQ3ZkTHhGZjdMci9XTUpO?=
- =?utf-8?B?UVdOUTdMeFZoMjZzSDJ5TlRLZVg4Vk9Mb3o5cUtHck9lZmYyLzlncmtTNHpm?=
- =?utf-8?B?Yy9vb0o0Z3JjYldrWWFiOEUwTndGQzErZ2cwZFJSUlRWc1E2bDNpWTJ2SDE3?=
- =?utf-8?B?Ni8xR0tqV3Uzb1N1Q3ZXUHU3K3VmaHQ5VXQ3Tzl3ejhVUjh2K3EwbnVIRlBh?=
- =?utf-8?B?R2czM0VFVnd3cjR5N0JUOUtaQWdISUVFdUc3VHF3eVByMUVuVE4vZ2RlYzlJ?=
- =?utf-8?B?TVI3N09KU05BUlYvNUMxaUFhVGtoMW9sY1BoZkVJQWtlM0hxd3pnTzRFSjhv?=
- =?utf-8?B?ZTNvbndpb0V5N2Jnc1NVM3h6dGk5RmRnSUVoRVlOY3VjTFpmbzJ4am1xcE9l?=
- =?utf-8?B?aHFpWHcvankxOEsyeVhNNzRnaFZmY0lVWGxHWGE4R09hS1RoOElFdGx0czVB?=
- =?utf-8?B?WFpScGpKMW1JdFdMdUVxUFBLeHc1Z2ttSWlkTGM1UzJRSlk4cisyK1dDV0J0?=
- =?utf-8?B?dWs0ZHhGZzJZMjB6UDlYSHREeUxLWUVvaTFmNmZmRjltUHRPUDdnWWJIT1Z6?=
- =?utf-8?B?Zm9MQlV0N3lHVkdzUW8zZFJxVUJiS2QxSmo1eVNyeWlCTmxoUFluUEZ3eVl2?=
- =?utf-8?B?UTlra3ZSWDArWngvdkg5VEtYOG51NHpTOTRVMURyQVpHOENkcFBWVndOS04x?=
- =?utf-8?B?SXBaWVg0TDJRaTdPVzlLSFB4OTkrT05nNUVIOStYVG1BZkZlWEtkc0kraXgx?=
- =?utf-8?B?QjV3Z0I0dTcxRlNqajVMaHV0MzVESlN4OTloSGhxZE45TCtNR0pXeEU3c1dv?=
- =?utf-8?B?aW82UTRUdkp4YXFpYlVxb2o2K0ZpOEMzMkRRNmgwM1pDcXYzUTdYWVBqWDlW?=
- =?utf-8?B?cXBucngyVnUwRlhNT2dvT2xIQ0dmSGRIUkg3cEpRaXoxSFNvN0FBbmJBSitv?=
- =?utf-8?B?ZVh0aW1EWkZkY1dLYkw2UjhDeS8xbDRUYyt4dFpGSC90Sm11THVKd29KdlZG?=
- =?utf-8?B?eGRCZXNuZXMzVWtEVVNaRklEK1F4d0VJS2hPRUozbDNJQnRrREFUcHpReGJv?=
- =?utf-8?B?NUszZlhtY2hpWmhJcXhmU2VkVi92cjNHdEVlMjJTNGdWL2ZGRE5OdXJmV0JU?=
- =?utf-8?B?U0E9PQ==?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71ad9c88-afb2-4d64-e378-08da8aa670bb
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NHF4TTd2MlZ4UFRqTEx4NnRBZ3MzajZqY1JicnQ3bHZpRHhFZEFCWFNEMVpW?=
+ =?utf-8?B?NXRsR0ZLVWprVEVBQWg1bmFEVXhUaloyYzJkY2lOQW12VTg5SkdmalBnUUtK?=
+ =?utf-8?B?VDJXTElzVXdxUjFocXZPcDUyc3c3YWVuK0FPWk1vVUlEUHdKVVJYdC9Lcml2?=
+ =?utf-8?B?dHZYTWVoL2o3R2crajJrVmFMZGthVUZ1WDBUNWZMV1dkdmlYVHEwaXExNG5S?=
+ =?utf-8?B?bWcxbDZNb1RFSkdUeVUrU1ZLZXh5T1ovWkRKVzFVVFNYMENORnlENUdtQkFU?=
+ =?utf-8?B?b1c5VDRncTRJT2V0Z2V2YldvTmttUzdrWDlCN1VCWHdNdkxNdTZ3TWExZyt2?=
+ =?utf-8?B?a2s0Vzh2ZWtmRzY4RkFqWlV1RHEwT3dqMDBnVXJ5MmFtY3hOM0VjMSszV2ZI?=
+ =?utf-8?B?b3E2dnVwd3hmREVLbTBabjVFVzNSL3VTbG5tOXN4WmxxVTUzWXd3Zm42bFJM?=
+ =?utf-8?B?RlJaUWZleW1kWkJZVStweDFaNVg1UE8wTVNSVlgxaXUzaTRHbHVZZUwrV0hv?=
+ =?utf-8?B?Smd5ZnVydGJNMnB3SFVXaSt0WDU4Y2VTRzlXR0dYMVhNWUd2ZFhLL3RMSk1z?=
+ =?utf-8?B?czhTUlIvOXhPaFNtZWdxSUZ3dVZGYlV1cFJYYUVDZFVaaGtCaTN0Q3d5d1Vw?=
+ =?utf-8?B?L1ZGS0tzSktvUm9pNUU4SHBwUWVGNFA2QkM3M3JrcllpTmpRWllNTUIxUTdx?=
+ =?utf-8?B?YVpsK1J4OHVObjNnbVA2MWxYVFZpc0FlMGJQQTY4VFpRTG9XRGVDcXlGM3lN?=
+ =?utf-8?B?TXBPRTh2T3hsalZhQ2N4TUZYNjc4ZDMrK0xWc0JoZHhmcjlZaE1YMmd2KzdJ?=
+ =?utf-8?B?TnZpOEZodGlzbmZTMU9uUmQzbmNCVFhkZFJTVkRZVTJUYjZYd1RwQUlyN0ho?=
+ =?utf-8?B?Uk83aWlHU29WSUhNUHMvWWlZRENUVWlHTHpkOG9kRGJOQVZocjIxODUyS09l?=
+ =?utf-8?B?bzJDT0ZQT0c1ZjFzVEliN3pkUVlYVHpYeWR6ZjlDQmk1VXgydmF6azA1RytE?=
+ =?utf-8?B?NmxmS3VZM3I0T1JoUkE0b2F4TWVEb3lVUWwxMUxSRld1MmlUOHBMTXN0MWhp?=
+ =?utf-8?B?b1I2Zll4Yy9nWDEyQWN3N2t5WUNuYUZiQkJQcmlMZ2J5ZHlndjZKQngxVVor?=
+ =?utf-8?B?VXhzNzJCVWdPbElkNmU3K3lmTDVzU0JlUldzdjBWQzFBMjlSbDg5TUxWWjZ4?=
+ =?utf-8?B?M3RCMVA2MTRlZ0ZKelpVTFRFZ0RSTDlpbElNc0UyZzNLM2FQSzZWNk0zLzNV?=
+ =?utf-8?B?OUxpblNjSEgwMGdWUVpYTVVNU3RwL0p5aUZoVmRRUGFkZjJySWM5MWoySGlD?=
+ =?utf-8?B?b0ZzbTUvNWVRVXdaRW1YM0FsRTJpTUJZZTI2VUJrUm44MUw5ZU1xdXV1ZHEv?=
+ =?utf-8?B?ais1U0plMUs0RHJiaitCck92bGNKWFZmOXp1OGh5NDhYRU5hUStyaURqdEk3?=
+ =?utf-8?B?L0E0dEtJRk43YTdyY3FzdFM5SUJFcU92THpWMFpSN3dSSDd6eFN4YThpcmdM?=
+ =?utf-8?B?aTFidjVDNTZJdzRIcmFaT1pSYkR3YjRCVldoUFVrSWVDY3JWNDZFelhPRlNq?=
+ =?utf-8?B?UDM3SnMwMjk5TkNEMFJVWWJ4OEpMajRKOUlPaGdCN21wc0hqb0o4NlpyTkFT?=
+ =?utf-8?B?dyt0ZmV6eldxb0dMOGVwU1ZqdmJBS005L0FpbHJJbUUvVm9OOUNiaVR3bVpF?=
+ =?utf-8?B?cXdaMzdrSHBiR0NPa0NPUlFzOVRwNjdWRUtDeFloaTdWbGMxK3l0aDhPOGdT?=
+ =?utf-8?B?cjZJS2tRMTBteU9WSnArTXAwWlJNZ1VwdnAwKzllZmhNZUVuaXBOazkrQ3dx?=
+ =?utf-8?B?c2JkVzdDODUxQnR2M1Z3bzBCc0dVWHVxRlRtcnhySFNBOXdQWVZDSFdGVDJN?=
+ =?utf-8?B?dndyZkgxTStIYkh5NDBSTDA1YnpBT0ppdXVKOW0vVE01MUcyWW1kc0RKUUkw?=
+ =?utf-8?B?cTJwaUh0UHRmSmIxYkdBTU45aHp3dEFaWE1pZzVMMlJtZkFGaURvS3Rxd0pu?=
+ =?utf-8?B?TkpHelV2RW54bTVJSUpNS1pNSXZuUExDeG54UFFQQkw4M0hidk9KdVFaVC91?=
+ =?utf-8?B?dFlFajh6SkVEc1dpeHZXMU9QWmdBdmhCOXJFajVTeThjR3hXalZvZGhnMVh2?=
+ =?utf-8?B?U2V1TWt0czB0SFBHdlAxOTdsQzIxRWR5QXNLK2pQNVBuMG8velRkeEY0ZTVP?=
+ =?utf-8?B?OWc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: db89522b-32c7-4892-1bda-08da8aa63c0c
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR11MB1862.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2022 16:41:09.3161
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2022 16:39:40.5008
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 31qv6yrnTTY1u3GLxkC0rxnsIqkZi4EmJNDKJ+fsmIQYFs5iefQ12Ll9HNg5QyCQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1584
-X-Proofpoint-ORIG-GUID: Gi3FLUjfe3q6GB1a1ur0kaR5FHe8OvGn
-X-Proofpoint-GUID: Gi3FLUjfe3q6GB1a1ur0kaR5FHe8OvGn
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-30_10,2022-08-30_01,2022-06-22_01
+X-MS-Exchange-CrossTenant-UserPrincipalName: jkgHxT+ENw/3tpdlcy/Y7ec1p1JnvQnTYNyyquRD6hsKfku+rEC8vYJhHPPpVli6t9RyZRKYgsCXpMMYZtM+uAyTCgwUxR50n+tECRdRO58=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB0080
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Babu,
 
+On 8/29/2022 4:25 PM, Babu Moger wrote:
+> Hi Reinette,
+>    Some reason this thread did not land in my mailbox. Replying using git sendmail to the thread 
+> 
+>> (snip modified links)
+> 
+> Link: https://www.amd.com/en/support/tech-docs/amd64-technology-platform-quality-service-extensions
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=206537
+> 
+>> When you say "in this case", is there another case?
+> 
+> There is no other interface. It is only CXL memory device.
+> 
+>>
+>> Should "Slow Memory Bandwidth Allocation" thus be considered to be "CXL.mem
+>> Memory Bandwidth Allocation"? Why not call it "CXL(.mem?) Memory Bandwith
+>> Allocation"?
+> 
+> Checked with our team here. The currently only supported slow memory is CXL.mem
+> device. As for the naming, the "slow" memory landscape is still evolving.
+> While CXL.mem is the only known type supported right now. The specs says
+> "Slow Memory Bandwidth Allocation". So, we would prefer to keep it that way.
 
-On 8/29/22 4:18 PM, Hao Luo wrote:
-> Support dumping info of a cgroup_iter link. This includes
-> showing the cgroup's id and the order for walking the cgroup
-> hierarchy. Example output is as follows:
-> 
->> bpftool link show
-> 1: iter  prog 2  target_name bpf_map
-> 2: iter  prog 3  target_name bpf_prog
-> 3: iter  prog 12  target_name cgroup  cgroup_id 72  order self_only
-> 
->> bpftool -p link show
-> [{
->          "id": 1,
->          "type": "iter",
->          "prog_id": 2,
->          "target_name": "bpf_map"
->      },{
->          "id": 2,
->          "type": "iter",
->          "prog_id": 3,
->          "target_name": "bpf_prog"
->      },{
->          "id": 3,
->          "type": "iter",
->          "prog_id": 12,
->          "target_name": "cgroup",
->          "cgroup_id": 72,
->          "order": "self_only"
->      }
-> ]
-> 
-> Signed-off-by: Hao Luo <haoluo@google.com>
+If you prefer to keep "Slow Memory Bandwidth Allocation" then please also
+provide clear information to the user on what is managed via "Memory Bandwidth
+Allocation" and what is managed via "Slow Memory Bandwidth Allocation". This
+could be in the documentation.
 
-Acked-by: Yonghong Song <yhs@fb.com>
+>> I am not familiar with CXL so please correct me where I am
+>> wrong. From what I understand CXL.mem is a protocol and devices that implement
+>> it can have different memory types ... some faster than others. So, even if
+>> SMBA supports "CXL.mem" devices, could a system have multiple CXL.mem devices,
+>> some faster than others? Would all be configured the same with SMBA (they
+>> would all be classified as "slow" and throttled the same)?
+> 
+> I have not tested the multiple devices with different memory speeds here.
+> But checking with team here says it should just work the same way. It appears
+> that the throttling logic groups all the slow sources together and applies
+> the limit on them as a whole.
+
+"the throttling logic groups all the slow sources together and applies
+the limit on them as a whole.". This is valuable content for
+the documentation about this feature. Could the changes to
+Documentation/x86/resctrl.rst be updated to include a paragraph
+describing SMBA and what is (or is not) considered a "slow resource"? 
+
+>> I do not think these devices are invisible to the OS though (after
+>> reading Documentation/driver-api/cxl/memory-devices.rst and
+>> Documentation/ABI/testing/sysfs-class-cxl).
+>>
+>> Is there not a way to provide some more clarity to users on what
+>> would be throttled? 
+>>
+
+I repeat the question you snipped from my email (please don't do that). Could
+you please answer it?:
+Would the "SMBA" resource be available only when CXL.mem devices are present
+on the system? Since this is a CPU feature it is unclear to me whether
+presence of CXL.mem devices would be known at the time "SMBA" is enumerated.
+Could the "SMBA" resource thus exist without memory to throttle?
+
+>> How does a user know which memory on the system is "slow memory"?
+>>
+>> It remains unclear to me how a user is intended to use this feature.
+>>
+>> How will a user know which devices/memory (if any) are being
+>> throttled by "SMBA"?
+>>
+> This is a new technology. I am still learning. 
+> 
+> Currently, I have tested with CXL 1.1 type of device. CXL 1.1 uses a simple
+> topology structure of direct attachment between host (such as a CPU or GPU)
+> and CXL device.
+> 
+> #numactl -H
+> available: 2 nodes (0-1)
+> node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16
+> node 0 size: 63678 MB
+> node 0 free: 59542 MB
+> node 1 cpus:             (CPU list is emply. Node 1 have CXL memory)
+> node 1 size: 16122 MB    (There is 16GB CXL memory) 
+> node 1 free: 15627 MB    
+> node distances:
+> node   0   1
+>   0:  10  50
+>   1:  50  10
+> 
+> The cpu-cxl node distance is greater than cpu-to-cpu distances.
+> 
+> We can also verify using lsmem
+>  
+> #lsmem --output RANGE,SIZE,STATE,NODE,ZONES,BLOCK
+> RANGE                                 SIZE  STATE NODE  ZONES BLOCK
+> 0x0000000000000000-0x000000007fffffff   2G online    0   None     0
+> 0x0000000080000000-0x00000000ffffffff   2G online    0  DMA32     1
+> 0x0000000100000000-0x0000000fffffffff  60G online    0 Normal  2-31
+> 0x0000001000000000-0x000000107fffffff   2G online    0   None    32
+> 0x0000001080000000-0x000000147fffffff  16G online    1 Normal 33-40
+> 
+> Memory block size:         2G
+> Total online memory:      82G
+> Total offline memory:      0B
+> 
+> 
+> We can also verify using ACPI SRAT table and memory maps.
+
+I think that adding (in general terms) that "SMBA throttles CXL.mem
+devices" to Documentation/x86/resctrl.rst may be sufficient for
+a user to understand what will be throttled without needing to go into
+details about CXL device discovery. 
+
+Reinette
