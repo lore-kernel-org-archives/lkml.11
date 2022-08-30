@@ -2,88 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 601B0ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A60F3ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232186AbiH3R7M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:59:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40066 "EHLO
+        id S231895AbiH3R7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232285AbiH3R6s (ORCPT
+        with ESMTP id S231405AbiH3R7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:58:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6534A28E29;
-        Tue, 30 Aug 2022 10:58:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1ABD5B81D44;
-        Tue, 30 Aug 2022 17:58:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E7B2C433C1;
-        Tue, 30 Aug 2022 17:58:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661882292;
-        bh=sybPumXRTrZl2VUTu1Lul+2QtsmCj+bXbYY0Ec9V6Nc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F/kq8cXE+OBDPeYGcLVKD7LAAPXvfffIjNmrdN7JICx0jHC5rZjDtjNXiIMof9XDx
-         Dp89MRx4or0pCiPChJieA4of8rBpgn/z33h54tVBJ8QHqmaEypKUKp/ZrYRK9KHvkI
-         47eRucrG6j1s1Z3WOFNuEJpDXcIgmIp+f+mXvj+alcSVtpMHkEqBPNY3AkMrfQg3GE
-         eZuP6SCTbpTu/vR1FoYJmEOmCHTf/DPFAp4jm+4fRkbPI2BPb2WhKSHsPl78T9smoI
-         ag8RGM6/MpBEuTq6wDugRaXdm7PzX/iKRvvCSUfj31xRSRIoI17rqwEG9HD1mkEHja
-         CbxX1yn+2BaPA==
-Date:   Tue, 30 Aug 2022 18:58:09 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, seanjc@google.com,
-        mark.rutland@arm.com, elver@google.com, david.engraf@sysgo.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH AUTOSEL 5.15 14/23] arm64/signal: Raise limit on stack
- frames
-Message-ID: <Yw5PgFEtUloKxRNQ@sirena.org.uk>
-References: <20220830172141.581086-1-sashal@kernel.org>
- <20220830172141.581086-14-sashal@kernel.org>
+        Tue, 30 Aug 2022 13:59:01 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B4066586;
+        Tue, 30 Aug 2022 10:58:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661882318; x=1693418318;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=c1bfzPlPnwcIaAydZuBk1LBtzOY1e4cy8A3W3XSpJms=;
+  b=cSc+B+c5ce1JVHR4VGfOKGu5LDxCcbfATWx7CP+IIyzb+cSpO3/PBVtN
+   yRQd3BoozdQLgLsNNn9Sp0AnEWcN6+IsHBEVzTdz6Wmj4CWETYE8DC8DZ
+   JBSxOe1yRYzZi6H8/YMRkIQheOLCscfDs1RWJUzMqTW6txBwP4KnOyl19
+   kQTout4rHT9UfYT6Pzd6u0BDgJLEpyYFY9MhgcpyGSk7zG3fYd5B5YRKF
+   kX1FYcz4JMTr+hb+JrwKSqpmY4WYCZNuyhlC/90sWg4V6A4uIyV0/x/9U
+   R/Jwxo/l9WRNK5iAHvvgbdoxTcbZyVzdMrbzzeuf9FHv5q1QKqCnePU/h
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="292837247"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="292837247"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 10:58:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="614710548"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 30 Aug 2022 10:58:37 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id E612AAD; Tue, 30 Aug 2022 20:58:51 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v1 1/1] pinctrl: mcp23s08: Drop assignment of default number of OF cells
+Date:   Tue, 30 Aug 2022 20:58:50 +0300
+Message-Id: <20220830175850.44770-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5BnFLNDp644MiSfw"
-Content-Disposition: inline
-In-Reply-To: <20220830172141.581086-14-sashal@kernel.org>
-X-Cookie: Necessity is a mother.
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The GPIO library code will assign default value for number of OF
+cells, no need to repeat this in the driver.
 
---5BnFLNDp644MiSfw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/pinctrl/pinctrl-mcp23s08.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-On Tue, Aug 30, 2022 at 01:21:31PM -0400, Sasha Levin wrote:
-> From: Mark Brown <broonie@kernel.org>
->=20
-> [ Upstream commit 7ddcaf78e93c9282b4d92184f511b4d5bee75355 ]
->=20
-> The signal code has a limit of 64K on the size of a stack frame that it
-> will generate, if this limit is exceeded then a process will be killed if
+diff --git a/drivers/pinctrl/pinctrl-mcp23s08.c b/drivers/pinctrl/pinctrl-mcp23s08.c
+index 695236636d05..5f356edfd0fd 100644
+--- a/drivers/pinctrl/pinctrl-mcp23s08.c
++++ b/drivers/pinctrl/pinctrl-mcp23s08.c
+@@ -549,9 +549,6 @@ int mcp23s08_probe_one(struct mcp23s08 *mcp, struct device *dev,
+ 	mcp->chip.get = mcp23s08_get;
+ 	mcp->chip.direction_output = mcp23s08_direction_output;
+ 	mcp->chip.set = mcp23s08_set;
+-#ifdef CONFIG_OF_GPIO
+-	mcp->chip.of_gpio_n_cells = 2;
+-#endif
+ 
+ 	mcp->chip.base = base;
+ 	mcp->chip.can_sleep = true;
+-- 
+2.35.1
 
-I don't believe this is relevant to kernels without SME support.
-
---5BnFLNDp644MiSfw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmMOT7EACgkQJNaLcl1U
-h9BqAAf+P0C3w4jbPe9ZwvlXlJ5Lxcz1wmkm/TM/Ybj/OgRPqAlAy8JcHq9TqPDD
-WxMUfFH8yYktrmFZJfhxOwWOuBpDIMHOebd/7c07LvcOzEEdCzKK3YS1Gb8pv1xJ
-nsHnONwiWFlsubP7MtJL9NuDO9tSlCK1dqTbWmCpIe7AdnwI0d5yUMcqJYT8rw78
-ZFNcjBrrKYcFHE9k1/mZNvxbUEDmKgfOYgmSB7KNEn9JPB4+1UMPpXCuTsgf+aMl
-UrmpcL3ZHrAFGQ5U2hVhzQLMhqYHFGnmbVYYO6C5fvLYjbZAoIJQEfdBhw0QJdZJ
-AWNDcwm4RtAEnfekY8ooobBFr69g5A==
-=E+48
------END PGP SIGNATURE-----
-
---5BnFLNDp644MiSfw--
