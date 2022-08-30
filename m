@@ -2,53 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CE6ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A0AECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:36:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231340AbiH3Sdf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:33:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32956 "EHLO
+        id S230183AbiH3SgD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231269AbiH3Sd2 (ORCPT
+        with ESMTP id S229538AbiH3Sf7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:33:28 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551E66D573
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 11:33:27 -0700 (PDT)
+        Tue, 30 Aug 2022 14:35:59 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873136EF09;
+        Tue, 30 Aug 2022 11:35:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661884407; x=1693420407;
+  t=1661884558; x=1693420558;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=h1BxaOOoiltf/jjn9jarqjcp6JmDX52ctebixNc5/GI=;
-  b=Oj3CL7G3G/R0bTlc1w/nMPv0yl+BgLs0nePICwXH7xscldtm1B5lA/6+
-   D/HK+uIBcHYm5PNGTY8VulNQSaHb9IHhJ5k3WwxMVXupZlRfzZi+8Ksf3
-   gznOu4UY8VF24qd7oMWFbsOQd2jycWBhCnjkDcbqcGHH+k6DYNjZqfVPS
-   cwpK0e9Vg5Xv/y6ZeoNnuUAzvl/DA0aBw0Mr4R9AkeEsDfGCykOxtd3pv
-   +eTHqbPBFz6cfMjM63loo0ph8bNsygdLV+T9lizFWs+ZkUuvAGpF4dEPP
-   G3evko17V5dIvM0UzG5I2YnwLyLRC6Z32whU4ewdq+7qXDNIkdYqkdtBV
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="296054838"
+  bh=/pwVlxD0Nr2IM8YJuZISeUWEWBiGFVzCOOFkYtzCtIE=;
+  b=MsuRF7vU1rYgCFSDm3d9eEm+DsCbPZDfKBGS1hdUHdRawm0E7Eec79gf
+   w5kau9hvShBmip1e9ITwlV7Mhb6vQvSG/GNTT8HyWoEm19b8+sjnZtVhF
+   C2kNkYMvtjwd7pHo0vQr/KWmF15R8733fkkgHH+z6QA7SysXLCalXRzsp
+   fq/i8PP2BsETph1mLqySVed2SON8h690liKXtgNrAlUtjnyFF/762CgK9
+   lPgHu2TWkHR6W/uS3G/A9Td24Gnp+QUD2Mag8pCkxie1SkpwuMyDlayzR
+   SEjs2AI4A72iAdIu1OS/p+haYzMrCb+zEH0Mmy9ZJif2890Prg2JEiAsJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="275019773"
 X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="296054838"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 11:33:26 -0700
+   d="scan'208";a="275019773"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 11:35:40 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="754149113"
+   d="scan'208";a="562765580"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 30 Aug 2022 11:33:24 -0700
+  by orsmga003.jf.intel.com with ESMTP; 30 Aug 2022 11:35:39 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 31461AD; Tue, 30 Aug 2022 21:33:39 +0300 (EEST)
+        id BEDDA174; Tue, 30 Aug 2022 21:35:53 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] mtd: rawnand: Replace of_gpio_named_count() by gpiod_count()
-Date:   Tue, 30 Aug 2022 21:33:36 +0300
-Message-Id: <20220830183336.49966-1-andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH v1 1/1] Input: matrix_keypad - replace of_gpio_named_count() by gpiod_count()
+Date:   Tue, 30 Aug 2022 21:35:52 +0300
+Message-Id: <20220830183552.50695-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -61,26 +59,26 @@ driver to use gpiod_count() instead.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/mtd/nand/raw/nand_base.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/input/keyboard/matrix_keypad.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mtd/nand/raw/nand_base.c b/drivers/mtd/nand/raw/nand_base.c
-index 6b67b7dfe7ce..2200276c7f25 100644
---- a/drivers/mtd/nand/raw/nand_base.c
-+++ b/drivers/mtd/nand/raw/nand_base.c
-@@ -5331,11 +5331,10 @@ static int of_get_nand_secure_regions(struct nand_chip *chip)
- int rawnand_dt_parse_gpio_cs(struct device *dev, struct gpio_desc ***cs_array,
- 			     unsigned int *ncs_array)
- {
--	struct device_node *np = dev->of_node;
- 	struct gpio_desc **descs;
- 	int ndescs, i;
+diff --git a/drivers/input/keyboard/matrix_keypad.c b/drivers/input/keyboard/matrix_keypad.c
+index 30924b57058f..63f078f2bc4a 100644
+--- a/drivers/input/keyboard/matrix_keypad.c
++++ b/drivers/input/keyboard/matrix_keypad.c
+@@ -416,9 +416,9 @@ matrix_keypad_parse_dt(struct device *dev)
+ 		return ERR_PTR(-ENOMEM);
+ 	}
  
--	ndescs = of_gpio_named_count(np, "cs-gpios");
-+	ndescs = gpiod_count(dev, "cs");
- 	if (ndescs < 0) {
- 		dev_dbg(dev, "No valid cs-gpios property\n");
- 		return 0;
+-	pdata->num_row_gpios = nrow = of_gpio_named_count(np, "row-gpios");
+-	pdata->num_col_gpios = ncol = of_gpio_named_count(np, "col-gpios");
+-	if (nrow <= 0 || ncol <= 0) {
++	pdata->num_row_gpios = nrow = gpiod_count(dev, "row");
++	pdata->num_col_gpios = ncol = gpiod_count(dev, "col");
++	if (nrow < 0 || ncol < 0) {
+ 		dev_err(dev, "number of keypad rows/columns not specified\n");
+ 		return ERR_PTR(-EINVAL);
+ 	}
 -- 
 2.35.1
 
