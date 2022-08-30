@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67616ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:20:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE242C0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229961AbiH3KUe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:20:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53004 "EHLO
+        id S229868AbiH3KUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229826AbiH3KTg (ORCPT
+        with ESMTP id S229846AbiH3KTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:19:36 -0400
+        Tue, 30 Aug 2022 06:19:37 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98DD73889;
-        Tue, 30 Aug 2022 03:18:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023BC1A39D;
+        Tue, 30 Aug 2022 03:18:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661854723; x=1693390723;
+  t=1661854732; x=1693390732;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=hyLDKbNNI38wXrC5Tei7bV2mB9uLlpphPD5ViUjlS80=;
-  b=00y3xTx1HNyOyT+ygH1do5n1a6LAxDpMLi4RUtBN0cKD64AahsJ5D5cZ
-   9XNe5jHuuA4isNMzQXz4a/iVjZ6t2c0rJ9OeLkSyv5m0+hVgP1Iq7JOI/
-   vFz/OSy23Hvm3mBerbibiUOEfR1hl+P7J9+RnLTtT+PsVZU6M9ECkgZ3r
-   hLXsqFYIAS1QKGuqx6OzNP+SwtiwT8WSOk2NaDOlVIbOfpRPIjYpRCwzu
-   9SV/F4jhgJ/d4czWeZEo8lpv1G5goYpefDEoCURVIELI6oyn1Qg9fOUJu
-   Rqz54siisry4cWe0F14cDdtQ+gw+MJ5Ck8ePfooXZuBrEw0wW0sNwM31H
-   g==;
+  bh=fKL2pKdfe49aKzGqeWYbXuxKM2r4HTWOwpLHntUQotA=;
+  b=jE4dAYYqIjTHoTKnCCGNCT8O6PScfztT5KjvaP3jx5H+IAP1DkB/bk5t
+   yVItjdvWw6ibsd8Q/cdEK4YAG9iFYWhPCho2Q8+wtISe26HlWahuxSd+r
+   AE64bl9gp/9yv57M/+yjiCrpkdM6xKLikt3IEyQ6QOBqjnhtxquRjz7DV
+   8A8lgxpP62UH4QHVN4ZiD8pfOT6sNhreaCKX62Ow/aq+6+iUTeZv8csWr
+   mRZiYGyCCmrmEYUVxCY1noxOUD5texgauUsxXFBmlJVDiRVRXA5qSllFI
+   Am1Eps5SNtVaTyy+cqfaoXswwPKY3LbAemTEutFVT++iUPd6s/iNMPwZq
+   A==;
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="174786788"
+   d="scan'208";a="174786835"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 03:18:43 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 03:18:48 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 30 Aug 2022 03:18:40 -0700
+ 15.1.2507.12; Tue, 30 Aug 2022 03:18:47 -0700
 Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
  (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 30 Aug 2022 03:18:37 -0700
+ Transport; Tue, 30 Aug 2022 03:18:44 -0700
 From:   Conor Dooley <conor.dooley@microchip.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
@@ -55,9 +55,9 @@ CC:     Paul Walmsley <paul.walmsley@sifive.com>,
         Hugh Breslin <hugh.breslin@microchip.com>,
         <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 4/9] riscv: dts: microchip: add pci dma ranges for the icicle kit
-Date:   Tue, 30 Aug 2022 11:17:59 +0100
-Message-ID: <20220830101803.1456180-5-conor.dooley@microchip.com>
+Subject: [PATCH v2 6/9] riscv: dts: microchip: icicle: update pci address properties
+Date:   Tue, 30 Aug 2022 11:18:01 +0100
+Message-ID: <20220830101803.1456180-7-conor.dooley@microchip.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220830101803.1456180-1-conor.dooley@microchip.com>
 References: <20220830101803.1456180-1-conor.dooley@microchip.com>
@@ -68,56 +68,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The recently removed, accidentally included, "matr0" property was used
-in place of a dma-ranges property. The PCI controller is non-functional
-with mainline Linux in the v2022.02 or later reference designs and has
-not worked without configuration of address-translation since v2021.08.
+For the v2022.09 reference design the PCI root port's data region has
+been moved to FIC1 from FIC0. This is a shorter path, allowing for
+higher clock rates and improved through-put. As a result, the address at
+which the PCIe's data region appears to the core complex has changed.
+The config region's address is unchanged.
 
-Add the address translation that will be used by the v2022.09 reference
-design & update the compatible used by the dts.
+As FIC0 is no longer used, its clock can be removed too.
 
 Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 ---
- arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi | 7 ++++++-
- arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts         | 3 ++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ .../boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi    | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-index 0d28858b83f2..c0fb9dd7b2c8 100644
+index a21440c8ee03..32d51c4a5b0c 100644
 --- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
 +++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-@@ -2,7 +2,8 @@
+@@ -2,6 +2,7 @@
  /* Copyright (c) 2020-2021 Microchip Technology Inc */
  
  / {
--	compatible = "microchip,mpfs-icicle-reference-rtlv2203", "microchip,mpfs";
-+	compatible = "microchip,mpfs-icicle-reference-rtlv2209", "microchip,mpfs-icicle-kit",
-+		     "microchip,mpfs";
++
+ 	compatible = "microchip,mpfs-icicle-reference-rtlv2209", "microchip,mpfs-icicle-kit",
+ 		     "microchip,mpfs";
  
- 	core_pwm0: pwm@41000000 {
- 		compatible = "microchip,corepwm-rtl-v4";
-@@ -37,3 +38,7 @@ fabric_clk1: fabric-clk1 {
+@@ -38,13 +39,13 @@ fabric_clk1: fabric-clk1 {
  		clock-frequency = <125000000>;
  	};
- };
-+
-+&pcie {
-+	dma-ranges = <0x02000000 0x0 0x00000000 0x0 0x00000000 0x1 0x00000000>;
-+};
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-index f3f87ed2007f..5e2b8aa2ff64 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit.dts
-@@ -11,7 +11,8 @@
  
- / {
- 	model = "Microchip PolarFire-SoC Icicle Kit";
--	compatible = "microchip,mpfs-icicle-kit", "microchip,mpfs";
-+	compatible = "microchip,mpfs-icicle-reference-rtlv2209", "microchip,mpfs-icicle-kit",
-+		     "microchip,mpfs";
- 
- 	aliases {
- 		ethernet0 = &mac1;
+-	pcie: pcie@2000000000 {
++	pcie: pcie@3000000000 {
+ 		compatible = "microchip,pcie-host-1.0";
+ 		#address-cells = <0x3>;
+ 		#interrupt-cells = <0x1>;
+ 		#size-cells = <0x2>;
+ 		device_type = "pci";
+-		reg = <0x20 0x0 0x0 0x8000000>, <0x0 0x43000000 0x0 0x10000>;
++		reg = <0x30 0x0 0x0 0x8000000>, <0x0 0x43000000 0x0 0x10000>;
+ 		reg-names = "cfg", "apb";
+ 		bus-range = <0x0 0x7f>;
+ 		interrupt-parent = <&plic>;
+@@ -54,9 +55,9 @@ pcie: pcie@2000000000 {
+ 				<0 0 0 3 &pcie_intc 2>,
+ 				<0 0 0 4 &pcie_intc 3>;
+ 		interrupt-map-mask = <0 0 0 7>;
+-		clocks = <&fabric_clk1>, <&fabric_clk1>, <&fabric_clk3>;
+-		clock-names = "fic0", "fic1", "fic3";
+-		ranges = <0x3000000 0x0 0x8000000 0x20 0x8000000 0x0 0x80000000>;
++		clocks = <&fabric_clk1>, <&fabric_clk3>;
++		clock-names = "fic1", "fic3";
++		ranges = <0x3000000 0x0 0x8000000 0x30 0x8000000 0x0 0x80000000>;
+ 		dma-ranges = <0x02000000 0x0 0x00000000 0x0 0x00000000 0x1 0x00000000>;
+ 		msi-parent = <&pcie>;
+ 		msi-controller;
 -- 
 2.36.1
 
