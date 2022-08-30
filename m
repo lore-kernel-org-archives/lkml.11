@@ -2,133 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0815FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:30:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A072ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229671AbiH3V37 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 17:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52258 "EHLO
+        id S230000AbiH3Vbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 17:31:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiH3V3y (ORCPT
+        with ESMTP id S229730AbiH3Vbc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 17:29:54 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F07606586
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:29:52 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id v5so6126569plo.9
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:29:52 -0700 (PDT)
+        Tue, 30 Aug 2022 17:31:32 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2008991B
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:31:27 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id k18so6321760lji.13
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:31:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=5WLsBYjCbkwGCKMGaY8eL7UthKdutIGZNyDAn0hGpS0=;
-        b=kNBGhWae7luRn0hrtktFtHSOouZPD2AgvcYa2UTj8TdvoVCoxEvre+RHdEwHcaEgEe
-         OMIkzzBbaDGYEstUyi9LGxq5Nowdel36Ma4Qx8DIzN7EsoqmuZqovdwafOYvTiFFrmNR
-         mUmvMt18tMCakau+TsIWOVrLRzDEsT2HZ7kXpNQ5ktyBSlMoP0xstMjz7BWHBr0iYDWi
-         63tU4gyP1g6l0KuwDjNq+L3oe9yjX17Z0YTrun/3ALdbwqPWA1GN7Of6bO4InS778mjM
-         B3j5wCBYWk2mquKfCFekiQ6mCk6ZRWf1+HaQtyGx7c4KehkoqFyjPTO/IK4uppVcHFDI
-         CotA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:from:to:cc;
+        bh=ycOUS51f/+hxr26Bfki5rqNC0+Cghd136Ub/gFA0SaA=;
+        b=kSqNn3A96fFfYAvZMnZM6fCkCnjNdGOAfgbjh9xsCUhPlw304ML9UOEGEq0noWgIeP
+         e8mzpa9LJOTPz3mo314puee4Fei78Xd3dwfhduIl+R9me/flZOEnbstk45R5T8xMBH5j
+         qj1SBot1DkuqGKcyF7RI8id8AqXjy7LQG9OWw/dcdOmtkhYzextF2jhnGSmja1hGlzqs
+         8uFyhJM+XooSUzJnWBsnt2T9p8alpMeedc8qVliCE16DCl0Nea+DeCk5ybxPVZk/RlN9
+         3wS6qGlyAK0i3imci6ec/k3ZZuvuHvx8V/aL+wP4XOiVLZG8emIw8ni+mIZBgQVmJWF/
+         gsLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=5WLsBYjCbkwGCKMGaY8eL7UthKdutIGZNyDAn0hGpS0=;
-        b=1djztdR5YwiP23SvpcPIAsDj15xFUZWxPWpYK3wTQ4HXBV+24IvK3ubRo0j22QMWV9
-         D56ta0Fudnvxpa494zizzzdbPZyriVZhS6hbyt+IepJNeQttK/SwbDceqaxuKr+QdA/h
-         5fQD8K+XsppxvL22JwSPLllMoFdXU5Tu0URhonBzM6L9GmRKn43NimlivqQhJ4m8FXBy
-         W6F+RA6fTS0expI6vKJNqcI/E0iqkmp2yZKlsmalJy/YKwtV9ZwsnZ5Xjq0jUbC7HgAe
-         JwU92s9vvNM/1rRCAWjlUI7y9JL5xkN2hKcRx7tsZ/0uRItOlXytQt2IWHlWe1pD/VdR
-         U88Q==
-X-Gm-Message-State: ACgBeo22RJ/6t1FdS1T/Fpd7OIovNzAnX36E2+1ahRQX08uW7zPGNWF4
-        Vr+vOsH8q2xlLSGmGYRUnhQiXxCI877Hlg==
-X-Google-Smtp-Source: AA6agR7t11ERimIUvAcQpNmwsKWH+5w/jqpScqI7wrOTu+HPiopoeTQJslR1Bprh2yWOY7qDacnVOw==
-X-Received: by 2002:a17:903:1250:b0:172:614b:5f01 with SMTP id u16-20020a170903125000b00172614b5f01mr23279463plh.103.1661894992374;
-        Tue, 30 Aug 2022 14:29:52 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id b11-20020a170902d50b00b0016dc2366722sm10296184plg.77.2022.08.30.14.29.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 14:29:52 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 21:29:48 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Mingwei Zhang <mizhang@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH v4 3/3] KVM: x86: Print guest pgd in kvm_nested_vmenter()
-Message-ID: <Yw6BTJ1HpPdYR2E0@google.com>
-References: <20220825225755.907001-1-mizhang@google.com>
- <20220825225755.907001-4-mizhang@google.com>
+        h=content-transfer-encoding:in-reply-to:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc;
+        bh=ycOUS51f/+hxr26Bfki5rqNC0+Cghd136Ub/gFA0SaA=;
+        b=GgZpO7gjN3/8kSPZ8SfqfaFDxAS/FCWIQ5oS247spQR2nkHH4xFX5eLQCJ85mAIgRG
+         uxwMuyoXDxHs5ENARDIuyyQsqEaJfgEoouDKt7AU4t3T/m6ffiqLi5dv5mUZIyAAZD2v
+         kZPlfkj4x1Z2biXQqAG/Lfs5i9DnC8UO7QHbtqcCKZqddjFLQsxQmOtDbZGv8LQr82W3
+         Utvib0Ew9sLBi5eX4U3TsdLqNXptGG3Ew64vfQVxzbfxCP+21kDfb61oHS0GUtXxgLmN
+         /q9dLKPwqiqHZQN4nFXxxSuM03z5y5e2QFwE9YD2+W53qDybeexdD71B08aoL0Pe+n2w
+         jhog==
+X-Gm-Message-State: ACgBeo1kn5YYbNsdh0UlfsNQoD9ttBWazC7HFufUqkqDHkj1SHOErIRv
+        XZk8QBUV4N9W70qZ3xO3Yho=
+X-Google-Smtp-Source: AA6agR4S4WuypWhRAErxoi920Fo8fv4SJcbnBpQK5wzzMSWUXZMHydNeVYFmYA2Bqfe1pnKLfGrkYg==
+X-Received: by 2002:a05:651c:507:b0:25e:73af:1661 with SMTP id o7-20020a05651c050700b0025e73af1661mr8063374ljp.195.1661895086153;
+        Tue, 30 Aug 2022 14:31:26 -0700 (PDT)
+Received: from ?IPV6:2a02:a31a:a240:1700:d40b:b088:5bfe:3b81? ([2a02:a31a:a240:1700:d40b:b088:5bfe:3b81])
+        by smtp.googlemail.com with ESMTPSA id x7-20020a056512078700b0048b0aa2f87csm1733424lfr.181.2022.08.30.14.31.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 14:31:25 -0700 (PDT)
+From:   kFYatek <kfyatek@gmail.com>
+X-Google-Original-From: kFYatek <kfyatek+publicgit@gmail.com>
+Message-ID: <a2ebfb0b-7b54-8059-036b-7aa1bdf4dd78@gmail.com>
+Date:   Tue, 30 Aug 2022 23:31:21 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825225755.907001-4-mizhang@google.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.2.0
+Subject: Re: [PATCH v1 00/35] drm: Analog TV Improvements
+Content-Language: pl
+To:     Dom Cobley <dom@raspberrypi.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Phil Elwell <phil@raspberrypi.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+ <987d6114-5fcb-d668-3b0d-ad6d8723dfdb@tronnes.org>
+ <20220822074800.qzyctchqn5usr55g@houat>
+ <9a15b1cf-692c-1b0d-02a6-316cbd954525@gmail.com>
+ <20220825155506.wqurh5r752qfufqs@houat>
+ <18737c8a-78f4-5b9f-aea2-588bc65c13d9@gmail.com>
+ <9d9ba040-99d7-25cb-ba10-1c132d7f7663@gmail.com>
+ <CANUESCG22TrxasYoE2U0OJ7TVzNAcs_9zkuAfBQfZrEbM4h9dg@mail.gmail.com>
+In-Reply-To: <CANUESCG22TrxasYoE2U0OJ7TVzNAcs_9zkuAfBQfZrEbM4h9dg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022, Mingwei Zhang wrote:
-> ---
-> diff --git a/arch/x86/kvm/trace.h b/arch/x86/kvm/trace.h
-> index e7f0da9474f0..b2be0348bb14 100644
-> --- a/arch/x86/kvm/trace.h
-> +++ b/arch/x86/kvm/trace.h
-> @@ -591,9 +591,10 @@ TRACE_EVENT(kvm_pv_eoi,
->   */
->  TRACE_EVENT(kvm_nested_vmenter,
->  	    TP_PROTO(__u64 rip, __u64 vmcb, __u64 nested_rip, __u32 int_ctl,
-> -		     __u32 event_inj, bool tdp_enabled, __u32 isa),
-> +		     __u32 event_inj, bool tdp_enabled, __u64 guest_tdp,
+W dniu 26.08.2022 o 16:56, Dom Cobley pisze:
+> On Fri, 26 Aug 2022 at 05:08, Mateusz Kwiatkowski <kfyatek@gmail.com> wrote:
+>> - Commenting out the pm_runtime_put() / pm_runtime_get_sync() calls in vc4_vec.c
+>> - Reverting this PR by Dom Cobley a.k.a. popcornmix:
+>>    https://github.com/raspberrypi/linux/pull/4639
+>>
+>> Either of these approaches makes VEC mode switching work again. Obviously
+>> neither is appropriate for a permanent solution.
+> Might be worth trying the latest rpi-update firmware.
+> There was a change that affects restoring PIXEL/VEC clocks after a
+> power domain cycle.
+> There is also a fix for a USB boot breakage.
+>
+> If you still have an issue that occurs in downstream pi tree but not
+> upstream, then create a linux github issue.
 
-s/guest_tdp_pgd to differentiate it from "tdp_enabled"
+Hi Dom,
 
+I just tested the 868f1cf firmware and its associated kernel, and everything
+works like a charm for me, both USB boot and VEC power management.
 
->         TP_printk("rip: 0x%016llx %s: 0x%016llx nested_rip: 0x%016llx "
-> -                 "int_ctl: 0x%08x event_inj: 0x%08x nested_%s: %s",
-> +                 "int_ctl: 0x%08x event_inj: 0x%08x nested_%s: %s, "
-> +                 "guest_pgd: 0x%016llx",
+Thanks!
 
-It's a little gross, but this can spit out nested_eptp vs. nested_cr3 vs. guest_cr3.
-
->                 __entry->rip,
->                 __entry->isa == KVM_ISA_VMX ? "vmcs" : "vmcb",
->                 __entry->vmcb,
-
-> @@ -624,7 +628,8 @@ TRACE_EVENT(kvm_nested_vmenter,
->  		__entry->int_ctl,
->  		__entry->event_inj,
->  		__entry->isa == KVM_ISA_VMX ? "ept" : "npt",
-> -		__entry->tdp_enabled ? "on" : "off")
-> +		__entry->tdp_enabled ? "on" : "off",
-
-To keep things aligned, and because "on nested_eptp" reads as a combined
-snippet
-
-  event_inj: 0x00000000 nested_ept: off guest_cr3: 0x0000000001007000
-  event_inj: 0x00000000 nested_ept: off guest_cr3: 0x0000000001007000
-  event_inj: 0x00000000 nested_ept: on nested_eptp: 0x0000000007ec501e
-  event_inj: 0x00000000 nested_ept: on nested_eptp: 0x0000000007ec501e
-
-what about teaking the format so that the output looks like this?
-
-  event_inj: 0x00000000 nested_ept=n guest_cr3: 0x0000000001007000
-  event_inj: 0x00000000 nested_ept=n guest_cr3: 0x0000000001007000
-  event_inj: 0x00000000 nested_ept=y nested_eptp: 0x0000000007ec501e
-  event_inj: 0x00000000 nested_ept=y nested_eptp: 0x0000000007ec501e
-
-Deviating from the ": " style bothers me, but I find this difficult to read.
-Again, letters delimited by whitespace get visually clumped together.
-
-  event_inj: 0x00000000 nested_ept: n guest_cr3: 0x0000000001007000
-  event_inj: 0x00000000 nested_ept: n guest_cr3: 0x0000000001007000
-  event_inj: 0x00000000 nested_ept: y nested_eptp: 0x0000000007ec501e
-  event_inj: 0x00000000 nested_ept: y nested_eptp: 0x0000000007ec501e
-
-And this looks like a typo
-
-  event_inj: 0x00000000 nested_ept:n guest_cr3: 0x0000000001007000
-  event_inj: 0x00000000 nested_ept:n guest_cr3: 0x0000000001007000
-  event_inj: 0x00000000 nested_ept:y nested_eptp: 0x0000000007ec501e
-  event_inj: 0x00000000 nested_ept:y nested_eptp: 0x0000000007ec501e
-
-We could leave off the nested_{ept/npt} entirely and leave the differentation to
-the nested_eptp vs. nested_cr3 vs. guest_cr3, but I don't think that's worth
-shaving a few chars.
