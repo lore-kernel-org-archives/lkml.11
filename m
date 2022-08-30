@@ -2,89 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B33ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:14:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB96ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230240AbiH3KON (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40608 "EHLO
+        id S229449AbiH3KOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiH3KNW (ORCPT
+        with ESMTP id S230254AbiH3KO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:13:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F83DED
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:09:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 30 Aug 2022 06:14:27 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA882785BC;
+        Tue, 30 Aug 2022 03:12:23 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F12E661468
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:09:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CBFCC433B5;
-        Tue, 30 Aug 2022 10:09:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661854144;
-        bh=Z9reXcsrIkZplDNMS02kQlXf12HDGnUx9tXgDy6f+6g=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=fFrm9OKfAgFgpYV2gknVg/eV61X6HNOuAgbFpOOS2MeVcE8lk3wMi1LdDnrFqV1v0
-         vjdTWL1LViLVPOpvSxBwNGX8OImrfoKC6gyZIgzdnxdxvPzkY3rGqXKRIjui+NEo8m
-         G3VCSaCxbyz7Cn0EMdqiJDPs0M1Jx3UvvqrYfQ+vJkpqFUHZnZdUfTu2HN5nUbL8RR
-         tls+V9wxQaLO8xe+10HawNWxUxeEJDUyOKNPn/wn1uHE9WhTv8e+/v98wpsPw9keRh
-         665dxvuxsjIDIuCm9L7ogNWVFBkW4ybd+FOeyjcYi82QLuVT/pCXUdJZOB9w56Yoso
-         d6dsdjtDL+1CA==
-From:   Mark Brown <broonie@kernel.org>
-To:     Takashi Iwai <tiwai@suse.com>, linux-kernel@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jaroslav Kysela <perex@perex.cz>, alsa-devel@alsa-project.org
-Cc:     kernel test robot <lkp@intel.com>
-In-Reply-To: <20220830075855.278046-1-krzysztof.kozlowski@linaro.org>
-References: <20220830075855.278046-1-krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH] ASoC: codecs: rk817: fix missing I2C dependency in compile test
-Message-Id: <166185414198.1099664.6211983817122051754.b4-ty@kernel.org>
-Date:   Tue, 30 Aug 2022 11:09:01 +0100
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 43D6B21ACB;
+        Tue, 30 Aug 2022 10:12:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661854341; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LYvW4/C2mjaJQZlE3mRWOzrMuvS8imMEtRVp0zKjWZI=;
+        b=qsVu4V70wdDHwjBgpKiDN0IlP/BDCuLEwMyjOQLn0UUCVFhXfjfQkoPEbTbScmBED/gl6P
+        bhU/EU/BRe2KUivYSHMfWx7D/0VMg7tkZvJUo10luRxxgtwxj1QUbxotcwmi5ML2RzsZF/
+        j9alAbuMHIT1y5Qy8jCkr4+d0Co14+M=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1A90213B0C;
+        Tue, 30 Aug 2022 10:12:21 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id IHTZA4XiDWPAKQAAMHmgww
+        (envelope-from <mhocko@suse.com>); Tue, 30 Aug 2022 10:12:21 +0000
+Date:   Tue, 30 Aug 2022 12:12:20 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Kairui Song <ryncsn@gmail.com>
+Cc:     cgroups@vger.kernel.org, linux-mm@kvack.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] mm: memcontrol: make cgroup_memory_noswap a static
+ key
+Message-ID: <Yw3ihBZ7J/V37eU0@dhcp22.suse.cz>
+References: <20220830055949.12640-1-ryncsn@gmail.com>
+ <20220830055949.12640-3-ryncsn@gmail.com>
+ <Yw21uOyEz9lLkI3p@dhcp22.suse.cz>
+ <CAMgjq7CM_SX3jLj9yp5hzAr6c3hBtS5nd4Nh4z8bTY8yWx-3KQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-65ba7
+In-Reply-To: <CAMgjq7CM_SX3jLj9yp5hzAr6c3hBtS5nd4Nh4z8bTY8yWx-3KQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022 10:58:55 +0300, Krzysztof Kozlowski wrote:
-> SND_SOC_RK817 uses I2C regmap so compile testing without parent MFD_RK808, requires I2C:
+On Tue 30-08-22 16:50:38, Kairui Song wrote:
+> Michal Hocko <mhocko@suse.com> 于2022年8月30日周二 15:01写道：
+> >
+> > On Tue 30-08-22 13:59:49, Kairui Song wrote:
+> > > From: Kairui Song <kasong@tencent.com>
+> > >
+> > > cgroup_memory_noswap is used in many hot path, so make it a static key
+> > > to lower the kernel overhead.
+> > >
+> > > Using 8G of ZRAM as SWAP, benchmark using `perf stat -d -d -d --repeat 100`
+> > > with the following code snip in a non-root cgroup:
+> > >
+> > >    #include <stdio.h>
+> > >    #include <string.h>
+> > >    #include <linux/mman.h>
+> > >    #include <sys/mman.h>
+> > >    #define MB 1024UL * 1024UL
+> > >    int main(int argc, char **argv){
+> > >       void *p = mmap(NULL, 8000 * MB, PROT_READ | PROT_WRITE,
+> > >                      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+> > >       memset(p, 0xff, 8000 * MB);
+> > >       madvise(p, 8000 * MB, MADV_PAGEOUT);
+> > >       memset(p, 0xff, 8000 * MB);
+> > >       return 0;
+> > >    }
+> > >
+> > > Before:
+> > >           7,021.43 msec task-clock                #    0.967 CPUs utilized            ( +-  0.03% )
+> > >              4,010      context-switches          #  573.853 /sec                     ( +-  0.01% )
+> > >                  0      cpu-migrations            #    0.000 /sec
+> > >          2,052,057      page-faults               #  293.661 K/sec                    ( +-  0.00% )
+> > >     12,616,546,027      cycles                    #    1.805 GHz                      ( +-  0.06% )  (39.92%)
+> > >        156,823,666      stalled-cycles-frontend   #    1.25% frontend cycles idle     ( +-  0.10% )  (40.25%)
+> > >        310,130,812      stalled-cycles-backend    #    2.47% backend cycles idle      ( +-  4.39% )  (40.73%)
+> > >     18,692,516,591      instructions              #    1.49  insn per cycle
+> > >                                                   #    0.01  stalled cycles per insn  ( +-  0.04% )  (40.75%)
+> > >      4,907,447,976      branches                  #  702.283 M/sec                    ( +-  0.05% )  (40.30%)
+> > >         13,002,578      branch-misses             #    0.26% of all branches          ( +-  0.08% )  (40.48%)
+> > >      7,069,786,296      L1-dcache-loads           #    1.012 G/sec                    ( +-  0.03% )  (40.32%)
+> > >        649,385,847      L1-dcache-load-misses     #    9.13% of all L1-dcache accesses  ( +-  0.07% )  (40.10%)
+> > >      1,485,448,688      L1-icache-loads           #  212.576 M/sec                    ( +-  0.15% )  (39.49%)
+> > >         31,628,457      L1-icache-load-misses     #    2.13% of all L1-icache accesses  ( +-  0.40% )  (39.57%)
+> > >          6,667,311      dTLB-loads                #  954.129 K/sec                    ( +-  0.21% )  (39.50%)
+> > >          5,668,555      dTLB-load-misses          #   86.40% of all dTLB cache accesses  ( +-  0.12% )  (39.03%)
+> > >                765      iTLB-loads                #  109.476 /sec                     ( +- 21.81% )  (39.44%)
+> > >          4,370,351      iTLB-load-misses          # 214320.09% of all iTLB cache accesses  ( +-  1.44% )  (39.86%)
+> > >        149,207,254      L1-dcache-prefetches      #   21.352 M/sec                    ( +-  0.13% )  (40.27%)
+> > >
+> > >            7.25869 +- 0.00203 seconds time elapsed  ( +-  0.03% )
+> > >
+> > > After:
+> > >           6,576.16 msec task-clock                #    0.953 CPUs utilized            ( +-  0.10% )
+> > >              4,020      context-switches          #  605.595 /sec                     ( +-  0.01% )
+> > >                  0      cpu-migrations            #    0.000 /sec
+> > >          2,052,056      page-faults               #  309.133 K/sec                    ( +-  0.00% )
+> > >     11,967,619,180      cycles                    #    1.803 GHz                      ( +-  0.36% )  (38.76%)
+> > >        161,259,240      stalled-cycles-frontend   #    1.38% frontend cycles idle     ( +-  0.27% )  (36.58%)
+> > >        253,605,302      stalled-cycles-backend    #    2.16% backend cycles idle      ( +-  4.45% )  (34.78%)
+> > >     19,328,171,892      instructions              #    1.65  insn per cycle
+> > >                                                   #    0.01  stalled cycles per insn  ( +-  0.10% )  (31.46%)
+> > >      5,213,967,902      branches                  #  785.461 M/sec                    ( +-  0.18% )  (30.68%)
+> > >         12,385,170      branch-misses             #    0.24% of all branches          ( +-  0.26% )  (34.13%)
+> > >      7,271,687,822      L1-dcache-loads           #    1.095 G/sec                    ( +-  0.12% )  (35.29%)
+> > >        649,873,045      L1-dcache-load-misses     #    8.93% of all L1-dcache accesses  ( +-  0.11% )  (41.41%)
+> > >      1,950,037,608      L1-icache-loads           #  293.764 M/sec                    ( +-  0.33% )  (43.11%)
+> > >         31,365,566      L1-icache-load-misses     #    1.62% of all L1-icache accesses  ( +-  0.39% )  (45.89%)
+> > >          6,767,809      dTLB-loads                #    1.020 M/sec                    ( +-  0.47% )  (48.42%)
+> > >          6,339,590      dTLB-load-misses          #   95.43% of all dTLB cache accesses  ( +-  0.50% )  (46.60%)
+> > >                736      iTLB-loads                #  110.875 /sec                     ( +-  1.79% )  (48.60%)
+> > >          4,314,836      iTLB-load-misses          # 518653.73% of all iTLB cache accesses  ( +-  0.63% )  (42.91%)
+> > >        144,950,156      L1-dcache-prefetches      #   21.836 M/sec                    ( +-  0.37% )  (41.39%)
+> > >
+> > >            6.89935 +- 0.00703 seconds time elapsed  ( +-  0.10% )
+> >
+> > Do you happen to have a perf profile before and after to see which of
+> > the paths really benefits from this?
 > 
->   WARNING: unmet direct dependencies detected for REGMAP_I2C
->     Depends on [n]: I2C [=n]
->     Selected by [y]:
->     - SND_SOC_RK817 [=y] && SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && (MFD_RK808 [=n] || COMPILE_TEST [=y])
-> 
-> [...]
+> No I don't have a clear profile data about which path benefit the most.
+> The performance benchmark result can be stably reproduced, but perf
+> record & report & diff doesn't seems too helpful, as I can't see a
+> significant change of any single symbols.
 
-Applied to
+This is a good information on its own as it suggests that the overhead
+is spilled over multiple places rather than a single hot spot. Good to
+have in the changelog.
 
-   broonie/sound.git for-next
-
-Thanks!
-
-[1/1] ASoC: codecs: rk817: fix missing I2C dependency in compile test
-      commit: 5204e836544763cb085e653c82d4da77a427591a
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+-- 
+Michal Hocko
+SUSE Labs
