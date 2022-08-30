@@ -2,155 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C72FECAAD2
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 02:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C93ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 02:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229980AbiH3C2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 22:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47766 "EHLO
+        id S229945AbiH3CeE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 22:34:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiH3C2n (ORCPT
+        with ESMTP id S229684AbiH3CeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 22:28:43 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE689E8AB;
-        Mon, 29 Aug 2022 19:28:38 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id k66so4555935vsc.11;
-        Mon, 29 Aug 2022 19:28:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=QjrqdkL8EiHyS4Guqm609iRF1yaRNRzIlk5DKbamgo8=;
-        b=mwa2PjStAL2PoYMIfVe51D5frUlZHWSS//ENBMptJb92tASbpJcZKvwQDvO6XWBf/0
-         +5MeLtVVslLDgMPDnDcrVtSzDhio9vc+uX03u6cbzy6SVDfgnfGLEryQU9WRIwGf6/+O
-         WH4zTPszcB7diuZCINwHdTmoP5PBgeXoqfc+CdDjyUoVNN8Rmn42M5+1JX0aUlkJ+NyX
-         GdCmaH77/mhRBZKNObV0l1wVVh5tQpi9pELkAjZB/sInHcGEdAjyVgc63J5tK/Rzy53a
-         vrQn4JyAjfYP3wBaOShM7cNu1zzwZR0/lGlnl9szZIkPRKY2xolJsn1B+TlGyxav30/m
-         rLTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=QjrqdkL8EiHyS4Guqm609iRF1yaRNRzIlk5DKbamgo8=;
-        b=h24R5uxJ4gGJgkJOHmGdwMn0noVHxYvgFgq8o3YaS/OqZ6qxwQEQPpilrAvz2L8DkI
-         Xz9p+uMo/y1NMJNlHgp1qFf0bDN0b8G6oCxMyFSPr0Yr+l1Fwk/dfsoTzPy+n3pWPajT
-         jgFWML+Gl1+zyBfTLPBxl0n020d9Jz8wJwGNU7GMBQbfccLqxqp2NuL7DBw0Qy6SUOoI
-         Jt/ksHXFesH3BE2uT41JWtUkR5vXO1PtBoU6t2XEIvzs0xF6d+b1klXFiqfQfHKjoATg
-         Mu/sjpUx1MHcgUpPOpBux3g82gWDbcXgw4g2WgQNUNmNHRvi3Pw2xOzzGEBgmd/YuG/Y
-         tmwA==
-X-Gm-Message-State: ACgBeo3L21S969tqS0aNxm6hsIpu96HzSP4x5rt3FMsXY/0GMoq+zVv0
-        GaaOBZvFiopPdHxAsPu3jmZTF06NQjTCrJ8Kpf4=
-X-Google-Smtp-Source: AA6agR7xHfa6WrErd9Bk/UWyjKlWX0wCPdyRk3T0VhyapOrfuWCgmK4HjQTqIvw9ODlq9MAc9vqEgE+rKsduq1gTxZU=
-X-Received: by 2002:a67:b445:0:b0:391:92ef:464c with SMTP id
- c5-20020a67b445000000b0039192ef464cmr94682vsm.22.1661826517920; Mon, 29 Aug
- 2022 19:28:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1651800598.git.peilin.ye@bytedance.com> <cover.1661158173.git.peilin.ye@bytedance.com>
- <CANn89iJsOHK1qgudpfFW9poC4NRBZiob-ynTOuRBkuJTw6FaJw@mail.gmail.com>
-In-Reply-To: <CANn89iJsOHK1qgudpfFW9poC4NRBZiob-ynTOuRBkuJTw6FaJw@mail.gmail.com>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Tue, 30 Aug 2022 10:28:01 +0800
-Message-ID: <CALOAHbDQJY-YeOHnLLrZxyR6Xv957qBe+JH4Mq4YQtBB9AM8zQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 net-next 0/5] net: Qdisc backpressure infrastructure
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Dave Taht <dave.taht@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 29 Aug 2022 22:34:01 -0400
+Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F92190C7C
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 19:34:00 -0700 (PDT)
+Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4MGrwR0z6YzDqNy;
+        Tue, 30 Aug 2022 02:33:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1661826839; bh=FBA7vMb+rgG7Qoy28W2Z07a8D5nOpV54IOm0PHU9X+4=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
+        b=skPASDkcQSSFSas3Z56yj28qCarMA6dolky44XaBZgvSHqN4sBQx5YLeLOKoLoiRO
+         qPsB+rlHCW6+E5R2w9shk6vaMdeQ4xZMFeAVtAzRRMcBITuDikPOfwX/Cy2AtCC/NH
+         1atKAxKrMP7cjg+W/vkN4trOBg+m4KPKgu7aZ/7k=
+X-Riseup-User-ID: DA68E99367F6891740E74145F1354C44AA2E3FF34314E3D12E4572AD807607F0
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews2.riseup.net (Postfix) with ESMTPSA id 4MGrwK0WcYz1yQt;
+        Tue, 30 Aug 2022 02:33:52 +0000 (UTC)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
+Subject: Re: [PATCH 1/2] testing/selftests: Add tests for the is_signed_type()
+ macro
+From:   Isabella Basso <isabbasso@riseup.net>
+In-Reply-To: <20220826162116.1050972-2-bvanassche@acm.org>
+Date:   Mon, 29 Aug 2022 23:33:50 -0300
+Cc:     Kees Cook <keescook@chromium.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sander Vanheule <sander@svanheule.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Yury Norov <yury.norov@gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <74370E0B-AC37-435F-A44C-5DBAA8A38496@riseup.net>
+References: <20220826162116.1050972-1-bvanassche@acm.org>
+ <20220826162116.1050972-2-bvanassche@acm.org>
+To:     Bart Van Assche <bvanassche@acm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 1:02 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Mon, Aug 22, 2022 at 2:10 AM Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> >
-> > From: Peilin Ye <peilin.ye@bytedance.com>
-> >
-> > Hi all,
-> >
-> > Currently sockets (especially UDP ones) can drop a lot of packets at TC
-> > egress when rate limited by shaper Qdiscs like HTB.  This patchset series
-> > tries to solve this by introducing a Qdisc backpressure mechanism.
-> >
-> > RFC v1 [1] used a throttle & unthrottle approach, which introduced several
-> > issues, including a thundering herd problem and a socket reference count
-> > issue [2].  This RFC v2 uses a different approach to avoid those issues:
-> >
-> >   1. When a shaper Qdisc drops a packet that belongs to a local socket due
-> >      to TC egress congestion, we make part of the socket's sndbuf
-> >      temporarily unavailable, so it sends slower.
-> >
-> >   2. Later, when TC egress becomes idle again, we gradually recover the
-> >      socket's sndbuf back to normal.  Patch 2 implements this step using a
-> >      timer for UDP sockets.
-> >
-> > The thundering herd problem is avoided, since we no longer wake up all
-> > throttled sockets at the same time in qdisc_watchdog().  The socket
-> > reference count issue is also avoided, since we no longer maintain socket
-> > list on Qdisc.
-> >
-> > Performance is better than RFC v1.  There is one concern about fairness
-> > between flows for TBF Qdisc, which could be solved by using a SFQ inner
-> > Qdisc.
-> >
-> > Please see the individual patches for details and numbers.  Any comments,
-> > suggestions would be much appreciated.  Thanks!
-> >
-> > [1] https://lore.kernel.org/netdev/cover.1651800598.git.peilin.ye@bytedance.com/
-> > [2] https://lore.kernel.org/netdev/20220506133111.1d4bebf3@hermes.local/
-> >
-> > Peilin Ye (5):
-> >   net: Introduce Qdisc backpressure infrastructure
-> >   net/udp: Implement Qdisc backpressure algorithm
-> >   net/sched: sch_tbf: Use Qdisc backpressure infrastructure
-> >   net/sched: sch_htb: Use Qdisc backpressure infrastructure
-> >   net/sched: sch_cbq: Use Qdisc backpressure infrastructure
-> >
->
-> I think the whole idea is wrong.
->
-> Packet schedulers can be remote (offloaded, or on another box)
->
-> The idea of going back to socket level from a packet scheduler should
-> really be a last resort.
->
-> Issue of having UDP sockets being able to flood a network is tough, I
-> am not sure the core networking stack
-> should pretend it can solve the issue.
->
-> Note that FQ based packet schedulers can also help already.
+Hi, Bart,
 
-We encounter a similar issue when using (fq + edt-bpf) to limit UDP
-packet, because of the qdisc buffer limit.
-If the qdisc buffer limit is too small, the UDP packet will be dropped
-in the qdisc layer. But the sender doesn't know that the packets has
-been dropped, so it will continue to send packets, and thus more and
-more packets will be dropped there.  IOW, the qdisc will be a
-bottleneck before the bandwidth limit is reached.
-We workaround this issue by enlarging the buffer limit and flow_limit
-(the proper values can be calculated from net.ipv4.udp_mem and
-net.core.wmem_default).
-But obviously this is not a perfect solution, because
-net.ipv4.udp_mem or net.core.wmem_default may be changed dynamically.
-We also think about a solution to build a connection between udp
-memory and qdisc limit, but not sure if it is a good idea neither.
+Glad to see some more KUnit tests making it inside of the kernel=E2=80=99s=
+ lib folder :).
 
--- 
-Regards
-Yafang
+> Am 26/08/2022 um 1:21 PM schrieb Bart Van Assche <bvanassche@acm.org>:
+>=20
+> Although not documented, is_signed_type() must support the 'bool' and
+> pointer types next to scalar and enumeration types. Add a selftest =
+that
+> verifies that this macro handles all supported types correctly.
+>=20
+> Cc: Andrew Morton <akpm@linux-foundation.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Isabella Basso <isabbasso@riseup.net>
+> Cc: "Jason A. Donenfeld" <Jason@zx2c4.com>
+> Cc: Josh Poimboeuf <jpoimboe@kernel.org>
+> Cc: Luc Van Oostenryck <luc.vanoostenryck@gmail.com>
+> Cc: Masami Hiramatsu <mhiramat@kernel.org>
+> Cc: Nathan Chancellor <nathan@kernel.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Cc: Sander Vanheule <sander@svanheule.net>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Cc: Vlastimil Babka <vbabka@suse.cz>
+> Cc: Yury Norov <yury.norov@gmail.com>
+> Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+> ---
+> lib/Kconfig.debug         | 12 ++++++++++
+> lib/Makefile              |  1 +
+> lib/is_signed_type_test.c | 48 +++++++++++++++++++++++++++++++++++++++
+> 3 files changed, 61 insertions(+)
+> create mode 100644 lib/is_signed_type_test.c
+>=20
+> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+> index 072e4b289c13..36455953d306 100644
+> --- a/lib/Kconfig.debug
+> +++ b/lib/Kconfig.debug
+> @@ -2506,6 +2506,18 @@ config MEMCPY_KUNIT_TEST
+>=20
+> 	  If unsure, say N.
+>=20
+> +config IS_SIGNED_TYPE_KUNIT_TEST
+> +	tristate "Test is_signed_type() macro" if !KUNIT_ALL_TESTS
+> +	depends on KUNIT
+> +	default KUNIT_ALL_TESTS
+> +	help
+> +	  Builds unit tests for the is_signed_type() macro.
+> +
+> +	  For more information on KUnit and unit tests in general please =
+refer
+> +	  to the KUnit documentation in Documentation/dev-tools/kunit/.
+> +
+> +	  If unsure, say N.
+> +
+> config OVERFLOW_KUNIT_TEST
+> 	tristate "Test check_*_overflow() functions at runtime" if =
+!KUNIT_ALL_TESTS
+> 	depends on KUNIT
+> diff --git a/lib/Makefile b/lib/Makefile
+> index 5927d7fa0806..70176ff17023 100644
+> --- a/lib/Makefile
+> +++ b/lib/Makefile
+> @@ -377,6 +377,7 @@ obj-$(CONFIG_BITS_TEST) +=3D test_bits.o
+> obj-$(CONFIG_CMDLINE_KUNIT_TEST) +=3D cmdline_kunit.o
+> obj-$(CONFIG_SLUB_KUNIT_TEST) +=3D slub_kunit.o
+> obj-$(CONFIG_MEMCPY_KUNIT_TEST) +=3D memcpy_kunit.o
+> +obj-$(CONFIG_IS_SIGNED_TYPE_KUNIT_TEST) +=3D is_signed_type_test.o
+> obj-$(CONFIG_OVERFLOW_KUNIT_TEST) +=3D overflow_kunit.o
+> CFLAGS_stackinit_kunit.o +=3D $(call cc-disable-warning, =
+switch-unreachable)
+> obj-$(CONFIG_STACKINIT_KUNIT_TEST) +=3D stackinit_kunit.o
+> diff --git a/lib/is_signed_type_test.c b/lib/is_signed_type_test.c
+> new file mode 100644
+> index 000000000000..f2eedb1f0935
+> --- /dev/null
+> +++ b/lib/is_signed_type_test.c
+> @@ -0,0 +1,48 @@
+> +// SPDX-License-Identifier: GPL-2.0 OR MIT
+> +/*
+> + *	./tools/testing/kunit/kunit.py run is_signed_type [--raw_output]
+> + */
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+> +#include <kunit/test.h>
+> +#include <linux/overflow.h>
+
+Nit: I don=E2=80=99t know if that makes a huge difference but you might =
+include
+`<linux/compiler.h>` directly to make the final object smaller. Of =
+course, that
+would ideally be a change happening in 2/2 but that was already merged =
+:).
+
+> +
+> +enum unsigned_enum {
+> +	constant_a =3D 3,
+> +};
+> +
+> +enum signed_enum {
+> +	constant_b =3D -1,
+> +	constant_c =3D 2,
+> +};
+> +
+> +static void is_signed_type_test(struct kunit *test)
+> +{
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(bool), false);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(signed char), true);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(unsigned char), false);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(int), true);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(unsigned int), false);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(long), true);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(unsigned long), false);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(long long), true);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(unsigned long long), =
+false);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(enum unsigned_enum), =
+false);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(enum signed_enum), true);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(void *), false);
+> +	KUNIT_EXPECT_EQ(test, is_signed_type(const char *), false);
+> +}
+> +
+> +static struct kunit_case is_signed_type_test_cases[] =3D {
+> +	KUNIT_CASE(is_signed_type_test),
+> +	{}
+> +};
+> +
+> +static struct kunit_suite is_signed_type_test_suite =3D {
+> +	.name =3D "is_signed_type",
+> +	.test_cases =3D is_signed_type_test_cases,
+> +};
+> +
+> +kunit_test_suite(is_signed_type_test_suite);
+> +
+> +MODULE_LICENSE("Dual MIT/GPL=E2=80=9C);
+
+Tested-by: Isabella Basso <isabbasso@riseup.net>
+
+Cheers,
+--
+Isabella Basso=
