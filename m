@@ -2,135 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 502DFC0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE4EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232083AbiH3RpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:45:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32788 "EHLO
+        id S230451AbiH3Rpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:45:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231510AbiH3Rot (ORCPT
+        with ESMTP id S231564AbiH3RpU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:44:49 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9434CB2760;
-        Tue, 30 Aug 2022 10:41:34 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id v26so6295559lfd.10;
-        Tue, 30 Aug 2022 10:41:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=fqPF+MWfeg/k3XnE3nr5+5+Bm3YtEGzavSRsoFVY5bU=;
-        b=JGt/Sl5KZiypaJtO/ZevExJngm47fE7Lp/B4DfxkKe2QnPOs5oHE+w7R9CsOAhlYBB
-         TfyA3Md/yoShK6WcrVQd/UURiBX9kMI1AFYb0AJ2ua5hQ4JSD6EVoLlrECUv9NgMv5Xo
-         8sGwMvQm14FkIry4dvSfLvNeUU/cCw0oEPFnjBFCQWFXZufUD2BGfotKoOAWq1XVe6ih
-         e6VG53UH980nqhEDJVsXWknMcFOyWzPpctD1ErQ6/mzg3LaOJRMliMLUA0m44nQmwb3M
-         XVWvVNZ9+JQSgV/xbKvoxjpb14rdqGFET6NyMMkkc1BqR7DmefC/4SYx1yOg3SEpMNHJ
-         VBMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=fqPF+MWfeg/k3XnE3nr5+5+Bm3YtEGzavSRsoFVY5bU=;
-        b=5G14WZNY959ir8mPM8ZB0w7/N2FBfWrP/JP2XFp/Bfv91jg+w5g4tw9NQ8fOqP5+IE
-         sHq4ynOFkcE1b51s5tvfNsbmDJtUW1x9pfEvYRZPWRQ5Ftsm4H228PXnOlj9n7bLCM/8
-         fI7kmL3QO1WY3wOsFzmOa3rLlyVNh4dYfuDgREjfpa/+V8M658G3iDmTvkFvhb2GqYGo
-         KxNpFGM9WYDW4RdRAmvk4XwN2llNj5fJcnYCM0WAtGtGRO5BoBhPuHoGVs/hv0uU+g5P
-         dYvsQur5/XTaf+Gh4ibL5qT2JewEAeKUhRl+erO3jt04Et5UUVDyYu3hSsS0OSk7B25z
-         nG9w==
-X-Gm-Message-State: ACgBeo1Ykj4PCW95H3w2IDWMGk1mrL//4rM+liSql7pO432+FnRYVLgK
-        4PoJ4umbhsv/SfVonSX184YNcIOfu1NJN1G10+0=
-X-Google-Smtp-Source: AA6agR7sHG4w93xAS6KYapqGyUBnhNmV4MRbk0BLnzFoBmM7S5TDHo9WUpNk4qfGndrsF/+tJZcqmc7POhPosTXqoWw=
-X-Received: by 2002:a05:6512:2621:b0:47f:d228:bdeb with SMTP id
- bt33-20020a056512262100b0047fd228bdebmr7618563lfb.121.1661881291091; Tue, 30
- Aug 2022 10:41:31 -0700 (PDT)
+        Tue, 30 Aug 2022 13:45:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FA68D5E92;
+        Tue, 30 Aug 2022 10:41:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77304617B3;
+        Tue, 30 Aug 2022 17:23:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFD4C4347C;
+        Tue, 30 Aug 2022 17:23:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661880228;
+        bh=F4JNBWRRsruom+7qycrtF3bC1w50tyrEdpDUdXtc/3k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=q70iufNtohXl6WhqNeFwjX8TPCeklAFGbS8bchj+rVaXRoGMVrtSX33o+71ZMuLT2
+         m+zPTKLIgcfNkwctCDbvwRMHoyO5DzpZPvCWkJLwi65XotuDKT9ljaLXmTaj/7ikJr
+         tWaulIRI3aAF+Y1kePgVW3w3ACPUS+ZBWyb+IaY9ngr0EuWOthZOW9gmWBPZqHhtJQ
+         KXX11w88uiyXraL/FgW4hl7c7I0fXOYYNdXxP55GiPVRAoKOQ2HqCQSAQiwuM13un5
+         KdaQEXTymD1bGFgq+2n9yidAWOfe8B7C/Sxsu1qQo/I1OFzN3TPOOYcNNGSgiMfTs5
+         IXOc99mH15ynw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Li Qiong <liqiong@nfschina.com>, Helge Deller <deller@gmx.de>,
+        Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 08/16] parisc: ccio-dma: Handle kmalloc failure in ccio_init_resources()
+Date:   Tue, 30 Aug 2022 13:23:09 -0400
+Message-Id: <20220830172317.581397-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
+References: <20220830172317.581397-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <CAO4S-me4hoy0W6GASU3tOFF16+eaotxPbw+kqyc6vuxtxJyDZg@mail.gmail.com>
- <CAO4S-mfTNEKCs8ZQcT09wDzxX8MfidmbTVzaFMD3oG4i7Ytynw@mail.gmail.com> <f53dfd70-f8b3-8401-3f5a-d738b2f242e1@gmail.com>
-In-Reply-To: <f53dfd70-f8b3-8401-3f5a-d738b2f242e1@gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Tue, 30 Aug 2022 10:41:19 -0700
-Message-ID: <CABBYNZLZv_Y6E-rFc3kKFk+PqwNkWAzneAw=cUTEY4yW-cTs1Q@mail.gmail.com>
-Subject: Re: possible deadlock in rfcomm_sk_state_change
-To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Cc:     Jiacheng Xu <578001344xu@gmail.com>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Desmond,
+From: Li Qiong <liqiong@nfschina.com>
 
-On Mon, Aug 29, 2022 at 11:48 PM Desmond Cheong Zhi Xi
-<desmondcheongzx@gmail.com> wrote:
->
-> +cc Bluetooth and Networking maintainers
->
-> Hi Jiacheng,
->
-> On 28/8/22 04:03, Jiacheng Xu wrote:
-> > Hi,
-> >
-> > I believe the deadlock is more than possible but actually real.
-> > I got a poc that could stably trigger the deadlock.
-> >
-> > poc: https://drive.google.com/file/d/1PjqvMtHsrrGM1MIRGKl_zJGR-teAMMQy/view?usp=sharing
-> >
-> > Description/Root cause:
-> > In rfcomm_sock_shutdown(), lock_sock() is called when releasing and
-> > shutting down socket.
-> > However, lock_sock() has to be called once more when the sk_state is
-> > changed because the
-> > lock is not always held when rfcomm_sk_state_change() is called. One
-> > such call stack is:
-> >
-> >    rfcomm_sock_shutdown():
-> >      lock_sock();
-> >      __rfcomm_sock_close():
-> >        rfcomm_dlc_close():
-> >          __rfcomm_dlc_close():
-> >            rfcomm_dlc_lock();
-> >            rfcomm_sk_state_change():
-> >              lock_sock();
-> >
-> > Besides the recursive deadlock, there is also an
-> > issue of a lock hierarchy inversion between rfcomm_dlc_lock() and
-> > lock_sock() if the socket is locked in rfcomm_sk_state_change().
->
->
-> Thanks for the poc and for following the trail all the way to the root
-> cause - this was a known issue and I didn't realize the patch wasn't
-> applied.
->
-> >  > Reference:
-> https://lore.kernel.org/all/20211004180734.434511-1-desmondcheongzx@gmail.com/
-> >
->
-> Fwiw, I tested the patch again with syzbot. It still applies cleanly to
-> the head of bluetooth-next and seems to address the root cause.
->
-> Any thoughts from the maintainers on this issue and the proposed fix?
+[ Upstream commit d46c742f827fa2326ab1f4faa1cccadb56912341 ]
 
-We probably need to introduce a test to rfcomm-tester to reproduce
-this sort of problem, I also would like to avoid introducing a work
-just to trigger a state change since we don't have such problem on the
-likes of L2CAP socket so perhaps we need to rework the code a little
-bit to avoid the locking problems.
+As the possible failure of the kmalloc(), it should be better
+to fix this error path, check and return '-ENOMEM' error code.
 
-> Best,
-> Desmond
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/parisc/ccio-dma.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-
-
+diff --git a/drivers/parisc/ccio-dma.c b/drivers/parisc/ccio-dma.c
+index b916fab9b1618..ffd5000c23d39 100644
+--- a/drivers/parisc/ccio-dma.c
++++ b/drivers/parisc/ccio-dma.c
+@@ -1380,15 +1380,17 @@ ccio_init_resource(struct resource *res, char *name, void __iomem *ioaddr)
+ 	}
+ }
+ 
+-static void __init ccio_init_resources(struct ioc *ioc)
++static int __init ccio_init_resources(struct ioc *ioc)
+ {
+ 	struct resource *res = ioc->mmio_region;
+ 	char *name = kmalloc(14, GFP_KERNEL);
+-
++	if (unlikely(!name))
++		return -ENOMEM;
+ 	snprintf(name, 14, "GSC Bus [%d/]", ioc->hw_path);
+ 
+ 	ccio_init_resource(res, name, &ioc->ioc_regs->io_io_low);
+ 	ccio_init_resource(res + 1, name, &ioc->ioc_regs->io_io_low_hv);
++	return 0;
+ }
+ 
+ static int new_ioc_area(struct resource *res, unsigned long size,
+@@ -1543,7 +1545,10 @@ static int __init ccio_probe(struct parisc_device *dev)
+ 		return -ENOMEM;
+ 	}
+ 	ccio_ioc_init(ioc);
+-	ccio_init_resources(ioc);
++	if (ccio_init_resources(ioc)) {
++		kfree(ioc);
++		return -ENOMEM;
++	}
+ 	hppa_dma_ops = &ccio_ops;
+ 
+ 	hba = kzalloc(sizeof(*hba), GFP_KERNEL);
 -- 
-Luiz Augusto von Dentz
+2.35.1
+
