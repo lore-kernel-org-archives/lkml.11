@@ -2,120 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B39CC0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92454C0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230130AbiH3NCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40596 "EHLO
+        id S230086AbiH3NCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:02:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbiH3NCd (ORCPT
+        with ESMTP id S230128AbiH3NCt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:02:33 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F7AE7B2B4;
-        Tue, 30 Aug 2022 06:02:32 -0700 (PDT)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MH6s14Zqdz686l0;
-        Tue, 30 Aug 2022 21:01:57 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 30 Aug 2022 15:02:29 +0200
-Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 30 Aug
- 2022 14:02:29 +0100
-Date:   Tue, 30 Aug 2022 14:02:28 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <kernel@pengutronix.de>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v1 3/3] iio: adc: tsc2046: silent spi_device_id warning
-Message-ID: <20220830140228.000013ca@huawei.com>
-In-Reply-To: <20220830110709.2037302-3-o.rempel@pengutronix.de>
-References: <20220830110709.2037302-1-o.rempel@pengutronix.de>
-        <20220830110709.2037302-3-o.rempel@pengutronix.de>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Tue, 30 Aug 2022 09:02:49 -0400
+X-Greylist: delayed 1608 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 30 Aug 2022 06:02:46 PDT
+Received: from smtp2.uni-freiburg.de (smtp2.uni-freiburg.de [IPv6:2001:7c0:2500:4::25:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA58674CCD
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:02:46 -0700 (PDT)
+Delivery-date: Tue, 30 Aug 2022 15:02:46 +0200
+Received: from fe2.uni-freiburg.de ([132.230.2.222] helo=uni-freiburg.de) port 54700 
+        by smtp2.uni-freiburg.de with esmtp
+        ( Exim )
+        id 1oT0TD-0008CD-6L
+        for linux-kernel@vger.kernel.org; Tue, 30 Aug 2022 14:35:56 +0200
+Received: from [132.230.8.113] (account simon.rettberg@rz.uni-freiburg.de HELO computer)
+  by mail.uni-freiburg.de (CommuniGate Pro SMTP 6.3.14)
+  with ESMTPSA id 94944979; Tue, 30 Aug 2022 14:35:56 +0200
+Date:   Tue, 30 Aug 2022 14:35:55 +0200
+From:   Simon Rettberg <simon.rettberg@rz.uni-freiburg.de>
+To:     dri-devel@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org
+Cc:     Rafael Gieschke <rafael.gieschke@rz.uni-freiburg.de>
+Subject: [PATCH] drm/display: Don't assume dual mode adaptors support i2c
+ sub-addressing
+Message-ID: <20220830143555.22064236@computer>
+Organization: Rechenzentrum Uni Freiburg
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhrpeml100006.china.huawei.com (7.191.160.224) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022 13:07:09 +0200
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+Current dual mode adaptor ("DP++") detection code assumes that all adaptors
+support i2c sub-addressing for read operations from the DP-HDMI adaptor ID
+buffer.  It has been observed that multiple adaptors do not in fact
+support this, and always return data starting at register 0.  On
+affected adaptors, the code failed to read the proper registers that
+would identify the device as a type 2 adaptor, and handled those as
+type 1, limiting the TMDS clock to 165MHz.
+Fix this by always reading the ID buffer starting from offset 0, and
+discarding any bytes before the actual offset of interest.
 
-> Add spi_device_id to silent following warning:
->  SPI driver tsc2046 has no spi_device_id for ti,tsc2046e-adc
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  drivers/iio/adc/ti-tsc2046.c | 17 ++++++++++++++++-
->  1 file changed, 16 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
-> index bbc8b4137b0b1..b9a1fac659d46 100644
-> --- a/drivers/iio/adc/ti-tsc2046.c
-> +++ b/drivers/iio/adc/ti-tsc2046.c
-> @@ -761,7 +761,15 @@ static int tsc2046_adc_probe(struct spi_device *spi)
->  		return -EINVAL;
->  	}
->  
-> -	dcfg = device_get_match_data(dev);
-> +	if (!dev_fwnode(dev)) {
-> +		const struct spi_device_id *id;
-> +
-> +		id = spi_get_device_id(spi);
-> +		dcfg = (const struct tsc2046_adc_dcfg *)id->driver_data;
+Signed-off-by: Simon Rettberg <simon.rettberg@rz.uni-freiburg.de>
+Reviewed-by: Rafael Gieschke <rafael.gieschke@rz.uni-freiburg.de>
+---
+We had problems with multiple different "4k ready" DP++ adaptors only
+resulting in 1080p resolution on Linux.  While one of them turned out to
+actually just be a type1 adaptor, the others, according to the data
+retrieved via i2cdump, were in fact proper type2 adaptors, advertising a
+TMDS clock of 300MHz.  As it turned out, none of them supported
+sub-addressing when reading from the DP-HDMI adaptor ID buffer via i2c.
+The existing code suggested that this is known to happen with "broken"
+type1 adaptors, but evidently, type2 adaptors are also affected.
+We tried finding authoritative documentation on whether or not this is
+allowed behaviour, but since all the official VESA docs are paywalled,
+the best we could come up with was the spec sheet for Texas Instruments'
+SNx5DP149 chip family.[1]  It explicitly mentions that sub-addressing is
+supported for register writes, but *not* for reads (See NOTE in
+section 8.5.3).  Unless TI blatantly and openly decided to violate the
+VESA spec, one could take that as a strong hint that sub-addressing is
+in fact not mandated by VESA.
 
-Driver data not set below.
+[1] https://www.ti.com/lit/ds/symlink/sn75dp149.pdf
+---
+ .../gpu/drm/display/drm_dp_dual_mode_helper.c | 52 ++++++++++---------
+ 1 file changed, 28 insertions(+), 24 deletions(-)
 
-Otherwise this looks good to me.  An alternative more common form (I think...)
-is call device_get_match_data() unconditionally and if that is null follow
-the driver_data path. Either way is fine though.
-
-Could you add to the patch description where
-the warning is coming from?   Build time / runtime etc and what tool?
-
-Thanks,
-
-Jonathan
-
-
-> +	} else {
-> +		dcfg = device_get_match_data(dev);
-> +	}
-> +
->  	if (!dcfg)
->  		return -EINVAL;
->  
-> @@ -878,11 +886,18 @@ static const struct of_device_id ads7950_of_table[] = {
->  };
->  MODULE_DEVICE_TABLE(of, ads7950_of_table);
->  
-> +static const struct spi_device_id tsc2046_adc_spi_ids[] = {
-> +	{ "tsc2046e-adc" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, tsc2046_adc_spi_ids);
-> +
->  static struct spi_driver tsc2046_adc_driver = {
->  	.driver = {
->  		.name = "tsc2046",
->  		.of_match_table = ads7950_of_table,
->  	},
-> +	.id_table = tsc2046_adc_spi_ids,
->  	.probe = tsc2046_adc_probe,
->  	.remove = tsc2046_adc_remove,
->  };
-
+diff --git a/drivers/gpu/drm/display/drm_dp_dual_mode_helper.c b/drivers/gpu/drm/display/drm_dp_dual_mode_helper.c
+index 3ea53bb67..6147da983 100644
+--- a/drivers/gpu/drm/display/drm_dp_dual_mode_helper.c
++++ b/drivers/gpu/drm/display/drm_dp_dual_mode_helper.c
+@@ -63,23 +63,42 @@
+ ssize_t drm_dp_dual_mode_read(struct i2c_adapter *adapter,
+ 			      u8 offset, void *buffer, size_t size)
+ {
++	int ret;
++	u8 zero = 0;
++	char *tmpbuf;
++	/*
++	 * As sub-addressing is not supported by all adaptors,
++	 * always explicitly read from the start and discard
++	 * any bytes that come before the requested offset.
++	 * This way, no matter whether the adaptor supports it
++	 * or not, we'll end up reading the proper data.
++	 */
+ 	struct i2c_msg msgs[] = {
+ 		{
+ 			.addr = DP_DUAL_MODE_SLAVE_ADDRESS,
+ 			.flags = 0,
+ 			.len = 1,
+-			.buf = &offset,
++			.buf = &zero,
+ 		},
+ 		{
+ 			.addr = DP_DUAL_MODE_SLAVE_ADDRESS,
+ 			.flags = I2C_M_RD,
+-			.len = size,
+-			.buf = buffer,
++			.len = size + offset,
++			.buf = NULL,
+ 		},
+ 	};
+-	int ret;
+ 
++	tmpbuf = kmalloc(size + offset, GFP_KERNEL);
++	if (!tmpbuf)
++		return -ENOMEM;
++
++	msgs[1].buf = tmpbuf;
+ 	ret = i2c_transfer(adapter, msgs, ARRAY_SIZE(msgs));
++	if (ret == ARRAY_SIZE(msgs))
++		memcpy(buffer, tmpbuf + offset, size);
++
++	kfree(tmpbuf);
++
+ 	if (ret < 0)
+ 		return ret;
+ 	if (ret != ARRAY_SIZE(msgs))
+@@ -208,18 +227,6 @@ enum drm_dp_dual_mode_type drm_dp_dual_mode_detect(const struct drm_device *dev,
+ 	if (ret)
+ 		return DRM_DP_DUAL_MODE_UNKNOWN;
+ 
+-	/*
+-	 * Sigh. Some (maybe all?) type 1 adaptors are broken and ack
+-	 * the offset but ignore it, and instead they just always return
+-	 * data from the start of the HDMI ID buffer. So for a broken
+-	 * type 1 HDMI adaptor a single byte read will always give us
+-	 * 0x44, and for a type 1 DVI adaptor it should give 0x00
+-	 * (assuming it implements any registers). Fortunately neither
+-	 * of those values will match the type 2 signature of the
+-	 * DP_DUAL_MODE_ADAPTOR_ID register so we can proceed with
+-	 * the type 2 adaptor detection safely even in the presence
+-	 * of broken type 1 adaptors.
+-	 */
+ 	ret = drm_dp_dual_mode_read(adapter, DP_DUAL_MODE_ADAPTOR_ID,
+ 				    &adaptor_id, sizeof(adaptor_id));
+ 	drm_dbg_kms(dev, "DP dual mode adaptor ID: %02x (err %zd)\n", adaptor_id, ret);
+@@ -233,11 +240,10 @@ enum drm_dp_dual_mode_type drm_dp_dual_mode_detect(const struct drm_device *dev,
+ 				return DRM_DP_DUAL_MODE_TYPE2_DVI;
+ 		}
+ 		/*
+-		 * If neither a proper type 1 ID nor a broken type 1 adaptor
+-		 * as described above, assume type 1, but let the user know
+-		 * that we may have misdetected the type.
++		 * If not a proper type 1 ID, still assume type 1, but let
++		 * the user know that we may have misdetected the type.
+ 		 */
+-		if (!is_type1_adaptor(adaptor_id) && adaptor_id != hdmi_id[0])
++		if (!is_type1_adaptor(adaptor_id))
+ 			drm_err(dev, "Unexpected DP dual mode adaptor ID %02x\n", adaptor_id);
+ 
+ 	}
+@@ -343,10 +349,8 @@ EXPORT_SYMBOL(drm_dp_dual_mode_get_tmds_output);
+  * @enable: enable (as opposed to disable) the TMDS output buffers
+  *
+  * Set the state of the TMDS output buffers in the adaptor. For
+- * type2 this is set via the DP_DUAL_MODE_TMDS_OEN register. As
+- * some type 1 adaptors have problems with registers (see comments
+- * in drm_dp_dual_mode_detect()) we avoid touching the register,
+- * making this function a no-op on type 1 adaptors.
++ * type2 this is set via the DP_DUAL_MODE_TMDS_OEN register.
++ * Type1 adaptors do not support any register writes.
+  *
+  * Returns:
+  * 0 on success, negative error code on failure
+-- 
+2.35.1
