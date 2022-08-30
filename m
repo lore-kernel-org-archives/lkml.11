@@ -2,235 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 675B7ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2B2ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:50:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230092AbiH3QuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35570 "EHLO
+        id S230461AbiH3Qu0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:50:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiH3QuC (ORCPT
+        with ESMTP id S230289AbiH3QuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:50:02 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8763B8F16
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:49:43 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id s15-20020a5b044f000000b00680c4eb89f1so170325ybp.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:49:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=UaYLGnXSHOjhMWZ30heQH6ZXdh5cOP0FJqcTp4jtF4w=;
-        b=oTN9KhHjcP0AfblEbs3Q7NbkeKAyOaKREksXavFwUQxmsgajHOMpG8RNoVjleKBAgM
-         Ebs10bqWy1dYxrCQvDyivOwPcvK0DV6slhJSpIKoxwAWlQkcXCS3SPhlnR3Q58E3rjxy
-         9LefxvaqfDh3W8r0VBvBnqIT7mfPHvR2uqwQXQR9aP5bx/06QW6MxhipI7jztgL2T9ra
-         6TPP+Xa2mZEJzzUP8NTo1kC98RGLYfl+v9r26juXPkh4LduIGJtnqIaA7JWKMZNtsXc9
-         TSmciWithtMWhS9Uyn5OqIV+pkoOLtUKzu2yFOiMVieu42u+26PQzW/jZEGz9LJDHR4S
-         jLiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=UaYLGnXSHOjhMWZ30heQH6ZXdh5cOP0FJqcTp4jtF4w=;
-        b=mwRxAr3yLCZVtg/WNckorjZGObFq5yKmfpGaNoiiPPCLMsIUgn3D5Vdkp6AztsDB6+
-         dbmc1Pd5aW+zi5JQIDJ3Q2Mzgvm4IZ/OYSpzG4MtEBIOpomnZJVy6zxLnXxLwfKWEkba
-         r+YTcOUMJ23cSTUi92Oceodmqb0PQ1pAEMOE7bXIszM2u0dsb6K7rx7smNoGGo5V1KI+
-         jTGLjgtuaseA8K/NURtLfsjRpds4oKOqfItvmoUQZMJlIqNHZ9IfoBYRmCts83pR0tc6
-         6zXkoiSGyzp7YlSZFPiMyMmCOCmuqC+OjDFzAYtH0htsO7tG5jD0MmwIbR4kmrrqYj88
-         nzRQ==
-X-Gm-Message-State: ACgBeo39JoslByYeu2D3DASfk1AZsnJztxF4+c6kUjIpglwHaKvWLoN/
-        PB87y0QwbUjeV3eoAr8VxE03B15UqL7q
-X-Google-Smtp-Source: AA6agR6J1O+V+Nt9fLvS8RK117oZYQF/w6JmVykwj5TdihpD8bEuo6Mwfx2VdXnkW03hDBYVcuAqjfMvlXkv
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:902c:b0fa:dec9:8767])
- (user=irogers job=sendgmr) by 2002:a5b:e8c:0:b0:696:4b76:3c with SMTP id
- z12-20020a5b0e8c000000b006964b76003cmr12540073ybr.168.1661878177917; Tue, 30
- Aug 2022 09:49:37 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 09:48:44 -0700
-In-Reply-To: <20220830164846.401143-1-irogers@google.com>
-Message-Id: <20220830164846.401143-7-irogers@google.com>
-Mime-Version: 1.0
-References: <20220830164846.401143-1-irogers@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Subject: [PATCH v1 6/8] perf stat: Delay metric parsing
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Richter <tmricht@linux.ibm.com>,
-        James Clark <james.clark@arm.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        John Garry <john.garry@huawei.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Florian Fischer <florian.fischer@muhq.space>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        perry.taylor@intel.com, caleb.biggers@intel.com,
-        kshipra.bopardikar@intel.com
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 30 Aug 2022 12:50:04 -0400
+Received: from imap4.hz.codethink.co.uk (imap4.hz.codethink.co.uk [188.40.203.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66550E2C41;
+        Tue, 30 Aug 2022 09:49:40 -0700 (PDT)
+Received: from [167.98.27.226] (helo=[10.35.5.6])
+        by imap4.hz.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
+        id 1oT4Qh-0069aK-2x; Tue, 30 Aug 2022 17:49:35 +0100
+Message-ID: <c2f86a2a-a30e-5fac-de6c-6a28edc5bcee@codethink.co.uk>
+Date:   Tue, 30 Aug 2022 17:49:34 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [RESEND PATCH] dt-bindings: sifive-ccache: fix cache level for l3
+ cache
+To:     Conor.Dooley@microchip.com, ben.dooks@sifive.com,
+        palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, greentime.hu@sifive.com,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org
+References: <20220829062202.3287-1-zong.li@sifive.com>
+ <20220830125133.1698781-1-ben.dooks@sifive.com>
+ <b810d354-18f3-9ae0-6310-57d9e36f4f9b@microchip.com>
+ <6b6837c1-5a2c-567b-ba64-72a1dca38807@sifive.com>
+ <8422fb34-fc05-eddd-0eaa-3e713896d05d@microchip.com>
+Content-Language: en-GB
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+In-Reply-To: <8422fb34-fc05-eddd-0eaa-3e713896d05d@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Having metric parsing as part of argument processing causes issues as
-flags like metric-no-group may be specified later. It also denies the
-opportunity to optimize the events on SMT systems where fewer events
-may be possible if we know the target is system-wide. Move metric
-parsing to after command line option parsing. Because of how stat runs
-this moves the parsing after record/report which fail to work with
-metrics currently anyway.
+On 30/08/2022 14:49, Conor.Dooley@microchip.com wrote:
+> On 30/08/2022 13:58, Ben Dooks wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>
+>> On 30/08/2022 13:56, Conor.Dooley@microchip.com wrote:
+>>> On 30/08/2022 13:51, Ben Dooks wrote:
+>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>>>
+>>>> With newer cores such as the p550, the SiFive composable cache can be
+>>>> a level 3 cache. Update the cache level to be one of 2 or 3.
+>>>>
+>>>> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+>>>> ---
+>>>>     Documentation/devicetree/bindings/riscv/sifive-ccache.yaml | 2 +-
+>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/riscv/sifive-ccache.yaml b/Documentation/devicetree/bindings/riscv/sifive-ccache.yaml
+>>>> index 1a64a5384e36..6190deb65455 100644
+>>>> --- a/Documentation/devicetree/bindings/riscv/sifive-ccache.yaml
+>>>> +++ b/Documentation/devicetree/bindings/riscv/sifive-ccache.yaml
+>>>> @@ -45,7 +45,7 @@ properties:
+>>>>         const: 64
+>>>>
+>>>>       cache-level:
+>>>> -    const: 2
+>>>> +    enum: [2, 3]
+>>>
+>>> Do we want to enforce the cache level like we currently do for
+>>> interrupts and cache-sets?
+>>
+>> Not sure on that, for the P550 cores the ccache is going to be level3
+>> and my colleague has said it does confuse some tooling if the level is
+>> not set correctly.
+> 
+> What I meant was:
+> Currently we enforce the correct cache-sets & interrupts based on the
+> compatible string. Adding enum: [2, 3] relaxes the enforcement of the
+> cache-level for existing compatibles and does not prevent someone from
+> setting an incorrect cache level for p550 cores.
+> 
+> I think that on top of adding the enum, we should add some enforcement
+> so that the cache is not incorrectly configured for both existing l2
+> caches and for the new l3 versions.
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/builtin-stat.c     | 48 ++++++++++++++++++++++++-----------
- tools/perf/util/metricgroup.c |  3 +--
- tools/perf/util/metricgroup.h |  2 +-
- 3 files changed, 35 insertions(+), 18 deletions(-)
+Ok, we can add some enforcement once we add the new bindings, but I'm
+not ready for that today and I'd rather get the current queue sorted
+out first before we come in with newer silicon which hasn't hit the
+market uet.
 
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index 7fb81a44672d..c813b1aa7d7c 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -191,6 +191,7 @@ static bool			append_file;
- static bool			interval_count;
- static const char		*output_name;
- static int			output_fd;
-+static char			*metrics;
- 
- struct perf_stat {
- 	bool			 record;
-@@ -1147,14 +1148,21 @@ static int enable_metric_only(const struct option *opt __maybe_unused,
- 	return 0;
- }
- 
--static int parse_metric_groups(const struct option *opt,
-+static int append_metric_groups(const struct option *opt __maybe_unused,
- 			       const char *str,
- 			       int unset __maybe_unused)
- {
--	return metricgroup__parse_groups(opt, str,
--					 stat_config.metric_no_group,
--					 stat_config.metric_no_merge,
--					 &stat_config.metric_events);
-+	if (metrics) {
-+		char *tmp;
-+
-+		if (asprintf(&tmp, "%s,%s", metrics, str) < 0)
-+			return -ENOMEM;
-+		free(metrics);
-+		metrics = tmp;
-+	} else {
-+		metrics = strdup(str);
-+	}
-+	return 0;
- }
- 
- static int parse_control_option(const struct option *opt,
-@@ -1298,7 +1306,7 @@ static struct option stat_options[] = {
- 			"measure SMI cost"),
- 	OPT_CALLBACK('M', "metrics", &evsel_list, "metric/metric group list",
- 		     "monitor specified metrics or metric groups (separated by ,)",
--		     parse_metric_groups),
-+		     append_metric_groups),
- 	OPT_BOOLEAN_FLAG(0, "all-kernel", &stat_config.all_kernel,
- 			 "Configure all used events to run in kernel space.",
- 			 PARSE_OPT_EXCLUSIVE),
-@@ -1791,11 +1799,9 @@ static int add_default_attributes(void)
- 		 * on an architecture test for such a metric name.
- 		 */
- 		if (metricgroup__has_metric("transaction")) {
--			struct option opt = { .value = &evsel_list };
--
--			return metricgroup__parse_groups(&opt, "transaction",
-+			return metricgroup__parse_groups(evsel_list, "transaction",
- 							 stat_config.metric_no_group,
--							stat_config.metric_no_merge,
-+							 stat_config.metric_no_merge,
- 							 &stat_config.metric_events);
- 		}
- 
-@@ -2260,8 +2266,6 @@ int cmd_stat(int argc, const char **argv)
- 	argc = parse_options_subcommand(argc, argv, stat_options, stat_subcommands,
- 					(const char **) stat_usage,
- 					PARSE_OPT_STOP_AT_NON_OPTION);
--	perf_stat__collect_metric_expr(evsel_list);
--	perf_stat__init_shadow_stats();
- 
- 	if (stat_config.csv_sep) {
- 		stat_config.csv_output = true;
-@@ -2428,6 +2432,23 @@ int cmd_stat(int argc, const char **argv)
- 			target.system_wide = true;
- 	}
- 
-+	if ((stat_config.aggr_mode == AGGR_THREAD) && (target.system_wide))
-+		target.per_thread = true;
-+
-+	/*
-+	 * Metric parsing needs to be delayed as metrics may optimize events
-+	 * knowing the target is system-wide.
-+	 */
-+	if (metrics) {
-+		metricgroup__parse_groups(evsel_list, metrics,
-+					stat_config.metric_no_group,
-+					stat_config.metric_no_merge,
-+					&stat_config.metric_events);
-+		zfree(&metrics);
-+	}
-+	perf_stat__collect_metric_expr(evsel_list);
-+	perf_stat__init_shadow_stats();
-+
- 	if (add_default_attributes())
- 		goto out;
- 
-@@ -2447,9 +2468,6 @@ int cmd_stat(int argc, const char **argv)
- 		}
- 	}
- 
--	if ((stat_config.aggr_mode == AGGR_THREAD) && (target.system_wide))
--		target.per_thread = true;
--
- 	if (evlist__fix_hybrid_cpus(evsel_list, target.cpu_list)) {
- 		pr_err("failed to use cpu list %s\n", target.cpu_list);
- 		goto out;
-diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
-index b144c3e35264..9151346a16ab 100644
---- a/tools/perf/util/metricgroup.c
-+++ b/tools/perf/util/metricgroup.c
-@@ -1646,13 +1646,12 @@ static int parse_groups(struct evlist *perf_evlist, const char *str,
- 	return ret;
- }
- 
--int metricgroup__parse_groups(const struct option *opt,
-+int metricgroup__parse_groups(struct evlist *perf_evlist,
- 			      const char *str,
- 			      bool metric_no_group,
- 			      bool metric_no_merge,
- 			      struct rblist *metric_events)
- {
--	struct evlist *perf_evlist = *(struct evlist **)opt->value;
- 	const struct pmu_events_table *table = pmu_events_table__find();
- 
- 	if (!table)
-diff --git a/tools/perf/util/metricgroup.h b/tools/perf/util/metricgroup.h
-index 016b3b1a289a..af9ceadaec0f 100644
---- a/tools/perf/util/metricgroup.h
-+++ b/tools/perf/util/metricgroup.h
-@@ -64,7 +64,7 @@ struct metric_expr {
- struct metric_event *metricgroup__lookup(struct rblist *metric_events,
- 					 struct evsel *evsel,
- 					 bool create);
--int metricgroup__parse_groups(const struct option *opt,
-+int metricgroup__parse_groups(struct evlist *perf_evlist,
- 			      const char *str,
- 			      bool metric_no_group,
- 			      bool metric_no_merge,
+> @Zong, could you please incorporate Ben's patches into your V2? it
+> would make it a lot easier to review what's going on here. It may
+> also make sense to add the compatible for the p550 cache while we are
+> at it...
+> 
+> FYI, there is also this patch here outstanding against the l2:
+> https://lore.kernel.org/linux-riscv/20220825180417.1259360-2-mail@conchuod.ie/
+> 
+> I intend taking this into 6.0-rc5 or so as a fix, so if you could
+> rebase the series on that so it is not lost in the dt-binding rename
+> that would be great.
+
+Do we need someone to take charge of this series?
+
 -- 
-2.37.2.672.g94769d06f0-goog
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
+
+https://www.codethink.co.uk/privacy.html
 
