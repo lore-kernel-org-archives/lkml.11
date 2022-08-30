@@ -2,154 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C76ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:29:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1662BECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231756AbiH3R3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:29:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
+        id S231770AbiH3R3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:29:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231944AbiH3R3B (ORCPT
+        with ESMTP id S231783AbiH3R2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:29:01 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B26E15C7A1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:26:25 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id fa2so4092144pjb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:26:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=zAKSO26c9m8B+oXZ5FSXMQLoDUzeWAGDmdsownEQVv0=;
-        b=lIlqhwrzGQDmf0O81swu6nyaW8iX2n3RRGvkOJIWt0iw1hpt0Oo/ClGjgbeE5moYix
-         ShYSdqrqjdZJmcr8XsHCnEorT8McR7+lBiiOSKuVJ06S3Mc++LMYpAYVeNdjklldSu25
-         uqPROlC9zzPY9qXFsSGZcigz2j/4zbTTzs+FBQN8hb3xYlXHCCiwSsDpmddb7fWUywtf
-         cIzWIkRuH71Z3nMYwgS8qCsPei/2Basu36iuvpJO97ZgmnekEwi5Cwh0c8bELRQZ8dHH
-         iKbjIjF4TE5Irgu8Tb7kTOHxFmJuV269Hhq3p6kIU+vFtFW7/t69LKDUdXu698hHt1Ap
-         2Nnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=zAKSO26c9m8B+oXZ5FSXMQLoDUzeWAGDmdsownEQVv0=;
-        b=OLfH2/+SMvtVfO/sOzpLnr6K1osRxxTtXiSoMfd160tj6cT5sHvctCOhyBYj8VN38X
-         NDcRw9CQO3o6pQgkTcat/AugIr7rmaSx5UO5k1EtUqDVUcqnjbLCQkuWzRVRj13d6Mmz
-         g2tyJKP+1XjUDXZ2BxEVtHrYysG6RRhKhkEigwVjCxkcV7Vo4hmrZ8nJzgXzwIXStxBf
-         AzGFZjajmtNVy4m7+nziACvaN9uo4Hw+XYdzMtNEoUgHK6VkS1L8wVZmllibu2FT7veA
-         BDuwl/q615byTvk5rruow9sm0LbC5s/fHjsaAWdicxFmZ8XkfP7iBdoVH6Rq2aj/lr+j
-         y/YQ==
-X-Gm-Message-State: ACgBeo3EkStv83EbEmzh22aq4gzRcW79vxjbAPItLZvutb2/ftJTodHT
-        B4JF397Qt6NYtDQ8LGwRRpfh5w==
-X-Google-Smtp-Source: AA6agR5/CrwJJ1oc1zoSSIGRTxCXmnO0RTdlJEzjr25ib60dcSg/E4dy8E5Dpei3WfFN3UvG/pl56w==
-X-Received: by 2002:a17:902:e741:b0:175:2ffe:9280 with SMTP id p1-20020a170902e74100b001752ffe9280mr2341124plf.153.1661880297742;
-        Tue, 30 Aug 2022 10:24:57 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id n27-20020a056a00213b00b0052d327f67b9sm9549713pfj.152.2022.08.30.10.24.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 10:24:57 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 17:24:53 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     mingo@redhat.com, pbonzini@redhat.com, tglx@linutronix.de,
-        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
-        hpa@zytor.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] KVM: nVMX: Fix comment typo
-Message-ID: <Yw5H5ZYlPLixSlcn@google.com>
-References: <20220715044659.20282-1-wangborong@cdjrlc.com>
+        Tue, 30 Aug 2022 13:28:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87CDB24A4;
+        Tue, 30 Aug 2022 10:25:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D66E617B6;
+        Tue, 30 Aug 2022 17:24:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C72F9C433C1;
+        Tue, 30 Aug 2022 17:24:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661880250;
+        bh=NY6JsWI4b+Cby3KUaRVvcFmBg7BbC3hULZdp9WjljhA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vExd6F6wEdjlYzT6zkCD3pd6Cyx2HIjthgkvXesJMB8+fyReuZq7sUaQ+DHoMQ6oW
+         mEI2DbZVay9ejfTkQwT0QbipWIcyj9AY1V8cKY64M8OFas+ERPsT3nEh/jeSEG1Pg+
+         5gEpXAzBp6Ubvd3A29zlVQd89c7HPK9A8Zb5eHEatRGzp72XpqCcYPV4Cy7mFA9hvY
+         NCxCLtC00AmyLzoem1yI1K9dR6X3xM3PI8gNa2WEci+IAG2XMmga0WJBOFoQgxsuUa
+         k4kSrJQTRjAK0Nd3kGqk9rHtvsTFog5KC8WRQjVdw55xEY50vuoCdhl7LxMFDtW8ON
+         rGrkidMqSVEVQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, qiangqing.zhang@nxp.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 12/16] fec: Restart PPS after link state change
+Date:   Tue, 30 Aug 2022 13:23:13 -0400
+Message-Id: <20220830172317.581397-12-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
+References: <20220830172317.581397-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220715044659.20282-1-wangborong@cdjrlc.com>
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022, Jason Wang wrote:
-> The double `we' is duplicated in line 2569, remove one.
-> 
-> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
-> ---
->  arch/x86/kvm/vmx/nested.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index fbeda5aa72e1..cd99e49d7ff1 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -2566,7 +2566,7 @@ static int prepare_vmcs02(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
->  	 * bits which we consider mandatory enabled.
->  	 * The CR0_READ_SHADOW is what L2 should have expected to read given
->  	 * the specifications by L1; It's not enough to take
-> -	 * vmcs12->cr0_read_shadow because on our cr0_guest_host_mask we we
-> +	 * vmcs12->cr0_read_shadow because on our cr0_guest_host_mask we
->  	 * have more bits than L1 expected.
->  	 */
+From: Csókás Bence <csokas.bence@prolan.hu>
 
-I'd prefer to rewrite this entire comment.  The key part is that KVM needs to
-override the shadows that are set by vmx_set_cr0/4(), and then in the comment
-above the helpers call out that the value+mask in vmcs02 may not match vmcs12.
+[ Upstream commit f79959220fa5fbda939592bf91c7a9ea90419040 ]
 
+On link state change, the controller gets reset,
+causing PPS to drop out and the PHC to lose its
+time and calibration. So we restart it if needed,
+restoring calibration and time registers.
+
+Changes since v2:
+* Add `fec_ptp_save_state()`/`fec_ptp_restore_state()`
+* Use `ktime_get_real_ns()`
+* Use `BIT()` macro
+Changes since v1:
+* More ECR #define's
+* Stop PPS in `fec_ptp_stop()`
+
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-From: Sean Christopherson <seanjc@google.com>
-Date: Tue, 30 Aug 2022 10:11:41 -0700
-Subject: [PATCH] KVM: nVMX: Reword comments about generating nested CR0/4 read
- shadows
+ drivers/net/ethernet/freescale/fec.h      | 10 ++++++
+ drivers/net/ethernet/freescale/fec_main.c | 42 ++++++++++++++++++++---
+ drivers/net/ethernet/freescale/fec_ptp.c  | 29 ++++++++++++++++
+ 3 files changed, 77 insertions(+), 4 deletions(-)
 
-Reword the comments that (attempt to) document when nVMX overrides that
-CR0/4 read shadows for L2 after calling vmx_set_cr0/4().  The important
-behavior that needs to be documented is that KVM needs to override the
-shadows to account for L1's masks, even though the shadow are set by the
-common helpers.
-
-This also fixes a repeated "we we" reported by Jason.
-
-Cc: Jason Wang <wangborong@cdjrlc.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/vmx/nested.c | 9 +++------
- arch/x86/kvm/vmx/nested.h | 7 ++++---
- 2 files changed, 7 insertions(+), 9 deletions(-)
-
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index ddd4367d4826..12f57a99f725 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -2566,12 +2566,9 @@ static int prepare_vmcs02(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
- 		nested_ept_init_mmu_context(vcpu);
-
- 	/*
--	 * This sets GUEST_CR0 to vmcs12->guest_cr0, possibly modifying those
--	 * bits which we consider mandatory enabled.
--	 * The CR0_READ_SHADOW is what L2 should have expected to read given
--	 * the specifications by L1; It's not enough to take
--	 * vmcs12->cr0_read_shadow because on our cr0_guest_host_mask we we
--	 * have more bits than L1 expected.
-+	 * Override the CR0/CR4 read shadows after setting the effective guest
-+	 * CR0/CR4.  The common helpers also set the shadows, but they don't
-+	 * account for vmcs12's cr0/4_guest_host_mask.
- 	 */
- 	vmx_set_cr0(vcpu, vmcs12->guest_cr0);
- 	vmcs_writel(CR0_READ_SHADOW, nested_read_cr0(vmcs12));
-diff --git a/arch/x86/kvm/vmx/nested.h b/arch/x86/kvm/vmx/nested.h
-index 88b00a7359e4..8b700ab4baea 100644
---- a/arch/x86/kvm/vmx/nested.h
-+++ b/arch/x86/kvm/vmx/nested.h
-@@ -79,9 +79,10 @@ static inline bool nested_ept_ad_enabled(struct kvm_vcpu *vcpu)
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index 6ea98af63b341..0b8a06d833d5c 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -593,6 +593,13 @@ struct fec_enet_private {
+ 	int pps_enable;
+ 	unsigned int next_counter;
+ 
++	struct {
++		struct timespec64 ts_phc;
++		u64 ns_sys;
++		u32 at_corr;
++		u8 at_inc_corr;
++	} ptp_saved_state;
++
+ 	u64 ethtool_stats[];
+ };
+ 
+@@ -603,5 +610,8 @@ void fec_ptp_disable_hwts(struct net_device *ndev);
+ int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
+ int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
+ 
++void fec_ptp_save_state(struct fec_enet_private *fep);
++int fec_ptp_restore_state(struct fec_enet_private *fep);
++
+ /****************************************************************************/
+ #endif /* FEC_H */
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index d8bdaf2e5365c..b0999596b7858 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -253,8 +253,11 @@ MODULE_PARM_DESC(macaddr, "FEC Ethernet MAC address");
+ #define FEC_MMFR_TA		(2 << 16)
+ #define FEC_MMFR_DATA(v)	(v & 0xffff)
+ /* FEC ECR bits definition */
+-#define FEC_ECR_MAGICEN		(1 << 2)
+-#define FEC_ECR_SLEEP		(1 << 3)
++#define FEC_ECR_RESET   BIT(0)
++#define FEC_ECR_ETHEREN BIT(1)
++#define FEC_ECR_MAGICEN BIT(2)
++#define FEC_ECR_SLEEP   BIT(3)
++#define FEC_ECR_EN1588  BIT(4)
+ 
+ #define FEC_MII_TIMEOUT		30000 /* us */
+ 
+@@ -950,6 +953,9 @@ fec_restart(struct net_device *ndev)
+ 	u32 temp_mac[2];
+ 	u32 rcntl = OPT_FRAME_SIZE | 0x04;
+ 	u32 ecntl = 0x2; /* ETHEREN */
++	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
++
++	fec_ptp_save_state(fep);
+ 
+ 	/* Whack a reset.  We should wait for this.
+ 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+@@ -1101,7 +1107,7 @@ fec_restart(struct net_device *ndev)
+ 	}
+ 
+ 	if (fep->bufdesc_ex)
+-		ecntl |= (1 << 4);
++		ecntl |= FEC_ECR_EN1588;
+ 
+ #ifndef CONFIG_M5272
+ 	/* Enable the MIB statistic event counters */
+@@ -1115,6 +1121,14 @@ fec_restart(struct net_device *ndev)
+ 	if (fep->bufdesc_ex)
+ 		fec_ptp_start_cyclecounter(ndev);
+ 
++	/* Restart PPS if needed */
++	if (fep->pps_enable) {
++		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
++		fep->pps_enable = 0;
++		fec_ptp_restore_state(fep);
++		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
++	}
++
+ 	/* Enable interrupts we wish to service */
+ 	if (fep->link)
+ 		writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+@@ -1150,6 +1164,8 @@ fec_stop(struct net_device *ndev)
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	u32 rmii_mode = readl(fep->hwp + FEC_R_CNTRL) & (1 << 8);
+ 	u32 val;
++	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
++	u32 ecntl = 0;
+ 
+ 	/* We cannot expect a graceful transmit stop without link !!! */
+ 	if (fep->link) {
+@@ -1159,6 +1175,8 @@ fec_stop(struct net_device *ndev)
+ 			netdev_err(ndev, "Graceful transmit stop did not complete!\n");
+ 	}
+ 
++	fec_ptp_save_state(fep);
++
+ 	/* Whack a reset.  We should wait for this.
+ 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+ 	 * instead of reset MAC itself.
+@@ -1180,12 +1198,28 @@ fec_stop(struct net_device *ndev)
+ 	}
+ 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
+ 
++	if (fep->bufdesc_ex)
++		ecntl |= FEC_ECR_EN1588;
++
+ 	/* We have to keep ENET enabled to have MII interrupt stay working */
+ 	if (fep->quirks & FEC_QUIRK_ENET_MAC &&
+ 		!(fep->wol_flag & FEC_WOL_FLAG_SLEEP_ON)) {
+-		writel(2, fep->hwp + FEC_ECNTRL);
++		ecntl |= FEC_ECR_ETHEREN;
+ 		writel(rmii_mode, fep->hwp + FEC_R_CNTRL);
+ 	}
++
++	writel(ecntl, fep->hwp + FEC_ECNTRL);
++
++	if (fep->bufdesc_ex)
++		fec_ptp_start_cyclecounter(ndev);
++
++	/* Restart PPS if needed */
++	if (fep->pps_enable) {
++		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
++		fep->pps_enable = 0;
++		fec_ptp_restore_state(fep);
++		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
++	}
  }
-
- /*
-- * Return the cr0 value that a nested guest would read. This is a combination
-- * of the real cr0 used to run the guest (guest_cr0), and the bits shadowed by
-- * its hypervisor (cr0_read_shadow).
-+ * Return the cr0/4 value that a nested guest would read. This is a combination
-+ * of L1's "real" cr0 used to run the guest (guest_cr0), and the bits shadowed
-+ * by the L1 hypervisor (cr0_read_shadow).  KVM must emulate CPU behavior as
-+ * the value+mask loaded into vmcs02 may not match the vmcs12 fields.
-  */
- static inline unsigned long nested_read_cr0(struct vmcs12 *fields)
- {
-
-base-commit: 372d07084593dc7a399bf9bee815711b1fb1bcf2
---
+ 
+ 
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index c5ae673005908..63e221b95abed 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -638,7 +638,36 @@ void fec_ptp_stop(struct platform_device *pdev)
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 
++	if (fep->pps_enable)
++		fec_ptp_enable_pps(fep, 0);
++
+ 	cancel_delayed_work_sync(&fep->time_keep);
+ 	if (fep->ptp_clock)
+ 		ptp_clock_unregister(fep->ptp_clock);
+ }
++
++void fec_ptp_save_state(struct fec_enet_private *fep)
++{
++	u32 atime_inc_corr;
++
++	fec_ptp_gettime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
++	fep->ptp_saved_state.ns_sys = ktime_get_ns();
++
++	fep->ptp_saved_state.at_corr = readl(fep->hwp + FEC_ATIME_CORR);
++	atime_inc_corr = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_CORR_MASK;
++	fep->ptp_saved_state.at_inc_corr = (u8)(atime_inc_corr >> FEC_T_INC_CORR_OFFSET);
++}
++
++int fec_ptp_restore_state(struct fec_enet_private *fep)
++{
++	u32 atime_inc = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_MASK;
++	u64 ns_sys;
++
++	writel(fep->ptp_saved_state.at_corr, fep->hwp + FEC_ATIME_CORR);
++	atime_inc |= ((u32)fep->ptp_saved_state.at_inc_corr) << FEC_T_INC_CORR_OFFSET;
++	writel(atime_inc, fep->hwp + FEC_ATIME_INC);
++
++	ns_sys = ktime_get_ns() - fep->ptp_saved_state.ns_sys;
++	timespec64_add_ns(&fep->ptp_saved_state.ts_phc, ns_sys);
++	return fec_ptp_settime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
++}
+-- 
+2.35.1
 
