@@ -2,121 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA0F7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:59:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFE3ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:00:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiH3M7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 08:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
+        id S230073AbiH3NAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiH3M7I (ORCPT
+        with ESMTP id S229652AbiH3NAG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 08:59:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A005F25;
-        Tue, 30 Aug 2022 05:59:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D390F616E0;
-        Tue, 30 Aug 2022 12:59:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A82E3C433D6;
-        Tue, 30 Aug 2022 12:59:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661864346;
-        bh=py80JNZjWXneLCtoEplvUtMQuHLBH9TJN1tDhgjF5Ys=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xRhzp+ham63Qub7sG6+g79g/Jd1t9JTySXNHNbfKyEx20HVIUUl3+KM1Z4TIvviqn
-         Cwrh+dzHQ9xx6LF9JV8HQhUzUjj0HQrI+JKc4kBRlm4MLbI1COUea7EUo4pJs/FBho
-         KBdYInSUvJnuyuKM3n4/MR+g91tDR1SKZo3+YaQw=
-Date:   Tue, 30 Aug 2022 14:59:03 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Yinbo Zhu <zhuyinbo@loongson.cn>
-Cc:     Alan Stern <stern@rowland.harvard.edu>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Patchwork Bot <patchwork-bot@kernel.org>
-Subject: Re: [PATCH v1] usb: ohci-platform: fix usb disconnect issue after s4
-Message-ID: <Yw4JlyrjwHE5nYyd@kroah.com>
-References: <20220830111449.2300-1-zhuyinbo@loongson.cn>
+        Tue, 30 Aug 2022 09:00:06 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D25CEE0D1;
+        Tue, 30 Aug 2022 06:00:03 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id z20so11296524ljq.3;
+        Tue, 30 Aug 2022 06:00:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=TXqo6jqFFJO+5EXcJRS51k8mEsS8tkYLSHqnPARtF4Y=;
+        b=oPZzQlOssH7aV8JnOiAtZ5MMqpBWfo9On8CB+QzcsUyUkQt+9OLMCtaT0hbU8LnRP0
+         VM55bmQjNCPiLcwhwLdPrcFQO6ar9RjmZPn5RBf1q3L7RqXdrr+kFVODxioqWu6jC1/J
+         hNiZCNmQ5BYcrEyG4+n6s0ZClh6MqaEHAHWKHHfmw7qA/HMrkH+p8/15PZBIyXmt4PZX
+         g/CXh12+Hra431lQGAkb8OFYXMsIQXjXUMFB0vtI1zBCUfxnwU92f1RNDzRBC5MT8pYp
+         97C1PttHqhty6DdPOFxEZKACe9TW1ZDs6NNr6ENwjj/I/25P8U+JIjj9v+9vR3tU/MXh
+         p3fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=TXqo6jqFFJO+5EXcJRS51k8mEsS8tkYLSHqnPARtF4Y=;
+        b=UMkQ+kSTXegKUGsxnNthaJsVbS8cfOwI3hFA82TpefdvdAdCJmpRow0zYT8UyNuPQf
+         ylr9oPxf659wSduBUAlDaYb8hYqXh/znH+NkGfdiLgjKB5tg3km/AuPML1X+XiAAy5NO
+         iJ4P/SedCRXUWfNL8jOOkk8l1XTyf7RfytjLdT+N0Do8AVz8yJn3+I0Nets8btFgm8gC
+         EjM/jGhV95wDpxFKdM93LxPeSb0S1AWkAhesRAet8RCjD3U4vJIBpnsLWZCeYeho1G9t
+         KlbX4ET9rQlbFlFzK5oOMHpTI4FZ373uXUUYDeD2KqrM/FEtmHXWY2hV4tkC2TlScAvq
+         8flg==
+X-Gm-Message-State: ACgBeo0rueFyDMFNSbB/V/6r9bMHS+oZLdcfh+7VznglvyatCsPs1rol
+        7oEa2lP79wIPW/oRS4+Jskc=
+X-Google-Smtp-Source: AA6agR4gabFoz6Y6E2GV+9fQpfEMIy7tx92nadUdXSnpyzXqPsDOhKtNPT1wjyy/j0v62KBAC7QcqQ==
+X-Received: by 2002:a2e:8857:0:b0:261:b1b3:ab93 with SMTP id z23-20020a2e8857000000b00261b1b3ab93mr7443830ljj.270.1661864401596;
+        Tue, 30 Aug 2022 06:00:01 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:16f3:4a00::1? (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
+        by smtp.gmail.com with ESMTPSA id cf9-20020a056512280900b00494643505e1sm1053274lfb.79.2022.08.30.06.00.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 06:00:01 -0700 (PDT)
+Message-ID: <44f05a0b-01a7-775d-606c-d2f0ab94ae6e@gmail.com>
+Date:   Tue, 30 Aug 2022 16:00:00 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220830111449.2300-1-zhuyinbo@loongson.cn>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3 14/14] iio: hmc425a: simplify using
+ devm_regulator_get_enable()
+Content-Language: en-US
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <cover.1660934107.git.mazziesaccount@gmail.com>
+ <8b1193fdefb231a6d721e2bded52c48e56039c20.1660934107.git.mazziesaccount@gmail.com>
+ <SN4PR03MB678420C67AA8988CF706198399799@SN4PR03MB6784.namprd03.prod.outlook.com>
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <SN4PR03MB678420C67AA8988CF706198399799@SN4PR03MB6784.namprd03.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 07:14:49PM +0800, Yinbo Zhu wrote:
-> Avoid retaining bogus hardware states during resume-from-hibernation.
-> Previously we had reset the hardware as part of preparing to reinstate
-> the snapshot image. But we can do better now with the new PM framework,
-> since we know exactly which resume operations are from hibernation
+On 8/30/22 14:49, Sa, Nuno wrote:
 > 
-> According to the commit "cd1965db0" and "6ec4beb5c" that the flag
-> "hibernated" is for resume-from-hibernation and it should be true when
-> usb resume from disk.
-
-When writing commit ids in changelogs, please use the recommended
-format.  For this, that paragraph would read:
-
-According to commit cd1965db054e ("USB: ohci: move
-ohci_pci_{suspend,resume} to ohci-hcd.c") and commit 6ec4beb5c701 ("USB:
-new flag for resume-from-hibernation"), the flag "hibernated" is for...
-
-> When this flag "hibernated" is set, the drivers will reset the hardware
-> to get rid of any existing state and make sure resume from hibernation
-> re-enumerates everything for ohci.
+>> From: Matti Vaittinen <mazziesaccount@gmail.com>
+>> Sent: Friday, August 19, 2022 9:21 PM
+>> To: Matti Vaittinen <mazziesaccount@gmail.com>; Matti Vaittinen
+>> <matti.vaittinen@fi.rohmeurope.com>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
+>> <Michael.Hennerich@analog.com>; Jonathan Cameron
+>> <jic23@kernel.org>; linux-iio@vger.kernel.org; linux-
+>> kernel@vger.kernel.org
+>> Subject: [PATCH v3 14/14] iio: hmc425a: simplify using
+>> devm_regulator_get_enable()
+>>
+>> [External]
+>>
+>> Drop open-coded pattern: 'devm_regulator_get(), regulator_enable(),
+>> add_action_or_reset(regulator_disable)' and use the
+>> devm_regulator_get_enable() and drop the pointer to the regulator.
+>> This simplifies code and makes it less tempting to add manual control
+>> for the regulator which is also controlled by devm.
+>>
+>> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+>>
+>> ---
 > 
-> Signed-off-by: Yinbo Zhu <zhuyinbo@loongson.cn>
-
-What commit id does this fix?
-
-
-> ---
->  drivers/usb/host/ohci-platform.c | 28 ++++++++++++++++++++++++----
->  1 file changed, 24 insertions(+), 4 deletions(-)
+> Acked-by: Nuno Sá <nuno.sa@analog.com>
 > 
-> diff --git a/drivers/usb/host/ohci-platform.c b/drivers/usb/host/ohci-platform.c
-> index 0adae6265127..e733da2cd3b7 100644
-> --- a/drivers/usb/host/ohci-platform.c
-> +++ b/drivers/usb/host/ohci-platform.c
-> @@ -289,7 +289,7 @@ static int ohci_platform_suspend(struct device *dev)
->  	return ret;
->  }
->  
-> -static int ohci_platform_resume(struct device *dev)
-> +static int ohci_platform_renew(struct device *dev, bool hibernated)
+> (I see that in this patch you are not using dev_err_probe(). Maybe some
+> consistency in the series and where applicable would be appropriate :))
 
-I hate functions like this as it's now impossible to read the caller and
-understand what is going on.
+I don't think the driver did originally print an error if regulator get 
+or enable failed. I didn't want to add any new prints - just converted 
+the existing ones to use dev_err_probe(). I believe adding new prints 
+would've been somewhat unrelated change :)
 
->  {
->  	struct usb_hcd *hcd = dev_get_drvdata(dev);
->  	struct usb_ohci_pdata *pdata = dev_get_platdata(dev);
-> @@ -301,7 +301,7 @@ static int ohci_platform_resume(struct device *dev)
->  			return err;
->  	}
->  
-> -	ohci_resume(hcd, false);
-> +	ohci_resume(hcd, hibernated);
->  
->  	pm_runtime_disable(dev);
->  	pm_runtime_set_active(dev);
-> @@ -309,6 +309,16 @@ static int ohci_platform_resume(struct device *dev)
->  
->  	return 0;
->  }
-> +
-> +static int ohci_platform_resume(struct device *dev)
-> +{
-> +	return ohci_platform_renew(dev, false);
+Yours,
+	-- Matti
 
-See, what does "false" here mean?
+-- 
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
-You can wrap the ohci_platform_renew() function with two helpers that
-are ohci_platform_renew_hibernated() and ohci_platform_renew() or
-something like that, which would explain what the difference is here.
-
-thanks,
-
-greg k-h
+~~ When things go utterly wrong vim users can always type :help! ~~
