@@ -2,98 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35BCFC0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B14B1ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbiH3I4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
+        id S230310AbiH3I5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230226AbiH3I4P (ORCPT
+        with ESMTP id S229842AbiH3I5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:56:15 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1FB8D3FB
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:56:12 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id q16so10605856ljp.8
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:56:12 -0700 (PDT)
+        Tue, 30 Aug 2022 04:57:30 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7A69E11B
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:57:28 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id z25so14593745lfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:57:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=yksgcHaH8yK2nL0/KktGbN00V41GBl96J/5UMeIcDaY=;
-        b=MiIh4A8LV+RAbbjdllOrCTzRQJalCXjENCi1YWUULbNDueGRtSEDZ+qnWGRkJkiyOD
-         Dy+A91s6x4frfWPG2NJ3jIzWP/ByZjFzH30mCCa7H+GtAfPa/0iKOtosR57wC4p5TYdT
-         j9Nas+5xRGYF5WBnjH8JWMuShunfxEOs3gcyi8SOis4bclqePvBRXkXy5SmppTq7D1Dm
-         iyaGmtXrdKMfVxMIRqaeHqz/NmmBZUFqbRaiyin45dQDTtOihs+WF6B01ngFp9492Qvr
-         g/YdyMqOxePjBLzeZU7Y3pCQpIAYZiKrYZU+CXCsbd3nQs3wVtVC+rR1/cjBEITICZQn
-         vlZQ==
+        bh=GqxXJYLcgxzpP2ZXiJpKYao0UsYj8w9DXe+9ym7gme0=;
+        b=ujObYb7BZjSY2DG1cWtiXE+XefTdW9gkANM8ivM/MyZaWp2WACtiRtjyn9khuMY6dL
+         7xUWQE/PGwBxSRXLV9PYIOx6nGWmv+nQ3T1/vQnrHh8AwYM+oNFlit+m23uReoNY1LCQ
+         bp41qS+zVwBwi7JDyvD29HsZ9GPn12z10Dm9eP49yjHEBVJWyO/XCpu9UMxdd5B2/Y4M
+         28dCWyzz+s01uq9wDqUJGS58VnQRCtUsghnGTwjqaGFj9zUgkUfQQ92Zl3A9CUWGZW98
+         4oOXfroo9QygAIsAaCszAk/SlpVh5P3h7kghynKiDVCGlt0b814ZRJrxokUIATYQXzak
+         NbTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=yksgcHaH8yK2nL0/KktGbN00V41GBl96J/5UMeIcDaY=;
-        b=zXc78rEIsacxv2S4uN7JS33H2G/5cU3dBdMr+qvlx+lw4zkNRfCrdqwFBNWPUeqYo6
-         eSBc97YM9SdMUZMI/gEM3XEa7Z6720PjO9OotWDuIe4335Ye6hY9G8+H4FTs5S1WNXI1
-         oExg6RvYHhs3PR5RKCAqS5Vm9GrvIuY+DocKuiXbe7hgVO27TFmmcYWUAd+Y5W1GmF1K
-         ZUd6IRsKVRRuJ0F/2SWjmeH1y1tei4HIv/TeEmkzv1wFhe5e+q6V8Amy/tpo5YPC73AT
-         HLWjxYDQogJTEPJwHzbBBd7RoF8o7+hkPaLf8cj3mHnrxgQ3VmEheZ9FO81I2TBTUBi5
-         3AaA==
-X-Gm-Message-State: ACgBeo2T/VMW9BbyIR5Zh5RYAfyObfWqA2tp7C6GAUiekhY++ySU+cg8
-        5UuMgSHsqcjMsxXQK8tdt6IoeQ==
-X-Google-Smtp-Source: AA6agR4zZBU15rr+qcZ9goA/DUAtlU7TAZ0VTwAna0Yhnj/neDvMXGtyCwyH92/wxaQkndWDniibrA==
-X-Received: by 2002:a2e:bf29:0:b0:25f:fbd5:b693 with SMTP id c41-20020a2ebf29000000b0025ffbd5b693mr7114274ljr.372.1661849770702;
-        Tue, 30 Aug 2022 01:56:10 -0700 (PDT)
+        bh=GqxXJYLcgxzpP2ZXiJpKYao0UsYj8w9DXe+9ym7gme0=;
+        b=oid6OEdIHsalp6mKwFtdqLvJ4H560YNykckItLhef2fJG3ICOaHmzXlMotdQ+CQuSP
+         cqX7v0eMA6icKESPB8HuQ/man0IbwUKhjfw8gJUAI9D0u6gUjwri2oWLKzm8w9yxhGsa
+         W5I81uafYthBKemXcU2hWrhAPD+reU31h2tevGNQi40Xiit9p4At+kD9Eo/Vv1jDswDR
+         T9PGUoEPf+DpbZyIHwf2Qz9nR3T/FvP0O7+2fRhkoo9NpwEe+JkbCiMRiCBF31cGw5Dr
+         f3F0i21NIuwgod7KiVsb3pmS+QeaeTx+Wvx59rVh2VJlWKExFvCU1BoiicPWvhMDr263
+         T5og==
+X-Gm-Message-State: ACgBeo3+IsYuPi876Es1shEpu/jVv2Jy55ljcYVIzmjWXNI1PWWnt0os
+        9ZAyj60tgEUak53G+KdLzln9Nw==
+X-Google-Smtp-Source: AA6agR4EU+9shH21zvi7esssrpBh2nzV77A/AczGVMGQGOf/eJ1aqB+K9adBP6pNavBwjlUVXcwY3w==
+X-Received: by 2002:a05:6512:108f:b0:494:7299:7152 with SMTP id j15-20020a056512108f00b0049472997152mr1954983lfg.514.1661849846799;
+        Tue, 30 Aug 2022 01:57:26 -0700 (PDT)
 Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id f10-20020a056512360a00b004946e72711bsm539608lfs.76.2022.08.30.01.56.09
+        by smtp.gmail.com with ESMTPSA id c9-20020a2e9d89000000b002655fb689a6sm718889ljj.139.2022.08.30.01.57.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 01:56:10 -0700 (PDT)
-Message-ID: <45004d0c-e470-72e3-fad6-e8c48aefac1b@linaro.org>
-Date:   Tue, 30 Aug 2022 11:56:08 +0300
+        Tue, 30 Aug 2022 01:57:26 -0700 (PDT)
+Message-ID: <40577a34-6046-a10b-e444-4fb36d13e8e6@linaro.org>
+Date:   Tue, 30 Aug 2022 11:57:25 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.13.0
-Subject: Re: [PATCH v2 2/2] arm64: dts: qcom: Add sc7180-pazquel360
+Subject: Re: [PATCH V3 1/2] dt-bindings: fsl-imx-sdma: Convert imx sdma to DT
+ schema
 Content-Language: en-US
-To:     Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Henry Sun <henrysun@google.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Bob Moragues <moragues@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-References: <20220830083740.v2.1.Ic4d4e0777115011544dbc2ab07ed4d7b408c003a@changeid>
- <20220830083740.v2.2.I5bd646de8fac81eb23c8bcf1cbe21125bf9638f3@changeid>
+To:     Joy Zou <joy.zou@nxp.com>
+Cc:     shengjiu.wang@nxp.com, vkoul@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, dmaengine@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220830081839.1201720-1-joy.zou@nxp.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220830083740.v2.2.I5bd646de8fac81eb23c8bcf1cbe21125bf9638f3@changeid>
+In-Reply-To: <20220830081839.1201720-1-joy.zou@nxp.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/08/2022 11:42, Yunlong Jia wrote:
-> Create first version device tree for pazquel360
-> pazquel360 is convertible and the pazquel it is based on is clamshell.
-> sku 20 for lte & wifi
-> sku 21 for wifi only
-> sku 22 for lte w/o esim & wifi
+On 30/08/2022 11:18, Joy Zou wrote:
+> Convert the i.MX SDMA binding to DT schema format using
+> json-schema. In addition, add new peripheral types HDMI
+> Audio.
 > 
-> Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
+> when run dtbs_check will occur nodename not match issue
+> because the old dts nodename can't match new rule. I have
+> modified thoes old dts, and will upstream in the near future.
+> 
+> Signed-off-by: Joy Zou <joy.zou@nxp.com>
 > ---
-> 
-> Changes in v2:
-> - Remove the touchscreen setting, as a follow-up patch
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> Changes since (implicit) v2:
+> modify the commit message in patch v3.
+> modify the filename in patch v3.
+> modify the maintainer in patch v3.
+> delete the unnecessary comment in patch v3.
+> modify the compatible and run dt_binding_check and
+> dtbs_check in patch v3.
+> add clocks and clock-names property in patch v3.
+> delete the reg description and add maxItems in patch v3.
+> delete the interrupts description and add maxItems in patch v3.
+> add ref for gpr property.
+> modify the fsl,sdma-event-remap ref type and add items
+> in patch v3.
+> delete consumer example in patch v3.
 
-It's still wrong place for Rb tag. Apply this patch by yourself and
-check the result...
+This is patch 1/2. Where is 2/2?
 
 Best regards,
 Krzysztof
