@@ -2,109 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AACE0ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89968ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231222AbiH3Nti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:49:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38112 "EHLO
+        id S231241AbiH3Ntp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231361AbiH3Nsu (ORCPT
+        with ESMTP id S231386AbiH3Nsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:48:50 -0400
-Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8597644;
-        Tue, 30 Aug 2022 06:46:35 -0700 (PDT)
-Received: from localhost (7of9.are-b.org [127.0.0.1])
-        by 7of9.schinagl.nl (Postfix) with ESMTP id 779D6186AE5F;
-        Tue, 30 Aug 2022 15:46:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
-        t=1661867183; bh=khVk1+h4oRx19cuXioiLMZPDQXnPvXugjyG7HAbcHbA=;
-        h=From:To:Cc:Subject:Date;
-        b=J9TkkAZizFX2Ev8WcXA3wLYmmQ7tvzq0XsCjnnGO7IUhN6FYfcALRLtWCob0MWN3e
-         Y3BssB6Pwa/gDTrZFHVHMX0zWIJrQErOIVv5mVpCBZPCsiH9XatxzF/gpWujm/5QW8
-         ZGtfiQ6WtwzFUhxyK2toZAZLHqbsCAmYqG9ejfIM=
-X-Virus-Scanned: amavisd-new at schinagl.nl
-Received: from 7of9.schinagl.nl ([127.0.0.1])
-        by localhost (7of9.schinagl.nl [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id 9XaeXzQxb9rJ; Tue, 30 Aug 2022 15:46:22 +0200 (CEST)
-Received: from valexia.are-b.org (unknown [10.2.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by 7of9.schinagl.nl (Postfix) with ESMTPSA id 59C10186AE5A;
-        Tue, 30 Aug 2022 15:46:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
-        t=1661867182; bh=khVk1+h4oRx19cuXioiLMZPDQXnPvXugjyG7HAbcHbA=;
-        h=From:To:Cc:Subject:Date;
-        b=u5jTUgEhBJ5YagZbfQY573wymlKRocKrYrGD05gSu9uJP3lOy3g7GFIKb0kpRebC9
-         KdvHEVaLVCf/C9YZH8gsrwANvm+wRFZwy+U1hFUyA03YnYd3mCCZgXPRbxlVs927W9
-         gX+snmwf1HCJrABQCp1k6LVSO/S7L4lXakVfcRXY=
-From:   Olliver Schinagl <oliver@schinagl.nl>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>
-Cc:     Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        linux-leds@vger.kernel.org, Daniel Mack <daniel@zonque.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Olliver Schinagl <oliver+list@schinagl.nl>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Olliver Schinagl <oliver@schinagl.nl>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4] dt-bindings: leds: Expand LED_COLOR_ID definitions
-Date:   Tue, 30 Aug 2022 15:46:13 +0200
-Message-Id: <20220830134613.1564059-1-oliver@schinagl.nl>
-X-Mailer: git-send-email 2.37.2
+        Tue, 30 Aug 2022 09:48:53 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B831037F6;
+        Tue, 30 Aug 2022 06:46:42 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MH7mg5DSGzlWYp;
+        Tue, 30 Aug 2022 21:43:15 +0800 (CST)
+Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
+ (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 30 Aug
+ 2022 21:46:38 +0800
+From:   Zeng Heng <zengheng4@huawei.com>
+To:     <djwong@kernel.org>
+CC:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <zengheng4@huawei.com>
+Subject: [PATCH -next] xfs: remove "%Ld" which doesn't meet C standard
+Date:   Tue, 30 Aug 2022 21:54:22 +0800
+Message-ID: <20220830135422.2734749-1-zengheng4@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500022.china.huawei.com (7.185.36.162)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
-Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
-added. However, there's a little more very common LED colors.
+The "%Ld" specifier, which represents long long unsigned,
+doesn't meet C language standard, and even more,
+it makes people easily mistake with "%ld", which represent
+long unsigned. So replace "%Ld" with "lld".
 
-While the documentation states 'add what is missing', engineers tend to
-be lazy and will just use what currently exists. So this patch will take
-(a) list from online retailers [0], [1], [2] and use the common LED colors from
-there, this being reasonable as this is what is currently available to purchase.
+Do the same with "%Lu".
 
-Note, that LIME seems to be the modern take to 'Yellow-green' or
-'Yellowish-green' from some older datasheets.
-
-[0]: https://www.digikey.com/en/products/filter/led-lighting-color/125
-[1]: https://eu.mouser.com/c/optoelectronics/led-lighting/led-emitters/standard-leds-smd
-[2]: https://nl.farnell.com/en-NL/c/optoelectronics-displays/led-products/standard-single-colour-leds-under-75ma
-
-Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Zeng Heng <zengheng4@huawei.com>
 ---
-Changes since v3: Fix typo in purple; Fix whitespacing
-No changes since v2: Re-send with the proper e-mails.
-Changes since v1: Unbreak existing definitions.
- include/dt-bindings/leds/common.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ fs/xfs/xfs_inode_item_recover.c | 4 ++--
+ fs/xfs/xfs_stats.c              | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/dt-bindings/leds/common.h b/include/dt-bindings/leds/common.h
-index 3be89a7c20a9..9a0d33d027ff 100644
---- a/include/dt-bindings/leds/common.h
-+++ b/include/dt-bindings/leds/common.h
-@@ -33,7 +33,12 @@
- #define LED_COLOR_ID_MULTI	8	/* For multicolor LEDs */
- #define LED_COLOR_ID_RGB	9	/* For multicolor LEDs that can do arbitrary color,
- 					   so this would include RGBW and similar */
--#define LED_COLOR_ID_MAX	10
-+#define LED_COLOR_ID_PURPLE	10
-+#define LED_COLOR_ID_ORANGE	11
-+#define LED_COLOR_ID_PINK	12
-+#define LED_COLOR_ID_CYAN	13
-+#define LED_COLOR_ID_LIME	14
-+#define LED_COLOR_ID_MAX	15
+diff --git a/fs/xfs/xfs_inode_item_recover.c b/fs/xfs/xfs_inode_item_recover.c
+index d28ffaebd067..0e5dba2343ea 100644
+--- a/fs/xfs/xfs_inode_item_recover.c
++++ b/fs/xfs/xfs_inode_item_recover.c
+@@ -321,7 +321,7 @@ xlog_recover_inode_commit_pass2(
+ 	 */
+ 	if (XFS_IS_CORRUPT(mp, !xfs_verify_magic16(bp, dip->di_magic))) {
+ 		xfs_alert(mp,
+-	"%s: Bad inode magic number, dip = "PTR_FMT", dino bp = "PTR_FMT", ino = %Ld",
++	"%s: Bad inode magic number, dip = "PTR_FMT", dino bp = "PTR_FMT", ino = %lld",
+ 			__func__, dip, bp, in_f->ilf_ino);
+ 		error = -EFSCORRUPTED;
+ 		goto out_release;
+@@ -329,7 +329,7 @@ xlog_recover_inode_commit_pass2(
+ 	ldip = item->ri_buf[1].i_addr;
+ 	if (XFS_IS_CORRUPT(mp, ldip->di_magic != XFS_DINODE_MAGIC)) {
+ 		xfs_alert(mp,
+-			"%s: Bad inode log record, rec ptr "PTR_FMT", ino %Ld",
++			"%s: Bad inode log record, rec ptr "PTR_FMT", ino %lld",
+ 			__func__, item, in_f->ilf_ino);
+ 		error = -EFSCORRUPTED;
+ 		goto out_release;
+diff --git a/fs/xfs/xfs_stats.c b/fs/xfs/xfs_stats.c
+index 70d38b77682b..90a77cd3ebad 100644
+--- a/fs/xfs/xfs_stats.c
++++ b/fs/xfs/xfs_stats.c
+@@ -74,7 +74,7 @@ int xfs_stats_format(struct xfsstats __percpu *stats, char *buf)
+ 		defer_relog += per_cpu_ptr(stats, i)->s.defer_relog;
+ 	}
  
- /* Standard LED functions */
- /* Keyboard LEDs, usually it would be input4::capslock etc. */
+-	len += scnprintf(buf + len, PATH_MAX-len, "xpc %Lu %Lu %Lu\n",
++	len += scnprintf(buf + len, PATH_MAX-len, "xpc %llu %llu %llu\n",
+ 			xs_xstrat_bytes, xs_write_bytes, xs_read_bytes);
+ 	len += scnprintf(buf + len, PATH_MAX-len, "defer_relog %llu\n",
+ 			defer_relog);
 -- 
-2.37.2
+2.25.1
 
