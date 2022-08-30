@@ -2,81 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCB2ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C37EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230055AbiH3SAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:00:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
+        id S229867AbiH3SBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:01:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiH3SAX (ORCPT
+        with ESMTP id S231760AbiH3SA6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:00:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A8418E3B;
-        Tue, 30 Aug 2022 11:00:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DC17B81D21;
-        Tue, 30 Aug 2022 17:24:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B97EC433D7;
-        Tue, 30 Aug 2022 17:24:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880270;
-        bh=UyC6EuVYNPcXw2t8mig7weYbNDvzVVaZ6wLDTuTmYIk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lcxianBDPHmZ9ZfzGcyfv9n/OqV5tyo0OjvHHU1npelBq9+Wr9NwKFBOB+U1D+ktr
-         TB5E4iWQIDvG1yJVqcLD5/xr35TYxoGqz59vyWlDOzQIuvGv6Jr4PMwnSr8P1F7Op3
-         z44i0CqcdtfIKI75MDOelZvG6RpcPpB5dRLJHxtsL/Lsk9jjLpxM/sYLDjOH5AZFaG
-         MgCsF6+mgPPz3ygKs91xOGnNJ1JpwxooUVwNl3rv3c3G3UYsK1iya8qd8gjpUzs8li
-         1OEt280E+twfRV528rVdf3Iis4F4EW78yDHJjfcY7wsBhtsevgmzXboLwcfe2iWBlH
-         5MPrMUCCwTyeA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        christophe.leroy@csgroup.eu, mpe@ellerman.id.au,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 15/16] fbdev: chipsfb: Add missing pci_disable_device() in chipsfb_pci_init()
-Date:   Tue, 30 Aug 2022 13:23:16 -0400
-Message-Id: <20220830172317.581397-15-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
-References: <20220830172317.581397-1-sashal@kernel.org>
+        Tue, 30 Aug 2022 14:00:58 -0400
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9849810F0;
+        Tue, 30 Aug 2022 11:00:31 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-11f4e634072so4341418fac.13;
+        Tue, 30 Aug 2022 11:00:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=4umf5P0qSFO98IiufExn5Sdnahshv3yBAldzEjgn0j4=;
+        b=vqZe6YOFZrMyWSAYRghd+R3eCyO25rkIlLnzpKyq3Z8IDoZt8u3gNON0elk0hbuMG9
+         RX4DLVQmHMVnIOdePS5dPMJj0KY1SANj/FMhAoR96F5iuwkM3jui3uzWbsA1pNyJn+Wq
+         VpeXddjR72o+a4EcVye0pzRiJGV4bKJnQeXUxQAl+rvU16jTQs7I3A3trIaU4cKudo6v
+         cJZdC0Yvlj8OypA9ywTmvqwZRlwMS1B2S+aL6lZM867Ct+Q3CekTnbNXzvHflWg0HHlb
+         7mZvkY9KTmifEbIP7CG+kE3YDDe+ox1AllxMe6XUG27tZCJpE+5WtXBOCBwps3Sx3syT
+         oNxw==
+X-Gm-Message-State: ACgBeo2t8M1qatZKhF4ju1HeSMqnE9vBEIO+SshRO0k/Djg2ASLXN0W4
+        lP8TqSrltIGjPsAwNilcqg==
+X-Google-Smtp-Source: AA6agR5pm1v/qqg5BoLZtI0AcGW1KCa2e9nRD3jxB0Zc5BamYv40k7hzMg2PE3x0QwFLivkcj0gaGA==
+X-Received: by 2002:a54:4496:0:b0:343:2d07:fe01 with SMTP id v22-20020a544496000000b003432d07fe01mr9350204oiv.226.1661882429847;
+        Tue, 30 Aug 2022 11:00:29 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id q17-20020a9d6551000000b006370c0e5be0sm7861506otl.48.2022.08.30.11.00.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 11:00:29 -0700 (PDT)
+Received: (nullmailer pid 1763999 invoked by uid 1000);
+        Tue, 30 Aug 2022 18:00:28 -0000
+Date:   Tue, 30 Aug 2022 13:00:28 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Michal Simek <michal.simek@xilinx.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Manish Narani <manish.narani@xilinx.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Punnaiah Choudary Kalluri 
+        <punnaiah.choudary.kalluri@xilinx.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 02/13] dt-bindings: memory: snps: Add Baikal-T1 DDRC
+ support
+Message-ID: <20220830180028.GA1758236-robh@kernel.org>
+References: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
+ <20220822191957.28546-3-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822191957.28546-3-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+On Mon, Aug 22, 2022 at 10:19:45PM +0300, Serge Semin wrote:
+> Baikal-T1 DDR controller is based on the DW uMCTL2 DDRC IP-core v2.51a
+> with up to DDR3 protocol capability and 32-bit data bus + 8-bit ECC. There
+> are individual IRQs for each ECC and DFI events.The dedicated scrubber
+> clock source is absent since it's fully synchronous to the core clock.
+> In addition to that the DFI-DDR PHY CSRs can be accessed via a separate
+> registers space.
 
-[ Upstream commit 07c55c9803dea748d17a054000cbf1913ce06399 ]
+Are you sure the phy and dfi irq shouldn't be a separate device?
 
-Add missing pci_disable_device() in error path in chipsfb_pci_init().
-
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/video/fbdev/chipsfb.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/video/fbdev/chipsfb.c b/drivers/video/fbdev/chipsfb.c
-index 393894af26f84..2b00a9d554fc0 100644
---- a/drivers/video/fbdev/chipsfb.c
-+++ b/drivers/video/fbdev/chipsfb.c
-@@ -430,6 +430,7 @@ static int chipsfb_pci_init(struct pci_dev *dp, const struct pci_device_id *ent)
-  err_release_fb:
- 	framebuffer_release(p);
-  err_disable:
-+	pci_disable_device(dp);
-  err_out:
- 	return rc;
- }
--- 
-2.35.1
-
+Rob
