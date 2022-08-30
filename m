@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C023EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040FEECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232036AbiH3XSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39956 "EHLO
+        id S232050AbiH3XSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231954AbiH3XR6 (ORCPT
+        with ESMTP id S231955AbiH3XR6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 19:17:58 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770F0A1D4F
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:39 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id h5-20020a636c05000000b00429fa12cb65so6216346pgc.21
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:39 -0700 (PDT)
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3B8A1A6D
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:33 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id e11-20020a17090a630b00b001f8b2deb88dso11888058pjj.1
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=yHBXyjuddZA0FtZxUuLwswfl5TgUYOyURvfnTVyRG1I=;
-        b=g3u3SzNGQyYsW/HvOKTnjTobfUSMtxKIIwXr4GOoPY9xa5lrtiZ7K8mV2OnLnGeFtq
-         +WcD60MaanYsLmteb7PWxw7jQ1VbLvPyDlOTBpyth6nRg1lL1mMeUdIyb2LZKS37TkjN
-         qqhzPmmJYmkpuCyje8Tx8vx2WRmqLBs44Qc/0iVcJKpg5p/Gg70XdvyOvVyU7Ep4kAfE
-         xiV22ilsA3TtmvUImdSXl6lQHMYJlAXIgn4Rm92lLVSnYhGJH3xIjwcEsL02S2MZeLa7
-         KzCMxzWfPTwRWCdEc+rsuCvMuYy3iWp0D3FF8S8JaNGZ07+stOdbrt3B1MODUGPsKb7I
-         IkBg==
+        bh=9+JwBO4nX8GrUd03Z9QeV/uS8dpKH0L2avVFFDeS0ks=;
+        b=jXXAcjBui2gp6SLGVf6HlOAyNamaRGTU9bCBd9OArQqpSgOWiNRYQyFS62VJGb7awZ
+         MbuBS3ATOMu1rcMKmcDipN0/qy5F57JkCRaDfJ8OzL0FWE0F/2/jJJFZCaIcWkBt6K90
+         hT7ipBF3zGzKt+qniGAPX03UTOKgY8OwzTWBCzpJbB5x7/JfQT9NAgVGuLzHBOql6xlZ
+         b8HdfQbExvTD11n0LeyLbG8nyXbqIJ1AzHlQQmVBHqmMDsoPRqbZNY6VfIfhsGPlphTl
+         +2JFMldCRzJ733cuFpTajJrH9E1bJPrAe2kCY13SFhAscyaCw8rg4YEiSmpBMzYOCKPi
+         pLUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=yHBXyjuddZA0FtZxUuLwswfl5TgUYOyURvfnTVyRG1I=;
-        b=y8Jiz54Ao47Fz5fvibOtsG9UHfM1TesE0NZ5sxyFX5pgCcQyMSvA7+aZjhVVLbTM9k
-         ofsua+8zG5LFUjdbOASrzRhXpOIetBpuGP6ykLwQjSsPm5z98VGoUMeNHvRe7cMNBrFV
-         J3hMqK45LKsBT4KvjT1JON8Taj2JE0s6qmZ8lY8WpDsm5wyUxoUug5MRtCpuVqwlbpVT
-         dN+ZQAS2+R3eUnxcszMGC/p66aRp6Zj3v3vJZ89x2JCuqBF9KMMtHaaZupb+hfMMT7sr
-         VwGY9lRuev8r1hxjxn7Ccu4EPuKpYMlgpo1IsqNfbGYzkPgeQO1udld1NLLby372uoTu
-         MtmQ==
-X-Gm-Message-State: ACgBeo1W7hnXILPqKguzpIhmcGPzPNIoXRGmrmhEeVdDIeqa3PIQEAvM
-        pjB9M+n4lhjye23RHbkt/dddXlRRArM=
-X-Google-Smtp-Source: AA6agR7d6N9CT5D77KX6PME7R5fE0PdmC0Ng3N1TKCPTVk5cGRVHpLA1hZRdYgOLiiP8HGL7h7b+lq6GKfo=
+        bh=9+JwBO4nX8GrUd03Z9QeV/uS8dpKH0L2avVFFDeS0ks=;
+        b=uZfUnyD1gcydlkIypNNyB+eh8Hw+cl45calXgHekOB8vtS7i9mjNuH1tpyNhtRxRgr
+         xqXuAzEBLRHgd10NWeDSBZWQkmwKN1snszYm9e7KmxeTiWy2nuhEXofMUO5KI5BiLkb3
+         9QnyXxCmf1fYiaN2XdM8TEY6rOLxRyEs5arvXBKUNCOV/Bo4HzRuCtS0MEQXI4MeJhvv
+         Dja7apSnDGj9UgXvkxlbNS9u9+oVWfxXX7hWmPjXMmDI8RjqecIWGIN3M4VB4ws7x/ro
+         1Vqx74bH6pTU1+p41mjJIP36PR0lPzSUYRTwWIFG6Vo+WwKIKw0yoyWm763SvMCnPpBe
+         DhAA==
+X-Gm-Message-State: ACgBeo2xjJPt8QsYyggRx7z9B5cHz7oBP+0JWkbiPK4rVmxPQmKHK56f
+        UGJe7WmsP++jOE/YS44R+mOHZ94IWfs=
+X-Google-Smtp-Source: AA6agR7PpDK+dfX65Z2sMzsgx3m7tePN1WvJ9Hmgkqc960RY99L9vi3njldBIFNLzBOkYTsKCrRRz71/Pr4=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1c86:b0:538:b52:b494 with SMTP id
- y6-20020a056a001c8600b005380b52b494mr15505950pfw.49.1661901398839; Tue, 30
- Aug 2022 16:16:38 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
+ t9-20020a17090a024900b001e0a8a33c6cmr11231pje.0.1661901391766; Tue, 30 Aug
+ 2022 16:16:31 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 30 Aug 2022 23:16:00 +0000
+Date:   Tue, 30 Aug 2022 23:15:56 +0000
 In-Reply-To: <20220830231614.3580124-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220830231614.3580124-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830231614.3580124-14-seanjc@google.com>
-Subject: [PATCH v5 13/27] KVM: x86: Rename kvm_x86_ops.queue_exception to inject_exception
+Message-ID: <20220830231614.3580124-10-seanjc@google.com>
+Subject: [PATCH v5 09/27] KVM: x86: Use DR7_GD macro instead of open coding
+ check in emulator
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,105 +68,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename the kvm_x86_ops hook for exception injection to better reflect
-reality, and to align with pretty much every other related function name
-in KVM.
-
-No functional change intended.
+Use DR7_GD in the emulator instead of open coding the check, and drop a
+comically wrong comment.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/include/asm/kvm-x86-ops.h | 2 +-
- arch/x86/include/asm/kvm_host.h    | 2 +-
- arch/x86/kvm/svm/svm.c             | 4 ++--
- arch/x86/kvm/vmx/vmx.c             | 4 ++--
- arch/x86/kvm/x86.c                 | 2 +-
- 5 files changed, 7 insertions(+), 7 deletions(-)
+ arch/x86/kvm/emulate.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index 51f777071584..82ba4a564e58 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -67,7 +67,7 @@ KVM_X86_OP(get_interrupt_shadow)
- KVM_X86_OP(patch_hypercall)
- KVM_X86_OP(inject_irq)
- KVM_X86_OP(inject_nmi)
--KVM_X86_OP(queue_exception)
-+KVM_X86_OP(inject_exception)
- KVM_X86_OP(cancel_injection)
- KVM_X86_OP(interrupt_allowed)
- KVM_X86_OP(nmi_allowed)
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 2c96c43c313a..71b65b8bb8cc 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1523,7 +1523,7 @@ struct kvm_x86_ops {
- 				unsigned char *hypercall_addr);
- 	void (*inject_irq)(struct kvm_vcpu *vcpu, bool reinjected);
- 	void (*inject_nmi)(struct kvm_vcpu *vcpu);
--	void (*queue_exception)(struct kvm_vcpu *vcpu);
-+	void (*inject_exception)(struct kvm_vcpu *vcpu);
- 	void (*cancel_injection)(struct kvm_vcpu *vcpu);
- 	int (*interrupt_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
- 	int (*nmi_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index f3813dbacb9f..a9d3d5a5137f 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -461,7 +461,7 @@ static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
- 	return 0;
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index f092c54d1a2f..59b61a41125a 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -4168,8 +4168,7 @@ static int check_dr7_gd(struct x86_emulate_ctxt *ctxt)
+ 
+ 	ctxt->ops->get_dr(ctxt, 7, &dr7);
+ 
+-	/* Check if DR7.Global_Enable is set */
+-	return dr7 & (1 << 13);
++	return dr7 & DR7_GD;
  }
  
--static void svm_queue_exception(struct kvm_vcpu *vcpu)
-+static void svm_inject_exception(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	unsigned nr = vcpu->arch.exception.nr;
-@@ -4798,7 +4798,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.patch_hypercall = svm_patch_hypercall,
- 	.inject_irq = svm_inject_irq,
- 	.inject_nmi = svm_inject_nmi,
--	.queue_exception = svm_queue_exception,
-+	.inject_exception = svm_inject_exception,
- 	.cancel_injection = svm_cancel_injection,
- 	.interrupt_allowed = svm_interrupt_allowed,
- 	.nmi_allowed = svm_nmi_allowed,
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 7f3581960eb5..be4348fa176c 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1684,7 +1684,7 @@ static void vmx_clear_hlt(struct kvm_vcpu *vcpu)
- 		vmcs_write32(GUEST_ACTIVITY_STATE, GUEST_ACTIVITY_ACTIVE);
- }
- 
--static void vmx_queue_exception(struct kvm_vcpu *vcpu)
-+static void vmx_inject_exception(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_vmx *vmx = to_vmx(vcpu);
- 	unsigned nr = vcpu->arch.exception.nr;
-@@ -8080,7 +8080,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
- 	.patch_hypercall = vmx_patch_hypercall,
- 	.inject_irq = vmx_inject_irq,
- 	.inject_nmi = vmx_inject_nmi,
--	.queue_exception = vmx_queue_exception,
-+	.inject_exception = vmx_inject_exception,
- 	.cancel_injection = vmx_cancel_injection,
- 	.interrupt_allowed = vmx_interrupt_allowed,
- 	.nmi_allowed = vmx_nmi_allowed,
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 39d3eadc43a2..24b538b8b0ee 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9713,7 +9713,7 @@ static void kvm_inject_exception(struct kvm_vcpu *vcpu)
- 
- 	if (vcpu->arch.exception.error_code && !is_protmode(vcpu))
- 		vcpu->arch.exception.error_code = false;
--	static_call(kvm_x86_queue_exception)(vcpu);
-+	static_call(kvm_x86_inject_exception)(vcpu);
- }
- 
- static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
+ static int check_dr_read(struct x86_emulate_ctxt *ctxt)
 -- 
 2.37.2.672.g94769d06f0-goog
 
