@@ -2,350 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB22BC67868
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE34ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:49:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbiH3NtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
+        id S231136AbiH3Nt3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:49:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbiH3Ns2 (ORCPT
+        with ESMTP id S231277AbiH3Nsm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:48:28 -0400
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2188F107C60
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:46:13 -0700 (PDT)
-Received: by mail-ed1-f54.google.com with SMTP id y64so2442387ede.2
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:46:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=zeqCrYbLRqbzzFt4QKomGEJNQndGCiBbRSxMMbNW/MY=;
-        b=iD+jR834O/23Q1+XGpSqyaXld/4kkuf5B9D8H8ohS0Wdymhqe+RRZ9WcD4amHdx77O
-         reCUJoXHQzu409HzizTeEctZKVSH7LOB9XXzESSb7cgYmnjcUfgK5K77a91FRvRtuJDA
-         0+qQ7FqFVUzCL4pdaqo1AmviIaZT3D4mUlSsE=
+        Tue, 30 Aug 2022 09:48:42 -0400
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35612101E1;
+        Tue, 30 Aug 2022 06:46:19 -0700 (PDT)
+Received: by mail-qv1-f51.google.com with SMTP id y17so1548264qvr.5;
+        Tue, 30 Aug 2022 06:46:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=zeqCrYbLRqbzzFt4QKomGEJNQndGCiBbRSxMMbNW/MY=;
-        b=OMlMrjDfbuNkgE4I9HYclWTkp9FyvliY7pjp3vCiEJ1GybtR36kgwvte6cWdgkfTT+
-         cfrBIyGEKx7jRBE+PxPXTuD1rFM6F6fXngeUceyD7mGtCoI5QhRZUXyudQlyR5qpoxEP
-         AnZ+AMxKFYnzfcDL1ZVMysDzqaVlczZkoEUi8pS3hW/UJrYh0N9SSc87PWewqNcAMkbm
-         azlJgDJRe2BI8YXkiiJlPoHJyWWhiF2O9PYnYttQIIrAL+KsilKMxJ39jb3ArWgEF/0r
-         ncKWaqdobveuy18/2mn7zKoMQ7tZeuL/bmCOG8giYZlgwZEBJAJD6AbLlTiv3E/VQnPz
-         KRKQ==
-X-Gm-Message-State: ACgBeo1deoDX0X4azdKM3zNulB24xXZ2pZxPPpjUlbjw9GgGbyc0DuIY
-        T9A+HVB7LrlRoHEi9nY5gIbph9xpthmsIGfraZIXTg==
-X-Google-Smtp-Source: AA6agR7u8cywbHV4Qndx4R3eFD3tb1TBNDA1nKLbYkdYbLwCOrN/QBJqqMMKopj+F5/B11o3QKmyXjxIVKUoCqGy1s4=
-X-Received: by 2002:a05:6402:27d3:b0:43e:5490:27ca with SMTP id
- c19-20020a05640227d300b0043e549027camr21062997ede.307.1661866864670; Tue, 30
- Aug 2022 06:41:04 -0700 (PDT)
+        h=user-agent:in-reply-to:content-disposition:mime-version:references
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=21bngEPsx9nENODhGKloV6uJhY/ub47K75lzmtVSqjY=;
+        b=ajVTQTfgysLWpj7YHSxQdryhNnfQ1uiutmZpgxOdyGGyHIbBe+t2010ZGQq1FRORMn
+         i+gB9FaiiqwZOhzLvfaDMjYUH2LlgRCp6IcLc3Owfw0aOb2JBK/AbMIq5oPN+tA4sUC4
+         Bwg/pUEPf39uQ7VraDZHvmft4erZSxhzhDafk/9W4bTu8xeDdSBEaDYIIimFSVkOhCxm
+         +HdFzblzWv7J+GK3NqKJW/w06RVvLoe0ZxBEXLAghKj3iOrwNtFsYqrmFBfZfpsJqvfB
+         1XmTU+lkX64pxC7OAKj5OBMSVrg7A9a0hK9H+yJuM4TG1VA6di5gwZz9HMkeQQ1FcyUK
+         IBYQ==
+X-Gm-Message-State: ACgBeo3yT7zIDI97m6hGamOaN4aBZCSSADt5EyqfUSXAUROdGmL+nMmK
+        IP7lnfZ5mFPG2OAkPiOTA4U=
+X-Google-Smtp-Source: AA6agR6qsN5IRB4YXJCP4WyzhBkFmtmh4gNPDHtZPGWlp0qMb55XioYmJX4BacH+uy69tJMFjYAokg==
+X-Received: by 2002:a05:6214:d6d:b0:496:e11b:69e9 with SMTP id 13-20020a0562140d6d00b00496e11b69e9mr15334444qvs.45.1661867171236;
+        Tue, 30 Aug 2022 06:46:11 -0700 (PDT)
+Received: from maniforge.dhcp.thefacebook.com ([2620:10d:c091:480::2341])
+        by smtp.gmail.com with ESMTPSA id i13-20020a05620a248d00b006baed8f3a2esm7870099qkn.103.2022.08.30.06.46.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 06:46:10 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 08:46:12 -0500
+From:   David Vernet <void@manifault.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
+        daniel@iogearbox.net, kernel-team@fb.com, martin.lau@linux.dev,
+        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
+        jolsa@kernel.org, joannelkoong@gmail.com, tj@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 4/4] selftests/bpf: Add selftests validating the user
+ ringbuf
+Message-ID: <Yw4UpK4uPZP9fYD+@maniforge.dhcp.thefacebook.com>
+References: <20220818221212.464487-1-void@manifault.com>
+ <20220818221212.464487-5-void@manifault.com>
+ <CAEf4Bzbj0ACUmZqQLhRR5DvEX9Zphqz5UwBWdkTdXfKqxWM0mQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220822081424.1310926-1-wenst@chromium.org> <12115951.O9o76ZdvQC@steina-w>
- <CAGXv+5E788T01XJF-dYRW6ZB5-TTU_L5=0hT3AQ0g+zA=LzG2w@mail.gmail.com> <2254919.ElGaqSPkdT@steina-w>
-In-Reply-To: <2254919.ElGaqSPkdT@steina-w>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Tue, 30 Aug 2022 21:40:53 +0800
-Message-ID: <CAGXv+5Hf0n5jkqwuQmh0PG8ejxDND6BRVG47J9HTQrqz9OhLdQ@mail.gmail.com>
-Subject: Re: [PATCH RESEND v2 1/2] clk: core: Honor CLK_OPS_PARENT_ENABLE for
- clk gate ops
-To:     Alexander Stein <alexander.stein@ew.tq-group.com>
-Cc:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?B?TsOtY29sYXMgRiAuIFIgLiBBIC4gUHJhZG8=?= 
-        <nfraprado@collabora.com>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzbj0ACUmZqQLhRR5DvEX9Zphqz5UwBWdkTdXfKqxWM0mQ@mail.gmail.com>
+User-Agent: Mutt/2.2.7 (2022-08-07)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 8:37 PM Alexander Stein
-<alexander.stein@ew.tq-group.com> wrote:
->
-> Hi,
->
-> Am Montag, 29. August 2022, 11:22:16 CEST schrieb Chen-Yu Tsai:
-> > Hi,
-> >
-> > On Fri, Aug 26, 2022 at 8:28 PM Alexander Stein
-> >
-> > <alexander.stein@ew.tq-group.com> wrote:
-> > > Hi everybody,
-> > >
-> > > Am Montag, 22. August 2022, 10:14:23 CEST schrieb Chen-Yu Tsai:
-> > > > In the previous commits that added CLK_OPS_PARENT_ENABLE, support f=
-or
-> > > > this flag was only added to rate change operations (rate setting an=
-d
-> > > > reparent) and disabling unused subtree. It was not added to the
-> > > > clock gate related operations. Any hardware driver that needs it fo=
-r
-> > > > these operations will either see bogus results, or worse, hang.
-> > > >
-> > > > This has been seen on MT8192 and MT8195, where the imp_ii2_* clk
-> > > > drivers set this, but dumping debugfs clk_summary would cause it
-> > > > to hang.
-> > > >
-> > > > Fixes: fc8726a2c021 ("clk: core: support clocks which requires pare=
-nts
-> > > > enable (part 2)") Fixes: a4b3518d146f ("clk: core: support clocks w=
-hich
-> > > > requires parents enable (part 1)") Signed-off-by: Chen-Yu Tsai
-> > > > <wenst@chromium.org>
-> > > > Reviewed-by: N=C3=ADcolas F. R. A. Prado <nfraprado@collabora.com>
-> > > > Tested-by: N=C3=ADcolas F. R. A. Prado <nfraprado@collabora.com>
-> > > > ---
-> > > >
-> > > >  drivers/clk/clk.c | 28 ++++++++++++++++++++++++++++
-> > > >  1 file changed, 28 insertions(+)
-> > > >
-> > > > diff --git a/drivers/clk/clk.c b/drivers/clk/clk.c
-> > > > index 7fc191c15507..9b365cd6d14b 100644
-> > > > --- a/drivers/clk/clk.c
-> > > > +++ b/drivers/clk/clk.c
-> > > > @@ -196,6 +196,9 @@ static bool clk_core_rate_is_protected(struct
-> > > > clk_core
-> > > > *core) return core->protect_count;
-> > > >
-> > > >  }
-> > > >
-> > > > +static int clk_core_prepare_enable(struct clk_core *core);
-> > > > +static void clk_core_disable_unprepare(struct clk_core *core);
-> > > > +
-> > > >
-> > > >  static bool clk_core_is_prepared(struct clk_core *core)
-> > > >  {
-> > > >
-> > > >       bool ret =3D false;
-> > > >
-> > > > @@ -208,7 +211,11 @@ static bool clk_core_is_prepared(struct clk_co=
-re
-> > > > *core) return core->prepare_count;
-> > > >
-> > > >       if (!clk_pm_runtime_get(core)) {
-> > > >
-> > > > +             if (core->flags & CLK_OPS_PARENT_ENABLE)
-> > > > +                     clk_core_prepare_enable(core->parent);
-> > > >
-> > > >               ret =3D core->ops->is_prepared(core->hw);
-> > > >
-> > > > +             if (core->flags & CLK_OPS_PARENT_ENABLE)
-> > > > +                     clk_core_disable_unprepare(core->parent);
-> > > >
-> > > >               clk_pm_runtime_put(core);
-> > > >
-> > > >       }
-> > > >
-> > > > @@ -244,7 +251,13 @@ static bool clk_core_is_enabled(struct clk_cor=
-e
-> > > > *core)
-> > > >
-> > > >               }
-> > > >
-> > > >       }
-> > > >
-> > > > +     if (core->flags & CLK_OPS_PARENT_ENABLE)
-> > > > +             clk_core_prepare_enable(core->parent);
-> > > > +
-> > > >
-> > > >       ret =3D core->ops->is_enabled(core->hw);
-> > > >
-> > > > +
-> > > > +     if (core->flags & CLK_OPS_PARENT_ENABLE)
-> > > > +             clk_core_disable_unprepare(core->parent);
-> > > >
-> > > >  done:
-> > > >       if (core->rpm_enabled)
-> > > >
-> > > >               pm_runtime_put(core->dev);
-> > > >
-> > > > @@ -812,6 +825,9 @@ int clk_rate_exclusive_get(struct clk *clk)
-> > > >
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(clk_rate_exclusive_get);
-> > > >
-> > > > +static int clk_core_enable_lock(struct clk_core *core);
-> > > > +static void clk_core_disable_lock(struct clk_core *core);
-> > > > +
-> > > >
-> > > >  static void clk_core_unprepare(struct clk_core *core)
-> > > >  {
-> > > >
-> > > >       lockdep_assert_held(&prepare_lock);
-> > > >
-> > > > @@ -835,6 +851,9 @@ static void clk_core_unprepare(struct clk_core
-> > > > *core)
-> > > >
-> > > >       WARN(core->enable_count > 0, "Unpreparing enabled %s\n", core=
--
-> > > >
-> > > >name);
-> > > >
-> > > > +     if (core->flags & CLK_OPS_PARENT_ENABLE)
-> > > > +             clk_core_enable_lock(core->parent);
-> > > > +
-> > > >
-> > > >       trace_clk_unprepare(core);
-> > > >
-> > > >       if (core->ops->unprepare)
-> > > >
-> > > > @@ -843,6 +862,9 @@ static void clk_core_unprepare(struct clk_core
-> > > > *core)
-> > > >
-> > > >       clk_pm_runtime_put(core);
-> > > >
-> > > >       trace_clk_unprepare_complete(core);
-> > > >
-> > > > +
-> > > > +     if (core->flags & CLK_OPS_PARENT_ENABLE)
-> > > > +             clk_core_disable_lock(core->parent);
-> > > >
-> > > >       clk_core_unprepare(core->parent);
-> > > >
-> > > >  }
-> > > >
-> > > > @@ -891,6 +913,9 @@ static int clk_core_prepare(struct clk_core *co=
-re)
-> > > >
-> > > >               if (ret)
-> > > >
-> > > >                       goto runtime_put;
-> > > >
-> > > > +             if (core->flags & CLK_OPS_PARENT_ENABLE)
-> > > > +                     clk_core_enable_lock(core->parent);
-> > > > +
-> > > >
-> > > >               trace_clk_prepare(core);
-> > > >
-> > > >               if (core->ops->prepare)
-> > > >
-> > > > @@ -898,6 +923,9 @@ static int clk_core_prepare(struct clk_core *co=
-re)
-> > > >
-> > > >               trace_clk_prepare_complete(core);
-> > > >
-> > > > +             if (core->flags & CLK_OPS_PARENT_ENABLE)
-> > > > +                     clk_core_disable_lock(core->parent);
-> > > > +
-> > > >
-> > > >               if (ret)
-> > > >
-> > > >                       goto unprepare;
-> > > >
-> > > >       }
-> > >
-> > > Unfortunately this completely locks up my i.MX8M Plus based board dur=
-ing
-> > > early boot.
-> > > I'm currently running on next-20220826 using
-> > > arch/arm64/boot/dts/freescale/
-> > > imx8mp-tqma8mpql-mba8mpxl.dts
-> > > Reverting this patch gets my board booting again. dmesg until hard lo=
-ckup
-> > > below.
-> >
-> > The standard logs don't have anything to go on. Could you add some prin=
-tk
-> > calls to the clk core around the areas this patch touchs? That would he=
-lp.
-> >
-> > Could you also provide a dump of /sys/kernel/debug/clk/clk_summary? Tha=
-t
-> > would help to understand the clock tree.
->
-> Sure,
->
-> These are the last kernel log lines before hard lockup:
-> [    0.686357] io scheduler mq-deadline registered
-> [    0.690907] io scheduler kyber registered
-> [    0.699275] clk_core_prepare: clk: main_axi CLK_OPS_PARENT_ENABLE
->
-> main_axi is also the only debug output up to this point. This is the used
-> patch for debugging:
-> ---8<---
-> --- a/drivers/clk/clk.c
-> +++ b/drivers/clk/clk.c
-> @@ -211,8 +211,10 @@ static bool clk_core_is_prepared(struct clk_core *co=
-re)
->                 return core->prepare_count;
->
->         if (!clk_pm_runtime_get(core)) {
-> -               if (core->flags & CLK_OPS_PARENT_ENABLE)
-> +               if (core->flags & CLK_OPS_PARENT_ENABLE) {
-> +                       pr_info("%s: clk: %s CLK_OPS_PARENT_ENABLE\n",
-> __func__, core->name);
->                         clk_core_prepare_enable(core->parent);
-> +               }
->                 ret =3D core->ops->is_prepared(core->hw);
->                 if (core->flags & CLK_OPS_PARENT_ENABLE)
->                         clk_core_disable_unprepare(core->parent);
-> @@ -251,8 +253,10 @@ static bool clk_core_is_enabled(struct clk_core *cor=
-e)
->                 }
->         }
->
-> -       if (core->flags & CLK_OPS_PARENT_ENABLE)
-> +       if (core->flags & CLK_OPS_PARENT_ENABLE) {
-> +               pr_info("%s: clk: %s CLK_OPS_PARENT_ENABLE\n", __func__, =
-core-
-> >name);
->                 clk_core_prepare_enable(core->parent);
-> +       }
->
->         ret =3D core->ops->is_enabled(core->hw);
->
-> @@ -851,8 +855,10 @@ static void clk_core_unprepare(struct clk_core *core=
-)
->
->         WARN(core->enable_count > 0, "Unpreparing enabled %s\n", core->na=
-me);
->
-> -       if (core->flags & CLK_OPS_PARENT_ENABLE)
-> +       if (core->flags & CLK_OPS_PARENT_ENABLE) {
-> +               pr_info("%s: clk: %s CLK_OPS_PARENT_ENABLE\n", __func__, =
-core-
-> >name);
->                 clk_core_enable_lock(core->parent);
-> +       }
->
->         trace_clk_unprepare(core);
->
-> @@ -912,8 +918,10 @@ static int clk_core_prepare(struct clk_core *core)
->                 if (ret)
->                         goto runtime_put;
->
-> -               if (core->flags & CLK_OPS_PARENT_ENABLE)
-> +               if (core->flags & CLK_OPS_PARENT_ENABLE) {
-> +                       pr_info("%s: clk: %s CLK_OPS_PARENT_ENABLE\n",
-> __func__, core->name);
->                         clk_core_enable_lock(core->parent);
-> +               }
->
->                 trace_clk_prepare(core);
->
->
-> ---8<---
+On Wed, Aug 24, 2022 at 03:03:54PM -0700, Andrii Nakryiko wrote:
 
-Thanks. So the part of the clock tree that's problematic is this:
+[...]
 
- osc_24m (fixed)
-    sys_pll1_ref_sel (mux)
-       sys_pll1 (imx pll14xx)
-          sys_pll1_bypass (mux)
-             sys_pll1_out (gate)
-                sys_pll1_800m (fixed factor)
-                   main_axi (composite CLK_IS_CRITICAL)
+> > +                       CHECK(read <= 0, "snprintf_comm",
+> > +                             "Failed to write index %d to comm\n", i);
+> 
+> please, no CHECK() use in new tests, we have ASSERT_xxx() covering all
+> common cases
 
-Would it be possible for you to produce a stack dump as well? And also
-enable lock debugging? This likely still won't catch anything if it's
-a spinlock deadlock though.
+No problem, I'll make this change in v4. Unless I missed something,
+CHECK() isn't documented as deprecated in test_progs.h. I'll take care
+of adding that in a separate change.
 
+> > +static long
+> > +bad_access1(struct bpf_dynptr *dynptr, void *context)
+> > +{
+> > +       const struct sample *sample;
+> > +
+> > +       sample = bpf_dynptr_data(dynptr - 1, 0, sizeof(*sample));
+> > +       bpf_printk("Was able to pass bad pointer %lx\n", (__u64)dynptr - 1);
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +/* A callback that accesses a dynptr in a bpf_user_ringbuf_drain callback should
+> > + * not be able to read before the pointer.
+> > + */
+> > +SEC("?raw_tp/sys_nanosleep")
+> 
+> there is no sys_nanosleep raw tracepoint, use SEC("?raw_tp") to
+> specify type, that's enough
 
-Thanks
-ChenYu
+Got it, thanks for catching that. Will fix.
+
+> > diff --git a/tools/testing/selftests/bpf/test_user_ringbuf.h b/tools/testing/selftests/bpf/test_user_ringbuf.h
+> > new file mode 100644
+> > index 000000000000..1643b4d59ba7
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/test_user_ringbuf.h
+> 
+> nit: I'd probably put it under progs/test_user_ringbuf.h so it's
+> closer to BPF source code. As it is right now, it's neither near
+> user-space part of tests nor near BPF part.
+
+Fair enough, will fix.
+
+Thanks,
+David
