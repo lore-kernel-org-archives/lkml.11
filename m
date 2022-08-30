@@ -2,65 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90834ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 07:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AD1ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 07:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231324AbiH3H6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 03:58:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36816 "EHLO
+        id S230459AbiH3H7J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 03:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230506AbiH3H6B (ORCPT
+        with ESMTP id S229955AbiH3H7B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 03:58:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE5BD11E2
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 00:58:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BBA23B816CE
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 07:57:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B516C433D6;
-        Tue, 30 Aug 2022 07:57:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661846278;
-        bh=tMezW17H30QYH+rtqSZLpnK9Zmp87zjX0uCL3+xUkqU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tV6oBMpm8Q7OvzGU0kdTL7C8kgKDOwa39BWo+lhO5mOdnUsOAVhk52V2fbzv24ZnQ
-         +RnMsJ0TIPrf/uhtoyHS/EbpuMYrm9G5MwcYfWEoK3W+UHXmFclIvIvH8VMtQxhzy6
-         D513r5dPHqTXnSZhZPHRQBuoANbJdhdfgNmLG+nmUT9Uwl8YHhZp1QvKjgcybZ2cAw
-         iwW4MVZBn9ND7Tp3nu2VWNfbvF96sNTvb2Djlg4eTm7Gp9GziKL6T6Kx6dqfgBTVmn
-         ba4YAOPC7QMXH8xlJSCF0vjwNUF+cnkO+BgOSLIQyD/tFhh7eqM9/NcNK7nSZZI2Wj
-         I1KlExypp76kQ==
-Date:   Tue, 30 Aug 2022 09:57:52 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Carlos Llamas <cmllamas@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?utf-8?B?SGrDuG5uZXbDpWc=?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/7] binder: remove unused binder_alloc->buffer_free
-Message-ID: <20220830075752.6lueoqmaskhygb5z@wittgenstein>
-References: <20220829201254.1814484-1-cmllamas@google.com>
- <20220829201254.1814484-6-cmllamas@google.com>
+        Tue, 30 Aug 2022 03:59:01 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1462D124F
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 00:58:59 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id z29so5838707lfb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 00:58:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=JyJg814s8VNKfznL3jPP/bagNFT2CFpVK/YKwkc4pmY=;
+        b=hNnVqtnbES08UFG8eGi60EgJlNBj5fsNqtjk9dBwtUbdps1C1ZEv2RtnaP0ZCA3HOk
+         9mTGLOgYD4Ia0vYwdd9g9JLecbEIANKroQutHXrXjtyS12suuT671yUGtkuTWSWKcwkN
+         qG92MGVKfHNxGXX/edquEVl+6ebeeu7B95tpTb8um2lr2ovmF/yn1JLx2EWlIZaA5TJd
+         W1o3//HEt61Y/BxwiyDoiAdm8mUfGaKEseYD8sfyfaRHTGmI2ZGqwqPAsu9OA1q3pByu
+         ZOhAnESs9pGSwv5jPdkq1CvE1b7oKqupoyI0E6NkhcTNK6ciXdB9f4mmwdv9FvASVrp5
+         suVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=JyJg814s8VNKfznL3jPP/bagNFT2CFpVK/YKwkc4pmY=;
+        b=QjGKQUdki2Z7Yf/p2snp+LvMbbcGLqyjdH0jNF44NaQ4NrfwMvJCB4ZiVU6uhdKPO8
+         xagtu60JAtcOY1nfwpe1QIZHTSaWEFAtlsg/333WnyFvx0bJBTr1JhL7y4gZJ7/CjZDU
+         8UUt73fS6zXHk/KMSyoYPxupg9L1mywCmaPcua79V77nTyCzFVecTufDGQgbAkbkhmll
+         1fMCTewvAvC7xPd9wcUNpUYcmMr4zq8nI6MXBr+uJvhpVHOuoeCvDcXAhwSId7oB9GF2
+         iPe7oU9MP7owfbo6sgTuHvhjpV8fCXQICbKWekmsKjwxgR8bXAGB1sp+eAjiYGDxD/77
+         /s+w==
+X-Gm-Message-State: ACgBeo3f1sdXiakfxZ55o3lVz4zkSw/3FnwpbHz28t5dsTY1UiFFeVfC
+        0cwyX32fF9RGIF3UM6XtgnBFYQ==
+X-Google-Smtp-Source: AA6agR6WgXrloUT0qepCq/hwy+s6NVisiGm9eKqQl4uG0m4zYRath4sRXPDFwrotfJCXgR8G769NBQ==
+X-Received: by 2002:a05:6512:12c5:b0:48c:df54:a41a with SMTP id p5-20020a05651212c500b0048cdf54a41amr6994063lfg.464.1661846338193;
+        Tue, 30 Aug 2022 00:58:58 -0700 (PDT)
+Received: from krzk-bin.. (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id p9-20020a05651212c900b0048aa9d67483sm948946lfg.160.2022.08.30.00.58.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 00:58:57 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>
+Subject: [PATCH] ASoC: codecs: rk817: fix missing I2C dependency in compile test
+Date:   Tue, 30 Aug 2022 10:58:55 +0300
+Message-Id: <20220830075855.278046-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220829201254.1814484-6-cmllamas@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 08:12:52PM +0000, Carlos Llamas wrote:
-> The ->buffer_free member was introduced in the first revision of the
-> driver under staging but it appears like it was never actually used
-> according to git's history. Remove it from binder_alloc.
-> 
-> Signed-off-by: Carlos Llamas <cmllamas@google.com>
-> ---
+SND_SOC_RK817 uses I2C regmap so compile testing without parent MFD_RK808, requires I2C:
 
-Looks good,
-Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+  WARNING: unmet direct dependencies detected for REGMAP_I2C
+    Depends on [n]: I2C [=n]
+    Selected by [y]:
+    - SND_SOC_RK817 [=y] && SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && (MFD_RK808 [=n] || COMPILE_TEST [=y])
+
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 5b7f4e5de61b ("ASoC: codecs: allow compile testing without MFD drivers")
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+---
+
+Commit SHA from linux-next (recent).
+---
+ sound/soc/codecs/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 94b7bb85d236..968d0701f2e8 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -1197,7 +1197,7 @@ config SND_SOC_RK3328
+ 
+ config SND_SOC_RK817
+ 	tristate "Rockchip RK817 audio CODEC"
+-	depends on MFD_RK808 || COMPILE_TEST
++	depends on MFD_RK808 || COMPILE_TEST && I2C
+ 	select REGMAP_I2C
+ 
+ config SND_SOC_RL6231
+-- 
+2.34.1
+
