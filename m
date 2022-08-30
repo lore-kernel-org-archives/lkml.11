@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68581ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB67ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231391AbiH3R0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        id S231556AbiH3R0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231460AbiH3R0P (ORCPT
+        with ESMTP id S231550AbiH3R0S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:26:15 -0400
+        Tue, 30 Aug 2022 13:26:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E838FF8F56;
-        Tue, 30 Aug 2022 10:23:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469D1153D3F;
+        Tue, 30 Aug 2022 10:24:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFB5D61775;
-        Tue, 30 Aug 2022 17:22:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25EA9C433D6;
-        Tue, 30 Aug 2022 17:22:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 589F161797;
+        Tue, 30 Aug 2022 17:23:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F093C433B5;
+        Tue, 30 Aug 2022 17:23:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880153;
-        bh=fPid+q0GoEnpfhUVAoMELTMnsoxydhxBhddicCiYKQ8=;
+        s=k20201202; t=1661880203;
+        bh=WHrlCYdi1bSrzecsw/MQNXNF2LLpNKQ3Aly2GDKG3Oc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dd5mXnl0XoCGUP3y6frrj23V6HIjnJ9HFXyedSfSyF4lEOUnj65wAnEZj3gz/lvtG
-         Xb4ok4Po5aFrWlFEyckw44CKVGFuXMc5gh0yrn2Ffc41aSsr8pMYkcHMQOz30PGXC7
-         f4RucqP+dt5jArS4UIgUxNFtL3P0b+Y3sWoXNQDqFB5ro5VOYZMJnY5Msc8//QBrjv
-         0sn+EDvckYQTXN6Sa3o1D3goccKJcDbOyr7PdsVKdPpzRQ63tpc2iilbo8B9zzDf8J
-         O4/Y5V358jnlCw4ld1hvC1GG3eaI/VOc1f+14D+7H0sxiPCE3S9nkxgByzx14TMVhI
-         Ncf6IDDVUB6Lw==
+        b=DSeRb8wnZLsXWHFeB5Rz8iE3gO7O2R0cxmyO/Df5QlIs3rsgBuH29gIfkkrbx8hOU
+         aDCKK/8p4slKOkKWi04bpDsS4QoQQCROeaTNgDMve0j5KxqrbD3Tm3qolveDMR66Ht
+         TocJRflmBO6jBw1Ci7xNLz8fopZ4M7mQEt5HTReqKuLE7wij1njer8NCVAtNtE4/Ug
+         hgTRCZZOSsV5ztt0ROrPBBNKR5Vuxjn5mmxo+VdIenQA9FLrGy1Lsgqbpps8Y4N5K/
+         RgXK2H7dAE42mvb4X3nsAaBzH8hrgApKLth9bgZbncm86sg1rgktq6OtgBGbQoT3op
+         V9NKDm0idnTsA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Bruno Goncalves <bgoncalv@redhat.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        catalin.marinas@arm.com, peterz@infradead.org, tglx@linutronix.de,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 13/23] arm64: cacheinfo: Fix incorrect assignment of signed error value to unsigned fw_level
-Date:   Tue, 30 Aug 2022 13:21:30 -0400
-Message-Id: <20220830172141.581086-13-sashal@kernel.org>
+Cc:     Guixin Liu <kanie@linux.alibaba.com>,
+        Sumit Saxena <sumit.saxena@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, kashyap.desai@broadcom.com,
+        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
+        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 03/16] scsi: megaraid_sas: Fix double kfree()
+Date:   Tue, 30 Aug 2022 13:23:04 -0400
+Message-Id: <20220830172317.581397-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
-References: <20220830172141.581086-1-sashal@kernel.org>
+In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
+References: <20220830172317.581397-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,79 +54,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Guixin Liu <kanie@linux.alibaba.com>
 
-[ Upstream commit e75d18cecbb3805895d8ed64da4f78575ec96043 ]
+[ Upstream commit 8c499e49240bd93628368c3588975cfb94169b8b ]
 
-Though acpi_find_last_cache_level() always returned signed value and the
-document states it will return any errors caused by lack of a PPTT table,
-it never returned negative values before.
+When allocating log_to_span fails, kfree(instance->ctrl_context) is called
+twice. Remove redundant call.
 
-Commit 0c80f9e165f8 ("ACPI: PPTT: Leave the table mapped for the runtime usage")
-however changed it by returning -ENOENT if no PPTT was found. The value
-returned from acpi_find_last_cache_level() is then assigned to unsigned
-fw_level.
-
-It will result in the number of cache leaves calculated incorrectly as
-a huge value which will then cause the following warning from __alloc_pages
-as the order would be great than MAX_ORDER because of incorrect and huge
-cache leaves value.
-
-  |  WARNING: CPU: 0 PID: 1 at mm/page_alloc.c:5407 __alloc_pages+0x74/0x314
-  |  Modules linked in:
-  |  CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.19.0-10393-g7c2a8d3ac4c0 #73
-  |  pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-  |  pc : __alloc_pages+0x74/0x314
-  |  lr : alloc_pages+0xe8/0x318
-  |  Call trace:
-  |   __alloc_pages+0x74/0x314
-  |   alloc_pages+0xe8/0x318
-  |   kmalloc_order_trace+0x68/0x1dc
-  |   __kmalloc+0x240/0x338
-  |   detect_cache_attributes+0xe0/0x56c
-  |   update_siblings_masks+0x38/0x284
-  |   store_cpu_topology+0x78/0x84
-  |   smp_prepare_cpus+0x48/0x134
-  |   kernel_init_freeable+0xc4/0x14c
-  |   kernel_init+0x2c/0x1b4
-  |   ret_from_fork+0x10/0x20
-
-Fix the same by changing fw_level to be signed integer and return the
-error from init_cache_level() early in case of error.
-
-Reported-and-Tested-by: Bruno Goncalves <bgoncalv@redhat.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Link: https://lore.kernel.org/r/20220808084640.3165368-1-sudeep.holla@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Link: https://lore.kernel.org/r/1659424729-46502-1-git-send-email-kanie@linux.alibaba.com
+Acked-by: Sumit Saxena <sumit.saxena@broadcom.com>
+Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/cacheinfo.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/scsi/megaraid/megaraid_sas_fusion.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/arm64/kernel/cacheinfo.c b/arch/arm64/kernel/cacheinfo.c
-index 587543c6c51cb..97c42be71338a 100644
---- a/arch/arm64/kernel/cacheinfo.c
-+++ b/arch/arm64/kernel/cacheinfo.c
-@@ -45,7 +45,8 @@ static void ci_leaf_init(struct cacheinfo *this_leaf,
- 
- int init_cache_level(unsigned int cpu)
- {
--	unsigned int ctype, level, leaves, fw_level;
-+	unsigned int ctype, level, leaves;
-+	int fw_level;
- 	struct cpu_cacheinfo *this_cpu_ci = get_cpu_cacheinfo(cpu);
- 
- 	for (level = 1, leaves = 0; level <= MAX_CACHE_LEVEL; level++) {
-@@ -63,6 +64,9 @@ int init_cache_level(unsigned int cpu)
- 	else
- 		fw_level = acpi_find_last_cache_level(cpu);
- 
-+	if (fw_level < 0)
-+		return fw_level;
-+
- 	if (level < fw_level) {
- 		/*
- 		 * some external caches not specified in CLIDR_EL1
+diff --git a/drivers/scsi/megaraid/megaraid_sas_fusion.c b/drivers/scsi/megaraid/megaraid_sas_fusion.c
+index 13022a42fd6f4..7838c7911adde 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_fusion.c
++++ b/drivers/scsi/megaraid/megaraid_sas_fusion.c
+@@ -5198,7 +5198,6 @@ megasas_alloc_fusion_context(struct megasas_instance *instance)
+ 		if (!fusion->log_to_span) {
+ 			dev_err(&instance->pdev->dev, "Failed from %s %d\n",
+ 				__func__, __LINE__);
+-			kfree(instance->ctrl_context);
+ 			return -ENOMEM;
+ 		}
+ 	}
 -- 
 2.35.1
 
