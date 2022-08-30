@@ -2,158 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D014ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD89FECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231161AbiH3VIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 17:08:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
+        id S231332AbiH3VI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 17:08:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbiH3VIT (ORCPT
+        with ESMTP id S229720AbiH3VIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 17:08:19 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A36C86884
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:08:18 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id j17so9566807qtp.12
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:08:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=YnMPi8S/rmzftaQJdnwQOkJ/FK3B4YCgHwvUmwZNUOY=;
-        b=W1TkrN40e7YmmGfiyZ9+TO2XuGUSCuaHtVqqW6ECmbsaOvBWLc7WjWn/2wAvg95xoq
-         a/9Mfhw40R792rRpcMLWlsiujFayibkHs4KGArB7fDXRRhigmP2Zu1xV0uX97wVr8N3o
-         jqad79DGL0xMxExjk5tab/QwmXpL7D8i/ZVR0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=YnMPi8S/rmzftaQJdnwQOkJ/FK3B4YCgHwvUmwZNUOY=;
-        b=FCc7lzSBhiF1P1d0CkPMo6bZ7lSoNod8ykSrGPS8ChhuVFg4NFOEhKLgsaC1+vsTVj
-         FjmR+/jCW215yX1Zh3/zNUXmUkVzrVlVITyXuR0AHqmnTAU3XCAs4qtVVkYrHWD6j5kD
-         oF9r6tdNR9h+D5YmYcHutqnRW4CeHkBrMicLqQBW9wXNCj9CmlBg6/oq7FmNcrNwAM38
-         ohWNm4blflsaWJd4mYZdJ03bvC+9FNiIomdURASMeNZ7606epuV+lx2OYBDFMD8RPdIJ
-         1bDz07m922xDjzwEJcJp12+ZlVZ1HRCGMBPjJOqyzOezDKh0QviZLRYqeEgkzf3MzVAx
-         rMMA==
-X-Gm-Message-State: ACgBeo3LkvXximfaaE2Jjc/JauPTxXc1ukDBl6fsfCW/qrLIuOjn4vCl
-        BLoPSxm/2QxpRcSCpTnHxSX2TQ==
-X-Google-Smtp-Source: AA6agR4tYyICEu+LzWKkcWiW7bKYlEEOF+VmXrjBrxsYNYg+yfuHnhe8j0tt6oTweVybWEhMDm2yVw==
-X-Received: by 2002:a05:622a:11d6:b0:343:5e19:7488 with SMTP id n22-20020a05622a11d600b003435e197488mr16456868qtk.476.1661893697348;
-        Tue, 30 Aug 2022 14:08:17 -0700 (PDT)
-Received: from [10.0.0.40] (c-73-148-104-166.hsd1.va.comcast.net. [73.148.104.166])
-        by smtp.gmail.com with ESMTPSA id l17-20020a37f911000000b006b629f86244sm8432968qkj.50.2022.08.30.14.08.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 14:08:17 -0700 (PDT)
-Message-ID: <663d568d-a343-d44b-d33d-29998bff8f70@joelfernandes.org>
-Date:   Tue, 30 Aug 2022 17:08:15 -0400
+        Tue, 30 Aug 2022 17:08:55 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EF847C1A3;
+        Tue, 30 Aug 2022 14:08:53 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27UL8kfG130221;
+        Tue, 30 Aug 2022 16:08:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661893726;
+        bh=NtKcwczTeR2CPHLoKmnqcAiFTJkPBNRBY1w2UEeVEY4=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=Ytan+20x+E6POnMychilOPBCWYZdKY4xPQXg53yvIKGSKxbdbm309bKG+dDX3U2b+
+         vlY+PAc19pc0yhBrwcMo9/rp/+UgcdeMBcBOrUkauiQLG1q7XHPND0ZDhpcWNJz7Nj
+         k+Yg51D1CzxTVtjx2bogG9ajBrE8bwlM7UiAvar4=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27UL8kFB017745
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 30 Aug 2022 16:08:46 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Tue, 30
+ Aug 2022 16:08:46 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Tue, 30 Aug 2022 16:08:45 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27UL8jt1085284;
+        Tue, 30 Aug 2022 16:08:45 -0500
+Date:   Tue, 30 Aug 2022 16:08:45 -0500
+From:   Bryan Brattlof <bb@ti.com>
+To:     Vignesh Raghavendra <vigneshr@ti.com>
+CC:     Nishanth Menon <nm@ti.com>, Tero Kristo <kristo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] arm64: dts: ti: k3-am642-sk: Add DT entry for onboard
+ LEDs
+Message-ID: <20220830210845.tohj2gm5po4bndtl@bryanbrattlof.com>
+References: <20220830123254.522222-1-vigneshr@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH] tools/memory-model: Weaken ctrl dependency definition in
- explanation.txt
-Content-Language: en-US
-To:     =?UTF-8?Q?Paul_Heidekr=c3=bcger?= <paul.heidekrueger@in.tum.de>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org
-Cc:     Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
-        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
-        Martin Fink <martin.fink@in.tum.de>
-References: <20220830204446.3590197-1-paul.heidekrueger@in.tum.de>
-From:   Joel Fernandes <joel@joelfernandes.org>
-In-Reply-To: <20220830204446.3590197-1-paul.heidekrueger@in.tum.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20220830123254.522222-1-vigneshr@ti.com>
+X-PGP-Fingerprint: D3D1 77E4 0A38 DF4D 1853 FEEF 41B9 0D5D 71D5 6CE0
+User-Agent: NeoMutt/20171215
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Aparna & Vignesh!
 
+On August 30, 2022 thus sayeth Vignesh Raghavendra:
+> From: Aparna M <a-m1@ti.com>
+> 
+> AM642 SK has 8 leds connected to tpic2810 onboard. Add support for these
+> gpio leds.
+> 
+> Signed-off-by: Aparna M <a-m1@ti.com>
+> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
 
-On 8/30/2022 4:44 PM, Paul Heidekrüger wrote:
-> The current informal control dependency definition in explanation.txt is
-> too broad and, as dicsussed, needs to be updated.
-> 
-> Consider the following example:
-> 
->> if(READ_ONCE(x))
->> 	return 42;
->>
->> 	WRITE_ONCE(y, 42);
->>
->> 	return 21;
-> 
-> The read event determines whether the write event will be executed "at
-> all" - as per the current definition - but the formal LKMM does not
-> recognize this as a control dependency.
-> 
-> Introduce a new defintion which includes the requirement for the second
-> memory access event to syntactically lie within the arm of a non-loop
-> conditional.
-> 
-> Link: https://lore.kernel.org/all/20220615114330.2573952-1-paul.heidekrueger@in.tum.de/
-> Cc: Marco Elver <elver@google.com>
-> Cc: Charalampos Mainas <charalampos.mainas@gmail.com>
-> Cc: Pramod Bhatotia <pramod.bhatotia@in.tum.de>
-> Cc: Soham Chakraborty <s.s.chakraborty@tudelft.nl>
-> Cc: Martin Fink <martin.fink@in.tum.de>
-> Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
-> Co-developed-by: Alan Stern <stern@rowland.harvard.edu>
+Reviewed-by: Bryan Brattlof <bb@ti.com>
+
+Looks great to me!
+
 > ---
+> v3:
+> Fix compile error due to missing header
+> Fix whitespace issues
 > 
-> @Alan:
+> v2: https://lore.kernel.org/all/20220629075859.6939-1-a-m1@ti.com/
 > 
-> Since I got it wrong the last time, I'm adding you as a co-developer after my
-> SOB. I'm sorry if this creates extra work on your side due to you having to
-> resubmit the patch now with your SOB if I understand correctly, but since it's
-> based on your wording from the other thread, I definitely wanted to give you
-> credit.
+>  arch/arm64/boot/dts/ti/k3-am642-sk.dts | 70 ++++++++++++++++++++++++++
+>  1 file changed, 70 insertions(+)
 > 
->  tools/memory-model/Documentation/explanation.txt | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/tools/memory-model/Documentation/explanation.txt b/tools/memory-model/Documentation/explanation.txt
-> index ee819a402b69..0bca50cac5f4 100644
-> --- a/tools/memory-model/Documentation/explanation.txt
-> +++ b/tools/memory-model/Documentation/explanation.txt
-> @@ -464,9 +464,10 @@ to address dependencies, since the address of a location accessed
->  through a pointer will depend on the value read earlier from that
->  pointer.
-> 
-> -Finally, a read event and another memory access event are linked by a
-> -control dependency if the value obtained by the read affects whether
-> -the second event is executed at all.  Simple example:
-> +Finally, a read event X and another memory access event Y are linked by
-> +a control dependency if Y syntactically lies within an arm of an if,
-> +else or switch statement and the condition guarding Y is either data or
-> +address-dependent on X.  Simple example:
 
-'conditioning guarding Y' sounds confusing to me as it implies to me that the
-condition's evaluation depends on Y. I much prefer Alan's wording from the
-linked post saying something like 'the branch condition is data or address
-dependent on X, and Y lies in one of the arms'.
-
-I have to ask though, why doesn't this imply that the second instruction never
-executes at all? I believe that would break the MP-pattern if it were not true.
-
-cheers,
-
- - Joel
-
-
-
+Thanks for getting the leds working :)
+~Bryan
