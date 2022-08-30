@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A03ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10502C65C0D
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbiH3LaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54332 "EHLO
+        id S230322AbiH3LaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiH3LaE (ORCPT
+        with ESMTP id S229908AbiH3LaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 07:30:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC35BF63;
-        Tue, 30 Aug 2022 04:30:03 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E6ABF5A;
+        Tue, 30 Aug 2022 04:30:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAEEEB81A63;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A410AB81A61;
         Tue, 30 Aug 2022 11:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1067C43164;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEF0C43142;
         Tue, 30 Aug 2022 11:29:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661859000;
-        bh=PsV1H7I2xcbdp4ZG7x9wTuYvt6EoxjXfLIKWptuuQtA=;
+        s=k20201202; t=1661858999;
+        bh=QW7NvZ/+JKzjGwVRO2hu0iK/A8N/vR9B98+FCjkhvqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r6E6mGYd8nf0BMGyrqoeV2Ct6Ok2tRbD+OCkbSYRF7F//Q7S1CmGwMRZmjfBEYYij
-         820MhuQFUasVgPQFkZSAw2/kLVtrmHINPntnbRlmey043iVEBgnLzMKslWdxuNpqNH
-         UrMkCth0+4Wl04b//vBfgylJDzOh5I43W+smC4O0oxbIIYe/yxfCdg/X+xh/mJOXib
-         dwO2UakKr5RS+yk53H0m0V37gURTWScc8IOGZ/T2BvqbKH3rJxCbZCTJhHEpVgE6d8
-         I0R+FNoDjBwdk2wTu9SVk6dRZhnfGJS50fbqf9zTEpkhRdna+FnGY75OLRu0babSAp
-         EOFfg3at0GZcw==
+        b=jOvFSB7m46S1z1VZVmjFgUOfhNT1L0ANnE8G3ZViFw8OxyYWbRwk1n1ZWodoplelK
+         IlMnIyDPb40JOrc1J3D9EpsQaki8WRiQfsAERbcEdVN61MuiKfC2xQeOB7oogYENtc
+         e7r7tc7j3CvzpSfrEZTh9cAnx2o0PO/0Tep3UvBY1qPaHd1sr/FcRGBvzJItDJLnnA
+         szTV4cYlCSfNRec/QuXQpNzXkq52ojui5aEIELB5Mq95PhYrkMDBOaBVusi6RMcawU
+         JCYPpXwLNrmjmpihrFnqfyYAHsyer9l2X7j3Ojes5a4EMh3DCKCz+SGje2m5mybynS
+         8MBMHZXP5SleQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oSzRN-00010E-M7; Tue, 30 Aug 2022 13:29:57 +0200
+        id 1oSzRN-000103-EP; Tue, 30 Aug 2022 13:29:57 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -47,9 +47,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 10/30] dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate PIPE clock names
-Date:   Tue, 30 Aug 2022 13:29:03 +0200
-Message-Id: <20220830112923.3725-11-johan+linaro@kernel.org>
+Subject: [PATCH v4 07/30] dt-bindings: phy: qcom,qmp: drop child-node comment
+Date:   Tue, 30 Aug 2022 13:29:00 +0200
+Message-Id: <20220830112923.3725-8-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830112923.3725-1-johan+linaro@kernel.org>
 References: <20220830112923.3725-1-johan+linaro@kernel.org>
@@ -59,59 +59,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Deprecate the PHY node 'clock-names' property which specified that the
-PIPE clock name should have an unnecessary "lane" suffix.
+Drop the redundant comment about child nodes being required that was
+copied from the old binding documentation.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml   | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-index 8125a91a3591..b7b115e021d4 100644
---- a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-@@ -69,6 +69,7 @@ patternProperties:
-           - description: PIPE clock
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+index a5319d20f027..8cb2898db740 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+@@ -98,7 +98,6 @@ properties:
  
-       clock-names:
-+        deprecated: true
-         items:
-           - enum:
-               - pipe0
-@@ -98,7 +99,6 @@ patternProperties:
-     required:
-       - reg
-       - clocks
--      - clock-names
-       - resets
-       - reset-names
-       - "#clock-cells"
-@@ -151,7 +151,6 @@ examples:
-                   <0x1400 0x1dc>;
+   vddp-ref-clk-supply: true
  
-             clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
--            clock-names = "pipe0";
-             resets = <&gcc GCC_PCIE_0_PHY_BCR>;
-             reset-names = "lane0";
- 
-@@ -167,7 +166,6 @@ examples:
-                   <0x2400 0x1dc>;
- 
-             clocks = <&gcc GCC_PCIE_1_PIPE_CLK>;
--            clock-names = "pipe1";
-             resets = <&gcc GCC_PCIE_1_PHY_BCR>;
-             reset-names = "lane1";
- 
-@@ -183,7 +181,6 @@ examples:
-                   <0x3400 0x1dc>;
- 
-             clocks = <&gcc GCC_PCIE_2_PIPE_CLK>;
--            clock-names = "pipe2";
-             resets = <&gcc GCC_PCIE_2_PHY_BCR>;
-             reset-names = "lane2";
- 
+-#Required nodes:
+ patternProperties:
+   "^phy@[0-9a-f]+$":
+     type: object
 -- 
 2.35.1
 
