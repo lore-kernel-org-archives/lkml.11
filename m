@@ -2,96 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D356ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6EEECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231322AbiH3NwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
+        id S231364AbiH3NwR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230392AbiH3Nvp (ORCPT
+        with ESMTP id S231307AbiH3Nvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:51:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7DB21E27
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:50:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661867401;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xSYsGT+JuRUnE0x8Uu6rvpfH2JA8fm0UMDh7oy78WJU=;
-        b=DRL+OAj8aY+7F4QlHoEuT79wRC2wCLyduuOJ8auHG2FFfMC9s4bKcNuReXbUcv8iBlu30C
-        rxnmcuv+k1FnW2fTAJ04Lc3F4umG003FBh4HGT7VScC228lCSVNbAGyP3bAeOCelkypKyk
-        Ci6hypV6IxZyFEraqtEPbXsQjjJ7/8Y=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-329-r6d0XWkBMuKppy4fUdOKJg-1; Tue, 30 Aug 2022 09:43:44 -0400
-X-MC-Unique: r6d0XWkBMuKppy4fUdOKJg-1
-Received: by mail-wr1-f72.google.com with SMTP id r7-20020adfbb07000000b00225b9579132so1757170wrg.6
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:43:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=xSYsGT+JuRUnE0x8Uu6rvpfH2JA8fm0UMDh7oy78WJU=;
-        b=fagMvdTCa78PTT9chyXm0XuONp9JrPG96Mvp4PskNVujG/2uqZJi3nWq2cI3av/qv3
-         QqeNUkhzcQ1rY7afiz8QB9ds3D1gJWydo9AB121WiWVz+LoZ3a5ANBsmG6BDeh/CU6LD
-         GNwqrPpg1xTr8DjuKQPrtUG+HdOFUA5Yc+S0lzp1FsVtljpbFfI+THcNwSPKRYQ3AnOd
-         lwBtTzlk4bBqItaLcd28kbUBtzz+b7DeMGZAUs13/hWwI7O8okfiH4V1lIDoHJ0Udo7B
-         6tECKi/SAVMbdLbrCWxPKc4eu/aeU1pEfz4DipmjcSWyDhLJEDBUg1xKziZ8P/cvBT5S
-         se7g==
-X-Gm-Message-State: ACgBeo3AB81LnyvmrqXs/uy7g2VSwhH2Z2Y7Pguurc1QRJRMN0vYrv9H
-        uYLZZsry1jTrYFm9musWHQuqGiPrCu2P25DlK97e4iLF0rUY/MvD0NjZ/qZndxCweYsTjkxI0h/
-        nbLhUZiWJVh2MWJlCZumCJY4X
-X-Received: by 2002:a05:600c:418a:b0:3a5:168e:a918 with SMTP id p10-20020a05600c418a00b003a5168ea918mr9782000wmh.31.1661867023751;
-        Tue, 30 Aug 2022 06:43:43 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7J7amscRJ3WfZNYVzhrBCLo4tjoSRLTzgx5nbx4QzFf31AtfhlXNT2cljEHY97bXhWh+p3lQ==
-X-Received: by 2002:a05:600c:418a:b0:3a5:168e:a918 with SMTP id p10-20020a05600c418a00b003a5168ea918mr9781989wmh.31.1661867023521;
-        Tue, 30 Aug 2022 06:43:43 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id i20-20020a05600c2d9400b003a604a29a34sm11680851wmg.35.2022.08.30.06.43.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 06:43:42 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        Yuan Yao <yuan.yao@linux.intel.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH v9 00/40] KVM: x86: hyper-v: Fine-grained TLB flush + L2
- TLB flush features
-In-Reply-To: <20220803134110.397885-1-vkuznets@redhat.com>
-References: <20220803134110.397885-1-vkuznets@redhat.com>
-Date:   Tue, 30 Aug 2022 15:43:41 +0200
-Message-ID: <8735ddvoc2.fsf@redhat.com>
+        Tue, 30 Aug 2022 09:51:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CDE4BA52;
+        Tue, 30 Aug 2022 06:50:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42EBAB81C07;
+        Tue, 30 Aug 2022 13:50:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB94FC433D6;
+        Tue, 30 Aug 2022 13:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661867405;
+        bh=l7ELeaRTVCV4lo7/FQ0h0/nHSZnx9Fi3ScrPGF9gzvs=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=aWStCZCicrMebcTCOFe7sxaeIJUPqBAwUaEf0+CLgJ2SV1vBL9kIWVDHMZrU6a+FW
+         b9wM+EAjmMpBpn68zTuq/Oc0sLAIkrPOV+QuNAE61dO12HJ9cNoU5YwvQCyrQwHtJ7
+         d5miBia6XH86fk/Zk+SFdI0Ce87PENiBZeWTSL60/FGV0QGbue6pCsXGB9n4quAWcI
+         diZUKu5+Q0tiqX/QvnQ7X1MLf6ovVGhsyD0xQoz0v6rDTjBxAj4y0SRS20V1pvAcCa
+         QcGZgRLg2BYoUiNkCzqa/HtZVKnjjHnLKkcfSm7HbwD3G/MyLvhdJELzoBaofQajzk
+         T7OMDrGENU0IQ==
+Message-ID: <a07686e7e1d1ef15720194be2abe5681f6a6c78e.camel@kernel.org>
+Subject: Re: [PATCH v3 1/7] iversion: update comments with info about atime
+ updates
+From:   Jeff Layton <jlayton@kernel.org>
+To:     "J. Bruce Fields" <bfields@fieldses.org>
+Cc:     NeilBrown <neilb@suse.de>, Dave Chinner <david@fromorbit.com>,
+        tytso@mit.edu, adilger.kernel@dilger.ca, djwong@kernel.org,
+        trondmy@hammerspace.com, viro@zeniv.linux.org.uk,
+        zohar@linux.ibm.com, xiubli@redhat.com, chuck.lever@oracle.com,
+        lczerner@redhat.com, jack@suse.cz, brauner@kernel.org,
+        linux-api@vger.kernel.org, linux-btrfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-ceph@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-xfs@vger.kernel.org,
+        Colin Walters <walters@verbum.org>
+Date:   Tue, 30 Aug 2022 09:50:02 -0400
+In-Reply-To: <20220830132443.GA26330@fieldses.org>
+References: <20220826214703.134870-1-jlayton@kernel.org>
+         <20220826214703.134870-2-jlayton@kernel.org>
+         <20220829075651.GS3600936@dread.disaster.area>
+         <549776abfaddcc936c6de7800b6d8249d97d9f28.camel@kernel.org>
+         <166181389550.27490.8200873228292034867@noble.neil.brown.name>
+         <f5c42c0d87dfa45188c2109ccf9baeb7a42aa27e.camel@kernel.org>
+         <20220830132443.GA26330@fieldses.org>
+Content-Type: text/plain; charset="ISO-8859-15"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Vitaly Kuznetsov <vkuznets@redhat.com> writes:
+On Tue, 2022-08-30 at 09:24 -0400, J. Bruce Fields wrote:
+> On Tue, Aug 30, 2022 at 07:40:02AM -0400, Jeff Layton wrote:
+> > Yes, saying only that it must be different is intentional. What we
+> > really want is for consumers to treat this as an opaque value for the
+> > most part [1]. Therefore an implementation based on hashing would
+> > conform to the spec, I'd think, as long as all of the relevant info is
+> > part of the hash.
+>=20
+> It'd conform, but it might not be as useful as an increasing value.
+>=20
+> E.g. a client can use that to work out which of a series of reordered
+> write replies is the most recent, and I seem to recall that can prevent
+> unnecessary invalidations in some cases.
+>=20
 
-> Changes since v8:
-> - Rebase to the current kvm/queue (93472b797153)
-> - selftests: move Hyper-V test pages to a dedicated struct untangling from 
->  vendor-specific (VMX/SVM) pages allocation [Sean].
+That's a good point; the linux client does this. That said, NFSv4 has a
+way for the server to advertise its change attribute behavior [1]
+(though nfsd hasn't implemented this yet). We don't have a good way to
+do that in userland for now.
 
-Sean, Paolo,
+This is another place where fsinfo() would have been nice to have. I
+think until we have something like that, we'd want to keep our promises
+to userland to a minimum.
 
-I've jsut checked and this series applies cleanly on top of the latest
-kvm/queue [372d07084593]. I also don't seem to have any feedback to
-address.
+[1]: https://www.rfc-editor.org/rfc/rfc7862.html#section-12.2.3 . I
+guess I should look at plumbing this in for IS_I_VERSION inodes...
 
-Any chance this can be queued?
+--=20
+Jeff Layton <jlayton@kernel.org>
 
--- 
-Vitaly
+
 
