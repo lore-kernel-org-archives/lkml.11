@@ -2,100 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 268F2ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729C4ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:48:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229751AbiH3Kqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48752 "EHLO
+        id S229732AbiH3Ksl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:48:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229583AbiH3Kqu (ORCPT
+        with ESMTP id S229583AbiH3Ksf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:46:50 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9FEDB062;
-        Tue, 30 Aug 2022 03:46:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661856409; x=1693392409;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=l1e3sLsvZsD5plicJS6nkkJnl6a8/uElddMk1TkHv64=;
-  b=Rh+gNBAhKmafuDgwfvLV/CWLHV1F07+EETgafEjDNn8NswATYiOJip7b
-   4Ram4KK7pWSjexFu6k0lXJYV1Kt439ausC8f86qL1uoQTK+hbrEFOn6mA
-   FJRkSdj82Q/2U9j8S3EajyHge8Xuow2kApT55lsMHz9kNBKdhUOdPl8Ci
-   L2z8af6LE4sJ7k4ldoT8MjpWNUxisD9hcJgeabdaFyh73yKfWTWiKaCU+
-   qG6ATR3G3J6Wiq/r9FXejOAtkiuhjJYN2pkZzyn1yWjbKjBRNcFNS721U
-   ZTswyfgeA0UefdyhMUAyBeUyPIXLBvz50nttca7MzXwwXPp/teQXX0kKl
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="295144102"
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="295144102"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 03:46:32 -0700
-X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="672808754"
-Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.52.185])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 03:46:30 -0700
-Message-ID: <6af830e7-9098-a16c-9af1-957cf38a7b3f@intel.com>
-Date:   Tue, 30 Aug 2022 13:46:26 +0300
+        Tue, 30 Aug 2022 06:48:35 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9269ADCFD8
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:48:34 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id i77so8859568ioa.7
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:48:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=D+Zr5m06Dz7pd1eCr8Zp9JUK+jm0toq4g0HWVGImRYA=;
+        b=abgFhPl46C8ei+7f36OH7DAnCzAMmjSmJbnkvTvPumKxM3f1C6WzRbefKGvkLMtYsA
+         NxpwF8HNjVwrUZ6K95DrwmzLJHXoauPusJCJ4avSH0MRD+rplq5ciQoaVkW+htEFWz4W
+         sYCigAomDmWEBjn4ZQLux3KreIkC02bze3h9E=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=D+Zr5m06Dz7pd1eCr8Zp9JUK+jm0toq4g0HWVGImRYA=;
+        b=T2PmgJp2mHgcM+2THcg9zo4ikDpAXOqPQa/5Fe/EGr0R8Rz+MT7zNHeIV2sIbUaqrw
+         AGYwxCfmkJTQ8p9kkRd2gbXQqKF4FbH6M+vur3CPo8H7sn3ALz6LfVF6QRlCcwBKs8TU
+         juxuikyeB1CSzQ3+dJiYW9AmryY42M4ciEirIYf7IHAMTHRqqjifEIHsugitD/XfyAFY
+         lQcNCxvDicYkXYej/H0pudmfh09Oyc67xftg46Hq/cmHh67NZ3nHD2RCrSJQpTS8AqT+
+         Mx1iCLdl1ZVo9fbo62h5BEckdpnbd+x74dFe/gYl8wmJgdM1+p0IM6Yf7aTxU/pLAM5j
+         DfeA==
+X-Gm-Message-State: ACgBeo3NSm/ico/78tmxZMsabiaDp+D7kRVQz88uSAfGl/bUstEevbp+
+        Gbf8kkXlMcitohhiiNLX2yp7Hp30u7o9VyloTdJAbQ==
+X-Google-Smtp-Source: AA6agR6iliUyUmz+S8kqdlyWYTe+420xcq+qusgU+R+5fk0mgQgTG3lhPxjIa7eRDTILKtYwB+ryOdEjtuc+NxjSFFc=
+X-Received: by 2002:a05:6602:15ce:b0:688:e4fd:bbfc with SMTP id
+ f14-20020a05660215ce00b00688e4fdbbfcmr10180294iow.121.1661856513754; Tue, 30
+ Aug 2022 03:48:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH linux-next] mmc: sdhci_am654: Remove the unneeded result
- variable
-Content-Language: en-US
-To:     cgel.zte@gmail.com, ulf.hansson@linaro.org
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ye xingchen <ye.xingchen@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220830083349.276709-1-ye.xingchen@zte.com.cn>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-In-Reply-To: <20220830083349.276709-1-ye.xingchen@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220729165954.991-1-ignat@cloudflare.com> <Yv9dvvy0rK/1T0sU@gondor.apana.org.au>
+ <CALrw=nEh7LX3DSCa3FTu8BYr4QWx+W2h3Jei9Qo67+XXH-Vegw@mail.gmail.com> <Yw3Rneo6Ik1QEfbG@gondor.apana.org.au>
+In-Reply-To: <Yw3Rneo6Ik1QEfbG@gondor.apana.org.au>
+From:   Ignat Korchagin <ignat@cloudflare.com>
+Date:   Tue, 30 Aug 2022 11:48:23 +0100
+Message-ID: <CALrw=nGJgMACrFVy+FVVCDb4H3wNUN2E-GLZaXzLsm3ReOUeVg@mail.gmail.com>
+Subject: Re: [PATCH] crypto: akcipher - default implementations for setting
+ private/public keys
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        linux-crypto <linux-crypto@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30/08/22 11:33, cgel.zte@gmail.com wrote:
-> From: ye xingchen <ye.xingchen@zte.com.cn>
-> 
-> Return the value cqhci_init() directly instead of storing it in another
-> redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+On Tue, Aug 30, 2022 at 10:00 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> On Mon, Aug 29, 2022 at 11:48:23AM +0100, Ignat Korchagin wrote:
+> >
+> > I can only elaborate here as I didn't encounter any real-world
+> > use-cases, but may assume some limited crypto hardware device, which
+> > may somehow "encourage" doing public key operations in software and
+> > providing only "private-key" operations due to its limited resources.
+>
+> In general if a hardware is missing a piece of the functinoality
+> required by the API then it should implement a software fallback.
+>
+> The only time such a NULL helper would make sense if an algorithm
+> had no public key.
 
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+I vaguely remember some initial research in quantum-resistant
+signatures, which used HMAC for "signing" thus don't have any public
+keys. But it is way beyond my expertise to comment on the practicality
+and availability of such schemes.
 
-> ---
->  drivers/mmc/host/sdhci_am654.c | 5 +----
->  1 file changed, 1 insertion(+), 4 deletions(-)
-> 
-> diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
-> index e7ced1496a07..8f1023480e12 100644
-> --- a/drivers/mmc/host/sdhci_am654.c
-> +++ b/drivers/mmc/host/sdhci_am654.c
-> @@ -554,7 +554,6 @@ static const struct cqhci_host_ops sdhci_am654_cqhci_ops = {
->  static int sdhci_am654_cqe_add_host(struct sdhci_host *host)
->  {
->  	struct cqhci_host *cq_host;
-> -	int ret;
->  
->  	cq_host = devm_kzalloc(mmc_dev(host->mmc), sizeof(struct cqhci_host),
->  			       GFP_KERNEL);
-> @@ -568,9 +567,7 @@ static int sdhci_am654_cqe_add_host(struct sdhci_host *host)
->  
->  	host->mmc->caps2 |= MMC_CAP2_CQE;
->  
-> -	ret = cqhci_init(cq_host, host->mmc, 1);
-> -
-> -	return ret;
-> +	return cqhci_init(cq_host, host->mmc, 1);
->  }
->  
->  static int sdhci_am654_get_otap_delay(struct sdhci_host *host,
+I'm more concerned here about a buggy "third-party" RSA driver, which
+may not implement the callback and which gets prioritised by the
+framework, thus giving the ability to trigger a NULL-ptr dereference
+from userspace via keyctl(2). I think the Crypto API framework should
+be a bit more robust to handle such a case, but I also understand that
+there are a lot of "if"s in this scenario and we can say it is up to
+crypto driver not to be buggy. Therefore, consider my opinion as not
+strong and I can post a v2, which does not provide a default stub for
+set_pub_key, if you prefer.
 
+Ignat
