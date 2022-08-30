@@ -2,108 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC18ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:44:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79801C0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229904AbiH3KoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:44:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
+        id S229889AbiH3KpC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:45:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiH3KoF (ORCPT
+        with ESMTP id S229579AbiH3Ko7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:44:05 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13A99F754;
-        Tue, 30 Aug 2022 03:44:03 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MH3nr5wnlz4xG6;
-        Tue, 30 Aug 2022 20:44:00 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1661856241;
-        bh=7FFszpKAwHkUcxfIIXTrsjmWHYTLLEAcEncl3AbzgmY=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=fVf/5xnChhmP5DNHOSS9QSyyCN2N3VX7gGKy3eglqlHvJuahftMSqb1BlXSI9rrDX
-         6DP3LrXiQXRsB05renWOiocFqYxY6u+JvWhyAgxQMcFdeoBKSj2pDJ+7uM2dZbBiRO
-         SrkQFagFwarD+ForSxKLf234yS6ScXJQQJjah00n8cFUjgFncZ8ZfzWyst8FL6Uwon
-         F9NbMQUnA6MHgi+jMKkSDYjde0gnDgZSLiCKDJu/LsUAp8pPtme9dzAmdrmmWMcbeY
-         zfH3AaHP1JvZm+QsJljRKHTVELGAUWcEsC1jQOE0VRBTjrt3dkJIityRWZ2OMwN3e4
-         Ybf3KFKj11ciw==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Nicholas Piggin <npiggin@gmail.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Axtens <dja@axtens.net>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Kees Cook <keescook@chromium.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] powerpc: clean up binutils version check
-In-Reply-To: <7daf34ca-ed5e-90ea-8ccc-6821127cbd96@csgroup.eu>
-References: <20220827164056.3365356-1-masahiroy@kernel.org>
- <58a90319-668f-7c87-4168-e0df10644aa7@csgroup.eu>
- <CAK7LNATJiQc5HMdsct1S5z15-b1fzc5-Y2xtBs6oT17Na79H_w@mail.gmail.com>
- <7daf34ca-ed5e-90ea-8ccc-6821127cbd96@csgroup.eu>
-Date:   Tue, 30 Aug 2022 20:43:56 +1000
-Message-ID: <87o7w2j9jn.fsf@mpe.ellerman.id.au>
+        Tue, 30 Aug 2022 06:44:59 -0400
+Received: from imap5.colo.codethink.co.uk (imap5.colo.codethink.co.uk [78.40.148.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716A1DFD9;
+        Tue, 30 Aug 2022 03:44:55 -0700 (PDT)
+Received: from [167.98.27.226] (helo=[10.35.5.6])
+        by imap5.colo.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
+        id 1oSyjc-006Sy9-7N; Tue, 30 Aug 2022 11:44:44 +0100
+Message-ID: <879a6823-6651-93cf-8500-661bedb050af@codethink.co.uk>
+Date:   Tue, 30 Aug 2022 11:44:43 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.1
+Subject: Re: [PATCH v2 6/9] riscv: dts: microchip: icicle: update pci address
+ properties
+Content-Language: en-GB
+To:     Conor Dooley <conor.dooley@microchip.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Daire McNamara <daire.mcnamara@microchip.com>,
+        Shravan Chippa <shravan.chippa@microchip.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Cyril Jean <Cyril.Jean@microchip.com>,
+        Lewis Hanly <lewis.hanly@microchip.com>,
+        Vattipalli Praveen <praveen.kumar@microchip.com>,
+        Wolfgang Grandegger <wg@aries-embedded.de>,
+        Hugh Breslin <hugh.breslin@microchip.com>,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220830101803.1456180-1-conor.dooley@microchip.com>
+ <20220830101803.1456180-7-conor.dooley@microchip.com>
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+In-Reply-To: <20220830101803.1456180-7-conor.dooley@microchip.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christophe Leroy <christophe.leroy@csgroup.eu> writes:
-> Le 27/08/2022 =C3=A0 20:03, Masahiro Yamada a =C3=A9crit=C2=A0:
->> On Sun, Aug 28, 2022 at 2:37 AM Christophe Leroy
->> <christophe.leroy@csgroup.eu> wrote:
->>> Le 27/08/2022 =C3=A0 18:40, Masahiro Yamada a =C3=A9crit :
->>>> The checkbin in arch/powerpc/Makefile errors out if ld <=3D 2.24.
->>>> So, the requirement on PPC is binutils >=3D 2.25. It is cleaner to
->>>> specify it in scripts/min-tool-version.sh. If binutils < 2.25 is
->>>> used, the toolchain check will fail in the Kconfig stage going
->>>> forward.
->>>>
->>>> Since binutils >=3D 2.25 is already required, another version test
->>>> for --save-restore-funcs on PPC64 is always met.
-...
->>>> diff --git a/scripts/min-tool-version.sh b/scripts/min-tool-version.sh
->>>> index 250925aab101..7df9f2150ea1 100755
->>>> --- a/scripts/min-tool-version.sh
->>>> +++ b/scripts/min-tool-version.sh
->>>> @@ -14,7 +14,13 @@ fi
->>>>
->>>>    case "$1" in
->>>>    binutils)
->>>> -     echo 2.23.0
->>>> +     if [ "$SRCARCH" =3D powerpc ]; then
->>>
->>> Isn't this limitation only for ppc64le ?
->>>
->>> Refer commit 60e065f70bdb ("powerpc: Reject binutils 2.24 when building
->>> little endian")
->>=20
->> I do not see any CONFIG check in the current checkbin.
->>=20
->> Refer commit a3ad84da0760 ("powerpc/toc: Future proof
->> kernel toc")
->
-> That's odd. There is no toc on PPC32.
+On 30/08/2022 11:18, Conor Dooley wrote:
+> For the v2022.09 reference design the PCI root port's data region has
+> been moved to FIC1 from FIC0. This is a shorter path, allowing for
+> higher clock rates and improved through-put. As a result, the address at
+> which the PCIe's data region appears to the core complex has changed.
+> The config region's address is unchanged.
 
-I think that's just a bug in a3ad84da0760.
+Did this also fix the 32bit address apperture issue which plagued
+getting pcie graphics cards sorted.
 
-But that means we inadvertantly dropped support for 2.24 about 8 months
-ago, and no one noticed.
 
-Let's see what the responses are to Nick's proposal to increase the
-minimum to 2.25.1.
+-- 
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
 
-cheers
+https://www.codethink.co.uk/privacy.html
+
