@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0A5ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24384ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:19:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbiH3RTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:19:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58868 "EHLO
+        id S229836AbiH3RTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiH3RSn (ORCPT
+        with ESMTP id S230321AbiH3RSo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:18:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CA2D419D;
-        Tue, 30 Aug 2022 10:18:39 -0700 (PDT)
+        Tue, 30 Aug 2022 13:18:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3CCD6BB7;
+        Tue, 30 Aug 2022 10:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41A10B81D0B;
-        Tue, 30 Aug 2022 17:18:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5EFBC433D6;
-        Tue, 30 Aug 2022 17:18:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC1556172F;
+        Tue, 30 Aug 2022 17:18:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E28BCC433C1;
+        Tue, 30 Aug 2022 17:18:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661879917;
-        bh=lPDqattntsJEG0XxXrX717mGqdP6yGADrTYv2gqoSd4=;
+        s=k20201202; t=1661879921;
+        bh=DPpbkP2lFMPQDukymNsUNw6LZGndApTSvx4rsplIZp8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RTLeqDhq1ypKkDalE9A9AeABAdPnkaem42lcIsFuyVpSQc70+pr3IQtHH7DAuuC00
-         7U8UAbdxgIRGzvoF5aXV7hTMu62+pEOMvAnHHXG7DTVUFNNXRDUuWsXV2nFxGNX/Qf
-         fUQxnAX9Del4nKioxbjTZG5lia1nY6ywbuhCYCR0iJVNh4b1jo549TYENolNG9jtE+
-         1Piuq2ayWVS+fuo0wMunA46wdH2FRk/xgw4cwcbFSsP9n2U6Z2RGOfGLoNA6i74qys
-         W53VnbA8V06c1lAxZ/BQW4B3YtUfiZ7UjRLi1Pm6H2O/enbX30MBOFe70IXb3gC1rT
-         CIiKddBoA2NBA==
+        b=GAJrHU1NGEdQq284WLXcBAl28m6ykn/Iqd+GGAEwBNBspl/Fz34zctfBoy2gLpd7U
+         dPbc1sI/xKZUVC3ekdhMP8k0OivjhR/Zgb4h+LFoEtgyJ+ue2OE8fjtvtcymAu0XFr
+         P/3MrQuC0RfCnzmJqF38L91tQwR/P7wR+GNAGp4RPqN2qZSL93sGBx6k0gfnwzXdRC
+         ds/xhNCk1Hzncr7QZqnGWq1IDpN1mdAfrYtEnTPK8INZJOBB87x4Z5ns/WN1QB+CLy
+         NUJxd9Vhus2XzK4XNDUZVfJ5drQOIq5szxokGdKnX4htewLBRl3fYZeZJK+M0aZNaO
+         REq16EGlhwF3w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maxime Ripard <maxime@cerno.tech>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
-        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.19 06/33] drm/vc4: hdmi: Rework power up
-Date:   Tue, 30 Aug 2022 13:17:57 -0400
-Message-Id: <20220830171825.580603-6-sashal@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Like Xu <likexu@tencent.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
+        acme@kernel.org, tglx@linutronix.de, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        linux-perf-users@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 08/33] perf/x86/core: Set pebs_capable and PMU_FL_PEBS_ALL for the Baseline
+Date:   Tue, 30 Aug 2022 13:17:59 -0400
+Message-Id: <20220830171825.580603-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830171825.580603-1-sashal@kernel.org>
 References: <20220830171825.580603-1-sashal@kernel.org>
@@ -54,77 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 258e483a4d5e97a6a8caa74381ddc1f395ac1c71 ]
+[ Upstream commit 7d3598868aaee05eb738d1c3115616b867e7530a ]
 
-The current code tries to handle the case where CONFIG_PM isn't selected
-by first calling our runtime_resume implementation and then properly
-report the power state to the runtime_pm core.
+The SDM explicitly states that PEBS Baseline implies Extended PEBS.
+For cpu model forward compatibility (e.g. on ICX, SPR, ADL), it's
+safe to stop doing FMS table thing such as setting pebs_capable and
+PMU_FL_PEBS_ALL since it's already set in the intel_ds_init().
 
-This allows to have a functionning device even if pm_runtime_get_*
-functions are nops.
+The Goldmont Plus is the only platform which supports extended PEBS
+but doesn't have Baseline. Keep the status quo.
 
-However, the device power state if CONFIG_PM is enabled is
-RPM_SUSPENDED, and thus our vc4_hdmi_write() and vc4_hdmi_read() calls
-in the runtime_pm hooks will now report a warning since the device might
-not be properly powered.
-
-Even more so, we need CONFIG_PM enabled since the previous RaspberryPi
-have a power domain that needs to be powered up for the HDMI controller
-to be usable.
-
-The previous patch has created a dependency on CONFIG_PM, now we can
-just assume it's there and only call pm_runtime_resume_and_get() to make
-sure our device is powered in bind.
-
-Link: https://lore.kernel.org/r/20220629123510.1915022-39-maxime@cerno.tech
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-(cherry picked from commit 53565c28e6af2cef6bbf438c34250135e3564459)
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reported-by: Like Xu <likexu@tencent.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Link: https://lkml.kernel.org/r/20220816114057.51307-1-likexu@tencent.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
+ arch/x86/events/intel/core.c | 2 --
+ arch/x86/events/intel/ds.c   | 1 +
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index c5702f22fe1a8..199bc398817fa 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -2992,17 +2992,15 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
- 			vc4_hdmi->disable_4kp60 = true;
- 	}
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index bd8b988576097..7333f505d790e 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -6192,7 +6192,6 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.pebs_block = true;
+ 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+ 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+-		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+ 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
+ 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
  
-+	pm_runtime_enable(dev);
-+
- 	/*
--	 * We need to have the device powered up at this point to call
--	 * our reset hook and for the CEC init.
-+	 *  We need to have the device powered up at this point to call
-+	 *  our reset hook and for the CEC init.
- 	 */
--	ret = vc4_hdmi_runtime_resume(dev);
-+	ret = pm_runtime_resume_and_get(dev);
- 	if (ret)
--		goto err_put_ddc;
--
--	pm_runtime_get_noresume(dev);
--	pm_runtime_set_active(dev);
--	pm_runtime_enable(dev);
-+		goto err_disable_runtime_pm;
- 
- 	if ((of_device_is_compatible(dev->of_node, "brcm,bcm2711-hdmi0") ||
- 	     of_device_is_compatible(dev->of_node, "brcm,bcm2711-hdmi1")) &&
-@@ -3048,6 +3046,7 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
- err_destroy_encoder:
- 	drm_encoder_cleanup(encoder);
- 	pm_runtime_put_sync(dev);
-+err_disable_runtime_pm:
- 	pm_runtime_disable(dev);
- err_put_ddc:
- 	put_device(&vc4_hdmi->ddc->dev);
+@@ -6237,7 +6236,6 @@ __init int intel_pmu_init(void)
+ 		x86_pmu.pebs_block = true;
+ 		x86_pmu.flags |= PMU_FL_HAS_RSP_1;
+ 		x86_pmu.flags |= PMU_FL_NO_HT_SHARING;
+-		x86_pmu.flags |= PMU_FL_PEBS_ALL;
+ 		x86_pmu.flags |= PMU_FL_INSTR_LATENCY;
+ 		x86_pmu.flags |= PMU_FL_MEM_LOADS_AUX;
+ 		x86_pmu.lbr_pt_coexist = true;
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index ba60427caa6d3..ac6dd4c96dbc1 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -2262,6 +2262,7 @@ void __init intel_ds_init(void)
+ 					PERF_SAMPLE_BRANCH_STACK |
+ 					PERF_SAMPLE_TIME;
+ 				x86_pmu.flags |= PMU_FL_PEBS_ALL;
++				x86_pmu.pebs_capable = ~0ULL;
+ 				pebs_qual = "-baseline";
+ 				x86_get_pmu(smp_processor_id())->capabilities |= PERF_PMU_CAP_EXTENDED_REGS;
+ 			} else {
 -- 
 2.35.1
 
