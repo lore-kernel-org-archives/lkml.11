@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99858C0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49C4C0502E
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230332AbiH3MCK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 08:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38128 "EHLO
+        id S230369AbiH3MCO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 08:02:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiH3MB6 (ORCPT
+        with ESMTP id S229982AbiH3MB6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 08:01:58 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CC3BE58B0;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC203E58B1;
         Tue, 30 Aug 2022 05:01:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1661860917; x=1693396917;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ecJt3wo84iM3H4djjCHx3xWGtpp+Oi5DdaN0Ffz4IIQ=;
-  b=HZLNJCdd/PFUoPFqL1D4quktOkYUlmwt/RRq72WB9+eEyHbRWNPu/nC9
-   heNaH2pCYNzsfhPaAHqzyOA+svHu9LEpfCqO16bBNi8sOA87RAxMqMxWz
-   T6sCvdjA+Jj+2S/WSXNxOq5uMrZB6xihdb/8Et5oV73X3R5FtgW2lx38H
-   BABtvJrgrZMnm6XHqiIwEtoIN5stbJGVAbeCLtN168VH684v8m1YZ8mw/
-   X+xm38ZPNgBJ3ztu9VOwTVH02SxgNp1u+LGHSAhn3M+EPcarBMB0EJRI7
-   OVwT7iqFzIghNWL5eUw49GTWyVWmhgtZLml5HH3UuKv/Lh1DLJm6uVfn2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="356870957"
+  bh=4lQQM3YEKOljyNg3+Qt8aEy+mGfQLUEBdfFaUdsEnJU=;
+  b=QygY3acMhLh+6hYcFzQU7X2J1Cx1GslcLVg6/OR3bfuEyO7J2VsTa99R
+   75RauTihyzNBYand4a9Bpl7c8ZBDqGSpACPzsVXaTOHlivJ4XmDOh8q52
+   vwbxnOfFP0G/+UPBtYWkT3Sg3xpSqYa6rjMG0bUh3zCJcfNXwwC0iDrqs
+   o522sdb3C0BzF8baU19rDdYh4svvcN4IbWjzZCc/V72u5nOlH0kNYGy2y
+   rt2IwXrvfOOpJ2wHlszYmyNehGTWOZ5e5V/87YmM8pGRq/4re/txtv8Ig
+   LU6SMc/1UfCzgbi04oO13XsMnya7Yk6nvGRG/fHlp0gDq0qM0HOQFkymV
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="356870962"
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="356870957"
+   d="scan'208";a="356870962"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:01:55 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:01:56 -0700
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="787469616"
+   d="scan'208";a="787469623"
 Received: from ls.sc.intel.com (HELO localhost) ([143.183.96.54])
   by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:01:55 -0700
 From:   isaku.yamahata@intel.com
@@ -43,10 +43,11 @@ Cc:     isaku.yamahata@intel.com, isaku.yamahata@gmail.com,
         Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>,
         Kai Huang <kai.huang@intel.com>, Chao Gao <chao.gao@intel.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH v2 03/19] KVM: x86: Move check_processor_compatibility from init ops to runtime ops
-Date:   Tue, 30 Aug 2022 05:01:18 -0700
-Message-Id: <ca14ea2d9582d4e08fc4a432f494d1180a1d60ac.1661860550.git.isaku.yamahata@intel.com>
+        Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: [PATCH v2 05/19] KVM: Rename and move CPUHP_AP_KVM_STARTING to ONLINE section
+Date:   Tue, 30 Aug 2022 05:01:20 -0700
+Message-Id: <d2c8815a56be1712e189ddcbea16c8b6cbc53e4a.1661860550.git.isaku.yamahata@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1661860550.git.isaku.yamahata@intel.com>
 References: <cover.1661860550.git.isaku.yamahata@intel.com>
@@ -58,168 +59,122 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Chao Gao <chao.gao@intel.com>
 
-so that KVM can do compatibility checks on hotplugged CPUs. Drop __init
-from check_processor_compatibility() and its callees.
+The CPU STARTING section doesn't allow callbacks to fail. Move KVM's
+hotplug callback to ONLINE section so that it can abort onlining a CPU in
+certain cases to avoid potentially breaking VMs running on existing CPUs.
+For example, when kvm fails to enable hardware virtualization on the
+hotplugged CPU.
 
-use a static_call() to invoke .check_processor_compatibility.
+Place KVM's hotplug state before CPUHP_AP_SCHED_WAIT_EMPTY as it ensures
+when offlining a CPU, all user tasks and non-pinned kernel tasks have left
+the CPU, i.e. there cannot be a vCPU task around. So, it is safe for KVM's
+CPU offline callback to disable hardware virtualization at that point.
+Likewise, KVM's online callback can enable hardware virtualization before
+any vCPU task gets a chance to run on hotplugged CPUs.
 
-Opportunistically rename {svm,vmx}_check_processor_compat to conform
-to the naming convention of fields of kvm_x86_ops.
+KVM's CPU hotplug callbacks are renamed as well.
 
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Chao Gao <chao.gao@intel.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Link: https://lore.kernel.org/r/20220216031528.92558-2-chao.gao@intel.com
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+Link: https://lore.kernel.org/r/20220216031528.92558-6-chao.gao@intel.com
 ---
- arch/x86/include/asm/kvm-x86-ops.h |  1 +
- arch/x86/include/asm/kvm_host.h    |  2 +-
- arch/x86/kvm/svm/svm.c             |  4 ++--
- arch/x86/kvm/vmx/vmx.c             | 14 +++++++-------
- arch/x86/kvm/x86.c                 |  3 +--
- 5 files changed, 12 insertions(+), 12 deletions(-)
+ include/linux/cpuhotplug.h |  2 +-
+ virt/kvm/kvm_main.c        | 30 ++++++++++++++++++++++--------
+ 2 files changed, 23 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index 51f777071584..3bc45932e2d1 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -129,6 +129,7 @@ KVM_X86_OP(msr_filter_changed)
- KVM_X86_OP(complete_emulated_msr)
- KVM_X86_OP(vcpu_deliver_sipi_vector)
- KVM_X86_OP_OPTIONAL_RET0(vcpu_get_apicv_inhibit_reasons);
-+KVM_X86_OP(check_processor_compatibility)
+diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+index f61447913db9..7972bd63e0cb 100644
+--- a/include/linux/cpuhotplug.h
++++ b/include/linux/cpuhotplug.h
+@@ -185,7 +185,6 @@ enum cpuhp_state {
+ 	CPUHP_AP_CSKY_TIMER_STARTING,
+ 	CPUHP_AP_TI_GP_TIMER_STARTING,
+ 	CPUHP_AP_HYPERV_TIMER_STARTING,
+-	CPUHP_AP_KVM_STARTING,
+ 	CPUHP_AP_KVM_ARM_VGIC_INIT_STARTING,
+ 	CPUHP_AP_KVM_ARM_VGIC_STARTING,
+ 	CPUHP_AP_KVM_ARM_TIMER_STARTING,
+@@ -203,6 +202,7 @@ enum cpuhp_state {
  
- #undef KVM_X86_OP
- #undef KVM_X86_OP_OPTIONAL
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 2c96c43c313a..5df5d88d345f 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1445,6 +1445,7 @@ static inline u16 kvm_lapic_irq_dest_mode(bool dest_mode_logical)
- struct kvm_x86_ops {
- 	const char *name;
- 
-+	int (*check_processor_compatibility)(void);
- 	int (*hardware_enable)(void);
- 	void (*hardware_disable)(void);
- 	void (*hardware_unsetup)(void);
-@@ -1655,7 +1656,6 @@ struct kvm_x86_nested_ops {
- struct kvm_x86_init_ops {
- 	int (*cpu_has_kvm_support)(void);
- 	int (*disabled_by_bios)(void);
--	int (*check_processor_compatibility)(void);
- 	int (*hardware_setup)(void);
- 	unsigned int (*handle_intel_pt_intr)(void);
- 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index f3813dbacb9f..371300f03f55 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4134,7 +4134,7 @@ svm_patch_hypercall(struct kvm_vcpu *vcpu, unsigned char *hypercall)
- 	hypercall[2] = 0xd9;
+ 	/* Online section invoked on the hotplugged CPU from the hotplug thread */
+ 	CPUHP_AP_ONLINE_IDLE,
++	CPUHP_AP_KVM_ONLINE,
+ 	CPUHP_AP_SCHED_WAIT_EMPTY,
+ 	CPUHP_AP_SMPBOOT_THREADS,
+ 	CPUHP_AP_X86_VDSO_VMA_ONLINE,
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 4243a9541543..6ce6f27f2934 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -5010,13 +5010,27 @@ static void hardware_enable_nolock(void *junk)
+ 	}
  }
  
--static int __init svm_check_processor_compat(void)
-+static int svm_check_processor_compatibility(void)
+-static int kvm_starting_cpu(unsigned int cpu)
++static int kvm_online_cpu(unsigned int cpu)
  {
- 	return 0;
- }
-@@ -4740,6 +4740,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.name = "kvm_amd",
- 
- 	.hardware_unsetup = svm_hardware_unsetup,
-+	.check_processor_compatibility = svm_check_processor_compatibility,
- 	.hardware_enable = svm_hardware_enable,
- 	.hardware_disable = svm_hardware_disable,
- 	.has_emulated_msr = svm_has_emulated_msr,
-@@ -5122,7 +5123,6 @@ static struct kvm_x86_init_ops svm_init_ops __initdata = {
- 	.cpu_has_kvm_support = has_svm,
- 	.disabled_by_bios = is_disabled,
- 	.hardware_setup = svm_hardware_setup,
--	.check_processor_compatibility = svm_check_processor_compat,
- 
- 	.runtime_ops = &svm_x86_ops,
- 	.pmu_ops = &amd_pmu_ops,
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index d7f8331d6f7e..3cf7f18a4115 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -2495,8 +2495,8 @@ static bool cpu_has_sgx(void)
- 	return cpuid_eax(0) >= 0x12 && (cpuid_eax(0x12) & BIT(0));
++	int ret = 0;
++
+ 	raw_spin_lock(&kvm_count_lock);
+-	if (kvm_usage_count)
++	/*
++	 * Abort the CPU online process if hardware virtualization cannot
++	 * be enabled. Otherwise running VMs would encounter unrecoverable
++	 * errors when scheduled to this CPU.
++	 */
++	if (kvm_usage_count) {
++		WARN_ON_ONCE(atomic_read(&hardware_enable_failed));
++
+ 		hardware_enable_nolock(NULL);
++		if (atomic_read(&hardware_enable_failed)) {
++			atomic_set(&hardware_enable_failed, 0);
++			ret = -EIO;
++		}
++	}
+ 	raw_spin_unlock(&kvm_count_lock);
+-	return 0;
++	return ret;
  }
  
--static __init int adjust_vmx_controls(u32 ctl_min, u32 ctl_opt,
--				      u32 msr, u32 *result)
-+static int adjust_vmx_controls(u32 ctl_min, u32 ctl_opt,
-+			       u32 msr, u32 *result)
+ static void hardware_disable_nolock(void *junk)
+@@ -5029,7 +5043,7 @@ static void hardware_disable_nolock(void *junk)
+ 	kvm_arch_hardware_disable();
+ }
+ 
+-static int kvm_dying_cpu(unsigned int cpu)
++static int kvm_offline_cpu(unsigned int cpu)
  {
- 	u32 vmx_msr_low, vmx_msr_high;
- 	u32 ctl = ctl_min | ctl_opt;
-@@ -2514,7 +2514,7 @@ static __init int adjust_vmx_controls(u32 ctl_min, u32 ctl_opt,
- 	return 0;
- }
+ 	raw_spin_lock(&kvm_count_lock);
+ 	if (kvm_usage_count)
+@@ -5840,8 +5854,8 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+ 			goto out_free_2;
+ 	}
  
--static __init u64 adjust_vmx_controls64(u64 ctl_opt, u32 msr)
-+static u64 adjust_vmx_controls64(u64 ctl_opt, u32 msr)
- {
- 	u64 allowed;
- 
-@@ -2523,8 +2523,8 @@ static __init u64 adjust_vmx_controls64(u64 ctl_opt, u32 msr)
- 	return  ctl_opt & allowed;
- }
- 
--static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
--				    struct vmx_capability *vmx_cap)
-+static int setup_vmcs_config(struct vmcs_config *vmcs_conf,
-+			     struct vmx_capability *vmx_cap)
- {
- 	u32 vmx_msr_low, vmx_msr_high;
- 	u32 min, opt, min2, opt2;
-@@ -7417,7 +7417,7 @@ static int vmx_vm_init(struct kvm *kvm)
- 	return 0;
- }
- 
--static int __init vmx_check_processor_compat(void)
-+static int vmx_check_processor_compatibility(void)
- {
- 	struct vmcs_config vmcs_conf;
- 	struct vmx_capability vmx_cap;
-@@ -8015,6 +8015,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
- 
- 	.hardware_unsetup = vmx_hardware_unsetup,
- 
-+	.check_processor_compatibility = vmx_check_processor_compatibility,
- 	.hardware_enable = vmx_hardware_enable,
- 	.hardware_disable = vmx_hardware_disable,
- 	.has_emulated_msr = vmx_has_emulated_msr,
-@@ -8404,7 +8405,6 @@ static __init int hardware_setup(void)
- static struct kvm_x86_init_ops vmx_init_ops __initdata = {
- 	.cpu_has_kvm_support = cpu_has_kvm_support,
- 	.disabled_by_bios = vmx_disabled_by_bios,
--	.check_processor_compatibility = vmx_check_processor_compat,
- 	.hardware_setup = hardware_setup,
- 	.handle_intel_pt_intr = NULL,
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 7d5fff68befe..985487fe0d63 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11997,7 +11997,6 @@ void kvm_arch_hardware_unsetup(void)
- int kvm_arch_check_processor_compat(void *opaque)
- {
- 	struct cpuinfo_x86 *c = &cpu_data(smp_processor_id());
--	struct kvm_x86_init_ops *ops = opaque;
- 
- 	WARN_ON(!irqs_disabled());
- 
-@@ -12005,7 +12004,7 @@ int kvm_arch_check_processor_compat(void *opaque)
- 	    __cr4_reserved_bits(cpu_has, &boot_cpu_data))
- 		return -EIO;
- 
--	return ops->check_processor_compatibility();
-+	return static_call(kvm_x86_check_processor_compatibility)();
- }
- 
- bool kvm_vcpu_is_reset_bsp(struct kvm_vcpu *vcpu)
+-	r = cpuhp_setup_state_nocalls(CPUHP_AP_KVM_STARTING, "kvm/cpu:starting",
+-				      kvm_starting_cpu, kvm_dying_cpu);
++	r = cpuhp_setup_state_nocalls(CPUHP_AP_KVM_ONLINE, "kvm/cpu:online",
++				      kvm_online_cpu, kvm_offline_cpu);
+ 	if (r)
+ 		goto out_free_2;
+ 	register_reboot_notifier(&kvm_reboot_notifier);
+@@ -5902,7 +5916,7 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+ 	kmem_cache_destroy(kvm_vcpu_cache);
+ out_free_3:
+ 	unregister_reboot_notifier(&kvm_reboot_notifier);
+-	cpuhp_remove_state_nocalls(CPUHP_AP_KVM_STARTING);
++	cpuhp_remove_state_nocalls(CPUHP_AP_KVM_ONLINE);
+ out_free_2:
+ 	kvm_arch_hardware_unsetup();
+ out_free_1:
+@@ -5928,7 +5942,7 @@ void kvm_exit(void)
+ 	kvm_async_pf_deinit();
+ 	unregister_syscore_ops(&kvm_syscore_ops);
+ 	unregister_reboot_notifier(&kvm_reboot_notifier);
+-	cpuhp_remove_state_nocalls(CPUHP_AP_KVM_STARTING);
++	cpuhp_remove_state_nocalls(CPUHP_AP_KVM_ONLINE);
+ 	on_each_cpu(hardware_disable_nolock, NULL, 1);
+ 	kvm_arch_hardware_unsetup();
+ 	kvm_arch_exit();
 -- 
 2.25.1
 
