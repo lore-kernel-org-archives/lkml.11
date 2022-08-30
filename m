@@ -2,579 +2,450 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A28DDC3DA6B
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7E5C0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:43:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230179AbiH3Dmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 23:42:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53776 "EHLO
+        id S230141AbiH3DnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 23:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230108AbiH3Dmc (ORCPT
+        with ESMTP id S229591AbiH3Dmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 23:42:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB90AA35E
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:42:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34E9960DD3
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:42:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 843BFC433D7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:42:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661830944;
-        bh=mBW5FtoKnnnaL+K6o3RnHXaTm9HKtehsxRM2sJuCIXY=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ZqS3Ah07Kv8aM6yyWGj494sccRN0PZybGPTGYDLNHosY7VAIZ+zNnSz8Birj4r79d
-         jedoZwLYQfo8K37PfZFpDCLXmKo/NUziKM0PQow5kdzccJ5yKmxogGODX4LFbLZYr+
-         PdhYwHEOP4jc7TneJcWeWIv1mHXPHANA8citv3OWrvOKCHijZyptOHSxQiFya1+lNI
-         8czJkFT/Y473YLA/jJzLx869O/DmokpAaXAN3Xn4xgzwfV1xDdnqCF3i3Zc8+xn87j
-         Ym7LE0h4dK8igL9ANDaGCZkhp0TX+ZetwUpynepDUmFJaXuXeHYNeaUC0/jgltEShP
-         i/ADQsasoChtw==
-Received: by mail-vs1-f50.google.com with SMTP id 190so10280300vsz.7
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:42:24 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3tcU+KzEOL51t+qqsBrxpzRAsUIPfuITSJPIeuPdUb1UUn7qK6
-        QCxDR8j+LX8eKDJ+IErOV3ieYUTZ4XcDd3cu+Qs=
-X-Google-Smtp-Source: AA6agR6WB3+wRRR16uzGAkhlFRc+kYYxKUrMhk9MLnWaDbf6lzjCzbsAMomOPRjalOsk2hGMrkXoDa065QgUWl6haf4=
-X-Received: by 2002:a67:d49e:0:b0:390:dccf:23c8 with SMTP id
- g30-20020a67d49e000000b00390dccf23c8mr2536761vsj.59.1661830943424; Mon, 29
- Aug 2022 20:42:23 -0700 (PDT)
+        Mon, 29 Aug 2022 23:42:35 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B68DAA4EF;
+        Mon, 29 Aug 2022 20:42:31 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id i5-20020a17090a2a0500b001fd8708ffdfso7401150pjd.2;
+        Mon, 29 Aug 2022 20:42:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=X2c8HiFtZtT40/1N/slgJQVOA1aM14Oprn847vWNQSs=;
+        b=Fltg8wtoe1iKPnx1sJTjDMNTa0Zfm72Thet4OZGbB5CSqPWEOh1Z+QMLx60Wmgfskd
+         M2izAoS2X0jSwve1AsbAa/DVOkfHZqr6FPQeADlaqCbfuw8UVjwUwXf4vUAhycPrFm1i
+         D9okV63YbXQveTskmQBXmGZYMggtHFQR+vzyI8CiyyMLFUDX2VTxQn/W+yA0FmaqiNNN
+         qmdIkA/RmvfwqqtOS1PPjNvC/OKOItdJ992nP96+NhmXdnUvDjXN42yycoqlQfjr4H47
+         ZWAcDlvfm7kaZjaKNvECBM/gJAAp3QbPJIceXfiw2KflelvVKIHC4D0cGu2VEboHvh1Y
+         AWsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=X2c8HiFtZtT40/1N/slgJQVOA1aM14Oprn847vWNQSs=;
+        b=nP9iqW4CanHyLATlVKyQ6cTR6IyBvwMVgQOSBn64ZVrowI1xNqdOuzbOi+OlFPtTWQ
+         kFXXSSyCYseOue4IcFdOHyww94zuaX2qoLxdYEf1c7umaY18OnWFVDNyJ+XS7EvP4LYC
+         18XT5r5IMDP/jD2PSnXwTH/fOW3mN/l9cUQRF48ErjYqGc5vEfqn/BzZ0XCkk4UJvwa2
+         pX0qMOHDBddiaZN98zH8oyZYLDp9rTdEdvW2KD0HKgGqzaEhFR1doGEyPlclow2XyRZ4
+         k6lVe4SkfpW+PnEVAcCSIS+7QJXFHBBiBN5VCA3kpF4410jRKlzM9sZ1D0dcwgsdSmsC
+         pobw==
+X-Gm-Message-State: ACgBeo0rtQJPrm3InK5RYTek9b4IM08/hEjS/+4egFTBKIzqVo1QnxGS
+        ebhIbdXo+S6eRyEkW6jNA8Y=
+X-Google-Smtp-Source: AA6agR7JAMOF+fikAuLx539K4oxGoCK78isk6KtnmaPdWJzzoeMiM9xhuTBSEbOWLdieRynhT+X6qA==
+X-Received: by 2002:a17:903:22d2:b0:174:dd99:a590 with SMTP id y18-20020a17090322d200b00174dd99a590mr6160299plg.26.1661830950636;
+        Mon, 29 Aug 2022 20:42:30 -0700 (PDT)
+Received: from RD-3580-24288.rt.l (42-77-88-242.emome-ip.hinet.net. [42.77.88.242])
+        by smtp.gmail.com with ESMTPSA id a6-20020a170902ecc600b0016ed5266a5csm8439577plh.170.2022.08.29.20.42.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 20:42:30 -0700 (PDT)
+From:   ChiaEn Wu <peterwu.pub@gmail.com>
+To:     lee@kernel.org, daniel.thompson@linaro.org, jingoohan1@gmail.com,
+        pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, jic23@kernel.org, lars@metafoo.de, deller@gmx.de,
+        broonie@kernel.org, mazziesaccount@gmail.com,
+        andriy.shevchenko@linux.intel.com
+Cc:     chiaen_wu@richtek.com, alice_chen@richtek.com,
+        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, szunichen@gmail.com,
+        andy.shevchenko@gmail.com,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v9 06/10] iio: adc: mt6370: Add MediaTek MT6370 support
+Date:   Tue, 30 Aug 2022 11:40:38 +0800
+Message-Id: <20220830034042.9354-7-peterwu.pub@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220830034042.9354-2-peterwu.pub@gmail.com>
+References: <20220830034042.9354-2-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-References: <1661747823-23745-1-git-send-email-tangyouling@loongson.cn>
- <1661747823-23745-2-git-send-email-tangyouling@loongson.cn>
- <e981e841-c43c-bbc5-a0f9-1077be9811cb@loongson.cn> <19b78960-8c5e-fc5f-c102-12db7aedb548@loongson.cn>
-In-Reply-To: <19b78960-8c5e-fc5f-c102-12db7aedb548@loongson.cn>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Tue, 30 Aug 2022 11:42:12 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H7ZoHrH2UbFbt4aDxDUfRjrJafiEHa5U0jcuQnvV4AyLw@mail.gmail.com>
-Message-ID: <CAAhV-H7ZoHrH2UbFbt4aDxDUfRjrJafiEHa5U0jcuQnvV4AyLw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] LoongArch: Add kexec support
-To:     Youling Tang <tangyouling@loongson.cn>
-Cc:     Jinyang He <hejinyang@loongson.cn>, Baoquan He <bhe@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Vivek Goyal <vgoyal@redhat.com>,
-        Dave Young <dyoung@redhat.com>, Guo Ren <guoren@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        kexec@lists.infradead.org, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 11:26 AM Youling Tang <tangyouling@loongson.cn> wrote:
->
-> Hi, Jinyang
->
-> On 08/30/2022 09:53 AM, Jinyang He wrote:
-> > Hi, Youling,
-> >
-> >
-> > On 08/29/2022 12:37 PM, Youling Tang wrote:
-> >> Add three new files, kexec.h, machine_kexec.c and relocate_kernel.S to
-> >> the
-> >> LoongArch architecture that add support for the kexec re-boot mechanis
-> >> (CONFIG_KEXEC) on LoongArch platforms.
-> >>
-> >> Supports loading vmlinux (vmlinux.elf) in ELF format and vmlinux.efi in
-> >> PE format.
-> >>
-> >> I tested this on  LoongArch 3A5000 machine and works as expected,
-> >>
-> >>   $ sudo kexec -l /boot/vmlinux.efi --reuse-cmdline
-> >>   $ sudo kexec -e
-> >>
-> >> Signed-off-by: Youling Tang <tangyouling@loongson.cn>
-> >> ---
-> >>   arch/loongarch/Kconfig                  |  11 ++
-> >>   arch/loongarch/include/asm/kexec.h      |  58 ++++++++
-> >>   arch/loongarch/kernel/Makefile          |   2 +
-> >>   arch/loongarch/kernel/head.S            |   7 +-
-> >>   arch/loongarch/kernel/machine_kexec.c   | 178 ++++++++++++++++++++++++
-> >>   arch/loongarch/kernel/relocate_kernel.S | 125 +++++++++++++++++
-> >>   6 files changed, 380 insertions(+), 1 deletion(-)
-> >>   create mode 100644 arch/loongarch/include/asm/kexec.h
-> >>   create mode 100644 arch/loongarch/kernel/machine_kexec.c
-> >>   create mode 100644 arch/loongarch/kernel/relocate_kernel.S
-> >>
-> >> diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-> >> index 45364cffc793..903c82fa958d 100644
-> >> --- a/arch/loongarch/Kconfig
-> >> +++ b/arch/loongarch/Kconfig
-> >> @@ -409,6 +409,17 @@ config FORCE_MAX_ZONEORDER
-> >>         The page size is not necessarily 4KB.  Keep this in mind
-> >>         when choosing a value for this option.
-> >>   +config KEXEC
-> >> +    bool "Kexec system call"
-> >> +    select KEXEC_CORE
-> >> +    help
-> >> +      kexec is a system call that implements the ability to shutdown
-> >> your
-> >> +      current kernel, and to start another kernel.  It is like a reboot
-> >> +      but it is independent of the system firmware.   And like a reboot
-> >> +      you can start any kernel with it, not just Linux.
-> >> +
-> >> +      The name comes from the similarity to the exec system call.
-> >> +
-> >>   config SECCOMP
-> >>       bool "Enable seccomp to safely compute untrusted bytecode"
-> >>       depends on PROC_FS
-> >> diff --git a/arch/loongarch/include/asm/kexec.h
-> >> b/arch/loongarch/include/asm/kexec.h
-> >> new file mode 100644
-> >> index 000000000000..5c9e7b5eccb8
-> >> --- /dev/null
-> >> +++ b/arch/loongarch/include/asm/kexec.h
-> >> @@ -0,0 +1,58 @@
-> >> +/* SPDX-License-Identifier: GPL-2.0 */
-> >> +/*
-> >> + * kexec.h for kexec
-> >> + *
-> >> + * Copyright (C) 2022 Loongson Technology Corporation Limited
-> >> + */
-> >> +
-> >> +#ifndef _ASM_KEXEC_H
-> >> +#define _ASM_KEXEC_H
-> >> +
-> >> +#include <asm/stacktrace.h>
-> >> +#include <asm/page.h>
-> >> +
-> >> +/* Maximum physical address we can use pages from */
-> >> +#define KEXEC_SOURCE_MEMORY_LIMIT (-1UL)
-> >> +/* Maximum address we can reach in physical address mode */
-> >> +#define KEXEC_DESTINATION_MEMORY_LIMIT (-1UL)
-> >> + /* Maximum address we can use for the control code buffer */
-> >> +#define KEXEC_CONTROL_MEMORY_LIMIT (-1UL)
-> >> +
-> >> +/* Reserve a page for the control code buffer */
-> >> +#define KEXEC_CONTROL_PAGE_SIZE PAGE_SIZE
-> >> +
-> >> +/* The native architecture */
-> >> +#define KEXEC_ARCH KEXEC_ARCH_LOONGARCH
-> >> +
-> >> +static inline void crash_setup_regs(struct pt_regs *newregs,
-> >> +                    struct pt_regs *oldregs)
-> >> +{
-> >> +    if (oldregs)
-> >> +        memcpy(newregs, oldregs, sizeof(*newregs));
-> >> +    else
-> >> +        prepare_frametrace(newregs);
-> >> +}
-> >> +
-> >> +#define ARCH_HAS_KIMAGE_ARCH
-> >> +
-> >> +struct kimage_arch {
-> >> +    unsigned long boot_flag;
-> >> +    unsigned long fdt_addr;
-> >> +};
-> >> +
-> >> +typedef void (*do_kexec_t)(unsigned long boot_flag,
-> >> +               unsigned long fdt_addr,
-> >> +               unsigned long first_ind_entry,
-> >> +               unsigned long jump_addr);
-> >> +
-> >> +struct kimage;
-> >> +extern const unsigned char relocate_new_kernel[];
-> >> +extern const size_t relocate_new_kernel_size;
-> >> +
-> >> +#ifdef CONFIG_SMP
-> >> +extern atomic_t kexec_ready_to_reboot;
-> >> +extern const unsigned char kexec_smp_wait[];
-> >> +extern void kexec_reboot(void);
-> >> +#endif
-> >> +
-> >> +#endif /* !_ASM_KEXEC_H */
-> >> diff --git a/arch/loongarch/kernel/Makefile
-> >> b/arch/loongarch/kernel/Makefile
-> >> index a213e994db68..20b64ac3f128 100644
-> >> --- a/arch/loongarch/kernel/Makefile
-> >> +++ b/arch/loongarch/kernel/Makefile
-> >> @@ -17,6 +17,8 @@ obj-$(CONFIG_CPU_HAS_FPU)    += fpu.o
-> >>   obj-$(CONFIG_MODULES)        += module.o module-sections.o
-> >>   obj-$(CONFIG_STACKTRACE)    += stacktrace.o
-> >>   +obj-$(CONFIG_KEXEC)             += machine_kexec.o relocate_kernel.o
-> >> +
-> >>   obj-$(CONFIG_PROC_FS)        += proc.o
-> >>     obj-$(CONFIG_SMP)        += smp.o
-> >> diff --git a/arch/loongarch/kernel/head.S b/arch/loongarch/kernel/head.S
-> >> index 01bac62a6442..22bdf4928325 100644
-> >> --- a/arch/loongarch/kernel/head.S
-> >> +++ b/arch/loongarch/kernel/head.S
-> >> @@ -20,7 +20,12 @@
-> >>     _head:
-> >>       .word    MZ_MAGIC        /* "MZ", MS-DOS header */
-> >> -    .org    0x3c            /* 0x04 ~ 0x3b reserved */
-> >> +    .org    0x8
-> >> +    .quad    0            /* Image load offset from start of RAM */
-> >> +    .dword    _end - _text        /* Effective size of kernel image */
-> >> +    .quad    0
-> >> +    .dword    kernel_entry        /* Kernel entry point */
-> >> +    .org    0x3c            /* 0x28 ~ 0x3b reserved */
-> >>       .long    pe_header - _head    /* Offset to the PE header */
-> >>     pe_header:
-> >> diff --git a/arch/loongarch/kernel/machine_kexec.c
-> >> b/arch/loongarch/kernel/machine_kexec.c
-> >> new file mode 100644
-> >> index 000000000000..4ffcd4cd9c8c
-> >> --- /dev/null
-> >> +++ b/arch/loongarch/kernel/machine_kexec.c
-> >> @@ -0,0 +1,178 @@
-> >> +// SPDX-License-Identifier: GPL-2.0-only
-> >> +/*
-> >> + * machine_kexec.c for kexec
-> >> + *
-> >> + * Copyright (C) 2022 Loongson Technology Corporation Limited
-> >> + */
-> >> +#include <linux/compiler.h>
-> >> +#include <linux/cpu.h>
-> >> +#include <linux/kexec.h>
-> >> +#include <linux/mm.h>
-> >> +#include <linux/delay.h>
-> >> +#include <linux/libfdt.h>
-> >> +#include <linux/of_fdt.h>
-> >> +
-> >> +#include <asm/bootinfo.h>
-> >> +#include <asm/cacheflush.h>
-> >> +#include <asm/page.h>
-> >> +
-> >> +/* 0x100000 ~ 0x200000 is safe */
-> >> +#define KEXEC_CTRL_CODE    TO_CACHE(0x100000UL)
-> >> +#define KEXEC_BLOB_ADDR    TO_CACHE(0x108000UL)
-> >> +
-> >> +static unsigned long reboot_code_buffer;
-> >> +#ifdef CONFIG_SMP
-> >> +void (*relocated_kexec_smp_wait)(void *);
-> >> +atomic_t kexec_ready_to_reboot = ATOMIC_INIT(0);
-> >> +#endif
-> >> +
-> >> +static unsigned long jump_addr;
-> >> +static unsigned long first_ind_entry;
-> >> +static unsigned long boot_flag;
-> >> +static unsigned long fdt_addr;
-> >> +
-> >> +static void kexec_image_info(const struct kimage *kimage)
-> >> +{
-> >> +    unsigned long i;
-> >> +
-> >> +    pr_debug("kexec kimage info:\n");
-> >> +    pr_debug("\ttype:        %d\n", kimage->type);
-> >> +    pr_debug("\tstart:       %lx\n", kimage->start);
-> >> +    pr_debug("\thead:        %lx\n", kimage->head);
-> >> +    pr_debug("\tnr_segments: %lu\n", kimage->nr_segments);
-> >> +
-> >> +    for (i = 0; i < kimage->nr_segments; i++) {
-> >> +        pr_debug("\t    segment[%lu]: %016lx - %016lx", i,
-> >> +            kimage->segment[i].mem,
-> >> +            kimage->segment[i].mem + kimage->segment[i].memsz);
-> >> +        pr_debug("\t\t0x%lx bytes, %lu pages\n",
-> >> +            (unsigned long)kimage->segment[i].memsz,
-> >> +            (unsigned long)kimage->segment[i].memsz /  PAGE_SIZE);
-> >> +    }
-> >> +}
-> >> +
-> >> +int machine_kexec_prepare(struct kimage *kimage)
-> >> +{
-> >> +    int i;
-> >> +    void *dtb = (void *)KEXEC_BLOB_ADDR;
-> >> +
-> >> +    kexec_image_info(kimage);
-> >> +
-> >> +    /* Find the Flattened Device Tree */
-> >> +    for (i = 0; i < kimage->nr_segments; i++) {
-> >> +        if (!fdt_check_header(kimage->segment[i].buf)) {
-> >> +            memcpy(dtb, kimage->segment[i].buf, SZ_64K);
-> >> +            kimage->arch.boot_flag = fw_arg0;
-> >> +            kimage->arch.fdt_addr = (unsigned long) dtb;
-> >> +            break;
-> >> +        }
-> >> +        continue;
-> >> +    }
-> >> +
-> >> +    /* kexec need a safe page to save reboot_code_buffer */
-> >> +    kimage->control_code_page = virt_to_page((void *)KEXEC_CTRL_CODE);
-> >> +
-> >> +    reboot_code_buffer =
-> >> +      (unsigned long)page_address(kimage->control_code_page);
-> >> +    memcpy((void *)reboot_code_buffer, relocate_new_kernel,
-> >> +           relocate_new_kernel_size);
-> > It copys same content to KEXEC_CTRL_CODE each time, could we do this at
-> > boot time?
-> I think it's possible to have the copy action happen at boot-time or
-> during the prepare phase. (RISCV in prepare, MIPS in boot-time)
->
-> >
-> > BTW, our system always keep the low-2MB no used, on mips-loongson or
-> > LoongArch. Is that necessary on LoongArch? We cannot use parameter
-> > 'mem=YYM' normally but 'mem=YYM@2M' is ok. And the low-2MB is not
-> > in virtual memory management, although we can get it in kernel.
-> For existing kernels, the low 2M has been reserved by
-> memblock_reserve(PHYS_OFFSET, 0x200000), maybe it is acceptable to keep
-> the low 2M behavior.
->
-> Yes, we need to use "mem=YM@2M" if the low 2M is reserved.
->
-> >
-> > In kexec/kdump process, we can follows kimage_alloc_control_pages().
-> > When the boot cpu copy complete the second-kernels, all cpus can jump
-> > to a kernel-entry-trampoline which is in kernel image. Then we don't
-> > worry about the code can be destroyed. The kernel-entry-trampoline
-> > get its cpuid, keep non-boot cpus do as kexec_smp_wait and let boot
-> > cpu go kernel-entry. In this way we can drop the low-2MB IMO.
->
-> It is also feasible to dynamically allocate control pages, but it is
-> easier to use a low 2M approach. What do you think, Huacai?
-I prefer to use the low 2MB.
+From: ChiaEn Wu <chiaen_wu@richtek.com>
 
-Huacai
->
-> >
-> >> +
-> >> +    /* All secondary cpus now may jump to kexec_smp_wait cycle */
-> >> +    relocated_kexec_smp_wait = reboot_code_buffer +
-> >> +        (void *)(kexec_smp_wait - relocate_new_kernel);
-> >> +
-> >> +    return 0;
-> >> +}
-> >> +
-> >> +void machine_kexec_cleanup(struct kimage *kimage)
-> >> +{
-> >> +}
-> >> +
-> >> +#ifdef CONFIG_SMP
-> >> +void kexec_reboot(void)
-> >> +{
-> >> +    do_kexec_t do_kexec = NULL;
-> >> +
-> >> +    /* All secondary cpus go to kexec_smp_wait */
-> >> +    if (smp_processor_id() > 0) {
-> >> +        relocated_kexec_smp_wait(NULL);
-> >> +        unreachable();
-> >> +    }
-> >> +
-> >> +    do_kexec = (void *)reboot_code_buffer;
-> >> +    do_kexec(boot_flag, fdt_addr, first_ind_entry, jump_addr);
-> >> +
-> >> +    unreachable();
-> >> +}
-> >> +
-> >> +static void kexec_shutdown_secondary(void *)
-> >> +{
-> >> +    local_irq_disable();
-> >> +    while (!atomic_read(&kexec_ready_to_reboot))
-> >> +        cpu_relax();
-> >> +
-> >> +    kexec_reboot();
-> >> +}
-> >> +
-> >> +void machine_crash_shutdown(struct pt_regs *regs)
-> >> +{
-> >> +}
-> >> +#endif
-> >> +
-> >> +void machine_shutdown(void)
-> >> +{
-> >> +    smp_call_function(kexec_shutdown_secondary, NULL, 0);
-> >> +}
-> >> +
-> >> +void machine_kexec(struct kimage *image)
-> >> +{
-> >> +    unsigned long entry;
-> >> +    unsigned long *ptr;
-> >> +    struct kimage_arch *internal = &image->arch;
-> >> +
-> >> +    boot_flag = internal->boot_flag;
-> >> +    fdt_addr = internal->fdt_addr;
-> >> +
-> >> +    jump_addr = (unsigned long)phys_to_virt(image->start);
-> >> +
-> >> +    first_ind_entry = (unsigned long)phys_to_virt(image->head &
-> >> PAGE_MASK);
-> >> +
-> >> +    /*
-> >> +     * The generic kexec code builds a page list with physical
-> >> +     * addresses. they are directly accessible through XKPRANGE
-> >> +     * hence the phys_to_virt() call.
-> >> +     */
-> >> +    for (ptr = &image->head; (entry = *ptr) && !(entry & IND_DONE);
-> >> +         ptr = (entry & IND_INDIRECTION) ?
-> >> +           phys_to_virt(entry & PAGE_MASK) : ptr + 1) {
-> >> +        if (*ptr & IND_SOURCE || *ptr & IND_INDIRECTION ||
-> >> +            *ptr & IND_DESTINATION)
-> >> +            *ptr = (unsigned long) phys_to_virt(*ptr);
-> >> +    }
-> >> +
-> >> +    /* Mark offline before disabling local irq. */
-> >> +    set_cpu_online(smp_processor_id(), false);
-> >> +
-> >> +    /* we do not want to be bothered. */
-> >> +    local_irq_disable();
-> >> +
-> >> +    pr_notice("Will call new kernel at %lx\n", jump_addr);
-> >> +    pr_notice("FDT image at %lx\n", fdt_addr);
-> >> +    pr_notice("Bye ...\n");
-> >> +
-> >> +    /* Make reboot code buffer available to the boot CPU. */
-> >> +    flush_cache_all();
-> >> +
-> >> +    atomic_set(&kexec_ready_to_reboot, 1);
-> >> +
-> >> +    /*
-> >> +     * We know we were online, and there will be no incoming IPIs at
-> >> +     * this point.
-> >> +     */
-> >> +    set_cpu_online(smp_processor_id(), true);
-> >> +
-> >> +    /* Ensure remote CPUs observe that we're online before rebooting. */
-> >> +    smp_mb__after_atomic();
-> >> +
-> >> +    kexec_reboot();
-> >> +}
-> >> diff --git a/arch/loongarch/kernel/relocate_kernel.S
-> >> b/arch/loongarch/kernel/relocate_kernel.S
-> >> new file mode 100644
-> >> index 000000000000..d1f242f74ea8
-> >> --- /dev/null
-> >> +++ b/arch/loongarch/kernel/relocate_kernel.S
-> >> @@ -0,0 +1,125 @@
-> >> +/* SPDX-License-Identifier: GPL-2.0 */
-> >> +/*
-> >> + * relocate_kernel.S for kexec
-> >> + *
-> >> + * Copyright (C) 2022 Loongson Technology Corporation Limited
-> >> + */
-> >> +
-> >> +#include <linux/kexec.h>
-> >> +
-> >> +#include <asm/asm.h>
-> >> +#include <asm/asmmacro.h>
-> >> +#include <asm/regdef.h>
-> >> +#include <asm/loongarch.h>
-> >> +#include <asm/stackframe.h>
-> >> +#include <asm/addrspace.h>
-> >> +
-> >> +#define IPI_REG_BASE 0x1fe01000
-> >> +
-> >> +SYM_CODE_START(relocate_new_kernel)
-> >> +    /*
-> >> +     * s0: Boot flag passed to the new kernel
-> >> +     * s1: Virt address of the FDT image
-> >> +     * s2: Pointer to the current entry
-> >> +     * s3: Virt address to jump to after relocation
-> >> +     */
-> >> +    move        s0, a0
-> >> +    move        s1, a1
-> >> +    move        s2, a2
-> >> +    move        s3, a3
-> >> +
-> >> +process_entry:
-> >> +    PTR_L        s4, s2, 0
-> >> +    PTR_ADDI    s2, s2, SZREG
-> >> +
-> >> +    /* destination page */
-> >> +    andi        s5, s4, IND_DESTINATION
-> >> +    beqz        s5, 1f
-> >> +    li.w        t0, ~0x1
-> >> +    and        s6, s4, t0    /* store destination addr in s6 */
-> >> +    b        process_entry
-> >> +
-> >> +1:
-> >> +    /* indirection page, update s2    */
-> >> +    andi        s5, s4, IND_INDIRECTION
-> >> +    beqz        s5, 1f
-> >> +    li.w        t0, ~0x2
-> >> +    and        s2, s4, t0
-> >> +    b        process_entry
-> >> +
-> >> +1:
-> >> +    /* done page */
-> >> +    andi        s5, s4, IND_DONE
-> >> +    beqz        s5, 1f
-> >> +    b        done
-> >> +1:
-> >> +    /* source page */
-> >> +    andi        s5, s4, IND_SOURCE
-> >> +    beqz        s5, process_entry
-> >> +    li.w        t0, ~0x8
-> >> +    and        s4, s4, t0
-> >> +    li.w        s8, (1 << _PAGE_SHIFT) / SZREG
-> >> +
-> >> +copy_word:
-> >> +    /* copy page word by word */
-> >> +    REG_L        s7, s4, 0
-> >> +    REG_S        s7, s6, 0
-> >> +    PTR_ADDI    s6, s6, SZREG
-> >> +    PTR_ADDI    s4, s4, SZREG
-> >> +    LONG_ADDI    s8, s8, -1
-> >> +    beqz        s8, process_entry
-> >> +    b        copy_word
-> >> +    b        process_entry
-> >> +
-> >> +done:
-> >> +    dbar        0
-> > ibar, too?
->
-> Will add ibar 0.
->
-> >> +
-> >> +    move        a0, s0
-> >> +    move        a1, s1
-> >> +    /* jump to the new kernel */
-> >> +    jr        s3
-> >> +SYM_CODE_END(relocate_new_kernel)
-> >> +
-> >> +#ifdef CONFIG_SMP
-> >> +/*
-> >> + * Other CPUs should wait until code is relocated and
-> >> + * then start at entry (?) point.
-> >> + */
-> >> +SYM_CODE_START(kexec_smp_wait)
-> >> +    li.d        t0, IPI_REG_BASE
-> >> +    li.d        t1, UNCACHE_BASE
-> >> +    or        t0, t0, t1
-> >> +
-> >> +    /*
-> >> +     * s1:initfn
-> >> +     * t0:base t1:cpuid t2:node t3:core t4:count
-> >> +     */
-> >> +    csrrd        t1, LOONGARCH_CSR_CPUID
-> >> +    andi        t1, t1, CSR_CPUID_COREID
-> >> +    andi        t3, t1, 0x3
-> >> +    slli.w        t3, t3, 8              /* get core id */
-> >> +    or        t0, t0, t3
-> >> +    andi        t2, t1, 0x3c
-> >> +    slli.d        t2, t2, 42             /* get node id */
-> >> +    or        t0, t0, t2
-> >> +
-> >> +1:    li.w        t4, 0x100              /* wait for init loop */
-> >> +2:    addi.w        t4, t4, -1             /* limit mailbox access */
-> >> +    bnez        t4, 2b
-> >> +    ld.w        s1, t0, 0x20           /* check PC as an indicator */
-> > Can we do this with iocsr*?
->
-> OK, I will consider the implementation in the iocsr way.
->
-> Thanks,
-> Youling
-> >
-> > Thanks,
-> > Jinyang
-> >> +    beqz        s1, 1b
-> >> +    ld.d        s1, t0, 0x20           /* get PC via mailbox */
-> >> +    ld.d        sp, t0, 0x28           /* get SP via mailbox */
-> >> +    ld.d        tp, t0, 0x30           /* get TP via mailbox */
-> >> +
-> >> +    li.d        t0, CACHE_BASE
-> >> +    or        s1, s1, t0
-> >> +    jr        s1                     /* jump to initial PC */
-> >> +SYM_CODE_END(kexec_smp_wait)
-> >> +#endif
-> >> +
-> >> +relocate_new_kernel_end:
-> >> +
-> >> +SYM_DATA_START(relocate_new_kernel_size)
-> >> +    PTR        relocate_new_kernel_end - relocate_new_kernel
-> >> +SYM_DATA_END(relocate_new_kernel_size)
-> >
->
+MediaTek MT6370 is a SubPMIC consisting of a single cell battery charger
+with ADC monitoring, RGB LEDs, dual channel flashlight, WLED backlight
+driver, display bias voltage supply, one general purpose LDO, and the
+USB Type-C & PD controller complies with the latest USB Type-C and PD
+standards.
+
+Add support for the MT6370 ADC driver for system monitoring, including
+charger current, voltage, and temperature.
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+---
+ drivers/iio/adc/Kconfig      |  12 ++
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/mt6370-adc.c | 305 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 318 insertions(+)
+ create mode 100644 drivers/iio/adc/mt6370-adc.c
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7fe5930..995cbb5 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -736,6 +736,18 @@ config MEDIATEK_MT6360_ADC
+ 	  is used in smartphones and tablets and supports a 11 channel
+ 	  general purpose ADC.
+ 
++config MEDIATEK_MT6370_ADC
++	tristate "MediaTek MT6370 ADC driver"
++	depends on MFD_MT6370
++	help
++	  Say yes here to enable MediaTek MT6370 ADC support.
++
++	  This ADC driver provides 9 channels for system monitoring (charger
++	  current, voltage, and temperature).
++
++	  This driver can also be built as a module. If so, the module
++	  will be called "mt6370-adc".
++
+ config MEDIATEK_MT6577_AUXADC
+ 	tristate "MediaTek AUXADC driver"
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 1772a54..c6bc35f 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -68,6 +68,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
+ obj-$(CONFIG_MCP3422) += mcp3422.o
+ obj-$(CONFIG_MCP3911) += mcp3911.o
+ obj-$(CONFIG_MEDIATEK_MT6360_ADC) += mt6360-adc.o
++obj-$(CONFIG_MEDIATEK_MT6370_ADC) += mt6370-adc.o
+ obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
+ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+ obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
+diff --git a/drivers/iio/adc/mt6370-adc.c b/drivers/iio/adc/mt6370-adc.c
+new file mode 100644
+index 0000000..2a46471
+--- /dev/null
++++ b/drivers/iio/adc/mt6370-adc.c
+@@ -0,0 +1,305 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2022 Richtek Technology Corp.
++ *
++ * Author: ChiaEn Wu <chiaen_wu@richtek.com>
++ */
++
++#include <linux/bits.h>
++#include <linux/bitfield.h>
++#include <linux/iio/iio.h>
++#include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/sysfs.h>
++#include <linux/units.h>
++
++#include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
++
++#define MT6370_REG_CHG_CTRL3		0x113
++#define MT6370_REG_CHG_CTRL7		0x117
++#define MT6370_REG_CHG_ADC		0x121
++#define MT6370_REG_ADC_DATA_H		0x14C
++
++#define MT6370_ADC_START_MASK		BIT(0)
++#define MT6370_ADC_IN_SEL_MASK		GENMASK(7, 4)
++#define MT6370_AICR_ICHG_MASK		GENMASK(7, 2)
++
++#define MT6370_AICR_100_mA		0x0
++#define MT6370_AICR_150_mA		0x1
++#define MT6370_AICR_200_mA		0x2
++#define MT6370_AICR_250_mA		0x3
++#define MT6370_AICR_300_mA		0x4
++#define MT6370_AICR_350_mA		0x5
++
++#define MT6370_ICHG_100_mA		0x0
++#define MT6370_ICHG_200_mA		0x1
++#define MT6370_ICHG_300_mA		0x2
++#define MT6370_ICHG_400_mA		0x3
++#define MT6370_ICHG_500_mA		0x4
++#define MT6370_ICHG_600_mA		0x5
++#define MT6370_ICHG_700_mA		0x6
++#define MT6370_ICHG_800_mA		0x7
++
++#define ADC_CONV_TIME_MS		35
++#define ADC_CONV_POLLING_TIME_US	1000
++
++struct mt6370_adc_data {
++	struct device *dev;
++	struct regmap *regmap;
++	/*
++	 * This mutex lock is for preventing the different ADC channels
++	 * from being read at the same time.
++	 */
++	struct mutex adc_lock;
++};
++
++static int mt6370_adc_read_channel(struct mt6370_adc_data *priv, int chan,
++				   unsigned long addr, int *val)
++{
++	unsigned int reg_val;
++	__be16 be_val;
++	int ret;
++
++	mutex_lock(&priv->adc_lock);
++
++	reg_val = MT6370_ADC_START_MASK |
++		  FIELD_PREP(MT6370_ADC_IN_SEL_MASK, addr);
++	ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, reg_val);
++	if (ret)
++		goto adc_unlock;
++
++	msleep(ADC_CONV_TIME_MS);
++
++	ret = regmap_read_poll_timeout(priv->regmap,
++				       MT6370_REG_CHG_ADC, reg_val,
++				       !(reg_val & MT6370_ADC_START_MASK),
++				       ADC_CONV_POLLING_TIME_US,
++				       ADC_CONV_TIME_MS * MILLI * 3);
++	if (ret) {
++		dev_err(priv->dev, "Failed to read ADC register (%d)\n", ret);
++		goto adc_unlock;
++	}
++
++	ret = regmap_raw_read(priv->regmap, MT6370_REG_ADC_DATA_H,
++			      &be_val, sizeof(be_val));
++	if (ret)
++		goto adc_unlock;
++
++	*val = be16_to_cpu(be_val);
++	ret = IIO_VAL_INT;
++
++adc_unlock:
++	mutex_unlock(&priv->adc_lock);
++
++	return ret;
++}
++
++static int mt6370_adc_read_scale(struct mt6370_adc_data *priv,
++				 int chan, int *val1, int *val2)
++{
++	unsigned int reg_val;
++	int ret;
++
++	switch (chan) {
++	case MT6370_CHAN_VBAT:
++	case MT6370_CHAN_VSYS:
++	case MT6370_CHAN_CHG_VDDP:
++		*val1 = 5;
++		return IIO_VAL_INT;
++	case MT6370_CHAN_IBUS:
++		ret = regmap_read(priv->regmap, MT6370_REG_CHG_CTRL3, &reg_val);
++		if (ret)
++			return ret;
++
++		reg_val = FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
++		switch (reg_val) {
++		case MT6370_AICR_100_mA:
++		case MT6370_AICR_150_mA:
++		case MT6370_AICR_200_mA:
++		case MT6370_AICR_250_mA:
++		case MT6370_AICR_300_mA:
++		case MT6370_AICR_350_mA:
++			*val1 = 3350;
++			break;
++		default:
++			*val1 = 5000;
++			break;
++		}
++
++		*val2 = 100;
++
++		return IIO_VAL_FRACTIONAL;
++	case MT6370_CHAN_IBAT:
++		ret = regmap_read(priv->regmap, MT6370_REG_CHG_CTRL7, &reg_val);
++		if (ret)
++			return ret;
++
++		reg_val = FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
++		switch (reg_val) {
++		case MT6370_ICHG_100_mA:
++		case MT6370_ICHG_200_mA:
++		case MT6370_ICHG_300_mA:
++		case MT6370_ICHG_400_mA:
++			*val1 = 2375;
++			break;
++		case MT6370_ICHG_500_mA:
++		case MT6370_ICHG_600_mA:
++		case MT6370_ICHG_700_mA:
++		case MT6370_ICHG_800_mA:
++			*val1 = 2680;
++			break;
++		default:
++			*val1 = 5000;
++			break;
++		}
++
++		*val2 = 100;
++
++		return IIO_VAL_FRACTIONAL;
++	case MT6370_CHAN_VBUSDIV5:
++		*val1 = 25;
++		return IIO_VAL_INT;
++	case MT6370_CHAN_VBUSDIV2:
++		*val1 = 50;
++		return IIO_VAL_INT;
++	case MT6370_CHAN_TS_BAT:
++		*val1 = 25;
++		*val2 = 10000;
++		return IIO_VAL_FRACTIONAL;
++	case MT6370_CHAN_TEMP_JC:
++		*val1 = 2000;
++		return IIO_VAL_FRACTIONAL;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int mt6370_adc_read_offset(struct mt6370_adc_data *priv,
++				  int chan, int *val)
++{
++	*val = -20;
++
++	return IIO_VAL_INT;
++}
++
++static int mt6370_adc_read_raw(struct iio_dev *iio_dev,
++			       const struct iio_chan_spec *chan,
++			       int *val, int *val2, long mask)
++{
++	struct mt6370_adc_data *priv = iio_priv(iio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		return mt6370_adc_read_channel(priv, chan->channel,
++					       chan->address, val);
++	case IIO_CHAN_INFO_SCALE:
++		return mt6370_adc_read_scale(priv, chan->channel, val, val2);
++	case IIO_CHAN_INFO_OFFSET:
++		return mt6370_adc_read_offset(priv, chan->channel, val);
++	default:
++		return -EINVAL;
++	}
++}
++
++static const char * const mt6370_channel_labels[MT6370_CHAN_MAX] = {
++	[MT6370_CHAN_VBUSDIV5] = "vbusdiv5",
++	[MT6370_CHAN_VBUSDIV2] = "vbusdiv2",
++	[MT6370_CHAN_VSYS] = "vsys",
++	[MT6370_CHAN_VBAT] = "vbat",
++	[MT6370_CHAN_TS_BAT] = "ts_bat",
++	[MT6370_CHAN_IBUS] = "ibus",
++	[MT6370_CHAN_IBAT] = "ibat",
++	[MT6370_CHAN_CHG_VDDP] = "chg_vddp",
++	[MT6370_CHAN_TEMP_JC] = "temp_jc",
++};
++
++static int mt6370_adc_read_label(struct iio_dev *iio_dev,
++				 struct iio_chan_spec const *chan, char *label)
++{
++	return sysfs_emit(label, "%s\n", mt6370_channel_labels[chan->channel]);
++}
++
++static const struct iio_info mt6370_adc_iio_info = {
++	.read_raw = mt6370_adc_read_raw,
++	.read_label = mt6370_adc_read_label,
++};
++
++#define MT6370_ADC_CHAN(_idx, _type, _addr, _extra_info) {	\
++	.type = _type,						\
++	.channel = MT6370_CHAN_##_idx,				\
++	.address = _addr,					\
++	.scan_index = MT6370_CHAN_##_idx,			\
++	.indexed = 1,						\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
++			      BIT(IIO_CHAN_INFO_SCALE) |	\
++			      _extra_info,			\
++}
++
++static const struct iio_chan_spec mt6370_adc_channels[] = {
++	MT6370_ADC_CHAN(VBUSDIV5, IIO_VOLTAGE, 1, 0),
++	MT6370_ADC_CHAN(VBUSDIV2, IIO_VOLTAGE, 2, 0),
++	MT6370_ADC_CHAN(VSYS, IIO_VOLTAGE, 3, 0),
++	MT6370_ADC_CHAN(VBAT, IIO_VOLTAGE, 4, 0),
++	MT6370_ADC_CHAN(TS_BAT, IIO_VOLTAGE, 6, 0),
++	MT6370_ADC_CHAN(IBUS, IIO_CURRENT, 8, 0),
++	MT6370_ADC_CHAN(IBAT, IIO_CURRENT, 9, 0),
++	MT6370_ADC_CHAN(CHG_VDDP, IIO_VOLTAGE, 11, 0),
++	MT6370_ADC_CHAN(TEMP_JC, IIO_TEMP, 12, BIT(IIO_CHAN_INFO_OFFSET)),
++};
++
++static int mt6370_adc_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct mt6370_adc_data *priv;
++	struct iio_dev *indio_dev;
++	struct regmap *regmap;
++	int ret;
++
++	regmap = dev_get_regmap(pdev->dev.parent, NULL);
++	if (!regmap)
++		return dev_err_probe(dev, -ENODEV, "Failed to get regmap\n");
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	priv = iio_priv(indio_dev);
++	priv->dev = dev;
++	priv->regmap = regmap;
++	mutex_init(&priv->adc_lock);
++
++	ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, 0);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to reset ADC\n");
++
++	indio_dev->name = "mt6370-adc";
++	indio_dev->info = &mt6370_adc_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = mt6370_adc_channels;
++	indio_dev->num_channels = ARRAY_SIZE(mt6370_adc_channels);
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct of_device_id mt6370_adc_of_id[] = {
++	{ .compatible = "mediatek,mt6370-adc", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, mt6370_adc_of_id);
++
++static struct platform_driver mt6370_adc_driver = {
++	.driver = {
++		.name = "mt6370-adc",
++		.of_match_table = mt6370_adc_of_id,
++	},
++	.probe = mt6370_adc_probe,
++};
++module_platform_driver(mt6370_adc_driver);
++
++MODULE_AUTHOR("ChiaEn Wu <chiaen_wu@richtek.com>");
++MODULE_DESCRIPTION("MT6370 ADC Driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.7.4
+
