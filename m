@@ -2,188 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9278ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:58:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD7BAECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230455AbiH3U6m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 16:58:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38680 "EHLO
+        id S231342AbiH3VEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 17:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbiH3U6i (ORCPT
+        with ESMTP id S231308AbiH3VEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 16:58:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7F77C755;
-        Tue, 30 Aug 2022 13:58:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C473061839;
-        Tue, 30 Aug 2022 20:58:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3749C433D6;
-        Tue, 30 Aug 2022 20:58:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661893116;
-        bh=DGa8DZfgmN4fY2jkpCB2mbfVdu7HUE7vBbFQOMTS9DY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BAeTBa0jgM8cQy4hOltLiCbZud891Erw6dFvDUiygC5nfQW9jFqcFEJtQxpVQPv0T
-         mxtSmDAbfM4sHMmKgiYcND4PsyBgH9EFjec1NhFFgdrb0KN0T2YcCqDBvwBz7nXxvc
-         yk9MBd0fHMnEXY4J+YBYsEa3uLJH38TcEJj0Xxtz4cq2r+Gcz8LQ/nUP+YLIpjBd4Y
-         lT4+/VabW7CyKxFfgcr0xfAdLmhIom6Rj26GCmBJwNB4n0wMtuwLLW+DR2xGU1UQZ7
-         JW3rTvX+94g13EbGWEqSZbmNyJY25aTIwvhiVfetZx9U2abKy+em7tIqdbhx5podLW
-         xQB9D7oN3ZEOg==
-Received: by pali.im (Postfix)
-        id 0F2CC834; Tue, 30 Aug 2022 22:58:33 +0200 (CEST)
-Date:   Tue, 30 Aug 2022 22:58:32 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Ben Greear <greearb@candelatech.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, bjorn@helgaas.com,
-        LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-        Stefan Roese <sr@denx.de>, Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Yao Hongbo <yaohongbo@linux.alibaba.com>,
-        Naveen Naidu <naveennaidu479@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.4 182/389] PCI/portdrv: Dont disable AER reporting in
- get_port_device_capability()
-Message-ID: <20220830205832.g3lyysmgkarijkvj@pali>
-References: <20220823080115.331990024@linuxfoundation.org>
- <20220823080123.228828362@linuxfoundation.org>
- <CABhMZUVycsyy76j2Z=K+C6S1fwtzKE1Lx2povXKfB80o9g0MtQ@mail.gmail.com>
- <YwXH/l37HaYQD66B@kroah.com>
- <47b775c5-57fa-5edf-b59e-8a9041ffbee7@candelatech.com>
+        Tue, 30 Aug 2022 17:04:52 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA827AE5E
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:04:50 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-11c4d7d4683so19762979fac.8
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:04:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=vhplHiofN1IwDs+sPIAVXi1uUH/q8bkxHPA+4MeuY6w=;
+        b=rx6STPbUMXOjJIkpPmYFzYBv/zqYhXUEdfrB6LuyHYoBbf3T/Gr0ZH5BgFZbl4C6zu
+         sa8QVfciMeSp2ItILMkdzkPoz3hkE3CMX80Tbu0oF/AkiX1l48AjQvvfu97kbqKC1EP8
+         B7F5edsosTU4gu5LnQGSlCii3iSTehQr1VRgJS4jCUqXHyA4ZVtLRw60chbW2YYoXwL7
+         8vq1vmSHND8w+RyUQU2Icxoc+lTCcuNZBoJUQGqZUy+cryNcEqpiHejBdo58t71eNR1X
+         6xONRKOcU2KgR67IVjHqgCdwMOcF4VCM8ZgqUxNgivmULN5QO9Y92Nf/7i+ux0xK/eNI
+         YlBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=vhplHiofN1IwDs+sPIAVXi1uUH/q8bkxHPA+4MeuY6w=;
+        b=BnClArBMIExcs+Tzi+/DoWibaz2OJvxXtk8dAyVcgUKJu1W2kvnHeRvVuQtm/ex+/z
+         iy7n8N908E6R/8dhfatb3s4QlxF0FGwY1pVv9/15Sqyqfbm5iLnYkcVpQRZVuhMYS6tN
+         t6ubkQJDFSYTUk5O87gQ23qrjyS9hnx0iuD31UzXxLb6Z6gsAM2SAadYrFrsB6mWerVT
+         A6Gp+R3lrOIUiBtdeS0MMykM9qUufNL8lgzlEsThHw0vC2q11Y+Bg6excuCReGZguMCF
+         tmvk8MDW4rPjpMgc7mGwdfRGe8QYF2AiXtn+b92FoMdElTu9siYzOws6FGTdY0/shjOG
+         bC0A==
+X-Gm-Message-State: ACgBeo1MHEDUqkYMkB3BdoJKjRZpzaAwJZh4UTjOwdUYNM3UrvYjG1gA
+        Cd5iW1kF4jX2omrCn65C0FZxVSCTjfZzUWBKgzD7
+X-Google-Smtp-Source: AA6agR6CdgbXULQ7dGtNu5GDf9fktFU8ysMzqSs4r3qAn4FCoK9GqEenVLzT8tm2ugfY1EenJehJS1YSnVi9Z/NQ6bI=
+X-Received: by 2002:a05:6808:3a9:b0:343:4b14:ccce with SMTP id
+ n9-20020a05680803a900b003434b14cccemr44936oie.41.1661893489715; Tue, 30 Aug
+ 2022 14:04:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <47b775c5-57fa-5edf-b59e-8a9041ffbee7@candelatech.com>
-User-Agent: NeoMutt/20180716
+References: <20220830154500.18165-1-cgzones@googlemail.com>
+In-Reply-To: <20220830154500.18165-1-cgzones@googlemail.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 30 Aug 2022 17:04:38 -0400
+Message-ID: <CAHC9VhTe92h-FR0GOepVrPqWwOgKLPV6NcXxi4sRpAjEbPkt5w@mail.gmail.com>
+Subject: Re: [PATCH] selinux: use int arrays for boolean values
+To:     =?UTF-8?Q?Christian_G=C3=B6ttsche?= <cgzones@googlemail.com>
+Cc:     selinux@vger.kernel.org,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Eric Paris <eparis@parisplace.org>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tuesday 30 August 2022 13:47:48 Ben Greear wrote:
-> On 8/23/22 11:41 PM, Greg Kroah-Hartman wrote:
-> > On Tue, Aug 23, 2022 at 07:20:14AM -0500, Bjorn Helgaas wrote:
-> > > On Tue, Aug 23, 2022, 6:35 AM Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > wrote:
-> > > 
-> > > > From: Stefan Roese <sr@denx.de>
-> > > > 
-> > > > [ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
-> > > > 
-> > > 
-> > > There's an open regression related to this commit:
-> > > 
-> > > https://bugzilla.kernel.org/show_bug.cgi?id=216373
-> > 
-> > This is already in the following released stable kernels:
-> > 	5.10.137 5.15.61 5.18.18 5.19.2
-> > 
-> > I'll go drop it from the 4.19 and 5.4 queues, but when this gets
-> > resolved in Linus's tree, make sure there's a cc: stable on the fix so
-> > that we know to backport it to the above branches as well.  Or at the
-> > least, a "Fixes:" tag.
-> 
-> This is still in 5.19.5.  We saw some funny iwlwifi crashes in 5.19.3+
-> that we did not see in 5.19.0+.  I just bisected the scary looking AER errors to this
-> patch, though I do not know for certain if it causes the iwlwifi related crashes yet.
-> 
-> In general, from reading the commit msg, this patch doesn't seem to be a great candidate
-> for stable in general.  Does it fix some important problem?
-> 
-> In case it helps, here is example of what I see in dmesg.  The kernel crashes in iwlwifi
-> had to do with rx messages from the firmware, and some warnings lead me to believe that
-> pci messages were slow coming back and/or maybe duplicated.  So maybe this AER patch changes
-> timing or otherwise screws up the PCI adapter boards we use...
+On Tue, Aug 30, 2022 at 11:45 AM Christian G=C3=B6ttsche
+<cgzones@googlemail.com> wrote:
+>
+> Do not cast pointers of signed integers to pointers of unsigned integers
+> and vice versa.
+>
+> It should currently not be an issue since they hold SELinux boolean
+> values which should only contain either 0's or 1's, which should have
+> the same representation.
+>
+> Reported by sparse:
+>
+>     security/selinux/selinuxfs.c:1485:30: warning: incorrect type in assi=
+gnment (different signedness)
+>     security/selinux/selinuxfs.c:1485:30:    expected unsigned int *
+>     security/selinux/selinuxfs.c:1485:30:    got int *[addressable] value=
+s
+>     security/selinux/selinuxfs.c:1402:48: warning: incorrect type in argu=
+ment 3 (different signedness)
+>     security/selinux/selinuxfs.c:1402:48:    expected int *values
+>     security/selinux/selinuxfs.c:1402:48:    got unsigned int *bool_pendi=
+ng_values
+>
+> Signed-off-by: Christian G=C3=B6ttsche <cgzones@googlemail.com>
+> ---
+> Previous patch proposal: https://patchwork.kernel.org/project/selinux/pat=
+ch/20220502135907.31035-1-cgzones@googlemail.com/
+> ---
+>  security/selinux/selinuxfs.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 
-From that log I have feeling that issue is in that intel wifi card and
-it was there also before that commit. Card is crashing (or something
-other happens on PCIe bus) and because kernel had disabled Error
-Reporting for this card, nobody spotted any issue. And that commit just
-opened eye to kernel to see those errors.
+Merged into selinux/next, thanks!
 
-I think this issue should be reported to intel wifi card developers,
-maybe they comment it, why card is reporting errors.
-
-> 
-> [   50.905809] iwlwifi 0000:04:00.0: AER: can't recover (no error_detected callback)
-> [   50.905830] pcieport 0000:03:01.0: AER: device recovery failed
-> [   50.905831] pcieport 0000:00:1c.0: AER: Uncorrected (Non-Fatal) error received: 0000:03:01.0
-> [   50.905845] pcieport 0000:03:01.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   50.915679] pcieport 0000:03:01.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   50.922735] pcieport 0000:03:01.0:    [20] UnsupReq               (First)
-> [   50.928230] pcieport 0000:03:01.0: AER:   TLP Header: 34000000 04001f10 00000000 88c888c8
-> [   50.935126] iwlwifi 0000:04:00.0: AER: can't recover (no error_detected callback)
-> [   50.935133] pcieport 0000:03:01.0: AER: device recovery failed
-> [   50.935134] pcieport 0000:00:1c.0: AER: Multiple Uncorrected (Non-Fatal) error received: 0000:03:01.0
-> [   50.935222] pcieport 0000:03:01.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   50.945059] pcieport 0000:03:01.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   50.952120] pcieport 0000:03:01.0:    [20] UnsupReq               (First)
-> [   50.957614] pcieport 0000:03:01.0: AER:   TLP Header: 34000000 04001f10 00000000 88c888c8
-> [   50.964492] pcieport 0000:03:01.0: AER:   Error of this Agent is reported first
-> [   50.970519] pcieport 0000:03:02.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   50.980344] pcieport 0000:03:02.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   50.987399] pcieport 0000:03:02.0:    [20] UnsupReq               (First)
-> [   50.992891] pcieport 0000:03:02.0: AER:   TLP Header: 34000000 05001f10 00000000 88c888c8
-> [   50.999785] pcieport 0000:03:03.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   51.009611] pcieport 0000:03:03.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   51.016665] pcieport 0000:03:03.0:    [20] UnsupReq               (First)
-> [   51.022161] pcieport 0000:03:03.0: AER:   TLP Header: 34000000 06001f10 00000000 88c888c8
-> [   51.029052] pcieport 0000:03:05.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   51.038881] pcieport 0000:03:05.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   51.045931] pcieport 0000:03:05.0:    [20] UnsupReq               (First)
-> [   51.051430] pcieport 0000:03:05.0: AER:   TLP Header: 34000000 07001f10 00000000 88c888c8
-> [   51.058320] pcieport 0000:03:07.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   51.068147] pcieport 0000:03:07.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   51.075200] pcieport 0000:03:07.0:    [20] UnsupReq               (First)
-> [   51.080696] pcieport 0000:03:07.0: AER:   TLP Header: 34000000 08001f10 00000000 88c888c8
-> [   51.087589] iwlwifi 0000:04:00.0: AER: can't recover (no error_detected callback)
-> [   51.087598] pcieport 0000:03:01.0: AER: device recovery failed
-> [   51.087611] iwlwifi 0000:05:00.0: AER: can't recover (no error_detected callback)
-> [   51.087615] pcieport 0000:03:02.0: AER: device recovery failed
-> [   51.087628] iwlwifi 0000:06:00.0: AER: can't recover (no error_detected callback)
-> [   51.087631] pcieport 0000:03:03.0: AER: device recovery failed
-> [   51.087643] iwlwifi 0000:07:00.0: AER: can't recover (no error_detected callback)
-> [   51.087646] pcieport 0000:03:05.0: AER: device recovery failed
-> [   51.087659] iwlwifi 0000:08:00.0: AER: can't recover (no error_detected callback)
-> [   51.087662] pcieport 0000:03:07.0: AER: device recovery failed
-> [   51.103761] pcieport 0000:00:1c.0: AER: Uncorrected (Non-Fatal) error received: 0000:03:0f.0
-> [   51.103778] pcieport 0000:03:0f.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   51.113608] pcieport 0000:03:0f.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   51.120658] pcieport 0000:03:0f.0:    [20] UnsupReq               (First)
-> [   51.126152] pcieport 0000:03:0f.0: AER:   TLP Header: 34000000 0f001f10 00000000 88c888c8
-> [   51.133044] iwlwifi 0000:0f:00.0: AER: can't recover (no error_detected callback)
-> [   51.133068] pcieport 0000:03:0f.0: AER: device recovery failed
-> [   51.168925] pcieport 0000:00:1c.0: AER: Uncorrected (Non-Fatal) error received: 0000:03:0f.0
-> [   51.168940] pcieport 0000:03:0f.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   51.178773] pcieport 0000:03:0f.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   51.185823] pcieport 0000:03:0f.0:    [20] UnsupReq               (First)
-> [   51.191318] pcieport 0000:03:0f.0: AER:   TLP Header: 34000000 0f001f10 00000000 88c888c8
-> [   51.198211] iwlwifi 0000:0f:00.0: AER: can't recover (no error_detected callback)
-> [   51.198234] pcieport 0000:03:0f.0: AER: device recovery failed
-> [   51.260695] pcieport 0000:00:1c.0: AER: Uncorrected (Non-Fatal) error received: 0000:03:0f.0
-> [   51.260710] pcieport 0000:03:0f.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   51.270548] pcieport 0000:03:0f.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   51.277605] pcieport 0000:03:0f.0:    [20] UnsupReq               (First)
-> [   51.283103] pcieport 0000:03:0f.0: AER:   TLP Header: 34000000 0f001f10 00000000 88c888c8
-> [   51.290009] iwlwifi 0000:0f:00.0: AER: can't recover (no error_detected callback)
-> [   51.290033] pcieport 0000:03:0f.0: AER: device recovery failed
-> [   51.328514] pcieport 0000:00:1c.0: AER: Uncorrected (Non-Fatal) error received: 0000:03:0f.0
-> [   51.328530] pcieport 0000:03:0f.0: PCIe Bus Error: severity=Uncorrected (Non-Fatal), type=Transaction Layer, (Requester ID)
-> [   51.331638] ACPI: \: failed to evaluate _DSM bf0212f2-788f-c64d-a5b3-1f738e285ade (0x1001)
-> [   51.338363] pcieport 0000:03:0f.0:   device [10b5:8619] error status/mask=00100000/00000000
-> [   51.338364] pcieport 0000:03:0f.0:    [20] UnsupReq               (First)
-> [   51.345413] ACPI: \: failed to evaluate _DSM bf0212f2-788f-c64d-a5b3-1f738e285ade (0x1001)
-> [   51.350900] pcieport 0000:03:0f.0: AER:   TLP Header: 34000000 0f001f10 00000000 88c888c8
-> [   51.350927] iwlwifi 0000:0f:00.0: AER: can't recover (no error_detected callback)
-> 
-> 
-> Thanks,
-> Ben
-> 
-> -- 
-> Ben Greear <greearb@candelatech.com>
-> Candela Technologies Inc  http://www.candelatech.com
-> 
+--=20
+paul-moore.com
