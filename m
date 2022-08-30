@@ -2,121 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F94ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2C4ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231741AbiH3Rw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        id S231691AbiH3RxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231583AbiH3RwF (ORCPT
+        with ESMTP id S231643AbiH3Rwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:52:05 -0400
-Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE7A6165
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:48:37 -0700 (PDT)
-Received: by mail-oo1-xc2e.google.com with SMTP id t15-20020a4a96cf000000b0044e0142ec24so834713ooi.8
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 10:48:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=QOHQdT3OVUHpaukm+t85KBAiboEat0T162RdVG0MMRc=;
-        b=ic2UsMvdh43Vh89r7gu68/5vS8Gc7ct2j4Rov7GrexcQ9s16/wXTD1ymMp1y6SR3aV
-         Jh2sexQ5LADumerYJDxpJk0EJ1AiZ07QkeB0n6zBSGwAqDJGm1oQ20+7KRjGiYxY65VP
-         0hcbTfHGfgIbtrWpk7s6DgceZhnxQc8Z/b2b/KDIdabS2V/wIYca0xqNKhksoli2+BJj
-         ZINYb9N1UkQ418SNClE0gKC2YGQfAl8IvArpO5hk9t6Az5FYaP1sxl/UMPJZcIHVoO27
-         GiDt6a72zGXNlCEyx0Dejn0NzQbRW9luawE9d9riQwmoNMDdCdkIwdslQEMyt6W1yNq1
-         buww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=QOHQdT3OVUHpaukm+t85KBAiboEat0T162RdVG0MMRc=;
-        b=afqbxBsG4Jupw+pX7Uj1r8ur7nM0w/OJlqnzkN16Nnyd8iF3yb4sbchYBRpK6TMmjX
-         Ec/ACaI7h3ahVILWuBTAnT0vctR3lE/uAEMFTnFrDen5mGaxQ+8zmglwd56A3ooTQBkP
-         khBPt6+4SBAvsv0Ks6GS1S03AV2owpHRI/xpEMD8bSu+XN2z/Vvw/+VoRyOmKuIjl3eb
-         AGGPAa/NkkwFNF4pjuoqcjcmt4u/bvXmLYPi1su8H1SyNwhJni2X8gGHIoYY2v15jl00
-         oYF3LHWI7Dl+LcrYsheGIIpp4/7gRdaA1Zm3iDZ6W9O+IZMkm3pYEUT1ago2c+aqH0p5
-         71dw==
-X-Gm-Message-State: ACgBeo0M9aQwCqGEsOz2TA1NrVqB16raCYTrr82N5zbmMHbWNhxFX4Fp
-        tk+OmEBR75hYPuMQ2kBsHxyNsYArMlbIFQ3nNSQfpnhSAnutCg==
-X-Google-Smtp-Source: AA6agR5myCVhW84r+QnDSTVy/jqy/jK/lcmeHgeFWiCsfy/GwPMSD184FpXqLE+yTKCnYkkikETTKuY42+Rb2QyDVOg=
-X-Received: by 2002:a0d:fd05:0:b0:329:3836:53ac with SMTP id
- n5-20020a0dfd05000000b00329383653acmr15412080ywf.455.1661880907756; Tue, 30
- Aug 2022 10:35:07 -0700 (PDT)
+        Tue, 30 Aug 2022 13:52:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7CFDEA9;
+        Tue, 30 Aug 2022 10:49:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19A4EB81D18;
+        Tue, 30 Aug 2022 17:25:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4CBEC433B5;
+        Tue, 30 Aug 2022 17:25:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661880353;
+        bh=HQHYkKIuu2m483r8bXGwDp3s7/RFPN6AGKU9oMAMuI0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HKXaHrVt/91G1UySVTNsmFFw13l3a/T1AspMCCOEMo/rSaHpw4ZFSI9LxWtICGKkN
+         SxAbCSX3dGtCT6wjJJ9KejSDykRy/6+83b5QcgpwuaKFPkaUQSNleOzp7deRQjS0cH
+         igq34q44syt3z1k5yvgVkuNOBAoHdDaeMoB+0x1nK8hZARx+elT5CWTOdvrMSjmuJL
+         ZzCriiNQKan7iaZi3mLmEdIaFFIoJNVF/hlyWnNnnLtoimoHOyYnVpTTQZqtV8n//I
+         BC0gps7JpoLBGhBEmVUDnMc2x8HYMkOHILv5kVVBUKzQVGYLFrTmXgYI/qtxa7w3y8
+         +wCvdPwr/k8bg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zhenneng Li <lizhenneng@kylinos.cn>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.19 03/10] drm/radeon: add a force flush to delay work when radeon
+Date:   Tue, 30 Aug 2022 13:25:34 -0400
+Message-Id: <20220830172541.581820-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220830172541.581820-1-sashal@kernel.org>
+References: <20220830172541.581820-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220830065413.638-1-thunder.leizhen@huawei.com>
- <CAGETcx8hfzAthF_gCMrmnVOgwgFJEPE=bwRuVeXaiB7ywUkWkg@mail.gmail.com>
- <Yw3cs6wb4PvnDN/7@shell.armlinux.org.uk> <b120e94b-4b43-6d8a-a136-41417cb250cc@huawei.com>
- <Yw3hfGV4DYyJ0Gno@shell.armlinux.org.uk> <2452e7b0-d4fd-2e27-a336-bf87b85a8d50@huawei.com>
- <Yw3oR6WhM0O5LQX5@shell.armlinux.org.uk>
-In-Reply-To: <Yw3oR6WhM0O5LQX5@shell.armlinux.org.uk>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Tue, 30 Aug 2022 10:34:31 -0700
-Message-ID: <CAGETcx_GB-r+H96hWHfoKSZjK9hodqe-+FWh6rve0E09pz0nXA@mail.gmail.com>
-Subject: Re: [PATCH v2] ARM: Add sanity check for dev->periphid in amba_probe()
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        patches@armlinux.org.uk, Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 3:36 AM Russell King (Oracle)
-<linux@armlinux.org.uk> wrote:
->
-> On Tue, Aug 30, 2022 at 06:31:14PM +0800, Leizhen (ThunderTown) wrote:
-> > On 2022/8/30 18:07, Russell King (Oracle) wrote:
-> > > For an amba driver, drv->bus will always be pointing at amba_bustype.
-> > > That always has a "match" operation. Therefore, the default of '1'
-> > > above will *never* be used for an AMBA driver.
-> > >
-> > > If drv->bus does not point at amba_bustype, then amba_probe() will
-> > > not be called for "drv".
-> > >
-> > > Therefore, amba_match() must always be called before amba_probe().
-> >
-> > Oh, I was careless. I think it's drv->match. But the processing flow
-> > will continue to go to "dev->bus->probe".
-> >
-> > __driver_attach():
-> >         ret = driver_match_device(drv, dev);
-> >         if (ret == 0) {
-> >                 /* no match */
-> >                 return 0;
-> >         } else if (ret == -EPROBE_DEFER) {               <------no return in this branch
-> >                 dev_dbg(dev, "Device match requests probe deferral\n");
-> >                 dev->can_match = true;
-> >                 driver_deferred_probe_add(dev);
-> >         } else if (ret < 0) {
-> >                 dev_dbg(dev, "Bus failed to match device: %d\n", ret);
-> >                 return ret;
-> >         } /* ret > 0 means positive match */
-> >
-> >         ... ...
-> >         driver_probe_device(drv, dev);
-> >              ......
-> >                   dev->bus->probe
->
-> And that makes no sense, is an already known issue, and there is a patch
-> to fix it:
->
-> https://lore.kernel.org/all/20220817184026.3468620-1-isaacmanjarres@google.com/
+From: Zhenneng Li <lizhenneng@kylinos.cn>
 
-Russell,
+[ Upstream commit f461950fdc374a3ada5a63c669d997de4600dffe ]
 
-Thanks for discussing this further and pointing out the other fix. I
-assumed Leizhen was talking about an instance of
-device_driver_attach() which allows probe to be called without match.
-Thankfully that function is used only by some specific
-frameworks/buses types. I did a cursory check and I don't see any
-intersection with we amba.
+Although radeon card fence and wait for gpu to finish processing current batch rings,
+there is still a corner case that radeon lockup work queue may not be fully flushed,
+and meanwhile the radeon_suspend_kms() function has called pci_set_power_state() to
+put device in D3hot state.
+Per PCI spec rev 4.0 on 5.3.1.4.1 D3hot State.
+> Configuration and Message requests are the only TLPs accepted by a Function in
+> the D3hot state. All other received Requests must be handled as Unsupported Requests,
+> and all received Completions may optionally be handled as Unexpected Completions.
+This issue will happen in following logs:
+Unable to handle kernel paging request at virtual address 00008800e0008010
+CPU 0 kworker/0:3(131): Oops 0
+pc = [<ffffffff811bea5c>]  ra = [<ffffffff81240844>]  ps = 0000 Tainted: G        W
+pc is at si_gpu_check_soft_reset+0x3c/0x240
+ra is at si_dma_is_lockup+0x34/0xd0
+v0 = 0000000000000000  t0 = fff08800e0008010  t1 = 0000000000010000
+t2 = 0000000000008010  t3 = fff00007e3c00000  t4 = fff00007e3c00258
+t5 = 000000000000ffff  t6 = 0000000000000001  t7 = fff00007ef078000
+s0 = fff00007e3c016e8  s1 = fff00007e3c00000  s2 = fff00007e3c00018
+s3 = fff00007e3c00000  s4 = fff00007fff59d80  s5 = 0000000000000000
+s6 = fff00007ef07bd98
+a0 = fff00007e3c00000  a1 = fff00007e3c016e8  a2 = 0000000000000008
+a3 = 0000000000000001  a4 = 8f5c28f5c28f5c29  a5 = ffffffff810f4338
+t8 = 0000000000000275  t9 = ffffffff809b66f8  t10 = ff6769c5d964b800
+t11= 000000000000b886  pv = ffffffff811bea20  at = 0000000000000000
+gp = ffffffff81d89690  sp = 00000000aa814126
+Disabling lock debugging due to kernel taint
+Trace:
+[<ffffffff81240844>] si_dma_is_lockup+0x34/0xd0
+[<ffffffff81119610>] radeon_fence_check_lockup+0xd0/0x290
+[<ffffffff80977010>] process_one_work+0x280/0x550
+[<ffffffff80977350>] worker_thread+0x70/0x7c0
+[<ffffffff80977410>] worker_thread+0x130/0x7c0
+[<ffffffff80982040>] kthread+0x200/0x210
+[<ffffffff809772e0>] worker_thread+0x0/0x7c0
+[<ffffffff80981f8c>] kthread+0x14c/0x210
+[<ffffffff80911658>] ret_from_kernel_thread+0x18/0x20
+[<ffffffff80981e40>] kthread+0x0/0x210
+ Code: ad3e0008  43f0074a  ad7e0018  ad9e0020  8c3001e8  40230101
+ <88210000> 4821ed21
+So force lockup work queue flush to fix this problem.
 
--Saravana
-P.S: I hate that function exists, as it just throws a wrench in the
-whole driver core design and adds corner cases to a lot of generic
-driver core design.
+Acked-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/radeon/radeon_device.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
+index 59c8a6647ff21..cc1c07963116c 100644
+--- a/drivers/gpu/drm/radeon/radeon_device.c
++++ b/drivers/gpu/drm/radeon/radeon_device.c
+@@ -1625,6 +1625,9 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
+ 		if (r) {
+ 			/* delay GPU reset to resume */
+ 			radeon_fence_driver_force_completion(rdev, i);
++		} else {
++			/* finish executing delayed work */
++			flush_delayed_work(&rdev->fence_drv[i].lockup_work);
+ 		}
+ 	}
+ 
+-- 
+2.35.1
+
