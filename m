@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D30ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEADECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232059AbiH3XUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
+        id S232242AbiH3XUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:20:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231784AbiH3XSp (ORCPT
+        with ESMTP id S232105AbiH3XS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:18:45 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C1AA3D26
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:59 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id 92-20020a17090a09e500b001d917022847so5233128pjo.1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:59 -0700 (PDT)
+        Tue, 30 Aug 2022 19:18:56 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04ACA2871
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:58 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id u14-20020a170902e5ce00b00174b2ad8435so5042481plf.12
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=ppFRkhG99Lekds01NjhzNIGVVTbKBQGCAaihGiWF468=;
-        b=EPrQnz5TZu1DM3Qso0wkPVPEPDWGIYBwKc9otwlVqCzNXXWzBj9zKRq9lA3BDkW6lA
-         KN/SH0Jyul5m5uLFWXqKoco8p4r5ChqoOjw4iJjxFpilADDC09XL3Ud9FjnlL+AcHMUi
-         fjGRh29o204uIulHCMudGmdUxZAeukPc1mGi3qCVcuAAPH5Bhtj6DOplNW/7HXfNWJzu
-         Iy/ccXeuklhzrEdJlLmDANaYUgeZiQX7F79qqik9eBbyUXuG2oqKFr5HNffhVWtXeNwl
-         zRAE7qX2QHa27441JdmzjGR4S4y8yjl5oqED0OAoYuynvGx3Nbn5IAe63rnIho1nR2by
-         LdKA==
+        bh=apaMWeewgN9SCKsQ/b/x81peVp5WzIJeQ3d9tZS54uU=;
+        b=J+/GqW68OWNVKsMUQ+Lm/NRPGm758Ko4Ru4CXb6/G3anRjQUb6/vNI3tnjNs9oXpX4
+         bM1dqEIh6orkqQ3z+LgS+V1uvGpmznQU5UCg80EYopA/Zm6ag1cTYRit8WAGa9c4wOZ0
+         jRsFwwMq8yPLQXI+cqyXHezofIqCk/Z3omr+dQrZNIW9oDZOIjQQ5ryghXZruFKM+EqF
+         YepkUY+wC+rPsuqGJzqltlx4G9a13zBIMj77oGRvpwInWgH3PbXezmcDyHxJuX6msqn1
+         U4i4diAfENCHPHSvnvoPer8kXM1O2vnkOEbg0/j979DVDO+OL/VnX6sRnqDamEuh+283
+         v+Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=ppFRkhG99Lekds01NjhzNIGVVTbKBQGCAaihGiWF468=;
-        b=mpvQwERSSmG91UlKAl4/kAZDimmskHmWplpUKlU42hBDdKNaJjtQdEKdVo7rdd7H6x
-         +gzscQJNL3+Oxw2JaKrnMiiu6jP44cpAQQNbPo3EcXb0SZ6uDC6lEQRS+X0DK2JjT8qd
-         Fq263wUomr5L1wTcE7IhRgvfyEeHhO2Ys3lMh9jAV3VxLReJG5EeFc8E8NxhMf+lRBzh
-         LMLkH735+cwiDLarkmnn7ZYbAUs1TZwvy950ZUw7F22pSh8OXSlvFMPVYY1mgZiHnkST
-         NTuQclb7Y0VQ6Jk2IOjRyNr0AWBgXbvdIzWkjtOJhuwxEEHOs4iTTqmSbiTAN/jAqmth
-         TWmg==
-X-Gm-Message-State: ACgBeo3Lz5Bmc3zUvIBiFcyOUGs2AH3KfjG83c3dS/pdfla0FXzqPaG1
-        EOonGzZYm2dEkNawK0El8fj2bopVCx8=
-X-Google-Smtp-Source: AA6agR6Gw2OIgKEMgtNFmk7jbNSdCA5FuTDIwR93NeBqqGEzHzaWbjNgr4CyfTtDKcOU5iWRTEqQA2vXxCo=
+        bh=apaMWeewgN9SCKsQ/b/x81peVp5WzIJeQ3d9tZS54uU=;
+        b=6NDxhvnfX5qEmPB9uqsibird+DcEbW8P/j0EQKaT1AXU6TSFgE1wO/hrqI/Bs3Y6m7
+         4JQPJMQSrzlB46jXlL08yUR9wwdw8rPxMwXGz4ZC20Hvvmd/HHovMiOksuaFwBncnn/3
+         gaHba2TSXdoOridiyFrOBPLKDMiKxteS5s0JECXcd3Cbw0B8u5zrFP9nyPhQdxicKnbJ
+         lSnI3oz2O2GDwp33YWbRE/dQxgKVjmcSuDe2h2vaRtyFnCqAlgQNe53T1TaFIgEzXTrA
+         VxgorbOtDqjKNen5q0EkgP2aSgwJJcUHwWjtI55aMJoYUmW4Gqej8FvXgZl5/ABelyGI
+         a54g==
+X-Gm-Message-State: ACgBeo1yEchIYCl5eIGiYofURT/v+/iM33XBVNAB+0Fwpdlz3zauKWAN
+        SH4bZj8YJqkGZxWgLTq4ndAhMB6Fok8=
+X-Google-Smtp-Source: AA6agR4alFe/DlTkXRLpDZwZxXKY0c/bfpZS/WVRRuTfpQiWlJZ0s/3NKDpT/OTDRZjA4VcP+2ZSnFSHGAw=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a63:fb05:0:b0:430:268f:f8c9 with SMTP id
- o5-20020a63fb05000000b00430268ff8c9mr398202pgh.559.1661901417187; Tue, 30 Aug
- 2022 16:16:57 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
+ t9-20020a17090a024900b001e0a8a33c6cmr11325pje.0.1661901413850; Tue, 30 Aug
+ 2022 16:16:53 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 30 Aug 2022 23:16:11 +0000
+Date:   Tue, 30 Aug 2022 23:16:09 +0000
 In-Reply-To: <20220830231614.3580124-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220830231614.3580124-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830231614.3580124-25-seanjc@google.com>
-Subject: [PATCH v5 24/27] KVM: x86: Rename inject_pending_events() to kvm_check_and_inject_events()
+Message-ID: <20220830231614.3580124-23-seanjc@google.com>
+Subject: [PATCH v5 22/27] KVM: x86: Treat pending TRIPLE_FAULT requests as
+ pending exceptions
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,123 +68,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename inject_pending_events() to kvm_check_and_inject_events() in order
-to capture the fact that it handles more than just pending events, and to
-(mostly) align with kvm_check_nested_events(), which omits the "inject"
-for brevity.
+Treat pending TRIPLE_FAULTS as pending exceptions.  A triple fault is an
+exception for all intents and purposes, it's just not tracked as such
+because there's no vector associated the exception.  E.g. if userspace
+were to set vcpu->request_interrupt_window while running L2 and L2 hit a
+triple fault, a triple fault nested VM-Exit should be synthesized to L1
+before exiting to userspace with KVM_EXIT_IRQ_WINDOW_OPEN.
 
-Add a comment above kvm_check_and_inject_events() to provide a high-level
-synopsis, and to document a virtualization hole (KVM erratum if you will)
-that exists due to KVM not strictly tracking instruction boundaries with
-respect to coincident instruction restarts and asynchronous events.
-
-No functional change inteded.
-
+Link: https://lore.kernel.org/all/YoVHAIGcFgJit1qp@google.com
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/svm/nested.c |  2 +-
- arch/x86/kvm/svm/svm.c    |  2 +-
- arch/x86/kvm/x86.c        | 46 ++++++++++++++++++++++++++++++++++++---
- 3 files changed, 45 insertions(+), 5 deletions(-)
+ arch/x86/kvm/x86.c | 3 ---
+ arch/x86/kvm/x86.h | 3 ++-
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 405075286965..6b3b18404533 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -1312,7 +1312,7 @@ static void nested_svm_inject_exception_vmexit(struct kvm_vcpu *vcpu)
- 		else
- 			vmcb->control.exit_info_2 = vcpu->arch.cr2;
- 	} else if (ex->vector == DB_VECTOR) {
--		/* See inject_pending_event.  */
-+		/* See kvm_check_and_inject_events().  */
- 		kvm_deliver_exception_payload(vcpu, ex);
- 
- 		if (vcpu->arch.dr7 & DR7_GD) {
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index dbd10d61f29d..fc6eae94aa61 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -3520,7 +3520,7 @@ void svm_complete_interrupt_delivery(struct kvm_vcpu *vcpu, int delivery_mode,
- 
- 	/* Note, this is called iff the local APIC is in-kernel. */
- 	if (!READ_ONCE(vcpu->arch.apic->apicv_active)) {
--		/* Process the interrupt via inject_pending_event */
-+		/* Process the interrupt via kvm_check_and_inject_events(). */
- 		kvm_make_request(KVM_REQ_EVENT, vcpu);
- 		kvm_vcpu_kick(vcpu);
- 		return;
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index d004e18c7cdb..45f295d35cc9 100644
+index 17cf43ca42c3..d004e18c7cdb 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -9745,7 +9745,47 @@ static void kvm_inject_exception(struct kvm_vcpu *vcpu)
- 	static_call(kvm_x86_inject_exception)(vcpu);
+@@ -12742,9 +12742,6 @@ static inline bool kvm_vcpu_has_events(struct kvm_vcpu *vcpu)
+ 	if (kvm_xen_has_pending_events(vcpu))
+ 		return true;
+ 
+-	if (kvm_test_request(KVM_REQ_TRIPLE_FAULT, vcpu))
+-		return true;
+-
+ 	return false;
  }
  
--static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
-+/*
-+ * Check for any event (interrupt or exception) that is ready to be injected,
-+ * and if there is at least one event, inject the event with the highest
-+ * priority.  This handles both "pending" events, i.e. events that have never
-+ * been injected into the guest, and "injected" events, i.e. events that were
-+ * injected as part of a previous VM-Enter, but weren't successfully delivered
-+ * and need to be re-injected.
-+ *
-+ * Note, this is not guaranteed to be invoked on a guest instruction boundary,
-+ * i.e. doesn't guarantee that there's an event window in the guest.  KVM must
-+ * be able to inject exceptions in the "middle" of an instruction, and so must
-+ * also be able to re-inject NMIs and IRQs in the middle of an instruction.
-+ * I.e. for exceptions and re-injected events, NOT invoking this on instruction
-+ * boundaries is necessary and correct.
-+ *
-+ * For simplicity, KVM uses a single path to inject all events (except events
-+ * that are injected directly from L1 to L2) and doesn't explicitly track
-+ * instruction boundaries for asynchronous events.  However, because VM-Exits
-+ * that can occur during instruction execution typically result in KVM skipping
-+ * the instruction or injecting an exception, e.g. instruction and exception
-+ * intercepts, and because pending exceptions have higher priority than pending
-+ * interrupts, KVM still honors instruction boundaries in most scenarios.
-+ *
-+ * But, if a VM-Exit occurs during instruction execution, and KVM does NOT skip
-+ * the instruction or inject an exception, then KVM can incorrecty inject a new
-+ * asynchrounous event if the event became pending after the CPU fetched the
-+ * instruction (in the guest).  E.g. if a page fault (#PF, #NPF, EPT violation)
-+ * occurs and is resolved by KVM, a coincident NMI, SMI, IRQ, etc... can be
-+ * injected on the restarted instruction instead of being deferred until the
-+ * instruction completes.
-+ *
-+ * In practice, this virtualization hole is unlikely to be observed by the
-+ * guest, and even less likely to cause functional problems.  To detect the
-+ * hole, the guest would have to trigger an event on a side effect of an early
-+ * phase of instruction execution, e.g. on the instruction fetch from memory.
-+ * And for it to be a functional problem, the guest would need to depend on the
-+ * ordering between that side effect, the instruction completing, _and_ the
-+ * delivery of the asynchronous event.
-+ */
-+static int kvm_check_and_inject_events(struct kvm_vcpu *vcpu,
-+				       bool *req_immediate_exit)
+diff --git a/arch/x86/kvm/x86.h b/arch/x86/kvm/x86.h
+index 256745d1a2c3..a784ff90740b 100644
+--- a/arch/x86/kvm/x86.h
++++ b/arch/x86/kvm/x86.h
+@@ -85,7 +85,8 @@ int kvm_check_nested_events(struct kvm_vcpu *vcpu);
+ static inline bool kvm_is_exception_pending(struct kvm_vcpu *vcpu)
  {
- 	bool can_inject;
- 	int r;
-@@ -10224,7 +10264,7 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
- 	 * When APICv gets disabled, we may still have injected interrupts
- 	 * pending. At the same time, KVM_REQ_EVENT may not be set as APICv was
- 	 * still active when the interrupt got accepted. Make sure
--	 * inject_pending_event() is called to check for that.
-+	 * kvm_check_and_inject_events() is called to check for that.
- 	 */
- 	if (!apic->apicv_active)
- 		kvm_make_request(KVM_REQ_EVENT, vcpu);
-@@ -10521,7 +10561,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 			goto out;
- 		}
+ 	return vcpu->arch.exception.pending ||
+-	       vcpu->arch.exception_vmexit.pending;
++	       vcpu->arch.exception_vmexit.pending ||
++	       kvm_test_request(KVM_REQ_TRIPLE_FAULT, vcpu);
+ }
  
--		r = inject_pending_event(vcpu, &req_immediate_exit);
-+		r = kvm_check_and_inject_events(vcpu, &req_immediate_exit);
- 		if (r < 0) {
- 			r = 0;
- 			goto out;
+ static inline void kvm_clear_exception_queue(struct kvm_vcpu *vcpu)
 -- 
 2.37.2.672.g94769d06f0-goog
 
