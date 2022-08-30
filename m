@@ -2,95 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8BB4ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 04:47:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D7D5ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 04:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229978AbiH3Er4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 00:47:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
+        id S229966AbiH3Esi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 00:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229830AbiH3Erq (ORCPT
+        with ESMTP id S229957AbiH3EsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 00:47:46 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D40AC24D
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 21:47:45 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id f12so9809893plb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 21:47:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Z/mBY2jgNDkWQ3lEWcoeCOwOWescKqJwUlwqGO5KuJY=;
-        b=lcMsqLdRZBsh1/gE+Om6+9NNv+3cxCzdFy+52mewdqx7Myu1GG270U5wm/uWxmaAuB
-         bWUyMzYKZgd6KlAwoDeIWNg/ySRIt9WJLvEfij3ceJRNNf6FJDFc6jKyvi32loU214Kd
-         IIp/l3Knw5x7Ah35ABT0IwTSW/liiduLwdAAXtja8YQkgP/Cf3cuYnSsJkC4cnA3ZNXT
-         7ddhs9HdHwOrX6T6yvjR7DbXmj74a7o3JiqyOxf/GBJinx6X49Hl3/sPm9ZtcqrOoAZQ
-         +g/+qaQORJ5sxzPgivFlwGU5UnqGYennizwRUcSB+4xjsRr5yb9H/LGB/qd7HqiM4Gfj
-         oLkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Z/mBY2jgNDkWQ3lEWcoeCOwOWescKqJwUlwqGO5KuJY=;
-        b=RJMEeJI7w2K9FTNKSd2ebbA1AhcW/V8YNmOdZUkMeZo9HYwdxoZ1JL0RRF8YOB8TyY
-         WB2sTIe+n+cX2PvCpP8yPa/TIwUZA/W0uaO9nXDV01S8QPSjqlBObl1A/CFxUQeIPa5G
-         gnPhEZnVBd8j2QG5/N8+B1V2A2Leow6FUVJBwr7gAsdca0fXLv1luM7NOaKhVv1JitxA
-         g1ix7Qw9n8oVfPoakN7N/PxOz41MKfF94gqnHfyTHaFEyF6XbwAx6RsLR+UrWsMJUTgk
-         4uC1bxir4odVRdvRHtWaeOf4sOltMkikhsu4ZebRCrqy+TP6fXWrBWfCjtQlokIJLhBH
-         wd+A==
-X-Gm-Message-State: ACgBeo3yPiB0Da5/XfWy9y4jcaysx1MzxfEgIgFnfNUJA9QYjLZMeV9J
-        +4fY/gC7ySLXAfD1QSoBtbKaxg==
-X-Google-Smtp-Source: AA6agR6XrkfmOxoBKob/nJpRXtmL+AzNaaiMBZH+BzRQYeIJ3CiaTKVwkXr2+cFUppJYxY/R+NLzhA==
-X-Received: by 2002:a17:90b:4a82:b0:1fd:9c58:daff with SMTP id lp2-20020a17090b4a8200b001fd9c58daffmr13582124pjb.48.1661834865182;
-        Mon, 29 Aug 2022 21:47:45 -0700 (PDT)
-Received: from anup-ubuntu64-vm.. ([171.76.81.23])
-        by smtp.gmail.com with ESMTPSA id y27-20020a634b1b000000b0041cd5ddde6fsm592240pga.76.2022.08.29.21.47.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 21:47:44 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>
-Cc:     Atish Patra <atishp@atishpatra.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>,
-        Mayuresh Chitale <mchitale@ventanamicro.com>
-Subject: [PATCH v2 4/4] RISC-V: Enable PMEM drivers
-Date:   Tue, 30 Aug 2022 10:16:42 +0530
-Message-Id: <20220830044642.566769-5-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220830044642.566769-1-apatel@ventanamicro.com>
-References: <20220830044642.566769-1-apatel@ventanamicro.com>
+        Tue, 30 Aug 2022 00:48:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89146B02BA;
+        Mon, 29 Aug 2022 21:48:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B2F9B811B9;
+        Tue, 30 Aug 2022 04:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2FF2C433D7;
+        Tue, 30 Aug 2022 04:48:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661834894;
+        bh=fx/2R2KpWM7H7A+xXD+jhcW9b7yHd7jYx/HOk0b0+FM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Lfi5ILY7H7MlFVkOoxKjJwpESchr+4w3n5xuiE4sXXJySElHGle+AWHp2j3itzS/b
+         1FzA3t1FdGjnVZpulB3FDolZ28wXbpWg1dj89dYE+zEyh4ULGAyH4Pn4ti9NS7kvxL
+         K11VRl/0ic+6/L5rpXm1QLo+sjBgLzjVKzzmR/DvYWjgx5I3b2qk/6RuMVQvknoRhA
+         sGmj3xCJFv8VUlPM5CB2RDBWUnn6HRiWsxt+X6LehzqNuKGmcOjtydPaKZFHoxTSXV
+         Gtf83tVJQvUOyRhdABK9Yi23Y++hAN5DD7CYfhNW6wdjLoBWWb3wrqYuZprKL9yPMz
+         2ebaN29wWwh9g==
+Date:   Mon, 29 Aug 2022 21:48:11 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Peter Zijlstra' <peterz@infradead.org>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Borislav Petkov <bp@alien8.de>, X86 ML <x86@kernel.org>,
+        Michael Matz <matz@suse.de>,
+        "linux-toolchains@vger.kernel.org" <linux-toolchains@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH] x86/sev: Mark snp_abort() noreturn
+Message-ID: <20220830044811.jad66k4sxdfnprul@treble>
+References: <20220824152420.20547-1-bp@alien8.de>
+ <20220824172929.GA25951@gate.crashing.org>
+ <YwaN2HtMyM0YEdSB@worktop.programming.kicks-ass.net>
+ <20220824224144.GC25951@gate.crashing.org>
+ <YwcZjxVkO/lspvmv@worktop.programming.kicks-ass.net>
+ <ce56926842dc49ecb08ddb9d828590af@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <ce56926842dc49ecb08ddb9d828590af@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We now have PMEM arch support available in RISC-V kernel so let us
-enable relevant drivers in defconfig.
+On Thu, Aug 25, 2022 at 01:12:42PM +0000, David Laight wrote:
+> ...
+> > Objtool follows control flow. As you said above, noreturn functions
+> > behave differently and code-gen after a call to a noreturn function
+> > stops.
+> 
+> Thinks....
+> 
+> How near is objtool to outputting a list of functions and the
+> stack offset at which they call something else?
 
-Co-developed-by: Mayuresh Chitale <mchitale@ventanamicro.com>
-Signed-off-by: Mayuresh Chitale <mchitale@ventanamicro.com>
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
----
- arch/riscv/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
+It basically already does this.
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index aed332a9d4ea..010b673ebd11 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -159,6 +159,7 @@ CONFIG_VIRTIO_MMIO=y
- CONFIG_RPMSG_CHAR=y
- CONFIG_RPMSG_CTRL=y
- CONFIG_RPMSG_VIRTIO=y
-+CONFIG_LIBNVDIMM=y
- CONFIG_EXT4_FS=y
- CONFIG_EXT4_FS_POSIX_ACL=y
- CONFIG_EXT4_FS_SECURITY=y
+> With the 'magic numbers' to track indirect jumps that is very
+> nearly enough information to do full static stack depth checking.
+
+What do you mean by 'magic numbers'?
+
 -- 
-2.34.1
-
+Josh
