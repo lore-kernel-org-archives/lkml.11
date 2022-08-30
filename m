@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EA8C3DA6B
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F98DECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 21:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232037AbiH3Vw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 17:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60254 "EHLO
+        id S232177AbiH3VxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 17:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232111AbiH3Vvz (ORCPT
+        with ESMTP id S231895AbiH3VwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 17:51:55 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C0DB6F253
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:50:12 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-340e618b145so120887247b3.2
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:50:12 -0700 (PDT)
+        Tue, 30 Aug 2022 17:52:07 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A7190183
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:50:18 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id h9-20020a256c09000000b0069671af62ecso714982ybc.4
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 14:50:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc;
-        bh=ofrC1PqNoYIKnyKYWjHD7inVuacSGBJJLHypr0RookE=;
-        b=VGRf/84iZ1p67fJnvZ/X1xcCS67elVIPk9IGJJ+bUuWMMIF3sRy7RxzaFdrO+WG7dH
-         d/TlbooTEmNgUOWOqFkIyFyAhgj636EU+aMGf3bhfUhI9LPGF0x0v39+rp3COSYRpICF
-         emKVXtjPhIhzNDYojpJwNosafP0nhIDkwMZkM1SszHz/jzoceNfVxm+3TZcljgHgvL8y
-         TVQxs/Koc6RZpeES3hIup/YjX0wdMTaa96AxFv1wg+iYYTwvZ7GGZBg+tBO+knqi5Juw
-         fEBz0idUpafaOWyAi5+6IN+BrsO4tEn9FOM/qV9RCHSE0DEDO6hWPkFyyM8anxAPc5xB
-         lw8A==
+        bh=k1RBq3yq4U5V/3OJ4fp4kBxfnryZ2+wdIlpTdmkxoTI=;
+        b=VhiQWzTMcrdH+FaQQULhGR8WSlxfBOTth6dlvIbrF9tNsikpCPNZSCsVVNQzwya0+m
+         inYdBoaJMW2SV4VMQbG9aeBgJRps+ez+XWS5k3Rur9K2IIy7JqKGimhHZpLDadEOC8jn
+         mlaKyF5VrtiZ0WWLgSmcUKau4UWKqCVgLA42otcSHORATS4YZtKue2vIEn7FwP4yHe6S
+         ZPXLk6/7AXcHQ83MkQ3/jShGMz5S5LOyBhJVZrkJyLThC9PcUD9ldyCOL0uzdDG1sb5M
+         06MkPGxPeBa0aM/Evc6sFSslW/GhAWnvZBA8+PZrxcvSTvVlK9z1clRYSNWpN2i8rC4H
+         SSiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=ofrC1PqNoYIKnyKYWjHD7inVuacSGBJJLHypr0RookE=;
-        b=i1wh/Qrjx1SGiMM3Za3exPyeS+LHLMzHVCaxF0kW2ZUTd+gcmXXFS86l1wGzwU5grX
-         BEkp1CHWNhmQ+K5TPAn868dGvDe2k9OV4pV3avJL+Vj4GL7Iu9P+puhKbo5p5eWs+nEL
-         qDtLEa7W3E6ungzRQWTht7uDU6cV44ZljMRKS5h4E0fNgeSUFlX06xcZEEieecIrl5xd
-         0m6xHMjyKZ4ywToHJZCHJvtMogWrHlJBLIjAV8zN71xclgI7704ZFzwQKY+Fwb491xeI
-         /pi52qg/Uq7yYvNESEBW1p20FypqCqVixudy9ke5yuw2kkqn0GypoYDnxQG6K3SZ026I
-         uxTw==
-X-Gm-Message-State: ACgBeo1681Y74vMTxvJWgw8gfd6NWrHgMQEGQGNcOnM1r4JR8huPR8xi
-        aeTaRJf48iw4WG1K9QpNwTifWhQwjVw=
-X-Google-Smtp-Source: AA6agR5S9pMWRwrdqx3FNbA74RB4ArEfkNsuNbxmIMNnFeUvwj+w6zosapneZCdX4VxzXX80wAu2gx5OQhs=
+        bh=k1RBq3yq4U5V/3OJ4fp4kBxfnryZ2+wdIlpTdmkxoTI=;
+        b=8G/vs6NCvCTme87fK5lF2Oexjc1A6tZY9wj8dTuuA/nVBLZLV9hTxyM6SuV1JPj9dK
+         xDkG52w2i2PcZIWfmxGhQdCETzhIdAKei/hIFXdTr1rljOybtjMk3CDBnczb0KFB2I5h
+         jq9dTZYDEX5gBA0WP/UcihfzR13sLwdLz78F5RB6cZ558Xxk6YBH3Ouotwrl0XR/1nmt
+         5pucEzpQH6OrU0gBDLZ55sRNFvrvYwT7h7W/zVsqT9PhmEpzprBevQ8HWLh5BLsDzoNJ
+         bYlXKpLuUo+gMUXZbfmqS8mRTFXBtg1TUSR/XZt3wNZi9jvsJ/HvfZo4tFjpy84BI71j
+         yxDA==
+X-Gm-Message-State: ACgBeo2z42mru9R+B9r62R+1sspDcpbtuyw7pZuDmJlkdiX08Pz4g2al
+        JIaaJ/euFLNC6epDItJr0rzogLh+F4Q=
+X-Google-Smtp-Source: AA6agR4708nF24x7XI3k0Gx9DyNo/OwdO20Vx8Uo0n79f6qJIllny6st9xxE+KwycAbaAtlsqzU8pt5cOBU=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:200:a005:55b3:6c26:b3e4])
- (user=surenb job=sendgmr) by 2002:a0d:cd43:0:b0:329:febf:8c25 with SMTP id
- p64-20020a0dcd43000000b00329febf8c25mr15393402ywd.90.1661896211649; Tue, 30
- Aug 2022 14:50:11 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 14:49:07 -0700
+ (user=surenb job=sendgmr) by 2002:a25:ef45:0:b0:696:45b0:7b5d with SMTP id
+ w5-20020a25ef45000000b0069645b07b5dmr12075882ybm.368.1661896216803; Tue, 30
+ Aug 2022 14:50:16 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 14:49:09 -0700
 In-Reply-To: <20220830214919.53220-1-surenb@google.com>
 Mime-Version: 1.0
 References: <20220830214919.53220-1-surenb@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830214919.53220-19-surenb@google.com>
-Subject: [RFC PATCH 18/30] codetag: add codetag query helper functions
+Message-ID: <20220830214919.53220-21-surenb@google.com>
+Subject: [RFC PATCH 20/30] lib: introduce support for storing code tag context
 From:   Suren Baghdasaryan <surenb@google.com>
 To:     akpm@linux-foundation.org
 Cc:     kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
@@ -79,196 +79,331 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kent Overstreet <kent.overstreet@linux.dev>
+Add support for code tag context capture when registering a new code tag
+type. When context capture for a specific code tag is enabled,
+codetag_ref will point to a codetag_ctx object which can be attached
+to an application-specific object storing code invocation context.
+codetag_ctx has a pointer to its codetag_with_ctx object with embedded
+codetag object in it. All context objects of the same code tag are placed
+into codetag_with_ctx.ctx_head linked list. codetag.flag is used to
+indicate when a context capture for the associated code tag is
+initialized and enabled.
 
-Provide codetag_query_parse() to parse codetag queries and
-codetag_matches_query() to check if the query affects a given codetag.
-
-Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- include/linux/codetag.h |  27 ++++++++
- lib/codetag.c           | 135 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 162 insertions(+)
+ include/linux/codetag.h     |  50 +++++++++++++-
+ include/linux/codetag_ctx.h |  48 +++++++++++++
+ lib/codetag.c               | 134 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 231 insertions(+), 1 deletion(-)
+ create mode 100644 include/linux/codetag_ctx.h
 
 diff --git a/include/linux/codetag.h b/include/linux/codetag.h
-index 386733e89b31..0c605417ebbe 100644
+index 0c605417ebbe..57736ec77b45 100644
 --- a/include/linux/codetag.h
 +++ b/include/linux/codetag.h
-@@ -80,4 +80,31 @@ static inline void codetag_load_module(struct module *mod) {}
- static inline void codetag_unload_module(struct module *mod) {}
- #endif
+@@ -5,8 +5,12 @@
+ #ifndef _LINUX_CODETAG_H
+ #define _LINUX_CODETAG_H
  
-+/* Codetag query parsing */
++#include <linux/container_of.h>
++#include <linux/spinlock.h>
+ #include <linux/types.h>
+ 
++struct kref;
++struct codetag_ctx;
+ struct codetag_iterator;
+ struct codetag_type;
+ struct seq_buf;
+@@ -18,15 +22,38 @@ struct module;
+  * an array of these.
+  */
+ struct codetag {
+-	unsigned int flags; /* used in later patches */
++	unsigned int flags; /* has to be the first member shared with codetag_ctx */
+ 	unsigned int lineno;
+ 	const char *modname;
+ 	const char *function;
+ 	const char *filename;
+ } __aligned(8);
+ 
++/* codetag_with_ctx flags */
++#define CTC_FLAG_CTX_PTR	(1 << 0)
++#define CTC_FLAG_CTX_READY	(1 << 1)
++#define CTC_FLAG_CTX_ENABLED	(1 << 2)
 +
-+struct codetag_query {
-+	const char	*filename;
-+	const char	*module;
-+	const char	*function;
-+	const char	*class;
-+	unsigned int	first_line, last_line;
-+	unsigned int	first_index, last_index;
-+	unsigned int	cur_index;
++/*
++ * Code tag with context capture support. Contains a list to store context for
++ * each tag hit, a lock protecting the list and a flag to indicate whether
++ * context capture is enabled for the tag.
++ */
++struct codetag_with_ctx {
++	struct codetag ct;
++	struct list_head ctx_head;
++	spinlock_t ctx_lock;
++} __aligned(8);
 +
-+	bool		match_line:1;
-+	bool		match_index:1;
++/*
++ * Tag reference can point to codetag directly or indirectly via codetag_ctx.
++ * Direct codetag pointer is used when context capture is disabled or not
++ * supported. When context capture for the tag is used, the reference points
++ * to the codetag_ctx through which the codetag can be reached.
++ */
+ union codetag_ref {
+ 	struct codetag *ct;
++	struct codetag_ctx *ctx;
+ };
+ 
+ struct codetag_range {
+@@ -46,6 +73,7 @@ struct codetag_type_desc {
+ 			    struct codetag_module *cmod);
+ 	void (*module_unload)(struct codetag_type *cttype,
+ 			      struct codetag_module *cmod);
++	void (*free_ctx)(struct kref *ref);
+ };
+ 
+ struct codetag_iterator {
+@@ -53,6 +81,7 @@ struct codetag_iterator {
+ 	struct codetag_module *cmod;
+ 	unsigned long mod_id;
+ 	struct codetag *ct;
++	struct codetag_ctx *ctx;
+ };
+ 
+ #define CODE_TAG_INIT {					\
+@@ -63,9 +92,28 @@ struct codetag_iterator {
+ 	.flags		= 0,				\
+ }
+ 
++static inline bool is_codetag_ctx_ref(union codetag_ref *ref)
++{
++	return !!(ref->ct->flags & CTC_FLAG_CTX_PTR);
++}
 +
-+	unsigned int	set_enabled:1;
-+	unsigned int	enabled:2;
++static inline
++struct codetag_with_ctx *ct_to_ctc(struct codetag *ct)
++{
++	return container_of(ct, struct codetag_with_ctx, ct);
++}
 +
-+	unsigned int	set_frequency:1;
-+	unsigned int	frequency;
-+};
+ void codetag_lock_module_list(struct codetag_type *cttype, bool lock);
+ struct codetag_iterator codetag_get_ct_iter(struct codetag_type *cttype);
+ struct codetag *codetag_next_ct(struct codetag_iterator *iter);
++struct codetag_ctx *codetag_next_ctx(struct codetag_iterator *iter);
 +
-+char *codetag_query_parse(struct codetag_query *q, char *buf);
-+bool codetag_matches_query(struct codetag_query *q,
-+			   const struct codetag *ct,
-+			   const struct codetag_module *mod,
-+			   const char *class);
++bool codetag_enable_ctx(struct codetag_with_ctx *ctc, bool enable);
++static inline bool codetag_ctx_enabled(struct codetag_with_ctx *ctc)
++{
++	return !!(ctc->ct.flags & CTC_FLAG_CTX_ENABLED);
++}
++bool codetag_has_ctx(struct codetag_with_ctx *ctc);
+ 
+ void codetag_to_text(struct seq_buf *out, struct codetag *ct);
+ 
+diff --git a/include/linux/codetag_ctx.h b/include/linux/codetag_ctx.h
+new file mode 100644
+index 000000000000..e741484f0e08
+--- /dev/null
++++ b/include/linux/codetag_ctx.h
+@@ -0,0 +1,48 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * code tag context
++ */
++#ifndef _LINUX_CODETAG_CTX_H
++#define _LINUX_CODETAG_CTX_H
 +
- #endif /* _LINUX_CODETAG_H */
++#include <linux/codetag.h>
++#include <linux/kref.h>
++
++/* Code tag hit context. */
++struct codetag_ctx {
++	unsigned int flags; /* has to be the first member shared with codetag */
++	struct codetag_with_ctx *ctc;
++	struct list_head node;
++	struct kref refcount;
++} __aligned(8);
++
++static inline struct codetag_ctx *kref_to_ctx(struct kref *refcount)
++{
++	return container_of(refcount, struct codetag_ctx, refcount);
++}
++
++static inline void add_ctx(struct codetag_ctx *ctx,
++			   struct codetag_with_ctx *ctc)
++{
++	kref_init(&ctx->refcount);
++	spin_lock(&ctc->ctx_lock);
++	ctx->flags = CTC_FLAG_CTX_PTR;
++	ctx->ctc = ctc;
++	list_add_tail(&ctx->node, &ctc->ctx_head);
++	spin_unlock(&ctc->ctx_lock);
++}
++
++static inline void rem_ctx(struct codetag_ctx *ctx,
++			   void (*free_ctx)(struct kref *refcount))
++{
++	struct codetag_with_ctx *ctc = ctx->ctc;
++
++	spin_lock(&ctc->ctx_lock);
++	/* ctx might have been removed while we were using it */
++	if (!list_empty(&ctx->node))
++		list_del_init(&ctx->node);
++	spin_unlock(&ctc->ctx_lock);
++	kref_put(&ctx->refcount, free_ctx);
++}
++
++#endif /* _LINUX_CODETAG_CTX_H */
 diff --git a/lib/codetag.c b/lib/codetag.c
-index f0a3174f9b71..288ccfd5cbd0 100644
+index 288ccfd5cbd0..2762fda5c016 100644
 --- a/lib/codetag.c
 +++ b/lib/codetag.c
-@@ -246,3 +246,138 @@ void codetag_unload_module(struct module *mod)
- 	}
- 	mutex_unlock(&codetag_lock);
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ #include <linux/codetag.h>
++#include <linux/codetag_ctx.h>
+ #include <linux/idr.h>
+ #include <linux/kallsyms.h>
+ #include <linux/module.h>
+@@ -91,6 +92,139 @@ struct codetag *codetag_next_ct(struct codetag_iterator *iter)
+ 	return ct;
  }
-+
-+/* Codetag query parsing */
-+
-+#define CODETAG_QUERY_TOKENS()	\
-+	x(func)			\
-+	x(file)			\
-+	x(line)			\
-+	x(module)		\
-+	x(class)		\
-+	x(index)
-+
-+enum tokens {
-+#define x(name)		TOK_##name,
-+	CODETAG_QUERY_TOKENS()
-+#undef x
-+};
-+
-+static const char * const token_strs[] = {
-+#define x(name)		#name,
-+	CODETAG_QUERY_TOKENS()
-+#undef x
-+	NULL
-+};
-+
-+static int parse_range(char *str, unsigned int *first, unsigned int *last)
+ 
++static struct codetag_ctx *next_ctx_from_ct(struct codetag_iterator *iter)
 +{
-+	char *first_str = str;
-+	char *last_str = strchr(first_str, '-');
++	struct codetag_with_ctx *ctc;
++	struct codetag_ctx *ctx = NULL;
++	struct codetag *ct = iter->ct;
 +
-+	if (last_str)
-+		*last_str++ = '\0';
++	while (ct) {
++		if (!(ct->flags & CTC_FLAG_CTX_READY))
++			goto next;
 +
-+	if (kstrtouint(first_str, 10, first))
-+		return -EINVAL;
-+
-+	if (!last_str)
-+		*last = *first;
-+	else if (kstrtouint(last_str, 10, last))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+char *codetag_query_parse(struct codetag_query *q, char *buf)
-+{
-+	while (1) {
-+		char *p = buf;
-+		char *str1 = strsep_no_empty(&p, " \t\r\n");
-+		char *str2 = strsep_no_empty(&p, " \t\r\n");
-+		int ret, token;
-+
-+		if (!str1 || !str2)
-+			break;
-+
-+		token = match_string(token_strs, ARRAY_SIZE(token_strs), str1);
-+		if (token < 0)
-+			break;
-+
-+		switch (token) {
-+		case TOK_func:
-+			q->function = str2;
-+			break;
-+		case TOK_file:
-+			q->filename = str2;
-+			break;
-+		case TOK_line:
-+			ret = parse_range(str2, &q->first_line, &q->last_line);
-+			if (ret)
-+				return ERR_PTR(ret);
-+			q->match_line = true;
-+			break;
-+		case TOK_module:
-+			q->module = str2;
-+			break;
-+		case TOK_class:
-+			q->class = str2;
-+			break;
-+		case TOK_index:
-+			ret = parse_range(str2, &q->first_index, &q->last_index);
-+			if (ret)
-+				return ERR_PTR(ret);
-+			q->match_index = true;
-+			break;
++		ctc = ct_to_ctc(ct);
++		spin_lock(&ctc->ctx_lock);
++		if (!list_empty(&ctc->ctx_head)) {
++			ctx = list_first_entry(&ctc->ctx_head,
++					       struct codetag_ctx, node);
++			kref_get(&ctx->refcount);
 +		}
-+
-+		buf = p;
++		spin_unlock(&ctc->ctx_lock);
++		if (ctx)
++			break;
++next:
++		ct = codetag_next_ct(iter);
 +	}
 +
-+	return buf;
++	iter->ctx = ctx;
++	return ctx;
 +}
 +
-+bool codetag_matches_query(struct codetag_query *q,
-+			   const struct codetag *ct,
-+			   const struct codetag_module *mod,
-+			   const char *class)
++struct codetag_ctx *codetag_next_ctx(struct codetag_iterator *iter)
 +{
-+	size_t classlen = q->class ? strlen(q->class) : 0;
++	struct codetag_ctx *ctx = iter->ctx;
++	struct codetag_ctx *found = NULL;
 +
-+	if (q->module &&
-+	    (!mod->mod ||
-+	     strcmp(q->module, ct->modname)))
++	lockdep_assert_held(&iter->cttype->mod_lock);
++
++	if (!ctx)
++		return next_ctx_from_ct(iter);
++
++	spin_lock(&ctx->ctc->ctx_lock);
++	/*
++	 * Do not advance if the object was isolated, restart at the same tag.
++	 */
++	if (!list_empty(&ctx->node)) {
++		if (list_is_last(&ctx->node, &ctx->ctc->ctx_head)) {
++			/* Finished with this tag, advance to the next */
++			codetag_next_ct(iter);
++		} else {
++			found = list_next_entry(ctx, node);
++			kref_get(&found->refcount);
++		}
++	}
++	spin_unlock(&ctx->ctc->ctx_lock);
++	kref_put(&ctx->refcount, iter->cttype->desc.free_ctx);
++
++	if (!found)
++		return next_ctx_from_ct(iter);
++
++	iter->ctx = found;
++	return found;
++}
++
++static struct codetag_type *find_cttype(struct codetag *ct)
++{
++	struct codetag_module *cmod;
++	struct codetag_type *cttype;
++	unsigned long mod_id;
++	unsigned long tmp;
++
++	mutex_lock(&codetag_lock);
++	list_for_each_entry(cttype, &codetag_types, link) {
++		down_read(&cttype->mod_lock);
++		idr_for_each_entry_ul(&cttype->mod_idr, cmod, tmp, mod_id) {
++			if (ct >= cmod->range.start && ct < cmod->range.stop) {
++				up_read(&cttype->mod_lock);
++				goto found;
++			}
++		}
++		up_read(&cttype->mod_lock);
++	}
++	cttype = NULL;
++found:
++	mutex_unlock(&codetag_lock);
++
++	return cttype;
++}
++
++bool codetag_enable_ctx(struct codetag_with_ctx *ctc, bool enable)
++{
++	struct codetag_type *cttype = find_cttype(&ctc->ct);
++
++	if (!cttype || !cttype->desc.free_ctx)
 +		return false;
 +
-+	if (q->filename &&
-+	    strcmp(q->filename, ct->filename) &&
-+	    strcmp(q->filename, kbasename(ct->filename)))
++	lockdep_assert_held(&cttype->mod_lock);
++	BUG_ON(!rwsem_is_locked(&cttype->mod_lock));
++
++	if (codetag_ctx_enabled(ctc) == enable)
 +		return false;
 +
-+	if (q->function &&
-+	    strcmp(q->function, ct->function))
-+		return false;
-+
-+	/* match against the line number range */
-+	if (q->match_line &&
-+	    (ct->lineno < q->first_line ||
-+	     ct->lineno > q->last_line))
-+		return false;
-+
-+	/* match against the class */
-+	if (classlen &&
-+	    (strncmp(q->class, class, classlen) ||
-+	     (class[classlen] && class[classlen] != ':')))
-+		return false;
-+
-+	/* match against the fault index */
-+	if (q->match_index &&
-+	    (q->cur_index < q->first_index ||
-+	     q->cur_index > q->last_index)) {
-+		q->cur_index++;
-+		return false;
++	if (enable) {
++		/* Initialize context capture fields only once */
++		if (!(ctc->ct.flags & CTC_FLAG_CTX_READY)) {
++			spin_lock_init(&ctc->ctx_lock);
++			INIT_LIST_HEAD(&ctc->ctx_head);
++			ctc->ct.flags |= CTC_FLAG_CTX_READY;
++		}
++		ctc->ct.flags |= CTC_FLAG_CTX_ENABLED;
++	} else {
++		/*
++		 * The list of context objects is intentionally left untouched.
++		 * It can be read back and if context capture is re-enablied it
++		 * will append new objects.
++		 */
++		ctc->ct.flags &= ~CTC_FLAG_CTX_ENABLED;
 +	}
 +
-+	q->cur_index++;
 +	return true;
 +}
++
++bool codetag_has_ctx(struct codetag_with_ctx *ctc)
++{
++	bool no_ctx;
++
++	if (!(ctc->ct.flags & CTC_FLAG_CTX_READY))
++		return false;
++
++	spin_lock(&ctc->ctx_lock);
++	no_ctx = list_empty(&ctc->ctx_head);
++	spin_unlock(&ctc->ctx_lock);
++
++	return !no_ctx;
++}
++
+ void codetag_to_text(struct seq_buf *out, struct codetag *ct)
+ {
+ 	seq_buf_printf(out, "%s:%u module:%s func:%s",
 -- 
 2.37.2.672.g94769d06f0-goog
 
