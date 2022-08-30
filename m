@@ -2,74 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5229ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0161ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230391AbiH3PXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 11:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46580 "EHLO
+        id S230419AbiH3PXa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 11:23:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiH3PXP (ORCPT
+        with ESMTP id S230400AbiH3PX2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 11:23:15 -0400
-Received: from smtp.domeneshop.no (smtp.domeneshop.no [IPv6:2a01:5b40:0:3005::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8849C6B8C0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:23:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=tronnes.org
-        ; s=ds202112; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ZcvUU1EAXtTJzWhX0QKcblQnfz8rCARTSjamaFHiCSU=; b=K1pOL/7VuwXIcKrFnYe4r1r4tz
-        VcgJ5EA7GXFLnj1vXLCdZOGTds1+FYeb1zAO+mIDcwJJr5QfAJY7wXWfydGN18tmUCWtdepYk07XN
-        aVFSXq9tl8E9tl0i083anWFytp3zGwGPqXvtYp3gaPqZIruNMFZC6weAdPbrOSRFNrfmXR3mZc2N/
-        ucgNyZETk1Wn5WxBd/an71gTr54Ss8Y9RQp1wgzXjxSgd8Wv7+HsWh8Tei2XEiXelz2mktoDfEO5r
-        pEeW7DefxVWBgl+9h1m5KQRod3GYS/GVs2c4vWosuxGcTDjPU7/1H/TllOI9sEEbFkAHusLxgWHbz
-        E5G8PuCw==;
-Received: from [2a01:799:961:d200:cca0:57ac:c55d:a485] (port=57591)
-        by smtp.domeneshop.no with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <noralf@tronnes.org>)
-        id 1oT355-0006ei-4d; Tue, 30 Aug 2022 17:23:11 +0200
-Message-ID: <fbad203b-a508-f328-b43e-5a6012525794@tronnes.org>
-Date:   Tue, 30 Aug 2022 17:23:02 +0200
+        Tue, 30 Aug 2022 11:23:28 -0400
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B3512F135
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:23:25 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id c7so8034494wrp.11
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=yLvDBHWvpDIDxAvVlBZQf8gRsiHpZNmu2F53o7FHjx8=;
+        b=WcBAjT/Fmk/p8NMZFiek7pi28xrSdKWEIsJnw8E6BU/6zrdbZ899MCguFl5DFvowEZ
+         bxDj7PH7fs0eZeVFDLQtvY0Mi/DTErk1C92bjg3XhuXUD1L4Djcl8f5I+IpbiKXKJsv9
+         7Iy4eOX2cxC6yAG8nDmtCvjEDvlkUptjQ+kHKwtizODeXjFGn3rD2Vk2dvOBX/BBmUwK
+         YebTbOvFE7qqAeIF6fi1TnoHAq8JZv3UczRDFOowWKxXOjyFZgZvFcj8xXuBF9we+Gt3
+         gNwCJ4fNVYtOn55f8fhJqUO/yFyWHUdbDYOtCXtI8TgLmgIfTUk4bdv/ZPumztnH6obf
+         Fctg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=yLvDBHWvpDIDxAvVlBZQf8gRsiHpZNmu2F53o7FHjx8=;
+        b=gYghjqDmx8IAOXiQgddQ5O4stZMe0aWqJoC6RhC5t5BtvSm4ZCGAklg6x9dtCX9LzQ
+         AIT7rv8tG3ORkJ31YXDCLIeHoMIjebcIW8XTRKbJVXnny9ZaZXE73fZl4tLZoPet+UN0
+         7pDHSMoa7bJHnRAISVu4qCMCAYObLWO3eck8R80z5widacWcAnY7AO0KbKUS9Byx3zZD
+         jYfdfujQp7THBDDdJcdwklIiQRH4Cgg3MufTojzikaBNJyWQpVoSgH9G55a1IcjUh0Oe
+         jMZE39n66j8pjgmrUoDDnZNMyfZn23jWAcepv+8cMy0juMjJ1SqEYmuLvgbgpXlZpX39
+         S2PQ==
+X-Gm-Message-State: ACgBeo3zNNT5LZYDarIgGOu78nSVAsO5YBSHn0oyWdAkh71L2WH1bv2U
+        ibyFt9IzeP9blfXDsFFoNeypOWxJXeYdFw==
+X-Google-Smtp-Source: AA6agR7eYGv+NukFzkM7WWtG7U1wN/FA5XCAoBqskFXNotnVjkirf60+8Ht+FIoJOGmBrOQfJoF9QQ==
+X-Received: by 2002:a05:6000:144:b0:226:da62:6d90 with SMTP id r4-20020a056000014400b00226da626d90mr6202972wrx.609.1661873003800;
+        Tue, 30 Aug 2022 08:23:23 -0700 (PDT)
+Received: from [192.168.86.238] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id l7-20020a05600c088700b003a5260b8392sm12698585wmp.23.2022.08.30.08.23.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 08:23:23 -0700 (PDT)
+Message-ID: <f79b7992-2170-bc31-74ca-4767ba870791@linaro.org>
+Date:   Tue, 30 Aug 2022 16:23:22 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v2 24/41] drm/vc4: vec: Remove empty mode_fixup
-To:     Maxime Ripard <maxime@cerno.tech>,
-        Maxime Ripard <mripard@kernel.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        intel-gfx@lists.freedesktop.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        dri-devel@lists.freedesktop.org, Dom Cobley <dom@raspberrypi.com>,
-        linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org,
-        linux-sunxi@lists.linux.dev,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
- <20220728-rpi-analog-tv-properties-v2-24-459522d653a7@cerno.tech>
-From:   =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>
-In-Reply-To: <20220728-rpi-analog-tv-properties-v2-24-459522d653a7@cerno.tech>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 06/14] nvmem: core: introduce NVMEM layouts
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-7-michael@walle.cc>
+ <e2d91011-583e-a88d-94f9-beb194416326@linaro.org>
+ <ae27e9d300a9c9eca4e9ec0c702b5e0a@walle.cc>
+ <815f8e22-3a23-ebdb-7476-14682d0b3287@linaro.org>
+ <c2e3a05339d54123de539fd124e874bb@walle.cc>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <c2e3a05339d54123de539fd124e874bb@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -77,14 +89,116 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-Den 29.08.2022 15.11, skrev Maxime Ripard:
-> The mode_fixup hooks are deprecated, and the behaviour we implement is the
+On 30/08/2022 16:02, Michael Walle wrote:
+> Am 2022-08-30 16:43, schrieb Srinivas Kandagatla:
 > 
-> default one anyway. Let's remove it.
+>>>>> diff --git a/drivers/nvmem/layouts/Makefile 
+>>>>> b/drivers/nvmem/layouts/Makefile
+>>>>> new file mode 100644
+>>>>> index 000000000000..6fdb3c60a4fa
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/nvmem/layouts/Makefile
+>>>>> @@ -0,0 +1,4 @@
+>>>>> +# SPDX-License-Identifier: GPL-2.0
+>>>>> +#
+>>>>> +# Makefile for nvmem layouts.
+>>>>> +#
+>>>>> diff --git a/include/linux/nvmem-provider.h 
+>>>>> b/include/linux/nvmem-provider.h
+>>>>> index e710404959e7..323685841e9f 100644
+>>>>> --- a/include/linux/nvmem-provider.h
+>>>>> +++ b/include/linux/nvmem-provider.h
+>>>>> @@ -127,6 +127,28 @@ struct nvmem_cell_table {
+>>>>>       struct list_head    node;
+>>>>>   };
+>>>>>   +/**
+>>>>> + * struct nvmem_layout - NVMEM layout definitions
+>>>>> + *
+>>>>> + * @name:        Layout name.
+>>>>> + * @of_match_table:    Open firmware match table.
+>>>>> + * @add_cells:        Will be called if a nvmem device is found which
+>>>>> + *            has this layout. The function will add layout
+>>>>> + *            specific cells with nvmem_add_one_cell().
+>>>>> + * @node:        List node.
+>>>>> + *
+>>>>> + * A nvmem device can hold a well defined structure which can just be
+>>>>> + * evaluated during runtime. For example a TLV list, or a list of 
+>>>>> "name=val"
+>>>>> + * pairs. A nvmem layout can parse the nvmem device and add 
+>>>>> appropriate
+>>>>> + * cells.
+>>>>> + */
+>>>>> +struct nvmem_layout {
+>>>>> +    const char *name;
+>>>>> +    const struct of_device_id *of_match_table;
+>>>>
+>>>> looking at this, I think its doable to convert the existing
+>>>> cell_post_process callback to layouts by adding a layout specific
+>>>> callback here.
+>>>
+>>> can you elaborate on that?
+>>
+>> If we relax add_cells + add nvmem_unregister_layout() and update
+>> struct nvmem_layout to include post_process callback like
+>>
+>> struct nvmem_layout {
+>>     const char *name;
+>>     const struct of_device_id *of_match_table;
+>>     int (*add_cells)(struct nvmem_device *nvmem, struct nvmem_layout 
+>> *layout);
+>>     struct list_head node;
+>>     /* default callback for every cell */
+>>     nvmem_cell_post_process_t post_process;
+>> };
+>>
+>> then we can move imx-ocotp to this layout style without add_cell
+>> callback, and finally get rid of cell_process_callback from both
+>> nvmem_config and nvmem_device.
+>>
+>> If layout specific post_process callback is available and cell does
+>> not have a callback set then we can can be either updated cell
+>> post_process callback with this one or invoke layout specific callback
+>> directly.
+>>
+>> does that make sense?
 > 
-> 
-> 
-> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+> Yes I get what you mean. BUT I'm not so sure; it mixes different
+> things together. Layouts will add cells, analogue to
+> nvmem_add_cells_from_of() or nvmem_add_cells_from_table(). With
+> the hook above, the layout mechanism is abused to add post
+> processing to cells added by other means.
+
+We are still defining what layout exactly mean w.r.t to nvmem :-)
+
 > 
 
-Reviewed-by: Noralf Trønnes <noralf@tronnes.org>
+There are two aspects to this as nvmem core is concerned
+
+1> parse and add cells based on some provider specific algo/stucture.
+2> post process cell data before user can see it.
+
+In some cases we need 1 and 2 while in other cases we just need 1 or 2.
+
+Having an unified interface would help with maintenance and removing 
+duplication.
+
+> What is then the difference to the driver having that "global"
+> post process hook?
+
+w.r.t post processing there should be no difference.
+
+cell can have no post-processing or a default post processing or a 
+specific one depending on its configuration.
+
+> 
+> The correct place to add the per-cell hook in this case would be
+> nvmem_add_cells_from_of().
+
+yes, that is the place where it should go. we have to work on the 
+details but if provider is associated with a layout then this should be 
+doable.
+
+
+--srini
+> 
+> -michael
