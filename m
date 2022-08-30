@@ -2,102 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AAB1ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA32FECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231490AbiH3Www (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 18:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56768 "EHLO
+        id S231754AbiH3WyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 18:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231279AbiH3Wwq (ORCPT
+        with ESMTP id S230162AbiH3WyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 18:52:46 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E327696E
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:52:45 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id f12so12324210plb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:52:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=50GcGtwxII56nR8Ve/iTsX8Cys/NHgWdZqTmv1JFSDY=;
-        b=r8s7Zc5fnGQyyyCCB5WN6HBXRgA0/I9WQQfHM0dFlq4Kf1xPYAzRarv6YXb8oAxOGH
-         XO4uMxrOlmUR2UgFdapMx5k8S/KHHzdLNdWKtidmKFk+LJlYMLMNLfdOWM7Z6mMF7SLs
-         ipMHHcwpuswr6yKjXh7WNScCsbjMl32cesIh9pRG20EyAPlIELuGz2hACSHfZcmYDVCh
-         VZmpY4wwqIcfMR8zUJCjdS6ZVpS0moVN3GNZJ86o3rPXxcdvbDw7VUuSIrrWbqpU5Ar4
-         r7ZGk+Ba59oqXv9zp7SaMwX0u6gr+eBRySZ2gFPzpVwOROUyScgoKYG/wqM3P72wLjwL
-         o5Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=50GcGtwxII56nR8Ve/iTsX8Cys/NHgWdZqTmv1JFSDY=;
-        b=vdPYAqE6GcJVjluOxkqWJESPqaAaR6IYtO3XyGdiZyacm4tfbocsTX4DWKoXKE6Z/H
-         7qozeFmA3LZywAVxq1NapIfNgYGelfrOU7D9Siy8WqUBRJcjs30V+zesqGoecRAOfC/C
-         V0z2aoRNnqLI/jnvPFZQEJsqrYlBZrqb2PgC8bXJHYtISYnWwkiPpLqJMCxLVD0YjUZh
-         Bj3liJVK3V7NtZBYxZPLmUPRZWW2lhfGkmblLzXrYtynWy4Owb9zPJr7D7xjwwa3SodK
-         Mw2YeOOlSDW8FSoPMTkhNbxVT8EqzVr0ifL/bTNw8HqLni9L5BmOy7Yw99957PBcWsjd
-         JlnA==
-X-Gm-Message-State: ACgBeo1HFydvAyqS5+WE6eL3VQEtW9hag0pY7Z/n6ou67ddHXtXEL6p3
-        11k+mROGxD9IoXnhJK8MV5N+QQ==
-X-Google-Smtp-Source: AA6agR4jUalQikRhi6sA4/IvdPGRz4uX8g+OW73SgOmAyijpEnGvNgIKwc9VoJqgs2ApD8BtveGOlg==
-X-Received: by 2002:a17:90b:4f4e:b0:1f5:8a65:9192 with SMTP id pj14-20020a17090b4f4e00b001f58a659192mr263060pjb.224.1661899964563;
-        Tue, 30 Aug 2022 15:52:44 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id o3-20020a656143000000b00427564b6b57sm2164222pgv.7.2022.08.30.15.52.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 15:52:43 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 22:52:40 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Huang, Kai" <kai.huang@intel.com>
-Cc:     "linmiaohe@huawei.com" <linmiaohe@huawei.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] kvm: x86: mmu: fix memoryleak in
- kvm_mmu_vendor_module_init()
-Message-ID: <Yw6UuGqIF1op5zYp@google.com>
-References: <20220823063237.47299-1-linmiaohe@huawei.com>
- <Yw6DsUwSInpz97IV@google.com>
- <e1199046d184ad7210ebb100fc2f4b77d1ef4fba.camel@intel.com>
+        Tue, 30 Aug 2022 18:54:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EABE47756C
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:54:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A9B5615B3
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 22:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75248C433D7;
+        Tue, 30 Aug 2022 22:54:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661900050;
+        bh=KEid+7kvUT3KgTg6693WIkEqqlhKnYmQIIvaC6xRZ84=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YfrUOS2KHTb/I5OSrN0nhxWjcz6EbMXxna1r0dihmtHU3Ixx4FzrnjAA6igduRNun
+         Kqjij67/zLqnufSaXsgE47ZyBYarG6+eGDDbL6vOHqphZl8pkN3Y35FFtNwlA+Nq14
+         hfuXTBhYE6dmNfjhFujLEyMLJ3NcHuL3S13QJUeGkA2+odl9NdCi5hIqrEmsO7Cg78
+         3DdeFQAcFoSu7gPlGaCUqavOKxonSSzDtZRWhKEWUdMang1+GudxJYNWnw5LT3i3qe
+         8jmdRRyf3ppMCBgcdJSqSrDSot78d/IQDkL3FbL1MVQ2stOIQyS5VaUvO7reBHb+K4
+         ULTc90sp4Hpdg==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH v2] f2fs: fix to disallow getting inner inode via f2fs_iget()
+Date:   Wed, 31 Aug 2022 06:53:58 +0800
+Message-Id: <20220830225358.300027-1-chao@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e1199046d184ad7210ebb100fc2f4b77d1ef4fba.camel@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022, Huang, Kai wrote:
-> On Tue, 2022-08-30 at 21:40 +0000, Sean Christopherson wrote:
-> > On Tue, Aug 23, 2022, Miaohe Lin wrote:
-> > > When register_shrinker() fails, we forgot to release the percpu counter
-> 
-> > > kvm_total_used_mmu_pages leading to memoryleak. Fix this issue by calling
-> > > percpu_counter_destroy() when register_shrinker() fails.
-> > > 
-> > > Fixes: ab271bd4dfd5 ("x86: kvm: propagate register_shrinker return code")
-> > > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> > > ---
-> > 
-> > Pushed to branch `for_paolo/6.1` at:
-> > 
-> >     https://github.com/sean-jc/linux.git
-> > 
-> > Unless you hear otherwise, it will make its way to kvm/queue "soon".
-> > 
-> > Note, the commit IDs are not guaranteed to be stable.
-> 
-> Sorry for late reply.
-> 
-> The commit message has "we".  Should we get rid of it?
+From: Chao Yu <chao.yu@oppo.com>
 
-Avoiding pronouns is obviously my preference, but sometimes even I set aside my
-crusade to move things along :-)
+Introduce f2fs_iget_inner() for f2fs_fill_super() to get inner inode:
+meta inode, node inode or compressed inode, and add f2fs_check_nid_range()
+in f2fs_iget() to avoid getting inner inode from external interfaces.
+
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+v2:
+- don't override errno from f2fs_check_nid_range()
+- fix compile error
+ fs/f2fs/compress.c |  2 +-
+ fs/f2fs/f2fs.h     |  1 +
+ fs/f2fs/inode.c    | 13 ++++++++++++-
+ fs/f2fs/super.c    |  4 ++--
+ 4 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/fs/f2fs/compress.c b/fs/f2fs/compress.c
+index 730256732a9e..c38b22bb6432 100644
+--- a/fs/f2fs/compress.c
++++ b/fs/f2fs/compress.c
+@@ -1947,7 +1947,7 @@ int f2fs_init_compress_inode(struct f2fs_sb_info *sbi)
+ 	if (!test_opt(sbi, COMPRESS_CACHE))
+ 		return 0;
+ 
+-	inode = f2fs_iget(sbi->sb, F2FS_COMPRESS_INO(sbi));
++	inode = f2fs_iget_inner(sbi->sb, F2FS_COMPRESS_INO(sbi));
+ 	if (IS_ERR(inode))
+ 		return PTR_ERR(inode);
+ 	sbi->compress_inode = inode;
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 408d8034ed74..35f9e1a6a1bf 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -3467,6 +3467,7 @@ int f2fs_pin_file_control(struct inode *inode, bool inc);
+ void f2fs_set_inode_flags(struct inode *inode);
+ bool f2fs_inode_chksum_verify(struct f2fs_sb_info *sbi, struct page *page);
+ void f2fs_inode_chksum_set(struct f2fs_sb_info *sbi, struct page *page);
++struct inode *f2fs_iget_inner(struct super_block *sb, unsigned long ino);
+ struct inode *f2fs_iget(struct super_block *sb, unsigned long ino);
+ struct inode *f2fs_iget_retry(struct super_block *sb, unsigned long ino);
+ int f2fs_try_to_free_nats(struct f2fs_sb_info *sbi, int nr_shrink);
+diff --git a/fs/f2fs/inode.c b/fs/f2fs/inode.c
+index 6d11c365d7b4..965f87c1dd63 100644
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -480,7 +480,7 @@ static int do_read_inode(struct inode *inode)
+ 	return 0;
+ }
+ 
+-struct inode *f2fs_iget(struct super_block *sb, unsigned long ino)
++struct inode *f2fs_iget_inner(struct super_block *sb, unsigned long ino)
+ {
+ 	struct f2fs_sb_info *sbi = F2FS_SB(sb);
+ 	struct inode *inode;
+@@ -568,6 +568,17 @@ struct inode *f2fs_iget(struct super_block *sb, unsigned long ino)
+ 	return ERR_PTR(ret);
+ }
+ 
++struct inode *f2fs_iget(struct super_block *sb, unsigned long ino)
++{
++	int ret;
++
++	ret = f2fs_check_nid_range(F2FS_SB(sb), ino);
++	if (ret)
++		return ERR_PTR(ret);
++
++	return f2fs_iget_inner(sb, ino);
++}
++
+ struct inode *f2fs_iget_retry(struct super_block *sb, unsigned long ino)
+ {
+ 	struct inode *inode;
+diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
+index b8e5fe244596..a5f5e7483791 100644
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -4157,7 +4157,7 @@ static int f2fs_fill_super(struct super_block *sb, void *data, int silent)
+ 		goto free_xattr_cache;
+ 
+ 	/* get an inode for meta space */
+-	sbi->meta_inode = f2fs_iget(sb, F2FS_META_INO(sbi));
++	sbi->meta_inode = f2fs_iget_inner(sb, F2FS_META_INO(sbi));
+ 	if (IS_ERR(sbi->meta_inode)) {
+ 		f2fs_err(sbi, "Failed to read F2FS meta data inode");
+ 		err = PTR_ERR(sbi->meta_inode);
+@@ -4265,7 +4265,7 @@ static int f2fs_fill_super(struct super_block *sb, void *data, int silent)
+ 		goto free_nm;
+ 
+ 	/* get an inode for node space */
+-	sbi->node_inode = f2fs_iget(sb, F2FS_NODE_INO(sbi));
++	sbi->node_inode = f2fs_iget_inner(sb, F2FS_NODE_INO(sbi));
+ 	if (IS_ERR(sbi->node_inode)) {
+ 		f2fs_err(sbi, "Failed to read node inode");
+ 		err = PTR_ERR(sbi->node_inode);
+-- 
+2.25.1
+
