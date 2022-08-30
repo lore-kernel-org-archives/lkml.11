@@ -2,163 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BA7ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 337F7C0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbiH3G7T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 02:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49316 "EHLO
+        id S230321AbiH3G7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 02:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiH3G7Q (ORCPT
+        with ESMTP id S230311AbiH3G7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 02:59:16 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599BF564F6
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:59:15 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MGyjQ5GlQzYd1M;
-        Tue, 30 Aug 2022 14:54:50 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 14:59:13 +0800
-Received: from thunder-town.china.huawei.com (10.174.178.55) by
- dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 14:59:13 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Russell King <linux@armlinux.org.uk>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <patches@armlinux.org.uk>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Saravana Kannan <saravanak@google.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        "Linus Walleij" <linus.walleij@linaro.org>
-Subject: [PATCH v2] ARM: Add sanity check for dev->periphid in amba_probe()
-Date:   Tue, 30 Aug 2022 14:54:13 +0800
-Message-ID: <20220830065413.638-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+        Tue, 30 Aug 2022 02:59:40 -0400
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52952C00DA;
+        Mon, 29 Aug 2022 23:59:39 -0700 (PDT)
+Received: by mail-ej1-f41.google.com with SMTP id fy31so19781075ejc.6;
+        Mon, 29 Aug 2022 23:59:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=udLDyvqYEWiFFMc7PF4o3+l6dw+FJ84syS3HsmSGTcA=;
+        b=nybnJGTvo1weV/qzWwUP+2cXrQ3ED9Pyh5MQbj+W47K8nM0QkwohrSGjtUZ+enM9Dd
+         9H/dpixKrroTtehrQoZBETDDFHs4Lc16eS4ItdSSEgnMOEp0zkiuO/KFIynJQ5q7AtmX
+         WhwzJWS8uCNmND9xfR0x9cBEwLrV6lLM1UUITeH7CJYAN9G47QWEjWoHyFWjd6Ril9cJ
+         cpZu5YJayw8DVVe4g++Bqihs6zwGPm6opVytoqD5Hb3FP1J6WvLmj8WeZsDZ1eAHzQ+G
+         XRsvh/gqMh+imm+GUJuZC0Qy1V4cHNjpT9t+TCLjfo+rzfsBaWpzh1Mb20MnoUcrvwZv
+         KiYQ==
+X-Gm-Message-State: ACgBeo3Qk8xuvnHZGreVeZ3nBWoPFxikEv1ww6ESppxi9QtkRGIbtoTf
+        nFtxQtobfkPdmDH+RUP6S9U7jbk7N9ltVA==
+X-Google-Smtp-Source: AA6agR6Flm8qe4jXyOfHveehL6f0JSYaqRNWgZurTFrHZIkwS7S7R7X/1vOMlUKm8gI2O12IYevEbg==
+X-Received: by 2002:a17:907:728d:b0:731:8396:ea86 with SMTP id dt13-20020a170907728d00b007318396ea86mr16058182ejc.361.1661842777858;
+        Mon, 29 Aug 2022 23:59:37 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id w23-20020aa7cb57000000b0043a61f6c389sm5638914edt.4.2022.08.29.23.59.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 29 Aug 2022 23:59:37 -0700 (PDT)
+Message-ID: <fe014b7b-a1d2-9be9-625b-2f630934c56c@kernel.org>
+Date:   Tue, 30 Aug 2022 08:59:36 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.178.55]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 4/6] tty: n_gsm: introduce gsm_control_command()
+ function
+Content-Language: en-US
+To:     "D. Starke" <daniel.starke@siemens.com>,
+        linux-serial@vger.kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220823062259.4754-1-daniel.starke@siemens.com>
+ <20220823062259.4754-4-daniel.starke@siemens.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220823062259.4754-4-daniel.starke@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
-forcibly invokes device_add() even if dev->periphid is not ready. Although
-it will be remedied in amba_match(): dev->periphid will be initialized
-if everything is in place; Otherwise, return -EPROBE_DEFER to block
-__driver_attach() from further execution. But not all drivers have .match
-hook, such as pl031, the dev->bus->probe will be called directly in
-__driver_attach(). Unfortunately, if dev->periphid is still not
-initialized, the following exception will be triggered.
+On 23. 08. 22, 8:22, D. Starke wrote:
+> From: Daniel Starke <daniel.starke@siemens.com>
+> 
+> Move the content of gsm_control_transmit() to a new function
+> gsm_control_command() with a more generic signature and analog to
+> gsm_control_reply(). Use this within gsm_control_transmit().
+> 
+> This is needed to simplify upcoming functional additions.
+> 
+> Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+> ---
+>   drivers/tty/n_gsm.c | 30 +++++++++++++++++++++++-------
+>   1 file changed, 23 insertions(+), 7 deletions(-)
+> 
+> No changes since v1.
+> 
+> diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+> index 9535e84f3063..5a20561c0a5d 100644
+> --- a/drivers/tty/n_gsm.c
+> +++ b/drivers/tty/n_gsm.c
+> @@ -1316,6 +1316,28 @@ static void gsm_dlci_data_kick(struct gsm_dlci *dlci)
+>    */
+>   
+>   
+> +/**
+> + *	gsm_control_command	-	send a command frame to a control
+> + *	@gsm: gsm channel
+> + *	@cmd: the command to use
+> + *	@data: data to follow encoded info
+> + *	@dlen: length of data
+> + *
+> + *	Encode up and queue a UI/UIH frame containing our command.
 
-8<--- cut here ---
-Unable to handle kernel NULL pointer dereference at virtual address 00000008
-[00000008] *pgd=00000000
-Internal error: Oops: 5 [#1] SMP ARM
-Modules linked in:
-CPU: 1 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc2+ #7
-Hardware name: ARM-Versatile Express
-PC is at pl031_probe+0x8/0x208
-LR is at amba_probe+0xf0/0x160
-pc : 80698df8  lr : 8050eb54  psr: 80000013
-sp : c0825df8  ip : 00000000  fp : 811fda38
-r10: 00000000  r9 : 80d72470  r8 : fffffdfb
-r7 : 811fd800  r6 : be7eb330  r5 : 00000000  r4 : 811fd900
-r3 : 80698df0  r2 : 37000000  r1 : 00000000  r0 : 811fd800
-Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-Control: 10c5387d  Table: 6000406a  DAC: 00000051
-... ...
- pl031_probe from amba_probe+0xf0/0x160
- amba_probe from really_probe+0x118/0x290
- really_probe from __driver_probe_device+0x84/0xe4
- __driver_probe_device from driver_probe_device+0x30/0xd0
- driver_probe_device from __driver_attach+0x8c/0xfc
- __driver_attach from bus_for_each_dev+0x70/0xb0
- bus_for_each_dev from bus_add_driver+0x168/0x1f4
- bus_add_driver from driver_register+0x7c/0x118
- driver_register from do_one_initcall+0x44/0x1ec
- do_one_initcall from kernel_init_freeable+0x238/0x288
- kernel_init_freeable from kernel_init+0x18/0x12c
- kernel_init from ret_from_fork+0x14/0x2c
-... ...
----[ end trace 0000000000000000 ]---
+These tabs after asterisks are not understood by kernel-doc. You should 
+add no new ones.
 
-Therefore, take the same action as in amba_match(): return -EPROBE_DEFER
-if dev->periphid is not ready in amba_probe().
+> + */
+> +static int gsm_control_command(struct gsm_mux *gsm, int cmd, u8 *data, int dlen)
 
-Fixes: f2d3b9a46e0e ("ARM: 9220/1: amba: Remove deferred device addition")
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
----
-KernelVersion: v6.0-rc3
- drivers/amba/bus.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+Can gsm and data be const? I assume gsm cannot due to call to 
+gsm_data_queue(). And what about cmd & dlen being uint? cmd seems to be 
+u8 at least...
 
-v1 --> v2:
-1. Update this patch based on:
-   https://lore.kernel.org/lkml/20220818172852.3548-1-isaacmanjarres@google.com/
-2. Move the operations of sanity checking and reading dev->periphid,
-   updating uevent into new function amba_prepare_periphid().
+> +{
+> +	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, dlen + 2, gsm->ftype);
+> +
+> +	if (msg == NULL)
+> +		return -ENOMEM;
 
-diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-index 110a535648d2e1f..8e4c7e190880206 100644
---- a/drivers/amba/bus.c
-+++ b/drivers/amba/bus.c
-@@ -204,10 +204,9 @@ static int amba_read_periphid(struct amba_device *dev)
- 	return ret;
- }
- 
--static int amba_match(struct device *dev, struct device_driver *drv)
-+static int amba_prepare_periphid(struct device *dev)
- {
- 	struct amba_device *pcdev = to_amba_device(dev);
--	struct amba_driver *pcdrv = to_amba_driver(drv);
- 
- 	mutex_lock(&pcdev->periphid_lock);
- 	if (!pcdev->periphid) {
-@@ -228,6 +227,19 @@ static int amba_match(struct device *dev, struct device_driver *drv)
- 	}
- 	mutex_unlock(&pcdev->periphid_lock);
- 
-+	return 0;
-+}
-+
-+static int amba_match(struct device *dev, struct device_driver *drv)
-+{
-+	struct amba_device *pcdev = to_amba_device(dev);
-+	struct amba_driver *pcdrv = to_amba_driver(drv);
-+	int ret;
-+
-+	ret = amba_prepare_periphid(dev);
-+	if (ret)
-+		return ret;
-+
- 	/* When driver_override is set, only bind to the matching driver */
- 	if (pcdev->driver_override)
- 		return !strcmp(pcdev->driver_override, drv->name);
-@@ -278,9 +290,15 @@ static int amba_probe(struct device *dev)
- {
- 	struct amba_device *pcdev = to_amba_device(dev);
- 	struct amba_driver *pcdrv = to_amba_driver(dev->driver);
--	const struct amba_id *id = amba_lookup(pcdrv->id_table, pcdev);
-+	const struct amba_id *id;
- 	int ret;
- 
-+	ret = amba_prepare_periphid(dev);
-+	if (ret)
-+		return ret;
-+
-+	id = amba_lookup(pcdrv->id_table, pcdev);
-+
- 	do {
- 		ret = of_amba_device_decode_irq(pcdev);
- 		if (ret)
+\n here
+
+> +	msg->data[0] = (cmd << 1) | CR | EA;	/* Set C/R */
+> +	msg->data[1] = (dlen << 1) | EA;
+> +	memcpy(msg->data + 2, data, dlen);
+> +	gsm_data_queue(gsm->dlci[0], msg);
+
+\n here
+
+> +	return 0;
+> +}
+> +
+>   /**
+>    *	gsm_control_reply	-	send a response frame to a control
+>    *	@gsm: gsm channel
+> @@ -1623,13 +1645,7 @@ static void gsm_control_response(struct gsm_mux *gsm, unsigned int command,
+>   
+>   static void gsm_control_transmit(struct gsm_mux *gsm, struct gsm_control *ctrl)
+>   {
+> -	struct gsm_msg *msg = gsm_data_alloc(gsm, 0, ctrl->len + 2, gsm->ftype);
+> -	if (msg == NULL)
+> -		return;
+> -	msg->data[0] = (ctrl->cmd << 1) | CR | EA;	/* command */
+> -	msg->data[1] = (ctrl->len << 1) | EA;
+> -	memcpy(msg->data + 2, ctrl->data, ctrl->len);
+> -	gsm_data_queue(gsm->dlci[0], msg);
+> +	gsm_control_command(gsm, ctrl->cmd, ctrl->data, ctrl->len);
+>   }
+
+thanks,
 -- 
-2.25.1
+js
+suse labs
 
