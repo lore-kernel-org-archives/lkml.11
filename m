@@ -2,109 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F71ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C9EFECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:01:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231508AbiH3XAz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:00:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43618 "EHLO
+        id S231754AbiH3XBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231514AbiH3XAh (ORCPT
+        with ESMTP id S231667AbiH3XAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:00:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6C093502;
-        Tue, 30 Aug 2022 16:00:36 -0700 (PDT)
+        Tue, 30 Aug 2022 19:00:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F03095E71;
+        Tue, 30 Aug 2022 16:00:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4819461614;
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE2B8B81E3C;
+        Tue, 30 Aug 2022 23:00:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70B2AC433D7;
         Tue, 30 Aug 2022 23:00:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 857A6C433D6;
-        Tue, 30 Aug 2022 23:00:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661900435;
-        bh=t182bdU7U0dEHPhdYXFdbvLZ9arqgWMZzee1Mf+ZirY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hVHEzCTx1vfsL5No6e64f9sD8YRfWm+grVLiy3uxPtvkSx0h55ACTzzRJWYPsbjG0
-         VzHmfG+stwfgv7Y0PgUjpwUfRE8E4NsseluknbE7GjmJ1xjGndM1+Ybrq4Kqhq1ZVc
-         XUUVPbnhDOsmDs3+qDLTRonw0YRLAfnni3a/JcSDQdvqRnSF9e+csG3CZWS0K5M4Tz
-         nYeDxEullW4l7y3ib1VrjAH6MLIMAvZnAPmFeld/A2/5pTKqMBk+1daOPPWuL1h5bk
-         2o8+ajQzMax8iVEzhXdaNJhMPa84rePwhGhkssz7P+We6LuSg6QZ6nrnGsP/2kqSWP
-         b+jClHfuQtkdQ==
-Received: by pali.im (Postfix)
-        id 3DEEA1A76; Wed, 31 Aug 2022 01:00:33 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Cc:     devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH v2 3/3] powerpc: dts: turris1x.dts: Set lower priority for CPLD syscon-reboot
-Date:   Wed, 31 Aug 2022 01:00:12 +0200
-Message-Id: <20220830230012.9429-3-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220830230012.9429-1-pali@kernel.org>
-References: <20220820102925.29476-1-pali@kernel.org>
- <20220830230012.9429-1-pali@kernel.org>
-MIME-Version: 1.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1661900437;
+        bh=cN2UArrEEjLgyw+ytEbcnL0Je4jmNbuPP7fQx642XoA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ohIDGa98EfP/vnDW70jHjDc/nd2xOxnSnu/mv2Jzjwe6cqIq+rV1Qhw/M4vnzrYOT
+         EwYTIPJTx/qLyv/h5cZ8xG+7o+dhtPCXzd/0q3GfwVuZ+LZ3GNljpMZgo4XBuJqAJ8
+         /Ti4orN80h+hji0IwOpWIihUD2Lh8l03kll5CWYI=
+Date:   Tue, 30 Aug 2022 16:00:35 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Alexander Potapenko <glider@google.com>,
+        Marco Elver <elver@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 04/44] x86: asm: instrument usercopy in get_user()
+ and put_user()
+Message-Id: <20220830160035.8baf16a7f40cf09963e8bc55@linux-foundation.org>
+In-Reply-To: <CAOUHufZrb_gkxaWfCLuFodRtCwGGdYjo2wvFW7kTiTkRbg4XNQ@mail.gmail.com>
+References: <20220826150807.723137-1-glider@google.com>
+        <20220826150807.723137-5-glider@google.com>
+        <20220826211729.e65d52e7919fee5c34d22efc@linux-foundation.org>
+        <CAG_fn=Xpva_yx8oG-xi7jqJyM2YLcjNda+8ZyQPGBMV411XgMQ@mail.gmail.com>
+        <20220829122452.cce41f2754c4e063f3ae8b75@linux-foundation.org>
+        <CAG_fn=X6eZ6Cdrv5pivcROHi3D8uymdgh+EbnFasBap2a=0LQQ@mail.gmail.com>
+        <20220830150549.afa67340c2f5eb33ff9615f4@linux-foundation.org>
+        <CAOUHufZrb_gkxaWfCLuFodRtCwGGdYjo2wvFW7kTiTkRbg4XNQ@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Due to CPLD firmware bugs, set CPLD syscon-reboot priority level to 64
-(between rstcr and watchdog) to ensure that rstcr's global-utilities reset
-method which is preferred stay as default one, and to ensure that CPLD
-syscon-reboot is more preferred than watchdog reset method.
+On Tue, 30 Aug 2022 16:25:24 -0600 Yu Zhao <yuzhao@google.com> wrote:
 
-Fixes: 0531a4abd1c6 ("powerpc: dts: turris1x.dts: Add CPLD reboot node")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- arch/powerpc/boot/dts/turris1x.dts | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+> On Tue, Aug 30, 2022 at 4:05 PM Andrew Morton <akpm@linux-foundation.org> wrote:
+> >
+> > On Tue, 30 Aug 2022 16:23:44 +0200 Alexander Potapenko <glider@google.com> wrote:
+> >
+> > > >                  from init/do_mounts.c:2:
+> > > > ./include/linux/page-flags.h: In function ‘page_fixed_fake_head’:
+> > > > ./include/linux/page-flags.h:226:36: error: invalid use of undefined type ‘const struct page’
+> > > >   226 |             test_bit(PG_head, &page->flags)) {
+> > > >       |                                    ^~
+> > > > ./include/linux/bitops.h:50:44: note: in definition of macro ‘bitop’
+> > > >    50 |           __builtin_constant_p((uintptr_t)(addr) != (uintptr_t)NULL) && \
+> > > >       |                                            ^~~~
+> > > > ./include/linux/page-flags.h:226:13: note: in expansion of macro ‘test_bit’
+> > > >   226 |             test_bit(PG_head, &page->flags)) {
+> > > >       |             ^~~~~~~~
+> > > > ...
+> > >
+> > > Gotcha, this is a circular dependency: mm_types.h -> sched.h ->
+> > > kmsan.h -> gfp.h -> mmzone.h -> page-flags.h -> mm_types.h, where the
+> > > inclusion of sched.h into mm_types.h was only introduced in "mm:
+> > > multi-gen LRU: support page table walks" - that's why the problem was
+> > > missing in other trees.
+> >
+> > Ah, thanks for digging that out.
+> >
+> > Yu, that inclusion is regrettable.
+> 
+> Sorry for the trouble -- it's also superfluous because we don't call
+> lru_gen_use_mm() when switching to the kernel.
+> 
+> I've queued the following for now.
 
-diff --git a/arch/powerpc/boot/dts/turris1x.dts b/arch/powerpc/boot/dts/turris1x.dts
-index 69c38ed8a3a5..c189293d5a1e 100644
---- a/arch/powerpc/boot/dts/turris1x.dts
-+++ b/arch/powerpc/boot/dts/turris1x.dts
-@@ -353,11 +353,34 @@
- 			};
+Well, the rest of us want it too.
+
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -3,7 +3,6 @@
+>  #define _LINUX_MM_TYPES_H
+> 
+>  #include <linux/mm_types_task.h>
+> -#include <linux/sched.h>
+> 
+>  #include <linux/auxvec.h>
+>  #include <linux/kref.h>
+> @@ -742,8 +741,7 @@ static inline void lru_gen_init_mm(struct mm_struct *mm)
+> 
+>  static inline void lru_gen_use_mm(struct mm_struct *mm)
+>  {
+> -       if (!(current->flags & PF_KTHREAD))
+> -               WRITE_ONCE(mm->lru_gen.bitmap, -1);
+> +       WRITE_ONCE(mm->lru_gen.bitmap, -1);
+>  }
+
+Doesn't apply.  I did:
+
+--- a/include/linux/mm_types.h~mm-multi-gen-lru-support-page-table-walks-fix
++++ a/include/linux/mm_types.h
+@@ -3,7 +3,6 @@
+ #define _LINUX_MM_TYPES_H
  
- 			reboot@d {
-+				/*
-+				 * CPLD firmware which manages system reset and
-+				 * watchdog registers has bugs. It does not
-+				 * autoclear system reset register after change
-+				 * and watchdog ignores reset line on immediate
-+				 * succeeding reset cycle triggered by watchdog.
-+				 * These bugs have to be workarounded in U-Boot
-+				 * bootloader. So use system reset via syscon as
-+				 * a last resort because older U-Boot versions
-+				 * do not have workaround for watchdog.
-+				 *
-+				 * Reset method via rstcr's global-utilities
-+				 * (the preferred one) has priority level 128,
-+				 * watchdog has priority level 0 and default
-+				 * syscon-reboot priority level is 192.
-+				 *
-+				 * So define syscon-reboot with custom priority
-+				 * level 64 (between rstcr and watchdog) because
-+				 * rstcr should stay as default preferred reset
-+				 * method and reset via watchdog is more broken
-+				 * than system reset via syscon.
-+				 */
- 				compatible = "syscon-reboot";
- 				reg = <0x0d 0x01>;
- 				offset = <0x0d>;
- 				mask = <0x01>;
- 				value = <0x01>;
-+				priority = <64>;
- 			};
+ #include <linux/mm_types_task.h>
+-#include <linux/sched.h>
  
- 			led-controller@13 {
--- 
-2.20.1
+ #include <linux/auxvec.h>
+ #include <linux/kref.h>
+@@ -742,11 +741,7 @@ static inline void lru_gen_init_mm(struc
+ 
+ static inline void lru_gen_use_mm(struct mm_struct *mm)
+ {
+-	/* unlikely but not a bug when racing with lru_gen_migrate_mm() */
+-	VM_WARN_ON_ONCE(list_empty(&mm->lru_gen.list));
+-
+-	if (!(current->flags & PF_KTHREAD))
+-		WRITE_ONCE(mm->lru_gen.bitmap, -1);
++	WRITE_ONCE(mm->lru_gen.bitmap, -1);
+ }
+ 
+ #else /* !CONFIG_LRU_GEN */
+_
 
