@@ -2,105 +2,303 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E27ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91BCECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230147AbiH3NGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46250 "EHLO
+        id S230117AbiH3NHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:07:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiH3NGr (ORCPT
+        with ESMTP id S229620AbiH3NHn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:06:47 -0400
-X-Greylist: delayed 563 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 30 Aug 2022 06:06:42 PDT
-Received: from smtp1.rz.tu-harburg.de (smtp1.rz.tu-harburg.de [IPv6:2001:638:702:20aa::205:38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C3E97B1A
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:06:42 -0700 (PDT)
-Received: from mail.tu-harburg.de (mail3.rz.tu-harburg.de [134.28.202.82])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "mail.tu-harburg.de", Issuer "DFN-Verein Global Issuing CA" (verified OK))
-        by smtp1.rz.tu-harburg.de (Postfix) with ESMTPS id 4MH6ld31TXzxR9;
-        Tue, 30 Aug 2022 14:57:17 +0200 (CEST)
-Received: from mailspring.rz.tuhh.de (mailspring.rz.tuhh.de [134.28.202.181])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: ccd5802@KERBEROS.TU-HARBURG.DE)
-        by mail.tu-harburg.de (Postfix) with ESMTPSA id 4MH6ld1brZzJrCR;
-        Tue, 30 Aug 2022 14:57:17 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tuhh.de; s=x2022-35;
-        t=1661864237; bh=3M5KoBjmdncSnK+7gaN5/nElfuzhGBpbhk1ql1rqzsM=;
-        h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
-         Content-Transfer-Encoding;
-        b=uamaj48JtI3YvFPznHSpkCiq7cFrd+ToU6ra/DfYBft7xjTMaoq7dzEhtapbEmAcm
-         X2B6Mc/j6LRB5dlg7T4toywzOEU93Yoc7xIbP55ivdvXf8UpzLLdzlaJ0LkZBZCorO
-         y90rapyUfrzM00KDI0Z1wr4KSRPU9GsnHT/t7eXY=
-From:   Christian Dietrich <christian.dietrich@tuhh.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     Max =?utf-8?Q?Kr=C3=BCger?= <maxk@posteo.de>,
-        John 'Warthog9' Hawley <warthog9@eaglescrag.net>
-Subject: Unexpected behavior: Sending signalfd over AF_UNIX
-Organization: Technische =?utf-8?Q?Universit=C3=A4t?= Hamburg
-X-Commit-Hash-org: fa8b6bc392fa8cd66bd1773f47a6d531f437cf27
-X-Commit-Hash-Maildir: 4826b0f25ca3598beaad655896227faaf1c9ec19
-Date:   Tue, 30 Aug 2022 14:57:06 +0200
-Message-ID: <s7b1qsx3n4t.fsf@dokucode.de>
+        Tue, 30 Aug 2022 09:07:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B0AADCC1
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:07:38 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1oT0xX-00081U-Ii; Tue, 30 Aug 2022 15:07:15 +0200
+Message-ID: <06d256719a2ac5bf22ce80bb30b8320eec8fc1d9.camel@pengutronix.de>
+Subject: Re: [PATCH v5 6/7] phy: freescale: imx8m-pcie: Add iMX8MP PCIe PHY
+ support
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, p.zabel@pengutronix.de,
+        bhelgaas@google.com, lorenzo.pieralisi@arm.com, robh@kernel.org,
+        shawnguo@kernel.org, vkoul@kernel.org,
+        alexander.stein@ew.tq-group.com, marex@denx.de,
+        richard.leitner@linux.dev
+Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Tue, 30 Aug 2022 15:07:13 +0200
+In-Reply-To: <1661845564-11373-7-git-send-email-hongxing.zhu@nxp.com>
+References: <1661845564-11373-1-git-send-email-hongxing.zhu@nxp.com>
+         <1661845564-11373-7-git-send-email-hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[John is also on Cc: since I sent the mail before, but somehow vger ate
- the mail and it did not arrive on the LKML]
+Am Dienstag, dem 30.08.2022 um 15:46 +0800 schrieb Richard Zhu:
+> Add i.MX8MP PCIe PHY support.
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+> Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+> Tested-by: Marek Vasut <marex@denx.de>
+> Tested-by: Richard Leitner <richard.leitner@skidata.com>
+> Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+> ---
+>  drivers/phy/freescale/phy-fsl-imx8m-pcie.c | 137 +++++++++++++--------
+>  1 file changed, 89 insertions(+), 48 deletions(-)
+> 
+> diff --git a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
+> index ad7d2edfc414..c76e3a1a5f51 100644
+> --- a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
+> +++ b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
+> @@ -11,6 +11,9 @@
+>  #include <linux/mfd/syscon.h>
+>  #include <linux/mfd/syscon/imx7-iomuxc-gpr.h>
+>  #include <linux/module.h>
+> +#include <linux/of_address.h>
+> +#include <linux/of_device.h>
+> +#include <linux/of_device.h>
+>  #include <linux/phy/phy.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/regmap.h>
+> @@ -31,12 +34,10 @@
+>  #define IMX8MM_PCIE_PHY_CMN_REG065	0x194
+>  #define  ANA_AUX_RX_TERM		(BIT(7) | BIT(4))
+>  #define  ANA_AUX_TX_LVL			GENMASK(3, 0)
+> -#define IMX8MM_PCIE_PHY_CMN_REG75	0x1D4
+> -#define  PCIE_PHY_CMN_REG75_PLL_DONE	0x3
+> +#define IMX8MM_PCIE_PHY_CMN_REG075	0x1D4
+> +#define  ANA_PLL_DONE			0x3
+>  #define PCIE_PHY_TRSV_REG5		0x414
+> -#define  PCIE_PHY_TRSV_REG5_GEN1_DEEMP	0x2D
+>  #define PCIE_PHY_TRSV_REG6		0x418
+> -#define  PCIE_PHY_TRSV_REG6_GEN2_DEEMP	0xF
+>  
+>  #define IMX8MM_GPR_PCIE_REF_CLK_SEL	GENMASK(25, 24)
+>  #define IMX8MM_GPR_PCIE_REF_CLK_PLL	FIELD_PREP(IMX8MM_GPR_PCIE_REF_CLK_SEL, 0x3)
+> @@ -47,16 +48,23 @@
+>  #define IMX8MM_GPR_PCIE_SSC_EN		BIT(16)
+>  #define IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE	BIT(9)
+>  
+> +enum imx8_pcie_phy_type {
+> +	IMX8MM,
+> +	IMX8MP,
+> +};
+> +
+>  struct imx8_pcie_phy {
+>  	void __iomem		*base;
+>  	struct clk		*clk;
+>  	struct phy		*phy;
+>  	struct regmap		*iomuxc_gpr;
+>  	struct reset_control	*reset;
+> +	struct reset_control	*perst;
+>  	u32			refclk_pad_mode;
+>  	u32			tx_deemph_gen1;
+>  	u32			tx_deemph_gen2;
+>  	bool			clkreq_unused;
+> +	enum imx8_pcie_phy_type	variant;
+>  };
+>  
+>  static int imx8_pcie_phy_init(struct phy *phy)
+> @@ -68,31 +76,20 @@ static int imx8_pcie_phy_init(struct phy *phy)
+>  	reset_control_assert(imx8_phy->reset);
+>  
+>  	pad_mode = imx8_phy->refclk_pad_mode;
+> -	/* Set AUX_EN_OVERRIDE 1'b0, when the CLKREQ# isn't hooked */
+> -	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> -			   IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE,
+> -			   imx8_phy->clkreq_unused ?
+> -			   0 : IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE);
+> -	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> -			   IMX8MM_GPR_PCIE_AUX_EN,
+> -			   IMX8MM_GPR_PCIE_AUX_EN);
+> -	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> -			   IMX8MM_GPR_PCIE_POWER_OFF, 0);
+> -	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> -			   IMX8MM_GPR_PCIE_SSC_EN, 0);
+> -
+> -	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> -			   IMX8MM_GPR_PCIE_REF_CLK_SEL,
+> -			   pad_mode == IMX8_PCIE_REFCLK_PAD_INPUT ?
+> -			   IMX8MM_GPR_PCIE_REF_CLK_EXT :
+> -			   IMX8MM_GPR_PCIE_REF_CLK_PLL);
+> -	usleep_range(100, 200);
+> -
+> -	/* Do the PHY common block reset */
+> -	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> -			   IMX8MM_GPR_PCIE_CMN_RST,
+> -			   IMX8MM_GPR_PCIE_CMN_RST);
+> -	usleep_range(200, 500);
+> +	switch (imx8_phy->variant) {
+> +	case IMX8MM:
+> +		/* Tune PHY de-emphasis setting to pass PCIe compliance. */
+> +		if (imx8_phy->tx_deemph_gen1)
+> +			writel(imx8_phy->tx_deemph_gen1,
+> +			       imx8_phy->base + PCIE_PHY_TRSV_REG5);
+> +		if (imx8_phy->tx_deemph_gen2)
+> +			writel(imx8_phy->tx_deemph_gen2,
+> +			       imx8_phy->base + PCIE_PHY_TRSV_REG6);
+> +		break;
+> +	case IMX8MP:
+> +		reset_control_assert(imx8_phy->perst);
+> +		break;
+> +	}
+>  
+>  	if (pad_mode == IMX8_PCIE_REFCLK_PAD_INPUT ||
+>  	    pad_mode == IMX8_PCIE_REFCLK_PAD_UNUSED) {
+> @@ -120,20 +117,44 @@ static int imx8_pcie_phy_init(struct phy *phy)
+>  		       imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG065);
+>  	}
+>  
+> -	/* Tune PHY de-emphasis setting to pass PCIe compliance. */
+> -	if (imx8_phy->tx_deemph_gen1)
+> -		writel(imx8_phy->tx_deemph_gen1,
+> -		       imx8_phy->base + PCIE_PHY_TRSV_REG5);
+> -	if (imx8_phy->tx_deemph_gen2)
+> -		writel(imx8_phy->tx_deemph_gen2,
+> -		       imx8_phy->base + PCIE_PHY_TRSV_REG6);
+> +	/* Set AUX_EN_OVERRIDE 1'b0, when the CLKREQ# isn't hooked */
+> +	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> +			   IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE,
+> +			   imx8_phy->clkreq_unused ?
+> +			   0 : IMX8MM_GPR_PCIE_AUX_EN_OVERRIDE);
+> +	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> +			   IMX8MM_GPR_PCIE_AUX_EN,
+> +			   IMX8MM_GPR_PCIE_AUX_EN);
+> +	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> +			   IMX8MM_GPR_PCIE_POWER_OFF, 0);
+> +	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> +			   IMX8MM_GPR_PCIE_SSC_EN, 0);
+> +
+> +	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> +			   IMX8MM_GPR_PCIE_REF_CLK_SEL,
+> +			   pad_mode == IMX8_PCIE_REFCLK_PAD_INPUT ?
+> +			   IMX8MM_GPR_PCIE_REF_CLK_EXT :
+> +			   IMX8MM_GPR_PCIE_REF_CLK_PLL);
+> +	usleep_range(100, 200);
+> +
+> +	/* Do the PHY common block reset */
+> +	regmap_update_bits(imx8_phy->iomuxc_gpr, IOMUXC_GPR14,
+> +			   IMX8MM_GPR_PCIE_CMN_RST,
+> +			   IMX8MM_GPR_PCIE_CMN_RST);
+>  
+> -	reset_control_deassert(imx8_phy->reset);
+> +	switch (imx8_phy->variant) {
+> +	case IMX8MP:
+> +		reset_control_deassert(imx8_phy->perst);
+> +		fallthrough;
+> +	case IMX8MM:
+> +		reset_control_deassert(imx8_phy->reset);
+> +		usleep_range(200, 500);
+> +		break;
+> +	}
+>  
+>  	/* Polling to check the phy is ready or not. */
+> -	ret = readl_poll_timeout(imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG75,
+> -				 val, val == PCIE_PHY_CMN_REG75_PLL_DONE,
+> -				 10, 20000);
+> +	ret = readl_poll_timeout(imx8_phy->base + IMX8MM_PCIE_PHY_CMN_REG075,
+> +				 val, val == ANA_PLL_DONE, 10, 20000);
+>  	return ret;
+>  }
+>  
+> @@ -160,6 +181,13 @@ static const struct phy_ops imx8_pcie_phy_ops = {
+>  	.owner		= THIS_MODULE,
+>  };
+>  
+> +static const struct of_device_id imx8_pcie_phy_of_match[] = {
+> +	{.compatible = "fsl,imx8mm-pcie-phy", .data = (void *)IMX8MM},
+> +	{.compatible = "fsl,imx8mp-pcie-phy", .data = (void *)IMX8MP},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, imx8_pcie_phy_of_match);
+> +
+>  static int imx8_pcie_phy_probe(struct platform_device *pdev)
+>  {
+>  	struct phy_provider *phy_provider;
+> @@ -172,6 +200,9 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
+>  	if (!imx8_phy)
+>  		return -ENOMEM;
+>  
+> +	imx8_phy->variant =
+> +		(enum imx8_pcie_phy_type)of_device_get_match_data(dev);
+> +
+>  	/* get PHY refclk pad mode */
+>  	of_property_read_u32(np, "fsl,refclk-pad-mode",
+>  			     &imx8_phy->refclk_pad_mode);
+> @@ -196,8 +227,16 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
+>  	}
+>  
+>  	/* Grab GPR config register range */
+> -	imx8_phy->iomuxc_gpr =
+> -		 syscon_regmap_lookup_by_compatible("fsl,imx6q-iomuxc-gpr");
+> +	switch (imx8_phy->variant) {
+> +	case IMX8MM:
+> +		imx8_phy->iomuxc_gpr =
+> +			 syscon_regmap_lookup_by_compatible("fsl,imx8mm-iomuxc-gpr");
+> +		break;
+> +	case IMX8MP:
+> +		imx8_phy->iomuxc_gpr =
+> +			 syscon_regmap_lookup_by_compatible("fsl,imx8mp-iomuxc-gpr");
+> +		break;
+> +	}
 
-Hi everyone!
+Oh, I had a real phandle in DT in mind for this, but I see how this
+would be hard to introduce in a backward compatible manner for the 8MM.
+At least this way it is fully contained in the driver and doesn't leak
+into DT compatibles.
 
-For a small pet project of mine[1], I experimented with signalfd and
-wanted to send it over UNIX domain sockets. Thereby, I encountered an
-unexpected behavior:
+Maybe we could make this a little nicer by just having an const array
+of iomux syscon compatibles indexed by imx8_phy->variant, to avoid the
+switch and the resulting code (almost-)duplication.
 
-My expectation was that task A can create a signalfd and send it to
-task B, whereby B becomes able to receive the signals of task A.
+Regards,
+Lucas
 
-However, this is not whats happening there. What is actually happening
-is that I can correctly transfer the fd to the other process. But
-instead of read(2)-ing the siginfos of task A in task B, I now receive
-the signals of task B on this foreign file descriptor.
+>  	if (IS_ERR(imx8_phy->iomuxc_gpr)) {
+>  		dev_err(dev, "unable to find iomuxc registers\n");
+>  		return PTR_ERR(imx8_phy->iomuxc_gpr);
+> @@ -208,6 +247,14 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
+>  		dev_err(dev, "Failed to get PCIEPHY reset control\n");
+>  		return PTR_ERR(imx8_phy->reset);
+>  	}
+> +	if (imx8_phy->variant == IMX8MP) {
+> +		imx8_phy->perst =
+> +			devm_reset_control_get_exclusive(dev, "perst");
+> +		if (IS_ERR(imx8_phy->perst)) {
+> +			dev_err(dev, "Failed to get PCIE PHY PERST control\n");
+> +			return PTR_ERR(imx8_phy->perst);
+> +		}
+> +	}
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	imx8_phy->base = devm_ioremap_resource(dev, res);
+> @@ -225,12 +272,6 @@ static int imx8_pcie_phy_probe(struct platform_device *pdev)
+>  	return PTR_ERR_OR_ZERO(phy_provider);
+>  }
+>  
+> -static const struct of_device_id imx8_pcie_phy_of_match[] = {
+> -	{.compatible = "fsl,imx8mm-pcie-phy",},
+> -	{ },
+> -};
+> -MODULE_DEVICE_TABLE(of, imx8_pcie_phy_of_match);
+> -
+>  static struct platform_driver imx8_pcie_phy_driver = {
+>  	.probe	= imx8_pcie_phy_probe,
+>  	.driver = {
 
-And by looking at the code, this is also the implemented behavior.
-There, the code references `current' at various places and signalfd_ctx
-does not hold a `struct task_struct*' but only a signal mask.
 
-As already said, this behavior was unexpected for me. What would be
-less surpringing would be one of the following:
-
-A. I cannot transfer the signalfd fd at all (are there non-transferable fds=
-?)
-
-B. I can read the signals of task A in task B
-
-With B, there remains the question, whether I should read those signals
-directed to task A or to its task group. If route B is chosen, it would
-also be great to derive a signalfd from a pidfd.
-
-And yes, the whole idea of sending my own signalfd to another task is
-kind of insane. However, for the sake of orthogonality, this would just
-be beautiful and I could point my students to this and say: Look! In
-Linux, file descriptors are just capabilities that can be transferred
-between processes.
-
-chris
-
-[1] I'm currently working on a system-call Christmas calendar that has
-    a nice exercise for every day before Christmas.
---=20
-Prof. Dr.-Ing. Christian Dietrich
-Operating System Group (E-EXK4)
-Technische Universit=C3=A4t Hamburg
-Am Schwarzenberg-Campus 3 (E), 4.092
-21073 Hamburg
-
-eMail:  christian.dietrich@tuhh.de
-Tel:    +49 40 42878 2188
-WWW:    https://osg.tuhh.de/
