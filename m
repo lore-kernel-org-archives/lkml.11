@@ -2,131 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A776ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:53:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C22ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbiH3NxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
+        id S229647AbiH3Nx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231171AbiH3Nw6 (ORCPT
+        with ESMTP id S231292AbiH3NxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:52:58 -0400
-Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC4327E;
-        Tue, 30 Aug 2022 06:51:41 -0700 (PDT)
-Received: from [10.2.12.24] (unknown [10.2.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by 7of9.schinagl.nl (Postfix) with ESMTPSA id 460C5186AE58;
-        Tue, 30 Aug 2022 15:42:58 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
-        t=1661866978; bh=VGw2Qzyj3OF2DuUcVdIgndrfA7vp4cP/flSebzN5Nhw=;
-        h=Date:Subject:To:References:From:In-Reply-To;
-        b=FrDLdcWtc/a0geROqdLM6MqQbXUDZWXwWK1rBR9Q5J9CzRNuL6X1XpYfL49GqULLG
-         hpzweGZUX/tshrvI4tLDgW/vBKqFINnUAcrvxFO9ljf2VLQZeN7/SM/hdDRWeiM1bJ
-         LalZzZAOcK3/1Ik4q/CsRJiZT8JkiIfIQrZEQzx8=
-Message-ID: <81566e5b-297a-4db4-b741-3a80dbf875ac@schinagl.nl>
-Date:   Tue, 30 Aug 2022 15:42:57 +0200
+        Tue, 30 Aug 2022 09:53:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17603BE1A
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:52:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661867525;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UJVr43uWt8PVxH448vHnmIse/JFMIMR/CqYNuTX+I0E=;
+        b=KI7ulRrjwIRswM84L4UQTjrai6STk1iriWRqGA6jCAUemjt/O/Jq4GL3eh1lR7kBuzEmLk
+        LwFT+I9gvzmHpe3KaRWBzMKmqDIrRpbikUdgomMjuEvipR5DBWZ5mn8ydYmFoqk+zuGlEq
+        uloRZ/DfE5tRMfnv6hS6qKdl2wNwfFU=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-371-j2A3FOOlPpySpBLHblOpvQ-1; Tue, 30 Aug 2022 09:52:03 -0400
+X-MC-Unique: j2A3FOOlPpySpBLHblOpvQ-1
+Received: by mail-pl1-f198.google.com with SMTP id a13-20020a170902eccd00b001730da9d40fso8091855plh.10
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:52:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=UJVr43uWt8PVxH448vHnmIse/JFMIMR/CqYNuTX+I0E=;
+        b=mzELNixOl/S1MIky43oS7bLpB/jDSnKNMx7sUsrrc7ePLOKem8Czo37dJj+FXuZnum
+         CXy7ZTjbyM602piXfUvfnJCVQ97ks1uFxrtUOVeevpFKDMwZeXmHJxYGwevZxohv1qZi
+         QjhmyW8mUFwgCQxF1V00l/tUS7qAV8JAyyM8X7lMyIxRX0E7zGwJ/3Sfr8MvjTfaAkPO
+         PhSjEKvrhwg5zvaSR9TdxY7gGPCpAaxXvEbHemESi6S4p2RSxy+Irghivn6yBBoXP4Qr
+         0VCM8K6EFXvlJ8DKaDjoDuJHRljNl0j+QfqZTxYW0fMotHOF1KO9Naf97z+yQY1K99EW
+         imRg==
+X-Gm-Message-State: ACgBeo0sKsHY/sm2UDcwJAVhi6qx428WnoXzh6oB8pBjKC5hMOWqRIyI
+        JoWmb3YUh5w2NbWwclRI0Ar/omvSA+oKGA+x6o+XkT1F+zmDdtAvFYgPLp6NJBeUHduzt/qcEXX
+        X+TRSsqgD+xL2RSqzBYT2K0L/79CLTuuBezynd0TX
+X-Received: by 2002:a65:6255:0:b0:42c:87b1:485b with SMTP id q21-20020a656255000000b0042c87b1485bmr3977295pgv.491.1661867522197;
+        Tue, 30 Aug 2022 06:52:02 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4uttRB0OgUCrHoIJFyDwUqMmth8JbBFJmcReY4G9C4XP9O/bnAzP100AWpX19LwnHtW0ssr0V6liTxxc7zEVI=
+X-Received: by 2002:a65:6255:0:b0:42c:87b1:485b with SMTP id
+ q21-20020a656255000000b0042c87b1485bmr3977270pgv.491.1661867521925; Tue, 30
+ Aug 2022 06:52:01 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v3] dt-bindings: leds: Expand LED_COLOR_ID definitions
-Content-Language: nl
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        linux-leds@vger.kernel.org, Daniel Mack <daniel@zonque.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Olliver Schinagl <oliver+list@schinagl.nl>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220830084454.1133369-1-oliver@schinagl.nl>
- <Yw37exBark8pCE2p@ada.ifak-system.com>
-From:   Olliver Schinagl <oliver@schinagl.nl>
-In-Reply-To: <Yw37exBark8pCE2p@ada.ifak-system.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
+ <20220824134055.1328882-3-benjamin.tissoires@redhat.com> <CAP01T76tie9dpjacCLxCcAjtra12GxfmeO9f_mYnUU6pO4otzQ@mail.gmail.com>
+In-Reply-To: <CAP01T76tie9dpjacCLxCcAjtra12GxfmeO9f_mYnUU6pO4otzQ@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Tue, 30 Aug 2022 15:51:50 +0200
+Message-ID: <CAO-hwJL6cy8JbXFSmSVtkNQHZkuYoHsvb1=JxvLSnBeeRBMZ5A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 02/23] bpf/verifier: do not clear meta in check_mem_size
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 30-08-2022 13:58, Alexander Dahl wrote:
-> Hello Olliver,
+On Fri, Aug 26, 2022 at 3:55 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
 >
-> Am Tue, Aug 30, 2022 at 10:44:54AM +0200 schrieb Olliver Schinagl:
->> In commit 853a78a7d6c7 (dt-bindings: leds: Add LED_COLOR_ID definitions,
->> Sun Jun 9 20:19:04 2019 +0200) the most basic color definitions where
->> added. However, there's a little more very common LED colors.
->>
->> While the documentation states 'add what is missing', engineers tend to
->> be lazy and will just use what currently exists. So this patch will take
->> (a) list from online retailers [0], [1], [2] and use the common LED colors from
->> there, this being reasonable as this is what is currently available to purchase.
->>
->> Note, that LIME seems to be the modern take to 'Yellow-green' or
->> 'Yellowish-green' from some older datasheets.
->>
->> [0]: https://www.digikey.com/en/products/filter/led-lighting-color/125
->> [1]: https://eu.mouser.com/c/optoelectronics/led-lighting/led-emitters/standard-leds-smd
->> [2]: https://nl.farnell.com/en-NL/c/optoelectronics-displays/led-products/standard-single-colour-leds-under-75ma
->>
->> Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
->> ---
->> No chances since v2: Re-send with the proper e-mails.
->> Changes since v1: Unbreak existing definitions.
->>
->>   include/dt-bindings/leds/common.h | 28 ++++++++++++++++------------
->>   1 file changed, 16 insertions(+), 12 deletions(-)
->>
->> diff --git a/include/dt-bindings/leds/common.h b/include/dt-bindings/leds/common.h
->> index 3be89a7c20a9..04bf94523ea3 100644
->> --- a/include/dt-bindings/leds/common.h
->> +++ b/include/dt-bindings/leds/common.h
->> @@ -22,18 +22,22 @@
->>   #define LEDS_BOOST_FIXED	2
->>   
->>   /* Standard LED colors */
->> -#define LED_COLOR_ID_WHITE	0
->> -#define LED_COLOR_ID_RED	1
->> -#define LED_COLOR_ID_GREEN	2
->> -#define LED_COLOR_ID_BLUE	3
->> -#define LED_COLOR_ID_AMBER	4
->> -#define LED_COLOR_ID_VIOLET	5
->> -#define LED_COLOR_ID_YELLOW	6
->> -#define LED_COLOR_ID_IR		7
->> -#define LED_COLOR_ID_MULTI	8	/* For multicolor LEDs */
->> -#define LED_COLOR_ID_RGB	9	/* For multicolor LEDs that can do arbitrary color,
->> -					   so this would include RGBW and similar */
->> -#define LED_COLOR_ID_MAX	10
->> +#define LED_COLOR_ID_WHITE      0
->> +#define LED_COLOR_ID_RED        1
->> +#define LED_COLOR_ID_GREEN      2
->> +#define LED_COLOR_ID_BLUE       3
->> +#define LED_COLOR_ID_AMBER      4
->> +#define LED_COLOR_ID_VIOLET     5
->> +#define LED_COLOR_ID_YELLOW     6
->> +#define LED_COLOR_ID_IR         7
->> +#define LED_COLOR_ID_MULTI      8 /* For multicolor LEDs */
->> +#define LED_COLOR_ID_RGB        9 /* For multicolor LEDs that can do arbitrary color, including RGBW etc. */
->> +#define LED_COLOR_ID_PUPRPLE   10
-> This is still a typo, isn't it? Purple?
-Yes sir, And the spacing too, as you mentioned on the v2;
+> On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
+> <benjamin.tissoires@redhat.com> wrote:
+> >
+> > The purpose of this clear is to prevent meta->raw_mode to be evaluated
+> > at true, but this also prevents to forward any other data to the other
+> > callees.
+> >
+> > Only switch back raw_mode to false so we don't entirely clear meta.
+> >
+> > Acked-by: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> >
+> > ---
+> >
+> > no changes in v9
+> >
+> > no changes in v8
+> >
+> > no changes in v7
+> >
+> > new in v6
+> > ---
+> >  kernel/bpf/verifier.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index d694f43ab911..13190487fb12 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -5287,7 +5287,7 @@ static int check_mem_size_reg(struct bpf_verifier_env *env,
+> >                  * initialize all the memory that the helper could
+> >                  * just partially fill up.
+> >                  */
+> > -               meta = NULL;
+> > +               meta->raw_mode = false;
 >
-> Greets
-> Alex
+> But this is adding a side effect, the caller's meta->raw_mode becomes
+> false, which the caller may not expect...
+
+Turns out that I don't need that patch anymore because I am not
+checking against is_kfunc in the previous patch. So dropping it from
+the next revision.
+
+Cheers,
+Benjamin
+
 >
->> +#define LED_COLOR_ID_ORANGE    11
->> +#define LED_COLOR_ID_PINK      12
->> +#define LED_COLOR_ID_CYAN      13
->> +#define LED_COLOR_ID_LIME      14
->> +#define LED_COLOR_ID_MAX       15
->>   
->>   /* Standard LED functions */
->>   /* Keyboard LEDs, usually it would be input4::capslock etc. */
->> -- 
->> 2.37.2
->>
+> >
+> >         if (reg->smin_value < 0) {
+> >                 verbose(env, "R%d min value is negative, either use unsigned or 'var &= const'\n",
+> > --
+> > 2.36.1
+> >
+>
 
