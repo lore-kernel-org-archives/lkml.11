@@ -2,154 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3322ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D42ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbiH3QSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
+        id S230484AbiH3QSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbiH3QSa (ORCPT
+        with ESMTP id S231182AbiH3QSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:18:30 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D099C6B71
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:18:27 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id y3so23251155ejc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:18:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=mREfjPyAZE8fR8BbY6J8ChRmeGgj52ZYtbGLQB+Yl64=;
-        b=Pb7d9l19y97oNgQaeYdhiQ+Bd+pVG+plxWtfgRvphPOnXTtvxZU1nsqpOkAjdVPPzi
-         3OAwiJDtg/Tq/6Fo3iDXejNMbxNNlsFnE+08YdD9h+4aPcy447bFVmbpHq5eYzVXz9aG
-         UOzZhSw6z5Z6lwQxqtWlFrHuGfaFLHYNdHof4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=mREfjPyAZE8fR8BbY6J8ChRmeGgj52ZYtbGLQB+Yl64=;
-        b=dZSjKZI72eIaGYxNdQ0j46M8lXNSekTQr6Jqjg16aQEdiwOzQPGK9GfcD/9wp0CE/s
-         HtlDK+CdlZ9nakV40e4kBhZFY5uQ5K3kqH7Au1cqU5YNhyStvOHcOIDsQckcQnycPL/l
-         G2+0XCXcmmRaImS+fXue5OmG5sK+gHRfABG8czd3SyeFy6v0D1/eJKFo+DjULs1JKUoG
-         PsfYCwujBHRDFlBp0RSVxecGSxdvVKkeyGP+8VpNlzLVpxankv9cEcprsDqBHZX23xSu
-         uk/+uPbAK9KV1NtV9Ee7JgSKMN8M1f7NnngvJK8j2+UoOjdpnezFTxrDNRzd+PA8w14p
-         wDLA==
-X-Gm-Message-State: ACgBeo2k/R1uzrzAcXFMwO+5MCTx/qCzbX/0tc2vpVAmOjkU2aoytTca
-        GA4nnhRWKTtQ8J5iVCDCfojQrttro/ZUJOq9
-X-Google-Smtp-Source: AA6agR6rA+2mlFnA94Wyp1EAJW0qH0iZbq3paWGDk4bINMO4+qBmf+BvMhpSVvyF3LiZ0Et7cOTtrg==
-X-Received: by 2002:a17:907:6d98:b0:741:3872:b9c2 with SMTP id sb24-20020a1709076d9800b007413872b9c2mr12785494ejc.259.1661876305402;
-        Tue, 30 Aug 2022 09:18:25 -0700 (PDT)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id e23-20020a170906315700b007420aaba67esm1399937eje.36.2022.08.30.09.18.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 09:18:23 -0700 (PDT)
-Received: by mail-wr1-f44.google.com with SMTP id bq11so14898050wrb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 09:18:23 -0700 (PDT)
-X-Received: by 2002:a5d:6881:0:b0:225:28cb:332f with SMTP id
- h1-20020a5d6881000000b0022528cb332fmr9403684wru.405.1661876302923; Tue, 30
- Aug 2022 09:18:22 -0700 (PDT)
+        Tue, 30 Aug 2022 12:18:40 -0400
+Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F892E3958;
+        Tue, 30 Aug 2022 09:18:36 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+        by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4MHC5d6Rwdz9xFfx;
+        Wed, 31 Aug 2022 00:13:09 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.204.63.22])
+        by APP2 (Coremail) with SMTP id GxC2BwDHQl0ZOA5jLmYNAA--.2866S4;
+        Tue, 30 Aug 2022 17:18:07 +0100 (CET)
+From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
+        dhowells@redhat.com, jarkko@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
+        serge@hallyn.com, shuah@kernel.org
+Cc:     bpf@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        deso@posteo.net, memxor@gmail.com,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Joanne Koong <joannelkoong@gmail.com>
+Subject: [PATCH v14 02/12] bpf: Move dynptr type check to is_dynptr_type_expected()
+Date:   Tue, 30 Aug 2022 18:17:06 +0200
+Message-Id: <20220830161716.754078-3-roberto.sassu@huaweicloud.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220830161716.754078-1-roberto.sassu@huaweicloud.com>
+References: <20220830161716.754078-1-roberto.sassu@huaweicloud.com>
 MIME-Version: 1.0
-References: <20211116012912.723980-1-longman@redhat.com> <CAD=FV=URCo5xv3k3jWbxV1uRkUU5k6bcnuB1puZhxayEyVc6-A@mail.gmail.com>
- <20220719104104.1634-1-hdanton@sina.com> <CAD=FV=Xng_Mcd-9SaK29XSbsthDWLTR6sz53VEktAQFng6a27A@mail.gmail.com>
- <20220722115510.2101-1-hdanton@sina.com> <CAD=FV=XS_AqMveo=a2zN+=b3DxM-yJQapd27Dq8dR+kSb2oL_A@mail.gmail.com>
- <20220723001713.2156-1-hdanton@sina.com> <CAD=FV=X7FnrwHSedA=1xJsrfSgQZcqu0YEAKrfoJC6BhDc-gFA@mail.gmail.com>
- <2fcf84e6-168b-4ee7-bc9e-5b1c3c9a3d4e@redhat.com> <CAD=FV=UyAecgOfiA18WoA+Dd7DxwD7v1RbjrKUs9=LqrZ6C70g@mail.gmail.com>
-In-Reply-To: <CAD=FV=UyAecgOfiA18WoA+Dd7DxwD7v1RbjrKUs9=LqrZ6C70g@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 30 Aug 2022 09:18:09 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=VUfB5kZQZ=T4AdKgiA_59OwTUppUZXDidAcxLTu4cDcA@mail.gmail.com>
-Message-ID: <CAD=FV=VUfB5kZQZ=T4AdKgiA_59OwTUppUZXDidAcxLTu4cDcA@mail.gmail.com>
-Subject: Re: [PATCH v5] locking/rwsem: Make handoff bit handling more consistent
-To:     Waiman Long <longman@redhat.com>, Hillf Danton <hdanton@sina.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Davidlohr Bueso <dave@stgolabs.net>, MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GxC2BwDHQl0ZOA5jLmYNAA--.2866S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxWryxKrykuw4rAr4rAF4UXFb_yoWrAFWUpF
+        s7C39FqrW0yF42vw1fJF4kArW5Kry8WrW5CrZ5A340yFyxZr98ZF15Kr1xXrn5KFWkCw43
+        Aw10vay5Aw1UJFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUPqb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
+        A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
+        w2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
+        W8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v2
+        6r4UJVWxJr1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2
+        WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkE
+        bVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kIc2xKxwCY1x0262kKe7
+        AKxVW8ZVWrXwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02
+        F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_Wr
+        ylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVW8JVW5JwCI42IY6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr1j6F4UJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI
+        0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8Jr0_Cr1UYxBIdaVFxhVjvjDU0xZFpf9x
+        07j7hLnUUUUU=
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAQAABF1jj4Jv4wAAs6
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-On Fri, Aug 5, 2022 at 12:16 PM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Fri, Aug 5, 2022 at 12:02 PM Waiman Long <longman@redhat.com> wrote:
-> >
-> >
-> > On 8/5/22 13:14, Doug Anderson wrote:
-> > > Hi,
-> > >
-> > > On Fri, Jul 22, 2022 at 5:17 PM Hillf Danton <hdanton@sina.com> wrote:
-> > >> On Fri, 22 Jul 2022 07:02:42 -0700 Doug Anderson wrote:
-> > >>> Thanks! I added this diff to your previous diff and my simple test
-> > >>> still passes and I don't see your WARN_ON triggered.
-> > >> Thanks!
-> > >>> How do we move forward? Are you going to officially submit a patch
-> > >>> with both of your diffs squashed together? Are we waiting for
-> > >>> additional review from someone?
-> > >> Given it is not unusual for us to miss anything important, lets take
-> > >> a RWSEM_WAIT_TIMEOUT nap now or two.
-> > > It appears that another fix has landed in the meantime. Commit
-> > > 6eebd5fb2083 ("locking/rwsem: Allow slowpath writer to ignore handoff
-> > > bit if not set by first waiter").
-> > >
-> > > ...unfortunately with that patch my test cases still hangs. :(
-> >
-> > The aim of commit 6eebd5fb2083 ("locking/rwsem: Allow slowpath writer to
-> > ignore handoff bit if not set by first waiter") is to restore slowpath
-> > writer behavior to be the same as before commit d257cc8cb8d5
-> > ("locking/rwsem: Make handoff bit handling more consistent").
->
-> Ah, OK. I just saw another fix to the same commit and assumed that
-> perhaps it was intended to address the same issue.
->
->
-> > If the hang still exists, there may be other cause for it. Could you
-> > share more information about what the test case is doing and any kernel
-> > splat that you have?
->
-> It's all described in my earlier reply including my full test case:
->
-> https://lore.kernel.org/r/CAD=FV=URCo5xv3k3jWbxV1uRkUU5k6bcnuB1puZhxayEyVc6-A@mail.gmail.com
->
-> Previously I tested Hillf's patches and they fixed it for me.
+Move dynptr type check to is_dynptr_type_expected() from
+is_dynptr_reg_valid_init(), so that callers can better determine the cause
+of a negative result (dynamic pointer not valid/initialized, dynamic
+pointer of the wrong type).
 
-Hillf: do you have any plan here for your patches?
+Also, splitting makes the code more readable, since checking the dynamic
+pointer type is not necessarily related to validity and initialization.
 
-I spent some time re-testing this today atop mainline, specifically
-atop commit dcf8e5633e2e ("tracing: Define the is_signed_type() macro
-once"). Some notes:
+Split the validity/initialization and dynamic pointer type check also in
+the verifier, and adjust the expected error message in the test (a test for
+an unexpected dynptr type passed to a helper cannot be added due to missing
+suitable helpers, but this case has been tested manually).
 
-1. I can confirm that my test case still reproduces a hang on
-mainline, though it seems a bit harder to reproduce (sometimes I have
-to run for a few minutes). I didn't spend lots of time confirming that
-the hang is exactly the same, but the same testcase reproduces it so
-it probably is. If it's important I can drop into kgdb and dig around
-to confirm.
+Cc: Joanne Koong <joannelkoong@gmail.com>
+Cc: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ kernel/bpf/verifier.c                         | 35 ++++++++++++++-----
+ .../testing/selftests/bpf/prog_tests/dynptr.c |  2 +-
+ 2 files changed, 28 insertions(+), 9 deletions(-)
 
-2. Blindly applying the first (and resolving the trivial merge
-conflict) or both of your proposed patches no longer fixes the hang on
-mainline.
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 0194a36d0b36..1b913db252a3 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -779,8 +779,8 @@ static bool is_dynptr_reg_valid_uninit(struct bpf_verifier_env *env, struct bpf_
+ 	return true;
+ }
+ 
+-static bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_reg_state *reg,
+-				     enum bpf_arg_type arg_type)
++static bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env,
++				     struct bpf_reg_state *reg)
+ {
+ 	struct bpf_func_state *state = func(env, reg);
+ 	int spi = get_spi(reg->off);
+@@ -796,11 +796,24 @@ static bool is_dynptr_reg_valid_init(struct bpf_verifier_env *env, struct bpf_re
+ 			return false;
+ 	}
+ 
++	return true;
++}
++
++static bool is_dynptr_type_expected(struct bpf_verifier_env *env,
++				    struct bpf_reg_state *reg,
++				    enum bpf_arg_type arg_type)
++{
++	struct bpf_func_state *state = func(env, reg);
++	int spi = get_spi(reg->off);
++	enum bpf_dynptr_type dynptr_type;
++
+ 	/* ARG_PTR_TO_DYNPTR takes any type of dynptr */
+ 	if (arg_type == ARG_PTR_TO_DYNPTR)
+ 		return true;
+ 
+-	return state->stack[spi].spilled_ptr.dynptr.type == arg_to_dynptr_type(arg_type);
++	dynptr_type = arg_to_dynptr_type(arg_type);
++
++	return state->stack[spi].spilled_ptr.dynptr.type == dynptr_type;
+ }
+ 
+ /* The reg state of a pointer or a bounded scalar was saved when
+@@ -6050,21 +6063,27 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+ 			}
+ 
+ 			meta->uninit_dynptr_regno = regno;
+-		} else if (!is_dynptr_reg_valid_init(env, reg, arg_type)) {
++		} else if (!is_dynptr_reg_valid_init(env, reg)) {
++			verbose(env,
++				"Expected an initialized dynptr as arg #%d\n",
++				arg + 1);
++			return -EINVAL;
++		} else if (!is_dynptr_type_expected(env, reg, arg_type)) {
+ 			const char *err_extra = "";
+ 
+ 			switch (arg_type & DYNPTR_TYPE_FLAG_MASK) {
+ 			case DYNPTR_TYPE_LOCAL:
+-				err_extra = "local ";
++				err_extra = "local";
+ 				break;
+ 			case DYNPTR_TYPE_RINGBUF:
+-				err_extra = "ringbuf ";
++				err_extra = "ringbuf";
+ 				break;
+ 			default:
++				err_extra = "<unknown>";
+ 				break;
+ 			}
+-
+-			verbose(env, "Expected an initialized %sdynptr as arg #%d\n",
++			verbose(env,
++				"Expected a dynptr of type %s as arg #%d\n",
+ 				err_extra, arg + 1);
+ 			return -EINVAL;
+ 		}
+diff --git a/tools/testing/selftests/bpf/prog_tests/dynptr.c b/tools/testing/selftests/bpf/prog_tests/dynptr.c
+index bcf80b9f7c27..8fc4e6c02bfd 100644
+--- a/tools/testing/selftests/bpf/prog_tests/dynptr.c
++++ b/tools/testing/selftests/bpf/prog_tests/dynptr.c
+@@ -30,7 +30,7 @@ static struct {
+ 	{"invalid_helper2", "Expected an initialized dynptr as arg #3"},
+ 	{"invalid_write1", "Expected an initialized dynptr as arg #1"},
+ 	{"invalid_write2", "Expected an initialized dynptr as arg #3"},
+-	{"invalid_write3", "Expected an initialized ringbuf dynptr as arg #1"},
++	{"invalid_write3", "Expected an initialized dynptr as arg #1"},
+ 	{"invalid_write4", "arg 1 is an unacquired reference"},
+ 	{"invalid_read1", "invalid read from stack"},
+ 	{"invalid_read2", "cannot pass in dynptr at an offset"},
+-- 
+2.25.1
 
-3. Reverting Waiman's commit 6eebd5fb2083 ("locking/rwsem: Allow
-slowpath writer to ignore handoff bit if not set by first waiter") and
-then applying your two fixes _does_ still fix the patch on mainline. I
-ran for 20 minutes w/ no reproduction.
-
-So it seems like Waiman's recent commit interacts with your fix in a bad way. :(
-
--Doug
-
-
-
-
-
-
-
--Doug
