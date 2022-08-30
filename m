@@ -2,162 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23866C0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59AFEECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 06:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230215AbiH3GjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 02:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
+        id S230025AbiH3Gkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 02:40:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbiH3GjJ (ORCPT
+        with ESMTP id S229449AbiH3Gkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 02:39:09 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4591C79EDE
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:39:07 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id n17so12833995wrm.4
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 23:39:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:to:from:user-agent:references:from:to:cc;
-        bh=mNuvuJblGgM9erVe7VcLK6pPLtsf0LmqJmZgGgV3TEY=;
-        b=4JZcJU5Kk16NjSy/F4gIG+ZROwRDQaEaxk1TBxGeyVmhVZBBuI6MlZntdzUydskp0Y
-         K2QLeLkibCJDa+iqJgONHz3Yp7okPWStEX6X/5KZddbDfK+ogKTKEomSOc//pbZKU23J
-         8uoC5jijvaDy3zUtqNZBca90oR8FwjUXcnJwam1TiKWROB2VKLm5qsQEQQVTfCoyuOSo
-         TB9WV0mEclmgLdHmsxiMyeSjoeoL/4wR2W6Tc4qo5E2oSQ91RoiQc7DSXCFs3KjxTG0O
-         KPNWhSKWgMsvyl+JPG2BdMjDjlwa2ZbqCc4THp+M00xceZQUQOQSNS1b9CbV2R5lgNHH
-         NtoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:to:from:user-agent:references:x-gm-message-state:from:to:cc;
-        bh=mNuvuJblGgM9erVe7VcLK6pPLtsf0LmqJmZgGgV3TEY=;
-        b=DNiWbutAkNcjRfaejK+q6Lhy20J8DpKN1myaMYCiLQpYpN1fxYpivLBaRdICKYNyvj
-         YWfoUHscj6lx6AwjKtk7chPIJibIyLd37XnjIoR4IRYnnQK4DeQ3tcD6Abv8rVZ+6vgH
-         dxumSiYh8I28dZ6QhctoMdIJLgcHVZbupwPilJ2xL0mWRc3tzm3TO31EoksnMx+xHegE
-         OaCo2PbuzLtkHzQn95ixX2eHc1ERY3BAkBQQ6U3j2Div4C5IjETWwe8U6YmQGKgQcPkf
-         5CzYPjmXMAwJJvkAYUYqEKku6K+jQiUhFZxkLyWcpJF0ymUMKdilWUBpz0DbaCfJytD8
-         RhIg==
-X-Gm-Message-State: ACgBeo3SD7dJuHl5MT80KxtA5K09Q6PJvZr7UKgnUqLtC3jsVSofV0Lr
-        uDFXOqiV+nEQhcbP2I//um+zgw==
-X-Google-Smtp-Source: AA6agR62NkzOlArUrEk7k7uj4nn6Sn+TSr+IpCcQazgLhmOgjmRiJzUtmuBSZR6cyJwtWRmU9owjjw==
-X-Received: by 2002:adf:fa4e:0:b0:225:8616:be3a with SMTP id y14-20020adffa4e000000b002258616be3amr7730934wrr.234.1661841545776;
-        Mon, 29 Aug 2022 23:39:05 -0700 (PDT)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id m13-20020a05600c3b0d00b003a83b066401sm10964211wms.31.2022.08.29.23.39.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Aug 2022 23:39:05 -0700 (PDT)
-References: <20220805085716.5635-1-yu.tu@amlogic.com>
- <20220805085716.5635-3-yu.tu@amlogic.com>
- <19654574-bdc0-9fa5-6465-fc88b20e20c5@linaro.org>
- <c223a85a-b76e-0e82-9a8c-6b60588dc03a@amlogic.com>
- <1jmtccz0f4.fsf@starbuckisacylon.baylibre.com>
- <edc9b0bd-6c69-0562-05ca-db0496897cf1@amlogic.com>
- <1j1qszv0wa.fsf@starbuckisacylon.baylibre.com>
- <72631035-58a6-23b5-1f7e-f1643b120432@amlogic.com>
-User-agent: mu4e 1.8.7; emacs 28.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V3 2/6] arm64: dts: meson: add S4 Soc PLL clock
- controller in DT
-Date:   Tue, 30 Aug 2022 08:36:00 +0200
-In-reply-to: <72631035-58a6-23b5-1f7e-f1643b120432@amlogic.com>
-Message-ID: <1jy1v6z14n.fsf@starbuckisacylon.baylibre.com>
+        Tue, 30 Aug 2022 02:40:35 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 580194456E;
+        Mon, 29 Aug 2022 23:40:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661841630; x=1693377630;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=r1rkNqH4NwCMJ8U2+7fF8EZ3qwx3bexNboxUU+Dfyn4=;
+  b=VI4NafG1+X8mhmKkU7fTDr5RJW8Gp0yg/lPPOLPAJ2mQiGLRBTlKU3Ch
+   6EEpDm9IFSXWxLMIwcX9G1JYisGPElWD1TY5zmx2gy4WiWwA78luiMgZX
+   KHP/ViFMgZimQVzIoW9ImIz07f3FVRjTtzZUtHsa5gvFE0Nasz2pv0kkt
+   XwL3rHG1iKgLaTVKfdq4equBgJ98tJOmKQiv1d7HsxcC5SRCPoPH1NVYn
+   v0xWylE6vnUsr/1ChgJudktWbNzmvt+/M73qzphpgdSCLxtvtxGYpJyYf
+   unjX+mCW0v83wttw5EjLGnUeMnnJ+KoB1WbkiEC4BghrY7htPRE+xffB8
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="295098495"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="295098495"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 23:40:29 -0700
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="641246660"
+Received: from ahajda-mobl.ger.corp.intel.com (HELO [10.213.1.40]) ([10.213.1.40])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 23:40:27 -0700
+Message-ID: <8d880425-72f5-6ba6-933f-b8b016da88cd@intel.com>
+Date:   Tue, 30 Aug 2022 08:40:25 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.13.0
+Subject: Re: [PATCH v2] overflow: Allow mixed type arguments
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-hardening@vger.kernel.org,
+        Daniel Latypov <dlatypov@google.com>,
+        Vitor Massaru Iha <vitor@massaru.org>,
+        linux-kernel@vger.kernel.org
+References: <20220829214550.3443472-1-keescook@chromium.org>
+From:   Andrzej Hajda <andrzej.hajda@intel.com>
+Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298
+ Gdansk - KRS 101882 - NIP 957-07-52-316
+In-Reply-To: <20220829214550.3443472-1-keescook@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On Tue 30 Aug 2022 at 14:05, Yu Tu <yu.tu@amlogic.com> wrote:
 
-> On 2022/8/29 17:43, Jerome Brunet wrote:
->> [ EXTERNAL EMAIL ]
->> On Mon 15 Aug 2022 at 14:17, Yu Tu <yu.tu@amlogic.com> wrote:
->>=20
->>> Hi Jerome=EF=BC=8C
->>>
->>> On 2022/8/10 21:32, Jerome Brunet wrote:
->>>> [ EXTERNAL EMAIL ]
->>>> On Fri 05 Aug 2022 at 17:39, Yu Tu <yu.tu@amlogic.com> wrote:
->>>>
->>>>> Hi Krzysztof,
->>>>>       Thank you for your reply.
->>>>>
->>>>> On 2022/8/5 17:16, Krzysztof Kozlowski wrote:
->>>>>> [ EXTERNAL EMAIL ]
->>>>>> On 05/08/2022 10:57, Yu Tu wrote:
->>>>>>> Added information about the S4 SOC PLL Clock controller in DT.
->>>>>>>
->>>>>>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->>>>>>> ---
->>>>>>>     arch/arm64/boot/dts/amlogic/meson-s4.dtsi | 8 ++++++++
->>>>>>>     1 file changed, 8 insertions(+)
->>>>>>>
->>>>>>> diff --git a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi b/arch/arm64=
-/boot/dts/amlogic/meson-s4.dtsi
->>>>>>> index ff213618a598..a816b1f7694b 100644
->>>>>>> --- a/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
->>>>>>> +++ b/arch/arm64/boot/dts/amlogic/meson-s4.dtsi
->>>>>>> @@ -92,6 +92,14 @@ apb4: apb4@fe000000 {
->>>>>>>     			#size-cells =3D <2>;
->>>>>>>     			ranges =3D <0x0 0x0 0x0 0xfe000000 0x0 0x480000>;
->>>>>>>     +			clkc_pll: pll-clock-controller@8000 {
->>>>>> Node names should be generic - clock-controller.
->>>>>> https://devicetree-specification.readthedocs.io/en/latest/chapter2-d=
-evicetree-basics.html#generic-names-recommendation
->>>>>>
->>>>> I will change to clkc_pll: clock-controller@8000, in next version.
->>>> Same comment applies to the binding doc.
->>> OKay.
->>>> Also it would be nice to split this in two series.
->>>> Bindings and drivers in one, arm64 dt in the other. These changes goes
->>>> in through different trees.
->>> At present, Bindings, DTS and drivers are three series. Do you mean to =
-put
->>> Bindings and drivers together? If so, checkpatch.pl will report a warni=
-ng.
->> Yes because patches are not in yet so there is a good reason to ignore
->> the warning. Warning will never show up on the actual tree if the
->> patches are correctly ordered.
+On 29.08.2022 23:45, Kees Cook wrote:
+> When the check_[op]_overflow() helpers were introduced, all arguments were
+> required to be the same type to make the fallback macros simpler. However,
+> once the fallback macros were removed[1], it is fine to allow mixed
+> types, which makes using the helpers much more useful, as they can be
+> used to test for type-based overflows (e.g. adding two large ints but
+> storing into a u8), as would be handy in the drm core[2].
 >
-> I think Binding, DTS and drivers use three series and you said two series
-> is not a big problem. Three series are recommended for checkpatch.pl, I
-> think it should be easy for that to separate and merge=E3=80=82
-
-No - There is only 2 series. 1 for the bindings and clock drivers and
-one for the DT once things are in
-
+> Remove the restriction, and add additional self-tests that exercise some
+> of the mixed-type overflow cases.
 >
-> I've sent it to V4. Please look at V4 and give some comments.
+> [1] https://git.kernel.org/linus/4eb6bd55cfb22ffc20652732340c4962f3ac9a91
+> [2] https://lore.kernel.org/lkml/20220824084514.2261614-2-gwan-gyeong.mun@intel.com
 >
+> Cc: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+> Cc: Gwan-gyeong Mun <gwan-gyeong.mun@intel.com>
+> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+> Cc: "Gustavo A. R. Silva" <gustavoars@kernel.org>
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Cc: linux-hardening@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+> v2: change names to "type1_type2__output-type" for better readability (Rasmus)
+> v1: https://lore.kernel.org/lkml/20220829204729.3409270-1-keescook@chromium.org
+> ---
+>   include/linux/overflow.h |  6 ----
+>   lib/overflow_kunit.c     | 77 +++++++++++++++++++++++++++++-----------
+>   2 files changed, 57 insertions(+), 26 deletions(-)
+>
+> diff --git a/include/linux/overflow.h b/include/linux/overflow.h
+> index 0eb3b192f07a..ad692fb11bf3 100644
+> --- a/include/linux/overflow.h
+> +++ b/include/linux/overflow.h
+> @@ -63,8 +63,6 @@ static inline bool __must_check __must_check_overflow(bool overflow)
+>   	typeof(a) __a = (a);			\
+>   	typeof(b) __b = (b);			\
+>   	typeof(d) __d = (d);			\
+> -	(void) (&__a == &__b);			\
+> -	(void) (&__a == __d);			\
+>   	__builtin_add_overflow(__a, __b, __d);	\
+>   }))
 
-That's not how it works. You sent that before v3 review was done. There
-are still comments that needed to be addressed
+Is there a reason to keep all local vars?
+Why not:
+#define check_add_overflow(a, b, d) 
+__must_check_overflow(__builtin_add_overflow((a), (b), (d)))
 
-Given the time it takes to make that review I going to completly skip v4
-and I'd like on the comment to addressed before you send another version
+Similar for other macros.
 
+Regards
+Andrzej
 
->>=20
->>>
->>>>
->>>>>> Best regards,
->>>>>> Krzysztof
->>>>>> .
->>>> .
->> .
+>   
+> @@ -72,8 +70,6 @@ static inline bool __must_check __must_check_overflow(bool overflow)
+>   	typeof(a) __a = (a);			\
+>   	typeof(b) __b = (b);			\
+>   	typeof(d) __d = (d);			\
+> -	(void) (&__a == &__b);			\
+> -	(void) (&__a == __d);			\
+>   	__builtin_sub_overflow(__a, __b, __d);	\
+>   }))
+>   
+> @@ -81,8 +77,6 @@ static inline bool __must_check __must_check_overflow(bool overflow)
+>   	typeof(a) __a = (a);			\
+>   	typeof(b) __b = (b);			\
+>   	typeof(d) __d = (d);			\
+> -	(void) (&__a == &__b);			\
+> -	(void) (&__a == __d);			\
+>   	__builtin_mul_overflow(__a, __b, __d);	\
+>   }))
+>   
+> diff --git a/lib/overflow_kunit.c b/lib/overflow_kunit.c
+> index 7e3e43679b73..5e1b51d42e93 100644
+> --- a/lib/overflow_kunit.c
+> +++ b/lib/overflow_kunit.c
+> @@ -16,12 +16,15 @@
+>   #include <linux/types.h>
+>   #include <linux/vmalloc.h>
+>   
+> -#define DEFINE_TEST_ARRAY(t)			\
+> -	static const struct test_ ## t {	\
+> -		t a, b;				\
+> -		t sum, diff, prod;		\
+> -		bool s_of, d_of, p_of;		\
+> -	} t ## _tests[]
+> +#define DEFINE_TEST_ARRAY_TYPED(t1, t2, t)			\
+> +	static const struct test_ ## t1 ## _ ## t2 ## __ ## t {	\
+> +		t1 a;						\
+> +		t2 b;						\
+> +		t sum, diff, prod;				\
+> +		bool s_of, d_of, p_of;				\
+> +	} t1 ## _ ## t2 ## __ ## t ## _tests[]
+> +
+> +#define DEFINE_TEST_ARRAY(t)	DEFINE_TEST_ARRAY_TYPED(t, t, t)
+>   
+>   DEFINE_TEST_ARRAY(u8) = {
+>   	{0, 0, 0, 0, 0, false, false, false},
+> @@ -235,8 +238,8 @@ DEFINE_TEST_ARRAY(s64) = {
+>   		a, b, r, _r, #t);				\
+>   } while (0)
+>   
+> -#define DEFINE_TEST_FUNC(t, fmt)					\
+> -static void do_test_ ## t(struct kunit *test, const struct test_ ## t *p) \
+> +#define DEFINE_TEST_FUNC_TYPED(n, t, fmt)				\
+> +static void do_test_ ## n(struct kunit *test, const struct test_ ## n *p) \
+>   {							   		\
+>   	check_one_op(t, fmt, add, "+", p->a, p->b, p->sum, p->s_of);	\
+>   	check_one_op(t, fmt, add, "+", p->b, p->a, p->sum, p->s_of);	\
+> @@ -245,15 +248,18 @@ static void do_test_ ## t(struct kunit *test, const struct test_ ## t *p) \
+>   	check_one_op(t, fmt, mul, "*", p->b, p->a, p->prod, p->p_of);	\
+>   }									\
+>   									\
+> -static void t ## _overflow_test(struct kunit *test) {			\
+> +static void n ## _overflow_test(struct kunit *test) {			\
+>   	unsigned i;							\
+>   									\
+> -	for (i = 0; i < ARRAY_SIZE(t ## _tests); ++i)			\
+> -		do_test_ ## t(test, &t ## _tests[i]);			\
+> +	for (i = 0; i < ARRAY_SIZE(n ## _tests); ++i)			\
+> +		do_test_ ## n(test, &n ## _tests[i]);			\
+>   	kunit_info(test, "%zu %s arithmetic tests finished\n",		\
+> -		ARRAY_SIZE(t ## _tests), #t);				\
+> +		ARRAY_SIZE(n ## _tests), #n);				\
+>   }
+>   
+> +#define DEFINE_TEST_FUNC(t, fmt)					\
+> +	DEFINE_TEST_FUNC_TYPED(t ## _ ## t ## __ ## t, t, fmt)
+> +
+>   DEFINE_TEST_FUNC(u8, "%d");
+>   DEFINE_TEST_FUNC(s8, "%d");
+>   DEFINE_TEST_FUNC(u16, "%d");
+> @@ -265,6 +271,33 @@ DEFINE_TEST_FUNC(u64, "%llu");
+>   DEFINE_TEST_FUNC(s64, "%lld");
+>   #endif
+>   
+> +DEFINE_TEST_ARRAY_TYPED(u32, u32, u8) = {
+> +	{0, 0, 0, 0, 0, false, false, false},
+> +	{U8_MAX, 2, 1, U8_MAX - 2, U8_MAX - 1, true, false, true},
+> +	{U8_MAX + 1, 0, 0, 0, 0, true, true, false},
+> +};
+> +DEFINE_TEST_FUNC_TYPED(u32_u32__u8, u8, "%d");
+> +
+> +DEFINE_TEST_ARRAY_TYPED(u32, u32, int) = {
+> +	{0, 0, 0, 0, 0, false, false, false},
+> +	{U32_MAX, 0, -1, -1, 0, true, true, false},
+> +};
+> +DEFINE_TEST_FUNC_TYPED(u32_u32__int, int, "%d");
+> +
+> +DEFINE_TEST_ARRAY_TYPED(u8, u8, int) = {
+> +	{0, 0, 0, 0, 0, false, false, false},
+> +	{U8_MAX, U8_MAX, 2 * U8_MAX, 0, U8_MAX * U8_MAX, false, false, false},
+> +	{1, 2, 3, -1, 2, false, false, false},
+> +};
+> +DEFINE_TEST_FUNC_TYPED(u8_u8__int, int, "%d");
+> +
+> +DEFINE_TEST_ARRAY_TYPED(int, int, u8) = {
+> +	{0, 0, 0, 0, 0, false, false, false},
+> +	{1, 2, 3, U8_MAX, 2, false, true, false},
+> +	{-1, 0, U8_MAX, U8_MAX, 0, true, true, false},
+> +};
+> +DEFINE_TEST_FUNC_TYPED(int_int__u8, u8, "%d");
+> +
+>   static void overflow_shift_test(struct kunit *test)
+>   {
+>   	int count = 0;
+> @@ -649,17 +682,21 @@ static void overflow_size_helpers_test(struct kunit *test)
+>   }
+>   
+>   static struct kunit_case overflow_test_cases[] = {
+> -	KUNIT_CASE(u8_overflow_test),
+> -	KUNIT_CASE(s8_overflow_test),
+> -	KUNIT_CASE(u16_overflow_test),
+> -	KUNIT_CASE(s16_overflow_test),
+> -	KUNIT_CASE(u32_overflow_test),
+> -	KUNIT_CASE(s32_overflow_test),
+> +	KUNIT_CASE(u8_u8__u8_overflow_test),
+> +	KUNIT_CASE(s8_s8__s8_overflow_test),
+> +	KUNIT_CASE(u16_u16__u16_overflow_test),
+> +	KUNIT_CASE(s16_s16__s16_overflow_test),
+> +	KUNIT_CASE(u32_u32__u32_overflow_test),
+> +	KUNIT_CASE(s32_s32__s32_overflow_test),
+>   /* Clang 13 and earlier generate unwanted libcalls on 32-bit. */
+>   #if BITS_PER_LONG == 64
+> -	KUNIT_CASE(u64_overflow_test),
+> -	KUNIT_CASE(s64_overflow_test),
+> +	KUNIT_CASE(u64_u64__u64_overflow_test),
+> +	KUNIT_CASE(s64_s64__s64_overflow_test),
+>   #endif
+> +	KUNIT_CASE(u32_u32__u8_overflow_test),
+> +	KUNIT_CASE(u32_u32__int_overflow_test),
+> +	KUNIT_CASE(u8_u8__int_overflow_test),
+> +	KUNIT_CASE(int_int__u8_overflow_test),
+>   	KUNIT_CASE(overflow_shift_test),
+>   	KUNIT_CASE(overflow_allocation_test),
+>   	KUNIT_CASE(overflow_size_helpers_test),
 
