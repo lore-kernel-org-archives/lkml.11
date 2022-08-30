@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72314ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90FA3ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:34:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbiH3RdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:33:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32848 "EHLO
+        id S231954AbiH3ReY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231796AbiH3RcR (ORCPT
+        with ESMTP id S232079AbiH3Rc6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:32:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E0E1636EC;
-        Tue, 30 Aug 2022 10:28:12 -0700 (PDT)
+        Tue, 30 Aug 2022 13:32:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1D4C32CD;
+        Tue, 30 Aug 2022 10:29:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4137BB81D2D;
-        Tue, 30 Aug 2022 17:26:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F69C433D6;
-        Tue, 30 Aug 2022 17:26:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1ED23B81CD0;
+        Tue, 30 Aug 2022 17:27:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D195DC433C1;
+        Tue, 30 Aug 2022 17:27:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880407;
-        bh=0cH85VvIYBOZ+pBLS98yG/BMwMyFTJk/yyn7iuR9B+E=;
+        s=k20201202; t=1661880448;
+        bh=tjMui3/sZ+L+ZhPIM7/IALO8nmLeCVVbPByfLgaGHUs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t75wnxgK3+WlrxRSLhHuGe9HNWDv6fZCDT1dMxQ+SmB8D5Dn8TW3X3Zes4cYbIPcU
-         mT0szj9Z3hjYXAOO/p6SSD4lyBGeFsCmx20U3PTClpjl3rw+l/BvEflg8Sl2FMPHFi
-         JDgH5g6NsfKiGuHhqU4TBIjY2RjvMbMXzO9y7QWMFEIgG3HNGkXs4EsPPrkDQAFe2a
-         gGwRM0JtiK45HrWqIboWM22MVmME8Dk0PB3VMXimXZkijn35fJMOtglJjcqgHVTr8Y
-         secRA9KWVbsIG9C6RwK31SS8UTMjMJpJRcM2VF3gSNALl5XMRgbwqSVw1oMDLw85Wk
-         w2Jut3USIOQmQ==
+        b=CPMSQSTT8hdIGz+Ai2wkcHj9Z2X2Sm+xu6zgS/Fu9nbpqmHvnzM5awjua895w1PUb
+         AAHu6piEoyB414f4hKRzzfBFhAMFqeExK0agDpGB0BeI35eJ1XqsV9mNGYQCD9cqx7
+         2YXFKmc923EZoFEPzb59WSjpILE0AXPpYYp6YN8Jzrek4sOmIBX1t6JxAtPeHlPg6N
+         8N4SCtQOrUCmsXcvizmuecOdnbV0n7jHvi9gQ7U841vUp6cyB5h1DK9VKe0Nrgipez
+         7q0m/5hstdOhdv4ZEnI6JZhXxI6fNqYOUUluEyli7rrsB4vbsnJxpgK4DQLvzA9sDx
+         57jx09HjSy2Kg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
-        linux-parisc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 5/8] parisc: Add runtime check to prevent PA2.0 kernels on PA1.x machines
-Date:   Tue, 30 Aug 2022 13:26:28 -0400
-Message-Id: <20220830172631.581969-5-sashal@kernel.org>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        christophe.leroy@csgroup.eu, mpe@ellerman.id.au,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.9 6/6] fbdev: chipsfb: Add missing pci_disable_device() in chipsfb_pci_init()
+Date:   Tue, 30 Aug 2022 13:27:06 -0400
+Message-Id: <20220830172706.582088-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172631.581969-1-sashal@kernel.org>
-References: <20220830172631.581969-1-sashal@kernel.org>
+In-Reply-To: <20220830172706.582088-1-sashal@kernel.org>
+References: <20220830172706.582088-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,81 +52,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 591d2108f3abc4db9f9073cae37cf3591fd250d6 ]
+[ Upstream commit 07c55c9803dea748d17a054000cbf1913ce06399 ]
 
-If a 32-bit kernel was compiled for PA2.0 CPUs, it won't be able to run
-on machines with PA1.x CPUs. Add a check and bail out early if a PA1.x
-machine is detected.
+Add missing pci_disable_device() in error path in chipsfb_pci_init().
 
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/head.S | 43 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
+ drivers/video/fbdev/chipsfb.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/parisc/kernel/head.S b/arch/parisc/kernel/head.S
-index 9b99eb0712ad1..2f570a5205866 100644
---- a/arch/parisc/kernel/head.S
-+++ b/arch/parisc/kernel/head.S
-@@ -22,7 +22,7 @@
- #include <linux/linkage.h>
- #include <linux/init.h>
- 
--	.level	PA_ASM_LEVEL
-+	.level	1.1
- 
- 	__INITDATA
- ENTRY(boot_args)
-@@ -69,6 +69,47 @@ $bss_loop:
- 	stw,ma          %arg2,4(%r1)
- 	stw,ma          %arg3,4(%r1)
- 
-+#if !defined(CONFIG_64BIT) && defined(CONFIG_PA20)
-+	/* This 32-bit kernel was compiled for PA2.0 CPUs. Check current CPU
-+	 * and halt kernel if we detect a PA1.x CPU. */
-+	ldi		32,%r10
-+	mtctl		%r10,%cr11
-+	.level 2.0
-+	mfctl,w		%cr11,%r10
-+	.level 1.1
-+	comib,<>,n	0,%r10,$cpu_ok
-+
-+	load32		PA(msg1),%arg0
-+	ldi		msg1_end-msg1,%arg1
-+$iodc_panic:
-+	copy		%arg0, %r10
-+	copy		%arg1, %r11
-+	load32		PA(init_stack),%sp
-+#define MEM_CONS 0x3A0
-+	ldw		MEM_CONS+32(%r0),%arg0	// HPA
-+	ldi		ENTRY_IO_COUT,%arg1
-+	ldw		MEM_CONS+36(%r0),%arg2	// SPA
-+	ldw		MEM_CONS+8(%r0),%arg3	// layers
-+	load32		PA(__bss_start),%r1
-+	stw		%r1,-52(%sp)		// arg4
-+	stw		%r0,-56(%sp)		// arg5
-+	stw		%r10,-60(%sp)		// arg6 = ptr to text
-+	stw		%r11,-64(%sp)		// arg7 = len
-+	stw		%r0,-68(%sp)		// arg8
-+	load32		PA(.iodc_panic_ret), %rp
-+	ldw		MEM_CONS+40(%r0),%r1	// ENTRY_IODC
-+	bv,n		(%r1)
-+.iodc_panic_ret:
-+	b .				/* wait endless with ... */
-+	or		%r10,%r10,%r10	/* qemu idle sleep */
-+msg1:	.ascii "Can't boot kernel which was built for PA8x00 CPUs on this machine.\r\n"
-+msg1_end:
-+
-+$cpu_ok:
-+#endif
-+
-+	.level	PA_ASM_LEVEL
-+
- 	/* Initialize startup VM. Just map first 16/32 MB of memory */
- 	load32		PA(swapper_pg_dir),%r4
- 	mtctl		%r4,%cr24	/* Initialize kernel root pointer */
+diff --git a/drivers/video/fbdev/chipsfb.c b/drivers/video/fbdev/chipsfb.c
+index 84a3778552eba..ec1f8af165e9e 100644
+--- a/drivers/video/fbdev/chipsfb.c
++++ b/drivers/video/fbdev/chipsfb.c
+@@ -432,6 +432,7 @@ static int chipsfb_pci_init(struct pci_dev *dp, const struct pci_device_id *ent)
+  err_release_fb:
+ 	framebuffer_release(p);
+  err_disable:
++	pci_disable_device(dp);
+  err_out:
+ 	return rc;
+ }
 -- 
 2.35.1
 
