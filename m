@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5FF3ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:32:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B05ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230447AbiH3LcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55158 "EHLO
+        id S230467AbiH3LcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbiH3LaK (ORCPT
+        with ESMTP id S229997AbiH3LaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:30:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6767D24BD6;
-        Tue, 30 Aug 2022 04:30:06 -0700 (PDT)
+        Tue, 30 Aug 2022 07:30:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 995832CC8C;
+        Tue, 30 Aug 2022 04:30:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C114B81A66;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CA3261562;
         Tue, 30 Aug 2022 11:30:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A856C4FF17;
-        Tue, 30 Aug 2022 11:30:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7AB4C50001;
+        Tue, 30 Aug 2022 11:30:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661859000;
-        bh=q7516nLGJqvL48u1D0OTxXEREQ4QbqQWdVf6bIh8Ods=;
+        s=k20201202; t=1661859001;
+        bh=n7oevCsJiM3+P/j5DFo0XgY4G7Bn2vNQPrFCIQg+vT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ncQ2umLD75ttmTCG7Qvyb/R3ca19EXfTC4tkDd1Z1gYDq7BI1DtyTzHlNbwe08w1a
-         mtMYaRZpJVLBt4Uhg0a+yresA1ZgrVRJmnRZnEtxjVwDkF9A33tmZ9iuPfmumgGVZE
-         c0CFTX07XIZON4ErIn6AMu4Xoi9e93M9PXMnlfYDxxkLJ+e2+isekCKH2ac+D0KS8z
-         1B0Ze9FI2IMxyJ7r+zW5quR/eeXBSerio2fgDwN9L322aFUmu1QxS25XDkF/NIZRk0
-         IUox0hA628+IWBdQLPce191gEUnJoAe1HDNnhAd8Qzvge3EDTVH4Gimctmr+p5Cv9u
-         0NYfQKk06Wmxw==
+        b=bNXRLM5oMPNWPrkS7vCalNu7VmiGGZvPxLlr8H2WLgBkYPWQjtvNHyRWfCJANyug5
+         kc78JtCEOCQaU0En/ETuTk2VMWHvXfhXGxPzGpQUiG95fEPQsaGrpQW0Z0lr58mdHq
+         QAJ6nY4x9uJUBZtEgDOGKMgYtP441wG3fCEGwm/3w9nJ38/hAzRLJFtZLzklOUnuXI
+         8s8gwcoFCYvY/hemBKwkml5l1sAQ3qLT7vT7UdrQjInRSXG4b5CcO1UYyrGBjKF54x
+         YfAtzljIAaL43Nq9cpgbFjQzky1wlzd+UVx1fUydy0J3f/W7GuxA1hPYsiMrkdFQmi
+         LsvVB8kE8Jepw==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oSzRO-00010d-An; Tue, 30 Aug 2022 13:29:58 +0200
+        id 1oSzRP-00011G-GU; Tue, 30 Aug 2022 13:29:59 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -47,9 +47,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v4 17/30] dt-bindings: phy: qcom,qmp-ufs: add missing SM8150 power domain
-Date:   Tue, 30 Aug 2022 13:29:10 +0200
-Message-Id: <20220830112923.3725-18-johan+linaro@kernel.org>
+Subject: [PATCH v4 30/30] phy: qcom-qmp-usb: drop pipe clock lane suffix
+Date:   Tue, 30 Aug 2022 13:29:23 +0200
+Message-Id: <20220830112923.3725-31-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830112923.3725-1-johan+linaro@kernel.org>
 References: <20220830112923.3725-1-johan+linaro@kernel.org>
@@ -59,30 +59,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing optional power-domains property used by the SM8150 UFS
-QMP PHY to the binding.
+The pipe clock is defined in the "lane" node so there's no need to keep
+adding a redundant lane-number suffix to the clock name.
 
-Fixes: fe75b0c4a691 ("arm64: dts: qcom: sm8150: Add ufs power-domain entries")
+Update driver to support the new binding where the pipe clock name has
+been deprecated by instead requesting the clock by index.
+
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/phy/qualcomm/phy-qcom-qmp-usb.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-index 7a1f80e2cf23..0e76256e5636 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
-@@ -48,6 +48,9 @@ properties:
-     minItems: 1
-     maxItems: 3
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-usb.c b/drivers/phy/qualcomm/phy-qcom-qmp-usb.c
+index ce0e2acb7094..59ed6c89979d 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-usb.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-usb.c
+@@ -2630,7 +2630,6 @@ int qcom_qmp_phy_usb_create(struct device *dev, struct device_node *np, int id,
+ 	struct qcom_qmp *qmp = dev_get_drvdata(dev);
+ 	struct phy *generic_phy;
+ 	struct qmp_phy *qphy;
+-	char prop_name[MAX_PROP_NAME];
+ 	int ret;
  
-+  power-domains:
-+    maxItems: 1
-+
-   resets:
-     maxItems: 1
+ 	qphy = devm_kzalloc(dev, sizeof(*qphy), GFP_KERNEL);
+@@ -2689,8 +2688,7 @@ int qcom_qmp_phy_usb_create(struct device *dev, struct device_node *np, int id,
+ 	if (!qphy->pcs_misc)
+ 		dev_vdbg(dev, "PHY pcs_misc-reg not used\n");
  
+-	snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
+-	qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
++	qphy->pipe_clk = devm_get_clk_from_child(dev, np, NULL);
+ 	if (IS_ERR(qphy->pipe_clk)) {
+ 		return dev_err_probe(dev, PTR_ERR(qphy->pipe_clk),
+ 				     "failed to get lane%d pipe clock\n", id);
 -- 
 2.35.1
 
