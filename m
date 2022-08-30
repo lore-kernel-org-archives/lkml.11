@@ -2,97 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C86ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 966C5ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229752AbiH3Ljc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42908 "EHLO
+        id S230429AbiH3Ljg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231194AbiH3Lie (ORCPT
+        with ESMTP id S231219AbiH3Lij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:38:34 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FFF64E86B;
-        Tue, 30 Aug 2022 04:37:22 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id l3so10823716plb.10;
-        Tue, 30 Aug 2022 04:37:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=6KNK/Qer37pzDc5PqooWdVUsv4ChHn4/mUHtr5VgJZ0=;
-        b=B/RK3EqxipgVqKFf0dtCSUmJhO0BwkBfBN5JAZqQrjRyS55tYNgcifxj8m3yKWL9T1
-         sN4yvF+Rde0etRQu9R9ULdjfCNVWfDQM08fHMWWE4ZEkxxd7FdC/wW+zc+do68vs6WKQ
-         VL0Wr64doOvUeppiDemQZhnFV4UDB2aU+4Bmqf+YobACeQtWuwuMy/NngcIywMlDBl6Z
-         U2cKgIZI7l+4OdMTs76iRSEbJ69dVBtzqlKaNYVxaE1RbpmdqCgdzUBWAIjgxFdM02By
-         zV6rc7/icw4DfWHUNm/SLdR77rl8NDTZE8BCSGlpP7wcG3VzaS69ntrzekgJepNCOTz9
-         gC9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=6KNK/Qer37pzDc5PqooWdVUsv4ChHn4/mUHtr5VgJZ0=;
-        b=pkzW9BO6aQyqPiJHf2SeQonnzw4WcwoBhYgrpz21b5Ex1tIEZ6Ve1nVpYB++eGi70U
-         yB7hfGq5JLOum9JbuIetGUZRMrlZejBtdk5meMRAddSR4zn/OLvpoarC/Czj4lBYZ8fr
-         TdzBT5L3YjmN4EcpoBYAmX2RcZsRtz2RhLquxmeNX2rBjHZPUA4FmKOe+dldpdj/13NT
-         7GQ+4vuG++gho2ze9bmJDq4eOnhVPQERchdrykJMJo9DBA8Rtk0etL03jDvtrwEhJYZ0
-         7ytBJH8cj3ASQ7Dwi8TFcqxLst7s8NPVHZ8g0UBDmHCk6thKyWQp0hwEAe8LXEkujsP5
-         NIUA==
-X-Gm-Message-State: ACgBeo2JL6HPUf4t8AIvfX8MITXPMpiPK6/ElgHDRGMpns6DXTi8Al+Z
-        M8l4w918qW6wqp+y1OwG2Us=
-X-Google-Smtp-Source: AA6agR75UjHnbrL+QMBV7Kx0U4AmXrY0/uQSilpcTQY4gnXb4H5a3CnIgH5v5bp5zmVwiNAoHs3ghQ==
-X-Received: by 2002:a17:90b:4a51:b0:1f5:8308:6ed7 with SMTP id lb17-20020a17090b4a5100b001f583086ed7mr23096648pjb.177.1661859441227;
-        Tue, 30 Aug 2022 04:37:21 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id d6-20020a170902654600b0016cb873fe6fsm7467590pln.183.2022.08.30.04.37.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 04:37:20 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: cui.jinpeng2@zte.com.cn
-To:     balbi@kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] usb: gadget: remove redundant variables ret
-Date:   Tue, 30 Aug 2022 11:37:16 +0000
-Message-Id: <20220830113716.287855-1-cui.jinpeng2@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 30 Aug 2022 07:38:39 -0400
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548D51AD87
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:37:30 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id E17505801D8;
+        Tue, 30 Aug 2022 07:37:26 -0400 (EDT)
+Received: from imap51 ([10.202.2.101])
+  by compute3.internal (MEProxy); Tue, 30 Aug 2022 07:37:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1661859446; x=1661860046; bh=Oupn4eihBs
+        i0MiLn85P4dhLgR7rqSv7zUgSdpKnmCGk=; b=k6PVLwqikiKnbm9KWzOSLRNMuO
+        ipubifHhHOySC975owsKGRAvLAJ8UIDt8zBiP0ipjOePPcitcsWiUXqFwe697nTV
+        /ybV4l7AtnADfW4mDMt4vPZuM/w6V5poMXqFYQgPWWQ6YiVChVKLtAbzNntCwKP0
+        4rsipZ4rRLX6HVYbFGl7lUDkmTItHrAf6MiUrPy/bhDYvq76vo4DEllCHyiBR+a4
+        kqSIK8pfN9y7aSZWDa4Jpspq9cFkSHBS9uGLXxBgCyUINMnApo1E0qvepfKwR+9W
+        8/TObG4yD0UHKuwvKQtQ7yemnuRP1uJG4KiqEx2vLgJcR890l7xEJry9lrGg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        i56a14606.fm1; t=1661859446; x=1661860046; bh=Oupn4eihBsi0MiLn85
+        P4dhLgR7rqSv7zUgSdpKnmCGk=; b=LF4CCGJe/E9AAzS3vhlzL3gPRaFjg0od9b
+        QCu2/es7f4b0wxDSGar9ChqSa1o6s6j+5hzvt53D+ejZO2NxcWI3fk4sUzs6d7ye
+        dM15mQMIO+4J6vqczxGrjgSH4ZFbzlqNjrMySYysqc2T2aztEp8gXjgL8tL9tpey
+        //vy05ZhUBO8+5o+/grrfaDMeo4wcF5lF5/+Rew4VVoRKVGh6po7oHKh262uiLpR
+        zILRqhRirH6cGEt8Krb6Op+/GuE003fKQyqGCjnzaDe8gCnM1/Wcw7bFBML/PEUt
+        bZ15Q7QLSJWJrFWrhtuT9zM3ByolA6e5U98F4H9SfPb45MBDQdjA==
+X-ME-Sender: <xms:dfYNY4ftYDUwhy1k6OjYWVhivaQSvhKknnX1kKYtHqsxQlJASsEAPw>
+    <xme:dfYNY6OIFiJYyLNwmwBFs7BeAGTzKEm3mDXqe60IVTVXMNE3GX4b_oTYrkoPZ8Hqm
+    5MDVijlpCDD_WRWhY8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekfedggeefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
+    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
+    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
+    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
+    hrnhgusegrrhhnuggsrdguvg
+X-ME-Proxy: <xmx:dfYNY5j3_glt5-JETShyH_6WgIV1Rvyuxo97PliiyuSpORA7152kXA>
+    <xmx:dfYNY99nBaln0tKxJohbZPmXWQBBrFhwfoiT-96n4NgTtj7-Oto0Hg>
+    <xmx:dfYNY0tYdzKKt_ezne9MXT0Xz19sFm7jdLLVdlTaKHdDo3TWbUETwQ>
+    <xmx:dvYNY94D27W0abX1AuoxDehA_WxBzsPjs0nPZWA5bIIx5cbzhZhbtPwMONQ>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id ABADBB60083; Tue, 30 Aug 2022 07:37:25 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
+Mime-Version: 1.0
+Message-Id: <78451bb1-e4d2-457a-adf7-8fb61be0fb3e@www.fastmail.com>
+In-Reply-To: <4ff2a310-c8ba-ccf2-8d51-5181b83685c7@loongson.cn>
+References: <1661766931-7277-1-git-send-email-yangtiezhu@loongson.cn>
+ <d1a52fa2-380a-421b-8c46-5150a39be484@www.fastmail.com>
+ <4ff2a310-c8ba-ccf2-8d51-5181b83685c7@loongson.cn>
+Date:   Tue, 30 Aug 2022 13:37:05 +0200
+From:   "Arnd Bergmann" <arnd@arndb.de>
+To:     "Tiezhu Yang" <yangtiezhu@loongson.cn>,
+        "Huacai Chen" <chenhuacai@kernel.org>,
+        "WANG Xuerui" <kernel@xen0n.name>
+Cc:     loongarch@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] LoongArch: Fix warning: #warning syscall fstat not implemented
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+On Mon, Aug 29, 2022, at 4:34 PM, Tiezhu Yang wrote:
+>
+> I read the commit message in the commit 82b355d161c9 ("y2038: Remove
+> newstat family from default syscall set"), I am not quite sure whether
+> we should check __ARCH_WANT_NEW_STAT first, like this:
+>
+>    #ifndef __ARCH_WANT_NEW_STAT
+>    #define __IGNORE_fstat
+>    #endif
 
-Rturn value directly from configfs_register_subsystem()
-instead of getting value from redundant variable ret.
+No, the #ifdef is not needed here, the entry just means we
+no longer warn about the missing syscall because it has
+been replaced by statx and this is true regardless of
+__ARCH_WANT_NEW_STAT.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
----
- drivers/usb/gadget/configfs.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
-diff --git a/drivers/usb/gadget/configfs.c b/drivers/usb/gadget/configfs.c
-index 3a6b4926193e..070872d1ae70 100644
---- a/drivers/usb/gadget/configfs.c
-+++ b/drivers/usb/gadget/configfs.c
-@@ -1671,12 +1671,9 @@ EXPORT_SYMBOL_GPL(unregister_gadget_item);
- 
- static int __init gadget_cfs_init(void)
- {
--	int ret;
--
- 	config_group_init(&gadget_subsys.su_group);
- 
--	ret = configfs_register_subsystem(&gadget_subsys);
--	return ret;
-+	return configfs_register_subsystem(&gadget_subsys);
- }
- module_init(gadget_cfs_init);
- 
--- 
-2.25.1
-
+       Arnd
