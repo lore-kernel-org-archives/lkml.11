@@ -2,183 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0322C0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3F0ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbiH3KdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53358 "EHLO
+        id S229773AbiH3Kdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiH3KdO (ORCPT
+        with ESMTP id S229446AbiH3Kdr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:33:14 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7364A3D5D;
-        Tue, 30 Aug 2022 03:33:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=llGPjFGwJB/wfY44LT3rb5OTwIONCk545lArJ09EwdM=;
-        b=d8NgS0QG94kN53tMYz9L97aD8JmAvM5y3Pjb+auL5tVDM7BRnTyjWX+fOsVxocIVCZx4ee8/d/FFA
-         o6hbq2ALOKlQMPgZ+0AiK9avUSNlPVO0HMXeJb1tF1CKP8h3J5lHWSYD1AkT/vGoAhxm+Nq7rzQT20
-         P8iQbpCJzGzVQ+XOuomBqZiV7By52iHjp9lN/RBtATnHOJPQPDdWagNZPTThL5RpBA/h8gjEaNphw7
-         PgdMaWjFEOf1FLHCCOSiBpPFePcwtHpfeKgzfV/XkJKH9+xj9LGfX+IBwPKaoAgRG6vcV2Fn+h9v55
-         kcHuRDIPcSBwRa67f2lkg01SGi0ALiw==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.4.1445, Stamp: 3], Multi: [Enabled, t: (0.000010,0.015701)], BW: [Enabled, t: (0.000014,0.000001)], RTDA: [Enabled, t: (0.078785), Hit: No, Details: v2.41.0; Id: 15.52kem9.1gbn4vlpc.vtp; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from h-e2.ddg ([85.143.252.66])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Tue, 30 Aug 2022 13:33:03 +0300
-Date:   Tue, 30 Aug 2022 13:32:01 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, dg@emlix.com, j.zink@pengutronix.de,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        system@metrotek.ru
-Subject: Re: [PATCH v9 2/2] dt-bindings: fpga: document Lattice sysCONFIG
- FPGA manager
-Message-ID: <20220830103201.dmtvotiq43g742v5@h-e2.ddg>
-References: <20220830095405.31609-1-i.bornyakov@metrotek.ru>
- <20220830095405.31609-3-i.bornyakov@metrotek.ru>
+        Tue, 30 Aug 2022 06:33:47 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1361EA99D4;
+        Tue, 30 Aug 2022 03:33:46 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id p16so18072166ejb.9;
+        Tue, 30 Aug 2022 03:33:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=Ys+8Z6N0JfNmceYLYZuuH+Ph0GEReWrDYc+IFrZJZ9g=;
+        b=LZ95PwPgsdj1N4bPPn9buX0wXjjtt8FUMSHPYkmjckRYeMzfKwpRyce9O0TNChyn7f
+         XBBEVysmFGKpofkQPY4EZCsU0MM4sB1h63mTRxj6Cp4kPJ3Iu1/byqNIaNHrTPHaxZBT
+         S3qO5VPZDyoKUCaBJRHFNeJUPPX//kgip2P0EnJCteVv3QLY2x4wBHtmdpmJaC0GfUDC
+         A0e4yeofBlv5yItDpV1maqSoP4hQhEeZOzjg6YwLNH55Wc+J3UNt8Ckx3uN/C/gc33eO
+         h7yI8UfGHX8gWcfYDjkQTgtUKWRJFwfTyLmJnv7hbohQTaf7m+df9E35TeKlBOMvJHkk
+         LBnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Ys+8Z6N0JfNmceYLYZuuH+Ph0GEReWrDYc+IFrZJZ9g=;
+        b=3BgCC9ix0JctO6uReQIJFtIfzVwKtNGOtgZPIRnKCGByZytSavJl1aN2xIJMj75Z/h
+         RIIaLeuVu24R4VZSdkywJXsifaWMZSSftPtbbCIwCNTlD/+27JS5gvsBl1o4iSEPrTWI
+         PjLNbLDj/Mj+DIovdhO+pbjdbE/V9HFeWGE9oEDJcWXV/OgBVc4qLGu5ZpT1gZBnhUAL
+         Wk5ta7Pryyjc13S6iKMKIxlNSYBXvIOaUjio7q9QjT9rVawBZjffEM2FW9A3TxlKS4t5
+         cHq6pnPOdM6+5e+6cZDvuAWEuCQBWCvDv4Glqpk2+zggHHrCWqQeI/m79TsTYaYY+EEO
+         /nIg==
+X-Gm-Message-State: ACgBeo3UEiAGLVEAJWx4JyiLNF2f/ydY+roUDp/quJzcGEosgj8/9CTM
+        ITGxBxk8f6fJ/ega+fvNH2s=
+X-Google-Smtp-Source: AA6agR5llQh730VpcSYBbVc5ywWPY4z5/DSb0T/203JQCSaYPRWFMUzcQNRhGrOGSh0Ebh2/UQU0VQ==
+X-Received: by 2002:a17:906:cc14:b0:73d:d230:2aa8 with SMTP id ml20-20020a170906cc1400b0073dd2302aa8mr15518970ejb.218.1661855624532;
+        Tue, 30 Aug 2022 03:33:44 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id 6-20020a170906328600b0073d6d1990e2sm5668047ejw.140.2022.08.30.03.33.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 03:33:43 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 13:33:40 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jerry Ray <jerry.ray@microchip.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH 1/2] net: dsa: LAN9303: Add basic support for LAN9354
+Message-ID: <20220830103340.bqgzmcztb57m7jgd@skbuf>
+References: <20220829180037.31078-1-jerry.ray@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220830095405.31609-3-i.bornyakov@metrotek.ru>
+In-Reply-To: <20220829180037.31078-1-jerry.ray@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 12:54:05PM +0300, Ivan Bornyakov wrote:
-> Add Device Tree Binding doc for configuring Lattice ECP5 and MachXO2
-> FPGAs over Slave SPI sysCONFIG interface.
+On Mon, Aug 29, 2022 at 01:00:36PM -0500, Jerry Ray wrote:
+> Add initial BYTE_ORDER read to sync to improve driver robustness
+
+Please don't post 2 different patches with the same commit message.
+I think here, the first paragraph is what the commit message should
+actually be.
+
 > 
-> Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+> The lan9303 expects two mdio read transactions back-to-back to read a 32-bit
+> register. The first read transaction causes the other half of the 32-bit
+> register to get latched.  The subsequent read returns the latched second half
+> of the 32-bit read. The BYTE_ORDER register is an exception to this rule. As
+> it is a constant value, there is no need to latch the second half. We read
+> this register first in case there were reads during the boot loader process
+> that might have occurred prior to this driver taking over ownership of
+> accessing this device.
+> 
+> This patch has been tested on the SAMA5D3-EDS with a LAN9303 RMII daughter
+> card.
+
+Is this patch fixing a problem for any existing platforms supported by
+this driver?
+
+> 
+> Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
 > ---
->  .../bindings/fpga/lattice,sysconfig.yaml      | 102 ++++++++++++++++++
->  1 file changed, 102 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/fpga/lattice,sysconfig.yaml
+>  drivers/net/dsa/lan9303-core.c | 13 +++++++++++--
+>  1 file changed, 11 insertions(+), 2 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/fpga/lattice,sysconfig.yaml b/Documentation/devicetree/bindings/fpga/lattice,sysconfig.yaml
-> new file mode 100644
-> index 000000000000..17f1e0c50bc4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/fpga/lattice,sysconfig.yaml
-> @@ -0,0 +1,102 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/fpga/lattice,sysconfig.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+> index e03ff1f267bb..17ae02a56bfe 100644
+> --- a/drivers/net/dsa/lan9303-core.c
+> +++ b/drivers/net/dsa/lan9303-core.c
+> @@ -32,6 +32,7 @@
+>  #define LAN9303_INT_EN 0x17
+>  # define LAN9303_INT_EN_PHY_INT2_EN BIT(27)
+>  # define LAN9303_INT_EN_PHY_INT1_EN BIT(26)
+> +#define LAN9303_BYTE_ORDER 0x19
+>  #define LAN9303_HW_CFG 0x1D
+>  # define LAN9303_HW_CFG_READY BIT(27)
+>  # define LAN9303_HW_CFG_AMDX_EN_PORT2 BIT(26)
+> @@ -847,9 +848,10 @@ static int lan9303_check_device(struct lan9303 *chip)
+>  	int ret;
+>  	u32 reg;
+>  
+> -	ret = lan9303_read(chip->regmap, LAN9303_CHIP_REV, &reg);
+> +	// Dummy read to ensure MDIO access is in 32-bit sync.
+
+C-style comments /* */ are more typical in the Linux kernel coding style.
+
+> +	ret = lan9303_read(chip->regmap, LAN9303_BYTE_ORDER, &reg);
+
+Pretty strange to see the dummy read in lan9303_check_device().
+Bootloader leaving things in a messy state is only a problem if we don't
+have a reset GPIO, right?
+
+How about introducing the logic here, right in lan9303_probe():
+
+	lan9303_handle_reset(chip);
+
+	if (!chip->reset_gpio) {
+		/* Dummy read to ensure MDIO access is in 32-bit sync. */
+		ret = lan9303_read(chip->regmap, LAN9303_BYTE_ORDER, &reg);
+		if (ret) {
+			dev_err(chip->dev, "failed to access the device: %pe\n",
+				ERR_PTR(ret));
+			return ret;
+		}
+	}
+
+	ret = lan9303_check_device(chip);
+
+>  	if (ret) {
+> -		dev_err(chip->dev, "failed to read chip revision register: %d\n",
+> +		dev_err(chip->dev, "failed to access the device: %d\n",
+>  			ret);
+>  		if (!chip->reset_gpio) {
+>  			dev_dbg(chip->dev,
+
+The context here reads:
+		if (!chip->reset_gpio) {
+			dev_dbg(chip->dev,
+				"hint: maybe failed due to missing reset GPIO\n");
+		}
+
+Is the comment still accurate after the change, or do you feel that it
+can be removed? Looks like you are fixing a known issue.
+
+> @@ -858,6 +860,13 @@ static int lan9303_check_device(struct lan9303 *chip)
+>  		return ret;
+>  	}
+>  
+> +	ret = lan9303_read(chip->regmap, LAN9303_CHIP_REV, &reg);
+> +	if (ret) {
+> +		dev_err(chip->dev, "failed to read chip revision register: %d\n",
+> +			ret);
+> +		return ret;
+> +	}
 > +
-> +title: Lattice Slave SPI sysCONFIG FPGA manager
-> +
-> +maintainers:
-> +  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
-> +
-> +description: |
-> +  Lattice sysCONFIG port, which is used for FPGA configuration, among others,
-> +  have Slave Serial Peripheral Interface. Only full reconfiguration is
-> +  supported.
-> +
-> +  Programming of ECP5 is done by writing uncompressed bitstream image in .bit
-> +  format into FPGA's SRAM configuration memory.
-> +
-> +  Programming of MachXO2 is done by writing configuration data into device's
-> +  internal non-volatile Flash memory, then Self-Download of data from Flash
-> +  into SRAM is issued.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - lattice,ecp5-fpga-mgr
-> +      - lattice,machxo2-fpga-mgr
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  program-gpios:
-> +    description:
-> +      A GPIO line connected to PROGRAMN (active low) pin of the device.
-> +      Initiates configuration sequence.
-> +    maxItems: 1
-> +
-> +  init-gpios:
-> +    description:
-> +      A GPIO line connected to INITN (active low) pin of the device.
-> +      Indicates that the FPGA is ready to be configured.
-> +    maxItems: 1
-> +
-> +  done-gpios:
-> +    description:
-> +      A GPIO line connected to DONE (active high) pin of the device.
-> +      Indicates that the configuration sequence is complete.
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: lattice,machxo2-fpga-mgr
-> +    then:
-> +      properties:
-> +        spi-max-frequency:
-> +          maximum: 66000000
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: lattice,ecp5-fpga-mgr
-> +    then:
-> +      properties:
-> +        spi-max-frequency:
-> +          maximum: 60000000
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        fpga-mgr@0 {
-> +            compatible = "lattice,ecp5-fpga-mgr";
-> +            reg = <0>;
-> +            spi-max-frequency = <20000000>;
-> +            program-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
-> +            init-gpios = <&gpio3 3 GPIO_ACTIVE_LOW>;
-> +            done-gpios = <&gpio3 2 GPIO_ACTIVE_HIGH>;
-> +        };
-> +
-> +        fpga-mgr@1 {
-> +            compatible = "lattice,machxo2-fpga-mgr";
-> +            reg = <1>;
-> +            spi-max-frequency = <20000000>;
-> +        };
-> +    };
+>  	if ((reg >> 16) != LAN9303_CHIP_ID) {
+>  		dev_err(chip->dev, "expecting LAN9303 chip, but found: %X\n",
+>  			reg >> 16);
 > -- 
-> 2.37.2
+> 2.17.1
 > 
-
-Sorry, I forgot to add a tag from Krzysztof. Since there is not much
-change here, I think the tag is still valid.
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-
-
