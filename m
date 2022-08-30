@@ -2,151 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8831FECAAD5
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29FBFECAAD5
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229824AbiH3Dd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 23:33:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38124 "EHLO
+        id S229913AbiH3Dgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 23:36:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbiH3Ddg (ORCPT
+        with ESMTP id S229566AbiH3Dgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 23:33:36 -0400
-Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C194F6AA13
-        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:33:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=QP8HW
-        uzvK/XpdKlS+HMadL+ojObm+N5qHMzgCFkYqug=; b=fQyuKO2G6niXW3NBOsFUs
-        3HfQWjBSNhizPcMFPocsWBNRXKTZ04tJGUJEOaP3ozIURak+JuU47pPyHSm0BmK1
-        /bq8nVhWTpBbvunBpGkFupC3on60PNSywBiFJEUylWQnqQspPkPq/0x2S8ouvZ9u
-        Gmb86V7wcsRu5XLCtFFlYg=
-Received: from DESKTOP-B1R4FVG.localdomain (unknown [218.201.129.20])
-        by smtp13 (Coremail) with SMTP id EcCowACHfpHqhA1jauj7YQ--.16609S2;
-        Tue, 30 Aug 2022 11:33:01 +0800 (CST)
-From:   qianfanguijin@163.com
-To:     linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev
-Cc:     Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Evgeny Boger <boger@wirenboard.com>,
-        Andre Przywara <andre.przywara@arm.com>,
-        qianfan Zhao <qianfanguijin@163.com>
-Subject: [PATCH] net: allwinner: emac: Fix double spinlock in emac_timeout
-Date:   Tue, 30 Aug 2022 11:32:58 +0800
-Message-Id: <20220830033258.8105-1-qianfanguijin@163.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 29 Aug 2022 23:36:41 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9627FE52
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:36:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=uRgJgJxuAtkFqhcrFtpIXGr2qJkeEfRvFFtV3MUVJKg=; b=lkuoSRY94uq2I9RzVPvlgPl/F7
+        cGGeAzHCVeMN62Xg4IT6DYHHKK0fpb2+Mb0hd8nxm1VQLJLa1tY2shASO5agTDTJXlOzRLcZc/7ZL
+        mIsu3IdwedATtQHfPPEOB4P92SPM48epx0gUdPkVZm2lJwVteJHt6Nb9v6vUoiH8WqOFb+raYYZ8f
+        8uW6MjNEWE+HlEGVQmgq28ODTxPhtwYpBYyv4cQ3x+7OgPZRGNmRsSGwnbJSTk5+1nXjS+WsoTk4o
+        OQpLgaCSlzxZ3cqU3nHhLuuRwSE5v/WNtaAy/BNWH/vdyp2MNfyjeZxbACQHwPNy75KxHpxunyw7R
+        +GxItWOg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oSs3I-003e6W-GS; Tue, 30 Aug 2022 03:36:36 +0000
+Date:   Tue, 30 Aug 2022 04:36:36 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Sidhartha Kumar <sidhartha.kumar@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, songmuchun@bytedance.com,
+        mike.kravetz@oracle.com, vbabka@suse.cz,
+        william.kucharski@oracle.com, dhowells@redhat.com,
+        peterx@redhat.com, arnd@arndb.de, ccross@google.com,
+        hughd@google.com, ebiederm@xmission.com
+Subject: Re: [PATCH 2/7] mm: add private field of first tail to struct page
+ and struct folio
+Message-ID: <Yw2FxCKxm429Py9P@casper.infradead.org>
+References: <20220829230014.384722-1-sidhartha.kumar@oracle.com>
+ <20220829230014.384722-3-sidhartha.kumar@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EcCowACHfpHqhA1jauj7YQ--.16609S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxCw15tr4xAF48JryfXFW7XFb_yoWrAF43pr
-        yjya4rCw4xX3Wqvw4xtrWvqFWjq3Z2y34xCrs7Aw4fuFn3G34rXFy8tFy2kFWYyrZrAay7
-        KF1qyrWSkF4kXaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0piU73kUUUUU=
-X-Originating-IP: [218.201.129.20]
-X-CM-SenderInfo: htld0w5dqj3xxmlqqiywtou0bp/xtbB2Alt7WBHLzAuEgAAsV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829230014.384722-3-sidhartha.kumar@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: qianfan Zhao <qianfanguijin@163.com>
+On Mon, Aug 29, 2022 at 04:00:09PM -0700, Sidhartha Kumar wrote:
+> +++ b/include/linux/mm_types.h
+> @@ -144,6 +144,7 @@ struct page {
+>  #ifdef CONFIG_64BIT
+>  			unsigned int compound_nr; /* 1 << compound_order */
+>  #endif
+> +			unsigned long _private_1;
+>  		};
+>  		struct {	/* Second tail page of compound page */
+>  			unsigned long _compound_pad_1;	/* compound_head */
 
-The system will dead due to double lock if sometings trigger
-emac_timeout, next is the kernel logs:
+Have you tested compiling this on 32-bit?  I think you need to move
+the _private_1 inside the ifdef CONFIG_64BIT.
 
-WARNING: CPU: 2 PID: 0 at net/sched/sch_generic.c:478
-dev_watchdog+0x2e4/0x2e8
-NETDEV WATCHDOG: FE0 (sun4i-emac): transmit queue 0 timed out
-Modules linked in:
-CPU: 2 PID: 0 Comm: swapper/2 Tainted: G W 5.15.0-00047-g0848e4aeb313
-Hardware name: Wisdom T3 based CCT Family
-[<c010f740>] (unwind_backtrace) from [<c010b744>] (show_stack+0x10/0x14)
-[<c010b744>] (show_stack) from [<c0a4d978>] (dump_stack_lvl+0x40/0x4c)
-[<c0a4d978>] (dump_stack_lvl) from [<c0120734>] (__warn+0x104/0x108)
-[<c0120734>] (__warn) from [<c01207b0>] (warn_slowpath_fmt+0x78/0xbc)
-[<c01207b0>] (warn_slowpath_fmt) from [<c0898a54>]
-(dev_watchdog+0x2e4/0x2e8)
-[<c0898a54>] (dev_watchdog) from [<c019a888>] (call_timer_fn+0x3c/0x178)
-[<c019a888>] (call_timer_fn) from [<c019bddc>]
-(run_timer_softirq+0x540/0x624)
-[<c019bddc>] (run_timer_softirq) from [<c0101298>]
-(__do_softirq+0x130/0x3bc)
-[<c0101298>] (__do_softirq) from [<c0127ea0>] (irq_exit+0xbc/0x100)
-[<c0127ea0>] (irq_exit) from [<c017e514>] (handle_domain_irq+0x60/0x78)
-[<c017e514>] (handle_domain_irq) from [<c05a6130>]
-(gic_handle_irq+0x7c/0x90)
-[<c05a6130>] (gic_handle_irq) from [<c0100afc>] (__irq_svc+0x5c/0x78)
-Exception stack(0xc14f3f70 to 0xc14f3fb8)
-3f60:                                     0003475c 00000000 00000001
-c01188a0
-3f80: c107b200 c0f06b4c c0f06b90 00000004 c1079ff8 c0c62774 00000000
-00000000
-3fa0: c10b2198 c14f3fc0 c0107fcc c0107fd0 60030013 ffffffff
-[<c0100afc>] (__irq_svc) from [<c0107fd0>] (arch_cpu_idle+0x38/0x3c)
-[<c0107fd0>] (arch_cpu_idle) from [<c0a57f38>]
-(default_idle_call+0x3c/0xcc)
-[<c0a57f38>] (default_idle_call) from [<c0157258>] (do_idle+0xdc/0x13c)
-[<c0157258>] (do_idle) from [<c01575a4>] (cpu_startup_entry+0x18/0x1c)
-[<c01575a4>] (cpu_startup_entry) from [<401015d0>] (0x401015d0)
----[ end trace a70942a1265338f1 ]---
-rcu: INFO: rcu_sched detected stalls on CPUs/tasks:
-rcu: \x092-...0: (1 GPs behind) idle=75d/0/0x1 softirq=8288/8289 fqs=931
-\x09(detected by 0, t=2102 jiffies, g=13485, q=1635)
-Sending NMI from CPU 0 to CPUs 2:
-spi_master spi2: spi2.1: timeout transferring 4 bytes@100000Hz for
-110(100)ms
-spidev spi2.1: SPI transfer failed: -110
+> @@ -251,6 +252,7 @@ struct page {
+>   * @_total_mapcount: Do not use directly, call folio_entire_mapcount().
+>   * @_pincount: Do not use directly, call folio_maybe_dma_pinned().
+>   * @_folio_nr_pages: Do not use directly, call folio_nr_pages().
+> + * @_private_1: Do not use directly, call folio_get_private_1().
+>   *
+>   * A folio is a physically, virtually and logically contiguous set
+>   * of bytes.  It is a power-of-two in size, and it is aligned to that
+> @@ -298,6 +300,8 @@ struct folio {
+>  #ifdef CONFIG_64BIT
+>  	unsigned int _folio_nr_pages;
+>  #endif
+> +	unsigned long _private_1;
 
-Fix it.
+(but don't do that here!)
 
-Signed-off-by: qianfan Zhao <qianfanguijin@163.com>
----
- drivers/net/ethernet/allwinner/sun4i-emac.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+The intent is that _private_1 lines up with head[1].private on 32-bit.
+It's a bit tricky, and I'm not sure that I'm thinking about it quite right.
 
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
-index 49759deeed8e..d49c2c18f39d 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.c
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
-@@ -378,14 +378,11 @@ static int emac_set_mac_address(struct net_device *dev, void *p)
- }
- 
- /* Initialize emac board */
--static void emac_init_device(struct net_device *dev)
-+static void emac_init_device_without_lock(struct net_device *dev)
- {
- 	struct emac_board_info *db = netdev_priv(dev);
--	unsigned long flags;
- 	unsigned int reg_val;
- 
--	spin_lock_irqsave(&db->lock, flags);
--
- 	emac_update_speed(dev);
- 	emac_update_duplex(dev);
- 
-@@ -398,7 +395,15 @@ static void emac_init_device(struct net_device *dev)
- 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
- 	reg_val |= (0xf << 0) | (0x01 << 8);
- 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
-+}
-+
-+static void emac_init_device(struct net_device *dev)
-+{
-+	struct emac_board_info *db = netdev_priv(dev);
-+	unsigned long flags;
- 
-+	spin_lock_irqsave(&db->lock, flags);
-+	emac_init_device_without_lock(dev);
- 	spin_unlock_irqrestore(&db->lock, flags);
- }
- 
-@@ -416,7 +421,7 @@ static void emac_timeout(struct net_device *dev, unsigned int txqueue)
- 
- 	netif_stop_queue(dev);
- 	emac_reset(db);
--	emac_init_device(dev);
-+	emac_init_device_without_lock(dev);
- 	/* We can accept TX packets again */
- 	netif_trans_update(dev);
- 	netif_wake_queue(dev);
--- 
-2.25.1
-
+>  };
+>  
+>  #define FOLIO_MATCH(pg, fl)						\
+> @@ -325,6 +329,7 @@ FOLIO_MATCH(compound_mapcount, _total_mapcount);
+>  FOLIO_MATCH(compound_pincount, _pincount);
+>  #ifdef CONFIG_64BIT
+>  FOLIO_MATCH(compound_nr, _folio_nr_pages);
+> +FOLIO_MATCH(_private_1, _private_1);
+>  #endif
+>  #undef FOLIO_MATCH
+>  
+> @@ -370,6 +375,16 @@ static inline void *folio_get_private(struct folio *folio)
+>  	return folio->private;
+>  }
+>  
+> +static inline void folio_set_private_1(struct folio *folio, unsigned long private)
+> +{
+> +	folio->_private_1 = private;
+> +}
+> +
+> +static inline unsigned long folio_get_private_1(struct folio *folio)
+> +{
+> +	return folio->_private_1;
+> +}
+> +
+>  struct page_frag_cache {
+>  	void * va;
+>  #if (PAGE_SIZE < PAGE_FRAG_CACHE_MAX_SIZE)
+> -- 
+> 2.31.1
+> 
