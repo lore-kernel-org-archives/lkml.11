@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B42A4ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B23AECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232319AbiH3WVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 18:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54092 "EHLO
+        id S231906AbiH3WVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 18:21:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231997AbiH3WVL (ORCPT
+        with ESMTP id S231940AbiH3WVN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 18:21:11 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE4356E2C3
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:27 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id cj15-20020a056a00298f00b0053a700f1178so1396076pfb.14
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:26 -0700 (PDT)
+        Tue, 30 Aug 2022 18:21:13 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D290F5F9BF
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:35 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id i1-20020a170902cf0100b001730caeec78so8655974plg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:20:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date;
-        bh=3Hb55PPYqJ9GhLXNrzEjW9U1TfsgkxT16tA5j1wTvr0=;
-        b=lOtIGU26iz1lGzz8PGxwebfYTciclQR/ZgZqMjT1sDm6xcmOSU7kFFnxdKTt4q5Ssc
-         Jl92P1U0pIKvRArwiPIAhoifOejXR1RAKNMMgUIrEsd0mt601ry3OkyJ69SbdGSjCoK9
-         gB5WDN+KstIssgYegKHaGoEkGdGJaJ6kd/x/wLSSWZRamedKb3Zs71O96pmeT1lKxxj2
-         BYFZbVoLweZlWz32QxV5gtF4JpzPcpNt2Ub/bZ8qWrmQU27ra+MaAAmiaWTcvefsUOc8
-         27XAGYSi2VBY0E990Jv7NmNmhYC1xqe6hjceMiWojJ9F3KhctMFnapBA6pRKP4kyp76X
-         joTA==
+        bh=AzDgZBgFplUyYkteDiAFd4snp6/vsyrTsM86sz6yvPk=;
+        b=oyUkqckUdLsL5ggmZbJj+/O1xqCczSWPMKvRE8ocdVgkeAZFayetIhhOe44TGpaLql
+         ReZ149//ZWno+R6jcV3voWkq4A5b+eDmxLN5bzhJhvPYNIFlg9bor3UQmG/QjWaULZTz
+         coYkgMTzQol2T7/dgQMPD1VePwLVC/50IgmlElxIveOAXEQtCK9aKN/L5P89G3MOi/LC
+         Afa3y0Bdp5ncs6BijVBN+Zt6cVaAqghhmYC4OVXKyk6CKVmjiIsRVsJABLObRS1/OQWY
+         w3X5Rt+1SXUmcSRyLW9RezJQkIhnSTSPOVJFitZjCWB4+XG/GY2Q32BsGVMojvcpvTNc
+         90jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=3Hb55PPYqJ9GhLXNrzEjW9U1TfsgkxT16tA5j1wTvr0=;
-        b=rkFKbVEVGNKoDxGdf1TYKxie+sm7QaIOeFWsKcEfyaM/fGIbL/wt6Tpzb0IQugrz8l
-         9xJ8DuJw2JvNwA0oiMETrS4tBwBRTPMM2/aph9+40N1/pFOwwLO3fN4FvalnwiSQfuUm
-         xyf/gNhrqAgGQ41id0RPQGhmaj1s87Ni/WGDbJR82MDV2orNd0LeOzBlPq06Dis8E1cQ
-         IGHpmCXs98DyXipVOrl1b2G7tGa9UR8lOOrkBuhlrprJrTg1G7SqxB1pXZzJZSgMBNmC
-         XsezqVyOv1KXd6ls04hOZ7sTZpQF6O7ovxmjgkLxvMRws5H4g6UwRjfBoPoP2C6PFqUh
-         ZJxw==
-X-Gm-Message-State: ACgBeo3vMvrqE6mJDvfEMqBPW3s2FhsFiecNpaUQtoe18scJThygRfx0
-        LIGrn0Jl6BdMhcGcg8cH51NsCi0OWQ==
-X-Google-Smtp-Source: AA6agR5r9ukQ4wlLG+/DfKVl60d5YWDQENm8K4M7KnBQl9loaE6nhV9tNxkZsIffR8utMom8bm2g3UZNjg==
+        bh=AzDgZBgFplUyYkteDiAFd4snp6/vsyrTsM86sz6yvPk=;
+        b=4MUMP8iDfPWy6I6r7NZxdWLe71D8stndVEYz/9ieRQpJyXrZUcmEY58T0gI1bDKmD+
+         guytpJ+fJL/uZhAuOQ5YLltUFYHZN3MPQEYmaGdWvho95APOnTFCstsqYYR1uHoA6/Kd
+         oTSbduLTSPY2OnyBVgCd9Ciap6PmSd9yvDOCE0DC96n8Eo6e8fA/75LhjyQbHp2fAJ2b
+         fIU6zmE+V8jqd7ygfmvOpyKZ0Ro50xSxqjvMYBx/asBGzyL3T2k5iBpukvKJBMLwK7r1
+         7+WqlmJ42ylF7vDll6SACKmK6ni5rYcZ8zEOixJv79uRgYGuJBV7mIqcbeCb7SwLNLMT
+         JZYQ==
+X-Gm-Message-State: ACgBeo152BKTBpozCXL7+tVDAibN6RMUhadMWkdSYJblNwZGHutv7dNZ
+        6KK+JUSwgSn67WvLFGOhvb/T12w0Kg==
+X-Google-Smtp-Source: AA6agR4dolB76RWxR4Csigjf13X6+PTxv/agrCvSqBIs9UDI2TG+UKkBY4FJGdwS0vCvT+Rxs05FTlGBIQ==
 X-Received: from sagi.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:241b])
- (user=sagis job=sendgmr) by 2002:a05:6a00:174b:b0:52f:c4d1:d130 with SMTP id
- j11-20020a056a00174b00b0052fc4d1d130mr22924078pfc.23.1661898026592; Tue, 30
- Aug 2022 15:20:26 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 22:19:55 +0000
+ (user=sagis job=sendgmr) by 2002:a05:6a00:e8a:b0:535:cc5c:3d87 with SMTP id
+ bo10-20020a056a000e8a00b00535cc5c3d87mr23494953pfb.24.1661898035202; Tue, 30
+ Aug 2022 15:20:35 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 22:20:00 +0000
 In-Reply-To: <20220830222000.709028-1-sagis@google.com>
 Mime-Version: 1.0
 References: <20220830222000.709028-1-sagis@google.com>
 X-Mailer: git-send-email 2.37.2.789.g6183377224-goog
-Message-ID: <20220830222000.709028-13-sagis@google.com>
-Subject: [RFC PATCH v2 12/17] KVM: selftest: TDX: Add TDX MMIO reads test
+Message-ID: <20220830222000.709028-18-sagis@google.com>
+Subject: [RFC PATCH v2 17/17] KVM: selftest: TDX: Add shared memory test
 From:   Sagi Shahar <sagis@google.com>
 To:     linux-kselftest@vger.kernel.org
 Cc:     Paolo Bonzini <pbonzini@redhat.com>,
@@ -90,51 +90,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The test verifies MMIO reads of various sizes from the host to the guest.
+From: Ryan Afranji <afranji@google.com>
 
+Adds a test that sets up shared memory between the host and guest.
+
+Signed-off-by: Ryan Afranji <afranji@google.com>
 Signed-off-by: Sagi Shahar <sagis@google.com>
 ---
- tools/testing/selftests/kvm/lib/x86_64/tdx.h  |  21 ++++
- .../selftests/kvm/x86_64/tdx_vm_tests.c       | 113 ++++++++++++++++++
- 2 files changed, 134 insertions(+)
+ tools/testing/selftests/kvm/lib/x86_64/tdx.h  |  38 +++++-
+ .../selftests/kvm/lib/x86_64/tdx_lib.c        |  41 +++++-
+ .../selftests/kvm/x86_64/tdx_vm_tests.c       | 124 ++++++++++++++++++
+ 3 files changed, 192 insertions(+), 11 deletions(-)
 
 diff --git a/tools/testing/selftests/kvm/lib/x86_64/tdx.h b/tools/testing/selftests/kvm/lib/x86_64/tdx.h
-index b11200028546..7045d617dd78 100644
+index 7af2d189043f..be8564f4672d 100644
 --- a/tools/testing/selftests/kvm/lib/x86_64/tdx.h
 +++ b/tools/testing/selftests/kvm/lib/x86_64/tdx.h
-@@ -60,12 +60,15 @@
- #define TDX_INSTRUCTION_IO 30
- #define TDX_INSTRUCTION_RDMSR 31
- #define TDX_INSTRUCTION_WRMSR 32
-+#define TDX_INSTRUCTION_VE_REQUEST_MMIO 48
+@@ -23,10 +23,21 @@
  
- #define TDX_SUCCESS_PORT 0x30
- #define TDX_TEST_PORT 0x31
- #define TDX_DATA_REPORT_PORT 0x32
- #define TDX_IO_READ 0
- #define TDX_IO_WRITE 1
-+#define TDX_MMIO_READ 0
-+#define TDX_MMIO_WRITE 1
+ /*
+  * Max Page Table Size
+- * To map 4GB memory region with 2MB pages, there needs to be 1 page for PML4,
+- * 1 Page for PDPT, 4 pages for PD. Reserving 6 pages for PT.
++ * To map 4GB memory regions for each private and shared memory with 2MB pages,
++ * there needs to be 1 page for PML4, 1 Page for PDPT, 8 pages for PD. Reserving
++ * 10 pages for PT.
+  */
+-#define TDX_GUEST_NR_PT_PAGES (1 + 1 + 4)
++#define TDX_GUEST_NR_PT_PAGES (1 + 1 + 8)
++
++/*
++ * Guest Virtual Address Shared Bit
++ * TDX's shared bit is defined as the highest order bit in the GPA. Since the
++ * highest order bit allowed in the GPA may exceed the GVA's, a 1:1 mapping
++ * cannot be applied for shared memory. This value is a bit within the range
++ * [32 - 38] (0-indexed) that will designate a 4 GB region of GVAs that map the
++ * shared GPAs. This approach does not increase number of PML4 and PDPT pages.
++ */
++#define TDX_GUEST_VIRT_SHARED_BIT 32
  
- #define GDT_ENTRY(flags, base, limit)				\
- 		((((base)  & 0xff000000ULL) << (56-24)) |	\
-@@ -308,6 +311,24 @@ static inline uint64_t tdvmcall_hlt(uint64_t interrupt_blocked_flag)
- 	return regs.r10;
+ /*
+  * Predefined GDTR values.
+@@ -60,6 +71,7 @@
+ #define TDX_VMCALL_INVALID_OPERAND 0x8000000000000000
+ 
+ #define TDX_GET_TD_VM_CALL_INFO 0x10000
++#define TDX_MAP_GPA 0x10001
+ #define TDX_REPORT_FATAL_ERROR 0x10003
+ #define TDX_INSTRUCTION_CPUID 10
+ #define TDX_INSTRUCTION_HLT 12
+@@ -101,7 +113,7 @@ struct __packed tdx_gdtr {
+ struct page_table {
+ 	uint64_t  pml4[512];
+ 	uint64_t  pdpt[512];
+-	uint64_t  pd[4][512];
++	uint64_t  pd[8][512];
+ };
+ 
+ void add_td_memory(struct kvm_vm *vm, void *source_page,
+@@ -411,6 +423,24 @@ static inline uint64_t tdcall_vp_info(uint64_t *rcx, uint64_t *rdx,
+ 	return regs.rax;
  }
  
 +/*
-+ * Execute MMIO request instruction for read.
++ * Execute MapGPA instruction.
 + */
-+static inline uint64_t tdvmcall_mmio_read(uint64_t address, uint64_t size, uint64_t *data_out)
++static inline uint64_t tdvmcall_map_gpa(uint64_t address, uint64_t size,
++					uint64_t *data_out)
 +{
 +	struct kvm_regs regs;
 +
 +	memset(&regs, 0, sizeof(regs));
-+	regs.r11 = TDX_INSTRUCTION_VE_REQUEST_MMIO;
-+	regs.r12 = size;
-+	regs.r13 = TDX_MMIO_READ;
-+	regs.r14 = address;
-+	regs.rcx = 0x7C00;
++	regs.r11 = TDX_MAP_GPA;
++	regs.r12 = address;
++	regs.r13 = size;
++	regs.rcx = 0x3C00;
 +	tdcall(&regs);
 +	*data_out = regs.r11;
 +	return regs.r10;
@@ -143,142 +173,208 @@ index b11200028546..7045d617dd78 100644
  /*
   * Reports a 32 bit value from the guest to user space using a TDVM IO call.
   * Data is reported on port TDX_DATA_REPORT_PORT.
-diff --git a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
-index 39604aac54bd..963e4feae31a 100644
---- a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
-+++ b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0-only
- 
- #include "asm/kvm.h"
-+#include "linux/kernel.h"
- #include <bits/stdint-uintn.h>
- #include <fcntl.h>
- #include <limits.h>
-@@ -47,6 +48,24 @@
- 			    (VCPU)->run->io.direction);					\
- 	} while (0)
- 
-+#define CHECK_MMIO(VCPU, ADDR, SIZE, DIR)						\
-+	do {										\
-+		TEST_ASSERT((VCPU)->run->exit_reason == KVM_EXIT_MMIO,			\
-+			    "Got exit_reason other than KVM_EXIT_MMIO: %u (%s)\n",	\
-+			    (VCPU)->run->exit_reason,					\
-+			    exit_reason_str((VCPU)->run->exit_reason));			\
-+											\
-+		TEST_ASSERT(((VCPU)->run->exit_reason == KVM_EXIT_MMIO) &&		\
-+			    ((VCPU)->run->mmio.phys_addr == (ADDR)) &&			\
-+			    ((VCPU)->run->mmio.len == (SIZE)) &&			\
-+			    ((VCPU)->run->mmio.is_write == (DIR)),			\
-+			    "Got an unexpected MMIO exit values: %u (%s) %llu %d %d\n",	\
-+			    (VCPU)->run->exit_reason,					\
-+			    exit_reason_str((VCPU)->run->exit_reason),			\
-+			    (VCPU)->run->mmio.phys_addr, (VCPU)->run->mmio.len,		\
-+			    (VCPU)->run->mmio.is_write);				\
-+	} while (0)
-+
- #define CHECK_GUEST_FAILURE(VCPU)							\
- 	do {										\
- 		if ((VCPU)->run->exit_reason == KVM_EXIT_SYSTEM_EVENT)			\
-@@ -89,6 +108,8 @@ struct kvm_msr_filter test_filter = {
- 	},
- };
- 
-+#define MMIO_VALID_ADDRESS (TDX_GUEST_MAX_NR_PAGES * PAGE_SIZE + 1)
-+
- static uint64_t read_64bit_from_guest(struct kvm_vcpu *vcpu, uint64_t port)
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c b/tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c
+index dc9a44ae4064..23893949c3a1 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/tdx_lib.c
+@@ -183,29 +183,56 @@ void build_gdtr_table(void *gdtr_target, void *gdt_target)
+  * which will be used by the TDX guest when paging is enabled.
+  * TODO: use virt_pg_map() functions to dynamically allocate the page tables.
+  */
+-void build_page_tables(void *pt_target, uint64_t  pml4_base_address)
++void build_page_tables(void *pt_target, uint64_t  pml4_base_address,
++		       uint64_t gpa_shared_bit)
  {
- 	uint32_t lo, hi;
-@@ -970,6 +991,97 @@ void verify_guest_hlt(void)
- 	_verify_guest_hlt(0);
+ 	uint64_t i;
++	uint64_t shared_pdpt_index;
++	uint64_t gpa_shared_mask;
++	uint64_t *pde;
+ 	struct page_table *pt;
+ 
+ 	pt = malloc(sizeof(struct page_table));
+ 	TEST_ASSERT(pt != NULL, "Could not allocate memory for page tables!\n");
+ 	memset((void *) &(pt->pml4[0]), 0, sizeof(pt->pml4));
+ 	memset((void *) &(pt->pdpt[0]), 0, sizeof(pt->pdpt));
+-	for (i = 0; i < 4; i++)
++	for (i = 0; i < 8; i++)
+ 		memset((void *) &(pt->pd[i][0]), 0, sizeof(pt->pd[i]));
+ 
++	/* Populate pml4 entry. */
+ 	pt->pml4[0] = (pml4_base_address + PAGE_SIZE) |
+ 		      _PAGE_PRESENT | _PAGE_RW;
++
++	/* Populate pdpt entries for private memory region. */
+ 	for (i = 0; i < 4; i++)
+ 		pt->pdpt[i] = (pml4_base_address + (i + 2) * PAGE_SIZE) |
+-				_PAGE_PRESENT | _PAGE_RW;
++			      _PAGE_PRESENT | _PAGE_RW;
++
++	/* Index used in pdpt #0 to map to pd with guest virt shared bit set. */
++	static_assert(TDX_GUEST_VIRT_SHARED_BIT >= 32 &&
++		      TDX_GUEST_VIRT_SHARED_BIT <= 38,
++		      "Guest virtual shared bit must be in the range [32 - 38].\n");
++	shared_pdpt_index = 1 << (TDX_GUEST_VIRT_SHARED_BIT - 30);
+ 
+-	uint64_t *pde = &(pt->pd[0][0]);
++	/* Populate pdpt entries for shared memory region. */
++	for (i = 0; i < 4; i++)
++		pt->pdpt[shared_pdpt_index + i] = (pml4_base_address + (i + 6) *
++						  PAGE_SIZE) | _PAGE_PRESENT |
++						  _PAGE_RW;
+ 
+-	for (i = 0; i < sizeof(pt->pd) / sizeof(pt->pd[0][0]); i++, pde++)
++	/* Populate pd entries for private memory region. */
++	pde = &(pt->pd[0][0]);
++	for (i = 0; i < (sizeof(pt->pd) / sizeof(pt->pd[0][0])) / 2; i++, pde++)
+ 		*pde = (i << 21) | _PAGE_PRESENT | _PAGE_RW | _PAGE_PS;
+-	memcpy(pt_target, pt, 6 * PAGE_SIZE);
++
++	/* Populate pd entries for shared memory region; set shared bit. */
++	pde = &(pt->pd[4][0]);
++	gpa_shared_mask = BIT_ULL(gpa_shared_bit);
++	for (i = 0; i < (sizeof(pt->pd) / sizeof(pt->pd[0][0])) / 2; i++, pde++)
++		*pde = gpa_shared_mask | (i << 21) | _PAGE_PRESENT | _PAGE_RW |
++		       _PAGE_PS;
++
++	memcpy(pt_target, pt, 10 * PAGE_SIZE);
  }
  
-+TDX_GUEST_FUNCTION(guest_mmio_reads)
+ static void
+@@ -318,7 +345,7 @@ void prepare_source_image(struct kvm_vm *vm, void *guest_code,
+ 	guest_code_base =  gdt_address + (TDX_GUEST_STACK_NR_PAGES *
+ 					  PAGE_SIZE);
+ 
+-	build_page_tables(pt_address, TDX_GUEST_PT_FIXED_ADDR);
++	build_page_tables(pt_address, TDX_GUEST_PT_FIXED_ADDR, vm->pa_bits - 1);
+ 	build_gdtr_table(gdtr_address, gdt_address);
+ 
+ 	/* reset vector code should end with int3 instructions.
+diff --git a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
+index 8d49099e1ed8..a96abada54b6 100644
+--- a/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
++++ b/tools/testing/selftests/kvm/x86_64/tdx_vm_tests.c
+@@ -1515,6 +1515,129 @@ void verify_tdcall_vp_info(void)
+ 	printf("\t ... PASSED\n");
+ }
+ 
++TDX_GUEST_FUNCTION(guest_shared_mem)
 +{
-+	uint64_t data;
++	uint64_t gpa_shared_mask;
++	uint64_t gva_shared_mask;
++	uint64_t shared_gpa;
++	uint64_t shared_gva;
++	uint64_t gpa_width;
++	uint64_t failed_gpa;
 +	uint64_t ret;
++	uint64_t err;
 +
-+	ret = tdvmcall_mmio_read(MMIO_VALID_ADDRESS, 1, &data);
++	gva_shared_mask = BIT_ULL(TDX_GUEST_VIRT_SHARED_BIT);
++	shared_gpa = 0x80000000;
++	shared_gva = gva_shared_mask | shared_gpa;
++
++	/* Read highest order physical bit to calculate shared mask. */
++	err = tdcall_vp_info(&gpa_width, 0, 0, 0, 0, 0);
++	if (err)
++		tdvmcall_fatal(err);
++
++	/* Map gpa as shared. */
++	gpa_shared_mask = BIT_ULL(gpa_width - 1);
++	ret = tdvmcall_map_gpa(shared_gpa | gpa_shared_mask, PAGE_SIZE,
++			       &failed_gpa);
 +	if (ret)
 +		tdvmcall_fatal(ret);
-+	if (data != 0x12)
-+		tdvmcall_fatal(1);
 +
-+	ret = tdvmcall_mmio_read(MMIO_VALID_ADDRESS, 2, &data);
-+	if (ret)
-+		tdvmcall_fatal(ret);
-+	if (data != 0x1234)
-+		tdvmcall_fatal(2);
++	/* Write to shared memory. */
++	*(uint16_t *)shared_gva = 0x1234;
++	tdvmcall_success();
 +
-+	ret = tdvmcall_mmio_read(MMIO_VALID_ADDRESS, 4, &data);
-+	if (ret)
-+		tdvmcall_fatal(ret);
-+	if (data != 0x12345678)
-+		tdvmcall_fatal(4);
-+
-+	ret = tdvmcall_mmio_read(MMIO_VALID_ADDRESS, 8, &data);
-+	if (ret)
-+		tdvmcall_fatal(ret);
-+	if (data != 0x1234567890ABCDEF)
-+		tdvmcall_fatal(8);
-+
-+	// Read an invalid number of bytes.
-+	ret = tdvmcall_mmio_read(MMIO_VALID_ADDRESS, 10, &data);
++	/* Read from shared memory; report to host. */
++	ret = tdvmcall_io(TDX_TEST_PORT, 2, TDX_IO_WRITE,
++			  (uint64_t *)shared_gva);
 +	if (ret)
 +		tdvmcall_fatal(ret);
 +
 +	tdvmcall_success();
 +}
 +
-+/*
-+ * Varifies guest MMIO reads.
-+ */
-+void verify_mmio_reads(void)
++void verify_shared_mem(void)
 +{
 +	struct kvm_vcpu *vcpu;
 +	struct kvm_vm *vm;
++	struct userspace_mem_region *region;
++	uint16_t guest_read_val;
++	uint64_t shared_gpa;
++	uint64_t shared_hva;
++	uint64_t shared_pages_num;
++	int ctr;
 +
-+	printf("Verifying TD MMIO reads:\n");
-+	/* Create a TD VM with no memory.*/
++	printf("Verifying shared memory\n");
++
++	/* Create a TD VM with no memory. */
 +	vm = vm_create_tdx();
 +
-+	/* Allocate TD guest memory and initialize the TD.*/
++	/* Allocate TD guest memory and initialize the TD. */
 +	initialize_td(vm);
 +
-+	/* Initialize the TD vcpu and copy the test code to the guest memory.*/
++	/* Initialize the TD vcpu and copy the test code to the guest memory. */
 +	vcpu = vm_vcpu_add_tdx(vm, 0);
 +
-+	/* Setup and initialize VM memory */
-+	prepare_source_image(vm, guest_mmio_reads,
-+			     TDX_FUNCTION_SIZE(guest_mmio_reads), 0);
++	/* Allocate shared memory. */
++	shared_gpa = 0x80000000;
++	shared_pages_num = 1;
++	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS,
++				    shared_gpa, 1,
++				    shared_pages_num, 0);
++
++	/* Setup and initialize VM memory. */
++	prepare_source_image(vm, guest_shared_mem,
++			     TDX_FUNCTION_SIZE(guest_shared_mem), 0);
 +	finalize_td_memory(vm);
 +
++	/* Begin guest execution; guest writes to shared memory. */
++	printf("\t ... Starting guest execution\n");
 +	vcpu_run(vcpu);
 +	CHECK_GUEST_FAILURE(vcpu);
-+	CHECK_MMIO(vcpu, MMIO_VALID_ADDRESS, 1, TDX_MMIO_READ);
-+	*(uint8_t *)vcpu->run->mmio.data = 0x12;
 +
++	/* Get the host's shared memory address. */
++	shared_hva = 0;
++	hash_for_each(vm->regions.slot_hash, ctr, region, slot_node) {
++		uint64_t region_guest_addr;
++
++		region_guest_addr = (uint64_t)region->region.guest_phys_addr;
++		if (region_guest_addr == (shared_gpa)) {
++			shared_hva = (uint64_t)region->host_mem;
++			break;
++		}
++	}
++	TEST_ASSERT(shared_hva != 0,
++		    "Guest address not found in guest memory regions\n");
++
++	/* Verify guest write -> host read succeeds. */
++	printf("\t ... Guest wrote 0x1234 to shared memory\n");
++	if (*(uint16_t *)shared_hva != 0x1234) {
++		printf("\t ... FAILED: Host read 0x%x instead of 0x1234\n",
++		       *(uint16_t *)shared_hva);
++	}
++	printf("\t ... Host read 0x%x from shared memory\n",
++	       *(uint16_t *)shared_hva);
++
++	/* Verify host write -> guest read succeeds. */
++	*((uint16_t *)shared_hva) = 0xABCD;
++	printf("\t ... Host wrote 0xabcd to shared memory\n");
 +	vcpu_run(vcpu);
 +	CHECK_GUEST_FAILURE(vcpu);
-+	CHECK_MMIO(vcpu, MMIO_VALID_ADDRESS, 2, TDX_MMIO_READ);
-+	*(uint16_t *)vcpu->run->mmio.data = 0x1234;
++	CHECK_IO(vcpu, TDX_TEST_PORT, 2, TDX_IO_WRITE);
++	guest_read_val = *(uint16_t *)((void *)vcpu->run + vcpu->run->io.data_offset);
 +
-+	vcpu_run(vcpu);
-+	CHECK_GUEST_FAILURE(vcpu);
-+	CHECK_MMIO(vcpu, MMIO_VALID_ADDRESS, 4, TDX_MMIO_READ);
-+	*(uint32_t *)vcpu->run->mmio.data = 0x12345678;
-+
-+	vcpu_run(vcpu);
-+	CHECK_GUEST_FAILURE(vcpu);
-+	CHECK_MMIO(vcpu, MMIO_VALID_ADDRESS, 8, TDX_MMIO_READ);
-+	*(uint64_t *)vcpu->run->mmio.data = 0x1234567890ABCDEF;
-+
-+	vcpu_run(vcpu);
-+	ASSERT_EQ(vcpu->run->exit_reason, KVM_EXIT_SYSTEM_EVENT);
-+	ASSERT_EQ(vcpu->run->system_event.data[1], TDX_VMCALL_INVALID_OPERAND);
-+
-+	vcpu_run(vcpu);
-+	CHECK_GUEST_COMPLETION(vcpu);
++	if (guest_read_val != 0xABCD) {
++		printf("\t ... FAILED: Guest read 0x%x instead of 0xABCD\n",
++		       guest_read_val);
++		kvm_vm_free(vm);
++		return;
++	}
++	printf("\t ... Guest read 0x%x from shared memory\n",
++	       guest_read_val);
 +
 +	kvm_vm_free(vm);
 +	printf("\t ... PASSED\n");
@@ -287,11 +383,11 @@ index 39604aac54bd..963e4feae31a 100644
  int main(int argc, char **argv)
  {
  	if (!is_tdx_enabled()) {
-@@ -987,6 +1099,7 @@ int main(int argc, char **argv)
- 	run_in_new_process(&verify_guest_msr_reads);
- 	run_in_new_process(&verify_guest_msr_writes);
- 	run_in_new_process(&verify_guest_hlt);
-+	run_in_new_process(&verify_mmio_reads);
+@@ -1537,6 +1660,7 @@ int main(int argc, char **argv)
+ 	run_in_new_process(&verify_mmio_writes);
+ 	run_in_new_process(&verify_host_reading_private_mem);
+ 	run_in_new_process(&verify_tdcall_vp_info);
++	run_in_new_process(&verify_shared_mem);
  
  	return 0;
  }
