@@ -2,307 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333D7ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F913ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:30:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231520AbiH3Iaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58288 "EHLO
+        id S231522AbiH3Iay (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:30:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbiH3Iai (ORCPT
+        with ESMTP id S231349AbiH3Iao (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:30:38 -0400
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60CA53D29
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:30:36 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 463805802C7;
-        Tue, 30 Aug 2022 04:30:34 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 30 Aug 2022 04:30:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1661848234; x=1661855434; bh=4FUstz1Bdi
-        VLP6X4LQhEKrnrrNlVhEnXxEPj4uh/Uzc=; b=IwLeeCxHNRnnHplBJu0uEHdvBM
-        aTXoBi+yXbvI1LRc1fjNBjfcVSdO/hdeATXGukUSmaY+CVsFuj+TL0LGx9JwwH6X
-        ruDV2qvOwgNN8CaCjJVUnhzSXPtsF4mYoU32TF1G1zEDrUMstky99Zls/qtiRLlp
-        vv3qb3dV+dXuSuvOR+mGjWCUEBSf++O3L+VjhmGmvOPZOvqNztvcAto4U+DwvJHN
-        tqvHCuUjkPNExJKVizhc+vfaOLhrQfzbayzK0rS3VENI1jv8wSyTrFHDfanT7Mea
-        KA9iUR1eMVX1uYIE6eNmLRV9OZGrCkdu1Rsjl+6UlDPhKg81hscFVpwnytSg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1661848234; x=1661855434; bh=4FUstz1BdiVLP6X4LQhEKrnrrNlV
-        hEnXxEPj4uh/Uzc=; b=VY1TwponrynsBGb2Snb/BnT4rJ9pJQhDKxd78cdIbUX9
-        6AxFqi7dRDzyAYcvj5HtMBKVhKUvl4W0TexfsYxn8V+xFBtHJEslz2LNvzttkFsH
-        /6Pi1kWvB/2gY8+kKcCJSWFDnJHk6Zj9joSEwfldwv6IXEAlxNcDSwdZRYZVd/Oj
-        M1AxJ4MSE7H5rO+anPZH6Ipafz8iUxQkpOvd6l+++sRSrZ3/ceLVQQZKZ1Wqjgko
-        adCpQ1ir2EaVLWlhLSipPArFb+2WFsyCv9OcH7VGySo7bMxpXRCHyEYkte5mO9FM
-        9OZRQ8OpQbv/buBYNMxNNd8RpDdUm8cctKGuGh3tuQ==
-X-ME-Sender: <xms:qcoNYwawP1IXm3fK0yP5jIgva-SrXuCVr3NTEC2ugz4C-wkPIv8FfA>
-    <xme:qcoNY7Zywf4imp57iJHNpz4v_t0D_ZueD5CSc5PgrSSbZqN1ONdHebkTTWsbLMLy9
-    L0MDFC0F7OPrQhXUTA>
-X-ME-Received: <xmr:qcoNY6-zldDE4xfplIzn_iqdhrG2YgeLzyJhQ7dwPHpiWJ-XAu50dlBMJek>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekfedgtdegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtudenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpeeftdejhfekgfduvddvgeevffeiveffteehgedtjeelfeduueeuhfekjefh
-    hffgffenucffohhmrghinhepmhgrgidrlhhotggrlhenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:qcoNY6onZPviIhwSYvBeRKcG6o_HyOB_7VUs5qJTBcvfqTsSqHPaTQ>
-    <xmx:qcoNY7pjQz4HVW1I7ePRGqWGCYVFV3KY73QTcSDGxsxn40UVXX7KLQ>
-    <xmx:qcoNY4QuqcqbOIu9G-PHQ8wW9uvJ6fihdnYWwavt2xeqOYSWkXDrjg>
-    <xmx:qsoNY-XFNnJ7L38ytACCjp3Se_yk12cV6NtY0McxE-kxiWUyyTmSTA>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 30 Aug 2022 04:30:32 -0400 (EDT)
-Date:   Tue, 30 Aug 2022 10:30:27 +0200
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-Cc:     Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        intel-gfx@lists.freedesktop.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        dri-devel@lists.freedesktop.org, Dom Cobley <dom@raspberrypi.com>,
-        linux-kernel@vger.kernel.org, nouveau@lists.freedesktop.org,
-        linux-sunxi@lists.linux.dev,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v2 01/41] drm/tests: Order Kunit tests in Makefile
-Message-ID: <20220830083027.4iyi2s5r5bto4h2e@houat>
-References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
- <20220728-rpi-analog-tv-properties-v2-1-459522d653a7@cerno.tech>
- <f6289e5d-98e3-1a0d-f514-136e2b7978c1@tronnes.org>
- <20220829190242.tk2hinttzzmzhnaj@meerkat.local>
+        Tue, 30 Aug 2022 04:30:44 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008F95C97A
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:30:42 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id b142so8618407iof.10
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:30:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=XOQ1w4vm4/BAxEC+jX3EtH/zHfW8KGtqf6yAkxCZrGU=;
+        b=gcdkuigXVR/vglMBclXyxN6RKU1Cq6mDJqZck+kETu/wpBTgNg/NLwx+KVkgCiSTCa
+         QnBaQMICJzda/l5FgnBEN6vk8KZoN0e8/6hW9nr8bmr+HdhOgDcbvfiPhxFUM096SsmS
+         aabZxgI2yDhhk8IJbABimf9O4pDaxkZX/0ALC4cYNyQ+zGbklZQGJzyXqZ3R7fL25aCy
+         hZvKl/PKJdoaLepvAWzauAspBgUcRPHodvQlaFu7cnJIapB6zTnDwwL4sYT6Mrlmjuj/
+         D7i6BlTAiY5oTQsrDib61dL9iFaqWDAsIcuyaBPXxSHYgDEEHctyEMnoH9h3Aih6Oif4
+         MIKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=XOQ1w4vm4/BAxEC+jX3EtH/zHfW8KGtqf6yAkxCZrGU=;
+        b=bnLxrrAQeUdsycN/NcQF9J/K8nwfdhUNVjSEsiZJVoQNcQzuSZUmDkedPPT4jI3EGj
+         mCGipjpdc/y9I7HvE52c3Nx3QBlUlcpGvYl+UAegy6FsHwZdJdJqfAtASc2SGDxCoTkN
+         fA3k9EL8+gWv7T03QzRfEFN29nTDNMnMWtsLqVi8KYxx3ZVOAQUp+eBq/Qgkj+Hh/IiJ
+         QSSd7yVKVnnIs5tjnDwm7/SYti6kISCX9t2ABEGpHnpKnVyyzGrUzJ6ICn7bYc+nfYqz
+         VPI5A8RgjeZKOnS/a/MnTPSTrTLIgm1NAqRuMVFMeQl13JF0pObW6MaWy4bcMgfa243m
+         l/7g==
+X-Gm-Message-State: ACgBeo0Yal0W+8WqJFxfF/YJ4grCFA5Z4nj6jS/+CGSvndema506lbNN
+        v1YwTcNnTa/f6vXx71z5OSV/sn3v78EAoyS2xIc=
+X-Google-Smtp-Source: AA6agR6MMrtKGn8FUnHIBa7I3kqhhl++k8Y3Jd9D30PcbuoGF4u50BtNrbh/zQRgOvad1+8DaTFKulwW2xYhi2TMrIA=
+X-Received: by 2002:a6b:8d8a:0:b0:689:4bb8:d59e with SMTP id
+ p132-20020a6b8d8a000000b006894bb8d59emr10535278iod.16.1661848242253; Tue, 30
+ Aug 2022 01:30:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="d3pufob2ilu477zw"
-Content-Disposition: inline
-In-Reply-To: <20220829190242.tk2hinttzzmzhnaj@meerkat.local>
+References: <20220803151217.75962-1-ppbuk5246@gmail.com> <CAM7-yPTdihLsPjDKM-0OEszxNd8n0bgeRseiEkCsSZW-uuaRvw@mail.gmail.com>
+ <Yw2+H9MNpf3Ve0eJ@MiWiFi-R3L-srv>
+In-Reply-To: <Yw2+H9MNpf3Ve0eJ@MiWiFi-R3L-srv>
+From:   Yun Levi <ppbuk5246@gmail.com>
+Date:   Tue, 30 Aug 2022 17:30:29 +0900
+Message-ID: <CAM7-yPRoBofD9+avRj1SH_GFogAnmJ7U8jJjbViH_hgOFBTX0w@mail.gmail.com>
+Subject: Re: [PATCH-RESEND] arm64/kexec: Fix missing extra range for crashkres_low.
+To:     Baoquan He <bhe@redhat.com>
+Cc:     will@kernel.org, chenzhou10@huawei.com, nramas@linux.microsoft.com,
+        thunder.leizhen@huawei.com, linux-arm-kernel@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kexec@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+> Right, excluding crashkernel region may cause memory region splitting,
+> so we need extra slot for that.
+>
+> Meanwhile, can you fix above code comment mess? Otherwise, this looks
+> good to me.
 
---d3pufob2ilu477zw
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks! I'll remove the comment.
 
-Hi Konstantin,
+> Or we can add extra 2 slots like we do in x86, it just add another 16
+> bytes temporarily.
 
-On Mon, Aug 29, 2022 at 03:02:42PM -0400, Konstantin Ryabitsev wrote:
-> On Mon, Aug 29, 2022 at 08:46:42PM +0200, Noralf Tr=F8nnes wrote:
-> > Something has gone wrong with this patchset, there are double line endi=
-ngs.
->=20
-> I noticed this, too, and I think the reason is because these patches were
-> generated with "b4 send -o", but actually sent using git-send-email. It's=
- not
-> a use-case I've considered (or tested) and the breakage is because when b4
-> generates patches with "-o", they are written with CRLF line endings, whi=
-ch is
-> not something git-send-email expects.
+Agree. I'll send the patch again by modifying nr_ranges' initialized value as 2.
 
-You're right
-
-> Maxime, any reason you went this direction instead of just letting b4 send
-> these patches directly?
-
-For some reason, b4 send doesn't work for my setup and I haven't had the
-time to look into why and let you know.
-
-Whenever I used b4 send (on this series for example) I get:
-
-$ b4 send
-Converted the branch to 41 patches
-Populating the To: and Cc: fields with automatically collected addresses
-Invoking get_maintainer.pl for To: addresses
-Invoking get_maintainer.pl for Cc: addresses
-Will send the following messages:
----
-To: David Airlie <airlied@linux.ie>
-    Daniel Vetter <daniel@ffwll.ch>
-    Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-    Maxime Ripard <mripard@kernel.org>
-    Thomas Zimmermann <tzimmermann@suse.de>
-    Noralf Tr=F8nnes <noralf@tronnes.org>
-    Emma Anholt <emma@anholt.net>
-    Ben Skeggs <bskeggs@redhat.com>
-    Karol Herbst <kherbst@redhat.com>
-    Lyude Paul <lyude@redhat.com>
-    Jani Nikula <jani.nikula@linux.intel.com>
-    Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-    Rodrigo Vivi <rodrigo.vivi@intel.com>
-    Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-    Chen-Yu Tsai <wens@csie.org>
-    Jernej Skrabec <jernej.skrabec@gmail.com>
-    Samuel Holland <samuel@sholland.org>
-    Philipp Zabel <p.zabel@pengutronix.de>
-Cc: dri-devel@lists.freedesktop.org
-    linux-kernel@vger.kernel.org
-    nouveau@lists.freedesktop.org
-    intel-gfx@lists.freedesktop.org
-    linux-arm-kernel@lists.infradead.org
-    linux-sunxi@lists.linux.dev
-    Dom Cobley <dom@raspberrypi.com>
-    Maxime Ripard <maxime@cerno.tech>
-    Geert Uytterhoeven <geert@linux-m68k.org>
-    Hans de Goede <hdegoede@redhat.com>
-    Dave Stevenson <dave.stevenson@raspberrypi.com>
-    Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
-    Phil Elwell <phil@raspberrypi.com>
----
-  [PATCH v2 00/41] drm: Analog TV Improvements
-  [PATCH v2 01/41] drm/tests: Order Kunit tests in Makefile
-  [PATCH v2 02/41] drm/tests: Add Kunit Helpers
-  [PATCH v2 03/41] drm/atomic-helper: Rename drm_atomic_helper_connector_tv=
-_reset to avoid ambiguity
-  [PATCH v2 04/41] drm/connector: Rename subconnector state variable
-  [PATCH v2 05/41] drm/atomic: Add TV subconnector property to get/set_prop=
-erty
-  [PATCH v2 06/41] drm/connector: Rename legacy TV property
-  [PATCH v2 07/41] drm/connector: Only register TV mode property if present
-  [PATCH v2 08/41] drm/connector: Rename drm_mode_create_tv_properties
-  [PATCH v2 09/41] drm/connector: Add TV standard property
-  [PATCH v2 10/41] drm/modes: Add a function to generate analog display mod=
-es
-  [PATCH v2 11/41] drm/modes: Only consider bpp and refresh before options
-  [PATCH v2 12/41] drm/modes: parse_cmdline: Add support for named modes co=
-ntaining dashes
-  [PATCH v2 13/41] drm/client: Add some tests for drm_connector_pick_cmdlin=
-e_mode()
-  [PATCH v2 14/41] drm/modes: Move named modes parsing to a separate functi=
-on
-  [PATCH v2 15/41] drm/modes: Switch to named mode descriptors
-  [PATCH v2 16/41] drm/modes: Fill drm_cmdline mode from named modes
-  [PATCH v2 17/41] drm/connector: Add pixel clock to cmdline mode
-  [PATCH v2 18/41] drm/connector: Add a function to lookup a TV mode by its=
- name
-  [PATCH v2 19/41] drm/modes: Introduce the tv_mode property as a command-l=
-ine option
-  [PATCH v2 20/41] drm/modes: Properly generate a drm_display_mode from a n=
-amed mode
-  [PATCH v2 21/41] drm/modes: Introduce more named modes
-  [PATCH v2 22/41] drm/atomic-helper: Add a TV properties reset helper
-  [PATCH v2 23/41] drm/atomic-helper: Add an analog TV atomic_check impleme=
-ntation
-  [PATCH v2 24/41] drm/vc4: vec: Remove empty mode_fixup
-  [PATCH v2 25/41] drm/vc4: vec: Convert to atomic helpers
-  [PATCH v2 26/41] drm/vc4: vec: Refactor VEC TV mode setting
-  [PATCH v2 27/41] drm/vc4: vec: Remove redundant atomic_mode_set
-  [PATCH v2 28/41] drm/vc4: vec: Fix timings for VEC modes
-  [PATCH v2 29/41] drm/vc4: vec: Switch for common modes
-  [PATCH v2 30/41] drm/vc4: vec: Fix definition of PAL-M mode
-  [PATCH v2 31/41] drm/vc4: vec: Use TV Reset implementation
-  [PATCH v2 32/41] drm/vc4: vec: Convert to the new TV mode property
-  [PATCH v2 33/41] drm/vc4: vec: Add support for more analog TV standards
-  [PATCH v2 34/41] drm/sun4i: tv: Remove unused mode_valid
-  [PATCH v2 35/41] drm/sun4i: tv: Convert to atomic hooks
-  [PATCH v2 36/41] drm/sun4i: tv: Merge mode_set into atomic_enable
-  [PATCH v2 37/41] drm/sun4i: tv: Remove useless function
-  [PATCH v2 38/41] drm/sun4i: tv: Remove useless destroy function
-  [PATCH v2 39/41] drm/sun4i: tv: Rename error label
-  [PATCH v2 40/41] drm/sun4i: tv: Add missing reset assertion
-  [PATCH v2 41/41] drm/sun4i: tv: Convert to the new TV mode property
----
-Press Enter to send or Ctrl-C to abort
-  [PATCH v2 00/41] drm: Analog TV Improvements
-  [PATCH v2 01/41] drm/tests: Order Kunit tests in Makefile
-  [PATCH v2 02/41] drm/tests: Add Kunit Helpers
-  [PATCH v2 03/41] drm/atomic-helper: Rename drm_atomic_helper_connector_tv=
-_reset to avoid ambiguity
-  [PATCH v2 04/41] drm/connector: Rename subconnector state variable
-  [PATCH v2 05/41] drm/atomic: Add TV subconnector property to get/set_prop=
-erty
-  [PATCH v2 06/41] drm/connector: Rename legacy TV property
-  [PATCH v2 07/41] drm/connector: Only register TV mode property if present
-  [PATCH v2 08/41] drm/connector: Rename drm_mode_create_tv_properties
-  [PATCH v2 09/41] drm/connector: Add TV standard property
-  [PATCH v2 10/41] drm/modes: Add a function to generate analog display mod=
-es
-  [PATCH v2 11/41] drm/modes: Only consider bpp and refresh before options
-  [PATCH v2 12/41] drm/modes: parse_cmdline: Add support for named modes co=
-ntaining dashes
-  [PATCH v2 13/41] drm/client: Add some tests for drm_connector_pick_cmdlin=
-e_mode()
-  [PATCH v2 14/41] drm/modes: Move named modes parsing to a separate functi=
-on
-  [PATCH v2 15/41] drm/modes: Switch to named mode descriptors
-  [PATCH v2 16/41] drm/modes: Fill drm_cmdline mode from named modes
-  [PATCH v2 17/41] drm/connector: Add pixel clock to cmdline mode
-  [PATCH v2 18/41] drm/connector: Add a function to lookup a TV mode by its=
- name
-  [PATCH v2 19/41] drm/modes: Introduce the tv_mode property as a command-l=
-ine option
-  [PATCH v2 20/41] drm/modes: Properly generate a drm_display_mode from a n=
-amed mode
-  [PATCH v2 21/41] drm/modes: Introduce more named modes
-  [PATCH v2 22/41] drm/atomic-helper: Add a TV properties reset helper
-  [PATCH v2 23/41] drm/atomic-helper: Add an analog TV atomic_check impleme=
-ntation
-  [PATCH v2 24/41] drm/vc4: vec: Remove empty mode_fixup
-  [PATCH v2 25/41] drm/vc4: vec: Convert to atomic helpers
-  [PATCH v2 26/41] drm/vc4: vec: Refactor VEC TV mode setting
-  [PATCH v2 27/41] drm/vc4: vec: Remove redundant atomic_mode_set
-  [PATCH v2 28/41] drm/vc4: vec: Fix timings for VEC modes
-  [PATCH v2 29/41] drm/vc4: vec: Switch for common modes
-  [PATCH v2 30/41] drm/vc4: vec: Fix definition of PAL-M mode
-  [PATCH v2 31/41] drm/vc4: vec: Use TV Reset implementation
-  [PATCH v2 32/41] drm/vc4: vec: Convert to the new TV mode property
-  [PATCH v2 33/41] drm/vc4: vec: Add support for more analog TV standards
-  [PATCH v2 34/41] drm/sun4i: tv: Remove unused mode_valid
-  [PATCH v2 35/41] drm/sun4i: tv: Convert to atomic hooks
-  [PATCH v2 36/41] drm/sun4i: tv: Merge mode_set into atomic_enable
-  [PATCH v2 37/41] drm/sun4i: tv: Remove useless function
-  [PATCH v2 38/41] drm/sun4i: tv: Remove useless destroy function
-  [PATCH v2 39/41] drm/sun4i: tv: Rename error label
-  [PATCH v2 40/41] drm/sun4i: tv: Add missing reset assertion
-  [PATCH v2 41/41] drm/sun4i: tv: Convert to the new TV mode property
-Connecting to /home/max/.local/bin/msmtpq:0
-Failed to configure the smtp connection:
-[Errno -2] Name or service not known
-
-msmtpq is basically a sendmail-like tool to queue the mails if the
-machine is offline. It is setup in my git config as
-sendemail.smtpserver.
-
-git-send-email works just fine, but somehow b4 send fails. I think it's
-due to cmd_send calling b4.get_smtp() and expecting to get some
-credentials out of it?
-
-Maxime
-
---d3pufob2ilu477zw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYw3KowAKCRDj7w1vZxhR
-xaIZAP42+l/5+Eqvr3A62fk6KM1Kbbg5h0I1Z6ZpYaKL2WMNSwEAs+r4YZvtTzHT
-3urI7OZ931zTG5k+e3FRpMF2caXz1ws=
-=nwvM
------END PGP SIGNATURE-----
-
---d3pufob2ilu477zw--
+Thanks!
