@@ -2,157 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E48ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E517ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:55:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230268AbiH3My7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 08:54:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49600 "EHLO
+        id S229806AbiH3MzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 08:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230154AbiH3MyT (ORCPT
+        with ESMTP id S230245AbiH3My4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 08:54:19 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DDA1612BF;
-        Tue, 30 Aug 2022 05:54:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661864044; x=1693400044;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gKiQrVoPS5U5E0J/ieB622E3Sd8fCWlrmjU5Y54NYxE=;
-  b=qBHoYSDSSfrYYQxKC5zT0SIdjq6vyP34alufhgWJJ0erb0YHmhK1FRu6
-   CYVIeFPsG3qLygIZ0edZnIISMATU0+v5bXoEYMVEziUTw0MWzmRPlOjRD
-   xeSp7QgyR6WBPSlCS5piIzUT09Jbtd4QQCY9dcxLZivIcBQudtqFs+vUf
-   ib05IlEdCYhcYuuF52UThFhzGIlgx+8ExA7vd3N0Zx1Pbj36Jc9hIu5eT
-   +ALV3cQe4WiDZmlT4Add6knBQYpfZy1WqamXWR2dHCdTbApCPEnUnIf/j
-   NX497+s6YbrWwZNePXRFylLzcjcuniru8R7Ek88dl/OZNRJ5T52RhiWzF
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="178301981"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 05:53:47 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 30 Aug 2022 05:53:44 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
- Transport; Tue, 30 Aug 2022 05:53:42 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Daire McNamara <daire.mcnamara@microchip.com>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>
-Subject: [PATCH v4 10/13] clk: microchip: mpfs: delete 2 line mpfs_clk_register_foo()
-Date:   Tue, 30 Aug 2022 13:52:47 +0100
-Message-ID: <20220830125249.2373416-10-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220830125110.2372514-1-conor.dooley@microchip.com>
-References: <20220830125110.2372514-1-conor.dooley@microchip.com>
+        Tue, 30 Aug 2022 08:54:56 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3034E122BCF;
+        Tue, 30 Aug 2022 05:54:28 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id z25so15403993lfr.2;
+        Tue, 30 Aug 2022 05:54:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=PI82MzFvdHP75c7weRhmZb8nU9JOXMueIl3nwAOMIGk=;
+        b=XhN2VTNabjEKtoWOzHgPVjJ1yePu6flob5CKlciItMWh9Q559bF3hKp4BefZlZ5k7s
+         TezrpQO7B2zeRnRrah1a38p/pc2jJV0YOl1YXmx3lWIGI0p+CDKIGeuQQJCCyHvkJD6f
+         zQ6sb1rqQ9qegqcAeq+XKvHbqBVGNSqYDt9O+gzjaFRH+YziJ0x6gFXfUnhrZuzittNf
+         W4YdMl72KP0whn81v46NKjK4TZV2Hwy6sgl+OwZhIsvOrjsk32GBS/tAf1M5GWldwaYD
+         VOAdggCQtCsoxWRiEl5aUAG8LIbWLlS2dEIB3pzTCAqd2cHtRUqrZlyzvZOs7EoZluI9
+         oS/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=PI82MzFvdHP75c7weRhmZb8nU9JOXMueIl3nwAOMIGk=;
+        b=E3o5nRMX4Zdy9iZqk6KGfmH6ldvX3jV4elekYbT/uLEm2DqbeMXOCEnQGY3PBPzzj4
+         J3QBfjqtCA+Ip74jxc+uukbdPkOWg3thdRAK0keNha0qEQ0Eu91VBGBFQSQlJmvhyeQU
+         /TVqiEyp/6QM6A+RXcwF4w/f+q5aytlwZFykJygkbocKzAhOsuCDB88lRc7NuRlhWZ4q
+         i+oSDxHWe05xAcjk7TBhaSTV06+inQQW/rEwtUsDc9P8mFdOi/fzykBi/VK5YYaCUqr8
+         vPPCiNV3WVepM46zsmsm8yYhz6k2jaPyoUeidg18UW/9AvWvrJMLevNTOjsf86O0Ba+a
+         t5vA==
+X-Gm-Message-State: ACgBeo3lDj5v7x5fw/00wBLTcAqlWNHlaXtg3IhV7fLvbPlUpbxI+MBu
+        9RHwqm/MITHR6chQFjWkF9c=
+X-Google-Smtp-Source: AA6agR6OkiSrMxyw4LWK6fNAB7FxseNF8wU9mDYISGsRgO04gUdFhOFyiclQMQeFrJRC6Ue3RkSMdQ==
+X-Received: by 2002:a05:6512:3b0b:b0:494:66e7:e3f with SMTP id f11-20020a0565123b0b00b0049466e70e3fmr4065680lfv.279.1661864048680;
+        Tue, 30 Aug 2022 05:54:08 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:16f3:4a00::1? (dc75zzyyyyyyyyyyyyyyt-3.rev.dnainternet.fi. [2001:14ba:16f3:4a00::1])
+        by smtp.gmail.com with ESMTPSA id s20-20020a056512315400b0048af3c315efsm1605659lfi.191.2022.08.30.05.54.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 05:54:08 -0700 (PDT)
+Message-ID: <0aaeb018-94ba-eaaa-4000-7ad082a09850@gmail.com>
+Date:   Tue, 30 Aug 2022 15:54:07 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v3 11/14] iio: ad7606: simplify using
+ devm_regulator_get_enable()
+Content-Language: en-US
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <cover.1660934107.git.mazziesaccount@gmail.com>
+ <521c52f5a9bdc2db04d5775b36df4b233ae338da.1660934107.git.mazziesaccount@gmail.com>
+ <SN4PR03MB6784BE44D4A6DCECA0859C5F99799@SN4PR03MB6784.namprd03.prod.outlook.com>
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <SN4PR03MB6784BE44D4A6DCECA0859C5F99799@SN4PR03MB6784.namprd03.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The register functions are now comprised of only a single operation
-each and no longer add anything to the driver. Delete them.
+Thanks for the review(s) Nuno!
 
-Reviewed-by: Daire McNamara <daire.mcnamara@microchip.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- drivers/clk/microchip/clk-mpfs.c | 33 ++++++--------------------------
- 1 file changed, 6 insertions(+), 27 deletions(-)
+On 8/30/22 14:46, Sa, Nuno wrote:
+>> From: Matti Vaittinen <mazziesaccount@gmail.com>
+>> Sent: Friday, August 19, 2022 9:20 PM
+>> To: Matti Vaittinen <mazziesaccount@gmail.com>; Matti Vaittinen
+>> <matti.vaittinen@fi.rohmeurope.com>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
+>> <Michael.Hennerich@analog.com>; Jonathan Cameron
+>> <jic23@kernel.org>; linux-iio@vger.kernel.org; linux-
+>> kernel@vger.kernel.org
+>> Subject: [PATCH v3 11/14] iio: ad7606: simplify using
+>> devm_regulator_get_enable()
+>>
+>> [External]
+>>
+>> Drop open-coded pattern: 'devm_regulator_get(), regulator_enable(),
+>> add_action_or_reset(regulator_disable)' and use the
+>> devm_regulator_get_enable() and drop the pointer to the regulator.
+>> This simplifies code and makes it less tempting to add manual control
+>> for the regulator which is also controlled by devm.
+>>
+>> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+>>
+>> ---
+> 
+> The commit message could state that while doing the change, dev_err_probe()
+> was also introduced. Bah, anyways:
+> 
+> Acked-by: Nuno Sá <nuno.sa@analog.com>
 
-diff --git a/drivers/clk/microchip/clk-mpfs.c b/drivers/clk/microchip/clk-mpfs.c
-index 60e1e82912fe..538cb589d232 100644
---- a/drivers/clk/microchip/clk-mpfs.c
-+++ b/drivers/clk/microchip/clk-mpfs.c
-@@ -203,14 +203,6 @@ static struct mpfs_msspll_hw_clock mpfs_msspll_clks[] = {
- 		MSSPLL_FBDIV_WIDTH, 0, REG_MSSPLL_SSCG_2_CR),
- };
- 
--static int mpfs_clk_register_msspll(struct device *dev, struct mpfs_msspll_hw_clock *msspll_hw,
--				    void __iomem *base)
--{
--	msspll_hw->base = base;
--
--	return devm_clk_hw_register(dev, &msspll_hw->hw);
--}
--
- static int mpfs_clk_register_mssplls(struct device *dev, struct mpfs_msspll_hw_clock *msspll_hws,
- 				     unsigned int num_clks, struct mpfs_clock_data *data)
- {
-@@ -220,7 +212,8 @@ static int mpfs_clk_register_mssplls(struct device *dev, struct mpfs_msspll_hw_c
- 	for (i = 0; i < num_clks; i++) {
- 		struct mpfs_msspll_hw_clock *msspll_hw = &msspll_hws[i];
- 
--		ret = mpfs_clk_register_msspll(dev, msspll_hw, data->msspll_base);
-+		msspll_hw->base = data->msspll_base;
-+		ret = devm_clk_hw_register(dev, &msspll_hw->hw);
- 		if (ret)
- 			return dev_err_probe(dev, ret, "failed to register msspll id: %d\n",
- 					     CLK_MSSPLL);
-@@ -314,14 +307,6 @@ static struct mpfs_cfg_hw_clock mpfs_cfg_clks[] = {
- 	}
- };
- 
--static int mpfs_clk_register_cfg(struct device *dev, struct mpfs_cfg_hw_clock *cfg_hw,
--				 void __iomem *base)
--{
--	cfg_hw->cfg.reg = base + cfg_hw->reg_offset;
--
--	return devm_clk_hw_register(dev, &cfg_hw->hw);
--}
--
- static int mpfs_clk_register_cfgs(struct device *dev, struct mpfs_cfg_hw_clock *cfg_hws,
- 				  unsigned int num_clks, struct mpfs_clock_data *data)
- {
-@@ -331,7 +316,8 @@ static int mpfs_clk_register_cfgs(struct device *dev, struct mpfs_cfg_hw_clock *
- 	for (i = 0; i < num_clks; i++) {
- 		struct mpfs_cfg_hw_clock *cfg_hw = &cfg_hws[i];
- 
--		ret = mpfs_clk_register_cfg(dev, cfg_hw, data->base);
-+		cfg_hw->cfg.reg = data->base + cfg_hw->reg_offset;
-+		ret = devm_clk_hw_register(dev, &cfg_hw->hw);
- 		if (ret)
- 			return dev_err_probe(dev, ret, "failed to register clock id: %d\n",
- 					     cfg_hw->id);
-@@ -454,14 +440,6 @@ static struct mpfs_periph_hw_clock mpfs_periph_clks[] = {
- 	CLK_PERIPH(CLK_CFM, "clk_periph_cfm", PARENT_CLK(AHB), 29, 0),
- };
- 
--static int mpfs_clk_register_periph(struct device *dev, struct mpfs_periph_hw_clock *periph_hw,
--				    void __iomem *base)
--{
--	periph_hw->periph.reg = base + REG_SUBBLK_CLOCK_CR;
--
--	return devm_clk_hw_register(dev, &periph_hw->hw);
--}
--
- static int mpfs_clk_register_periphs(struct device *dev, struct mpfs_periph_hw_clock *periph_hws,
- 				     int num_clks, struct mpfs_clock_data *data)
- {
-@@ -471,7 +449,8 @@ static int mpfs_clk_register_periphs(struct device *dev, struct mpfs_periph_hw_c
- 	for (i = 0; i < num_clks; i++) {
- 		struct mpfs_periph_hw_clock *periph_hw = &periph_hws[i];
- 
--		ret = mpfs_clk_register_periph(dev, periph_hw, data->base);
-+		periph_hw->periph.reg = data->base + REG_SUBBLK_CLOCK_CR;
-+		ret = devm_clk_hw_register(dev, &periph_hw->hw);
- 		if (ret)
- 			return dev_err_probe(dev, ret, "failed to register clock id: %d\n",
- 					     periph_hw->id);
+Good point. I have few other changes to the series pending - and I 
+probably need to rebase/respin when -rc1 is out (and dependency patches 
+are merged from Mark's tree) => I may as well alter the commit message.
+
+Yours,
+	-- Matti
+
 -- 
-2.36.1
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
+~~ When things go utterly wrong vim users can always type :help! ~~
