@@ -2,676 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8828ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E47DECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:45:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232397AbiH3Woe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 18:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
+        id S231366AbiH3Wpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 18:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232493AbiH3Wnt (ORCPT
+        with ESMTP id S231815AbiH3Wp0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 18:43:49 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B8684ECC
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:43:34 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id z14-20020a170903018e00b00174fff57d17so2918173plg.14
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:43:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc;
-        bh=lqixpQXBBABWZQORlxTuydpIP0GZwF2DjDV0e6REe5k=;
-        b=d4nHpC0Ur/2l1zx8uv7diUCkftpV5Vp6eS/8jS9BbOEp7ec/TJDCKBYUpr9NZxQl3z
-         xQP9x3TvMEjbgUkDeXQ2VMC+VKfyIcvqmhZrak7Ty2iI0+aaf2A7iDFImRoKRV9WNH7s
-         kN94+gLz32tYIMkjEtL3H034U2gDjvqDdApLgHXd+qeBwDGhmG7g6J/8Ov+xm4OnDBIg
-         wzO6ZXO8E1BD5P+rcR22geRPjBZMVcEWeA4VOPWlfwCMM4uGbI6xHwX1/cPZ59vc0mWb
-         8ApRoYpRd7FYjG0ufGmgGYXWH4h9c86bQCEinqquiZmYmu/WkIGKbO67kSaJOSBq4FI6
-         XA7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=lqixpQXBBABWZQORlxTuydpIP0GZwF2DjDV0e6REe5k=;
-        b=tGwkgPSoyUH2inzeFKWmGJ7PwtdUF6TQP/fFmgLbhBCEw+ALA1nS7J6JikBYwkD8QG
-         o9GUqtAMu3FQ79tLG2YqAFwF3Op0wRghGqbXJ5MZGEQja1vOoUHK0jGg482jNhYvrT7Q
-         MynWvegDy9I7owXFFLLpEBs1K8RieptCZxrSZ+rYtCkvPasJGvyWE/m4eClAbYDqS6Uh
-         tpDL31A6NO6SZytiyWIQeOXhI/73AvwYgcxI1Q1BzxMegR+MgEr0jP+vuMiqBPymdZ+Y
-         +P/gYkXDA8n+1+FNT1b8nAt+w7ufkbSAAWp30pQG4InxRvxW16Ui9k6gY2J2mEaJYVTB
-         Oo4Q==
-X-Gm-Message-State: ACgBeo1qlGWdBsuSYqez7U6bAGoPJc7x1yUsFDgREs7H7uzVueJQhL6B
-        WG0Qvkg1TwDZD33EaT1bK8K8aNOByXJBrMUx
-X-Google-Smtp-Source: AA6agR4ml/Ql2xekqUAm4T/hSZGEEww9e0VlFIKKFuer2hjk7TU2Wk7Uwk9mBoOlkkPKqFgQci6wOzxkIp6dKzBD
-X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f8])
- (user=vannapurve job=sendgmr) by 2002:a17:90a:e515:b0:1fd:6e58:40 with SMTP
- id t21-20020a17090ae51500b001fd6e580040mr272209pjy.46.1661899413403; Tue, 30
- Aug 2022 15:43:33 -0700 (PDT)
-Date:   Tue, 30 Aug 2022 22:42:58 +0000
-In-Reply-To: <20220830224259.412342-1-vannapurve@google.com>
-Mime-Version: 1.0
-References: <20220830224259.412342-1-vannapurve@google.com>
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830224259.412342-8-vannapurve@google.com>
-Subject: [RFC V2 PATCH 7/8] selftests: kvm: Refactor testing logic for private memory
-From:   Vishal Annapurve <vannapurve@google.com>
-To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, shuah@kernel.org, yang.zhong@intel.com,
-        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
-        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
-        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
-        bfields@fieldses.org, akpm@linux-foundation.org,
-        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
-        jun.nakajima@intel.com, dave.hansen@intel.com,
-        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
-        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
-        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
-        pgonda@google.com, nikunj@amd.com, seanjc@google.com,
-        diviness@google.com, maz@kernel.org, dmatlack@google.com,
-        axelrasmussen@google.com, maciej.szmigiero@oracle.com,
-        mizhang@google.com, bgardon@google.com,
-        Vishal Annapurve <vannapurve@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 30 Aug 2022 18:45:26 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33289DF87;
+        Tue, 30 Aug 2022 15:44:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661899472; x=1693435472;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=T2YHnYMDd4Fol+DaoGjhCT5He76leU8I4QvQYG9kKp4=;
+  b=hWXxHb+XbMycchMj1DKSYFzK44K6GXAOrfJTeCAPGIfXk99G5oZTJcNr
+   EiNNiTa7SXPNokVesNeUSAFAkMWPh5rEZYexk6NUOjyoBLBxizbIq1dW0
+   zM1Yw8mwbYGeQIB65PXbWoWGsQWwt37ejqjm+UAoZ3WRWqxm0CuNsboBS
+   48+2Ntf/f39Qhw/uMSyjC6+0smNEQiUbNIf4iBASwJ0PleHfTpS6p4h5m
+   dFFnOCrJhZGZMSk3vJHHjAUuaRbyKeb/Vt0JcW/IBzkkNMZqdCN4tZERc
+   aHSYax0WETxWep0HFF6DOCowapYWTrC8c/K43MulU6IE2+3mcZK9EUbDv
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="357039950"
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="357039950"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 15:44:27 -0700
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="737915064"
+Received: from skanpuri-mobl1.amr.corp.intel.com (HELO desk) ([10.212.18.137])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 15:44:26 -0700
+Date:   Tue, 30 Aug 2022 15:44:25 -0700
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     stable@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, andrew.cooper3@citrix.com, bp@suse.de,
+        tony.luck@intel.com, antonio.gomez.iglesias@linux.intel.com,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 4.14 2/2] x86/bugs: Add "unknown" reporting for MMIO Stale
+ Data
+Message-ID: <4a2f049185e7032a98030631b9555cbdd9b96b8a.1661899117.git.pawan.kumar.gupta@linux.intel.com>
+References: <ec31e22b4f3b079d0da6b60f5899ffcd79d9bea0.1661899117.git.pawan.kumar.gupta@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ec31e22b4f3b079d0da6b60f5899ffcd79d9bea0.1661899117.git.pawan.kumar.gupta@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move all of the logic to execute memory conversion tests into library to
-allow sharing the logic between normal non-confidential VMs and SEV VMs.
+[ Upstream commit 7df548840c496b0141fb2404b889c346380c2b22 ]
 
-Signed-off-by: Vishal Annapurve <vannapurve@google.com>
+Older Intel CPUs that are not in the affected processor list for MMIO
+Stale Data vulnerabilities currently report "Not affected" in sysfs,
+which may not be correct. Vulnerability status for these older CPUs is
+unknown.
+
+Add known-not-affected CPUs to the whitelist. Report "unknown"
+mitigation status for CPUs that are not in blacklist, whitelist and also
+don't enumerate MSR ARCH_CAPABILITIES bits that reflect hardware
+immunity to MMIO Stale Data vulnerabilities.
+
+Mitigation is not deployed when the status is unknown.
+
+  [ bp: Massage, fixup. ]
+
+Fixes: 8d50cdf8b834 ("x86/speculation/mmio: Add sysfs reporting for Processor MMIO Stale Data")
+Suggested-by: Andrew Cooper <andrew.cooper3@citrix.com>
+Suggested-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/a932c154772f2121794a5f2eded1a11013114711.1657846269.git.pawan.kumar.gupta@linux.intel.com
 ---
- tools/testing/selftests/kvm/Makefile          |   1 +
- .../include/x86_64/private_mem_test_helper.h  |  13 +
- .../kvm/lib/x86_64/private_mem_test_helper.c  | 273 ++++++++++++++++++
- .../selftests/kvm/x86_64/private_mem_test.c   | 246 +---------------
- 4 files changed, 289 insertions(+), 244 deletions(-)
- create mode 100644 tools/testing/selftests/kvm/include/x86_64/private_mem_test_helper.h
- create mode 100644 tools/testing/selftests/kvm/lib/x86_64/private_mem_test_helper.c
+ .../hw-vuln/processor_mmio_stale_data.rst     | 14 ++++++++
+ arch/x86/include/asm/cpufeatures.h            |  1 +
+ arch/x86/kernel/cpu/bugs.c                    | 14 ++++++--
+ arch/x86/kernel/cpu/common.c                  | 34 +++++++++++++------
+ 4 files changed, 50 insertions(+), 13 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index c5fc8ea2c843..36874fedff4a 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -52,6 +52,7 @@ LIBKVM_x86_64 += lib/x86_64/apic.c
- LIBKVM_x86_64 += lib/x86_64/handlers.S
- LIBKVM_x86_64 += lib/x86_64/perf_test_util.c
- LIBKVM_x86_64 += lib/x86_64/private_mem.c
-+LIBKVM_x86_64 += lib/x86_64/private_mem_test_helper.c
- LIBKVM_x86_64 += lib/x86_64/processor.c
- LIBKVM_x86_64 += lib/x86_64/svm.c
- LIBKVM_x86_64 += lib/x86_64/ucall.c
-diff --git a/tools/testing/selftests/kvm/include/x86_64/private_mem_test_helper.h b/tools/testing/selftests/kvm/include/x86_64/private_mem_test_helper.h
-new file mode 100644
-index 000000000000..31bc559cd813
---- /dev/null
-+++ b/tools/testing/selftests/kvm/include/x86_64/private_mem_test_helper.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2022, Google LLC.
-+ */
+diff --git a/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
+index 9393c50b5afc..c98fd11907cc 100644
+--- a/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
++++ b/Documentation/admin-guide/hw-vuln/processor_mmio_stale_data.rst
+@@ -230,6 +230,20 @@ The possible values in this file are:
+      * - 'Mitigation: Clear CPU buffers'
+        - The processor is vulnerable and the CPU buffer clearing mitigation is
+          enabled.
++     * - 'Unknown: No mitigations'
++       - The processor vulnerability status is unknown because it is
++	 out of Servicing period. Mitigation is not attempted.
 +
-+#ifndef SELFTEST_KVM_PRIVATE_MEM_TEST_HELPER_H
-+#define SELFTEST_KVM_PRIVATE_MEM_TEST_HELPER_H
++Definitions:
++------------
 +
-+void execute_memory_conversion_tests(void);
++Servicing period: The process of providing functional and security updates to
++Intel processors or platforms, utilizing the Intel Platform Update (IPU)
++process or other similar mechanisms.
 +
-+void execute_sev_memory_conversion_tests(void);
-+
-+#endif  // SELFTEST_KVM_PRIVATE_MEM_TEST_HELPER_H
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/private_mem_test_helper.c b/tools/testing/selftests/kvm/lib/x86_64/private_mem_test_helper.c
-new file mode 100644
-index 000000000000..ce53bef7896e
---- /dev/null
-+++ b/tools/testing/selftests/kvm/lib/x86_64/private_mem_test_helper.c
-@@ -0,0 +1,273 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022, Google LLC.
-+ */
-+#define _GNU_SOURCE /* for program_invocation_short_name */
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+
-+#include <test_util.h>
-+#include <kvm_util.h>
-+#include <private_mem.h>
-+#include <private_mem_test_helper.h>
-+#include <processor.h>
-+#include <sev.h>
-+
-+#define VM_MEMSLOT0_PAGES	(512 * 10)
-+
-+#define TEST_AREA_SLOT		10
-+#define TEST_AREA_GPA		0xC0000000
-+#define TEST_AREA_SIZE		(2 * 1024 * 1024)
-+#define GUEST_TEST_MEM_OFFSET	(1 * 1024 * 1024)
-+#define GUEST_TEST_MEM_SIZE	(10 * 4096)
-+
-+#define VM_STAGE_PROCESSED(x)	pr_info("Processed stage %s\n", #x)
-+
-+#define TEST_MEM_DATA_PAT1	0x66
-+#define TEST_MEM_DATA_PAT2	0x99
-+#define TEST_MEM_DATA_PAT3	0x33
-+#define TEST_MEM_DATA_PAT4	0xaa
-+#define TEST_MEM_DATA_PAT5	0x12
-+
-+static bool verify_mem_contents(void *mem, uint32_t size, uint8_t pat)
-+{
-+	uint8_t *buf = (uint8_t *)mem;
-+
-+	for (uint32_t i = 0; i < size; i++) {
-+		if (buf[i] != pat)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+/*
-+ * Add custom implementation for memset to avoid using standard/builtin memset
-+ * which may use features like SSE/GOT that don't work with guest vm execution
-+ * within selftests.
-+ */
-+void *memset(void *mem, int byte, size_t size)
-+{
-+	uint8_t *buf = (uint8_t *)mem;
-+
-+	for (uint32_t i = 0; i < size; i++)
-+		buf[i] = byte;
-+
-+	return buf;
-+}
-+
-+static void populate_test_area(void *test_area_base, uint64_t pat)
-+{
-+	memset(test_area_base, pat, TEST_AREA_SIZE);
-+}
-+
-+static void populate_guest_test_mem(void *guest_test_mem, uint64_t pat)
-+{
-+	memset(guest_test_mem, pat, GUEST_TEST_MEM_SIZE);
-+}
-+
-+static bool verify_test_area(void *test_area_base, uint64_t area_pat,
-+	uint64_t guest_pat)
-+{
-+	void *test_area1_base = test_area_base;
-+	uint64_t test_area1_size = GUEST_TEST_MEM_OFFSET;
-+	void *guest_test_mem = test_area_base + test_area1_size;
-+	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
-+	void *test_area2_base = guest_test_mem + guest_test_size;
-+	uint64_t test_area2_size = (TEST_AREA_SIZE - (GUEST_TEST_MEM_OFFSET +
-+			GUEST_TEST_MEM_SIZE));
-+
-+	return (verify_mem_contents(test_area1_base, test_area1_size, area_pat) &&
-+		verify_mem_contents(guest_test_mem, guest_test_size, guest_pat) &&
-+		verify_mem_contents(test_area2_base, test_area2_size, area_pat));
-+}
-+
-+#define GUEST_STARTED			0
-+#define GUEST_PRIVATE_MEM_POPULATED	1
-+#define GUEST_SHARED_MEM_POPULATED	2
-+#define GUEST_PRIVATE_MEM_POPULATED2	3
-+#define GUEST_IMPLICIT_MEM_CONV1	4
-+#define GUEST_IMPLICIT_MEM_CONV2	5
-+
-+/*
-+ * Run memory conversion tests supporting two types of conversion:
-+ * 1) Explicit: Execute KVM hypercall to map/unmap gpa range which will cause
-+ *   userspace exit to back/unback private memory. Subsequent accesses by guest
-+ *   to the gpa range will not cause exit to userspace.
-+ * 2) Implicit: Execute KVM hypercall to update memory access to a gpa range as
-+ *   private/shared without exiting to userspace. Subsequent accesses by guest
-+ *   to the gpa range will result in KVM EPT/NPT faults and then exit to
-+ *   userspace for each page.
-+ *
-+ * Test memory conversion scenarios with following steps:
-+ * 1) Access private memory using private access and verify that memory contents
-+ *   are not visible to userspace.
-+ * 2) Convert memory to shared using explicit/implicit conversions and ensure
-+ *   that userspace is able to access the shared regions.
-+ * 3) Convert memory back to private using explicit/implicit conversions and
-+ *   ensure that userspace is again not able to access converted private
-+ *   regions.
-+ */
-+static void guest_conv_test_fn(bool test_explicit_conv)
-+{
-+	void *test_area_base = (void *)TEST_AREA_GPA;
-+	void *guest_test_mem = (void *)(TEST_AREA_GPA + GUEST_TEST_MEM_OFFSET);
-+	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
-+
-+	guest_map_ucall_page_shared();
-+	GUEST_SYNC(GUEST_STARTED);
-+
-+	populate_test_area(test_area_base, TEST_MEM_DATA_PAT1);
-+	GUEST_SYNC(GUEST_PRIVATE_MEM_POPULATED);
-+	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
-+		TEST_MEM_DATA_PAT1));
-+
-+	if (test_explicit_conv)
-+		guest_update_mem_map(TO_SHARED, (uint64_t)guest_test_mem,
-+			(uint64_t)guest_test_mem, guest_test_size);
-+	else {
-+		guest_update_mem_access(TO_SHARED, (uint64_t)guest_test_mem,
-+			(uint64_t)guest_test_mem, guest_test_size);
-+		GUEST_SYNC(GUEST_IMPLICIT_MEM_CONV1);
-+	}
-+
-+	populate_guest_test_mem(guest_test_mem, TEST_MEM_DATA_PAT2);
-+
-+	GUEST_SYNC(GUEST_SHARED_MEM_POPULATED);
-+	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
-+		TEST_MEM_DATA_PAT5));
-+
-+	if (test_explicit_conv)
-+		guest_update_mem_map(TO_PRIVATE, (uint64_t)guest_test_mem,
-+			(uint64_t)guest_test_mem, guest_test_size);
-+	else {
-+		guest_update_mem_access(TO_PRIVATE, (uint64_t)guest_test_mem,
-+			(uint64_t)guest_test_mem, guest_test_size);
-+		GUEST_SYNC(GUEST_IMPLICIT_MEM_CONV2);
-+	}
-+
-+	populate_guest_test_mem(guest_test_mem, TEST_MEM_DATA_PAT3);
-+	GUEST_SYNC(GUEST_PRIVATE_MEM_POPULATED2);
-+
-+	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
-+		TEST_MEM_DATA_PAT3));
-+	GUEST_DONE();
-+}
-+
-+static void conv_test_ioexit_fn(struct kvm_vm *vm, uint32_t uc_arg1)
-+{
-+	void *test_area_hva = addr_gpa2hva(vm, TEST_AREA_GPA);
-+	void *guest_test_mem_hva = (test_area_hva + GUEST_TEST_MEM_OFFSET);
-+	uint64_t guest_mem_gpa = (TEST_AREA_GPA + GUEST_TEST_MEM_OFFSET);
-+	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
-+
-+	switch (uc_arg1) {
-+	case GUEST_STARTED:
-+		populate_test_area(test_area_hva, TEST_MEM_DATA_PAT4);
-+		VM_STAGE_PROCESSED(GUEST_STARTED);
-+		break;
-+	case GUEST_PRIVATE_MEM_POPULATED:
-+		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
-+				TEST_MEM_DATA_PAT4), "failed");
-+		VM_STAGE_PROCESSED(GUEST_PRIVATE_MEM_POPULATED);
-+		break;
-+	case GUEST_SHARED_MEM_POPULATED:
-+		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
-+				TEST_MEM_DATA_PAT2), "failed");
-+		populate_guest_test_mem(guest_test_mem_hva, TEST_MEM_DATA_PAT5);
-+		VM_STAGE_PROCESSED(GUEST_SHARED_MEM_POPULATED);
-+		break;
-+	case GUEST_PRIVATE_MEM_POPULATED2:
-+		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
-+				TEST_MEM_DATA_PAT5), "failed");
-+		VM_STAGE_PROCESSED(GUEST_PRIVATE_MEM_POPULATED2);
-+		break;
-+	case GUEST_IMPLICIT_MEM_CONV1:
-+		/*
-+		 * For first implicit conversion, memory is already private so
-+		 * mark it private again just to zap the pte entries for the gpa
-+		 * range, so that subsequent accesses from the guest will
-+		 * generate ept/npt fault and memory conversion path will be
-+		 * exercised by KVM.
-+		 */
-+		vm_update_private_mem(vm, guest_mem_gpa, guest_test_size,
-+				ALLOCATE_MEM);
-+		VM_STAGE_PROCESSED(GUEST_IMPLICIT_MEM_CONV1);
-+		break;
-+	case GUEST_IMPLICIT_MEM_CONV2:
-+		/*
-+		 * For second implicit conversion, memory is already shared so
-+		 * mark it shared again just to zap the pte entries for the gpa
-+		 * range, so that subsequent accesses from the guest will
-+		 * generate ept/npt fault and memory conversion path will be
-+		 * exercised by KVM.
-+		 */
-+		vm_update_private_mem(vm, guest_mem_gpa, guest_test_size,
-+				UNBACK_MEM);
-+		VM_STAGE_PROCESSED(GUEST_IMPLICIT_MEM_CONV2);
-+		break;
-+	default:
-+		TEST_FAIL("Unknown stage %d\n", uc_arg1);
-+		break;
-+	}
-+}
-+
-+static void guest_explicit_conv_test_fn(void)
-+{
-+	guest_conv_test_fn(true);
-+}
-+
-+static void guest_implicit_conv_test_fn(void)
-+{
-+	guest_conv_test_fn(false);
-+}
-+
-+/*
-+ * Execute implicit and explicit memory conversion tests with non-confidential
-+ * VMs using memslots with private memory.
-+ */
-+void execute_memory_conversion_tests(void)
-+{
-+	struct vm_setup_info info;
-+	struct test_setup_info *test_info = &info.test_info;
-+
-+	info.vm_mem_src = VM_MEM_SRC_ANONYMOUS;
-+	info.memslot0_pages = VM_MEMSLOT0_PAGES;
-+	test_info->test_area_gpa = TEST_AREA_GPA;
-+	test_info->test_area_size = TEST_AREA_SIZE;
-+	test_info->test_area_slot = TEST_AREA_SLOT;
-+	test_info->test_area_mem_src = VM_MEM_SRC_ANONYMOUS;
-+	info.ioexit_cb = conv_test_ioexit_fn;
-+
-+	info.guest_fn = guest_explicit_conv_test_fn;
-+	execute_vm_with_private_mem(&info);
-+
-+	info.guest_fn = guest_implicit_conv_test_fn;
-+	execute_vm_with_private_mem(&info);
-+}
-+
-+/*
-+ * Execute implicit and explicit memory conversion tests with SEV VMs using
-+ * memslots with private memory.
-+ */
-+void execute_sev_memory_conversion_tests(void)
-+{
-+	struct vm_setup_info info;
-+	struct test_setup_info *test_info = &info.test_info;
-+
-+	info.vm_mem_src = VM_MEM_SRC_ANONYMOUS;
-+	info.memslot0_pages = VM_MEMSLOT0_PAGES;
-+	test_info->test_area_gpa = TEST_AREA_GPA;
-+	test_info->test_area_size = TEST_AREA_SIZE;
-+	test_info->test_area_slot = TEST_AREA_SLOT;
-+	test_info->test_area_mem_src = VM_MEM_SRC_ANONYMOUS;
-+	info.ioexit_cb = conv_test_ioexit_fn;
-+
-+	info.policy = SEV_POLICY_NO_DBG;
-+	info.guest_fn = guest_explicit_conv_test_fn;
-+	execute_sev_vm_with_private_mem(&info);
-+
-+	info.guest_fn = guest_implicit_conv_test_fn;
-+	execute_sev_vm_with_private_mem(&info);
-+}
-diff --git a/tools/testing/selftests/kvm/x86_64/private_mem_test.c b/tools/testing/selftests/kvm/x86_64/private_mem_test.c
-index 52430b97bd0b..49da626e5807 100644
---- a/tools/testing/selftests/kvm/x86_64/private_mem_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/private_mem_test.c
-@@ -1,263 +1,21 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-- * tools/testing/selftests/kvm/lib/kvm_util.c
-- *
-  * Copyright (C) 2022, Google LLC.
-  */
- #define _GNU_SOURCE /* for program_invocation_short_name */
--#include <fcntl.h>
--#include <limits.h>
--#include <sched.h>
--#include <signal.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
--#include <sys/ioctl.h>
--
--#include <linux/compiler.h>
--#include <linux/kernel.h>
--#include <linux/kvm_para.h>
--#include <linux/memfd.h>
++End of Servicing Updates (ESU): ESU is the date at which Intel will no
++longer provide Servicing, such as through IPU or other similar update
++processes. ESU dates will typically be aligned to end of quarter.
  
- #include <test_util.h>
- #include <kvm_util.h>
--#include <private_mem.h>
--#include <processor.h>
--
--#define VM_MEMSLOT0_PAGES	(512 * 10)
--
--#define TEST_AREA_SLOT		10
--#define TEST_AREA_GPA		0xC0000000
--#define TEST_AREA_SIZE		(2 * 1024 * 1024)
--#define GUEST_TEST_MEM_OFFSET	(1 * 1024 * 1024)
--#define GUEST_TEST_MEM_SIZE	(10 * 4096)
--
--#define VM_STAGE_PROCESSED(x)	pr_info("Processed stage %s\n", #x)
--
--#define TEST_MEM_DATA_PAT1	0x66
--#define TEST_MEM_DATA_PAT2	0x99
--#define TEST_MEM_DATA_PAT3	0x33
--#define TEST_MEM_DATA_PAT4	0xaa
--#define TEST_MEM_DATA_PAT5	0x12
--
--static bool verify_mem_contents(void *mem, uint32_t size, uint8_t pat)
--{
--	uint8_t *buf = (uint8_t *)mem;
--
--	for (uint32_t i = 0; i < size; i++) {
--		if (buf[i] != pat)
--			return false;
--	}
--
--	return true;
--}
--
--/*
-- * Add custom implementation for memset to avoid using standard/builtin memset
-- * which may use features like SSE/GOT that don't work with guest vm execution
-- * within selftests.
-- */
--void *memset(void *mem, int byte, size_t size)
--{
--	uint8_t *buf = (uint8_t *)mem;
--
--	for (uint32_t i = 0; i < size; i++)
--		buf[i] = byte;
--
--	return buf;
--}
--
--static void populate_test_area(void *test_area_base, uint64_t pat)
--{
--	memset(test_area_base, pat, TEST_AREA_SIZE);
--}
--
--static void populate_guest_test_mem(void *guest_test_mem, uint64_t pat)
--{
--	memset(guest_test_mem, pat, GUEST_TEST_MEM_SIZE);
--}
--
--static bool verify_test_area(void *test_area_base, uint64_t area_pat,
--	uint64_t guest_pat)
--{
--	void *test_area1_base = test_area_base;
--	uint64_t test_area1_size = GUEST_TEST_MEM_OFFSET;
--	void *guest_test_mem = test_area_base + test_area1_size;
--	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
--	void *test_area2_base = guest_test_mem + guest_test_size;
--	uint64_t test_area2_size = (TEST_AREA_SIZE - (GUEST_TEST_MEM_OFFSET +
--			GUEST_TEST_MEM_SIZE));
--
--	return (verify_mem_contents(test_area1_base, test_area1_size, area_pat) &&
--		verify_mem_contents(guest_test_mem, guest_test_size, guest_pat) &&
--		verify_mem_contents(test_area2_base, test_area2_size, area_pat));
--}
--
--#define GUEST_STARTED			0
--#define GUEST_PRIVATE_MEM_POPULATED	1
--#define GUEST_SHARED_MEM_POPULATED	2
--#define GUEST_PRIVATE_MEM_POPULATED2	3
--#define GUEST_IMPLICIT_MEM_CONV1	4
--#define GUEST_IMPLICIT_MEM_CONV2	5
--
--/*
-- * Run memory conversion tests supporting two types of conversion:
-- * 1) Explicit: Execute KVM hypercall to map/unmap gpa range which will cause
-- *   userspace exit to back/unback private memory. Subsequent accesses by guest
-- *   to the gpa range will not cause exit to userspace.
-- * 2) Implicit: Execute KVM hypercall to update memory access to a gpa range as
-- *   private/shared without exiting to userspace. Subsequent accesses by guest
-- *   to the gpa range will result in KVM EPT/NPT faults and then exit to
-- *   userspace for each page.
-- *
-- * Test memory conversion scenarios with following steps:
-- * 1) Access private memory using private access and verify that memory contents
-- *   are not visible to userspace.
-- * 2) Convert memory to shared using explicit/implicit conversions and ensure
-- *   that userspace is able to access the shared regions.
-- * 3) Convert memory back to private using explicit/implicit conversions and
-- *   ensure that userspace is again not able to access converted private
-- *   regions.
-- */
--static void guest_conv_test_fn(bool test_explicit_conv)
--{
--	void *test_area_base = (void *)TEST_AREA_GPA;
--	void *guest_test_mem = (void *)(TEST_AREA_GPA + GUEST_TEST_MEM_OFFSET);
--	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
--
--	guest_map_ucall_page_shared();
--	GUEST_SYNC(GUEST_STARTED);
--
--	populate_test_area(test_area_base, TEST_MEM_DATA_PAT1);
--	GUEST_SYNC(GUEST_PRIVATE_MEM_POPULATED);
--	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
--		TEST_MEM_DATA_PAT1));
--
--	if (test_explicit_conv)
--		guest_update_mem_map(TO_SHARED, (uint64_t)guest_test_mem,
--			guest_test_size);
--	else {
--		guest_update_mem_access(TO_SHARED, (uint64_t)guest_test_mem,
--			guest_test_size);
--		GUEST_SYNC(GUEST_IMPLICIT_MEM_CONV1);
--	}
--
--	populate_guest_test_mem(guest_test_mem, TEST_MEM_DATA_PAT2);
--
--	GUEST_SYNC(GUEST_SHARED_MEM_POPULATED);
--	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
--		TEST_MEM_DATA_PAT5));
--
--	if (test_explicit_conv)
--		guest_update_mem_map(TO_PRIVATE, (uint64_t)guest_test_mem,
--			guest_test_size);
--	else {
--		guest_update_mem_access(TO_PRIVATE, (uint64_t)guest_test_mem,
--			guest_test_size);
--		GUEST_SYNC(GUEST_IMPLICIT_MEM_CONV2);
--	}
--
--	populate_guest_test_mem(guest_test_mem, TEST_MEM_DATA_PAT3);
--	GUEST_SYNC(GUEST_PRIVATE_MEM_POPULATED2);
--
--	GUEST_ASSERT(verify_test_area(test_area_base, TEST_MEM_DATA_PAT1,
--		TEST_MEM_DATA_PAT3));
--	GUEST_DONE();
--}
--
--static void conv_test_ioexit_fn(struct kvm_vm *vm, uint32_t uc_arg1)
--{
--	void *test_area_hva = addr_gpa2hva(vm, TEST_AREA_GPA);
--	void *guest_test_mem_hva = (test_area_hva + GUEST_TEST_MEM_OFFSET);
--	uint64_t guest_mem_gpa = (TEST_AREA_GPA + GUEST_TEST_MEM_OFFSET);
--	uint64_t guest_test_size = GUEST_TEST_MEM_SIZE;
--
--	switch (uc_arg1) {
--	case GUEST_STARTED:
--		populate_test_area(test_area_hva, TEST_MEM_DATA_PAT4);
--		VM_STAGE_PROCESSED(GUEST_STARTED);
--		break;
--	case GUEST_PRIVATE_MEM_POPULATED:
--		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
--				TEST_MEM_DATA_PAT4), "failed");
--		VM_STAGE_PROCESSED(GUEST_PRIVATE_MEM_POPULATED);
--		break;
--	case GUEST_SHARED_MEM_POPULATED:
--		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
--				TEST_MEM_DATA_PAT2), "failed");
--		populate_guest_test_mem(guest_test_mem_hva, TEST_MEM_DATA_PAT5);
--		VM_STAGE_PROCESSED(GUEST_SHARED_MEM_POPULATED);
--		break;
--	case GUEST_PRIVATE_MEM_POPULATED2:
--		TEST_ASSERT(verify_test_area(test_area_hva, TEST_MEM_DATA_PAT4,
--				TEST_MEM_DATA_PAT5), "failed");
--		VM_STAGE_PROCESSED(GUEST_PRIVATE_MEM_POPULATED2);
--		break;
--	case GUEST_IMPLICIT_MEM_CONV1:
--		/*
--		 * For first implicit conversion, memory is already private so
--		 * mark it private again just to zap the pte entries for the gpa
--		 * range, so that subsequent accesses from the guest will
--		 * generate ept/npt fault and memory conversion path will be
--		 * exercised by KVM.
--		 */
--		vm_update_private_mem(vm, guest_mem_gpa, guest_test_size,
--				ALLOCATE_MEM);
--		VM_STAGE_PROCESSED(GUEST_IMPLICIT_MEM_CONV1);
--		break;
--	case GUEST_IMPLICIT_MEM_CONV2:
--		/*
--		 * For second implicit conversion, memory is already shared so
--		 * mark it shared again just to zap the pte entries for the gpa
--		 * range, so that subsequent accesses from the guest will
--		 * generate ept/npt fault and memory conversion path will be
--		 * exercised by KVM.
--		 */
--		vm_update_private_mem(vm, guest_mem_gpa, guest_test_size,
--				UNBACK_MEM);
--		VM_STAGE_PROCESSED(GUEST_IMPLICIT_MEM_CONV2);
--		break;
--	default:
--		TEST_FAIL("Unknown stage %d\n", uc_arg1);
--		break;
--	}
--}
--
--static void guest_explicit_conv_test_fn(void)
--{
--	guest_conv_test_fn(true);
--}
--
--static void guest_implicit_conv_test_fn(void)
--{
--	guest_conv_test_fn(false);
--}
--
--static void execute_memory_conversion_test(void)
--{
--	struct vm_setup_info info;
--	struct test_setup_info *test_info = &info.test_info;
--
--	info.vm_mem_src = VM_MEM_SRC_ANONYMOUS;
--	info.memslot0_pages = VM_MEMSLOT0_PAGES;
--	test_info->test_area_gpa = TEST_AREA_GPA;
--	test_info->test_area_size = TEST_AREA_SIZE;
--	test_info->test_area_slot = TEST_AREA_SLOT;
--	test_info->test_area_mem_src = VM_MEM_SRC_ANONYMOUS;
--	info.ioexit_cb = conv_test_ioexit_fn;
--
--	info.guest_fn = guest_explicit_conv_test_fn;
--	execute_vm_with_private_mem(&info);
--
--	info.guest_fn = guest_implicit_conv_test_fn;
--	execute_vm_with_private_mem(&info);
--}
-+#include <private_mem_test_helper.h>
+ If the processor is vulnerable then the following information is appended to
+ the above information:
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index e874b1709d9a..d56634d6b10c 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -394,5 +394,6 @@
+ #define X86_BUG_ITLB_MULTIHIT		X86_BUG(23) /* CPU may incur MCE during certain page attribute changes */
+ #define X86_BUG_SRBDS			X86_BUG(24) /* CPU may leak RNG bits if not mitigated */
+ #define X86_BUG_MMIO_STALE_DATA		X86_BUG(25) /* CPU is affected by Processor MMIO Stale Data vulnerabilities */
++#define X86_BUG_MMIO_UNKNOWN		X86_BUG(26) /* CPU is too old and its MMIO Stale Data status is unknown */
  
- int main(int argc, char *argv[])
- {
- 	/* Tell stdout not to buffer its content */
- 	setbuf(stdout, NULL);
+ #endif /* _ASM_X86_CPUFEATURES_H */
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 4037317f55e7..68056ee5dff9 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -396,7 +396,8 @@ static void __init mmio_select_mitigation(void)
+ 	u64 ia32_cap;
  
--	execute_memory_conversion_test();
-+	execute_memory_conversion_tests();
- 	return 0;
+ 	if (!boot_cpu_has_bug(X86_BUG_MMIO_STALE_DATA) ||
+-	    cpu_mitigations_off()) {
++	     boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN) ||
++	     cpu_mitigations_off()) {
+ 		mmio_mitigation = MMIO_MITIGATION_OFF;
+ 		return;
+ 	}
+@@ -501,6 +502,8 @@ static void __init md_clear_update_mitigation(void)
+ 		pr_info("TAA: %s\n", taa_strings[taa_mitigation]);
+ 	if (boot_cpu_has_bug(X86_BUG_MMIO_STALE_DATA))
+ 		pr_info("MMIO Stale Data: %s\n", mmio_strings[mmio_mitigation]);
++	else if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
++		pr_info("MMIO Stale Data: Unknown: No mitigations\n");
  }
+ 
+ static void __init md_clear_select_mitigation(void)
+@@ -1823,6 +1826,9 @@ static ssize_t tsx_async_abort_show_state(char *buf)
+ 
+ static ssize_t mmio_stale_data_show_state(char *buf)
+ {
++	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
++		return sysfs_emit(buf, "Unknown: No mitigations\n");
++
+ 	if (mmio_mitigation == MMIO_MITIGATION_OFF)
+ 		return sysfs_emit(buf, "%s\n", mmio_strings[mmio_mitigation]);
+ 
+@@ -1933,6 +1939,7 @@ static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr
+ 		return srbds_show_state(buf);
+ 
+ 	case X86_BUG_MMIO_STALE_DATA:
++	case X86_BUG_MMIO_UNKNOWN:
+ 		return mmio_stale_data_show_state(buf);
+ 
+ 	default:
+@@ -1989,6 +1996,9 @@ ssize_t cpu_show_srbds(struct device *dev, struct device_attribute *attr, char *
+ 
+ ssize_t cpu_show_mmio_stale_data(struct device *dev, struct device_attribute *attr, char *buf)
+ {
+-	return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
++	if (boot_cpu_has_bug(X86_BUG_MMIO_UNKNOWN))
++		return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_UNKNOWN);
++	else
++		return cpu_show_common(dev, attr, buf, X86_BUG_MMIO_STALE_DATA);
+ }
+ #endif
+diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
+index 608f37ac9c7b..e72a21c20772 100644
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -905,6 +905,7 @@ static void identify_cpu_without_cpuid(struct cpuinfo_x86 *c)
+ #define MSBDS_ONLY		BIT(5)
+ #define NO_SWAPGS		BIT(6)
+ #define NO_ITLB_MULTIHIT	BIT(7)
++#define NO_MMIO			BIT(8)
+ 
+ #define VULNWL(_vendor, _family, _model, _whitelist)	\
+ 	{ X86_VENDOR_##_vendor, _family, _model, X86_FEATURE_ANY, _whitelist }
+@@ -922,6 +923,11 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
+ 	VULNWL(NSC,	5, X86_MODEL_ANY,	NO_SPECULATION),
+ 
+ 	/* Intel Family 6 */
++	VULNWL_INTEL(TIGERLAKE,			NO_MMIO),
++	VULNWL_INTEL(TIGERLAKE_L,		NO_MMIO),
++	VULNWL_INTEL(ALDERLAKE,			NO_MMIO),
++	VULNWL_INTEL(ALDERLAKE_L,		NO_MMIO),
++
+ 	VULNWL_INTEL(ATOM_SALTWELL,		NO_SPECULATION | NO_ITLB_MULTIHIT),
+ 	VULNWL_INTEL(ATOM_SALTWELL_TABLET,	NO_SPECULATION | NO_ITLB_MULTIHIT),
+ 	VULNWL_INTEL(ATOM_SALTWELL_MID,		NO_SPECULATION | NO_ITLB_MULTIHIT),
+@@ -939,9 +945,9 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
+ 
+ 	VULNWL_INTEL(ATOM_AIRMONT_MID,		NO_L1TF | MSBDS_ONLY | NO_SWAPGS | NO_ITLB_MULTIHIT),
+ 
+-	VULNWL_INTEL(ATOM_GOLDMONT,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
+-	VULNWL_INTEL(ATOM_GOLDMONT_X,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
+-	VULNWL_INTEL(ATOM_GOLDMONT_PLUS,	NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT),
++	VULNWL_INTEL(ATOM_GOLDMONT,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
++	VULNWL_INTEL(ATOM_GOLDMONT_X,		NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
++	VULNWL_INTEL(ATOM_GOLDMONT_PLUS,	NO_MDS | NO_L1TF | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
+ 
+ 	/*
+ 	 * Technically, swapgs isn't serializing on AMD (despite it previously
+@@ -954,13 +960,13 @@ static const __initconst struct x86_cpu_id cpu_vuln_whitelist[] = {
+ 	VULNWL_INTEL(ATOM_TREMONT_X,		NO_ITLB_MULTIHIT),
+ 
+ 	/* AMD Family 0xf - 0x12 */
+-	VULNWL_AMD(0x0f,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
+-	VULNWL_AMD(0x10,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
+-	VULNWL_AMD(0x11,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
+-	VULNWL_AMD(0x12,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
++	VULNWL_AMD(0x0f,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
++	VULNWL_AMD(0x10,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
++	VULNWL_AMD(0x11,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
++	VULNWL_AMD(0x12,	NO_MELTDOWN | NO_SSB | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
+ 
+ 	/* FAMILY_ANY must be last, otherwise 0x0f - 0x12 matches won't work */
+-	VULNWL_AMD(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT),
++	VULNWL_AMD(X86_FAMILY_ANY,	NO_MELTDOWN | NO_L1TF | NO_MDS | NO_SWAPGS | NO_ITLB_MULTIHIT | NO_MMIO),
+ 	{}
+ };
+ 
+@@ -1100,10 +1106,16 @@ static void __init cpu_set_bug_bits(struct cpuinfo_x86 *c)
+ 	 * Affected CPU list is generally enough to enumerate the vulnerability,
+ 	 * but for virtualization case check for ARCH_CAP MSR bits also, VMM may
+ 	 * not want the guest to enumerate the bug.
++	 *
++	 * Set X86_BUG_MMIO_UNKNOWN for CPUs that are neither in the blacklist,
++	 * nor in the whitelist and also don't enumerate MSR ARCH_CAP MMIO bits.
+ 	 */
+-	if (cpu_matches(cpu_vuln_blacklist, MMIO) &&
+-	    !arch_cap_mmio_immune(ia32_cap))
+-		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
++	if (!arch_cap_mmio_immune(ia32_cap)) {
++		if (cpu_matches(cpu_vuln_blacklist, MMIO))
++			setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
++		else if (!cpu_matches(cpu_vuln_whitelist, NO_MMIO))
++			setup_force_cpu_bug(X86_BUG_MMIO_UNKNOWN);
++	}
+ 
+ 	if (cpu_matches(cpu_vuln_whitelist, NO_MELTDOWN))
+ 		return;
 -- 
-2.37.2.672.g94769d06f0-goog
+2.37.2
+
 
