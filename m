@@ -2,98 +2,288 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED73ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3365BECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 22:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231439AbiH3WoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 18:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
+        id S231237AbiH3WoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 18:44:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231799AbiH3Wn3 (ORCPT
+        with ESMTP id S231846AbiH3Wni (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 18:43:29 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304A27FFB8;
-        Tue, 30 Aug 2022 15:43:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661899407; x=1693435407;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=T78uXjMUcdTpdHDsruBB9yEmBihIp9BInOVCLXWNUsU=;
-  b=CapujMgLxkPW74ztVOJXY8lpyTlGKWEPtt1t6adKPNxFCA3rDSOaEiBp
-   ibWOCeglNTuRK6c/dkt8+G+HW3lsdb/Di4YPKAsx+7xmkZYt0ekbiOlmH
-   9gYGrIjF5kDGTE/qoJ+JTZivZaDo+MPl6X7I/2ahYnlDbOmADCCM9OJVE
-   44CeQx9MSF+IJYWqr28A7iWv0/qQG0ONd/DVUXjf/HXemk2BZAAzmGn2i
-   eX0XGAuh5oL+bJ+wUjv10aFHCljdLSkfjO8JSjwhhdGMnt+XSj5+gAYrz
-   oePb647PNn9QRbnuVddcyqb26VDAuO8Jd/qTQzlIvliX7/2M1zbUvuvxa
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="381619460"
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="381619460"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 15:43:26 -0700
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="645022577"
-Received: from skanpuri-mobl1.amr.corp.intel.com (HELO desk) ([10.212.18.137])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 15:43:25 -0700
-Date:   Tue, 30 Aug 2022 15:43:24 -0700
-From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-To:     stable@vger.kernel.org
-Cc:     gregkh@linuxfoundation.org, andrew.cooper3@citrix.com, bp@suse.de,
-        tony.luck@intel.com, antonio.gomez.iglesias@linux.intel.com,
-        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4.14 1/2] x86/cpu: Add Tiger Lake to Intel family
-Message-ID: <ec31e22b4f3b079d0da6b60f5899ffcd79d9bea0.1661899117.git.pawan.kumar.gupta@linux.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Tue, 30 Aug 2022 18:43:38 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549DB6E2C9
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:43:28 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id k3-20020a170902c40300b001743aafd6c6so8833781plk.20
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 15:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc;
+        bh=FxpX7DoPE3GMtBbFVyScvJLAhxo3IL8fu/3CfhEaMzM=;
+        b=erWtdHITEzoRn+OGEzvo+IuiSJLt5Me15nfx9IkgRhJht9nbPSXu7kj81eibvCHxOT
+         8M3ZqpSXqa4NaBg7NigHUZSvPcXHBoADeRVYKq4WEO/UNmBJRFNXVdSTO4ue0ZRuQtaD
+         JiAZANlRx8tKA5Ye5zGOIcUn4Q5VLY2za0WwBB/xhwaQ+jJVvnOkIWTivOC3U5prOyh/
+         WGPWTkMRkz22EMo1pSMVLroa6Xnfr0I1IfJczL6Prk3f7lk9vDClqGKzUoKFMGqjwEqC
+         66QWJbO+YFFfMWVaqpjedTSIejKgWpjppNYV5cP4JqFCSkjB+30XQ+ZVcmXp2EVOkuOr
+         gWgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=FxpX7DoPE3GMtBbFVyScvJLAhxo3IL8fu/3CfhEaMzM=;
+        b=F5cH30eoxc83PPLaexqT9VUARLBZNEGXrSZRtRzwJ77fRSJhHQr+7ja+LnEL4dhPxr
+         4T8fQ5mqPiNpjWrebBmwMgfFCnc9+zwS73Zn6m2BvUo328zLBoDyoZVusBjgcRf0W8wU
+         6dgjh6HQpEnFijZAUleNGmVU4Z+pp4vp8XJRj7vYQXnn8ku6lSPufO8kmG2XZBltnJH4
+         MdctJmFXKKTKOCgD4XUvVK4w1DY1EUK5p5WGz5Ow+9c6KD2j6t1y6l79As30aPDJw+X3
+         HPwq5ZqeefYC+kiyNBX8mU1noj7YF4XY2YmKSCxoL0P5xiDLkqhkYjaRX2U8bPaYnkya
+         AOIg==
+X-Gm-Message-State: ACgBeo3TiuRiB16V4o8V1W4cTtMvDxOnI5n2iXz50MqN4/MQ3vpXtRe2
+        VDhRS4pb7icdT8YT1XogFD6LCjk9bWh2anDc
+X-Google-Smtp-Source: AA6agR4B1IUI8+BUs70F/elePrZ2UGxVCcCeqHEWdmOOw5t10UrnaK5juPiTyW2FEuX0yLwZlQ/8qutIu2KwxlQ1
+X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:41f8])
+ (user=vannapurve job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP
+ id t9-20020a17090a024900b001e0a8a33c6cmr5346pje.0.1661899406644; Tue, 30 Aug
+ 2022 15:43:26 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 22:42:56 +0000
+In-Reply-To: <20220830224259.412342-1-vannapurve@google.com>
+Mime-Version: 1.0
+References: <20220830224259.412342-1-vannapurve@google.com>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220830224259.412342-6-vannapurve@google.com>
+Subject: [RFC V2 PATCH 5/8] selftests: kvm: Update usage of private mem lib
+ for SEV VMs
+From:   Vishal Annapurve <vannapurve@google.com>
+To:     x86@kernel.org, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Cc:     pbonzini@redhat.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        jmattson@google.com, joro@8bytes.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        hpa@zytor.com, shuah@kernel.org, yang.zhong@intel.com,
+        drjones@redhat.com, ricarkol@google.com, aaronlewis@google.com,
+        wei.w.wang@intel.com, kirill.shutemov@linux.intel.com,
+        corbet@lwn.net, hughd@google.com, jlayton@kernel.org,
+        bfields@fieldses.org, akpm@linux-foundation.org,
+        chao.p.peng@linux.intel.com, yu.c.zhang@linux.intel.com,
+        jun.nakajima@intel.com, dave.hansen@intel.com,
+        michael.roth@amd.com, qperret@google.com, steven.price@arm.com,
+        ak@linux.intel.com, david@redhat.com, luto@kernel.org,
+        vbabka@suse.cz, marcorr@google.com, erdemaktas@google.com,
+        pgonda@google.com, nikunj@amd.com, seanjc@google.com,
+        diviness@google.com, maz@kernel.org, dmatlack@google.com,
+        axelrasmussen@google.com, maciej.szmigiero@oracle.com,
+        mizhang@google.com, bgardon@google.com,
+        Vishal Annapurve <vannapurve@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gayatri Kammela <gayatri.kammela@intel.com>
+Add/update APIs to allow reusing private mem lib for SEV VMs.
+Memory conversion for SEV VMs includes updating guest pagetables
+based on virtual addresses to toggle C-bit.
 
-[ Upstream commit 6e1c32c5dbb4b90eea8f964c2869d0bde050dbe0 ]
-
-Add the model numbers/CPUIDs of Tiger Lake mobile and desktop to the
-Intel family.
-
-Suggested-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Gayatri Kammela <gayatri.kammela@intel.com>
-Signed-off-by: Tony Luck <tony.luck@intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Rahul Tanwar <rahul.tanwar@linux.intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20190905193020.14707-2-tony.luck@intel.com
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vishal Annapurve <vannapurve@google.com>
 ---
-Patch 2/2 (x86/bugs: Add "unknown" reporting for MMIO Stale) depends on
-this patch.
+ .../kvm/include/x86_64/private_mem.h          |   9 +-
+ .../selftests/kvm/lib/x86_64/private_mem.c    | 103 +++++++++++++-----
+ 2 files changed, 83 insertions(+), 29 deletions(-)
 
- arch/x86/include/asm/intel-family.h | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
-index 98823250a521..05d2d7169ab8 100644
---- a/arch/x86/include/asm/intel-family.h
-+++ b/arch/x86/include/asm/intel-family.h
-@@ -71,6 +71,9 @@
- #define INTEL_FAM6_ALDERLAKE		0x97
- #define INTEL_FAM6_ALDERLAKE_L		0x9A
+diff --git a/tools/testing/selftests/kvm/include/x86_64/private_mem.h b/tools/testing/selftests/kvm/include/x86_64/private_mem.h
+index 645bf3f61d1e..183b53b8c486 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/private_mem.h
++++ b/tools/testing/selftests/kvm/include/x86_64/private_mem.h
+@@ -14,10 +14,10 @@ enum mem_conversion_type {
+ 	TO_SHARED
+ };
  
-+#define INTEL_FAM6_TIGERLAKE_L		0x8C
-+#define INTEL_FAM6_TIGERLAKE		0x8D
+-void guest_update_mem_access(enum mem_conversion_type type, uint64_t gpa,
+-	uint64_t size);
+-void guest_update_mem_map(enum mem_conversion_type type, uint64_t gpa,
+-	uint64_t size);
++void guest_update_mem_access(enum mem_conversion_type type, uint64_t gva,
++	uint64_t gpa, uint64_t size);
++void guest_update_mem_map(enum mem_conversion_type type, uint64_t gva,
++	uint64_t gpa, uint64_t size);
+ 
+ void guest_map_ucall_page_shared(void);
+ 
+@@ -45,6 +45,7 @@ struct vm_setup_info {
+ 	struct test_setup_info test_info;
+ 	guest_code_fn guest_fn;
+ 	io_exit_handler ioexit_cb;
++	uint32_t policy; /* Used for Sev VMs */
+ };
+ 
+ void execute_vm_with_private_mem(struct vm_setup_info *info);
+diff --git a/tools/testing/selftests/kvm/lib/x86_64/private_mem.c b/tools/testing/selftests/kvm/lib/x86_64/private_mem.c
+index f6dcfa4d353f..28d93754e1f2 100644
+--- a/tools/testing/selftests/kvm/lib/x86_64/private_mem.c
++++ b/tools/testing/selftests/kvm/lib/x86_64/private_mem.c
+@@ -22,12 +22,45 @@
+ #include <kvm_util.h>
+ #include <private_mem.h>
+ #include <processor.h>
++#include <sev.h>
 +
- /* "Small Core" Processors (Atom) */
++#define GUEST_PGT_MIN_VADDR	0x10000
++
++/* Variables populated by userspace logic and consumed by guest code */
++static bool is_sev_vm;
++static struct guest_pgt_info *sev_gpgt_info;
++static uint8_t sev_enc_bit;
++
++static void sev_guest_set_clr_pte_bit(uint64_t vaddr_start, uint64_t mem_size,
++	bool set)
++{
++	uint64_t vaddr = vaddr_start;
++	uint32_t guest_page_size = sev_gpgt_info->page_size;
++	uint32_t num_pages;
++
++	GUEST_ASSERT(!(mem_size % guest_page_size) && !(vaddr_start %
++		guest_page_size));
++
++	num_pages = mem_size / guest_page_size;
++	for (uint32_t i = 0; i < num_pages; i++) {
++		uint64_t *pte = guest_code_get_pte(sev_gpgt_info, vaddr);
++
++		GUEST_ASSERT(pte);
++		if (set)
++			*pte |= (1ULL << sev_enc_bit);
++		else
++			*pte &= ~(1ULL << sev_enc_bit);
++		asm volatile("invlpg (%0)" :: "r"(vaddr) : "memory");
++		vaddr += guest_page_size;
++	}
++}
  
- #define INTEL_FAM6_ATOM_BONNELL		0x1C /* Diamondville, Pineview */
-
-base-commit: e548869f356fead9fdcb3562f52d2226574f4f41
+ /*
+  * Execute KVM hypercall to change memory access type for a given gpa range.
+  *
+  * Input Args:
+  *   type - memory conversion type TO_SHARED/TO_PRIVATE
++ *   gva - starting gva address
+  *   gpa - starting gpa address
+  *   size - size of the range starting from gpa for which memory access needs
+  *     to be changed
+@@ -40,9 +73,12 @@
+  * for a given gpa range. This API is useful in exercising implicit conversion
+  * path.
+  */
+-void guest_update_mem_access(enum mem_conversion_type type, uint64_t gpa,
+-	uint64_t size)
++void guest_update_mem_access(enum mem_conversion_type type, uint64_t gva,
++	uint64_t gpa, uint64_t size)
+ {
++	if (is_sev_vm)
++		sev_guest_set_clr_pte_bit(gva, size, type == TO_PRIVATE ? true : false);
++
+ 	int ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, gpa, size >> MIN_PAGE_SHIFT,
+ 		type == TO_PRIVATE ? KVM_MARK_GPA_RANGE_ENC_ACCESS :
+ 			KVM_CLR_GPA_RANGE_ENC_ACCESS, 0);
+@@ -54,6 +90,7 @@ void guest_update_mem_access(enum mem_conversion_type type, uint64_t gpa,
+  *
+  * Input Args:
+  *   type - memory conversion type TO_SHARED/TO_PRIVATE
++ *   gva - starting gva address
+  *   gpa - starting gpa address
+  *   size - size of the range starting from gpa for which memory type needs
+  *     to be changed
+@@ -65,9 +102,12 @@ void guest_update_mem_access(enum mem_conversion_type type, uint64_t gpa,
+  * Function called by guest logic in selftests to update the memory type for a
+  * given gpa range. This API is useful in exercising explicit conversion path.
+  */
+-void guest_update_mem_map(enum mem_conversion_type type, uint64_t gpa,
+-	uint64_t size)
++void guest_update_mem_map(enum mem_conversion_type type, uint64_t gva,
++	uint64_t gpa, uint64_t size)
+ {
++	if (is_sev_vm)
++		sev_guest_set_clr_pte_bit(gva, size, type == TO_PRIVATE ? true : false);
++
+ 	int ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, gpa, size >> MIN_PAGE_SHIFT,
+ 		type == TO_PRIVATE ? KVM_MAP_GPA_RANGE_ENCRYPTED :
+ 			KVM_MAP_GPA_RANGE_DECRYPTED, 0);
+@@ -90,30 +130,15 @@ void guest_update_mem_map(enum mem_conversion_type type, uint64_t gpa,
+ void guest_map_ucall_page_shared(void)
+ {
+ 	vm_paddr_t ucall_paddr = get_ucall_pool_paddr();
++	GUEST_ASSERT(ucall_paddr);
+ 
+-	guest_update_mem_access(TO_SHARED, ucall_paddr, 1 << MIN_PAGE_SHIFT);
++	int ret = kvm_hypercall(KVM_HC_MAP_GPA_RANGE, ucall_paddr, 1,
++		KVM_MAP_GPA_RANGE_DECRYPTED, 0);
++	GUEST_ASSERT_1(!ret, ret);
+ }
+ 
+-/*
+- * Execute KVM ioctl to back/unback private memory for given gpa range.
+- *
+- * Input Args:
+- *   vm - kvm_vm handle
+- *   gpa - starting gpa address
+- *   size - size of the gpa range
+- *   op - mem_op indicating whether private memory needs to be allocated or
+- *     unbacked
+- *
+- * Output Args: None
+- *
+- * Return: None
+- *
+- * Function called by host userspace logic in selftests to back/unback private
+- * memory for gpa ranges. This function is useful to setup initial boot private
+- * memory and then convert memory during runtime.
+- */
+-void vm_update_private_mem(struct kvm_vm *vm, uint64_t gpa, uint64_t size,
+-	enum mem_op op)
++static void vm_update_private_mem_internal(struct kvm_vm *vm, uint64_t gpa,
++	uint64_t size, enum mem_op op, bool encrypt)
+ {
+ 	int priv_memfd;
+ 	uint64_t priv_offset, guest_phys_base, fd_offset;
+@@ -142,6 +167,10 @@ void vm_update_private_mem(struct kvm_vm *vm, uint64_t gpa, uint64_t size,
+ 	TEST_ASSERT(ret == 0, "fallocate failed\n");
+ 	enc_region.addr = gpa;
+ 	enc_region.size = size;
++
++	if (!encrypt)
++		return;
++
+ 	if (op == ALLOCATE_MEM) {
+ 		printf("doing encryption for gpa 0x%lx size 0x%lx\n", gpa, size);
+ 		vm_ioctl(vm, KVM_MEMORY_ENCRYPT_REG_REGION, &enc_region);
+@@ -151,6 +180,30 @@ void vm_update_private_mem(struct kvm_vm *vm, uint64_t gpa, uint64_t size,
+ 	}
+ }
+ 
++/*
++ * Execute KVM ioctl to back/unback private memory for given gpa range.
++ *
++ * Input Args:
++ *   vm - kvm_vm handle
++ *   gpa - starting gpa address
++ *   size - size of the gpa range
++ *   op - mem_op indicating whether private memory needs to be allocated or
++ *     unbacked
++ *
++ * Output Args: None
++ *
++ * Return: None
++ *
++ * Function called by host userspace logic in selftests to back/unback private
++ * memory for gpa ranges. This function is useful to setup initial boot private
++ * memory and then convert memory during runtime.
++ */
++void vm_update_private_mem(struct kvm_vm *vm, uint64_t gpa, uint64_t size,
++	enum mem_op op)
++{
++	vm_update_private_mem_internal(vm, gpa, size, op, true /* encrypt */);
++}
++
+ static void handle_vm_exit_map_gpa_hypercall(struct kvm_vm *vm,
+ 				volatile struct kvm_run *run)
+ {
 -- 
-2.37.2
-
+2.37.2.672.g94769d06f0-goog
 
