@@ -2,130 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DDCC0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E46ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbiH3MJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 08:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
+        id S229781AbiH3MLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 08:11:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbiH3MJP (ORCPT
+        with ESMTP id S229608AbiH3MLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 08:09:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1607D7CCD;
-        Tue, 30 Aug 2022 05:09:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A897611AF;
-        Tue, 30 Aug 2022 12:09:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AAEFC433C1;
-        Tue, 30 Aug 2022 12:09:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661861353;
-        bh=5SJoOLlqoi3wA7Tl35RDJpwiROFY/iHL4dfRvU6AjnM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gK/iqDo4C0Zmh3B/Nc+4CrNwNlp8phAoKQBEDV7U6eONb46Joz5lH14kH/W7okd4C
-         z1/xe/VtSl+JhaXC5uMOa8EA3y0s3LfoUGzwklvFeUT74PRSuTWvBuLCnLJs608KOV
-         rFmxIqtIm/n5DlS3PtzYHeWrVCeQrpFhCYQIdgOQ=
-Date:   Tue, 30 Aug 2022 14:09:10 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Mazin Al Haddad <mazinalhaddad05@gmail.com>
-Cc:     pontus.fuchs@gmail.com, netdev@vger.kernel.org, kvalo@kernel.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com,
-        edumazet@google.com, paskripkin@gmail.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel-mentees@lists.linuxfoundation.org,
-        davem@davemloft.net
-Subject: Re: [PATCH] ar5523: check endpoints type and direction in probe()
-Message-ID: <Yw395qJF+eDYaY4Z@kroah.com>
-References: <20220823222436.514204-1-mazinalhaddad05@gmail.com>
- <YwW/cw2cXLEd5xFo@kroah.com>
- <CMGQTZ9XBSTJ.5QY7JQCNULBN@Arch-Desktop>
+        Tue, 30 Aug 2022 08:11:02 -0400
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E495A6AE5
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 05:10:57 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 7213D5802D9;
+        Tue, 30 Aug 2022 08:03:36 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 30 Aug 2022 08:03:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1661861016; x=
+        1661868216; bh=Un4EFnpmCrjF0op+CQJbf6xj3KV7/HPMuOuXK7AEo2I=; b=D
+        tvEwgKsQqnUenjfacp4PZwK0ZhaN/HT87mq75are5HFk0XfZglYSMRXUP2aNVpdO
+        tabv3AyDoz4CT5k++l9c3y9JHGnsYqDVm7cgR/iWQye24reLcluU/RRGezMHMa3o
+        26lJD1g9RgnfgW/OANYyo9K4c6vWlN71CduB2tRPAJqZq16cgjpZieIr87H4Jlg7
+        CMhS9/azps7Am17rwoqUK1Uzi2DSu+b8JpaWS9CO4G+HZmfnAPs/5HNsjBkwTnzN
+        ipQSgsrTKotKvLM9y8XxkH7d+I9Z2kpDV/7B7h5Pj3SpiRe4LvYuUnsxAp9CyoMZ
+        AwL0Hm7CQETZv9e626ipQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1661861016; x=
+        1661868216; bh=Un4EFnpmCrjF0op+CQJbf6xj3KV7/HPMuOuXK7AEo2I=; b=3
+        6dbXYWyKPwm/+6hbuyU/giI2uQ63drNFQSePRhBlilQ67WGUWjcWLI1p+LqEK73g
+        fs0NRJU95nYgN8bDHN8FFYkRwp8xIREz5mPdBI26UdsvXS/065X+RwB5GxhnS7De
+        rKK6aH8bgofjNfDGB4pg6ieTA8OIAtlPiMqiN5aA38ZA7g7KDM7sUn9DyxZVOCOe
+        vrAeQ7vrwxvCPu8swnYxmAZY1Ax1Ud1UUMQ8fqiDPb28jmFFKhi09+a0LWmcu3Xn
+        7E4+8+7+U/xAMvq+LZ7fMjdTdaqwxfwhcecTw/1UJu+ZPvkslXODYswUAoZdUdOo
+        vaJgClnI41QuGh/kzRTgA==
+X-ME-Sender: <xms:l_wNY6oGFCuPrXLu_lICDTdCbSEu35J3iVJVjDE6nUcPvveRoHEZiw>
+    <xme:l_wNY4quMS5CXVM1erpTf7cw2djyVbwpuQRrcz2Jhxok1vKHyOF8yaKwhraLbbSse
+    sSXcX3CLE88lmpFNxA>
+X-ME-Received: <xmr:l_wNY_Okj9gTra9L6Fm8reAM8HlENdzUrpVeFZ0H_Ckc2Ky9DkU-Uuh76b0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekfedggeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggugfgjsehtqhertddttddvnecuhfhrohhmpeforgig
+    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
+    grthhtvghrnheptefgleeggfegkeekgffgleduieduffejffegveevkeejudektdduueet
+    feetfefgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:l_wNY575QlKLJhE0dUITZhr1Y2xjKtL3jvcKcW6f6p2TbHDxlpTffA>
+    <xmx:l_wNY54AtJBpBRMzVSilS5LlYoWV0xW1oilUo4CAO7DJ4OoEQbFw9A>
+    <xmx:l_wNY5jTwGvBb8C8tqMpNARDm_YnrE5LfgJuayPRMJOXWiSvsec9ig>
+    <xmx:mPwNY16sLANYyD2X2vgc2p_03AS9Unm3tT13yoQ8vkPx2iJxXj6aNQ>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 30 Aug 2022 08:03:34 -0400 (EDT)
+Date:   Tue, 30 Aug 2022 14:03:30 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Lyude Paul <lyude@redhat.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Karol Herbst <kherbst@redhat.com>,
+        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Dom Cobley <dom@raspberrypi.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Nouveau Dev <nouveau@lists.freedesktop.org>,
+        linux-sunxi@lists.linux.dev,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
+Subject: Re: [PATCH v2 14/41] drm/modes: Move named modes parsing to a
+ separate function
+Message-ID: <20220830120330.6f5f22d35gu7cbr3@houat>
+References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
+ <20220728-rpi-analog-tv-properties-v2-14-459522d653a7@cerno.tech>
+ <CAMuHMdV9wVgHFfwHoqtBoYzJDnjDmKTfaZkAKvTVKh1Y-2x1pA@mail.gmail.com>
+ <87czcidnb8.fsf@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CMGQTZ9XBSTJ.5QY7JQCNULBN@Arch-Desktop>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87czcidnb8.fsf@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Aug 27, 2022 at 01:36:29PM +0300, Mazin Al Haddad wrote:
-> On Wed Aug 24, 2022 at 9:04 AM +03, Greg KH wrote:
-> > On Wed, Aug 24, 2022 at 01:24:38AM +0300, Mazin Al Haddad wrote:
-> > > Fixes a bug reported by syzbot, where a warning occurs in usb_submit_urb()
-> > > due to the wrong endpoint type. There is no check for both the number
-> > > of endpoints and the type which causes an error as the code tries to
-> > > send a URB to the wrong endpoint.
-> > > 
-> > > Fix it by adding a check for the number of endpoints and the
-> > > direction/type of the endpoints. If the endpoints do not match the 
-> > > expected configuration -ENODEV is returned.
-> > > 
-> > > Syzkaller report:
-> > > 
-> > > usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-> > > WARNING: CPU: 1 PID: 71 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-> > > Modules linked in:
-> > > CPU: 1 PID: 71 Comm: kworker/1:2 Not tainted 5.19.0-rc7-syzkaller-00150-g32f02a211b0a #0
-> > > Hardware name: Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-> > > Workqueue: usb_hub_wq hub_event
-> > > Call Trace:
-> > >  <TASK>
-> > >  ar5523_cmd+0x420/0x790 drivers/net/wireless/ath/ar5523/ar5523.c:275
-> > >  ar5523_cmd_read drivers/net/wireless/ath/ar5523/ar5523.c:302 [inline]
-> > >  ar5523_host_available drivers/net/wireless/ath/ar5523/ar5523.c:1376 [inline]
-> > >  ar5523_probe+0xc66/0x1da0 drivers/net/wireless/ath/ar5523/ar5523.c:1655
-> > > 
-> > > 
-> > > Link: https://syzkaller.appspot.com/bug?extid=1bc2c2afd44f820a669f
-> > > Reported-and-tested-by: syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com
-> > > Signed-off-by: Mazin Al Haddad <mazinalhaddad05@gmail.com>
-> > > ---
-> > >  drivers/net/wireless/ath/ar5523/ar5523.c | 31 ++++++++++++++++++++++++
-> > >  1 file changed, 31 insertions(+)
-> > > 
-> > > diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-> > > index 6f937d2cc126..5451bf9ab9fb 100644
-> > > --- a/drivers/net/wireless/ath/ar5523/ar5523.c
-> > > +++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-> > > @@ -1581,8 +1581,39 @@ static int ar5523_probe(struct usb_interface *intf,
-> > >  	struct usb_device *dev = interface_to_usbdev(intf);
-> > >  	struct ieee80211_hw *hw;
-> > >  	struct ar5523 *ar;
-> > > +	struct usb_host_interface *host = intf->cur_altsetting;
-> > >  	int error = -ENOMEM;
-> > >  
-> > > +	if (host->desc.bNumEndpoints != 4) {
-> > > +		dev_err(&dev->dev, "Wrong number of endpoints\n");
-> > > +		return -ENODEV;
-> > > +	}
-> > > +
-> > > +	for (int i = 0; i < host->desc.bNumEndpoints; ++i) {
-> > > +		struct usb_endpoint_descriptor *ep = &host->endpoint[i].desc;
-> > > +		// Check for type of endpoint and direction.
-> > > +		switch (i) {
-> > > +		case 0:
-> > > +		case 1:
-> > > +			if ((ep->bEndpointAddress & USB_DIR_OUT) &&
-> > > +			    ((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-> > > +			     == USB_ENDPOINT_XFER_BULK)){
+Hi,
+
+On Tue, Aug 30, 2022 at 01:43:07PM +0300, Jani Nikula wrote:
+> On Tue, 30 Aug 2022, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Mon, Aug 29, 2022 at 3:13 PM Maxime Ripard <maxime@cerno.tech> wrote:
+> >> +#define STR_STRICT_EQ(str, len, cmp) \
+> >> +       ((strlen(cmp) =3D=3D len) && !strncmp(str, cmp, len))
 > >
-> > Did you run your change through checkpatch?
-> 
-> Yes.
-> 
-> > We have usb helper functions for all of this, why not use them instead
-> > of attempting to roll your own?
-> 
-> Using the helpers is indeed a lot better. I wasn't aware of all of them.
-> Since find_common_endpoints() won't work here, I used the helpers for 
-> checking direction/type. 
+> > This is not part of the move, but newly added.
+>=20
+> The same construct is also duplicated elsewhere in the series, and I
+> kept being confused by it.
 
-I don't understand why usb_find_common_endpoints() will not work here.
-It seems to be very generic and should work just fine.
+I'm not sure what is confusing, but I can add a comment if needed.
 
-thanks,
+> The above is precisely the same as:
+>=20
+> 	str_has_prefix(str, cmp) =3D=3D len
 
-greg k-h
+Here, it's used to make sure we don't have a named mode starting with
+either e, d, or D.
+
+If I understood str_has_prefix() right, str_has_prefix("DUMB-MODE", "D")
+=3D=3D strlen("DUMB-MODE") would return true, while it's actually what we
+want to avoid.
+
+It's also used indeed in drm_get_tv_mode_from_name(), where we try to
+match a list of names with one passed as argument.
+
+With drm_get_tv_mode_from_name("NSTC", strlen("NTSC")), we would end up
+calling str_has_prefix("NTSC-J", "NTSC") =3D=3D strlen("NTSC-J") which would
+work. However, we end up calling prefix not a prefix, but an entire
+string we want to match against, which is very confusing to me too.
+
+Maxime
