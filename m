@@ -2,67 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BA6ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B38ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230257AbiH3PKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 11:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53136 "EHLO
+        id S230293AbiH3PKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 11:10:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230242AbiH3PKK (ORCPT
+        with ESMTP id S230286AbiH3PKR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 11:10:10 -0400
-Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528FE286D0;
-        Tue, 30 Aug 2022 08:10:06 -0700 (PDT)
-X-QQ-mid: bizesmtp72t1661872189taippgaq
-Received: from localhost.localdomain ( [182.148.13.26])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 30 Aug 2022 23:09:43 +0800 (CST)
-X-QQ-SSF: 01000000002000B0C000B00A0000000
-X-QQ-FEAT: Kol1Dm0TdrBY3VVmcZA8Cluyd69CRq9T6xCeEOK7HZtzwD/guwODQBL26XGp5
-        FlrnS2dttpsBfKHkIkutuyymhI8o6tPYjjlbwH+Ktk+L0UsHZqTXSVEkvnuJZdj1tag5GmL
-        xyzu3Nv086ySEsJ30YdB9mCFd7EMCRFE92zGHP4PSzee8OSr37ogb7YgwvKi9w6XhFCrZp/
-        ldJGv4WVJqu5j7acDdNakxyYlwiUqCiDxZU3zzFiF7xoJHeUWwcm9hkJORnn/RlzuXRGB3g
-        giUeDkOO6fEyykY3yxpDenPqU5JSjHxBJAvrjKEKwmQTr5tABG/nSDKgqv5va9Bl6wGyXVP
-        EahHYI4aICF1YmaPAUxhsFcYCZHviAu3DAwKDTkng3INTAgf5Gv+v/2ckCuZA==
-X-QQ-GoodBg: 0
-From:   Shaomin Deng <dengshaomin@cdjrlc.com>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Shaomin Deng <dengshaomin@cdjrlc.com>
-Subject: [PATCH] fpga: mgr: Fix double word in comments
-Date:   Tue, 30 Aug 2022 11:09:43 -0400
-Message-Id: <20220830150943.25371-1-dengshaomin@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 30 Aug 2022 11:10:17 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05CBE4F182
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:10:11 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id jy14so3123932qvb.12
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 08:10:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=CBamQzSNNxE6SjxTKzzEO+qM/bRDvj9E4TwCaLJXBMk=;
+        b=fXNdwdpK40/W9ZV/jtDtFanBo50pdD9Zqq2j76SqDodQNMcH/S/9ZORqwpujvM/1o7
+         Y6ijjlraOllJTnfE8hkllQZkWTkVYG+l9AgDUUsf4ThP+1u3Lezl0Ah/HcTMhGdPhepr
+         6oaOHPhbuuQXVL7zA8adj2Q6F6wDptOrEHfHvWpbBkt1JOkwh5bMK0Ps71apRT8m0wKL
+         AOMSw1qxFu5ZtF1ie2DWVMI+XNlOgLhGsqhKFseVmGJOBV0nuysZvPAUoIJ8ecRUEdf7
+         8NQ34drZxPG72BJMShFI1bT2VX5a+waMVxy4LYhuSx5L0ejfGHWsTQ/GqJcHZt7AT8AA
+         7NCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=CBamQzSNNxE6SjxTKzzEO+qM/bRDvj9E4TwCaLJXBMk=;
+        b=keL26Vg16UtFgJqEpa2PQBjfas11sxtgAqqMXtwJH9SGcDLVFnkoA7KtX0uf9jh52s
+         F9WXRqQGp+bWB2Ljl65l7vYHWpSk/LXAG4qplTpwReSmpjjWlc9JZ72+lstdgsPaa4Pf
+         mTo6dngpH0YMl+/3+iuUPTtSc0SVxUM0aNS8O8PRzkYkwtZMei/B8KUinn1ver9d69UN
+         nJI3NOB8prGcGDODfrJhfMnXFQc0PYo8yJvTz5v2DUK/bvPWvURXevL8H5+5V4CjFZno
+         5fiuPBgUqNLvfWbAYuvjX9k5Iq7BLfRJzso0Ojm0kUoA/yli42dSHCEB60m+NH0bSLkJ
+         Tpyw==
+X-Gm-Message-State: ACgBeo3qO6bqQ3rA+bNeexRBiGnoejpdmnTPJ58cS/Qj8vJzad3MdDSN
+        nDFZmU48ywTAIe/TPwVw1kfBnqRBwwBAAg==
+X-Google-Smtp-Source: AA6agR6UUGFhrYHDf4KVE6IxiHBU+9Pg/pWLmRZ4Y2KqjrWUkINgLEKIUkRA9mAuIBzucBWjgrkfbQ==
+X-Received: by 2002:a0c:f1c7:0:b0:474:725e:753e with SMTP id u7-20020a0cf1c7000000b00474725e753emr15301629qvl.49.1661872210775;
+        Tue, 30 Aug 2022 08:10:10 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id bl8-20020a05620a1a8800b006bbdcb3fff7sm7634727qkb.69.2022.08.30.08.10.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 08:10:09 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1oT2sS-003kUN-QX;
+        Tue, 30 Aug 2022 12:10:08 -0300
+Date:   Tue, 30 Aug 2022 12:10:08 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Anthony Krowiak <akrowiak@linux.ibm.com>
+Cc:     Kevin Tian <kevin.tian@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Eric Farman <farman@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        Harald Freudenberger <freude@linux.ibm.com>,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Longfang Liu <liulongfang@huawei.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Abhishek Sahu <abhsahu@nvidia.com>,
+        intel-gvt-dev@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, Yi Liu <yi.l.liu@intel.com>
+Subject: Re: [PATCH 01/15] vfio: Add helpers for unifying vfio_device life
+ cycle
+Message-ID: <Yw4oUL33TbJK6inc@ziepe.ca>
+References: <20220827171037.30297-1-kevin.tian@intel.com>
+ <20220827171037.30297-2-kevin.tian@intel.com>
+ <907c54c6-7f5b-77f3-c284-45604c60c12e@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <907c54c6-7f5b-77f3-c284-45604c60c12e@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the repeated word "if" in comments.
+On Tue, Aug 30, 2022 at 09:42:42AM -0400, Anthony Krowiak wrote:
 
-Signed-off-by: Shaomin Deng <dengshaomin@cdjrlc.com>
----
- drivers/fpga/stratix10-soc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > +/*
+> > + * Alloc and initialize vfio_device so it can be registered to vfio
+> > + * core.
+> > + *
+> > + * Drivers should use the wrapper vfio_alloc_device() for allocation.
+> > + * @size is the size of the structure to be allocated, including any
+> > + * private data used by the driver.
+> 
+> 
+> It seems the purpose of the wrapper is to ensure that the object being
+> allocated has as its first field a struct vfio_device object and to return
+> its container. Why not just make that a requirement for this function -
+> which I would rename vfio_alloc_device - and document it in the prologue?
+> The caller can then cast the return pointer or use container_of.
 
-diff --git a/drivers/fpga/stratix10-soc.c b/drivers/fpga/stratix10-soc.c
-index 357cea58ec98..e4f2e83a615b 100644
---- a/drivers/fpga/stratix10-soc.c
-+++ b/drivers/fpga/stratix10-soc.c
-@@ -285,7 +285,7 @@ static int s10_ops_write(struct fpga_manager *mgr, const char *buf,
- 
- 	/*
- 	 * Loop waiting for buffers to be returned.  When a buffer is returned,
--	 * reuse it to send more data or free if if all data has been sent.
-+	 * reuse it to send more data or free if all data has been sent.
- 	 */
- 	while (count > 0 || s10_free_buffer_count(mgr) != NUM_SVC_BUFS) {
- 		reinit_completion(&priv->status_return_completion);
--- 
-2.35.1
+There are three fairly common patterns for this kind of thing
 
+1) The caller open codes everything:
+
+   driver_struct = kzalloc()
+   core_init(&driver_struct->core)
+
+2) Some 'get priv' / 'get data' is used instead of container_of():
+
+   core_struct = core_alloc(sizeof(*driver_struct))
+   driver_struct = core_get_priv(core_struct)
+
+3) The allocations and initialization are consolidated in the core,
+   but we continue to use container_of()
+
+   driver_struct = core_alloc(typeof(*driver_struct))
+
+#1 has a general drawback that people routinely mess up the lifecycle
+model and get really confused about when to do kfree() vs put(),
+creating bugs.
+
+#2 has a general drawback of not using container_of() at all, and being
+a bit confusing in some cases
+
+#3 has the general drawback of being a bit magical, but solves 1 and
+2's problems.
+
+I would not fix the struct layout without the BUILD_BUG_ON because
+someone will accidently change the order and that becomes a subtle
+runtime error - so at a minimum the wrapper macro has to exist to
+check that.
+
+If you want to allow a dynamic struct layout and avoid the pitfall of
+exposing the user to kalloc/kfree, then you still need the macro, and
+it does some more complicated offset stuff.
+
+Having the wrapper macro be entirely type safe is appealing and
+reduces code in the drivers, IMHO. Tell it what type you are initing
+and get back init'd memory for that type that you always, always free
+with a put operation.
+
+Jason
