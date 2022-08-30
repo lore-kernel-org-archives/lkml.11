@@ -2,97 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966C5ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A719ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 11:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230429AbiH3Ljg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 07:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44264 "EHLO
+        id S230480AbiH3LkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 07:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbiH3Lij (ORCPT
+        with ESMTP id S230465AbiH3Ljr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 07:38:39 -0400
-Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548D51AD87
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:37:30 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id E17505801D8;
-        Tue, 30 Aug 2022 07:37:26 -0400 (EDT)
-Received: from imap51 ([10.202.2.101])
-  by compute3.internal (MEProxy); Tue, 30 Aug 2022 07:37:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1661859446; x=1661860046; bh=Oupn4eihBs
-        i0MiLn85P4dhLgR7rqSv7zUgSdpKnmCGk=; b=k6PVLwqikiKnbm9KWzOSLRNMuO
-        ipubifHhHOySC975owsKGRAvLAJ8UIDt8zBiP0ipjOePPcitcsWiUXqFwe697nTV
-        /ybV4l7AtnADfW4mDMt4vPZuM/w6V5poMXqFYQgPWWQ6YiVChVKLtAbzNntCwKP0
-        4rsipZ4rRLX6HVYbFGl7lUDkmTItHrAf6MiUrPy/bhDYvq76vo4DEllCHyiBR+a4
-        kqSIK8pfN9y7aSZWDa4Jpspq9cFkSHBS9uGLXxBgCyUINMnApo1E0qvepfKwR+9W
-        8/TObG4yD0UHKuwvKQtQ7yemnuRP1uJG4KiqEx2vLgJcR890l7xEJry9lrGg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        i56a14606.fm1; t=1661859446; x=1661860046; bh=Oupn4eihBsi0MiLn85
-        P4dhLgR7rqSv7zUgSdpKnmCGk=; b=LF4CCGJe/E9AAzS3vhlzL3gPRaFjg0od9b
-        QCu2/es7f4b0wxDSGar9ChqSa1o6s6j+5hzvt53D+ejZO2NxcWI3fk4sUzs6d7ye
-        dM15mQMIO+4J6vqczxGrjgSH4ZFbzlqNjrMySYysqc2T2aztEp8gXjgL8tL9tpey
-        //vy05ZhUBO8+5o+/grrfaDMeo4wcF5lF5/+Rew4VVoRKVGh6po7oHKh262uiLpR
-        zILRqhRirH6cGEt8Krb6Op+/GuE003fKQyqGCjnzaDe8gCnM1/Wcw7bFBML/PEUt
-        bZ15Q7QLSJWJrFWrhtuT9zM3ByolA6e5U98F4H9SfPb45MBDQdjA==
-X-ME-Sender: <xms:dfYNY4ftYDUwhy1k6OjYWVhivaQSvhKknnX1kKYtHqsxQlJASsEAPw>
-    <xme:dfYNY6OIFiJYyLNwmwBFs7BeAGTzKEm3mDXqe60IVTVXMNE3GX4b_oTYrkoPZ8Hqm
-    5MDVijlpCDD_WRWhY8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekfedggeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehr
-    nhguuceuvghrghhmrghnnhdfuceorghrnhgusegrrhhnuggsrdguvgeqnecuggftrfgrth
-    htvghrnhepffehueegteeihfegtefhjefgtdeugfegjeelheejueethfefgeeghfektdek
-    teffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprg
-    hrnhgusegrrhhnuggsrdguvg
-X-ME-Proxy: <xmx:dfYNY5j3_glt5-JETShyH_6WgIV1Rvyuxo97PliiyuSpORA7152kXA>
-    <xmx:dfYNY99nBaln0tKxJohbZPmXWQBBrFhwfoiT-96n4NgTtj7-Oto0Hg>
-    <xmx:dfYNY0tYdzKKt_ezne9MXT0Xz19sFm7jdLLVdlTaKHdDo3TWbUETwQ>
-    <xmx:dvYNY94D27W0abX1AuoxDehA_WxBzsPjs0nPZWA5bIIx5cbzhZhbtPwMONQ>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id ABADBB60083; Tue, 30 Aug 2022 07:37:25 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
-Mime-Version: 1.0
-Message-Id: <78451bb1-e4d2-457a-adf7-8fb61be0fb3e@www.fastmail.com>
-In-Reply-To: <4ff2a310-c8ba-ccf2-8d51-5181b83685c7@loongson.cn>
-References: <1661766931-7277-1-git-send-email-yangtiezhu@loongson.cn>
- <d1a52fa2-380a-421b-8c46-5150a39be484@www.fastmail.com>
- <4ff2a310-c8ba-ccf2-8d51-5181b83685c7@loongson.cn>
-Date:   Tue, 30 Aug 2022 13:37:05 +0200
-From:   "Arnd Bergmann" <arnd@arndb.de>
-To:     "Tiezhu Yang" <yangtiezhu@loongson.cn>,
-        "Huacai Chen" <chenhuacai@kernel.org>,
-        "WANG Xuerui" <kernel@xen0n.name>
-Cc:     loongarch@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] LoongArch: Fix warning: #warning syscall fstat not implemented
-Content-Type: text/plain
+        Tue, 30 Aug 2022 07:39:47 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CABE153D1B
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 04:38:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661859501; x=1693395501;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ZP7S2cGrU/c+7YXSBj6I3/v2Y3j1c0NXw8uPGfW5pRg=;
+  b=Y0UU6n6eqM0/j/SUA7q3sDtlj4dMjItzFYWhxw26EW0ecNXKsAc6MtQt
+   6Rpmm87uvecU1IE17OLP6FyeB3oIrAiTQTbq3pUhrGEDrJX8YIFk6LUr+
+   gF2PBP8h1+kd/pMWFwLwnrYJ/hQbMJdvPtt221vp5KXEjQ0eNMcXkcoyE
+   Xx9YeckLtVVrHVoexDgwJP6rkrsN2wT7v1CbX569iWcIEArW6qsNTeNtZ
+   cHpqOy44BwHnSLABL98aW8pqmwhcVs0gxdR7ogIev/kIl55ELWFZAeQnH
+   OdiL7LY7pWnr1+LO9I9zTi32qZBuCvOG3WLDgqf+uY8Gk7TuywQO24lde
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="292729487"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="292729487"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 04:38:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="680004077"
+Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 30 Aug 2022 04:38:18 -0700
+Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oSzZR-0000Fe-1k;
+        Tue, 30 Aug 2022 11:38:17 +0000
+Date:   Tue, 30 Aug 2022 19:38:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [arm-integrator:virt-to-pfn-v6.0-rc1 24/24]
+ arch/x86/xen/setup.c:341:20: sparse: sparse: incorrect type in argument 1
+ (different base types)
+Message-ID: <202208301933.EfJXBgQg-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022, at 4:34 PM, Tiezhu Yang wrote:
->
-> I read the commit message in the commit 82b355d161c9 ("y2038: Remove
-> newstat family from default syscall set"), I am not quite sure whether
-> we should check __ARCH_WANT_NEW_STAT first, like this:
->
->    #ifndef __ARCH_WANT_NEW_STAT
->    #define __IGNORE_fstat
->    #endif
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git virt-to-pfn-v6.0-rc1
+head:   fd7709c9f1119794e96665ae423d79d93bfe43fc
+commit: fd7709c9f1119794e96665ae423d79d93bfe43fc [24/24] x86/xen: Make virt_to_pfn() a static inline
+config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220830/202208301933.EfJXBgQg-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=fd7709c9f1119794e96665ae423d79d93bfe43fc
+        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
+        git fetch --no-tags arm-integrator virt-to-pfn-v6.0-rc1
+        git checkout fd7709c9f1119794e96665ae423d79d93bfe43fc
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/xen/ drivers/pci/
 
-No, the #ifdef is not needed here, the entry just means we
-no longer warn about the missing syscall because it has
-been replaced by statx and this is true regardless of
-__ARCH_WANT_NEW_STAT.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-       Arnd
+sparse warnings: (new ones prefixed by >>)
+>> arch/x86/xen/setup.c:341:20: sparse: sparse: incorrect type in argument 1 (different base types) @@     expected void const *v @@     got unsigned long buf @@
+   arch/x86/xen/setup.c:341:20: sparse:     expected void const *v
+   arch/x86/xen/setup.c:341:20: sparse:     got unsigned long buf
+
+vim +341 arch/x86/xen/setup.c
+
+83d51ab473dddd David Vrabel  2012-05-03  316  
+83d51ab473dddd David Vrabel  2012-05-03  317  /*
+4fbb67e3c87b80 Matt Rushton  2014-08-11  318   * This function updates the p2m and m2p tables with an identity map from
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  319   * start_pfn to start_pfn+size and prepares remapping the underlying RAM of the
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  320   * original allocation at remap_pfn. The information needed for remapping is
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  321   * saved in the memory itself to avoid the need for allocating buffers. The
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  322   * complete remap information is contained in a list of MFNs each containing
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  323   * up to REMAP_SIZE MFNs and the start target PFN for doing the remap.
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  324   * This enables us to preserve the original mfn sequence while doing the
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  325   * remapping at a time when the memory management is capable of allocating
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  326   * virtual and physical memory in arbitrary amounts, see 'xen_remap_memory' and
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  327   * its callers.
+83d51ab473dddd David Vrabel  2012-05-03  328   */
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  329  static void __init xen_do_set_identity_and_remap_chunk(
+4fbb67e3c87b80 Matt Rushton  2014-08-11  330          unsigned long start_pfn, unsigned long size, unsigned long remap_pfn)
+4fbb67e3c87b80 Matt Rushton  2014-08-11  331  {
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  332  	unsigned long buf = (unsigned long)&xen_remap_buf;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  333  	unsigned long mfn_save, mfn;
+4fbb67e3c87b80 Matt Rushton  2014-08-11  334  	unsigned long ident_pfn_iter, remap_pfn_iter;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  335  	unsigned long ident_end_pfn = start_pfn + size;
+4fbb67e3c87b80 Matt Rushton  2014-08-11  336  	unsigned long left = size;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  337  	unsigned int i, chunk;
+e201bfcc5c4fe6 David Vrabel  2013-07-22  338  
+4fbb67e3c87b80 Matt Rushton  2014-08-11  339  	WARN_ON(size == 0);
+e201bfcc5c4fe6 David Vrabel  2013-07-22  340  
+1f3ac86b4c45a1 Juergen Gross 2014-11-28 @341  	mfn_save = virt_to_mfn(buf);
+4fbb67e3c87b80 Matt Rushton  2014-08-11  342  
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  343  	for (ident_pfn_iter = start_pfn, remap_pfn_iter = remap_pfn;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  344  	     ident_pfn_iter < ident_end_pfn;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  345  	     ident_pfn_iter += REMAP_SIZE, remap_pfn_iter += REMAP_SIZE) {
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  346  		chunk = (left < REMAP_SIZE) ? left : REMAP_SIZE;
+4fbb67e3c87b80 Matt Rushton  2014-08-11  347  
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  348  		/* Map first pfn to xen_remap_buf */
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  349  		mfn = pfn_to_mfn(ident_pfn_iter);
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  350  		set_pte_mfn(buf, mfn, PAGE_KERNEL);
+4fbb67e3c87b80 Matt Rushton  2014-08-11  351  
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  352  		/* Save mapping information in page */
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  353  		xen_remap_buf.next_area_mfn = xen_remap_mfn;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  354  		xen_remap_buf.target_pfn = remap_pfn_iter;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  355  		xen_remap_buf.size = chunk;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  356  		for (i = 0; i < chunk; i++)
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  357  			xen_remap_buf.mfns[i] = pfn_to_mfn(ident_pfn_iter + i);
+4fbb67e3c87b80 Matt Rushton  2014-08-11  358  
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  359  		/* Put remap buf into list. */
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  360  		xen_remap_mfn = mfn;
+4fbb67e3c87b80 Matt Rushton  2014-08-11  361  
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  362  		/* Set identity map */
+bc7142cf798ae7 David Vrabel  2015-01-07  363  		set_phys_range_identity(ident_pfn_iter, ident_pfn_iter + chunk);
+4fbb67e3c87b80 Matt Rushton  2014-08-11  364  
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  365  		left -= chunk;
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  366  	}
+4fbb67e3c87b80 Matt Rushton  2014-08-11  367  
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  368  	/* Restore old xen_remap_buf mapping */
+1f3ac86b4c45a1 Juergen Gross 2014-11-28  369  	set_pte_mfn(buf, mfn_save, PAGE_KERNEL);
+4fbb67e3c87b80 Matt Rushton  2014-08-11  370  }
+4fbb67e3c87b80 Matt Rushton  2014-08-11  371  
+
+:::::: The code at line 341 was first introduced by commit
+:::::: 1f3ac86b4c45a146e090d24bf66c49b95e72f071 xen: Delay remapping memory of pv-domain
+
+:::::: TO: Juergen Gross <jgross@suse.com>
+:::::: CC: David Vrabel <david.vrabel@citrix.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
