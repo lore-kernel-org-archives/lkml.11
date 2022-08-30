@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8F1ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4DBECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231566AbiH3IcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33198 "EHLO
+        id S231539AbiH3Ic4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231548AbiH3Ibv (ORCPT
+        with ESMTP id S230312AbiH3Icy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:31:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37912A5985;
-        Tue, 30 Aug 2022 01:31:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0181B61544;
-        Tue, 30 Aug 2022 08:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8525C433D6;
-        Tue, 30 Aug 2022 08:31:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661848308;
-        bh=qvjvjxIMAdSikhigPbaLJR7QXVbF7fZM/vc2EUcvDNk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=rQBkiMTaQU16mALr+TH+Sg05ehXQJTVoPB6yidy/nYB7xEBcngqFg1ixgLVrnISgO
-         kgThYmrsE7nSEI77eJpcDUjwRQyoSi90Qa5vqrPtAXpZPM1Vsyll6Qnr5Ui6JRzfQr
-         fpwag/rBk03Ez9taOM1pxOHgYpOInkulwE/cbeYIm5fmQWqPiBSj9lwos4GS/konhx
-         0tapGnxuJ0yZcU/3uaqrQFLONDJCETpwaonleWA/agQWTLpNFslIC7BnT3x+X4S3Fa
-         b5iJGxGc7GJ2qWDhB1ZPlfb/K/Gu08d2BdnrVTe5knj5xG8BNHbSM6maMaNgQj6WRY
-         O4ET0FFhendkw==
-Message-ID: <8a12d593-4f67-956c-352a-58d8f6c1bc43@kernel.org>
-Date:   Tue, 30 Aug 2022 11:31:44 +0300
+        Tue, 30 Aug 2022 04:32:54 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD0C6D568
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:32:53 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id fa2so2745753pjb.2
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:32:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=7DbBF1+oaDwBQvC8cRC9cxy+Yq2Vsxw50yfZErPMASA=;
+        b=QHRjtpH1TXzAXZ6WC+IKgw21HECpC8KBem/uLNhOg0vQcIwSamzdyqro17MpnY/0/W
+         LvlANBt2PduRRiB5Tn9XQ7zQhJhU0LUUjVom+bXKdg1086zex3X82U0Flur5UsOQGzO6
+         +QtnBOATJesYl7DjuZ6hl6yl71xHogrA8gWVPHIyO+eFfj+Dlki/SmrZ7f23827S/0eB
+         1scPzxQu5OlizfrcK9q5M7lPlo34XwwKNqOkED0Fm/1/xzBF1PdLS68DXQokPtbCXS7a
+         QNO3pOGfxSo+Dlx/pulyQ4IE6dQroCZGR2024tTr5rgb15rzKV9xwSxEjE4wMy/Y7K+j
+         DJqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=7DbBF1+oaDwBQvC8cRC9cxy+Yq2Vsxw50yfZErPMASA=;
+        b=8DT6RIAe0bJcplP3HJZydjLqjPaeycFYFcqQkyKq1RISzEjsBEEbmkFz3Kfq2XjjEo
+         8GkDHAv7CYBkGDwQmZ+3FLMhWtc4FF8fqFaKll69MZIjtgOlObTxwtdkrhXrmcmHAVzJ
+         78Diy7A8rNNQ1lRn1nYq/sLScuw9hZlkyebknFW7lt9/DvWN6nuj9SMS7AaoXPNJUjmW
+         JkJ50acne4Cus2RNLwJ7eqbZ/OTOSdzyJlPu0sqKoCKYrG7d+rVb1nWSN+R6c5VPb1k9
+         QGi+yLmsJd1OUA9IU3Li7FJ/TXzFude9PswJK9efCC/McFsMxRBsFGNatGe27Zcq2B8L
+         kGqQ==
+X-Gm-Message-State: ACgBeo36J/D9TjCLUgYic1czwpjir8bhJyjeILii/mbKq0lQMmTrDYw3
+        ESfBHPO680VqLhxN0uieGQq8n0tJgXw=
+X-Google-Smtp-Source: AA6agR4Is8dMqZl7uCk/1vuQ+NNemcLnEcQJRsIuv652D6FMEB1n52aGDtSlrjjQDs4ov4EvP0MG2g==
+X-Received: by 2002:a17:902:c949:b0:172:d2cd:a9b2 with SMTP id i9-20020a170902c94900b00172d2cda9b2mr20599799pla.38.1661848372968;
+        Tue, 30 Aug 2022 01:32:52 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id e15-20020a170902784f00b00172f4835f65sm7032761pln.271.2022.08.30.01.32.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 01:32:52 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     alexander.deucher@amd.com
+Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, tao.zhou1@amd.com, YiPeng.Chai@amd.com,
+        Hawking.Zhang@amd.com, rajib.mahapatra@amd.com, Jack.Xiao@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] drm/amdgpu: Remove the unneeded result variable 'r'
+Date:   Tue, 30 Aug 2022 08:32:43 +0000
+Message-Id: <20220830083243.276646-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 0/2] arm64: dts: ti: k3-am64-main: Add GPMC & ELM nodes
-Content-Language: en-US
-To:     nm@ti.com, vigneshr@ti.com
-Cc:     kishon@ti.com, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220802104456.11069-1-rogerq@kernel.org>
-From:   Roger Quadros <rogerq@kernel.org>
-In-Reply-To: <20220802104456.11069-1-rogerq@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Nishant/Vignesh,
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-On 02/08/2022 13:44, Roger Quadros wrote:
-> Hi Nishanth,
-> 
-> This series adds GPMC and ELM controller device tree nodes to
-> AM64 SoC's dtsi file.
+Return the value sdma_v4_0_start() directly instead of storing it in
+another redundant variable.
 
-Gentle ping to pick this series. Thanks!
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+---
+ drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-> 
-> Changelog:
-> v4
-> - Rebased to v5.19
-> - use 'ti,am64-elm' compatible for ELM node
-> 
-> v3
-> - Rebased to v5.17-rc1
-> 
-> v2
-> - Fix register sizes for GPMC node.
-> - Disable GPMC and ELM nodes in board files. They will be enabled in
-> NAND card device tree overlay.
-> 
-> Roger Quadros (2):
->   arm64: dts: ti: k3-am64-main: Add GPMC memory controller node
->   arm64: dts: ti: k3-am64-main: Add ELM (Error Location Module) node
-> 
->  arch/arm64/boot/dts/ti/k3-am64-main.dtsi | 28 ++++++++++++++++++++++++
->  arch/arm64/boot/dts/ti/k3-am642-evm.dts  |  8 +++++++
->  arch/arm64/boot/dts/ti/k3-am642-sk.dts   |  8 +++++++
->  3 files changed, 44 insertions(+)
-> 
-
-cheers,
--roger
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
+index 65181efba50e..0cf9d3b486b2 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
+@@ -2002,7 +2002,6 @@ static int sdma_v4_0_sw_fini(void *handle)
+ 
+ static int sdma_v4_0_hw_init(void *handle)
+ {
+-	int r;
+ 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
+ 
+ 	if (adev->flags & AMD_IS_APU)
+@@ -2011,9 +2010,7 @@ static int sdma_v4_0_hw_init(void *handle)
+ 	if (!amdgpu_sriov_vf(adev))
+ 		sdma_v4_0_init_golden_registers(adev);
+ 
+-	r = sdma_v4_0_start(adev);
+-
+-	return r;
++	return sdma_v4_0_start(adev);
+ }
+ 
+ static int sdma_v4_0_hw_fini(void *handle)
+-- 
+2.25.1
