@@ -2,113 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69676ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 999A7ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 20:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbiH3Urg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 16:47:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
+        id S230292AbiH3Ute (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 16:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiH3Ure (ORCPT
+        with ESMTP id S229629AbiH3Utc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 16:47:34 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7927B61727
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 13:47:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661892453; x=1693428453;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gDzm1XLBuTLbUNhYNDG0QOKV+fs5prMh9MVxqkOSecU=;
-  b=QVpj2GUgMAkZNF1K23XYLT8x8wS2cuQZzw4VLn8XgtIrBCyMfrRZm8cz
-   2notyIJUOQjIwXq4OIqTm0xIf8wHD3+2zpGKXfKJLlwkLX/HS4ibwvJgV
-   NPjlsDi+FvWD2Cpr1wHSWiM1hpwCucT0RgMCfUkJhBJ7S0M+BHnun5Xx+
-   VTsTv6U4/TH3m/SZyH+r0lVUcyq1bi/OvKIMPZ/KXZirGYR2bhF5g3t2d
-   +sIGplLnCLkn8sTkJExWFejRhMWqcT2r6OInmgVYSr+ud4Z/a9MSQCJXM
-   Jn+91EV3OrJXt06TxdaJ9mxyxp8UkfjwdjLM1Nz1r5hxPGNseCKz6yCXx
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="282269259"
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="282269259"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 13:47:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="680184467"
-Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 30 Aug 2022 13:47:31 -0700
-Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oT88w-0000af-23;
-        Tue, 30 Aug 2022 20:47:30 +0000
-Date:   Wed, 31 Aug 2022 04:47:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Fuad Tabba <tabba@google.com>
-Subject: arch/arm64/kvm/hyp/nvhe/stacktrace.c:46:6: warning: no previous
- prototype for function 'kvm_nvhe_prepare_backtrace'
-Message-ID: <202208310413.eqNpIobb-lkp@intel.com>
+        Tue, 30 Aug 2022 16:49:32 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC0661727
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 13:49:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=X7iCSTOWnU9U3NhVrvgeJETd405QeOeiTIOooqNdB1U=; b=gHAz3xYNkI3tRJgVyrayctUNn6
+        FVSzD8fJhvqrScQM3uI3z3gV/t9Xe/uqUvA27go4xDvOr2+k0+eJ0tln1Z2/fJ8l1So8kOPQQ/DrW
+        o+c1C5yTgE98mfKcMK2h71rRIzLvbgfeGASSIcrUvwIh2SQboMxS54OJKIXTXdCvrCvgI/ZNpESA2
+        FgxNpDBwcJlHVD8FIQ1+HhQVn9UVQWl+2GljU8rjXvjDohBYmpmP6xvYGjGtiGik6mPXhE4PKh4lK
+        A7S5/S7F95ZS/c+JJcsGumqpCK6IPZpB6oDBbXmokqeBugfwQ/YOlOyP5d9ztO1HdJ9tzRanRpS6m
+        4PNfFFzQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34010)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oT8Ao-0003NE-Q0; Tue, 30 Aug 2022 21:49:26 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oT8An-0001qo-F7; Tue, 30 Aug 2022 21:49:25 +0100
+Date:   Tue, 30 Aug 2022 21:49:25 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Matija Glavinic Pecotic <matija.glavinic-pecotic.ext@nokia.com>,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: [rmk-arm:for-next 5/7] arch/arm/mm/init.c:219: undefined
+ reference to `phys_initrd_start'
+Message-ID: <Yw531SABnjRQ0ZCK@shell.armlinux.org.uk>
+References: <202208310435.G07HW3ZF-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <202208310435.G07HW3ZF-lkp@intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalesh,
+On Wed, Aug 31, 2022 at 04:36:48AM +0800, kernel test robot wrote:
+> tree:   git://git.armlinux.org.uk/~rmk/linux-arm for-next
+> head:   a72b4b3ba681398a3ac1c1384efb949bef3ac846
+> commit: b35b2736b43d7124e7da6a8050b8fd9e02f9f734 [5/7] ARM: 9230/1: Support initrd with address in boot alias region
 
-FYI, the error/warning still remains.
+Dropping this patch.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   dcf8e5633e2e69ad60b730ab5905608b756a032f
-commit: 879e5ac7b2e4db05799a905b5a07fc9e5dedf651 KVM: arm64: Prepare non-protected nVHE hypervisor stacktrace
-date:   5 weeks ago
-config: arm64-randconfig-r011-20220830 (https://download.01.org/0day-ci/archive/20220831/202208310413.eqNpIobb-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project c7df82e4693c19e3fd2e25c83eb04d9deb7b7b59)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=879e5ac7b2e4db05799a905b5a07fc9e5dedf651
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 879e5ac7b2e4db05799a905b5a07fc9e5dedf651
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> arch/arm64/kvm/hyp/nvhe/stacktrace.c:46:6: warning: no previous prototype for function 'kvm_nvhe_prepare_backtrace' [-Wmissing-prototypes]
-   void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)
-        ^
-   arch/arm64/kvm/hyp/nvhe/stacktrace.c:46:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/kvm_nvhe_prepare_backtrace +46 arch/arm64/kvm/hyp/nvhe/stacktrace.c
-
-    36	
-    37	/*
-    38	 * kvm_nvhe_prepare_backtrace - prepare to dump the nVHE backtrace
-    39	 *
-    40	 * @fp : frame pointer at which to start the unwinding.
-    41	 * @pc : program counter at which to start the unwinding.
-    42	 *
-    43	 * Saves the information needed by the host to dump the nVHE hypervisor
-    44	 * backtrace.
-    45	 */
-  > 46	void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)
+> config: arm-lubbock_defconfig (https://download.01.org/0day-ci/archive/20220831/202208310435.G07HW3ZF-lkp@intel.com/config)
+> compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         git remote add rmk-arm git://git.armlinux.org.uk/~rmk/linux-arm
+>         git fetch --no-tags rmk-arm for-next
+>         git checkout b35b2736b43d7124e7da6a8050b8fd9e02f9f734
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    arm-linux-gnueabi-ld: arch/arm/mm/init.o: in function `arm_memblock_init':
+> >> arch/arm/mm/init.c:219: undefined reference to `phys_initrd_start'
+> 
+> 
+> vim +219 arch/arm/mm/init.c
+> 
+> b35b2736b43d71 Matija Glavinic Pecotic 2022-08-19  197  
+> 3928624812dcfa Russell King            2017-01-16  198  void __init arm_memblock_init(const struct machine_desc *mdesc)
+> 3928624812dcfa Russell King            2017-01-16  199  {
+> 3928624812dcfa Russell King            2017-01-16  200  	/* Register the kernel text, kernel data and initrd with memblock. */
+> 3928624812dcfa Russell King            2017-01-16  201  	memblock_reserve(__pa(KERNEL_START), KERNEL_END - KERNEL_START);
+> 3928624812dcfa Russell King            2017-01-16  202  
+> b35b2736b43d71 Matija Glavinic Pecotic 2022-08-19  203  	sanitize_initrd_address();
+> e46e45f00d9ea5 Wang Kefeng             2021-12-22  204  	reserve_initrd_mem();
+> 2778f62056ada4 Russell King            2010-07-09  205  
+> 2778f62056ada4 Russell King            2010-07-09  206  	arm_mm_memblock_reserve();
+> 2778f62056ada4 Russell King            2010-07-09  207  
+> 8d717a52d1b095 Russell King            2010-05-22  208  	/* reserve any platform specific memblock areas */
+> 8d717a52d1b095 Russell King            2010-05-22  209  	if (mdesc->reserve)
+> 8d717a52d1b095 Russell King            2010-05-22  210  		mdesc->reserve();
+> 8d717a52d1b095 Russell King            2010-05-22  211  
+> bcedb5f9bd7466 Marek Szyprowski        2014-02-28  212  	early_init_fdt_scan_reserved_mem();
+> bcedb5f9bd7466 Marek Szyprowski        2014-02-28  213  
+> 99a468d779f685 George G. Davis         2015-01-16  214  	/* reserve memory for DMA contiguous allocations */
+> 95b0e655f91488 Marek Szyprowski        2014-10-09  215  	dma_contiguous_reserve(arm_dma_limit);
+> c79095092834a1 Marek Szyprowski        2011-12-29  216  
+> 716a3dc20084da Russell King            2012-01-13  217  	arm_memblock_steal_permitted = false;
+> 2778f62056ada4 Russell King            2010-07-09  218  	memblock_dump_all();
+> 2778f62056ada4 Russell King            2010-07-09 @219  }
+> 2778f62056ada4 Russell King            2010-07-09  220  
+> 
+> :::::: The code at line 219 was first introduced by commit
+> :::::: 2778f62056ada442414392d7ccd41188bb631619 ARM: initial LMB trial
+> 
+> :::::: TO: Russell King <rmk+kernel@arm.linux.org.uk>
+> :::::: CC: Russell King <rmk+kernel@arm.linux.org.uk>
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
+> 
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
