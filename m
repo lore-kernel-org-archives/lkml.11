@@ -2,134 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B825ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 006A0ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiH3XRU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37796 "EHLO
+        id S231308AbiH3XRY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231342AbiH3XQq (ORCPT
+        with ESMTP id S231768AbiH3XQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 19:16:46 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B65D6A4A6
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 286C66B8C6
         for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:19 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id ng1-20020a17090b1a8100b001f4f9f69d48so11872892pjb.4
+Received: by mail-io1-xd30.google.com with SMTP id z72so10575137iof.12
         for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 16:16:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=ZlynD2151oAwoVetBZOi7ygkuiFbrmF9qnEbeilSaHk=;
-        b=sW9B9SLCPv5zTB8B7Fiify7VlWOcvvPppU5ir+i6uzPnaTl8E2HyJpqa2R/2WmMSwY
-         ecEecOG1/Xu+vJomiRWhB7S3JLY+HnlJcWomwIJjekLwfUyJtSYi3jsLlijpBPASrdUp
-         hRD9p5uufXXSE7j5YmZCtxVZ7eBdyJ+qps1Wn1CKOqyvYS2nyV6K9W4wdEBGRb6syGJr
-         NDxLQYZ1oR2w95a2Z+X9McwPsoKnW1DoA2ekhRX1wPMieLhP1BRLIxS4VjYlrMqCVv6h
-         6rEV77Pn8/8xy4flunM19T1whsgGBnUQFe2CHqSoSllmL7OsHvQpZMd0iSWJ3lfLq3kq
-         G8JQ==
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=A3xTTsKZx/5fCLbOqrazlesBJJTiVoLwUz/jQe2gDwc=;
+        b=enSBMG0ikj2KVRid8ICGNrBLNn4mDnrczn9UDKjUzxD0GnYzzrVpmDo/yOottmAKUw
+         XdEytm0iTECUDxcQ0+a1t9pT8bZ6J1CZu3ZbUx2DQN0kMjOfgMXHg7iAQIHXcXHVo8No
+         x6/2xXo1E8a9bvUwMSSh9HPbQmCHsO5YiLHWw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=ZlynD2151oAwoVetBZOi7ygkuiFbrmF9qnEbeilSaHk=;
-        b=ClPFExYPHuVsIZC6QKjkPEBKAUL60srNM7oRCG/3+UjYDohc+CsB6mGhYGY0adPay1
-         1T4b7YTNuShLrSfxz4aexmrzdWmdrue3gGqYUFKdI7W1znuFnONDcWhrjvVHTXNwUHqL
-         HFKPD/ILdu7ksvn+oF9ZWhgu5gXv0zoGSWmPgIoIEUN8zsP2bR8uEtbiuuloaU+BexL9
-         9nlNCGAMYaOkHGN+GVblKdoW7aY+NZU8zP6/yUJjt0PEE9z4Vd3h1Q1MSFyKTsffcNkh
-         oejmvOAs7Z3ALyriZcLVVF5HRoLDSbX4Wl9uNQ72Q0Q1SyeF/M7EoHf2r5/DWeQlNbOh
-         iLQw==
-X-Gm-Message-State: ACgBeo1FJrJ1xgJnx1o449jh18OofvjrfMXfd+15IqUmeli0kLJ/vCRx
-        1XUD4K70NZItikMTH8dPEuYinJL/sGc=
-X-Google-Smtp-Source: AA6agR5ardEOM1vUttPFlIZwPDoClV3JBCEUdeIemWGtCUXWy+yd11oFjAIkUOIh++12NAYBBHHZQ53S4dQ=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:1496:b0:52f:734f:9122 with SMTP id
- v22-20020a056a00149600b0052f734f9122mr23792706pfu.85.1661901378626; Tue, 30
- Aug 2022 16:16:18 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Tue, 30 Aug 2022 23:15:48 +0000
-In-Reply-To: <20220830231614.3580124-1-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220830231614.3580124-1-seanjc@google.com>
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=A3xTTsKZx/5fCLbOqrazlesBJJTiVoLwUz/jQe2gDwc=;
+        b=fV8pdaH5ib3HdewnA6ddIN8KZlc5XMqio8P6LtQEhaxyfTrXtQJoWkcm2U4HXrcWPD
+         k0kezsQ3F+Y24E4QqMeVX2u+nlgB9k3EknKgDppFGhvpHO9VjM7VLuMicZ1GMxLGOK7p
+         RXgh/08I/0jTauNUiPApblHm1YcRd0S6b/DH5jawzzZQw9URwsJ1QR5o6Ve7i85gimBq
+         B5nV/kvXPizOIafi3i6AF6CdEPOq5rTrtE3xL51IoGiH+fOCNO5PzmGawi0tWzx9mZED
+         FPkBU1pxbP4dTChO76GdbTany9eiuEmPa3I8Ob9fWtHjmgImjhxXvPsHfXOoQuoP480Z
+         eRKw==
+X-Gm-Message-State: ACgBeo0A6FNU+nG9D4DJCsam1HFBs8kqvEG9kIYwIsbXLUWuierdCe8D
+        Zx6zzMY82hmGd7cDG/q3a9g9ew==
+X-Google-Smtp-Source: AA6agR6sWZgtFPbmAA1vaJWYl2qtrzuw360jdq0jUvuVKES+v1H37eSeKRiCfPEp7nZSSmyKKOGZYA==
+X-Received: by 2002:a05:6638:130c:b0:343:5bc5:7a45 with SMTP id r12-20020a056638130c00b003435bc57a45mr14017254jad.250.1661901378747;
+        Tue, 30 Aug 2022 16:16:18 -0700 (PDT)
+Received: from rrangel920.bld.corp.google.com (h24-56-189-219.arvdco.broadband.dynamic.tds.net. [24.56.189.219])
+        by smtp.gmail.com with ESMTPSA id z30-20020a056602081e00b0068b1858c81asm6165821iow.13.2022.08.30.16.16.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 16:16:18 -0700 (PDT)
+From:   Raul E Rangel <rrangel@chromium.org>
+To:     linux-acpi@vger.kernel.org, linux-input@vger.kernel.org
+Cc:     hdegoede@redhat.com, mario.limonciello@amd.com, timvp@google.com,
+        rafael@kernel.org, Raul E Rangel <rrangel@chromium.org>,
+        Len Brown <lenb@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH 8/8] ACPI: PM: Take wake IRQ into consideration when entering suspend-to-idle
+Date:   Tue, 30 Aug 2022 17:15:41 -0600
+Message-Id: <20220830171332.8.I7d9202463f08373feccd6e8fd87482c4f40ece5d@changeid>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220830231614.3580124-2-seanjc@google.com>
-Subject: [PATCH v5 01/27] KVM: nVMX: Unconditionally purge queued/injected
- events on nested "exit"
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220830231541.1135813-1-rrangel@chromium.org>
+References: <20220830231541.1135813-1-rrangel@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drop pending exceptions and events queued for re-injection when leaving
-nested guest mode, even if the "exit" is due to VM-Fail, SMI, or forced
-by host userspace.  Failure to purge events could result in an event
-belonging to L2 being injected into L1.
+This change adds support for ACPI devices that use ExclusiveAndWake or
+SharedAndWake in their _CRS GpioInt definition (instead of using _PRW),
+and also provide power resources. Previously the ACPI subsystem had no
+idea if the device had a wake capable interrupt armed. This resulted
+in the ACPI device PM system placing the device into D3Cold, and thus
+cutting power to the device. With this change we will now query the
+_S0W method to figure out the appropriate wake capable D-state.
 
-This _should_ never happen for VM-Fail as all events should be blocked by
-nested_run_pending, but it's possible if KVM, not the L1 hypervisor, is
-the source of VM-Fail when running vmcs02.
-
-SMI is a nop (barring unknown bugs) as recognition of SMI and thus entry
-to SMM is blocked by pending exceptions and re-injected events.
-
-Forced exit is definitely buggy, but has likely gone unnoticed because
-userspace probably follows the forced exit with KVM_SET_VCPU_EVENTS (or
-some other ioctl() that purges the queue).
-
-Fixes: 4f350c6dbcb9 ("kvm: nVMX: Handle deferred early VMLAUNCH/VMRESUME failure properly")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Jim Mattson <jmattson@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Raul E Rangel <rrangel@chromium.org>
 ---
- arch/x86/kvm/vmx/nested.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index ddd4367d4826..ca07d4ce4383 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -4255,14 +4255,6 @@ static void prepare_vmcs12(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12,
- 			nested_vmx_abort(vcpu,
- 					 VMX_ABORT_SAVE_GUEST_MSR_FAIL);
+ drivers/acpi/device_pm.c | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/acpi/device_pm.c b/drivers/acpi/device_pm.c
+index 9dce1245689ca2..6bc81f525d5160 100644
+--- a/drivers/acpi/device_pm.c
++++ b/drivers/acpi/device_pm.c
+@@ -681,8 +681,23 @@ static int acpi_dev_pm_get_state(struct device *dev, struct acpi_device *adev,
+ 		d_min = ret;
+ 		wakeup = device_may_wakeup(dev) && adev->wakeup.flags.valid
+ 			&& adev->wakeup.sleep_state >= target_state;
+-	} else {
+-		wakeup = adev->wakeup.flags.valid;
++	} else if (acpi_device_can_wakeup(adev)) {
++		/* ACPI GPE from specified by _PRW. */
++		wakeup = true;
++	} else if (device_may_wakeup(dev) && dev->power.wakeirq) {
++		/*
++		 * The ACPI subsystem doesn't manage the wake bit for IRQs
++		 * defined with ExclusiveAndWake and SharedAndWake. Instead we
++		 * expect them to be managed via the PM subsystem. Drivers
++		 * should call dev_pm_set_wake_irq to register an IRQ as a wake
++		 * source.
++		 *
++		 * If a device has a wake IRQ attached we need to check the
++		 * _S0W method to get the correct wake D-state. Otherwise we
++		 * end up putting the device into D3Cold which will more than
++		 * likely disable wake functionality.
++		 */
++		wakeup = true;
  	}
--
--	/*
--	 * Drop what we picked up for L2 via vmx_complete_interrupts. It is
--	 * preserved above and would only end up incorrectly in L1.
--	 */
--	vcpu->arch.nmi_injected = false;
--	kvm_clear_exception_queue(vcpu);
--	kvm_clear_interrupt_queue(vcpu);
- }
  
- /*
-@@ -4602,6 +4594,17 @@ void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 vm_exit_reason,
- 		WARN_ON_ONCE(nested_early_check);
- 	}
- 
-+	/*
-+	 * Drop events/exceptions that were queued for re-injection to L2
-+	 * (picked up via vmx_complete_interrupts()), as well as exceptions
-+	 * that were pending for L2.  Note, this must NOT be hoisted above
-+	 * prepare_vmcs12(), events/exceptions queued for re-injection need to
-+	 * be captured in vmcs12 (see vmcs12_save_pending_event()).
-+	 */
-+	vcpu->arch.nmi_injected = false;
-+	kvm_clear_exception_queue(vcpu);
-+	kvm_clear_interrupt_queue(vcpu);
-+
- 	vmx_switch_vmcs(vcpu, &vmx->vmcs01);
- 
- 	/* Update any VMCS fields that might have changed while L2 ran */
+ 	/*
 -- 
 2.37.2.672.g94769d06f0-goog
 
