@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E98CECAAD8
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5730ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231566AbiH3R0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:26:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
+        id S231612AbiH3R02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231523AbiH3RZt (ORCPT
+        with ESMTP id S231567AbiH3RZ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:25:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E00F8242;
-        Tue, 30 Aug 2022 10:23:59 -0700 (PDT)
+        Tue, 30 Aug 2022 13:25:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856861616BB;
+        Tue, 30 Aug 2022 10:23:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E854B81D0C;
-        Tue, 30 Aug 2022 17:23:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A235C433D6;
-        Tue, 30 Aug 2022 17:23:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17B4FB81D19;
+        Tue, 30 Aug 2022 17:22:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC08AC43148;
+        Tue, 30 Aug 2022 17:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880188;
-        bh=UyC6EuVYNPcXw2t8mig7weYbNDvzVVaZ6wLDTuTmYIk=;
+        s=k20201202; t=1661880142;
+        bh=D2HyxxSpSa5YTEjtXuzgAvSwiiYUGhrSmQTZJg4P7MA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=deeR71hRpCRt+QoleHNpKdfcXqaM0U+PyUScxbKSyM5d5cVZCSQ6y4vq0+tOV57TS
-         uoqdSwRcGkdPQ4l8GlIr3TLfv7nD5A1jdhaSr0B0rvXfisV5XsoCMjuKfnbF1fwUbk
-         eL40u5ufNiZRpxaTe78ts9Z/eavNSh+0M3Q1FlgblRyLieeE1TgOmE1gWAkUeQmNf5
-         pEFfZYTx+2+VHpHpsbFVwgCqscOEV1lkGzOnzFE/kso0GpNfWsxj0NlNhohAEnVAmc
-         LQB1O7SnykPp5EvH1KCKVo/Ku/M+aLac/BUTfdo0xa6RjdUbh6ld1J82BxziispQQ6
-         immvVdFHpr+xA==
+        b=gNJvJt14AkC7GZBesrXUmKs5KwryDankqekGxA+OFD2reJseIoG3eYdPUSNwFtBs+
+         6Q3mQ9lzIuog19u/BgNuFrq5PjmFVLHBN/FAtTJCRfDgJUGlc31ha7mrXkbOQbvAgo
+         m6euRsFVcKzelWnqAk8s4pz/kXnG+2WwD82K3g+R7EEYAGpNQhuoY0DhGQR91tmjCX
+         HrJ/8CuiQIJkcjWBX9jXKnptLzCEsbg96oXxmccBOu0W1yghpeZUxErejOh9L9yvUi
+         aagWAFhXhiyTL+sfj1DcTdot42Lct2vW7w7klAZWhJ8tiYpNR2auhNmXK/t3B9u14A
+         kieiJhI+dKcpA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
-        christophe.leroy@csgroup.eu, mpe@ellerman.id.au,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 22/23] fbdev: chipsfb: Add missing pci_disable_device() in chipsfb_pci_init()
-Date:   Tue, 30 Aug 2022 13:21:39 -0400
-Message-Id: <20220830172141.581086-22-sashal@kernel.org>
+Cc:     Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, yury.norov@gmail.com,
+        geert@linux-m68k.org, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/23] Revert "parisc: Show error if wrong 32/64-bit compiler is being used"
+Date:   Tue, 30 Aug 2022 13:21:27 -0400
+Message-Id: <20220830172141.581086-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
 References: <20220830172141.581086-1-sashal@kernel.org>
@@ -52,31 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Helge Deller <deller@gmx.de>
 
-[ Upstream commit 07c55c9803dea748d17a054000cbf1913ce06399 ]
+[ Upstream commit b4b18f47f4f9682fbf5827682645da7c8dde8f80 ]
 
-Add missing pci_disable_device() in error path in chipsfb_pci_init().
+This reverts commit b160628e9ebcdc85d0db9d7f423c26b3c7c179d0.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+There is no need any longer to have this sanity check, because the
+previous commit ("parisc: Make CONFIG_64BIT available for ARCH=parisc64
+only") prevents that CONFIG_64BIT is set if ARCH==parisc.
+
 Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/fbdev/chipsfb.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/parisc/include/asm/bitops.h | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/video/fbdev/chipsfb.c b/drivers/video/fbdev/chipsfb.c
-index 393894af26f84..2b00a9d554fc0 100644
---- a/drivers/video/fbdev/chipsfb.c
-+++ b/drivers/video/fbdev/chipsfb.c
-@@ -430,6 +430,7 @@ static int chipsfb_pci_init(struct pci_dev *dp, const struct pci_device_id *ent)
-  err_release_fb:
- 	framebuffer_release(p);
-  err_disable:
-+	pci_disable_device(dp);
-  err_out:
- 	return rc;
- }
+diff --git a/arch/parisc/include/asm/bitops.h b/arch/parisc/include/asm/bitops.h
+index 5779d463b341f..aa4e883431c1a 100644
+--- a/arch/parisc/include/asm/bitops.h
++++ b/arch/parisc/include/asm/bitops.h
+@@ -12,14 +12,6 @@
+ #include <asm/barrier.h>
+ #include <linux/atomic.h>
+ 
+-/* compiler build environment sanity checks: */
+-#if !defined(CONFIG_64BIT) && defined(__LP64__)
+-#error "Please use 'ARCH=parisc' to build the 32-bit kernel."
+-#endif
+-#if defined(CONFIG_64BIT) && !defined(__LP64__)
+-#error "Please use 'ARCH=parisc64' to build the 64-bit kernel."
+-#endif
+-
+ /* See http://marc.theaimsgroup.com/?t=108826637900003 for discussion
+  * on use of volatile and __*_bit() (set/clear/change):
+  *	*_bit() want use of volatile.
 -- 
 2.35.1
 
