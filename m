@@ -2,81 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2EF0ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E3FECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 10:03:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbiH3KCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 06:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
+        id S229843AbiH3KDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 06:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbiH3KBs (ORCPT
+        with ESMTP id S229969AbiH3KCE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 06:01:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D865657E3D;
-        Tue, 30 Aug 2022 03:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C926B81691;
-        Tue, 30 Aug 2022 10:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 35DCFC433D7;
-        Tue, 30 Aug 2022 10:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661853615;
-        bh=RbNLgaU0VdiLiev6MW1xgBhP2qXRPB2B/gTgDJZSro4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rrRSmSBAuqTb7nmgI9Ax8p5okymXy69indsZ2I27ALkxb8HpmWELEEWM77wLt8cFF
-         IGOz23VfGROtZ3bbz4QWsb0GwUtkVjjO8IfGlm+tj6K2+yzHqjEW7hPdbI3WtbezuH
-         83xVsDSUhL2QeIwZ6RKW9E3yihwjxN8b184ar9kBH1kgNxKsig+jsZ8TxTFPeHUX8t
-         mjMMSQ4OYE33FP+Plv8iltZnEsJKrz2FDPnGpErkoGBRju3oBu4ePZPOSkdCPcZZQF
-         PiocDs6mjAvnnw0q3Ggz9V5Xt5zm3vwIGxG+6TffXRGoHjAjsnmAzOsg7TOdu0qSSc
-         77tNaj3V+sdFg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1445FE924D8;
-        Tue, 30 Aug 2022 10:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 30 Aug 2022 06:02:04 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9207C1B9
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:00:26 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id bx38so10760622ljb.10
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 03:00:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=DpqH2TpiaPFXK14Oex8+aiVrh9OCCpKJd77bM+zCeBQ=;
+        b=mdVxEyB/7Oo9CMhulv8NnDF5/Q//NVLNdOJuB3r6lRDWF6RN/q8XPChY9TvYpilIFb
+         2kAIp09nq9fv4OOfXs1x6MXEcIy1uxLtVuQdYkYw2sUPAVKi1H2rxnYRbI0fb1GLEEwd
+         4wA7Vr7RA46fmiNwmLNKzHwPBeOFLcQ3FT0bx/QbG3OvqV6m9q6bzShNDB36FLlAl1kY
+         /Pud1avUZjDydXO/3RvgjmJLoimRhlIix1fw7v9ya2x3Jq98dvxW4iptaLUHQZQsVIkI
+         WQH3qirgFw/vMvBaRfdn2fmMzHy3hCg22JtDX4LqWZ1BXcE62mjOypXvkOeYofGRRw7y
+         /xjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=DpqH2TpiaPFXK14Oex8+aiVrh9OCCpKJd77bM+zCeBQ=;
+        b=VRvU/HGob/7jeuJ763Gb+pMK+HqqvH9QVuf3i+w0urHFc8yIOpCu62X9vtnsfi3k5O
+         Jlkq6so9m6W8HPVTXa6zQlBC91dLgb4fNgizFWyzYSjV43zBKx7vWZd434R08Lilunz3
+         HFuupmEFazTdWDHKTdCAjwgP1VdGgvtXS7MlGw50NDh/ka4iQtCsD8VnJqMdIKmon4NJ
+         sPImGhE9sseK1HmclH9eunSG3YV2eCWYjo71JuCd8sKVrDd6ML8n5NOEYh9/O3OpdF/h
+         fe5a63/l+L7lP/h87vebUWHRGiM20MwTGznPdczMDPPldl+Tn/4m2f/rMmLJDP965373
+         ziGw==
+X-Gm-Message-State: ACgBeo0VGnl74gdqtQRElrYXqr81PY9L3jnJKzVgXPDOOTiivj/RXyVR
+        YQSRFmO4XUva5LBHwTRW7S53bQ==
+X-Google-Smtp-Source: AA6agR6dNBGiZLCWxCtISGA2AzCx+Ctg7OenNVoBsgC3U9xvglT0LwlEFfy7DRie6ER6ski7QrwMEw==
+X-Received: by 2002:a05:651c:1993:b0:263:a41d:3d7b with SMTP id bx19-20020a05651c199300b00263a41d3d7bmr3483559ljb.63.1661853625175;
+        Tue, 30 Aug 2022 03:00:25 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id 11-20020ac2482b000000b00492e2918a5asm544940lft.269.2022.08.30.03.00.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 03:00:24 -0700 (PDT)
+Message-ID: <d9b5e312-4999-4410-03be-299e95bbe8b2@linaro.org>
+Date:   Tue, 30 Aug 2022 13:00:23 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net,v2] net: sched: tbf: don't call qdisc_put() while holding
- tree lock
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166185361506.21797.5581795536615394834.git-patchwork-notify@kernel.org>
-Date:   Tue, 30 Aug 2022 10:00:15 +0000
-References: <20220826013930.340121-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220826013930.340121-1-shaozhengchao@huawei.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, vladbu@mellanox.com, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v4 1/4] dt-bindings: arm: qcom: update beryllium
+ compatible property
+Content-Language: en-US
+To:     Joel Selvaraj <joelselvaraj.oss@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Marijn Suijten <marijn.suijten@somainline.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+References: <20220828205723.20834-1-joelselvaraj.oss@gmail.com>
+ <20220828205723.20834-2-joelselvaraj.oss@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220828205723.20834-2-joelselvaraj.oss@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Fri, 26 Aug 2022 09:39:30 +0800 you wrote:
-> The issue is the same to commit c2999f7fb05b ("net: sched: multiq: don't
-> call qdisc_put() while holding tree lock"). Qdiscs call qdisc_put() while
-> holding sch tree spinlock, which results sleeping-while-atomic BUG.
+On 28/08/2022 23:57, Joel Selvaraj wrote:
+> There are two panel variants of Xiaomi Poco F1. Tianma and EBBG panel.
+> The previous beryllium dts supported the Tianma variant. In order to
+> add support for EBBG variant, the common nodes from beryllium dts are
+> moved to a new common dtsi and to make the variants distinguishable,
+> sdm845-xiaomi-beryllium.dts is now named as
+> sdm845-xiaomi-beryllium-tianma.dts. The board's model and compatible
+> properties are also renamed to distinguish between the variants.
+> So update the dt-bindings to reflect the new compatible value.
 > 
-> Fixes: c266f64dbfa2 ("net: sched: protect block state with mutex")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> Signed-off-by: Joel Selvaraj <joelselvaraj.oss@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/arm/qcom.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> [...]
+> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+> index fb1d00bcc847..e465ca45c07f 100644
+> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+> @@ -666,7 +666,7 @@ properties:
+>                - sony,akatsuki-row
+>                - sony,apollo-row
+>                - thundercomm,db845c
+> -              - xiaomi,beryllium
+> +              - xiaomi,beryllium-tianma
 
-Here is the summary with links:
-  - [net,v2] net: sched: tbf: don't call qdisc_put() while holding tree lock
-    https://git.kernel.org/netdev/net/c/b05972f01e7d
+The board compatibles are not that important for ABI yet this creates
+precedence, so I am against it. Simple renaming should not be a reason
+to change compatibles.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Best regards,
+Krzysztof
