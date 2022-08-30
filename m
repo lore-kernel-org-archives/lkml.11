@@ -2,81 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B1EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:43:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1C9ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231268AbiH3Inu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:43:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
+        id S231138AbiH3Ioz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231673AbiH3Inj (ORCPT
+        with ESMTP id S230314AbiH3Iov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:43:39 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F3D9A5735;
-        Tue, 30 Aug 2022 01:43:34 -0700 (PDT)
-X-UUID: a1eacdbadf364491962084fe0678a21c-20220830
-X-CPASD-INFO: 5c614a9c99bb432ebf4fe4b30a3a12d8@frNwUWGTZ5NlWaSug3Z9n4KXZJaVYIK
-        CcptTkV9ikFiVhH5xTV5uYFV9fWtVYV9dYVR6eGxQYmBgZFJ4i3-XblBgXoZgUZB3hKVwUWSPaQ==
-X-CLOUD-ID: 5c614a9c99bb432ebf4fe4b30a3a12d8
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:0.0,URL:-5,TVAL:173.
-        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:102.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
-        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFOB:0.0,SPC:0,SIG:-
-        5,AUF:2,DUF:3567,ACD:65,DCD:65,SL:0,EISP:0,AG:0,CFC:0.338,CFSR:0.081,UAT:0,RA
-        F:0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,E
-        AF:0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: a1eacdbadf364491962084fe0678a21c-20220830
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1
-X-UUID: a1eacdbadf364491962084fe0678a21c-20220830
-X-User: huxiaoying@kylinos.cn
-Received: from localhost.localdomain [(112.64.161.44)] by mailgw
-        (envelope-from <huxiaoying@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 2131062562; Tue, 30 Aug 2022 16:43:47 +0800
-From:   Hu Xiaoying <huxiaoying@kylinos.cn>
-To:     stern@rowland.harvard.edu, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net
-Cc:     linux-media@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Hu Xiaoying <huxiaoying@kylinos.cn>,
-        Hu Xiaoying <huxiaoying@gmail.com>
-Subject: [PATCH] usb: Improves USB2.0 write performance
-Date:   Tue, 30 Aug 2022 16:43:25 +0800
-Message-Id: <20220830084325.752655-1-huxiaoying@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 30 Aug 2022 04:44:51 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12205FA7
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:44:49 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id jm11so10417644plb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 01:44:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=JbzIXp14whwZiEWpePza0tJks7qqH7QXTLeRE8LUEwk=;
+        b=Kaq+VCJSXSeBjOwz4uj10z70wAAkT0EHwpaSfz3KhVomZTfcoywdK0FcqjpLCyLdn/
+         JrAoy10e42ty2BQ8VoYEdBUwzcRXXOAPxf6w6A0nk9tBExYbPeir+ETDlY+NIXYQXQ8y
+         N18bQMMvTCiarry9ljqF9Sbloi9mB5JjqgqyJxkaWCHDwJggrW5gpUm/3c5MU3Zadqb5
+         5c9h4LGhzZB3UHAUisb5ATkRh4Y/xG69nT8hJYfJZljGM9mKwqbYa8rb36QXleTNda9B
+         oxWg8YDhKIt19xljiT63DUp4oahJwdMtuO2h/GElwMdDHFDHDqQlOEUXu+4QhJ4O0zTn
+         6Grw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=JbzIXp14whwZiEWpePza0tJks7qqH7QXTLeRE8LUEwk=;
+        b=zH29blmS+I1Ux1k5IXIpnT7SS5ieoS89iMk27du9p/RpoWNkVcFPgV86XR8axrry6P
+         e1oA3OXqc5VF77mA/mBe0fEyPJv9fkKS58/YE+ibUdoOp8YlFQWwU5Pp7cC6bi92vCJE
+         n9uGcCbG3Xrqu/4Qf6PcWZ9kyxfpdTk10MK+o5zMkmqNNMPiJ1NWueR6NsSdQLv3P2Vg
+         2Qi4mlt86AK5wui9tcDt8mp2t2rzQEn5XVQWQmBIvXZcmG+9kADSYjp1OWlw6r581c2x
+         ngRbBm1ll2Q3MEEeKpvADckkEJaxNC5FD+VlHrJF1KVQLAWsurWPqwEQlMQwxRowGBbQ
+         2Olw==
+X-Gm-Message-State: ACgBeo3CNw5MJLnUErUbXCc4/xu5FwuWgSVJFbosZ8BTWQWkZ4OBY3P6
+        wD8bfGWM/O+uC49ACOQRvyZM
+X-Google-Smtp-Source: AA6agR7OLrfi21l1qp1fuRodigI5L4GFAZFbEKo1JeImXZ+WTHuDDpQCPNW8b9WT1eQHB0qto6zzMA==
+X-Received: by 2002:a17:90b:1a88:b0:1fd:6a42:3eb9 with SMTP id ng8-20020a17090b1a8800b001fd6a423eb9mr20749411pjb.154.1661849089311;
+        Tue, 30 Aug 2022 01:44:49 -0700 (PDT)
+Received: from thinkpad ([117.193.209.245])
+        by smtp.gmail.com with ESMTPSA id h17-20020a170902f7d100b00174a4bcefc7sm4918735plw.217.2022.08.30.01.44.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 01:44:48 -0700 (PDT)
+Date:   Tue, 30 Aug 2022 14:14:41 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     linus.walleij@linaro.org, bjorn.andersson@linaro.org,
+        robimarko@gmail.com, linux-arm-msm@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        johan+linaro@kernel.org, steev@kali.org
+Subject: Re: [PATCH v2] pinctrl: qcom: spmi-gpio: Make IRQCHIP immutable
+Message-ID: <20220830084441.GB135982@thinkpad>
+References: <20220830081212.164709-1-manivannan.sadhasivam@linaro.org>
+ <e20dabe02d88f28fc933b596dee8b69d@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <e20dabe02d88f28fc933b596dee8b69d@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-USB external storage device(0x0b05:1932), use gnome-disk-utility tools
-to test usb write  < 30MB/s. if does not to load module of uas for this device
-, can increase the write speed from 20MB/s to more than 40MB/s.
+On Tue, Aug 30, 2022 at 09:26:51AM +0100, Marc Zyngier wrote:
+> On 2022-08-30 09:12, Manivannan Sadhasivam wrote:
+> > The IRQCHIP implementation used inside the gpiochips are not supposed to
+> 
+> lower case
+> 
+> > be changed during runtime. So let's make the one inside the spmi-gpio
+> > gpiochip immutable.
+> > 
+> > This fixes the below warning during boot:
+> > gpio gpiochip0: (c440000.spmi:pmic@0:gpio@c000): not an immutable
+> > chip, please consider fixing it!
+> > 
+> > Separate callbacks need to be provided for irq_{mask/unmask} pointers
+> > since
+> > the callbacks are supposed to mask/unmask the corresponding parent IRQ
+> > in
+> > addition to changing the gpio_desc flags.
+> 
+> This is all part of the existing documentation, so I don't think
+> this is really needed.
+> 
 
-Signed-off-by: Hu Xiaoying <huxiaoying@gmail.com>
----
- drivers/usb/storage/unusual_uas.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+Yes it is documented, but developers usually refer the commits doing the similar
+thing while doing these kind of conversions. For them, this text serves as a
+quick documentation.
 
-diff --git a/drivers/usb/storage/unusual_uas.h b/drivers/usb/storage/unusual_uas.h
-index 4051c8cd0cd8..3925c7c67915 100644
---- a/drivers/usb/storage/unusual_uas.h
-+++ b/drivers/usb/storage/unusual_uas.h
-@@ -62,6 +62,13 @@ UNUSUAL_DEV(0x0984, 0x0301, 0x0128, 0x0128,
- 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
- 		US_FL_IGNORE_UAS),
- 
-+/* Reported-by: Tom Hu <huxiaoying@gmail.com> */
-+UNUSUAL_DEV(0x0b05, 0x1932, 0x0000, 0x9999,
-+		"ASUS",
-+		"External HDD",
-+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
-+		US_FL_IGNORE_UAS),
-+
- /* Reported-by: David Webb <djw@noc.ac.uk> */
- UNUSUAL_DEV(0x0bc2, 0x331a, 0x0000, 0x9999,
- 		"Seagate",
+So I prefer to keep it in the commit message.
+
+Thanks,
+Mani
+
+> > 
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> 
+> With the above fixed:
+> 
+> Acked-by: Marc Zyngier <maz@kernel.org>
+> 
+>         M.
+> -- 
+> Jazz is not dead. It just smells funny...
+
 -- 
-2.25.1
-
+மணிவண்ணன் சதாசிவம்
