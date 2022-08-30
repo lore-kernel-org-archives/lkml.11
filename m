@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF28ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C417AC0502C
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 17:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231253AbiH3RZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 13:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48140 "EHLO
+        id S231582AbiH3R0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 13:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231390AbiH3RZG (ORCPT
+        with ESMTP id S231451AbiH3RZY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 13:25:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FD4C1612A4;
-        Tue, 30 Aug 2022 10:23:00 -0700 (PDT)
+        Tue, 30 Aug 2022 13:25:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EF1C1644;
+        Tue, 30 Aug 2022 10:23:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6C9C61798;
-        Tue, 30 Aug 2022 17:22:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D467C43140;
-        Tue, 30 Aug 2022 17:22:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 321ACB81D12;
+        Tue, 30 Aug 2022 17:22:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F64CC433C1;
+        Tue, 30 Aug 2022 17:22:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880161;
-        bh=clkQyZKh5bH63+URz0rVRixmIuxpZVkeNeCIrGtcjM0=;
+        s=k20201202; t=1661880169;
+        bh=L+kb1PjlO2zZUHIOB4XWHokuhAxTc5I1jpYA5piofE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E+8FPJeb6zO8050kvyhlktdoVznUykcm4PEI2fpV5Ky2a7wt/Zm+q7PzJtdnbsY7j
-         0I/rfxW29W1HWFG8trS7+XYa0SWiU6yh2Oix7Ku8U2R3tLcKMyXl7OgRzJgCMaUVzI
-         Iuz2tHDkBfWyX1VSwTewzTExPY1W0z0j7MvFpfFH86Jw9ps/ZRhBip2DbuTTru+vFb
-         QXp3b0KlIyRwrX96tJ6rYZuEOWs105w1o1TdKo3y3vVWQ6oO6tXQvFHchzQRL/nro/
-         7Z5YVm+AcCgKMKGYu1UtmVKpEsl5H96XfOnQMA0Lkin+tEBc1/yR3z8VSsKnEx2Pqc
-         /ITU82X1HxKNA==
+        b=IJsFmY1CufURLN/8BSKxeYADOqrOu7iTS+nb5vahZJtnexa8hFfJ7/ga+USEKrLxQ
+         Zi+0E7u8wPP9WJHIzcb6ArWiJvj48Cgli8LDP32SaRAinJAJF6OmZzKCVBPVx/lD/k
+         5RkTpVrlpEEJmlBviO5ZHg+0mzBIZ8TlXfySS2Fo7aHPT53o/KLLJpa0cXcUvF+nGq
+         5e/D5DTERVjzSKKO8zqcrjhJRxOJfLxQq2mR1BAmjlZN3qZzjj047ehjfMifvjXUi5
+         RLG+qKHchAu6GnKJ5KIAT4CBVam/k5ES/wrTLsr66joYajefclirPsj++MpdKt4avc
+         Uiz3PwLrzi0NA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukasz Luba <lukasz.luba@arm.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 16/23] cpufreq: check only freq_table in __resolve_freq()
-Date:   Tue, 30 Aug 2022 13:21:33 -0400
-Message-Id: <20220830172141.581086-16-sashal@kernel.org>
+Cc:     David Sloan <david.sloan@eideticom.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Song Liu <song@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        linux-raid@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 19/23] md: Flush workqueue md_rdev_misc_wq in md_alloc()
+Date:   Tue, 30 Aug 2022 13:21:36 -0400
+Message-Id: <20220830172141.581086-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
 References: <20220830172141.581086-1-sashal@kernel.org>
@@ -53,39 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukasz Luba <lukasz.luba@arm.com>
+From: David Sloan <david.sloan@eideticom.com>
 
-[ Upstream commit 6ca7076fbfaeccce173aeab832d76b9e49e1034b ]
+[ Upstream commit 5e8daf906f890560df430d30617c692a794acb73 ]
 
-There is no need to check if the cpufreq driver implements callback
-cpufreq_driver::target_index. The logic in the __resolve_freq uses
-the frequency table available in the policy. It doesn't matter if the
-driver provides 'target_index' or 'target' callback. It just has to
-populate the 'policy->freq_table'.
+A race condition still exists when removing and re-creating md devices
+in test cases. However, it is only seen on some setups.
 
-Thus, check only frequency table during the frequency resolving call.
+The race condition was tracked down to a reference still being held
+to the kobject by the rdev in the md_rdev_misc_wq which will be released
+in rdev_delayed_delete().
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+md_alloc() waits for previous deletions by waiting on the md_misc_wq,
+but the md_rdev_misc_wq may still be holding a reference to a recently
+removed device.
+
+To fix this, also flush the md_rdev_misc_wq in md_alloc().
+
+Signed-off-by: David Sloan <david.sloan@eideticom.com>
+[logang@deltatee.com: rewrote commit message]
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Signed-off-by: Song Liu <song@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/md.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index cddf7e13c2322..799431d287ee8 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -532,7 +532,7 @@ static unsigned int __resolve_freq(struct cpufreq_policy *policy,
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 33946adb0d6f6..17100b39ff14a 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -5651,6 +5651,7 @@ static int md_alloc(dev_t dev, char *name)
+ 	 * removed (mddev_delayed_delete).
+ 	 */
+ 	flush_workqueue(md_misc_wq);
++	flush_workqueue(md_rdev_misc_wq);
  
- 	target_freq = clamp_val(target_freq, policy->min, policy->max);
- 
--	if (!cpufreq_driver->target_index)
-+	if (!policy->freq_table)
- 		return target_freq;
- 
- 	idx = cpufreq_frequency_table_target(policy, target_freq, relation);
+ 	mutex_lock(&disks_mutex);
+ 	mddev = mddev_alloc(dev);
 -- 
 2.35.1
 
