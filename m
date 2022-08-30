@@ -2,140 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F628ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A11ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 13:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229647AbiH3Ngw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 09:36:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        id S230088AbiH3NhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 09:37:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230365AbiH3Ngr (ORCPT
+        with ESMTP id S230352AbiH3NhJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 09:36:47 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD194E39B6
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:36:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661866599; x=1693402599;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=O9CgTkDBOczWNsw6xgnL7AlVgHCVygWfHTMUKa/QgD8=;
-  b=d8YuDrvsUXU2NT992PGZ3eotpCrktdhojJf8pVMRj+fcwKWLbe0GZZtm
-   jIBdjYv2oBkMDZIFCGt0iwkkk+w3bWFoJQMIJbJcuzWe+hJ2ghHT98L4i
-   OMusSZaWd7GqULYvF89gQeXFn4tQxEDnoT1jX4trc5g8wxt9atYHYqTpw
-   6F4yJsF+gDuDjh7aPBm2xnpL6W2GHTa+xsIr4QOmKae71qY0PTx6HzO56
-   QmD6PPInon52r0u7HIqpLW0eLTI54DM2sDmukr+j+/wrnWS/qNSAgIYBx
-   uTnL1+dOqEX7tnhE1iHeTHce9nEtcN5FjQRoHFnYqerJvY/6Uv8pJFc2O
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="359136439"
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="359136439"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 06:36:38 -0700
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="672867819"
-Received: from amrabet-mobl.ger.corp.intel.com (HELO localhost) ([10.252.41.211])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 06:36:31 -0700
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Lyude Paul <lyude@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Dom Cobley <dom@raspberrypi.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nouveau Dev <nouveau@lists.freedesktop.org>,
-        linux-sunxi@lists.linux.dev,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
-Subject: Re: [PATCH v2 14/41] drm/modes: Move named modes parsing to a
- separate function
-In-Reply-To: <20220830120330.6f5f22d35gu7cbr3@houat>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
- <20220728-rpi-analog-tv-properties-v2-14-459522d653a7@cerno.tech>
- <CAMuHMdV9wVgHFfwHoqtBoYzJDnjDmKTfaZkAKvTVKh1Y-2x1pA@mail.gmail.com>
- <87czcidnb8.fsf@intel.com> <20220830120330.6f5f22d35gu7cbr3@houat>
-Date:   Tue, 30 Aug 2022 16:36:23 +0300
-Message-ID: <875yi9etuw.fsf@intel.com>
+        Tue, 30 Aug 2022 09:37:09 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C09E1154
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:37:08 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id e20so14232142wri.13
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 06:37:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=+q3Kcm7Z8JcF1d1hb0GI/ucgVEvk8yb2HItfmD3paZk=;
+        b=NU3/EStJBPHlk7kN6uEG1oz84H5Jcs+QKIu8/T+eB/3agx+f6pCskn8M4SDPWD7Dyq
+         q66EgziiJZ3EdGRB2x0QZF0ph1SxDX7zaqKnqMJne5GdZfQ4wBqEajYGSoos5VbOVBL3
+         8il6dedrXJzyFPi4QcVDTsG96O8uo174kTXjtGUbnrtRF6npeLqqL8JPIoB41MzzFX86
+         xwa2w1kVBYdgy8SaK2jnXy+8VdVV5uCkJRk0kIfKeg7t9DnQSmkodAUSrrGpw4wNr9o5
+         g2nYirYCEjT0UMph0lOxsMILoLFsaOaHCdso/wavDP/Dk2L1u3o8MI6nKX4MW4cQi+R6
+         sG8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=+q3Kcm7Z8JcF1d1hb0GI/ucgVEvk8yb2HItfmD3paZk=;
+        b=hkgqp6txDgtP+lkYvxZMy8UyKc/3BDxeYKEPV7JIbcJxK0IUf3OmQcQOxZ+e0bfkJV
+         UBM5+TV8KSj31k6WxW45y2fFXyH1kjHF97tsa2gW8qrFQssCkbtMbEUpJsFHfe++hcRu
+         9AUFv+TE55pntfZp6X0vA6N3mmYTs63AN64oHja7+grbxGL3maMAIhV5uMTIvrKxxT2s
+         KcHlGqtBJNIlWCt+gNAUu6p0CNpsUDaiiuqHcSG3y9Yuncm0FdSaPx8Y6VCwOmzC8met
+         MIUm8f6i5/eJLVqyH8yAMXqiw9mzeEVpub9/5rxg7EjVX3KwasquJECcLo6eQNLw76s3
+         IRZw==
+X-Gm-Message-State: ACgBeo1/NypIg9VukCakMv1uylTZOJ+KEGGRwD8iTRtJxmjuwqarNK8C
+        5FVoSLlg+f0feTd49UnlnAGxag==
+X-Google-Smtp-Source: AA6agR7lWkpWZIi5bIEym5Qu4vx/h9f4HQXzOy/VgIM2LgtlZz93g9irL0WAuwvzH65xnDqgHu1sfw==
+X-Received: by 2002:a5d:69c5:0:b0:226:e04f:eb2c with SMTP id s5-20020a5d69c5000000b00226e04feb2cmr2813035wrw.523.1661866626547;
+        Tue, 30 Aug 2022 06:37:06 -0700 (PDT)
+Received: from [192.168.86.238] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id b17-20020adfde11000000b0021eaf4138aesm11283959wrm.108.2022.08.30.06.37.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 06:37:05 -0700 (PDT)
+Message-ID: <ddae21bf-a51b-7266-60ba-8a10c293888a@linaro.org>
+Date:   Tue, 30 Aug 2022 14:37:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 07/14] nvmem: core: add per-cell post processing
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-8-michael@walle.cc>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <20220825214423.903672-8-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022, Maxime Ripard <maxime@cerno.tech> wrote:
-> Hi,
->
-> On Tue, Aug 30, 2022 at 01:43:07PM +0300, Jani Nikula wrote:
->> On Tue, 30 Aug 2022, Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->> > On Mon, Aug 29, 2022 at 3:13 PM Maxime Ripard <maxime@cerno.tech> wrote:
->> >> +#define STR_STRICT_EQ(str, len, cmp) \
->> >> +       ((strlen(cmp) == len) && !strncmp(str, cmp, len))
->> >
->> > This is not part of the move, but newly added.
->> 
->> The same construct is also duplicated elsewhere in the series, and I
->> kept being confused by it.
->
-> I'm not sure what is confusing, but I can add a comment if needed.
-
-STR_STRICT_EQ() is what's confusing. I have to look at the
-implementation to understand what it means. What does "strict" string
-equality mean?
-
->
->> The above is precisely the same as:
->> 
->> 	str_has_prefix(str, cmp) == len
->
-> Here, it's used to make sure we don't have a named mode starting with
-> either e, d, or D.
->
-> If I understood str_has_prefix() right, str_has_prefix("DUMB-MODE", "D")
-> == strlen("DUMB-MODE") would return true, while it's actually what we
-> want to avoid.
-
-That's not true, str_has_prefix("DUMB-MODE", "D") == strlen("D") is.
-
-> It's also used indeed in drm_get_tv_mode_from_name(), where we try to
-> match a list of names with one passed as argument.
->
-> With drm_get_tv_mode_from_name("NSTC", strlen("NTSC")), we would end up
-> calling str_has_prefix("NTSC-J", "NTSC") == strlen("NTSC-J") which would
-> work. However, we end up calling prefix not a prefix, but an entire
-> string we want to match against, which is very confusing to me too.
-
-If I get this right, you have a string and you want to check if that has
-a certain prefix. Additionally, you want to check the prefix is a
-certain length.
-
-Sure, that the prefix is a certain length is more of a property of the
-string, which is NUL terminated later than at length, but that's doesn't
-really matter.
-
-That condition is simply str_has_prefix(string, prefix) == length.
-
-BR,
-Jani.
 
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+On 25/08/2022 22:44, Michael Walle wrote:
+> Instead of relying on the name the consumer is using for the cell, like
+> it is done for the nvmem .cell_post_process configuration parameter,
+> provide a per-cell post processing hook. This can then be populated by
+> the NVMEM provider (or the NVMEM layout) when adding the cell.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>   drivers/nvmem/core.c           | 16 ++++++++++++++++
+>   include/linux/nvmem-consumer.h |  5 +++++
+>   2 files changed, 21 insertions(+)
+> 
+> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+> index 5357fc378700..cbfbe6264e6c 100644
+> --- a/drivers/nvmem/core.c
+> +++ b/drivers/nvmem/core.c
+> @@ -52,6 +52,7 @@ struct nvmem_cell_entry {
+>   	int			bytes;
+>   	int			bit_offset;
+>   	int			nbits;
+> +	nvmem_cell_post_process_t post_process;
+
+
+two post_processing callbacks for cells is confusing tbh, we could 
+totally move to use of cell->post_process.
+
+one idea is to point cell->post_process to nvmem->cell_post_process 
+during cell creation time which should clean this up a bit.
+
+Other option is to move to using layouts for every thing.
+
+prefixing post_process with read should also make it explicit that this 
+callback is very specific to reads only.
+
+
+>   	struct device_node	*np;
+>   	struct nvmem_device	*nvmem;
+>   	struct list_head	node;
+> @@ -468,6 +469,7 @@ static int nvmem_cell_info_to_nvmem_cell_entry_nodup(struct nvmem_device *nvmem,
+>   	cell->offset = info->offset;
+>   	cell->bytes = info->bytes;
+>   	cell->name = info->name;
+> +	cell->post_process = info->post_process;
+>   
+>   	cell->bit_offset = info->bit_offset;
+>   	cell->nbits = info->nbits;
+> @@ -1500,6 +1502,13 @@ static int __nvmem_cell_read(struct nvmem_device *nvmem,
+>   	if (cell->bit_offset || cell->nbits)
+>   		nvmem_shift_read_buffer_in_place(cell, buf);
+>   
+> +	if (cell->post_process) {
+> +		rc = cell->post_process(nvmem->priv, id, index,
+> +					cell->offset, buf, cell->bytes);
+> +		if (rc)
+> +			return rc;
+> +	}
+> +
+>   	if (nvmem->cell_post_process) {
+>   		rc = nvmem->cell_post_process(nvmem->priv, id, index,
+>   					      cell->offset, buf, cell->bytes);
+> @@ -1608,6 +1617,13 @@ static int __nvmem_cell_entry_write(struct nvmem_cell_entry *cell, void *buf, si
+>   	    (cell->bit_offset == 0 && len != cell->bytes))
+>   		return -EINVAL;
+>   
+> +	/*
+> +	 * Any cells which have a post_process hook are read-only because we
+> +	 * cannot reverse the operation and it might affect other cells, too.
+> +	 */
+> +	if (cell->post_process)
+> +		return -EINVAL;
+
+Post process was always implicitly for reads only, this check should 
+also tie the loose ends of cell_post_processing callback.
+
+
+--srini
+> +
+>   	if (cell->bit_offset || cell->nbits) {
+>   		buf = nvmem_cell_prepare_write_buffer(cell, buf, len);
+>   		if (IS_ERR(buf))
+> diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
+> index 980f9c9ac0bc..761b8ef78adc 100644
+> --- a/include/linux/nvmem-consumer.h
+> +++ b/include/linux/nvmem-consumer.h
+> @@ -19,6 +19,10 @@ struct device_node;
+>   struct nvmem_cell;
+>   struct nvmem_device;
+>   
+> +/* duplicated from nvmem-provider.h */
+> +typedef int (*nvmem_cell_post_process_t)(void *priv, const char *id, int index,
+> +					 unsigned int offset, void *buf, size_t bytes);
+> +
+>   struct nvmem_cell_info {
+>   	const char		*name;
+>   	unsigned int		offset;
+> @@ -26,6 +30,7 @@ struct nvmem_cell_info {
+>   	unsigned int		bit_offset;
+>   	unsigned int		nbits;
+>   	struct device_node	*np;
+> +	nvmem_cell_post_process_t post_process;
+>   };
+>   
+>   /**
