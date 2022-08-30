@@ -2,133 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2350ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD22CECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 23:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231720AbiH3XBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 19:01:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44128 "EHLO
+        id S229907AbiH3XCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 19:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiH3XAr (ORCPT
+        with ESMTP id S229720AbiH3XCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 19:00:47 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F43F9675D;
-        Tue, 30 Aug 2022 16:00:40 -0700 (PDT)
+        Tue, 30 Aug 2022 19:02:25 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 009E595E5D;
+        Tue, 30 Aug 2022 16:02:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661900441; x=1693436441;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=u24qmCxu/nmcxL/d7ko8eIbijaFgPKTEjucw9W1Ntz0=;
-  b=OYLR/1pJxRRuiN70byetv/jQlKVfyviU6k3Ff1U/RweAJITAWYH6j++1
-   SL86kR1FKZpb0F6l2KGS2ta+0egMpqKzPD27CR6QwfIrp22ipzKmscLwE
-   4d0lHWcojLAdbS3ZWcGT/2q6YezWFrbAm55UUmpS0J3W1qcXgQy997dlm
-   ETkuMqo7BGvQxB3z08YlUndDGpjjEkA4nVqzM73wtnDtpgFwNq+bQ6IHK
-   wasX++4zH2ClfZ8iDJRuhFb5+3bzr7zmUs2tHql74yS/zhhMnQkvAw4qR
-   cIp9c0EW//A3VqmQp9NfgvNTiPxtZvSbFWL7TGFaB6vuu4TI3n+t5cTw1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="381622037"
+  t=1661900545; x=1693436545;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7FuT3vbL3dMCmOkNCr0MvByJHvFwQiNqKsGQA29tuIM=;
+  b=O++2NICWw1aXt2gp5pAt48I02etVV3NS7ttzlGUGnqjB8I2S7gClGQ7/
+   wLMOGrolZbO2F4JWFZF7giMBt2JUkFieyJc/PcOBXYR+6nMAx8hQCnBki
+   TkHL+aZFMQJnFCfSXmSyhiL0u2u0Y/wMCl3d4eAEkL1nn3S6zJOcXxozb
+   OEdpXnai7RISLEO2jmgPApCJfPCOFyiYElFjiKDxW47hUyoit2SBdPsDB
+   4owP8GiSK3hNZ6WUjKG0RY4GEwADYcml66+Po3QKkC3PuNd7f5HSN0JqV
+   +tKzxZrtZJxiah1loe/kVEk9cMijnAQI4L1soXQoEH6o8PWrqe46oo+EM
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="296605021"
 X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="381622037"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 16:00:39 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="296605021"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 16:02:24 -0700
 X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="715497511"
-Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 30 Aug 2022 16:00:36 -0700
-Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTADj-0000iJ-28;
-        Tue, 30 Aug 2022 23:00:35 +0000
-Date:   Wed, 31 Aug 2022 07:00:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kumaravel Thiagarajan <kumaravel.thiagarajan@microchip.com>,
-        gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        ilpo.jarvinen@linux.intel.com, andy.shevchenko@gmail.com,
-        u.kleine-koenig@pengutronix.de, johan@kernel.org,
-        wander@redhat.com, etremblay@distech-controls.com,
-        macro@orcam.me.uk, geert+renesas@glider.be, jk@ozlabs.org,
-        phil.edworthy@renesas.com, lukas@wunner.de
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-serial@vger.kernel.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v1 tty-next 2/2] 8250: microchip: pci1xxxx: Add power
- management functions to pci1xxxx's  quad-uart driver.
-Message-ID: <202208310603.ea8ISalW-lkp@intel.com>
-References: <20220830180054.1998296-3-kumaravel.thiagarajan@microchip.com>
+   d="scan'208";a="940226447"
+Received: from skanpuri-mobl1.amr.corp.intel.com (HELO desk) ([10.212.18.137])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 16:02:23 -0700
+Date:   Tue, 30 Aug 2022 16:02:23 -0700
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     stable@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, andrew.cooper3@citrix.com, bp@suse.de,
+        tony.luck@intel.com, antonio.gomez.iglesias@linux.intel.com,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 4.9 1/2] x86/cpu: Add Tiger Lake to Intel family
+Message-ID: <81f08c055ed116d80a1b139b41f1b663867368b5.1661899974.git.pawan.kumar.gupta@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220830180054.1998296-3-kumaravel.thiagarajan@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kumaravel,
+From: Gayatri Kammela <gayatri.kammela@intel.com>
 
-I love your patch! Perhaps something to improve:
+[ Upstream commit 6e1c32c5dbb4b90eea8f964c2869d0bde050dbe0 ]
 
-[auto build test WARNING on tty/tty-testing]
-[also build test WARNING on linus/master v6.0-rc3 next-20220830]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Add the model numbers/CPUIDs of Tiger Lake mobile and desktop to the
+Intel family.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Kumaravel-Thiagarajan/8250-microchip-pci1xxxx-Add-driver-for-the-pci1xxxx-s-quad-uart-function/20220831-020314
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220831/202208310603.ea8ISalW-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/a994946078a1bca8361d4f3245ad306515291b6e
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Kumaravel-Thiagarajan/8250-microchip-pci1xxxx-Add-driver-for-the-pci1xxxx-s-quad-uart-function/20220831-020314
-        git checkout a994946078a1bca8361d4f3245ad306515291b6e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/tty/serial/8250/
+Suggested-by: Tony Luck <tony.luck@intel.com>
+Signed-off-by: Gayatri Kammela <gayatri.kammela@intel.com>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Rahul Tanwar <rahul.tanwar@linux.intel.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20190905193020.14707-2-tony.luck@intel.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+---
+ arch/x86/include/asm/intel-family.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+diff --git a/arch/x86/include/asm/intel-family.h b/arch/x86/include/asm/intel-family.h
+index 8b6c01774ca2..aadb91d43eef 100644
+--- a/arch/x86/include/asm/intel-family.h
++++ b/arch/x86/include/asm/intel-family.h
+@@ -70,6 +70,9 @@
+ #define INTEL_FAM6_ALDERLAKE		0x97
+ #define INTEL_FAM6_ALDERLAKE_L		0x9A
+ 
++#define INTEL_FAM6_TIGERLAKE_L		0x8C
++#define INTEL_FAM6_TIGERLAKE		0x8D
++
+ /* "Small Core" Processors (Atom) */
+ 
+ #define INTEL_FAM6_ATOM_BONNELL		0x1C /* Diamondville, Pineview */
 
-All warnings (new ones prefixed by >>):
-
-   drivers/tty/serial/8250/8250_pci1xxxx.c: In function 'mchp_pci1xxxx_setup':
-   drivers/tty/serial/8250/8250_pci1xxxx.c:293:32: error: assignment to 'void (*)(struct uart_port *, struct ktermios *, const struct ktermios *)' from incompatible pointer type 'void (*)(struct uart_port *, struct ktermios *, struct ktermios *)' [-Werror=incompatible-pointer-types]
-     293 |         port->port.set_termios = mchp_pci1xxxx_set_termios;
-         |                                ^
-   drivers/tty/serial/8250/8250_pci1xxxx.c: At top level:
-   drivers/tty/serial/8250/8250_pci1xxxx.c:305:6: warning: no previous prototype for 'mchp_pci1xxxx_irq_assign' [-Wmissing-prototypes]
-     305 | void mchp_pci1xxxx_irq_assign(struct pci1xxxx_8250 *priv,
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/tty/serial/8250/8250_pci1xxxx.c:475:6: warning: no previous prototype for 'pci1xxxx_port_resume' [-Wmissing-prototypes]
-     475 | void pci1xxxx_port_resume(int line)
-         |      ^~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/pci1xxxx_port_resume +475 drivers/tty/serial/8250/8250_pci1xxxx.c
-
-   474	
- > 475	void pci1xxxx_port_resume(int line)
-   476	{
-   477		struct uart_8250_port *up = serial8250_get_port(line);
-   478		struct uart_port *port = &up->port;
-   479		unsigned long flags;
-   480	
-   481		writeb(UART_WAKE_SRCS, port->membase + UART_WAKE_REG);
-   482	
-   483		if (port->suspended == 0) {
-   484			spin_lock_irqsave(&port->lock, flags);
-   485			port->mctrl |= TIOCM_OUT2;
-   486			port->ops->set_mctrl(port, port->mctrl);
-   487			spin_unlock_irqrestore(&port->lock, flags);
-   488		}
-   489	}
-   490	
-
+base-commit: c97531caf70f2b533fa1944bf64dd06ac20edad6
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.2
+
+
