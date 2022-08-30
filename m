@@ -2,86 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C37EECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 824E6ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 18:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbiH3SBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 14:01:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52640 "EHLO
+        id S231801AbiH3SBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 14:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiH3SA6 (ORCPT
+        with ESMTP id S231345AbiH3SBP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 14:00:58 -0400
+        Tue, 30 Aug 2022 14:01:15 -0400
 Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9849810F0;
-        Tue, 30 Aug 2022 11:00:31 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-11f4e634072so4341418fac.13;
-        Tue, 30 Aug 2022 11:00:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B775A8BF;
+        Tue, 30 Aug 2022 11:01:01 -0700 (PDT)
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-11e7e0a63e2so17733239fac.4;
+        Tue, 30 Aug 2022 11:01:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=4umf5P0qSFO98IiufExn5Sdnahshv3yBAldzEjgn0j4=;
-        b=vqZe6YOFZrMyWSAYRghd+R3eCyO25rkIlLnzpKyq3Z8IDoZt8u3gNON0elk0hbuMG9
-         RX4DLVQmHMVnIOdePS5dPMJj0KY1SANj/FMhAoR96F5iuwkM3jui3uzWbsA1pNyJn+Wq
-         VpeXddjR72o+a4EcVye0pzRiJGV4bKJnQeXUxQAl+rvU16jTQs7I3A3trIaU4cKudo6v
-         cJZdC0Yvlj8OypA9ywTmvqwZRlwMS1B2S+aL6lZM867Ct+Q3CekTnbNXzvHflWg0HHlb
-         7mZvkY9KTmifEbIP7CG+kE3YDDe+ox1AllxMe6XUG27tZCJpE+5WtXBOCBwps3Sx3syT
-         oNxw==
-X-Gm-Message-State: ACgBeo2t8M1qatZKhF4ju1HeSMqnE9vBEIO+SshRO0k/Djg2ASLXN0W4
-        lP8TqSrltIGjPsAwNilcqg==
-X-Google-Smtp-Source: AA6agR5pm1v/qqg5BoLZtI0AcGW1KCa2e9nRD3jxB0Zc5BamYv40k7hzMg2PE3x0QwFLivkcj0gaGA==
-X-Received: by 2002:a54:4496:0:b0:343:2d07:fe01 with SMTP id v22-20020a544496000000b003432d07fe01mr9350204oiv.226.1661882429847;
-        Tue, 30 Aug 2022 11:00:29 -0700 (PDT)
+        bh=8M/7Lx16+OlBZKe+Y8q5TplQAj/xrxLLqahY/Z66u+I=;
+        b=aF/c7ossgPMUHWpfLPqpJQsHIW69LMkF+0mDwVyl02hsp7zIX9xb7PyjC25AJTLCU6
+         JLhFXvKPoNL6QCM5ZrJNjWs+BX+Nq0hUFVma+HhqzVq185gAudd3VY6RnuJACbJy6iN6
+         KrYjJHTlHNySTb7QJlmiOT6Wz6k8lUWA/NvcgD3wVA34EurMRaWIhDmG+ba9CqURPEm6
+         TzBAw6URAnMq3MJoRyGt6loXXPfa++xLRLt6OAvenqNYL5IZQCDmweAlxzRfue6hHyF1
+         GUYQg2REin15Qxu30pARQ+VAIX/a0Ki4wMGCgPpon9A4Awg3+Y9arzzuPHb73atALY29
+         7N/A==
+X-Gm-Message-State: ACgBeo0/wRaHgsS5jDUiimgk18SZTB3svEp5BJrXuLzA6kJhDVl23QSZ
+        mr4P56KcL3qOPiFAnYjeo8AlWd5c7A==
+X-Google-Smtp-Source: AA6agR7ZDsNAq6OLZ9Us1tI663luQbBgXmT2TSNrkZQM5o6zI6UitXxnefX1mp2lqzQ7fh4fH8qzRw==
+X-Received: by 2002:a05:6808:10c2:b0:345:c2da:79b9 with SMTP id s2-20020a05680810c200b00345c2da79b9mr8468377ois.298.1661882461042;
+        Tue, 30 Aug 2022 11:01:01 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id q17-20020a9d6551000000b006370c0e5be0sm7861506otl.48.2022.08.30.11.00.28
+        by smtp.gmail.com with ESMTPSA id o12-20020a4ae58c000000b0044afc1ba91asm7191960oov.44.2022.08.30.11.01.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Aug 2022 11:00:29 -0700 (PDT)
-Received: (nullmailer pid 1763999 invoked by uid 1000);
-        Tue, 30 Aug 2022 18:00:28 -0000
-Date:   Tue, 30 Aug 2022 13:00:28 -0500
+        Tue, 30 Aug 2022 11:01:00 -0700 (PDT)
+Received: (nullmailer pid 1764917 invoked by uid 1000);
+        Tue, 30 Aug 2022 18:00:58 -0000
+Date:   Tue, 30 Aug 2022 13:00:58 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Michal Simek <michal.simek@xilinx.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Manish Narani <manish.narani@xilinx.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Michail Ivanov <Michail.Ivanov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Punnaiah Choudary Kalluri 
-        <punnaiah.choudary.kalluri@xilinx.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH 02/13] dt-bindings: memory: snps: Add Baikal-T1 DDRC
- support
-Message-ID: <20220830180028.GA1758236-robh@kernel.org>
-References: <20220822191957.28546-1-Sergey.Semin@baikalelectronics.ru>
- <20220822191957.28546-3-Sergey.Semin@baikalelectronics.ru>
+To:     Robert Nelson <robertcnelson@gmail.com>
+Cc:     devicetree@vger.kernel.org, Nishanth Menon <nm@ti.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Jason Kridner <jkridner@beagleboard.org>,
+        Drew Fustini <drew@beagleboard.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: arm: ti: Add bindings for BeagleBone
+ AI-64
+Message-ID: <20220830180058.GA1764859-robh@kernel.org>
+References: <20220822230304.2284952-1-robertcnelson@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822191957.28546-3-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220822230304.2284952-1-robertcnelson@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 10:19:45PM +0300, Serge Semin wrote:
-> Baikal-T1 DDR controller is based on the DW uMCTL2 DDRC IP-core v2.51a
-> with up to DDR3 protocol capability and 32-bit data bus + 8-bit ECC. There
-> are individual IRQs for each ECC and DFI events.The dedicated scrubber
-> clock source is absent since it's fully synchronous to the core clock.
-> In addition to that the DFI-DDR PHY CSRs can be accessed via a separate
-> registers space.
+On Mon, 22 Aug 2022 18:03:03 -0500, Robert Nelson wrote:
+> This board is based on the ti,j721e
+> 
+> https://beagleboard.org/ai-64
+> https://git.beagleboard.org/beagleboard/beaglebone-ai-64
+> 
+> Signed-off-by: Robert Nelson <robertcnelson@gmail.com>
+> CC: Rob Herring <robh@kernel.org>
+> CC: Nishanth Menon <nm@ti.com>
+> CC: Jason Kridner <jkridner@beagleboard.org>
+> CC: Drew Fustini <drew@beagleboard.org>
+> ---
+> Changes since v1:
+>  - added documenation links
+>  - add board in alphabetical order
+> ---
+>  Documentation/devicetree/bindings/arm/ti/k3.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Are you sure the phy and dfi irq shouldn't be a separate device?
-
-Rob
+Acked-by: Rob Herring <robh@kernel.org>
