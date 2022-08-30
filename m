@@ -2,113 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E14C0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB7E9ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 08:30:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231502AbiH3I2f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 04:28:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
+        id S231513AbiH3Ias (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 04:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230332AbiH3I2d (ORCPT
+        with ESMTP id S231453AbiH3Iah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 04:28:33 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FEF72FE7;
-        Tue, 30 Aug 2022 01:28:32 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-340f82c77baso139612157b3.1;
-        Tue, 30 Aug 2022 01:28:32 -0700 (PDT)
+        Tue, 30 Aug 2022 04:30:37 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D813252E65;
+        Tue, 30 Aug 2022 01:30:35 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id 76so10656442pfy.3;
+        Tue, 30 Aug 2022 01:30:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=+LwAl7PUkEepJ1lIaE4+OPBBMc7O0EAG6xNwpqZpZHg=;
-        b=pIdNzjVbNqDCLu7th2NhL6YlLeZtusgcSiGIM10wkikXvkdU2UarJvv7cX4x9fnpnF
-         RoHO7evoZVeXsYjzacL7iqHkciPpq0q3+W24PBSSHJRjVeA3rJs5sPfTU4rPyioDw4wB
-         pYp2+JespgNH6DTzmNyJ4DBLebBGjWrjQS5iVv6R+VemKBip5lDcdcRV6TEyr05AcMid
-         6Ajcjj/mdBTEB2tlSmMKSqd/I4ai9FNwoB1LqSeoQ8Z8Ifwb8VRcz2FZHjBpM0eWKb9u
-         uubGSasiJyjw+fQQUMyel689DpGAjFkUQrF4PPXMnJ7P8/Kngt96kp2b9UX0kaBBNC9M
-         aduw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=QeKpSNFySHjpFiEd0sNIh8LOq1qKfN6ztJE6GynOB7M=;
+        b=Ffuh2oMzMyFeksYhzqQ0IU0DZqsglNRMgfaknYKcSUVXPq4Kpk7W747DKQ7Arj66w1
+         EUjZDBkCielYYrtnn1hP7MvVMkh+VVE+zpmxWaHS/3jfITtpMP0seqpD7n0Caf+4CgJj
+         Reb03pNmOk6BWGE6ET1qVdlOJ5xRGD+Jm4jSVIvt6IZJg7MXEriycy8lejU+DYjdW4Zv
+         aITU3uLnJFbVlC+Mm8ZUgX236O8Wu0mzUj1aykU6By4CFfMdEIjxhLnHaOvHg3xKcdhC
+         1rhgN+dOnHltmrVWXQ4ei6WQdaBGDIRLhmOW8FUQzeg5f0GhfOXWxRhDvEhn0Vznmkcx
+         RBkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=+LwAl7PUkEepJ1lIaE4+OPBBMc7O0EAG6xNwpqZpZHg=;
-        b=p7tdTBCSkjKgn+QguOhjzb2RsS26DRRumOwvTXoN8NW4+qBRP2EMM0hBcwqorZBatb
-         YocaUCDwp6yaW6DaukeAirLOpVSrM0Oy4nJWwunwpzno57MkMTVsCwKNZauXV5yuSEUK
-         p87tpIZWJdsHE7dTTsi0i1ADc6sToW5/9AJoRMiaeiG4JghSpqKPw1483mEAaRc0ba6A
-         B4qZw8GBKKSu8bRFswYbs87JgDFDfBdDO1XE+s65FM9BLMP4iXXAs3NS5CQ8En51aTgS
-         ghGeyh9VJisT0tfxF03HvlI48KvSVZau0EKZWgzhdocOVmiZzDBf2/cskrw/P7fsUo6+
-         tBlQ==
-X-Gm-Message-State: ACgBeo3wb7jtR/kgfY3wXruVZZczzdf0pmERQ+b5wIE/QH4qF3RRzCKR
-        zSjgQuX1L/4I7ELAq/4GKMvw6w1Q/SI1G8zTjBs=
-X-Google-Smtp-Source: AA6agR7zI5uwUNMd7rMEnWYc6pU0UTrwwUW+ldgZCwHycenpKmKo3pCG2JmVmS5N2j7w3RikV0r6AKlINfnZRnHOYwM=
-X-Received: by 2002:a25:8b8c:0:b0:67b:5c18:870 with SMTP id
- j12-20020a258b8c000000b0067b5c180870mr10814096ybl.244.1661848111642; Tue, 30
- Aug 2022 01:28:31 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=QeKpSNFySHjpFiEd0sNIh8LOq1qKfN6ztJE6GynOB7M=;
+        b=GOSU66XwZ/eMIVX3KuvDrQlApEU4DgAWfR8Sb+mPOms8bhjvPulOfbPwohXtdpFMmd
+         Fw6GY52d+xHA6tf7UNh4RU/YwWYFZeUNbiRVJYw+podfeUL1z3asM/iqb3hNn0ONG3OX
+         61IgUz+aQpQX7Y1CS7DxrJMCzlNt6rkpIHAbch3tLnAwvkvhVKDN7dOpTkTHqyQq2hLh
+         HJS/TDxkUhU5w8kAKCt8P8xXd666ABPobEacdcPjD5FomfSD2A0HDItpi/xCarcXBML6
+         LsLOAK4Oc4Qn5EwtGAMyMzzTqMWqn3CBOzxzAWoOOh50MCaHNHxBTHEVrRe/LSxZfAxS
+         TImg==
+X-Gm-Message-State: ACgBeo3kSGSYKbizn6MHmeiYHsnUgUBxqF4R8ZfoYx2TZ8kD9qC7mbTr
+        do+W8DYTL/Kay8xYmTuIYIxw4MNIJ1A=
+X-Google-Smtp-Source: AA6agR5a4/X9nPFm9WIK0dAzpjRcyUYm2uDgGItk0K8cMRZ5BYFSd8CUxK/Q7XeQtrrIzLQ+o/tbVg==
+X-Received: by 2002:a63:90c7:0:b0:42b:6b68:3655 with SMTP id a190-20020a6390c7000000b0042b6b683655mr16837088pge.335.1661848235441;
+        Tue, 30 Aug 2022 01:30:35 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id 126-20020a620484000000b0053617cbe2d2sm8657344pfe.168.2022.08.30.01.30.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 01:30:34 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     mchehab@kernel.org
+Cc:     sean@mess.org, linux-media@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] media: imon: Remove the unneeded result variable
+Date:   Tue, 30 Aug 2022 08:30:27 +0000
+Message-Id: <20220830083027.276291-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220829214256.5583-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdVV6eEtWBaeG4VESe_cyPKYcTo-xSfwJDPLYOYCG=ZHug@mail.gmail.com>
-In-Reply-To: <CAMuHMdVV6eEtWBaeG4VESe_cyPKYcTo-xSfwJDPLYOYCG=ZHug@mail.gmail.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Tue, 30 Aug 2022 09:28:05 +0100
-Message-ID: <CA+V-a8vJpj-S177DTsKezT=f3T4Oup0763fQtK3+9Rsums0N9Q@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: mmc: renesas,sdhi: Add iommus property
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Geert,
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-Thank you for the review.
+Return the value send_packet() directly instead of storing it in another
+redundant variable.
 
-On Tue, Aug 30, 2022 at 8:06 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Prabhakar,
->
-> Thanks for your patch!
->
-> On Mon, Aug 29, 2022 at 11:43 PM Lad Prabhakar
-> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> > The SDHI block on Renesas R-Car and RZ/G2 SoC's make use of IOMMU.
->
-> blocks ... SoCs
->
-> > This patch fixes the below dtbs_check warnings:
-> > arch/arm64/boot/dts/renesas/r8a774e1-hihope-rzg2h-ex-idk-1110wr.dtb: mmc@ee100000: Unevaluated properties are not allowed ('iommus' was unexpected)
-> >         From schema: Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
->
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
->
-> > --- a/Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml
-> > +++ b/Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml
-> > @@ -77,6 +77,9 @@ properties:
-> >
-> >    clock-names: true
-> >
-> > +  iommus:
-> > +    maxItems: 1
->
-> I would insert iommus below dma-names, as iommus belongs to dmas,
-> logically (yes I know dmas is not used on R-Car Gen3 and RZ/G2, as
-> SDHI has its own DMA controller).
->
-Ok, I will move it after dmas along with an updated commit message and
-send a v2.
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
+---
+ drivers/media/rc/imon.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Cheers,
-Prabhakar
+diff --git a/drivers/media/rc/imon.c b/drivers/media/rc/imon.c
+index 735b925da998..5edfd8a9e849 100644
+--- a/drivers/media/rc/imon.c
++++ b/drivers/media/rc/imon.c
+@@ -684,7 +684,6 @@ static int send_packet(struct imon_context *ictx)
+  */
+ static int send_associate_24g(struct imon_context *ictx)
+ {
+-	int retval;
+ 	const unsigned char packet[8] = { 0x01, 0x00, 0x00, 0x00,
+ 					  0x00, 0x00, 0x00, 0x20 };
+ 
+@@ -699,9 +698,8 @@ static int send_associate_24g(struct imon_context *ictx)
+ 	}
+ 
+ 	memcpy(ictx->usb_tx_buf, packet, sizeof(packet));
+-	retval = send_packet(ictx);
+ 
+-	return retval;
++	return send_packet(ictx);
+ }
+ 
+ /*
+-- 
+2.25.1
