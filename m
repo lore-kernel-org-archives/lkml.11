@@ -2,88 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5369ECAAD2
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BADDECAAD2
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 03:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230060AbiH3DCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 29 Aug 2022 23:02:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
+        id S229649AbiH3DDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 29 Aug 2022 23:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiH3DBt (ORCPT
+        with ESMTP id S229714AbiH3DDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 29 Aug 2022 23:01:49 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1DB0C9C224;
-        Mon, 29 Aug 2022 20:01:46 -0700 (PDT)
-Received: from loongson-pc.loongson.cn (unknown [10.20.42.105])
-        by localhost.localdomain (Coremail) with SMTP id AQAAf8Cx72uTfQ1jmS0MAA--.50840S2;
-        Tue, 30 Aug 2022 11:01:39 +0800 (CST)
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-To:     lpieralisi@kernel.org, robin.murphy@arm.com, chenhuacai@loongson.cn
-Cc:     guohanjun@huawei.com, sudeep.holla@arm.com, rafael@kernel.org,
-        lenb@kernel.org, robert.moore@intel.com,
-        linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        loongarch@lists.linux.dev
-Subject: [PATCH V3 0/2] DMA: update acpi_dma_get_range to return dma map regions 
-Date:   Tue, 30 Aug 2022 11:01:37 +0800
-Message-Id: <20220830030139.29899-1-lvjianmin@loongson.cn>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf8Cx72uTfQ1jmS0MAA--.50840S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Gr1ftw4DWw4xZw1xCw1DAwb_yoWkKrg_AF
-        Z3Ja48Gr1kWay5XFy7trW3tr98tFW7XF4Y93Wvqw4UCrnxJF1UXr1jyF47Zr17ZF18Grs8
-        Za4jvryrZr17tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbaxFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j6F4UM28EF7xvwVC2z280
-        aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r10
-        6r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxE
-        wVCm-wCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4
-        IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1r
-        MI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJV
-        WUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j
-        6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYx
-        BIdaVFxhVjvjDU0xZFpf9x0JUZa9-UUUUU=
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+        Mon, 29 Aug 2022 23:03:01 -0400
+Received: from mail-io1-xd49.google.com (mail-io1-xd49.google.com [IPv6:2607:f8b0:4864:20::d49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8A809D113
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:03:00 -0700 (PDT)
+Received: by mail-io1-xd49.google.com with SMTP id b21-20020a5d8915000000b0068aaf634432so5926020ion.20
+        for <linux-kernel@vger.kernel.org>; Mon, 29 Aug 2022 20:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:from:to:cc;
+        bh=2XaZZETii+6PIf9IdmpIQGt4a+rcs/HHiKkWECCIB48=;
+        b=fVhkee5EruLHw0LuUU8nVIUn3apOeMRuR8SY0+hDJXdTMaqwvdegea/UoD2cRiVLNO
+         t6aDgCyXGOlhyi4qDRp21TyoA228FyeP/ois6XWeqkpUIDsxaXIjk8Gvt2uSoUEF4oda
+         uCtjAnZd60hT7i/QH64FDXTXLCCWeZw/TIRSktNN9nd6ioibWwPNDo5tUHgMgpH16jTA
+         G0yDyCz//JyWqG2tXO9ITBiIYZK8odAOUlw/klgGoIrs0BG4caQsdm2EyaCwZgHOE1H5
+         dFjrJ38bOMRFY5fyn0y1xygNZWzhe9Qqb3BgivjIZFuimahoaodu3iqX3abexciV4XZH
+         ly6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=2XaZZETii+6PIf9IdmpIQGt4a+rcs/HHiKkWECCIB48=;
+        b=sONbMT+ShetjlLOhIt1J2fl/DJBl39RFXcWkYpYlFEuJ6ZcopeCA4+UFP5mnV48tRd
+         z9EshbEAYx3RPy41OAOqGDfeNApFtZO9k/OrEVOl3X1oGfdJUy8mqq0UpmkTp+S5UElF
+         Hyp13qGMX8xPayGsCgnn6JS4o5sSp20Qus9iSreI6gySja6p5glhGyCcRIXtAokgyE3c
+         UKt6yJolmDF5Vb+UCopje9sxPmB2E78b0n5/Y+jihYBZSw/1XwM8ERpmrTW2gtI4n/1M
+         8i89J2SESlAPKOc3q9AqtQDnjSo1CmgrVKO2fXlutN1kpQ9TelejH2iyuU9DoNDXF7Kf
+         iKyA==
+X-Gm-Message-State: ACgBeo3nvzCtjuRu7AxVPoSitOB0AjJPrXJzIrq0S8e6KiLrKeKl6pQ2
+        sRQyvxPNELDEd4vJ1KsXEAqZXTqyMAA=
+X-Google-Smtp-Source: AA6agR4Q1pBH1awKjioD9X7zEwd1kxWatig/+Lk+rvnUkBqPRrClpJvtSPWcXgWc+2IALshWGb51jxjpTno=
+X-Received: from yuzhao.bld.corp.google.com ([2620:15c:183:200:3049:2153:3017:38c9])
+ (user=yuzhao job=sendgmr) by 2002:a05:6638:3805:b0:349:ffd0:9a86 with SMTP id
+ i5-20020a056638380500b00349ffd09a86mr11183833jav.227.1661828580358; Mon, 29
+ Aug 2022 20:03:00 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 21:02:59 -0600
+In-Reply-To: <20220725091740.28188-2-alexander.sverdlin@nokia.com>
+Message-Id: <20220830030259.3503212-1-yuzhao@google.com>
+Mime-Version: 1.0
+References: <20220725091740.28188-2-alexander.sverdlin@nokia.com>
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Subject: Re: [PATCH 1/2] MIPS: Introduce CAVIUM_RESERVE32 Kconfig option
+From:   Yu Zhao <yuzhao@google.com>
+To:     alexander.sverdlin@nokia.com
+Cc:     cminyard@mvista.com, joe@perches.com, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, tsbogend@alpha.franken.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The patch series changed acpi_dma_get_range to return dma regions
-as of_dma_get_range, so that dev->dma_range_map can be initialized
-conveniently.
+Hi,
 
-And acpi_arch_dma_setup for ARM64 is changed wih removing dma_base
-and size from it's parameters.
+This commit produces a bogus error message on systems that use the
+default value. Please take a look.
 
-Remove ARCH_HAS_PHYS_TO_DMA for LoongArch and use generic
-phys_to_dma/dma_to_phys in include/linux/dma-direct.h.
+Thanks.
 
-V1 -> V2
-- Removed dma_base and size from acpi_arch_dma_setup' parameters
-- Add patch to remove ARCH_HAS_PHYS_TO_DMA for LoongArch
-
-V2 -> V3
-- Add kerneldoc for acpi_dma_get_range changing
-- Remove redundant code in acpi_arch_dma_setup, and check map
-
-
-Jianmin Lv (2):
-  ACPI / scan: Support multiple dma windows with different offsets
-  LoongArch: Remove ARCH_HAS_PHYS_TO_DMA
-
- arch/loongarch/Kconfig        |  1 -
- arch/loongarch/kernel/dma.c   | 52 +++++++++++++++++-------------------------
- arch/loongarch/kernel/setup.c |  2 +-
- drivers/acpi/arm64/dma.c      | 29 ++++++++++++++---------
- drivers/acpi/scan.c           | 53 +++++++++++++++++++------------------------
- include/acpi/acpi_bus.h       |  3 +--
- include/linux/acpi.h          | 12 ++++++----
- 7 files changed, 71 insertions(+), 81 deletions(-)
-
--- 
-1.8.3.1
-
+  Linux version 6.0.0-rc1 (builder@buildhost) (mips64-openwrt-linux-musl-gcc (OpenWrt GCC 11.2.0 r19590-042d558536) 11.2.0, GNU ld (GNU Binutils) 2.37) #0 SMP Sun Jul 31 15:12:47 2022
+  Failed to allocate CAVIUM_RESERVE32 memory area  <<<===
+  Skipping L2 locking due to reduced L2 cache size
+  CVMSEG size: 0 cache lines (0 bytes)
+  printk: bootconsole [early0] enabled
+  CPU0 revision is: 000d9301 (Cavium Octeon II)
