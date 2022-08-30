@@ -2,61 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B56BEC0502A
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:50:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5A3C0502A
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 12:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229948AbiH3MuB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 08:50:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40814 "EHLO
+        id S229729AbiH3Mvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 08:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbiH3Mt6 (ORCPT
+        with ESMTP id S229985AbiH3Mvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 08:49:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C8915A2E;
-        Tue, 30 Aug 2022 05:49:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E594B81B13;
-        Tue, 30 Aug 2022 12:49:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0765C433C1;
-        Tue, 30 Aug 2022 12:49:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661863795;
-        bh=uygw8/1pX9qwg7jJu1Zlgn4AfSH9pfarsnrVapMvZBI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ld0BnanAvnrx3OMI+kaBa7VcG9CLMZ2Xb//WD7lWw92em1OhHBbWQwPaqE1ZABG0z
-         ID2VFi72BjN2YB6aGD5IPcjd6/a0y3hFohAMmxiEh/rV1LUm2cvq6PejVwiTyFAfPr
-         9MeNNgTxp6BzJdDISXXQ+6O+BYEt0/KM+tlLq3Ro=
-Date:   Tue, 30 Aug 2022 14:49:52 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     cgel.zte@gmail.com
-Cc:     linux@roeck-us.net, heikki.krogerus@linux.intel.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xupanda <xu.panda@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH linux-next v3] usb: typec: tcpm: tcpci: Remove the
- unneeded result variable
-Message-ID: <Yw4HcNoWFuHIem1h@kroah.com>
-References: <20220829030442.264695-1-xu.panda@zte.com.cn>
+        Tue, 30 Aug 2022 08:51:38 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3665D74377
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 05:51:37 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so6075474wms.5
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 05:51:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=7s4lILp9cgE/VG98/TN3p3rL3NeB7y+YGCWWz/Ak6qo=;
+        b=L6AZHkI6qAhQKRgDVwck8jQPEP5pvVUbAewKRUe/QGZDUn6HXSmN7CBSKyiywVSxuc
+         jx+z2pZ+bS6vETgwOq+5TPiOOZd/+INHG4k09nhpsh7oO7PbPKmVWluwQhTFnH7sTb+b
+         TMfPZLKaY9wuJnFT6eo9KxVz+acW//pawvrgQZ8ioqEfagH4O9ZY4YJbhJGSmCJhEVqX
+         1LGL4eQupDP+4Yhh4q/cg3pBc1mapDtk8g7hqBfmgV4vCCm4eLh9sZ+RYQ4XWP950MEq
+         U8V5zPoQfGgNugjHqnYldO7xIy93uKBSjuZ578J8OsdSqOQs1yt4iX/9O38srfbRYIq5
+         qWrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=7s4lILp9cgE/VG98/TN3p3rL3NeB7y+YGCWWz/Ak6qo=;
+        b=74rcsaaYNd/k3PFohuh3LZUeD15BdKmjGpAYN3JenlqF8PzNzVvKgMZiZxajrfhD2+
+         gU1kf8HEbGR6lYyqGgSN97kMwa/24qF1T8Fp98wqt5yIpvWYQOCHM0NhwSqQ8DKn0UKy
+         RptVWNnhlk1gcyt2QZh6kmx1ACBL56SyXXgUXkaoSGvxMmOzUEwSTnicjsCfWgi2F/Eh
+         fJzeoYFLAuCygsdNqcNfbKy1xBG/LGSMBUUtx33yKApvCTU/cZOeRfd45r3o0bUZXnnZ
+         9Dr0FAkIMjNDqL6jxZzz/eVtSDJdjEPhXq+wrFpoyE9v2NZLQfK2KbEvYb5fZkhsp9Hk
+         aQpA==
+X-Gm-Message-State: ACgBeo3jCyiN51W5yAnPuXXSJ+tuo5rulsX/MP5DN3Pj6AVWWqKT2aiP
+        fT4/LWWXiFkF5orxOxUor4q/YQ==
+X-Google-Smtp-Source: AA6agR5nyN9qMCqsMR5Co7UgnLcOiBBKn7+L3agUSkd7KYHf7KNGKsjAB3LwR6t08tkeAcEr4nLWYw==
+X-Received: by 2002:a7b:cc85:0:b0:3a5:50b2:f9be with SMTP id p5-20020a7bcc85000000b003a550b2f9bemr9329439wma.18.1661863895829;
+        Tue, 30 Aug 2022 05:51:35 -0700 (PDT)
+Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id 14-20020a05600c020e00b003a3170a7af9sm11778784wmi.4.2022.08.30.05.51.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 05:51:35 -0700 (PDT)
+From:   Ben Dooks <ben.dooks@sifive.com>
+To:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, greentime.hu@sifive.com,
+        conor.dooley@microchip.com, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
+Cc:     Ben Dooks <ben.dooks@sifive.com>
+Subject: [RESEND PATCH] dt-bindings: sifive-ccache: fix cache level for l3 cache
+Date:   Tue, 30 Aug 2022 13:51:33 +0100
+Message-Id: <20220830125133.1698781-1-ben.dooks@sifive.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220829062202.3287-1-zong.li@sifive.com>
+References: <20220829062202.3287-1-zong.li@sifive.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829030442.264695-1-xu.panda@zte.com.cn>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 03:04:43AM +0000, cgel.zte@gmail.com wrote:
-> From: xupanda <xu.panda@zte.com.cn>
-> 
-> Return the value regmap_update_bits() directly instead of
-> storing it in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
+With newer cores such as the p550, the SiFive composable cache can be
+a level 3 cache. Update the cache level to be one of 2 or 3.
 
-I am now just going to drop all patches like this, given that no one
-seems to be following the proper documentation for how to handle
-research tools like this :(
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+---
+ Documentation/devicetree/bindings/riscv/sifive-ccache.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/Documentation/devicetree/bindings/riscv/sifive-ccache.yaml b/Documentation/devicetree/bindings/riscv/sifive-ccache.yaml
+index 1a64a5384e36..6190deb65455 100644
+--- a/Documentation/devicetree/bindings/riscv/sifive-ccache.yaml
++++ b/Documentation/devicetree/bindings/riscv/sifive-ccache.yaml
+@@ -45,7 +45,7 @@ properties:
+     const: 64
+ 
+   cache-level:
+-    const: 2
++    enum: [2, 3]
+ 
+   cache-sets:
+     enum: [1024, 2048]
+-- 
+2.35.1
+
