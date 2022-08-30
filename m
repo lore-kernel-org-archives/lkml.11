@@ -2,79 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7438AECAAD1
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAE8AECAAD1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 16:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230095AbiH3QUb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 12:20:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39252 "EHLO
+        id S229927AbiH3QUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 12:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231200AbiH3QTz (ORCPT
+        with ESMTP id S231229AbiH3QUK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 12:19:55 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B056D10E0;
-        Tue, 30 Aug 2022 09:19:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661876390; x=1693412390;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UZQPKJ4u30LgHZYy7pYFq8/WK3HtHOpZxJaqan/zXgM=;
-  b=JgyPGxNbFogshzz3XATLynEo2ZwhxqSYDzIitmogbTQ2vtvl5C9KyfiU
-   VAtAj6BxbhLaogz6NiEcNQeiKcePwpldWbQdgm56eZeZnpQziPI8ffaSL
-   M6nv4lGmk+hnqQfX/xdr2o97f9bnlOWJ1ZsmcJ5BmJKK6+9PCpUJZbZzb
-   GW/5ww7eC20TrKdMiiWJSJQOMzhKjMcZbBmDg00eCISm7AoM8AzL1dxtE
-   NTDGo4j1qyjm8S/OUs2i2ttsz1CHtQjmXQfBuQJqSlfdAElD0kc3YEXpq
-   eMTKs/jlyZYLVdbZvT/woEViGSgU49mfLe7u6NWiTt/fWwuYQI9qO1rz3
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="296500479"
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="296500479"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 09:11:01 -0700
-X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
-   d="scan'208";a="641438785"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 09:11:00 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oT3pJ-0061WG-1u;
-        Tue, 30 Aug 2022 19:10:57 +0300
-Date:   Tue, 30 Aug 2022 19:10:57 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/2] ACPI: PMIC: Use sizeof() instead of hard coded
- value
-Message-ID: <Yw42ka9czLbBmTtp@smile.fi.intel.com>
-References: <20220830135532.28992-1-andriy.shevchenko@linux.intel.com>
- <Yw4zaBJu81SvkFMM@black.fi.intel.com>
+        Tue, 30 Aug 2022 12:20:10 -0400
+Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2B32C66D;
+        Tue, 30 Aug 2022 09:20:02 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4MHC914TTgz9xtTV;
+        Wed, 31 Aug 2022 00:16:05 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.204.63.22])
+        by APP2 (Coremail) with SMTP id GxC2BwDHQl0ZOA5jLmYNAA--.2866S11;
+        Tue, 30 Aug 2022 17:19:33 +0100 (CET)
+From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
+        dhowells@redhat.com, jarkko@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
+        serge@hallyn.com, shuah@kernel.org
+Cc:     bpf@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        deso@posteo.net, memxor@gmail.com,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v14 09/12] selftests/bpf: Add verifier tests for bpf_lookup_*_key() and bpf_key_put()
+Date:   Tue, 30 Aug 2022 18:17:13 +0200
+Message-Id: <20220830161716.754078-10-roberto.sassu@huaweicloud.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220830161716.754078-1-roberto.sassu@huaweicloud.com>
+References: <20220830161716.754078-1-roberto.sassu@huaweicloud.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yw4zaBJu81SvkFMM@black.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GxC2BwDHQl0ZOA5jLmYNAA--.2866S11
+X-Coremail-Antispam: 1UD129KBjvJXoWxtw4UAFyUXw48KF4DWrWUtwb_yoWxAr1Dp3
+        WfX3WjyF1kXF4aqrykKryIvFyagFZ8X343GasFv39rZa97Jw4xXw43ta15Wr9xtrWrXrWF
+        v3W2kan7ua4UX37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUPSb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
+        Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
+        rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
+        AKxVWxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAF
+        wI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7
+        xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Y
+        z7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc7CjxVAaw2
+        AFwI0_GFv_Wryl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAq
+        x4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6r
+        W5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Xr0_Ar1lIxAIcVC0I7IYx2IY6xkF
+        7I0E14v26F4UJVW0owCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI
+        0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVWxJr0_GcJvcSsGvfC2KfnxnUUI43ZEXa7I
+        U0189tUUUUU==
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgAABF1jj35w-QAAsE
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 06:57:28PM +0300, Mika Westerberg wrote:
-> On Tue, Aug 30, 2022 at 04:55:31PM +0300, Andy Shevchenko wrote:
-> > It's better to use sizeof() of a given buffer than spreading
-> > a hard coded value.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-Thanks! As I replied to this, I'm preparing a v2 which will cover more
-conversions. I won't use your tag because it will cover just like a half of it.
+Add verifier tests for bpf_lookup_*_key() and bpf_key_put(), to ensure that
+acquired key references stored in the bpf_key structure are released, that
+a non-NULL bpf_key pointer is passed to bpf_key_put(), and that key
+references are not leaked.
 
+Also, slightly modify test_verifier.c, to find the BTF ID of the attach
+point for the LSM program type (currently, it is done only for TRACING).
+
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ tools/testing/selftests/bpf/config            |   1 +
+ tools/testing/selftests/bpf/test_verifier.c   |   3 +-
+ .../selftests/bpf/verifier/ref_tracking.c     | 139 ++++++++++++++++++
+ 3 files changed, 142 insertions(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
+index 0fdd11e6b742..add5a5a919b4 100644
+--- a/tools/testing/selftests/bpf/config
++++ b/tools/testing/selftests/bpf/config
+@@ -30,6 +30,7 @@ CONFIG_IPV6_GRE=y
+ CONFIG_IPV6_SEG6_BPF=y
+ CONFIG_IPV6_SIT=y
+ CONFIG_IPV6_TUNNEL=y
++CONFIG_KEYS=y
+ CONFIG_LIRC=y
+ CONFIG_LWTUNNEL=y
+ CONFIG_MPLS=y
+diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+index f9d553fbf68a..2dbcbf363c18 100644
+--- a/tools/testing/selftests/bpf/test_verifier.c
++++ b/tools/testing/selftests/bpf/test_verifier.c
+@@ -1498,7 +1498,8 @@ static void do_test_single(struct bpf_test *test, bool unpriv,
+ 		opts.log_level = DEFAULT_LIBBPF_LOG_LEVEL;
+ 	opts.prog_flags = pflags;
+ 
+-	if (prog_type == BPF_PROG_TYPE_TRACING && test->kfunc) {
++	if ((prog_type == BPF_PROG_TYPE_TRACING ||
++	     prog_type == BPF_PROG_TYPE_LSM) && test->kfunc) {
+ 		int attach_btf_id;
+ 
+ 		attach_btf_id = libbpf_find_vmlinux_btf_id(test->kfunc,
+diff --git a/tools/testing/selftests/bpf/verifier/ref_tracking.c b/tools/testing/selftests/bpf/verifier/ref_tracking.c
+index 57a83d763ec1..f18ce867271f 100644
+--- a/tools/testing/selftests/bpf/verifier/ref_tracking.c
++++ b/tools/testing/selftests/bpf/verifier/ref_tracking.c
+@@ -84,6 +84,145 @@
+ 	.errstr = "Unreleased reference",
+ 	.result = REJECT,
+ },
++{
++	"reference tracking: acquire/release user key reference",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_1, -3),
++	BPF_MOV64_IMM(BPF_REG_2, 0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 2),
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_LSM,
++	.kfunc = "bpf",
++	.expected_attach_type = BPF_LSM_MAC,
++	.flags = BPF_F_SLEEPABLE,
++	.fixup_kfunc_btf_id = {
++		{ "bpf_lookup_user_key", 2 },
++		{ "bpf_key_put", 5 },
++	},
++	.result = ACCEPT,
++},
++{
++	"reference tracking: acquire/release system key reference",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_1, 1),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 2),
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_LSM,
++	.kfunc = "bpf",
++	.expected_attach_type = BPF_LSM_MAC,
++	.flags = BPF_F_SLEEPABLE,
++	.fixup_kfunc_btf_id = {
++		{ "bpf_lookup_system_key", 1 },
++		{ "bpf_key_put", 4 },
++	},
++	.result = ACCEPT,
++},
++{
++	"reference tracking: release user key reference without check",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_1, -3),
++	BPF_MOV64_IMM(BPF_REG_2, 0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_LSM,
++	.kfunc = "bpf",
++	.expected_attach_type = BPF_LSM_MAC,
++	.flags = BPF_F_SLEEPABLE,
++	.errstr = "arg#0 pointer type STRUCT bpf_key must point to scalar, or struct with scalar",
++	.fixup_kfunc_btf_id = {
++		{ "bpf_lookup_user_key", 2 },
++		{ "bpf_key_put", 4 },
++	},
++	.result = REJECT,
++},
++{
++	"reference tracking: release system key reference without check",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_1, 1),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_LSM,
++	.kfunc = "bpf",
++	.expected_attach_type = BPF_LSM_MAC,
++	.flags = BPF_F_SLEEPABLE,
++	.errstr = "arg#0 pointer type STRUCT bpf_key must point to scalar, or struct with scalar",
++	.fixup_kfunc_btf_id = {
++		{ "bpf_lookup_system_key", 1 },
++		{ "bpf_key_put", 3 },
++	},
++	.result = REJECT,
++},
++{
++	"reference tracking: release with NULL key pointer",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_1, 0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_LSM,
++	.kfunc = "bpf",
++	.expected_attach_type = BPF_LSM_MAC,
++	.flags = BPF_F_SLEEPABLE,
++	.errstr = "arg#0 pointer type STRUCT bpf_key must point to scalar, or struct with scalar",
++	.fixup_kfunc_btf_id = {
++		{ "bpf_key_put", 1 },
++	},
++	.result = REJECT,
++},
++{
++	"reference tracking: leak potential reference to user key",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_1, -3),
++	BPF_MOV64_IMM(BPF_REG_2, 0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_LSM,
++	.kfunc = "bpf",
++	.expected_attach_type = BPF_LSM_MAC,
++	.flags = BPF_F_SLEEPABLE,
++	.errstr = "Unreleased reference",
++	.fixup_kfunc_btf_id = {
++		{ "bpf_lookup_user_key", 2 },
++	},
++	.result = REJECT,
++},
++{
++	"reference tracking: leak potential reference to system key",
++	.insns = {
++	BPF_MOV64_IMM(BPF_REG_1, 1),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_LSM,
++	.kfunc = "bpf",
++	.expected_attach_type = BPF_LSM_MAC,
++	.flags = BPF_F_SLEEPABLE,
++	.errstr = "Unreleased reference",
++	.fixup_kfunc_btf_id = {
++		{ "bpf_lookup_system_key", 1 },
++	},
++	.result = REJECT,
++},
+ {
+ 	"reference tracking: release reference without check",
+ 	.insns = {
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
