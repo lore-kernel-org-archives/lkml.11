@@ -2,95 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F4FBC0502C
-	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8997ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Tue, 30 Aug 2022 15:24:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbiH3PYA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 11:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
+        id S230232AbiH3PYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 11:24:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229923AbiH3PXy (ORCPT
+        with ESMTP id S229521AbiH3PYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 11:23:54 -0400
-Received: from corp-front07-corp.i.nease.net (corp-front07-corp.i.nease.net [59.111.134.157])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3760512F55C;
-        Tue, 30 Aug 2022 08:23:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
-        Date:Message-Id:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding; bh=czJTLBpE0tloFZmYSS2AFw3bPxWy7e6kJq
-        YwgdeEzv4=; b=eyAKvZ7bP5lCinzXZ3TLZqvvDVy+ixk6mX2QqAUeFAD5UBb5MC
-        DKNEwwscxIjvV268duvoKI7H//Eu7w8cuux3YOXktATf6pBxE33OEzx6hveFV5Tm
-        CCP3+hWs4I8IyVDvfGW7Oy5pAnU5g8Mqzj4wOc8/sUbPMe2gRysk/YeDA=
-Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
-        by corp-front07-corp.i.nease.net (Coremail) with SMTP id nRDICgA3jOhoKw5j3AUVAA--.38750S2;
-        Tue, 30 Aug 2022 23:23:20 +0800 (HKT)
-From:   liuyacan@corp.netease.com
-To:     tonylu@linux.alibaba.com
-Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, liuyacan@corp.netease.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, wenjia@linux.ibm.com,
-        hwippel@linux.ibm.com, ubraun@linux.ibm.com
-Subject: [PATCH net v2] net/smc: Remove redundant refcount increase
-Date:   Tue, 30 Aug 2022 23:23:14 +0800
-Message-Id: <20220830152314.838736-1-liuyacan@corp.netease.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <YwzirUcxlQW3ydT7@TonyMac-Alibaba>
-References: <YwzirUcxlQW3ydT7@TonyMac-Alibaba>
+        Tue, 30 Aug 2022 11:24:40 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0B20B6D7D;
+        Tue, 30 Aug 2022 08:24:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661873073; x=1693409073;
+  h=from:to:subject:date:message-id:mime-version;
+  bh=WIYMYXNuQxtPPXy3sID+B0KJkT+rhekTnPMM/ei80Jo=;
+  b=YQtg2rtfYkkdBfxtUH8RcgCtI/myp6wKwqdPrwZorBfUXdhqNEHGqt3p
+   0xZXw31itfVPhb4syTSTd43f22UkYXVInW32DUOtkofB7r6tKf2IdZhK3
+   RIskLBNRCKRchhydd5TXs9q78V85c4MAKy8AmbUukysoDnvLtdkCVx2b5
+   sts3QESL5CgVFj0BTSBJJa+talDFiZkRQxqRZYcV8M4GUGRYtq7/FUndf
+   45bmEE3btqSg3n7Jpnp4eJWB0+ShUXgdT7x0XNVDVaw2HIjWIuhkZuFOo
+   C4feUc4MrIsup1l6kE31F/53eokpdDQiRCnSo8KM4YIbPmtbHeauZJUHJ
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="111411586"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 08:24:31 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 30 Aug 2022 08:24:30 -0700
+Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 08:24:29 -0700
+From:   Jerry Ray <jerry.ray@microchip.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Jerry Ray" <jerry.ray@microchip.com>
+Subject: [PATCH v5 1/2] dts: arm: Adding documentation for SAMA5D3-EDS board
+Date:   Tue, 30 Aug 2022 10:24:27 -0500
+Message-ID: <20220830152428.12625-1-jerry.ray@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: nRDICgA3jOhoKw5j3AUVAA--.38750S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jr1xuF1kAFWxWr4kXw4Utwb_yoW3Zrc_K3
-        47GFnrWa1jyFZayw4fG393uwsaqw1kJr48Xrn5ArZ0y3Wjvr48Can8Crn8uw15u3yYyF13
-        Jr45tFZYgw12yjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbtAYjxAI6xCIbckI1I0E57IF64kEYxAxM7AC8VAFwI0_Gr0_Xr1l
-        1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0I
-        I2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0
-        Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84
-        ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC6x9vy-n0Xa0_Xr1Utr1k
-        JwI_Jr4ln4vE4IxY62xKV4CY8xCE548m6r4UJryUGwAS0I0E0xvYzxvE52x082IY62kv04
-        87Mc804VCqF7xvr2I5Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
-        JVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
-        AKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwAKzVCY
-        07xG64k0F24l7I0Y64k_MxkI7II2jI8vz4vEwIxGrwCF04k20xvY0x0EwIxGrwCF72vEw2
-        IIxxk0rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7vE0wC20s026c02F40E14v26r1j6r18
-        MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr4
-        1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l
-        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
-        A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRp6wAUUUUU=
-X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQAOCVt77xO05QAVsa
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yacan Liu <liuyacan@corp.netease.com>
+Adding the SAMA5D3-EDS board from Microchip into the atmel AT91 board
+description yaml file.
 
-For passive connections, the refcount increment has been done in
-smc_clcsock_accept()-->smc_sock_alloc().
-
-Fixes: 3b2dec2603d5 ("net/smc: restructure client and server code in af_smc")
-Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
-
+Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
-Change in v2:
-  -- Tune commit message
+v4->v5:
+ - No change
+v3->v4:
+ - No change
+v2->v3:
+ - No change
+v1->v2:
+ - Added Device Tree documentation for Microchip SAMA5D3-EDS board
 ---
- net/smc/af_smc.c | 1 -
- 1 file changed, 1 deletion(-)
+ Documentation/devicetree/bindings/arm/atmel-at91.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 79c1318af..0939cc3b9 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1855,7 +1855,6 @@ static void smc_listen_out_connected(struct smc_sock *new_smc)
- {
- 	struct sock *newsmcsk = &new_smc->sk;
+diff --git a/Documentation/devicetree/bindings/arm/atmel-at91.yaml b/Documentation/devicetree/bindings/arm/atmel-at91.yaml
+index 08efb259a947..635491aaeb0c 100644
+--- a/Documentation/devicetree/bindings/arm/atmel-at91.yaml
++++ b/Documentation/devicetree/bindings/arm/atmel-at91.yaml
+@@ -138,6 +138,13 @@ properties:
+           - const: atmel,at91sam9g20
+           - const: atmel,at91sam9
  
--	sk_refcnt_debug_inc(newsmcsk);
- 	if (newsmcsk->sk_state == SMC_INIT)
- 		newsmcsk->sk_state = SMC_ACTIVE;
- 
++      - description: Microchip SAMA5D3 Ethernet Development System Board
++        items:
++          - const: microchip,sama5d3-eds
++          - const: atmel,sama5d36
++          - const: atmel,sama5d3
++          - const: atmel,sama5
++
+       - items:
+           - enum:
+               - atmel,sama5d31
 -- 
-2.20.1
+2.17.1
 
