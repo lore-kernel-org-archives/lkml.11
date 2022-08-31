@@ -2,97 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F9FECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 01:49:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24A30ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 01:50:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbiHaBt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 21:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
+        id S229828AbiHaBuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 21:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231822AbiHaBtv (ORCPT
+        with ESMTP id S229557AbiHaBur (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 21:49:51 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0295EB2493
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 18:49:42 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id 193so2156764ybc.10
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 18:49:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=WBgIYiK0R8MyjOrBW9Qr0NQe4i20glZFZfsxiGjR9Js=;
-        b=UrrZ3gdP0DYEzt2tLaTueomDMpcDl9rxoco194EQny8lyNhVtuVOjWt0NhoRhkcQXf
-         MToHlti/EMdQyxSlvPHLd299yLJj/5rpKMd99Ugqaqyqp332oBu0v9TF1tStCO4Wf1pZ
-         hybPkjtxwYlWHqdBAuPxA9U3Czk1LSlkvi9cOeEfNBPmTQiGChjDHINeA9IfVG0Hw92s
-         z0dRDzENZOXd0RuKe0vP6cyFn2Fs8RWXdhLBUnCzlub4yMsxiTb4hHdJ6bQj+6KJFEm1
-         cagvjZcos4RlGUx1EOi9Liz2wC9KfP40z2qkwmEAGrX1lljSKkdJ/Tw4/VKjlJQqCLdw
-         00xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=WBgIYiK0R8MyjOrBW9Qr0NQe4i20glZFZfsxiGjR9Js=;
-        b=SniVo5MlsE6sNOsZwpV+6B9YpBaRbSnVcAY9PO0bpmaeZsUbTg5KjRQmdAGYaAuoOB
-         IA0o9u4I9aqt+LKFD9vR2vMNpyO3uEnzq4nHT0SrDycGJ/EUxwTwMg00s7SZScuH6hHV
-         YRokEpyBrNEPqAL33rghRSD+NOZgmYlhc4EyhwKr251ni8S1jJA1+xhN2eguz2NG63rv
-         VyZVE1Qrn0KFbgP5vVOBad59C2Eu4V0zNc/lLiJInACYOiHoD3jbRyHWOP5tcEFd00Xm
-         w2ymHZT0iHfxNPsPdPbs138DtLZvYZqO/NlCSYRXGdGBEJRdrsns5rpOUkTPRNBjlOfN
-         LLZg==
-X-Gm-Message-State: ACgBeo1c0qQJ3rZ1adr5WO38DEAiGXGhDy5YY97zPDYPMYdbZ/KlSENC
-        8WW3WgdKMf/Itoq80vvJbZ2zOXoqjJVOjHcrz4Y=
-X-Google-Smtp-Source: AA6agR5v+P0bjKc/LRs/ofzxWFzyP4hxcvl7IhyadMjop5OY67JxjkkGONKU+jN+FlyzR2h3D89Cee0OXwhomiRh1XQ=
-X-Received: by 2002:a25:9948:0:b0:67b:fc24:642d with SMTP id
- n8-20020a259948000000b0067bfc24642dmr12933701ybo.42.1661910581149; Tue, 30
- Aug 2022 18:49:41 -0700 (PDT)
+        Tue, 30 Aug 2022 21:50:47 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4DD11A0D
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 18:50:45 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MHRr71C7LzlWYR;
+        Wed, 31 Aug 2022 09:47:19 +0800 (CST)
+Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 31 Aug 2022 09:50:43 +0800
+Received: from [10.174.178.55] (10.174.178.55) by
+ dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 31 Aug 2022 09:50:42 +0800
+Subject: Re: [PATCH 1/2] arm64, kdump: enforce to take 4G as the crashkernel
+ low memory end
+To:     Baoquan He <bhe@redhat.com>, <linux-kernel@vger.kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>, <catalin.marinas@arm.com>,
+        <ardb@kernel.org>, <rppt@kernel.org>,
+        <guanghuifeng@linux.alibaba.com>, <mark.rutland@arm.com>,
+        <will@kernel.org>, <linux-mm@kvack.org>,
+        <wangkefeng.wang@huawei.com>, <kexec@lists.infradead.org>
+References: <20220828005545.94389-1-bhe@redhat.com>
+ <20220828005545.94389-2-bhe@redhat.com>
+From:   "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
+Message-ID: <077ab34d-9d64-5cab-7a44-1c7222032db4@huawei.com>
+Date:   Wed, 31 Aug 2022 09:50:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <CAM7-yPTdihLsPjDKM-0OEszxNd8n0bgeRseiEkCsSZW-uuaRvw@mail.gmail.com>
- <20220830092839.3197-1-ppbuk5246@gmail.com> <Yw49m7Hpq+NIZYWw@arm.com>
- <CAM7-yPQjjwM_fCgojYHbrhE4GFCX22VLoCiTVkorNG6hQDj9EQ@mail.gmail.com>
- <Yw62//C+LmH+BcEh@MiWiFi-R3L-srv> <CAM7-yPRKC8hGSoSe34+RbCuRDdv88QsFzD=VznM2v9yu0YZMWA@mail.gmail.com>
-In-Reply-To: <CAM7-yPRKC8hGSoSe34+RbCuRDdv88QsFzD=VznM2v9yu0YZMWA@mail.gmail.com>
-From:   Yun Levi <ppbuk5246@gmail.com>
-Date:   Wed, 31 Aug 2022 10:49:30 +0900
-Message-ID: <CAM7-yPRp7wpP1a=SrH4o2SBijF4ZfxkLTe7vpRXq_D_y1Kz-1g@mail.gmail.com>
-Subject: [PATCH v2-RESEND] arm64/kexec: Fix missing extra range for crashkres_low.
-To:     Baoquan He <bhe@redhat.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>, will@kernel.org,
-        nramas@linux.microsoft.com, thunder.leizhen@huawei.com,
-        linux-arm-kernel@lists.infradead.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kexec@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220828005545.94389-2-bhe@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.55]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500006.china.huawei.com (7.185.36.236)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like crashk_res, Calling crash_exclude_mem_range function with
-crashk_low_res area would need extra crash_mem range too.
 
-Add one more extra cmem slot in case of crashk_low_res is used.
 
-Signed-off-by: Levi Yun <ppbuk5246@gmail.com>
-Fixes: 944a45abfabc ("arm64: kdump: Reimplement crashkernel=X")
-Cc: stable@vger.kernel.org
-Acked-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
----
- arch/arm64/kernel/machine_kexec_file.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 2022/8/28 8:55, Baoquan He wrote:
+> Problem:
+> =======
+> On arm64, block and section mapping is supported to build page tables.
+> However, currently it enforces to take base page mapping for the whole
+> linear mapping if CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 is enabled and
+> crashkernel kernel parameter is set. This will cause longer time of the
+> linear mapping process during bootup and severe performance degradation
+> during running time.
+> 
+> Root cause:
+> ==========
+> On arm64, crashkernel reservation relies on knowing the upper limit of
+> low memory zone because it needs to reserve memory in the zone so that
+> devices' DMA addressing in kdump kernel can be satisfied. However, the
+> limit on arm64 is variant. And the upper limit can only be decided late
+> till bootmem_init() is called.
+> 
+> And we need to map the crashkernel region with base page granularity when
+> doing linear mapping, because kdump needs to protect the crashkernel region
+> via set_memory_valid(,0) after kdump kernel loading. However, arm64 doesn't
+> support well on splitting the built block or section mapping due to some
+> cpu reststriction [1]. And unfortunately, the linear mapping is done before
+> bootmem_init().
+> 
+> To resolve the above conflict on arm64, the compromise is enforcing to
+> take base page mapping for the entire linear mapping if crashkernel is
+> set, and CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 is enabed. Hence
+> performance is sacrificed.
+> 
+> Solution:
+> =========
+> To fix the problem, we should always take 4G as the crashkernel low
+> memory end in case CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 is enabled.
+> With this, we don't need to defer the crashkernel reservation till
+> bootmem_init() is called to set the arm64_dma_phys_limit. As long as
+> memblock init is done, we can conclude what is the upper limit of low
+> memory zone.
+> 
+> 1) both CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 are disabled or memblock_start_of_DRAM() > 4G
+>   limit = PHYS_ADDR_MAX+1  (Corner cases)
+> 2) CONFIG_ZONE_DMA or CONFIG_ZONE_DMA32 are enabled:
+>    limit = 4G  (generic case)
 
-diff --git a/arch/arm64/kernel/machine_kexec_file.c
-b/arch/arm64/kernel/machine_kexec_file.c
-index 889951291cc0..a11a6e14ba89 100644
---- a/arch/arm64/kernel/machine_kexec_file.c
-+++ b/arch/arm64/kernel/machine_kexec_file.c
-@@ -47,7 +47,7 @@ static int prepare_elf_headers(void **addr, unsigned long *sz)
-  u64 i;
-  phys_addr_t start, end;
+If Raspberry Pi 4 doesn't need to be considered:
+Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
 
-- nr_ranges = 1; /* for exclusion of crashkernel region */
-+ nr_ranges = 2; /* for exclusion of crashkernel region */
-  for_each_mem_range(i, &start, &end)
-  nr_ranges++;
+In fact, I also think, for the sake of a niche scene, sacrificing the mass scene,
+the cart is put before the horse.
+
+
+> 
+> [1]
+> https://lore.kernel.org/all/YrIIJkhKWSuAqkCx@arm.com/T/#u
+> 
+> Signed-off-by: Baoquan He <bhe@redhat.com>
+> ---
+>  arch/arm64/mm/init.c | 24 ++++++++++++++----------
+>  arch/arm64/mm/mmu.c  | 38 ++++++++++++++++++++++----------------
+>  2 files changed, 36 insertions(+), 26 deletions(-)
+> 
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index b9af30be813e..8ae55afdd11c 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -90,10 +90,22 @@ phys_addr_t __ro_after_init arm64_dma_phys_limit;
+>  phys_addr_t __ro_after_init arm64_dma_phys_limit = PHYS_MASK + 1;
+>  #endif
+>  
+> +static phys_addr_t __init crash_addr_low_max(void)
+> +{
+> +	phys_addr_t low_mem_mask = U32_MAX;
+> +	phys_addr_t phys_start = memblock_start_of_DRAM();
+> +
+> +	if ((!IS_ENABLED(CONFIG_ZONE_DMA) && !IS_ENABLED(CONFIG_ZONE_DMA32)) ||
+> +	     (phys_start > U32_MAX))
+> +		low_mem_mask = PHYS_ADDR_MAX;
+> +
+> +	return min(low_mem_mask, memblock_end_of_DRAM() - 1) + 1;
+> +}
+> +
+>  /* Current arm64 boot protocol requires 2MB alignment */
+>  #define CRASH_ALIGN			SZ_2M
+>  
+> -#define CRASH_ADDR_LOW_MAX		arm64_dma_phys_limit
+> +#define CRASH_ADDR_LOW_MAX		crash_addr_low_max()
+>  #define CRASH_ADDR_HIGH_MAX		(PHYS_MASK + 1)
+>  
+>  static int __init reserve_crashkernel_low(unsigned long long low_size)
+> @@ -389,8 +401,7 @@ void __init arm64_memblock_init(void)
+>  
+>  	early_init_fdt_scan_reserved_mem();
+>  
+> -	if (!defer_reserve_crashkernel())
+> -		reserve_crashkernel();
+> +	reserve_crashkernel();
+>  
+>  	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+>  }
+> @@ -434,13 +445,6 @@ void __init bootmem_init(void)
+>  	 */
+>  	dma_contiguous_reserve(arm64_dma_phys_limit);
+>  
+> -	/*
+> -	 * request_standard_resources() depends on crashkernel's memory being
+> -	 * reserved, so do it here.
+> -	 */
+> -	if (defer_reserve_crashkernel())
+> -		reserve_crashkernel();
+> -
+>  	memblock_dump_all();
+>  }
+>  
+> diff --git a/arch/arm64/mm/mmu.c b/arch/arm64/mm/mmu.c
+> index e7ad44585f40..cdd338fa2115 100644
+> --- a/arch/arm64/mm/mmu.c
+> +++ b/arch/arm64/mm/mmu.c
+> @@ -547,13 +547,12 @@ static void __init map_mem(pgd_t *pgdp)
+>  	memblock_mark_nomap(kernel_start, kernel_end - kernel_start);
+>  
+>  #ifdef CONFIG_KEXEC_CORE
+> -	if (crash_mem_map) {
+> -		if (defer_reserve_crashkernel())
+> -			flags |= NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS;
+> -		else if (crashk_res.end)
+> -			memblock_mark_nomap(crashk_res.start,
+> -			    resource_size(&crashk_res));
+> -	}
+> +	if (crashk_res.end)
+> +		memblock_mark_nomap(crashk_res.start,
+> +				    resource_size(&crashk_res));
+> +	if (crashk_low_res.end)
+> +		memblock_mark_nomap(crashk_low_res.start,
+> +				    resource_size(&crashk_low_res));
+>  #endif
+>  
+>  	/* map all the memory banks */
+> @@ -589,16 +588,23 @@ static void __init map_mem(pgd_t *pgdp)
+>  	 * through /sys/kernel/kexec_crash_size interface.
+>  	 */
+>  #ifdef CONFIG_KEXEC_CORE
+> -	if (crash_mem_map && !defer_reserve_crashkernel()) {
+> -		if (crashk_res.end) {
+> -			__map_memblock(pgdp, crashk_res.start,
+> -				       crashk_res.end + 1,
+> -				       PAGE_KERNEL,
+> -				       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
+> -			memblock_clear_nomap(crashk_res.start,
+> -					     resource_size(&crashk_res));
+> -		}
+> +	if (crashk_res.end) {
+> +		__map_memblock(pgdp, crashk_res.start,
+> +			       crashk_res.end + 1,
+> +			       PAGE_KERNEL,
+> +			       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
+> +		memblock_clear_nomap(crashk_res.start,
+> +				     resource_size(&crashk_res));
+>  	}
+> +	if (crashk_low_res.end) {
+> +		__map_memblock(pgdp, crashk_low_res.start,
+> +			       crashk_low_res.end + 1,
+> +			       PAGE_KERNEL,
+> +			       NO_BLOCK_MAPPINGS | NO_CONT_MAPPINGS);
+> +		memblock_clear_nomap(crashk_low_res.start,
+> +				     resource_size(&crashk_low_res));
+> +	}
+> +
+>  #endif
+>  }
+>  
+> 
 
 -- 
-2.35.1
+Regards,
+  Zhen Lei
