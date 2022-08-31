@@ -2,182 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4FFECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 19:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F07ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 19:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231947AbiHaTM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 15:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38906 "EHLO
+        id S232003AbiHaTMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 15:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiHaTMZ (ORCPT
+        with ESMTP id S232144AbiHaTMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 15:12:25 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD59ED83D9;
-        Wed, 31 Aug 2022 12:12:23 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id w18so11591506qki.8;
-        Wed, 31 Aug 2022 12:12:23 -0700 (PDT)
+        Wed, 31 Aug 2022 15:12:45 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E262DD9D60;
+        Wed, 31 Aug 2022 12:12:44 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id l3so15002151plb.10;
+        Wed, 31 Aug 2022 12:12:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:feedback-id:from:to:cc;
-        bh=BlRf7W3x/ZYNwUL/i+8WPajC7eIKtq4rRsLFRUO00UY=;
-        b=VwDMh3hjO0mzYMUaX3Gbi5C12cnleNpGMjqWcA82t/sPm5YtWOnSoguxQgUtFIvyHj
-         3F9+/03fOnPYbWbhTGNudrydWLgzabdo5uAOFkym9KE6GN1S6Qw2Oly0JHnNVdhE4Aon
-         OUn+o5Q+rshbxHEiEteg4YJJmR3Bjm/0JPKiVycMblC1caVgs9FEgLi/5bW0vM/8bbpT
-         chLurFdKNEi3Mcb/IUB9rVKT8Qbjcp48YyFSpyfDlPl5uCXSM/ijCHlsLz2nzccyK4io
-         4gwIJew9HfMPiTUEnFMG9HOSKi3qdqlg4Frtk6kkjRbHWc+8ncSZiMevOUzU4OlXa1H8
-         Db4w==
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=J8+gw0Ed2BKWKNTM6I+2z6oJ3D/Q+GyJQau9gr2e+74=;
+        b=TIm6eifYCXYq/PDBPG8Rj+J5qLJhCxQactVwc3wazhmU9BLD+RTNNfM2Vgu7DFADzv
+         5629vKQ+L2ehtlNMrHY34I0XhzNSoBMj28Pbe+9X6pcFX8lFXaCDflqbo9v93mEnEDJn
+         7EQJjvNAj2ZZelg6D3r5jtXj/HmhzbKNawgYU37IVEGucJxgfcZf0mpIdg3iql/CnGti
+         W5ss01iNL3B/OyxMMRPBZ/HV7SvbOpSmTWTvvyeEofWvsi53RIJ+273HFwZ4SkTojNb+
+         UcCMwxU/GrpFvHyUpn3nE0suJZ/ImQyRZzztKbBIfIuLzB9sQeIfzZJ50EZrVeVzu2+l
+         tpAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:feedback-id:x-gm-message-state:from:to:cc;
-        bh=BlRf7W3x/ZYNwUL/i+8WPajC7eIKtq4rRsLFRUO00UY=;
-        b=qxQNQra2P7UO85sUqaRsrn2Xqo8WFEufXRCWFnPQ7I7HfiDSvuFyrFyvcQpJsmGMSs
-         p/ji2082r6V8WMEd/jP5CcnF9yGnlzJI0nUQF+lv4xfgHLtZl7ZlHi3tjs6VqDvZqkOg
-         FnYERs/od4fpWZ/v0hYhVNdjyHByXR5cvBlPf97oqmj4/Elp11yY7IB3D0POJheJFd1k
-         9T/ndEPbPLh7YetUfLwMtdqAlcWdX0Zj6q1FPiwWTyFoz8o1bewlK5wDBLAE3XHsZ3Ae
-         XnyY23/uWZA0XTIsyRruAbiVedWIHAEuhTPCIE+B/HniKBcUvPZbqdp12xIQWLD4esA/
-         Vy+w==
-X-Gm-Message-State: ACgBeo33Om2c5b2ZKOR2Xglr1AqoH/zmnqLXCBetR2sF/QiJYlom6o/u
-        V/5ErB4k/SKvJG/aH+zTX+h429Q5QBs=
-X-Google-Smtp-Source: AA6agR440czcs4X1aV4EzQ4AiT3FymTTvuCugfm3euv1cnTiNJ342KELuSCOBVZvIJrQlrR0YSdFqA==
-X-Received: by 2002:a05:620a:b02:b0:6bb:ebe:248b with SMTP id t2-20020a05620a0b0200b006bb0ebe248bmr16654670qkg.420.1661973142873;
-        Wed, 31 Aug 2022 12:12:22 -0700 (PDT)
-Received: from auth2-smtp.messagingengine.com (auth2-smtp.messagingengine.com. [66.111.4.228])
-        by smtp.gmail.com with ESMTPSA id ge17-20020a05622a5c9100b003430589dd34sm9095655qtb.57.2022.08.31.12.12.21
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=J8+gw0Ed2BKWKNTM6I+2z6oJ3D/Q+GyJQau9gr2e+74=;
+        b=E8yutALp52Gie5rpEYnp0iGnzLrIKNsWPvD/P2KNcAqtYF5txD1F+UOj3J7qgsOP9P
+         zC0NvcGD1KuebkhAvJ5FR/qinHTaKWovnr677+DSP+aXPCyR1XPZdMBzn3NupOCT7G26
+         I7s5AhWEAfwSEUeYQ4A9ZUdyXznWHoq0iu/epiO3p87DUXlcmO2YvSsHns+CziTjpdxv
+         mJiCyByDDXAbLveFjdPnvIVdH09IDaW9WKCrDIxIzIPSeOuH0na2PtjRLee/vL+HxfUB
+         Qwa78pAQYlvMe/55zXCA3wJeoPAt8v3mMBtwkIWHJR97tAf0YcnZGpQwwA3cFf/Aojnd
+         ehmQ==
+X-Gm-Message-State: ACgBeo0yDyjOzVNVAuD2J6VJ8LW4zD/Vk7WjFA5VnWKG5o0gYkJhuZ05
+        zXu4Qf2RvmaPluDwSDYpbqw=
+X-Google-Smtp-Source: AA6agR7zHOg4Ib5yW645lx9oyZjDhbo86Yl2jtZwt70PO5wWt4Qqzk4e4xqVhXE0ZUim6dT9/siaxg==
+X-Received: by 2002:a17:902:b217:b0:172:bd6c:814d with SMTP id t23-20020a170902b21700b00172bd6c814dmr27201253plr.55.1661973164211;
+        Wed, 31 Aug 2022 12:12:44 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:2488:79db:897a:5de7])
+        by smtp.gmail.com with ESMTPSA id a10-20020a1709027e4a00b001752ffe92absm3429677pln.91.2022.08.31.12.12.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 12:12:22 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 7DC9827C0054;
-        Wed, 31 Aug 2022 15:12:20 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 31 Aug 2022 15:12:20 -0400
-X-ME-Sender: <xms:lLIPYxB3qTvX1-AkkQAcOIBgelkbwoykY_cp_swDtqbyC87vsYoB-Q>
-    <xme:lLIPY_gt1pI0QNlxYdwk_X0gGqm0BjEdOgZ5j_EOdtickj-9rD28z_B_Rrm40qvcu
-    YuF7uYMBFBzWUF_UQ>
-X-ME-Received: <xmr:lLIPY8m6flquFM3dYY5TPOkgjgRT1PE8LCaYykB7XK8QuddW-XPfJ2m6vtM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdekiedguddtjecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeeuohhq
-    uhhnucfhvghnghcuoegsohhquhhnrdhfvghnghesghhmrghilhdrtghomheqnecuggftrf
-    grthhtvghrnhephedugfduffffteeutddvheeuveelvdfhleelieevtdeguefhgeeuveei
-    udffiedvnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epsghoqhhunhdomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghedt
-    ieegqddujeejkeehheehvddqsghoqhhunhdrfhgvnhhgpeepghhmrghilhdrtghomhesfh
-    higihmvgdrnhgrmhgv
-X-ME-Proxy: <xmx:lLIPY7yJ9SfImoLUIqOW7RQSJf5ctfc76SEk4pWazSIfNQrZ6MztKw>
-    <xmx:lLIPY2RR3tpdj1xWTrdavcmzL5chOJHsilhOfVPxE8x8Y_21BMDBXw>
-    <xmx:lLIPY-Yb3y6Deh6xSc5e0RVFs4gvIAsFEv35COKTpc9qN5y5MguUAg>
-    <xmx:lLIPY9KbY3Gm4O3b5YR9NSXwm3Xa3QZHqBtELxJRzEnJt3x0ufV-tg>
-Feedback-ID: iad51458e:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 31 Aug 2022 15:12:19 -0400 (EDT)
-Date:   Wed, 31 Aug 2022 12:11:20 -0700
-From:   Boqun Feng <boqun.feng@gmail.com>
-To:     stable@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        linux-hyperv@vger.kernel.org,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        David Hildenbrand <david@redhat.com>,
-        linux-kernel@vger.kernel.org, Wei Liu <wei.liu@kernel.org>
-Subject: Re: [PATCH v2 1/2] Drivers: hv: balloon: Support status report for
- larger page sizes
-Message-ID: <Yw+yWFFpU+mwT97H@boqun-archlinux>
-References: <20220325023212.1570049-1-boqun.feng@gmail.com>
- <20220325023212.1570049-2-boqun.feng@gmail.com>
+        Wed, 31 Aug 2022 12:12:43 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 12:12:41 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Raul E Rangel <rrangel@chromium.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-input <linux-input@vger.kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        timvp@google.com, "jingle.wu" <jingle.wu@emc.com.tw>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Tony Lindgren <tony@atomide.com>
+Subject: Re: [PATCH 1/8] Input: elan_i2c - Use PM subsystem to manage wake irq
+Message-ID: <Yw+yqbaTi04Ydgkq@google.com>
+References: <20220830231541.1135813-1-rrangel@chromium.org>
+ <20220830171332.1.Id022caf53d01112188308520915798f08a33cd3e@changeid>
+ <CAJZ5v0h10wrurjYG50dA+pCfRtNDqN=c8odQ0p6HJRnOyJh7KA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220325023212.1570049-2-boqun.feng@gmail.com>
+In-Reply-To: <CAJZ5v0h10wrurjYG50dA+pCfRtNDqN=c8odQ0p6HJRnOyJh7KA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-I think we also want this patch in the 5.15 stable. Without this patch,
-hv_balloon() will report incorrect memory usage to hypervisor when
-running on ARM64 with PAGE_SIZE > 4k. Only 5.15 needs this because ARM64
-support of HyperV guests arrived in 5.15.
-
-Upstream id b3d6dd09ff00fdcf4f7c0cb54700ffd5dd343502
-
-Cc: <stable@vger.kernel.org> # 5.15.x
-
-Thanks!
-
-Regards,
-Boqun
-
-On Fri, Mar 25, 2022 at 10:32:11AM +0800, Boqun Feng wrote:
-> DM_STATUS_REPORT expects the numbers of pages in the unit of 4k pages
-> (HV_HYP_PAGE) instead of guest pages, so to make it work when guest page
-> sizes are larger than 4k, convert the numbers of guest pages into the
-> numbers of HV_HYP_PAGEs.
+On Wed, Aug 31, 2022 at 08:01:12PM +0200, Rafael J. Wysocki wrote:
+> On Wed, Aug 31, 2022 at 1:16 AM Raul E Rangel <rrangel@chromium.org> wrote:
+> >
+> > The Elan I2C touchpad driver is currently manually managing the wake
+> > IRQ. This change removes the explicit enable_irq_wake/disable_irq_wake
+> > and instead relies on the PM subsystem. This is done by calling
+> > dev_pm_set_wake_irq.
+> >
+> > i2c_device_probe already calls dev_pm_set_wake_irq when using device
+> > tree, so it's only required when using ACPI. The net result is that this
+> > change should be a no-op. i2c_device_remove also already calls
+> > dev_pm_clear_wake_irq, so we don't need to do that in this driver.
+> >
+> > I tested this on an ACPI system where the touchpad doesn't have _PRW
+> > defined. I verified I can still wake the system and that the wake source
+> > was the touchpad IRQ GPIO.
+> >
+> > Signed-off-by: Raul E Rangel <rrangel@chromium.org>
 > 
-> Note that the numbers of guest pages are still used for tracing because
-> tracing is internal to the guest kernel.
-> 
-> Reported-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> Signed-off-by: Boqun Feng <boqun.feng@gmail.com>
-> Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-> ---
->  drivers/hv/hv_balloon.c | 13 ++++++++++---
->  1 file changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-> index f2d05bff4245..062156b88a87 100644
-> --- a/drivers/hv/hv_balloon.c
-> +++ b/drivers/hv/hv_balloon.c
-> @@ -17,6 +17,7 @@
->  #include <linux/slab.h>
->  #include <linux/kthread.h>
->  #include <linux/completion.h>
-> +#include <linux/count_zeros.h>
->  #include <linux/memory_hotplug.h>
->  #include <linux/memory.h>
->  #include <linux/notifier.h>
-> @@ -1130,6 +1131,7 @@ static void post_status(struct hv_dynmem_device *dm)
->  	struct dm_status status;
->  	unsigned long now = jiffies;
->  	unsigned long last_post = last_post_time;
-> +	unsigned long num_pages_avail, num_pages_committed;
->  
->  	if (pressure_report_delay > 0) {
->  		--pressure_report_delay;
-> @@ -1154,16 +1156,21 @@ static void post_status(struct hv_dynmem_device *dm)
->  	 * num_pages_onlined) as committed to the host, otherwise it can try
->  	 * asking us to balloon them out.
->  	 */
-> -	status.num_avail = si_mem_available();
-> -	status.num_committed = vm_memory_committed() +
-> +	num_pages_avail = si_mem_available();
-> +	num_pages_committed = vm_memory_committed() +
->  		dm->num_pages_ballooned +
->  		(dm->num_pages_added > dm->num_pages_onlined ?
->  		 dm->num_pages_added - dm->num_pages_onlined : 0) +
->  		compute_balloon_floor();
->  
-> -	trace_balloon_status(status.num_avail, status.num_committed,
-> +	trace_balloon_status(num_pages_avail, num_pages_committed,
->  			     vm_memory_committed(), dm->num_pages_ballooned,
->  			     dm->num_pages_added, dm->num_pages_onlined);
-> +
-> +	/* Convert numbers of pages into numbers of HV_HYP_PAGEs. */
-> +	status.num_avail = num_pages_avail * NR_HV_HYP_PAGES_IN_PAGE;
-> +	status.num_committed = num_pages_committed * NR_HV_HYP_PAGES_IN_PAGE;
-> +
->  	/*
->  	 * If our transaction ID is no longer current, just don't
->  	 * send the status. This can happen if we were interrupted
-> -- 
-> 2.35.1
-> 
+> I like this a lot [...]
+
+I also like this a lot, but this assumes that firmware has correct
+settings for the interrupt... Unfortunately it is not always the case
+and I see that at least Chrome OS devices, such as glados line (cave, chell, sentry,
+ect) do not mark interrupt as wakeup:
+
+src/mainboard/google/glados/variants/chell/overridetree.cb
+
+                        chip drivers/i2c/generic
+                                register "hid" = ""ELAN0000""
+                                register "desc" = ""ELAN Touchpad""
+                                register "irq" = "ACPI_IRQ_LEVEL_LOW(GPP_B3_IRQ)"
+                                register "wake" = "GPE0_DW0_05"
+                                device i2c 15 on end
+
+I assume it should have been ACPI_IRQ_WAKE_LEVEL_LOW for the interrupt
+to be marked as wakeup.
+
+(we do correctly mark GPE as wakeup).
+
+So we need to do something about older devices....
+
+-- 
+Dmitry
