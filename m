@@ -2,103 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B38ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 16:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C80ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 16:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbiHaQxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 12:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54280 "EHLO
+        id S230350AbiHaQy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 12:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiHaQxJ (ORCPT
+        with ESMTP id S229607AbiHaQyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 12:53:09 -0400
-Received: from sonic309-27.consmr.mail.ne1.yahoo.com (sonic309-27.consmr.mail.ne1.yahoo.com [66.163.184.153])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1BF6DCFD7
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 09:53:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1661964785; bh=ZCdWOAPS92e0L8p/nSC2kBeHBP1h4DoQBYzuNRI5u+U=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=C2Ta+o3Il5MP8bKvZbxOh+n9Q/l7S6LpGCk4RtspiXnWJOF/E03lTkYaNq78kUc654j8ZKzAPot3kx0l0o+nhs4oF0xVtIJ73AP9ZCB1Ou8bAYbijDzevQ3IKB2JVnXgA+SdBe5UCkncuwiRI3qoxW3m40RkV+xRuN9QhsVNySqXK5xo9/BNqCthWDO9JPcSrDFdvIkryAmdZRoEDu5kqwiMq6Mqt2XjnNwIkUA+QBJoFN5d6OM8bve5/QaO7UIXzYIP5yQg9zE6wt9mb+5lVQFdi4pNYyTlJiZg2EysSegjn0a142PDOtQrHnt4+qDH4JUQOWBl3+6d9WU/Kh37UA==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1661964785; bh=8OplMxJbJkJZ9r7vM63IiotdRomZJCnDpbR8aoQxPjV=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=OselDFnnrcq47Vosf6n7SYy4PRFgzyCKVKQzwVo4fh/IvFnIOTlIuFI7LQb9Mtj1didxJlZssJ1udE8Kn/rFiJ4ZtnK6o2c4XLP09Y4yZrrkFjDUgOD7T1yQcuCDOf21UX6EvxuX5mZYC05y4xy4dhmfiJHXGlxEjNxKZu9cza1G4lHsYG1zydHYhsYuYQVuDZrzEdvo1WNHFXC90xM6ns3eSojAP/p3QTe/q7PuvYiIj9cBPC3f6F04NHzl1WB9NVXy8C6AXAcxoIU04mxJNcYdsehvrgh2+4Vpvd6QfpaJxUJcvBG+bQLYqUuZMtgfLPSh27Q2TCgEy1gnvaFUXg==
-X-YMail-OSG: 0RdEtYYVM1niEJJkXuqbzhxiFHwZuTcNFUqPOLFl2StBWLTKjYVHGBvQH5pOq_p
- oIg_pWVyilnlRqg5AUexGcZiwpNexJpoMS_tSso7KWebqnPBIN96mQKtBAIEy2ZCJuuN1IMrEcvg
- DWUc6EvkqRtY7WSooEnVfYnHQ6KhjaprU73SobbkYlzIToIRnldzcGNZRLOiSTUFFFSV6dINoBtH
- n.8_vPQNRglo_nvAi2scl_CgfnoSnE.KL1GxD0zNcH_2YKvQtkYMqP7k0me5qCeUqdJrnRF7_Bk0
- OEKjUS3WGUjilgOUFuHBS5uHGI9R1SgrxZOC1dZV4KcIW_rK.eSv0lgQMpgsfDg1tYM3I2RapQ6v
- cnA87UQWsl.lHCcc3d9tjuEvYRY28x7bbquAps0l15rojufio8nEI0XvLFCCSTQ1S81KXPBdMAwd
- rMCmChIUaNXJR5vcNdzXCO.QKKI4sET42AUvaOWicAqF1Az_XdzHUwVoAjJdT4QqCr3DDm59hUDc
- lmxWUKx45.d_JwjJq5y_m9PHpuAOzRjKfeV3VnrbE1JkKkfIrdVa0qKevDyKT7RIJ6tYXRuX6Oua
- yS_Mc0XcDUCNP07JmCxnntk3f2vAknWQRrhwmM5Vrvy.2Ms9I._afIZFdJoWMRO2EkUXDEpBUZnz
- HK0iJhIiJApFS9z0WcT.jFWwJqeqUNFT6S1IVrt2Xmq2waa9EvN4GCgUORQ1C5DQz9k1totxs8Gz
- YX.jEKFKv8HPxLKs5v10J3he_oszldXHwRRj8RmqZwSa_2KIoPGBBcvMjHYzGWc26Fn1gZu4jFlL
- 2Xg8Xn27PKCVYvifdaplV0T5GRXtLEdOmwd7MZsGeRKU9AbZ7Brki8a6Pgu8Bk6Z.PT9En1u9mZ6
- hzVT8zjjLVEh0htyosyYy.fh7g7vFasff6AyS4KycTrXGm9dmJRXuxvbzJdtqohbM0LFzhKJR7ue
- wY1bwY_PP4Im1zEuHcTGqBq6Vil.O289U01fqhzazTKT0TquvkM13r0X1.ekrxqdFTjHztMYcrsp
- vtjuhedblUf2xGrbKPOfj.Xzd3aEtFM8iXzYXzAtx2CThawlkU0fxK11ARAwC5Jj9DCyd5ggpJeG
- d07fKORhaRipG1I1Dhs25dc4JktSiJ5Uub86cf00Z5w4iIP7JAZqHDyJw2EKRCcAwUrVJI9mW.B8
- U0lDrjkNw1rboLGqudaMd7A22QD3j39ZZT_xFxitGQu05cEMOMdjK3UZ8IuBk.F_gFcQmFvynKAj
- xp3_8TZC67F8MEciunQi2hBp7T5s6Yaunh2iCKJjN1DrJbp4xddIK8UGDEfy5wH.e1Skd1IVGWEp
- Gqm7t4bmHKUjBDMBxj5tegDYqaUSAOuCESM9njYIyqhuE9IWW92dI8n7e..beQKMRV1_JYW4mSo2
- 64APWNT_eKsQsDcuZEPxrP_4mCd1_jnyUc7.1VXg6q5qV4jzQZnMQDlJ9lGLcjPD1TlR4eW9ntwB
- HJzE9BBKZ.lFxiKMQX5ye3VZ8HJQhGfhogV5zqGYkazBb77yeXQf2HDsll3P9nkhxOyZpZ6Z7oDX
- TqjW0GxdMaSFfAt1oz.oipn1wnk8xJ.NYl6D5EtcnnwohAYMDxYIQreNxeG1R8fkBEW32fC3dla0
- CW6WQ2UPNimUgQYK2OQLe9AJjd4iYIk.zn8K0PREZ.PvGxSISQs.059vfG3UbTj3oJKfD5baDUqY
- 13XhhZyBxESIDTXZfIXpKt7LC3oppuNnhvnd502v1YzSuh062OuA3NSsQCbWWTBNh34eUHKJb4fU
- NhHoWEo4FjRnk3YFC3eopsWCIAkJieaFuF.8m_ecsiBSMwQZYCn8mpgaXVBxFcyu41s17sRpWKP8
- xYPPC9ADuNZE9jo..36bd59PV_eFCmTzQbZq_5qNcIG.QCgQ6p3odgB3RRzvrL53Q8uuPjHd1jMY
- fesXh8ISBx9kK.zNp.dB8BpjYdKnuRlya9qwkvX.unJSRqC1R9Lp9yP6hkDZkFp9mna4R4Z0T0sm
- X9GtbG7JIteNAQ7zmDi7pOr0jlnhiTRq70lU5xHavJrjRx_S2XXpZsxXrxRnUvEvP2G.kGKZJ4ST
- xfWKec8HEUcTq1sY01Sd3BdevtMgSmnfl8wv6Lls2GoSt32LYHaVUPbEYAlbByCPSfndYNhG.iCb
- XCTFZTipebGqvsDC_OvINSi9w3t4ot2epPzUWjuzUal7B4FVy3ZmtNQKOCCRaV_T8n3BMBfMD2ox
- dc23fg2GtKd3yu1SyUYzq_HtBOd4YsacQfQ--
-X-Sonic-MF: <casey@schaufler-ca.com>
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ne1.yahoo.com with HTTP; Wed, 31 Aug 2022 16:53:05 +0000
-Received: by hermes--production-bf1-7586675c46-lmmdh (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 9f8c2b6d5afb29179a6b494874f2add6;
-          Wed, 31 Aug 2022 16:53:01 +0000 (UTC)
-Message-ID: <766a755d-bd43-22eb-7a90-970a807ea803@schaufler-ca.com>
-Date:   Wed, 31 Aug 2022 09:52:58 -0700
+        Wed, 31 Aug 2022 12:54:53 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BB9D31FE;
+        Wed, 31 Aug 2022 09:54:43 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 12:54:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1661964881;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JEP5P0FivNXzUzqKfDvRWYdY+bpNYj7QyhA+GvUOAA8=;
+        b=oy8BDHTFcP2BrlGTXifpszllUxXH86Pv/uhrb5Vvx0qLa2JoLx3g7wnt0nSOLOMYEKiDJs
+        2NCmMsw9mPuD8JADSvOWhLRPmi8UBEOqVzwFjz54BQPN6frJC8u3+q+B989+uxgznTkBGn
+        hijZJCZAL0cuRmj5HQ86K6BZfEcahIU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Kent Overstreet <kent.overstreet@linux.dev>
+To:     Coly Li <colyli@suse.de>
+Cc:     linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org
+Subject: Re: [PATCH 2/3] bcache: Convert to lib/time_stats
+Message-ID: <20220831165437.l27raas6k5nlqsdg@moria.home.lan>
+References: <20220829165344.2958640-1-kent.overstreet@linux.dev>
+ <20220829165344.2958640-3-kent.overstreet@linux.dev>
+ <14ACCED7-D24D-4AC4-8677-F7F4630A840A@suse.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v4] vfs, security: Fix automount superblock LSM init
- problem, preventing NFS sb sharing
-Content-Language: en-US
-To:     David Howells <dhowells@redhat.com>
-Cc:     Christian Brauner <brauner@kernel.org>, viro@zeniv.linux.org.uk,
-        Jeff Layton <jlayton@kernel.org>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna@kernel.org>,
-        Scott Mayhew <smayhew@redhat.com>,
-        Paul Moore <paul@paul-moore.com>, linux-nfs@vger.kernel.org,
-        selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, dwysocha@redhat.com,
-        linux-kernel@vger.kernel.org, casey@schaufler-ca.com
-References: <89548338-f716-c110-0f85-3ef880bbd723@schaufler-ca.com>
- <c648aa7c-a49c-a7e2-6a05-d1dfe44b8fdb@schaufler-ca.com>
- <166133579016.3678898.6283195019480567275.stgit@warthog.procyon.org.uk>
- <20220826082439.wdestxwkeccsyqtp@wittgenstein>
- <1903709.1661849345@warthog.procyon.org.uk>
- <1535495.1661953720@warthog.procyon.org.uk>
-From:   Casey Schaufler <casey@schaufler-ca.com>
-In-Reply-To: <1535495.1661953720@warthog.procyon.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Mailer: WebService/1.1.20595 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <14ACCED7-D24D-4AC4-8677-F7F4630A840A@suse.de>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 6:48 AM, David Howells wrote:
-> Casey Schaufler <casey@schaufler-ca.com> wrote:
->
->> No. I appreciate that you're including Smack as part of the effort.
->> I would much rather have the code working as you have it than have
->> to go in later and do it all from scratch. With luck I should be able
->> to get someone with a considerably lower level of expertise to work
->> on it.
-> Can I put you down as a Reviewed-by, then?
+On Thu, Sep 01, 2022 at 12:00:17AM +0800, Coly Li wrote:
+> 
+> 
+> > 2022年8月30日 00:53，Kent Overstreet <kent.overstreet@linux.dev> 写道：
+> > 
+> > This patch converts bcache to the new generic time_stats code
+> > lib/time_stats.c. The new code is from bcachefs, and has some changes
+> > from the version in bcache:
+> > 
+> > - we now use ktime_get_ns(), not local_clock(). When the code was
+> >   originally written multi processor systems that lacked synchronized
+> >   TSCs were still common, and so local_clock() was much cheaper than
+> >   sched_clock() (though not necessarily fully accurate, due to TSC
+> >   drift). ktime_get_ns() should be cheap enough on all common hardware
+> >   now, and more standard/correct.
+> > 
+> > - time_stats are now exported in a single file in sysfs, which means we
+> >   can improve the statistics we keep track of without changing all
+> >   users. This also means we don't have to manually specify which units
+> >   (ms, us, ns) a given time_stats should be printed in; that's handled
+> >   dynamically.
+> > 
+> > - There's a lazily-allocated percpu buffer, which now needs to be freed
+> >   with time_stats_exit().
+> > 
+> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> > Cc: Coly Li <colyli@suse.de>
+> 
+> Hi Kent,
+> 
+> Overall I am OK with the change to bcache code. You may add
+> 	Acked-by: Coly Li <colyli@suse.de>
+> in future version of this patch.
+> 
+> In bcache-tools, they don’t read the changed sysfs files (including bcache-status), IMHO changing the output format won’t be problem for upstream.
+> 
+> My only question is, how to understand the time_stats_to_text() output format,
+> count:          3
+> rate:           0/sec
+> frequency:      4 sec
+> avg duration:   4 sec
+> max duration:   4 sec
+> quantiles (ns): 0 4288669120 4288669120 5360836048 5360836048 5360836048 5360836048 5360836048 5360836048 5360836048 5360836048 5360836048 5360836048 5360836048 5360836048
+> 
+> Fro the above output, what are “rate”, “frequence” and “quantiles” for?
 
-I haven't had a chance to test the changes. I wouldn't want to go
-so far as Reviewed-by without that. I don't think I'll be able to
-do the required setup for the test this week.
+Rate and frequency are inverses - in this example, we're seeing 4 events per
+second.
 
->
-> David
->
+The quantiles are for the duration, they give you an idea of the statistical
+distribution, see https://en.wikipedia.org/wiki/Quantile
+
+In the near future, the quantiles will be removed and replaced with standard
+deviation, true and weighted - the quantiles algorithm isn't super accurate, we
+can give more accurate numbers with standard deviation.
