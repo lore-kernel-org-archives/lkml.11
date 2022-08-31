@@ -2,82 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5C9ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5476EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231756AbiHaNVH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:21:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52782 "EHLO
+        id S231717AbiHaNXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231312AbiHaNU7 (ORCPT
+        with ESMTP id S229875AbiHaNXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:20:59 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792A93AB27
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:20:57 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id k18so8203139lji.13
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:20:57 -0700 (PDT)
+        Wed, 31 Aug 2022 09:23:05 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF57A2856;
+        Wed, 31 Aug 2022 06:23:04 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id 72so14389958pfx.9;
+        Wed, 31 Aug 2022 06:23:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=gXyPGs1xzbqWLyCKCXFzzY2n7w6S19U4Yvty6n2m3xI=;
-        b=BS+iR4ydREy9MZ7gRYr2l+ma3DWnH9f+1BrJTWu2kpJujnIGn4ylhL9yE3RjvSFbs3
-         qJeKzs1i7Lq8Tz2IzKqcT+joLyZ9cnHgdOu+UMz8Lfp3JZqVTg6oc2ha464C7c1nmMld
-         fIrKQy0orkywCqiBh34WVfTq/TsyyiIgzoJhGZOap2Kp6iEtSjbQSSj4S8szXBp4G1gX
-         sfyQBFgzd3aUxXyPuscbnqzTqTLjdBq7uhoPqmJd1Qx76soaiyNL7yaRkM3iBf42g69D
-         HrMoVFeSA1yyEk512f/rdp5TL5v2k35zviPsyAd3ecqgHJyfiwbwE/qE8gNUFYObckMM
-         MV/g==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=GSBS1LQcbgyhNQw5aYu+ifT22UvTNUJPKtaTUkIicrE=;
+        b=dHDe1xGB+PNE3nj1UIoOqRGuf6PzJJ7Ffj+Hr5+399Hx3MT2pGD/iAoy/NKn9zcy7Z
+         WhreKBHworXHvjh75ZDASlCD77Pfz8532BFdjIB625m6guswJUdhVw76ELgfHrcoczlB
+         14YvPDzekLXteWlGohqiij4gtam9sf6fllcvEJqgWjd7vT+z8E8C+fPOhePPZ4lmU1cK
+         WttLRwzykdarIK8SbPU92wu0xxZgcwoU2HXgv+4boZ6gLcTzEVfUiVbWE6wGO+Y5dSIF
+         ISEk4OUYPDt/QDKynMbCBEIzVwVjY+1Au18yU6pKBQU6I0bjaN4/mau0KxTB757b1ByI
+         Gg0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=gXyPGs1xzbqWLyCKCXFzzY2n7w6S19U4Yvty6n2m3xI=;
-        b=mvQEaIYN9GEJOq6BV7m9ezb74CPnICIykODedqbK962SNhuN2UVw+7PiT/mLxAvrXM
-         oZMuuy/rWNI+eHYQhJvGZoxTJOgqCdfOM2Lzw41M/L5OHpvohCtNFb6UECCQE/OUysYm
-         WbmcRGlHrF0J0mldml6qXa59MdHsCrtJ0ymFyMr4sJEbogDL6gUEj0kc99ES8pMp3kFK
-         DRN47EawtQN4/EhnswW2+yRu1w2tXdKRxdCH9kib0kYjqKTj/x6E2yc8Cbr7E5RcBKTT
-         0untdwXdIMoJHfcEJhUSrNa4Ogq5NUTgFhABxCXXWTQXG4Ecbefs5Vi9zeWGRdHnhSDu
-         PufQ==
-X-Gm-Message-State: ACgBeo1PrRz1kYCujNjQl/3Bz+MlHIWfNDE9xSsv4BxGLa3UjffNFIIK
-        0XwYsAVPyH7yZlQzDtVz5qG+vwGYVnLHV0dD
-X-Google-Smtp-Source: AA6agR68vhI8/CXEZ3hYaem0vpetajctNycqN1PQYVoVf9YCRz4ASjoY0Ha1A8CPSwcomrieT8YKWw==
-X-Received: by 2002:a05:651c:1942:b0:268:9b0d:e15c with SMTP id bs2-20020a05651c194200b002689b0de15cmr582532ljb.479.1661952055897;
-        Wed, 31 Aug 2022 06:20:55 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id u26-20020ac258da000000b00493050d6bcesm1987686lfo.122.2022.08.31.06.20.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Aug 2022 06:20:55 -0700 (PDT)
-Message-ID: <330d1f46-0e3c-f58e-b916-9e8644e7b4a1@linaro.org>
-Date:   Wed, 31 Aug 2022 16:20:54 +0300
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=GSBS1LQcbgyhNQw5aYu+ifT22UvTNUJPKtaTUkIicrE=;
+        b=own+jOcCEfpgpszuERV/NvowsyUNcF0Dp4xr0g9bEgl0HL4e2iypF7HlVhQTaypodZ
+         Ood/ZS41pDvQf6M4cfxOiKDhE/+j0LwdDLD/qKtggqjy56JquV2igy1SagNBbOI1V6NP
+         HhmXV/gDWBTr2+HiC81vUFZOOfww2MHTm9FsYsoJkintQOAvLszi/3SH0rwENhlA7FxZ
+         ctwPrbhyOs/zCcGO6vs46wO4EzR9jPq+kWF1M5rBdsOD5eearK5tJGyqwM5y7WyLEpZm
+         1fCPFI57X+WYOjCx4hXFhEa0oi5fz1k7dgIbhisp8Jy79dHJ00NqiFm83+I21eEaIQmg
+         hNvw==
+X-Gm-Message-State: ACgBeo2HR3zRlEDKgTDE7dMu2NPRTCM433Mb8HCuNfNj2pW4+v+VbBFy
+        JVemvKGt17gN/NldnGHoy9w=
+X-Google-Smtp-Source: AA6agR4apanJBvhKCcUhWnruw+A9wyD/ViBodSXus2EbQypb6sFpnqNh/tycA8VBlvXsaPs/s34aAQ==
+X-Received: by 2002:a63:41c5:0:b0:42c:6b7f:6d95 with SMTP id o188-20020a6341c5000000b0042c6b7f6d95mr8917345pga.175.1661952183824;
+        Wed, 31 Aug 2022 06:23:03 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id x13-20020a17090a1f8d00b001f510175984sm1283089pja.41.2022.08.31.06.22.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 06:23:03 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: cui.jinpeng2@zte.com.cn
+To:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com
+Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, johannes.berg@intel.com,
+        alsi@bang-olufsen.dk, loic.poulain@linaro.org,
+        quic_vjakkam@quicinc.com, cui.jinpeng2@zte.com.cn, smoch@web.de,
+        hdegoede@redhat.com, prestwoj@gmail.com,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH v3 linux-next] wifi: brcmfmac: remove redundant variable err
+Date:   Wed, 31 Aug 2022 13:22:54 +0000
+Message-Id: <20220831132254.303697-1-cui.jinpeng2@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 0/4] Introduce MediaTek frequency hopping driver
-Content-Language: en-US
-To:     Johnson Wang <johnson.wang@mediatek.com>, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        angelogioacchino.delregno@collabora.com, sboyd@kernel.org
-Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220831124850.7748-1-johnson.wang@mediatek.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220831124850.7748-1-johnson.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/08/2022 15:48, Johnson Wang wrote:
-> Introduce MediaTek frequency hopping and spread spectrum clocking control
-> for MT8186.
+From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-With one line introduction, you do not help us to understand this. :(
+Return value from brcmf_fil_iovar_data_set() and
+brcmf_config_ap_mgmt_ie() directly instead of
+taking this in another redundant variable.
 
-Best regards,
-Krzysztof
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+---
+ .../wireless/broadcom/brcm80211/brcmfmac/cfg80211.c  | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 7c72ea26a7d7..938a6ed10275 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -3988,7 +3988,6 @@ brcmf_update_pmklist(struct brcmf_cfg80211_info *cfg, struct brcmf_if *ifp)
+ 	struct brcmf_pmk_list_le *pmk_list;
+ 	int i;
+ 	u32 npmk;
+-	s32 err;
+ 
+ 	pmk_list = &cfg->pmk_list;
+ 	npmk = le32_to_cpu(pmk_list->npmk);
+@@ -3997,10 +3996,8 @@ brcmf_update_pmklist(struct brcmf_cfg80211_info *cfg, struct brcmf_if *ifp)
+ 	for (i = 0; i < npmk; i++)
+ 		brcmf_dbg(CONN, "PMK[%d]: %pM\n", i, &pmk_list->pmk[i].bssid);
+ 
+-	err = brcmf_fil_iovar_data_set(ifp, "pmkid_info", pmk_list,
+-				       sizeof(*pmk_list));
+-
+-	return err;
++	return brcmf_fil_iovar_data_set(ifp, "pmkid_info", pmk_list,
++			sizeof(*pmk_list));
+ }
+ 
+ static s32
+@@ -5046,13 +5043,10 @@ brcmf_cfg80211_change_beacon(struct wiphy *wiphy, struct net_device *ndev,
+ 			     struct cfg80211_beacon_data *info)
+ {
+ 	struct brcmf_if *ifp = netdev_priv(ndev);
+-	s32 err;
+ 
+ 	brcmf_dbg(TRACE, "Enter\n");
+ 
+-	err = brcmf_config_ap_mgmt_ie(ifp->vif, info);
+-
+-	return err;
++	return brcmf_config_ap_mgmt_ie(ifp->vif, info);
+ }
+ 
+ static int
+-- 
+2.25.1
+
