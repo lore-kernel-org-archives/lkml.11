@@ -2,94 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 769A0ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA46C0502A
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231781AbiHaODf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
+        id S231899AbiHaOEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231643AbiHaODZ (ORCPT
+        with ESMTP id S232075AbiHaODo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:03:25 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CBFD6BA9;
-        Wed, 31 Aug 2022 07:03:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661954603; x=1693490603;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=5kccYvtkHvzcQzQhgfR8z09RnV+ThYRtA105LHeNCwk=;
-  b=gk58dDMXmZWQlW33IwlI7KHAAea1ZhEtUtxFHRGqilbwjArapauGQ2tZ
-   7AKIE2zGkJkIiq6wlR7vNj72zPY6kwcxzfiaJHItkzoNmL6e3MKnjns+9
-   1SSv9714H/1UWBg9/re6u2shJ8Srrro61CjfS1df+geDQyo1+y3KRijnF
-   9XaLBaV3X+QI7MQyOG1qz5ZQLbLiNCbhGTHe7pAMrM81lh5tzGUWHe8b7
-   urJSIWs1rOCbC6Dwp5Gw3jZZ2HQgdyBSErCqmo2Z6rKKpCK76d2EoYZMb
-   rfc1eM7oSrk9GIhyJm5RKD9T1WLH73Oc0nzmEWBd5FJkkCLydEbSMFzlr
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275200995"
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="275200995"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:03:15 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="680427489"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 31 Aug 2022 07:03:14 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id EB8DD238; Wed, 31 Aug 2022 17:03:28 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>
-Subject: [PATCH v2 4/4] ACPI: platform: Sort forbidden_id_list[] in ascending order
-Date:   Wed, 31 Aug 2022 17:03:27 +0300
-Message-Id: <20220831140327.79149-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220831140327.79149-1-andriy.shevchenko@linux.intel.com>
-References: <20220831140327.79149-1-andriy.shevchenko@linux.intel.com>
+        Wed, 31 Aug 2022 10:03:44 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4724D7584;
+        Wed, 31 Aug 2022 07:03:32 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id q3so10985886pjg.3;
+        Wed, 31 Aug 2022 07:03:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=RKP/ZYjQ5LLZx8BdjnHeUNuUWKQLAOrkHnnLMRbIo6g=;
+        b=Q3IkbhY2RfoBmt+qrOm3SlTSGuJw+s5kdmR95OQdDMohpQYqiv0JBaEm51XCr1n8+f
+         FxPliqYcGW1IepktBKvaVYfMniyobeP7hi1620AmKrSI4gXaVZDjEO848kMFFsvumPvQ
+         yFVnmltYYqsP0pV4OI3rD11kIaBG7XIutAHIgMAiFG11pfw4bfUAvgUIdFusPY0TCsD3
+         xeT9Xw7KT91eeDMWwc6LZMXyeTvBFZBx/6/lWHyKcd8qFFfkkWKoHd5fiRed9m6Rc3LL
+         UNxJdb40x7tr7FLATfr69ahY4RAjhh5CoaivucoVSzA8PeOpr/oqMdaHRJhS8xUfTtVp
+         OVRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=RKP/ZYjQ5LLZx8BdjnHeUNuUWKQLAOrkHnnLMRbIo6g=;
+        b=GrBvqYeqzOJchxF3e/72xcvM2oUo6aGwCEMRLgiNOy+AxRPZdtET2Y9XU5cmNd7Wtu
+         bJeZ1M1JDceMYhKQ83IfqyqtMd1iXC9WI/GfOCfZJk5sKm+KDIZZev47eB1yvyR14DIf
+         WjUD3O06AFU0ZI29cTVB6iKRPb24gQi3Q5DoIr43r1/Gxm+3bHp/2VvOemO8AZ6Z9ew6
+         77SJ3zfnub/d0VVlEdDHPHxmbVTo/1WwT1xUPCFItF9nWmZTf/hXKQ7XWZLGisXVYES9
+         7DsipobAzhjcH1zvGAMdJKcM7KyID3k3fNXpZVAOseHPXVGRW7i5rX5W/wLBt0zVzpC4
+         Ngnw==
+X-Gm-Message-State: ACgBeo2XW/DxXg91KbrcnSWmh19yIZSFxX0FJbQNpo+W1XrMTDkfrs75
+        pR7mSLS8u/IW4nwLlC4FQ88=
+X-Google-Smtp-Source: AA6agR64POgYbk5BQ45tnGxc5PZdhejfTcLDwh5aFsNEC2MFKbAKuZN+r97xfhvMBYSEfNNJY0XEjw==
+X-Received: by 2002:a17:903:2651:b0:173:3dc3:a19b with SMTP id je17-20020a170903265100b001733dc3a19bmr25616970plb.79.1661954611654;
+        Wed, 31 Aug 2022 07:03:31 -0700 (PDT)
+Received: from carlis-virtual-machine.localdomain ([156.236.96.164])
+        by smtp.gmail.com with ESMTPSA id ik21-20020a170902ab1500b0016f057b88c9sm11627936plb.26.2022.08.31.07.03.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 07:03:31 -0700 (PDT)
+From:   Xuezhi Zhang <zhangxuezhi3@gmail.com>
+To:     kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
+        shivasharan.srikanteshwara@broadcom.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com
+Cc:     megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, zhangxuezhi3@gmail.com,
+        Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+Subject: [PATCH] scsi: megaraid: convert sysfs snprintf to sysfs_emit
+Date:   Wed, 31 Aug 2022 22:03:25 +0800
+Message-Id: <20220831140325.396295-1-zhangxuezhi3@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For easier maintenance, sort the forbidden_id_list[] table rows in
-ascending order with respect to the device ID field.
+From: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
 
-While at it, use an empty row as the list terminator, which is more
-usual in the kernel.
+Fix up all sysfs show entries to use sysfs_emit
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
 ---
-v2 modified commit messages to be prettier (Rafael)
- drivers/acpi/acpi_platform.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/scsi/megaraid/megaraid_mbox.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/acpi_platform.c b/drivers/acpi/acpi_platform.c
-index 0d812fe248d4..f13409583cd9 100644
---- a/drivers/acpi/acpi_platform.c
-+++ b/drivers/acpi/acpi_platform.c
-@@ -20,13 +20,13 @@
- #include "internal.h"
+diff --git a/drivers/scsi/megaraid/megaraid_mbox.c b/drivers/scsi/megaraid/megaraid_mbox.c
+index 157c3bdb50be..132de68c14e9 100644
+--- a/drivers/scsi/megaraid/megaraid_mbox.c
++++ b/drivers/scsi/megaraid/megaraid_mbox.c
+@@ -3979,7 +3979,7 @@ megaraid_mbox_app_hndl_show(struct device *dev, struct device_attribute *attr, c
  
- static const struct acpi_device_id forbidden_id_list[] = {
-+	{"ACPI0009", 0},	/* IOxAPIC */
-+	{"ACPI000A", 0},	/* IOAPIC */
- 	{"PNP0000",  0},	/* PIC */
- 	{"PNP0100",  0},	/* Timer */
- 	{"PNP0200",  0},	/* AT DMA Controller */
--	{"ACPI0009", 0},	/* IOxAPIC */
--	{"ACPI000A", 0},	/* IOAPIC */
- 	{"SMB0001",  0},	/* ACPI SMBUS virtual device */
--	{"", 0},
-+	{ }
- };
+ 	app_hndl = mraid_mm_adapter_app_handle(adapter->unique_id);
  
- static struct platform_device *acpi_platform_device_find_by_companion(struct acpi_device *adev)
+-	return snprintf(buf, 8, "%u\n", app_hndl);
++	return sysfs_emit(buf, "%u\n", app_hndl);
+ }
+ 
+ 
+@@ -4048,7 +4048,7 @@ megaraid_mbox_ld_show(struct device *dev, struct device_attribute *attr, char *b
+ 		}
+ 	}
+ 
+-	return snprintf(buf, 36, "%d %d %d %d\n", scsi_id, logical_drv,
++	return sysfs_emit(buf, "%d %d %d %d\n", scsi_id, logical_drv,
+ 			ldid_map, app_hndl);
+ }
+ 
 -- 
-2.35.1
+2.25.1
 
