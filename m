@@ -2,235 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D35C1ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:36:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B9EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbiHaCg6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 22:36:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
+        id S231965AbiHaCjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 22:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiHaCgx (ORCPT
+        with ESMTP id S229456AbiHaCjH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 22:36:53 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE009C525
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 19:36:51 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MHSs33yVYz1N7dG;
-        Wed, 31 Aug 2022 10:33:11 +0800 (CST)
-Received: from huawei.com (10.67.174.53) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
- 2022 10:36:49 +0800
-From:   Liao Chang <liaochang1@huawei.com>
-To:     <tglx@linutronix.de>, <maz@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <john.garry@huawei.com>
-Subject: [PATCH V2] irqchip/gic-v3-its: Reclaim the dangling bits in LPI maps
-Date:   Wed, 31 Aug 2022 10:33:32 +0800
-Message-ID: <20220831023332.191368-1-liaochang1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 30 Aug 2022 22:39:07 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373569C8E0;
+        Tue, 30 Aug 2022 19:39:06 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id f24so10145067plr.1;
+        Tue, 30 Aug 2022 19:39:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:sender
+         :from:to:cc;
+        bh=6I3GeMx+uqUZdiXdBJPpFrxttsFF0ltwfrX0yfx92NI=;
+        b=Vz+/yOjBgNxRcW4AcECQXhDA5IlCUp1rVQgNZVJBrJyxjMqmeLcDNSVdjxE+0FdUVy
+         dz1MAzEjlNyCls+cqmM/keBJoot9JQ8tV/oY2IXmSV0paIeQeGyGmQdcP9rAiDfIj9vy
+         qssA+ZTlwd+JDHTNJiuEhqQJdHdgYoe0errSOhaWKsJiVuXXlzugiVNPTnYb1KifcnF0
+         BNc4i0ndkgPyouYM4xqT7M69yWGxgHVM6fW0e87vgEJbuUA7014qlOhtnuMIRPIvLbB1
+         NF2weJ4LkqJCjCsCXeJfmswr2rKuj60SQsFY+gq2uXhG6nVl6OKIAyQwjr6pXnc94tqw
+         J9aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:sender
+         :x-gm-message-state:from:to:cc;
+        bh=6I3GeMx+uqUZdiXdBJPpFrxttsFF0ltwfrX0yfx92NI=;
+        b=HajuRhkTzMIxqj/DaXMlwUAh2BA6UhEaEerme9WwzSilHZUbywfnm61Fv53DzBpKci
+         bW2dgHZiC492mu0shsfHleIbxvmwYb3yfYLM9qTg3mnGBbPQniP0OFP0EQsNPh0SPt4R
+         j5YpVKL8cFEXUog/Y8B5fszxXgyudcu3cBv/4sOaSeE2GkTF6IEqQSb5rOb7J9UhfpYX
+         Xso0xolb/y50bm5IButrjP7l/F7u7STTi4pyuafaCFZV7KVmXJ47wqdgwZbMzeZr/a4k
+         ewasVIl68Yv002B1BOjewWzGA0v6+bzWxKQSa9T78fQDuMBga2z20kyO1Dq880pKBMi2
+         s1jQ==
+X-Gm-Message-State: ACgBeo1I83jCu5mQa6w/+CfGbtkMIRFOjQeHZWHajYDG9C3LdIk28pD9
+        gZf+YQ4APEOuwYUvq7KcxnzWyJAaIE8hFw==
+X-Google-Smtp-Source: AA6agR7oAnrknYawTKOErK7WVEqTplrYWxE/svDSxMh/43DD0IjkCv/5ep1bPjBzTsAiszeScSfCsw==
+X-Received: by 2002:a17:90a:9f96:b0:1fa:b4fb:6297 with SMTP id o22-20020a17090a9f9600b001fab4fb6297mr1050215pjp.80.1661913545641;
+        Tue, 30 Aug 2022 19:39:05 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 5-20020a630605000000b0042988a04bfdsm2278466pgg.9.2022.08.30.19.39.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 19:39:04 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <bd510d56-b161-ff17-8a09-ed4a8a66ca57@roeck-us.net>
+Date:   Tue, 30 Aug 2022 19:39:01 -0700
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.53]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Eliav Farber <farbere@amazon.com>, jdelvare@suse.com,
+        robh+dt@kernel.org, p.zabel@pengutronix.de, rtanwar@maxlinear.com,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     talel@amazon.com, hhhawa@amazon.com, jonnyc@amazon.com,
+        hanochu@amazon.com, ronenk@amazon.com, itamark@amazon.com,
+        shellykz@amazon.com, shorer@amazon.com, amitlavi@amazon.com,
+        almogbs@amazon.com, dkl@amazon.com, rahul.tanwar@linux.intel.com,
+        andriy.shevchenko@intel.com
+References: <20220830192212.28570-1-farbere@amazon.com>
+ <20220830192212.28570-3-farbere@amazon.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v3 02/19] hwmon: (mr75203) fix VM sensor allocation when
+ "intel,vm-map" not defined
+In-Reply-To: <20220830192212.28570-3-farbere@amazon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following interrupt allocation process leads to some interrupts are
-mapped in the low-level domain(Arm ITS), but they have never mapped
-at the higher level.
+On 8/30/22 12:21, Eliav Farber wrote:
+> Bug fix - in case "intel,vm-map" is missing in device-tree ,'num' is set
+> to 0, and no voltage channel infos are allocated.
+> 
+> Signed-off-by: Eliav Farber <farbere@amazon.com>
+> ---
+>   drivers/hwmon/mr75203.c | 28 ++++++++++++----------------
+>   1 file changed, 12 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
+> index 046523d47c29..0e29877a1a9c 100644
+> --- a/drivers/hwmon/mr75203.c
+> +++ b/drivers/hwmon/mr75203.c
+> @@ -580,8 +580,6 @@ static int mr75203_probe(struct platform_device *pdev)
+>   	}
+>   
+>   	if (vm_num) {
+> -		u32 num = vm_num;
+> -
+>   		ret = pvt_get_regmap(pdev, "vm", pvt);
+>   		if (ret)
+>   			return ret;
+> @@ -594,30 +592,28 @@ static int mr75203_probe(struct platform_device *pdev)
+>   		ret = device_property_read_u8_array(dev, "intel,vm-map",
+>   						    pvt->vm_idx, vm_num);
+>   		if (ret) {
+> -			num = 0;
+> +			/*
+> +			 * Incase intel,vm-map property is not defined, we
+> +			 * assume incremental channel numbers.
+> +			 */
+> +			for (i = 0; i < vm_num; i++)
+> +				pvt->vm_idx[i] = i;
+>   		} else {
+>   			for (i = 0; i < vm_num; i++)
+>   				if (pvt->vm_idx[i] >= vm_num ||
+> -				    pvt->vm_idx[i] == 0xff) {
+> -					num = i;
+> +				    pvt->vm_idx[i] == 0xff)
+>   					break;
+> -				}
+> -		}
+>   
+> -		/*
+> -		 * Incase intel,vm-map property is not defined, we assume
+> -		 * incremental channel numbers.
+> -		 */
+> -		for (i = num; i < vm_num; i++)
+> -			pvt->vm_idx[i] = i;
+> +			vm_num = i;
+> +		}
+>   
 
-irq_domain_alloc_irqs_hierarchy(.., nr_irqs, ...)
-  its_irq_domain_alloc(..., nr_irqs, ...)
-    its_alloc_device_irq(..., nr_irqs, ...)
-      bitmap_find_free_region(..., get_count_order(nr_irqs))
+So this is actually a functional change: In the old code, unspecified channel
+numbers (num ... vm_num) were filled with incremental channel numbers.
+This is no longer the case.
 
-Since ITS domain finds a region of zero bits, the length of which must
-aligned to the power of two. If nr_irqs is 30, the length of zero bits
-is actually 32, but the first 30 bits are really mapped.
+> -		in_config = devm_kcalloc(dev, num + 1,
+> +		in_config = devm_kcalloc(dev, vm_num + 1,
+>   					 sizeof(*in_config), GFP_KERNEL);
 
-On teardown, the low-level domain only free these interrupts that
-actually mapped, and leave last interrupts dangling in the ITS domain.
-Thus the ITS device resources are never freed. On device driver reload,
-dangling interrupts prevent ITS domain from allocating enough resource.
+The relevant difference (and maybe bug in the existing code ?) seems to be
+this change. Have you considered leaving everything else in place and only
+changing this code as well as the num -> vm_num changes below ?
 
-irq_domain_free_irqs_hierarchy(..., nr_irqs, ...)
-  its_irq_domain_free(..., irq_base + i, 1)
-    bitmap_release_region(..., irq_base + i, get_count_order(1))
+Thanks,
+Guenter
 
-John reported this problem to LKML and Marc provided a solution and fix
-it in the generic code, see the discussion from Link tag. Marc's patch
-fix John's problem, but does not take care of some corner case, look one
-example below.
-
-Step1: 32 interrupts allocated in LPI domain, but return the first 30 to
-higher driver.
-
-   111111111111111111111111111111 11
-  |<------------0~29------------>|30,31|
-
-Step2: interrupt #16~28 are released one by one, then #0~15 and #29~31
-still be there.
-
-   1111111111111111 0000000000000 1  11
-  |<-----0~15----->|<---16~28--->|29|30,31|
-
-Step#: on driver teardown, generic code will invoke ITS domain code
-twice. The first time, #0~15 will be released, the second one, only #29
-will be released(1 align to power of two).
-
-   0000000000000000 0000000000000 0  11
-  |<-----0~15----->|<---16~28--->|29|30,31|
-
-In short summary, the dangling problem stems from the number of released
-hwirq is less than the one of the allocated hwirq in ITS domain.
-
-In order to fix this problem, introduce dangling list for recording
-these allocated but unmapped hwirq. Whenever some LPI hwirqs are
-released, perform dangling list-travel to find out some dangling bits
-followed then release them, look back the trivial example above.
-
-Step1: record '2' into the irq_data.dangling of #29 hwirq.
-
-           111111111111111111111111111111 11
-          |<------------0~29------------>|30,31|
-dangling:  000000000000000000000000000002
-
-Step2: no change
-
-          1111111111111111 0000000000000 1  11
-         |<-----0~15----->|<---16~28--->|29|30,31|
-dangling: 0000000000000000 0000000000000 2
-
-Step3: ITS domain will release #30~31 since the irq_data.dangling of #29
-is '2'.
-
-           0000000000000000 0000000000000 0  00
-          |<-----0~15----->|<---16~28--->|29|30,31|
-dangling:  0000000000000000 0000000000000 2
-
-Fixes: 4615fbc3788dd ("genirq/irqdomain: Don't try to free an interrupt that has no mapping")
-Reported-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Liao Chang <liaochang1@huawei.com>
-Link: https://lore.kernel.org/lkml/3d3d0155e66429968cb4f6b4feeae4b3@kernel.org/
----
-Changes since v1:
-- Correct grammar and spelling mistakes in commit message.
-- Refactor the fixup solution, avoid hacking generici irq code.
-
----
- drivers/irqchip/irq-gic-v3-its.c | 57 ++++++++++++++++++++++++++++++--
- 1 file changed, 54 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 5ff09de6c48f..e191491bf683 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -143,6 +143,12 @@ struct its_node {
- /* Convert page order to size in bytes */
- #define PAGE_ORDER_TO_SIZE(o)	(PAGE_SIZE << (o))
- 
-+struct dangling_lpis {
-+	struct list_head	list;
-+	irq_hw_number_t		start;
-+	irq_hw_number_t		end;
-+};
-+
- struct event_lpi_map {
- 	unsigned long		*lpi_map;
- 	u16			*col_map;
-@@ -152,6 +158,7 @@ struct event_lpi_map {
- 	struct its_vm		*vm;
- 	struct its_vlpi_map	*vlpi_maps;
- 	int			nr_vlpis;
-+	struct list_head	dangling;
- };
- 
- /*
-@@ -3414,6 +3421,7 @@ static struct its_device *its_create_device(struct its_node *its, u32 dev_id,
- 	dev->event_map.col_map = col_map;
- 	dev->event_map.lpi_base = lpi_base;
- 	dev->event_map.nr_lpis = nr_lpis;
-+	INIT_LIST_HEAD(&dev->event_map.dangling);
- 	raw_spin_lock_init(&dev->event_map.vlpi_lock);
- 	dev->device_id = dev_id;
- 	INIT_LIST_HEAD(&dev->entry);
-@@ -3443,6 +3451,8 @@ static void its_free_device(struct its_device *its_dev)
- static int its_alloc_device_irq(struct its_device *dev, int nvecs, irq_hw_number_t *hwirq)
- {
- 	int idx;
-+	int real_bits = (1 << get_count_order(nvecs));
-+	struct dangling_lpis *lpis;
- 
- 	/* Find a free LPI region in lpi_map and allocate them. */
- 	idx = bitmap_find_free_region(dev->event_map.lpi_map,
-@@ -3453,9 +3463,52 @@ static int its_alloc_device_irq(struct its_device *dev, int nvecs, irq_hw_number
- 
- 	*hwirq = dev->event_map.lpi_base + idx;
- 
-+	/*
-+	 * In order to reclaim dangling hwirq bits when module teardown,
-+	 * record all dangling hwirq here.
-+	 */
-+	if (real_bits > nvecs) {
-+		lpis = kzalloc(sizeof(*lpis), GFP_KERNEL);
-+		if (!lpis) {
-+			bitmap_release_region(dev->event_map.lpi_map,
-+					      *hwirq, get_count_order(nvecs));
-+			return -ENOMEM;
-+		}
-+		lpis->start = *hwirq + nvecs;
-+		lpis->end = *hwirq + real_bits;
-+		list_add_tail(&dev->event_map.dangling, &lpis->list);
-+	}
-+
- 	return 0;
- }
- 
-+static void its_free_device_irq(struct its_device *dev, int nvecs,
-+				irq_hw_number_t hwirq)
-+{
-+	struct dangling_lpis *entry, *temp;
-+
-+	bitmap_release_region(dev->event_map.lpi_map, hwirq,
-+			      get_count_order(nvecs));
-+
-+	/*
-+	 * If these hwirq are followed by some dangling bits, it needs to
-+	 * reclaim these dangling bits.
-+	 */
-+	list_for_each_entry_safe(entry, temp, &dev->event_map.dangling, list) {
-+		if (entry->start != hwirq + nvecs)
-+			continue;
-+
-+		while (entry->start < entry->end) {
-+			bitmap_release_region(dev->event_map.lpi_map,
-+					      entry->start, get_count_order(1));
-+			entry->start += 1;
-+		}
-+		list_del(&entry->list);
-+		kfree(entry);
-+		break;
-+	}
-+}
-+
- static int its_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			   int nvec, msi_alloc_info_t *info)
- {
-@@ -3619,9 +3672,7 @@ static void its_irq_domain_free(struct irq_domain *domain, unsigned int virq,
- 	struct its_node *its = its_dev->its;
- 	int i;
- 
--	bitmap_release_region(its_dev->event_map.lpi_map,
--			      its_get_event_id(irq_domain_get_irq_data(domain, virq)),
--			      get_count_order(nr_irqs));
-+	its_free_device_irq(its_dev, nr_irqs, its_get_event_id(d));
- 
- 	for (i = 0; i < nr_irqs; i++) {
- 		struct irq_data *data = irq_domain_get_irq_data(domain,
--- 
-2.17.1
+>   		if (!in_config)
+>   			return -ENOMEM;
+>   
+> -		memset32(in_config, HWMON_I_INPUT, num);
+> -		in_config[num] = 0;
+> +		memset32(in_config, HWMON_I_INPUT, vm_num);
+> +		in_config[vm_num] = 0;
+>   		pvt_in.config = in_config;
+>   
+>   		pvt_info[index++] = &pvt_in;
 
