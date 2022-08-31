@@ -2,129 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C28EECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:11:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C99DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230508AbiHaILa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
+        id S231216AbiHaIMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiHaIL2 (ORCPT
+        with ESMTP id S230310AbiHaIM2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:11:28 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA97642E3
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:11:26 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-11eb44f520dso18197568fac.10
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:11:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=IThx7ewIU6azW3sLn1BeaFcNjprihRTPt0DjgsNUm7k=;
-        b=pM7HEjYq3ykY2Jtr2/pjZObHyCoUdu3gmLHwwYTyyGhI5HMOpq+emabjGGqdY1r+ue
-         f+rekOkFSEEubZgRhOVX3vwbDwq21m5x/k/YOPLKvDCewEgANxOsxnZrEGGFufaIUeJP
-         n+VIlK8Pditi8CWIXKv0WNOoHH77LWW2vpESN4l/1K81ltcYKF2TwqbMEYpGyKtRTajB
-         kJcZFbRyNesHZSjH5iITgTSOFuGuoFI24BwGVCmCZ/uXgaSLaReTjAQnHlhuIAQMgPHj
-         h2jJCDzkk9DcwQdnNoxps/OFFq+tn7UWc5c5aZST5kx3gs2tOnelJrKuJEZEMowK3Fhw
-         pA2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=IThx7ewIU6azW3sLn1BeaFcNjprihRTPt0DjgsNUm7k=;
-        b=DKp93mPXi6X8O8PZUNlvDyHFB61mLAh1ZEBpF0TiPRsVSREduGkyG23U3LhUqJi4cs
-         b8MyRTRyy5AVRzk60J3HIPDRzB5d9eYyO9fEFePFOMoMiOCYO8ACSWX2hlL4sNTUKy1W
-         AY6Lko+3CSF77XW2R5eqtWFXdbyYIKzCB0pVz1i4JILH2kmjU9MeD7ExyqxRr77x3D9c
-         LaWEkHo9zAaQOTQrKH7tzzG1pUwYAdIF4+GE+gdZ/C5UpGPW5JnhcX6Zvg3jJj5i2EkK
-         f7J39dwiv53yI5FN55aIFLTun+M2BXka+PolrUYDOSh/QjsUyQDhrWRjWC+Oq3KDEczO
-         EWrg==
-X-Gm-Message-State: ACgBeo3/L3f3V1touMeE7Jlz2deDYmhBj0f8hWLND7tHhkHepQpkiYZd
-        X5ObI/dILorEqNi2bDKERNpSRHhYNMiLx4QxAUxetQ==
-X-Google-Smtp-Source: AA6agR5BQP0YZDeoqoxupBK9/08QOD/DF2ceSgx9W2keBirZJCnci8BcWoypJX+YJum+Aqx9YzC7yXn5ejpJwAzFuCY=
-X-Received: by 2002:a05:6808:8db:b0:344:fb71:2159 with SMTP id
- k27-20020a05680808db00b00344fb712159mr706259oij.34.1661933485314; Wed, 31 Aug
- 2022 01:11:25 -0700 (PDT)
+        Wed, 31 Aug 2022 04:12:28 -0400
+X-Greylist: delayed 1982 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 01:12:26 PDT
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 029A3BD1C4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:12:26 -0700 (PDT)
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20220831073921527a120d4c4c76302e
+        for <linux-kernel@vger.kernel.org>;
+        Wed, 31 Aug 2022 09:39:21 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=daniel.starke@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=26Dc7y6NWxeC2hFu/fC7SmDBkUmYDy6k4QE9Vjw2usY=;
+ b=oh59g8ea4m/iQCLUXttHs97Zi0xPTkZnJapKeJDJ2JX85CQ2H92HUMpoJ601IPUcvlg9Z4
+ u5CDyfLvRTq9aJmVL8WHcIkYdxUSnn7EDaUewax2YKK3oU4sSjGgAxVdxfORJwTHjRweg3eu
+ Zw68OOSdHytlXecjU7fgCk4KImPQI=;
+From:   "D. Starke" <daniel.starke@siemens.com>
+To:     linux-serial@vger.kernel.org, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH v3 2/6] tty: n_gsm: name gsm tty device minors
+Date:   Wed, 31 Aug 2022 09:37:56 +0200
+Message-Id: <20220831073800.7459-2-daniel.starke@siemens.com>
+In-Reply-To: <20220831073800.7459-1-daniel.starke@siemens.com>
+References: <20220831073800.7459-1-daniel.starke@siemens.com>
 MIME-Version: 1.0
-References: <20220830172614.340962-1-james.clark@arm.com> <20220830172614.340962-2-james.clark@arm.com>
-In-Reply-To: <20220830172614.340962-2-james.clark@arm.com>
-From:   Mike Leach <mike.leach@linaro.org>
-Date:   Wed, 31 Aug 2022 09:11:14 +0100
-Message-ID: <CAJ9a7Vg41LZSLYvvk440-rR=BqU=qn80ZqHCJSfHUfkEQb8_UA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] coresight: Remove unused function parameter
-To:     James Clark <james.clark@arm.com>
-Cc:     suzuki.poulose@arm.com, coresight@lists.linaro.org,
-        mathieu.poirier@linaro.org, leo.yan@linaro.org,
-        linux-kernel@vger.kernel.org, german.gomez@arm.com,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-314044:519-21489:flowmailer
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022 at 18:26, James Clark <james.clark@arm.com> wrote:
->
-> The ability to use a custom function in this sysfs show function isn't
-> used so remove it.
->
-> No functional changes.
->
-> Signed-off-by: James Clark <james.clark@arm.com>
-> ---
->  drivers/hwtracing/coresight/coresight-priv.h | 16 ++++------------
->  1 file changed, 4 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
-> index ff1dd2092ac5..f2458b794ef3 100644
-> --- a/drivers/hwtracing/coresight/coresight-priv.h
-> +++ b/drivers/hwtracing/coresight/coresight-priv.h
-> @@ -40,31 +40,23 @@
->  #define ETM_MODE_EXCL_KERN     BIT(30)
->  #define ETM_MODE_EXCL_USER     BIT(31)
->
-> -typedef u32 (*coresight_read_fn)(const struct device *, u32 offset);
-> -#define __coresight_simple_func(type, func, name, lo_off, hi_off)      \
-> +#define __coresight_simple_show(type, name, lo_off, hi_off)            \
->  static ssize_t name##_show(struct device *_dev,                                \
->                            struct device_attribute *attr, char *buf)    \
->  {                                                                      \
->         type *drvdata = dev_get_drvdata(_dev->parent);                  \
-> -       coresight_read_fn fn = func;                                    \
->         u64 val;                                                        \
->         pm_runtime_get_sync(_dev->parent);                              \
-> -       if (fn)                                                         \
-> -               val = (u64)fn(_dev->parent, lo_off);                    \
-> -       else                                                            \
-> -               val = coresight_read_reg_pair(drvdata->base,            \
-> -                                                lo_off, hi_off);       \
-> +       val = coresight_read_reg_pair(drvdata->base, lo_off, hi_off);   \
->         pm_runtime_put_sync(_dev->parent);                              \
->         return scnprintf(buf, PAGE_SIZE, "0x%llx\n", val);              \
->  }                                                                      \
->  static DEVICE_ATTR_RO(name)
->
-> -#define coresight_simple_func(type, func, name, offset)                        \
-> -       __coresight_simple_func(type, func, name, offset, -1)
->  #define coresight_simple_reg32(type, name, offset)                     \
-> -       __coresight_simple_func(type, NULL, name, offset, -1)
-> +       __coresight_simple_show(type, name, offset, -1)
->  #define coresight_simple_reg64(type, name, lo_off, hi_off)             \
-> -       __coresight_simple_func(type, NULL, name, lo_off, hi_off)
-> +       __coresight_simple_show(type, name, lo_off, hi_off)
->
->  extern const u32 coresight_barrier_pkt[4];
->  #define CORESIGHT_BARRIER_PKT_SIZE (sizeof(coresight_barrier_pkt))
-> --
-> 2.28.0
->
+From: Daniel Starke <daniel.starke@siemens.com>
 
-Reviewed-by: Mike Leach <mike.leach@linaro.org>
+Add a macro which defines the possible number of virtual devices for n_gsm
+to improve code readability.
 
+Reviewed-by: Jiri Slaby <jirislaby@kernel.org>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+---
+ drivers/tty/n_gsm.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+Added reviewed-by line since v2. No other changes done.
+
+Link: https://lore.kernel.org/all/dae848f0-6817-a281-94b3-9d2b6f84c90d@kernel.org/
+
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 3fa859a29317..813363825e54 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -164,6 +164,9 @@ struct gsm_dlci {
+ 	struct net_device *net; /* network interface, if created */
+ };
+ 
++/* Total number of supported devices */
++#define GSM_TTY_MINORS		256
++
+ /* DLCI 0, 62/63 are special or reserved see gsmtty_open */
+ 
+ #define NUM_DLCI		64
+@@ -3749,7 +3752,7 @@ static int __init gsm_init(void)
+ 		return status;
+ 	}
+ 
+-	gsm_tty_driver = tty_alloc_driver(256, TTY_DRIVER_REAL_RAW |
++	gsm_tty_driver = tty_alloc_driver(GSM_TTY_MINORS, TTY_DRIVER_REAL_RAW |
+ 			TTY_DRIVER_DYNAMIC_DEV | TTY_DRIVER_HARDWARE_BREAK);
+ 	if (IS_ERR(gsm_tty_driver)) {
+ 		pr_err("gsm_init: tty allocation failed.\n");
 -- 
-Mike Leach
-Principal Engineer, ARM Ltd.
-Manchester Design Centre. UK
+2.34.1
+
