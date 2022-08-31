@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA853C0502A
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC31ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231886AbiHaAiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:38:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
+        id S232233AbiHaAiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbiHaAhJ (ORCPT
+        with ESMTP id S231604AbiHaAhO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:37:09 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2151AB1A6
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:36:01 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id rj3-20020a17090b3e8300b001fae0be4dc4so11947405pjb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:36:01 -0700 (PDT)
+        Tue, 30 Aug 2022 20:37:14 -0400
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44429AB1BF
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:36:03 -0700 (PDT)
+Received: by mail-pf1-x44a.google.com with SMTP id 14-20020a056a00072e00b0053689e4d0e5so5206526pfm.5
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:36:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=+YMlCYc3ExFhBvYYADHjoE7ZsXqjL3nmZXjZ12ZiBNw=;
-        b=sLNACwIJjMr1ibfCQ93pmBhaT79sm158HWrLH3PRFrFvzygtTWVigpI2OlQRDw5QXN
-         MO8uT4BKABOGwX5vGOO7BzoHeg9gQfVjB3OJ1uvfMPL3H4SKJPw1b6yW3Fh5jY1WUgVf
-         BrLOzeUWMB7f5TGHjJZ6bOwp0ev/MiX7H841oomE+B8NatX77H99VbBLNTEJ+krbs6iT
-         ANxXOacClU8ppUO6qCOnpsLDNgn1dcFvH2ePriX7+itvU0eiNcK/u8eirQmOr+DsGvJm
-         1SLH0/D83wpAQSE6opsCLSpuRK967tzQZ+PYFLK7IUA/T1Qopj9L1BBFJIQy0UqmLW2A
-         ovIQ==
+        bh=jKorNpXhvwAGsXROivEBSj6hwWRnB+Rxe5sOrtAqphg=;
+        b=tIU13tu3TrRZIwVjv3NBqNY45MhfLObBL6gThmPiOhUD6+etBUdAZjTHH2Bd9lYATB
+         mm3B0SIcYf9WsoH4X+DNkzgG0ymiFjKf1dhwKuhKL7+DbEf1731yMvENCFd8Y2rOCqLX
+         0NfwwTsjoiy6K40RaNI/f3p/JN1vVV9LgEN7ez756T3aQvTU/ln2o4jBeW8T/dteao5w
+         lELNQ1P6djW8X4RFC1e/w1a+VZ6BI1RA6yX2YixQqGUyYIpXwRgH9G27UQNl2EFMPGRB
+         MQ4noN2nDGKNGasEYXlxnYPZh7xlR/0dImt5IH7XdJWUg4VEgZMYS9sXuO5nMQYQIzan
+         nD4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=+YMlCYc3ExFhBvYYADHjoE7ZsXqjL3nmZXjZ12ZiBNw=;
-        b=Dac+Bh6acKsXrmfeY2hfs26kF+dwRMoFdYxmJfUl6elfcFJOAAmIG/hfKf5h+nuJPc
-         3uE4ZTk8D3iSYCoCGCzYVSIavzL0/zeUoXg3DKafqRL+8VjnX+kor2A2UT93AOLHAOl0
-         iv07zKKu1tOqG1dqVBr4eftAqNAWMHyDJnH8k6UERDAKMHU/DoL5xmnWASyQ+GJysPj4
-         6Z9fYqs8zyUkKC5yLL46UlTgII2Tw5wKbBfCPu5Ead8mdng9jf3b0Eh4UNRBEEZqZLlL
-         XpdS4uEKmb38F+1MWWMoeiCJ6h6h/I4Nf2AExpw3U3FFm52+jSnphPOyUP7/TdYlzXSY
-         La0Q==
-X-Gm-Message-State: ACgBeo1PZpCgM5gBLjVooYqTFU9I4a9vjuutrqBlI4a9hKse57B8TobL
-        UTw8+tHn/c0ppYS05qdeX30SoldVk90=
-X-Google-Smtp-Source: AA6agR6TMGjcK254MJkJTONU/65Ct6ilW9/zfFyM5frT68x5QoUsxITnrV6TghN0fRA891jz32a/NaI1yxQ=
+        bh=jKorNpXhvwAGsXROivEBSj6hwWRnB+Rxe5sOrtAqphg=;
+        b=HOEwaigQQCMFKM8CiEAEbEEKo/ckaq5FcJpbDsmIhf0J5Vdyz+/dv0dc0XMxCSURdz
+         AHEh1nuvLfaw0H5G+fPFtdEQCAGNQ63KNwM9jq4/GDH8OaupKjccnXR3okdWGoBbhtwR
+         Out1ogl4vYNxb8KMs9h8ovlXlb/qYvQNyIAJ/8q4BChnlMG/4ZvJ6WpOf4bigJKW1OfR
+         pJerB8w07NRzWygt4QEhepGAYwxtbZRqY1lflUbgZFj5BKzNgAAuriJ7nZwpMvavqz45
+         9fOChGgYYKmhLvxeC+j8TuD9dgD7WxgGBOuhjpvoQirfMkzBBUK6viWo7eKc+RM4CIHM
+         zUVQ==
+X-Gm-Message-State: ACgBeo3CUI6TMdw//8oARwilKtEEFUu8blw0O/7w9zqJpJQQ+tQRWt/4
+        Hm6dFAN/fjXRbouVSxi1neWiJNCmdV4=
+X-Google-Smtp-Source: AA6agR7yN+Sp/Y+nZ4AuoglDHrI+LXd3f1PmIguhTRo3PXqVoSa11JZpxTjMBfll0T0+/fbcDbejWHARNus=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:aa7:9242:0:b0:536:f215:4f4f with SMTP id
- 2-20020aa79242000000b00536f2154f4fmr23764791pfp.45.1661906127770; Tue, 30 Aug
- 2022 17:35:27 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:4b0c:b0:1f4:ffac:699a with SMTP id
+ lx12-20020a17090b4b0c00b001f4ffac699amr600872pjb.145.1661906131231; Tue, 30
+ Aug 2022 17:35:31 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 31 Aug 2022 00:34:58 +0000
+Date:   Wed, 31 Aug 2022 00:35:00 +0000
 In-Reply-To: <20220831003506.4117148-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220831003506.4117148-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220831003506.4117148-12-seanjc@google.com>
-Subject: [PATCH 11/19] KVM: SVM: Add helper to perform final AVIC "kick" of
- single vCPU
+Message-ID: <20220831003506.4117148-14-seanjc@google.com>
+Subject: [PATCH 13/19] KVM: x86: Disable APIC logical map if vCPUs are aliased
+ in logical mode
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,66 +67,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a helper to perform the final kick, two instances of the ICR decoding
-is one too many.
+Disable the optimized APIC logical map if multiple vCPUs are aliased to
+the same logical ID.  Architecturally, all CPUs whose logical ID matches
+the MDA are supposed to receive the interrupt; overwriting existing map
+entries can result in missed IPIs.
 
-No functional change intended.
-
+Fixes: 1e08ec4a130e ("KVM: optimize apic interrupt delivery")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ arch/x86/kvm/lapic.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 3959d4766911..2095ece70712 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -329,6 +329,16 @@ void avic_ring_doorbell(struct kvm_vcpu *vcpu)
- 	put_cpu();
- }
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 82278acae95b..d537b51295d6 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -303,12 +303,13 @@ void kvm_recalculate_apic_map(struct kvm *kvm)
+ 		if (!mask)
+ 			continue;
  
-+
-+static void avic_kick_vcpu(struct kvm_vcpu *vcpu, u32 icrl)
-+{
-+	vcpu->arch.apic->irr_pending = true;
-+	svm_complete_interrupt_delivery(vcpu,
-+					icrl & APIC_MODE_MASK,
-+					icrl & APIC_INT_LEVELTRIG,
-+					icrl & APIC_VECTOR_MASK);
-+}
-+
- /*
-  * A fast-path version of avic_kick_target_vcpus(), which attempts to match
-  * destination APIC ID to vCPU without looping through all vCPUs.
-@@ -427,11 +437,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
- 	if (unlikely(!target_vcpu))
- 		return 0;
- 
--	target_vcpu->arch.apic->irr_pending = true;
--	svm_complete_interrupt_delivery(target_vcpu,
--					icrl & APIC_MODE_MASK,
--					icrl & APIC_INT_LEVELTRIG,
--					icrl & APIC_VECTOR_MASK);
-+	avic_kick_vcpu(target_vcpu, icrl);
- 	return 0;
- }
- 
-@@ -455,13 +461,8 @@ static void avic_kick_target_vcpus(struct kvm *kvm, struct kvm_lapic *source,
- 	 */
- 	kvm_for_each_vcpu(i, vcpu, kvm) {
- 		if (kvm_apic_match_dest(vcpu, source, icrl & APIC_SHORT_MASK,
--					dest, icrl & APIC_DEST_MASK)) {
--			vcpu->arch.apic->irr_pending = true;
--			svm_complete_interrupt_delivery(vcpu,
--							icrl & APIC_MODE_MASK,
--							icrl & APIC_INT_LEVELTRIG,
--							icrl & APIC_VECTOR_MASK);
--		}
-+					dest, icrl & APIC_DEST_MASK))
-+			avic_kick_vcpu(vcpu, icrl);
+-		if (!is_power_of_2(mask)) {
++		ldr = ffs(mask) - 1;
++		if (!is_power_of_2(mask) || cluster[ldr]) {
+ 			new->mode = KVM_APIC_MODE_XAPIC_FLAT |
+ 				    KVM_APIC_MODE_XAPIC_CLUSTER;
+ 			continue;
+ 		}
+-		cluster[ffs(mask) - 1] = apic;
++		cluster[ldr] = apic;
  	}
- }
- 
+ out:
+ 	old = rcu_dereference_protected(kvm->arch.apic_map,
 -- 
 2.37.2.672.g94769d06f0-goog
 
