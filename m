@@ -2,209 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D26EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3548AC0502A
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231917AbiHaPrT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 11:47:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51360 "EHLO
+        id S231301AbiHaPrp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 11:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231873AbiHaPq4 (ORCPT
+        with ESMTP id S231983AbiHaPrR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 11:46:56 -0400
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F98390C4F
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:45:28 -0700 (PDT)
-Received: by mail-yb1-xb2e.google.com with SMTP id c9so4745912ybf.5
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Yg5lEIxwkC8L9g2KyGsqswRBhk4gAo50nJ7nWIpcdXc=;
-        b=f3+0Eh/W8OX4KuooBQ0WgBNbVwjJbAXBKTWgD/1rnSxw8Or+o0OJFGSWtlhyJfP9gD
-         QCFEtC0rc3uk17x5AtGX0ukxT/fwVuDehIBS7C3A9pMG33oU0ZJGMmly+vrXS5p4by0+
-         jDT69+FR9RtMW6e1SjrFZnroYNBot0xZKZX0R51jheU+mrpvrFLrGntTcPsTHaijk6mV
-         iKPavpo7jboK8+tsNQ9Az/YAZSJr40a0Ai7H69DS5U2PS7wmYchRHvmW2/w/UajBDN7Y
-         I8Esb137FVo77guaGTuDVZBl6klQw58Xua4rWyO6cGYeV+DdQ1NJpxEpQh+0pcY1wICS
-         8E3g==
+        Wed, 31 Aug 2022 11:47:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5112DA3E6
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:46:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661960780;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FDnsKK2cZELk5wddqmtKkVouG+DKHN8ltWUs0oV7mCc=;
+        b=VkOc/eUsODxiVivu1spYJvbiSSztMf0h7EENeoGeeL+wIqrQdfYj6cOgXzd3UaZmMjJENK
+        5D1C1hbHvObBHZrChzNxrtJDpVkm27xDfYkqRRh7bnnNRiTuqQNIX42L8qUrb36xY+yZzg
+        Q+ty8ZB+9kR5OEL0zH24nd3qvLoRYpY=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-586-t-OIe2qaP0iUklszjBYdsA-1; Wed, 31 Aug 2022 11:46:18 -0400
+X-MC-Unique: t-OIe2qaP0iUklszjBYdsA-1
+Received: by mail-wm1-f71.google.com with SMTP id q16-20020a1cf310000000b003a626026ed1so2923133wmq.4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:46:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Yg5lEIxwkC8L9g2KyGsqswRBhk4gAo50nJ7nWIpcdXc=;
-        b=noT4Ygy/BLqC83zk3myWLuPfcYX/6Fmk5lcmdOmBAorIwc/rr5HmsK1+eJUDQOfXo/
-         5J+oxQar1kBiV4HV51W+8VCTMnHbRRhU8Ho61jQd9SgKatAdRmfsGC9sr9pUYOwj7nWa
-         DrG998ksupNofWxpxOQUKfDaJ7o/pt5Hiwkf7+EtmbQSE7LRNYteksUp1Lo18qPACNYn
-         P89aJRjyLWDxEUIUpjIrCPsqcfhul/Ka84Ee45aIubJel6ydLpj3uBUpKC4n1liAm6KE
-         GxQWi9EmC0nGNjCeO+p49H2j7grtJyoyn1TZya5wBFr7er2ZCwvvPAGRlMdUFkoSdD1f
-         4VlQ==
-X-Gm-Message-State: ACgBeo2EdHh4Rqj5E5sTy/zPqc6KVOBiXUrp0mLZTHOUrRUbgh7s8KIq
-        PbMw/YsK4NQamRJP5CZbM5yZBC260nmfXetugYBtiQ==
-X-Google-Smtp-Source: AA6agR7eJQcze4oyVJ5u+oBz3mWkBzYq0MHuMfNSxceWOgOVlxBCkZ6NIfrADtyTqEPi+FGZK0IDnHN5ZKC4stom7pQ=
-X-Received: by 2002:a05:6902:705:b0:695:b3b9:41bc with SMTP id
- k5-20020a056902070500b00695b3b941bcmr16070987ybt.426.1661960727041; Wed, 31
- Aug 2022 08:45:27 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=FDnsKK2cZELk5wddqmtKkVouG+DKHN8ltWUs0oV7mCc=;
+        b=UPB3bggRnblE1Mirf+jkW3fRp3SAxeYML/76hTunHmBF8Xrqo6ddIVjMEIcxyKzK63
+         m11XC1taWP2l8S+0hoOzDWc7oo8Z658oI2WBsR/I1Or2DkiYKXmseTAhI5bzSo77GF+2
+         ejbFoAsLJNCLpkfStDeqWH2NkAIEj0OqIT+m+UXYygy91SkOIxGjHzFhcBU6ECs5Qaqm
+         XeC8VnbqEw8ybjIIFADVQvh/rsAv2Ta7UK2gDkvXTqk7jiuASg3rycXp3gb+pbV+VYPZ
+         4KwglRVR2GoSms2t9f3/MKfNkKS4+AlMFeQatQUMtLgjww43nOsX1YdPkb2/ZHR78hqe
+         Khlw==
+X-Gm-Message-State: ACgBeo3VCR88n7QsDiMyE+l2GENaJIANbGdZnmHEwvGMuJ7BwEaQZMCP
+        8D/YQ4R3xaRWS/DVgXp9yjQkMKgfrwbjkXs+N2OCEA1lwuOPbUVQU8vf9TLTayXF/hC8Q5csBPi
+        jRYJiCVjAaM6LHp30cvYDOM8Q
+X-Received: by 2002:adf:f2c5:0:b0:226:e838:3ed8 with SMTP id d5-20020adff2c5000000b00226e8383ed8mr3256074wrp.545.1661960776895;
+        Wed, 31 Aug 2022 08:46:16 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR51lk4waATJlZuT8JdfrFRa/Uuco6WTTGuyB1nHXQejK5PjPhp5O0007rSiEEDR6ePRgGWKog==
+X-Received: by 2002:adf:f2c5:0:b0:226:e838:3ed8 with SMTP id d5-20020adff2c5000000b00226e8383ed8mr3256066wrp.545.1661960776675;
+        Wed, 31 Aug 2022 08:46:16 -0700 (PDT)
+Received: from redhat.com ([2.55.191.225])
+        by smtp.gmail.com with ESMTPSA id n16-20020a5d4850000000b0022546f469e1sm12162234wrs.28.2022.08.31.08.46.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 08:46:16 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 11:46:11 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Maxime Coquelin <maxime.coquelin@redhat.com>
+Cc:     jasowang@redhat.com, Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, elic@nvidia.com,
+        guanjun@linux.alibaba.com, parav@nvidia.com,
+        gautam.dawar@xilinx.com, dan.carpenter@oracle.com,
+        xieyongji@bytedance.com, stable@vger.kernel.org
+Subject: Re: [PATCH v2] vduse: prevent uninitialized memory accesses
+Message-ID: <20220831114534-mutt-send-email-mst@kernel.org>
+References: <20220829073424.5677-1-maxime.coquelin@redhat.com>
+ <YwxvXFiuRqGxRgZH@kroah.com>
+ <796c9d73-30a0-2401-e499-724aeb0f8dc6@redhat.com>
 MIME-Version: 1.0
-References: <20220830214919.53220-1-surenb@google.com> <20220830214919.53220-11-surenb@google.com>
- <20220831101103.fj5hjgy3dbb44fit@suse.de>
-In-Reply-To: <20220831101103.fj5hjgy3dbb44fit@suse.de>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Wed, 31 Aug 2022 08:45:16 -0700
-Message-ID: <CAJuCfpHwUUc_VphqBY9KmWvZJDrsBG6Za+kG_MW=J-abjuM4Lw@mail.gmail.com>
-Subject: Re: [RFC PATCH 10/30] mm: enable page allocation tagging for
- __get_free_pages and alloc_pages
-To:     Mel Gorman <mgorman@suse.de>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Kent Overstreet <kent.overstreet@linux.dev>,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Liam R. Howlett" <liam.howlett@oracle.com>,
-        David Vernet <void@manifault.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Peter Xu <peterx@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, mcgrof@kernel.org,
-        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-        ytcoode@gmail.com, Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Benjamin Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Christopher Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>, 42.hyeyoo@gmail.com,
-        Alexander Potapenko <glider@google.com>,
-        Marco Elver <elver@google.com>, dvyukov@google.com,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>, arnd@arndb.de,
-        jbaron@akamai.com, David Rientjes <rientjes@google.com>,
-        Minchan Kim <minchan@google.com>,
-        Kalesh Singh <kaleshsingh@google.com>,
-        kernel-team <kernel-team@android.com>,
-        linux-mm <linux-mm@kvack.org>, iommu@lists.linux.dev,
-        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <796c9d73-30a0-2401-e499-724aeb0f8dc6@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 3:11 AM Mel Gorman <mgorman@suse.de> wrote:
->
-> On Tue, Aug 30, 2022 at 02:48:59PM -0700, Suren Baghdasaryan wrote:
-> > Redefine alloc_pages, __get_free_pages to record allocations done by
-> > these functions. Instrument deallocation hooks to record object freeing.
-> >
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > +#ifdef CONFIG_PAGE_ALLOC_TAGGING
-> > +
-> >  #include <linux/alloc_tag.h>
-> >  #include <linux/page_ext.h>
-> >
-> > @@ -25,4 +27,37 @@ static inline void pgalloc_tag_dec(struct page *page, unsigned int order)
-> >               alloc_tag_sub(get_page_tag_ref(page), PAGE_SIZE << order);
-> >  }
-> >
-> > +/*
-> > + * Redefinitions of the common page allocators/destructors
-> > + */
-> > +#define pgtag_alloc_pages(gfp, order)                                        \
-> > +({                                                                   \
-> > +     struct page *_page = _alloc_pages((gfp), (order));              \
-> > +                                                                     \
-> > +     if (_page)                                                      \
-> > +             alloc_tag_add(get_page_tag_ref(_page), PAGE_SIZE << (order));\
-> > +     _page;                                                          \
-> > +})
-> > +
->
-> Instead of renaming alloc_pages, why is the tagging not done in
-> __alloc_pages()? At least __alloc_pages_bulk() is also missed. The branch
-> can be guarded with IS_ENABLED.
+On Wed, Aug 31, 2022 at 05:01:11PM +0200, Maxime Coquelin wrote:
+> On 8/29/22 09:48, Greg KH wrote:
+> > On Mon, Aug 29, 2022 at 09:34:24AM +0200, Maxime Coquelin wrote:
+> > > If the VDUSE application provides a smaller config space
+> > > than the driver expects, the driver may use uninitialized
+> > > memory from the stack.
+> > > 
+> > > This patch prevents it by initializing the buffer passed by
+> > > the driver to store the config value.
+> > > 
+> > > This fix addresses CVE-2022-2308.
+> > > 
+> > > Cc: xieyongji@bytedance.com
+> > > Cc: stable@vger.kernel.org # v5.15+
+> > > Fixes: c8a6153b6c59 ("vduse: Introduce VDUSE - vDPA Device in Userspace")
+> > > 
+> > > Acked-by: Jason Wang <jasowang@redhat.com>
+> > > Signed-off-by: Maxime Coquelin <maxime.coquelin@redhat.com>
+> > 
+> > Please no blank line above the Acked-by: line here if possible.
+> 
+> Sure.
+> 
+> Jason, do you prefer I post a new revision with this single change or
+> you will handle it while applying? Either way is fine to me.
+> 
+> Thanks,
+> Maxime
 
-Hmm. Assuming all the other allocators using __alloc_pages are inlined, that
-should work. I'll try that and if that works will incorporate in the
-next respin.
-Thanks!
+I queue these normally.
 
-I don't think IS_ENABLED is required because the tagging functions are already
-defined as empty if the appropriate configs are not enabled. Unless I
-misunderstood
-your node.
+> > thanks,
+> > 
+> > greg k-h
+> > 
 
->
-> > +#define pgtag_get_free_pages(gfp_mask, order)                                \
-> > +({                                                                   \
-> > +     struct page *_page;                                             \
-> > +     unsigned long _res = _get_free_pages((gfp_mask), (order), &_page);\
-> > +                                                                     \
-> > +     if (_res)                                                       \
-> > +             alloc_tag_add(get_page_tag_ref(_page), PAGE_SIZE << (order));\
-> > +     _res;                                                           \
-> > +})
-> > +
->
-> Similar, the tagging could happen in a core function instead of a wrapper.
->
-> > +#else /* CONFIG_PAGE_ALLOC_TAGGING */
-> > +
-> > +#define pgtag_alloc_pages(gfp, order) _alloc_pages(gfp, order)
-> > +
-> > +#define pgtag_get_free_pages(gfp_mask, order) \
-> > +     _get_free_pages((gfp_mask), (order), NULL)
-> > +
-> > +#define pgalloc_tag_dec(__page, __size)              do {} while (0)
-> > +
-> > +#endif /* CONFIG_PAGE_ALLOC_TAGGING */
-> > +
-> >  #endif /* _LINUX_PGALLOC_TAG_H */
-> > diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-> > index b73d3248d976..f7e6d9564a49 100644
-> > --- a/mm/mempolicy.c
-> > +++ b/mm/mempolicy.c
-> > @@ -2249,7 +2249,7 @@ EXPORT_SYMBOL(vma_alloc_folio);
-> >   * flags are used.
-> >   * Return: The page on success or NULL if allocation fails.
-> >   */
-> > -struct page *alloc_pages(gfp_t gfp, unsigned order)
-> > +struct page *_alloc_pages(gfp_t gfp, unsigned int order)
-> >  {
-> >       struct mempolicy *pol = &default_policy;
-> >       struct page *page;
-> > @@ -2273,7 +2273,7 @@ struct page *alloc_pages(gfp_t gfp, unsigned order)
-> >
-> >       return page;
-> >  }
-> > -EXPORT_SYMBOL(alloc_pages);
-> > +EXPORT_SYMBOL(_alloc_pages);
-> >
-> >  struct folio *folio_alloc(gfp_t gfp, unsigned order)
-> >  {
-> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> > index e5486d47406e..165daba19e2a 100644
-> > --- a/mm/page_alloc.c
-> > +++ b/mm/page_alloc.c
-> > @@ -763,6 +763,7 @@ static inline bool pcp_allowed_order(unsigned int order)
-> >
-> >  static inline void free_the_page(struct page *page, unsigned int order)
-> >  {
-> > +
-> >       if (pcp_allowed_order(order))           /* Via pcp? */
-> >               free_unref_page(page, order);
-> >       else
->
-> Spurious wide-space change.
->
-> --
-> Mel Gorman
-> SUSE Labs
