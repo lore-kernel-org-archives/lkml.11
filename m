@@ -2,218 +2,426 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 893FCECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A943ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbiHaKnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:43:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
+        id S230293AbiHaKoc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:44:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiHaKnh (ORCPT
+        with ESMTP id S229655AbiHaKoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:43:37 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5698FC990C
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:43:33 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id c2so13754699plo.3
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:43:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ecs-corp-partner-google-com.20210112.gappssmtp.com; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc;
-        bh=rpg8qFuHMz9trXb2l6JJc6TcfgnEOiyqRxW6isBGGfo=;
-        b=qnI132CjIp9ycTs28mvrwj3Bvqv1tYeaXCXnlTKwnUCwM5ux+dj0dL8VlohJNHCmGD
-         4nNYy5tA60bBSVtQfxaGMwPcNwYZ6RLzsQoSEcfQnIijdg+N3Qnpv+NDHNFkfU75Qed3
-         IKZYfiZrkCnOgvFUv+1+k2CeMGc3An9vV4P4jGBIb6RtcL482Liex2dPnSNU9TFvEegR
-         ZL8LPKxaKnG26irfJLx8pT38QTkEdrz00j5a1ksGmhT2l+HZ98uE2RsjyJvT0AS6RVfd
-         88qN6CX0TEKwIYpEyyWs//qFHBfXo7QT8tVVvluzBWkT+SjI073ClbUOBNOOQeWXNfcj
-         rE3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=rpg8qFuHMz9trXb2l6JJc6TcfgnEOiyqRxW6isBGGfo=;
-        b=C6/CFFYjCQq/krSCiiKQFEfM3cmAXdOVlgGXzaU2SZ5RxcBlCfJczBYcTvdhh/0RJ9
-         ZamrX6qPLxAB+LpHt6CvX3MQV5astTkh6K8i+znH443tpzqYpeJ3kPt6dk0+nIs9P/5V
-         LtdJMwGWics1iSsJ4+V2VrR5AvpgkMwQsfxfXNwlHFbX1cB9eiYBtnYa9/z5sBITKnHh
-         G5R8zjsJEw/mOZoE1zC84lrG8n/lXfJ1M0/Cna9XnOa4AC6Gs8VxnShh3NSj4uMNnnHT
-         DQYDNWQn+GlMzOUEJF2OpnM9hOEGm6cVTncOGcCB0C5nbtTwwsBUc5SReYdISPGIEOLJ
-         dROQ==
-X-Gm-Message-State: ACgBeo2KNqmjFhQWw4A2mNsvPWH2HKYpJClC9NwIelNxj3DR6yuV9fmD
-        2Oo5YGBCLDXei/hFR/duhV/HWWE2P00okQTl
-X-Google-Smtp-Source: AA6agR59Jajv3otVproOhXY/tkq6dAl7VX9bjryV+m6GY9tKTE7SU5v1jUrNotEfFdXtGfj+F3lrFg==
-X-Received: by 2002:a17:902:d50b:b0:172:d4f4:91aa with SMTP id b11-20020a170902d50b00b00172d4f491aamr26108605plg.53.1661942612348;
-        Wed, 31 Aug 2022 03:43:32 -0700 (PDT)
-Received: from localhost.localdomain ([103.150.184.130])
-        by smtp.gmail.com with ESMTPSA id b13-20020a170902650d00b0016be596c8afsm11266905plk.282.2022.08.31.03.43.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 03:43:31 -0700 (PDT)
-From:   Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Henry Sun <henrysun@google.com>,
-        Bob Moragues <moragues@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 2/2] arm64: dts: qcom: Add sc7180-pazquel360
-Date:   Wed, 31 Aug 2022 10:43:18 +0000
-Message-Id: <20220831104220.v2.2.I9d00dd1cd4fd33948829a618c04403a6352c1fc0@changeid>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220831104220.v2.1.I11899dbd0476ffc83aaca07f8ca9b204ecd9a84c@changeid>
-References: <20220831104220.v2.1.I11899dbd0476ffc83aaca07f8ca9b204ecd9a84c@changeid>
+        Wed, 31 Aug 2022 06:44:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3482DC9E93
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:44:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661942658;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=glJVeUkKg3tox5zcMh5W5s7ejcgNPbJiczeeGyhy1x0=;
+        b=ZyytIsXRgoj6WVrXwQi5xszOVbr/qlQ09sTcSO4Ru01+Y/RQsEhAVbF1YRaIN2vRcOHNtJ
+        nwC5++JnSsi52CpTAIi34XwNXyHrxjmRc7cjfSZF7ZYJDoLAuLygS+zZhkG7GCrZwyZlog
+        6jtu7YQh+F/ctfdS6uQ2Sml6yoK5QXA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-446-abKaBme1Mkmze0NZBgk68g-1; Wed, 31 Aug 2022 06:44:15 -0400
+X-MC-Unique: abKaBme1Mkmze0NZBgk68g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C62F83C0D865;
+        Wed, 31 Aug 2022 10:44:14 +0000 (UTC)
+Received: from starship (unknown [10.40.194.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8E14CC15BB3;
+        Wed, 31 Aug 2022 10:44:12 +0000 (UTC)
+Message-ID: <4ad924e282fd9a387a9c40d4780a1b9f2eaf4f06.camel@redhat.com>
+Subject: Re: [PATCH v2 2/3] KVM: selftests: Rename 'msr->availble' to
+ 'msr->should_not_gp' in hyperv_features test
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 31 Aug 2022 13:44:11 +0300
+In-Reply-To: <20220831085009.1627523-3-vkuznets@redhat.com>
+References: <20220831085009.1627523-1-vkuznets@redhat.com>
+         <20220831085009.1627523-3-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create first version device tree for pazquel360
-pazquel360 is convertible and the pazquel it is based on is clamshell.
-sku 20 for lte & wifi
-sku 21 for wifi only
-sku 22 for lte w/o esim & wifi
+On Wed, 2022-08-31 at 10:50 +0200, Vitaly Kuznetsov wrote:
+> It may not be clear what 'msr->availble' means. The test actually
+> checks that accessing the particular MSR doesn't cause #GP, rename
+> the varialble accordingly.
+> 
+> Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  .../selftests/kvm/x86_64/hyperv_features.c    | 92 +++++++++----------
+>  1 file changed, 46 insertions(+), 46 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/kvm/x86_64/hyperv_features.c b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+> index 79ab0152d281..4ec4776662a4 100644
+> --- a/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+> +++ b/tools/testing/selftests/kvm/x86_64/hyperv_features.c
+> @@ -33,7 +33,7 @@ static inline uint8_t hypercall(u64 control, vm_vaddr_t input_address,
+>  
+>  struct msr_data {
+>  	uint32_t idx;
+> -	bool available;
+> +	bool should_not_gp;
+>  	bool write;
+>  	u64 write_val;
+>  };
+> @@ -56,7 +56,7 @@ static void guest_msr(struct msr_data *msr)
+>  	else
+>  		vector = wrmsr_safe(msr->idx, msr->write_val);
+>  
+> -	if (msr->available)
+> +	if (msr->should_not_gp)
+>  		GUEST_ASSERT_2(!vector, msr->idx, vector);
+>  	else
+>  		GUEST_ASSERT_2(vector == GP_VECTOR, msr->idx, vector);
+> @@ -153,12 +153,12 @@ static void guest_test_msrs_access(void)
+>  			 */
+>  			msr->idx = HV_X64_MSR_GUEST_OS_ID;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 1:
+>  			msr->idx = HV_X64_MSR_HYPERCALL;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 2:
+>  			feat->eax |= HV_MSR_HYPERCALL_AVAILABLE;
+> @@ -169,116 +169,116 @@ static void guest_test_msrs_access(void)
+>  			msr->idx = HV_X64_MSR_GUEST_OS_ID;
+>  			msr->write = 1;
+>  			msr->write_val = LINUX_OS_ID;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 3:
+>  			msr->idx = HV_X64_MSR_GUEST_OS_ID;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 4:
+>  			msr->idx = HV_X64_MSR_HYPERCALL;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  
+>  		case 5:
+>  			msr->idx = HV_X64_MSR_VP_RUNTIME;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 6:
+>  			feat->eax |= HV_MSR_VP_RUNTIME_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_VP_RUNTIME;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 7:
+>  			/* Read only */
+>  			msr->idx = HV_X64_MSR_VP_RUNTIME;
+>  			msr->write = 1;
+>  			msr->write_val = 1;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  
+>  		case 8:
+>  			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 9:
+>  			feat->eax |= HV_MSR_TIME_REF_COUNT_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 10:
+>  			/* Read only */
+>  			msr->idx = HV_X64_MSR_TIME_REF_COUNT;
+>  			msr->write = 1;
+>  			msr->write_val = 1;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  
+>  		case 11:
+>  			msr->idx = HV_X64_MSR_VP_INDEX;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 12:
+>  			feat->eax |= HV_MSR_VP_INDEX_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_VP_INDEX;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 13:
+>  			/* Read only */
+>  			msr->idx = HV_X64_MSR_VP_INDEX;
+>  			msr->write = 1;
+>  			msr->write_val = 1;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  
+>  		case 14:
+>  			msr->idx = HV_X64_MSR_RESET;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 15:
+>  			feat->eax |= HV_MSR_RESET_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_RESET;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 16:
+>  			msr->idx = HV_X64_MSR_RESET;
+>  			msr->write = 1;
+>  			msr->write_val = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  
+>  		case 17:
+>  			msr->idx = HV_X64_MSR_REFERENCE_TSC;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 18:
+>  			feat->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_REFERENCE_TSC;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 19:
+>  			msr->idx = HV_X64_MSR_REFERENCE_TSC;
+>  			msr->write = 1;
+>  			msr->write_val = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  
+>  		case 20:
+>  			msr->idx = HV_X64_MSR_EOM;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 21:
+>  			/*
+> @@ -287,145 +287,145 @@ static void guest_test_msrs_access(void)
+>  			 */
+>  			msr->idx = HV_X64_MSR_EOM;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 22:
+>  			feat->eax |= HV_MSR_SYNIC_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_EOM;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 23:
+>  			msr->idx = HV_X64_MSR_EOM;
+>  			msr->write = 1;
+>  			msr->write_val = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  
+>  		case 24:
+>  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 25:
+>  			feat->eax |= HV_MSR_SYNTIMER_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 26:
+>  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
+>  			msr->write = 1;
+>  			msr->write_val = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 27:
+>  			/* Direct mode test */
+>  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
+>  			msr->write = 1;
+>  			msr->write_val = 1 << 12;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 28:
+>  			feat->edx |= HV_STIMER_DIRECT_MODE_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_STIMER0_CONFIG;
+>  			msr->write = 1;
+>  			msr->write_val = 1 << 12;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  
+>  		case 29:
+>  			msr->idx = HV_X64_MSR_EOI;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 30:
+>  			feat->eax |= HV_MSR_APIC_ACCESS_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_EOI;
+>  			msr->write = 1;
+>  			msr->write_val = 1;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  
+>  		case 31:
+>  			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 32:
+>  			feat->eax |= HV_ACCESS_FREQUENCY_MSRS;
+>  			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 33:
+>  			/* Read only */
+>  			msr->idx = HV_X64_MSR_TSC_FREQUENCY;
+>  			msr->write = 1;
+>  			msr->write_val = 1;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  
+>  		case 34:
+>  			msr->idx = HV_X64_MSR_REENLIGHTENMENT_CONTROL;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 35:
+>  			feat->eax |= HV_ACCESS_REENLIGHTENMENT;
+>  			msr->idx = HV_X64_MSR_REENLIGHTENMENT_CONTROL;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 36:
+>  			msr->idx = HV_X64_MSR_REENLIGHTENMENT_CONTROL;
+>  			msr->write = 1;
+>  			msr->write_val = 1;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 37:
+>  			/* Can only write '0' */
+>  			msr->idx = HV_X64_MSR_TSC_EMULATION_STATUS;
+>  			msr->write = 1;
+>  			msr->write_val = 1;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  
+>  		case 38:
+>  			msr->idx = HV_X64_MSR_CRASH_P0;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 39:
+>  			feat->edx |= HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE;
+>  			msr->idx = HV_X64_MSR_CRASH_P0;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 40:
+>  			msr->idx = HV_X64_MSR_CRASH_P0;
+>  			msr->write = 1;
+>  			msr->write_val = 1;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  
+>  		case 41:
+>  			msr->idx = HV_X64_MSR_SYNDBG_STATUS;
+>  			msr->write = 0;
+> -			msr->available = 0;
+> +			msr->should_not_gp = 0;
+>  			break;
+>  		case 42:
+>  			feat->edx |= HV_FEATURE_DEBUG_MSRS_AVAILABLE;
+>  			dbg->eax |= HV_X64_SYNDBG_CAP_ALLOW_KERNEL_DEBUGGING;
+>  			msr->idx = HV_X64_MSR_SYNDBG_STATUS;
+>  			msr->write = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  		case 43:
+>  			msr->idx = HV_X64_MSR_SYNDBG_STATUS;
+>  			msr->write = 1;
+>  			msr->write_val = 0;
+> -			msr->available = 1;
+> +			msr->should_not_gp = 1;
+>  			break;
+>  
+>  		case 44:
 
-Signed-off-by: Yunlong Jia <yunlong.jia@ecs.corp-partner.google.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
 
----
+Thanks,
 
-Changes in v2:
-1. Remove the touchscreen setting, as a follow-up patch
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
----
- arch/arm64/boot/dts/qcom/Makefile             |  2 +
- .../qcom/sc7180-trogdor-pazquel360-lte.dts    | 22 ++++++++
- .../qcom/sc7180-trogdor-pazquel360-wifi.dts   | 17 +++++++
- .../dts/qcom/sc7180-trogdor-pazquel360.dtsi   | 50 +++++++++++++++++++
- 4 files changed, 91 insertions(+)
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360-lte.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360-wifi.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360.dtsi
+Best regards,
+	Maxim Levitsky
 
-diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-index 1d86a33de528..9f736702e06f 100644
---- a/arch/arm64/boot/dts/qcom/Makefile
-+++ b/arch/arm64/boot/dts/qcom/Makefile
-@@ -84,6 +84,8 @@ dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel-lte-parade.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel-lte-ti.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel-parade.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel-ti.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel360-lte.dtb
-+dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pazquel360-wifi.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r1.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r1-lte.dtb
- dtb-$(CONFIG_ARCH_QCOM)	+= sc7180-trogdor-pompom-r2.dtb
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360-lte.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360-lte.dts
-new file mode 100644
-index 000000000000..021bcafcf815
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360-lte.dts
-@@ -0,0 +1,22 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Pazquel board device tree source
-+ *
-+ * Copyright 2021 Google LLC.
-+ */
-+
-+/dts-v1/;
-+
-+#include "sc7180-trogdor.dtsi"
-+#include "sc7180-trogdor-parade-ps8640.dtsi"
-+#include "sc7180-trogdor-pazquel360.dtsi"
-+#include "sc7180-trogdor-lte-sku.dtsi"
-+
-+/ {
-+	model = "Google Pazquel (Parade,LTE)";
-+	compatible = "google,pazquel-sku22", "google,pazquel-sku20", "qcom,sc7180";
-+};
-+
-+&ap_sar_sensor_i2c {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360-wifi.dts b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360-wifi.dts
-new file mode 100644
-index 000000000000..defd84c5354a
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360-wifi.dts
-@@ -0,0 +1,17 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Pazquel board device tree source
-+ *
-+ * Copyright 2022 Google LLC.
-+ */
-+
-+/dts-v1/;
-+
-+#include "sc7180-trogdor.dtsi"
-+#include "sc7180-trogdor-parade-ps8640.dtsi"
-+#include "sc7180-trogdor-pazquel360.dtsi"
-+
-+/ {
-+	model = "Google Pazquel (Parade,WIFI-only)";
-+	compatible = "google,pazquel-sku21", "qcom,sc7180";
-+};
-diff --git a/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360.dtsi b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360.dtsi
-new file mode 100644
-index 000000000000..5702325d0c7b
---- /dev/null
-+++ b/arch/arm64/boot/dts/qcom/sc7180-trogdor-pazquel360.dtsi
-@@ -0,0 +1,50 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Google Pazquel board device tree source
-+ *
-+ * Copyright 2021 Google LLC.
-+ */
-+
-+/* This file must be included after sc7180-trogdor.dtsi */
-+#include "sc7180-trogdor-pazquel.dtsi"
-+
-+&alc5682 {
-+	compatible = "realtek,rt5682s";
-+	realtek,dmic1-clk-pin = <2>;
-+	realtek,dmic-clk-rate-hz = <2048000>;
-+};
-+
-+&keyboard_controller {
-+	function-row-physmap = <
-+		MATRIX_KEY(0x00, 0x02, 0)	/* T1 */
-+		MATRIX_KEY(0x03, 0x02, 0)	/* T2 */
-+		MATRIX_KEY(0x02, 0x02, 0)	/* T3 */
-+		MATRIX_KEY(0x01, 0x02, 0)	/* T4 */
-+		MATRIX_KEY(0x03, 0x04, 0)	/* T5 */
-+		MATRIX_KEY(0x02, 0x04, 0)	/* T6 */
-+		MATRIX_KEY(0x01, 0x04, 0)	/* T7 */
-+		MATRIX_KEY(0x02, 0x09, 0)	/* T8 */
-+		MATRIX_KEY(0x01, 0x09, 0)	/* T9 */
-+		MATRIX_KEY(0x00, 0x04, 0)	/* T10 */
-+		MATRIX_KEY(0x03, 0x09, 0)       /* T11 */
-+	>;
-+	linux,keymap = <
-+		MATRIX_KEY(0x00, 0x02, KEY_BACK)
-+		MATRIX_KEY(0x03, 0x02, KEY_REFRESH)
-+		MATRIX_KEY(0x02, 0x02, KEY_ZOOM)
-+		MATRIX_KEY(0x01, 0x02, KEY_SCALE)
-+		MATRIX_KEY(0x03, 0x04, KEY_SYSRQ)
-+		MATRIX_KEY(0x02, 0x04, KEY_BRIGHTNESSDOWN)
-+		MATRIX_KEY(0x01, 0x04, KEY_BRIGHTNESSUP)
-+		MATRIX_KEY(0x02, 0x09, KEY_MUTE)
-+		MATRIX_KEY(0x01, 0x09, KEY_VOLUMEDOWN)
-+		MATRIX_KEY(0x00, 0x04, KEY_VOLUMEUP)
-+		MATRIX_KEY(0x03, 0x09, KEY_SLEEP)
-+		CROS_STD_MAIN_KEYMAP
-+	>;
-+};
-+
-+&sound {
-+	compatible = "google,sc7180-trogdor";
-+	model = "sc7180-rt5682s-max98357a-1mic";
-+};
--- 
-2.17.1
 
