@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27AE8ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DEE9ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231536AbiHaAzk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:55:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38938 "EHLO
+        id S230249AbiHaA6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:58:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiHaAzh (ORCPT
+        with ESMTP id S229481AbiHaA6B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:55:37 -0400
-Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.154.221.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 384803FA11;
-        Tue, 30 Aug 2022 17:55:33 -0700 (PDT)
-X-QQ-mid: bizesmtp71t1661907326thqev3j7
+        Tue, 30 Aug 2022 20:58:01 -0400
+Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A44A9C0E
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:57:59 -0700 (PDT)
+X-QQ-mid: bizesmtp86t1661907467t62nxb90
 Received: from localhost.localdomain ( [182.148.13.26])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 31 Aug 2022 08:55:25 +0800 (CST)
+        id ; Wed, 31 Aug 2022 08:57:46 +0800 (CST)
 X-QQ-SSF: 01000000000000D0E000000A0000000
-X-QQ-FEAT: r/cTxDoDoiEUJB1x/y0g/y9aiEOuG+0p/qt4054NpODYVPa4ZLjp3hQ9sVv23
-        MOOgYgNx3IXyhubPKvxm9JrxGfUjkFd5jHPAdmGz0ashHPcJnIAokQgCENUmt9Z51oactLQ
-        jAl53Uwnyo3MdwZv7gBfTB5qOa6dYY3D4jpgaRP29gwFwFRZvh20p+qObE554v/YgCrlerP
-        knzhtIxhzUh4EQqp6bNcqvkBrzQ6KqtpPrIzbUxg1gcXBhkqG1TyThk6y1whw+sx3+2OKL7
-        ISrNlpTuf4A0rmuyawhU7ehFNCAZWUBKy9itis9VfOvnoZ3nGfmnGRWhCIEoCUsVKfCRY6f
-        jC9JTkHOE6/cLICkVt6/H4qwg4Tku6EL6Tjifga0aPJI+6B0Vc=
+X-QQ-FEAT: 83ShfzFP0oDIRreUK6adz5wTVdQyShTxZeHC2bUg8eBmCdTH4bjfHfU4c2RKf
+        +pEy1ajNp1slJSLECzdbqH7duG6VnAR5XwjKwGNCTEl1qPo3/919OIiO1ONRDgKfghwpFTg
+        j6yvumPy9phSjo4D8FBrUqauSdZt6PIjmggQ/8V8kjaaU9Tlg6oHu7HoXVDjQQcihyxP9J3
+        b4IBbubYws+q38CwLpAaiuIjvcMtQbT3HPwfDJ2eLl7cVtohXm7JNCJ5QDUNXR4901o3c6R
+        uGd0WXqvLESFdtvo+xteTJmnkSPD8lYEOrr4U3SaDDL7pOOvEpcd7GowwGQ6hSctzY/Gw41
+        ezJDagp//oX2wgIrN1l8TmyFXxHblaEuN/7UzSvuKojtKAWpok=
 X-QQ-GoodBg: 0
 From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     davem@davemloft.net
-Cc:     sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org,
+To:     nsekhar@ti.com, brgl@bgdev.pl, linux@armlinux.org.uk
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] sparc: fix repeated words in comments
-Date:   Wed, 31 Aug 2022 08:55:19 +0800
-Message-Id: <20220831005519.41306-1-yuanjilin@cdjrlc.com>
+Subject: [PATCH] ARM: davinci: fix repeated words in comments
+Date:   Wed, 31 Aug 2022 08:57:39 +0800
+Message-Id: <20220831005739.42648-1-yuanjilin@cdjrlc.com>
 X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -47,22 +47,22 @@ Delete the redundant word 'the'.
 
 Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 ---
- arch/sparc/kernel/pci.c | 2 +-
+ arch/arm/mach-davinci/board-dm365-evm.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/sparc/kernel/pci.c b/arch/sparc/kernel/pci.c
-index cb1ef25116e9..07897cb09bbd 100644
---- a/arch/sparc/kernel/pci.c
-+++ b/arch/sparc/kernel/pci.c
-@@ -310,7 +310,7 @@ static struct pci_dev *of_create_pci_dev(struct pci_pbm_info *pbm,
- 	/* We can't actually use the firmware value, we have
- 	 * to read what is in the register right now.  One
- 	 * reason is that in the case of IDE interfaces the
--	 * firmware can sample the value before the the IDE
-+	 * firmware can sample the value before the IDE
- 	 * interface is programmed into native mode.
- 	 */
- 	pci_read_config_dword(dev, PCI_CLASS_REVISION, &class);
+diff --git a/arch/arm/mach-davinci/board-dm365-evm.c b/arch/arm/mach-davinci/board-dm365-evm.c
+index d8c6c360818b..cca709236ade 100644
+--- a/arch/arm/mach-davinci/board-dm365-evm.c
++++ b/arch/arm/mach-davinci/board-dm365-evm.c
+@@ -528,7 +528,7 @@ static struct vpbe_enc_mode_info dm365evm_enc_preset_timing[] = {
+ 
+ /*
+  * The outputs available from VPBE + ecnoders. Keep the
+- * the order same as that of encoders. First those from venc followed by that
++ * order same as that of encoders. First those from venc followed by that
+  * from encoders. Index in the output refers to index on a particular
+  * encoder.Driver uses this index to pass it to encoder when it supports more
+  * than one output. Application uses index of the array to set an output.
 -- 
 2.36.1
 
