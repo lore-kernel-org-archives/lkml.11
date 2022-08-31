@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 331A5ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:14:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C38ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229867AbiHaIOd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:14:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
+        id S230449AbiHaIPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229838AbiHaIOa (ORCPT
+        with ESMTP id S229742AbiHaIPM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:14:30 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F83BD153;
-        Wed, 31 Aug 2022 01:14:29 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id B6F8F6601A13;
-        Wed, 31 Aug 2022 09:14:27 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661933668;
-        bh=MxOD5M65W1GJcNc0Z8B2s/tYrrWG9J/LN9h5lRW6bSU=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=iaGCilpQKPcvOdreLUtUnyAO/H8KlaMdDQY5OwiupI4t3Ruht7gtwqhUgexUB9SPV
-         p4okatpOHehg5tuz60UsjxuUuTKp07/aH9d94kH53QPMA/Bkeg0z8oxof/I1XPKUgw
-         J/P5qqUYbelSw0cQUg2qqwljDtPkXqieT86jRDFdBkFhCycZOXOaTKBebwT8PpF6h5
-         AxxrV3K60UmDTdA9mzSlWdXHYBCBmFS6MOSp2IkWcskFS6tinz73Y1ioLbE8Ic3edB
-         oqooAJiBqGuoYJww0T4/ga0JmNHLFLVEJNhReQmRIMCpVvuhpRff8IDuIbN6o6LyiR
-         X8CTpZsWeNlnw==
-Message-ID: <219aef5a-af2a-6873-f682-cb6aef862425@collabora.com>
-Date:   Wed, 31 Aug 2022 10:14:25 +0200
+        Wed, 31 Aug 2022 04:15:12 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E4F022B23
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:15:11 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oTIs1-0004bv-Ab; Wed, 31 Aug 2022 10:14:45 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oTIs0-0002sI-CE; Wed, 31 Aug 2022 10:14:44 +0200
+Date:   Wed, 31 Aug 2022 10:14:44 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     mchehab@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, vkoul@kernel.org, kishon@ti.com,
+        sakari.ailus@linux.intel.com, hverkuil@xs4all.nl,
+        jacopo@jmondi.org, laurent.pinchart+renesas@ideasonboard.com
+Cc:     linux-phy@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-media@vger.kernel.org
+Subject: Re: [PATCH 0/4] Add support for Toshiba TC358746
+Message-ID: <20220831081444.foupf6nfhqrk63ej@pengutronix.de>
+References: <20220818143307.967150-1-m.felsch@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH v2 3/7] phy: phy-mtk-tphy: add property to set
- pre-emphasis
-Content-Language: en-US
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Eddie Hung <eddie.hung@mediatek.com>
-References: <20220829080830.5378-1-chunfeng.yun@mediatek.com>
- <20220829080830.5378-3-chunfeng.yun@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220829080830.5378-3-chunfeng.yun@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818143307.967150-1-m.felsch@pengutronix.de>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 29/08/22 10:08, Chunfeng Yun ha scritto:
-> Add a property to set usb2 phy's pre-emphasis, it's disabled by default
-> on some SoCs.
+Hi,
+
+gentle ping on this series.
+
+On 22-08-18, Marco Felsch wrote:
+> Hi,
 > 
-> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-> ---
-> v2: no changes
-> ---
->   drivers/phy/mediatek/phy-mtk-tphy.c | 10 ++++++++++
->   1 file changed, 10 insertions(+)
+> this small series adds the support for the Toshiba TC358746 MIPI-CSI to
+> Parallel converter chip. After a long period I finally had the time to
+> include Sakaris points made on my v2 [1]. Since [1] is long time ago
+> and I reworked the driver a lot, I don't add a v3 on this series. Also
+> all already provided RB tags are dropped.
 > 
-> diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
-> index 8ee7682b8e93..986fde0f63a0 100644
-> --- a/drivers/phy/mediatek/phy-mtk-tphy.c
-> +++ b/drivers/phy/mediatek/phy-mtk-tphy.c
-> @@ -72,6 +72,8 @@
->   #define PA5_RG_U2_HS_100U_U3_EN	BIT(11)
->   
->   #define U3P_USBPHYACR6		0x018
-> +#define PA6_RG_U2_PRE_EMP		GENMASK(31, 30)
-> +#define PA6_RG_U2_PRE_EMP_VAL(x)	((0x3 & (x)) << 30)
-
-Hello Chunfeng,
-
-can you please clarify which SoC is this change referred to?
-
-If I'm not missing anything, there may be a register layout conflict between
-one version and the other for T-PHYs, for which, it may be a good idea to add
-a PHY version check before allowing to write settings that are supported only
-on a specific IP...
-
-Regards,
-Angelo
-
+> Regards,
+>   Marco
+> 
+> [1] https://www.mail-archive.com/linux-media@vger.kernel.org/msg147901.html
+> 
+> Marco Felsch (4):
+>   phy: dphy: refactor get_default_config
+>   phy: dphy: add support to calculate the timing based on hs_clk_rate
+>   media: dt-bindings: add bindings for Toshiba TC358746
+>   media: tc358746: add Toshiba TC358746 Parallel to CSI-2 bridge driver
+> 
+>  .../bindings/media/i2c/toshiba,tc358746.yaml  |  157 ++
+>  drivers/media/i2c/Kconfig                     |   17 +
+>  drivers/media/i2c/Makefile                    |    1 +
+>  drivers/media/i2c/tc358746.c                  | 1645 +++++++++++++++++
+>  drivers/phy/phy-core-mipi-dphy.c              |   31 +-
+>  include/linux/phy/phy-mipi-dphy.h             |    3 +
+>  6 files changed, 1850 insertions(+), 4 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/media/i2c/toshiba,tc358746.yaml
+>  create mode 100644 drivers/media/i2c/tc358746.c
+> 
+> -- 
+> 2.30.2
+> 
+> 
+> 
