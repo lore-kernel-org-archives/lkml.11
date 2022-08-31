@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5C2ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A30ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230340AbiHaS00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57166 "EHLO
+        id S232014AbiHaS0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:26:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232756AbiHaSZh (ORCPT
+        with ESMTP id S232755AbiHaSZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 14:25:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409C1FCA2C
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:54 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464F1A2DAC
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F780B82278
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D613C43147;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 824F6B82274
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 274F7C433D7;
         Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661970110;
-        bh=Cc1PozE4Kvo2KpHAs/2aNkgoLKg3JAhc3RNFnVGkdlc=;
+        bh=PbgqrlZZosHYbW1nGq71ZuCzDyWkjMJCAl8bHAx5ujs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DonB0/CVLG3l2uQY+D8qFgEMnR1rFNq4Af5Svwo2EM5tXyCJm4wjRcUw1YLb3b9/L
-         Kti+1NzP41QbSzjO7oqaB54J6asvqX7e0/d3Yp7DAIiFmxs/cGaVBvT3Y3zKQkZFt4
-         BL1Ak7etLvMHCb8uk84YwcZ2wES2rt/xLqkAvMGu85khdbbprH+JiZgDP2DKD8zGfe
-         YUBXqdCgZ5x0jbxNtd3eIug9+HR6O4I14ajmDQNdS3XAviHQZYiEyRdRGt2I35Z4Qv
-         4duFMw1hdLZg6oSflkMXGAlh0FoVLTO+UNi5Rd58Nm9fRQX7f668CL5xSwKOtUYjyF
-         8cSSaj9V/uMAQ==
+        b=m2hHmhTlnhrQBP23DC4aegtGLyEdtj+cabH/135m81FavzC3rZTMlAUHM0+jOTupX
+         b5mjGnFAGF0lle8toXNjpYU4hBkGvv1Pi0g5Du3ag+bYnhfgdmSS4EeJmdb51z+CO7
+         Ni6QqW3/Z5M6xQLdJk+iRjSqjcwKr9tpR1nYKoUR+bPXe5QTK3IsElV+GCOtDDDIPV
+         GOMi4WtfuOqN3ScnYfbFWYH7D/cQqLrgLizFNGF9mF5Cnz+wbUUanCacq5vqy4ykbN
+         cR1Zt786nh3WsneWxtNbhNwr8uGftZrf9ThZfkYO/iufD4hIBLVIMyR6+wzwC/N2el
+         Ajq5eRSNJhDpg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id DEE785C09C2; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+        id D35715C02A9; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
-        Willy Tarreau <w@1wt.eu>,
+        Zqiang <qiang1.zhang@intel.com>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 07/18] selftests/nolibc: add a few tests for some libc functions
-Date:   Wed, 31 Aug 2022 11:21:37 -0700
-Message-Id: <20220831182148.2698489-9-paulmck@kernel.org>
+Subject: [PATCH rcu 2/2] rcutorture: Use the barrier operation specified by cur_ops
+Date:   Wed, 31 Aug 2022 11:21:31 -0700
+Message-Id: <20220831182148.2698489-3-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
@@ -51,69 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Zqiang <qiang1.zhang@intel.com>
 
-The test series called "stdlib" covers some libc functions (string,
-stdlib etc). By default they are automatically run after "syscall"
-but may be requested in argument or in variable NOLIBC_TEST.
+The rcutorture_oom_notify() function unconditionally invokes
+rcu_barrier(), which is OK when the rcutorture.torture_type value is
+"rcu", but unhelpful otherwise.  The purpose of these barrier calls is to
+wait for all outstanding callback-flooding callbacks to be invoked before
+cleaning up their data.  Using the wrong barrier function therefore
+risks arbitrary memory corruption.  Thus, this commit changes these
+rcu_barrier() calls into cur_ops->cb_barrier() to make things work when
+torturing non-vanilla flavors of RCU.
 
-Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Zqiang <qiang1.zhang@intel.com>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/testing/selftests/nolibc/nolibc-test.c | 35 ++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ kernel/rcu/rcutorture.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/nolibc/nolibc-test.c b/tools/testing/selftests/nolibc/nolibc-test.c
-index dc87832912ce4..b928f099431f7 100644
---- a/tools/testing/selftests/nolibc/nolibc-test.c
-+++ b/tools/testing/selftests/nolibc/nolibc-test.c
-@@ -496,11 +496,46 @@ int run_syscall(int min, int max)
- 	return ret;
- }
- 
-+int run_stdlib(int min, int max)
-+{
-+	int test;
-+	int tmp;
-+	int ret = 0;
-+	void *p1, *p2;
-+
-+	for (test = min; test >= 0 && test <= max; test++) {
-+		int llen = 0; // line length
-+
-+		/* avoid leaving empty lines below, this will insert holes into
-+		 * test numbers.
-+		 */
-+		switch (test + __LINE__ + 1) {
-+		CASE_TEST(getenv_TERM);        EXPECT_STRNZ(1, getenv("TERM")); break;
-+		CASE_TEST(getenv_blah);        EXPECT_STRZR(1, getenv("blah")); break;
-+		CASE_TEST(setcmp_blah_blah);   EXPECT_EQ(1, strcmp("blah", "blah"), 0); break;
-+		CASE_TEST(setcmp_blah_blah2);  EXPECT_NE(1, strcmp("blah", "blah2"), 0); break;
-+		CASE_TEST(setncmp_blah_blah);  EXPECT_EQ(1, strncmp("blah", "blah", 10), 0); break;
-+		CASE_TEST(setncmp_blah_blah4); EXPECT_EQ(1, strncmp("blah", "blah4", 4), 0); break;
-+		CASE_TEST(setncmp_blah_blah5); EXPECT_NE(1, strncmp("blah", "blah5", 5), 0); break;
-+		CASE_TEST(setncmp_blah_blah6); EXPECT_NE(1, strncmp("blah", "blah6", 6), 0); break;
-+		CASE_TEST(strchr_foobar_o);    EXPECT_STREQ(1, strchr("foobar", 'o'), "oobar"); break;
-+		CASE_TEST(strchr_foobar_z);    EXPECT_STRZR(1, strchr("foobar", 'z')); break;
-+		CASE_TEST(strrchr_foobar_o);   EXPECT_STREQ(1, strrchr("foobar", 'o'), "obar"); break;
-+		CASE_TEST(strrchr_foobar_z);   EXPECT_STRZR(1, strrchr("foobar", 'z')); break;
-+		case __LINE__:
-+			return ret; /* must be last */
-+		/* note: do not set any defaults so as to permit holes above */
-+		}
-+	}
-+	return ret;
-+}
-+
- 
- /* This is the definition of known test names, with their functions */
- static struct test test_names[] = {
- 	/* add new tests here */
- 	{ .name = "syscall",   .func = run_syscall  },
-+	{ .name = "stdlib",    .func = run_stdlib   },
- 	{ 0 }
- };
- 
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index d8e1b270a065f..08b7b59d5d05b 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -2600,12 +2600,12 @@ static int rcutorture_oom_notify(struct notifier_block *self,
+ 	for (i = 0; i < fwd_progress; i++)
+ 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
+ 	pr_info("%s: Freed %lu RCU callbacks.\n", __func__, ncbs);
+-	rcu_barrier();
++	cur_ops->cb_barrier();
+ 	ncbs = 0;
+ 	for (i = 0; i < fwd_progress; i++)
+ 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
+ 	pr_info("%s: Freed %lu RCU callbacks.\n", __func__, ncbs);
+-	rcu_barrier();
++	cur_ops->cb_barrier();
+ 	ncbs = 0;
+ 	for (i = 0; i < fwd_progress; i++)
+ 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
 -- 
 2.31.1.189.g2e36527f23
 
