@@ -2,111 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F700ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C32ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbiHaNGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
+        id S231660AbiHaNHi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiHaNGO (ORCPT
+        with ESMTP id S230376AbiHaNHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:06:14 -0400
-X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 06:06:12 PDT
-Received: from smtp126.ord1c.emailsrvr.com (smtp126.ord1c.emailsrvr.com [108.166.43.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6328ABB92A
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:06:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
-        s=20190130-41we5z8j; t=1661950705;
-        bh=0KcZlJccqHicNmaRgVPiDmAuxUe7nb/278cWgizWaGQ=;
-        h=Date:Subject:To:From:From;
-        b=OPrZeTdJNfQhcaza09qAyFjQh4ZYjZbsxcBm31jlrUfOzaWJ/aBRqvGge7B6VUZu0
-         54ONJJteoNeqzpBUmx067fY427Teb7qDImUd+SeeosZ/T08aFNjQC4og2zykj0hnaz
-         SvriQrKkF7NEpMvRTNV1TOWbON+TAufBJKhAIHX4=
-X-Auth-ID: abbotti@mev.co.uk
-Received: by smtp24.relay.ord1c.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id 2ECC46016D;
-        Wed, 31 Aug 2022 08:58:25 -0400 (EDT)
-Message-ID: <26274f3d-75fd-3653-e1f3-11ce52f402ee@mev.co.uk>
-Date:   Wed, 31 Aug 2022 13:58:24 +0100
+        Wed, 31 Aug 2022 09:07:33 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F4BB7EDB
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:07:25 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id bq23so19889205lfb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:07:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=7VyLyCy0cnv60X071RxqWAQwfMlcLy5pCMa/AfqXhkg=;
+        b=a/rdoFx21sc0a21CEmujAwRASRoyLTGEPAamYtZO6o02CdxDbzXJnfGD1lAVXjLRmi
+         CB1IaNpolIxNdpnZ7MDdkKQ6Vu9J4TguhAfL0TaL/iZtTwJzMIwDhBYZEPK4zK20VJtn
+         iy+bc7itxKMzhpX2GypJoE/LPt78ONRXS7rJvojWh5lVwczZxkkE7dSkpUutJcZ3D+aY
+         mQ64PBFz9mP9KuKBgGwzAcxRe3JGfrgXeIYilvYKoXZDDaXDN0psmYJaIuFLOlpdA4P7
+         i8j45hAWo9YIgEuqnJvI1l1cfRXyoKkfV20u3dX15TLHmEDS6h+KJxn7oBptZG5AuSWV
+         xX/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=7VyLyCy0cnv60X071RxqWAQwfMlcLy5pCMa/AfqXhkg=;
+        b=fvphBPD/yACmu5+AuNJju3w2oJJdUpLL3KzEurgWXthcPP7Rsdt6UYl0JVrmBEUG2w
+         ZivSnK7mLQrXg8CyAd5V26aMAWHhy75sc7+2KCUqcoD1gA/Qtb5T9NZjMtbB0DOgIy9D
+         Jhl4Fy+50NqOKFKr63UGTpcaj1LIGCl5WANa3AQZ2mKbWzQk8vXePyLWuUeqlf+Q0zg3
+         ZFGspV+OZ3eN/CffzEmZIfJDSZTqvu5m6z8wQzLnsiVu2PfpJ6po1bwprAiSIpQhuu1k
+         2W3qHHaftzSDxaM+OM4FH3sMpNsW7TxSeawIvteh7+RgtaN9G7dXiY2znWy/oLuJl6SX
+         ziTw==
+X-Gm-Message-State: ACgBeo3Yx1bto+FyZb9R0QEZQLi5A55Fx3w+ryjmpDZ5eD0tENG8bn0Y
+        U0nae0PEa55NEu/+oaGs1wrfkw==
+X-Google-Smtp-Source: AA6agR47dGuaM07NwVhaLYtpM85boK7MaJ8WRmcwUOPUyjS2OsuSm56CCSlFElSfgpAjtdp6cbm+3Q==
+X-Received: by 2002:ac2:4bc1:0:b0:48b:2b20:ed24 with SMTP id o1-20020ac24bc1000000b0048b2b20ed24mr8675439lfq.67.1661951243523;
+        Wed, 31 Aug 2022 06:07:23 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id t17-20020ac25491000000b004946d1f3cc4sm1033990lfk.164.2022.08.31.06.07.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 06:07:23 -0700 (PDT)
+Message-ID: <66076594-6745-e2d9-afff-03b9266f31bd@linaro.org>
+Date:   Wed, 31 Aug 2022 16:07:21 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.13.0
-Subject: Re: [PATCH v2] comedi: sysfs: convert sysfs snprintf to sysfs_emit
-Content-Language: en-GB
-To:     Xuezhi Zhang <zhangxuezhi3@gmail.com>,
-        hsweeten@visionengravers.com, gregkh@linuxfoundation.org,
-        zhangxuezhi1@coolpad.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220831125520.239055-1-zhangxuezhi3@gmail.com>
-From:   Ian Abbott <abbotti@mev.co.uk>
-Organization: MEV Ltd.
-In-Reply-To: <20220831125520.239055-1-zhangxuezhi3@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v1 09/14] dt-bindings: nvmem: add YAML schema for the sl28
+ vpd layout
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-10-michael@walle.cc>
+ <b85276ee-3e19-3adb-8077-c1e564e02eb3@linaro.org>
+ <ddaf3328bc7d88c47517285a3773470f@walle.cc>
+ <4bf16e18-1591-8bc9-7c46-649391de3761@linaro.org>
+ <1b06716690b0070c0c2b0985577763e3@walle.cc>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1b06716690b0070c0c2b0985577763e3@walle.cc>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Classification-ID: d1fc4daa-60b2-4b34-b65e-daa36668d751-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/08/2022 13:55, Xuezhi Zhang wrote:
-> From: zhangxuezhi1 <zhangxuezhi1@coolpad.com>
+On 31/08/2022 12:51, Michael Walle wrote:
+> Am 2022-08-31 11:24, schrieb Krzysztof Kozlowski:
+>> On 31/08/2022 11:17, Michael Walle wrote:
 > 
-> Fix up all sysfs show entries to use sysfs_emit
+>>> First thing, this binding isn't like the usual ones, so it might be
+>>> totally wrong.
+>>>
+>>> What I'd like to achieve here is the following:
+>>>
+>>> We have the nvmem-consumer dt binding where you can reference a
+>>> nvmem cell in a consumer node. Example:
+>>>    nvmem-cells = <&base_mac_address 5>;
+>>>    nvmem-cell-names = "mac-address";
+>>>
+>>> On the other end of the link we have the nvmem-provider. The dt
+>>> bindings works well if that one has individual cell nodes, like
+>>> it is described in the nvmem.yaml binding. I.e. you can give the
+>>> cell a label and make a reference to it in the consumer just like
+>>> in the example above.
+>>
+>> You can also achieve it with phandle argument to the nvmwm controller,
+>> right? Just like most of providers are doing (clocks, resets). Having
+>> fake (empty) nodes just for that seems like overkill.
 > 
-> Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
-> ---
-> v2: use a proper name for the Signed-off-by line.
-> ---
->   drivers/comedi/comedi_fops.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
+> You mean like
+>   nvmem-cells = <&nvmem_device SERIAL_NUMBER>;
+
+Yes.
+
 > 
-> diff --git a/drivers/comedi/comedi_fops.c b/drivers/comedi/comedi_fops.c
-> index 55a0cae04b8d..e2114bcf815a 100644
-> --- a/drivers/comedi/comedi_fops.c
-> +++ b/drivers/comedi/comedi_fops.c
-> @@ -396,7 +396,7 @@ static ssize_t max_read_buffer_kb_show(struct device *csdev,
->   	mutex_unlock(&dev->mutex);
->   
->   	comedi_dev_put(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
-> +	return sysfs_emit(buf, "%u\n", size);
->   }
->   
->   static ssize_t max_read_buffer_kb_store(struct device *csdev,
-> @@ -452,7 +452,7 @@ static ssize_t read_buffer_kb_show(struct device *csdev,
->   	mutex_unlock(&dev->mutex);
->   
->   	comedi_dev_put(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
-> +	return sysfs_emit(buf, "%u\n", size);
->   }
->   
->   static ssize_t read_buffer_kb_store(struct device *csdev,
-> @@ -509,7 +509,7 @@ static ssize_t max_write_buffer_kb_show(struct device *csdev,
->   	mutex_unlock(&dev->mutex);
->   
->   	comedi_dev_put(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
-> +	return sysfs_emit(buf, "%u\n", size);
->   }
->   
->   static ssize_t max_write_buffer_kb_store(struct device *csdev,
-> @@ -565,7 +565,7 @@ static ssize_t write_buffer_kb_show(struct device *csdev,
->   	mutex_unlock(&dev->mutex);
->   
->   	comedi_dev_put(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
-> +	return sysfs_emit(buf, "%u\n", size);
->   }
->   
->   static ssize_t write_buffer_kb_store(struct device *csdev,
+> I'm not sure about the implications for now, because one is
+> referencing the device and not individal cells. Putting that
+> aside for now, there seems to be a problem with the index for
+> the base mac address: You will have different number of arguments
+> for the phandle. That doesn't work, right?
+> 
+> nvmem-cells = <&nvmem_device SERIAL_NUMBER>;
+> nvmem-cells = <&nvmem_device BASE_MAC_ADDRESS 1>;
 
-Looks good, thanks!
+It could work, but looks poor, however it could be still nicely extended
+with new defines and renames later:
 
-Reviewed-by: Ian Abbott <abbotti@mev.co.uk>
+Once:
+nvmem-cells = <&nvmem_device BASE_MAC_ADDRESS>;
 
--- 
--=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
--=( registered in England & Wales.  Regd. number: 02862268.  )=-
--=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
--=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
+Later renamed to (with some ABI impact, but in theory names are not part
+of ABI, but numbers are):
+nvmem-cells = <&nvmem_device BASE_MAC_ADDRESS_1>;
+nvmem-cells = <&nvmem_device BASE_MAC_ADDRESS_2>;
+
+(or even skip renaming and just add suffix _2)
+
+You cannot rename device nodes, without deprecating them.
+
+> 
+>>> Now comes the catch: what if there is no actual description of the
+>>> cell in the device tree, but is is generated during runtime. How
+>>> can I get a label to it.
+>>
+>> Same as clocks, resets, power-domains and everyone else.
+> 
+> See
+> https://git.kernel.org/torvalds/c/084973e944bec21804f8afb0515b25434438699a
+> 
+> And I guess this discussion is relevant here:
+> https://lore.kernel.org/linux-devicetree/20220124160300.25131-1-zajec5@gmail.com/
+
+Eh, ok, I jumped in the middle of something and seems Rob was fine with
+these empty nodes. Looks weird and overkill too me (imagine defining 500
+clocks in clock-controller like that), but I am here still learning. :)
+
+I guess it makes sense for the cases when OTP/nvmem cells are not
+controller specific, not fixed for given OTP controller but rather board
+specific and having defined them in header would not make sense.
+
+But then if they are strictly/statically defined as children of a
+device, means they are fixed for given OTP and effort is the same as
+having them in header...
+
+> 
+>>> Therefore, in this case, there is just
+>>> an empty node and the driver will associate it with the cell
+>>> created during runtime (see patch 10). It is not expected, that
+>>> is has any properties.
+>>
+>> It cannot be even referenced as it does not have #cells property...
+> 
+> You mean "#nvmem-cell-cells"? See patch #2. None of the nvmem
+> cells had such a property for now.
+
+Oh, so so how do you reference them? Users of this seems to be missing,
+so I am guessing that directly via phandle to label and nvmem maps them
+ with nvmem_find_cell_of_node()?
+
+> 
+>>>>> +
+>>>>> +  base-mac-address:
+>>>>
+>>>> Fields should be rather described here, not in top-level description.
+>>>>
+>>>>> +    type: object
+>>>>
+>>>> On this level:
+>>>>     additionalProperties: false
+>>>>
+>>>>> +
+>>>>> +    properties:
+>>>>> +      "#nvmem-cell-cells":
+>>>>> +        const: 1
+>>>>> +
+>>>>
+>>>> I also wonder why you do not have unit addresses. What if you want to
+>>>> have two base MAC addresses?
+>>>
+>>> That would describe an offset within the nvmem device. But the offset
+>>> might not be constant, depending on the content. My understanding
+>>> so far was that in that case, you use the "-N" suffix.
+>>>
+>>> base-mac-address-1
+>>> base-mac-address-2
+>>>
+>>> (or maybe completely different names).
+>>
+>> You do not allow "base-mac-address-1". Your binding explicitly accepts
+>> only "base-mac-address".
+> 
+> Because the binding matches the driver, which matches the driver
+> which matches the VPD data and there is only one base mac address.
+> Thus, no need for different ones.
+
+True, but it is also not extensible, so you have to be sure you covered
+100% of this device. And then if you have a new, slightly different
+device, you need entirely new schema, because this one is not reusable
+at all.
+
+It's ok, it just has some drawbacks/limitations.
+
+Best regards,
+Krzysztof
