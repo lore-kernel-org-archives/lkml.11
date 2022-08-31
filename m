@@ -2,133 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90EDAC0502C
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E3EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231935AbiHaNu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:50:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
+        id S231940AbiHaNvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbiHaNux (ORCPT
+        with ESMTP id S231331AbiHaNvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:50:53 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44799F18A;
-        Wed, 31 Aug 2022 06:50:51 -0700 (PDT)
-Received: from [IPV6:2405:201:10:389d:42df:ae4c:c047:294c] (unknown [IPv6:2405:201:10:389d:42df:ae4c:c047:294c])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: shreeya)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2A19266015AB;
-        Wed, 31 Aug 2022 14:50:47 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661953850;
-        bh=qrAOSFiudT5hLLoyAKQTuL5l0pWRMOhoiKTCH02kSHA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=kXdIIWLqOs5QXlLV3w07O4cJu8gd8C0rqDl8/pEQKKypLt7mGZcancOeRqhM0rhEk
-         J0nJw2iSCQ02phR2J7zdxvYih4ZhzgCiAP8MOat9djBjfSuRHwews2nujiKuAj+OI0
-         F3Yk9IohyZb+eD83xQaPXpIwuPvu9XktfzQ9NnTg1bmRtM04W46XwYuBD+k+YfPQLD
-         B/S37rhAFp3gORYibum6Lz+bOuUw0Z0J7bqjtMFsBPgx0IPGBMAlWp6qy9wWt+v3ZO
-         yqMR+GR2wsRz51a/wWnzhwQEN1y6bxd5WfVQtp/MK3qJsmB0Ar3Z7ZlnITmBimfoL9
-         DTTlysGxVe+jA==
-Message-ID: <2bbbd71a-904f-2bdf-8dda-f699e38265f8@collabora.com>
-Date:   Wed, 31 Aug 2022 19:20:38 +0530
+        Wed, 31 Aug 2022 09:51:38 -0400
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB935CE4A4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:51:36 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2045.outbound.protection.outlook.com [104.47.22.45]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-26-3oeqpHEePuSCKQK7CJSOtQ-1; Wed, 31 Aug 2022 15:51:31 +0200
+X-MC-Unique: 3oeqpHEePuSCKQK7CJSOtQ-1
+Received: from ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3b::9) by
+ ZR0P278MB0364.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:31::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5566.15; Wed, 31 Aug 2022 13:51:31 +0000
+Received: from ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::cd78:5df6:612c:455f]) by ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::cd78:5df6:612c:455f%2]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
+ 13:51:30 +0000
+From:   Marcel Ziswiler <marcel.ziswiler@toradex.com>
+To:     "alexander.stein@ew.tq-group.com" <alexander.stein@ew.tq-group.com>,
+        "wenst@chromium.org" <wenst@chromium.org>
+CC:     "nfraprado@collabora.com" <nfraprado@collabora.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "angelogioacchino.delregno@collabora.com" 
+        <angelogioacchino.delregno@collabora.com>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>
+Subject: Re: [PATCH RESEND v2 1/2] clk: core: Honor CLK_OPS_PARENT_ENABLE for
+ clk gate ops
+Thread-Topic: [PATCH RESEND v2 1/2] clk: core: Honor CLK_OPS_PARENT_ENABLE for
+ clk gate ops
+Thread-Index: AQHYvUDGGvG/DF/yckGrUtVF0yV3bw==
+Date:   Wed, 31 Aug 2022 13:51:30 +0000
+Message-ID: <9f61678e008815ed011a61472cf909445448cb2b.camel@toradex.com>
+References: <20220822081424.1310926-1-wenst@chromium.org>
+         <2254919.ElGaqSPkdT@steina-w>
+         <CAGXv+5Hf0n5jkqwuQmh0PG8ejxDND6BRVG47J9HTQrqz9OhLdQ@mail.gmail.com>
+         <8113103.T7Z3S40VBb@steina-w>
+In-Reply-To: <8113103.T7Z3S40VBb@steina-w>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f854f774-e525-4a45-c336-08da8b57e8bf
+x-ms-traffictypediagnostic: ZR0P278MB0364:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0
+x-microsoft-antispam-message-info: sLZbSk14RoxLbKefqayypQgfEUvSncXbsdMoV8d8ZWRFFYoRvRd9FfzM+DFNPpVwkYQTZCufDxH6Ax8GHUc0j1WePyRt0te6jpTRf89qKBpyytNrIs69AA8p7T6LggSpejqvsN5GLNIK5l/3AnxV01tUInchZoqDQ8xE6aMLLYImOuitXBSt+juN84vau+vU17crreKA3AYvWKN/1v9o9wLqya83FYsYrOz285DoEX8WGYy/0zYcJMgiTw2TP5S2sZrHqYtUKDBBCv387QimhkbM5KPLiPIgHzyjSlhGQdcG3QP1Dgc6S3zqIfmX7Jkj87wD9N+ob7qMOYRZbwaP44clg0H37cayaW1CttqtkkIn+QBKPdoe3bioj0z8iywjFvLO/VgCqbJdtOyzGdhVK49YOmO8ug/zuWSPmBl2z4X0SxuIMEsN3WYeRJvKHdhBS8WywHZS20F6146nDY7w0SGB//Hnd7wOT8uGH6cPIpA4DpNhvXC1ZAsR/lqciP2osxg7ZYLr4aA88i5r10Ycr5OaKOAXQ7ORa/K+UcoQthVm8YPGTdMWSlhgGvel0gVsZhThXFunUdj17z0PwT0G0Wsb5+n9FFmRH3eJCo1nYl5LCAQjAOEVKXGslZLEEAEM8db6u1jSqGK8JfXVk6hyvPtqYDMFMOy/z+I7b4DAw6+3l32vmt886rAYEWcSzPci3EPLy1tIuV4/QZEKJoTc8Gne/+COTAnfendpN2BGrNFqO7FjdxD7Xd0wF2vYAIIw+RSWn/b8cIxzgRzntdNEkA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(366004)(396003)(39840400004)(376002)(38070700005)(44832011)(86362001)(2906002)(38100700002)(122000001)(8936002)(5660300002)(26005)(6512007)(6506007)(54906003)(316002)(110136005)(6486002)(478600001)(71200400001)(41300700001)(83380400001)(66946007)(64756008)(66476007)(66556008)(8676002)(66446008)(76116006)(4326008)(2616005)(186003)(36756003);DIR:OUT;SFP:1102
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WEJMNkUzV2VNdUdUbVliZDZ2ZUhlSC9IRlExY1lpTmwzN3JSTWc1bUlIMlpz?=
+ =?utf-8?B?QWp0T2NLQkZhTFN6L1g5UzBWWHQrTlpoa2V5REs4YWRXK09DREExN3g4UGU4?=
+ =?utf-8?B?Mm5jN3d2Z3FZOGh5NUlEYXhvRjNBeDlnbWcrVFhWdHUzSm9odjdoRm5BelA5?=
+ =?utf-8?B?a05GT0k3cVVOR0ZXUFkxMFdJTzJuYkx6d2cvTUhDYXpRS1ZCbGFxWVh5ZFBv?=
+ =?utf-8?B?UVpJT29pK1NuaVlkT3FQTjNJTHJpbEQveTR3Sm9XWE9BR1JDb25hc2hodG9R?=
+ =?utf-8?B?QUowOXNjdUxPbTZhb3pEdVlMdUpxVjJETlpxdVkwY2R4VEQrN2dHU0tKU2kx?=
+ =?utf-8?B?QmhMTVBhTnI3cExYemUyTVBLYnlKNEszMHJ2SXlha0NYbjdwV1dzcndua1Rp?=
+ =?utf-8?B?RlJCQWViZGE0d1ZTNUJHdkluZ1o3ZncyaUFhRitOc1hQZ2pPY05CUStLVUFo?=
+ =?utf-8?B?V2NrTDg4UWxEelhYL0ZYRW9neXZTb0k4NmVpVHRjbWttdVEvclEreS84U0dS?=
+ =?utf-8?B?akt0UzVUbkxqbmtlTzlDeFZkeGdOWnJoVC96Z1ZnWTN3YzEvd29mR1puT1Zo?=
+ =?utf-8?B?RDhRRXJUSkpHSGl6UWRaekhNR1A5TjV1ZVpkelp3VGJqeFl4ekJCVGN2Yjh5?=
+ =?utf-8?B?MXpnUW1rcjNmTjRHNnpyU2djNkhPMW50NHVwUTBldDVBRXR2ZWtPMVR1cGtu?=
+ =?utf-8?B?aXB2cktlT3Y4NWVXSkp6aWMxcUxieUJSUlNqV1F1MU5lRVBDLzMzdGxrbmlW?=
+ =?utf-8?B?YlB3bTA1aW9YMkdqckVsMWhpL3lSQzBWK1lTbVE4WmhyTFErb3hBd2FKUHox?=
+ =?utf-8?B?WWYwZnBrYmNWcmpock1lbzcrek1oRERvdElxVVFSd2JWYmhaRnZZK2JoTDRD?=
+ =?utf-8?B?SGQ0ZEFLTmE3NGUrODBYQ2k5d3FPR3ZnMGlJaFkvY3lQTW5kSGc4OHpiYzF3?=
+ =?utf-8?B?Nml4K2p4bmhRV2wzakY4cGtjVm5DTGRpZTFqR0lIUTBNUWNmR2liYTlZUzcz?=
+ =?utf-8?B?U3dlMXNXS09iZDBRU0h2WWN3NmtmdlVIRlRMNXFrNEpwK0RQM2VVOS9meGpy?=
+ =?utf-8?B?TXFuOXI5QjhjejRxMmU5WkZFTHozallQdHZIY0hsbUNBdU5pK0UzK25ablo4?=
+ =?utf-8?B?aXRNcUJOSEIxUDJVdEdIWHVSTHhsVVJic0NOSFhCRVhJeUROZ3JBWVB3Vlgy?=
+ =?utf-8?B?RG1TTTdMK2M3eEplZ1JxOWhmUmJadG5NTkdnazhxRGNFMHFrdDluM3dzMzFW?=
+ =?utf-8?B?WmJCa2todVZWY09CK3YwVUtuMnpSWWlxMnZqaGZ5WE9PMWR5U0gvbVRkTlY3?=
+ =?utf-8?B?ZEtPNnJ2c1RSamNVdUlhbWFyNE5rcVVURG9MMkhVbERJMXV1NVNJRmp4WWVl?=
+ =?utf-8?B?dGVPMjIrakllcU9kZGZDY09vWE1PRzJ5UnZxTkpwbVVyYnZMYjEvMndPbDRV?=
+ =?utf-8?B?N2YwSU1ZL3NzSndFTHI4VUdHMDluWmpYNXhaQ2hzeUMyOHUwY2hiMEJBOVdo?=
+ =?utf-8?B?aVlBc05WM2VtYitJYS9obkNMOG1iM3laOElpK0syZWoxNFBsd2dyQW92eVox?=
+ =?utf-8?B?MWE0cVk5cUpyL1JoN3diaTJjUVN3SGd5OUtndFNNSVBRMHVqeUF5bkdCdE9N?=
+ =?utf-8?B?U3lEQ21WQVdISzNLVFV3S0JYS2o0M2tMSlQ1NXlVb1dhLzhYbWliYi9NUjcy?=
+ =?utf-8?B?MHQ0cXNmdDc0UEUxTnc0NEhqOFRaQzJpYWkzWmdCSU9wdVNlSVNWSHMwRk1p?=
+ =?utf-8?B?QjFwRzBXMFkrYlF1NUMzRTAzVkxzMkx1N1lMTjlSSjZMQlZlRzN5WVlBVnZa?=
+ =?utf-8?B?MEF3TlB3cCtEbHVyc2xWL2p1TXFNT2poVlhFTGVmTXJlVkprL1pUM0M1K1d3?=
+ =?utf-8?B?RmJwOHNMY1RiQytHUG5ITmxZL2JJNG9OUnBMZVN6MDBueHBuS2xKS1BWZC9j?=
+ =?utf-8?B?NkxxTTMzcGc5QkU4S29FVDk2QVFsZXdyam9JSzJzVGUzZUJ5YzlWNGltM1pF?=
+ =?utf-8?B?WHpSQnh4WmVwdjVaWXpFMDlXWFpsMFhleFZrVkloQzhCM3Naa1NhY2tJZlNU?=
+ =?utf-8?B?NE5tK1NvNmVqcHVNaFdEQ1NWSlF1VjlqT1dYRDhxTEMxRWdUZjlLNFkzYWFK?=
+ =?utf-8?B?bzJOMUpGUnFob1VySWUxTzFJTXRzRUxzcXFlaEdSanJJajRtNkRDRUN0R0h2?=
+ =?utf-8?Q?TSjFp//nRPSnD3cJtq182Fs=3D?=
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2] iio: light: tsl2583: Fix module unloading
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: ZR0P278MB0683.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: f854f774-e525-4a45-c336-08da8b57e8bf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2022 13:51:30.9018
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bNDWEUUBI9Ux+M9N4s+zc4lqAQhlJpU8XWW6PkfrcZVIHdlWbKvh1Jon/qcz0i1pXaVoP/NfNd2n6Uwx2z3nY7/GeNxVSZmSm+EZLGoH+W4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0364
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
 Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     lars@metafoo.de, krisman@collabora.com,
-        dmitry.osipenko@collabora.com, kernel@collabora.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <20220826122352.288438-1-shreeya.patel@collabora.com>
- <20220828173327.7949ad73@jic23-huawei>
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-In-Reply-To: <20220828173327.7949ad73@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-ID: <9D67C55B0DA53846B39844AFDF9561EE@CHEP278.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+SGkgdGhlcmUNCg0KT24gV2VkLCAyMDIyLTA4LTMxIGF0IDA5OjQwICswMjAwLCBBbGV4YW5kZXIg
+U3RlaW4gd3JvdGU6DQo+IEFtIERpZW5zdGFnLCAzMC4gQXVndXN0IDIwMjIsIDE1OjQwOjUzIENF
+U1Qgc2NocmllYiBDaGVuLVl1IFRzYWk6DQoNCltzbmlwXQ0KDQo+ID4gVGhhbmtzLiBTbyB0aGUg
+cGFydCBvZiB0aGUgY2xvY2sgdHJlZSB0aGF0J3MgcHJvYmxlbWF0aWMgaXMgdGhpczoNCj4gPiAN
+Cj4gPiDCoG9zY18yNG0gKGZpeGVkKQ0KPiA+IMKgwqDCoCBzeXNfcGxsMV9yZWZfc2VsIChtdXgp
+DQo+ID4gwqDCoMKgwqDCoMKgIHN5c19wbGwxIChpbXggcGxsMTR4eCkNCj4gPiDCoMKgwqDCoMKg
+wqDCoMKgwqAgc3lzX3BsbDFfYnlwYXNzIChtdXgpDQo+ID4gwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgIHN5c19wbGwxX291dCAoZ2F0ZSkNCj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqAgc3lzX3BsbDFfODAwbSAoZml4ZWQgZmFjdG9yKQ0KPiA+IMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBtYWluX2F4aSAoY29tcG9zaXRlIENMS19JU19DUklUSUNBTCkNCj4g
+PiANCj4gPiBXb3VsZCBpdCBiZSBwb3NzaWJsZSBmb3IgeW91IHRvIHByb2R1Y2UgYSBzdGFjayBk
+dW1wIGFzIHdlbGw/IEFuZCBhbHNvDQo+ID4gZW5hYmxlIGxvY2sgZGVidWdnaW5nPyBUaGlzIGxp
+a2VseSBzdGlsbCB3b24ndCBjYXRjaCBhbnl0aGluZyBpZiBpdCdzDQo+ID4gYSBzcGlubG9jayBk
+ZWFkbG9jayB0aG91Z2guDQo+IA0KPiBTdXJlIHRoaW5nLCBJIGFkZGVkIGEgZHVtcF9zdGFjaygp
+IGNhbGwgdG8gYWxsIG9mIHRoZSBhYm92ZSBkZWJ1ZyBvdXRwdXRzIGFzIA0KPiB3ZWxsIGFzIHRo
+ZSBuYW1lIG9mIHRoZSBwYXJlbnQgY2xvY2ssIGp1c3QgdG8gYmUgc3VyZSwgYW5kIGhlcmUgaXMg
+dGhlIHJlc3VsdCANCj4gb3V0cHV0Og0KPiBbwqDCoMKgIDEuMTQyMzg2XSBpbyBzY2hlZHVsZXIg
+bXEtZGVhZGxpbmUgcmVnaXN0ZXJlZA0KPiBbwqDCoMKgIDEuMTQ2OTAyXSBpbyBzY2hlZHVsZXIg
+a3liZXIgcmVnaXN0ZXJlZA0KPiBbwqDCoMKgIDEuMTc3MzQ1XSBjbGtfY29yZV9wcmVwYXJlOiBj
+bGs6IG1haW5fYXhpIENMS19PUFNfUEFSRU5UX0VOQUJMRQ0KPiBbwqDCoMKgIDEuMTgwNzEzXSBj
+bGtfY29yZV9wcmVwYXJlOiBjbGstPnBhcmVudDogc3lzX3BsbDFfODAwbQ0KPiBbwqDCoMKgIDEu
+MTg2MDI1XSBDUFU6IDAgUElEOiAxIENvbW06IHN3YXBwZXIvMCBOb3QgdGFpbnRlZCA2LjAuMC1y
+YzMtDQo+IG5leHQtMjAyMjA4MzErICM2MTkgOWM4MmU1YjkwNzVkNzM1ZmEwN2UyYzU1ODYwM2Zm
+YjcyMGQ3Mjk4Mw0KPiBbwqDCoMKgIDEuMTk3Mjc0XSBIYXJkd2FyZSBuYW1lOiBUUS1TeXN0ZW1z
+IGkuTVg4TVBsdXMgVFFNYThNUHhMIG9uIE1CYThNUHhMIChEVCkNCj4gW8KgwqDCoCAxLjIwNDI3
+NV0gQ2FsbCB0cmFjZToNCj4gW8KgwqDCoCAxLjIwNjcyM13CoCBkdW1wX2JhY2t0cmFjZSsweGQ4
+LzB4MTIwDQo+IFvCoMKgwqAgMS4yMTA0ODVdwqAgc2hvd19zdGFjaysweDE0LzB4NTANCj4gW8Kg
+wqDCoCAxLjIxMzgxMV3CoCBkdW1wX3N0YWNrX2x2bCsweDg4LzB4YjANCj4gW8KgwqDCoCAxLjIx
+NzQ4Nl3CoCBkdW1wX3N0YWNrKzB4MTQvMHgyYw0KPiBbwqDCoMKgIDEuMjIwODExXcKgIGNsa19j
+b3JlX3ByZXBhcmUrMHgxZmMvMHgyNDANCj4gW8KgwqDCoCAxLjIyNDgzNF3CoCBfX2Nsa19jb3Jl
+X2luaXQrMHgyMDgvMHg0ZGMNCj4gW8KgwqDCoCAxLjIyODc3Ml3CoCBfX2Nsa19yZWdpc3Rlcisw
+eDE2MC8weDI0MA0KPiBbwqDCoMKgIDEuMjMyNjIyXcKgIGNsa19od19yZWdpc3RlcisweDFjLzB4
+NWMNCj4gW8KgwqDCoCAxLjIzNjM4NF3CoCBfX2Nsa19od19yZWdpc3Rlcl9jb21wb3NpdGUrMHgx
+ZTgvMHgyZDANCj4gW8KgwqDCoCAxLjI0MTM3Ml3CoCBjbGtfaHdfcmVnaXN0ZXJfY29tcG9zaXRl
+KzB4NDAvMHg1MA0KPiBbwqDCoMKgIDEuMjQ2MDA5XcKgIF9faW14OG1fY2xrX2h3X2NvbXBvc2l0
+ZSsweDEzMC8weDIxMA0KPiBbwqDCoMKgIDEuMjUwNzM0XcKgIGlteDhtcF9jbG9ja3NfcHJvYmUr
+MHgxM2FjLzB4Mzc1MA0KPiBbwqDCoMKgIDEuMjU1MTk5XcKgIHBsYXRmb3JtX3Byb2JlKzB4NjQv
+MHgxMDANCj4gW8KgwqDCoCAxLjI1ODk1OV3CoCBjYWxsX2RyaXZlcl9wcm9iZSsweDI4LzB4MTQw
+DQo+IFvCoMKgwqAgMS4yNjI5ODRdwqAgcmVhbGx5X3Byb2JlKzB4YzAvMHgzMzQNCj4gW8KgwqDC
+oCAxLjI2NjU3Ml3CoCBfX2RyaXZlcl9wcm9iZV9kZXZpY2UrMHg4NC8weDE0NA0KPiBbwqDCoMKg
+IDEuMjcwOTQ3XcKgIGRyaXZlcl9wcm9iZV9kZXZpY2UrMHgzOC8weDEzMA0KPiBbwqDCoMKgIDEu
+Mjc1MTQ3XcKgIF9fZHJpdmVyX2F0dGFjaCsweGQ0LzB4MjQwDQo+IFvCoMKgwqAgMS4yNzg5OTdd
+wqAgYnVzX2Zvcl9lYWNoX2RldisweDZjLzB4YmMNCj4gW8KgwqDCoCAxLjI4Mjg0N13CoCBkcml2
+ZXJfYXR0YWNoKzB4MjAvMHgzMA0KPiBbwqDCoMKgIDEuMjg2NDM2XcKgIGJ1c19hZGRfZHJpdmVy
+KzB4MTc4LzB4MjUwDQo+IFvCoMKgwqAgMS4yOTAyODRdwqAgZHJpdmVyX3JlZ2lzdGVyKzB4NzQv
+MHgxMjANCj4gW8KgwqDCoCAxLjI5NDEzNF3CoCBfX3BsYXRmb3JtX2RyaXZlcl9yZWdpc3Rlcisw
+eDI0LzB4MzANCj4gW8KgwqDCoCAxLjI5ODg1OV3CoCBpbXg4bXBfY2xrX2RyaXZlcl9pbml0KzB4
+MTgvMHgyMA0KPiBbwqDCoMKgIDEuMzAzMjM0XcKgIGRvX29uZV9pbml0Y2FsbCsweDQ4LzB4MTgw
+DQo+IFvCoMKgwqAgMS4zMDcwODRdwqAgZG9faW5pdGNhbGxzKzB4MTY0LzB4MTljDQo+IFvCoMKg
+wqAgMS4zMTA3NTldwqAga2VybmVsX2luaXRfZnJlZWFibGUrMHhmNC8weDEzOA0KPiBbwqDCoMKg
+IDEuMzE1MDQ3XcKgIGtlcm5lbF9pbml0KzB4MmMvMHgxNDANCj4gW8KgwqDCoCAxLjMxODU0OV3C
+oCByZXRfZnJvbV9mb3JrKzB4MTAvMHgyMA0KPiANCj4gRW5hYmxpbmcgbG9jayBkZWJ1Z2dpbmcg
+cmVzdWx0cyBpbiBubyBhZGRpdGlvbmFsIG91dHB1dC4NCg0KSSBhbHNvIGp1c3QgYmktc2VjdGVk
+IHRoaXMgdG8gY2F1c2UgYSBzaW1pbGFyIGhhcmQgbG9jay11cCBvbiBWZXJkaW4gaU1YOE0gTWlu
+aSBhbmQgVmVyZGluIGlNWDhNIFBsdXMgcnVubmluZw0KbmV4dC0yMDIyMDgzMS4gTGV0IG1lIGtu
+b3cgaWYgeW91IG5lZWQgYW55IGZ1cnRoZXIgaW5mb3JtYXRpb24uDQoNClRoYW5rcyENCg0KPiBC
+ZXN0IHJlZ2FyZHMsDQo+IEFsZXhhbmRlcg0KDQpDaGVlcnMNCg0KTWFyY2VsDQo=
 
-On 28/08/22 22:03, Jonathan Cameron wrote:
-> On Fri, 26 Aug 2022 17:53:52 +0530
-> Shreeya Patel <shreeya.patel@collabora.com> wrote:
->
->> tsl2583 uses devm_iio_device_register() function and
->> calling iio_device_unregister() in remove breaks the
->> module unloading.
->> Fix this by using iio_device_register() instead of
->> devm_iio_device_register() function in probe.
-> Not sure why you are wrapping at 55 chars. I rewrapped this whilst applying.
->
-> Reworded it a little too as I was touching it anyway.
->
-> Applied to the fixes-togreg branch of iio.git.
->
->> Cc: stable@vger.kernel.org
->> Fixes: 371894f5d1a0 ("iio: tsl2583: add runtime power management support")
-> I took a look at this patch and it introduces the issue I just pointed
-> out in replying to your v1 by dropping the
-> /* Make sure the chip is on */
-> Which was correct even with runtime pm because it covered the case of
-> runtime_pm being disabled.   We probably need to bring that back as well,
-> perhaps as part of a cleanup patch taking this fully devm_
-
-Hi Jonathan,
-
-I can work on fixing some of the issues with this driver in my free time.
-Thanks for taking a look at the patch and letting me know.
-
-FYI, I am also planning to work on ADT7316 driver to move out of staging.
-I have the adt7516 eval board with me which I'll be using for testing.
-
-
-Thanks,
-Shreeya Patel
-
-> This driver has another issue for working if runtime PM isn't built into
-> the kernel which is that it checks the return of pm_runtime_put_autosuspend()
-> which calls
->
-> static inline int __pm_runtime_suspend(struct device *dev, int rpmflags)
-> {
-> 	return -ENOSYS;
-> }
->
-> I've been meaning to do an audit for drivers that have this problem for
-> a while, but not yet gotten to it.
->
-> An ideal IIO driver needs to work correctly whether or not CONFIG_PM is
-> enabled.
->
-> Jonathan
->
->
->> Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
->> ---
->> Changes in v2
->>    - Use iio_device_register() instead of devm_iio_device_register()
->>    - Add fixes and stable tags
->>
->>   drivers/iio/light/tsl2583.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
->> index 82662dab87c0..94d75ec687c3 100644
->> --- a/drivers/iio/light/tsl2583.c
->> +++ b/drivers/iio/light/tsl2583.c
->> @@ -858,7 +858,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
->>   					 TSL2583_POWER_OFF_DELAY_MS);
->>   	pm_runtime_use_autosuspend(&clientp->dev);
->>   
->> -	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
->> +	ret = iio_device_register(indio_dev);
->>   	if (ret) {
->>   		dev_err(&clientp->dev, "%s: iio registration failed\n",
->>   			__func__);
->
