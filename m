@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD42ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9464EECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232680AbiHaS1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:27:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57432 "EHLO
+        id S232979AbiHaS1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232785AbiHaSZl (ORCPT
+        with ESMTP id S232799AbiHaSZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:25:41 -0400
+        Wed, 31 Aug 2022 14:25:45 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF83F2D55
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C7BEE68C
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FA9C61CE7
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C52F261CEE
         for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9830BC4314F;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0BF3C4315A;
         Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661970110;
-        bh=2xQ5ecRyKfR7ptHCLyMP99aehKiar5JnTBnRAnso19o=;
+        bh=hpw3dacwnLzPWl5y8Cq3vm7W0XF8HCMlGL9rQUzjRhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s+q/JbhAYVX+CsSD2e5YBXtKSE8T/MmpXUOG78n9m2juOQohoMZ3bvWE+le5pPMbq
-         xl4DX5AjyCW2YXcg6o8QaWBkoNMKiW7ejLALPrD6bPcnkpBh62aQRYKGqx5KGpwX0q
-         5JHqiubOx0U9bUrSVPo2OUxauLWT40HqThmgOS0f365wSZ69ACJM5depZke8jv3z+P
-         6GsFFpbJ5hLaQXtWOIyHBgwOisa4YmAacvnxKq0f9f7IwrtLEeiGM5U17NRHu/kbRg
-         aqradmgQlJppWarSVjNcTM1cxI4a5Qe8dXxfb66W9QmljOSEBXUbAsC/HNXo6ii6Hy
-         uaVSUsSJBLnOg==
+        b=XwG15xQ84Pqok3dWN53SvRS0c71ccK6xdN94X/s2EA9txx3fA5/W7v7pN8PJH3aAp
+         1jqCLk313zaNhCtJ5i5jUc4jB6AyWc51fLis87H4MplTHfBYxUrOqx5UQN3IfRfBBa
+         2yzxgPHU4oLYatGUzpsQ9HYmeItCN/Q327hjKX2ZlgNLHYjSlVFLmkn0grHGc8Vhdh
+         vIWB5TGlrPLOrEw98BxzKHcyBZrt3jvPigYqYgCcG8lhUCspnmZJERmvBCeUYLc8n2
+         4/PSAhnzqe3Bh3+BWBRjIqS4NvXD/YXEzyA7gNJn+GOaO0MHAcDF+2Pwd7JRtOokIU
+         BLfpC2Bs7+8mw==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E93815C0DA6; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+        id F046B5C0E68; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 13/18] selftests/nolibc: add a "kernel" target to build the kernel with the initramfs
-Date:   Wed, 31 Aug 2022 11:21:43 -0700
-Message-Id: <20220831182148.2698489-15-paulmck@kernel.org>
+Subject: [PATCH nolibc 17/18] selftests/nolibc: add a "help" target
+Date:   Wed, 31 Aug 2022 11:21:47 -0700
+Message-Id: <20220831182148.2698489-19-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
@@ -53,49 +53,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-The "kernel" target rebuilds the kernel with the current config for the
-selected arch, with an initramfs containing the nolibc-test utility.
-
-Since image names depend on the architecture, the currently supported
-ones are referenced and resolved based on the architecture.
+It presents the supported targets, and becomes the default target to
+save the user from having to read the makefile. The "all" target was
+placed after it and now points to "run" to do everything since it's
+no longer the default one.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/testing/selftests/nolibc/Makefile | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ tools/testing/selftests/nolibc/Makefile | 27 ++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/nolibc/Makefile b/tools/testing/selftests/nolibc/Makefile
-index fd0a670823340..4a2ab0e73ce2e 100644
+index 210f5369fdfc4..69ea659caca98 100644
 --- a/tools/testing/selftests/nolibc/Makefile
 +++ b/tools/testing/selftests/nolibc/Makefile
-@@ -12,6 +12,16 @@ include $(srctree)/scripts/subarch.include
- ARCH = $(SUBARCH)
- endif
+@@ -65,7 +65,32 @@ endif
+ CFLAGS  ?= -Os -fno-ident -fno-asynchronous-unwind-tables
+ LDFLAGS := -s
  
-+# kernel image names by architecture
-+IMAGE_i386    = arch/x86/boot/bzImage
-+IMAGE_x86     = arch/x86/boot/bzImage
-+IMAGE_arm64   = arch/arm64/boot/Image
-+IMAGE_arm     = arch/arm/boot/zImage
-+IMAGE_mips    = vmlinuz
-+IMAGE_riscv   = arch/riscv/boot/Image
-+IMAGE         = $(IMAGE_$(ARCH))
-+IMAGE_NAME    = $(notdir $(IMAGE))
+-all: nolibc-test
++help:
++	@echo "Supported targets under selftests/nolibc:"
++	@echo "  all          call the \"run\" target below"
++	@echo "  help         this help"
++	@echo "  sysroot      create the nolibc sysroot here (uses \$$ARCH)"
++	@echo "  nolibc-test  build the executable (uses \$$CC and \$$CROSS_COMPILE)"
++	@echo "  initramfs    prepare the initramfs with nolibc-test"
++	@echo "  defconfig    create a fresh new default config (uses \$$ARCH)"
++	@echo "  kernel       (re)build the kernel with the initramfs (uses \$$ARCH)"
++	@echo "  run          runs the kernel in QEMU after building it (uses \$$ARCH, \$$TEST)"
++	@echo "  rerun        runs a previously prebuilt kernel in QEMU (uses \$$ARCH, \$$TEST)"
++	@echo "  clean        clean the sysroot, initramfs, build and output files"
++	@echo ""
++	@echo "The output file is \"run.out\". Test ranges may be passed using \$$TEST."
++	@echo ""
++	@echo "Currently using the following variables:"
++	@echo "  ARCH          = $(ARCH)"
++	@echo "  CROSS_COMPILE = $(CROSS_COMPILE)"
++	@echo "  CC            = $(CC)"
++	@echo "  OUTPUT        = $(OUTPUT)"
++	@echo "  TEST          = $(TEST)"
++	@echo "  QEMU_ARCH     = $(if $(QEMU_ARCH),$(QEMU_ARCH),UNKNOWN_ARCH) [determined from \$$ARCH]"
++	@echo "  IMAGE_NAME    = $(if $(IMAGE_NAME),$(IMAGE_NAME),UNKNOWN_ARCH) [determined from \$$ARCH]"
++	@echo ""
 +
- # OUTPUT is only set when run from the main makefile, otherwise
- # it defaults to this nolibc directory.
- OUTPUT ?= $(CURDIR)/
-@@ -36,6 +46,9 @@ initramfs: nolibc-test
- 	$(call QUIET_INSTALL, initramfs/init)
- 	$(Q)cp nolibc-test initramfs/init
++all: run
  
-+kernel: initramfs
-+	$(Q)$(MAKE) -C $(srctree) ARCH=$(ARCH) CC=$(CC) CROSS_COMPILE=$(CROSS_COMPILE) $(IMAGE_NAME) CONFIG_INITRAMFS_SOURCE=$(CURDIR)/initramfs
-+
- clean:
- 	$(call QUIET_CLEAN, nolibc-test)
- 	$(Q)rm -f nolibc-test
+ sysroot: sysroot/$(ARCH)/include
+ 
 -- 
 2.31.1.189.g2e36527f23
 
