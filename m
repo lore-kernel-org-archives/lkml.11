@@ -2,224 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 835E6C0502C
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA2DECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbiHaPml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 11:42:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        id S231244AbiHaPnJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 11:43:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232168AbiHaPmJ (ORCPT
+        with ESMTP id S232213AbiHaPml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 11:42:09 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8324CDAA12;
-        Wed, 31 Aug 2022 08:40:53 -0700 (PDT)
-Received: from dimapc.. (109-252-119-13.nat.spd-mgts.ru [109.252.119.13])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Wed, 31 Aug 2022 11:42:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505B130F51
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:41:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5D4526601EAE;
-        Wed, 31 Aug 2022 16:40:14 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1661960417;
-        bh=Vcx/herjUGb9SFY+5nbdG8eUk/jlKDV/4QxlVbI0myY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H7P2X/MSLjMYUbowKm1td5heFuAv2x2KHLd0zXp2PPEXEjZRF1WY3W4lu/+X3AIB+
-         OJZ0cQKyXYJjECH6RJQGKxpJ9Wt8yHpnBTv9M0N0egVpNwLGyZqXcw/HLK6MPyimwK
-         9+YQuLZu7AvFgC02eHi0Awrq3JKzyqGbRnZ1a38cQp+YPZ0WFyK7KrGn7qC5YXq9sz
-         hsUIFpbDbKldDnxkb18PjgpvSh4PHJZyi+BYZhb2viuFdHOPwXlZdQZ4ExXLHRs1C4
-         rXvU6nakcKOaMklK5RlKvUNqhwzkzMTvqfpXl0ueGpwsVpcWJMYWK35UaYGTLlhrkW
-         w82LTHqG43vwQ==
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Clark <robdclark@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas_os@shipmail.org>,
-        Qiang Yu <yuq825@gmail.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Amol Maheshwari <amahesh@qti.qualcomm.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
-        Tomi Valkeinen <tomba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kernel@collabora.com, virtualization@lists.linux-foundation.org,
-        linux-rdma@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v4 20/21] media: videobuf2: Stop using internal dma-buf lock
-Date:   Wed, 31 Aug 2022 18:37:56 +0300
-Message-Id: <20220831153757.97381-21-dmitry.osipenko@collabora.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220831153757.97381-1-dmitry.osipenko@collabora.com>
-References: <20220831153757.97381-1-dmitry.osipenko@collabora.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E41B261767
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 15:40:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3BFEC433C1;
+        Wed, 31 Aug 2022 15:40:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661960445;
+        bh=NQugEGtQ4q90YCzbEoB+KnxOf7m4Ztpm79HaE8a8dU0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hOxm7a+iGDfywGpkPlXXYJ298bt5HcmnF1KpFrxRYy1GJPv9qNcdQipLS5+3ztKQY
+         N1cWe2o9OKCiRxxij8fMAhseHIK9p9YTcFRx4VSLVsanpAIgErN2Q3aVwRU//SsEAI
+         yBBdF+1wZDGj7gU9vF5tEmZIpttzFYITKzXR8ty5f4xhIHfkVjGp2aiTQ7B0qhybuN
+         HJsOaouabf+OjuGxDVLti2onqWKCWpFMg03OePEae/Ff1tYER4uRO+75gYhgoyXVaw
+         J2j857HpuPLSltAPST9rX/LurOKQj+zLOJvizmsCNkM5GSmEcP5fp0uX17NEq7naEr
+         OpHJPV523uPHw==
+Date:   Wed, 31 Aug 2022 08:40:43 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Kees Cook <keescook@chromium.org>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Subject: Re: powerpc-linux-objdump: Warning: Unrecognized form: 0x23
+Message-ID: <Yw+A+0BY26l0AC5j@dev-arch.thelio-3990X>
+References: <202208311414.4OPuYS9K-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202208311414.4OPuYS9K-lkp@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All drivers that use dma-bufs have been moved to the updated locking
-specification and now dma-buf reservation is guaranteed to be locked
-by importers during the mapping operations. There is no need to take
-the internal dma-buf lock anymore. Remove locking from the videobuf2
-memory allocators.
+On Wed, Aug 31, 2022 at 02:52:36PM +0800, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   dcf8e5633e2e69ad60b730ab5905608b756a032f
+> commit: f9b3cd24578401e7a392974b3353277286e49cee Kconfig.debug: make DEBUG_INFO selectable from a choice
+> date:   5 months ago
+> config: powerpc-buildonly-randconfig-r003-20220830 (https://download.01.org/0day-ci/archive/20220831/202208311414.4OPuYS9K-lkp@intel.com/config)
+> compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project c7df82e4693c19e3fd2e25c83eb04d9deb7b7b59)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install powerpc cross compiling tool for clang build
+>         # apt-get install binutils-powerpc-linux-gnu
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f9b3cd24578401e7a392974b3353277286e49cee
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout f9b3cd24578401e7a392974b3353277286e49cee
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+> >> powerpc-linux-objdump: Warning: Unrecognized form: 0x23
 
-Acked-by: Tomasz Figa <tfiga@chromium.org>
-Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
----
- drivers/media/common/videobuf2/videobuf2-dma-contig.c | 11 +----------
- drivers/media/common/videobuf2/videobuf2-dma-sg.c     | 11 +----------
- drivers/media/common/videobuf2/videobuf2-vmalloc.c    | 11 +----------
- 3 files changed, 3 insertions(+), 30 deletions(-)
+Given this is clang 16.0.0 with
+CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y, which uses DWARF5 by
+default instead of DWARF4, it looks like older binutils not
+understanding DWARF5. What version of binutils is being used by the bot?
+CONFIG_DEBUG_INFO_DWARF5 requires 2.35.2, it seems like it might be
+worth trying to extend those dependencies to
+CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT to avoid issues like this,
+especially in lieu of Nick's series here, which is already codifying the
+implicit default DWARF version of the compiler.
 
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-index 79f4d8301fbb..555bd40fa472 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-@@ -382,18 +382,12 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
- 	struct dma_buf_attachment *db_attach, enum dma_data_direction dma_dir)
- {
- 	struct vb2_dc_attachment *attach = db_attach->priv;
--	/* stealing dmabuf mutex to serialize map/unmap operations */
--	struct mutex *lock = &db_attach->dmabuf->lock;
- 	struct sg_table *sgt;
- 
--	mutex_lock(lock);
--
- 	sgt = &attach->sgt;
- 	/* return previously mapped sg table */
--	if (attach->dma_dir == dma_dir) {
--		mutex_unlock(lock);
-+	if (attach->dma_dir == dma_dir)
- 		return sgt;
--	}
- 
- 	/* release any previous cache */
- 	if (attach->dma_dir != DMA_NONE) {
-@@ -409,14 +403,11 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
- 	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir,
- 			    DMA_ATTR_SKIP_CPU_SYNC)) {
- 		pr_err("failed to map scatterlist\n");
--		mutex_unlock(lock);
- 		return ERR_PTR(-EIO);
- 	}
- 
- 	attach->dma_dir = dma_dir;
- 
--	mutex_unlock(lock);
--
- 	return sgt;
- }
- 
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-index 36ecdea8d707..36981a5b5c53 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-@@ -424,18 +424,12 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
- 	struct dma_buf_attachment *db_attach, enum dma_data_direction dma_dir)
- {
- 	struct vb2_dma_sg_attachment *attach = db_attach->priv;
--	/* stealing dmabuf mutex to serialize map/unmap operations */
--	struct mutex *lock = &db_attach->dmabuf->lock;
- 	struct sg_table *sgt;
- 
--	mutex_lock(lock);
--
- 	sgt = &attach->sgt;
- 	/* return previously mapped sg table */
--	if (attach->dma_dir == dma_dir) {
--		mutex_unlock(lock);
-+	if (attach->dma_dir == dma_dir)
- 		return sgt;
--	}
- 
- 	/* release any previous cache */
- 	if (attach->dma_dir != DMA_NONE) {
-@@ -446,14 +440,11 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
- 	/* mapping to the client with new direction */
- 	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
- 		pr_err("failed to map scatterlist\n");
--		mutex_unlock(lock);
- 		return ERR_PTR(-EIO);
- 	}
- 
- 	attach->dma_dir = dma_dir;
- 
--	mutex_unlock(lock);
--
- 	return sgt;
- }
- 
-diff --git a/drivers/media/common/videobuf2/videobuf2-vmalloc.c b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
-index 7831bf545874..41db707e43a4 100644
---- a/drivers/media/common/videobuf2/videobuf2-vmalloc.c
-+++ b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
-@@ -267,18 +267,12 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
- 	struct dma_buf_attachment *db_attach, enum dma_data_direction dma_dir)
- {
- 	struct vb2_vmalloc_attachment *attach = db_attach->priv;
--	/* stealing dmabuf mutex to serialize map/unmap operations */
--	struct mutex *lock = &db_attach->dmabuf->lock;
- 	struct sg_table *sgt;
- 
--	mutex_lock(lock);
--
- 	sgt = &attach->sgt;
- 	/* return previously mapped sg table */
--	if (attach->dma_dir == dma_dir) {
--		mutex_unlock(lock);
-+	if (attach->dma_dir == dma_dir)
- 		return sgt;
--	}
- 
- 	/* release any previous cache */
- 	if (attach->dma_dir != DMA_NONE) {
-@@ -289,14 +283,11 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
- 	/* mapping to the client with new direction */
- 	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
- 		pr_err("failed to map scatterlist\n");
--		mutex_unlock(lock);
- 		return ERR_PTR(-EIO);
- 	}
- 
- 	attach->dma_dir = dma_dir;
- 
--	mutex_unlock(lock);
--
- 	return sgt;
- }
- 
--- 
-2.37.2
+https://lore.kernel.org/20220826181035.859042-1-ndesaulniers@google.com/
 
+Cheers,
+Nathan
