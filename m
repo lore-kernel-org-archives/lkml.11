@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 914FEECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A276ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232913AbiHaS0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        id S232919AbiHaS0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232739AbiHaSZg (ORCPT
+        with ESMTP id S232753AbiHaSZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 14:25:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EE4FB294
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46299FB2AF
         for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6377861CDE
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72AA161CDF
         for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CFE2C43145;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8752FC43144;
         Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661970110;
-        bh=SQPsyy9Vw1zAhKnxU2HPB0epktjeTQk3RDWN/C0VtjM=;
+        bh=oWTBcWxwRcNwj5pYtUzATgnqSwPazE+3AJlhHkeS8Dk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTzY4pGiBFNhDe/LhkJfWLA/OI5kQxPv6QKYYcFwxRtIUjY78yHG37at6JH/4OW5g
-         +w7eektmCnuAFAfpVKmj/Uf6icornAmMnfLXnsrTYFwwQVrGfQf0CM88Wjjejz4xG/
-         DYcV7RpnyMbd8/gFqdlTXecUV201Qeq76KsFMdkter6gv3OtI8H1NR/pG33P2b32UW
-         PhuwFc8PrinDnU43L1je4T7tJ4Fw3qVRi24lMbt377VtcvOghQZvVM8vtyUaSciG+I
-         nq7kR3RNOl4F0r07WO5TvC24Zhd9y7wSLfj011I38LqXq0mGLwMATJLMhyI9ahGNFK
-         a1oJ/gRaG9cnw==
+        b=ClzmHyot5hQJaJf4f3olS2jN43V3At6jLwx8uaE0cAlsdnmJFMcDLLbxsKcCK3c7Y
+         DHsITUky26rzvmKnwsSpYfT3X5aHTqXj7cKyc67nfc3cMU9HtpBpV9YyZVL70uAn9X
+         hXGAl+gIyhs5wlXZXVWnlnU1CHTM95ZcTxAjzMA0twVUlwBWkqCs5ovFlWAyNLexBU
+         SHEZD+XNxiWbLQssXULi8RmB3hGwsAsdaxkLgWskYX4OFl6txcdHEeddASC0958AHL
+         bdKIymWpSR335KQ1LBmQmhgpJd2oby38bafAs5FVOTg8hjcNk0PKIcj8H2wIq0FdAT
+         e3/9mb7fUqaAA==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id DBBD65C0950; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+        id E5B8B5C0B07; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 05/18] selftests/nolibc: support a test definition format
-Date:   Wed, 31 Aug 2022 11:21:35 -0700
-Message-Id: <20220831182148.2698489-7-paulmck@kernel.org>
+Subject: [PATCH nolibc 11/18] selftests/nolibc: condition some tests on /proc existence
+Date:   Wed, 31 Aug 2022 11:21:41 -0700
+Message-Id: <20220831182148.2698489-13-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
@@ -53,146 +53,63 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-It now becomes possible to pass a string either in argv[1] or in the
-NOLIBC_TEST environment variable (the former having precedence), to
-specify which tests to run. The format is:
-
-   testname[:range]*[,testname...]
-
-Where a range is either a single value or the min and max numbers of the
-test IDs in a sequence, delimited by a dash. Multiple ranges are possible.
-This should provide enough flexibility to focus on certain failing parts
-just by playing with the boot command line in a boot loader or in qemu
-depending on what is accessible.
+If /proc is not available (program run inside a chroot or without
+sufficient permissions), it's better to disable the associated tests.
+Some will be preserved like the ones which check for a failure to
+create some entries there since they're still supposed to fail.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/testing/selftests/nolibc/nolibc-test.c | 91 ++++++++++++++++++++
- 1 file changed, 91 insertions(+)
+ tools/testing/selftests/nolibc/nolibc-test.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/tools/testing/selftests/nolibc/nolibc-test.c b/tools/testing/selftests/nolibc/nolibc-test.c
-index 6c050d4381fec..49177ea9943cc 100644
+index a697182c87f57..662dea691749c 100644
 --- a/tools/testing/selftests/nolibc/nolibc-test.c
 +++ b/tools/testing/selftests/nolibc/nolibc-test.c
-@@ -17,6 +17,12 @@
- /* will be used by nolibc by getenv() */
- char **environ;
- 
-+/* definition of a series of tests */
-+struct test {
-+	const char *name;              // test name
-+	int (*func)(int min, int max); // handler
-+};
-+
- #define CASE_ERR(err) \
- 	case err: return #err
- 
-@@ -376,19 +382,104 @@ static int expect_strne(const char *expr, int llen, const char *cmp)
- 	return ret;
- }
- 
-+
- /* declare tests based on line numbers. There must be exactly one test per line. */
- #define CASE_TEST(name) \
- 	case __LINE__: llen += printf("%d %s", test, #name);
- 
- 
-+/* This is the definition of known test names, with their functions */
-+static struct test test_names[] = {
-+	/* add new tests here */
-+	{ 0 }
-+};
-+
- int main(int argc, char **argv, char **envp)
+@@ -413,11 +413,15 @@ int test_getdents64(const char *dir)
+ int run_syscall(int min, int max)
  {
- 	int min = 0;
- 	int max = __INT_MAX__;
+ 	struct stat stat_buf;
++	int proc;
+ 	int test;
+ 	int tmp;
  	int ret = 0;
-+	int err;
-+	int idx;
-+	char *test;
+ 	void *p1, *p2;
  
- 	environ = envp;
++	/* <proc> indicates whether or not /proc is mounted */
++	proc = stat("/proc", &stat_buf) == 0;
++
+ 	for (test = min; test >= 0 && test <= max; test++) {
+ 		int llen = 0; // line length
  
-+	/* the definition of a series of tests comes from either argv[1] or the
-+	 * "NOLIBC_TEST" environment variable. It's made of a comma-delimited
-+	 * series of test names and optional ranges:
-+	 *    syscall:5-15[:.*],stdlib:8-10
-+	 */
-+	test = argv[1];
-+	if (!test)
-+		test = getenv("NOLIBC_TEST");
-+
-+	if (test) {
-+		char *comma, *colon, *dash, *value;
-+
-+		do {
-+			comma = strchr(test, ',');
-+			if (comma)
-+				*(comma++) = '\0';
-+
-+			colon = strchr(test, ':');
-+			if (colon)
-+				*(colon++) = '\0';
-+
-+			for (idx = 0; test_names[idx].name; idx++) {
-+				if (strcmp(test, test_names[idx].name) == 0)
-+					break;
-+			}
-+
-+			if (test_names[idx].name) {
-+				/* The test was named, it will be called at least
-+				 * once. We may have an optional range at <colon>
-+				 * here, which defaults to the full range.
-+				 */
-+				do {
-+					min = 0; max = __INT_MAX__;
-+					value = colon;
-+					if (value && *value) {
-+						colon = strchr(value, ':');
-+						if (colon)
-+							*(colon++) = '\0';
-+
-+						dash = strchr(value, '-');
-+						if (dash)
-+							*(dash++) = '\0';
-+
-+						/* support :val: :min-max: :min-: :-max: */
-+						if (*value)
-+							min = atoi(value);
-+						if (!dash)
-+							max = min;
-+						else if (*dash)
-+							max = atoi(dash);
-+
-+						value = colon;
-+					}
-+
-+					/* now's time to call the test */
-+					printf("Running test '%s'\n", test_names[idx].name);
-+					err = test_names[idx].func(min, max);
-+					ret += err;
-+					printf("Errors during this test: %d\n\n", err);
-+				} while (colon && *colon);
-+			} else
-+				printf("Ignoring unknown test name '%s'\n", test);
-+
-+			test = comma;
-+		} while (test && *test);
-+	} else {
-+		/* no test mentioned, run everything */
-+		for (idx = 0; test_names[idx].name; idx++) {
-+			printf("Running test '%s'\n", test_names[idx].name);
-+			err = test_names[idx].func(min, max);
-+			ret += err;
-+			printf("Errors during this test: %d\n\n", err);
-+		}
-+	}
-+
- 	printf("Total number of errors: %d\n", ret);
- 	printf("Exiting with status %d\n", !!ret);
- 	return !!ret;
+@@ -438,12 +442,12 @@ int run_syscall(int min, int max)
+ 		CASE_TEST(chdir_root);        EXPECT_SYSZR(1, chdir("/")); break;
+ 		CASE_TEST(chdir_dot);         EXPECT_SYSZR(1, chdir(".")); break;
+ 		CASE_TEST(chdir_blah);        EXPECT_SYSER(1, chdir("/blah"), -1, ENOENT); break;
+-		CASE_TEST(chmod_net);         EXPECT_SYSZR(1, chmod("/proc/self/net", 0555)); break;
+-		CASE_TEST(chmod_self);        EXPECT_SYSER(1, chmod("/proc/self", 0555), -1, EPERM); break;
+-		CASE_TEST(chown_self);        EXPECT_SYSER(1, chown("/proc/self", 0, 0), -1, EPERM); break;
++		CASE_TEST(chmod_net);         EXPECT_SYSZR(proc, chmod("/proc/self/net", 0555)); break;
++		CASE_TEST(chmod_self);        EXPECT_SYSER(proc, chmod("/proc/self", 0555), -1, EPERM); break;
++		CASE_TEST(chown_self);        EXPECT_SYSER(proc, chown("/proc/self", 0, 0), -1, EPERM); break;
+ 		CASE_TEST(chroot_root);       EXPECT_SYSZR(1, chroot("/")); break;
+ 		CASE_TEST(chroot_blah);       EXPECT_SYSER(1, chroot("/proc/self/blah"), -1, ENOENT); break;
+-		CASE_TEST(chroot_exe);        EXPECT_SYSER(1, chroot("/proc/self/exe"), -1, ENOTDIR); break;
++		CASE_TEST(chroot_exe);        EXPECT_SYSER(proc, chroot("/proc/self/exe"), -1, ENOTDIR); break;
+ 		CASE_TEST(close_m1);          EXPECT_SYSER(1, close(-1), -1, EBADF); break;
+ 		CASE_TEST(close_dup);         EXPECT_SYSZR(1, close(dup(0))); break;
+ 		CASE_TEST(dup_0);             tmp = dup(0);  EXPECT_SYSNE(1, tmp, -1); close(tmp); break;
+@@ -464,7 +468,7 @@ int run_syscall(int min, int max)
+ 		CASE_TEST(link_root1);        EXPECT_SYSER(1, link("/", "/"), -1, EEXIST); break;
+ 		CASE_TEST(link_blah);         EXPECT_SYSER(1, link("/proc/self/blah", "/blah"), -1, ENOENT); break;
+ 		CASE_TEST(link_dir);          EXPECT_SYSER(1, link("/", "/blah"), -1, EPERM); break;
+-		CASE_TEST(link_cross);        EXPECT_SYSER(1, link("/proc/self/net", "/blah"), -1, EXDEV); break;
++		CASE_TEST(link_cross);        EXPECT_SYSER(proc, link("/proc/self/net", "/blah"), -1, EXDEV); break;
+ 		CASE_TEST(lseek_m1);          EXPECT_SYSER(1, lseek(-1, 0, SEEK_SET), -1, EBADF); break;
+ 		CASE_TEST(lseek_0);           EXPECT_SYSER(1, lseek(0, 0, SEEK_SET), -1, ESPIPE); break;
+ 		CASE_TEST(mkdir_root);        EXPECT_SYSER(1, mkdir("/", 0755), -1, EEXIST); break;
 -- 
 2.31.1.189.g2e36527f23
 
