@@ -2,103 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52209ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16F68ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbiHaJtE convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58348 "EHLO
+        id S229950AbiHaJuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230183AbiHaJst (ORCPT
+        with ESMTP id S229453AbiHaJuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:48:49 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 772F3D0207
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:48:47 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oTKKn-0008Mh-Ti; Wed, 31 Aug 2022 11:48:33 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oTKKm-0032YJ-UX; Wed, 31 Aug 2022 11:48:32 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oTKKm-0004eS-AC; Wed, 31 Aug 2022 11:48:32 +0200
-Message-ID: <92cdeaeb8aebb22852e7a5079f41216852c27de9.camel@pengutronix.de>
-Subject: Re: [PATCH v3 04/19] dt-bindings: hwmon: (mr75203) change "reset"
- property to be optional
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     "Farber, Eliav" <farbere@amazon.com>, jdelvare@suse.com,
-        linux@roeck-us.net, robh+dt@kernel.org, rtanwar@maxlinear.com,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     talel@amazon.com, hhhawa@amazon.com, jonnyc@amazon.com,
-        hanochu@amazon.com, ronenk@amazon.com, itamark@amazon.com,
-        shellykz@amazon.com, shorer@amazon.com, amitlavi@amazon.com,
-        almogbs@amazon.com, dkl@amazon.com, andriy.shevchenko@intel.com
-Date:   Wed, 31 Aug 2022 11:48:32 +0200
-In-Reply-To: <671a0ee8-9b0d-b417-19ff-013681cc73d8@amazon.com>
-References: <20220830192212.28570-1-farbere@amazon.com>
-         <20220830192212.28570-5-farbere@amazon.com>
-         <3bd5f46dff622e375c4f60140f479bf6ee483aec.camel@pengutronix.de>
-         <671a0ee8-9b0d-b417-19ff-013681cc73d8@amazon.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Wed, 31 Aug 2022 05:50:08 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6145313D14;
+        Wed, 31 Aug 2022 02:50:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661939406; x=1693475406;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=w8dohBsUnNgNN5IHL66P9ft9i1qrWZxpzUPmgsUyMx4=;
+  b=AxuD2o3jER0cNKyCdZg6dRpjPX6ragzmECxiB5wPA6S905oav/U2fE7H
+   ZFCWCAHbDjBiIUXtWa2l5xOH4gaOC6Df4YhXt1BQRnLgvJH5Mu38RYBe/
+   7dsmsnRkYgU6CDS7UjtzJJjnfHHOVCNrZUVw5J4zjM8JNqsSFOQOfVrmO
+   /FrwZRnlMSbNgo4nH42wv9HwtlYJRltUKdE8HFqaF6nBIdvK9s5wai05H
+   o7oJH7IqpCfQfcix3Qh8S5xobAn+NQEGfZPChbe86YgdbVfruJoVM6CtG
+   9VdGOMIgBBxSAbfYwsWnBWYOo/0FugU13MzJtE42UcmjcBWvw9DUuIAUx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="321552591"
+X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
+   d="scan'208";a="321552591"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 02:50:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
+   d="scan'208";a="645177250"
+Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 31 Aug 2022 02:50:02 -0700
+Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTKMD-0000BB-1x;
+        Wed, 31 Aug 2022 09:50:01 +0000
+Date:   Wed, 31 Aug 2022 17:49:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Like Xu <like.xu.linux@gmail.com>
+Subject: Re: [PATCH v3 3/3] KVM: VMX: Advertise PMU LBRs if and only if perf
+ supports LBRs
+Message-ID: <202208311746.VAzmtgNx-lkp@intel.com>
+References: <20220831000051.4015031-4-seanjc@google.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220831000051.4015031-4-seanjc@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mi, 2022-08-31 at 12:43 +0300, Farber, Eliav wrote:
-> On 8/31/2022 11:21 AM, Philipp Zabel wrote:
-> > On Di, 2022-08-30 at 19:21 +0000, Eliav Farber wrote:
-> > > Change "reset" property to be optional instead of required, for SOCs 
-> > > that
-> > > don't support a reset controller.
-> > > 
-> > > Signed-off-by: Eliav Farber <farbere@amazon.com>
-> > > ---
-> > > V3 -> v2:
-> > > - Change "reset" property to be optional instead of adding new
-> > >   "reset-control-skip" property.
-> > > 
-> > >  Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml | 1 -
-> > >  1 file changed, 1 deletion(-)
-> > > 
-> > > diff --git 
-> > > a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml 
-> > > b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-> > > index 6abde48b746e..2ec4b9da4b92 100644
-> > > --- a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-> > > +++ b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
-> > > @@ -49,7 +49,6 @@ required:
-> > >    - reg
-> > >    - reg-names
-> > >    - clocks
-> > > -  - resets
-> > 
-> > Is this just for mr76006? Or does mr75203 work without reset as well?
-> > 
-> > If it is the former, maybe a new compatible should be added and resets
-> > should be kept required
-> 
-> mr75203 also works without a reset.
-> As I replied in PATCH v3 14/19, series 5/6 is relevant only for the
-> temperature sensor.
-> The “reset” property is relevant to the controller.
+Hi Sean,
 
-In that case,
+I love your patch! Yet something to improve:
 
-Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+[auto build test ERROR on 372d07084593dc7a399bf9bee815711b1fb1bcf2]
 
-regards
-Philipp
+url:    https://github.com/intel-lab-lkp/linux/commits/Sean-Christopherson/KVM-x86-Intel-LBR-related-perf-cleanups/20220831-080309
+base:   372d07084593dc7a399bf9bee815711b1fb1bcf2
+config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220831/202208311746.VAzmtgNx-lkp@intel.com/config)
+compiler: clang version 14.0.6 (https://github.com/llvm/llvm-project f28c006a5895fc0e329fe15fead81e37457cb1d1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/094f42374997562fff3f9f9637ec9aa8257490a0
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sean-Christopherson/KVM-x86-Intel-LBR-related-perf-cleanups/20220831-080309
+        git checkout 094f42374997562fff3f9f9637ec9aa8257490a0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 prepare
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/x86/kernel/asm-offsets.c:22:
+   In file included from arch/x86/kernel/../kvm/vmx/vmx.h:11:
+>> arch/x86/kernel/../kvm/vmx/capabilities.h:416:2: error: implicit declaration of function 'x86_perf_get_lbr' is invalid in C99 [-Werror,-Wimplicit-function-declaration]
+           x86_perf_get_lbr(&lbr);
+           ^
+   1 error generated.
+   make[2]: *** [scripts/Makefile.build:117: arch/x86/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1207: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:222: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +/x86_perf_get_lbr +416 arch/x86/kernel/../kvm/vmx/capabilities.h
+
+   403	
+   404	static inline u64 vmx_get_perf_capabilities(void)
+   405	{
+   406		u64 perf_cap = PMU_CAP_FW_WRITES;
+   407		struct x86_pmu_lbr lbr;
+   408		u64 host_perf_cap = 0;
+   409	
+   410		if (!enable_pmu)
+   411			return 0;
+   412	
+   413		if (boot_cpu_has(X86_FEATURE_PDCM))
+   414			rdmsrl(MSR_IA32_PERF_CAPABILITIES, host_perf_cap);
+   415	
+ > 416		x86_perf_get_lbr(&lbr);
+   417		if (lbr.nr)
+   418			perf_cap |= host_perf_cap & PMU_CAP_LBR_FMT;
+   419	
+   420		if (vmx_pebs_supported()) {
+   421			perf_cap |= host_perf_cap & PERF_CAP_PEBS_MASK;
+   422			if ((perf_cap & PERF_CAP_PEBS_FORMAT) < 4)
+   423				perf_cap &= ~PERF_CAP_PEBS_BASELINE;
+   424		}
+   425	
+   426		return perf_cap;
+   427	}
+   428	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
