@@ -2,89 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCABBECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F700ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:06:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229591AbiHaNEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:04:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51714 "EHLO
+        id S231648AbiHaNGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:06:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiHaNEF (ORCPT
+        with ESMTP id S229518AbiHaNGO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:04:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7F1C1657;
-        Wed, 31 Aug 2022 06:04:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A214561A2F;
-        Wed, 31 Aug 2022 13:04:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70D3EC433C1;
-        Wed, 31 Aug 2022 13:04:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661951044;
-        bh=RSI4EOwQ+8AxbiJ/TcfxFRbL8c6SneehjW86TBWE2t0=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=q2nRvBXZwapTVPpgTrknqzCUAIK9LuQlJp085kuXCzQp2GW/xX+EvBvXIS3o/fLVD
-         FTcaT4VEtdu4twrIr++RNpEQiryUwCtil+VtQGs1W/kL0fypw2M+HyIeZ2vk5EPe7q
-         bbqb5+vFpqoZxss1heRJoYysNEu5Up6B5n9GGAxSRJxDtlpYROVTvAFl/5QkelktFf
-         jj/+3hzvuxttQdU9Dp7tyG257flFYRjxuVJPmjYpJvkqOiEzyci+TTRR9WrgvrFZy9
-         fotJMvEVPTfXheB4VwXN4ZckJT5hfs0mbmBC0NLKCVoS9h8o0iHvfbbnX0XOLBG9x0
-         13yP17Fw4uaBg==
-From:   Mark Brown <broonie@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-In-Reply-To: <20220830182821.47919-1-andriy.shevchenko@linux.intel.com>
-References: <20220830182821.47919-1-andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v1 1/2] spi: stm32-qspi: Replace of_gpio_named_count() by gpiod_count()
-Message-Id: <166195104216.267626.16919953203529886429.b4-ty@kernel.org>
-Date:   Wed, 31 Aug 2022 14:04:02 +0100
+        Wed, 31 Aug 2022 09:06:14 -0400
+X-Greylist: delayed 465 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 06:06:12 PDT
+Received: from smtp126.ord1c.emailsrvr.com (smtp126.ord1c.emailsrvr.com [108.166.43.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6328ABB92A
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:06:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
+        s=20190130-41we5z8j; t=1661950705;
+        bh=0KcZlJccqHicNmaRgVPiDmAuxUe7nb/278cWgizWaGQ=;
+        h=Date:Subject:To:From:From;
+        b=OPrZeTdJNfQhcaza09qAyFjQh4ZYjZbsxcBm31jlrUfOzaWJ/aBRqvGge7B6VUZu0
+         54ONJJteoNeqzpBUmx067fY427Teb7qDImUd+SeeosZ/T08aFNjQC4og2zykj0hnaz
+         SvriQrKkF7NEpMvRTNV1TOWbON+TAufBJKhAIHX4=
+X-Auth-ID: abbotti@mev.co.uk
+Received: by smtp24.relay.ord1c.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id 2ECC46016D;
+        Wed, 31 Aug 2022 08:58:25 -0400 (EDT)
+Message-ID: <26274f3d-75fd-3653-e1f3-11ce52f402ee@mev.co.uk>
+Date:   Wed, 31 Aug 2022 13:58:24 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-0c1df
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v2] comedi: sysfs: convert sysfs snprintf to sysfs_emit
+Content-Language: en-GB
+To:     Xuezhi Zhang <zhangxuezhi3@gmail.com>,
+        hsweeten@visionengravers.com, gregkh@linuxfoundation.org,
+        zhangxuezhi1@coolpad.com
+Cc:     linux-kernel@vger.kernel.org
+References: <20220831125520.239055-1-zhangxuezhi3@gmail.com>
+From:   Ian Abbott <abbotti@mev.co.uk>
+Organization: MEV Ltd.
+In-Reply-To: <20220831125520.239055-1-zhangxuezhi3@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Classification-ID: d1fc4daa-60b2-4b34-b65e-daa36668d751-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 30 Aug 2022 21:28:20 +0300, Andy Shevchenko wrote:
-> As a preparation to unexport of_gpio_named_count(), convert the
-> driver to use gpiod_count() instead.
+On 31/08/2022 13:55, Xuezhi Zhang wrote:
+> From: zhangxuezhi1 <zhangxuezhi1@coolpad.com>
 > 
+> Fix up all sysfs show entries to use sysfs_emit
 > 
+> Signed-off-by: Xuezhi Zhang <zhangxuezhi1@coolpad.com>
+> ---
+> v2: use a proper name for the Signed-off-by line.
+> ---
+>   drivers/comedi/comedi_fops.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/comedi/comedi_fops.c b/drivers/comedi/comedi_fops.c
+> index 55a0cae04b8d..e2114bcf815a 100644
+> --- a/drivers/comedi/comedi_fops.c
+> +++ b/drivers/comedi/comedi_fops.c
+> @@ -396,7 +396,7 @@ static ssize_t max_read_buffer_kb_show(struct device *csdev,
+>   	mutex_unlock(&dev->mutex);
+>   
+>   	comedi_dev_put(dev);
+> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
+> +	return sysfs_emit(buf, "%u\n", size);
+>   }
+>   
+>   static ssize_t max_read_buffer_kb_store(struct device *csdev,
+> @@ -452,7 +452,7 @@ static ssize_t read_buffer_kb_show(struct device *csdev,
+>   	mutex_unlock(&dev->mutex);
+>   
+>   	comedi_dev_put(dev);
+> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
+> +	return sysfs_emit(buf, "%u\n", size);
+>   }
+>   
+>   static ssize_t read_buffer_kb_store(struct device *csdev,
+> @@ -509,7 +509,7 @@ static ssize_t max_write_buffer_kb_show(struct device *csdev,
+>   	mutex_unlock(&dev->mutex);
+>   
+>   	comedi_dev_put(dev);
+> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
+> +	return sysfs_emit(buf, "%u\n", size);
+>   }
+>   
+>   static ssize_t max_write_buffer_kb_store(struct device *csdev,
+> @@ -565,7 +565,7 @@ static ssize_t write_buffer_kb_show(struct device *csdev,
+>   	mutex_unlock(&dev->mutex);
+>   
+>   	comedi_dev_put(dev);
+> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
+> +	return sysfs_emit(buf, "%u\n", size);
+>   }
+>   
+>   static ssize_t write_buffer_kb_store(struct device *csdev,
 
-Applied to
+Looks good, thanks!
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+Reviewed-by: Ian Abbott <abbotti@mev.co.uk>
 
-Thanks!
-
-[1/2] spi: stm32-qspi: Replace of_gpio_named_count() by gpiod_count()
-      commit: eea0e7d20d6dab38522ac0a3af61fd92c53c34f6
-[2/2] spi: stm32-qspi: Refactor dual flash mode enable check in ->setup()
-      commit: c9448aa41ac7dd223a6bef79e71d6c168593ebb7
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+-- 
+-=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
+-=( registered in England & Wales.  Regd. number: 02862268.  )=-
+-=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
+-=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
