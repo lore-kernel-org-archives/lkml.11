@@ -2,99 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C602ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B15ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232372AbiHaVvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:51:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60648 "EHLO
+        id S232421AbiHaVzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232404AbiHaVvR (ORCPT
+        with ESMTP id S232253AbiHaVyy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:51:17 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00BCDE833B;
-        Wed, 31 Aug 2022 14:51:13 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Wed, 31 Aug 2022 17:54:54 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA161007;
+        Wed, 31 Aug 2022 14:54:47 -0700 (PDT)
+Received: from jupiter.universe (dyndsl-091-096-057-024.ewe-ip-backbone.de [91.96.57.24])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MHyY82ysQz4xDH;
-        Thu,  1 Sep 2022 07:51:07 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1661982669;
-        bh=9AVJ4/cLcrc009ZqXyiDlHnV4P7HwRGKg/7HDhDcTEs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KEyU0f2NTyL3driADOPi5VH2rJQcDdRXQI5AJ1XVndcno7rzv+YlioMsk0uiUKfAR
-         wTurE0yGsD4GA2wqMhx9dXPWIMpS56eZfVIXlFnPlStuhYNAvOxDMLO4C8pmuCdha3
-         QlpmCMQCrRsh37eAfxy/CsgJ+ZWRGeb8iaElQjTRL93l32gIL3WrKAKm5Q9oUvk0O7
-         nJ7s81lbLCE6nCYoG6eFNqWAs30oFxggN/xRCi0crAg5vQ/5k2ElPHwnMksWbT0jNs
-         U8uc7x2PxPHuQUkkUkU8AvosuElUYxcCzwsMHLKtE46cRD4nchmfVNeVn3UWwvNN9+
-         PkEUDXgDscaxA==
-Date:   Thu, 1 Sep 2022 07:50:47 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alan Stern <stern@rowland.harvard.edu>
-Cc:     Greg KH <greg@kroah.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the usb.current tree
-Message-ID: <20220901075048.7b281231@canb.auug.org.au>
-In-Reply-To: <Yw9vYaqczVlWzONt@rowland.harvard.edu>
-References: <20220831152458.56059e42@canb.auug.org.au>
-        <Yw9vYaqczVlWzONt@rowland.harvard.edu>
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 5BE2B6601DF6;
+        Wed, 31 Aug 2022 22:54:45 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1661982885;
+        bh=5S+4m0o6lH0iFlvtkGlOEp3g8stIwnHQ52TSa2RRK6c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JaO8psS7z1SFSvVqPOp+mlLunxmGYrPVQ59onOohztFOHnnUrm9huXUNK7C0ZuZeP
+         SiPmsMV2t4cBkLTLycypG5mXWCzvXKTtF799TotVYhbSPtceq+hnygEe7E+YAprNOS
+         phS1O6fzkMbn3vptqOIcuPSS1bKOAK1VgIwiyXbVLLPwO0Bby4ZgnmndYg4CvZ7mly
+         nXJFM8L7sGGjt2CF+yijwU0B3w+lgDr4OmL6o3WtDqQWkkbiIgy0zvFadCNk7WO1u/
+         eZB7ZpU4/G8GP2GycKk+VfFta0KngLd7n0Tp6iYye2TsY3lLsuxIYviXgRVeGzPONA
+         q8Q+SkSMKeRAA==
+Received: by jupiter.universe (Postfix, from userid 1000)
+        id 368594805C4; Wed, 31 Aug 2022 23:54:43 +0200 (CEST)
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lee Jones <lee@kernel.org>
+Cc:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        kernel@collabora.com
+Subject: [PATCH 04/13] regulator: rk808: reduce 'struct rk808' usage
+Date:   Wed, 31 Aug 2022 23:54:28 +0200
+Message-Id: <20220831215437.117880-5-sebastian.reichel@collabora.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220831215437.117880-1-sebastian.reichel@collabora.com>
+References: <20220831215437.117880-1-sebastian.reichel@collabora.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/eBYnpi2IJuOXVNPTD=yToFs";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/eBYnpi2IJuOXVNPTD=yToFs
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Reduce usage of 'struct rk808' (driver data of the parent MFD), so
+that only the chip variant field is still being accessed directly.
+This allows restructuring the MFD driver to support SPI based
+PMICs.
 
-Hi Alan,
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+---
+ drivers/regulator/rk808-regulator.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-On Wed, 31 Aug 2022 10:25:37 -0400 Alan Stern <stern@rowland.harvard.edu> w=
-rote:
->
-> On Wed, Aug 31, 2022 at 03:24:58PM +1000, Stephen Rothwell wrote:
-> >=20
-> > After merging the usb.current tree, today's linux-next build (htmldocs)
-> > produced this warning:
-> >=20
-> > Documentation/driver-api/usb/usb:176: /home/sfr/next/next/drivers/usb/c=
-ore/hub.c:6040: WARNING: Unknown target name: "pre".
-> >=20
-> > Introduced by commit
-> >=20
-> >   9c6d778800b9 ("USB: core: Prevent nested device-reset calls") =20
->=20
-> I don't fully understand this bug report.  Would it be fixed by changing=
-=20
-> "pre_" to "pre_reset()" in the kerneldoc?
+diff --git a/drivers/regulator/rk808-regulator.c b/drivers/regulator/rk808-regulator.c
+index 127dc2e2e690..ce9c64cadeba 100644
+--- a/drivers/regulator/rk808-regulator.c
++++ b/drivers/regulator/rk808-regulator.c
+@@ -14,7 +14,6 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/gpio.h>
+-#include <linux/i2c.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/of_gpio.h>
+@@ -1286,19 +1285,23 @@ static int rk808_regulator_dt_parse_pdata(struct device *dev,
+ static int rk808_regulator_probe(struct platform_device *pdev)
+ {
+ 	struct rk808 *rk808 = dev_get_drvdata(pdev->dev.parent);
+-	struct i2c_client *client = rk808->i2c;
+ 	struct regulator_config config = {};
+ 	struct regulator_dev *rk808_rdev;
+ 	struct rk808_regulator_data *pdata;
+ 	const struct regulator_desc *regulators;
++	struct regmap *regmap;
+ 	int ret, i, nregulators;
+ 
++	regmap = dev_get_regmap(pdev->dev.parent, NULL);
++	if (!regmap)
++		return -ENODEV;
++
+ 	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
+ 	if (!pdata)
+ 		return -ENOMEM;
+ 
+-	ret = rk808_regulator_dt_parse_pdata(&pdev->dev, &client->dev,
+-					     rk808->regmap, pdata);
++	ret = rk808_regulator_dt_parse_pdata(&pdev->dev, pdev->dev.parent,
++					     regmap, pdata);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -1326,21 +1329,22 @@ static int rk808_regulator_probe(struct platform_device *pdev)
+ 		nregulators = RK818_NUM_REGULATORS;
+ 		break;
+ 	default:
+-		dev_err(&client->dev, "unsupported RK8XX ID %lu\n",
++		dev_err(&pdev->dev, "unsupported RK8XX ID %lu\n",
+ 			rk808->variant);
+ 		return -EINVAL;
+ 	}
+ 
+-	config.dev = &client->dev;
++	config.dev = &pdev->dev;
++	config.dev->of_node = pdev->dev.parent->of_node;
+ 	config.driver_data = pdata;
+-	config.regmap = rk808->regmap;
++	config.regmap = regmap;
+ 
+ 	/* Instantiate the regulators */
+ 	for (i = 0; i < nregulators; i++) {
+ 		rk808_rdev = devm_regulator_register(&pdev->dev,
+ 						     &regulators[i], &config);
+ 		if (IS_ERR(rk808_rdev)) {
+-			dev_err(&client->dev,
++			dev_err(&pdev->dev,
+ 				"failed to register %d regulator\n", i);
+ 			return PTR_ERR(rk808_rdev);
+ 		}
+-- 
+2.35.1
 
-I would presume so.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/eBYnpi2IJuOXVNPTD=yToFs
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMP17gACgkQAVBC80lX
-0Gy63gf/XRhLMumU4GmYGfYWd0vx4gSLG6StUI1GKHbCsSBN+PY8Td71Kr2nIA+G
-uZBifP2CuQOv/qDViGtEc+a61jGagO/gplIUug+XpWBjJgISXnAFrLq3uulBoFwc
-cTyiAQ+R2j3djw43w4CVlkV6ltCd6zqQdzHgI+NSgkC1kk+823iRFUx31RUTu2qM
-s/huJgsQhm+A1l/YBqoROOzZPSv1Ub/M3nN0httH48R9+pV6rcwm6OD8pJiQMGTM
-OsUuIbCyBSlOsdtoWEtkNEO8+JklcZB7Mk/V5hZKd05EtNoOcEWaT5DZ1god0lut
-h9ecnWHRQFfJbL5QwDmxDSyKcCMoXA==
-=Danu
------END PGP SIGNATURE-----
-
---Sig_/eBYnpi2IJuOXVNPTD=yToFs--
