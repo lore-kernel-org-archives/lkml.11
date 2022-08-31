@@ -2,124 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9DEECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D5AECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:17:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232289AbiHaORC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
+        id S232116AbiHaORQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:17:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231917AbiHaOQX (ORCPT
+        with ESMTP id S229915AbiHaOQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:16:23 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF37213E39;
-        Wed, 31 Aug 2022 07:16:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661955370; x=1693491370;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3z0W0t1tvmSgzUHxrVOKoN4a/HoQR38NwihBSGthIa0=;
-  b=MwIMuZvX8ItROqCyc0vm8Bdi5hah+ircZe4AvTJSS3MI0k1DKirirI6s
-   lemDYW/yi7pZwtdxf5CYnKyGDVJ20dfNDqro8ecXeRjg7U4NvPmTS5n64
-   LG08n9TAq2cenHUNyH3/D//X97uEiYJb8QRkKPWdQFugrpsdkjjPZs5aR
-   a1Up6G94JiP3ikttr1v9D8eEx9sTQHuU/E/r48JUQjL2e7tpYDqN4vtjJ
-   hWGSEh/fmEZ6Q0de0K3eFFgqB+q8n3tVbiMVrSMelJTM0YCdcV4GldpGx
-   HHO7DxXuZb7ceGYkVQ+oV2MbiTkuhSNu75CV3vjBadzy/19gnB7K+iRdF
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275858245"
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="275858245"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:15:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="614980982"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 31 Aug 2022 07:15:17 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id AF371174; Wed, 31 Aug 2022 17:15:32 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jakob Hauser <jahau@rocketmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 1/3] iio: magnetometer: yamaha-yas530: Use pointers as driver data
-Date:   Wed, 31 Aug 2022 17:15:28 +0300
-Message-Id: <20220831141530.80572-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 31 Aug 2022 10:16:43 -0400
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.109.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2748ED86DA
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:16:33 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2049.outbound.protection.outlook.com [104.47.22.49]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-3-FDhVL-ZiO4avT6c5oYFnvg-2; Wed, 31 Aug 2022 16:16:29 +0200
+X-MC-Unique: FDhVL-ZiO4avT6c5oYFnvg-2
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ ZR0P278MB0377.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:34::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5566.15; Wed, 31 Aug 2022 14:16:27 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::6c6d:333:ab23:3f5b]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::6c6d:333:ab23:3f5b%2]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
+ 14:16:27 +0000
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     dri-devel@lists.freedesktop.org,
+        Thierry Reding <thierry.reding@gmail.com>
+CC:     Aishwarya Kothari <aishwarya.kothari@toradex.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        linux-kernel@vger.kernel.org,
+        Francesco Dolcini <francesco.dolcini@toradex.com>
+Subject: [PATCH v1] drm/panel: simple: set bpc field for logic technologies displays
+Date:   Wed, 31 Aug 2022 16:16:22 +0200
+Message-ID: <20220831141622.39605-1-francesco.dolcini@toradex.com>
+X-Mailer: git-send-email 2.25.1
+X-ClientProxiedBy: MR1P264CA0039.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:3e::31) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d8125b9b-434d-41e4-3b10-08da8b5b64a8
+X-MS-TrafficTypeDiagnostic: ZR0P278MB0377:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: YezYz4cv7STuSaBtz3TIXnJqTr4RAbVVx8cTgRFwd6LV9h1g3NW/BmEWpE0v+GVcB1fSpjiKbUO+3Hnpz1jG4JB0YE+G3HQW3tZVIQw92lsCW/Vo2yKy25Ree4X/8/GzlMn9UlIe8i+YGgeObLjwbFgCkh6r+bOcEXLfOPdXTxG8YZSos2jctUCOm1IiyeUcAaLwU97JQOt5tEwp1wAsPoqc4hmFy/rqSK2+D1LqVAABY0QWK9NnOnkS73qmgN7XIzS5pGJi7QoSvktyiPONqiBp84K/dhsly7sQP0kjgIRkoBFQyNuEDt8mwoLJeb61zEwNH89NdLaUCFScTz1XDztosD5d8juE92MuRBPJd4G/e0RjTqlcmDESZ99T114xCEEGtQWPaDxjhYe8HEMPmOqxklyXaMfgzVcUd16Y1+HRO/Z7k0QZPK2lDpUn3LF1YiElN6oPKapkm6q90epl/IM+TBIQYkmC1MCZNxl2yU0elfZUpB9vYypUHdnZmL1IPk9kTjieSeHSY3tqtlNzebCrOh6XxW9GuPpymEYI5xJNGFF3Eo+7ORPe0tT/qIv9J1WcvO73POY2x3e/cJlXdN5ZR2B6Yc5XZa3ZJMAj/jseu9MIr+Bda4dgn/PiXceONYT1/FtYXYG6hxAkiPu8A5tC3hP2fdJR39tnz26EscZnKUDobJh42aFZf6XtnBJghcn3D5eq4+svxFzOjR6or/raVxyuJ2pCSA7VD5lNtsl5qXh3NceKjc20mjDPqaF5
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(39840400004)(366004)(396003)(136003)(6512007)(2616005)(1076003)(316002)(186003)(26005)(6916009)(52116002)(86362001)(36756003)(6666004)(2906002)(6506007)(44832011)(107886003)(38350700002)(478600001)(66476007)(41300700001)(8936002)(8676002)(38100700002)(5660300002)(54906003)(6486002)(4326008)(66946007)(66556008);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?C0vZLy/ntNT3UebFrRA+hPMyufYrkCAwNpa3rAfMq1GNHgadyh6jbuYpqOfd?=
+ =?us-ascii?Q?7H5JosLBzUSo4/63mFM8Zwbk/Zq4QHfsPC6mWkKPa0GASfFRtuRF9HBVvjPN?=
+ =?us-ascii?Q?ZOqD6aml/tpMqt/sAETkjPjc6x+hkiNYzLFdiQrH9Z/YrD8gv0lcRb2F+Hj9?=
+ =?us-ascii?Q?ogf/U3nU83X/cuF+ILIGp92pXy8TFMxeWEUVXbLvycoWtpluJgXMl30R6ZZU?=
+ =?us-ascii?Q?QRhouYaBKSFyUngfG8WWmjOOtglioubDQK5xfUYHe+HqXOorUb7RQuMl3VUM?=
+ =?us-ascii?Q?7lxHslvUIMZQGR7BMX2XSq1R38IbQTvMY8aOKtvAOEXiRhZqn8psCFtjmmdV?=
+ =?us-ascii?Q?CNxOhd31qihwb5mHmbVUn/YUMrAiuHBiTsgiggh+HaN8he0nOzPRy5Fk8qN4?=
+ =?us-ascii?Q?KbuzyMS1DPEn/jWqn2zxEfmeB3zSukzE8aEZYIJISX7eW/l5cMeDYo+JN9Tp?=
+ =?us-ascii?Q?7yEtKkg+fmWtTrYy6fckOBw8fbbRFGSU418q4jpBZZdP0dFwO/yh2MZrTgBp?=
+ =?us-ascii?Q?JPylMkXZa046jtYix9wl65LKvwO6VRJtkdZhBOwJ/7ha4QyUEaq65SVU41qm?=
+ =?us-ascii?Q?VBry1RTPf6YdUROL8U1obA6nTju9AgqMMq50pGeZ5bxddlJ04MGyPG6r++Jb?=
+ =?us-ascii?Q?940/K1qbcUygvAbm10eF2vHuKwbxvzYCp4+zjrFzERPpi9yCom9K7wKJ35f2?=
+ =?us-ascii?Q?lfgs0Pa5eX3cqsXA/xHq++hQpmzHZiQF2vCQVw+BuBKq+OojaJoC4G2ZGwsk?=
+ =?us-ascii?Q?81sZ4di1lcgXPfVrcCXt6K1+/bZNzXzBDmeGoxirGDh1lDVzqOr7WZzWVmob?=
+ =?us-ascii?Q?ZaSvV8jhsxVOPB9WpMxAkCRnV4HdGDRCc8qBzZyIsw+sk5goOt2BisntkIcz?=
+ =?us-ascii?Q?3DoDH3riXhyR+WP5o7S++Y0UQXFyDXNZCn4SPrsgOIfo3A6Ye9b9OIREvzq4?=
+ =?us-ascii?Q?JR/K6DUMKi8KvfMyAfh0H8pFXh5vFBdfTwg0M9RMPGjoVK93gX/4FD7LeJ15?=
+ =?us-ascii?Q?dnP+14j6q1zjK6FvYU26hbDIlK2nbjhe0exaslxlCulaJBW2g7PA0ClMh9cE?=
+ =?us-ascii?Q?KF1ixU9/yDnbxSSdl3bI3AkNareTt2wPvZqpm3xK6VrTpx77b+R2UPPY1fkh?=
+ =?us-ascii?Q?nZHy3L9hSImG+qA7QOBwf3cfkmFWZcol4EHBgKJxkyZaTSVPJz0Y3vIE1ncL?=
+ =?us-ascii?Q?Xh7O98CWrHgD3uZXgaL5dPbUnsac9nCzov72Cbs7yUuh9FDniySlhJGPTaeW?=
+ =?us-ascii?Q?XSRT8ypv1jNqmvq2DpkjlG96R2cgN9jCGe4U6hbYqE8T+wBGJXKRyJf4wPjX?=
+ =?us-ascii?Q?RakTffXZ30eFlQXGX2U3f5EVkoCW+Pa/PRmzL+wJPn3/+rIlzPErspi+5SZ/?=
+ =?us-ascii?Q?Jm3CjdbCRHZ9OiMwM0WRFSCmC9zfIkYIWrGjK17uVKrUQRb0Kv2gVbn+0PmL?=
+ =?us-ascii?Q?GRZKZBgDTHbd0+g3Hlbsd2Zu73KRKIlyM2KgI4636IP/ZxJE7pEarhbJaaVM?=
+ =?us-ascii?Q?CUi5COSNhSMS/rLgHT9QGaIn6rBTal0yTMux31B9KEMEWHwZY3dePCY1iYHH?=
+ =?us-ascii?Q?km8mIkMnHU5EgereUxxzIwK4V8wfVlSpk/mWA1BaexmUAOkmr39Hzr7ttnRf?=
+ =?us-ascii?Q?Eg=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d8125b9b-434d-41e4-3b10-08da8b5b64a8
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 14:16:27.4159
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5Z5cjQm2se4lxOCni1oYmkN2CLsy9N5ct++f7AcbrQH+6FjMo1JWDlJksnTB/SJ2nE6m3X9Wq7kGa3pgU8WK4CEV0tpcTVQOU6k4Cx/yTRI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZR0P278MB0377
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unify ID tables to use pointers for driver data. It will allow
-to simplify the driver later on.
+From: Aishwarya Kothari <aishwarya.kothari@toradex.com>
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+In case bpc is not set for a panel it then throws a WARN(). Add bpc to
+the panels logictechno_lt170410_2whc and logictechno_lt161010_2nh.
+
+Fixes: 5728fe7fa539 ("drm/panel: simple: add display timings for logic technologies displays")
+Signed-off-by: Aishwarya Kothari <aishwarya.kothari@toradex.com>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
 ---
-v2: left ID fallback in place (Jonathan)
- drivers/iio/magnetometer/yamaha-yas530.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/panel/panel-simple.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index 026f71e524f3..58f527cfde07 100644
---- a/drivers/iio/magnetometer/yamaha-yas530.c
-+++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -32,6 +32,7 @@
- #include <linux/mod_devicetable.h>
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
- #include <linux/random.h>
-@@ -1437,8 +1438,10 @@ static int yas5xx_probe(struct i2c_client *i2c,
- 		goto assert_reset;
- 	}
- 
--	yas5xx->chip_info = &yas5xx_chip_info_tbl[id->driver_data];
--	ci = yas5xx->chip_info;
-+	ci = device_get_match_data(dev);
-+	if (!ci)
-+		ci = (const struct yas5xx_chip_info *)id->driver_data;
-+	yas5xx->chip_info = ci;
- 
- 	ret = regmap_read(yas5xx->map, YAS5XX_DEVICE_ID, &id_check);
- 	if (ret)
-@@ -1583,19 +1586,19 @@ static DEFINE_RUNTIME_DEV_PM_OPS(yas5xx_dev_pm_ops, yas5xx_runtime_suspend,
- 				 yas5xx_runtime_resume, NULL);
- 
- static const struct i2c_device_id yas5xx_id[] = {
--	{"yas530", yas530 },
--	{"yas532", yas532 },
--	{"yas533", yas533 },
--	{"yas537", yas537 },
-+	{"yas530", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas530] },
-+	{"yas532", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas532] },
-+	{"yas533", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas533] },
-+	{"yas537", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas537] },
- 	{}
- };
- MODULE_DEVICE_TABLE(i2c, yas5xx_id);
- 
- static const struct of_device_id yas5xx_of_match[] = {
--	{ .compatible = "yamaha,yas530", },
--	{ .compatible = "yamaha,yas532", },
--	{ .compatible = "yamaha,yas533", },
--	{ .compatible = "yamaha,yas537", },
-+	{ .compatible = "yamaha,yas530", &yas5xx_chip_info_tbl[yas530] },
-+	{ .compatible = "yamaha,yas532", &yas5xx_chip_info_tbl[yas532] },
-+	{ .compatible = "yamaha,yas533", &yas5xx_chip_info_tbl[yas533] },
-+	{ .compatible = "yamaha,yas537", &yas5xx_chip_info_tbl[yas537] },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, yas5xx_of_match);
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index ff5e1a44c43a..fef3fb0f45c9 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -2505,6 +2505,7 @@ static const struct display_timing logictechno_lt161010_2nh_timing = {
+ static const struct panel_desc logictechno_lt161010_2nh = {
+ 	.timings = &logictechno_lt161010_2nh_timing,
+ 	.num_timings = 1,
++	.bpc = 6,
+ 	.size = {
+ 		.width = 154,
+ 		.height = 86,
+@@ -2534,6 +2535,7 @@ static const struct display_timing logictechno_lt170410_2whc_timing = {
+ static const struct panel_desc logictechno_lt170410_2whc = {
+ 	.timings = &logictechno_lt170410_2whc_timing,
+ 	.num_timings = 1,
++	.bpc = 8,
+ 	.size = {
+ 		.width = 217,
+ 		.height = 136,
 -- 
-2.35.1
+2.25.1
 
