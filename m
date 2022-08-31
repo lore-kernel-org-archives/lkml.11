@@ -2,70 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317D5ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:16:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9DEECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232288AbiHaOQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        id S232289AbiHaORC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232137AbiHaOQV (ORCPT
+        with ESMTP id S231917AbiHaOQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:16:21 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00E7EE0BF;
-        Wed, 31 Aug 2022 07:16:04 -0700 (PDT)
+        Wed, 31 Aug 2022 10:16:23 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF37213E39;
+        Wed, 31 Aug 2022 07:16:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661955365; x=1693491365;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=lU/b5xtxFcAX48oYoAdtB/tqCv7ZZJ/uvnw63jeaSQc=;
-  b=h6r1GLpLPhAi3PreOsEa13Yrwl8Of41u7yTtO/yWJoIPqeWknrEmDHoA
-   ubsBqm5eQ7M98EpvNfJGhyk8V9Rq8KhIPUNvXQ9RFEEx0qAdyXiSQ7jsR
-   IRsEjYOnAdK3yqAgba1tSoiKuVNHXCSXBki9mX1FOfcegqoYCtf4xLelE
-   L+Jb9t3/X6WMFTxMrc+X2YiiLoEAHjFdzfyz4FEqj2axVCuWt95XNWXgi
-   SiUo8kx75zGSh/KMIzlbcayovJCm4THwah5ydVIM6pwseFEMwYSMHzLrC
-   EYpmu+Dl88jwGH+MNGlonspWQOvNLzrF72V0lx11eKhM/IG6PFkLcLJEU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="294195487"
+  t=1661955370; x=1693491370;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3z0W0t1tvmSgzUHxrVOKoN4a/HoQR38NwihBSGthIa0=;
+  b=MwIMuZvX8ItROqCyc0vm8Bdi5hah+ircZe4AvTJSS3MI0k1DKirirI6s
+   lemDYW/yi7pZwtdxf5CYnKyGDVJ20dfNDqro8ecXeRjg7U4NvPmTS5n64
+   LG08n9TAq2cenHUNyH3/D//X97uEiYJb8QRkKPWdQFugrpsdkjjPZs5aR
+   a1Up6G94JiP3ikttr1v9D8eEx9sTQHuU/E/r48JUQjL2e7tpYDqN4vtjJ
+   hWGSEh/fmEZ6Q0de0K3eFFgqB+q8n3tVbiMVrSMelJTM0YCdcV4GldpGx
+   HHO7DxXuZb7ceGYkVQ+oV2MbiTkuhSNu75CV3vjBadzy/19gnB7K+iRdF
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275858245"
 X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="294195487"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:16:04 -0700
+   d="scan'208";a="275858245"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:15:19 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="589045203"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:16:03 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oTOVc-006Pf9-2B;
-        Wed, 31 Aug 2022 17:16:00 +0300
-Date:   Wed, 31 Aug 2022 17:16:00 +0300
+   d="scan'208";a="614980982"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga007.fm.intel.com with ESMTP; 31 Aug 2022 07:15:17 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id AF371174; Wed, 31 Aug 2022 17:15:32 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Hans de Goede <hdegoede@redhat.com>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Mark Gross <markgross@kernel.org>
-Subject: Re: [PATCH v1 1/1] platform/x86: intel_cht_int33fe: Fix comment
- according to the code flow
-Message-ID: <Yw9tIAObVXvLcg+v@smile.fi.intel.com>
-References: <20220824152115.88012-1-andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jakob Hauser <jahau@rocketmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 1/3] iio: magnetometer: yamaha-yas530: Use pointers as driver data
+Date:   Wed, 31 Aug 2022 17:15:28 +0300
+Message-Id: <20220831141530.80572-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220824152115.88012-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 06:21:15PM +0300, Andy Shevchenko wrote:
-> We don't use software_node_register_nodes() in the code, fix the comment.
+Unify ID tables to use pointers for driver data. It will allow
+to simplify the driver later on.
 
-Any comments?
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: left ID fallback in place (Jonathan)
+ drivers/iio/magnetometer/yamaha-yas530.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
+diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
+index 026f71e524f3..58f527cfde07 100644
+--- a/drivers/iio/magnetometer/yamaha-yas530.c
++++ b/drivers/iio/magnetometer/yamaha-yas530.c
+@@ -32,6 +32,7 @@
+ #include <linux/mod_devicetable.h>
+ #include <linux/mutex.h>
+ #include <linux/pm_runtime.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/random.h>
+@@ -1437,8 +1438,10 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 		goto assert_reset;
+ 	}
+ 
+-	yas5xx->chip_info = &yas5xx_chip_info_tbl[id->driver_data];
+-	ci = yas5xx->chip_info;
++	ci = device_get_match_data(dev);
++	if (!ci)
++		ci = (const struct yas5xx_chip_info *)id->driver_data;
++	yas5xx->chip_info = ci;
+ 
+ 	ret = regmap_read(yas5xx->map, YAS5XX_DEVICE_ID, &id_check);
+ 	if (ret)
+@@ -1583,19 +1586,19 @@ static DEFINE_RUNTIME_DEV_PM_OPS(yas5xx_dev_pm_ops, yas5xx_runtime_suspend,
+ 				 yas5xx_runtime_resume, NULL);
+ 
+ static const struct i2c_device_id yas5xx_id[] = {
+-	{"yas530", yas530 },
+-	{"yas532", yas532 },
+-	{"yas533", yas533 },
+-	{"yas537", yas537 },
++	{"yas530", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas530] },
++	{"yas532", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas532] },
++	{"yas533", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas533] },
++	{"yas537", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas537] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, yas5xx_id);
+ 
+ static const struct of_device_id yas5xx_of_match[] = {
+-	{ .compatible = "yamaha,yas530", },
+-	{ .compatible = "yamaha,yas532", },
+-	{ .compatible = "yamaha,yas533", },
+-	{ .compatible = "yamaha,yas537", },
++	{ .compatible = "yamaha,yas530", &yas5xx_chip_info_tbl[yas530] },
++	{ .compatible = "yamaha,yas532", &yas5xx_chip_info_tbl[yas532] },
++	{ .compatible = "yamaha,yas533", &yas5xx_chip_info_tbl[yas533] },
++	{ .compatible = "yamaha,yas537", &yas5xx_chip_info_tbl[yas537] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, yas5xx_of_match);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.1
 
