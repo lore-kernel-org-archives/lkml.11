@@ -2,152 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5EAECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C5CECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:17:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbiHaIRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36470 "EHLO
+        id S229599AbiHaIRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229807AbiHaIRG (ORCPT
+        with ESMTP id S231387AbiHaIR2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:17:06 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E5C9C650F;
-        Wed, 31 Aug 2022 01:17:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Z4EOWw8MYIDBcCuNyFqvSHzPARdQ91J7QqmsdN2sYc1qsRHwof838UojuC/79njuO5Mh3BRhnqRyMdaHJheqX28NlYv9wci0vSD5ZnvEftWnIUezb4bwOTueWS3OVqi68CctSwdG2Ir02zZYGWAbSOV9yvZBFR/pNlcxKZKEEGPDBpI2DXQ/9fVsXM+iHN3fDOJ1WRXISYJpSdlSSIpFxPp/dhk+t0jvyAKOoU7ulg78ISfE1Si2uivxr+gfS0zoimHTbztFQcqGMFT8tknbVJQdBCJRLr5LuagU8xctX9jyiTbjSLS4nbc+7WAoa/UEjgD7UxBSIWk1q0RrHsyMhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cVB4yDHDaygl1aA4bRinjSuYPXrxKGhj/7fWwwTUHW4=;
- b=RZYhSNONxEXWSQN70w0CgYctXB0V/B1ziTu9W6iPLchPNOJOJxoWxKMK8BJgMHD1yWQhDF6lCQwvy7LhfjVamCrka10twamXvFpV0VNUYC88Yi4i8hqg+YWuH39fnLJ+QoKSvmzWYYE/YIQWYk05zKMkYm7d3c8oXO7ZXvGgvdFPDfEJ+d3nXhpB5yQBZh29gzE784Rwk6ycv5PmWKZq3I7viaEy8AfS22AKhwOjwuD5BQiW3l4PIye49mWtm0z9X1if5R5+T0LNzSTdueLskqGTaHG0YC1rG/+AyzeJqmtpkNMdH2OU5l9wHNx6q8zJuADD64HOjlnterhO8LN1sg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=intel.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cVB4yDHDaygl1aA4bRinjSuYPXrxKGhj/7fWwwTUHW4=;
- b=l65D6olE0YogOPgMOOgDWZGVbbkzHEPMHG/nTFIqbHNdTjNXw0SmJOW6PuWPo3rkRIeVV8kO/MkqQlkROMP2RjJDOl5Lz6PAlu2uIqNeTpHUc5P5Z4psUrHUYphpHgeMxzF5rTc3wmkR55xi+Box0ayNQqQsRfw5ufE3OzKDipE=
-Received: from MW4PR04CA0245.namprd04.prod.outlook.com (2603:10b6:303:88::10)
- by SA1PR12MB7344.namprd12.prod.outlook.com (2603:10b6:806:2b7::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Wed, 31 Aug
- 2022 08:16:58 +0000
-Received: from CO1NAM11FT051.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:88:cafe::ee) by MW4PR04CA0245.outlook.office365.com
- (2603:10b6:303:88::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
- Transport; Wed, 31 Aug 2022 08:16:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT051.mail.protection.outlook.com (10.13.174.114) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5588.10 via Frontend Transport; Wed, 31 Aug 2022 08:16:58 +0000
-Received: from rric.localdomain (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 31 Aug
- 2022 03:16:55 -0500
-From:   Robert Richter <rrichter@amd.com>
-To:     Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>
-CC:     <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Robert Richter <rrichter@amd.com>
-Subject: [PATCH 07/15] cxl/acpi: Check RCH's PCIe Host Bridge ACPI ID
-Date:   Wed, 31 Aug 2022 10:15:55 +0200
-Message-ID: <20220831081603.3415-8-rrichter@amd.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220831081603.3415-1-rrichter@amd.com>
-References: <20220831081603.3415-1-rrichter@amd.com>
+        Wed, 31 Aug 2022 04:17:28 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B577C695F;
+        Wed, 31 Aug 2022 01:17:07 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 4D172126D;
+        Wed, 31 Aug 2022 10:17:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1661933824;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=e3iSpyQN09evFGUwpbcqnJSarhmjMiSyteJCLVWGduA=;
+        b=QAQljtSCAZAC3wYiQG4rjFZPhdZ2aNOc0QjDAFzywpAhteTA6SXzvE0y8WPLsONYQyCcOR
+        9GRj8C9xSA1HQY1YH7W4ZF82mtAk/aiNFyRup8l/T/+bZTDPejrSYLoedouuOFu88lvQxn
+        BRR4Stwm8QeCOLpbDmNyH3/vSK7PjZOSBMYvaPyw1+PH5ESRWtmOKwDc8BW/Ji5FbAwq3Q
+        BJQdUZ6Y3llTQfNGKuFdg+DC3rMrQ0NvCMZHGOWeJVAOwGSHlggWCYv5hBn2p8DIG0Yfdo
+        KmizTcWjRPUAv2rqUClWVGn3CxaCXkhyJiwPPR+Sgxs5TVm9Z7FtL92zaAyGmw==
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 372dad74-62e0-4231-b773-08da8b292c8a
-X-MS-TrafficTypeDiagnostic: SA1PR12MB7344:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4uQPGTioVanKdMprnd8Sbej2+YeNydzIfkQ/82eTV0AhogQVYS12jRkEarpiFfhrqau621tI1zW97Dj4xFGbgHEUdBCZdM6Ywt7qc8C008jjlpy14cgJjUGstDy82P43cEZ2eyJne67lu0CWpGkuOlkqHV1rJxSpPWqdGAUmxe1hECjZnwpmuIPOM4DLcNKb/Du7lnttOrJ4l4Q0IMtILng+9wYd6P+1I453GDSVSqD3VttSy4RJzlHtjexo7cjDbKzGWW50RDFXWNzu8Q3t8wcUquOcIjXJLifld77l4S3LfhzqgHDAHVh433zEn2O184aRGNsoEkUn2yc6N+ZOdeU1aB/FUTF1AbgaalhAZy3ITh8K2+7TfeTRqrAEJbR4cEWeBHJfQ7J/ns7HsZr+egkYSxwZbptiU/Xc7+OtAivHEtuGXa0nrgj3VXnTPUzxmzQfCDUjbQymTheXuqAI+nsaFXy78u0e4ZTG3YejvCtAFcdFEUx9eDILNL0nlfyFg121B0NGnJTcujPq5qIu3qsGyGIfJQZfbrEFT3hGf624BH45hhTyQ4Z72EiIH/gxuh7kUsyk/O+zd8UtiYUgzGSliGcM/M3M1iyqGa9cADqmCWzSka0/fHEHklFy4x4Ap92cq2FmVsxS6Zu0oA9Th3GumGyjho7zKY4Ak0vBmsrhNkIZIU2iv8bFeeEZn6rs+tvy7Litfo3v5yCCXyTG2R9kyN7xBInGpUwjzz0Gn31dCICKUCDLjMVo582s88UP7SBLOFhdqHBA8vmc4jb32YXZMMhuROBPswZ29U4B4fk=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(346002)(39860400002)(136003)(46966006)(36840700001)(40470700004)(41300700001)(478600001)(316002)(82310400005)(110136005)(54906003)(82740400003)(36860700001)(40460700003)(2616005)(356005)(26005)(16526019)(336012)(1076003)(426003)(81166007)(47076005)(7416002)(186003)(36756003)(40480700001)(4326008)(2906002)(8936002)(5660300002)(8676002)(70586007)(70206006)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 08:16:58.1836
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 372dad74-62e0-4231-b773-08da8b292c8a
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT051.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7344
+Date:   Wed, 31 Aug 2022 10:17:04 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [PATCH v1 09/14] dt-bindings: nvmem: add YAML schema for the sl28
+ vpd layout
+In-Reply-To: <b85276ee-3e19-3adb-8077-c1e564e02eb3@linaro.org>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-10-michael@walle.cc>
+ <b85276ee-3e19-3adb-8077-c1e564e02eb3@linaro.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <ddaf3328bc7d88c47517285a3773470f@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-An RCH is a root bridge and has "PNP0A08" or "ACPI0016" ACPI ID set.
-Check this.
+Am 2022-08-31 09:45, schrieb Krzysztof Kozlowski:
+> On 26/08/2022 00:44, Michael Walle wrote:
+>> Add a schema for the NVMEM layout on Kontron's sl28 boards.
+>> 
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>  .../nvmem/layouts/kontron,sl28-vpd.yaml       | 52 
+>> +++++++++++++++++++
+>>  1 file changed, 52 insertions(+)
+>>  create mode 100644 
+>> Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+>> 
+>> diff --git 
+>> a/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml 
+>> b/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+>> new file mode 100644
+>> index 000000000000..e4bc2d9182db
+>> --- /dev/null
+>> +++ 
+>> b/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+>> @@ -0,0 +1,52 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: 
+>> http://devicetree.org/schemas/nvmem/layouts/kontron,sl28-vpd.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: NVMEM layout of the Kontron SMARC-sAL28 vital product data
+>> +
+>> +maintainers:
+>> +  - Michael Walle <michael@walle.cc>
+>> +
+>> +description:
+>> +  The vital product data (VPD) of the sl28 boards contains a serial
+>> +  number and a base MAC address. The actual MAC addresses for the
+>> +  on-board ethernet devices are derived from this base MAC address by
+>> +  adding an offset.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    items:
+>> +      - const: kontron,sl28-vpd
+>> +      - const: user-otp
+>> +
+>> +  serial-number:
+>> +    type: object
+> 
+> You should define the contents of this object. I would expect this to 
+> be
+> uint32 or string. I think you also need description, as this is not
+> really standard field.
 
-Signed-off-by: Robert Richter <rrichter@amd.com>
----
- drivers/cxl/acpi.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+First thing, this binding isn't like the usual ones, so it might be
+totally wrong.
 
-diff --git a/drivers/cxl/acpi.c b/drivers/cxl/acpi.c
-index a19e3154dd44..ffdf439adb87 100644
---- a/drivers/cxl/acpi.c
-+++ b/drivers/cxl/acpi.c
-@@ -312,9 +312,16 @@ static int add_root_nvdimm_bridge(struct device *match, void *data)
- 	return 1;
- }
- 
-+static const struct acpi_device_id cxl_host_ids[] = {
-+	{ "ACPI0016", 0 },
-+	{ "PNP0A08", 0 },
-+	{ },
-+};
-+
- struct pci_host_bridge *cxl_find_next_rch(struct pci_host_bridge *host)
- {
- 	struct pci_bus *bus = host ? host->bus : NULL;
-+	struct acpi_device *adev;
- 
- 	while ((bus = pci_find_next_bus(bus)) != NULL) {
- 		host = bus ? to_pci_host_bridge(bus->bridge) : NULL;
-@@ -323,6 +330,19 @@ struct pci_host_bridge *cxl_find_next_rch(struct pci_host_bridge *host)
- 
- 		dev_dbg(&host->dev, "PCI bridge found\n");
- 
-+		/* Must be a root bridge */
-+		if (host->bus->parent)
-+			continue;
-+
-+		dev_dbg(&host->dev, "PCI bridge is root bridge\n");
-+
-+		adev = ACPI_COMPANION(&host->dev);
-+		if (acpi_match_device_ids(adev, cxl_host_ids))
-+			continue;
-+
-+		dev_dbg(&host->dev, "PCI ACPI host found: %s\n",
-+			acpi_dev_name(adev));
-+
- 		return host;
- 	}
- 
--- 
-2.30.2
+What I'd like to achieve here is the following:
 
+We have the nvmem-consumer dt binding where you can reference a
+nvmem cell in a consumer node. Example:
+   nvmem-cells = <&base_mac_address 5>;
+   nvmem-cell-names = "mac-address";
+
+On the other end of the link we have the nvmem-provider. The dt
+bindings works well if that one has individual cell nodes, like
+it is described in the nvmem.yaml binding. I.e. you can give the
+cell a label and make a reference to it in the consumer just like
+in the example above.
+
+Now comes the catch: what if there is no actual description of the
+cell in the device tree, but is is generated during runtime. How
+can I get a label to it. Therefore, in this case, there is just
+an empty node and the driver will associate it with the cell
+created during runtime (see patch 10). It is not expected, that
+is has any properties.
+
+>> +
+>> +  base-mac-address:
+> 
+> Fields should be rather described here, not in top-level description.
+> 
+>> +    type: object
+> 
+> On this level:
+>     additionalProperties: false
+> 
+>> +
+>> +    properties:
+>> +      "#nvmem-cell-cells":
+>> +        const: 1
+>> +
+> 
+> I also wonder why you do not have unit addresses. What if you want to
+> have two base MAC addresses?
+
+That would describe an offset within the nvmem device. But the offset
+might not be constant, depending on the content. My understanding
+so far was that in that case, you use the "-N" suffix.
+
+base-mac-address-1
+base-mac-address-2
+
+(or maybe completely different names).
+
+>> +required:
+>> +  - compatible
+> 
+> Other fields are I guess required? At least serial-number should be 
+> always?
+
+Yes I could add them to the required list, but they are only
+"required" if you need to reference them within the device tree, in 
+which
+case there have to be there anyway. IOW, the driver doesn't care if
+there is a node. If there is none, it doesn't set the "struct 
+device_node*"
+in the nvmem cell.
+
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +      otp-1 {
+> 
+> Messed up indentation (use 4 spaces). Generic node name "otp".
+> 
+>> +          compatible = "kontron,sl28-vpd", "user-otp";
+>> +
+>> +          serial_number: serial-number {
+> 
+> What's the point of the empty node?
+
+See above.
+
+-michael
+
+>> +          };
+>> +
+>> +          base_mac_address: base-mac-address {
+>> +              #nvmem-cell-cells = <1>;
+>> +          };
+>> +      };
+>> +
+>> +...
