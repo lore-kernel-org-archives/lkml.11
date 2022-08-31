@@ -2,111 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD511ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 16:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48B1BECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 16:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232356AbiHaQ5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 12:57:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60498 "EHLO
+        id S232331AbiHaQ51 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 12:57:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232084AbiHaQ4y (ORCPT
+        with ESMTP id S232350AbiHaQ4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 12:56:54 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B1BDB07E
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 09:56:52 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id f4so13981941pgc.12
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 09:56:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date;
-        bh=HdAipv40/QqUuhoEN6Hq6J9CX7+XanSXNZDP7WXuA2w=;
-        b=E+dpjJqqZDnYhWyJB7NPrHbcJXnwY/FVAxgTif0XLDolthQbNU2kb5duOzTXFJRyNt
-         2hw1fG/0dF2n9h3l7igOMBUOwD2I41lLkJ5A3S4SqigYhZ2F8AUr6PC7+mm5zna0OiKM
-         7uSVQlx3qx8FVlP7XSuym/DhcVMW27h6f3oRVcIyKbXjcccx6adclZmABrC7J+dh5qYF
-         9svm06eXHLHJKMUb1s1RGoYVAzDRYFtPIwVWRXoIMKYBYtBbgkwoUtrsKu4p7H+856ti
-         3Xtm+2zdCedDRsDBZpFhZLp5JndSPq3kmB7RN63yD4rkTyjuj/KhtREr8vQwwZl4Cd0S
-         SiyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=HdAipv40/QqUuhoEN6Hq6J9CX7+XanSXNZDP7WXuA2w=;
-        b=WCh3sPUK8gxst4EX4zW+eMPAxa/Mvly1K4L1kyeDqvWRjWL6kJN2pvHOEOqbBgiSmh
-         Y2gnjQFxr7HtudrWc6VHzvV/lrtCbLtdvOAbdJ6DoFd58XnZffz17A/DBbPcHUafzCD2
-         soISDTbcSg69eKbfy8iqC+e09x1CkOaQA38S3T0EYcTtmsC8OoZCTX/DqzfGAV8RKlwk
-         j7iTClY2yCNCMWc+FIZZf0zJYA6V82f73YHUWhopy68URFUccMxUjw6CAWGG0QMX29tG
-         LbCFAvLfWMcrNkM9S8acnjdEnK6vkPGg5LzXbCghRY5dWYrpxNqwAt8GhxZMi1veKLxM
-         ZGvQ==
-X-Gm-Message-State: ACgBeo2bg++3J9TV1k3jPKcFdRdTJQ/NJSUT7VeMHl+FRVZdr34WcOFA
-        gIRZzdPis8jQQO0V+G76tareww==
-X-Google-Smtp-Source: AA6agR6cQdWCJj8nIL8lC0/B1orERU83CcRBe8mpU1Xnak54m5SKBPoax0iLrY8he6N8y6biTQJi5g==
-X-Received: by 2002:a63:fb56:0:b0:429:983f:b91e with SMTP id w22-20020a63fb56000000b00429983fb91emr22939560pgj.399.1661965011770;
-        Wed, 31 Aug 2022 09:56:51 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id p15-20020a170902780f00b0017555cef23asm199694pll.232.2022.08.31.09.56.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 09:56:51 -0700 (PDT)
-Date:   Wed, 31 Aug 2022 16:56:47 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Li RongQing <lirongqing@baidu.com>
-Subject: Re: [PATCH 16/19] KVM: x86: Explicitly track all possibilities for
- APIC map's logical modes
-Message-ID: <Yw+Sz+5rB+QNP2Z9@google.com>
-References: <20220831003506.4117148-1-seanjc@google.com>
- <20220831003506.4117148-17-seanjc@google.com>
- <8d3569a8b2d1563eb3ff665118ffc5c8d7e1e2f2.camel@redhat.com>
+        Wed, 31 Aug 2022 12:56:55 -0400
+Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E52CBFC7D;
+        Wed, 31 Aug 2022 09:56:53 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.18.147.227])
+        by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4MHqx222Sfz9v7cZ;
+        Thu,  1 Sep 2022 00:52:54 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.204.63.22])
+        by APP2 (Coremail) with SMTP id GxC2BwBX0lxfkg9jJXIRAA--.5993S8;
+        Wed, 31 Aug 2022 17:56:23 +0100 (CET)
+From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, mykolal@fb.com,
+        dhowells@redhat.com, jarkko@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, paul@paul-moore.com, jmorris@namei.org,
+        serge@hallyn.com, shuah@kernel.org
+Cc:     bpf@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        deso@posteo.net, memxor@gmail.com,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v15 06/12] bpf: Add bpf_lookup_*_key() and bpf_key_put() kfuncs
+Date:   Wed, 31 Aug 2022 18:54:39 +0200
+Message-Id: <20220831165445.1071641-7-roberto.sassu@huaweicloud.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220831165445.1071641-1-roberto.sassu@huaweicloud.com>
+References: <20220831165445.1071641-1-roberto.sassu@huaweicloud.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8d3569a8b2d1563eb3ff665118ffc5c8d7e1e2f2.camel@redhat.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: GxC2BwBX0lxfkg9jJXIRAA--.5993S8
+X-Coremail-Antispam: 1UD129KBjvJXoWxKFy8JF48Cw4xJw4kAF1rXrb_yoWxWFyDpF
+        WSkFyFkrWkGFy7Jrn7Cw47Za4a93Wkury7Ga47G3savrnaqr97Gw4xXF4Ygwn8Crs7ury3
+        tF42gw45uryUXrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUPvb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAV
+        Cq3wA2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0
+        rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267
+        AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E
+        14v26F4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I
+        80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCj
+        c4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0En4
+        kS14v26r4a6rW5MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E
+        5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVW8ZV
+        WrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r4j6ryUMIIF0xvE2Ix0cI8IcVCY
+        1x0267AKxVW8Jr0_Cr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67
+        AKxVW8JVWxJwCI42IY6I8E87Iv6xkF7I0E14v26F4UJVW0obIYCTnIWIevJa73UjIFyTuY
+        vjxUxrcTDUUUU
+X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAQABBF1jj4J6BgAAsL
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022, Maxim Levitsky wrote:
-> > diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-> > index 8209caffe3ab..3b6ef36b3963 100644
-> > --- a/arch/x86/kvm/lapic.c
-> > +++ b/arch/x86/kvm/lapic.c
-> > @@ -168,7 +168,12 @@ static bool kvm_use_posted_timer_interrupt(struct kvm_vcpu *vcpu)
-> >  
-> >  static inline bool kvm_apic_map_get_logical_dest(struct kvm_apic_map *map,
-> >  		u32 dest_id, struct kvm_lapic ***cluster, u16 *mask) {
-> > -	switch (map->mode) {
-> > +	switch (map->logical_mode) {
-> > +	case KVM_APIC_MODE_SW_DISABLED:
-> > +		/* Arbitrarily use the flat map so that @cluster isn't NULL. */
-> > +		*cluster = map->xapic_flat_map;
-> > +		*mask = 0;
-> > +		return true;
-> Could you explain why this is needed? I probably missed something.
+From: Roberto Sassu <roberto.sassu@huawei.com>
 
-If all vCPUs leave their APIC software disabled, or leave LDR=0, then the overall
-mode will be KVM_APIC_MODE_SW_DISABLED.  In this case, the effective "mask" is '0'
-because there are no targets.  And this returns %true because there are no targets,
-i.e. there's no need to go down the slow path after kvm_apic_map_get_dest_lapic().
+Add the bpf_lookup_user_key(), bpf_lookup_system_key() and bpf_key_put()
+kfuncs, to respectively search a key with a given key handle serial number
+and flags, obtain a key from a pre-determined ID defined in
+include/linux/verification.h, and cleanup.
 
-> > @@ -993,7 +1011,7 @@ static bool kvm_apic_is_broadcast_dest(struct kvm *kvm, struct kvm_lapic **src,
-> >  {
-> >  	if (kvm->arch.x2apic_broadcast_quirk_disabled) {
-> >  		if ((irq->dest_id == APIC_BROADCAST &&
-> > -				map->mode != KVM_APIC_MODE_X2APIC))
-> > +		     map->logical_mode != KVM_APIC_MODE_X2APIC))
-> >  			return true;
-> >  		if (irq->dest_id == X2APIC_BROADCAST)
-> >  			return true;
-> 
-> To be honest I would put that patch first, and then do all the other patches,
-> this way you would avoid all of the hacks they do and removed here.
+Introduce system_keyring_id_check() to validate the keyring ID parameter of
+bpf_lookup_system_key().
 
-I did it this way so that I could test this patch for correctness.  Without the
-bug fixes in place it's not really possible to verify this patch is 100% correct.
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ include/linux/bpf.h          |   8 +++
+ include/linux/verification.h |   8 +++
+ kernel/trace/bpf_trace.c     | 135 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 151 insertions(+)
 
-I completely agree that it would be a lot easier to read/understand/review if
-this came first, but I'd rather not sacrifice the ability to easily test this patch.
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 9dbd7c3f8929..f3db614aece6 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2595,4 +2595,12 @@ static inline void bpf_cgroup_atype_get(u32 attach_btf_id, int cgroup_atype) {}
+ static inline void bpf_cgroup_atype_put(int cgroup_atype) {}
+ #endif /* CONFIG_BPF_LSM */
+ 
++struct key;
++
++#ifdef CONFIG_KEYS
++struct bpf_key {
++	struct key *key;
++	bool has_ref;
++};
++#endif /* CONFIG_KEYS */
+ #endif /* _LINUX_BPF_H */
+diff --git a/include/linux/verification.h b/include/linux/verification.h
+index a655923335ae..f34e50ebcf60 100644
+--- a/include/linux/verification.h
++++ b/include/linux/verification.h
+@@ -17,6 +17,14 @@
+ #define VERIFY_USE_SECONDARY_KEYRING ((struct key *)1UL)
+ #define VERIFY_USE_PLATFORM_KEYRING  ((struct key *)2UL)
+ 
++static inline int system_keyring_id_check(u64 id)
++{
++	if (id > (unsigned long)VERIFY_USE_PLATFORM_KEYRING)
++		return -EINVAL;
++
++	return 0;
++}
++
+ /*
+  * The use to which an asymmetric key is being put.
+  */
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 68e5cdd24cef..7a7023704ac2 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -20,6 +20,8 @@
+ #include <linux/fprobe.h>
+ #include <linux/bsearch.h>
+ #include <linux/sort.h>
++#include <linux/key.h>
++#include <linux/verification.h>
+ 
+ #include <net/bpf_sk_storage.h>
+ 
+@@ -1181,6 +1183,139 @@ static const struct bpf_func_proto bpf_get_func_arg_cnt_proto = {
+ 	.arg1_type	= ARG_PTR_TO_CTX,
+ };
+ 
++#ifdef CONFIG_KEYS
++__diag_push();
++__diag_ignore_all("-Wmissing-prototypes",
++		  "kfuncs which will be used in BPF programs");
++
++/**
++ * bpf_lookup_user_key - lookup a key by its serial
++ * @serial: key handle serial number
++ * @flags: lookup-specific flags
++ *
++ * Search a key with a given *serial* and the provided *flags*.
++ * If found, increment the reference count of the key by one, and
++ * return it in the bpf_key structure.
++ *
++ * The bpf_key structure must be passed to bpf_key_put() when done
++ * with it, so that the key reference count is decremented and the
++ * bpf_key structure is freed.
++ *
++ * Permission checks are deferred to the time the key is used by
++ * one of the available key-specific kfuncs.
++ *
++ * Set *flags* with KEY_LOOKUP_CREATE, to attempt creating a requested
++ * special keyring (e.g. session keyring), if it doesn't yet exist.
++ * Set *flags* with KEY_LOOKUP_PARTIAL, to lookup a key without waiting
++ * for the key construction, and to retrieve uninstantiated keys (keys
++ * without data attached to them).
++ *
++ * Return: a bpf_key pointer with a valid key pointer if the key is found, a
++ *         NULL pointer otherwise.
++ */
++struct bpf_key *bpf_lookup_user_key(u32 serial, u64 flags)
++{
++	key_ref_t key_ref;
++	struct bpf_key *bkey;
++
++	if (flags & ~KEY_LOOKUP_ALL)
++		return NULL;
++
++	/*
++	 * Permission check is deferred until the key is used, as the
++	 * intent of the caller is unknown here.
++	 */
++	key_ref = lookup_user_key(serial, flags, KEY_DEFER_PERM_CHECK);
++	if (IS_ERR(key_ref))
++		return NULL;
++
++	bkey = kmalloc(sizeof(*bkey), GFP_ATOMIC);
++	if (!bkey) {
++		key_put(key_ref_to_ptr(key_ref));
++		return NULL;
++	}
++
++	bkey->key = key_ref_to_ptr(key_ref);
++	bkey->has_ref = true;
++
++	return bkey;
++}
++
++/**
++ * bpf_lookup_system_key - lookup a key by a system-defined ID
++ * @id: key ID
++ *
++ * Obtain a bpf_key structure with a key pointer set to the passed key ID.
++ * The key pointer is marked as invalid, to prevent bpf_key_put() from
++ * attempting to decrement the key reference count on that pointer. The key
++ * pointer set in such way is currently understood only by
++ * verify_pkcs7_signature().
++ *
++ * Set *id* to one of the values defined in include/linux/verification.h:
++ * 0 for the primary keyring (immutable keyring of system keys);
++ * VERIFY_USE_SECONDARY_KEYRING for both the primary and secondary keyring
++ * (where keys can be added only if they are vouched for by existing keys
++ * in those keyrings); VERIFY_USE_PLATFORM_KEYRING for the platform
++ * keyring (primarily used by the integrity subsystem to verify a kexec'ed
++ * kerned image and, possibly, the initramfs signature).
++ *
++ * Return: a bpf_key pointer with an invalid key pointer set from the
++ *         pre-determined ID on success, a NULL pointer otherwise
++ */
++struct bpf_key *bpf_lookup_system_key(u64 id)
++{
++	struct bpf_key *bkey;
++
++	if (system_keyring_id_check(id) < 0)
++		return NULL;
++
++	bkey = kmalloc(sizeof(*bkey), GFP_ATOMIC);
++	if (!bkey)
++		return NULL;
++
++	bkey->key = (struct key *)(unsigned long)id;
++	bkey->has_ref = false;
++
++	return bkey;
++}
++
++/**
++ * bpf_key_put - decrement key reference count if key is valid and free bpf_key
++ * @bkey: bpf_key structure
++ *
++ * Decrement the reference count of the key inside *bkey*, if the pointer
++ * is valid, and free *bkey*.
++ */
++void bpf_key_put(struct bpf_key *bkey)
++{
++	if (bkey->has_ref)
++		key_put(bkey->key);
++
++	kfree(bkey);
++}
++
++__diag_pop();
++
++BTF_SET8_START(key_sig_kfunc_set)
++BTF_ID_FLAGS(func, bpf_lookup_user_key, KF_ACQUIRE | KF_RET_NULL | KF_SLEEPABLE)
++BTF_ID_FLAGS(func, bpf_lookup_system_key, KF_ACQUIRE | KF_RET_NULL)
++BTF_ID_FLAGS(func, bpf_key_put, KF_RELEASE)
++BTF_SET8_END(key_sig_kfunc_set)
++
++static const struct btf_kfunc_id_set bpf_key_sig_kfunc_set = {
++	.owner = THIS_MODULE,
++	.set = &key_sig_kfunc_set,
++};
++
++static int __init bpf_key_sig_kfuncs_init(void)
++{
++	return register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING,
++					 &bpf_key_sig_kfunc_set);
++}
++
++late_initcall(bpf_key_sig_kfuncs_init);
++#endif /* CONFIG_KEYS */
++
+ static const struct bpf_func_proto *
+ bpf_tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ {
+-- 
+2.25.1
+
