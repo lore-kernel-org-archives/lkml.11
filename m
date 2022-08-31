@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6354ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3300EECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232313AbiHaSG5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40756 "EHLO
+        id S232245AbiHaSHB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:07:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232143AbiHaSGe (ORCPT
+        with ESMTP id S232141AbiHaSGe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 14:06:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8072AE395B;
-        Wed, 31 Aug 2022 11:06:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813E8E3983;
+        Wed, 31 Aug 2022 11:06:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E40D61C11;
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0E3AB82273;
         Wed, 31 Aug 2022 18:06:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1410C433B5;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48530C433D6;
         Wed, 31 Aug 2022 18:06:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661969187;
-        bh=kpYKwMnffVl1nsj+jg2r15lnrXjU997U2XZSk+XwMCw=;
+        bh=j7Vt+WhUPkmdxBzO+D24Yf2KD8/sQg3Uw1rN8AJx8XI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lcosIxom1w6n589swGSjYVyxOy0WWlOjPSWmLPz1RWc3RBFuybkPWoKbGBI7pclgg
-         ZUquTdoerz5JsV2KTDpU2POTgRcVft49OhyFWjOZR3R4/dMv/Qfu2q76pxImQBiQFF
-         ygql/vhgJHuJodsJ2ktyjDZuzoD0An0gAuLble+w2ufEuFSP2hqgGtuhMxDO72xUsP
-         VfLaqgfxm54gv4hleGgkuCY4nX/4MZWZYFA0BOhSet7EAGkqVJ5V/afy+f8moocxVY
-         nv5gcMjGYM00uop1FL/hDR7Y4uBRpu2J+KdduUEUatbydnjHd6FnUGX3kf4wwdTLHx
-         tqg3H0yb5x1wQ==
+        b=DwI9B3r+CnqTXMKM5ybBKM/kKxZC0BwiGC+MLk85ckyYsA0g/s+tmuhe1SnCxrpBR
+         hV2j2FGREwfxQ8ySaPlnI8p9/uZHyEZgcCAXUZ3goC3ifogzdf09qKf6claChLd84S
+         ghDrcrHaOxX8iDjjfhJkTvxsbJRx8fExndJ2cL8CD2neyLxxHorM0VCGl4k6G+KNMX
+         peLDis2g5qr5G/lsXoHmOYvCgIeEZAT7ukw1D6P97jR1s0i0rt3K0oWcIfHsZ6CW1O
+         lc+BUXcJs883AbhVb07GNpibDI5K7FRJEh/YScwaBt8pVP6XAdIk21oyjAN0XxJ0ZU
+         CsoVnuiASbO6Q==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 091545C090A; Wed, 31 Aug 2022 11:06:27 -0700 (PDT)
+        id 034755C02A9; Wed, 31 Aug 2022 11:06:27 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     rcu@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
         rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 6/7] doc: SLAB_TYPESAFE_BY_RCU uses cannot rely on spinlocks
-Date:   Wed, 31 Aug 2022 11:06:24 -0700
-Message-Id: <20220831180625.2692892-6-paulmck@kernel.org>
+Subject: [PATCH rcu 3/7] doc: Use rcu_barrier() to rate-limit RCU callbacks
+Date:   Wed, 31 Aug 2022 11:06:21 -0700
+Message-Id: <20220831180625.2692892-3-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831180617.GA2692480@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831180617.GA2692480@paulmck-ThinkPad-P17-Gen-1>
@@ -50,50 +50,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because the SLAB_TYPESAFE_BY_RCU code does not zero pages that are
-to be broken up into slabs, the memory returned by kmem_cache_alloc()
-must be fully initialized, including any spinlocks included in the newly
-allocated structure.  This means that readers attempting to look up an
-SLAB_TYPESAFE_BY_RCU object must use a reference-counting approach.
-A spinlock may be acquired only after a reference is obtained, which
-prevents that object from being passed to kmem_struct_free(), but only
-while that reference continues to be held.
+The checklist.rst document advises periodic synchronize_rcu() invocations
+to prevent callback flooding.  However, rcu_barrier() is often a better
+choice.  This commit therefore adds words to this effect.
 
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- Documentation/RCU/whatisRCU.rst | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ Documentation/RCU/checklist.rst | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/RCU/whatisRCU.rst b/Documentation/RCU/whatisRCU.rst
-index 6940e0fe8599b..97f2d0fa84dfa 100644
---- a/Documentation/RCU/whatisRCU.rst
-+++ b/Documentation/RCU/whatisRCU.rst
-@@ -915,13 +915,18 @@ which an RCU reference is held include:
- The understanding that RCU provides a reference that only prevents a
- change of type is particularly visible with objects allocated from a
- slab cache marked ``SLAB_TYPESAFE_BY_RCU``.  RCU operations may yield a
--reference to an object from such a cache that has been concurrently
--freed and the memory reallocated to a completely different object,
--though of the same type.  In this case RCU doesn't even protect the
--identity of the object from changing, only its type.  So the object
--found may not be the one expected, but it will be one where it is safe
--to take a reference or spinlock and then confirm that the identity
--matches the expectations.
-+reference to an object from such a cache that has been concurrently freed
-+and the memory reallocated to a completely different object, though of
-+the same type.  In this case RCU doesn't even protect the identity of the
-+object from changing, only its type.  So the object found may not be the
-+one expected, but it will be one where it is safe to take a reference
-+(and then potentially acquiring a spinlock), allowing subsequent code
-+to check whether the identity matches expectations.  It is tempting
-+to simply acquire the spinlock without first taking the reference, but
-+unfortunately any spinlock in a ``SLAB_TYPESAFE_BY_RCU`` object must be
-+initialized after each and every call to kmem_cache_alloc(), which renders
-+reference-free spinlock acquisition completely unsafe.  Therefore, when
-+using ``SLAB_TYPESAFE_BY_RCU``, make proper use of a reference counter.
+diff --git a/Documentation/RCU/checklist.rst b/Documentation/RCU/checklist.rst
+index 2db206fc3465f..178ca7547b987 100644
+--- a/Documentation/RCU/checklist.rst
++++ b/Documentation/RCU/checklist.rst
+@@ -305,7 +305,8 @@ over a rather long period of time, but improvements are always welcome!
+ 		the machine.
  
- With traditional reference counting -- such as that implemented by the
- kref library in Linux -- there is typically code that runs when the last
+ 	d.	Periodically invoke synchronize_rcu(), permitting a limited
+-		number of updates per grace period.
++		number of updates per grace period.  Better yet, periodically
++		invoke rcu_barrier() to wait for all outstanding callbacks.
+ 
+ 	The same cautions apply to call_srcu() and kfree_rcu().
+ 
 -- 
 2.31.1.189.g2e36527f23
 
