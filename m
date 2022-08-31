@@ -2,121 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD51ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1884ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230183AbiHaAWp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:22:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33038 "EHLO
+        id S230350AbiHaAY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiHaAWm (ORCPT
+        with ESMTP id S229753AbiHaAYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:22:42 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D179E0E8
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:22:40 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id h78so10674516iof.13
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:22:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=CjHJ6guV4AQZerFE0TWAnwta/uUYJx/V52zAnUvT6/E=;
-        b=B+Z3LtgOINbbiKNxf7rfsgWZcXD31cS2mUqAoLt11dXa4TmB3Z9cTVJC7uIJaYrtyl
-         baMjKg2MGdzwJInfHmIRXQsAyyP1vB2J0Gtf8KLZtdZVIrmzubfN4jUeez0W7yzH/m1f
-         invrO3bUao2ae/NM3XJ2vyuG0WoC3UTpWsZhVudvcqFjkOf4B5r/iScU1VyvufqPJ8cu
-         e3/7WDny8sDp8n+e4JLFXfp0WHyxvCK0TXTzPZiGHhuBK3RpkPQO4GqWQFal2qAXf7Uk
-         QhCsDBYlmQaFpko9nD+8apP0RZSsubqkDZsaaSW2AvNGp3yuwGBwp7t+zoO/SqB//I+U
-         NZ3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=CjHJ6guV4AQZerFE0TWAnwta/uUYJx/V52zAnUvT6/E=;
-        b=bRbsSC4K04un2N69FbcIahXc/Oo/3neypfuAImpfDGuITVDWJI1ZLVfExOWu9znmfu
-         BIf+IJE35jNatbwI3MHTW6+mQpXU8DFwVYx+0Mg//ClI3vCRhRX0PRnO9ItdHFAnPRS3
-         WN+YSuWKNyl04hs4xoTExWnOO+7cVFcJVPhzm6Jqi7/dGjsXRgpsdzXiOy+1Blsmz/aI
-         Q41oeLW91hgwm5x920KTCQ18TsN+Y5Oy86LAyYJSv16gUGtJL5lJTdgd7NBQ7A6wjy88
-         sD3F7+CTLrQjTZICgvqUU31UsYB/73rs/u94PBIg+4onnh3pn48AxFnQgk3AdGJMfVfW
-         ZB/Q==
-X-Gm-Message-State: ACgBeo2SLXAiMD7fu1i6F6MVBR/2maCn1ln1klO+ZoXiySUWswTauOjA
-        yk2CSCCoRWY9iO2R/DiHJXSg1n6z8ZY8DMs1Suh+2g==
-X-Google-Smtp-Source: AA6agR6JsDyNkBl/c6DnU+AKMAnb6qKQhg2RYhUPHDUIplj92y10BtV9xLaH22IHr9hCtav15WV8kUhbIC1rCDr354s=
-X-Received: by 2002:a05:6638:218d:b0:34a:1684:b21 with SMTP id
- s13-20020a056638218d00b0034a16840b21mr13670116jaj.178.1661905359984; Tue, 30
- Aug 2022 17:22:39 -0700 (PDT)
+        Tue, 30 Aug 2022 20:24:24 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9109C9D8FD
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:24:18 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id D6EB65FD04;
+        Wed, 31 Aug 2022 03:24:14 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1661905454;
+        bh=4fl4RLZ+WkBNNFnhafSFpNfg0CMeWHUQue3HBc22HT4=;
+        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type;
+        b=SiK5jM35SGwe9LUWazXDkqKx1TpUnpq+JpPXpWktGTZSJsEeUxmKO2os9FEIklp64
+         klMIHk5ERntS7nxgDxzgCmatKk+ZIVYtjy9vHyJ87FJ1NZD9vL6qB5TW+pqPCA/VAh
+         pNpVAxS+76z+VyDWXNnKYVCKs7W9u+pBsIG7jvl/glfaP+64NjXHvHnOl5+AI11yuE
+         QtrtEbTGhCBNfmXkm5Z8aj+yKvsAstkpWO0ZO4jH28QU3HTrwj1XQzn/AjBA47wXqV
+         k5VgpQ958LHfaPFB/SMVbuyZVivZ01C5KiOdPkwjZSIHsrzvKOoWKIANGDxLwsvhfm
+         XG+Z6SNfK8EWQ==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed, 31 Aug 2022 03:24:06 +0300 (MSK)
+Date:   Wed, 31 Aug 2022 03:24:05 +0300
+From:   Dmitry Rokosov <ddrokosov@sberdevices.ru>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+CC:     kernel test robot <lkp@intel.com>, <llvm@lists.linux.dev>,
+        <kbuild-all@lists.01.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [jic23-iio:testing 124/129] drivers/iio/accel/msa311.c:993:24:
+ warning: format specifies type 'unsigned char' but the argument has type
+ 'unsigned int'
+Message-ID: <20220831002405.m3j5sug2rz7bdz5s@Rockosov-MBP>
+References: <202208290618.wU7mHfOp-lkp@intel.com>
+ <20220830110329.00000d18@huawei.com>
+ <CAHp75VfA=w+Q2ccdTiQXeWRw0wSjbkUf6J3+tp-kE50mxdkTNg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220826084001.3341215-1-badhri@google.com> <20220826084001.3341215-4-badhri@google.com>
- <20220830175523.GA239841@roeck-us.net>
-In-Reply-To: <20220830175523.GA239841@roeck-us.net>
-From:   Badhri Jagan Sridharan <badhri@google.com>
-Date:   Tue, 30 Aug 2022 17:22:04 -0700
-Message-ID: <CAPTae5+xgdHUCwdrqp=Of5THUmdWLnLZu2qf1ZhysESLyPFioQ@mail.gmail.com>
-Subject: Re: [PATCH v1 4/4] usb: typec: maxim_contaminant: Implement
- check_contaminant callback
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        USB <linux-usb@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kyle Tso <kyletso@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VfA=w+Q2ccdTiQXeWRw0wSjbkUf6J3+tp-kE50mxdkTNg@mail.gmail.com>
+User-Agent: NeoMutt/20220429
+X-Originating-IP: [172.16.1.6]
+X-ClientProxiedBy: S-MS-EXCH01.sberdevices.ru (172.16.1.4) To
+ S-MS-EXCH01.sberdevices.ru (172.16.1.4)
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/30 20:46:00 #20189978
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 10:55 AM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> On Fri, Aug 26, 2022 at 01:40:01AM -0700, Badhri Jagan Sridharan wrote:
-> > Maxim TCPC has additional ADCs and low current(1ua) current source
-> > to measure the impedance of CC and SBU pins. When tcpm invokes
-> > the check_contaminant callback, Maxim TCPC measures the impedance
-> > of the CC & SBU pins and when the impedance measured is less than
-> > 1MOhm, it is assumed that USB-C port is contaminated. CC comparators
-> > are also checked to differentiate between presence of sink and
-> > contaminant. Once USB-C is deemed to be contaminated, MAXIM TCPC
-> > has additional hardware to disable normal DRP toggling cycle and
-> > enable 1ua on CC pins once every 2.4secs/4.8secs. Maxim TCPC
-> > interrupts AP once the impedance on the CC pin is above the
-> > 1MOhm threshold. The Maxim tcpc driver then signals TCPM_PORT_CLEAN
-> > to restart toggling.
-> >
-> > Signed-off-by: Badhri Jagan Sridharan <badhri@google.com>
-> > ---
-> >  drivers/usb/typec/tcpm/Makefile            |   2 +-
-> >  drivers/usb/typec/tcpm/maxim_contaminant.c | 338 +++++++++++++++++++++
-> >  drivers/usb/typec/tcpm/tcpci_maxim.c       |  34 ++-
-> >  drivers/usb/typec/tcpm/tcpci_maxim.h       |  68 +++++
-> >  4 files changed, 429 insertions(+), 13 deletions(-)
-> >  create mode 100644 drivers/usb/typec/tcpm/maxim_contaminant.c
-> >  create mode 100644 drivers/usb/typec/tcpm/tcpci_maxim.h
-> >
-> > diff --git a/drivers/usb/typec/tcpm/Makefile b/drivers/usb/typec/tcpm/Makefile
-> > index 906d9dced8e7..81e4e9421fa0 100644
-> > --- a/drivers/usb/typec/tcpm/Makefile
-> > +++ b/drivers/usb/typec/tcpm/Makefile
-> > @@ -7,4 +7,4 @@ obj-$(CONFIG_TYPEC_TCPCI)             += tcpci.o
-> >  obj-$(CONFIG_TYPEC_RT1711H)          += tcpci_rt1711h.o
-> >  obj-$(CONFIG_TYPEC_MT6360)           += tcpci_mt6360.o
-> >  obj-$(CONFIG_TYPEC_TCPCI_MT6370)     += tcpci_mt6370.o
-> > -obj-$(CONFIG_TYPEC_TCPCI_MAXIM)              += tcpci_maxim.o
-> > +obj-$(CONFIG_TYPEC_TCPCI_MAXIM)              += tcpci_maxim.o maxim_contaminant.o
->
-> This creates two separate modules, which doesn't really add any value.
-> I would suggest to adjust the file names and create a single module
-> named tcpci_maxim instead. Renaming tcpci_maxim.c to, say,
-> tcpci_maxim_core.c and
->
-> obj-$(CONFIG_TYPEC_TCPCI_MAXIM) += tcpci_maxim.o
-> tcpci_maxim-y := tcpci_maxim_core.o maxim_contaminant.o
->
-> should do. This would also avoid the need for exporting symbols
-> from tcpci_maxim.c.
+Hello Jonathan and Andy,
 
-Thanks Guenter ! Done. Just sent out "[PATCH v2 3/3] usb: typec:
-maxim_contaminant: Implement
-check_contaminant callback".
+Sorry for such a late response, a couple of days ago my daughter was born.
+So I couldn't reach my laptop :)
 
->
-> Thanks,
-> Guenter
+Please find my thoughts below.
+
+> > > >> drivers/iio/accel/msa311.c:993:24: warning: format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Wformat]
+> > >                                               "msa311-%hhx", partid);
+> > >                                                       ~~~~   ^~~~~~
+> > >                                                       %x
+> > >    1 warning generated.
+> 
+> > >    992                msa311->chip_name = devm_kasprintf(dev, GFP_KERNEL,
+> > >  > 993                                                   "msa311-%hhx", partid);
+> 
+> > I'm thinking intent here was to limit range of what was printed. Maybe better to use
+> > local u8 variable or cast?
+> >
+> > I can fix it up if that's fine with you - or even better send me a patch that fixes
+> > it however you prefer!
+> 
+> Looking back at what Linus said about those specifiers, I would rather
+> go with simple %x or %02x.
+> 
+> P.S. Surprisingly many C developers don't know the difference between
+> %hhx and %02x, which is easy to check by
+> 
+>   char a = -1;
+>   printf("%hhx <==> %02x\n", a, a);
+>   a = 217;
+>   printf("%hhx <==> %02x\n", a, a);
+
+Thank you for pointing to Linus answer. I have explored it at the link:
+
+https://lore.kernel.org/lkml/CAHk-=wgoxnmsj8GEVFJSvTwdnWm8wVJthefNk2n6+4TC=20e0Q@mail.gmail.com/
+
+Actually, Linus described one exception to this rule, which I have
+in my patch. I have an integer which I want to print as a char.
+I see that Linus mentions it's a bad idea. I agree with that. But
+currently %hhx => %02x replacement breaks the requested behavior, %02x
+will not shrink integer value to char. I want to say, maybe it's better
+just cast the value to u8 type and print as %x. What do you think? I can
+prepare such a patch.
+
+P.S. Andy's example to show the difference between %hhx and %02x makes
+more clear why such a replacement is not acceptable here.
+
+Output:
+ff <==> ffffffff
+d9 <==> ffffffd9
+
+-- 
+Thank you,
+Dmitry
