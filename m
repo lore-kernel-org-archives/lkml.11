@@ -2,93 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D59ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E10ADECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 09:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbiHaJOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 05:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
+        id S231356AbiHaJQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 05:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbiHaJOn (ORCPT
+        with ESMTP id S229742AbiHaJQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 05:14:43 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1ADB959F
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:14:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=GFz5iOxIbBoTaBFwG7z+teOGvv89yKvEwyJQ2cSoFzc=; b=D4zzVGFeJjxoIM9PhRE79Psysy
-        L4dFtyScAG6Wa48YuDOjM+fJbgDNWzZyPe368/WcSPOg7RGLC1Du+pMHJoKqIWkuQWlmH0YH7KzEK
-        MpurqE66sfdNtecXb8kohhx0B2OmsCM2Csy6deuk1fO9E8RzNF7GCI9jHjt8X2HeN8AhzSX8GeJ3T
-        RIBoCzr3dHoGLfsqtBvzNl78Xq8KRApeWubuMraMMehdP3mkUuiGpIn7VbgCQupUHwKtFky2PWw0S
-        CjGSvUDh4iDqW7FKfnHRJwgtu2tlKr54Z8WAiaGcRS+iiXLNZuWl8P1KX8e5cf7yUaajDCMWWEC8v
-        7D9hAWww==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTJno-004xPS-44; Wed, 31 Aug 2022 09:14:28 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id ACFEB300137;
-        Wed, 31 Aug 2022 11:14:25 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 930052B84630D; Wed, 31 Aug 2022 11:14:25 +0200 (CEST)
-Date:   Wed, 31 Aug 2022 11:14:25 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>
-Subject: Re: [PATCH v6 3/5] sched: Enforce user requested affinity
-Message-ID: <Yw8mcbgYThZGpMfN@hirez.programming.kicks-ass.net>
-References: <20220826010119.1265764-1-longman@redhat.com>
- <20220826010119.1265764-4-longman@redhat.com>
+        Wed, 31 Aug 2022 05:16:07 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0918174DDC
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:16:03 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id k18so7554703lji.13
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 02:16:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=yo2waPsn/VqYxgd2pcDs/I6zHMqdvY640Tr+GIvipRQ=;
+        b=XTYiYuH/bXWDfvmPO6sSGKYWyRufpke6PgmvtLNPIqwPcMwojHADlhExcBeWJGeMuL
+         74KMCq+D3Qo6JiExwZtM7rjoJSXoW91qnIKpdOAMaHuMzTNLOnJYFNA/gR2LBYIhh90d
+         sLybxLoYQ5Y0E0JICZDODxhzuW7d9eqc3F6tNx3guju3FqkC3AEGYlNrwKl1f0cwUVY7
+         i3AI7uEik3OIMc7dqoxkkopt7jKRTCbfR+M+St42gpcqrZ3qDKHnfBNyI2kP8cuOfNJC
+         +nr0Wg+rUiB4pikkRM7B3O+EO7OQtp7204LX+3HgfWC2I4uiv+sU+lhwx+lkFm0MV3HM
+         bdfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=yo2waPsn/VqYxgd2pcDs/I6zHMqdvY640Tr+GIvipRQ=;
+        b=mE6HAc63tUkBF7j5IG7DQqeQGoeJLO+mzGr1go+OcENq1ol1i+TVm4xTfEaZXdOT/y
+         gc/CavFU9xfIdP8aCEgB7uyPGsQ25ra6mu1n+4YjZmA1N/QzKNgEMwCKwf0qCwkLDZWb
+         KtqF1aghXmFJ12k1LUU1AVRLEMrZguBmueUEhs/LcNzn44lEDrNEHuDIh0mtrXsJEeij
+         yGgjJtJBm3IkRjU0uLRXEIonTbkw6xJqO9tOLKK8YBAOmRU8ypXBSdzyonBMjnOGeYur
+         0mZdcujMocj/8IXhlf650MwiP++XMOYXodVp/cB61Js8QGRsgicAngA5hYj+0Mo2+0dh
+         U9NA==
+X-Gm-Message-State: ACgBeo0z05t1H04afPvydw5G2CjHeJnyPhzts94ZCXq5gk20MBfOjLci
+        qsAuLpRLKCKKVvqNcXeV9ay4Vg==
+X-Google-Smtp-Source: AA6agR47GdZxxgTBbHsCe/hhHr8+UPz/pFmx+778ocPnijLif3kR3Mws9lFbUER6RhQ/VK/t4ARqgA==
+X-Received: by 2002:a2e:bc0c:0:b0:268:7411:c7da with SMTP id b12-20020a2ebc0c000000b002687411c7damr1023491ljf.118.1661937361410;
+        Wed, 31 Aug 2022 02:16:01 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id x6-20020a056512078600b0049480c69d98sm454811lfr.239.2022.08.31.02.16.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 02:16:00 -0700 (PDT)
+Message-ID: <cb3870bc-451a-ff62-e671-f2045eecc781@linaro.org>
+Date:   Wed, 31 Aug 2022 12:15:59 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220826010119.1265764-4-longman@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH V2 1/8] dt-bindings: soc: imx: add binding for i.MX9
+ syscon
+Content-Language: en-US
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        aisheng.dong@nxp.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+References: <20220831074923.3085937-1-peng.fan@oss.nxp.com>
+ <20220831074923.3085937-2-peng.fan@oss.nxp.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220831074923.3085937-2-peng.fan@oss.nxp.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 09:01:17PM -0400, Waiman Long wrote:
+On 31/08/2022 10:49, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Add binding doc for i.MX9 blk_ctrl_ns_aonmix and blk_ctrl_wakeupmix
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  .../bindings/soc/imx/fsl,imx9-syscon.yaml     | 37 +++++++++++++++++++
+>  1 file changed, 37 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/soc/imx/fsl,imx9-syscon.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/soc/imx/fsl,imx9-syscon.yaml b/Documentation/devicetree/bindings/soc/imx/fsl,imx9-syscon.yaml
+> new file mode 100644
+> index 000000000000..90c5e354f86c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/soc/imx/fsl,imx9-syscon.yaml
+> @@ -0,0 +1,37 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/soc/imx/fsl,imx9-syscon.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index ac2b103d69dc..1c2f548e5369 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -2928,11 +2928,40 @@ static int __set_cpus_allowed_ptr_locked(struct task_struct *p,
->  static int __set_cpus_allowed_ptr(struct task_struct *p,
->  				  const struct cpumask *new_mask, u32 flags)
->  {
-> +	struct cpumask *alloc_mask = NULL;
->  	struct rq_flags rf;
->  	struct rq *rq;
-> +	int ret;
->  
->  	rq = task_rq_lock(p, &rf);
-> -	return __set_cpus_allowed_ptr_locked(p, new_mask, flags, rq, &rf);
-> +	if (p->user_cpus_ptr) {
-> +
-> +		/*
-> +		 * A scratch cpumask is allocated on the percpu runqueues
-> +		 * to enable additional masking with user_cpus_ptr. This
-> +		 * cpumask, once allocated, will not be freed.
-> +		 */
-> +		if (unlikely(!rq->scratch_mask)) {
-> +			alloc_mask = kmalloc(cpumask_size(), GFP_ATOMIC);
+One more - drop the quotes both lines above.
 
-This -- absolutely not. You can't have allocations under a
-raw_spinlock_t.
+Best regards,
+Krzysztof
