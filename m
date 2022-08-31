@@ -2,132 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA46FECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA88DC0502C
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbiHaMFR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 08:05:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37956 "EHLO
+        id S229862AbiHaMGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 08:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbiHaMFL (ORCPT
+        with ESMTP id S229547AbiHaMGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 08:05:11 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916CBBE36
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:05:09 -0700 (PDT)
+        Wed, 31 Aug 2022 08:06:36 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D0F21248;
+        Wed, 31 Aug 2022 05:06:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661947509; x=1693483509;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Op5UlvE87KQlkVBfbfPxtK4iG+euMcqZycNT21H5YCQ=;
-  b=d4JPvquDCp7pp/wlGZnURBKnpYiOgvuRBhNqLuP8Itpyfb1Bisp4b+4o
-   vcUfyD14GNgXEz1mzTw7nrdLhh1Jg7HiRDhcaeL4nwknfdsgb9i7Ak7cH
-   Gb3LYJ4+4h+DYiTC7SW340guoJQ8WutMex2G53WXDssSC8OBmAdNd9uH9
-   HPejA8jNTNufXjlogYVP/hDvHspvs8LoFpLSaI7MoWXK2PmjdF3IUX7Uv
-   n5zVE1WWWcqeNHMBZ/xTl3EjI681S1z5lhuARRs+rTOPTJGxCVNq6OLC7
-   3xlheTXU5v6QvIOZUH42BECgxQDkAE9Yq4bdksMIOSHql2/g1nDqaSx3q
+  t=1661947594; x=1693483594;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=BGu3/5fG8xHIe5yMcSH1ib5RNNwENF77HYJJciCvzEQ=;
+  b=RGbMveID76jBMxC0Kqw6DRgFQvH7lMaNJoP42pb+BoK3LOy44gdWlHKM
+   qDKJ/dFtefBe8ounM726gqTqAXFUq2tFLqwO85aEDztEP060i/VBsmWB+
+   bBs1P8VC5AmthbvdwfHHJ/U1jHuuMY27uUhkyJCQ/FrSkxw+k2XhkUIM3
+   /NEX1kOTOMjvL+wc3w2+XwXQaG/+Z+4MIztKEAqYaZgPCeh1BHfuSQhXw
+   lqesMF6YLFju1d9lDf8xD+csTF9o47JHBUtY+6FKqkb6qVu/sEyjK3wRf
+   4e3hkJQuLuRqix7CM0IWCQt6oDNkZ356b1B9qeQQjkQfKPfG5kNIDsuVR
    g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="294171259"
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="296216014"
 X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
-   d="scan'208";a="294171259"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 05:05:09 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="296216014"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 05:06:34 -0700
 X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
-   d="scan'208";a="589006240"
-Received: from lkp-server02.sh.intel.com (HELO 811e2ceaf0e5) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 31 Aug 2022 05:05:07 -0700
-Received: from kbuild by 811e2ceaf0e5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTMSx-0000Fm-1A;
-        Wed, 31 Aug 2022 12:05:07 +0000
-Date:   Wed, 31 Aug 2022 20:04:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lucas Stach <l.stach@pengutronix.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [lst:imx8mp-hdmi 5/11]
- drivers/gpu/drm/bridge/imx/imx8mp-hdmi-pvi.c:82:9: error: implicit
- declaration of function 'writel'
-Message-ID: <202208312049.OpEghiNW-lkp@intel.com>
+   d="scan'208";a="680402279"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 05:06:29 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1oTMUE-006MbU-01;
+        Wed, 31 Aug 2022 15:06:26 +0300
+Date:   Wed, 31 Aug 2022 15:06:25 +0300
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Eliav Farber <farbere@amazon.com>
+Cc:     jdelvare@suse.com, linux@roeck-us.net, robh+dt@kernel.org,
+        p.zabel@pengutronix.de, rtanwar@maxlinear.com,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, talel@amazon.com, hhhawa@amazon.com,
+        jonnyc@amazon.com, hanochu@amazon.com, ronenk@amazon.com,
+        itamark@amazon.com, shellykz@amazon.com, shorer@amazon.com,
+        amitlavi@amazon.com, almogbs@amazon.com, dkl@amazon.com,
+        rahul.tanwar@linux.intel.com
+Subject: Re: [PATCH v3 13/19] hwmon: (mr75203) modify the temperature
+ equation according to series 5 datasheet
+Message-ID: <Yw9OwUUD/t9DESQb@smile.fi.intel.com>
+References: <20220830192212.28570-1-farbere@amazon.com>
+ <20220830192212.28570-14-farbere@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220830192212.28570-14-farbere@amazon.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.pengutronix.de/git/lst/linux imx8mp-hdmi
-head:   7e80a6e2d0a4709e471ab951a64d323534a6776f
-commit: b3d9e9dfedb64ed82e797a87259e6f7598f5b4d5 [5/11] drm/imx: add driver for HDMI TX Parallel Video Interface
-config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20220831/202208312049.OpEghiNW-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add lst https://git.pengutronix.de/git/lst/linux
-        git fetch --no-tags lst imx8mp-hdmi
-        git checkout b3d9e9dfedb64ed82e797a87259e6f7598f5b4d5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sparc SHELL=/bin/bash
+On Tue, Aug 30, 2022 at 07:22:06PM +0000, Eliav Farber wrote:
+> Modify the equation and coefficients used to convert the digital output
+> to temperature according to series 5 of the Moortec Embedded Temperature
+> Sensor (METS) datasheet:
+> T = G + H * (n / cal5 - 0.5) + J * F
+> 
+> Where:
+> *) G = 60, H = 200, cal5 = 4094, J = -0.1.
+> *) F = frequency clock in MHz.
+> *) n is the digital output.
+> 
+> In code, the G, H and J coefficients are multiplied by a factor of 1000
+> to get the temperature in milli-Celsius.
+> Final result is clamped in case it exceeds min/max thresholds.
+> 
+> Change is done since it is not clear where the current equation and
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+not clear -> unclear
 
-All errors (new ones prefixed by >>):
+> coefficients came from.
 
-   drivers/gpu/drm/bridge/imx/imx8mp-hdmi-pvi.c: In function 'imx_hdmi_pvi_bridge_enable':
->> drivers/gpu/drm/bridge/imx/imx8mp-hdmi-pvi.c:82:9: error: implicit declaration of function 'writel' [-Werror=implicit-function-declaration]
-      82 |         writel(val, pvi->regs + HTX_PVI_CTL);
-         |         ^~~~~~
-   cc1: some warnings being treated as errors
+...
 
+> +#define PVT_TEMP_MIN		-40000
+> +#define PVT_TEMP_MAX		125000
 
-vim +/writel +82 drivers/gpu/drm/bridge/imx/imx8mp-hdmi-pvi.c
-
-    45	
-    46	static void imx_hdmi_pvi_bridge_enable(struct drm_bridge *bridge,
-    47					       struct drm_bridge_state *bridge_state)
-    48	{
-    49		struct drm_atomic_state *state = bridge_state->base.state;
-    50		struct imx_hdmi_pvi *pvi = to_imx_hdmi_pvi(bridge);
-    51		struct drm_connector_state *conn_state;
-    52		const struct drm_display_mode *mode;
-    53		struct drm_crtc_state *crtc_state;
-    54		struct drm_connector *connector;
-    55		u32 bus_flags, val;
-    56	
-    57		connector = drm_atomic_get_new_connector_for_encoder(state, bridge->encoder);
-    58		conn_state = drm_atomic_get_new_connector_state(state, connector);
-    59		crtc_state = drm_atomic_get_new_crtc_state(state, conn_state->crtc);
-    60	
-    61		if (WARN_ON(pm_runtime_resume_and_get(pvi->dev)))
-    62			return;
-    63	
-    64		mode = &crtc_state->adjusted_mode;
-    65	
-    66		val = PVI_CTL_INPUT_LCDIF;
-    67	
-    68		if (mode->flags & DRM_MODE_FLAG_PVSYNC)
-    69			val |= PVI_CTL_OP_VSYNC_POL | PVI_CTL_INP_VSYNC_POL;
-    70	
-    71		if (mode->flags & DRM_MODE_FLAG_PHSYNC)
-    72			val |= PVI_CTL_OP_HSYNC_POL | PVI_CTL_INP_HSYNC_POL;
-    73	
-    74		if (pvi->next_bridge->timings)
-    75			bus_flags = pvi->next_bridge->timings->input_bus_flags;
-    76		else if (bridge_state)
-    77			bus_flags = bridge_state->input_bus_cfg.flags;
-    78	
-    79		if (bus_flags & DRM_BUS_FLAG_DE_HIGH)
-    80			val |= PVI_CTL_OP_DE_POL | PVI_CTL_INP_DE_POL;
-    81	
-  > 82		writel(val, pvi->regs + HTX_PVI_CTL);
-    83		val |= PVI_CTL_EN;
-    84		writel(val, pvi->regs + HTX_PVI_CTL);
-    85	}
-    86	
+Unit suffix? _mC perhaps would be enough.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+With Best Regards,
+Andy Shevchenko
+
+
