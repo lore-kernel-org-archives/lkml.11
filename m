@@ -2,166 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10707ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 04:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D17BECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 04:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231625AbiHaEXk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 00:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42112 "EHLO
+        id S230182AbiHaEdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 00:33:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230350AbiHaEX1 (ORCPT
+        with ESMTP id S229604AbiHaEdA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 00:23:27 -0400
-X-Greylist: delayed 9861 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 30 Aug 2022 21:23:26 PDT
-Received: from dispatch1-us1.ppe-hosted.com (dispatch1-us1.ppe-hosted.com [67.231.154.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE142E4E;
-        Tue, 30 Aug 2022 21:23:26 -0700 (PDT)
-Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 70EC524B059;
-        Tue, 30 Aug 2022 22:16:28 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.24])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id CD4B1A0068;
-        Tue, 30 Aug 2022 22:16:26 +0000 (UTC)
-Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 68CB63C007B;
-        Tue, 30 Aug 2022 22:16:25 +0000 (UTC)
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 8DFE413C2B0;
-        Tue, 30 Aug 2022 15:16:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 8DFE413C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1661897784;
-        bh=lSb6iPlm/e00kQHUQGYl6VDRSpB7b+OgWRMKI9nT3uU=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=CP3ZuQEG4SgFmdfJdIVeZc0bTNf4qlGF8he8eFS1a4zwosC7aG/QtHDE64dPnl7Kx
-         1p4iZp4zW85Wt1Ln6PXqCh7R5DSv+Ov5Zkp2zDGjC/9WFa5uwhRs1umjDp2r9cdZ33
-         ZwRzmX6mUxYi3CGyPC75afd2uHxfYR/7DgzMG08s=
-Subject: Re: [PATCH 5.4 182/389] PCI/portdrv: Dont disable AER reporting in
- get_port_device_capability()
-To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>, bjorn@helgaas.com,
-        LKML <linux-kernel@vger.kernel.org>, stable@vger.kernel.org,
-        Stefan Roese <sr@denx.de>, Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Bharat Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Yao Hongbo <yaohongbo@linux.alibaba.com>,
-        Naveen Naidu <naveennaidu479@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-References: <20220823080115.331990024@linuxfoundation.org>
- <20220823080123.228828362@linuxfoundation.org>
- <CABhMZUVycsyy76j2Z=K+C6S1fwtzKE1Lx2povXKfB80o9g0MtQ@mail.gmail.com>
- <YwXH/l37HaYQD66B@kroah.com>
- <47b775c5-57fa-5edf-b59e-8a9041ffbee7@candelatech.com>
- <20220830205832.g3lyysmgkarijkvj@pali>
- <00735f18-11f9-c6c6-4abf-002d378957df@candelatech.com>
- <20220830215532.6nnl6d4cfg55dmcl@pali>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <370dee6c-919a-2f98-1404-a3feda14d1ba@candelatech.com>
-Date:   Tue, 30 Aug 2022 15:16:24 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        Wed, 31 Aug 2022 00:33:00 -0400
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D445856BA1
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 21:32:58 -0700 (PDT)
+Received: by mail-pj1-f53.google.com with SMTP id t5so13082939pjs.0
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 21:32:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=2wlBh69S5T/T9iHDDZDeIpM5ED2QS1+ze35Ex3GUlR0=;
+        b=o2TG8IsxTiiSRyA/cXmZzMuPYEhOc3r6wd8+sqOV/QUv03LK0j0VlHggIdLyZVjJqY
+         EO8mbEd6RIEQ1FLDgCBu4L/9xr7vk6FBOxiLQImGE38nmwAgJUdn9F/2gnKya5qb4EdZ
+         wi6Xp/Y6C2lqFEfBBMw+2hKLv85uG8XZ+ATCrzj3t/v5P6AMpWW2xoi0VLbq7Lt1l72T
+         pO1QgEyNKpe+Sz7gDdEXr6Yahuo6MOEu3CLyBwJJD0970fPhMAdTaNRQ7bXgUMdg3Cfd
+         qX/pqVc2ww5lGgbl8htr+PasTuHynxAoS8oqg0xdS4mxCZHff07DTIKiSb3GtLJywmkz
+         kQAg==
+X-Gm-Message-State: ACgBeo1n8N1QKkJkqsaX+zqNmegXGTmW942k02N60FU1SiJ9uhNLXpcR
+        0gwEYR61mOUKN9/3xq7u2KQ=
+X-Google-Smtp-Source: AA6agR6GYEh50FxwD7XiaLAuWExdR2R2U+/5DGkH1XMXjpl7KZVFqoEFwzIayr/3o6De0oNi4lzmTA==
+X-Received: by 2002:a17:90a:6b0d:b0:1fa:c6fe:db6 with SMTP id v13-20020a17090a6b0d00b001fac6fe0db6mr1382049pjj.99.1661920378185;
+        Tue, 30 Aug 2022 21:32:58 -0700 (PDT)
+Received: from karthik-strix-linux.karthek.com ([117.241.13.19])
+        by smtp.gmail.com with ESMTPSA id d11-20020a62f80b000000b0053624c50d74sm10208149pfh.126.2022.08.30.21.32.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 21:32:57 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 10:02:51 +0530
+From:   Karthik Alapati <mail@karthek.com>
+To:     Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>
+Cc:     =ntfs3@lists.linux.dev, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH] fs/ntfs3: fix memory leak in put_ntfs()
+Message-ID: <Yw7kc+eNDImk7+w+@karthik-strix-linux.karthek.com>
 MIME-Version: 1.0
-In-Reply-To: <20220830215532.6nnl6d4cfg55dmcl@pali>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-MDID: 1661897787-3FcEtP5UB8oZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/30/22 2:55 PM, Pali Rohár wrote:
-> On Tuesday 30 August 2022 14:28:14 Ben Greear wrote:
->> On 8/30/22 1:58 PM, Pali Rohár wrote:
->>> On Tuesday 30 August 2022 13:47:48 Ben Greear wrote:
->>>> On 8/23/22 11:41 PM, Greg Kroah-Hartman wrote:
->>>>> On Tue, Aug 23, 2022 at 07:20:14AM -0500, Bjorn Helgaas wrote:
->>>>>> On Tue, Aug 23, 2022, 6:35 AM Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>>>>> wrote:
->>>>>>
->>>>>>> From: Stefan Roese <sr@denx.de>
->>>>>>>
->>>>>>> [ Upstream commit 8795e182b02dc87e343c79e73af6b8b7f9c5e635 ]
->>>>>>>
->>>>>>
->>>>>> There's an open regression related to this commit:
->>>>>>
->>>>>> https://bugzilla.kernel.org/show_bug.cgi?id=216373
->>>>>
->>>>> This is already in the following released stable kernels:
->>>>> 	5.10.137 5.15.61 5.18.18 5.19.2
->>>>>
->>>>> I'll go drop it from the 4.19 and 5.4 queues, but when this gets
->>>>> resolved in Linus's tree, make sure there's a cc: stable on the fix so
->>>>> that we know to backport it to the above branches as well.  Or at the
->>>>> least, a "Fixes:" tag.
->>>>
->>>> This is still in 5.19.5.  We saw some funny iwlwifi crashes in 5.19.3+
->>>> that we did not see in 5.19.0+.  I just bisected the scary looking AER errors to this
->>>> patch, though I do not know for certain if it causes the iwlwifi related crashes yet.
->>>>
->>>> In general, from reading the commit msg, this patch doesn't seem to be a great candidate
->>>> for stable in general.  Does it fix some important problem?
->>>>
->>>> In case it helps, here is example of what I see in dmesg.  The kernel crashes in iwlwifi
->>>> had to do with rx messages from the firmware, and some warnings lead me to believe that
->>>> pci messages were slow coming back and/or maybe duplicated.  So maybe this AER patch changes
->>>> timing or otherwise screws up the PCI adapter boards we use...
->>>
->>>   From that log I have feeling that issue is in that intel wifi card and
->>> it was there also before that commit. Card is crashing (or something
->>> other happens on PCIe bus) and because kernel had disabled Error
->>> Reporting for this card, nobody spotted any issue. And that commit just
->>> opened eye to kernel to see those errors.
->>>
->>> I think this issue should be reported to intel wifi card developers,
->>> maybe they comment it, why card is reporting errors.
->>
->> My main concern is not that AER messages started showing up, but that there
->> started being kernel NPE and WARNINGS showing up sometime after 5.19.0.
->>
->> Possibly this AER thing is mis-direction and the real bug is elsewhere,
->> but since the bugzilla also indicated (different) driver crashes, then
->> I am suspicious this changes things more significantly, at least in a subset
->> of hardware out there.
-> 
-> Yea, of course, this is something needed to investigate.
-> 
-> Anyway, do you see driver crashes? Or just these AER errors? And are
-> your PCIe cards working, or after seeing these messages in dmesg they
-> stopped working? It is needed to know if you are just spammed by tons of
-> lines in dmesg and otherwise everything works. Or if after AER errors
-> your PCIe devices stop working and rebooting system is required.
+free options in put_ntfs() rather than in ntfs_put_super()
 
-We did see higher frequency of weird crashes (accessing null-ish pointer) after upgrading to 5.19.3,
-I am building kernel now with 5.19.5 and that AER patch reverted.  We will
-test to see if that solves the crashes.
+BUG: memory leak
+unreferenced object 0xffff8881104f3720 (size 32):
+  comm "syz-executor634", pid 3605, jiffies 4294945517 (age 12.630s)
+  hex dump (first 32 bytes):
+    e0 36 4f 10 81 88 ff ff 80 57 e1 85 ff ff ff ff  .6O......W......
+    00 00 00 00 00 00 00 00 c0 ff c0 ff 00 00 00 00  ................
+  backtrace:
+    [<ffffffff81b23ef2>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff81b23ef2>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff81b23ef2>] ntfs_init_fs_context+0x22/0x1e0 fs/ntfs3/super.c:1397
+    [<ffffffff81650045>] alloc_fs_context+0x225/0x3b0 fs/fs_context.c:290
+    [<ffffffff8162bed3>] do_new_mount fs/namespace.c:3025 [inline]
+    [<ffffffff8162bed3>] path_mount+0x6f3/0x10d0 fs/namespace.c:3370
+    [<ffffffff8162cffe>] do_mount fs/namespace.c:3383 [inline]
+    [<ffffffff8162cffe>] __do_sys_mount fs/namespace.c:3591 [inline]
+    [<ffffffff8162cffe>] __se_sys_mount fs/namespace.c:3568 [inline]
+    [<ffffffff8162cffe>] __x64_sys_mount+0x18e/0x1d0 fs/namespace.c:3568
+    [<ffffffff845e4855>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845e4855>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
->> Also, any idea what this error in my logs is actually indicating?
-> 
-> Your PCIe controller received non-fatal, but uncorrected error. There is
-> also indication of Unsupported Request Completion Status. Unsupported
-> Request is generated by PCIe device when controller / host / kernel try
-> to do something which is not supported by device; pretty generic error.
-> PCIe base spec describe lot of scenarios when card should return this
-> error. Maybe some more detailed information are in TLP Header hexdump,
-> but I cannot decode it now.
-> 
-> Basically it is PCIe card driver who could know how fatal it is that
-> issue and how to recover from it. But as you can see intel wifi driver
-> does not implement that callback.
+BUG: memory leak
+unreferenced object 0xffff8881104f36e0 (size 32):
+  comm "syz-executor634", pid 3605, jiffies 4294945517 (age 12.630s)
+  hex dump (first 32 bytes):
+    6d 61 63 63 79 72 69 6c 6c 69 63 00 00 00 00 00  maccyrillic.....
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<ffffffff814c5b1d>] kmemdup_nul+0x2d/0x70 mm/util.c:152
+    [<ffffffff8164f66e>] vfs_parse_fs_string+0x6e/0xd0 fs/fs_context.c:178
+    [<ffffffff8164f7b0>] generic_parse_monolithic+0xe0/0x130 fs/fs_context.c:224
+    [<ffffffff8162c374>] do_new_mount fs/namespace.c:3036 [inline]
+    [<ffffffff8162c374>] path_mount+0xb94/0x10d0 fs/namespace.c:3370
+    [<ffffffff8162cffe>] do_mount fs/namespace.c:3383 [inline]
+    [<ffffffff8162cffe>] __do_sys_mount fs/namespace.c:3591 [inline]
+    [<ffffffff8162cffe>] __se_sys_mount fs/namespace.c:3568 [inline]
+    [<ffffffff8162cffe>] __x64_sys_mount+0x18e/0x1d0 fs/namespace.c:3568
+    [<ffffffff845e4855>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845e4855>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84800087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-Odds of me getting a good answer on that are pretty small.
+Link: https://syzkaller.appspot.com/bug?id=332ba47915d0e39e94b42a622f195f0804ecb67f
+Reported-by: syzbot+9d67170b20e8f94351c8@syzkaller.appspotmail.com
+Signed-off-by: Karthik Alapati <mail@karthek.com>
+---
+ fs/ntfs3/super.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Ben
-
+diff --git a/fs/ntfs3/super.c b/fs/ntfs3/super.c
+index 47012c9bf505..ffb76a5bfd4f 100644
+--- a/fs/ntfs3/super.c
++++ b/fs/ntfs3/super.c
+@@ -439,6 +439,7 @@ static void init_once(void *foo)
+  */
+ static noinline void put_ntfs(struct ntfs_sb_info *sbi)
+ {
++	put_mount_options(sbi->options);
+ 	kfree(sbi->new_rec);
+ 	kvfree(ntfs_put_shared(sbi->upcase));
+ 	kfree(sbi->def_table);
+@@ -482,7 +483,6 @@ static void ntfs_put_super(struct super_block *sb)
+ 	/* Mark rw ntfs as clear, if possible. */
+ 	ntfs_set_state(sbi, NTFS_DIRTY_CLEAR);
+ 
+-	put_mount_options(sbi->options);
+ 	put_ntfs(sbi);
+ 	sb->s_fs_info = NULL;
+ 
 -- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+2.37.2
 
