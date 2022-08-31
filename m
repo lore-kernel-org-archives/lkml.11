@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A276ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5C2ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232919AbiHaS0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
+        id S230340AbiHaS00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232753AbiHaSZg (ORCPT
+        with ESMTP id S232756AbiHaSZh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:25:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46299FB2AF
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:52 -0700 (PDT)
+        Wed, 31 Aug 2022 14:25:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409C1FCA2C
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72AA161CDF
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8752FC43144;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F780B82278
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D613C43147;
         Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661970110;
-        bh=oWTBcWxwRcNwj5pYtUzATgnqSwPazE+3AJlhHkeS8Dk=;
+        bh=Cc1PozE4Kvo2KpHAs/2aNkgoLKg3JAhc3RNFnVGkdlc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ClzmHyot5hQJaJf4f3olS2jN43V3At6jLwx8uaE0cAlsdnmJFMcDLLbxsKcCK3c7Y
-         DHsITUky26rzvmKnwsSpYfT3X5aHTqXj7cKyc67nfc3cMU9HtpBpV9YyZVL70uAn9X
-         hXGAl+gIyhs5wlXZXVWnlnU1CHTM95ZcTxAjzMA0twVUlwBWkqCs5ovFlWAyNLexBU
-         SHEZD+XNxiWbLQssXULi8RmB3hGwsAsdaxkLgWskYX4OFl6txcdHEeddASC0958AHL
-         bdKIymWpSR335KQ1LBmQmhgpJd2oby38bafAs5FVOTg8hjcNk0PKIcj8H2wIq0FdAT
-         e3/9mb7fUqaAA==
+        b=DonB0/CVLG3l2uQY+D8qFgEMnR1rFNq4Af5Svwo2EM5tXyCJm4wjRcUw1YLb3b9/L
+         Kti+1NzP41QbSzjO7oqaB54J6asvqX7e0/d3Yp7DAIiFmxs/cGaVBvT3Y3zKQkZFt4
+         BL1Ak7etLvMHCb8uk84YwcZ2wES2rt/xLqkAvMGu85khdbbprH+JiZgDP2DKD8zGfe
+         YUBXqdCgZ5x0jbxNtd3eIug9+HR6O4I14ajmDQNdS3XAviHQZYiEyRdRGt2I35Z4Qv
+         4duFMw1hdLZg6oSflkMXGAlh0FoVLTO+UNi5Rd58Nm9fRQX7f668CL5xSwKOtUYjyF
+         8cSSaj9V/uMAQ==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E5B8B5C0B07; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+        id DEE785C09C2; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 11/18] selftests/nolibc: condition some tests on /proc existence
-Date:   Wed, 31 Aug 2022 11:21:41 -0700
-Message-Id: <20220831182148.2698489-13-paulmck@kernel.org>
+Subject: [PATCH nolibc 07/18] selftests/nolibc: add a few tests for some libc functions
+Date:   Wed, 31 Aug 2022 11:21:37 -0700
+Message-Id: <20220831182148.2698489-9-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
@@ -53,63 +53,67 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-If /proc is not available (program run inside a chroot or without
-sufficient permissions), it's better to disable the associated tests.
-Some will be preserved like the ones which check for a failure to
-create some entries there since they're still supposed to fail.
+The test series called "stdlib" covers some libc functions (string,
+stdlib etc). By default they are automatically run after "syscall"
+but may be requested in argument or in variable NOLIBC_TEST.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/testing/selftests/nolibc/nolibc-test.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ tools/testing/selftests/nolibc/nolibc-test.c | 35 ++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
 diff --git a/tools/testing/selftests/nolibc/nolibc-test.c b/tools/testing/selftests/nolibc/nolibc-test.c
-index a697182c87f57..662dea691749c 100644
+index dc87832912ce4..b928f099431f7 100644
 --- a/tools/testing/selftests/nolibc/nolibc-test.c
 +++ b/tools/testing/selftests/nolibc/nolibc-test.c
-@@ -413,11 +413,15 @@ int test_getdents64(const char *dir)
- int run_syscall(int min, int max)
- {
- 	struct stat stat_buf;
-+	int proc;
- 	int test;
- 	int tmp;
- 	int ret = 0;
- 	void *p1, *p2;
+@@ -496,11 +496,46 @@ int run_syscall(int min, int max)
+ 	return ret;
+ }
  
-+	/* <proc> indicates whether or not /proc is mounted */
-+	proc = stat("/proc", &stat_buf) == 0;
++int run_stdlib(int min, int max)
++{
++	int test;
++	int tmp;
++	int ret = 0;
++	void *p1, *p2;
 +
- 	for (test = min; test >= 0 && test <= max; test++) {
- 		int llen = 0; // line length
++	for (test = min; test >= 0 && test <= max; test++) {
++		int llen = 0; // line length
++
++		/* avoid leaving empty lines below, this will insert holes into
++		 * test numbers.
++		 */
++		switch (test + __LINE__ + 1) {
++		CASE_TEST(getenv_TERM);        EXPECT_STRNZ(1, getenv("TERM")); break;
++		CASE_TEST(getenv_blah);        EXPECT_STRZR(1, getenv("blah")); break;
++		CASE_TEST(setcmp_blah_blah);   EXPECT_EQ(1, strcmp("blah", "blah"), 0); break;
++		CASE_TEST(setcmp_blah_blah2);  EXPECT_NE(1, strcmp("blah", "blah2"), 0); break;
++		CASE_TEST(setncmp_blah_blah);  EXPECT_EQ(1, strncmp("blah", "blah", 10), 0); break;
++		CASE_TEST(setncmp_blah_blah4); EXPECT_EQ(1, strncmp("blah", "blah4", 4), 0); break;
++		CASE_TEST(setncmp_blah_blah5); EXPECT_NE(1, strncmp("blah", "blah5", 5), 0); break;
++		CASE_TEST(setncmp_blah_blah6); EXPECT_NE(1, strncmp("blah", "blah6", 6), 0); break;
++		CASE_TEST(strchr_foobar_o);    EXPECT_STREQ(1, strchr("foobar", 'o'), "oobar"); break;
++		CASE_TEST(strchr_foobar_z);    EXPECT_STRZR(1, strchr("foobar", 'z')); break;
++		CASE_TEST(strrchr_foobar_o);   EXPECT_STREQ(1, strrchr("foobar", 'o'), "obar"); break;
++		CASE_TEST(strrchr_foobar_z);   EXPECT_STRZR(1, strrchr("foobar", 'z')); break;
++		case __LINE__:
++			return ret; /* must be last */
++		/* note: do not set any defaults so as to permit holes above */
++		}
++	}
++	return ret;
++}
++
  
-@@ -438,12 +442,12 @@ int run_syscall(int min, int max)
- 		CASE_TEST(chdir_root);        EXPECT_SYSZR(1, chdir("/")); break;
- 		CASE_TEST(chdir_dot);         EXPECT_SYSZR(1, chdir(".")); break;
- 		CASE_TEST(chdir_blah);        EXPECT_SYSER(1, chdir("/blah"), -1, ENOENT); break;
--		CASE_TEST(chmod_net);         EXPECT_SYSZR(1, chmod("/proc/self/net", 0555)); break;
--		CASE_TEST(chmod_self);        EXPECT_SYSER(1, chmod("/proc/self", 0555), -1, EPERM); break;
--		CASE_TEST(chown_self);        EXPECT_SYSER(1, chown("/proc/self", 0, 0), -1, EPERM); break;
-+		CASE_TEST(chmod_net);         EXPECT_SYSZR(proc, chmod("/proc/self/net", 0555)); break;
-+		CASE_TEST(chmod_self);        EXPECT_SYSER(proc, chmod("/proc/self", 0555), -1, EPERM); break;
-+		CASE_TEST(chown_self);        EXPECT_SYSER(proc, chown("/proc/self", 0, 0), -1, EPERM); break;
- 		CASE_TEST(chroot_root);       EXPECT_SYSZR(1, chroot("/")); break;
- 		CASE_TEST(chroot_blah);       EXPECT_SYSER(1, chroot("/proc/self/blah"), -1, ENOENT); break;
--		CASE_TEST(chroot_exe);        EXPECT_SYSER(1, chroot("/proc/self/exe"), -1, ENOTDIR); break;
-+		CASE_TEST(chroot_exe);        EXPECT_SYSER(proc, chroot("/proc/self/exe"), -1, ENOTDIR); break;
- 		CASE_TEST(close_m1);          EXPECT_SYSER(1, close(-1), -1, EBADF); break;
- 		CASE_TEST(close_dup);         EXPECT_SYSZR(1, close(dup(0))); break;
- 		CASE_TEST(dup_0);             tmp = dup(0);  EXPECT_SYSNE(1, tmp, -1); close(tmp); break;
-@@ -464,7 +468,7 @@ int run_syscall(int min, int max)
- 		CASE_TEST(link_root1);        EXPECT_SYSER(1, link("/", "/"), -1, EEXIST); break;
- 		CASE_TEST(link_blah);         EXPECT_SYSER(1, link("/proc/self/blah", "/blah"), -1, ENOENT); break;
- 		CASE_TEST(link_dir);          EXPECT_SYSER(1, link("/", "/blah"), -1, EPERM); break;
--		CASE_TEST(link_cross);        EXPECT_SYSER(1, link("/proc/self/net", "/blah"), -1, EXDEV); break;
-+		CASE_TEST(link_cross);        EXPECT_SYSER(proc, link("/proc/self/net", "/blah"), -1, EXDEV); break;
- 		CASE_TEST(lseek_m1);          EXPECT_SYSER(1, lseek(-1, 0, SEEK_SET), -1, EBADF); break;
- 		CASE_TEST(lseek_0);           EXPECT_SYSER(1, lseek(0, 0, SEEK_SET), -1, ESPIPE); break;
- 		CASE_TEST(mkdir_root);        EXPECT_SYSER(1, mkdir("/", 0755), -1, EEXIST); break;
+ /* This is the definition of known test names, with their functions */
+ static struct test test_names[] = {
+ 	/* add new tests here */
+ 	{ .name = "syscall",   .func = run_syscall  },
++	{ .name = "stdlib",    .func = run_stdlib   },
+ 	{ 0 }
+ };
+ 
 -- 
 2.31.1.189.g2e36527f23
 
