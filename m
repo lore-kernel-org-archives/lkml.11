@@ -2,89 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A221ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB863ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbiHaN0k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:26:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35382 "EHLO
+        id S231481AbiHaNaF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:30:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231821AbiHaN0h (ORCPT
+        with ESMTP id S229769AbiHaNaD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:26:37 -0400
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6300B7D7B3
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:26:36 -0700 (PDT)
-Received: by mail-yb1-xb30.google.com with SMTP id e71so4141547ybh.9
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:26:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=FQi2F3OOiF0121qUr5Q7RuzQmHvpSimdNedNb895628=;
-        b=sqHB4qB4Fc4j91sGEkoQr/5USwtH2tfn5YFDYhQHv+nQWjW/fE9BV4BhTI3TlLOHXe
-         xfzLb/ZhCEUqXWjsoQUfCgj8qWQWfM1ktHeTnC7PzNGB6bgJ/8GThuUicezaTpCzBlNW
-         jQNAEBPq0syv/aFuFTcktZXjy4sfzUsIcnuw7jPZ9BzQK7wJ3j11CEV23/gGjMwlAJ04
-         PwKrsnrsBqv491uGzcufobOKhTDPOCOmnCZIBy7ChtKW7O+Ct6Epo7AdF5fAdMjuip4D
-         fEHNsiA+Zhox14GuI4+MpoW1HRjBgWq7M8qM4mYu9u12cku8deQg+jwWNbR0R86Mco90
-         vf9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=FQi2F3OOiF0121qUr5Q7RuzQmHvpSimdNedNb895628=;
-        b=3McL1NR1r1Z28CByg34TF8Mje/r9BZvMiQVbFZkX9dvwtXDlisUToZjY4kRT/Pf1qF
-         1/nIMt7gXEffBVosQEkk7LNUbtYpDdF1gZj+Vn0wQiuFzDg6N1cPdi91fTIcYshDfVGf
-         tJzeIeGk9rYGb0snKMteMPJ8IngA7YTa/Wjw9VX7Cjl0hdzQVIIY5+T82V1RJUh8cMkx
-         YWQ8VPEI1t2Rb0OlGqfB1ZjRJnjaKDwo5F/ArQy9b1R1qBK4PQ00Fh9fF+1jmN+KcCGL
-         RgD0FUfBP/NtUPiVt6z5j+ld80ZeZdnkNIIXjLuB+noyd0LCV+YUkPY5s3Tf08D3JiQE
-         bsug==
-X-Gm-Message-State: ACgBeo1D0+1sPfJiPz3GZ35/JGKFl0qZY+r4ClbgLypfwXS2drG9JoYx
-        SBAEJaMWdmCyO0tYyO6l+4bvwPMUQqYmTM1zP2LJXQ==
-X-Google-Smtp-Source: AA6agR5piGHKZmJpBam+qnTNcGww+dtgaY3JgguMnUZV8nShHSFeB4oqzrWBTKDMXO8ZnnoFnfFkRJbS/wNz5rnnBYY=
-X-Received: by 2002:a05:6902:124e:b0:668:222c:e8da with SMTP id
- t14-20020a056902124e00b00668222ce8damr15312979ybu.383.1661952395631; Wed, 31
- Aug 2022 06:26:35 -0700 (PDT)
+        Wed, 31 Aug 2022 09:30:03 -0400
+X-Greylist: delayed 399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 06:29:59 PDT
+Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C7CC1A064
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:29:57 -0700 (PDT)
+Received: (qmail 15005 invoked by uid 990); 31 Aug 2022 13:23:14 -0000
+Authentication-Results: giacobini.uberspace.de;
+        auth=pass (plain)
+From:   Soenke Huster <soenke.huster@eknoes.de>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Soenke Huster <soenke.huster@eknoes.de>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] wifi: mac80211_hwsim: check length for virtio packets
+Date:   Wed, 31 Aug 2022 15:22:06 +0200
+Message-Id: <20220831132205.129922-1-soenke.huster@eknoes.de>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-References: <20220829133923.1114555-1-martyn.welch@collabora.com>
- <20220829133923.1114555-2-martyn.welch@collabora.com> <9db9dcf8-6299-acec-c09e-603afde9a239@linaro.org>
-In-Reply-To: <9db9dcf8-6299-acec-c09e-603afde9a239@linaro.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 31 Aug 2022 15:26:24 +0200
-Message-ID: <CACRpkdb1-LXwLdV3qLMc+i_VaLoJ-mTs=+0QtuJtNaQR_xVpxQ@mail.gmail.com>
-Subject: Re: [PATCH 2/5] dt-bindings: gpio: pca95xx: add entry for pcal6534
- and PI4IOE5V6534Q
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Martyn Welch <martyn.welch@collabora.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        kernel@collabora.com, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Bar: /
+X-Rspamd-Report: R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) BAYES_HAM(-0.616589)
+X-Rspamd-Score: 0.78341
+Received: from unknown (HELO unkown) (::1)
+        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Wed, 31 Aug 2022 15:23:14 +0200
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 9:50 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
-> On 29/08/2022 16:39, Martyn Welch wrote:
-> > The NXP PCAL6534 is a 34-bit I2C I/O expander similar to the PCAL6524. The
-> > Diodes PI4IOE5V6534Q is a functionally identical chip provided by Diodes
-> > Inc.
-> >
-> > Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
->
-> Then diodes should be followed by fallback (and use only one compatible
-> to bind).
+An invalid packet with a length shorther than the specified length in the
+netlink header can lead to use-after-frees and slab-out-of-bounds in the
+processing of the netlink attributes, such as the following:
 
-Ugh I don't think we have done a very good job at providing fallbacks
-(several compatibles) for this hardware. Just looking at the list makes
-me suspicious.
+  BUG: KASAN: slab-out-of-bounds in __nla_validate_parse+0x1258/0x2010
+  Read of size 2 at addr ffff88800ac7952c by task kworker/0:1/12
 
-The fallback scheme is pretty hard to maintain when vendors are a bit
-unclear on whether things are really compatible or not, and sometimes
-they are compatible but rather not say :(
+  Workqueue: events hwsim_virtio_rx_work
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x45/0x5d
+   print_report.cold+0x5e/0x5e5
+   kasan_report+0xb1/0x1c0
+   __nla_validate_parse+0x1258/0x2010
+   __nla_parse+0x22/0x30
+   hwsim_virtio_handle_cmd.isra.0+0x13f/0x2d0
+   hwsim_virtio_rx_work+0x1b2/0x370
+   process_one_work+0x8df/0x1530
+   worker_thread+0x575/0x11a0
+   kthread+0x29d/0x340
+   ret_from_fork+0x22/0x30
+ </TASK>
 
-Yours,
-Linus Walleij
+Discarding packets with an invalid length solves this.
+Therefore, skb->len must be set at reception.
+
+Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
+---
+ drivers/net/wireless/mac80211_hwsim.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
+index 4fb8f68e5c3b..6bd9bd50071e 100644
+--- a/drivers/net/wireless/mac80211_hwsim.c
++++ b/drivers/net/wireless/mac80211_hwsim.c
+@@ -5436,6 +5436,10 @@ static int hwsim_virtio_handle_cmd(struct sk_buff *skb)
+ 
+ 	nlh = nlmsg_hdr(skb);
+ 	gnlh = nlmsg_data(nlh);
++
++	if (skb->len < nlh->nlmsg_len)
++		return -EINVAL;
++
+ 	err = genlmsg_parse(nlh, &hwsim_genl_family, tb, HWSIM_ATTR_MAX,
+ 			    hwsim_genl_policy, NULL);
+ 	if (err) {
+@@ -5478,7 +5482,8 @@ static void hwsim_virtio_rx_work(struct work_struct *work)
+ 	spin_unlock_irqrestore(&hwsim_virtio_lock, flags);
+ 
+ 	skb->data = skb->head;
+-	skb_set_tail_pointer(skb, len);
++	skb_reset_tail_pointer(skb);
++	skb_put(skb, len);
+ 	hwsim_virtio_handle_cmd(skb);
+ 
+ 	spin_lock_irqsave(&hwsim_virtio_lock, flags);
+-- 
+2.37.3
+
