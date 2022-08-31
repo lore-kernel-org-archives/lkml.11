@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24861ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:27:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24ED9ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:27:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232997AbiHaS1S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:27:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60580 "EHLO
+        id S232573AbiHaS1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:27:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232807AbiHaSZq (ORCPT
+        with ESMTP id S232812AbiHaSZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:25:46 -0400
+        Wed, 31 Aug 2022 14:25:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AF6F2433
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAEDF325E
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B222CB82286
+        by ams.source.kernel.org (Postfix) with ESMTPS id D96EFB82289
         for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0BA0C43159;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9E2FC4315B;
         Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661970110;
-        bh=hXeiDn5SObJ18DT8fc6Pa6a9wr3LC/31YgOsnz8spKc=;
+        bh=kvIGUGvWGjbnatoeWWWTTFZH4v3qpwz0HmIzMW+k0bA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=esKn2NT7MHuBE6iHrVUjMw3WR/bsaF9URjFUicPeI2JCHLi+3G/ZPIMYfMhYn8eVo
-         aHYRw7eRLWDuAUyWyYu7liE9bG66/54Bv2A7CmsVSYRHaPoyaZFZ0rZ9NEZwGv+crE
-         F+hd+eBu4PAjsWSBMIk4mtPlAedhyYpg7YKS1hxVNjQ7guOMYEJN/TwEjE4NbWz6k5
-         IyQ7horEW3nH6J8l99xrEBygytnoZf8+DBf3rmTTfU3z9nsUsCNG7Oelfx/NlOufhs
-         5g2Gg6aC1NKC94bBwbX2O1moSTUOdA+m2rb2qLnwTpNCaFYhp7wdqOIGfZfabFiWPo
-         S0zMUnTb0caPw==
+        b=dMco6OtjNymKmvXqe4YO3uA2mhCo1vVXYbahavRhIjVb+2ZDbdtsG2T/x+3G3rDoi
+         S1aoqaqmRwvSOps2WbWSv1x0kVu+RxCryZS5HbCadxXXpNjom4zqU39BI/HTjTAHzT
+         GbkqpBy1iRqYLI6Eg7+vw+Kv279nEeTvWEHfmYjNXCP0t71SKO3zKRtxF5UkwSJaCn
+         EPk19OwY3aq7DBmig38IOwtbagy/h30wicniiChKPtKRe/sY98Ur2KrJ9s6szrrsOf
+         De4qUP8TOBkUnLXbW3dvPUs4XZj4aOMM37ynYvsJNbEjWX880Qhog3HqJDWiKariR4
+         PWSdRux+59RBg==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id ECCF15C0DF4; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+        id F24275C0EAC; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
+        Fernanda Ma'rouf <fernandafmr12@gnuweeb.org>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Fernanda Ma'rouf <fernandafmr2@gmail.com>,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 15/18] selftests/nolibc: add a "run" target to start the kernel in QEMU
-Date:   Wed, 31 Aug 2022 11:21:45 -0700
-Message-Id: <20220831182148.2698489-17-paulmck@kernel.org>
+Subject: [PATCH nolibc 18/18] selftests/nolibc: Avoid generated files being committed
+Date:   Wed, 31 Aug 2022 11:21:48 -0700
+Message-Id: <20220831182148.2698489-20-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
@@ -51,82 +54,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Fernanda Ma'rouf <fernandafmr12@gnuweeb.org>
 
-The "run" target will build the kernel and start it in QEMU. The
-"rerun" target will not have the kernel dependency and will just try
-to start QEMU. The QEMU architecture used to start the kernel is
-derived from the configured ARCH. This might need to be improved
-for archs which include different variants under the same name
-(mips vs mipsel, +/-64, riscv32 vs riscv64). This could be tested
-for i386, x86, arm, arm64, mips and riscv (the later two reporting
-issues on some tests).
+After running the nolibc tests, the "git status" is not clean because
+the generated files are not ignored. Create a `.gitignore` inside the
+selftests/nolibc directory to ignore them.
 
-It is possible to pass a test specification for nolibc-test in the TEST
-variable, which will be passed as-is as NOLIBC_TEST.
-
-On success, the number of successful tests is printed. On failure, failed
-lines are individually printed.
-
+Cc: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Cc: Fernanda Ma'rouf <fernandafmr2@gmail.com>
+Signed-off-by: Fernanda Ma'rouf <fernandafmr12@gnuweeb.org>
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/testing/selftests/nolibc/Makefile | 33 +++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ tools/testing/selftests/nolibc/.gitignore | 4 ++++
+ 1 file changed, 4 insertions(+)
+ create mode 100644 tools/testing/selftests/nolibc/.gitignore
 
-diff --git a/tools/testing/selftests/nolibc/Makefile b/tools/testing/selftests/nolibc/Makefile
-index c104719eae8b8..7c1f5360f454e 100644
---- a/tools/testing/selftests/nolibc/Makefile
-+++ b/tools/testing/selftests/nolibc/Makefile
-@@ -31,6 +31,27 @@ DEFCONFIG_mips    = malta_defconfig
- DEFCONFIG_riscv   = defconfig
- DEFCONFIG         = $(DEFCONFIG_$(ARCH))
- 
-+# optional tests to run (default = all)
-+TEST =
-+
-+# QEMU_ARCH: arch names used by qemu
-+QEMU_ARCH_i386    = i386
-+QEMU_ARCH_x86     = x86_64
-+QEMU_ARCH_arm64   = aarch64
-+QEMU_ARCH_arm     = arm
-+QEMU_ARCH_mips    = mipsel  # works with malta_defconfig
-+QEMU_ARCH_riscv   = riscv64
-+QEMU_ARCH         = $(QEMU_ARCH_$(ARCH))
-+
-+# QEMU_ARGS : some arch-specific args to pass to qemu
-+QEMU_ARGS_i386    = -M pc -append "console=ttyS0,9600 i8042.noaux panic=-1 $(TEST:%=NOLIBC_TEST=%)"
-+QEMU_ARGS_x86     = -M pc -append "console=ttyS0,9600 i8042.noaux panic=-1 $(TEST:%=NOLIBC_TEST=%)"
-+QEMU_ARGS_arm64   = -M virt -cpu cortex-a53 -append "panic=-1 $(TEST:%=NOLIBC_TEST=%)"
-+QEMU_ARGS_arm     = -M virt -append "panic=-1 $(TEST:%=NOLIBC_TEST=%)"
-+QEMU_ARGS_mips    = -M malta -append "panic=-1 $(TEST:%=NOLIBC_TEST=%)"
-+QEMU_ARGS_riscv   = -M virt -append "console=ttyS0 panic=-1 $(TEST:%=NOLIBC_TEST=%)"
-+QEMU_ARGS         = $(QEMU_ARGS_$(ARCH))
-+
- # OUTPUT is only set when run from the main makefile, otherwise
- # it defaults to this nolibc directory.
- OUTPUT ?= $(CURDIR)/
-@@ -61,8 +82,20 @@ defconfig:
- kernel: initramfs
- 	$(Q)$(MAKE) -C $(srctree) ARCH=$(ARCH) CC=$(CC) CROSS_COMPILE=$(CROSS_COMPILE) $(IMAGE_NAME) CONFIG_INITRAMFS_SOURCE=$(CURDIR)/initramfs
- 
-+# run the tests after building the kernel
-+run: kernel
-+	$(Q)qemu-system-$(QEMU_ARCH) -display none -no-reboot -kernel "$(srctree)/$(IMAGE)" -serial stdio $(QEMU_ARGS) > "$(CURDIR)/run.out"
-+	$(Q)grep -w FAIL "$(CURDIR)/run.out" && echo "See all results in $(CURDIR)/run.out" || echo "$$(grep -c ^[0-9].*OK $(CURDIR)/run.out) test(s) passed."
-+
-+# re-run the tests from an existing kernel
-+rerun:
-+	$(Q)qemu-system-$(QEMU_ARCH) -display none -no-reboot -kernel "$(srctree)/$(IMAGE)" -serial stdio $(QEMU_ARGS) > "$(CURDIR)/run.out"
-+	$(Q)grep -w FAIL "$(CURDIR)/run.out" && echo "See all results in $(CURDIR)/run.out" || echo "$$(grep -c ^[0-9].*OK $(CURDIR)/run.out) test(s) passed."
-+
- clean:
- 	$(call QUIET_CLEAN, nolibc-test)
- 	$(Q)rm -f nolibc-test
- 	$(call QUIET_CLEAN, initramfs)
- 	$(Q)rm -rf initramfs
-+	$(call QUIET_CLEAN, run.out)
-+	$(Q)rm -rf run.out
+diff --git a/tools/testing/selftests/nolibc/.gitignore b/tools/testing/selftests/nolibc/.gitignore
+new file mode 100644
+index 0000000000000..4696df589d68e
+--- /dev/null
++++ b/tools/testing/selftests/nolibc/.gitignore
+@@ -0,0 +1,4 @@
++/initramfs/
++/nolibc-test
++/run.out
++/sysroot/
 -- 
 2.31.1.189.g2e36527f23
 
