@@ -2,128 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9F9FECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 07:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA76ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 07:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231160AbiHaHR6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 03:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37990 "EHLO
+        id S229714AbiHaHSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 03:18:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229998AbiHaHRS (ORCPT
+        with ESMTP id S229729AbiHaHRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 03:17:18 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E516F8C014;
-        Wed, 31 Aug 2022 00:13:45 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 34E12202067;
-        Wed, 31 Aug 2022 09:13:39 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id F030A20203E;
-        Wed, 31 Aug 2022 09:13:38 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 478E8180222C;
-        Wed, 31 Aug 2022 15:13:37 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     a.fatoum@pengutronix.de, l.stach@pengutronix.de,
-        bhelgaas@google.com, lorenzo.pieralisi@arm.com, vkoul@kernel.org,
-        marcel.ziswiler@toradex.com, kishon@ti.com
-Cc:     hongxing.zhu@nxp.com, linux-phy@lists.infradead.org,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Subject: [PATCH v2] phy: freescale: imx8m-pcie: Fix the wrong order of phy_init() and phy_power_on()
-Date:   Wed, 31 Aug 2022 14:55:56 +0800
-Message-Id: <1661928956-12727-1-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Wed, 31 Aug 2022 03:17:48 -0400
+Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1029C58FC
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 00:13:58 -0700 (PDT)
+Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-3321c2a8d4cso299165647b3.5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 00:13:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=Sfi1gRWe3Pv4hFkp/2mywI4Y2D7k7G63OFzJO6B3Cn8=;
+        b=BelMdRwxcWgK2FmiETN4G0SMTYvwzt3LlM2rfO25SUvWxisPd4IWOIrSByXa1hbiwF
+         vmaRPnWjODVluEAX7l4xmbCRNwk9RAFsQ0sP8K32o7INXBKiULH0UBx2QEZ16KUNp/el
+         20wTqhpaXdBraJaexGf64vLELpmkvO7Wl4i1ORnixOMIQ6lr20xKynjKXeUR28+kwhTA
+         ZOtgBCMmRmxsWkLUGMiGSQgUQpOkDZ0mZF99D9OjGyGGWwQEt8jjxmgqN2ur4BZkofJs
+         qfS/U5ymRnoqgtV10bC1SZ/s6Gd6C8ltlP2lXZ5zAySrQptuFH8c6QyT9W001JQtxRix
+         /JJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=Sfi1gRWe3Pv4hFkp/2mywI4Y2D7k7G63OFzJO6B3Cn8=;
+        b=TpLcEMvvcfAmk3LnoLus5uRUtUNW2W2TBATODpcTLj/Ulgy6pJxj1c+TETlDSp83uE
+         fp1rRyH7wlGd0MvEOGDQIN52g3+NiXwSUJHxECnLrW0mIUWvLQl4daAFNwKWRkLgDH+i
+         CvFF/kZmwTIbKtBVXlKWvJYUG1wWucXbTpJdilLzAI8FlhEAYiwYWUrKMloQXKSAuVbK
+         gOxVuPsqMV6UjCOE/SLJg35gYSmCGawNZC7ys46UHNlbrbMbiWOnt5RbRFSWoRg39DCW
+         DtpoIY+bIBBb4zEuzLUfC3H8n8yHOyCnryGRIebZfBITD5lcqC98MGsidP66/UUilvSR
+         CZew==
+X-Gm-Message-State: ACgBeo0J8XYmg3TTOvY7lN7CHvC+EdKqgMObCFjXQoELzkGHIwYPFANT
+        wdMRgCrVOtXZqjcv3sEyfMIDFYcXaL0k0GD6WaeMmQ==
+X-Google-Smtp-Source: AA6agR7tofDr5ZjrWSlubPMSuX2jZCF3ilRWXqrSsYwrEPX0qY8vGVVVRDGrLg3wF1fahgLzPzyMJTTIzZcZF3k0WMU=
+X-Received: by 2002:a81:b71c:0:b0:340:bb98:fb38 with SMTP id
+ v28-20020a81b71c000000b00340bb98fb38mr15645113ywh.428.1661930037271; Wed, 31
+ Aug 2022 00:13:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220826150807.723137-1-glider@google.com> <20220826150807.723137-5-glider@google.com>
+ <20220826211729.e65d52e7919fee5c34d22efc@linux-foundation.org>
+ <CAG_fn=Xpva_yx8oG-xi7jqJyM2YLcjNda+8ZyQPGBMV411XgMQ@mail.gmail.com>
+ <20220829122452.cce41f2754c4e063f3ae8b75@linux-foundation.org>
+ <CAG_fn=X6eZ6Cdrv5pivcROHi3D8uymdgh+EbnFasBap2a=0LQQ@mail.gmail.com>
+ <20220830150549.afa67340c2f5eb33ff9615f4@linux-foundation.org>
+ <CAOUHufZrb_gkxaWfCLuFodRtCwGGdYjo2wvFW7kTiTkRbg4XNQ@mail.gmail.com>
+ <20220830160035.8baf16a7f40cf09963e8bc55@linux-foundation.org> <CAOUHufZQ5QV4_GaJU_SPYk-hNEWnnTxcE8EdpcPBHK6M3qSm-w@mail.gmail.com>
+In-Reply-To: <CAOUHufZQ5QV4_GaJU_SPYk-hNEWnnTxcE8EdpcPBHK6M3qSm-w@mail.gmail.com>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Wed, 31 Aug 2022 09:13:20 +0200
+Message-ID: <CAG_fn=Vwxmc6VwbJObiHNiPaAt9tAV77RqFco=q7traPG5DxYw@mail.gmail.com>
+Subject: Re: [PATCH v5 04/44] x86: asm: instrument usercopy in get_user() and put_user()
+To:     Yu Zhao <yuzhao@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Marco Elver <elver@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        kasan-dev <kasan-dev@googlegroups.com>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refer to phy_core driver, phy_init() must be called before phy_power_on().
-Fix the wrong order of phy_init() and phy_power_on() here.
-Squash the changes into one patch to avoid the possible bi-section hole.
+On Wed, Aug 31, 2022 at 1:07 AM Yu Zhao <yuzhao@google.com> wrote:
+>
+> On Tue, Aug 30, 2022 at 5:00 PM Andrew Morton <akpm@linux-foundation.org>=
+ wrote:
+> >
+> > On Tue, 30 Aug 2022 16:25:24 -0600 Yu Zhao <yuzhao@google.com> wrote:
+> >
+> > > On Tue, Aug 30, 2022 at 4:05 PM Andrew Morton <akpm@linux-foundation.=
+org> wrote:
+> > > >
+> > > > On Tue, 30 Aug 2022 16:23:44 +0200 Alexander Potapenko <glider@goog=
+le.com> wrote:
+> > > >
+> > > > > >                  from init/do_mounts.c:2:
+> > > > > > ./include/linux/page-flags.h: In function =E2=80=98page_fixed_f=
+ake_head=E2=80=99:
+> > > > > > ./include/linux/page-flags.h:226:36: error: invalid use of unde=
+fined type =E2=80=98const struct page=E2=80=99
+> > > > > >   226 |             test_bit(PG_head, &page->flags)) {
+> > > > > >       |                                    ^~
+> > > > > > ./include/linux/bitops.h:50:44: note: in definition of macro =
+=E2=80=98bitop=E2=80=99
+> > > > > >    50 |           __builtin_constant_p((uintptr_t)(addr) !=3D (=
+uintptr_t)NULL) && \
+> > > > > >       |                                            ^~~~
+> > > > > > ./include/linux/page-flags.h:226:13: note: in expansion of macr=
+o =E2=80=98test_bit=E2=80=99
+> > > > > >   226 |             test_bit(PG_head, &page->flags)) {
+> > > > > >       |             ^~~~~~~~
+> > > > > > ...
+> > > > >
+> > > > > Gotcha, this is a circular dependency: mm_types.h -> sched.h ->
+> > > > > kmsan.h -> gfp.h -> mmzone.h -> page-flags.h -> mm_types.h, where=
+ the
+> > > > > inclusion of sched.h into mm_types.h was only introduced in "mm:
+> > > > > multi-gen LRU: support page table walks" - that's why the problem=
+ was
+> > > > > missing in other trees.
+> > > >
+> > > > Ah, thanks for digging that out.
+> > > >
+> > > > Yu, that inclusion is regrettable.
+> > >
+> > > Sorry for the trouble -- it's also superfluous because we don't call
+> > > lru_gen_use_mm() when switching to the kernel.
+> > >
+> > > I've queued the following for now.
+> >
+> > Well, the rest of us want it too.
+> >
+> > > --- a/include/linux/mm_types.h
+> > > +++ b/include/linux/mm_types.h
+> > > @@ -3,7 +3,6 @@
+> > >  #define _LINUX_MM_TYPES_H
+> > >
+> > >  #include <linux/mm_types_task.h>
+> > > -#include <linux/sched.h>
+> > >
+> > >  #include <linux/auxvec.h>
+> > >  #include <linux/kref.h>
+> > > @@ -742,8 +741,7 @@ static inline void lru_gen_init_mm(struct mm_stru=
+ct *mm)
+> > >
+> > >  static inline void lru_gen_use_mm(struct mm_struct *mm)
+> > >  {
+> > > -       if (!(current->flags & PF_KTHREAD))
+> > > -               WRITE_ONCE(mm->lru_gen.bitmap, -1);
+> > > +       WRITE_ONCE(mm->lru_gen.bitmap, -1);
+> > >  }
+> >
+> > Doesn't apply.  I did:
+> >
+> > --- a/include/linux/mm_types.h~mm-multi-gen-lru-support-page-table-walk=
+s-fix
+> > +++ a/include/linux/mm_types.h
+> > @@ -3,7 +3,6 @@
+> >  #define _LINUX_MM_TYPES_H
+> >
+> >  #include <linux/mm_types_task.h>
+> > -#include <linux/sched.h>
+> >
+> >  #include <linux/auxvec.h>
+> >  #include <linux/kref.h>
+> > @@ -742,11 +741,7 @@ static inline void lru_gen_init_mm(struc
+> >
+> >  static inline void lru_gen_use_mm(struct mm_struct *mm)
+> >  {
+> > -       /* unlikely but not a bug when racing with lru_gen_migrate_mm()=
+ */
+> > -       VM_WARN_ON_ONCE(list_empty(&mm->lru_gen.list));
+>
+> Yes. I got a report that somebody tripped over this "unlikely"
+> condition (and ascertained it's not a bug). So I deleted this part as
+> well.
+>
+> Will refresh the series around rc5. Thanks.
 
-Fixes: 1aa97b002258 ("phy: freescale: pcie: Initialize the imx8 pcie standalone phy driver")
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
----
- drivers/pci/controller/dwc/pci-imx6.c      | 6 +++---
- drivers/phy/freescale/phy-fsl-imx8m-pcie.c | 8 ++++----
- 2 files changed, 7 insertions(+), 7 deletions(-)
+Guess I'd still proceed with splitting up kmsan.h just to be on the safe si=
+de.
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 6e5debdbc55b..b5f0de455a7b 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -935,7 +935,7 @@ static int imx6_pcie_host_init(struct dw_pcie_rp *pp)
- 	}
- 
- 	if (imx6_pcie->phy) {
--		ret = phy_power_on(imx6_pcie->phy);
-+		ret = phy_init(imx6_pcie->phy);
- 		if (ret) {
- 			dev_err(dev, "pcie PHY power up failed\n");
- 			goto err_clk_disable;
-@@ -949,7 +949,7 @@ static int imx6_pcie_host_init(struct dw_pcie_rp *pp)
- 	}
- 
- 	if (imx6_pcie->phy) {
--		ret = phy_init(imx6_pcie->phy);
-+		ret = phy_power_on(imx6_pcie->phy);
- 		if (ret) {
- 			dev_err(dev, "waiting for PHY ready timeout!\n");
- 			goto err_phy_off;
-@@ -961,7 +961,7 @@ static int imx6_pcie_host_init(struct dw_pcie_rp *pp)
- 
- err_phy_off:
- 	if (imx6_pcie->phy)
--		phy_power_off(imx6_pcie->phy);
-+		phy_exit(imx6_pcie->phy);
- err_clk_disable:
- 	imx6_pcie_clk_disable(imx6_pcie);
- err_reg_disable:
-diff --git a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-index ad7d2edfc414..c93286483b42 100644
---- a/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-+++ b/drivers/phy/freescale/phy-fsl-imx8m-pcie.c
-@@ -59,7 +59,7 @@ struct imx8_pcie_phy {
- 	bool			clkreq_unused;
- };
- 
--static int imx8_pcie_phy_init(struct phy *phy)
-+static int imx8_pcie_phy_power_on(struct phy *phy)
- {
- 	int ret;
- 	u32 val, pad_mode;
-@@ -137,14 +137,14 @@ static int imx8_pcie_phy_init(struct phy *phy)
- 	return ret;
- }
- 
--static int imx8_pcie_phy_power_on(struct phy *phy)
-+static int imx8_pcie_phy_init(struct phy *phy)
- {
- 	struct imx8_pcie_phy *imx8_phy = phy_get_drvdata(phy);
- 
- 	return clk_prepare_enable(imx8_phy->clk);
- }
- 
--static int imx8_pcie_phy_power_off(struct phy *phy)
-+static int imx8_pcie_phy_exit(struct phy *phy)
- {
- 	struct imx8_pcie_phy *imx8_phy = phy_get_drvdata(phy);
- 
-@@ -155,8 +155,8 @@ static int imx8_pcie_phy_power_off(struct phy *phy)
- 
- static const struct phy_ops imx8_pcie_phy_ops = {
- 	.init		= imx8_pcie_phy_init,
-+	.exit		= imx8_pcie_phy_exit,
- 	.power_on	= imx8_pcie_phy_power_on,
--	.power_off	= imx8_pcie_phy_power_off,
- 	.owner		= THIS_MODULE,
- };
- 
--- 
-2.25.1
+--=20
+Alexander Potapenko
+Software Engineer
 
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
+
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
