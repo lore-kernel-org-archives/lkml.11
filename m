@@ -2,180 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 470F0ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4C4ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230510AbiHaKAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:00:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
+        id S231249AbiHaKBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230437AbiHaKAR (ORCPT
+        with ESMTP id S230498AbiHaKAh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:00:17 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36751DEC4;
-        Wed, 31 Aug 2022 02:59:49 -0700 (PDT)
-Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MHflj3mCTz687Gp;
-        Wed, 31 Aug 2022 17:59:13 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.31; Wed, 31 Aug 2022 11:59:46 +0200
-Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
- 2022 10:59:46 +0100
-Date:   Wed, 31 Aug 2022 10:59:45 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Robert Richter <rrichter@amd.com>
-CC:     Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <bwidawsk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        <linux-cxl@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>
-Subject: Re: [PATCH 03/15] cxl: Unify debug messages when calling
- devm_cxl_add_port()
-Message-ID: <20220831105945.00004668@huawei.com>
-In-Reply-To: <20220831081603.3415-4-rrichter@amd.com>
-References: <20220831081603.3415-1-rrichter@amd.com>
-        <20220831081603.3415-4-rrichter@amd.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Wed, 31 Aug 2022 06:00:37 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E1F9A50F1
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:00:32 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id s11so3608148iln.12
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:00:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=btMbTIPSX5dbCacGerCyAxqDIoBmYrvBMjvjrYIGNig=;
+        b=WYM3XeLVMXVxeaZOoVzvPbeAuSlTMMHkX0Y2eZD1K4/ThGlZ6+Eg/Bv6VJyoDJlB+u
+         W9LgBtDjWINhH+2OYh6n1/A5BSQmHGsWXMj8XqAhtn+krL7C++jj6y+j+FmlTs31utN0
+         k9tC2ICHRKzAD6KXirg6CojpcPygW6KLNOetc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=btMbTIPSX5dbCacGerCyAxqDIoBmYrvBMjvjrYIGNig=;
+        b=VSBOWDGyFeE+D7w4dE+XMIsEQcTIg3HYTfI2fJgUa5q11+rLYy6n3l0j/CzSg3WQbi
+         7PD0nXxoqjWS1g+j8AW3OxpuGy//Mio0l0VAz+76VTaOFFrllFfqAdjHq4cpf2AA8iyq
+         kRzKXahGdJVCMH5w8LyakLy4ov24SEWFs9tJQP9in/AuGEIuh21ALJ8uKNfYT1lpwx4s
+         p3WdQ30ORE5F2E+Iue7crPzDJX8/y5D3iltFIj0UwhV9GpYWwzkgveTk2b3Yp+Vq4+61
+         coZKkIiX0wC2JgYHbA2QzQmZUV37lSYM77/w2pSyKBwlGvUwoD6io1lxQqszNao6Ti4m
+         Q8oQ==
+X-Gm-Message-State: ACgBeo2ZH9NlHQpKXrBx7GBNJ37RWoBnrXPnhN7eax4amffGJpF+dAgN
+        DQNPVxUgNt8sBp8+KD7v9LMWT7pTX84O8T8d5HI53Q==
+X-Google-Smtp-Source: AA6agR7Ykym679T8iG+4ASbb+ENC/8XjLuzKLFnYo9eL16xdbnKf1MwaRtCyWd2Kj1UhmxqnIYOvsKqLHnQSC+/aFFU=
+X-Received: by 2002:a92:cd0d:0:b0:2eb:e4a:2d4a with SMTP id
+ z13-20020a92cd0d000000b002eb0e4a2d4amr6517370iln.309.1661940031852; Wed, 31
+ Aug 2022 03:00:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+References: <20220729165954.991-1-ignat@cloudflare.com> <Yv9dvvy0rK/1T0sU@gondor.apana.org.au>
+ <CALrw=nEh7LX3DSCa3FTu8BYr4QWx+W2h3Jei9Qo67+XXH-Vegw@mail.gmail.com>
+ <Yw3Rneo6Ik1QEfbG@gondor.apana.org.au> <CALrw=nGJgMACrFVy+FVVCDb4H3wNUN2E-GLZaXzLsm3ReOUeVg@mail.gmail.com>
+ <Yw8iTNjGlsP1LpNG@gondor.apana.org.au>
+In-Reply-To: <Yw8iTNjGlsP1LpNG@gondor.apana.org.au>
+From:   Ignat Korchagin <ignat@cloudflare.com>
+Date:   Wed, 31 Aug 2022 11:00:21 +0100
+Message-ID: <CALrw=nECpsJA-Q1ze2-ErQN37hMeWYbyfrWpmzUpsFCq=6R7Ew@mail.gmail.com>
+Subject: Re: [PATCH] crypto: akcipher - default implementations for setting
+ private/public keys
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        linux-crypto <linux-crypto@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        kernel-team <kernel-team@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 31 Aug 2022 10:15:51 +0200
-Robert Richter <rrichter@amd.com> wrote:
+On Wed, Aug 31, 2022 at 9:56 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+>
+> On Tue, Aug 30, 2022 at 11:48:23AM +0100, Ignat Korchagin wrote:
+> >
+> > I vaguely remember some initial research in quantum-resistant
+> > signatures, which used HMAC for "signing" thus don't have any public
+> > keys. But it is way beyond my expertise to comment on the practicality
+> > and availability of such schemes.
+>
+> We could always add this again should an algorithm requiring
+> it be introduced.
+>
+> > I'm more concerned here about a buggy "third-party" RSA driver, which
+> > may not implement the callback and which gets prioritised by the
+> > framework, thus giving the ability to trigger a NULL-ptr dereference
+> > from userspace via keyctl(2). I think the Crypto API framework should
+> > be a bit more robust to handle such a case, but I also understand that
+> > there are a lot of "if"s in this scenario and we can say it is up to
+> > crypto driver not to be buggy. Therefore, consider my opinion as not
+> > strong and I can post a v2, which does not provide a default stub for
+> > set_pub_key, if you prefer.
+>
+> If you're concerned with buggy algorithms/drivers, we should
+> ensure that the self-tests catch this.
 
-> CXL ports are added in a couple of code paths using
-> devm_cxl_add_port(). Debug messages are individually generated, but
-> are incomplete and inconsistent. Change this by moving its generation
-> to devm_cxl_add_port(). This unifies the messages and reduces code
-> duplication. Also, generate messages on failure.
-> 
-> Signed-off-by: Robert Richter <rrichter@amd.com>
-
-This is one for Dan etc as it is mostly a question of how verbose we want
-the debug prints to be plus preference for caller or callee being
-responsible for outputting this sort of message.
-
-Patch looks good to me if we want to make this sort of change.
-
-> ---
->  drivers/cxl/acpi.c      |  2 --
->  drivers/cxl/core/port.c | 39 ++++++++++++++++++++++++++++-----------
->  2 files changed, 28 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/cxl/acpi.c b/drivers/cxl/acpi.c
-> index fb649683dd3a..767a91f44221 100644
-> --- a/drivers/cxl/acpi.c
-> +++ b/drivers/cxl/acpi.c
-> @@ -220,7 +220,6 @@ static int add_host_bridge_uport(struct device *match, void *arg)
->  	port = devm_cxl_add_port(host, match, dport->component_reg_phys, dport);
->  	if (IS_ERR(port))
->  		return PTR_ERR(port);
-> -	dev_dbg(host, "%s: add: %s\n", dev_name(match), dev_name(&port->dev));
->  
->  	return 0;
->  }
-> @@ -466,7 +465,6 @@ static int cxl_acpi_probe(struct platform_device *pdev)
->  	root_port = devm_cxl_add_port(host, host, CXL_RESOURCE_NONE, NULL);
->  	if (IS_ERR(root_port))
->  		return PTR_ERR(root_port);
-> -	dev_dbg(host, "add: %s\n", dev_name(&root_port->dev));
->  
->  	rc = bus_for_each_dev(adev->dev.bus, NULL, root_port,
->  			      add_host_bridge_dport);
-> diff --git a/drivers/cxl/core/port.c b/drivers/cxl/core/port.c
-> index bffde862de0b..8604cda88787 100644
-> --- a/drivers/cxl/core/port.c
-> +++ b/drivers/cxl/core/port.c
-> @@ -666,13 +666,17 @@ struct cxl_port *devm_cxl_add_port(struct device *host, struct device *uport,
->  				   resource_size_t component_reg_phys,
->  				   struct cxl_dport *parent_dport)
->  {
-> -	struct cxl_port *port;
-> +	struct cxl_port *port, *parent_port;
->  	struct device *dev;
->  	int rc;
->  
-> +	parent_port = parent_dport ? parent_dport->port : NULL;
-> +
->  	port = cxl_port_alloc(uport, component_reg_phys, parent_dport);
-> -	if (IS_ERR(port))
-> -		return port;
-> +	if (IS_ERR(port)) {
-> +		rc = PTR_ERR(port);
-> +		goto err_out;
-> +	}
->  
->  	dev = &port->dev;
->  	if (is_cxl_memdev(uport))
-> @@ -682,24 +686,39 @@ struct cxl_port *devm_cxl_add_port(struct device *host, struct device *uport,
->  	else
->  		rc = dev_set_name(dev, "root%d", port->id);
->  	if (rc)
-> -		goto err;
-> +		goto err_put;
->  
->  	rc = device_add(dev);
->  	if (rc)
-> -		goto err;
-> +		goto err_put;
->  
->  	rc = devm_add_action_or_reset(host, unregister_port, port);
->  	if (rc)
-> -		return ERR_PTR(rc);
-> +		goto err_out;
->  
->  	rc = devm_cxl_link_uport(host, port);
->  	if (rc)
-> -		return ERR_PTR(rc);
-> +		goto err_out;
->  
-> -	return port;
-> +	dev_dbg(host, "added %s as%s port of device %s%s%s\n",
-> +		dev_name(&port->dev),
-> +		parent_port ? "" : " root",
-> +		dev_name(uport),
-> +		parent_port ? " to parent port " : "",
-> +		parent_port ? dev_name(&parent_port->dev) : "");
->  
-> -err:
-> +	return port;
-> +err_put:
->  	put_device(dev);
-> +err_out:
-> +	dev_dbg(host, "failed to add %s as%s port of device %s%s%s: %d\n",
-> +		dev_name(&port->dev),
-> +		parent_port ? "" : " root",
-> +		dev_name(uport),
-> +		parent_port ? " to parent port " : "",
-> +		parent_port ? dev_name(&parent_port->dev) : "",
-> +		rc);
-> +
->  	return ERR_PTR(rc);
->  }
->  EXPORT_SYMBOL_NS_GPL(devm_cxl_add_port, CXL);
-> @@ -1140,8 +1159,6 @@ int devm_cxl_add_endpoint(struct cxl_memdev *cxlmd,
->  	if (IS_ERR(endpoint))
->  		return PTR_ERR(endpoint);
->  
-> -	dev_dbg(&cxlmd->dev, "add: %s\n", dev_name(&endpoint->dev));
-> -
->  	rc = cxl_endpoint_autoremove(cxlmd, endpoint);
->  	if (rc)
->  		return rc;
-
+So it does currently, because I caught it via testmgr. Will send a v2
+without a default set_pub_key.
