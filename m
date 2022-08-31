@@ -2,67 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 286A2ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:42:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2D4C0502C
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbiHaGmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 02:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
+        id S229498AbiHaGmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 02:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229879AbiHaGmF (ORCPT
+        with ESMTP id S229879AbiHaGmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 02:42:05 -0400
-Received: from bg4.exmail.qq.com (bg4.exmail.qq.com [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B188EBE4F9;
-        Tue, 30 Aug 2022 23:42:03 -0700 (PDT)
-X-QQ-mid: bizesmtp80t1661928119tglclo0g
-Received: from localhost.localdomain ( [182.148.13.26])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 31 Aug 2022 14:41:58 +0800 (CST)
-X-QQ-SSF: 01000000000000D0E000000A0000000
-X-QQ-FEAT: hoArX50alxF+DlkLpK/znGIRlCGJAm5yW5Wu9It0PjkeJdDzPx4f/OSE+9DEh
-        rAxdP9B2znhloLLiMI6VFCGcf/jPHLjKzmg2yUUZnQoX5oAfEPLgo7u+UdrlPV45aKrawxF
-        VfRK7k/avmHGqPywszbzi2kYfemyUm1hjJwRmuHSaRBQHg1YWNW6BVqh56dl7S99T2xd++G
-        cRdlvl+qtvLafgxh/Vu62x7Feia77RpQoULA36ddg5hOJJ5KZk0MsiWObohTCatrmqGRBPa
-        Z+QWTAQ1WilbHDn8HZByjeMjVa8EgdcANyygxu/raMp0/EkIzFg6H6P2juLF0IZAzuj9RKn
-        w0JTNfJWGPnVnLff7XBKd00S0Fg/B0QiLVOxc0Ru/Qy1hjoGzKg1b1VOnDYlQ==
-X-QQ-GoodBg: 0
-From:   Jilin Yuan <yuanjilin@cdjrlc.com>
-To:     tsbogend@alpha.franken.de
-Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: [PATCH] mips: fix repeated words in comments
-Date:   Wed, 31 Aug 2022 14:41:51 +0800
-Message-Id: <20220831064151.22233-1-yuanjilin@cdjrlc.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 31 Aug 2022 02:42:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D54EBE4F6;
+        Tue, 30 Aug 2022 23:42:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B2D5617B0;
+        Wed, 31 Aug 2022 06:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 669F9C433D6;
+        Wed, 31 Aug 2022 06:42:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661928169;
+        bh=wHxNLZ8wYygk0ecxMitMpRPezWusffNg4BCOnaA+jtk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=svl1S5Gytc5jhHXKgx+K9sMMUOzCPtxMTxgyz/oObb2TsC/wjQaN2R8DQ5X8Jm6c0
+         295dqgKWJmTdL5jlW6h/BgfMtN3x6KUk0Wbgl/Brw9nV0ivEOJJijvyldXesbiGvJL
+         OfXQ5IVvTQahjyB4Dw/Nd3OMfeewepl1DV0GYlHiZ5jZyNtqes6ViuogXvxpSL2Tyl
+         4itvK27HP5M7r/u5Tls9m9D62PWSSbOIIwodgnhpbyRihvw5aDRIo7Ky6cfwicrRHg
+         7roIKr8kDc3oLkc2XK/t2SVqkVT/X2/FlnRf7QRt7K76aPFyUTX0Q9dlYdULOj4Xyi
+         h18u130lvPinw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oTHQz-0006E9-61; Wed, 31 Aug 2022 08:42:45 +0200
+Date:   Wed, 31 Aug 2022 08:42:45 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/6] arm64: dts: qcom: sa8295p-adp: Specify which LDO
+ modes are allowed
+Message-ID: <Yw8C5fl+DQUk8O+Y@hovoldconsulting.com>
+References: <20220829164952.2672848-1-dianders@chromium.org>
+ <20220829094903.v2.2.I430a56702ab0af65244e62667bb7743107de0c96@changeid>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829094903.v2.2.I430a56702ab0af65244e62667bb7743107de0c96@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Delete the redundant word 'of'.
+On Mon, Aug 29, 2022 at 09:49:48AM -0700, Douglas Anderson wrote:
+> This board uses RPMH, specifies "regulator-allow-set-load" for LDOs,
+> but doesn't specify any modes with "regulator-allowed-modes".
+> 
+> Prior to commit efb0cb50c427 ("regulator: qcom-rpmh: Implement
+> get_optimum_mode(), not set_load()") the above meant that we were able
+> to set either LPM or HPM mode. After that commit (and fixes [1]) we'll
+> be stuck at the initial mode. Discussion of this has resulted in the
+> decision that the old dts files were wrong and should be fixed to
+> fully restore old functionality.
+> 
+> Let's re-enable the old functionality by fixing the dts.
+> 
+> [1] https://lore.kernel.org/r/20220824142229.RFT.v2.2.I6f77860e5cd98bf5c67208fa9edda4a08847c304@changeid
+> 
+> Fixes: 519183af39b2 ("arm64: dts: qcom: add SA8540P and ADP")
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+> Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> ---
+> 
+> Changes in v2:
+> - Rebased atop ("...: sa8295p-adp: disallow regulator mode switches")
 
-Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
----
- arch/mips/sgi-ip22/ip22-gio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Looks good: 
 
-diff --git a/arch/mips/sgi-ip22/ip22-gio.c b/arch/mips/sgi-ip22/ip22-gio.c
-index 8686e8c1c4e5..b8e944b81a92 100644
---- a/arch/mips/sgi-ip22/ip22-gio.c
-+++ b/arch/mips/sgi-ip22/ip22-gio.c
-@@ -41,7 +41,7 @@ static struct device gio_bus = {
- /**
-  * gio_match_device - Tell if an of_device structure has a matching
-  * gio_match structure
-- * @ids: array of of device match structures to search in
-+ * @ids: array of device match structures to search in
-  * @dev: the of device structure to match against
-  *
-  * Used by a driver to check whether an of_device present in the
--- 
-2.36.1
+Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
 
+>  arch/arm64/boot/dts/qcom/sa8295p-adp.dts | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sa8295p-adp.dts b/arch/arm64/boot/dts/qcom/sa8295p-adp.dts
+> index ca5f5ad32ce5..5b16ac76fefb 100644
+> --- a/arch/arm64/boot/dts/qcom/sa8295p-adp.dts
+> +++ b/arch/arm64/boot/dts/qcom/sa8295p-adp.dts
+> @@ -83,6 +83,9 @@ vreg_l3c: ldo3 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l4c: ldo4 {
+> @@ -98,6 +101,9 @@ vreg_l6c: ldo6 {
+>  			regulator-max-microvolt = <1200000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l7c: ldo7 {
+> @@ -113,6 +119,9 @@ vreg_l10c: ldo10 {
+>  			regulator-max-microvolt = <2504000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  
+>  		vreg_l17c: ldo17 {
+> @@ -121,6 +130,9 @@ vreg_l17c: ldo17 {
+>  			regulator-max-microvolt = <2504000>;
+>  			regulator-initial-mode = <RPMH_REGULATOR_MODE_HPM>;
+>  			regulator-allow-set-load;
+> +			regulator-allowed-modes =
+> +			    <RPMH_REGULATOR_MODE_LPM
+> +			     RPMH_REGULATOR_MODE_HPM>;
+>  		};
+>  	};
