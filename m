@@ -2,90 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84D23ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C92E0ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230297AbiHaGiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 02:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
+        id S230351AbiHaGjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 02:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbiHaGie (ORCPT
+        with ESMTP id S230335AbiHaGjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 02:38:34 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9B5BD77A;
-        Tue, 30 Aug 2022 23:38:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MHZJ26Syjz4xG9;
-        Wed, 31 Aug 2022 16:38:25 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1661927907;
-        bh=Mfa+WJavmZH755TJjYyiSYl3pOBeXXNV8JnJ6g3kaaM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=UOCZwsQD+yhdDrElF4fEwZQNxMKQyoFvEIenZKcuQm5N56rgRTsOfruitdP6M5oN5
-         RqEhz7KBkh/IUOKY9ChrFpByRTCxJGleKN7mpld9TUg+V27gNfMgm4+a3o2ainVUqr
-         3MrEqSI87+QqLs1uFT1y1mgief5LHBHnNnLQhhMZz+vB1GKEdtTbFTbj53cfhgmDhn
-         XZuyN3bwMm36vu/RqjgHd1pXfdYRDKIuq3RcNnCHdcYVlqZabcQiCGltJ4HIBHF6jW
-         I9d9LZje8AXkIMdStMIe93lB1KMw9Wjqb7ui+AZu/8sxuCpr3AR3/u/0glk1UV21RB
-         VMH7LPUdVXVEg==
-Date:   Wed, 31 Aug 2022 16:38:24 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Lin Ma <linma@zju.edu.cn>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20220831163824.03b1b61b@canb.auug.org.au>
+        Wed, 31 Aug 2022 02:39:01 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90792BD77D;
+        Tue, 30 Aug 2022 23:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661927939; x=1693463939;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3h6fHhHRDNQcqkMpD+T/7yDsiWITob0fje7mD5mrhvw=;
+  b=uRibIK28PaDk+k+CCHmwmWLQ3Sz2KSUCXid5mvE6P85noSXpog9cxZs1
+   f//toMjPOOoZk12ssewIT11htpACXp/30ua6YX+ae9mLK9ZsVCVOagFSk
+   02olafo364y4sNg2PW45UonT6Cha7nJrzHy0DbFsRSmB7+5Btb/caas3O
+   lOuWsm9e1ktV+2GiQmpApU/IrwI47+9NIPbrNvyY7S4/EKDVCKOB5XtUM
+   88xa9kcOEswXW/jha+DqV2A7o+hwPKnVWyyEibevSHjJd47cKapy77cZ5
+   hTdCmRU+xlV3mIkB7Zp+XH80hxhOhBDH+1r9/ETaTe13SR7rI2pzezQk9
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
+   d="scan'208";a="188777660"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 23:38:59 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 30 Aug 2022 23:38:59 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 23:38:57 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <UNGLinuxDriver@microchip.com>,
+        "Horatiu Vultur" <horatiu.vultur@microchip.com>
+Subject: [PATCH v3 0/2] nvmem: lan9662-otpc: add support
+Date:   Wed, 31 Aug 2022 08:42:36 +0200
+Message-ID: <20220831064238.102267-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/nyN5hq=.7V8DNzqSK.a3//E";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/nyN5hq=.7V8DNzqSK.a3//E
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Add support for lan9662 OTP controller that is available on lan9662.
+The driver gives access to non-volatile memory. It allows both write
+and read access to it.
 
-Hi all,
+v2->v3:
+- fix dt-bindings, make sure that make dt_binding_check passes
+- remove lan9662_writel/readl/clrbits/setbits and use writel/readl
+- remove WARN_ON(offset >= OTP_MEM_SIZE) as it can't happen
 
-In commit
+v1->v2:
+- remove unneed quotes for $ref: nvmem.yaml#
+- rename lan966x to lan9662 as not to have any wildcards
+- remove compatible string syscon
 
-  afe7116f6d3b ("ieee802154/adf7242: defer destroy_workqueue call")
+Horatiu Vultur (2):
+  dt-bindings: lan9662-otpc: document Lan9662 OTPC
+  nvmem: lan9662-otp: add support.
 
-Fixes tag
+ .../nvmem/microchip,lan9662-otpc.yaml         |  45 ++++
+ drivers/nvmem/Kconfig                         |   8 +
+ drivers/nvmem/Makefile                        |   2 +
+ drivers/nvmem/lan9662-otpc.c                  | 223 ++++++++++++++++++
+ 4 files changed, 278 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/microchip,lan9662-otpc.yaml
+ create mode 100644 drivers/nvmem/lan9662-otpc.c
 
-  Fixes: 58e9683d1475 ("net: ieee802154: adf7242: Fix OCL calibration
+-- 
+2.33.0
 
-has these problem(s):
-
-  - Subject has leading but no trailing parentheses
-  - Subject has leading but no trailing quotes
-
-In the future, please do not split Fixes tags over more than one line.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/nyN5hq=.7V8DNzqSK.a3//E
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMPAeAACgkQAVBC80lX
-0GyNJQf+P8i+jK3g5oALbtdvvIGDQdgVWWEo/zuXCBbWK2IvBfk4rJIuLgANIuJP
-z+zDVLMHvSPLOaGXPp3vuDtFKhkRhaCzEO4cuw8zVNNaF/T/f0K2rP/2uwPcsxhI
-aWipf1AhKWJ1XvbWHFHr0KxjkwsqJM8De2HEEzvrYgxG+mWTswd1LRNEuWLtCapG
-m2jFnj0FKH802ECugohMWe6GWg1hDiv4fsvZVbAAtUMZqUjUjSyRIN0Xx0UikaSS
-jqt34BQDHeCWnHiMkEQSm/6vU4hc34IAua3RUbT/PO3qmpvzEc9Yd5bnYmXpGubI
-ACq6csofuhEysVnmyRPk4Q/yG3cLig==
-=zAms
------END PGP SIGNATURE-----
-
---Sig_/nyN5hq=.7V8DNzqSK.a3//E--
