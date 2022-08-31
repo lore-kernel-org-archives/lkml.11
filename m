@@ -2,177 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21511ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:07:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 396E2ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231811AbiHaCHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 22:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
+        id S231842AbiHaCNb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 22:13:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbiHaCHG (ORCPT
+        with ESMTP id S229775AbiHaCN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 22:07:06 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A0360534
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 19:07:03 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MHSBT0xwVzlWdH;
-        Wed, 31 Aug 2022 10:03:13 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 31 Aug 2022 10:06:32 +0800
-Received: from huawei.com (10.175.124.27) by kwepemm600016.china.huawei.com
- (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
- 2022 10:06:31 +0800
-From:   Shuqi Zhang <zhangshuqi3@huawei.com>
-To:     <jaegeuk@kernel.org>, <chao@kernel.org>
-CC:     <linux-f2fs-devel@lists.sourceforge.net>,
-        <linux-kernel@vger.kernel.org>, <zhangshuqi3@huawei.com>
-Subject: [PATCH v2 -next] f2fs: fix wrong dirty page count when race between mmap and fallocate.
-Date:   Wed, 31 Aug 2022 10:24:40 +0800
-Message-ID: <20220831022440.2985736-1-zhangshuqi3@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 30 Aug 2022 22:13:26 -0400
+Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D4AB2CF0
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 19:13:25 -0700 (PDT)
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+        by relay.mailchannels.net (Postfix) with ESMTP id 7FB723E074F;
+        Wed, 31 Aug 2022 02:13:24 +0000 (UTC)
+Received: from pdx1-sub0-mail-a286 (unknown [127.0.0.6])
+        (Authenticated sender: dreamhost)
+        by relay.mailchannels.net (Postfix) with ESMTPA id 0A0823E1297;
+        Wed, 31 Aug 2022 02:13:24 +0000 (UTC)
+ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661912004; a=rsa-sha256;
+        cv=none;
+        b=2sZZKJ60j/LHvcjQGJElzSm8D0MZkWgt1+1/25qVYDDZT1faaT470B270EW3yYCx2yZ6Su
+        75XfoaU621WFmirWyYpYsibtxLXh7AScEHGD4o1U6JnGtSb5WglSAmFpWyLq+6VMRFILwI
+        AgA6fQ9zuGnPLbbvhN25hybPY8bGbgQX33bo6dc/R0hyEwYdb8EbRpR8qaRdWk+BwwpSLN
+        oqGUSENPoiTYtJZ30zAjPQXrlsbRZRkzaGRmYy7DIEnJxyj0xJBaQO0hJYY8eZC1IoAozS
+        UheLDRDDNDKVIgx/alEE5TvZqsEUJAI6oTY6yOstcDu/D/RNbqBK9OkuIfGaEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+        s=arc-2022; t=1661912004;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references:dkim-signature;
+        bh=2na/1YB6P8pAjhSwDiKAckiFI98TLLaOiftpwQaZCbQ=;
+        b=VzTcH2zQ2K7iUV86PMfQ7+S8YacIKN+QZG0Hf1VNuF/MK3uhiHEHtdKOHQKbpM+GxSIZto
+        SDjVgmgi/y/4cixec9kCahD2XpSGEplS0lJUdxKJtcBsrTcI4Lz+w/pza2stFiDn4SfcSL
+        tu3n+S5p1WpxMggsN5iQQ6hr7lzP6NgsxceeOsyfYCqzz6YBRQoRhXaGyvxe0S7QtezJT2
+        PV0kgYyBWKI49C3b73mOntIWtKb0y6AAyZ9iXPpWhlEAZ0Broe3INonQ2TT4rlhWXArF5g
+        uRJ62ZLHlyR8cRMe0on4YjVcNgKIYjQUvE80RH9g8orA30tih6PCh2YpkRBC4w==
+ARC-Authentication-Results: i=1;
+        rspamd-75b4464bd-xzkt6;
+        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
+X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
+X-MailChannels-Auth-Id: dreamhost
+X-Attack-Chief: 2b693d20502d7a1a_1661912004303_2191180068
+X-MC-Loop-Signature: 1661912004303:4261194441
+X-MC-Ingress-Time: 1661912004303
+Received: from pdx1-sub0-mail-a286 (pop.dreamhost.com [64.90.62.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+        by 100.119.76.153 (trex/6.7.1);
+        Wed, 31 Aug 2022 02:13:24 +0000
+Received: from offworld (unknown [104.36.31.106])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: dave@stgolabs.net)
+        by pdx1-sub0-mail-a286 (Postfix) with ESMTPSA id 4MHSQC29CZz64;
+        Tue, 30 Aug 2022 19:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
+        s=dreamhost; t=1661912003;
+        bh=2na/1YB6P8pAjhSwDiKAckiFI98TLLaOiftpwQaZCbQ=;
+        h=Date:From:To:Cc:Subject:Content-Type;
+        b=RSVJrsC0s9o7yWlqhf1uU4/Fu1o3hlhtpBws8baIe7eMmVAqrKHyi0x5c0WPkCrjZ
+         4Zgd1KhxNfbLG/W8X4cgMS9GUsyrdLjgoRYdov7CU6chAnAR4yk9nyKpqIrHQFdCvW
+         9mJv8HAEjYw9wFeDVhCHokObriyhgLZgf5pOWZXlx6LLMjelfynRLwmgzyRm15pxlw
+         /6QlZWKVTNr1PBRER4U/ufItNi3xaree4UbN87+HpP4heDECNboVcXdFRhp/scwy0o
+         XTD0a/hMBIYSpGVUriZtHR57qxFSClIVFCj0QmYQxiWv3VW/DT6sxVFXIJx0Htz8fh
+         Ao7CUa9GTGh+w==
+Date:   Tue, 30 Aug 2022 18:54:54 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v13 7/70] lib/test_maple_tree: add testing for maple tree
+Message-ID: <20220831015454.wi5pqgstegvnwnr2@offworld>
+Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
+ <20220822150128.1562046-8-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220822150128.1562046-8-Liam.Howlett@oracle.com>
+User-Agent: NeoMutt/20220429
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a BUG_ON issue as follows when running xfstest-generic-503:
-WARNING: CPU: 21 PID: 1385 at fs/f2fs/inode.c:762 f2fs_evict_inode+0x847/0xaa0
-Modules linked in:
-CPU: 21 PID: 1385 Comm: umount Not tainted 5.19.0-rc5+ #73
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
+On Mon, 22 Aug 2022, Liam Howlett wrote:
 
-Call Trace:
-evict+0x129/0x2d0
-dispose_list+0x4f/0xb0
-evict_inodes+0x204/0x230
-generic_shutdown_super+0x5b/0x1e0
-kill_block_super+0x29/0x80
-kill_f2fs_super+0xe6/0x140
-deactivate_locked_super+0x44/0xc0
-deactivate_super+0x79/0x90
-cleanup_mnt+0x114/0x1a0
-__cleanup_mnt+0x16/0x20
-task_work_run+0x98/0x100
-exit_to_user_mode_prepare+0x3d0/0x3e0
-syscall_exit_to_user_mode+0x12/0x30
-do_syscall_64+0x42/0x80
-entry_SYSCALL_64_after_hwframe+0x46/0xb0
+>From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+>
+>This is a test suite that uses the radix test infrastructure.  It has been
+>split into its own commit to allow for easier review of the maple tree
+>code.
 
-Function flow analysis when BUG occurs:
-f2fs_fallocate                    mmap
-                                  do_page_fault
-                                    pte_spinlock  // ---lock_pte
-                                    do_wp_page
-                                      wp_page_shared
-                                        pte_unmap_unlock   // unlock_pte
-                                          do_page_mkwrite
-                                          f2fs_vm_page_mkwrite
-                                            down_read(invalidate_lock)
-                                            lock_page
-                                            if (PageMappedToDisk(page))
-                                              goto out;
-                                            // set_page_dirty  --NOT RUN
-                                            out: up_read(invalidate_lock);
-                                        finish_mkwrite_fault // unlock_pte
-f2fs_collapse_range
-  down_write(i_mmap_sem)
-  truncate_pagecache
-    unmap_mapping_pages
-      i_mmap_lock_write // down_write(i_mmap_rwsem)
-        ......
-        zap_pte_range
-          pte_offset_map_lock // ---lock_pte
-           set_page_dirty
-            f2fs_dirty_data_folio
-              if (!folio_test_dirty(folio)) {
-                                        fault_dirty_shared_page
-                                          set_page_dirty
-                                            f2fs_dirty_data_folio
-                                              if (!folio_test_dirty(folio)) {
-                                                filemap_dirty_folio
-                                                f2fs_update_dirty_folio // ++
-                                              }
-                                            unlock_page
-                filemap_dirty_folio
-                f2fs_update_dirty_folio // page count++
-              }
-          pte_unmap_unlock  // --unlock_pte
-      i_mmap_unlock_write  // up_write(i_mmap_rwsem)
-  truncate_inode_pages
-  up_write(i_mmap_sem)
-
-When race happens between mmap-do_page_fault-wp_page_shared and
-fallocate-truncate_pagecache-zap_pte_range, the zap_pte_range calls
-function set_page_dirty without page lock. Besides, though
-truncate_pagecache has immap and pte lock, wp_page_shared calls
-fault_dirty_shared_page without any. In this case, two threads race
-in f2fs_dirty_data_folio function. Page is set to dirty only ONCE,
-but the count is added TWICE by calling filemap_dirty_folio.
-Thus the count of dirty page cannot accord with the real dirty pages.
-
-Following is the solution to in case of race happens without any lock.
-Since folio_test_set_dirty in filemap_dirty_folio is atomic, judge return
-value will not be at risk of race.
-
-Signed-off-by: Shuqi Zhang <zhangshuqi3@huawei.com>
----
- fs/f2fs/checkpoint.c | 3 +--
- fs/f2fs/data.c       | 3 +--
- fs/f2fs/node.c       | 3 +--
- 3 files changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
-index 8259e0fa97e1..3a3329bf1033 100644
---- a/fs/f2fs/checkpoint.c
-+++ b/fs/f2fs/checkpoint.c
-@@ -448,8 +448,7 @@ static bool f2fs_dirty_meta_folio(struct address_space *mapping,
- 
- 	if (!folio_test_uptodate(folio))
- 		folio_mark_uptodate(folio);
--	if (!folio_test_dirty(folio)) {
--		filemap_dirty_folio(mapping, folio);
-+	if (filemap_dirty_folio(mapping, folio)) {
- 		inc_page_count(F2FS_M_SB(mapping), F2FS_DIRTY_META);
- 		set_page_private_reference(&folio->page);
- 		return true;
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index aa3ccddfa037..16c39bd948a0 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -3697,8 +3697,7 @@ static bool f2fs_dirty_data_folio(struct address_space *mapping,
- 		folio_mark_uptodate(folio);
- 	BUG_ON(folio_test_swapcache(folio));
- 
--	if (!folio_test_dirty(folio)) {
--		filemap_dirty_folio(mapping, folio);
-+	if (filemap_dirty_folio(mapping, folio)) {
- 		f2fs_update_dirty_folio(inode, folio);
- 		return true;
- 	}
-diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
-index e06a0c478b39..3506ffcb31f8 100644
---- a/fs/f2fs/node.c
-+++ b/fs/f2fs/node.c
-@@ -2147,8 +2147,7 @@ static bool f2fs_dirty_node_folio(struct address_space *mapping,
- 	if (IS_INODE(&folio->page))
- 		f2fs_inode_chksum_set(F2FS_M_SB(mapping), &folio->page);
- #endif
--	if (!folio_test_dirty(folio)) {
--		filemap_dirty_folio(mapping, folio);
-+	if (filemap_dirty_folio(mapping, folio)) {
- 		inc_page_count(F2FS_M_SB(mapping), F2FS_DIRTY_NODES);
- 		set_page_private_reference(&folio->page);
- 		return true;
--- 
-2.25.1
-
+It would be good to be a bit more descriptive about the tests and what
+they consist of, for clarity if nothing else.
