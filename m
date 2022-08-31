@@ -2,96 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3D6ECAAD5
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D86FDECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232288AbiHaV0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:26:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
+        id S232310AbiHaV1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231955AbiHaV0o (ORCPT
+        with ESMTP id S232199AbiHaV1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:26:44 -0400
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352D77B78B;
-        Wed, 31 Aug 2022 14:26:44 -0700 (PDT)
-Received: by mail-ot1-f53.google.com with SMTP id br15-20020a056830390f00b0061c9d73b8bdso11146651otb.6;
-        Wed, 31 Aug 2022 14:26:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=rIyadyeq6YLRftLRyrN0QiirUdnHJN+op5RTIIc+np8=;
-        b=luaXHk+xH0MfVZcIDVtf6jCniMVXtHxJ8UrbW3yaDth5ViJ4buBSNnmS8XKK9efFzD
-         po1fCRrxxz+g+YZbycuFvg2Zv7MRKm05Hw0doE6hOP+QwBoDbDYDOjRx+sBx9PHpGihn
-         vaA5Yk5yLdW5U8cExD3CfTvn8SnPfX7zJw68vDdKuB5JebxVfRzdaptv/9qts5jrH7ef
-         sBWxmlf74PLEzYN5q8EHaqMLZAW2Pa0UqqtUGGldWmrplpisQcYl7nyPOSoMD4XDTKHP
-         IVgIfsE3bOgW560iG7zlffs2USsoCnzrOVoLKwMLWZyZcCg9ZjgTdoT4kGtZD3Q8kl1H
-         yDXQ==
-X-Gm-Message-State: ACgBeo3vKqFoVQNDF7Llb03ZMJnYYJ712f6zysVDcH4lA08BQmte/0Bd
-        +Z/D72wFvCsXTCezZMQ5ZA==
-X-Google-Smtp-Source: AA6agR7h7g/4sGiJzr8LtSk06Zhc0E+hGHG6a643D5LCN9/i1HNmUyxP4sw3/5p5W25yVMpjgOueGw==
-X-Received: by 2002:a05:6830:929:b0:63b:25ba:dfe4 with SMTP id v41-20020a056830092900b0063b25badfe4mr8368108ott.311.1661981203420;
-        Wed, 31 Aug 2022 14:26:43 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id o139-20020a4a2c91000000b00435ae9a836asm8623117ooo.15.2022.08.31.14.26.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 14:26:43 -0700 (PDT)
-Received: (nullmailer pid 279436 invoked by uid 1000);
-        Wed, 31 Aug 2022 21:26:31 -0000
-Date:   Wed, 31 Aug 2022 16:26:31 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Simon Xue <xxm@rock-chips.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-pci@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH v5 13/20] dt-bindings: PCI: dwc: Apply common schema to
- Rockchip DW PCIe nodes
-Message-ID: <20220831212631.GA277851-robh@kernel.org>
-References: <20220822184701.25246-1-Sergey.Semin@baikalelectronics.ru>
- <20220822184701.25246-14-Sergey.Semin@baikalelectronics.ru>
+        Wed, 31 Aug 2022 17:27:34 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88F2F4935
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661981253; x=1693517253;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=m3s12TGYjWSlxsDVLCLH+j+oxn8X4YKyWRyMNxD+r3o=;
+  b=A9iMkozpiN5nnyu1OA0nWjsKjYEPqipYD6nYvk/RPTBDjUQJR3kiYKnK
+   1Kf3DcB9O79Nx2u0xfVqpJAD6P0CFLC8iNJL/63aIT0QBwDrEmXYRQHqa
+   GPpqw6uFEPqGi0IwInta47MaKmiveJW1nPcxv+89hT53Ll6qytx49zDPM
+   TuuYn217yIAmm02zEHJ9ePvEIwJ1HlBjGQ1zp/u4gCqgofH1/iCdcL5dF
+   cJUxViTLujVhPXvFd/sNu+IrW+drGAGAa5DpPi7B4ihImboHBRM3sLUwT
+   FpxApndEsyzsGu0c1stwR2XsZUP6C2p1T+Vi4hvxgmNyocBtPBD9+i4ld
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296828925"
+X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
+   d="scan'208";a="296828925"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 14:27:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
+   d="scan'208";a="612236180"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 31 Aug 2022 14:27:31 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8C5E519D; Thu,  1 Sep 2022 00:27:46 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v2 3/3] regmap: spi-avmm: Use swabXX_array() helpers
+Date:   Thu,  1 Sep 2022 00:27:44 +0300
+Message-Id: <20220831212744.56435-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220831212744.56435-1-andriy.shevchenko@linux.intel.com>
+References: <20220831212744.56435-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822184701.25246-14-Sergey.Semin@baikalelectronics.ru>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 09:46:54PM +0300, Serge Semin wrote:
-> As the DT-bindings description states the Rockchip PCIe controller is
-> based on the DW PCIe RP IP-core thus its DT-nodes are supposed to be
-> compatible with the common DW PCIe controller schema. Let's make sure they
-> are evaluated against it by referring to the snps,dw-pcie.yaml schema in
-> the allOf sub-schemas composition.
-> 
-> Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> 
-> ---
-> 
-> Changelog v3:
-> - This is a new patch created on v3 lap of the series.
-> 
-> Changelog v5:
-> - Apply snps,dw-pcie.yaml instead of the snps,dw-pcie-common.yaml schema.
-> ---
->  Documentation/devicetree/bindings/pci/rockchip-dw-pcie.yaml | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+Since we have a few helpers to swab elements of a given size in an array
+use them instead of open coded variants.
 
-Shouldn't this come before/after patch 7?
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: fixed compilation error (LKP)
+ drivers/base/regmap/regmap-spi-avmm.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+diff --git a/drivers/base/regmap/regmap-spi-avmm.c b/drivers/base/regmap/regmap-spi-avmm.c
+index ad1da83e849f..4c2b94b3e30b 100644
+--- a/drivers/base/regmap/regmap-spi-avmm.c
++++ b/drivers/base/regmap/regmap-spi-avmm.c
+@@ -7,6 +7,7 @@
+ #include <linux/module.h>
+ #include <linux/regmap.h>
+ #include <linux/spi/spi.h>
++#include <linux/swab.h>
+ 
+ /*
+  * This driver implements the regmap operations for a generic SPI
+@@ -162,19 +163,12 @@ struct spi_avmm_bridge {
+ 	/* bridge buffer used in translation between protocol layers */
+ 	char trans_buf[TRANS_BUF_SIZE];
+ 	char phy_buf[PHY_BUF_SIZE];
+-	void (*swap_words)(char *buf, unsigned int len);
++	void (*swap_words)(void *buf, unsigned int len);
+ };
+ 
+-static void br_swap_words_32(char *buf, unsigned int len)
++static void br_swap_words_32(void *buf, unsigned int len)
+ {
+-	u32 *p = (u32 *)buf;
+-	unsigned int count;
+-
+-	count = len / 4;
+-	while (count--) {
+-		*p = swab32p(p);
+-		p++;
+-	}
++	swab32_array(buf, len / 4);
+ }
+ 
+ /*
+-- 
+2.35.1
+
