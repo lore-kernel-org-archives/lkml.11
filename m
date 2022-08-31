@@ -2,90 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A1EECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7F5ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiHaNvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51910 "EHLO
+        id S231733AbiHaNw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:52:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231939AbiHaNvk (ORCPT
+        with ESMTP id S231137AbiHaNwY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:51:40 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEF0D34F7
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:51:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=9jNNNZj2QWLvrPf5qUgDVYXz8CN/57+L72lv9cMQiTw=; b=qjR/COqnuEQu8DH0tE2MDA+c/r
-        FT6d4i7N6AXTHOLxrOSrr51/tFxiVCanz6N/HhV0xLa57+GHdGFQTaLGe8aCRheWtmrWV83Lg0FXp
-        XCEi1cIIpKu46bqGTmc0xs2l8q9sRFUz1D82oeIH9iL7GMoDEhZ0oTQLqKqz/xlhfVwg9AQUb6gV+
-        0fmchRiq0AA6/EKTu9Q2rqClhmCUdqrXLF/Ru6Dq/UZe6g11yZvtUICtV1Vtuhr4322n7OsGz1IZE
-        jWXivZBnbS/5KZ9xj02/482oOR+6vQmlWqwCwwaV4Ymwtc9KbivUiBbAavEnayXXChN+6AbcLPkk/
-        v7Uou4vg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34020)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oTO7h-0004PK-94; Wed, 31 Aug 2022 14:51:17 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oTO7X-0002Yx-8l; Wed, 31 Aug 2022 14:51:07 +0100
-Date:   Wed, 31 Aug 2022 14:51:07 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     Victor Hassan <victor@allwinnertech.com>, linus.walleij@linaro.org,
-        yanfei.xu@windriver.com, ardb@kernel.org, tglx@linutronix.de,
-        mirq-linux@rere.qmqm.pl, arnd@arndb.de,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        allwinner-opensource-support@allwinnertech.com
-Subject: Re: [PATCH] ARM: mmu: fix access to illegal address when using
- earlycon & memblock=debug
-Message-ID: <Yw9nS0GXOPCGUWbn@shell.armlinux.org.uk>
-References: <20220316023356.120595-1-victor@allwinnertech.com>
- <CGME20220831115257eucas1p20d37a01c51e42767860920a936255bd7@eucas1p2.samsung.com>
- <9a425a51-9460-6c4d-e331-5cd5873f8a43@samsung.com>
+        Wed, 31 Aug 2022 09:52:24 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F1ED418D
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:52:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661953942; x=1693489942;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HWBRbF2PbdvN4PBXDLfgRZ00K3DXNb6yDsqH36AIk+0=;
+  b=ggIIWJJvEoeC7udWOmOx89LlP/EHofHnRQx/9eFsH91SI8fm1WfnpUzw
+   L+yHMNVbtUd5mD/dPLdBpmYcTTOhg8QWKKBijc5PBDCDCtdB4KCe7TYMl
+   7wzY658kQBtlfe7DescFZTOgck+ciK+2UbVOE1iTKh20ZlTYFgFdiExa7
+   LUpILRVqCHsMNgrCI88fgMpR72FIdiDFUtxba9SjCC0+hcOh0yBnsb6mt
+   o3n/Lcks7RRHuNF9Yaz8b9bmlmvO1dIdDbO6Lp1zvXu/LiBaVezqaUG9x
+   Zq7ug41Z8E41Ma+4jOAPidClpnhMVfJMM+qT5OzAR0TJONcOIR98WmoFi
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296234840"
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="296234840"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 06:52:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="645236922"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga001.jf.intel.com with ESMTP; 31 Aug 2022 06:52:21 -0700
+Received: from [10.252.208.162] (kliang2-mobl1.ccr.corp.intel.com [10.252.208.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by linux.intel.com (Postfix) with ESMTPS id 23BCD580871;
+        Wed, 31 Aug 2022 06:52:20 -0700 (PDT)
+Message-ID: <0b8477e2-6e85-b349-0e92-e6a298531c18@linux.intel.com>
+Date:   Wed, 31 Aug 2022 09:52:19 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9a425a51-9460-6c4d-e331-5cd5873f8a43@samsung.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2 8/9] perf/x86/intel: Shadow
+ MSR_ARCH_PERFMON_FIXED_CTR_CTRL
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        eranian@google.com, ravi.bangoria@amd.com
+Cc:     linux-kernel@vger.kernel.org, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org
+References: <20220829100959.917169441@infradead.org>
+ <20220829101321.905673933@infradead.org>
+From:   "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20220829101321.905673933@infradead.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 01:52:57PM +0200, Marek Szyprowski wrote:
-> Hi Victor,
-> 
-> On 16.03.2022 03:33, Victor Hassan wrote:
-> > earlycon uses fixmap to create a memory map,
-> > So we need to close earlycon before closing fixmap,
-> > otherwise printk will access illegal addresses.
-> > After creating a new memory map, we open earlycon again.
-> >
-> > Signed-off-by: Victor Hassan <victor@allwinnertech.com>
-> 
-> This patch landed in linux next-20220831 as commit a76886d117cb ("ARM: 
-> 9223/1: mmu: fix access to illegal address when using earlycon & 
-> memblock=debug"). Unfortunately it breaks booting of all my test boards 
-> which *do not* use earlycon. It can be easily reproduced even with QEMU.
-> 
-> With kernel compiled from multi_v7_defconfig the following setup boots:
-> 
-> $ qemu-system-arm -nographic -kernel arch/arm/boot/zImage -append 
-> "console=ttyAMA0 earlycon" -M virt -smp 2 -m 512
-> 
-> while this one doesn't:
-> 
-> $ qemu-system-arm -nographic -kernel arch/arm/boot/zImage -append 
-> "console=ttyAMA0" -M virt -smp 2 -m 512
 
-That's the second patch to drop from my merge yesterday... not good.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+On 2022-08-29 6:10 a.m., Peter Zijlstra wrote:
+> Less RDMSR is more better.
+
+I had an RFC patch which does a further step to move the fixed
+control register write to right before the entire PMU re-enabling, which
+could also save some writes if there are several fixed counters enabled.
+https://lore.kernel.org/lkml/20220804140729.2951259-1-kan.liang@linux.intel.com/
+
+Do you have any comments for the RFC patch?
+
+If the method is OK, I will rebase the RFC patch on top of this patch.
+
+Thanks,
+Kan
+> 
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  arch/x86/events/intel/core.c |    8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> --- a/arch/x86/events/intel/core.c
+> +++ b/arch/x86/events/intel/core.c
+> @@ -2405,6 +2405,8 @@ static inline void intel_clear_masks(str
+>  	__clear_bit(idx, (unsigned long *)&cpuc->intel_cp_status);
+>  }
+>  
+> +static DEFINE_PER_CPU(u64, intel_fixed_ctrl);
+> +
+>  static void intel_pmu_disable_fixed(struct perf_event *event)
+>  {
+>  	struct hw_perf_event *hwc = &event->hw;
+> @@ -2426,8 +2428,9 @@ static void intel_pmu_disable_fixed(stru
+>  	intel_clear_masks(event, idx);
+>  
+>  	mask = 0xfULL << ((idx - INTEL_PMC_IDX_FIXED) * 4);
+> -	rdmsrl(hwc->config_base, ctrl_val);
+> +	ctrl_val = this_cpu_read(intel_fixed_ctrl);
+>  	ctrl_val &= ~mask;
+> +	this_cpu_write(intel_fixed_ctrl, ctrl_val);>  	wrmsrl(hwc->config_base, ctrl_val);
+>  }
+>  
+> @@ -2746,9 +2749,10 @@ static void intel_pmu_enable_fixed(struc
+>  		mask |= ICL_FIXED_0_ADAPTIVE << (idx * 4);
+>  	}
+>  
+> -	rdmsrl(hwc->config_base, ctrl_val);
+> +	ctrl_val = this_cpu_read(intel_fixed_ctrl);
+>  	ctrl_val &= ~mask;
+>  	ctrl_val |= bits;
+> +	this_cpu_write(intel_fixed_ctrl, ctrl_val);
+>  	wrmsrl(hwc->config_base, ctrl_val);
+>  }
+>  
+> 
+> 
