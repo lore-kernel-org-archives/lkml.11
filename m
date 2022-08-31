@@ -2,99 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57BD3C0502C
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17EAEECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229655AbiHaKkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:40:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
+        id S230243AbiHaKkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiHaKkk (ORCPT
+        with ESMTP id S229826AbiHaKkm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:40:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFBB70E61
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:40:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661942438;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eY5LuG2wHGwxNQCbR+wrs6/M0fyvhRpWPUlG334Q3OU=;
-        b=VsEyAUCL3yipe51FlE4U0S09XbzLXHVflwIJY9JgKOa5ApxuJhqN+KHYB8zWoLkpyFdWQO
-        JN1E/9WW+87oWMNOJ1AyxdrkrlY38oZQOgyS2BsnkE1bxhmBNQL70a/ZZei+EtJgsVDS/X
-        ibfnY2FmcAN+uCuxgr2gLS80eZe9NDU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-204-w06gCvOrOduQbFnOxFDzsg-1; Wed, 31 Aug 2022 06:40:34 -0400
-X-MC-Unique: w06gCvOrOduQbFnOxFDzsg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9CAE73800C3C;
-        Wed, 31 Aug 2022 10:40:33 +0000 (UTC)
-Received: from starship (unknown [10.40.194.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 07B4A945D7;
-        Wed, 31 Aug 2022 10:40:31 +0000 (UTC)
-Message-ID: <06375b1fe988bee627f95b54b7d224adf8fe91ec.camel@redhat.com>
-Subject: Re: [PATCH 18/19] KVM: SVM: Ignore writes to Remote Read Data on
- AVIC write traps
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Li RongQing <lirongqing@baidu.com>
-Date:   Wed, 31 Aug 2022 13:40:30 +0300
-In-Reply-To: <20220831003506.4117148-19-seanjc@google.com>
-References: <20220831003506.4117148-1-seanjc@google.com>
-         <20220831003506.4117148-19-seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Wed, 31 Aug 2022 06:40:42 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D356CBE4C1;
+        Wed, 31 Aug 2022 03:40:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661942440; x=1693478440;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=iN7KMiFLh0DoaPA2bfV6omYoHGxgYoE8MOyNtDAZ1qQ=;
+  b=TsGYp/h2tECmppXBiYnohnQtlg0mDAQdWIOmbsIR/+8V20OAO4fZf1Nm
+   Hqet9K6XxVSti+HjwsMU38u+odQ229scVz/D1weh6mvOxUV1+9xW63aO7
+   t72cI1mphRiCx7PlapjzgxeNYBoVieIOl4q/BjbhHK7QS/7rNA8q+IMd/
+   DM2kBF758p30a5/hGlQfPVAldPSeqp2ky2ht2QYnpFRIthYHE047BMYAW
+   xmoi+3St4LzNiNfWDEeobx4v8bF9pkdGDiHas8x6fyqlEPZEqjH+5hKH7
+   Z5LUhZ46RoQgVlX4UYXuu7ub13ekZoF3ftP5UEXwehFXCOrsftUWseU3k
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
+   d="scan'208";a="178449398"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Aug 2022 03:40:39 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 31 Aug 2022 03:40:38 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.12 via Frontend
+ Transport; Wed, 31 Aug 2022 03:40:38 -0700
+Date:   Wed, 31 Aug 2022 12:44:55 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <srinivas.kandagatla@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: lan9662-otpc: document Lan9662 OTPC
+Message-ID: <20220831104455.2oc24fokicieyh37@soft-dev3-1.localhost>
+References: <20220831064238.102267-1-horatiu.vultur@microchip.com>
+ <20220831064238.102267-2-horatiu.vultur@microchip.com>
+ <393933f5-9a87-4d12-2527-5adfa4aeccca@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <393933f5-9a87-4d12-2527-5adfa4aeccca@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 00:35 +0000, Sean Christopherson wrote:
-> Drop writes to APIC_RRR, a.k.a. Remote Read Data Register, on AVIC
-> unaccelerated write traps.  The register is read-only and isn't emulated
-> by KVM.  Sending the register through kvm_apic_write_nodecode() will
-> result in screaming when x2APIC is enabled due to the unexpected failure
-> to retrieve the MSR (KVM expects that only "legal" accesses will trap).
+The 08/31/2022 10:28, Krzysztof Kozlowski wrote:
 
-I wonder about ESR register as well (280H), KVM doesn't seem to support it either,
-but allows 0 writes. Anyway:
+Hi Krzysztof,
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    oneOf:
+> > +      - items:
+> > +          - const: microchip,lan9662-otpc
+> > +          - const: microchip,lan9668-otpc
+> > +      - enum:
+> > +          - microchip,lan9662-otpc
+> 
+> This is not what I wrote and this does not make sense. You now listed
+> twice 9662 and 9668 does not have its entry.
 
-Best regards,
-	Maxim Levitsky
+As you figured it out, I am quite noob at these bindings.
+The only difference between what you wrote and what I wrote is the order
+under items. So the order matters?
 
 > 
-> Fixes: 4d1d7942e36a ("KVM: SVM: Introduce logic to (de)activate x2AVIC mode")
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index dad5affe44c1..b2033a56010c 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -675,6 +675,9 @@ static int avic_unaccel_trap_write(struct kvm_vcpu *vcpu)
->  	case APIC_DFR:
->  		avic_handle_dfr_update(vcpu);
->  		break;
-> +	case APIC_RRR:
-> +		/* Ignore writes to Read Remote Data, it's read-only. */
-> +		return 1;
->  	default:
->  		break;
->  	}
+> Best regards,
+> Krzysztof
 
-
+-- 
+/Horatiu
