@@ -2,86 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 992C4C0502C
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 520ABC54EE9
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230447AbiHaNUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
+        id S231537AbiHaNVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:21:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230213AbiHaNUS (ORCPT
+        with ESMTP id S230315AbiHaNU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:20:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EFE4CA0D;
-        Wed, 31 Aug 2022 06:20:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 332A161AB9;
-        Wed, 31 Aug 2022 13:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8672DC433B5;
-        Wed, 31 Aug 2022 13:20:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661952016;
-        bh=HEX19Msue3ia1rUZ9HgmgaphrORghYpXMdcYG7HxG5U=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=N56X7E936bII32lwSkViwaOtgiyImAwBwAhUW10zv/WB/1DorJO91Fj2cfF3/mG0m
-         /1F6ZoUPL2f+QRvfKl5CHJCc3cbMXPscoeAmL6vH6WoFOM5AFh32Dq7EKEviDAFey8
-         8399WoIrYHcThilBHnmHDCWMf5BsxwtD1kaG+pc+uzN8OFZWoK05cNjEai4d0XNn4a
-         NfEAGTpHCfKcApuWmbFdDBAKR1AQL+FJDmdjxN6AYUx4oosrtsvl7N/AVVcumdi2Fv
-         i7bl7a0ncYbBMHQ+AQA3qdQy4TlzPHtXol6KqSHapbFVVf8El53ipC7YWHn9PD0aRy
-         zzbo3oyfTHMQQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6FF44E924DA;
-        Wed, 31 Aug 2022 13:20:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 31 Aug 2022 09:20:58 -0400
+X-Greylist: delayed 602 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 06:20:56 PDT
+Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7735E12A90;
+        Wed, 31 Aug 2022 06:20:53 -0700 (PDT)
+Received: from imsva.intranet.prolan.hu (imsva.intranet.prolan.hu [10.254.254.252])
+        by fw2.prolan.hu (Postfix) with ESMTPS id C50867F540;
+        Wed, 31 Aug 2022 15:03:40 +0200 (CEST)
+Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B23E634064;
+        Wed, 31 Aug 2022 15:03:40 +0200 (CEST)
+Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 998BF3405A;
+        Wed, 31 Aug 2022 15:03:40 +0200 (CEST)
+Received: from fw2.prolan.hu (unknown [10.254.254.253])
+        by imsva.intranet.prolan.hu (Postfix) with ESMTPS;
+        Wed, 31 Aug 2022 15:03:40 +0200 (CEST)
+Received: from atlas.intranet.prolan.hu (atlas.intranet.prolan.hu [10.254.0.229])
+        by fw2.prolan.hu (Postfix) with ESMTPS id 638A87F540;
+        Wed, 31 Aug 2022 15:03:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=prolan.hu; s=mail;
+        t=1661951020; bh=qhxZovzJ5NVCosNILHzZdGtbXVH9Dqfa+uvEWfbbrmc=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To:From;
+        b=aEMO8oJXfSHFlMjIzvmMgbgIrFZwBRAR95OrDPIOGjcUyUW6foQCnmzUWARsYxtN9
+         WajvJhrDuPneRRADIxh0waVrHfqwCn6u+9Gzwaa3Ot5lyr7E6TNMemqnGqBbl8wsL0
+         3V2AzcyDXexu9k9rNffH+agpADSAfrU3A0Qaadsn9fj2uDz9P806WyCKl/8iegYV+U
+         8XciyLlR3lkGvU0yW7aVuFM/AApP3RKBQgnSQkFF2lzcDe4/V8ST6CLN/MGAjkmXui
+         iYWhwGoXzMz+qJmG4j9u16YmokUe/Vf6aEso2l+vwpj9Lr2f9adED+iyNwm2lsvG+T
+         KxgAI3aivpBSQ==
+Received: from [10.254.7.28] (10.254.7.28) by atlas.intranet.prolan.hu
+ (10.254.0.229) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Wed, 31
+ Aug 2022 15:03:40 +0200
+Message-ID: <0d6d1182-921e-1da2-b315-427f25228d12@prolan.hu>
+Date:   Wed, 31 Aug 2022 15:03:40 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH AUTOSEL 5.15 17/23] fec: Restart PPS after link state
+ change
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stable@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>
+References: <20220830172141.581086-1-sashal@kernel.org>
+ <20220830172141.581086-17-sashal@kernel.org>
+From:   =?UTF-8?B?Q3PDs2vDoXMgQmVuY2U=?= <csokas.bence@prolan.hu>
+In-Reply-To: <20220830172141.581086-17-sashal@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] net: hns3: updates for -next
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166195201645.2919.18238731043037132359.git-patchwork-notify@kernel.org>
-Date:   Wed, 31 Aug 2022 13:20:16 +0000
-References: <20220830111117.47865-1-huangguangbin2@huawei.com>
-In-Reply-To: <20220830111117.47865-1-huangguangbin2@huawei.com>
-To:     Guangbin Huang <huangguangbin2@huawei.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        lanhao@huawei.com
+X-Originating-IP: [10.254.7.28]
+X-ClientProxiedBy: atlas.intranet.prolan.hu (10.254.0.229) To
+ atlas.intranet.prolan.hu (10.254.0.229)
+X-EsetResult: clean, is OK
+X-EsetId: 37303A29971EF456637D67
+X-TM-AS-GCONF: 00
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Tue, 30 Aug 2022 19:11:13 +0800 you wrote:
-> This series includes some updates for the HNS3 ethernet driver.
+On 2022. 08. 30. 19:21, Sasha Levin wrote:
+> From: Csókás Bence <csokas.bence@prolan.hu>
 > 
-> Guangbin Huang (3):
->   net: hns3: add getting capabilities of gro offload and fd from
->     firmware
->   net: hns3: add querying fec ability from firmware
->   net: hns3: net: hns3: add querying and setting fec off mode from
->     firmware
+> [ Upstream commit f79959220fa5fbda939592bf91c7a9ea90419040 ]
 > 
-> [...]
+> On link state change, the controller gets reset,
+> causing PPS to drop out and the PHC to lose its
+> time and calibration. So we restart it if needed,
+> restoring calibration and time registers.
 
-Here is the summary with links:
-  - [net-next,1/4] net: hns3: add getting capabilities of gro offload and fd from firmware
-    https://git.kernel.org/netdev/net-next/c/507e46ae26ea
-  - [net-next,2/4] net: hns3: add querying fec ability from firmware
-    https://git.kernel.org/netdev/net-next/c/eaf83ae59e18
-  - [net-next,3/4] net: hns3: add querying and setting fec llrs mode from firmware
-    https://git.kernel.org/netdev/net-next/c/5c4f72842d1d
-  - [net-next,4/4] net: hns3: net: hns3: add querying and setting fec off mode from firmware
-    https://git.kernel.org/netdev/net-next/c/08aa17a0c185
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+There is an ongoing investigation on netdev@ about a potential kernel 
+panic on kernels newer than 5.12 with this patch applied. Please hold 
+off on backporting to 5.15 until the bugfix is applied to upstream.
