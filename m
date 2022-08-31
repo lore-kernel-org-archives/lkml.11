@@ -2,114 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0497DECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B815ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231356AbiHaMmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 08:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41864 "EHLO
+        id S230395AbiHaMnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 08:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiHaMls (ORCPT
+        with ESMTP id S229607AbiHaMnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 08:41:48 -0400
-X-Greylist: delayed 506 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 05:41:46 PDT
-Received: from smtp86.iad3b.emailsrvr.com (smtp86.iad3b.emailsrvr.com [146.20.161.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7388D3E79
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:41:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mev.co.uk;
-        s=20190130-41we5z8j; t=1661949200;
-        bh=f7Ge6BqQzFFLnUBF1++YxLIJ1YH3OB0XRMTv5fP9cQc=;
-        h=Date:Subject:To:From:From;
-        b=K/crxDlTJz3YFxF6FIuw3JGVV3vC+U9Zbe1OvhOv5CHoSBijoQdVdl7TaLToBCs9p
-         07/S1aeUmXD6D2K6n6fNMnku8/d9U1KGhsRX0tVSejJO/ldL5kRrGYz31xswBHh059
-         RvEQgiawNT00NQ+bcpVwzwrV0dfQ7CLTqNsaJzGg=
-X-Auth-ID: abbotti@mev.co.uk
-Received: by smtp11.relay.iad3b.emailsrvr.com (Authenticated sender: abbotti-AT-mev.co.uk) with ESMTPSA id 36AE9400D4;
-        Wed, 31 Aug 2022 08:33:19 -0400 (EDT)
-Message-ID: <0a0e568e-e3fc-56da-8370-e4796b480fe3@mev.co.uk>
-Date:   Wed, 31 Aug 2022 13:33:18 +0100
+        Wed, 31 Aug 2022 08:43:32 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BC925CE;
+        Wed, 31 Aug 2022 05:43:30 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id f14so10685864qkm.0;
+        Wed, 31 Aug 2022 05:43:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=5tRe0udrOzgvmzmVe1TJfRXs9QUgCv6/ooryrQ8LL0E=;
+        b=GudmD5Nd8mmMc/sqJS0qDmKTlZc/qGH+NwbB+EtE9tfjZxH/7/PKo2UOJHKbR2U6NU
+         9NqXSzQr0QKZt8CEq901VRrf3y499jtMjto/7uWUFncsFkPSt3Be6Yqh+nphYXif/hOk
+         7/K4JNjm5kvean7oixyXbECcP7RoG3WR8JQI97UzcG25zhQwKXKPe0c481f9pnKRdVXP
+         KCptRWkbD23qWS6VY1J+qLmnnEWOVoFDI5bewXuaRn7nFMoy3lW1Wy0jybr0EVKfxZAb
+         H/kkebegl/FHLDrPT4f9UGM8Mz35s9vjCqzlOFByhokWczigz0eNkdgO1Hi/GQDlJ+0c
+         9MRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=5tRe0udrOzgvmzmVe1TJfRXs9QUgCv6/ooryrQ8LL0E=;
+        b=DXE1icVzAnp+7rflXxczpQ+lvNu94y9uH90bENfcr9gbUxTkjV+0obaMmi5drVlLYg
+         Fnp9zsRe5Lv9JfGg3KZDlrmFJjcFG31T21hv0/yHj0A8xpdstLkEQv3fo68tmVs3pGNO
+         8wxh4wsvwZMuEufPMU/V6ADNpe3ESQMeHlGxYUYSeIuY2QV3uUCoQfkipg4N8aq3iDFF
+         hklJLApoC8yKLYCrm1PPrXF0xSem0SU1m3/+h2DurnziEUV2gpnV5121a9URHjT/1kq0
+         xtGAiIL2qWDKWWi1eaNIReWIiwsfk7smuPd87vJ+pKz+6ZB0nIBcBWiEM3fY+sE4wjUg
+         Fmfw==
+X-Gm-Message-State: ACgBeo2BdIK1AqK1l9jhIchtSA8ezGtAvTnwuCtWw7sLUwFe7fdK+ZbJ
+        z5Jv566weIrSCqRa9B5rAS8U520idevC2xForqrGmkahGjk=
+X-Google-Smtp-Source: AA6agR5PK7pRe0Eks80SVQBsPZG5FPESZc9foSYIBUYFn36C70hyDeIVP+KIVawwKV+ML2F4ckOA5o7padIb9dv+ut4=
+X-Received: by 2002:a05:620a:254d:b0:6ab:84b8:25eb with SMTP id
+ s13-20020a05620a254d00b006ab84b825ebmr15379328qko.383.1661949809875; Wed, 31
+ Aug 2022 05:43:29 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH] comedi: sysfs: convert sysfs snprintf to sysfs_emit
-Content-Language: en-GB
-To:     Xuezhi Zhang <zhangxuezhi3@gmail.com>,
-        hsweeten@visionengravers.com, gregkh@linuxfoundation.org,
-        zhangxuezhi1@coolpad.com
-Cc:     linux-kernel@vger.kernel.org
-References: <20220831121456.210835-1-zhangxuezhi3@gmail.com>
-From:   Ian Abbott <abbotti@mev.co.uk>
-Organization: MEV Ltd.
-In-Reply-To: <20220831121456.210835-1-zhangxuezhi3@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Classification-ID: 0165e51f-50d6-4f1b-89cf-afbcf9ee0dca-1-1
+References: <20220831100506.3368103-1-vincent.whitchurch@axis.com> <20220831100506.3368103-3-vincent.whitchurch@axis.com>
+In-Reply-To: <20220831100506.3368103-3-vincent.whitchurch@axis.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 31 Aug 2022 15:42:54 +0300
+Message-ID: <CAHp75VeMxjwtORMBRUMk0ynEpL354WaRGczo_Mi1SjveEmGAbA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] iio: adc: mcp320x: remove device_index check for TX
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>, kernel <kernel@axis.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/08/2022 13:14, Xuezhi Zhang wrote:
-> From: zhangxuezhi1 <zhangxuezhi1@coolpad.com>
-> 
-> Fix up all sysfs show entries to use sysfs_emit
-> 
-> Signed-off-by: zhangxuezhi1 <zhangxuezhi1@coolpad.com>
+On Wed, Aug 31, 2022 at 1:05 PM Vincent Whitchurch
+<vincent.whitchurch@axis.com> wrote:
+>
+> Replace the device_index switch with a TX value computation based on the
+> number of channels in the chip_info structure, so that the latter has
+> all the information needed to handle the variants.
 
-The patch looks fine apart from the Signed-off-by line.  Please use a 
-proper name for the Signed-off-by line.  Generally, a romanized version 
-of the forename(s) (given name(s)) followed by the surname (family name) 
-is preferred, for example: Xuezhi Zhang.
+...
 
-Could you please post a "PATCH v2" with a proper Signed-off-by line? 
-Thanks.
+>                 return ((start_bit << 4) | (!differential << 3) |
+> +                       (address << 2));
 
-> ---
->   drivers/comedi/comedi_fops.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/comedi/comedi_fops.c b/drivers/comedi/comedi_fops.c
-> index 55a0cae04b8d..e2114bcf815a 100644
-> --- a/drivers/comedi/comedi_fops.c
-> +++ b/drivers/comedi/comedi_fops.c
-> @@ -396,7 +396,7 @@ static ssize_t max_read_buffer_kb_show(struct device *csdev,
->   	mutex_unlock(&dev->mutex);
->   
->   	comedi_dev_put(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
-> +	return sysfs_emit(buf, "%u\n", size);
->   }
->   
->   static ssize_t max_read_buffer_kb_store(struct device *csdev,
-> @@ -452,7 +452,7 @@ static ssize_t read_buffer_kb_show(struct device *csdev,
->   	mutex_unlock(&dev->mutex);
->   
->   	comedi_dev_put(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
-> +	return sysfs_emit(buf, "%u\n", size);
->   }
->   
->   static ssize_t read_buffer_kb_store(struct device *csdev,
-> @@ -509,7 +509,7 @@ static ssize_t max_write_buffer_kb_show(struct device *csdev,
->   	mutex_unlock(&dev->mutex);
->   
->   	comedi_dev_put(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
-> +	return sysfs_emit(buf, "%u\n", size);
->   }
->   
->   static ssize_t max_write_buffer_kb_store(struct device *csdev,
-> @@ -565,7 +565,7 @@ static ssize_t write_buffer_kb_show(struct device *csdev,
->   	mutex_unlock(&dev->mutex);
->   
->   	comedi_dev_put(dev);
-> -	return snprintf(buf, PAGE_SIZE, "%u\n", size);
-> +	return sysfs_emit(buf, "%u\n", size);
->   }
->   
->   static ssize_t write_buffer_kb_store(struct device *csdev,
+At the same time can be put on the above line and removed couple of ().
+
+...
+
+>                 return ((start_bit << 6) | (!differential << 5) |
+> -                                                       (channel << 2));
+> +                       (address << 2));
+
+Ditto.
 
 -- 
--=( Ian Abbott <abbotti@mev.co.uk> || MEV Ltd. is a company  )=-
--=( registered in England & Wales.  Regd. number: 02862268.  )=-
--=( Regd. addr.: S11 & 12 Building 67, Europa Business Park, )=-
--=( Bird Hall Lane, STOCKPORT, SK3 0XA, UK. || www.mev.co.uk )=-
+With Best Regards,
+Andy Shevchenko
