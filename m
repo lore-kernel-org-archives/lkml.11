@@ -2,144 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB4AC0502A
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 03:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE60EECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 03:40:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbiHaDkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 23:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59754 "EHLO
+        id S231726AbiHaDk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 23:40:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbiHaDkb (ORCPT
+        with ESMTP id S229659AbiHaDkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 23:40:31 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7063D5A4;
-        Tue, 30 Aug 2022 20:40:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661917230; x=1693453230;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4UnPxXmSAR7BcO87OaiX5jBIE02ojL3gV8lzjgFw+ek=;
-  b=MB79ibZx1zQxGuEL+NW/UTd654ri+jGvYdvDlHFmQTaq8+yH0gWR5qtX
-   eVkT5Gd7i2JZDQR/8SlAHLA68r04qRROF37aW11DCQr5mvAsT41hhRnOi
-   q8RuLcORI3FyqInvw7UZR6SBzwOVFxSoyZTNltr+mJ0MDcm4e5nj0+WWP
-   n7M8LNwuYLFaF8e1Ml0qkIcFuMUH9hfqK5rvf7gUekQh0hmxOVq5cs60F
-   sPcP6xKF1IM2VBnXoJlW3WfMYjAK08VXByJQaxZRsM6gRkV/gGLdJpY8M
-   pRqt+/aLL3GhGkXSRHCfA/SG6F3iEEWB2HPphMV+qYKtI557IC1skjsgg
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="292940295"
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="292940295"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 20:40:29 -0700
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="673175541"
-Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.249.192.207]) ([10.249.192.207])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 20:40:26 -0700
-Message-ID: <37ed6be6-bfa5-e87c-9c74-e5bdacda1600@intel.com>
-Date:   Wed, 31 Aug 2022 11:40:24 +0800
+        Tue, 30 Aug 2022 23:40:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2F18D3E5;
+        Tue, 30 Aug 2022 20:40:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8375CB81E3B;
+        Wed, 31 Aug 2022 03:40:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C79C5C433D6;
+        Wed, 31 Aug 2022 03:40:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661917251;
+        bh=Il5YVxVcg7szkQ+GmwaV3LD8OB+7QYzLJ9JZruU/l7E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tYw/COZBYfyqk9eBx6TDhe0Y8JFtlUOKUXqXMTW4Ii7BRwLVteJZsZ8kbjdNtRY/4
+         zMUX+Rs15SoyLi5VPIawB3AYZaVEonNzHgpYS2h4JfnbZ3JSN4Qgwc+OfUJ4+8MAyJ
+         UJoKMTYbT0Bt9TVVbuyOA7gHdA86QHjsLndfqtHYqtmK5TZGFRq40cxhAVGMDPcRtq
+         3RKV2jeo9ZGAuHAqVbw0ENlcn3NtM4euRhWE3dE55/NSq9aJ3ebSym7XvRg7NPOhfF
+         o64iveXPO8pS3OF8l0KHTck8QE8w99/2nNeQXKQ+jscoITly0LpS1JFJemy4leCnJh
+         /56WCjnVNSEGw==
+Date:   Wed, 31 Aug 2022 06:40:46 +0300
+From:   "jarkko@kernel.org" <jarkko@kernel.org>
+To:     "Huang, Kai" <kai.huang@intel.com>
+Cc:     "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "haitao.huang@linux.intel.com" <haitao.huang@linux.intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/6] x86/sgx: Do not consider unsanitized pages an error
+Message-ID: <Yw7YPjGHrM6X+WC+@kernel.org>
+References: <20220830031206.13449-2-jarkko@kernel.org>
+ <1f43e7b9-c101-3872-bd1b-add66933b285@intel.com>
+ <1b3308a364317d36ad41961ea9cfee24aa122f02.camel@intel.com>
+ <Yw7EX5GCrEaLzpHV@kernel.org>
+ <d07577c3f0b4b3fff0ce470c56f91fb634653703.camel@intel.com>
+ <Yw7LJa7eRG+WZ0wv@kernel.org>
+ <c3c085d69311ed759bff5bb325a2c182d423f91f.camel@intel.com>
+ <Yw7OEh7QP8tb7BR1@kernel.org>
+ <Yw7RDhRrgJZ8M2EZ@kernel.org>
+ <7d4e79a9b9751c479378dd0f21605dabc6507cc8.camel@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.13.0
-Subject: Re: [PATCH v8 018/103] KVM: TDX: Stub in tdx.h with structs,
- accessors, and VMCS helpers
-Content-Language: en-US
-To:     Isaku Yamahata <isaku.yamahata@gmail.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Binbin Wu <binbin.wu@linux.intel.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>, erdemaktas@google.com,
-        Sagi Shahar <sagis@google.com>
-References: <cover.1659854790.git.isaku.yamahata@intel.com>
- <d88e0cee35b70d86493d5a71becffa4ab5c5d97c.1659854790.git.isaku.yamahata@intel.com>
- <651c33a5-4b9b-927f-cb04-ec20b8c3d730@linux.intel.com>
- <YwT0+DO4AuO1xL82@google.com>
- <20220826044817.GE2538772@ls.amr.corp.intel.com>
-From:   Xiaoyao Li <xiaoyao.li@intel.com>
-In-Reply-To: <20220826044817.GE2538772@ls.amr.corp.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <7d4e79a9b9751c479378dd0f21605dabc6507cc8.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/26/2022 12:48 PM, Isaku Yamahata wrote:
-> On Tue, Aug 23, 2022 at 03:40:40PM +0000,
-> Sean Christopherson <seanjc@google.com> wrote:
+On Wed, Aug 31, 2022 at 03:28:20AM +0000, Huang, Kai wrote:
+> On Wed, 2022-08-31 at 06:10 +0300, Jarkko Sakkinen wrote:
+> > On Wed, Aug 31, 2022 at 05:57:22AM +0300, jarkko@kernel.org wrote:
+> > > On Wed, Aug 31, 2022 at 02:55:52AM +0000, Huang, Kai wrote:
+> > > > On Wed, 2022-08-31 at 05:44 +0300, jarkko@kernel.org wrote:
+> > > > > On Wed, Aug 31, 2022 at 02:35:53AM +0000, Huang, Kai wrote:
+> > > > > > On Wed, 2022-08-31 at 05:15 +0300, jarkko@kernel.org wrote:
+> > > > > > > On Wed, Aug 31, 2022 at 01:27:58AM +0000, Huang, Kai wrote:
+> > > > > > > > On Tue, 2022-08-30 at 15:54 -0700, Reinette Chatre wrote:
+> > > > > > > > > Hi Jarkko,
+> > > > > > > > > 
+> > > > > > > > > On 8/29/2022 8:12 PM, Jarkko Sakkinen wrote:
+> > > > > > > > > > In sgx_init(), if misc_register() for the provision device fails, and
+> > > > > > > > > > neither sgx_drv_init() nor sgx_vepc_init() succeeds, then ksgxd will be
+> > > > > > > > > > prematurely stopped.
+> > > > > > > > > 
+> > > > > > > > > I do not think misc_register() is required to fail for the scenario to
+> > > > > > > > > be triggered (rather use "or" than "and"?). Perhaps just
+> > > > > > > > > "In sgx_init(), if a failure is encountered after ksgxd is started
+> > > > > > > > > (via sgx_page_reclaimer_init()) ...".
+> > > > > > > > 
+> > > > > > > > IMHO "a failure" might be too vague.  For instance, failure to sgx_drv_init()
+> > > > > > > > won't immediately result in ksgxd to stop prematurally.  As long as KVM SGX can
+> > > > > > > > be initialized successfully, sgx_init() still returns 0.
+> > > > > > > > 
+> > > > > > > > Btw I was thinking whether we should move sgx_page_reclaimer_init() to the end
+> > > > > > > > of sgx_init(), after we make sure at least one of the driver and the KVM SGX is
+> > > > > > > > initialized successfully.  Then the code change in this patch won't be necessary
+> > > > > > > > if I understand correctly.  AFAICT there's no good reason to start the ksgxd at
+> > > > > > > > early stage before we are sure either the driver or KVM SGX will work.
+> > > > > > > 
+> > > > > > > I would focus fixing the existing flow rather than reinventing the flow.
+> > > > > > > 
+> > > > > > > It can be made to work, and therefore it is IMHO correct action to take.
+> > > > > > 
+> > > > > > From another perspective, the *existing flow* is the reason which causes this
+> > > > > > bug.  A real fix is to fix the flow itself.
+> > > > > 
+> > > > > Any existing flow in part of the kernel can have a bug. That
+> > > > > does not mean that switching flow would be proper way to fix
+> > > > > a bug.
+> > > > > 
+> > > > > BR, Jarkko
+> > > > 
+> > > > Yes but I think this is only true when the flow is reasonable.  If the flow
+> > > > itself isn't reasonable, we should fix the flow (given it's easy to fix AFAICT).
+> > > > 
+> > > > Anyway, let us also hear from others.
+> > > 
+> > > The flow can be made to work without issues, which in the
+> > > context of a bug fix is exactly what a bug fix should do.
+> > > Not more or less.
+> > > 
+> > > You don't gain any measurable value for the user with this
+> > > switch idea.
+> > 
+> > And besides this not proper way to review patch anyway because you did
+> > not review the code. 
+> > 
 > 
->> On Tue, Aug 23, 2022, Binbin Wu wrote:
->>>
->>> On 2022/8/8 6:01, isaku.yamahata@intel.com wrote:
->>>> +static __always_inline void tdvps_vmcs_check(u32 field, u8 bits)
->>>> +{
->>>> +	BUILD_BUG_ON_MSG(__builtin_constant_p(field) && (field) & 0x1,
->>>> +			 "Read/Write to TD VMCS *_HIGH fields not supported");
->>>> +
->>>> +	BUILD_BUG_ON(bits != 16 && bits != 32 && bits != 64);
->>>> +
->>>> +	BUILD_BUG_ON_MSG(bits != 64 && __builtin_constant_p(field) &&
->>>> +			 (((field) & 0x6000) == 0x2000 ||
->>>> +			  ((field) & 0x6000) == 0x6000),
->>>> +			 "Invalid TD VMCS access for 64-bit field");
->>>
->>> if bits is 64 here, "bits != 64" is false, how could this check for "Invalid
->>> TD VMCS access for 64-bit field"?
->>
->> Bits 14:13 of the encoding, which is extracted by "(field) & 0x6000", encodes the
->> width of the VMCS field.  Bit 0 of the encoding, "(field) & 0x1" above, is a modifier
->> that is only relevant when operating in 32-bit mode, and is disallowed because TDX is
->> 64-bit only.
->>
->> This yields four possibilities for TDX:
->>
->>    (field) & 0x6000) == 0x0000 : 16-bit field
->>    (field) & 0x6000) == 0x2000 : 64-bit field
->>    (field) & 0x6000) == 0x4000 : 32-bit field
->>    (field) & 0x6000) == 0x6000 : 64-bit field (technically "natural width", but
->>                                                effectively 64-bit because TDX is
->> 					      64-bit only)
->>
->> The assertion is that if the encoding indicates a 64-bit field (0x2000 or 0x6000),
->> then the number of bits KVM is accessing must be '64'.  The below assertions do
->> the same thing for 32-bit and 16-bit fields.
+> I did review the code, but I couldn't agree on the fix.  That's why I expressed
+> my view here.
 > 
-> Thanks for explanation. I've updated it as follows to use symbolic value.
 > 
-> #define VMCS_ENC_ACCESS_TYPE_MASK	0x1UL
-> #define VMCS_ENC_ACCESS_TYPE_FULL	0x0UL
-> #define VMCS_ENC_ACCESS_TYPE_HIGH	0x1UL
-> #define VMCS_ENC_ACCESS_TYPE(field)	((field) & VMCS_ENC_ACCESS_TYPE_MASK)
+> > I'll focus on fix what is broken e.g. so that it
+> > is easy to backport to stable and distro kernels, and call it a day.
+> > It certainly does not have to make code "perfect", as long as known
+> > bugs are sorted out.
 > 
-> 	/* TDX is 64bit only.  HIGH field isn't supported. */
-> 	BUILD_BUG_ON_MSG(__builtin_constant_p(field) &&
-> 			 VMCS_ENC_ACCESS_TYPE(field) == VMCS_ENC_ACCESS_TYPE_HIGH,
-> 			 "Read/Write to TD VMCS *_HIGH fields not supported");
+> Why cannot the fix which fixes the flow go to stable?
 > 
-> 	BUILD_BUG_ON(bits != 16 && bits != 32 && bits != 64);
+> > 
+> > You are welcome to review the next version of the patch, once I've
+> > resolved the issues that were pointed out by Reinette, if you still
+> > see some issue but this type of speculative discussion is frankly just
+> > wasting everyones time.
 > 
-> #define VMCS_ENC_WIDTH_MASK	GENMASK_UL(14, 13)
-> #define VMCS_ENC_WIDTH_16BIT	(0UL << 13)
-> #define VMCS_ENC_WIDTH_64BIT	(1UL << 13)
-> #define VMCS_ENC_WIDTH_32BIT	(2UL << 13)
-> #define VMCS_ENC_WIDTH_NATURAL	(3UL << 13)
-> #define VMCS_ENC_WIDTH(field)	((field) & VMCS_ENC_WIDTH_MASK)
-> 
-> 	/* TDX is 64bit only.  i.e. natural width = 64bit. */
-> 	BUILD_BUG_ON_MSG(bits != 64 && __builtin_constant_p(field) &&
-> 			 (VMCS_ENC_WIDTH(field) == VMCS_ENC_WIDTH_64BIT ||
-> 			  VMCS_ENC_WIDTH(field) == VMCS_ENC_WIDTH_NATURAL),
-> 			 "Invalid TD VMCS access for 64-bit field");
-> 	BUILD_BUG_ON_MSG(bits != 32 && __builtin_constant_p(field) &&
-> 			 VMCS_ENC_WIDTH(field) == VMCS_ENC_WIDTH_32BIT,
-> 			 "Invalid TD VMCS access for 32-bit field");
-> 	BUILD_BUG_ON_MSG(bits != 16 && __builtin_constant_p(field) &&
-> 			 VMCS_ENC_WIDTH(field) == VMCS_ENC_WIDTH_16BIT,
-> 			 "Invalid TD VMCS access for 16-bit field");
+> Hmm.. Why pointing out a better fix (my perspective of course) is wasting
+> everyone's time?
 
-Actually, the original code is written by me that is copied from 
-vmcs_check{16/32/64/l} in arch/x86/kvm/vmx/vmx_ops.h
+There was not a single inline comment.
 
-If you are going to do above change, you'd better cook a patch to change 
-it for vmx_ops.h at first and see opinion from community.
-
+BR, Jarkko
