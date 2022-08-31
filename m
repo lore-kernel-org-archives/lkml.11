@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9750ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 490FFECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232395AbiHaSRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:17:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32790 "EHLO
+        id S231290AbiHaSRh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:17:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232689AbiHaSQQ (ORCPT
+        with ESMTP id S232767AbiHaSQo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:16:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08173EF9FB;
-        Wed, 31 Aug 2022 11:13:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 320ACB8227A;
-        Wed, 31 Aug 2022 18:12:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D4EC4347C;
-        Wed, 31 Aug 2022 18:12:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661969532;
-        bh=TwQvXPSEvLyzs2xgFi3POyva60hZdjGop9E3Q6E66NA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tIFl2jRYM/70ivwGtBc1NUThPZtbFDPC4tP4XsBJP3whZimUxtfZqLCXaGsWZEOKZ
-         mvboeGMrwn80J1xnwsXJB0KaqL+SQiXyDQzJpST/dRjtKXftyqXUZCTKKrJSlNcZsA
-         RPUVfvd0YK/h3WwxsAtJzhcSkX7PVhtGx+V1f+Elgq75dPS08csNSR90IbNIAREExC
-         5mllniGYgQMqveB7u9EIvGzgRwcaBFy+hhmQC6sbZ3lbzmXiusGhzUOYcA/2eMq6VO
-         dyBYvjXhm8Y33nqS+rAUBVPMjw6EveHIuyogYEIN1ZumZcZ9AYttvrMkZMFmPwbXjs
-         9qSaYAPblZqkQ==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 786FF5C0E4D; Wed, 31 Aug 2022 11:12:11 -0700 (PDT)
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     rcu@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        rostedt@goodmis.org, "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH rcu 18/25] rcu: Make synchronize_rcu_expedited() fast path update .expedited_sequence
-Date:   Wed, 31 Aug 2022 11:12:03 -0700
-Message-Id: <20220831181210.2695080-18-paulmck@kernel.org>
-X-Mailer: git-send-email 2.31.1.189.g2e36527f23
-In-Reply-To: <20220831181207.GA2694717@paulmck-ThinkPad-P17-Gen-1>
-References: <20220831181207.GA2694717@paulmck-ThinkPad-P17-Gen-1>
+        Wed, 31 Aug 2022 14:16:44 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DA2E3432
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:13:41 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id j17so11608418qtp.12
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:13:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=u1UVGt6PDJkRSWBfyxYzPJPgJUP53+mBBhKcycvTk2g=;
+        b=DzjeZqnBEIOpRc0mqEBl5vCuzK/sA5YrAjEOSfzzRN+NHRw/jneFNPhOXOoa0/WAz8
+         fapoH4MfjijFBac1DYoiBXKYAj6lbFwTnN5zLElx5Z71IBkIRItRnt+r6z/v1n0YsAwZ
+         6BRIDW4+nXIcwSzg4MMBOBzBPVlsll5ktae+M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=u1UVGt6PDJkRSWBfyxYzPJPgJUP53+mBBhKcycvTk2g=;
+        b=7IHeO1SaT2mapCn/fXyCsVUSOkuFtOlvbsscsO8W3+FY/bgL1kU4pI2/M6qHVtUP3Y
+         BR2tN5GG7vAaX7Xr1na868kSTicWyCtWAI5hLryjCVG7bkYSYBqMAzaraLTcNco78YYW
+         7CgiukZPrgCDq22lUN8PxS4sD0Sve5Dsgbo/8yNWcYoUl/7kj9yeKMLSJF2QZ750Tf2c
+         DEnXC3OhJe1Q7ED+IMeA/+NlidH+T8Ua/CfCKG2Wpcms9ZvFxQMLBX7SYsYNft3EN+Qz
+         3JhusoIMbYmU9ZSOS3IiqdpMoMsfSgOe9xtCuiAW+QOouliQQd2IuzBma1hcg4J2HMD2
+         4pdQ==
+X-Gm-Message-State: ACgBeo1cqmw7OTUkyC7yQgGZayE55T2WnqwrOw+qIXM0X/bPAwnX/Eja
+        MwL5K8GlTCOcA9cO6Vv5f5kiFvSsuaZo8Sm83GA0670UyBA=
+X-Google-Smtp-Source: AA6agR5OFUtG/N/PNwq8535QjQeYjw4uWLO1JLOAsKjXkpu6+BRuCFiHCNnvFotv4A2ReBXzk2skh2SdsmxB8iMwS0g=
+X-Received: by 2002:ac8:5983:0:b0:344:5dcb:3b6b with SMTP id
+ e3-20020ac85983000000b003445dcb3b6bmr20745469qte.503.1661969611308; Wed, 31
+ Aug 2022 11:13:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220830202018.1884851-1-pmalani@chromium.org> <Yw8frAv2pMfjmE0U@kuha.fi.intel.com>
+In-Reply-To: <Yw8frAv2pMfjmE0U@kuha.fi.intel.com>
+From:   Prashant Malani <pmalani@chromium.org>
+Date:   Wed, 31 Aug 2022 11:13:20 -0700
+Message-ID: <CACeCKae_uB6O_=A6bPGq28zUivWhhyLpvb31c7gP5vMFBSetNg@mail.gmail.com>
+Subject: Re: [PATCH] platform/chrome: cros_ec_typec: Register partner PDOs
+To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev,
+        bleung@chromium.org, Guenter Roeck <groeck@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit causes the early boot single-CPU synchronize_rcu_expedited()
-fastpath to update the rcu_state structure's ->expedited_sequence
-counter.  This will allow the full-state polled grace-period APIs to
-detect all expedited grace periods without the need to track the special
-combined polling-only counter, which is another step towards removing
-the ->rgos_polled field from the rcu_gp_oldstate, thereby reducing its
-size by one third.
+Thanks for the review, Heikki.
 
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
----
- kernel/rcu/tree_exp.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+On Wed, Aug 31, 2022 at 1:45 AM Heikki Krogerus
+<heikki.krogerus@linux.intel.com> wrote:
+>
+> On Tue, Aug 30, 2022 at 08:20:18PM +0000, Prashant Malani wrote:
+> > The ChromeOS EC exports partner source/sink cap PDOs (Power Data
+> > Objects) to the application processor (AP). Use this information
+> > to register USB PD (Power Delivery) capabilities with the
+> > USB Type-C Power Delivery device class.
+> >
+> > Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> > Signed-off-by: Prashant Malani <pmalani@chromium.org>
+>
+> This looks good to me. One nitpick below. With that fixed, FWIW:
+>
+> Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+>
+> Will you later register also the port PDOs?
+Yes, that is the plan.
 
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index 1a51f9301ebff..54e05d13d1512 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -906,6 +906,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp)
- void synchronize_rcu_expedited(void)
- {
- 	bool boottime = (rcu_scheduler_active == RCU_SCHEDULER_INIT);
-+	unsigned long flags;
- 	struct rcu_exp_work rew;
- 	struct rcu_node *rnp;
- 	unsigned long s;
-@@ -924,6 +925,11 @@ void synchronize_rcu_expedited(void)
- 		// them, which allows reuse of ->gp_seq_polled_exp_snap.
- 		rcu_poll_gp_seq_start_unlocked(&rcu_state.gp_seq_polled_exp_snap);
- 		rcu_poll_gp_seq_end_unlocked(&rcu_state.gp_seq_polled_exp_snap);
-+
-+		local_irq_save(flags);
-+		WARN_ON_ONCE(num_online_cpus() > 1);
-+		rcu_state.expedited_sequence += (1 << RCU_SEQ_CTR_SHIFT);
-+		local_irq_restore(flags);
- 		return;  // Context allows vacuous grace periods.
- 	}
- 
--- 
-2.31.1.189.g2e36527f23
+> >       if (resp.events & PD_STATUS_EVENT_SOP_PRIME_DISC_DONE &&
+> > @@ -1006,6 +1061,7 @@ static void cros_typec_handle_status(struct cros_typec_data *typec, int port_num
+> >                                        "Failed SOP Disc event clear, port: %d\n", port_num);
+> >               }
+> >       }
+> > +
+> >  }
+>
+> I'm guessing that extra newline was just a typo.
 
+Yeah ,I missed it during self-review :(
+I'll fix it up while applying the patch if there is no other comment.
+Otherwise I'll fix it in v2 (if there is one).
