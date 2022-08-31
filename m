@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04EBEECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5583ECAAD8
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:23:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230141AbiHaGUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 02:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33126 "EHLO
+        id S230144AbiHaGX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 02:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbiHaGUG (ORCPT
+        with ESMTP id S229786AbiHaGXZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 02:20:06 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8227F1DA48
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:20:02 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id b128so10024418vsc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:20:02 -0700 (PDT)
+        Wed, 31 Aug 2022 02:23:25 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8B0BD107
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:23:24 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id g7so1578616lfe.11
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:23:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=5Uji14+TdZrnvcT0vtEfCUN+mbWQ8EBkoUebh8FZEU8=;
-        b=Y2jD8zNY3VvF7yFZcZLYhg5Gfzu1o+2UpwAtIZ2QspR4u/sFWVRH4h00lTQdl/47MW
-         U5odU8htYcZ2Axj1dl79B3wZsOZ6AaAPdjRQHp0WvPY18nb6X5oZ7E/qv2UrdCqSqcvZ
-         fcm5ILO5TV8jpnS/soWNXWi/byQir7ZtOy2l6E/jPNrxOkqN9uQhq344Wv4lLGrr1sG3
-         +X5uaZ6rKLsXBsGJpEd6Qw01wUEnqrQcnhJ7fvdlYWjpk58o8N+20uN7tysYr0ICkUCb
-         aZdQZEo8jA8A1s3kXHfKh/Al/ymnrr3XYS0CpXGICVRZbwu2b/gMHYq+pxWvc293raeZ
-         +sBQ==
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=sG8qQX99gFK4yoHoKn1Te6zMXWrXBOfDL+SjtxXraow=;
+        b=VLeRXkSI9xzluqbrtoexL6/woaBxAqAt86KOLzWX2tiaEbNAu7jebpt79pR+gAyIXH
+         rMrki1qaEQxEQVFIUqx2laUPLlU+yiqsrj3/9YIctsuKMt+oWIV3ruqkYazPSmqr3YFN
+         gfCjS/3wSyIOu2gTKsqF684/JK1PEu4XNmM7QiyQt1qqgEBHdRQu8hgqAI6MgXcGaToq
+         STmaE2cO2BVkejVzfGqJIc9NVfIdyKCtJnoBcTNwbo7ZhqvzB36T3rCS+CFQndf82Iz7
+         4I9BnepR+SKDA1MaUkQiqzNfDIw+IzX+AitTllmE32OWBWEr0VoUfH2SrB7Xs0G7S5Qv
+         W4KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=5Uji14+TdZrnvcT0vtEfCUN+mbWQ8EBkoUebh8FZEU8=;
-        b=4ouK/vPlU6aTpyfqgGWRaL1vaipz6X4se65vE/l24gAoxJqHdGuK7VMkayuoP1ZMNu
-         MTperFII+I6rQOuUgZwRzeFcT9K0Dovti9vZcCSPfkpLrm77DWMRd5n25ZjqBTb3JXeP
-         mITvsyGJcv2La6sWpFaSkbUOxHEbekKmvdL60f3QfTcMKWphGsSnasSJASBNiqsAK1de
-         kl/P/2ter/w7ZEcAQ2NuZSVlZs7kYgq+m6d4i9zZmc8QyBgTl4dgHLoDRVl/Go/hgNzl
-         ghzloexylx4rNVNkKGROpRcrvC2bQEkN+Yz3Bf/nREMy8pkkSK3cVVWob/UhSrrs4UBI
-         66aw==
-X-Gm-Message-State: ACgBeo3AgZCjmvzgPpOd5EcaFTQUwHiqgbnxdIZ7AbMN+4fkFpziEoY8
-        fkiZP2jauqpWIMQ48sFjnUVO1sxBe5HBm/P5hhNs6HgmA9U=
-X-Google-Smtp-Source: AA6agR4394e/N2qvqEWV8UddKMjybUgjOSmpGyCbjDt0hIzivYq9pWESRkiTrl7QLWA8RmaV5T+80kojoXyYUB3pVqA=
-X-Received: by 2002:a05:6102:e93:b0:390:d839:9aa2 with SMTP id
- l19-20020a0561020e9300b00390d8399aa2mr5535835vst.65.1661926801397; Tue, 30
- Aug 2022 23:20:01 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=sG8qQX99gFK4yoHoKn1Te6zMXWrXBOfDL+SjtxXraow=;
+        b=6byyTrGSs8tPOCdwjL2HOBfhGimJ4mOoKky3925qr07N2YwD5IhJPvgBOWuulQiSzF
+         fKiG+svGX/kaEGzgycpPNABlJHbO0vh2MXwH1qHu3hIXLpKv0PuIPoh66Y7y9ygIxIF9
+         K64piXFhHZ9EtxdDAMd3ap/pYluXKqxAMbmygENTdCIwLTAYZQabGdbx8Te9WOzSWw45
+         ZNafbNrOkMHs2Lc+UqamKroFekfYP468YNAFI6bKg0KdjklPIA6nX7oLyJ0DFkRQfVYt
+         fBuAhA0Qj+rHMgogbSHFFNVbfhp90LBuTwKUWqVgP7vVBQjpwofp8EGXTe/fHzdTgIjz
+         BeCA==
+X-Gm-Message-State: ACgBeo2FEf+Tgf0N5pkJmjFjPaDW0PYfqepc5RFpcOiv63SAIL/JH1tc
+        I+w88H6C8E2WmDebjSiJc70Rmw==
+X-Google-Smtp-Source: AA6agR5BmtOnQlEfLdxdo+dKqIZi/cCEsfH7kp1nabWPpiU2DtSDu1l5/8vzYaNFyjpJVl4vA8Nx+g==
+X-Received: by 2002:a19:e00d:0:b0:492:e5a5:588b with SMTP id x13-20020a19e00d000000b00492e5a5588bmr8309119lfg.243.1661927002695;
+        Tue, 30 Aug 2022 23:23:22 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id f13-20020a056512092d00b00492ed031aacsm1868997lft.173.2022.08.30.23.23.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 23:23:21 -0700 (PDT)
+Message-ID: <ad8da366-0eec-fb23-b30f-0fe20d709104@linaro.org>
+Date:   Wed, 31 Aug 2022 09:23:21 +0300
 MIME-Version: 1.0
-References: <20220829232934.3277747-1-yuzhao@google.com> <202208310701.LKr1WDCh-lkp@intel.com>
-In-Reply-To: <202208310701.LKr1WDCh-lkp@intel.com>
-From:   Yu Zhao <yuzhao@google.com>
-Date:   Wed, 31 Aug 2022 00:19:25 -0600
-Message-ID: <CAOUHufbnaZpNZ-rarVzOE+S6Wya8OmJF5sbNF29S-Y_XLNRooQ@mail.gmail.com>
-Subject: Re: [PATCH] Revert "swiotlb: panic if nslabs is too small"
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kbuild@lists.01.org, Christoph Hellwig <hch@infradead.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dongli Zhang <dongli.zhang@oracle.com>,
-        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        iommu@lists.linux.dev, linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH 2/4] dt-bindings: memory: Add numeric LPDDR compatible
+ string variant
+Content-Language: en-US
+To:     Julius Werner <jwerner@chromium.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Jian-Jia Su <jjsu@google.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220831013359.1807905-1-jwerner@chromium.org>
+ <20220831013359.1807905-3-jwerner@chromium.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220831013359.1807905-3-jwerner@chromium.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 12:01 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
->
-> Hi Yu,
->
-> url:    https://github.com/intel-lab-lkp/linux/commits/Yu-Zhao/Revert-swiotlb-panic-if-nslabs-is-too-small/20220830-073123
-> base:   c40e8341e3b3bb27e3a65b06b5b454626234c4f0
-> config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20220831/202208310701.LKr1WDCh-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
->
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->
-> smatch warnings:
-> kernel/dma/swiotlb.c:334 swiotlb_init_remap() error: uninitialized symbol 'nslabs'.
->
-> vim +/nslabs +334 kernel/dma/swiotlb.c
->
-> 7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  307  void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
-> 7374153d294eb5 kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-14  308                int (*remap)(void *tlb, unsigned long nslabs))
->                                                                                                                               ^^^^^^
->
-> abbceff7d7a884 lib/swiotlb.c           FUJITA Tomonori   2010-05-10  309  {
-> 6424e31b1c050a kernel/dma/swiotlb.c    Christoph Hellwig 2022-03-15  310        struct io_tlb_mem *mem = &io_tlb_default_mem;
-> 20347fca71a387 kernel/dma/swiotlb.c    Tianyu Lan        2022-07-08  311        unsigned long nslabs;
->                                                                                               ^^^^^^
-> Merge issue?  How does this compile?
+On 31/08/2022 04:33, Julius Werner wrote:
+> This patch allows a new kind of compatible string for LPDDR parts in the
+> device tree bindings, in addition to the existing hardcoded
+> <vendor>,<part-number> strings. The new format contains manufacturer and
+> part (revision) information in numerical form, such as lpddr3-ff,0201
+> for an LPDDR3 part with manufacturer ID ff and revision ID 0201. This
+> helps cases where LPDDR parts are probed at runtime by boot firmware and
+> cannot be matched to hardcoded part numbers.
 
-Sorry, I deleted an extra line while resolving the conflict.
+Please describe your case here as example.
 
-Resending the patch.
+Best regards,
+Krzysztof
