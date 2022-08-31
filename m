@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A8EECAAD4
-	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C886CECAAD1
+	for <linux-kernel@archiver.kernel.org>; Thu,  1 Sep 2022 01:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232680AbiIABhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 21:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
+        id S232931AbiIABh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 21:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232628AbiIABhK (ORCPT
+        with ESMTP id S232710AbiIABhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 31 Aug 2022 21:37:10 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46C5815C786;
-        Wed, 31 Aug 2022 18:37:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8C615C34A;
+        Wed, 31 Aug 2022 18:37:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661996229; x=1693532229;
+  t=1661996227; x=1693532227;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Sz9BlB4ANsYCtbFD5nTVp7ZqKmSjsoP5saDIYrx4AOY=;
-  b=Jkz38WJLjxVVzVx+JQ0g65SKrFTZrr82V59Uwl2GM7OplMkZcB4RYyUs
-   ONf2WmMfggANmEeGnaMulLjqsEgz4TxH4V9Vv7YUmM281v5EvS5RxR0cf
-   I1Zf7P9GAFj5YgsA653rhT90bzvHcUDdgcbSBP6uBwUln3Rb7WXllAPnN
-   yqChWi0gzY+PhmHqPZoxpsRji49mOQuVvEsXy54cGr6b7UaaUTmG6EWgB
-   yMRNHwia3R6846zpuGpndNwMEmx+R7ZouXTodD0j45MCIg0oX9IBhg9cv
-   Z8OYAfPZD2XDqcnfkBRB5CQzFak1KIMp8uiLIiyxWu6YzGhqCKMdl4l9k
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321735089"
+  bh=dth9ZWbiqgebUb3AdCr1vdAzve9ZHQAexkY+TrqhTKU=;
+  b=eeSiJvhMbsI+AM6x/NZrTXt45/XaLACCA+i5cGVROvyqh7LzmLnRIUl0
+   ynkzzEuzkDi7bfL2XwYNCC5p8nwijch0jNIyCMr1s/gSTtD3M8uN5eMW1
+   6rO4ilKLm2uUYb02fgl6+1rG243IveZEckOPnRcM11QjrAHKwziGQHL/B
+   Ml/P+wP4ZghRRcUOLxSZb2ewvln59Ct9dT8SjGxXAyAex/W+gjnLycejk
+   OI5ax3WtT+tK3C7Pa26dzfFQVRGYlYCqCkvYvvsdyFq/g7XoDOnNUB7PM
+   5OnwoegNfnlwEgFrtfuNC5v030I7Go9OnGT0jdjFYhw/mYiUw6ML1zvy6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321735087"
 X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="321735089"
+   d="scan'208";a="321735087"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 18:37:01 -0700
 X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="754626007"
+   d="scan'208";a="754626002"
 Received: from embargo.jf.intel.com ([10.165.9.183])
   by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 18:37:01 -0700
 From:   Yang Weijiang <weijiang.yang@intel.com>
 To:     pbonzini@redhat.com, seanjc@google.com, kvm@vger.kernel.org
 Cc:     like.xu.linux@gmail.com, kan.liang@linux.intel.com,
         wei.w.wang@intel.com, linux-kernel@vger.kernel.org
-Subject: [PATCH 08/15] KVM: x86: Add Arch LBR MSRs to msrs_to_save_all list
-Date:   Wed, 31 Aug 2022 18:34:31 -0400
-Message-Id: <20220831223438.413090-9-weijiang.yang@intel.com>
+Subject: [PATCH 07/15] KVM: VMX: Support passthrough of architectural LBRs
+Date:   Wed, 31 Aug 2022 18:34:30 -0400
+Message-Id: <20220831223438.413090-8-weijiang.yang@intel.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220831223438.413090-1-weijiang.yang@intel.com>
 References: <20220831223438.413090-1-weijiang.yang@intel.com>
@@ -53,61 +53,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Arch LBR MSR_ARCH_LBR_DEPTH and MSR_ARCH_LBR_CTL are queried by
-userspace application before it wants to {save|restore} the Arch LBR
-data. Other LBR related data MSRs are omitted here intentionally due
-to lengthy list(32*3). Userspace can still use KVM_{GET|SET}_MSRS to
-access them if necessary.
+From: Paolo Bonzini <pbonzini@redhat.com>
 
-Suggested-by: Jim Mattson <jmattson@google.com>
-Signed-off-by: Yang Weijiang <weijiang.yang@intel.com>
-Reviewed-by: Jim Mattson <jmattson@google.com>
+MSR_ARCH_LBR_* can be pointed to by records->from, records->to and
+records->info, so list them in is_valid_passthrough_msr.
+
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/x86.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/x86/kvm/vmx/vmx.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 92ff5f7d944b..b3d2a7ad1d18 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1452,6 +1452,7 @@ static const u32 msrs_to_save_all[] = {
- 	MSR_F15H_PERF_CTR3, MSR_F15H_PERF_CTR4, MSR_F15H_PERF_CTR5,
- 	MSR_IA32_XFD, MSR_IA32_XFD_ERR,
- 	MSR_IA32_XSS,
-+	MSR_ARCH_LBR_CTL, MSR_ARCH_LBR_DEPTH,
- };
- 
- static u32 msrs_to_save[ARRAY_SIZE(msrs_to_save_all)];
-@@ -3839,6 +3840,8 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_IA32_PEBS_ENABLE:
- 	case MSR_IA32_DS_AREA:
- 	case MSR_PEBS_DATA_CFG:
-+	case MSR_ARCH_LBR_CTL:
-+	case MSR_ARCH_LBR_DEPTH:
- 	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
- 		if (kvm_pmu_is_valid_msr(vcpu, msr))
- 			return kvm_pmu_set_msr(vcpu, msr_info);
-@@ -3942,6 +3945,8 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case MSR_IA32_PEBS_ENABLE:
- 	case MSR_IA32_DS_AREA:
- 	case MSR_PEBS_DATA_CFG:
-+	case MSR_ARCH_LBR_CTL:
-+	case MSR_ARCH_LBR_DEPTH:
- 	case MSR_F15H_PERF_CTL0 ... MSR_F15H_PERF_CTR5:
- 		if (kvm_pmu_is_valid_msr(vcpu, msr_info->index))
- 			return kvm_pmu_get_msr(vcpu, msr_info);
-@@ -6948,6 +6953,11 @@ static void kvm_init_msr_list(void)
- 			if (!kvm_caps.supported_xss)
- 				continue;
- 			break;
-+		case MSR_ARCH_LBR_DEPTH:
-+		case MSR_ARCH_LBR_CTL:
-+			if (!kvm_cpu_cap_has(X86_FEATURE_ARCH_LBR))
-+				continue;
-+			break;
- 		default:
- 			break;
- 		}
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 020db207215b..77bad663d804 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -638,6 +638,9 @@ static bool is_valid_passthrough_msr(u32 msr)
+ 	case MSR_LBR_NHM_TO ... MSR_LBR_NHM_TO + 31:
+ 	case MSR_LBR_CORE_FROM ... MSR_LBR_CORE_FROM + 8:
+ 	case MSR_LBR_CORE_TO ... MSR_LBR_CORE_TO + 8:
++	case MSR_ARCH_LBR_FROM_0 ... MSR_ARCH_LBR_FROM_0 + 31:
++	case MSR_ARCH_LBR_TO_0 ... MSR_ARCH_LBR_TO_0 + 31:
++	case MSR_ARCH_LBR_INFO_0 ... MSR_ARCH_LBR_INFO_0 + 31:
+ 		/* LBR MSRs. These are handled in vmx_update_intercept_for_lbr_msrs() */
+ 		return true;
+ 	}
 -- 
 2.27.0
 
