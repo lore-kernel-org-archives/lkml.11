@@ -2,93 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33BDFECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C079DC0502A
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232852AbiHaS0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:26:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58886 "EHLO
+        id S232585AbiHaS0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:26:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232370AbiHaSZd (ORCPT
+        with ESMTP id S232500AbiHaSZf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:25:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD20CE3420;
-        Wed, 31 Aug 2022 11:21:48 -0700 (PDT)
+        Wed, 31 Aug 2022 14:25:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A81BF327A
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A390EB82221;
-        Wed, 31 Aug 2022 18:21:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 164F7C433D6;
-        Wed, 31 Aug 2022 18:21:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5D8861CCE
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C3A7C433D6;
+        Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661970105;
-        bh=VfqWYmsroNc40aDzHJP4Oz82CrPs4tYiPBQEHE7mCHs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WhkKrb4viMn/yX3AS+kCL6vTqSDvaM30S6DwNJQRdsl1AgwGSn7rftwEZQo+5Ynf6
-         S9E8uGrAgI4b6zDOhgZOYhsg5xkRJieNMZu2nE2UNrJq1eYooyy5tY6PNfQjsCKD/g
-         9FqJ/G6gQORToNcg0qy8S/QekzXWfWMVwMYKtIwhhPigIjsdjNZCsA4ABTldm4630B
-         wTH2N3fS2y+Ir0pycP4G+PJzqhfzaZ2cLpCIfpe2xnxkXMRJ4XpusK9dsQYXX+r6w8
-         nCWO2IGvm/Q/heTwP7e6tZF9EtviuDO0gYzKLXk3XYj454/Av3rUqRlqAB1Rzx0P0b
-         4EGgG5DzxKXzQ==
-Date:   Wed, 31 Aug 2022 21:21:41 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Reinette Chatre <reinette.chatre@intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Haitao Huang <haitao.huang@linux.intel.com>,
-        Vijay Dhanraj <vijay.dhanraj@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/6] x86/sgx: Handle VA page allocation failure for
- EAUG on PF.
-Message-ID: <Yw+mtfFs3dvOWOv2@kernel.org>
-References: <20220831173829.126661-1-jarkko@kernel.org>
- <20220831173829.126661-4-jarkko@kernel.org>
- <20991fdc-1ae4-ef68-c6d4-12372b4e6f73@intel.com>
+        s=k20201202; t=1661970110;
+        bh=6XP22WTmc8yL/Ak3Vl83+H3N1Eq7ZOAnCRPlATglroc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FU5A3CG2XmPZTVGIDeITHow4YBhkVZku8EyLz8IYtjfCTd1yEakYzRlDQU4nUhml6
+         9v5RUwRNGH0AAx3m3CIfq2x7EgyxoUtSKdEFM+tH/E7HQRUICmAp9FKL9yZpfoPm5i
+         GMKp7pGL9deirpDTNBmVpV/fWGgZtaP6svuS67bqvpAbaIL2jhy2EeGLAlMWbpFNsw
+         P2xUWLvmlC7kq7dbmbjY/OLX5+oAiWuZ+t7zlqTQBD98BqFUbRnzYtRuPQUVO8J4H+
+         K/lnTlQcACZvKzMw5EXX1psV++0UUfm96fmHzJ0gUjRXOUVsphGHJYGke7+Iy6y3DC
+         KvW8OIx+qFL7g==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id CF0BC5C015D; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
+        Willy Tarreau <w@1wt.eu>,
+        Pranith Kumar <bobby.prani@gmail.com>,
+        "Paul E . McKenney" <paulmck@kernel.org>
+Subject: [PATCH nolibc 01/18] tools/nolibc: make argc 32-bit in riscv startup code
+Date:   Wed, 31 Aug 2022 11:21:29 -0700
+Message-Id: <20220831182148.2698489-1-paulmck@kernel.org>
+X-Mailer: git-send-email 2.31.1.189.g2e36527f23
+In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
+References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20991fdc-1ae4-ef68-c6d4-12372b4e6f73@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 11:08:33AM -0700, Reinette Chatre wrote:
-> Hi Jarkko,
-> 
-> On 8/31/2022 10:38 AM, Jarkko Sakkinen wrote:
-> > From: Haitao Huang <haitao.huang@linux.intel.com>
-> > 
-> > VM_FAULT_NOPAGE is expected behaviour for -EBUSY failure path, when
-> > augmenting a page, as this means that the reclaimer thread has been
-> > triggered, and the intention is just to round-trip in ring-3, and
-> > retry with a new page fault.
-> > 
-> > Fixes: 5a90d2c3f5ef ("x86/sgx: Support adding of pages to an initialized enclave")
-> > Signed-off-by: Haitao Huang <haitao.huang@linux.intel.com>
-> > Tested-by: Vijay Dhanraj <vijay.dhanraj@intel.com>
-> > Reviewed-by: Reinette Chatre <reinette.chatre@intel.com>
-> > Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-> > ---
-> > v3:
-> > * Added Reinette's ack.
-> 
-> The ack came with a caveat related to a white space issue that
-> you did not fix in this version.
+From: Willy Tarreau <w@1wt.eu>
 
-Reinette, I'm sorry but I might possibly have some sort of blind
-spot here.
+The "ld a0, 0(sp)" instruction doesn't build on RISCV32 because that
+would load a 64-bit value into a 32-bit register. But argc 32-bit,
+not 64, so we ought to use "lw" here. Tested on both RISCV32 and
+RISCV64.
 
-I looked at the diff and I could not see any issues, and did not
-run into issues with checkpath.
+Cc: Pranith Kumar <bobby.prani@gmail.com>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+---
+ tools/include/nolibc/arch-riscv.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Can you point out what exactly is the whitespace issue?
+diff --git a/tools/include/nolibc/arch-riscv.h b/tools/include/nolibc/arch-riscv.h
+index 95e2b79249257..ba04771cb3a34 100644
+--- a/tools/include/nolibc/arch-riscv.h
++++ b/tools/include/nolibc/arch-riscv.h
+@@ -190,7 +190,7 @@ __asm__ (".section .text\n"
+     ".option norelax\n"
+     "lla   gp, __global_pointer$\n"
+     ".option pop\n"
+-    "ld    a0, 0(sp)\n"          // argc (a0) was in the stack
++    "lw    a0, 0(sp)\n"          // argc (a0) was in the stack
+     "add   a1, sp, "SZREG"\n"    // argv (a1) = sp
+     "slli  a2, a0, "PTRLOG"\n"   // envp (a2) = SZREG*argc ...
+     "add   a2, a2, "SZREG"\n"    //             + SZREG (skip null)
+-- 
+2.31.1.189.g2e36527f23
 
-BR, Jarkko
