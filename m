@@ -2,120 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 906B1ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:55:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23181ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229877AbiHaKzR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:55:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54084 "EHLO
+        id S230288AbiHaK5O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:57:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229837AbiHaKzL (ORCPT
+        with ESMTP id S230060AbiHaK5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:55:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E594819298
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:55:09 -0700 (PDT)
+        Wed, 31 Aug 2022 06:57:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0DB7CAC8D
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:57:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8826AB82000
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:55:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F13AC433D6;
-        Wed, 31 Aug 2022 10:55:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A39CB81FF5
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:57:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AA0AC433D6;
+        Wed, 31 Aug 2022 10:57:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661943307;
-        bh=mQ+vP0khgVt2cfBh+0A4KU46mUN0VhCpiZcKn24psr8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n+pf2gGfnlfjeX1xE4Z08fviRhtoHn0NMu+d52yBD9j1hKTvFV+Jjno1+0d2say1L
-         oQK9ewUnXBdZIPixw1BDbJsdhPZK9bFtPixuuqvQDFpdx/1yDacTZ9EXWdnqpMrl43
-         Ls4mo+6RTP141ikxL/aT6EMCX13Ogff3VAWZ3ZKpNzm9EjHR2y2TP5PLBdhFxQKk+K
-         NYGhGhDaj65AHOVivbnRTEfu+1zG/k4E/kKDJKUzn0FjgRmPT8yOtZIllRLyT8PHtA
-         oa/ykLTbC7FwuoTug/wiG45hyuNRUIAtml2itIoxwSWfdeukLAaBH311yYjEYtTmQW
-         Ah8qq3fYUzCmQ==
-Date:   Wed, 31 Aug 2022 13:54:45 +0300
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Wang Kefeng <wangkefeng.wang@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Matija Glavinic Pecotic <matija.glavinic-pecotic.ext@nokia.com>,
-        Victor Hassan <victor@allwinnertech.com>
-Subject: Re: arch/arm/mm/init.o: in function `arm_memblock_init':
- init.c:(.init.text+0xc8): undefined reference to `phys_initrd_start'
-Message-ID: <Yw899e/S6wuo4EX6@kernel.org>
-References: <CA+G9fYt6831htScyAHTk9w1PMLU-kLPvQRqJt73t9=NHLM5qOA@mail.gmail.com>
+        s=k20201202; t=1661943428;
+        bh=AcZZZkQyVF2bDFbGmh47igrqNgqi57iGKTnF8zvHbU4=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=MxAnuY+pgMoeF8dV0+CH41J0Es90hVxbDQVvFZjaE2OSQr/LM+z/2zWzGr8uZGPZl
+         1OgF7A8k1XXjkPKhsnCnzrQexnBBkJeZKsoFWHmExhfZK6XqkNH6s645UmqtAkUafk
+         MpdJA3jgfJw29/E3MWmm22+e/siSvOoDANpZiw8xxJznlEsRQ3XK4I/6l3E+2LIhVD
+         r7ZHSQ2KY4kjT6xKJf/q95nLtlZreeoE4qTJcRgborFCbt+0M84cjKPBcAVyOeujeU
+         WpGqqnYZPHZKKaExSZGl8IR3NKXNNbOGKeD4mJGFGqmiAex2zzDUb675aS6xm6rOkO
+         zgLb8IkWpfX3Q==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id DF6B05C05A0; Wed, 31 Aug 2022 03:57:07 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 03:57:07 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     kernel test robot <oliver.sang@intel.com>
+Cc:     Neeraj Upadhyay <neeraj.iitr10@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, lkp@lists.01.org,
+        lkp@intel.com, qiang1.zhang@intel.com
+Subject: Re: [rcutorture]  613b00fbe6:
+ WARNING:at_kernel/rcu/rcutorture.c:#rcu_torture_fwd_prog_cr[rcutorture]
+Message-ID: <20220831105707.GJ6159@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <YuqOqJnNzmEDKRIB@xsang-OptiPlex-9020>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+G9fYt6831htScyAHTk9w1PMLU-kLPvQRqJt73t9=NHLM5qOA@mail.gmail.com>
+In-Reply-To: <YuqOqJnNzmEDKRIB@xsang-OptiPlex-9020>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 02:26:36PM +0530, Naresh Kamboju wrote:
-> The following arm builds failed on Linux next-20220831.
+On Wed, Aug 03, 2022 at 11:05:12PM +0800, kernel test robot wrote:
 > 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> (please be noted we reported this since clean on parent, ~10% on this commit,
+> and found similar issue on latest maineline, e.g. v5.19)
 > 
-> Regressions found on arm:
->    - build-clang-14-allnoconfig
->    - build-gcc-11-tinyconfig
->    - build-clang-11-tinyconfig
->    - build-gcc-9-tinyconfig
->    - build-gcc-11-orion5x_defconfig
->    - build-gcc-10-allnoconfig
->    - build-clang-nightly-orion5x_defconfig
->    - build-gcc-8-orion5x_defconfig
->    - build-clang-11-allnoconfig
->    - build-gcc-8-tinyconfig
->    - build-clang-11-orion5x_defconfig
->    - build-clang-nightly-tinyconfig
->    - build-clang-13-allnoconfig
->    - build-gcc-9-allnoconfig
->    - build-clang-13-tinyconfig
->    - build-clang-14-orion5x_defconfig
->    - build-clang-13-orion5x_defconfig
->    - build-clang-14-tinyconfig
->    - build-gcc-8-allnoconfig
->    - build-gcc-9-orion5x_defconfig
->    - build-clang-12-tinyconfig
->    - build-clang-nightly-allnoconfig
->    - build-gcc-10-orion5x_defconfig
->    - build-clang-12-orion5x_defconfig
->    - build-gcc-10-tinyconfig
->    - build-clang-12-allnoconfig
->    - build-gcc-11-allnoconfig
->    
-> Build error:
-> ------------
-> arm-linux-gnueabihf-ld: arch/arm/mm/init.o: in function `arm_memblock_init':
-> init.c:(.init.text+0xc8): undefined reference to `phys_initrd_start'
-> make[1]: *** [/builds/linux/Makefile:1250: vmlinux] Error 1
+> 
+> Greeting,
+> 
+> FYI, we noticed the following commit (built with gcc-11):
+> 
+> commit: 613b00fbe64461f1c73e035e07c22cf3de65740b ("rcutorture: Add ability to limit callback-flood intensity")
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git master
+> 
+> in testcase: rcutorture
+> version: 
+> with following parameters:
+> 
+> 	runtime: 300s
+> 	test: default
+> 	torture_type: tasks-tracing
+> 
+> test-description: rcutorture is rcutorture kernel module load/unload test.
+> test-url: https://www.kernel.org/doc/Documentation/RCU/torture.txt
+> 
+> 
+> on test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 2 -m 16G
 
-Looks like this is because of 
-Fixes: b35b2736b43d ("ARM: 9230/1: Support initrd with address in boot alias region")
-that uses phys_initrd_start regardless of CONFIG_BLK_DEV_INITRD
- 
-> Build log link:
-> https://builds.tuxbuild.com/2E6pMzczzw7tLMxz7WFjaPgQ9Io/
-> 
-> Steps to reproduce:
-> -------------------
-> # To install tuxmake on your system globally:
-> # sudo pip3 install -U tuxmake
-> 
-> tuxmake --runtime podman --target-arch arm --toolchain gcc-11 --kconfig
-> tinyconfig
-> 
-> --
-> Linaro LKFT
-> https://lkft.linaro.org
+I believe that this commit in -rcu fixes this problem.  Could you please
+check it?
 
--- 
-Sincerely yours,
-Mike.
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+commit dba268ff32101559cd3e3800b24993ae5c59844c
+Author: Zqiang <qiang1.zhang@intel.com>
+Date:   Sun Jul 31 18:53:56 2022 +0800
+
+    rcutorture: Use the barrier operation specified by cur_ops
+    
+    The rcutorture_oom_notify() function unconditionally invokes
+    rcu_barrier(), which is OK when the rcutorture.torture_type value is
+    "rcu", but unhelpful otherwise.  The purpose of these barrier calls is to
+    wait for all outstanding callback-flooding callbacks to be invoked before
+    cleaning up their data.  Using the wrong barrier function therefore
+    risks arbitrary memory corruption.  Thus, this commit changes these
+    rcu_barrier() calls into cur_ops->cb_barrier() to make things work when
+    torturing non-vanilla flavors of RCU.
+    
+    Signed-off-by: Zqiang <qiang1.zhang@intel.com>
+    Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index 7168dc8d61e98..bdd630f7a970c 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -2603,12 +2603,12 @@ static int rcutorture_oom_notify(struct notifier_block *self,
+ 	for (i = 0; i < fwd_progress; i++)
+ 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
+ 	pr_info("%s: Freed %lu RCU callbacks.\n", __func__, ncbs);
+-	rcu_barrier();
++	cur_ops->cb_barrier();
+ 	ncbs = 0;
+ 	for (i = 0; i < fwd_progress; i++)
+ 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
+ 	pr_info("%s: Freed %lu RCU callbacks.\n", __func__, ncbs);
+-	rcu_barrier();
++	cur_ops->cb_barrier();
+ 	ncbs = 0;
+ 	for (i = 0; i < fwd_progress; i++)
+ 		ncbs += rcu_torture_fwd_prog_cbfree(&rfp[i]);
