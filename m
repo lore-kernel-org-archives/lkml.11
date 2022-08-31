@@ -2,160 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C09ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB08ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 20:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231681AbiHaU4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 16:56:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38914 "EHLO
+        id S231788AbiHaU4n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 16:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229996AbiHaU41 (ORCPT
+        with ESMTP id S231755AbiHaU4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 16:56:27 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA5DD2E86;
-        Wed, 31 Aug 2022 13:56:26 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id f9so8367026qvw.11;
-        Wed, 31 Aug 2022 13:56:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=j8UxbtDew574grRc59F86ZudDhnKYJ7sEvH/yI7OmEs=;
-        b=pLlZHUsafseS+eCvZzo2JMww4kXTSN5Q009GbouFmh6rphSQFQvi1GE/RwHfiTJKMd
-         9migLuUKejEVPejkRaYRfP7/BIf5BciS+SYPx0hw2ASIXdnkmETO1wOs6NEhfl9bLOuB
-         CtPa7JYith5/ZdRSaQvBadQYpYozjdj30GtuP9HRhzxeOodxfE83lEYOPIZlhbySw81C
-         VW3tujh7TS6fEfmWuSENg9LnaCvMgwotDGbZ2iCUXXhPWsDXE4taQvChbTf6e9jmeunl
-         CODvVln7wyQeAhYIKqsBZkpYHMGw5v/LftrW3ugq9j6T8npLQqqiDIKD1GBLhdqttybf
-         tHdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=j8UxbtDew574grRc59F86ZudDhnKYJ7sEvH/yI7OmEs=;
-        b=J/s9NmfiPYexWNaRGdMB6wvegF9yIrt47YwlxTHlPsAqwCmingqq68X5L5ut1Wl7vg
-         RjKknk86dMn+xtgsrjHuKrmvqoUBpR9sj8lKjPI55pdWV4WYsbjPqHvjORDAddB8ubwG
-         RbgzKe2kCASW9MpshwRPfSDAuzPOowCJcQFDwufXpY73/KaFuByhDPuf8F3YR5bHWLOV
-         /9ZGSmK5lCVnCxuB5+tHESXgXWKI7fgTYCJ6AB46O2tMo2R6akejFDbMKLcXTiPp0k6q
-         EOOJQFkmgr8YwmmMUyk6w6ZQUU4XiAkIa7NVsCnDMoDzLDklef5RAHY3PLSVxYhEm3wz
-         KeJA==
-X-Gm-Message-State: ACgBeo2qZxxzyg36f0jw0TGapbxWxh7JF5E8K3pXguyUED4LSJeYv0pL
-        C/W8VY9P9LZMfJGBG8qVcb/I+aWrRcN/X9E9pMW/Ffa+J7k=
-X-Google-Smtp-Source: AA6agR5Rx6JL/d53spayx5rkbH9OCbX4qUggQsXoOMq2Dsh8M4BdCXMWYm+Rx90QyjJ89vPJycmpDbRH1YmFQb8xBuo=
-X-Received: by 2002:a05:6214:27ca:b0:499:95f:6379 with SMTP id
- ge10-20020a05621427ca00b00499095f6379mr12263042qvb.82.1661979385373; Wed, 31
- Aug 2022 13:56:25 -0700 (PDT)
+        Wed, 31 Aug 2022 16:56:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897B5DA3F6
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 13:56:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661979397;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qnNunS1Uu1r2E9WQbQD7VNVpEMdhi6o4PT34nVTssRQ=;
+        b=Z6IU8k/V7mNSagHILqoMDPudmJZzR2C6x44EeUbsLEJ2HfONXiMPt2NP/YnBYLabrDEf1M
+        GBPu+MklEOiMlOtM+ltDKK+6w4ZYW449F6j09TnDyY83QwLw53A9zm7NWhaLoyOhF4aekQ
+        lTFtYwv6Y+OjE7bBGET5SScf2jScZP4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-533-hF-lzSJeP3e2wkCeHmHk6A-1; Wed, 31 Aug 2022 16:56:33 -0400
+X-MC-Unique: hF-lzSJeP3e2wkCeHmHk6A-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CC08D29AB416;
+        Wed, 31 Aug 2022 20:56:32 +0000 (UTC)
+Received: from [10.18.17.215] (dhcp-17-215.bos.redhat.com [10.18.17.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 46AD11121314;
+        Wed, 31 Aug 2022 20:56:32 +0000 (UTC)
+Message-ID: <1eef45a5-e418-e3c6-631f-58b9e52afedf@redhat.com>
+Date:   Wed, 31 Aug 2022 16:56:32 -0400
 MIME-Version: 1.0
-References: <20220829133923.1114555-1-martyn.welch@collabora.com> <20220829133923.1114555-4-martyn.welch@collabora.com>
-In-Reply-To: <20220829133923.1114555-4-martyn.welch@collabora.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 31 Aug 2022 23:55:49 +0300
-Message-ID: <CAHp75VcXR9=5WwZqe=juLBDT1CZnYfWHCGDb4Tp211sL2AA_Gw@mail.gmail.com>
-Subject: Re: [PATCH 4/5] gpio: pca953x: Swap if statements to save later complexity
-To:     Martyn Welch <martyn.welch@collabora.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v6 4/5] sched: Handle set_cpus_allowed_ptr() &
+ sched_setaffinity() race
+Content-Language: en-US
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>
+References: <20220826010119.1265764-1-longman@redhat.com>
+ <20220826010119.1265764-5-longman@redhat.com>
+ <Yw8uS0Ibavb/5s4D@hirez.programming.kicks-ass.net>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <Yw8uS0Ibavb/5s4D@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 4:43 PM Martyn Welch <martyn.welch@collabora.com> wrote:
+On 8/31/22 05:47, Peter Zijlstra wrote:
+> On Thu, Aug 25, 2022 at 09:01:18PM -0400, Waiman Long wrote:
+>> @@ -2722,6 +2734,7 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+>>   			complete = true;
+>>   		}
+>>   
+>> +		swap_user_cpus_ptr(p, puser_mask);
+>>   		task_rq_unlock(rq, p, rf);
+>>   
+>>   		if (push_task) {
+>> @@ -2793,6 +2806,7 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+>>   		if (flags & SCA_MIGRATE_ENABLE)
+>>   			p->migration_flags &= ~MDF_PUSH;
+>>   
+>> +		swap_user_cpus_ptr(p, puser_mask);
+>>   		task_rq_unlock(rq, p, rf);
+>>   
+>>   		if (!stop_pending) {
+>> @@ -2813,6 +2827,8 @@ static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flag
+>>   				complete = true;
+>>   			}
+>>   		}
+>> +
+>> +		swap_user_cpus_ptr(p, puser_mask);
+>>   		task_rq_unlock(rq, p, rf);
+>>   
+>>   		if (complete)
+> I'm not at all sure about those.
 >
-> A later patch in the series adds support for a further chip type that
-> shares some similarity with the PCA953X_TYPE. In order to keep the logic
-> simple,
+> Would it not be much simpler to keep the update of cpus_mask and
+> cpus_user_mask together, always ensuring that cpus_user_mask is a strict
+> superset of cpus_mask ? That is, set_cpus_allowed_common() seems like
+> the right place to me.
+>
+> I'm thinking this also means blowing away user_mask when we do a full
+> reset of the cpus_mask when we do an affnity break.
 
-If you say so...
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Thanks for the suggestion. I will need to think about what will be best 
+way to pass in those additional parameters there.
 
-> swap over the if and else portions where checks are made against
-> PCA953X_TYPE and instead check for PCA957X_TYPE.
->
-> Signed-off-by: Martyn Welch <martyn.welch@collabora.com>
-> ---
->  drivers/gpio/gpio-pca953x.c | 31 +++++++++++++++----------------
->  1 file changed, 15 insertions(+), 16 deletions(-)
->
-> diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
-> index 41e7ff83a735..19a8eb94a629 100644
-> --- a/drivers/gpio/gpio-pca953x.c
-> +++ b/drivers/gpio/gpio-pca953x.c
-> @@ -293,13 +293,13 @@ static bool pca953x_readable_register(struct device *dev, unsigned int reg)
->         struct pca953x_chip *chip = dev_get_drvdata(dev);
->         u32 bank;
->
-> -       if (PCA_CHIP_TYPE(chip->driver_data) == PCA953X_TYPE) {
-> -               bank = PCA953x_BANK_INPUT | PCA953x_BANK_OUTPUT |
-> -                      PCA953x_BANK_POLARITY | PCA953x_BANK_CONFIG;
-> -       } else {
-> +       if (PCA_CHIP_TYPE(chip->driver_data) == PCA957X_TYPE) {
->                 bank = PCA957x_BANK_INPUT | PCA957x_BANK_OUTPUT |
->                        PCA957x_BANK_POLARITY | PCA957x_BANK_CONFIG |
->                        PCA957x_BANK_BUSHOLD;
-> +       } else {
-> +               bank = PCA953x_BANK_INPUT | PCA953x_BANK_OUTPUT |
-> +                      PCA953x_BANK_POLARITY | PCA953x_BANK_CONFIG;
->         }
->
->         if (chip->driver_data & PCA_PCAL) {
-> @@ -316,12 +316,12 @@ static bool pca953x_writeable_register(struct device *dev, unsigned int reg)
->         struct pca953x_chip *chip = dev_get_drvdata(dev);
->         u32 bank;
->
-> -       if (PCA_CHIP_TYPE(chip->driver_data) == PCA953X_TYPE) {
-> -               bank = PCA953x_BANK_OUTPUT | PCA953x_BANK_POLARITY |
-> -                       PCA953x_BANK_CONFIG;
-> -       } else {
-> +       if (PCA_CHIP_TYPE(chip->driver_data) == PCA957X_TYPE) {
->                 bank = PCA957x_BANK_OUTPUT | PCA957x_BANK_POLARITY |
->                         PCA957x_BANK_CONFIG | PCA957x_BANK_BUSHOLD;
-> +       } else {
-> +               bank = PCA953x_BANK_OUTPUT | PCA953x_BANK_POLARITY |
-> +                       PCA953x_BANK_CONFIG;
->         }
->
->         if (chip->driver_data & PCA_PCAL)
-> @@ -336,10 +336,10 @@ static bool pca953x_volatile_register(struct device *dev, unsigned int reg)
->         struct pca953x_chip *chip = dev_get_drvdata(dev);
->         u32 bank;
->
-> -       if (PCA_CHIP_TYPE(chip->driver_data) == PCA953X_TYPE)
-> -               bank = PCA953x_BANK_INPUT;
-> -       else
-> +       if (PCA_CHIP_TYPE(chip->driver_data) == PCA957X_TYPE)
->                 bank = PCA957x_BANK_INPUT;
-> +       else
-> +               bank = PCA953x_BANK_INPUT;
->
->         if (chip->driver_data & PCA_PCAL)
->                 bank |= PCAL9xxx_BANK_IRQ_STAT;
-> @@ -1069,13 +1069,12 @@ static int pca953x_probe(struct i2c_client *client,
->         /* initialize cached registers from their original values.
->          * we can't share this chip with another i2c master.
->          */
-> -
-> -       if (PCA_CHIP_TYPE(chip->driver_data) == PCA953X_TYPE) {
-> -               chip->regs = &pca953x_regs;
-> -               ret = device_pca95xx_init(chip, invert);
-> -       } else {
-> +       if (PCA_CHIP_TYPE(chip->driver_data) == PCA957X_TYPE) {
->                 chip->regs = &pca957x_regs;
->                 ret = device_pca957x_init(chip, invert);
-> +       } else {
-> +               chip->regs = &pca953x_regs;
-> +               ret = device_pca95xx_init(chip, invert);
->         }
->         if (ret)
->                 goto err_exit;
-> --
-> 2.35.1
->
+Cheers,
+Longman
 
-
--- 
-With Best Regards,
-Andy Shevchenko
