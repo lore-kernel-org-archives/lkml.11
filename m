@@ -2,138 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B98EBECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 676A4ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230496AbiHaIWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
+        id S231539AbiHaIXK convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230390AbiHaIWL (ORCPT
+        with ESMTP id S231311AbiHaIWv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:22:11 -0400
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD9CC6FED
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:20:49 -0700 (PDT)
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-11ba6e79dd1so22453307fac.12
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:20:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=tL3Pu80GajPbXIuFp2pntr8ejcDbNLFHN+ltW3MDRBA=;
-        b=chJsU8jivhcSNYsXVa+DgMSXCb6DoJVCBM8TXfnPpXZ3XdTVVMtmoO6bEijJ3U5fQA
-         UWLCp6sC2KWSiU9TM80WQlQjZmhYmQ1FqeMouQFYw6FodO9bMPmftMjEJmMOhGkDu3en
-         UpMRQtM4NGoFgQs5NvgCPtr0RGc2rT1izdZrb75fdEyTQDL3S9jWCRQw8+wDwpsZRrxF
-         KGJ6RXEGBdeJh2sdcwvci5C9WpXazoJZvDpumCrsFTB8MaQCTPd7u9t68me6Ld1m+pi7
-         wHILAp9hMMx3Pgf6QGcORJD+Jm709tvWxnIGLV9C46TZCj2/z0TPKJ1fFWlGN3uKY5On
-         40qw==
-X-Gm-Message-State: ACgBeo1eQUA+6RjZpnlrxSXHcJUvTzhMnI4Ywm2miFp2Xbd6SPe3e1cM
-        9Swudo2OroV6SXTFgY2BW3xEB0yL6v+zLw==
-X-Google-Smtp-Source: AA6agR7q026XxgBpdRrFOScaBbFQ67VPyKlV9qohD3PZaz+u9+cjK9VkdB4N+r8cxK9hWnFuYU0K0g==
-X-Received: by 2002:a05:6870:a103:b0:11d:2441:668b with SMTP id m3-20020a056870a10300b0011d2441668bmr970892oae.263.1661934016861;
-        Wed, 31 Aug 2022 01:20:16 -0700 (PDT)
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com. [209.85.210.43])
-        by smtp.gmail.com with ESMTPSA id 65-20020aca0544000000b00339befdfad0sm7299210oif.50.2022.08.31.01.20.16
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Aug 2022 01:20:16 -0700 (PDT)
-Received: by mail-ot1-f43.google.com with SMTP id d18-20020a9d72d2000000b0063934f06268so9780160otk.0
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:20:16 -0700 (PDT)
-X-Received: by 2002:a25:24b:0:b0:696:4e87:7cec with SMTP id
- 72-20020a25024b000000b006964e877cecmr14439821ybc.202.1661933679611; Wed, 31
- Aug 2022 01:14:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220728-rpi-analog-tv-properties-v2-0-459522d653a7@cerno.tech>
- <20220728-rpi-analog-tv-properties-v2-10-459522d653a7@cerno.tech> <242d272b-5b79-986c-9aaf-64e62f6b37ff@gmail.com>
-In-Reply-To: <242d272b-5b79-986c-9aaf-64e62f6b37ff@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 31 Aug 2022 10:14:28 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWq3aOO4-2AReDeaC2VBJb=QJF2dTMZP=DGmwCg6ZOffA@mail.gmail.com>
-Message-ID: <CAMuHMdWq3aOO4-2AReDeaC2VBJb=QJF2dTMZP=DGmwCg6ZOffA@mail.gmail.com>
-Subject: Re: [PATCH v2 10/41] drm/modes: Add a function to generate analog
- display modes
-To:     Mateusz Kwiatkowski <kfyatek@gmail.com>
-Cc:     Maxime Ripard <maxime@cerno.tech>,
-        Maxime Ripard <mripard@kernel.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        David Airlie <airlied@linux.ie>, Chen-Yu Tsai <wens@csie.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Lyude Paul <lyude@redhat.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Karol Herbst <kherbst@redhat.com>,
-        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Emma Anholt <emma@anholt.net>, Daniel Vetter <daniel@ffwll.ch>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Intel Graphics Development <intel-gfx@lists.freedesktop.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Dom Cobley <dom@raspberrypi.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Nouveau Dev <nouveau@lists.freedesktop.org>,
-        linux-sunxi@lists.linux.dev
+        Wed, 31 Aug 2022 04:22:51 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43BF3696FB
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:21:59 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oTIym-0005vX-BB; Wed, 31 Aug 2022 10:21:44 +0200
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oTIyl-00320b-Cu; Wed, 31 Aug 2022 10:21:43 +0200
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1oTIyk-0002RW-2z; Wed, 31 Aug 2022 10:21:42 +0200
+Message-ID: <3bd5f46dff622e375c4f60140f479bf6ee483aec.camel@pengutronix.de>
+Subject: Re: [PATCH v3 04/19] dt-bindings: hwmon: (mr75203) change "reset"
+ property to be optional
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Eliav Farber <farbere@amazon.com>, jdelvare@suse.com,
+        linux@roeck-us.net, robh+dt@kernel.org, rtanwar@maxlinear.com,
+        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     talel@amazon.com, hhhawa@amazon.com, jonnyc@amazon.com,
+        hanochu@amazon.com, ronenk@amazon.com, itamark@amazon.com,
+        shellykz@amazon.com, shorer@amazon.com, amitlavi@amazon.com,
+        almogbs@amazon.com, dkl@amazon.com, rahul.tanwar@linux.intel.com,
+        andriy.shevchenko@intel.com
+Date:   Wed, 31 Aug 2022 10:21:42 +0200
+In-Reply-To: <20220830192212.28570-5-farbere@amazon.com>
+References: <20220830192212.28570-1-farbere@amazon.com>
+         <20220830192212.28570-5-farbere@amazon.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mateusz,
+On Di, 2022-08-30 at 19:21 +0000, Eliav Farber wrote:
+> Change "reset" property to be optional instead of required, for SOCs that
+> don't support a reset controller.
+> 
+> Signed-off-by: Eliav Farber <farbere@amazon.com>
+> ---
+> V3 -> v2:
+> - Change "reset" property to be optional instead of adding new
+>   "reset-control-skip" property.
+> 
+>  Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
+> index 6abde48b746e..2ec4b9da4b92 100644
+> --- a/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
+> +++ b/Documentation/devicetree/bindings/hwmon/moortec,mr75203.yaml
+> @@ -49,7 +49,6 @@ required:
+>    - reg
+>    - reg-names
+>    - clocks
+> -  - resets
 
-On Wed, Aug 31, 2022 at 3:44 AM Mateusz Kwiatkowski <kfyatek@gmail.com> wrote:
-> Wow. That's an enormous amount of effort put into this patch.
->
-> But I'm tempted to say that this is actually overengineered quite a bit :D
-> Considering that there's no way to access all these calculations from user
-> space, and I can't imagine anybody using anything else than those standard
-> 480i/576i (and maybe 240p/288p) modes at 13.5 MHz any time soon... I'm not
-> sure if we actually need all this.
+Is this just for mr76006? Or does mr75203 work without reset as well?
 
-We'll need it when we get an Amiga DRM driver, which will use
-7/14/28 MHz pixel clocks.
+If it is the former, maybe a new compatible should be added and resets
+should be kept required
 
-> But anyway, I'm not the maintainer of this subsystem, so I'm not the one to
-> decide.
->
-> > +enum drm_mode_analog {
-> > +    DRM_MODE_ANALOG_NTSC,
-> > +    DRM_MODE_ANALOG_PAL,
-> > +};
->
-> Using "NTSC" and "PAL" to describe the 50Hz and 60Hz analog TV modes is common,
-> but strictly speaking a misnomer. Those are color encoding systems, and your
-> patchset fully supports lesser used, but standard encodings for those (e.g.
-> PAL-M for 60Hz and SECAM for 50Hz). I'd propose switching to some more neutral
-> naming scheme. Some ideas:
->
-> - DRM_MODE_ANALOG_60_HZ / DRM_MODE_ANALOG_50_HZ (after standard refresh rate)
-> - DRM_MODE_ANALOG_525_LINES / DRM_MODE_ANALOG_625_LINES (after standard line
->   count)
+if:
+  properties:
+    compatible:
+      contains:
+        const: moortec,mr75203
 
-IMHO these are bad names, as e.g. VGA640x480@60 is also analog, using
-60 Hz and 525 lines.  Add "TV" to the name?
-
-> - DRM_MODE_ANALOG_JM / DRM_MODE_ANALOG_BDGHIKLN (after corresponding ITU System
->   Letter Designations)
-
-Or DRM_MODE_ITU_*?
-But given the long list of letters, this looks fragile to me.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+regards
+Philipp
