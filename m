@@ -2,88 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D46ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 07:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8285EECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 07:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230391AbiHaHBo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 03:01:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41706 "EHLO
+        id S230401AbiHaHD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 03:03:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiHaHBl (ORCPT
+        with ESMTP id S230335AbiHaHDw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 03:01:41 -0400
-X-Greylist: delayed 455 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 00:01:39 PDT
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06B1767C82
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 00:01:35 -0700 (PDT)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowACniTqEBQ9jiJkUAg--.45336S2;
-        Wed, 31 Aug 2022 14:53:56 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     keescook@chromium.org, arnd@arndb.de, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] lkdtm: Add checks after calling kmalloc and vmalloc
-Date:   Wed, 31 Aug 2022 14:53:55 +0800
-Message-Id: <20220831065355.2125181-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 31 Aug 2022 03:03:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60782BB01E
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 00:03:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661929429;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F4hkpM3t1SPDuL+oYdpd1nLRpbIa0E4FQzXvygiJGl0=;
+        b=bs6t5ctzhPWN31Jxh82uC74a/U4xDdOd5WRSsGLu9Z4+tTCbF0pyEsIFCcwUfYYgl+9An0
+        K/kGkh5GKwLan800O8ngEYrKplZbDQuMOq8IRpAeV9HUoYIK2ayug0CZK4ogSYN1cBwR2k
+        tLK7fElFWmSr8DZUFngTlzW4dr/3yvA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-657-kCVIJ8jZOO-kl_vEArdlUg-1; Wed, 31 Aug 2022 03:03:46 -0400
+X-MC-Unique: kCVIJ8jZOO-kl_vEArdlUg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 134EC3C0CD3C;
+        Wed, 31 Aug 2022 07:03:46 +0000 (UTC)
+Received: from starship (unknown [10.40.194.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5EED84010E3C;
+        Wed, 31 Aug 2022 07:03:44 +0000 (UTC)
+Message-ID: <ad4986e64a02fbd75d4b3f0199fae546e2cea2c6.camel@redhat.com>
+Subject: Re: [PATCH 19/19] Revert "KVM: SVM: Do not throw warning when
+ calling avic_vcpu_load on a running vcpu"
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Li RongQing <lirongqing@baidu.com>
+Date:   Wed, 31 Aug 2022 10:03:43 +0300
+In-Reply-To: <fd349966a87ef3cb93fe1670e91cf6d2142ed442.camel@redhat.com>
+References: <20220831003506.4117148-1-seanjc@google.com>
+         <20220831003506.4117148-20-seanjc@google.com>
+         <fd349966a87ef3cb93fe1670e91cf6d2142ed442.camel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowACniTqEBQ9jiJkUAg--.45336S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7XrW3ZrykZryDJFWktFy8uFg_yoWkArb_Gr
-        4rAr17XryYya48C347KF1rZr4FkF4kXFsIkasaqwsIqFy7Jr4rJ3409r45AwsxZrWFkFnr
-        Ww4DJ3s29r12gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r47
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-        W8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI
-        42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JU24E_UUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the memory allocation,
-it should be better to check the return value after
-calling kmalloc and vmalloc and skip the execute_location
-if fails.
+On Wed, 2022-08-31 at 09:07 +0300, Maxim Levitsky wrote:
+> On Wed, 2022-08-31 at 00:35 +0000, Sean Christopherson wrote:
+> > Turns out that some warnings exist for good reasons.  Restore the warning
+> > in avic_vcpu_load() that guards against calling avic_vcpu_load() on a
+> > running vCPU now that KVM avoids doing so when switching between x2APIC
+> > and xAPIC.  The entire point of the WARN is to highlight that KVM should
+> > not be reloading an AVIC.
+> > 
+> > Opportunistically convert the WARN_ON() to WARN_ON_ONCE() to avoid
+> > spamming the kernel if it does fire.
+> > 
+> > This reverts commit c0caeee65af3944b7b8abbf566e7cc1fae15c775.
+> > 
+> > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > ---
+> >  arch/x86/kvm/svm/avic.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> > index b2033a56010c..3c300113d40b 100644
+> > --- a/arch/x86/kvm/svm/avic.c
+> > +++ b/arch/x86/kvm/svm/avic.c
+> > @@ -1080,6 +1080,7 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
+> >  		return;
+> >  
+> >  	entry = READ_ONCE(*(svm->avic_physical_id_cache));
+> > +	WARN_ON_ONCE(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
+> >  
+> >  	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
+> >  	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
+> 
+> Note that this warning was removed because it would trigger wheh x2avic code would switch
+> between xapic and x2apic.
+> 
+> I do agree 100% that this warning is useful.
 
-Fixes: cc33c537c12f ("lkdtm: add "EXEC_*" triggers")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/misc/lkdtm/perms.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Ah I see that you fixed the apic reloading to not trigger this code,
+need more coffee - in this case this patch makes lot of sense.
 
-diff --git a/drivers/misc/lkdtm/perms.c b/drivers/misc/lkdtm/perms.c
-index b93404d65650..9ba927d74973 100644
---- a/drivers/misc/lkdtm/perms.c
-+++ b/drivers/misc/lkdtm/perms.c
-@@ -180,14 +180,16 @@ static void lkdtm_EXEC_STACK(void)
- static void lkdtm_EXEC_KMALLOC(void)
- {
- 	u32 *kmalloc_area = kmalloc(EXEC_SIZE, GFP_KERNEL);
--	execute_location(kmalloc_area, CODE_WRITE);
-+	if (kmalloc_area)
-+		execute_location(kmalloc_area, CODE_WRITE);
- 	kfree(kmalloc_area);
- }
- 
- static void lkdtm_EXEC_VMALLOC(void)
- {
- 	u32 *vmalloc_area = vmalloc(EXEC_SIZE);
--	execute_location(vmalloc_area, CODE_WRITE);
-+	if (vmalloc_area)
-+		execute_location(vmalloc_area, CODE_WRITE);
- 	vfree(vmalloc_area);
- }
- 
--- 
-2.25.1
+I'll review it again when I review rest of the patches in the patch series.
+
+Best regards,
+	Maxim Levitsky
+> 
+> Best regards,
+> 	Maxim Levitsky
+
 
