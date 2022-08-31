@@ -2,153 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FCCC0502A
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 05:37:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7E0ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 05:37:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbiHaFhK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 01:37:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51848 "EHLO
+        id S229685AbiHaFhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 01:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229656AbiHaFhH (ORCPT
+        with ESMTP id S229647AbiHaFhh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 01:37:07 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB89B99F4;
-        Tue, 30 Aug 2022 22:37:02 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id j5so9285670plj.5;
-        Tue, 30 Aug 2022 22:37:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:from:to:cc;
-        bh=LeiPzwymSVIZVw3GRt09ThxmaQUoR04VQqbMh5D0t2k=;
-        b=onEPhCpuvi78PPkxj/K41vDrmpqAt0GbARq29lE4i9OY1lZlf1Vxti6vCDikGwvYqL
-         a3WrutZCHGSGAeOTBb1WWY9BQu0cm86TIwjV4p5QnR0pb7IcM6c1OnobCBez8hm35JgV
-         lZieVby+J8SaRDLF5p3JRVDHj8LZptS+eMraHjtJxaFQsipeFjFtvbDLfSMyzt6RzYP5
-         jiBeBEd0KftPkMryhFMXDT6suNqIzn3iG7TSTH3CGcNzXbWlLMz6ZcWM7DGgHpVFduZy
-         J1Q8Dp+F5GpI0U1DHSUCnb2xJ6UN4s7CuL/W6yLXSXQdSK2zk7ZS7nJ1PcObPZJ0U1MV
-         tpXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :sender:x-gm-message-state:from:to:cc;
-        bh=LeiPzwymSVIZVw3GRt09ThxmaQUoR04VQqbMh5D0t2k=;
-        b=hUJmkpVMkoG2E/EGYsmmp4Kq0Eo8qaPssiTuEdpyXNdhBqDveNC6lQ7IedSvvOY1Bt
-         iH/VquPwPdun7BJyOI7cRErfRuIH+Dlv1dwBaA2sFmWfU4bVO3DpXwZdw9WStYprRo+M
-         4+AHVuxWPxWSy6TD4KfHnji58SNzoUWe06UYcKW8p0h2SYEjoDP0uQrIE4SJgoc0KZc0
-         Vgt160wNCZNqIE3MELnJJJv652Xmbh3LY19YCZGvqYVlPP6owFvzg6xe5okMwBY7Bryz
-         bY2C4fHPxct4qXdJY0w/M4YnEuX1h2MwfybyZyh3Ee5eiZiVANeFVCULUlSx/lNd96Kq
-         5mqg==
-X-Gm-Message-State: ACgBeo0qq59sTpgeILSPG4aUbH9R8pCleebCscI7ccrYTpgvW0fuEJ3G
-        IVrUGpZFjpbBBMT6/vMXl2M=
-X-Google-Smtp-Source: AA6agR6g7jbkSaI6vo48mt68MtByBJcgFVXFcEpsT6bh5wmeLv9rRla4CDEld9U/ToG4gytmX6FkAg==
-X-Received: by 2002:a17:902:d4c4:b0:173:1206:cee7 with SMTP id o4-20020a170902d4c400b001731206cee7mr23963000plg.142.1661924221538;
-        Tue, 30 Aug 2022 22:37:01 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id t9-20020a170902e84900b0016eea511f2dsm10948677plg.242.2022.08.30.22.36.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 22:37:00 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <cddebb5a-3b83-e89d-db00-9a59ddbd6741@roeck-us.net>
-Date:   Tue, 30 Aug 2022 22:36:58 -0700
+        Wed, 31 Aug 2022 01:37:37 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D336A8327;
+        Tue, 30 Aug 2022 22:37:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661924256; x=1693460256;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2BmY08TpmPm2CQ9+xALqSFbs0LqS5Mmsg7iZ8SDKqIM=;
+  b=LZSh2Olk2gwEBfbdp/eiNncZyrPWlqbPQiJLLoXnX0Gstv4n+QPDecUT
+   MR9mOOB9wIgCm/toUDb9bMEFF06POnQEXTJEEpAinogvDwfnDCZ9rG2vr
+   c8jRPtUxoSHhhkA41Sw4vLWCKuMolau9QO9hmB0HWjPMSEgMrJu6Yg6mp
+   VXIAS2TxX6p9bnMWx2aROnCIB1y32Q/dK83yPvOj4wrvMT0ma0xN7RpCv
+   CRyRgLKftYEuRRfi7i0HlrS1D/6B1iv5/RiGb6FDkG1fgnxReR2GIeRWP
+   liy5uwlsu/0I7lYqpTELpv8BWoTD8cNwdUmta1F+DH7fjX/vTK3dV3Wmd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="357093844"
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="357093844"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 22:37:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="715582386"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 30 Aug 2022 22:37:33 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1001)
+        id 43556AD; Wed, 31 Aug 2022 08:37:48 +0300 (EEST)
+Date:   Wed, 31 Aug 2022 08:37:47 +0300
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v2 1/3] ACPI: PMIC: Use sizeof() instead of hard coded
+ value
+Message-ID: <Yw7zqzuTuULMR1Yy@black.fi.intel.com>
+References: <20220830171155.42962-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 02/19] hwmon: (mr75203) fix VM sensor allocation when
- "intel,vm-map" not defined
-Content-Language: en-US
-To:     Eliav Farber <farbere@amazon.com>, jdelvare@suse.com,
-        robh+dt@kernel.org, p.zabel@pengutronix.de, rtanwar@maxlinear.com,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     talel@amazon.com, hhhawa@amazon.com, jonnyc@amazon.com,
-        hanochu@amazon.com, ronenk@amazon.com, itamark@amazon.com,
-        shellykz@amazon.com, shorer@amazon.com, amitlavi@amazon.com,
-        almogbs@amazon.com, dkl@amazon.com, rahul.tanwar@linux.intel.com,
-        andriy.shevchenko@intel.com
-References: <20220830192212.28570-1-farbere@amazon.com>
- <20220830192212.28570-3-farbere@amazon.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <20220830192212.28570-3-farbere@amazon.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830171155.42962-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/30/22 12:21, Eliav Farber wrote:
-> Bug fix - in case "intel,vm-map" is missing in device-tree ,'num' is set
-> to 0, and no voltage channel infos are allocated.
+On Tue, Aug 30, 2022 at 08:11:53PM +0300, Andy Shevchenko wrote:
+> It's better to use sizeof() of a given buffer than spreading
+> a hard coded value.
 > 
-> Signed-off-by: Eliav Farber <farbere@amazon.com>
-> ---
->   drivers/hwmon/mr75203.c | 28 ++++++++++++----------------
->   1 file changed, 12 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
-> index 046523d47c29..0e29877a1a9c 100644
-> --- a/drivers/hwmon/mr75203.c
-> +++ b/drivers/hwmon/mr75203.c
-> @@ -580,8 +580,6 @@ static int mr75203_probe(struct platform_device *pdev)
->   	}
->   
->   	if (vm_num) {
-> -		u32 num = vm_num;
-> -
->   		ret = pvt_get_regmap(pdev, "vm", pvt);
->   		if (ret)
->   			return ret;
-> @@ -594,30 +592,28 @@ static int mr75203_probe(struct platform_device *pdev)
->   		ret = device_property_read_u8_array(dev, "intel,vm-map",
->   						    pvt->vm_idx, vm_num);
->   		if (ret) {
-> -			num = 0;
-> +			/*
-> +			 * Incase intel,vm-map property is not defined, we
-> +			 * assume incremental channel numbers.
-> +			 */
-> +			for (i = 0; i < vm_num; i++)
-> +				pvt->vm_idx[i] = i;
->   		} else {
->   			for (i = 0; i < vm_num; i++)
->   				if (pvt->vm_idx[i] >= vm_num ||
-> -				    pvt->vm_idx[i] == 0xff) {
-> -					num = i;
-> +				    pvt->vm_idx[i] == 0xff)
->   					break;
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-So all vm_idx values from 0x00 to 0xfe would be acceptable ?
-Does the chip really have that many registers (0x200 + 0x40 + 0x200 * 0xfe) ?
-Is that documented somewhere ?
-
-Thanks,
-Guenter
-
-> -				}
-> -		}
->   
-> -		/*
-> -		 * Incase intel,vm-map property is not defined, we assume
-> -		 * incremental channel numbers.
-> -		 */
-> -		for (i = num; i < vm_num; i++)
-> -			pvt->vm_idx[i] = i;
-> +			vm_num = i;
-> +		}
->   
-> -		in_config = devm_kcalloc(dev, num + 1,
-> +		in_config = devm_kcalloc(dev, vm_num + 1,
->   					 sizeof(*in_config), GFP_KERNEL);
->   		if (!in_config)
->   			return -ENOMEM;
->   
-> -		memset32(in_config, HWMON_I_INPUT, num);
-> -		in_config[num] = 0;
-> +		memset32(in_config, HWMON_I_INPUT, vm_num);
-> +		in_config[vm_num] = 0;
->   		pvt_in.config = in_config;
->   
->   		pvt_info[index++] = &pvt_in;
-
+Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
