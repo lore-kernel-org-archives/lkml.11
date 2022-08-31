@@ -2,96 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD942ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0E5C0502A
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232123AbiHaOQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
+        id S232125AbiHaOQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232120AbiHaOPy (ORCPT
+        with ESMTP id S232140AbiHaOP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:15:54 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB9E22B30
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:15:08 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id z6so20151251lfu.9
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:15:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=oyr/M5THRfXuofkR2FdLU5DqKefdd5DnYschP7srrC4=;
-        b=q2MTJGp16PxpFk5FrY9JXxp+JJJ2HJTmDbCYqK4/39XF6DBhBO9LDhM5vZOcotkVND
-         51RNgnRbHAebcY33bTUlDeA8RnN5RTN5XPjy66jyxq5uFBgsU+oida2any+8s8FCNv0x
-         godu+cWAZcePI1X1aYCphP0t5jhNyxejQW0WAq+VXc0DIdaQjxQJA6kIaCrWBR2F8vwM
-         7p5KvEt7JGXqhZGCr9yAUODp0B5QRsVAXDBt3RUG2Ln5K5dRdcN8vJEakwRwvhWd5SrB
-         QX3LSmSBq+vySnW4wAZn8S7JndQ0dEhC2KcB53J3ipYpS4cfj4Dfb56QVr8IYl2s1cQ8
-         iiWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=oyr/M5THRfXuofkR2FdLU5DqKefdd5DnYschP7srrC4=;
-        b=2EsQeW0+8BfJY0D35wt6m+V92OQgoduCIcRRa+7zi5rI/HU4zkhTn7OCenMkpnNyrt
-         9JPXHybVR20o8m3iABLcunsBZBRv3FJslWIcFlC433wppWB5O43Nd+/748CpIEmUsrGp
-         cOiMOXVHPfRf6VFnstEwsAIlEVlLH0toxRpugegYZPBu6a7nbriwe9HPOGinOfyZPeaO
-         5H/CCPLMopUz5CGbwr1ayRfPHSvh8njK/XcnYjGpamhIGMXk98ekA6KaYRPCUbq68w9z
-         M7PPltTvtDYSfxdbY5vy2sHJV76yGlDvvETRZYvTct6J4V1knKwAs1oALGmj57o9TijA
-         SH7g==
-X-Gm-Message-State: ACgBeo3coHACbzu7hGQlw+hsFKoDBIOGitoxCMTQ+7dSql5RhuB2wLBY
-        BuY3vrDEcN5AnFoFAqClOfxGC5nnGRJr2A==
-X-Google-Smtp-Source: AA6agR6AsSETunILgRQtztJlBJJCwSpIqIE9j75HrQx7DuXZn2UFjkiUNEIDXQma1dvXZSqKqjLhzQ==
-X-Received: by 2002:a19:5e51:0:b0:494:6b70:9302 with SMTP id z17-20020a195e51000000b004946b709302mr4294114lfi.250.1661955306513;
-        Wed, 31 Aug 2022 07:15:06 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id s8-20020a056512202800b0048b365176d9sm1992316lfs.286.2022.08.31.07.15.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 07:15:05 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
+        Wed, 31 Aug 2022 10:15:59 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E5D54C93;
+        Wed, 31 Aug 2022 07:15:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661955321; x=1693491321;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=L9mlAn2BFWn3JIKG5JcPjAbTHy4uCrPCXYYV2cWUXdk=;
+  b=l/B0P/Gy3eM3cTo/03Vt5WiaclCZK3igVmL/838vIY4qx5eckazw4Eo9
+   GlfS/f3EdNGyNHV5PKEo3X4fHCYvfXa4ffWEZwHIglUc7KNPLpVDksLTP
+   p1HZDW561mU3bPWnn00crHtwvvvBf6HzCu6NnQA0utpR0Qj4u86Oxhba8
+   Lyfz3cgLTm8wHBGZslce+PGzp7FCYneRdQatiEhC81jXuyN6bZrYUgHo/
+   GmAl5ERIAn6BxYnWglX/WLTLpqLUfXU+bxox1MMU5V9aYtYOYTvMK+L7w
+   pqOIsAK3JUEpjB6JnNT6w1AD4LIPptT/DtI4ZC87yf3D9BZPGgXvOJL8d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321594753"
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="321594753"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:15:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="787873718"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga005.jf.intel.com with ESMTP; 31 Aug 2022 07:15:17 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id BFF7C1C3; Wed, 31 Aug 2022 17:15:32 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH] regmap: mmio: Fix rebase error
-Date:   Wed, 31 Aug 2022 16:13:03 +0200
-Message-Id: <20220831141303.501548-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.37.2
+        Jakob Hauser <jahau@rocketmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 3/3] iio: magnetometer: yamaha-yas530: Use dev_err_probe()
+Date:   Wed, 31 Aug 2022 17:15:30 +0300
+Message-Id: <20220831141530.80572-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220831141530.80572-1-andriy.shevchenko@linux.intel.com>
+References: <20220831141530.80572-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A dangling pointless "ret 0" was left in and some unneeded
-whitespace can go too.
+Unify error message format by using dev_err_probe().
 
-Fixes: 81c0386c1376 ("regmap: mmio: Support accelerared noinc operations")
-Reported-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/base/regmap/regmap-mmio.c | 3 ---
- 1 file changed, 3 deletions(-)
+v2: no changes
+ drivers/iio/magnetometer/yamaha-yas530.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/base/regmap/regmap-mmio.c b/drivers/base/regmap/regmap-mmio.c
-index e8d2675463ac..b47ee3e8d050 100644
---- a/drivers/base/regmap/regmap-mmio.c
-+++ b/drivers/base/regmap/regmap-mmio.c
-@@ -410,14 +410,11 @@ static int regmap_mmio_noinc_read(void *context, unsigned int reg,
- 		}
+diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
+index a6e34d5f3e85..801c760feb4d 100644
+--- a/drivers/iio/magnetometer/yamaha-yas530.c
++++ b/drivers/iio/magnetometer/yamaha-yas530.c
+@@ -1415,10 +1415,8 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 		return dev_err_probe(dev, ret, "cannot get regulators\n");
+ 
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(yas5xx->regs), yas5xx->regs);
+-	if (ret) {
+-		dev_err(dev, "cannot enable regulators\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "cannot enable regulators\n");
+ 
+ 	/* See comment in runtime resume callback */
+ 	usleep_range(31000, 40000);
+@@ -1426,15 +1424,13 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 	/* This will take the device out of reset if need be */
+ 	yas5xx->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(yas5xx->reset)) {
+-		ret = dev_err_probe(dev, PTR_ERR(yas5xx->reset),
+-				    "failed to get reset line\n");
++		ret = dev_err_probe(dev, PTR_ERR(yas5xx->reset), "failed to get reset line\n");
+ 		goto reg_off;
  	}
  
--
- out_clk:
- 	if (!IS_ERR(ctx->clk))
- 		clk_disable(ctx->clk);
+ 	yas5xx->map = devm_regmap_init_i2c(i2c, &yas5xx_regmap_config);
+ 	if (IS_ERR(yas5xx->map)) {
+-		dev_err(dev, "failed to allocate register map\n");
+-		ret = PTR_ERR(yas5xx->map);
++		ret = dev_err_probe(dev, PTR_ERR(yas5xx->map), "failed to allocate register map\n");
+ 		goto assert_reset;
+ 	}
  
- 	return ret;
--
--	return 0;
- }
+@@ -1484,13 +1480,13 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 					 yas5xx_handle_trigger,
+ 					 NULL);
+ 	if (ret) {
+-		dev_err(dev, "triggered buffer setup failed\n");
++		dev_err_probe(dev, ret, "triggered buffer setup failed\n");
+ 		goto assert_reset;
+ 	}
  
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret) {
+-		dev_err(dev, "device register failed\n");
++		dev_err_probe(dev, ret, "device register failed\n");
+ 		goto cleanup_buffer;
+ 	}
  
 -- 
-2.37.2
+2.35.1
 
