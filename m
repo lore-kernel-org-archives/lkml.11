@@ -2,172 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EB70ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0810ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 10:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbiHaKLb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:11:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
+        id S230243AbiHaKLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:11:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiHaKLO (ORCPT
+        with ESMTP id S229986AbiHaKLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 06:11:14 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5A8AEDB7;
-        Wed, 31 Aug 2022 03:11:11 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 279092226F;
-        Wed, 31 Aug 2022 10:11:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1661940670; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9ZcqM4yN/Uj2veB6/peO+/NOESYU9wobXvQy0yQjV4o=;
-        b=Yy6RUQdM9jmsAxglplkxXX5ltqNnErSYCX9NG/KP34nto93gbhP8A03TGq2nPa/LvHZzml
-        btOJNLDHOI9hpuLsLjm09qtoqhoSAt44HVPsOPOvmrViCmO/bUFitzMEPHx5x2KSfVOCD4
-        vfr1uon403pQHuoUNgbpFaM/H1r2Wf8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1661940670;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9ZcqM4yN/Uj2veB6/peO+/NOESYU9wobXvQy0yQjV4o=;
-        b=KUiIFlqbF9LwRuhv7UYrcQNDomt2Z2X+zy/MToMnTER4Y3BnTVv72LaVQ5k1u0/+kR20Pu
-        NSrzG7KAdz5wpiBA==
-Received: from suse.de (unknown [10.163.43.106])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id C2D002C142;
-        Wed, 31 Aug 2022 10:11:04 +0000 (UTC)
-Date:   Wed, 31 Aug 2022 11:11:03 +0100
-From:   Mel Gorman <mgorman@suse.de>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     akpm@linux-foundation.org, kent.overstreet@linux.dev,
-        mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
-        roman.gushchin@linux.dev, dave@stgolabs.net, willy@infradead.org,
-        liam.howlett@oracle.com, void@manifault.com, peterz@infradead.org,
-        juri.lelli@redhat.com, ldufour@linux.ibm.com, peterx@redhat.com,
-        david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
-        masahiroy@kernel.org, nathan@kernel.org, changbin.du@intel.com,
-        ytcoode@gmail.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
-        penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
-        glider@google.com, elver@google.com, dvyukov@google.com,
-        shakeelb@google.com, songmuchun@bytedance.com, arnd@arndb.de,
-        jbaron@akamai.com, rientjes@google.com, minchan@google.com,
-        kaleshsingh@google.com, kernel-team@android.com,
-        linux-mm@kvack.org, iommu@lists.linux.dev,
-        kasan-dev@googlegroups.com, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-bcache@vger.kernel.org, linux-modules@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 10/30] mm: enable page allocation tagging for
- __get_free_pages and alloc_pages
-Message-ID: <20220831101103.fj5hjgy3dbb44fit@suse.de>
-References: <20220830214919.53220-1-surenb@google.com>
- <20220830214919.53220-11-surenb@google.com>
+        Wed, 31 Aug 2022 06:11:35 -0400
+X-Greylist: delayed 1854 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 31 Aug 2022 03:11:26 PDT
+Received: from mail-m964.mail.126.com (mail-m964.mail.126.com [123.126.96.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09B41AEDB7
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 03:11:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=qV7ak
+        zLaGXu9fGQiOMj/yV6cyOJkqSiwyUBHI4SCrYU=; b=LCSWjsF//RrnWuIz0RXeM
+        OnrYonwQWxDeOwZeNa+eJn1aPYToLOAd2fMKzsjujzJz8ttzRD3ZvUmUqDOcf27d
+        tAyrw5EFXgYd+JwS4XYdCseVyxANzevah7Go9seTtV4HM1pWCBkpFVTDRCqQafE/
+        VPzh3vXW8IVOf9q0cJy/9U=
+Received: from localhost.localdomain (unknown [116.128.244.169])
+        by smtp9 (Coremail) with SMTP id NeRpCgB3lxNPLA9jA+xpAg--.24384S2;
+        Wed, 31 Aug 2022 17:39:28 +0800 (CST)
+From:   Bing Huang <huangbing775@126.com>
+To:     rostedt@goodmis.org, dietmar.eggemann@arm.com
+Cc:     brauner@kernel.org, bristot@redhat.com, bsegall@google.com,
+        juri.lelli@redhat.com, linux-kernel@vger.kernel.org,
+        mgorman@suse.de, mingo@redhat.com, peterz@infradead.org,
+        vincent.guittot@linaro.org
+Subject: [PATCH RESEND] sched/topology: Add __init for init_defrootdomain
+Date:   Wed, 31 Aug 2022 17:39:27 +0800
+Message-Id: <20220831093927.5904-1-huangbing775@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
-Content-Disposition: inline
-In-Reply-To: <20220830214919.53220-11-surenb@google.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: NeRpCgB3lxNPLA9jA+xpAg--.24384S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Cr48ury3Kw4fJw1xKr43GFg_yoW8JFyrpF
+        yq9rW5G3y8GrWqq348C3ykurW3W3sxKw4Skan8tws8Jr1rGwn0gFn0vF43CryY9r45Gr4a
+        yF4qq342y3WUtFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07Undb8UUUUU=
+X-Originating-IP: [116.128.244.169]
+X-CM-SenderInfo: xkxd0w5elqwlixv6ij2wof0z/1tbijBBur1pEJLYbywAAsB
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 02:48:59PM -0700, Suren Baghdasaryan wrote:
-> Redefine alloc_pages, __get_free_pages to record allocations done by
-> these functions. Instrument deallocation hooks to record object freeing.
-> 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> +#ifdef CONFIG_PAGE_ALLOC_TAGGING
-> +
->  #include <linux/alloc_tag.h>
->  #include <linux/page_ext.h>
->  
-> @@ -25,4 +27,37 @@ static inline void pgalloc_tag_dec(struct page *page, unsigned int order)
->  		alloc_tag_sub(get_page_tag_ref(page), PAGE_SIZE << order);
->  }
->  
-> +/*
-> + * Redefinitions of the common page allocators/destructors
-> + */
-> +#define pgtag_alloc_pages(gfp, order)					\
-> +({									\
-> +	struct page *_page = _alloc_pages((gfp), (order));		\
-> +									\
-> +	if (_page)							\
-> +		alloc_tag_add(get_page_tag_ref(_page), PAGE_SIZE << (order));\
-> +	_page;								\
-> +})
-> +
+From: Bing Huang <huangbing@kylinos.cn>
 
-Instead of renaming alloc_pages, why is the tagging not done in
-__alloc_pages()? At least __alloc_pages_bulk() is also missed. The branch
-can be guarded with IS_ENABLED.
+init_defrootdomain is only used in initialization
 
-> +#define pgtag_get_free_pages(gfp_mask, order)				\
-> +({									\
-> +	struct page *_page;						\
-> +	unsigned long _res = _get_free_pages((gfp_mask), (order), &_page);\
-> +									\
-> +	if (_res)							\
-> +		alloc_tag_add(get_page_tag_ref(_page), PAGE_SIZE << (order));\
-> +	_res;								\
-> +})
-> +
+Signed-off-by: Bing Huang <huangbing@kylinos.cn>
+---
+ kernel/sched/sched.h    | 2 +-
+ kernel/sched/topology.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Similar, the tagging could happen in a core function instead of a wrapper.
-
-> +#else /* CONFIG_PAGE_ALLOC_TAGGING */
-> +
-> +#define pgtag_alloc_pages(gfp, order) _alloc_pages(gfp, order)
-> +
-> +#define pgtag_get_free_pages(gfp_mask, order) \
-> +	_get_free_pages((gfp_mask), (order), NULL)
-> +
-> +#define pgalloc_tag_dec(__page, __size)		do {} while (0)
-> +
-> +#endif /* CONFIG_PAGE_ALLOC_TAGGING */
-> +
->  #endif /* _LINUX_PGALLOC_TAG_H */
-> diff --git a/mm/mempolicy.c b/mm/mempolicy.c
-> index b73d3248d976..f7e6d9564a49 100644
-> --- a/mm/mempolicy.c
-> +++ b/mm/mempolicy.c
-> @@ -2249,7 +2249,7 @@ EXPORT_SYMBOL(vma_alloc_folio);
->   * flags are used.
->   * Return: The page on success or NULL if allocation fails.
->   */
-> -struct page *alloc_pages(gfp_t gfp, unsigned order)
-> +struct page *_alloc_pages(gfp_t gfp, unsigned int order)
->  {
->  	struct mempolicy *pol = &default_policy;
->  	struct page *page;
-> @@ -2273,7 +2273,7 @@ struct page *alloc_pages(gfp_t gfp, unsigned order)
->  
->  	return page;
->  }
-> -EXPORT_SYMBOL(alloc_pages);
-> +EXPORT_SYMBOL(_alloc_pages);
->  
->  struct folio *folio_alloc(gfp_t gfp, unsigned order)
->  {
-> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> index e5486d47406e..165daba19e2a 100644
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -763,6 +763,7 @@ static inline bool pcp_allowed_order(unsigned int order)
->  
->  static inline void free_the_page(struct page *page, unsigned int order)
->  {
-> +
->  	if (pcp_allowed_order(order))		/* Via pcp? */
->  		free_unref_page(page, order);
->  	else
-
-Spurious wide-space change.
-
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index b0bf2287dd9d..cd761f1fc60c 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -883,7 +883,7 @@ struct root_domain {
+ 	struct perf_domain __rcu *pd;
+ };
+ 
+-extern void init_defrootdomain(void);
++extern void __init init_defrootdomain(void);
+ extern int sched_init_domains(const struct cpumask *cpu_map);
+ extern void rq_attach_root(struct rq *rq, struct root_domain *rd);
+ extern void sched_get_rd(struct root_domain *rd);
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index 8739c2a5a54e..dea9fa39e7c0 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -578,7 +578,7 @@ static int init_rootdomain(struct root_domain *rd)
+  */
+ struct root_domain def_root_domain;
+ 
+-void init_defrootdomain(void)
++void __init init_defrootdomain(void)
+ {
+ 	init_rootdomain(&def_root_domain);
+ 
 -- 
-Mel Gorman
-SUSE Labs
+2.25.1
+
+
+No virus found
+		Checked by Hillstone Network AntiVirus
+
