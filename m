@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D0CECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:27:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EDDECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 18:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232787AbiHaS1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 14:27:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58282 "EHLO
+        id S232891AbiHaS1P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 14:27:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230151AbiHaSZq (ORCPT
+        with ESMTP id S232804AbiHaSZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 14:25:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269E21F2C2
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:57 -0700 (PDT)
+        Wed, 31 Aug 2022 14:25:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96EF8F2432
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 11:21:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2998B82282
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D974C4314B;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA3ED61CEF
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 18:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1489C433D6;
         Wed, 31 Aug 2022 18:21:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661970110;
-        bh=fmmGXrtft4WY+vYxlsPoch8NfKf9311WO6goU05GNWY=;
+        bh=CU73QDisjs/PRWOCwR+T0+q/eTYkk9fwbgXWId7CwWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sKiFWYHWw3ttCgjlsyc2E1INvfoTWR9OpKuHkufgBVo5RJr1haye3k19z1zICIyDb
-         Y45L3NkcrTYqzl/LkYwzg5PEUkYcD805Z7uE2apsuloFYftTH4YQzhM7j/d3XNuoeg
-         MfL5xtC8p0wpAAX4Fs3nPbsVNVt7zWosCh7uyJS3Fad2BLZJWZokgEL4qUOSu70PDc
-         9RUgK9CLEwMyHj5aXhhiZSORjNQ6LdA+Kve3cAd59VQudoFtoQJ0AxO0HHReRvjiHM
-         2fuvLc4A7HqzuLtjUP63Xr8qhwsDIrDvVXgVDm0GuyUcYzk23lmoSRE2BdoTjM/Pr/
-         fdcXIe0stWfYA==
+        b=tJy2tq89mR9IEZe4QbPiaq4VvQd3El7aXE3ZTo3k1+dysYtdAIum9IC4SxUqBpIqk
+         OqXiCDCM4wZPy6cNRhEKBR2pL4odJdqww8giyHt4ujJkEFsyRVDcuGMI231R352BI0
+         lJA2XFbROC1NtwEvbOEMaOte2DqxSB69oKAiuuK3R5c4HGAJlMV9NOGLdDcLYHktsQ
+         ZSfQ7ZRerfcM0eFUsj8O7zdrOj0FDYnMkAAuG8MM9xoBUgJ6knZpOsYB9oBHi3eSHW
+         TPXuZ8PjUKwUBHaJsAP84tofhNHNnwtaicL1ryWD/YLhbbxQYCHnkNnmhVtFPx4Rt5
+         tgLBg3NGnr0TQ==
 Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id E09525C0A6B; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
+        id EE91F5C0E4D; Wed, 31 Aug 2022 11:21:49 -0700 (PDT)
 From:   "Paul E. McKenney" <paulmck@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     gwml@vger.gnuweeb.org, kernel-team@fb.com, w@lwt.eu,
         Willy Tarreau <w@1wt.eu>,
         "Paul E . McKenney" <paulmck@kernel.org>
-Subject: [PATCH nolibc 08/18] selftests/nolibc: exit with poweroff on success when getpid() == 1
-Date:   Wed, 31 Aug 2022 11:21:38 -0700
-Message-Id: <20220831182148.2698489-10-paulmck@kernel.org>
+Subject: [PATCH nolibc 16/18] selftests/nolibc: "sysroot" target installs a local copy of the sysroot
+Date:   Wed, 31 Aug 2022 11:21:46 -0700
+Message-Id: <20220831182148.2698489-18-paulmck@kernel.org>
 X-Mailer: git-send-email 2.31.1.189.g2e36527f23
 In-Reply-To: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
 References: <20220831182113.GA2697286@paulmck-ThinkPad-P17-Gen-1>
@@ -53,43 +53,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Willy Tarreau <w@1wt.eu>
 
-The idea is to ease automated testing under qemu. If the test succeeds
-while running as PID 1, indicating the system was booted with init=/test,
-let's just power off so that qemu can exit with a successful code. In
-other situations it will exit and provoke a panic, which may be caught
-for example with CONFIG_PVPANIC.
+It's not convenient to rely on a sysroot built in another directory,
+especially when running cross-compilation tests, where one has to
+switch back and forth between directories.
+
+Let's make it possible to install the sysroot directly in the test
+directory. It's not big and even benefits from being copied by arch
+so that it's easier to switch between archs if needed. The new
+"sysroot" target does this, it just calls "headers_standalone" from
+nolibc to install the sysroot right here.
 
 Signed-off-by: Willy Tarreau <w@1wt.eu>
 Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 ---
- tools/testing/selftests/nolibc/nolibc-test.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ tools/testing/selftests/nolibc/Makefile | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/nolibc/nolibc-test.c b/tools/testing/selftests/nolibc/nolibc-test.c
-index b928f099431f7..291d96bfd7c12 100644
---- a/tools/testing/selftests/nolibc/nolibc-test.c
-+++ b/tools/testing/selftests/nolibc/nolibc-test.c
-@@ -626,6 +626,20 @@ int main(int argc, char **argv, char **envp)
- 	}
+diff --git a/tools/testing/selftests/nolibc/Makefile b/tools/testing/selftests/nolibc/Makefile
+index 7c1f5360f454e..210f5369fdfc4 100644
+--- a/tools/testing/selftests/nolibc/Makefile
++++ b/tools/testing/selftests/nolibc/Makefile
+@@ -67,9 +67,16 @@ LDFLAGS := -s
  
- 	printf("Total number of errors: %d\n", ret);
+ all: nolibc-test
+ 
+-nolibc-test: nolibc-test.c
++sysroot: sysroot/$(ARCH)/include
 +
-+	if (getpid() == 1) {
-+		/* we're running as init, there's no other process on the
-+		 * system, thus likely started from a VM for a quick check.
-+		 * Exiting will provoke a kernel panic that may be reported
-+		 * as an error by Qemu or the hypervisor, while stopping
-+		 * cleanly will often be reported as a success. This allows
-+		 * to use the output of this program for bisecting kernels.
-+		 */
-+		printf("Leaving init with final status: %d\n", !!ret);
-+		if (ret == 0)
-+			reboot(LINUX_REBOOT_CMD_POWER_OFF);
-+	}
++sysroot/$(ARCH)/include:
++	$(QUIET_MKDIR)mkdir -p sysroot
++	$(Q)$(MAKE) -C ../../../include/nolibc ARCH=$(ARCH) OUTPUT=$(CURDIR)/sysroot/ headers_standalone
++	$(Q)mv sysroot/sysroot sysroot/$(ARCH)
 +
- 	printf("Exiting with status %d\n", !!ret);
- 	return !!ret;
- }
++nolibc-test: nolibc-test.c sysroot/$(ARCH)/include
+ 	$(QUIET_CC)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ \
+-	  -nostdlib -static -include ../../../include/nolibc/nolibc.h $^ -lgcc
++	  -nostdlib -static -Isysroot/$(ARCH)/include $< -lgcc
+ 
+ initramfs: nolibc-test
+ 	$(QUIET_MKDIR)mkdir -p initramfs
+@@ -93,6 +100,8 @@ rerun:
+ 	$(Q)grep -w FAIL "$(CURDIR)/run.out" && echo "See all results in $(CURDIR)/run.out" || echo "$$(grep -c ^[0-9].*OK $(CURDIR)/run.out) test(s) passed."
+ 
+ clean:
++	$(call QUIET_CLEAN, sysroot)
++	$(Q)rm -rf sysroot
+ 	$(call QUIET_CLEAN, nolibc-test)
+ 	$(Q)rm -f nolibc-test
+ 	$(call QUIET_CLEAN, initramfs)
 -- 
 2.31.1.189.g2e36527f23
 
