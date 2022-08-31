@@ -2,258 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B37DECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 17:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05458ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 17:25:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231984AbiHaRZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 13:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50884 "EHLO
+        id S232038AbiHaRZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 13:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231923AbiHaRZE (ORCPT
+        with ESMTP id S231743AbiHaRZH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 13:25:04 -0400
-Received: from mx0.riseup.net (mx0.riseup.net [198.252.153.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACCF1275A
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:24:57 -0700 (PDT)
-Received: from fews2.riseup.net (fews2-pn.riseup.net [10.0.1.84])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx0.riseup.net (Postfix) with ESMTPS id 4MHrf023Pvz9sl2;
-        Wed, 31 Aug 2022 17:24:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1661966696; bh=b6CU+toJ1PQ9W1Moy4kQd795kcFuuGTIbfVFcq1JfhM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hh+0iPH8I9l83r06gwoiZfPs+YsJ8+yNxrdnQl4UfvImHhxD1ZEaMT+121sAUznZ1
-         6eCmXJ82AJ9ghPoECs+l3H4Ovzm/wmXwewD+q7IAN0tH6XUbTZzna1gCo2/LV5oE4r
-         BX1yv5sRKxauT0jfsqiyBHJc4cCxH3w2GCz7+EYA=
-X-Riseup-User-ID: F4261B9C7E7AB412A717A298C19C6718E84D43E1E9EA51AD2CEE2D300158CD4A
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews2.riseup.net (Postfix) with ESMTPSA id 4MHrdr0jCJz1y9N;
-        Wed, 31 Aug 2022 17:24:47 +0000 (UTC)
-From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-To:     Alex Deucher <alexander.deucher@amd.com>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        David Gow <davidgow@google.com>
-Cc:     andrealmeid@riseup.net, mwen@igalia.com,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, Trevor Woerner <twoerner@gmail.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        kunit-dev@googlegroups.com, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-Subject: [PATCH v2 3/8] drm/amd/display: Introduce KUnit tests to display_rq_dlg_calc_20
-Date:   Wed, 31 Aug 2022 14:22:34 -0300
-Message-Id: <20220831172239.344446-4-mairacanal@riseup.net>
-In-Reply-To: <20220831172239.344446-1-mairacanal@riseup.net>
-References: <20220831172239.344446-1-mairacanal@riseup.net>
+        Wed, 31 Aug 2022 13:25:07 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A692E1C137
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:25:04 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id bd26-20020a05600c1f1a00b003a5e82a6474so8390116wmb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 10:25:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=lCJ0X4MxUytr04uLAZfmQJHTkCXKEdN4OMX7NFuLbu4=;
+        b=Q3S1nbqunZ84BvgZwdQEX9PqqmrAQNvv4jEpzOY6BxlVLuE1IoEXXKjtROg5F47oGL
+         Qmgb6STeBCzOkRHYA4Ne5LCR3shk0edN6ixDwGEOmpVeXYkQhvljK6DgLIDriZudG/l4
+         R9kRylrw4IRf/Ik/VfxbiZA7Vy6m9O2+VhVX84kEIIicDRd+XVGOY1skq4e9sJgwxeE1
+         qVa5vU7B03fD0XKY5xDRIbfjgSA4ghgQfLYadm9VzUvb01KPQA0/WWKsFPyCYIfs7y8t
+         t1ZrwnVoScEV5jD9tVG+ndJ/vE1kWpH5HtV+yjsHgiQyd2lQ2hKESKqN4qEb5xIPtW0n
+         qC7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=lCJ0X4MxUytr04uLAZfmQJHTkCXKEdN4OMX7NFuLbu4=;
+        b=3x8pndULRfxXfGAAD3+pYqhXPrlfxrLEPiCe3s1DFLN0c+6BGIfsJIiUq7nrt2wLBq
+         O/NU1aAzKhvHUUEWmliaVEQiV9jYhO8IdjtjhwnmKQxZAoDkRfcPhz0X1FOU6V03fppT
+         MbEMg16jqZ2rMiJwThZsMzKejBrEtQkvopVPNgICmKbIvtMrl6l25a5NFTkb6tN8wiGN
+         ZMc7CDqwStRRg2w8gwbZGoDxkgBjS1vPRCqRL4tvegYm55c0kLAeoyzFI/JaPWcLaFS9
+         by4QIXF7ndQZiJm0D4ztXxDJa5C2eYlWG8fq/m7QYOMbhX3h+BjICSg7CXL0tHyYMgw5
+         lhqw==
+X-Gm-Message-State: ACgBeo1iWVnh8JhNxSWaz3i8AHrg6zAQtHf+mK8TwOrbeOraH9KH0smo
+        Pwxi/27DyUkPsZdmugkH0PWbIg==
+X-Google-Smtp-Source: AA6agR7AG0MhMcCgUXxNj/1M4XOFv1/Vik4cv/p81wTY7rbGynK6w5HUZOKiGVN2hPE63IiOUAeS0g==
+X-Received: by 2002:a7b:ce09:0:b0:3a6:6561:d9d5 with SMTP id m9-20020a7bce09000000b003a66561d9d5mr2664876wmc.62.1661966702341;
+        Wed, 31 Aug 2022 10:25:02 -0700 (PDT)
+Received: from localhost (cst2-173-67.cust.vodafone.cz. [31.30.173.67])
+        by smtp.gmail.com with ESMTPSA id da12-20020a056000408c00b0021ee65426a2sm13746758wrb.65.2022.08.31.10.25.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 10:25:01 -0700 (PDT)
+From:   Andrew Jones <ajones@ventanamicro.com>
+To:     linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, anup@brainfault.org,
+        mchitale@ventanamicro.com, heiko@sntech.de
+Subject: [PATCH v2 0/4] riscv: Introduce support for defining instructions
+Date:   Wed, 31 Aug 2022 19:24:56 +0200
+Message-Id: <20220831172500.752195-1-ajones@ventanamicro.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-type: text/plain
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Isabella Basso <isabbasso@riseup.net>
+When compiling with toolchains that haven't yet been taught about
+new instructions we need to encode them ourselves. This series
+creates a new file where support for instruction definitions can
+evolve. For starters the file is initiated with a macro for R-type
+encodings. The series then applies the R-type encoding macro to all
+instances of hard coded instruction definitions in KVM.
 
-This adds tests to the bit encoding format verification functions on the
-file. They're meant to be simpler so as to provide a proof of concept on
-testing DML code.
+Not only should using instruction encoding macros improve readability
+and maintainability of code, but we should also gain potential for
+more optimized code after compilation as the compiler will have control
+over the input and output registers used, which may provide more
+opportunities for inlining.
 
-Signed-off-by: Isabella Basso <isabbasso@riseup.net>
-Signed-off-by: Maíra Canal <mairacanal@riseup.net>
----
- drivers/gpu/drm/amd/display/Kconfig           |  13 ++
- .../dc/dml/dcn20/display_rq_dlg_calc_20.c     |   4 +
- .../gpu/drm/amd/display/tests/.kunitconfig    |   1 +
- .../dml/dcn20/display_rq_dlg_calc_20_test.c   | 124 ++++++++++++++++++
- 4 files changed, 142 insertions(+)
- create mode 100644 drivers/gpu/drm/amd/display/tests/dc/dml/dcn20/display_rq_dlg_calc_20_test.c
+I grepped for other places we may want to use these macros and the
+only place I found was ALT_CMO_OP(), but I didn't dare touch it :-)
+I do suggest we apply this to the Svinal support [1] as we won't
+want to frustrate the compiler's inlining efforts with hard coded
+register selection.
 
-diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
-index ce882a8c24f5..039227baedfa 100644
---- a/drivers/gpu/drm/amd/display/Kconfig
-+++ b/drivers/gpu/drm/amd/display/Kconfig
-@@ -67,6 +67,19 @@ config DCE_KUNIT_TEST
- 
- 		If unsure, say N.
- 
-+config DML_KUNIT_TEST
-+	bool "Run all KUnit tests for DML" if !KUNIT_ALL_TESTS
-+	depends on DRM_AMD_DC_DCN && KUNIT
-+	default KUNIT_ALL_TESTS
-+	help
-+		Enables unit tests for the Display Controller Engine. Only useful for kernel
-+		devs running KUnit.
-+
-+		For more information on KUnit and unit tests in general please refer to
-+		the KUnit documentation in Documentation/dev-tools/kunit/.
-+
-+		If unsure, say N.
-+
- config AMD_DC_BASICS_KUNIT_TEST
- 	bool "Enable KUnit tests for the 'basics' sub-component of DAL" if !KUNIT_ALL_TESTS
- 	depends on DRM_AMD_DC && KUNIT
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
-index 548cdef8a8ad..ab688c9ba0d1 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/display_rq_dlg_calc_20.c
-@@ -1683,3 +1683,7 @@ static void calculate_ttu_cursor(struct display_mode_lib *mode_lib,
- 		ASSERT(*refcyc_per_req_delivery_cur < dml_pow(2, 13));
- 	}
- }
-+
-+#if IS_ENABLED(CONFIG_DML_KUNIT_TEST)
-+#include "../../../tests/dc/dml/dcn20/display_rq_dlg_calc_20_test.c"
-+#endif
-diff --git a/drivers/gpu/drm/amd/display/tests/.kunitconfig b/drivers/gpu/drm/amd/display/tests/.kunitconfig
-index 7a58f75a8dfc..eb6f81601757 100644
---- a/drivers/gpu/drm/amd/display/tests/.kunitconfig
-+++ b/drivers/gpu/drm/amd/display/tests/.kunitconfig
-@@ -5,3 +5,4 @@ CONFIG_DRM_AMDGPU=y
- CONFIG_DRM_AMD_DC=y
- CONFIG_AMD_DC_BASICS_KUNIT_TEST=y
- CONFIG_DCE_KUNIT_TEST=y
-+CONFIG_DML_KUNIT_TEST=y
-diff --git a/drivers/gpu/drm/amd/display/tests/dc/dml/dcn20/display_rq_dlg_calc_20_test.c b/drivers/gpu/drm/amd/display/tests/dc/dml/dcn20/display_rq_dlg_calc_20_test.c
-new file mode 100644
-index 000000000000..e6d3e356205c
---- /dev/null
-+++ b/drivers/gpu/drm/amd/display/tests/dc/dml/dcn20/display_rq_dlg_calc_20_test.c
-@@ -0,0 +1,124 @@
-+// SPDX-License-Identifier: MIT
-+/*
-+ * KUnit tests for dml/dcn20/display_rq_dlg_calc_20.c
-+ *
-+ * Copyright (c) 2022, Isabella Basso <isabbasso@riseup.net>
-+ */
-+
-+#include <kunit/test.h>
-+#include "dml/display_mode_lib.h"
-+
-+/**
-+ * get_bytes_per_element_test - KUnit test for get_bytes_per_element
-+ * @test: represents a running instance of a test.
-+ */
-+static void get_bytes_per_element_test(struct kunit *test)
-+{
-+	/* last numbers should tell us the horizontal 4-element region binary
-+	 * size N used for subsampling, thus giving us N/8 bytes per element
-+	 */
-+	/* note that 4:4:4 is not subsampled */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_444_16, false), 2);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_444_32, false), 4);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_444_64, false), 8);
-+
-+	/* dcn20 doesn't support bit depths over 10b */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_420_12, false), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_420_12, true), 0);
-+
-+	/* dm_444_XX are not dual plane */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_444_16, true), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_444_32, true), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_444_64, true), 0);
-+
-+	/* in the dm_42* values, last numbers specify bit depth, demanding we
-+	 * treat chroma and luma channels separately
-+	 */
-+	/* thus we'll now have ceil(N/8) bytes for luma */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_420_8, false), 1);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_420_10, false), 2);
-+	/* and double the luma value for accommodating blue and red chroma
-+	 * channels
-+	 */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_420_8, true), 2);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_420_10, true), 4);
-+
-+	/* monochrome encodings should mirror non-subsampled variants */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_mono_8, false),
-+			get_bytes_per_element(dm_444_8, false));
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_mono_16, false),
-+			get_bytes_per_element(dm_444_16, false));
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_mono_16, true), 0);
-+
-+	/* dcn20 doesn't support 4:2:2 chroma subsampling */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_422_8, false), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_422_8, true), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_422_10, false), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_422_10, true), 0);
-+
-+	/* dcn20 doesn't support RGBE encodings */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_rgbe, false), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_rgbe, true), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_rgbe_alpha, false), 0);
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_rgbe_alpha, true), 0);
-+
-+	/* as in the first values, _8 here represents horizontal binary length */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_444_8, false), 1);
-+	/* in a non-subsampled monochrome encoding chroma and luma should be the
-+	 * same length
-+	 */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_444_8, false),
-+			get_bytes_per_element(dm_444_8, true));
-+
-+	/* as dm_mono_8 == dm_444_8, it must behave the same way */
-+	KUNIT_ASSERT_EQ(test, get_bytes_per_element(dm_mono_8, false),
-+			get_bytes_per_element(dm_mono_8, true));
-+}
-+
-+/**
-+ * is_dual_plane_test - KUnit test for is_dual_plane
-+ * @test: represents a running instance of a test.
-+ */
-+static void is_dual_plane_test(struct kunit *test)
-+{
-+	/* strictly speaking monochrome formats are not dual plane, but they're
-+	 * included here for completeness
-+	 */
-+	int source_format_count = 11;
-+
-+	for (int i = 0; i < source_format_count; i++) {
-+		/* dcn20 doesn't support other dual plane formats */
-+		if (i == 3 || i == 4)
-+			KUNIT_ASSERT_TRUE(test, is_dual_plane(i));
-+		else
-+			KUNIT_ASSERT_FALSE(test, is_dual_plane(i));
-+	}
-+}
-+
-+/**
-+ * get_blk_size_bytes_test - KUnit test for get_blk_size_bytes
-+ * @test: represents a running instance of a test.
-+ */
-+static void get_blk_size_bytes_test(struct kunit *test)
-+{
-+	/* corresponds to 4^4 kB tiles */
-+	KUNIT_ASSERT_EQ(test, get_blk_size_bytes(dm_256k_tile), 256 * 1024);
-+	/* corresponds to 4^3 kB tiles */
-+	KUNIT_ASSERT_EQ(test, get_blk_size_bytes(dm_64k_tile), 64 * 1024);
-+	/* corresponds to 4^1 kB tiles */
-+	KUNIT_ASSERT_EQ(test, get_blk_size_bytes(dm_4k_tile), 4 * 1024);
-+}
-+
-+static struct kunit_case dcn20_rq_dlg_calc_20_test_cases[] = {
-+	KUNIT_CASE(get_bytes_per_element_test),
-+	KUNIT_CASE(is_dual_plane_test),
-+	KUNIT_CASE(get_blk_size_bytes_test),
-+	{  }
-+};
-+
-+static struct kunit_suite dcn20_rq_dlg_calc_20_test_suite = {
-+	.name = "display_rq_dlg_calc_20",
-+	.test_cases = dcn20_rq_dlg_calc_20_test_cases,
-+};
-+
-+kunit_test_suites(&dcn20_rq_dlg_calc_20_test_suite);
+[1] https://lore.kernel.org/linux-riscv/20220812042921.14508-1-mchitale@ventanamicro.com/
+
+v2:
+ - Cleaned up some whitespace issues pointed out by Anup, myself
+   and checkpatch and dropped some {}
+ - Pushed the quoting of register tokens into the macros
+ - Picked up Anup's r-b's
+
+Andrew Jones (4):
+  riscv: Add X register names to gpr-nums
+  riscv: Introduce support for defining instructions
+  riscv: KVM: Apply insn-def to hfence encodings
+  riscv: KVM: Apply insn-def to hlv encodings
+
+ arch/riscv/Kconfig                |   3 +
+ arch/riscv/include/asm/gpr-num.h  |   8 ++
+ arch/riscv/include/asm/insn-def.h | 113 ++++++++++++++++++++++++++
+ arch/riscv/kvm/tlb.c              | 129 ++++--------------------------
+ arch/riscv/kvm/vcpu_exit.c        |  29 ++-----
+ 5 files changed, 146 insertions(+), 136 deletions(-)
+ create mode 100644 arch/riscv/include/asm/insn-def.h
+
 -- 
 2.37.2
 
