@@ -2,143 +2,277 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 866D3ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB44CC54EE9
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 13:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231734AbiHaNza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 09:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57602 "EHLO
+        id S230036AbiHaN5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 09:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231992AbiHaNzL (ORCPT
+        with ESMTP id S229570AbiHaN5i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 09:55:11 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0B224954;
-        Wed, 31 Aug 2022 06:55:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661954104; x=1693490104;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Me5kuSeD0lKqMI1ajfOQJ4feSTG7yhDhoYqU/db12HU=;
-  b=L0vOQX6eFMIgrfVCJ+BPfaQq6ScYoOBEYHgVq9vdmTt0IMW+KBFiyJuf
-   NCzHmkUqbbY0qx2vStvBPhpoZTQ1jTj2fxkEn1jsDtEP0D8DE5JNLiqPO
-   ZSLFqaJR0ZrlyhqQedGFDYTrYy7g/e4zcMbpUaqefrqbk8hQYqoLHpLNO
-   eqxKH3Z+Jzw+7rv+ndV806Qr8xPY9hOVrHbkup9KBv/z0q8prgRm1GKHl
-   +NVNCCUOribsgmTeV26Y+mqKwonAy1RhSaX8WobLk5zghNvPyaOYCO1H/
-   Hl9CxiTwGh5ztTjB8fxsh5X9rjk3n2aoJRrVATW4Jow3OV7bCEn30+RMk
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296235432"
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="296235432"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 06:54:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
-   d="scan'208";a="645237549"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 31 Aug 2022 06:54:58 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 56403174; Wed, 31 Aug 2022 16:55:13 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v2 1/1] pinctrl: pistachio: Switch to use fwnode instead of
-Date:   Wed, 31 Aug 2022 16:55:12 +0300
-Message-Id: <20220831135512.78407-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Wed, 31 Aug 2022 09:57:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14B32D5DEE
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 06:57:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661954256;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=u+qKO8x9wJXIemADSTXaheYi94IJqj0ek71ZlDgYpGA=;
+        b=e3XxipNMFdufQbjZcDVUam8hNRxGdYkLjB8hFS9AXexZwibWgAc/p7GBNB5WWtEU+QLi72
+        OYZ6C4uEs6Tx4KFJrHhfM49xYHQAaopVTkBEV809gfg0ilFCs7uAEL+bSy/8aprFTHyy9S
+        6DflTK6zhHp5wi01lZJAvZShFmQVc6E=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-231-xujqo_CLMIa0sGDzSJxApw-1; Wed, 31 Aug 2022 09:57:33 -0400
+X-MC-Unique: xujqo_CLMIa0sGDzSJxApw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8822980418F;
+        Wed, 31 Aug 2022 13:57:32 +0000 (UTC)
+Received: from starship (unknown [10.40.194.96])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E4BDB1415117;
+        Wed, 31 Aug 2022 13:57:30 +0000 (UTC)
+Message-ID: <ca3be5f88268f1547e6f02b01a472186566066c5.camel@redhat.com>
+Subject: Re: [PATCH 17/19] KVM: SVM: Handle multiple logical targets in AVIC
+ kick fastpath
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Li RongQing <lirongqing@baidu.com>
+Date:   Wed, 31 Aug 2022 16:57:29 +0300
+In-Reply-To: <20220831003506.4117148-18-seanjc@google.com>
+References: <20220831003506.4117148-1-seanjc@google.com>
+         <20220831003506.4117148-18-seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GPIO library now accepts fwnode as a firmware node, so
-switch the driver to use it.
+On Wed, 2022-08-31 at 00:35 +0000, Sean Christopherson wrote:
+> Iterate over all target logical IDs in the AVIC kick fastpath instead of
+> bailing if there is more than one target and KVM's optimized APIC map is
+> enabled for logical mode.  If the optimized map is enabled, all vCPUs are
+> guaranteed to be mapped 1:1 to a logical ID or effectively have logical
+> mode disabled, i.e. iterating over the bitmap is guaranteed to kick each
+> target exactly once.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/svm/avic.c | 126 +++++++++++++++++++++++++---------------
+>  1 file changed, 79 insertions(+), 47 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 2095ece70712..dad5affe44c1 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -339,6 +339,62 @@ static void avic_kick_vcpu(struct kvm_vcpu *vcpu, u32 icrl)
+>  					icrl & APIC_VECTOR_MASK);
+>  }
+>  
+> +static void avic_kick_vcpu_by_physical_id(struct kvm *kvm, u32 physical_id,
+> +					  u32 icrl)
+> +{
+> +	/*
+> +	 * KVM inhibits AVIC if any vCPU ID diverges from the vCPUs APIC ID,
+> +	 * i.e. APIC ID == vCPU ID.
+> +	 */
+> +	struct kvm_vcpu *target_vcpu = kvm_get_vcpu_by_id(kvm, physical_id);
+> +
+> +	/* Once again, nothing to do if the target vCPU doesn't exist. */
+> +	if (unlikely(!target_vcpu))
+> +		return;
+> +
+> +	avic_kick_vcpu(target_vcpu, icrl);
+> +}
+> +
+> +static void avic_kick_vcpu_by_logical_id(struct kvm *kvm, u32 *avic_logical_id_table,
+> +					 u32 logid_index, u32 icrl)
+> +{
+> +	u32 physical_id;
+> +
+> +	if (!avic_logical_id_table) {
+^ Typo, the '!' shoudn't be there.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
-v2: fixed compilation error (LKP)
- drivers/pinctrl/pinctrl-pistachio.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+> +		u32 logid_entry = avic_logical_id_table[logid_index];
+> +
+> +		/* Nothing to do if the logical destination is invalid. */
+> +		if (unlikely(!(logid_entry & AVIC_LOGICAL_ID_ENTRY_VALID_MASK)))
+> +			return;
+> +
+> +		physical_id = logid_entry &
+> +			      AVIC_LOGICAL_ID_ENTRY_GUEST_PHYSICAL_ID_MASK;
+> +	} else {
+> +		/*
+> +		 * For x2APIC, the logical APIC ID is a read-only value that is
+> +		 * derived from the x2APIC ID, thus the x2APIC ID can be found
+> +		 * by reversing the calculation (stored in logid_index).  Note,
+> +		 * bits 31:20 of the x2APIC ID aren't propagated to the logical
+> +		 * ID, but KVM limits the x2APIC ID limited to KVM_MAX_VCPU_IDS.
+> +		 */
+> +		physical_id = logid_index;
+> +	}
+> +
+> +	avic_kick_vcpu_by_physical_id(kvm, physical_id, icrl);
+> +}
 
-diff --git a/drivers/pinctrl/pinctrl-pistachio.c b/drivers/pinctrl/pinctrl-pistachio.c
-index 5de691c630b4..940ed3fff63a 100644
---- a/drivers/pinctrl/pinctrl-pistachio.c
-+++ b/drivers/pinctrl/pinctrl-pistachio.c
-@@ -10,13 +10,13 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/irq.h>
--#include <linux/of.h>
--#include <linux/of_irq.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/pinctrl/pinconf.h>
- #include <linux/pinctrl/pinconf-generic.h>
- #include <linux/pinctrl/pinctrl.h>
- #include <linux/pinctrl/pinmux.h>
- #include <linux/platform_device.h>
-+#include <linux/property.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- 
-@@ -1347,46 +1347,45 @@ static struct pistachio_gpio_bank pistachio_gpio_banks[] = {
- 
- static int pistachio_gpio_register(struct pistachio_pinctrl *pctl)
- {
--	struct device_node *node = pctl->dev->of_node;
- 	struct pistachio_gpio_bank *bank;
- 	unsigned int i;
- 	int irq, ret = 0;
- 
- 	for (i = 0; i < pctl->nbanks; i++) {
- 		char child_name[sizeof("gpioXX")];
--		struct device_node *child;
-+		struct fwnode_handle *child;
- 		struct gpio_irq_chip *girq;
- 
- 		snprintf(child_name, sizeof(child_name), "gpio%d", i);
--		child = of_get_child_by_name(node, child_name);
-+		child = device_get_named_child_node(pctl->dev, child_name);
- 		if (!child) {
- 			dev_err(pctl->dev, "No node for bank %u\n", i);
- 			ret = -ENODEV;
- 			goto err;
- 		}
- 
--		if (!of_find_property(child, "gpio-controller", NULL)) {
-+		if (!fwnode_property_present(child, "gpio-controller")) {
-+			fwnode_handle_put(child);
- 			dev_err(pctl->dev,
- 				"No gpio-controller property for bank %u\n", i);
--			of_node_put(child);
- 			ret = -ENODEV;
- 			goto err;
- 		}
- 
--		irq = irq_of_parse_and_map(child, 0);
--		if (!irq) {
-+		ret = fwnode_irq_get(child, 0);
-+		if (ret < 0) {
-+			fwnode_handle_put(child);
- 			dev_err(pctl->dev, "No IRQ for bank %u\n", i);
--			of_node_put(child);
--			ret = -EINVAL;
- 			goto err;
- 		}
-+		irq = ret;
- 
- 		bank = &pctl->gpio_banks[i];
- 		bank->pctl = pctl;
- 		bank->base = pctl->base + GPIO_BANK_BASE(i);
- 
- 		bank->gpio_chip.parent = pctl->dev;
--		bank->gpio_chip.of_node = child;
-+		bank->gpio_chip.fwnode = child;
- 
- 		girq = &bank->gpio_chip.irq;
- 		girq->chip = &bank->irq_chip;
--- 
-2.35.1
+These two functions are a very good cleanup IMHO.
+
+> +
+> +static bool is_optimized_logical_map_enabled(struct kvm *kvm)
+> +{
+> +	struct kvm_apic_map *map;
+> +	bool enabled;
+> +
+> +	rcu_read_lock();
+> +	map = rcu_dereference(kvm->arch.apic_map);
+> +	enabled = map && map->logical_mode != KVM_APIC_MODE_MAP_DISABLED;
+> +	rcu_read_unlock();
+> +	return enabled;
+> +}
+
+This function doesn't belong to avic, it should be in common KVM code.
+
+
+> +
+>  /*
+>   * A fast-path version of avic_kick_target_vcpus(), which attempts to match
+>   * destination APIC ID to vCPU without looping through all vCPUs.
+> @@ -346,11 +402,10 @@ static void avic_kick_vcpu(struct kvm_vcpu *vcpu, u32 icrl)
+>  static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source,
+>  				       u32 icrl, u32 icrh, u32 index)
+>  {
+> -	u32 l1_physical_id, dest;
+> -	struct kvm_vcpu *target_vcpu;
+>  	int dest_mode = icrl & APIC_DEST_MASK;
+>  	int shorthand = icrl & APIC_SHORT_MASK;
+>  	struct kvm_svm *kvm_svm = to_kvm_svm(kvm);
+> +	u32 dest;
+>  
+>  	if (shorthand != APIC_DEST_NOSHORT)
+>  		return -EINVAL;
+> @@ -367,14 +422,14 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+>  		if (!apic_x2apic_mode(source) && dest == APIC_BROADCAST)
+>  			return -EINVAL;
+>  
+> -		l1_physical_id = dest;
+> -
+> -		if (WARN_ON_ONCE(l1_physical_id != index))
+> +		if (WARN_ON_ONCE(dest != index))
+>  			return -EINVAL;
+>  
+> +		avic_kick_vcpu_by_physical_id(kvm, dest, icrl);
+>  	} else {
+> -		u32 bitmap, cluster;
+> -		int logid_index;
+> +		u32 *avic_logical_id_table;
+> +		unsigned long bitmap, i;
+> +		u32 cluster;
+>  
+>  		if (apic_x2apic_mode(source)) {
+>  			/* 16 bit dest mask, 16 bit cluster id */
+> @@ -394,50 +449,27 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+>  		if (unlikely(!bitmap))
+>  			return 0;
+>  
+> -		if (!is_power_of_2(bitmap))
+> -			/* multiple logical destinations, use slow path */
+> +		/*
+> +		 * Use the slow path if more than one bit is set in the bitmap
+> +		 * and KVM's optimized logical map is disabled to avoid kicking
+> +		 * a vCPU multiple times.  If the optimized map is disabled, a
+> +		 * vCPU _may_ have multiple bits set in its logical ID, i.e.
+> +		 * may have multiple entries in the logical table.
+> +		 */
+> +		if (!is_power_of_2(bitmap) &&
+> +		    !is_optimized_logical_map_enabled(kvm))
+>  			return -EINVAL;
+
+
+I hate to say it but there is another issue here, which I know about for a while
+but haven't gotten yet to fix.
+
+The issue is that AVIC's logical to physical map can't cover all the corner cases
+that you discovered - it only supports the sane subset: for each cluster, and for each bit
+in the mask, it has a physical apic id - so things like logical ids with multiple bits,
+having same logical id for multiple vcpus and so on can't work.
+
+In this case we need to either inhibit AVIC (I support this 100%), or clear
+its logical ID map, so all logicical IPIs VM exit, and then they can be emulated.
+
+I haven't studied it formally but the code which rebuilds the AVIC's logical ID map
+starts at 'avic_handle_ldr_update'.
+
+
+Besides that this patch makes sense, and it explains why you removed the logic which
+was incorrectly checking for having a single bit in the bitmap, but I still
+prefer to revert the patch as I explained there.
+
+Best regards,
+	Maxim Levitsky
+
+>  
+> -		logid_index = cluster + __ffs(bitmap);
+> -
+> -		if (!apic_x2apic_mode(source)) {
+> -			u32 *avic_logical_id_table =
+> -				page_address(kvm_svm->avic_logical_id_table_page);
+> -
+> -			u32 logid_entry = avic_logical_id_table[logid_index];
+> -
+> -			if (WARN_ON_ONCE(index != logid_index))
+> -				return -EINVAL;
+> -
+> -			/* Nothing to do if the logical destination is invalid. */
+> -			if (unlikely(!(logid_entry & AVIC_LOGICAL_ID_ENTRY_VALID_MASK)))
+> -				return 0;
+> -
+> -			l1_physical_id = logid_entry &
+> -					 AVIC_LOGICAL_ID_ENTRY_GUEST_PHYSICAL_ID_MASK;
+> -		} else {
+> -			/*
+> -			 * For x2APIC, the logical APIC ID is a read-only value
+> -			 * that is derived from the x2APIC ID, thus the x2APIC
+> -			 * ID can be found by reversing the calculation (done
+> -			 * above).  Note, bits 31:20 of the x2APIC ID are not
+> -			 * propagated to the logical ID, but KVM limits the
+> -			 * x2APIC ID limited to KVM_MAX_VCPU_IDS.
+> -			 */
+> -			l1_physical_id = logid_index;
+> -		}
+> +		if (apic_x2apic_mode(source))
+> +			avic_logical_id_table = NULL;
+> +		else
+> +			avic_logical_id_table = page_address(kvm_svm->avic_logical_id_table_page);
+> +
+> +		for_each_set_bit(i, &bitmap, 16)
+> +			avic_kick_vcpu_by_logical_id(kvm, avic_logical_id_table,
+> +						     cluster + i, icrl);
+>  	}
+>  
+> -	/*
+> -	 * KVM inhibits AVIC if any vCPU ID diverges from the vCPUs APIC ID,
+> -	 * i.e. APIC ID == vCPU ID.  Once again, nothing to do if the target
+> -	 * vCPU doesn't exist.
+> -	 */
+> -	target_vcpu = kvm_get_vcpu_by_id(kvm, l1_physical_id);
+> -	if (unlikely(!target_vcpu))
+> -		return 0;
+> -
+> -	avic_kick_vcpu(target_vcpu, icrl);
+>  	return 0;
+>  }
+>  
+
 
