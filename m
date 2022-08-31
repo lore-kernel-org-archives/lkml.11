@@ -2,141 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C54E8ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E91DECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 21:35:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232362AbiHaVfe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 17:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38684 "EHLO
+        id S229472AbiHaVfq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 17:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231955AbiHaVfc (ORCPT
+        with ESMTP id S232372AbiHaVfl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 17:35:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B944332E
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:35:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FDF8B8237D
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 21:35:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A55C433D6;
-        Wed, 31 Aug 2022 21:35:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661981727;
-        bh=uoI059YsN7b/dpj3ZD0QOsRMOtclPxUh1slTPJ2ZPxQ=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=dxovCY//gkKD6LeZ3Wk6zUjUQpowCKkcMQ/ZDLrNt0D9bCeAWnDVa+rVWA0lEqAJt
-         DttYSCtHkRXMlpD94JOIhoYU7276PyU2sKUqg/fC3iNkZgJHbXDk1CICHN7SDUI97m
-         LgS2c+IMYYsmawPnonUbpfCj5JTEc/z9FgJeerW9X9IKnvB/hPR7aeip43LXo61vbH
-         x7lCYhhxooP/htEo0fscWX3WlcLCuz2pHvVeTEbh/51f7OYUSM9m915Li0eHAKqTGG
-         Z4Dp9pR8zOqonrz2AoMJTSeEcB2I8N0vVaB9b/6gO9gSqkt1ixh0MzanmvvmGtWOFO
-         kuctIHMg+0CqQ==
-Message-ID: <4c7f9d2b46a02324dd4467144edaf3b2a34720b2.camel@kernel.org>
-Subject: Re: [PATCH v4 0/5] tracing/hist: Add percentage histogram suffixes
-From:   Tom Zanussi <zanussi@kernel.org>
-To:     "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org
-Date:   Wed, 31 Aug 2022 16:35:25 -0500
-In-Reply-To: <166157298537.348924.2537162090505397377.stgit@devnote2>
-References: <166157298537.348924.2537162090505397377.stgit@devnote2>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Wed, 31 Aug 2022 17:35:41 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09A15A15D
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:35:39 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id x80so11025195pgx.0
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:35:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=k+a5ywY0A19s4ewXtlKzkVso1icQ7ila5o+nOXUa5t0=;
+        b=c5JgVe1Byofhc6O6ncpug3jMP9vrBQ8mg1iV4x6OffluDyNwdc5yQC0i91mRpeqi+R
+         e60mwo7NYHqTwKLefxzxP98T5zdFGDwLlfZQhYzJomTXQ3P9D2BppXIkeoRHIChSYNap
+         k39or0uq0Q9ofWiwRcSOxl+34jVOM9ez6ZVUQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=k+a5ywY0A19s4ewXtlKzkVso1icQ7ila5o+nOXUa5t0=;
+        b=z/nmARcz48eQMem+pC1jN1uXgb+QKxEIxXODGQdVHUMpdhnKtDPZKSFy6Ro9KFtCs0
+         i2+xWHKnSlN8F5Xi85GVhrFdB8gho+Jm+5C9qZimJjxHgTgYJw140lvK9gIvZsmrmKIp
+         cf8MhnoNeNhY1cHkBIoC91hbcsiZwNwUCuCXm+6xoRsEL3FP8B1NJUQpAoATwnYezwnO
+         XJDhnxWt9RNKiufohlGUAjwFVMA3Dz+q7UoEy/eNx3+Ae40BJTGWOCTV/ihNp8NmgT6w
+         7k+b3Et/hp5HkgRToGKU5NKbFMIGW+yFQoiVGeCKdiBJl2w9umnzPB3NBbxxk3YPYFkY
+         4F5Q==
+X-Gm-Message-State: ACgBeo2TPDa6UPQggrURgiI6aBfHIb376tY3xVqXYKhqeKFIV6ySr8NX
+        Ki72iJpBM85dzOfSwpLyQ6TbMZHBopXkvQ==
+X-Google-Smtp-Source: AA6agR7bFSZUedthvJeKRtZPEbMNHJYiT50MWzKxjKEkFCt2A0WVVF41IJxipQKQFVlWm7oAFPkp1Q==
+X-Received: by 2002:a63:d16:0:b0:41d:fe52:1d2f with SMTP id c22-20020a630d16000000b0041dfe521d2fmr23976158pgl.416.1661981739540;
+        Wed, 31 Aug 2022 14:35:39 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:732f:b56c:f5e0:57d])
+        by smtp.gmail.com with UTF8SMTPSA id t10-20020a170902e84a00b00174f4316c24sm6051640plg.245.2022.08.31.14.35.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 14:35:39 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 14:35:36 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Hu Xiaoying <huxiaoying@kylinos.cn>
+Cc:     stern@rowland.harvard.edu, gregkh@linuxfoundation.org,
+        linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] usb: Improves USB2.0 write performance.
+Message-ID: <Yw/UKNu0++5MtvbK@google.com>
+References: <20220831015624.1119578-1-huxiaoying@kylinos.cn>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220831015624.1119578-1-huxiaoying@kylinos.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgTWFzYW1pLAoKT24gU2F0LCAyMDIyLTA4LTI3IGF0IDEzOjAzICswOTAwLCBNYXNhbWkgSGly
-YW1hdHN1IChHb29nbGUpIHdyb3RlOgo+IEhpLAo+IAo+IEhlcmUgaXMgdGhlIDR0aCB2ZXJzaW9u
-IG9mIC5wZXJjZW50IGFuZCAuZ3JhcGggc3VmZml4ZXMgZm9yIGhpc3RvZ3JhbQo+IHRyaWdnZXIg
-dG8gc2hvdyB0aGUgdmFsdWUgaW4gcGVyY2VudGFnZSBhbmQgaW4gYmFyLWdyYXBoCj4gcmVzcGVj
-dGl2ZWx5Lgo+IAo+IEkndmUgcmViYXNlZCBvbiBUb20ncyBoaXRjb3VudCBwYXRjaFsxLzVdIG9u
-IHRoZSBzZXJpZXMgYW5kIGFkZGVkIGEKPiBwYXRjaAo+IGZvciBzdXByZXNzaW5nIGRpc3BsYXkg
-b2YgaGl0Y291bnRbNS81XSBpbiB0aGlzIHZlcnNpb24uCgpUaGlzIGlzIGEgdmVyeSBuaWNlIHBh
-dGNoc2V0IG92ZXJhbGwgLSB0aGUgb25seSBxdWVzdGlvbiBJIGhhdmUKY29uY2VybnMgcGF0Y2gg
-NSBmb3Igc3VwcHJlc3NpbmcgdGhlIGhpdGNvdW50LiAgSSBhY3R1YWxseSB0aGluayB0aGUKcGF0
-Y2ggaXMgZmluZSBhbmQgZG9lcyB3aGF0IGl0IHNheXMgbmljZWx5IChhbmQgcHJvYmFibHkgc2hv
-dWxkIGhhdmUKYmVlbiBkb25lIHRoYXQgd2F5IHRvIGJlZ2luIHdpdGgpIGJ1dCBpdCBsb29rcyBs
-aWtlIGl0IHdvdWxkIGNhdXNlCnByb2JsZW1zIGZvciBhbnlvbmUgYWxyZWFkeSBkb2luZyBwb3N0
-cHJvY2Vzc2luZyBhbmQgd2hvc2Ugc2NyaXB0cwp3b3VsZCBiZSBleHBlY3RpbmcgdGhlIGhpdGNv
-dW50IHRvIGJlIHRoZXJlLiAgU28gY2hhbmdpbmcgdGhlIGRlZmF1bHQKYmVoYXZpb3Igd291bGQg
-cmVxdWlyZSB0aGVpciBzY3JpcHRzIHRvIGNoYW5nZSwgYW5kIGFsc28gbm93IHRoYXQgSQpsb29r
-IGF0IGl0LCB0aGUgZXhhbXBsZSBvdXRwdXQgaW4gRG9jdW1lbnRhdGlvbi8gYXMgd2VsbC4KCkhv
-dyBhYm91dCBhZGRpbmcgYW4gb3B0aW9uIGxpa2UgJ25vaGl0Y291bnQnIGFuZCBoYXZpbmcgdGhh
-dCBwYXRjaCBkbwp3aGF0IGl0IGRvZXMgYnV0IG9ubHkgaWYgdGhhdCBvcHRpb24gaXMgc2V0PwoK
-QW55d2F5LCBmb3IgdGhlIG90aGVyIG9uZXMsIHBhdGNoZXMgMi00LAoKICBTaWduZWQtb2ZmLWJ5
-OiBUb20gWmFudXNzaSA8emFudXNzaUBrZXJuZWwub3JnPgogIFRlc3RlZC1ieTogVG9tIFphbnVz
-c2kgPHphbnVzc2lAa2VybmVsLm9yZwoKVGhhbmtzIQoKVG9tCgo+IAo+IFRoaXMgd2lsbCBoZWxw
-IHVzIHRvIGNoZWNrIHRoZSB0cmVuZCBvZiB0aGUgaGlzdG9ncmFtIGluc3RhbnRseQo+IHdpdGhv
-dXQgYW55IHBvc3QgcHJvY2Vzc2luZyB0b29sLgo+IAo+IEhlcmUgc2hvd3MgYW4gZXhhbXBsZSBv
-ZiB0aGUgcGVyY2VudGFnZSBhbmQgdGhlIGJhciBncmFwaCBvZgo+IHRoZSBoaXRjb3VudCBvZiB0
-aGUgcnVubmluZyB0YXNrcy4KPiAKPiDCoCAjIGNkIC9zeXMva2VybmVsL2RlYnVnL3RyYWNpbmcv
-Cj4gwqAgIyBlY2hvIGhpc3Q6a2V5cz1waWQ6dmFscz1oaXRjb3VudC5wZXJjZW50LGhpdGNvdW50
-LmdyYXBoOnNvcnQ9cGlkCj4gPiBcCj4gwqDCoMKgwqDCoMKgwqAgZXZlbnRzL3NjaGVkL3NjaGVk
-X3N0YXRfcnVudGltZS90cmlnZ2VyCj4gwqAgIyBzbGVlcCAxMAo+IMKgICMgY2F0IGV2ZW50cy9z
-Y2hlZC9zY2hlZF9zdGF0X3J1bnRpbWUvaGlzdAo+IMKgIyBldmVudCBoaXN0b2dyYW0KPiDCoCMK
-PiDCoCMgdHJpZ2dlciBpbmZvOgo+IGhpc3Q6a2V5cz1waWQ6dmFscz1oaXRjb3VudC5wZXJjZW50
-LGhpdGNvdW50LmdyYXBoOnNvcnQ9cGlkOnNpemU9MjA0OAo+IFthY3RpdmVdCj4gwqAjCj4gCj4g
-wqB7IHBpZDrCoMKgwqDCoMKgwqDCoMKgIDE0IH0gaGl0Y291bnQgKCUpOsKgwqAgNC42OMKgIGhp
-dGNvdW50Ogo+ICMjI8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIAo+IMKgeyBwaWQ6
-wqDCoMKgwqDCoMKgwqDCoCAxNiB9IGhpdGNvdW50ICglKTrCoCAxNy4xOMKgIGhpdGNvdW50Ogo+
-ICMjIyMjIyMjIyMjwqDCoMKgwqDCoMKgwqDCoCAKPiDCoHsgcGlkOsKgwqDCoMKgwqDCoMKgwqAg
-NTcgfSBoaXRjb3VudCAoJSk6wqDCoCA3LjgxwqAgaGl0Y291bnQ6Cj4gIyMjIyPCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIAo+IMKgeyBwaWQ6wqDCoMKgwqDCoMKgwqDCoCA2MSB9IGhpdGNv
-dW50ICglKTrCoCAzMS4yNcKgIGhpdGNvdW50Ogo+ICMjIyMjIyMjIyMjIyMjIyMjIyMjCj4gwqB7
-IHBpZDrCoMKgwqDCoMKgwqDCoMKgIDcwIH0gaGl0Y291bnQgKCUpOsKgwqAgNC42OMKgIGhpdGNv
-dW50Ogo+ICMjI8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIAo+IMKgeyBwaWQ6wqDC
-oMKgwqDCoMKgwqDCoCA3NyB9IGhpdGNvdW50ICglKTrCoMKgIDEuNTbCoCBoaXRjb3VudDoKPiAj
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIAo+IMKgeyBwaWQ6wqDCoMKgwqDC
-oMKgwqAgMTQ1IH0gaGl0Y291bnQgKCUpOsKgIDE4Ljc1wqAgaGl0Y291bnQ6Cj4gIyMjIyMjIyMj
-IyMjwqDCoMKgwqDCoMKgwqAgCj4gwqB7IHBpZDrCoMKgwqDCoMKgwqDCoCAxNTEgfSBoaXRjb3Vu
-dCAoJSk6wqDCoCA5LjM3wqAgaGl0Y291bnQ6Cj4gIyMjIyMjwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgCj4gwqB7IHBpZDrCoMKgwqDCoMKgwqDCoCAxNTIgfSBoaXRjb3VudCAoJSk6wqDCoCA0
-LjY4wqAgaGl0Y291bnQ6Cj4gIyMjwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgCj4g
-Cj4gwqBUb3RhbHM6Cj4gwqDCoMKgwqAgSGl0czogNjQKPiDCoMKgwqDCoCBFbnRyaWVzOiA5Cj4g
-wqDCoMKgwqAgRHJvcHBlZDogMAo+IAo+IE9mIGNvdXJzZSBpZiB5b3UgZXhwbGljaXRseSBzcGVj
-aWZ5IHRoZSBoaXRjb3VudCwgaXQgY2FuIHNob3cgdGhlCj4gaGl0Y291bnQgYXMgYmVsb3c7Cj4g
-Cj4gwqAgIyBjZCAvc3lzL2tlcm5lbC9kZWJ1Zy90cmFjaW5nLwo+IMKgICMgZWNobyBoaXN0Omtl
-eXM9cGlkOnZhbHM9aGl0Y291bnQscnVudGltZTpzb3J0PXBpZCA+IFwKPiDCoMKgwqDCoMKgwqDC
-oCBldmVudHMvc2NoZWQvc2NoZWRfc3RhdF9ydW50aW1lL3RyaWdnZXIKPiDCoCAjIHNsZWVwIDEw
-Cj4gwqAgIyBjYXQgZXZlbnRzL3NjaGVkL3NjaGVkX3N0YXRfcnVudGltZS9oaXN0Cj4gwqAjIGV2
-ZW50IGhpc3RvZ3JhbQo+IMKgIwo+IMKgIyB0cmlnZ2VyIGluZm86Cj4gaGlzdDprZXlzPXBpZDp2
-YWxzPWhpdGNvdW50LHJ1bnRpbWU6c29ydD1waWQ6c2l6ZT0yMDQ4IFthY3RpdmVdCj4gwqAjCj4g
-Cj4gwqB7IHBpZDrCoMKgwqDCoMKgwqDCoMKgIDE0IH0gaGl0Y291bnQ6wqDCoMKgwqDCoMKgwqDC
-oMKgIDLCoCBydW50aW1lOsKgwqDCoMKgIDMwNDg3Ngo+IMKgeyBwaWQ6wqDCoMKgwqDCoMKgwqDC
-oCAxNiB9IGhpdGNvdW50OsKgwqDCoMKgwqDCoMKgwqDCoCA4wqAgcnVudGltZTrCoMKgwqDCoCAz
-MDA1NzQKPiDCoHsgcGlkOsKgwqDCoMKgwqDCoMKgwqAgMjYgfSBoaXRjb3VudDrCoMKgwqDCoMKg
-wqDCoMKgwqAgMsKgIHJ1bnRpbWU6wqDCoMKgwqDCoCAxNTU3OAo+IMKgeyBwaWQ6wqDCoMKgwqDC
-oMKgwqDCoCAzMiB9IGhpdGNvdW50OsKgwqDCoMKgwqDCoMKgwqDCoCAywqAgcnVudGltZTrCoMKg
-wqDCoCAyMTkxODYKPiDCoHsgcGlkOsKgwqDCoMKgwqDCoMKgwqAgNTcgfSBoaXRjb3VudDrCoMKg
-wqDCoMKgwqDCoMKgwqAgM8KgIHJ1bnRpbWU6wqDCoMKgwqAgNTA2MDAzCj4gwqB7IHBpZDrCoMKg
-wqDCoMKgwqDCoMKgIDYxIH0gaGl0Y291bnQ6wqDCoMKgwqDCoMKgwqDCoCAyMMKgIHJ1bnRpbWU6
-wqDCoMKgIDE2ODE0NzMKPiDCoHsgcGlkOsKgwqDCoMKgwqDCoMKgwqAgNjkgfSBoaXRjb3VudDrC
-oMKgwqDCoMKgwqDCoMKgwqAgM8KgIHJ1bnRpbWU6wqDCoMKgwqAgMjAxNzg1Cj4gwqB7IHBpZDrC
-oMKgwqDCoMKgwqDCoMKgIDcwIH0gaGl0Y291bnQ6wqDCoMKgwqDCoMKgwqDCoMKgIDTCoCBydW50
-aW1lOsKgwqDCoMKgIDM2MDYwOAo+IMKgeyBwaWQ6wqDCoMKgwqDCoMKgwqDCoCA3NyB9IGhpdGNv
-dW50OsKgwqDCoMKgwqDCoMKgwqDCoCA4wqAgcnVudGltZTrCoMKgwqAgNDE0NjkzNQo+IMKgeyBw
-aWQ6wqDCoMKgwqDCoMKgwqAgMTQ1IH0gaGl0Y291bnQ6wqDCoMKgwqDCoMKgwqDCoCAxM8KgIHJ1
-bnRpbWU6wqDCoMKgIDc1Mzc5OTQKPiDCoHsgcGlkOsKgwqDCoMKgwqDCoMKgIDE1NSB9IGhpdGNv
-dW50OsKgwqDCoMKgwqDCoMKgwqDCoCA0wqAgcnVudGltZTrCoMKgwqAgMjUxMTkzNwo+IMKgeyBw
-aWQ6wqDCoMKgwqDCoMKgwqAgMTU2IH0gaGl0Y291bnQ6wqDCoMKgwqDCoMKgwqDCoMKgIDLCoCBy
-dW50aW1lOsKgwqDCoCAxMzk4ODg2Cj4gCj4gwqBUb3RhbHM6Cj4gwqDCoMKgwqAgSGl0czogNzEK
-PiDCoMKgwqDCoCBFbnRyaWVzOiAxMgo+IMKgwqDCoMKgIERyb3BwZWQ6IDAKPiAKPiAKPiBUaGFu
-ayB5b3UsCj4gCj4gLS0tCj4gCj4gTWFzYW1pIEhpcmFtYXRzdSAoR29vZ2xlKSAoNCk6Cj4gwqDC
-oMKgwqDCoCB0cmFjaW5nOiBGaXggdG8gY2hlY2sgZXZlbnRfbXV0ZXggaXMgaGVsZCB3aGlsZSBh
-Y2Nlc3NpbmcKPiB0cmlnZ2VyIGxpc3QKPiDCoMKgwqDCoMKgIHRyYWNpbmc6IEFkZCAucGVyY2Vu
-dCBzdWZmaXggb3B0aW9uIHRvIGhpc3RvZ3JhbSB2YWx1ZXMKPiDCoMKgwqDCoMKgIHRyYWNpbmc6
-IEFkZCAuZ3JhcGggc3VmZml4IG9wdGlvbiB0byBoaXN0b2dyYW0gdmFsdWUKPiDCoMKgwqDCoMKg
-IHRyYWNpbmc6IFNob3cgaGl0Y291bnQgdmFsdWUgb25seSB3aGVuIHNwZWNpZmllZAo+IAo+IFRv
-bSBaYW51c3NpICgxKToKPiDCoMKgwqDCoMKgIHRyYWNpbmc6IEFsbG93IG11bHRpcGxlIGhpdGNv
-dW50IHZhbHVlcyBpbiBoaXN0b2dyYW1zCj4gCj4gCj4gwqBrZXJuZWwvdHJhY2UvdHJhY2UuY8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB8wqDCoMKgIDMgLQo+IMKga2VybmVsL3RyYWNl
-L3RyYWNlX2V2ZW50c19oaXN0LmPCoMKgwqAgfMKgIDE3Ngo+ICsrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKy0tLS0tCj4gwqBrZXJuZWwvdHJhY2UvdHJhY2VfZXZlbnRzX3RyaWdnZXIuYyB8
-wqDCoMKgIDMgLQo+IMKgMyBmaWxlcyBjaGFuZ2VkLCAxNTYgaW5zZXJ0aW9ucygrKSwgMjYgZGVs
-ZXRpb25zKC0pCj4gCj4gLS0KPiBNYXNhbWkgSGlyYW1hdHN1IChHb29nbGUpIDxtaGlyYW1hdEBr
-ZXJuZWwub3JnPgoK
+On Wed, Aug 31, 2022 at 09:56:24AM +0800, Hu Xiaoying wrote:
 
+> Subject: [PATCH v4] usb: Improves USB2.0 write performance.
+
+Virtually everyone who sees this will think that this patch improves
+USB 2.0 write performance in general, which isn't the case.
+
+Instead the subject could be something like:
+
+USB: storage: Add ASUS <model> to IGNORE_UAS
+
+> USB external storage device(0x0b05:1932), use gnome-disk-utility tools
+> to test usb write  < 30MB/s.
+> if does not to load module of uas for this device, can increase the
+> write speed from 20MB/s to >40MB/s.
+> 
+> Signed-off-by: Hu Xiaoying <huxiaoying@kylinos.cn>
+> ---
+> change for v4
+>  - Update two email addresses to be the same.
+> change for v3
+>  - Does not send html mail to the mailing lists.
+>  - Update patch, which sorted by vendor ID and product ID.
+>  - Modify discription, correct some english words.
+> change for v2
+>  - Update discription for patch.
+> ---
+>  drivers/usb/storage/unusual_uas.h | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/drivers/usb/storage/unusual_uas.h b/drivers/usb/storage/unusual_uas.h
+> index 4051c8cd0cd8..23ab3b048d9b 100644
+> --- a/drivers/usb/storage/unusual_uas.h
+> +++ b/drivers/usb/storage/unusual_uas.h
+> @@ -62,6 +62,13 @@ UNUSUAL_DEV(0x0984, 0x0301, 0x0128, 0x0128,
+>  		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+>  		US_FL_IGNORE_UAS),
+>  
+> +/* Reported-by: Tom Hu <huxiaoying@kylinos.cn> */
+> +UNUSUAL_DEV(0x0b05, 0x1932, 0x0000, 0x9999,
+> +		"ASUS",
+> +		"External HDD",
+> +		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
+> +		US_FL_IGNORE_UAS),
+> +
+>  /* Reported-by: David Webb <djw@noc.ac.uk> */
+>  UNUSUAL_DEV(0x0bc2, 0x331a, 0x0000, 0x9999,
+>  		"Seagate",
+> -- 
+> 2.25.1
+> 
