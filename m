@@ -2,109 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 396E2ECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E344ECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:16:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231842AbiHaCNb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 22:13:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
+        id S231873AbiHaCQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 22:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbiHaCN0 (ORCPT
+        with ESMTP id S229589AbiHaCQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 22:13:26 -0400
-Received: from bee.birch.relay.mailchannels.net (bee.birch.relay.mailchannels.net [23.83.209.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36D4AB2CF0
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 19:13:25 -0700 (PDT)
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-        by relay.mailchannels.net (Postfix) with ESMTP id 7FB723E074F;
-        Wed, 31 Aug 2022 02:13:24 +0000 (UTC)
-Received: from pdx1-sub0-mail-a286 (unknown [127.0.0.6])
-        (Authenticated sender: dreamhost)
-        by relay.mailchannels.net (Postfix) with ESMTPA id 0A0823E1297;
-        Wed, 31 Aug 2022 02:13:24 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1661912004; a=rsa-sha256;
-        cv=none;
-        b=2sZZKJ60j/LHvcjQGJElzSm8D0MZkWgt1+1/25qVYDDZT1faaT470B270EW3yYCx2yZ6Su
-        75XfoaU621WFmirWyYpYsibtxLXh7AScEHGD4o1U6JnGtSb5WglSAmFpWyLq+6VMRFILwI
-        AgA6fQ9zuGnPLbbvhN25hybPY8bGbgQX33bo6dc/R0hyEwYdb8EbRpR8qaRdWk+BwwpSLN
-        oqGUSENPoiTYtJZ30zAjPQXrlsbRZRkzaGRmYy7DIEnJxyj0xJBaQO0hJYY8eZC1IoAozS
-        UheLDRDDNDKVIgx/alEE5TvZqsEUJAI6oTY6yOstcDu/D/RNbqBK9OkuIfGaEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-        s=arc-2022; t=1661912004;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:dkim-signature;
-        bh=2na/1YB6P8pAjhSwDiKAckiFI98TLLaOiftpwQaZCbQ=;
-        b=VzTcH2zQ2K7iUV86PMfQ7+S8YacIKN+QZG0Hf1VNuF/MK3uhiHEHtdKOHQKbpM+GxSIZto
-        SDjVgmgi/y/4cixec9kCahD2XpSGEplS0lJUdxKJtcBsrTcI4Lz+w/pza2stFiDn4SfcSL
-        tu3n+S5p1WpxMggsN5iQQ6hr7lzP6NgsxceeOsyfYCqzz6YBRQoRhXaGyvxe0S7QtezJT2
-        PV0kgYyBWKI49C3b73mOntIWtKb0y6AAyZ9iXPpWhlEAZ0Broe3INonQ2TT4rlhWXArF5g
-        uRJ62ZLHlyR8cRMe0on4YjVcNgKIYjQUvE80RH9g8orA30tih6PCh2YpkRBC4w==
-ARC-Authentication-Results: i=1;
-        rspamd-75b4464bd-xzkt6;
-        auth=pass smtp.auth=dreamhost smtp.mailfrom=dave@stgolabs.net
-X-Sender-Id: dreamhost|x-authsender|dave@stgolabs.net
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|dave@stgolabs.net
-X-MailChannels-Auth-Id: dreamhost
-X-Attack-Chief: 2b693d20502d7a1a_1661912004303_2191180068
-X-MC-Loop-Signature: 1661912004303:4261194441
-X-MC-Ingress-Time: 1661912004303
-Received: from pdx1-sub0-mail-a286 (pop.dreamhost.com [64.90.62.162])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-        by 100.119.76.153 (trex/6.7.1);
-        Wed, 31 Aug 2022 02:13:24 +0000
-Received: from offworld (unknown [104.36.31.106])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 30 Aug 2022 22:16:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E8C7647E;
+        Tue, 30 Aug 2022 19:16:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: dave@stgolabs.net)
-        by pdx1-sub0-mail-a286 (Postfix) with ESMTPSA id 4MHSQC29CZz64;
-        Tue, 30 Aug 2022 19:13:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=stgolabs.net;
-        s=dreamhost; t=1661912003;
-        bh=2na/1YB6P8pAjhSwDiKAckiFI98TLLaOiftpwQaZCbQ=;
-        h=Date:From:To:Cc:Subject:Content-Type;
-        b=RSVJrsC0s9o7yWlqhf1uU4/Fu1o3hlhtpBws8baIe7eMmVAqrKHyi0x5c0WPkCrjZ
-         4Zgd1KhxNfbLG/W8X4cgMS9GUsyrdLjgoRYdov7CU6chAnAR4yk9nyKpqIrHQFdCvW
-         9mJv8HAEjYw9wFeDVhCHokObriyhgLZgf5pOWZXlx6LLMjelfynRLwmgzyRm15pxlw
-         /6QlZWKVTNr1PBRER4U/ufItNi3xaree4UbN87+HpP4heDECNboVcXdFRhp/scwy0o
-         XTD0a/hMBIYSpGVUriZtHR57qxFSClIVFCj0QmYQxiWv3VW/DT6sxVFXIJx0Htz8fh
-         Ao7CUa9GTGh+w==
-Date:   Tue, 30 Aug 2022 18:54:54 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v13 7/70] lib/test_maple_tree: add testing for maple tree
-Message-ID: <20220831015454.wi5pqgstegvnwnr2@offworld>
-Mail-Followup-To: Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220822150128.1562046-1-Liam.Howlett@oracle.com>
- <20220822150128.1562046-8-Liam.Howlett@oracle.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A3666191C;
+        Wed, 31 Aug 2022 02:16:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E731FC433D6;
+        Wed, 31 Aug 2022 02:16:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661912164;
+        bh=Ea0i+xlOeHCTTHU9/7iuQnw+cJvR7da0sKZ4LoOMoVc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=N+jLm4NoNJctmJuXBz9wntYcJM98EtBADyrRMxGY758hra9PXARJ9+f5lVWrG+2Oi
+         P2XXRnC+BgDsMmQSk2lKoGE4jxKWA2qiUo65g/ofPUXm1ELN51aDxRyaqVsoCYnjGa
+         BRsAWs78qawWa0lsng67pRu0OzdWbVq23VbcMH6tpVUio8BIPRKnwubJZb7hnQ9Y1K
+         zGJ88HJq1fwf3muYd1XR10ZlVCyoGJeG2XTOa3TgxGjcFX6ufL5W71HCRQQLT60rbQ
+         9hU/990wz6+PIoNDQq/dmCF64eh1Q8YdePTWjjgO0YD9B7cYcLBpmEYhrmvGtyPLD2
+         O5LAqYcPv6vQA==
+Date:   Wed, 31 Aug 2022 05:15:59 +0300
+From:   "jarkko@kernel.org" <jarkko@kernel.org>
+To:     "Huang, Kai" <kai.huang@intel.com>
+Cc:     "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>,
+        "x86@kernel.org" <x86@kernel.org>, "bp@alien8.de" <bp@alien8.de>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "haitao.huang@linux.intel.com" <haitao.huang@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/6] x86/sgx: Do not consider unsanitized pages an error
+Message-ID: <Yw7EX5GCrEaLzpHV@kernel.org>
+References: <20220830031206.13449-1-jarkko@kernel.org>
+ <20220830031206.13449-2-jarkko@kernel.org>
+ <1f43e7b9-c101-3872-bd1b-add66933b285@intel.com>
+ <1b3308a364317d36ad41961ea9cfee24aa122f02.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822150128.1562046-8-Liam.Howlett@oracle.com>
-User-Agent: NeoMutt/20220429
+In-Reply-To: <1b3308a364317d36ad41961ea9cfee24aa122f02.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 22 Aug 2022, Liam Howlett wrote:
+On Wed, Aug 31, 2022 at 01:27:58AM +0000, Huang, Kai wrote:
+> On Tue, 2022-08-30 at 15:54 -0700, Reinette Chatre wrote:
+> > Hi Jarkko,
+> > 
+> > On 8/29/2022 8:12 PM, Jarkko Sakkinen wrote:
+> > > In sgx_init(), if misc_register() for the provision device fails, and
+> > > neither sgx_drv_init() nor sgx_vepc_init() succeeds, then ksgxd will be
+> > > prematurely stopped.
+> > 
+> > I do not think misc_register() is required to fail for the scenario to
+> > be triggered (rather use "or" than "and"?). Perhaps just
+> > "In sgx_init(), if a failure is encountered after ksgxd is started
+> > (via sgx_page_reclaimer_init()) ...".
+> 
+> IMHO "a failure" might be too vague.  For instance, failure to sgx_drv_init()
+> won't immediately result in ksgxd to stop prematurally.  As long as KVM SGX can
+> be initialized successfully, sgx_init() still returns 0.
+> 
+> Btw I was thinking whether we should move sgx_page_reclaimer_init() to the end
+> of sgx_init(), after we make sure at least one of the driver and the KVM SGX is
+> initialized successfully.  Then the code change in this patch won't be necessary
+> if I understand correctly.  AFAICT there's no good reason to start the ksgxd at
+> early stage before we are sure either the driver or KVM SGX will work.
 
->From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
->
->This is a test suite that uses the radix test infrastructure.  It has been
->split into its own commit to allow for easier review of the maple tree
->code.
+I would focus fixing the existing flow rather than reinventing the flow.
 
-It would be good to be a bit more descriptive about the tests and what
-they consist of, for clarity if nothing else.
+It can be made to work, and therefore it is IMHO correct action to take.
+
+> Btw currently EPC pages assigned to KVM guest cannot be reclaimed, so
+> theoretically ksgxd can be moved to sgx_drv_init(), but who knows someday we
+> will decide to make KVM guest EPC pages to be able to be reclaimed. :)
+
+I'm open to changes but it is in my opinion out of context for this.
+
+> 
+> 
+> 
+> -- 
+> Thanks,
+> -Kai
+> 
+> 
+
+BR, Jarkko
