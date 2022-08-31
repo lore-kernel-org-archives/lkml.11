@@ -2,108 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C8DDECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB10ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231331AbiHaP5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 11:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42630 "EHLO
+        id S229684AbiHaP7G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 11:59:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232141AbiHaP4k (ORCPT
+        with ESMTP id S229476AbiHaP7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 11:56:40 -0400
-Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C793ABFEBE;
-        Wed, 31 Aug 2022 08:56:23 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.18.147.227])
-        by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4MHpYS0HrPz9xHv8;
-        Wed, 31 Aug 2022 23:50:52 +0800 (CST)
-Received: from roberto-ThinkStation-P620 (unknown [10.204.63.22])
-        by APP1 (Coremail) with SMTP id LxC2BwD3n5N7hA9jAUoRAA--.35375S2;
-        Wed, 31 Aug 2022 16:55:52 +0100 (CET)
-Message-ID: <827bd5dc3b1ee88b14af53f4575da1b62c8ae452.camel@huaweicloud.com>
-Subject: Re: [PATCH v14 05/12] KEYS: Move KEY_LOOKUP_ to include/linux/key.h
- and set KEY_LOOKUP_FLAGS_ALL
-From:   Roberto Sassu <roberto.sassu@huaweicloud.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>,
-        David Howells <dhowells@redhat.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        keyrings@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Daniel =?ISO-8859-1?Q?M=FCller?= <deso@posteo.net>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Date:   Wed, 31 Aug 2022 17:55:35 +0200
-In-Reply-To: <CAADnVQLCyts0JZ7_=rTp8vP67ET4PjVsZ0Cis0XKUpeCdC13LA@mail.gmail.com>
-References: <20220830161716.754078-1-roberto.sassu@huaweicloud.com>
-         <20220830161716.754078-6-roberto.sassu@huaweicloud.com>
-         <Yw7NKJfhyJqIWUcx@kernel.org> <Yw7o43Ivfo3jRwQg@kernel.org>
-         <cad9a20cadc074cf15dcd0d8eb63b43c98a2f13d.camel@huaweicloud.com>
-         <CAADnVQLCyts0JZ7_=rTp8vP67ET4PjVsZ0Cis0XKUpeCdC13LA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        Wed, 31 Aug 2022 11:59:04 -0400
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1AF2B1B0
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:59:03 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id i188-20020a1c3bc5000000b003a7b6ae4eb2so6978989wma.4
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:59:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=7nLvgccbq+l+f4PjDH7NTp25cyxEHdccDBKThvHtI1U=;
+        b=mruhE6GtkYYHapYUGe4e0jJuNcj1h3TYuIGN2mdsu2uOx55cJQchcF67Amh0ZIXo6s
+         pTiwh4QXJDPf/+GfK20NyTxKHf+ixVqYKcAMYOqPofjAZ87+dfyEcucdssUGmxB4Pz6y
+         9Vs4ghte/y26vvUW9aVA/DTfj2izUia5EFAgtAHpsX+pr2JCdXLW4GgQiMjDqbMf3LKA
+         KDOQCwSqvhwM5Tla2GPso9qi1Ve8NGnLMfQiho2vtYPZycbqsXuM+dLnbW2c/IXryd+e
+         8HW6Hva1tZaOyCa6/PFabMb5iqsFrnr+OjhL8Juq4dBBh+j+Lkb8Y2ZioSd0Z8ArHzux
+         BkvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=7nLvgccbq+l+f4PjDH7NTp25cyxEHdccDBKThvHtI1U=;
+        b=tfSMNss1cbx+yTuftmb0rxRNUaKkus2FxCz4SlbKiDEyNjLtpDknxHejDw8oCbTi/n
+         FM7SvUwfNwnQXw7+F4SWTGntG4aIe3UpoUkG2e5+n05HzUkvyyKkPNa/pWFqrqDqQsCu
+         eaJgVRMVSIIch955/e+XLbFyjOw6NF4vfWZjrOiOTMaDgQYHxIzCCVvoBMC3uKRU4Ytx
+         9m5D+a2ypXYUoxHOIDYPpJMNZ7R6w6bQfL4GZwD9MqzVBixwImI0RoIZUGdioNOfLaHX
+         i4zcRV8WMqXM0T4svLNtmiJwLhgWhzN8DvpMkbiAl4CWCmlz84BeMvSnVwSrv8OhBsy8
+         1I0g==
+X-Gm-Message-State: ACgBeo0oGOV1Jici2bmlfpqLQ/uCnV+6tD8J+xJe2ujsuv/COKfNJnQW
+        a6XM+NiQSMN9TsSqTbeY9+AVHLDkySz2D1sb5stIgQ==
+X-Google-Smtp-Source: AA6agR5gvDRPAv1UJhfveJqjrAC6RPkUAnUPpzuJkGOVT/QMHtOrGHczSWrfwZEzTF8SDfTrxXC/XF9P12nE3OCnXxU=
+X-Received: by 2002:a05:600c:19d3:b0:3a8:3b06:655a with SMTP id
+ u19-20020a05600c19d300b003a83b06655amr2420169wmq.182.1661961541223; Wed, 31
+ Aug 2022 08:59:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LxC2BwD3n5N7hA9jAUoRAA--.35375S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Gw4xtw48Kw1fGF17Jr45trb_yoWxZFb_Ar
-        yrArs3Jrn7CFWktF90g3s7GFZrJF1UJr1fX3Z8Kw4ak398JF4Utr4F9ryfXrZ5Ka1fXFZ5
-        Gr45GF9aqa42gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb7xYFVCjjxCrM7AC8VAFwI0_Wr0E3s1l1xkIjI8I6I8E6xAIw20E
-        Y4v20xvaj40_JFC_Wr1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
-        A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x02
-        67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267
-        AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
-        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
-        0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1l42xK82IYc2Ij
-        64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x
-        8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a6rW5MIIYrxkI7VAKI48JMIIF0xvE
-        2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42
-        xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
-        c7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07UAkuxUUUUU=
-X-CM-SenderInfo: purev21wro2thvvxqx5xdzvxpfor3voofrz/1tbiAgABBF1jj356zAAAs+
-X-CFilter-Loop: Reflected
+References: <20220830164846.401143-1-irogers@google.com> <20220830164846.401143-6-irogers@google.com>
+ <Yw9y1mEW7BhNvStT@kernel.org>
+In-Reply-To: <Yw9y1mEW7BhNvStT@kernel.org>
+From:   Ian Rogers <irogers@google.com>
+Date:   Wed, 31 Aug 2022 08:58:49 -0700
+Message-ID: <CAP-5=fUxRMSJUemUEcrDuRXpUFj3qNiRFQz1S7=cQrvmfyGYew@mail.gmail.com>
+Subject: Re: [PATCH v1 5/8] perf topology: Add core_wide
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        James Clark <james.clark@arm.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        John Garry <john.garry@huawei.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Florian Fischer <florian.fischer@muhq.space>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        perry.taylor@intel.com, caleb.biggers@intel.com,
+        kshipra.bopardikar@intel.com, Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 08:33 -0700, Alexei Starovoitov wrote:
-> On Wed, Aug 31, 2022 at 2:24 AM Roberto Sassu
-> <roberto.sassu@huaweicloud.com> wrote:
-> > > > > +#define KEY_LOOKUP_CREATE        0x01
-> > > > > +#define KEY_LOOKUP_PARTIAL       0x02
-> > > > > +#define KEY_LOOKUP_FLAGS_ALL     (KEY_LOOKUP_CREATE |
-> > > > > KEY_LOOKUP_PARTIAL)
-> > > > 
-> > > > IMHO this could be just KEY_LOOKUP_ALL.
-> 
-> Since this is supposed to be kernel internal flags
-> please make them enum, so that bpf progs can auto-adjust
-> (with the help of CORE) to changes in this enum.
-> With #define there is no way for bpf prog to know
-> when #define changed in the future kernels.
+On Wed, Aug 31, 2022 at 7:40 AM Arnaldo Carvalho de Melo
+<acme@kernel.org> wrote:
+>
+> Em Tue, Aug 30, 2022 at 09:48:43AM -0700, Ian Rogers escreveu:
+> > It is possible to optimize metrics when all SMT threads (CPUs) on a
+> > core are measuring events in system wide mode. For example, TMA
+> > metrics defines CORE_CLKS for Sandybrdige as:
+> >
+> > if SMT is disabled:
+> >   CPU_CLK_UNHALTED.THREAD
+> > if SMT is enabled and recording on all SMT threads:
+> >   CPU_CLK_UNHALTED.THREAD_ANY / 2
+> > if SMT is enabled and not recording on all SMT threads:
+> >   (CPU_CLK_UNHALTED.THREAD/2)*
+> >   (1+CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE/CPU_CLK_UNHALTED.REF_XCLK )
+> >
+> > That is two more events are necessary when not gathering counts on all
+> > SMT threads. To distinguish all SMT threads on a core vs system wide
+> > (all CPUs) call the new property core wide.  Add a core wide test that
+> > determines the property from user requested CPUs, the topology and
+> > system wide. System wide is required as other processes running on a
+> > SMT thread will change the counts.
+> >
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >  tools/perf/util/cputopo.c | 46 +++++++++++++++++++++++++++++++++++++++
+> >  tools/perf/util/cputopo.h |  3 +++
+> >  tools/perf/util/smt.c     | 14 ++++++++++++
+> >  tools/perf/util/smt.h     |  7 ++++++
+> >  4 files changed, 70 insertions(+)
+> >
+> > diff --git a/tools/perf/util/cputopo.c b/tools/perf/util/cputopo.c
+> > index 511002e52714..1a3ff6449158 100644
+> > --- a/tools/perf/util/cputopo.c
+> > +++ b/tools/perf/util/cputopo.c
+> > @@ -172,6 +172,52 @@ bool cpu_topology__smt_on(const struct cpu_topology *topology)
+> >       return false;
+> >  }
+> >
+> > +bool cpu_topology__core_wide(const struct cpu_topology *topology,
+> > +                          const char *user_requested_cpu_list)
+> > +{
+> > +     struct perf_cpu_map *user_requested_cpus;
+> > +
+> > +     /*
+> > +      * If user_requested_cpu_list is empty then all CPUs are recorded and so
+> > +      * core_wide is true.
+> > +      */
+> > +     if (!user_requested_cpu_list)
+> > +             return true;
+> > +
+> > +     user_requested_cpus = perf_cpu_map__new(user_requested_cpu_list);
+>
+> Don't we need a NULL test here?
 
-Ok, will add in the next version.
+No, NULL is a valid perf_cpu_map, one with no values in it. For
+example, see here:
+https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/lib/perf/cpumap.c?h=perf/core#n266
+So there's no way to tell an error (ENOMEM) from an empty map. My
+suggestion is a rewrite of perf_cpu_map, I'd like to do this in a new
+"libperf2" which has a more permissive than GPL license like libbpf.
+That is out-of-scope here.
 
-Thanks
+Thanks,
+Ian
 
-Roberto
-
+> > +     /* Check that every user requested CPU is the complete set of SMT threads on a core. */
+> > +     for (u32 i = 0; i < topology->core_cpus_lists; i++) {
+> > +             const char *core_cpu_list = topology->core_cpus_list[i];
+> > +             struct perf_cpu_map *core_cpus = perf_cpu_map__new(core_cpu_list);
+>
+> Here too, no?
+>
+> > +             struct perf_cpu cpu;
+> > +             int idx;
+> > +             bool has_first, first = true;
+> > +
+> > +             perf_cpu_map__for_each_cpu(cpu, idx, core_cpus) {
+> > +                     if (first) {
+> > +                             has_first = perf_cpu_map__has(user_requested_cpus, cpu);
+> > +                             first = false;
+> > +                     } else {
+> > +                             /*
+> > +                              * If the first core CPU is user requested then
+> > +                              * all subsequent CPUs in the core must be user
+> > +                              * requested too. If the first CPU isn't user
+> > +                              * requested then none of the others must be
+> > +                              * too.
+> > +                              */
+> > +                             if (perf_cpu_map__has(user_requested_cpus, cpu) != has_first) {
+> > +                                     perf_cpu_map__put(core_cpus);
+> > +                                     perf_cpu_map__put(user_requested_cpus);
+> > +                                     return false;
+> > +                             }
+> > +                     }
+> > +             }
+> > +             perf_cpu_map__put(core_cpus);
+> > +     }
+> > +     perf_cpu_map__put(user_requested_cpus);
+> > +     return true;
+> > +}
+> > +
+> >  static bool has_die_topology(void)
+> >  {
+> >       char filename[MAXPATHLEN];
+> > diff --git a/tools/perf/util/cputopo.h b/tools/perf/util/cputopo.h
+> > index 469db775a13c..969e5920a00e 100644
+> > --- a/tools/perf/util/cputopo.h
+> > +++ b/tools/perf/util/cputopo.h
+> > @@ -60,6 +60,9 @@ struct cpu_topology *cpu_topology__new(void);
+> >  void cpu_topology__delete(struct cpu_topology *tp);
+> >  /* Determine from the core list whether SMT was enabled. */
+> >  bool cpu_topology__smt_on(const struct cpu_topology *topology);
+> > +/* Are the sets of SMT siblings all enabled or all disabled in user_requested_cpus. */
+> > +bool cpu_topology__core_wide(const struct cpu_topology *topology,
+> > +                          const char *user_requested_cpu_list);
+> >
+> >  struct numa_topology *numa_topology__new(void);
+> >  void numa_topology__delete(struct numa_topology *tp);
+> > diff --git a/tools/perf/util/smt.c b/tools/perf/util/smt.c
+> > index ce90c4ee4138..994e9e418227 100644
+> > --- a/tools/perf/util/smt.c
+> > +++ b/tools/perf/util/smt.c
+> > @@ -21,3 +21,17 @@ bool smt_on(const struct cpu_topology *topology)
+> >       cached = true;
+> >       return cached_result;
+> >  }
+> > +
+> > +bool core_wide(bool system_wide, const char *user_requested_cpu_list,
+> > +            const struct cpu_topology *topology)
+> > +{
+> > +     /* If not everything running on a core is being recorded then we can't use core_wide. */
+> > +     if (!system_wide)
+> > +             return false;
+> > +
+> > +     /* Cheap case that SMT is disabled and therefore we're inherently core_wide. */
+> > +     if (!smt_on(topology))
+> > +             return true;
+> > +
+> > +     return cpu_topology__core_wide(topology, user_requested_cpu_list);
+> > +}
+> > diff --git a/tools/perf/util/smt.h b/tools/perf/util/smt.h
+> > index e26999c6b8d4..ae9095f2c38c 100644
+> > --- a/tools/perf/util/smt.h
+> > +++ b/tools/perf/util/smt.h
+> > @@ -7,4 +7,11 @@ struct cpu_topology;
+> >  /* Returns true if SMT (aka hyperthreading) is enabled. */
+> >  bool smt_on(const struct cpu_topology *topology);
+> >
+> > +/*
+> > + * Returns true when system wide and all SMT threads for a core are in the
+> > + * user_requested_cpus map.
+> > + */
+> > +bool core_wide(bool system_wide, const char *user_requested_cpu_list,
+> > +            const struct cpu_topology *topology);
+> > +
+> >  #endif /* __SMT_H */
+> > --
+> > 2.37.2.672.g94769d06f0-goog
+>
+> --
+>
+> - Arnaldo
