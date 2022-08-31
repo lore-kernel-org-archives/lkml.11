@@ -2,76 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B592ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DA0ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 08:02:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbiHaICw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 04:02:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        id S231274AbiHaIC5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 04:02:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiHaICp (ORCPT
+        with ESMTP id S230484AbiHaICs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 04:02:45 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1146B99D3
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:02:44 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B043CED1;
-        Wed, 31 Aug 2022 01:02:50 -0700 (PDT)
-Received: from [10.57.15.237] (unknown [10.57.15.237])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 13CBF3F766;
-        Wed, 31 Aug 2022 01:03:11 -0700 (PDT)
-Message-ID: <19a47bae-91ff-648c-c407-759468b8af6a@arm.com>
-Date:   Wed, 31 Aug 2022 09:02:35 +0100
+        Wed, 31 Aug 2022 04:02:48 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC4EB9F8F
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:02:47 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id k18so7378142lji.13
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 01:02:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=mcjkN3A9DFqOnzyDMP/4vsY+bIAutKbcUU811DHEXug=;
+        b=siwYfse66ZSBcXSIbs3T0fKz2ScX0U0xgDT1LfCiwVAFFNk19D25MDC3Pr4wERESVh
+         hHsm0yz0mbBTXmERMfxO9BtHFeXotDeQdQGfmtCTYGKY8n/lyCPiBTSk9/kWAjWrwxpR
+         nxXqQJb2t+hd6a/EthSjjbtWU5s3jFvtDvZSGTKX8z/Pc3l0QFL3U+MfhPi6m588xP85
+         5PCCQzf09qWI85ul0dNeAJOLbUycDOv7xzQzoE7J4suzXQKmy+fezy6U0tBzWJnFjSx8
+         iceefV8psf8nrSTMuZcf/i/8xZX3+Pu23YtK0EDj11rI7DR5I1yyi7dpnLsEE88PvGzK
+         d6Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=mcjkN3A9DFqOnzyDMP/4vsY+bIAutKbcUU811DHEXug=;
+        b=gOULCbczFoiC9t4O+bcQKEJltiSB6YaN22K4xNR4GZ7E1JTG5EipelPZ77u/QgCL3c
+         FLkrvgGYtIW6zSJ8boOZ8E8k4tk2NlUkPNjPQ7btRcs1qKyhf/Qvcgybb9NNLcMUNbpB
+         E3u866oSS+tzURsTJu6/v9hHrQYPw+i3zqbDlX8Q4F5veAeSzhSXI45RQcNod9NUNS4Y
+         KZrpR7566aJL6Vel0+5N1HBUjET8RBaqAe7q947km7S3CDd7apiWgNvUr7bcXxTuRWNi
+         Y+NAzGgpRVZSaKp2Z52Nby/814oVCx/ZUlzBRXBMfd8FB/Ln1Sdvj7JZUgiEaEWNEu5E
+         boVA==
+X-Gm-Message-State: ACgBeo3i42olt0zKYXiGxJKwHFMmKuWHo/ooBbbeuLiCSDavNLsz9BZ9
+        VXdocUU4sBucWHxtXeCcEHezFg==
+X-Google-Smtp-Source: AA6agR5ZFwRrNTK4X0TdLuhjQd5HialV0pcKzZjv37QULxCTS2sXvR8+wol8Rqmm8U9+PMM0GTK7lA==
+X-Received: by 2002:a2e:9f50:0:b0:267:7e8e:5396 with SMTP id v16-20020a2e9f50000000b002677e8e5396mr1854742ljk.222.1661932965694;
+        Wed, 31 Aug 2022 01:02:45 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id o19-20020ac25e33000000b0048b064707ebsm1906643lfg.103.2022.08.31.01.02.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 01:02:45 -0700 (PDT)
+Message-ID: <c842f6c8-fe7b-1e74-d873-4b674556ec40@linaro.org>
+Date:   Wed, 31 Aug 2022 11:02:44 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [PATCH] swiotlb: fix a typo
-Content-Language: en-GB
-To:     Chao Gao <chao.gao@intel.com>
-Cc:     linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        hch@infradead.org, m.szyprowski@samsung.com
-References: <20220826095046.880626-1-chao.gao@intel.com>
- <cd53526d-2564-996b-7b0d-d1fe9f114590@arm.com> <Yw7iFQGpStC6YodP@gao-cwp>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <Yw7iFQGpStC6YodP@gao-cwp>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [RESEND PATCH v2 3/5] dt-bindings: firmware: qcom-scm: Add
+ optional interrupt
+Content-Language: en-US
+To:     Guru Das Srinagesh <quic_gurus@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     David Heidelberg <david@ixit.cz>,
+        Robert Marko <robimarko@gmail.com>,
+        Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Elliot Berman <quic_eberman@quicinc.com>
+References: <1661898311-30126-1-git-send-email-quic_gurus@quicinc.com>
+ <1661898311-30126-4-git-send-email-quic_gurus@quicinc.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <1661898311-30126-4-git-send-email-quic_gurus@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-08-31 05:22, Chao Gao wrote:
-> On Tue, Aug 30, 2022 at 10:23:51AM +0100, Robin Murphy wrote:
->> On 2022-08-26 10:50, Chao Gao wrote:
->>> "overwirte" isn't a word. It should be "overwrite".
->>>
->>> Signed-off-by: Chao Gao <chao.gao@intel.com>
->>> ---
->>> BTW, I am wondering if copying the original buffer to the tlb buffer
->>> unconditionally will leak the original buffer to the VMM, especially
->>> when VMM isn't trusted e.g., by confidential VMs. Would it be better
->>> to zero the tlb buffer for dir == DMA_FROM_DEVICE?
->>
->> No, at the point of dma_map(), the buffer contents are owned by the caller,
->> so if parts of that buffer are sensitive and shouldn't be exposed to DMA,
->> then don't map the whole buffer for DMA. There are more DMA API
->> implementations than SWIOTLB.
->>
+On 31/08/2022 01:25, Guru Das Srinagesh wrote:
+> Add an interrupt specification to the bindings to support the wait-queue
+> feature.
 > 
-> I am not sure if all existing drivers ensure that all buffers allocated
-> for DMA_FROM_DEVICE are zeroed/poisoned so that they don't have sensitive
-> data before dma_map(). If that isn't the case, bouncing the original contents
-> (left by the previous user of the buffer) effectively makes the contents
-> visible to host/VMM. I am afraid it may be a concern for confidential VMs.
+> Signed-off-by: Guru Das Srinagesh <quic_gurus@quicinc.com>
 
-Sure, and in a scheme where pages can be dynamically shared in-place 
-instead of using SWIOTLB to bounce through a pre-shared buffer, then 
-those same drivers will still expose the same stale data. Similarly, a 
-driver could massively over-map with DMA_TO_DEVICE or DMA_BIDIRECTIONAL 
-and expose all manner of potential secrets that way. It's a concern that 
-cannot be addressed at the DMA API level. Anyone who wants to completely 
-trust drivers not to do anything stupid in a confidential compute 
-scenario is going to have to audit and possibly fix those drivers.
+Also not CC-ed to proper people and lists.
 
-Robin.
+> ---
+>  Documentation/devicetree/bindings/firmware/qcom,scm.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/firmware/qcom,scm.yaml b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
+> index e279fd2..4d6c89f 100644
+> --- a/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
+> +++ b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
+> @@ -75,6 +75,11 @@ properties:
+>        Specify this flag to remove SCM call serialization. Need to ensure that
+>        the firmware being used supports this feature first.
+>  
+> +  interrupts:
+> +    description:
+> +      The wait-queue interrupt that firmware raises as part of handshake
+> +      protocol to handle sleeping SCM calls.
+
+Missing constraints.
+
+Which firmwares support it?
+
+> +
+>    qcom,dload-mode:
+>      $ref: /schemas/types.yaml#/definitions/phandle-array
+>      items:
+
+
+Best regards,
+Krzysztof
