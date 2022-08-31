@@ -2,89 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B19ECAAD8
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 01:52:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B952C3DA6B
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 01:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbiHaBw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 21:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57556 "EHLO
+        id S230502AbiHaBx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 21:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230502AbiHaBww (ORCPT
+        with ESMTP id S229630AbiHaBxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 21:52:52 -0400
-Received: from mailgw.kylinos.cn (unknown [124.126.103.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C08AB275B;
-        Tue, 30 Aug 2022 18:52:45 -0700 (PDT)
-X-UUID: b06198feaa43475f977da810b3909272-20220831
-X-CPASD-INFO: 3dcdee8cd1a341cba5870ef212fc03d1@fLSdhJKXZpOQUaN_g3SunIFmaGdgkYa
-        Bc2yGll5jkFGVhH5xTV5uYFV9fWtVYV9dYVR6eGxQYmBgZFJ4i3-XblBjXoZgUZB3gqadhJiTaA==
-X-CLOUD-ID: 3dcdee8cd1a341cba5870ef212fc03d1
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,OB:3.0,URL:-5,TVAL:173.
-        0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:128.0,IP:-2.0,MAL:-5.0,PHF:-5.0,PHC:-5
-        .0,SPF:4.0,EDMS:-5,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:3.0,CFOB:3.0,SPC:0,SIG:-
-        5,AUF:4,DUF:3605,ACD:65,DCD:65,SL:0,EISP:0,AG:0,CFC:0.449,CFSR:0.05,UAT:0,RAF
-        :0,IMG:-5.0,DFA:0,DTA:0,IBL:-2.0,ADI:-5,SBL:0,REDM:0,REIP:0,ESB:0,ATTNUM:0,EA
-        F:0,CID:-5.0,VERSION:2.3.17
-X-CPASD-ID: b06198feaa43475f977da810b3909272-20220831
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1
-X-UUID: b06198feaa43475f977da810b3909272-20220831
-X-User: huxiaoying@kylinos.cn
-Received: from localhost.localdomain [(112.64.161.44)] by mailgw
-        (envelope-from <huxiaoying@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 753277048; Wed, 31 Aug 2022 09:53:00 +0800
-From:   Hu Xiaoying <huxiaoying@kylinos.cn>
-To:     stern@rowland.harvard.edu, gregkh@linuxfoundation.org,
-        linux-usb@vger.kernel.org, usb-storage@lists.one-eyed-alien.net
-Cc:     linux-kernel@vger.kernel.org, Hu Xiaoying <huxiaoying@kylinos.cn>
-Subject: [PATCH v4] usb: Improves USB2.0 write performance.
-Date:   Wed, 31 Aug 2022 09:52:36 +0800
-Message-Id: <20220831015236.1119093-1-huxiaoying@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 30 Aug 2022 21:53:55 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8943DB02A9;
+        Tue, 30 Aug 2022 18:53:54 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MHRtd2WtszYd10;
+        Wed, 31 Aug 2022 09:49:29 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 31 Aug 2022 09:53:52 +0800
+Subject: Re: [PATCH] kvm: x86: mmu: fix memoryleak in
+ kvm_mmu_vendor_module_init()
+To:     "Huang, Kai" <kai.huang@intel.com>,
+        "Christopherson,, Sean" <seanjc@google.com>
+CC:     "x86@kernel.org" <x86@kernel.org>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220823063237.47299-1-linmiaohe@huawei.com>
+ <Yw6DsUwSInpz97IV@google.com>
+ <e1199046d184ad7210ebb100fc2f4b77d1ef4fba.camel@intel.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <d0ad65ec-cbfb-f8c6-121b-ac3b8f5b7aaf@huawei.com>
+Date:   Wed, 31 Aug 2022 09:53:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <e1199046d184ad7210ebb100fc2f4b77d1ef4fba.camel@intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-USB external storage device(0x0b05:1932), use gnome-disk-utility tools
-to test usb write  < 30MB/s.
-if does not to load module of uas for this device, can increase the
-write speed from 20MB/s to >40MB/s.
+On 2022/8/31 6:42, Huang, Kai wrote:
+> On Tue, 2022-08-30 at 21:40 +0000, Sean Christopherson wrote:
+>> On Tue, Aug 23, 2022, Miaohe Lin wrote:
+>>> When register_shrinker() fails, we forgot to release the percpu counter
+> 
+>>> kvm_total_used_mmu_pages leading to memoryleak. Fix this issue by calling
+>>> percpu_counter_destroy() when register_shrinker() fails.
+>>>
+>>> Fixes: ab271bd4dfd5 ("x86: kvm: propagate register_shrinker return code")
+>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>> ---
+>>
+>> Pushed to branch `for_paolo/6.1` at:
+>>
+>>     https://github.com/sean-jc/linux.git
+>>
+>> Unless you hear otherwise, it will make its way to kvm/queue "soon".
+>>
+>> Note, the commit IDs are not guaranteed to be stable.
+> 
+> Sorry for late reply.
+> 
+> The commit message has "we".  Should we get rid of it?
 
-Signed-off-by: Hu Xiaoying <huxiaoying@kylinos.cn>
----
-change for v4
- - Update two email addresses to be the same.
-change for v3
- - Does not send html mail to the mailing lists.
- - Update patch, which sorted by vendor ID and product ID.
- - Modify discription, correct some english words.
-change for v2
- - Update discription for patch.
----
- drivers/usb/storage/unusual_uas.h | 7 +++++++
- 1 file changed, 7 insertions(+)
+Sean has kindly tweaked the commit message. Many thanks both.
 
-diff --git a/drivers/usb/storage/unusual_uas.h b/drivers/usb/storage/unusual_uas.h
-index 4051c8cd0cd8..3925c7c67915 100644
---- a/drivers/usb/storage/unusual_uas.h
-+++ b/drivers/usb/storage/unusual_uas.h
-@@ -62,6 +62,13 @@ UNUSUAL_DEV(0x0984, 0x0301, 0x0128, 0x0128,
- 		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
- 		US_FL_IGNORE_UAS),
- 
-+/* Reported-by: Tom Hu <huxiaoying@gmail.com> */
-+UNUSUAL_DEV(0x0b05, 0x1932, 0x0000, 0x9999,
-+		"ASUS",
-+		"External HDD",
-+		USB_SC_DEVICE, USB_PR_DEVICE, NULL,
-+		US_FL_IGNORE_UAS),
-+
- /* Reported-by: David Webb <djw@noc.ac.uk> */
- UNUSUAL_DEV(0x0bc2, 0x331a, 0x0000, 0x9999,
- 		"Seagate",
--- 
-2.25.1
+BTW: Is it unsuitable to use "we" in the commit message? If so, I will try to not use it
+in later patches.
 
+Thanks,
+Miaohe Lin
