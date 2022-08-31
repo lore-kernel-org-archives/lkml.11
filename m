@@ -2,132 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5700EC0502A
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 03:35:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DCBC0502A
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 03:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232250AbiHaDf1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 23:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
+        id S232280AbiHaDfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 23:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiHaDfW (ORCPT
+        with ESMTP id S232261AbiHaDfq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 23:35:22 -0400
-Received: from APC01-PSA-obe.outbound.protection.outlook.com (mail-psaapc01on20705.outbound.protection.outlook.com [IPv6:2a01:111:f400:feae::705])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D28424BDF;
-        Tue, 30 Aug 2022 20:35:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i9DSpKDnNvM0cl9QST2EwBtLW9rjO7porZ9s/C3ikqorOhpHu1NoVsaQO87GMsnpqvza0l4AtsQVhSliVXmzRTxGxVBt5z2IwQmVHRTR6uSZgBAh8IUPz9q1zVZzXPihZprY8/7hP/Us3OmhiKPlxEShx3j1tSAx5xLeqN0/fncgxhWYGZpbRsFIgZuv6cat/pAqDnLN8+r2VK0of89nDtOE7iScJ5kvnrTVXe98v7TTexjkpKI+7BcPjz3SGdHtS2zbTJDDxrbxzNNE13n/I7d1Nqdyw9xhk9G0UctELhbThZqXuVsV31cdhIdzXvwQ1mmkeLqwPVlxBzQNCJ+jig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vYSVB8NqYE0Wy5sbDJv3tPeXrAuInEwVxc0YFDNUdS4=;
- b=FXQHPsnfcDo/0MPFtkJxbUpGALeM5VuFpyXHJdlMDJyEK12JFoUsTPQdz9pIG9z3lTXO4RBekUfKR1XUxnXot/lddjBzChHRVWtigYqetQw1MGqnUxsmirwi4nMcglMvOlBGXwKg5JVvG6HM+RdrWUoEWOMaSj0lh4jGTX4BmqMZdpWXLtO0EH1TZQ6X6o/SCI9RI45xe7qZqqUq/JNqeZAqChPS0K4FQhMf9tvlrEoQ2tsUM8Zqmo1lAf4beBbnjSdR9zPGHEzBSJtBH2/61akp5mCsQxX5Pfqz7Fmx5Gw/7f/Vgsnv6t0Jl9tL6qBLGoF7Bdii3ScVwR8rSzlnGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vYSVB8NqYE0Wy5sbDJv3tPeXrAuInEwVxc0YFDNUdS4=;
- b=XFGLd/+/4MiFcU4uuTXTSlmd5Iu6gEvAyPsK7ZZ/eNHuGmyeR1FM0GrY+rldD+aMQrNaATHjFX+QmrkYz+LpDkLcWpSyjYagYLMZw/Q+1DRp2E5Dczm8KiGEgAr12GuGlC6JfYjrU70uaOCEcEWPI18mZQGstf9VleJX1o+NXog=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SEZPR06MB5269.apcprd06.prod.outlook.com (2603:1096:101:78::6)
- by KL1PR0601MB4497.apcprd06.prod.outlook.com (2603:1096:820:77::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.19; Wed, 31 Aug
- 2022 03:35:15 +0000
-Received: from SEZPR06MB5269.apcprd06.prod.outlook.com
- ([fe80::5c0:a9e4:9917:8982]) by SEZPR06MB5269.apcprd06.prod.outlook.com
- ([fe80::5c0:a9e4:9917:8982%9]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
- 03:35:15 +0000
-From:   Yangtao Li <frank.li@vivo.com>
-To:     code@tyhicks.com
-Cc:     ecryptfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yangtao Li <frank.li@vivo.com>
-Subject: [PATCH] ecryptfs: make splice write available again
-Date:   Wed, 31 Aug 2022 11:35:05 +0800
-Message-Id: <20220831033505.23178-1-frank.li@vivo.com>
-X-Mailer: git-send-email 2.35.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SI2PR02CA0052.apcprd02.prod.outlook.com
- (2603:1096:4:196::18) To SEZPR06MB5269.apcprd06.prod.outlook.com
- (2603:1096:101:78::6)
+        Tue, 30 Aug 2022 23:35:46 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6432473324;
+        Tue, 30 Aug 2022 20:35:38 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id b196so2728483pga.7;
+        Tue, 30 Aug 2022 20:35:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=SIkOhpnSgF12O0JnM4QFh38Ot/jDR9kAJ4qYsNIujk4=;
+        b=eIygtkBWAQmAnn7mDNLw0of/85QWNnSdr415QP9X5+//LjjnDzLKCpsBBmv0yOooFh
+         LnowY3AunE6UFHvA4cX/K83phl4F/5Ehf7zkkgkWqjyHHWuBK9GUGO5eWOiPxe7TnUgx
+         Dtpzwh6izT6zykxRx5FDpTX3AGnrqaY00QB4hy1OgmJGuGThmeurDjMNCjl446YbXTNh
+         FHITG4J+RkHsODf459Cunkt1omY/wdntktgydSvtr5eltdnybivHRr+qCK9KqaI7faV7
+         mk4goy1bfGUsT6O5iUN0aFHc9EXecgkTSrdxc/zYSfHgu6ZGdZ1fUzgaeh4yT1Yp4RsY
+         MtQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=SIkOhpnSgF12O0JnM4QFh38Ot/jDR9kAJ4qYsNIujk4=;
+        b=WP5i9CpnpGnTYJFJOtFkDNXS6hsmv/QRTwL3ZGof7lWFreUukD/fzDOhCV6WVT5mL4
+         fw6H/Lkd8rr71qPUmM0LbQt8JumILCTOcDdTsDep63JSJ8vq0EIKH/w3y0B28lYBK4gL
+         2pSvEW0VY8yubeolTT+4fkZp3Q1dLe40Sz7AI88kmlDOxhP98MBGhnfac7tyIkkPuH+M
+         i1ytayETPM7hT924o85Bsh+Ce44Ev/W7yw+DcpjbhEYt8zDSAKuu4jdh5h4/WfzkNy4E
+         B9Z8fsC4ANe0rLg1OVsZbi72bl6LjzrHzM7SY3u1bIphSZJeO0xpXRphefSkR06Lt0q5
+         3P0Q==
+X-Gm-Message-State: ACgBeo0rorrxzxXCQydXPVnjdsimhTK0iAa8x6T+CgBnjA7mGXuHtISX
+        oEz58RfrOsk6ZaZwkdck88ZxPLkzft0=
+X-Google-Smtp-Source: AA6agR4WW6HckWjcodwy/+crBhah3Qqe7gNkOeyuE5I782puZwmdrUpF3vNcys71GOj17Uh+r9ImSw==
+X-Received: by 2002:a63:4a47:0:b0:42b:e4a4:3aec with SMTP id j7-20020a634a47000000b0042be4a43aecmr12585562pgl.512.1661916937608;
+        Tue, 30 Aug 2022 20:35:37 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id z29-20020a630a5d000000b0042b291a89bfsm2307733pgk.11.2022.08.30.20.35.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 20:35:37 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: ye.xingchen@zte.com.cn
+To:     jejb@linux.ibm.com
+Cc:     martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ye xingchen <ye.xingchen@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] scsi: scsi_error.c: Remove the unneeded result variable
+Date:   Wed, 31 Aug 2022 03:35:28 +0000
+Message-Id: <20220831033528.302249-1-ye.xingchen@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e2d67b50-2c81-4670-2647-08da8b01d122
-X-MS-TrafficTypeDiagnostic: KL1PR0601MB4497:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IaBcN2PW4612a55J4RvXDQui+qXY+DAwh06oVb5gU0/eMbuCfH9I5iLkfKg/uNXJSfANHhl3GYjXRD3ByTJcRlPzqAt8m54p6iMlpzjaEr+uYV5dfPvzK5vFTGA6i6HZt2RN5YWNaJZhejf57iJBN6yem8CtQBdXpqsv3Z3XINvbA0DA4QrZGrm9Z0gI8jlw2jbGz7+EhV5aYvaOwcGYUZXi9K6dDS1+sIJkC2rZR3nvCtk0B6gbctTcqAJhM93GDFLF4rbqcJtHsLKtjPznNcbmTZH89SPSj5IPxkPEFN0xGLQtV2MB9gz5dkDt8aCbQvFD55/8pxsenUh7IdW+jEKfLae5K5S9RA/8IaQm1K5iyMZKt4+NDy7hjD1F+txG+l890MKR5tiV1u6gyTNAR+PPylBagq+oY7KPQ/PfM8kQob9Ex7jLyr7xpzfD8Xj3ELIQ3imsbe1Nf2c584LJd1QWKCQIOhsCLRfcJqqkF9cNtrjZEwoaBAgvB+VbjUsZ+/HtiFtZK15qJx2O8DzKIDykv4Z+n8eYMjCA3qeLlTC+OSrT0qN9dT+p4bg9pSHaR588Wqn5nWxB1okABjULj+gPHz6jdNd/GLowxdkOSGtOnoBE0LaSjfnADFajJ/JAxRbJAzQ2GL/iSDYgdsoGagqubmD2jNmeiBb0lLXqmUf1ppChX17zP8eILIQldtiR34T2W6cK3CG7Fjz6f6/qeKU72pT9yJ7HW5gMo2yhmfEVjhexGffssffLcFc8cwLujkdi76+iyP//mZgI1w89LqLeiO3pygz3MXUSfU8vZ1k=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SEZPR06MB5269.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(376002)(39860400002)(366004)(26005)(6512007)(316002)(36756003)(38100700002)(1076003)(38350700002)(6916009)(66556008)(6486002)(8936002)(8676002)(41300700001)(6506007)(4326008)(107886003)(66476007)(52116002)(5660300002)(6666004)(66946007)(2906002)(4744005)(83380400001)(478600001)(86362001)(186003)(2616005)(131093003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sANMMBb8bkNMbHuqWlq0gQ+eJzjq+FvZRBSZpcoydbsJ/CF+LPDq1SegV63p?=
- =?us-ascii?Q?MzJaNP/wXuiTCECuxbhiQ2GFTwaJ+p3Gu+2sN3YfeHCB5DkSNJKeZQDhPZ1g?=
- =?us-ascii?Q?y4efp16CymqE7eZwcgt6EnI7UBqfmZidB5wKW9BW3FxRXkVBio3IxLsDBIq3?=
- =?us-ascii?Q?CMFPY1sz4AkZoH9fDLQaDpmPoES3MPB45Bdsut3G/WkJwjBhYhnKtk9ulnip?=
- =?us-ascii?Q?ePZ2EKdA6KOiDXOkWrfxtNjvD3qPSeZBgU8AOWVxYDFX6J5EF83aZy5+BRJa?=
- =?us-ascii?Q?+d4GpSxYowR5ncXDMOkVSSZ4BfPCqed8U0ba3tsmd9yM+xeXtQUNI6qyJdoq?=
- =?us-ascii?Q?q70WbTnVPo91VYXlyoqZrYNYALj8UnCwb41W/s1Ix/ygWKDkMLIjwuPOAJMk?=
- =?us-ascii?Q?++w4yubiaT7isGxVWvTl8RY6Wehjr9Cl82bGe9N1+CroYjCDvgq46v1tgpa0?=
- =?us-ascii?Q?9SZodqDsYdf8y3uHeDPHyWW9ewJrRAFxjMddF0DRTuTopmWtLIzEDX+y7gOD?=
- =?us-ascii?Q?KhNaIQG6ov0uWDFXi7oSMBRZ0ZefQqmIBDuDOfPzCzFQ3J7Jw6wjQydb/0tK?=
- =?us-ascii?Q?/H7LYMtr2guVnGNw34Wzs8fFaHXDg1Bc1fbLG8AZP/pzwV6AdXiGHANHsPhX?=
- =?us-ascii?Q?GBLT6YvEV/HXKiQ+fRzrhnDE/DZbIrPq5pqkNJUtw4PQ6MRhYMDdr/RXW6vD?=
- =?us-ascii?Q?YkKWTzXgUYvFPi4rRVrecrBE/EiYBh7TEUklp/+zDfxmpEhGnJRA5SfLO1NS?=
- =?us-ascii?Q?bC8LY8PZ46Mg9VljgBEgEgbmGV1YBAyEso63FjGM9V63uNNg4rM9Yseh+GDL?=
- =?us-ascii?Q?U2/OC+2306Bioiu8HRGZ0Ukb8ajcoeX3SZLrOsrxjzCtw0QaY5irsXiWIq87?=
- =?us-ascii?Q?Usxyo2iq8146fOwi7t3tEn67hsUSSyyfIEoF8jT6RX6IdDClZ2/rKQcfP+oF?=
- =?us-ascii?Q?gIcay7zs0oHE7jJtJdD2g1t1ILL7Mc4Q8sIH+VndHVolV873n0EjcCFwk1Xa?=
- =?us-ascii?Q?4YQ68fntov8l+wJCGl69v3Xv385lsdEBG/5QaqVXSpsO0otXNuPWD5LKAsyc?=
- =?us-ascii?Q?yu5Sv2JTkNhNp3YJwQXjpXVpnY0VAhMBqp59JuUEaYe1A96v5KTpci11GAkM?=
- =?us-ascii?Q?iQihjG8IC4B2yFfiaDhYcysD2SNlOJCKgKYVOMQHNpgzAk5S/9vzsGWU9gju?=
- =?us-ascii?Q?t5KulGF68aYGJO/KjSDfxUSvsgw9mVXxqb87oQkxPB0bG8CQ1D7MxRfEQDnp?=
- =?us-ascii?Q?XgX+oI8FM/sfsto9F/6fEXSK3LoncOgm90QT3p7mEYid3LqVUQ8NpSH3yWdO?=
- =?us-ascii?Q?nLsXAI7f1B4ZVZoXGHVA47Pt2+PpCD/1KDLV41Q1urjJf5uHdYhi5pFEXYrm?=
- =?us-ascii?Q?GciqFn5WsSeB6d1sT8rZq1Md+TjjZ7WOP4ML9Bk5ui3diIQJN9d/nV9fkb7E?=
- =?us-ascii?Q?XT4C5YDTSUGYMHoc0xvqrocp/NcBh7sHA0CJ4x1K42WnOWdVX3cAv5ebAXO8?=
- =?us-ascii?Q?YvqyqnJ/+o62O41uYdyFAhpecjzYs2li/k4QAA7ofoIU/V5mmWsEt2bEdVOu?=
- =?us-ascii?Q?sNCHeo9V23QMSyorarCducZkkCO6ljvx221jA4Lr?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2d67b50-2c81-4670-2647-08da8b01d122
-X-MS-Exchange-CrossTenant-AuthSource: SEZPR06MB5269.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 03:35:14.8766
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b/Xms6hRvU0j54U6D+vjOA3cbdpOiN9ssbLqEDOgB9W+ZIXgGXguN+HnNZlkH48xb+jhtLKXycs9ZnJBuEOlvg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: KL1PR0601MB4497
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since 5.10, splice() or sendfile() return EINVAL.  This was
-caused by commit 36e2c7421f02 ("fs: don't allow splice read/write
-without explicit ops").
+From: ye xingchen <ye.xingchen@zte.com.cn>
 
-This patch initializes the splice_write field in file_operations, like
-most file systems do, to restore the functionality.
+Return the value scsi_device_online() directly instead of storing it in
+another redundant variable.
 
-Signed-off-by: Yangtao Li <frank.li@vivo.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: ye xingchen <ye.xingchen@zte.com.cn>
 ---
- fs/ecryptfs/file.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/scsi_error.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/fs/ecryptfs/file.c b/fs/ecryptfs/file.c
-index 18d5b91cb573..d070ca0fac2b 100644
---- a/fs/ecryptfs/file.c
-+++ b/fs/ecryptfs/file.c
-@@ -421,4 +421,5 @@ const struct file_operations ecryptfs_main_fops = {
- 	.fsync = ecryptfs_fsync,
- 	.fasync = ecryptfs_fasync,
- 	.splice_read = generic_file_splice_read,
-+	.splice_write = iter_file_splice_write,
- };
+diff --git a/drivers/scsi/scsi_error.c b/drivers/scsi/scsi_error.c
+index 448748e3fba5..6840bb4ab55f 100644
+--- a/drivers/scsi/scsi_error.c
++++ b/drivers/scsi/scsi_error.c
+@@ -377,13 +377,9 @@ enum blk_eh_timer_return scsi_timeout(struct request *req)
+  */
+ int scsi_block_when_processing_errors(struct scsi_device *sdev)
+ {
+-	int online;
+-
+ 	wait_event(sdev->host->host_wait, !scsi_host_in_recovery(sdev->host));
+ 
+-	online = scsi_device_online(sdev);
+-
+-	return online;
++	return scsi_device_online(sdev);
+ }
+ EXPORT_SYMBOL(scsi_block_when_processing_errors);
+ 
 -- 
 2.25.1
-
