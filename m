@@ -2,132 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95CFECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 11:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AF9ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 11:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230313AbiHaLEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 07:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37186 "EHLO
+        id S229510AbiHaLEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 07:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiHaLES (ORCPT
+        with ESMTP id S229449AbiHaLEu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 07:04:18 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEA29F8D4
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 04:04:17 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27V8ja3C006870;
-        Wed, 31 Aug 2022 11:03:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : from :
- date : subject : to : cc; s=corp-2022-7-12;
- bh=6SXXBybf0Upt3qTKeZCZXzMIP41uMlfYtChskMKRoLE=;
- b=Bn6rmefh+Fe7KRGWxCg+8R8qDL1eYnbDZovH+H4fqQzTMY/ApklmASX0SvzKeWuFyAmM
- DilACgs1usNEqE8NcH71X+akcCgiF5ZksMFEi1oBHCHUAAmlDd9isyJOdD9/0P30N+JG
- M6X8bq5HxwByCQbmhL1IPf/8E11MJiDlspw1r9c+CUXexb+dkB6zd3JkQu06D3I2tRtM
- DmL5cVdzsHOwI+ru07kH9SwensQYVxB1kISgNG148kpJ8IamPSBOXV4F5SlPMqTI0mC0
- O5ktjX3wTjDsgGFBqP9kP7h/UYUlE02t95I/0vyKT6NpU4utVoQMAFtpebZTrkZMnc4/ Tg== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j7btt8v6m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 31 Aug 2022 11:03:37 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27VAruCR013034;
-        Wed, 31 Aug 2022 11:03:36 GMT
-Received: from oracle.com (dhcp-10-175-18-16.vpn.oracle.com [10.175.18.16])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3j79q501j0-1;
-        Wed, 31 Aug 2022 11:03:36 +0000
-Message-Id: <ed7a508717bb8bec6273c2740418f0dc2df9eeba.1661943721.git.julian.pidancet@oracle.com>
-From:   Julian Pidancet <julian.pidancet@oracle.com>
-Date:   Tue, 30 Aug 2022 09:42:37 +0200
-Subject: [PATCH] x86/alternative: Consistently patch SMP locks in vmlinux and
- modules
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-31_06,2022-08-31_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 malwarescore=0 mlxscore=0
- spamscore=0 mlxlogscore=999 phishscore=0 suspectscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208310054
-X-Proofpoint-ORIG-GUID: uZtfzGXumc8d34qbDwPJcrd5nVm3r1GL
-X-Proofpoint-GUID: uZtfzGXumc8d34qbDwPJcrd5nVm3r1GL
+        Wed, 31 Aug 2022 07:04:50 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9051A614C;
+        Wed, 31 Aug 2022 04:04:49 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4591121E98;
+        Wed, 31 Aug 2022 11:04:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1661943888; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7rUfy2mjgKSZvW8Hv+C3XQ3MWeegbpsZkXWtmcFePxA=;
+        b=cN2bfJUKQAFYmP5lfcBq7Xllkrj98P3EGVrNed2TEDWPt+4B+jNWMWMPYksfasqywozxQl
+        mL8EMZ6a66b5xJbd4UlfD2MNL6uTjYXxHO/9CYo89r7wcfHQeaKVaHhcVHojSU+ksOT0kk
+        +7K2U+exV2KwTs7YfMEcA1DAIvKh6uk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1661943888;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7rUfy2mjgKSZvW8Hv+C3XQ3MWeegbpsZkXWtmcFePxA=;
+        b=IfQPklv0XIl0V4DwmvZuLeaWytRl8KT5euyQIi2kPBMZ6NVEGmXYMwS1+tudUmennmbg5a
+        OAGjG2rZvG7tIWCQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2E68F13A7C;
+        Wed, 31 Aug 2022 11:04:48 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id FO5ZC1BAD2NVcwAAMHmgww
+        (envelope-from <jack@suse.cz>); Wed, 31 Aug 2022 11:04:48 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 83F66A067B; Wed, 31 Aug 2022 13:04:47 +0200 (CEST)
+Date:   Wed, 31 Aug 2022 13:04:47 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Zhang Yi <yi.zhang@huawei.com>
+Cc:     linux-ext4@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, cluster-devel@redhat.com,
+        ntfs3@lists.linux.dev, ocfs2-devel@oss.oracle.com,
+        reiserfs-devel@vger.kernel.org, jack@suse.cz, tytso@mit.edu,
+        akpm@linux-foundation.org, axboe@kernel.dk,
+        viro@zeniv.linux.org.uk, rpeterso@redhat.com, agruenba@redhat.com,
+        almaz.alexandrovich@paragon-software.com, mark@fasheh.com,
+        dushistov@mail.ru, hch@infradead.org, chengzhihao1@huawei.com,
+        yukuai3@huawei.com
+Subject: Re: [PATCH 09/14] reiserfs: replace ll_rw_block()
+Message-ID: <20220831110447.4qm5cme3kenfa5cd@quack3>
+References: <20220831072111.3569680-1-yi.zhang@huawei.com>
+ <20220831072111.3569680-10-yi.zhang@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220831072111.3569680-10-yi.zhang@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The alternatives_smp_module_add() function restricts patching of SMP
-lock prefixes to the text address range passed as an argument.
+On Wed 31-08-22 15:21:06, Zhang Yi wrote:
+> ll_rw_block() is not safe for the sync read/write path because it cannot
+> guarantee that submitting read/write IO if the buffer has been locked.
+> We could get false positive EIO after wait_on_buffer() in read path if
+> the buffer has been locked by others. So stop using ll_rw_block() in
+> reiserfs. We also switch to new bh_readahead_batch() helper for the
+> buffer array readahead path.
+> 
+> Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
 
-For vmlinux, patching all the instructions located between the _text and
-_etext symbols is allowed. That includes the .text section but also
-other sections such as .text.hot and .text.unlikely.
+Looks good to me. Feel free to add:
 
-As per the comment inside the 'struct smp_alt_module' definition, the
-original purpose of this restriction is to avoid patching the init code
-which may have been deallocated when the alternatives code run.
+Reviewed-by: Jan Kara <jack@suse.cz>
 
-For modules, the current code only allows patching instructions located
-inside the .text segment, excluding other sections such as .text.hot or
-.text.unlikely, which may need patching.
+								Honza
 
-This change aims to make patching of the kernel core and modules more
-consistent, by allowing all text sections of modules except .init.text
-to be patched in module_finalize().
-
-For that we use mod->core_layout.base/mod->core_layout.text_size as the
-address range allowed to be patched, which include all the code sections
-except the init code.
-
-Signed-off-by: Julian Pidancet <julian.pidancet@oracle.com>
----
-Public tests: https://gist.github.com/jpidancet/1ee457623426f3e3902a28edaf2c80d0 
-Related thread: https://marc.info/?t=130864398400006
-
- arch/x86/kernel/module.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
-
-diff --git a/arch/x86/kernel/module.c b/arch/x86/kernel/module.c
-index b1abf663417c..da22193eb5e0 100644
---- a/arch/x86/kernel/module.c
-+++ b/arch/x86/kernel/module.c
-@@ -251,14 +251,12 @@ int module_finalize(const Elf_Ehdr *hdr,
- 		    const Elf_Shdr *sechdrs,
- 		    struct module *me)
- {
--	const Elf_Shdr *s, *text = NULL, *alt = NULL, *locks = NULL,
--		*para = NULL, *orc = NULL, *orc_ip = NULL,
--		*retpolines = NULL, *returns = NULL, *ibt_endbr = NULL;
-+	const Elf_Shdr *s, *alt = NULL, *locks = NULL, *para = NULL,
-+		*orc = NULL, *orc_ip = NULL, *retpolines = NULL,
-+		*returns = NULL, *ibt_endbr = NULL;
- 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
- 
- 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
--		if (!strcmp(".text", secstrings + s->sh_name))
--			text = s;
- 		if (!strcmp(".altinstructions", secstrings + s->sh_name))
- 			alt = s;
- 		if (!strcmp(".smp_locks", secstrings + s->sh_name))
-@@ -302,12 +300,13 @@ int module_finalize(const Elf_Ehdr *hdr,
- 		void *iseg = (void *)ibt_endbr->sh_addr;
- 		apply_ibt_endbr(iseg, iseg + ibt_endbr->sh_size);
- 	}
--	if (locks && text) {
-+	if (locks) {
- 		void *lseg = (void *)locks->sh_addr;
--		void *tseg = (void *)text->sh_addr;
-+		void *text = me->core_layout.base;
-+		void *text_end = text + me->core_layout.text_size;
- 		alternatives_smp_module_add(me, me->name,
- 					    lseg, lseg + locks->sh_size,
--					    tseg, tseg + text->sh_size);
-+					    text, text_end);
- 	}
- 
- 	if (orc && orc_ip)
+> ---
+>  fs/reiserfs/journal.c | 11 ++++++-----
+>  fs/reiserfs/stree.c   |  4 ++--
+>  fs/reiserfs/super.c   |  4 +---
+>  3 files changed, 9 insertions(+), 10 deletions(-)
+> 
+> diff --git a/fs/reiserfs/journal.c b/fs/reiserfs/journal.c
+> index 94addfcefede..699b1b8d5b73 100644
+> --- a/fs/reiserfs/journal.c
+> +++ b/fs/reiserfs/journal.c
+> @@ -868,7 +868,7 @@ static int write_ordered_buffers(spinlock_t * lock,
+>  		 */
+>  		if (buffer_dirty(bh) && unlikely(bh->b_page->mapping == NULL)) {
+>  			spin_unlock(lock);
+> -			ll_rw_block(REQ_OP_WRITE, 1, &bh);
+> +			write_dirty_buffer(bh, 0);
+>  			spin_lock(lock);
+>  		}
+>  		put_bh(bh);
+> @@ -1054,7 +1054,7 @@ static int flush_commit_list(struct super_block *s,
+>  		if (tbh) {
+>  			if (buffer_dirty(tbh)) {
+>  		            depth = reiserfs_write_unlock_nested(s);
+> -			    ll_rw_block(REQ_OP_WRITE, 1, &tbh);
+> +			    write_dirty_buffer(tbh, 0);
+>  			    reiserfs_write_lock_nested(s, depth);
+>  			}
+>  			put_bh(tbh) ;
+> @@ -2240,7 +2240,7 @@ static int journal_read_transaction(struct super_block *sb,
+>  		}
+>  	}
+>  	/* read in the log blocks, memcpy to the corresponding real block */
+> -	ll_rw_block(REQ_OP_READ, get_desc_trans_len(desc), log_blocks);
+> +	bh_read_batch(log_blocks, get_desc_trans_len(desc));
+>  	for (i = 0; i < get_desc_trans_len(desc); i++) {
+>  
+>  		wait_on_buffer(log_blocks[i]);
+> @@ -2342,10 +2342,11 @@ static struct buffer_head *reiserfs_breada(struct block_device *dev,
+>  		} else
+>  			bhlist[j++] = bh;
+>  	}
+> -	ll_rw_block(REQ_OP_READ, j, bhlist);
+> +	bh = bhlist[0];
+> +	bh_read_nowait(bh, 0);
+> +	bh_readahead_batch(&bhlist[1], j - 1, 0);
+>  	for (i = 1; i < j; i++)
+>  		brelse(bhlist[i]);
+> -	bh = bhlist[0];
+>  	wait_on_buffer(bh);
+>  	if (buffer_uptodate(bh))
+>  		return bh;
+> diff --git a/fs/reiserfs/stree.c b/fs/reiserfs/stree.c
+> index 9a293609a022..84c12a1947b2 100644
+> --- a/fs/reiserfs/stree.c
+> +++ b/fs/reiserfs/stree.c
+> @@ -579,7 +579,7 @@ static int search_by_key_reada(struct super_block *s,
+>  		if (!buffer_uptodate(bh[j])) {
+>  			if (depth == -1)
+>  				depth = reiserfs_write_unlock_nested(s);
+> -			ll_rw_block(REQ_OP_READ | REQ_RAHEAD, 1, bh + j);
+> +			bh_readahead(bh[j], REQ_RAHEAD);
+>  		}
+>  		brelse(bh[j]);
+>  	}
+> @@ -685,7 +685,7 @@ int search_by_key(struct super_block *sb, const struct cpu_key *key,
+>  			if (!buffer_uptodate(bh) && depth == -1)
+>  				depth = reiserfs_write_unlock_nested(sb);
+>  
+> -			ll_rw_block(REQ_OP_READ, 1, &bh);
+> +			bh_read_nowait(bh, 0);
+>  			wait_on_buffer(bh);
+>  
+>  			if (depth != -1)
+> diff --git a/fs/reiserfs/super.c b/fs/reiserfs/super.c
+> index c88cd2ce0665..8b1db82b6949 100644
+> --- a/fs/reiserfs/super.c
+> +++ b/fs/reiserfs/super.c
+> @@ -1702,9 +1702,7 @@ static int read_super_block(struct super_block *s, int offset)
+>  /* after journal replay, reread all bitmap and super blocks */
+>  static int reread_meta_blocks(struct super_block *s)
+>  {
+> -	ll_rw_block(REQ_OP_READ, 1, &SB_BUFFER_WITH_SB(s));
+> -	wait_on_buffer(SB_BUFFER_WITH_SB(s));
+> -	if (!buffer_uptodate(SB_BUFFER_WITH_SB(s))) {
+> +	if (bh_read(SB_BUFFER_WITH_SB(s), 0)) {
+>  		reiserfs_warning(s, "reiserfs-2504", "error reading the super");
+>  		return 1;
+>  	}
+> -- 
+> 2.31.1
+> 
 -- 
-2.37.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
