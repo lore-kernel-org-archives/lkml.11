@@ -2,97 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 106F1ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:19:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 528CCECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 15:21:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231819AbiHaPTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 11:19:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
+        id S229892AbiHaPVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 11:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbiHaPT3 (ORCPT
+        with ESMTP id S229682AbiHaPVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 11:19:29 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075DCD8B2D;
-        Wed, 31 Aug 2022 08:19:21 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VEt0ai016618;
-        Wed, 31 Aug 2022 15:19:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=b4mSvOEH+vP34dG48xtqm5QYnL6FD+Wz1XH17FHzmWA=;
- b=a6Q7gBbyj8YMBZZ0jAvlVD9Q2pCL/ETx22in1LXv/TNMYt3M+z3fxWWo+uaDwKmREUyU
- BmtKjAjeaX3IXl7ed7xsKJbLc3S8lC6L2KRGNFa4SAe7WTvXzGTuGz6QBHfxACngL4pS
- pgmn4ZUnHRZa7F5hAVnAib/tdMqce3Uo9AMy3LoBUAjcPjG+xikrct/m3iEQJB5R+bso
- wYjsEKqyx9YycDS4ix2DZT0Y0W14faWg5lcfRSzTPDVcJPE74zJ6HMcDhmw6eyfEwo4+
- uc69s+g6IW0DR/hp7KzwlFKjh97dqzLeg+0MmtRhFtQf5OVZ0kB/xaDJWn/asN2wqNy7 YA== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j9mwjkqk8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 15:19:02 +0000
-Received: from pps.filterd (NALASPPMTA01.qualcomm.com [127.0.0.1])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27VFIcQi011417;
-        Wed, 31 Aug 2022 15:19:01 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 3j7cbkqubm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 15:19:01 +0000
-Received: from NALASPPMTA01.qualcomm.com (NALASPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27VFJ1Ev012265;
-        Wed, 31 Aug 2022 15:19:01 GMT
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 27VFJ1G0012263
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 15:19:01 +0000
-Received: from [10.110.0.200] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 31 Aug
- 2022 08:19:00 -0700
-Message-ID: <24ee0926-1f56-f3d4-5531-f615352cda0c@quicinc.com>
-Date:   Wed, 31 Aug 2022 08:18:59 -0700
+        Wed, 31 Aug 2022 11:21:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46ACEC2FB7
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 08:21:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D608A6108F
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 15:21:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89678C433C1;
+        Wed, 31 Aug 2022 15:21:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661959298;
+        bh=DTL+LV2yF2EH+15dxhJXJ7zmzomlghacq3fufP//T8g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=uXMTB1pzQhVDzse2eYe/8fReXNqRMnQhKSVL2CIhKlqloRVvQDRTOewBE7hor/JOx
+         d/aUvJZzk9oOiwH1rnRAuSiZxyCYYnjYaAT5jGThcsse21w1aulO8aykX5M27CyXQd
+         mGY1POf0PmgNFhpHCnYtEdDXjim59m3G4gHxRyPn0Nj7eOHZNHFVGeETdKnw5rlXDp
+         rCz4IsOUdTy235EpZoMo88pmu2v66QVenNSHBrOmOXoeGz4T59FkekGj6XoTNlK7v+
+         y6NCuqG5j114iAEwU0jGIHlOuoDQlW0EDyRoZtTncI9XQwb+Adh+R+ck7m15a1Wrzc
+         AC7kEk7O3SbwA==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Nicholas Piggin <npiggin@gmail.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Arnd Bergmann <arnd@arndb.de>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] powerpc/math_emu/efp: Include module.h
+Date:   Wed, 31 Aug 2022 08:20:15 -0700
+Message-Id: <20220831152014.3501664-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.37.3
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH] wifi: mac80211_hwsim: check length for virtio packets
-Content-Language: en-US
-To:     Soenke Huster <soenke.huster@eknoes.de>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220831132205.129922-1-soenke.huster@eknoes.de>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <20220831132205.129922-1-soenke.huster@eknoes.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: PACf5UHZvt2zBIsW2CmIEZnqjxQaP8ZT
-X-Proofpoint-ORIG-GUID: PACf5UHZvt2zBIsW2CmIEZnqjxQaP8ZT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-31_09,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- malwarescore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
- clxscore=1011 mlxlogscore=505 phishscore=0 priorityscore=1501 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208310076
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 8/31/2022 6:22 AM, Soenke Huster wrote:
-> An invalid packet with a length shorther than the specified length in the
+When building with a recent version of clang, there are a couple of
+errors around the call to module_init():
 
-nit: s/shorther/shorter/
+  arch/powerpc/math-emu/math_efp.c:927:1: error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+  module_init(spe_mathemu_init);
+  ^
+  int
+  arch/powerpc/math-emu/math_efp.c:927:13: error: a parameter list without types is only allowed in a function definition
+  module_init(spe_mathemu_init);
+              ^
+  2 errors generated.
+
+module_init() is a macro, which is not getting expanded because module.h
+is not included in this file. Add the include so that the macro can
+expand properly, clearing up the build failure.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+
+No Fixes tag because it seems likely that this is a transient include
+issue (the code builds with GCC). The robot blamed commit e8c07082a810
+("Kbuild: move to -std=gnu11") but I think that just exposed these
+errors, not caused them.
+
+ arch/powerpc/math-emu/math_efp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/powerpc/math-emu/math_efp.c b/arch/powerpc/math-emu/math_efp.c
+index 39b84e7452e1..aa3bb8da1cb9 100644
+--- a/arch/powerpc/math-emu/math_efp.c
++++ b/arch/powerpc/math-emu/math_efp.c
+@@ -17,6 +17,7 @@
+ 
+ #include <linux/types.h>
+ #include <linux/prctl.h>
++#include <linux/module.h>
+ 
+ #include <linux/uaccess.h>
+ #include <asm/reg.h>
+
+base-commit: dcf8e5633e2e69ad60b730ab5905608b756a032f
+-- 
+2.37.3
 
