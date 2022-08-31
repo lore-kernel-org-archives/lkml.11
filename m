@@ -2,173 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1561BECAAA1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C258EECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:05:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbiHaCFO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 22:05:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
+        id S231749AbiHaCFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 22:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230206AbiHaCFL (ORCPT
+        with ESMTP id S229602AbiHaCFw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 22:05:11 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89EA8CE08;
-        Tue, 30 Aug 2022 19:05:09 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MHS8T0Z5pz1N7cZ;
-        Wed, 31 Aug 2022 10:01:29 +0800 (CST)
-Received: from huawei.com (10.175.103.91) by dggpemm500022.china.huawei.com
- (7.185.36.162) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
- 2022 10:05:07 +0800
-From:   Zeng Heng <zengheng4@huawei.com>
-To:     <djwong@kernel.org>, <sandeen@sandeen.net>, <dchinner@redhat.com>,
-        <chandan.babu@oracle.com>, <allison.henderson@oracle.com>,
-        <dan.carpenter@oracle.com>
-CC:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <zengheng4@huawei.com>
-Subject: [PATCH v2 -next] xfs: clean up "%Ld/%Lu" which doesn't meet C standard
-Date:   Wed, 31 Aug 2022 10:12:48 +0800
-Message-ID: <20220831021248.3127300-1-zengheng4@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 30 Aug 2022 22:05:52 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1043758DF3;
+        Tue, 30 Aug 2022 19:05:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661911551; x=1693447551;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=cttn7y6UHHWNipIRdPvVFXvVg0LWj2i77s/Uz1a/IWk=;
+  b=BzvEsG0Q2segwRAdRGwTq9/cHpkCtKs1Ql4N0PU/8pjyoGxx0z119UZZ
+   38wLXwmjvAhpUyc2yvqhT0Vdm/azBJrcIhxg38XRHkttGE6LTZRrzLGGj
+   DtZsiNslE6cyLeujEoaLBru5fT4yWxMBPQcbIjeFipDS76zfIwlaSmuQT
+   kvpjjpgVYaX1khvIhWgfhep31r8cJUNva+3q4jhunlI41Efrne1ePuv1K
+   4Mbvp3bKo4FjONm43gE+Be3L3WAEyUy4XSD8HZOVXgs+kc/Dh//W/RNse
+   x10VgxlJ0a6w3jYs87Wl39sZpuhw03IFKtPSHpFVuLWgdO00Rd/vp938t
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="294092185"
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="294092185"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 19:05:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="787723001"
+Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
+  by orsmga005.jf.intel.com with ESMTP; 30 Aug 2022 19:05:46 -0700
+Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTD6w-0000rn-0O;
+        Wed, 31 Aug 2022 02:05:46 +0000
+Date:   Wed, 31 Aug 2022 10:04:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sean Anderson <sean.anderson@seco.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, linux-doc@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-phy@lists.infradead.org,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [net-next PATCH v2] net: phy: Add 1000BASE-KX interface mode
+Message-ID: <202208311035.zXZ42EG5-lkp@intel.com>
+References: <20220830214241.596985-1-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500022.china.huawei.com (7.185.36.162)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830214241.596985-1-sean.anderson@seco.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "%Ld" specifier, which represents long long unsigned,
-doesn't meet C language standard, and even more,
-it makes people easily mistake with "%ld", which represent
-long unsigned. So replace "%Ld" with "lld".
+Hi Sean,
 
-Do the same with "%Lu".
+I love your patch! Perhaps something to improve:
 
-Signed-off-by: Zeng Heng <zengheng4@huawei.com>
----
- fs/xfs/libxfs/xfs_bmap.c        | 2 +-
- fs/xfs/libxfs/xfs_inode_fork.c  | 4 ++--
- fs/xfs/xfs_inode.c              | 8 ++++----
- fs/xfs/xfs_inode_item_recover.c | 4 ++--
- fs/xfs/xfs_stats.c              | 2 +-
- 5 files changed, 10 insertions(+), 10 deletions(-)
+[auto build test WARNING on net-next/master]
 
-diff --git a/fs/xfs/libxfs/xfs_bmap.c b/fs/xfs/libxfs/xfs_bmap.c
-index e56723dc9cd5..49d0d4ea63fc 100644
---- a/fs/xfs/libxfs/xfs_bmap.c
-+++ b/fs/xfs/libxfs/xfs_bmap.c
-@@ -294,7 +294,7 @@ xfs_check_block(
- 			else
- 				thispa = XFS_BMBT_PTR_ADDR(mp, block, j, dmxr);
- 			if (*thispa == *pp) {
--				xfs_warn(mp, "%s: thispa(%d) == pp(%d) %Ld",
-+				xfs_warn(mp, "%s: thispa(%d) == pp(%d) %lld",
- 					__func__, j, i,
- 					(unsigned long long)be64_to_cpu(*thispa));
- 				xfs_err(mp, "%s: ptrs are equal in node\n",
-diff --git a/fs/xfs/libxfs/xfs_inode_fork.c b/fs/xfs/libxfs/xfs_inode_fork.c
-index 9327a4f39206..6b21760184d9 100644
---- a/fs/xfs/libxfs/xfs_inode_fork.c
-+++ b/fs/xfs/libxfs/xfs_inode_fork.c
-@@ -78,7 +78,7 @@ xfs_iformat_local(
- 	 */
- 	if (unlikely(size > XFS_DFORK_SIZE(dip, ip->i_mount, whichfork))) {
- 		xfs_warn(ip->i_mount,
--	"corrupt inode %Lu (bad size %d for local fork, size = %zd).",
-+	"corrupt inode %llu (bad size %d for local fork, size = %zd).",
- 			(unsigned long long) ip->i_ino, size,
- 			XFS_DFORK_SIZE(dip, ip->i_mount, whichfork));
- 		xfs_inode_verifier_error(ip, -EFSCORRUPTED,
-@@ -192,7 +192,7 @@ xfs_iformat_btree(
- 					XFS_DFORK_SIZE(dip, mp, whichfork) ||
- 		     ifp->if_nextents > ip->i_nblocks) ||
- 		     level == 0 || level > XFS_BM_MAXLEVELS(mp, whichfork)) {
--		xfs_warn(mp, "corrupt inode %Lu (btree).",
-+		xfs_warn(mp, "corrupt inode %llu (btree).",
- 					(unsigned long long) ip->i_ino);
- 		xfs_inode_verifier_error(ip, -EFSCORRUPTED,
- 				"xfs_iformat_btree", dfp, size,
-diff --git a/fs/xfs/xfs_inode.c b/fs/xfs/xfs_inode.c
-index 28493c8e9bb2..b3eeeae3afe1 100644
---- a/fs/xfs/xfs_inode.c
-+++ b/fs/xfs/xfs_inode.c
-@@ -3119,7 +3119,7 @@ xfs_iflush(
- 	if (XFS_TEST_ERROR(dip->di_magic != cpu_to_be16(XFS_DINODE_MAGIC),
- 			       mp, XFS_ERRTAG_IFLUSH_1)) {
- 		xfs_alert_tag(mp, XFS_PTAG_IFLUSH,
--			"%s: Bad inode %Lu magic number 0x%x, ptr "PTR_FMT,
-+			"%s: Bad inode %llu magic number 0x%x, ptr "PTR_FMT,
- 			__func__, ip->i_ino, be16_to_cpu(dip->di_magic), dip);
- 		goto flush_out;
- 	}
-@@ -3129,7 +3129,7 @@ xfs_iflush(
- 		    ip->i_df.if_format != XFS_DINODE_FMT_BTREE,
- 		    mp, XFS_ERRTAG_IFLUSH_3)) {
- 			xfs_alert_tag(mp, XFS_PTAG_IFLUSH,
--				"%s: Bad regular inode %Lu, ptr "PTR_FMT,
-+				"%s: Bad regular inode %llu, ptr "PTR_FMT,
- 				__func__, ip->i_ino, ip);
- 			goto flush_out;
- 		}
-@@ -3140,7 +3140,7 @@ xfs_iflush(
- 		    ip->i_df.if_format != XFS_DINODE_FMT_LOCAL,
- 		    mp, XFS_ERRTAG_IFLUSH_4)) {
- 			xfs_alert_tag(mp, XFS_PTAG_IFLUSH,
--				"%s: Bad directory inode %Lu, ptr "PTR_FMT,
-+				"%s: Bad directory inode %llu, ptr "PTR_FMT,
- 				__func__, ip->i_ino, ip);
- 			goto flush_out;
- 		}
-@@ -3158,7 +3158,7 @@ xfs_iflush(
- 	if (XFS_TEST_ERROR(ip->i_forkoff > mp->m_sb.sb_inodesize,
- 				mp, XFS_ERRTAG_IFLUSH_6)) {
- 		xfs_alert_tag(mp, XFS_PTAG_IFLUSH,
--			"%s: bad inode %Lu, forkoff 0x%x, ptr "PTR_FMT,
-+			"%s: bad inode %llu, forkoff 0x%x, ptr "PTR_FMT,
- 			__func__, ip->i_ino, ip->i_forkoff, ip);
- 		goto flush_out;
- 	}
-diff --git a/fs/xfs/xfs_inode_item_recover.c b/fs/xfs/xfs_inode_item_recover.c
-index d28ffaebd067..0e5dba2343ea 100644
---- a/fs/xfs/xfs_inode_item_recover.c
-+++ b/fs/xfs/xfs_inode_item_recover.c
-@@ -321,7 +321,7 @@ xlog_recover_inode_commit_pass2(
- 	 */
- 	if (XFS_IS_CORRUPT(mp, !xfs_verify_magic16(bp, dip->di_magic))) {
- 		xfs_alert(mp,
--	"%s: Bad inode magic number, dip = "PTR_FMT", dino bp = "PTR_FMT", ino = %Ld",
-+	"%s: Bad inode magic number, dip = "PTR_FMT", dino bp = "PTR_FMT", ino = %lld",
- 			__func__, dip, bp, in_f->ilf_ino);
- 		error = -EFSCORRUPTED;
- 		goto out_release;
-@@ -329,7 +329,7 @@ xlog_recover_inode_commit_pass2(
- 	ldip = item->ri_buf[1].i_addr;
- 	if (XFS_IS_CORRUPT(mp, ldip->di_magic != XFS_DINODE_MAGIC)) {
- 		xfs_alert(mp,
--			"%s: Bad inode log record, rec ptr "PTR_FMT", ino %Ld",
-+			"%s: Bad inode log record, rec ptr "PTR_FMT", ino %lld",
- 			__func__, item, in_f->ilf_ino);
- 		error = -EFSCORRUPTED;
- 		goto out_release;
-diff --git a/fs/xfs/xfs_stats.c b/fs/xfs/xfs_stats.c
-index 70d38b77682b..90a77cd3ebad 100644
---- a/fs/xfs/xfs_stats.c
-+++ b/fs/xfs/xfs_stats.c
-@@ -74,7 +74,7 @@ int xfs_stats_format(struct xfsstats __percpu *stats, char *buf)
- 		defer_relog += per_cpu_ptr(stats, i)->s.defer_relog;
- 	}
- 
--	len += scnprintf(buf + len, PATH_MAX-len, "xpc %Lu %Lu %Lu\n",
-+	len += scnprintf(buf + len, PATH_MAX-len, "xpc %llu %llu %llu\n",
- 			xs_xstrat_bytes, xs_write_bytes, xs_read_bytes);
- 	len += scnprintf(buf + len, PATH_MAX-len, "defer_relog %llu\n",
- 			defer_relog);
+url:    https://github.com/intel-lab-lkp/linux/commits/Sean-Anderson/net-phy-Add-1000BASE-KX-interface-mode/20220831-054425
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 146ecbac1d327e7ed2153cfb3ef880166dc2b312
+config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220831/202208311035.zXZ42EG5-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/96d58b1eb1e74558860112250f067f5ff250e31f
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Sean-Anderson/net-phy-Add-1000BASE-KX-interface-mode/20220831-054425
+        git checkout 96d58b1eb1e74558860112250f067f5ff250e31f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/net/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/net/phy/phy-core.c: In function 'phy_interface_num_ports':
+>> drivers/net/phy/phy-core.c:86:9: warning: enumeration value 'PHY_INTERFACE_MODE_1000BASEKX' not handled in switch [-Wswitch]
+      86 |         switch (interface) {
+         |         ^~~~~~
+
+
+vim +/PHY_INTERFACE_MODE_1000BASEKX +86 drivers/net/phy/phy-core.c
+
+da4625ac2637e4 Russell King      2017-07-25   76  
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   77  /**
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   78   * phy_interface_num_ports - Return the number of links that can be carried by
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   79   *			     a given MAC-PHY physical link. Returns 0 if this is
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   80   *			     unknown, the number of links else.
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   81   *
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   82   * @interface: The interface mode we want to get the number of ports
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   83   */
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   84  int phy_interface_num_ports(phy_interface_t interface)
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   85  {
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  @86  	switch (interface) {
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   87  	case PHY_INTERFACE_MODE_NA:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   88  		return 0;
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   89  	case PHY_INTERFACE_MODE_INTERNAL:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   90  	case PHY_INTERFACE_MODE_MII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   91  	case PHY_INTERFACE_MODE_GMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   92  	case PHY_INTERFACE_MODE_TBI:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   93  	case PHY_INTERFACE_MODE_REVMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   94  	case PHY_INTERFACE_MODE_RMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   95  	case PHY_INTERFACE_MODE_REVRMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   96  	case PHY_INTERFACE_MODE_RGMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   97  	case PHY_INTERFACE_MODE_RGMII_ID:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   98  	case PHY_INTERFACE_MODE_RGMII_RXID:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17   99  	case PHY_INTERFACE_MODE_RGMII_TXID:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  100  	case PHY_INTERFACE_MODE_RTBI:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  101  	case PHY_INTERFACE_MODE_XGMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  102  	case PHY_INTERFACE_MODE_XLGMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  103  	case PHY_INTERFACE_MODE_MOCA:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  104  	case PHY_INTERFACE_MODE_TRGMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  105  	case PHY_INTERFACE_MODE_USXGMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  106  	case PHY_INTERFACE_MODE_SGMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  107  	case PHY_INTERFACE_MODE_SMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  108  	case PHY_INTERFACE_MODE_1000BASEX:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  109  	case PHY_INTERFACE_MODE_2500BASEX:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  110  	case PHY_INTERFACE_MODE_5GBASER:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  111  	case PHY_INTERFACE_MODE_10GBASER:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  112  	case PHY_INTERFACE_MODE_25GBASER:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  113  	case PHY_INTERFACE_MODE_10GKR:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  114  	case PHY_INTERFACE_MODE_100BASEX:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  115  	case PHY_INTERFACE_MODE_RXAUI:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  116  	case PHY_INTERFACE_MODE_XAUI:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  117  		return 1;
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  118  	case PHY_INTERFACE_MODE_QSGMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  119  	case PHY_INTERFACE_MODE_QUSGMII:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  120  		return 4;
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  121  	case PHY_INTERFACE_MODE_MAX:
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  122  		WARN_ONCE(1, "PHY_INTERFACE_MODE_MAX isn't a valid interface mode");
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  123  		return 0;
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  124  	}
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  125  	return 0;
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  126  }
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  127  EXPORT_SYMBOL_GPL(phy_interface_num_ports);
+c04ade27cb7b95 Maxime Chevallier 2022-08-17  128  
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
