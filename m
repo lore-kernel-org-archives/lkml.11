@@ -2,96 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D25ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1792ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231855AbiHaOM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
+        id S230480AbiHaOM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiHaOMY (ORCPT
+        with ESMTP id S231947AbiHaOMx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:12:24 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BA0C58C6
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:12:23 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id q16so14751156ljp.8
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:12:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=gzK10rJm3kDakU95ZOzVvw37oOA+zuu1InnZT0+0zc8=;
-        b=anQU10e8+GPGyhXsYmOKXNVsuNiBAq3vGn1CRMFCzYLiizIl40pIiNmHHoYfrI5ilg
-         DOaYNSzwJFoK5Gx3jOl6YVRafg3lVDuOH7Rbf5kZE9KegehB7Kvr3ldUZy3pGSA/kIRq
-         qCQIyxz7PVY/FIobzmokwfaK/HUO/IhDpZr+x1yacobSB73dOcFFSoZo9FRzmEw37b0B
-         zimmgXZ4urYhkmRMBxPtoJNjt9zebub8jFiCGy3SyDqd5q2L4HRfmR8iDU9YuedLiak4
-         +V7qo2bRf/hdYpawdUUSKDttDRBOIZUZp1LxJ6nqKJGY3w6f/rYeRQ0TM5y47/yNaoP2
-         eWNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=gzK10rJm3kDakU95ZOzVvw37oOA+zuu1InnZT0+0zc8=;
-        b=GRN/8sSBRWbF4jGWEt+lImTS0V11z29S6xX/a1qcQZ41LjlP+1XGlNtYzi/aGeelxN
-         k6CMIPyVdeKpOzvaAx/d1P03Icmbq+iAFUuk082E+DExbsB7VWPVSr1r05vEdxqhpBPC
-         JwZPtXa/rAJBWtgh5RMnfe2AM8Aewj/J9pZXTanuW9r+4zBn4Q9hd2L0cx78BW/72uoB
-         rkDJjU4dO8i46kROaPfRlTT9oKEWy+v1/0rdRkhRZ6wMbX+M0Oj9tWFaCl5RdXev5xVz
-         mUbY7dBMToFmZ3fvvGTM0gSXV0fwFDWNBsXSc0izs106s4EcTqTQX2xXHcKS/HMl70//
-         tZUw==
-X-Gm-Message-State: ACgBeo0QZmOs31yRdgh5w93gj/IEscOKBG3PxmCkqxXvspjZmcDEDZfx
-        lz4fCs1ntyJncc9Mr7UVf4gd3w==
-X-Google-Smtp-Source: AA6agR6Kxd376mZM7+9hyHIlzFnsCVzTl9sipNPdfLu+aWFjls/ZvCjq2m3yABlLucRA6u5J71yppg==
-X-Received: by 2002:a05:651c:901:b0:261:ca36:951a with SMTP id e1-20020a05651c090100b00261ca36951amr9030862ljq.36.1661955142051;
-        Wed, 31 Aug 2022 07:12:22 -0700 (PDT)
-Received: from krzk-bin.. (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id h5-20020ac24d25000000b00494603953b6sm1523745lfk.6.2022.08.31.07.12.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 07:12:21 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, arm@kernel.org,
-        soc@kernel.org, Olof Johansson <olof@lixom.net>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [RESEND PATCH] arm64: defconfig: enable newer Qualcomm SoC sound drivers
-Date:   Wed, 31 Aug 2022 17:12:18 +0300
-Message-Id: <20220831141218.516100-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+        Wed, 31 Aug 2022 10:12:53 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2080.outbound.protection.outlook.com [40.107.21.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8165D7CCA;
+        Wed, 31 Aug 2022 07:12:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QxzPNcXfBQTfZXUNsydZHTo5UQCZginOjhIEqyKPFtFvvJ7XqRF53NpKMlG9el17strLE9Kuo9I7TfUrM7fTCfRTGju8PJJcGamC4cQwWHFDlHdCTvRgYxOwlSD4LPlFyQn7Bd5PBrNz+L1hdLuTNYDJYmC4mf70i4EDIZw7eiAsWQWK3cHKEPSKfg/QCiLNOmAMmTscJklfnlH58Z8i0ZAqFDN6PRS8Sp5cyhvvLW8fc7cHRfYsKh8Hp6kI6Y5auT3+SIvhZ1gofIRQQOwL6nZo/RntAOoKEBieF10hPIYRufDnCQ2W60utbOB9++Aw7RguCTg5qeyPrIa/9lkemQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ps/RRas3htm+eeCAwSZtEu6tYoWx+l1EXPI+oa22fB8=;
+ b=ICSvuSjyzq644/ugbO6np+ctSGzoZ/R1P4IjNoV0zITne1574nkrI6rsbaSKTcOVKwXag/pjGSZyt00p26X9Gn8oCQV/bqwaMTKosDhcx90mdcaP5VL7gVqGHN3fBULoVn/CW3Wt/XQFin7dY9IdTFHJFqoi6A9aa3cmh2I/NAyuMH0LqSUov0wubJs6H471EWpGX05XxVcDWPzqlLMYuFLi6cUfzOWyipm0aqYEXMdHzrH4YcOMg6PtA9TDYM9bWwrfsAlhx2mJehOH/oKfVSToun01tbUwV6vehvKQFt6pPrevBD7z5uSUX/sO+3Ps22cxsgD7BeuQpUlZfM4/cg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ps/RRas3htm+eeCAwSZtEu6tYoWx+l1EXPI+oa22fB8=;
+ b=ivUv8gsix86p7pX1oIabIZjablrXh7pHBvGE5thESYAVAiYGAJX7gbI63g4Jov3cg2t+qkb+oZAD8gROgpPCqAynSYvyRuEJZvnUD4I0Gv6bQGFEgqFt1w6k3ZqPqGzn5Cw5H+f9Q0PKftSBhU0NxxMuPF4tEMu3Mrpnz7gI/MQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by PR3PR04MB7355.eurprd04.prod.outlook.com (2603:10a6:102:8f::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Wed, 31 Aug
+ 2022 14:12:41 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::2d22:3315:6f9b:82c7]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::2d22:3315:6f9b:82c7%5]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
+ 14:12:41 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        aisheng.dong@nxp.com, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V3 0/8] arm64: dts: imx93: add several nodes
+Date:   Wed, 31 Aug 2022 22:14:10 +0800
+Message-Id: <20220831141418.38532-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.37.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SGXP274CA0010.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b8::22)
+ To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 14900046-bcd5-4067-bca8-08da8b5add99
+X-MS-TrafficTypeDiagnostic: PR3PR04MB7355:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e/sLHzworC/3c+T+uXEh9X4GXrgo3+Bew41JmxkkEFRHF9yeY7Nj3hzB9B12+kRzEG5cqtJIujYm7dKajBeCxqbMTckNKcOFTr7HYxQwfW9Veyf3UQPzLTZpqNlpphNdJGa/7vTqmnnp34l7JjujXOWaI4Tp7du1s2OsQOBrJ0kYc8H6ofaGa1C6x/zZiMtS0JOecOXW9/aOYuiCyCK8A5hbFSsPMWmKLusZ4mThuqKtOf79Dtb+FS5fNeOT/dK6hWQ9cr4DKx+AIcEo6SZOJe9Zx7Hfsw3mX8VRp00mLe2xXpxPwFi0sy7g5BakOOoqlcxRyFXFD4Lq7GACaxhPiS+tuQT3MBlxVgvstHyo1fL6yNTns6HOQao0Z7/ogrHTnwCJpZTp9izsk1BiKy2BdYmSO0d/nB7ljIgJDiXgLTKpN92IefU3kBsrmPx05koVDiFYWwKBLPRzOkzU/vmGLCBSgItBrfA3JdHmdk8cqhZUVXrlfiamjGQt/jYIh9+p1Yd5uWVZ16k8kcMIB55kF6dAhSlOSZFKaK36huO3SSkoRXwK0sXrmCuqnOeD1+YZvSrV29OmFGdPMQJtKrxUOkrvAHLBz0Gr5WIBuu3YHQsirm40pC7D4i2SgsqJa72QMbDl/W1PNYvbGmFjRS8tPXRTxxScB4yrbGe0D+tcGRdwcdsf4Z3Fr1xyCKjuqmjNActuMX1TcLn3G55Pjih4qT3PvFrA7JRkSzZRscEQqMdmD/wQusUZQPMrF4IAE2Uq0/z9XT8gVEB5aNh/hH8RhGGb1g7jcXmIgyK5jHQdJqxT5hEdW3Dre8WtDO85mn74mAvVkGW/rv4b+8FPFxD9cQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(366004)(376002)(346002)(396003)(8676002)(4326008)(66476007)(66556008)(186003)(1076003)(2616005)(5660300002)(6506007)(52116002)(316002)(41300700001)(38100700002)(66946007)(26005)(6512007)(6666004)(86362001)(6486002)(478600001)(2906002)(966005)(38350700002)(8936002)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?XXbNnvJSg0LR0fKNopMeMdcTVrqxi0Ulos5pdZ8JZgWze3R5Lg539Ow6o3wD?=
+ =?us-ascii?Q?khFciZj1z4ct5gto4GWZXbmc2jAiYoYKW8TdVTpYttfxp3SE1HrDBU9aWKx4?=
+ =?us-ascii?Q?IIxZuRD8CBbpkaj7T5KbemtoaMMHrE0/l4JW2z/XidK6S6JDkbJOjOaGK+P7?=
+ =?us-ascii?Q?nqrF28hpWfXYZKp6Uj0XnH3lJjkBV/yvN7GkXUnY4NNMwv7uiN+G4C5e+KUU?=
+ =?us-ascii?Q?tDmfcZAEtprZG84fgYS/LgSEb3TUsa0omohAoBN8MP2/Gh4EnP791GXqXS2l?=
+ =?us-ascii?Q?pqUrbvU5+xoKZeNhOHTbuOYeInt/CSbulPf5kWkvJ3M3JNWZw37KsgStw0of?=
+ =?us-ascii?Q?0nIi3scIlJRZlagmBqe2zr9t8JJMevjdu6pKB7rjz6Ruk5dSOBXe4756jlpj?=
+ =?us-ascii?Q?MtWJF+fkkat5fhecdFNgfiJY7HjsTHjyOLM6ZLQc4XuD+AIWZnhxT31hax+1?=
+ =?us-ascii?Q?xtyIsd2O6yNQ7kXxWw8Zm3TWs4RfCRKraeN/H6ZdAJG5E4EeL6SArnNMHuzP?=
+ =?us-ascii?Q?hBILpOleYFhNh3ORYvUzK71c8kF6PGeVBcnJLiLKKLia8hyLrVmWwlxuZVVQ?=
+ =?us-ascii?Q?ArtTaHKOaaF7jDRoKXwvbuovRfvgXkeTuGNQ76uPQHgNSRbNqkoZTpbCVaw5?=
+ =?us-ascii?Q?FArcl1AGMKno0qA61yoyxtlAqLMhM+nNlDOUHnpwpzvYXqw+TH0W6J+dkaOg?=
+ =?us-ascii?Q?ksEyMKCCKPreSE26MyhIkKsYUZhKDDrRbUQXOWMd5zfJ+ICArSGr2xDeT2ze?=
+ =?us-ascii?Q?pxwtQJvJ8SzKWGrOX5LnwqWfLx9hO98oHb/pqnitXbJEQ6AQoYTIjNKwIeJN?=
+ =?us-ascii?Q?+G53BZv4DHzJFwaMMsmFDIqOHCxIleiZhFkbiAb2w6tU5uTU1GDG5FBceegU?=
+ =?us-ascii?Q?rdIvcq8kIxtt/JFMeyBKxiy9M0Kmcx2FL3n6re81zTRohuyGbMqk3QmZDblb?=
+ =?us-ascii?Q?eTpxtXCcJypTWmUR6PvRQfzINwvTtbWj4v1Jg3rxBa2feNnGUVlwWwzAkzhJ?=
+ =?us-ascii?Q?oBmPolbX/GZRyP2RcVdKW0usbbjguOVcFnV6aw3S+XNUMX0reIb3lypD7jNs?=
+ =?us-ascii?Q?6VdlxQRLkjJlpC+mkc9kNJ1sT73vno7qiJwS3xU+I0ESz7EGwAuwtoKcX13d?=
+ =?us-ascii?Q?UClNOWDUznJCg9/sODEXjDXzzeGBeFEA/pXMNniVOrBGVk3fsNzQ2YkINhNI?=
+ =?us-ascii?Q?Qr6zqpNKigduDPY88Cbmmmgh3gwX5z8ueuYqOvZdQ7UmtPP99ZcT2dQkVha5?=
+ =?us-ascii?Q?sIiDHOnVLXIqP70rUpxI2n0nn+MfLAKg6Dhf9paLcDkEidX5rDQXCme1Bg7v?=
+ =?us-ascii?Q?xbtglse9brAo0EXTrjk/PjetDs9CEX34ehsNxLB+h5/t8NXMQE44dykdqhdv?=
+ =?us-ascii?Q?UqBlIDPHujq3J7g0Cxl8NXL6D0z5eF7CUySGgMpnCvEz8am8GT1ZafFE3iU7?=
+ =?us-ascii?Q?nnZcQ87OQI0FsxjKbYsE7c5XAHwcBnNSicCZluCTcI6B3VxdDRWti/o8wann?=
+ =?us-ascii?Q?9s3Dm3Zm0Lqc1Vr575yv7WCdjZXpoKC0DDQfUwbSkzX+Ky7DT5E8325azbjA?=
+ =?us-ascii?Q?u2cjZXx8qVELKyEqsXBHWM32jgAuZYBQ6YbldPqA?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 14900046-bcd5-4067-bca8-08da8b5add99
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 14:12:41.1253
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C7tf20UVA/Y7O4D6mbv5s/yHAmqzZ5AbCjQ+hbKv9rAcSWJvrgwoSkSfQ6Ewbsd/cZGEi0UY4UzkpQVE+ItuQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7355
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable sound support (machine drivers) for Qualcomm SC7180 and SC7280
-SoCs.
+From: Peng Fan <peng.fan@nxp.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
+V3:
+ Address DT maintainer's comments in patch 1
 
-Resending because I missed ARM SoC maintainers and Bjorn.
+V2:
+ Add binding doc for aonmix/wakeupmix blk ctrl
+ Update compatible in patch 5 according to binding doc
+ The lpi2c binding doc has been accepted:
+   https://lore.kernel.org/all/Yw3hfcQ2JV248GIo@shikoro/
 
- arch/arm64/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+V1:
+Add S4MU, BLK CTRL, PMU, LPI2C, LPSPI nodes.
+Add GPIO clk entry.
+Correct SDHC clk entry
+https://patchwork.kernel.org/project/linux-arm-kernel/cover/20220812074609.53131-1-peng.fan@oss.nxp.com/
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 265454620682..644d084c6888 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -792,6 +792,8 @@ CONFIG_SND_SOC_APQ8016_SBC=m
- CONFIG_SND_SOC_MSM8996=m
- CONFIG_SND_SOC_SDM845=m
- CONFIG_SND_SOC_SM8250=m
-+CONFIG_SND_SOC_SC7180=m
-+CONFIG_SND_SOC_SC7280=m
- CONFIG_SND_SOC_ROCKCHIP=m
- CONFIG_SND_SOC_ROCKCHIP_SPDIF=m
- CONFIG_SND_SOC_ROCKCHIP_RT5645=m
+
+Peng Fan (8):
+  dt-bindings: soc: imx: add binding for i.MX93 syscon
+  arm64: dts: imx93: correct SDHC clk entry
+  arm64: dts: imx93: add gpio clk
+  arm64: dts: imx93: add s4 mu node
+  arm64: dts: imx93: add blk ctrl node
+  arm64: dts: imx93: add a55 pmu
+  arm64: dts: imx93: add lpi2c nodes
+  arm64: dts: imx93: add lpspi nodes
+
+ .../bindings/soc/imx/fsl,imx93-syscon.yaml    |  36 ++++
+ arch/arm64/boot/dts/freescale/imx93.dtsi      | 162 +++++++++++++++++-
+ 2 files changed, 192 insertions(+), 6 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/imx/fsl,imx93-syscon.yaml
+
 -- 
-2.34.1
+2.37.1
 
