@@ -2,93 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC59ECAAD3
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C625ECAAD3
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 06:10:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbiHaGJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 02:09:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42938 "EHLO
+        id S230059AbiHaGKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 02:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbiHaGJM (ORCPT
+        with ESMTP id S229646AbiHaGKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 02:09:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66A23BC12D
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:09:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661926150;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oR8XteXHX+4ai/3j0vU7EYXedgFBG0vhXvlh6RDFvTg=;
-        b=KXVAgjkKFUlvsEE9iMqbG99wdyFgMj0PsnKvtFqjwSH63vt+DhbQOT93teTGP6y+fF4wz2
-        P4AKl1/gdKMcnm4EH2Men6ypU0E1ouDzGJVGyV53kLXi5y5y9Hi6tUDiaBrBpoSBv7sPQE
-        ztspOl5DfFV5Qwsko+Dr+77nFX+6Tis=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-618-bfFlUR7aPrmA_9wacOzrOQ-1; Wed, 31 Aug 2022 02:09:09 -0400
-X-MC-Unique: bfFlUR7aPrmA_9wacOzrOQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EB45285A585;
-        Wed, 31 Aug 2022 06:09:08 +0000 (UTC)
-Received: from starship (unknown [10.40.194.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 54D92141511A;
-        Wed, 31 Aug 2022 06:09:07 +0000 (UTC)
-Message-ID: <7a7827ec2652a8409fccfe070659497df229211b.camel@redhat.com>
-Subject: Re: [PATCH 06/19] KVM: SVM: Get x2APIC logical dest bitmap from
- ICRH[15:0], not ICHR[31:16]
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Li RongQing <lirongqing@baidu.com>
-Date:   Wed, 31 Aug 2022 09:09:06 +0300
-In-Reply-To: <20220831003506.4117148-7-seanjc@google.com>
-References: <20220831003506.4117148-1-seanjc@google.com>
-         <20220831003506.4117148-7-seanjc@google.com>
+        Wed, 31 Aug 2022 02:10:14 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B9233425
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 23:10:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1661926212;
+        bh=/TER4iJHDBefpw95HzCdjG3bDhB21B9H1g+yQMQEbes=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=h++eRIqWYr2VAslir2CMvR3E5V+NfSELO5/cM+dMXeXd3KHe10CzHfmOPssSjRU43
+         yIrkZTb6e3aTQq46Bvbj/6l/+gZQP2a1bQI1OfJuNCejxEHibrMixx36mrCx1X+31H
+         TZY0omxhkkjYZ3tVxwZiD73MLsTGQ7ULwt7BbJok=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 196BB667CA;
+        Wed, 31 Aug 2022 02:10:10 -0400 (EDT)
+Message-ID: <5b87173faeef587a2ffaaa6f58d34e0940231067.camel@xry111.site>
+Subject: Re: [PATCH v7 0/5] LoongArch: Support toolchain with new relocation
+ types
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     Huacai Chen <chenhuacai@kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>
+Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
+Date:   Wed, 31 Aug 2022 14:10:09 +0800
+In-Reply-To: <CAAhV-H7Dz21qRgwkMcJ0SnA9FNDN19E6mpa7C25LUitrO9LGeA@mail.gmail.com>
+References: <20220830104806.128365-1-xry111@xry111.site>
+         <CAAhV-H5bH7xZTWLhqcZ_Bmh=RNaEVBy9523hmj-gTmitqqc8ag@mail.gmail.com>
+         <c0ba2e23-5be3-924d-554a-2f10272c05bc@xen0n.name>
+         <CAAhV-H7Dz21qRgwkMcJ0SnA9FNDN19E6mpa7C25LUitrO9LGeA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.45.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-08-31 at 00:34 +0000, Sean Christopherson wrote:
-> When attempting a fast kick for x2AVIC, get the destination bitmap from
-> ICR[15:0], not ICHR[31:16].  The upper 16 bits contain the cluster, the
-> lower 16 bits hold the bitmap.
-> 
-> Fixes: 603ccef42ce9 ("KVM: x86: SVM: fix avic_kick_target_vcpus_fast")
-> Cc: Maxim Levitsky <mlevitsk@redhat.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 3ace0f2f52f0..3c333cd2e752 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -368,7 +368,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
->  
->  		if (apic_x2apic_mode(source)) {
->  			/* 16 bit dest mask, 16 bit cluster id */
-> -			bitmap = dest & 0xFFFF0000;
-> +			bitmap = dest & 0xFFFF;
->  			cluster = (dest >> 16) << 4;
->  		} else if (kvm_lapic_get_reg(source, APIC_DFR) == APIC_DFR_FLAT) {
->  			/* 8 bit dest mask*/
+On Wed, 2022-08-31 at 13:44 +0800, Huacai Chen wrote:
 
-I swear I have seen a patch from Suravee Suthikulpanit fixing this my mistake, I don't know why it was not
-accepted upstream.
+> With this series applied and ARCH_WANT_LD_ORPHAN_WARN enabled, we get
+> loongarch64-unknown-linux-gnu-ld: warning: orphan section `.got' from
+> `arch/loongarch/kernel/head.o' being placed in section `.got'
+> loongarch64-unknown-linux-gnu-ld: warning: orphan section `.got.plt'
+> from `arch/loongarch/kernel/head.o' being placed in section `.got.plt'
+>=20
+> I think we should add this lines in vmlinux.lds.S
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .got : { *(.got) }
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .got.plt : { *(.got.plt) }
+>=20
+> But put them to which patch? Patch 2 or Patch 5?
 
-Best regards,
-	Maxim Levitsky
+In patch 2 IMO.  Because in patch 2 we already know "-Wa,-mla-global-
+with-pcrel" does not prevent the generation of GOT with new toolchain.
 
+If you need a v8 please tell me to send it, but I don't know how to
+handle -Woverride-init warnings (IMO the fix for this warning should be
+a standalone patch outside of the series).
+
+P. S. The ld warning message seems a little strange because "head.o"
+does not contain .got or .got.plt sections...  I guess there is a linker
+bug causing it outputs the very first input file in the message, instead
+of the first input file really containing an orphaned section.
+
+Another P. S.: the use of GOT is actually unneeded in main kernel image
+but we don't have something equivalent to "-Wa,-mla-global-with-pcrel"
+in the new toolchain.  Perhaps we can add this feature to GCC later.
+
+--=20
+Xi Ruoyao <xry111@xry111.site>
+School of Aerospace Science and Technology, Xidian University
