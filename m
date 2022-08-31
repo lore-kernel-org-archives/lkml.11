@@ -2,118 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 616D1ECAAD1
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70325ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 14:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229449AbiHaO4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 10:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        id S230060AbiHaO42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 10:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230328AbiHaO4R (ORCPT
+        with ESMTP id S231316AbiHaO4U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 10:56:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFF322505
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:55:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B67DB8217A
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 14:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83358C433D6;
-        Wed, 31 Aug 2022 14:54:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661957702;
-        bh=rsrl9rgDHgzWkXHkQCBHN7rLCeuL9PMu+p5M2KnjqKg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OWJZvYHa+Xep3KmkaQ+GB7W6pV1vfHPJU7erMHtWkUY6siio4YDl5IQPoDYH6yP2y
-         X4apdWL8/C2AmlWqhHUZDBl+cLeSq+nrMWN8pX9gdy16w9/0UNC3va1Xei6G3iyt8g
-         wlOFiYCrSfHwgNT9S1cWHwUAI0h8BiQcO9308TxGTHhq372v5qkghtxwsBV9x3/AYR
-         OGQ/xEqWCQ5Wl9Caba6JP5LzZXlJ8vg7SoH1zkN+j8BCmCyF3kyEslGi8WECWnFNZ7
-         Anse4YQclEJ67+8+DLXWDH7+IffvEhxYyMpyjpkP0BvqxZ3yhvCb37KJCf/b/hmhwT
-         sKVCDLUWxDM2A==
-From:   Chao Yu <chao@kernel.org>
-To:     linux-mm@kvack.org
-Cc:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        chao@kernel.org, jaegeuk@kernel.org, Chao Yu <chao.yu@oppo.com>,
-        stable@kernel.org,
-        syzbot+81684812ea68216e08c5@syzkaller.appspotmail.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Subject: [PATCH v2] mm/slub: fix to return errno if kmalloc() fails
-Date:   Wed, 31 Aug 2022 22:54:54 +0800
-Message-Id: <20220831145454.858200-1-chao@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        Wed, 31 Aug 2022 10:56:20 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD033CB5F7
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 07:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661957746; x=1693493746;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tKCKqwQ8m8var63qlj80j+a8U1AHxCZ1pQ7hTm4PXaM=;
+  b=b/KjTF2KvjSS7qKX/SzPhQfQ8/x7MZc1+nxKI9+y5YiqYFxbSYijqfST
+   STBFs0tp0z1Y7GR6OTSRV9KWo8myY8wXT8ZeBjXrdwF2sQOmacR4BKCye
+   iQRBKk7zJaig/I9lHmfUizDSbhvLW2odWeuX0iUTco7EM6JkSKuGXNVtS
+   UYt3nZn3jCEpJ5Q7/gBO1GpyoklF+DvRdh5w4KxF5XEt0QBGFZNui/b3H
+   ZxGLYB4+LfZvXcTW7vVD2Sj/MDJPZe5T7P7dj8yYtIGPQficQ+pt95dsy
+   tbeybWD3h4sRslqRyAUku5y91Hv1gz6MJpDyIYyIjOLv+lS44jq8M9BtE
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="296248194"
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="296248194"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 07:55:45 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,278,1654585200"; 
+   d="scan'208";a="614991682"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by fmsmga007.fm.intel.com with ESMTP; 31 Aug 2022 07:55:44 -0700
+From:   kan.liang@linux.intel.com
+To:     peterz@infradead.org, acme@kernel.org, mingo@redhat.com,
+        eranian@google.com, mpe@ellerman.id.au,
+        linux-kernel@vger.kernel.org
+Cc:     ak@linux.intel.com, andreas.kogler.0x@gmail.com,
+        atrajeev@linux.vnet.ibm.com, Kan Liang <kan.liang@linux.intel.com>
+Subject: [PATCH 3/6] perf: Use sample_flags for branch stack
+Date:   Wed, 31 Aug 2022 07:55:11 -0700
+Message-Id: <20220831145514.190514-4-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220831145514.190514-1-kan.liang@linux.intel.com>
+References: <20220831145514.190514-1-kan.liang@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao.yu@oppo.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-In create_unique_id(), kmalloc(, GFP_KERNEL) can fail due to
-out-of-memory, if it fails, return errno correctly rather than
-triggering panic via BUG_ON();
+Use the new sample_flags to indicate whether the branch stack is filled
+by the PMU driver.
 
-kernel BUG at mm/slub.c:5893!
-Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
+Remove the br_stack from the perf_sample_data_init() to minimize the number
+of cache lines touched.
 
-Call trace:
- sysfs_slab_add+0x258/0x260 mm/slub.c:5973
- __kmem_cache_create+0x60/0x118 mm/slub.c:4899
- create_cache mm/slab_common.c:229 [inline]
- kmem_cache_create_usercopy+0x19c/0x31c mm/slab_common.c:335
- kmem_cache_create+0x1c/0x28 mm/slab_common.c:390
- f2fs_kmem_cache_create fs/f2fs/f2fs.h:2766 [inline]
- f2fs_init_xattr_caches+0x78/0xb4 fs/f2fs/xattr.c:808
- f2fs_fill_super+0x1050/0x1e0c fs/f2fs/super.c:4149
- mount_bdev+0x1b8/0x210 fs/super.c:1400
- f2fs_mount+0x44/0x58 fs/f2fs/super.c:4512
- legacy_get_tree+0x30/0x74 fs/fs_context.c:610
- vfs_get_tree+0x40/0x140 fs/super.c:1530
- do_new_mount+0x1dc/0x4e4 fs/namespace.c:3040
- path_mount+0x358/0x914 fs/namespace.c:3370
- do_mount fs/namespace.c:3383 [inline]
- __do_sys_mount fs/namespace.c:3591 [inline]
- __se_sys_mount fs/namespace.c:3568 [inline]
- __arm64_sys_mount+0x2f8/0x408 fs/namespace.c:3568
-
-Cc: <stable@kernel.org>
-Fixes: 81819f0fc8285 ("SLUB core")
-Reported-by: syzbot+81684812ea68216e08c5@syzkaller.appspotmail.com
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
 ---
-v2:
-- add more rvb tags and fixes line
- mm/slub.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/powerpc/perf/core-book3s.c | 1 +
+ arch/x86/events/core.c          | 4 +++-
+ arch/x86/events/intel/core.c    | 4 +++-
+ arch/x86/events/intel/ds.c      | 5 ++++-
+ include/linux/perf_event.h      | 4 ++--
+ kernel/events/core.c            | 4 ++--
+ 6 files changed, 15 insertions(+), 7 deletions(-)
 
-diff --git a/mm/slub.c b/mm/slub.c
-index 862dbd9af4f5..e6f3727b9ad2 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -5890,7 +5890,8 @@ static char *create_unique_id(struct kmem_cache *s)
- 	char *name = kmalloc(ID_STR_LENGTH, GFP_KERNEL);
- 	char *p = name;
+diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
+index 13919eb96931..1ad1efdb33f9 100644
+--- a/arch/powerpc/perf/core-book3s.c
++++ b/arch/powerpc/perf/core-book3s.c
+@@ -2297,6 +2297,7 @@ static void record_and_restart(struct perf_event *event, unsigned long val,
+ 			cpuhw = this_cpu_ptr(&cpu_hw_events);
+ 			power_pmu_bhrb_read(event, cpuhw);
+ 			data.br_stack = &cpuhw->bhrb_stack;
++			data.sample_flags |= PERF_SAMPLE_BRANCH_STACK;
+ 		}
  
--	BUG_ON(!name);
-+	if (!name)
-+		return ERR_PTR(-ENOMEM);
+ 		if (event->attr.sample_type & PERF_SAMPLE_DATA_SRC &&
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index f969410d0c90..bb34a28fa71b 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -1714,8 +1714,10 @@ int x86_pmu_handle_irq(struct pt_regs *regs)
  
- 	*p++ = ':';
- 	/*
-@@ -5948,6 +5949,8 @@ static int sysfs_slab_add(struct kmem_cache *s)
- 		 * for the symlinks.
- 		 */
- 		name = create_unique_id(s);
-+		if (IS_ERR(name))
-+			return PTR_ERR(name);
+ 		perf_sample_data_init(&data, 0, event->hw.last_period);
+ 
+-		if (has_branch_stack(event))
++		if (has_branch_stack(event)) {
+ 			data.br_stack = &cpuc->lbr_stack;
++			data.sample_flags |= PERF_SAMPLE_BRANCH_STACK;
++		}
+ 
+ 		if (perf_event_overflow(event, &data, regs))
+ 			x86_pmu_stop(event, 0);
+diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
+index 4fce2bdbbf87..36f95894dd1c 100644
+--- a/arch/x86/events/intel/core.c
++++ b/arch/x86/events/intel/core.c
+@@ -3004,8 +3004,10 @@ static int handle_pmi_common(struct pt_regs *regs, u64 status)
+ 
+ 		perf_sample_data_init(&data, 0, event->hw.last_period);
+ 
+-		if (has_branch_stack(event))
++		if (has_branch_stack(event)) {
+ 			data.br_stack = &cpuc->lbr_stack;
++			data.sample_flags |= PERF_SAMPLE_BRANCH_STACK;
++		}
+ 
+ 		if (perf_event_overflow(event, &data, regs))
+ 			x86_pmu_stop(event, 0);
+diff --git a/arch/x86/events/intel/ds.c b/arch/x86/events/intel/ds.c
+index 3af24c4891fb..d5f3007af59d 100644
+--- a/arch/x86/events/intel/ds.c
++++ b/arch/x86/events/intel/ds.c
+@@ -1645,8 +1645,10 @@ static void setup_pebs_fixed_sample_data(struct perf_event *event,
+ 		data->sample_flags |= PERF_SAMPLE_TIME;
  	}
  
- 	s->kobj.kset = kset;
+-	if (has_branch_stack(event))
++	if (has_branch_stack(event)) {
+ 		data->br_stack = &cpuc->lbr_stack;
++		data->sample_flags |= PERF_SAMPLE_BRANCH_STACK;
++	}
+ }
+ 
+ static void adaptive_pebs_save_regs(struct pt_regs *regs,
+@@ -1796,6 +1798,7 @@ static void setup_pebs_adaptive_sample_data(struct perf_event *event,
+ 		if (has_branch_stack(event)) {
+ 			intel_pmu_store_pebs_lbrs(lbr);
+ 			data->br_stack = &cpuc->lbr_stack;
++			data->sample_flags |= PERF_SAMPLE_BRANCH_STACK;
+ 		}
+ 	}
+ 
+diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
+index b0ebbb1377b9..2aec1765b3d5 100644
+--- a/include/linux/perf_event.h
++++ b/include/linux/perf_event.h
+@@ -1010,7 +1010,6 @@ struct perf_sample_data {
+ 	u64				sample_flags;
+ 	u64				addr;
+ 	struct perf_raw_record		*raw;
+-	struct perf_branch_stack	*br_stack;
+ 	u64				period;
+ 	union perf_sample_weight	weight;
+ 	u64				txn;
+@@ -1020,6 +1019,8 @@ struct perf_sample_data {
+ 	 * The other fields, optionally {set,used} by
+ 	 * perf_{prepare,output}_sample().
+ 	 */
++	struct perf_branch_stack	*br_stack;
++
+ 	u64				type;
+ 	u64				ip;
+ 	struct {
+@@ -1060,7 +1061,6 @@ static inline void perf_sample_data_init(struct perf_sample_data *data,
+ 	data->sample_flags = 0;
+ 	data->addr = addr;
+ 	data->raw  = NULL;
+-	data->br_stack = NULL;
+ 	data->period = period;
+ 	data->weight.full = 0;
+ 	data->data_src.val = PERF_MEM_NA;
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index c9b9cb79231a..104c0c9f4e6f 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -7052,7 +7052,7 @@ void perf_output_sample(struct perf_output_handle *handle,
+ 	}
+ 
+ 	if (sample_type & PERF_SAMPLE_BRANCH_STACK) {
+-		if (data->br_stack) {
++		if (data->sample_flags & PERF_SAMPLE_BRANCH_STACK) {
+ 			size_t size;
+ 
+ 			size = data->br_stack->nr
+@@ -7358,7 +7358,7 @@ void perf_prepare_sample(struct perf_event_header *header,
+ 
+ 	if (sample_type & PERF_SAMPLE_BRANCH_STACK) {
+ 		int size = sizeof(u64); /* nr */
+-		if (data->br_stack) {
++		if (data->sample_flags & PERF_SAMPLE_BRANCH_STACK) {
+ 			if (perf_sample_save_hw_index(event))
+ 				size += sizeof(u64);
+ 
 -- 
-2.25.1
+2.35.1
 
