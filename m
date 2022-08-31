@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01CC9ECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C1EFECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231641AbiHaAhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
+        id S232084AbiHaAhU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:37:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231846AbiHaAgs (ORCPT
+        with ESMTP id S231886AbiHaAgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 20:36:48 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F8EA59A8
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:29 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id f16-20020a17090a4a9000b001f234757bbbso5296470pjh.6
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:29 -0700 (PDT)
+        Tue, 30 Aug 2022 20:36:50 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C161FA6AD5
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:30 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id y9-20020a17090322c900b00174c881abaeso4607506plg.6
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc;
-        bh=tqSFf2c/aR0xKLJBDtSO/L4uHcT204aNH3nZsuo4w3I=;
-        b=KErlEMAFoPTtFRi6Bojf/EJxZz4t2LYfQhsYhAPlw+jdz4eBgRUBZEhO6Hyc41ujO1
-         sQEGPDQXJ0Bdy/9xAdVxhOjhkikMSI6dEBsVrw+M3bXKGR+EunIcRvOrh3xYizbSJtcG
-         ziV0rcRn6eOA1jcEjUgc8yyP7GSfzC9A2LRJCCK9wHN/Wb1sz3EC5Etu+GJkqNCflwJ2
-         bEYGOoqjLnJHngLHPQsyfoiaIr2GuihYJM3gouUKIyzLhgdFyTRQdfcOe1+pLIFXcsnl
-         lxfjvcVvnSimrlJfiY73E9do/E0IxHmEsrR6nOU5AWsO66/ijfjeYvAq2c5TFToMWaAQ
-         V4vg==
+        bh=nNU9Bjqf9y2XiX7CZGxt5LtQZtYEQ0fRI0M+3kQYHd8=;
+        b=nsUDSLmwiz2YIjGoJDWf0sAGexBLRtBGLNj+U0a0dxwdRSnDUJLZ/s81wWgXfPmfZC
+         rcingM4u7HvJFWTBgWJYoy47ughU9OZmQ69i4DqRXTjNGW5TUGJAtBm24vA2koy20Z+W
+         WFEt7S4TUlpmlrrMirREsdRXHPp3qTniXB67PD3UFg+egTtgi3vDgy/lBQtl6fgp7K4x
+         na1upEaIRDzqldfvv3xrkoqoEluOHkX+4ctoSit8dSJRwikX9HoU6EP+/3rhGXZRoUT0
+         VfANzt47NFBIqN5xekmNQ7zAiDzyfupSXNkPPIW9bVZcUW6gXapvsysItmRXJxYhCoqs
+         hACQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=tqSFf2c/aR0xKLJBDtSO/L4uHcT204aNH3nZsuo4w3I=;
-        b=Juga2VkSB6j3qpShpyiOhAfEeXuyd/oKg3pxtsGhYfvow0/yWcioS1Pw9+nz2tWOAV
-         nKWamG8a8LhBuOYNYDSno7qlP02Es6G5bXImo5L7/elH+iCzHHYl3/K4zUYGl2H4BysA
-         vEOutjUIaHjhYefi5GS/KP6luKc+cp71URzU6WTxDLzHPqNDy65pIwC+iCFIlWRNTCtr
-         RRSaR1cSM6IitGTO++FgjH/raV7j5Eky3fxMaJZsVbtPGhkmT2TLlqzkOmFDoxu6FEdm
-         aAhvn8V97emRkfEvyEc46iiiJixyAkEiOamGyMwGknxWMQP2TFi9jqdn+0PwRa7r797Q
-         hhIw==
-X-Gm-Message-State: ACgBeo0LjEtJNXFy+UaXHCGF/E2UX6WeP0quLPCIdMYGRnLEVnySnaLw
-        Idv8+VuYg5lYk2sC92mmdUPOI2u8Wb8=
-X-Google-Smtp-Source: AA6agR4NV6ilNxju28gGAtvFvCbwtdHUFc7GAdPfKwMLLiKqvqvTVqp9b9JTlBsJQYJm3qq2uA/+hIhhY2U=
+        bh=nNU9Bjqf9y2XiX7CZGxt5LtQZtYEQ0fRI0M+3kQYHd8=;
+        b=ah0COkVJRMzQ1g0SIeRrqnW89NP2oU0e0rKzuwE+DIGZxgC/nIFmUtRoxmiL8oKtSx
+         VxaLaut5n7tzuiIOx6ZOf19iW4SZ+DaLVAiajPjRBfnW2Iy4XDEJLC4KIdXIz62Ek8R0
+         x6pu/RZxicopnQkLVNgz2BCAVy0uu4bIpp4m5WUBO7yNb0d/e+moJT0Gx+b9md4a14nS
+         Rg/3vfEStoMblrqEVgpmMvQJ00zUBCVf83EruLZqFYi99RJjGutn7BdOvgImSd3yCX9s
+         GnQ/EFQppUgR5aXbjBg06JDkPeXCBo1wLDY7No5Ar3ujaLHn+xDPDiDMTL6wWzaS8nhq
+         QsCw==
+X-Gm-Message-State: ACgBeo1K5WbXdMd7ZrOv5xdsNEHEgrfqTNCWiIvI1EKX44EMheIOpEue
+        8nvnF7nbs/vvJQy1wkKosH6yG4gUDK0=
+X-Google-Smtp-Source: AA6agR6iq5WY+NgNU9ERXKVNHlEQ6M1HBHY81ehzHMF+0tkMrIik4W+FhStuptJ4GRhrcOxrXoHTiMQFa3I=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr26559pje.0.1661906112763; Tue, 30 Aug
- 2022 17:35:12 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:124d:b0:538:295a:1c47 with SMTP id
+ u13-20020a056a00124d00b00538295a1c47mr13357367pfi.5.1661906114650; Tue, 30
+ Aug 2022 17:35:14 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 31 Aug 2022 00:34:49 +0000
+Date:   Wed, 31 Aug 2022 00:34:50 +0000
 In-Reply-To: <20220831003506.4117148-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220831003506.4117148-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220831003506.4117148-3-seanjc@google.com>
-Subject: [PATCH 02/19] KVM: SVM: Don't put/load AVIC when setting virtual APIC mode
+Message-ID: <20220831003506.4117148-4-seanjc@google.com>
+Subject: [PATCH 03/19] Revert "KVM: SVM: Introduce hybrid-AVIC mode"
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -66,126 +66,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the VMCB updates from avic_refresh_apicv_exec_ctrl() into
-avic_set_virtual_apic_mode() and invert the dependency being said
-functions to avoid calling avic_vcpu_{load,put}() and
-avic_set_pi_irte_mode() when "only" setting the virtual APIC mode.
+Remove SVM's so called "hybrid-AVIC mode" and reinstate the restriction
+where AVIC is disabled if x2APIC is enabled.  The argument that the
+"guest is not supposed to access xAPIC mmio when uses x2APIC" is flat out
+wrong.  Activating x2APIC completely disables the xAPIC MMIO region,
+there is nothing that says the guest must not access that address.
 
-avic_set_virtual_apic_mode() is invoked from common x86 with preemption
-enabled, which makes avic_vcpu_{load,put}() unhappy.  Luckily, calling
-those and updating IRTE stuff is unnecessary as the only reason
-avic_set_virtual_apic_mode() is called is to handle transitions between
-xAPIC and x2APIC that don't also toggle APICv activation.  And if
-activation doesn't change, there's no need to fiddle with the physical
-APIC ID table or update IRTE.
+Concretely, KVM-Unit-Test's existing "apic" test fails the subtests that
+expect accesses to the APIC base region to not be emulated when x2APIC is
+enabled.
 
-The "full" refresh is guaranteed to be called if activation changes in
-this case as the only call to the "set" path is:
+Furthermore, allowing the guest to trigger MMIO emulation in a mode where
+KVM doesn't expect such emulation to occur is all kinds of dangerous.
 
-	kvm_vcpu_update_apicv(vcpu);
-	static_call_cond(kvm_x86_set_virtual_apic_mode)(vcpu);
+Tweak the restriction so that it only inhibits AVIC if x2APIC is actually
+enabled instead of inhibiting AVIC is x2APIC is exposed to the guest.
 
-and kvm_vcpu_update_apicv() invokes the refresh if activation changes:
+This reverts commit 0e311d33bfbef86da130674e8528cc23e6acfe16.
 
-	if (apic->apicv_active == activate)
-		goto out;
-
-	apic->apicv_active = activate;
-	kvm_apic_update_apicv(vcpu);
-	static_call(kvm_x86_refresh_apicv_exec_ctrl)(vcpu);
-
-  WARNING: CPU: 183 PID: 49186 at arch/x86/kvm/svm/avic.c:1081 avic_vcpu_put+0xde/0xf0 [kvm_amd]
-  CPU: 183 PID: 49186 Comm: stable Tainted: G           O       6.0.0-smp--fcddbca45f0a-sink #34
-  Hardware name: Google, Inc. Arcadia_IT_80/Arcadia_IT_80, BIOS 10.48.0 01/27/2022
-  RIP: 0010:avic_vcpu_put+0xde/0xf0 [kvm_amd]
-   avic_refresh_apicv_exec_ctrl+0x142/0x1c0 [kvm_amd]
-   avic_set_virtual_apic_mode+0x5a/0x70 [kvm_amd]
-   kvm_lapic_set_base+0x149/0x1a0 [kvm]
-   kvm_set_apic_base+0x8f/0xd0 [kvm]
-   kvm_set_msr_common+0xa3a/0xdc0 [kvm]
-   svm_set_msr+0x364/0x6b0 [kvm_amd]
-   __kvm_set_msr+0xb8/0x1c0 [kvm]
-   kvm_emulate_wrmsr+0x58/0x1d0 [kvm]
-   msr_interception+0x1c/0x30 [kvm_amd]
-   svm_invoke_exit_handler+0x31/0x100 [kvm_amd]
-   svm_handle_exit+0xfc/0x160 [kvm_amd]
-   vcpu_enter_guest+0x21bb/0x23e0 [kvm]
-   vcpu_run+0x92/0x450 [kvm]
-   kvm_arch_vcpu_ioctl_run+0x43e/0x6e0 [kvm]
-   kvm_vcpu_ioctl+0x559/0x620 [kvm]
-
-Fixes: 05c4fe8c1bd9 ("KVM: SVM: Refresh AVIC configuration when changing APIC mode")
-Cc: stable@vger.kernel.org
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 31 +++++++++++++++----------------
- 1 file changed, 15 insertions(+), 16 deletions(-)
+ arch/x86/include/asm/kvm_host.h |  6 ++++++
+ arch/x86/kvm/svm/avic.c         | 21 ++++++++++-----------
+ 2 files changed, 16 insertions(+), 11 deletions(-)
 
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 2c96c43c313a..1f51411f3112 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1128,6 +1128,12 @@ enum kvm_apicv_inhibit {
+ 	 */
+ 	APICV_INHIBIT_REASON_PIT_REINJ,
+ 
++	/*
++	 * AVIC is inhibited because the vCPU has x2apic enabled and x2AVIC is
++	 * not supported.
++	 */
++	APICV_INHIBIT_REASON_X2APIC,
++
+ 	/*
+ 	 * AVIC is disabled because SEV doesn't support it.
+ 	 */
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index b1ade555e8d0..f3a74c8284cb 100644
+index f3a74c8284cb..1d516d658f9a 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -741,18 +741,6 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
- 	avic_handle_ldr_update(vcpu);
+@@ -71,22 +71,12 @@ static void avic_activate_vmcb(struct vcpu_svm *svm)
+ 	vmcb->control.avic_physical_id &= ~AVIC_PHYSICAL_MAX_INDEX_MASK;
+ 
+ 	vmcb->control.int_ctl |= AVIC_ENABLE_MASK;
+-
+-	/* Note:
+-	 * KVM can support hybrid-AVIC mode, where KVM emulates x2APIC
+-	 * MSR accesses, while interrupt injection to a running vCPU
+-	 * can be achieved using AVIC doorbell. The AVIC hardware still
+-	 * accelerate MMIO accesses, but this does not cause any harm
+-	 * as the guest is not supposed to access xAPIC mmio when uses x2APIC.
+-	 */
+-	if (apic_x2apic_mode(svm->vcpu.arch.apic) &&
+-	    avic_mode == AVIC_MODE_X2) {
++	if (apic_x2apic_mode(svm->vcpu.arch.apic)) {
+ 		vmcb->control.int_ctl |= X2APIC_MODE_MASK;
+ 		vmcb->control.avic_physical_id |= X2AVIC_MAX_PHYSICAL_ID;
+ 		/* Disabling MSR intercept for x2APIC registers */
+ 		svm_set_x2apic_msr_interception(svm, false);
+ 	} else {
+-		/* For xAVIC and hybrid-xAVIC modes */
+ 		vmcb->control.avic_physical_id |= AVIC_MAX_PHYSICAL_ID;
+ 		/* Enabling MSR intercept for x2APIC registers */
+ 		svm_set_x2apic_msr_interception(svm, true);
+@@ -537,6 +527,14 @@ unsigned long avic_vcpu_get_apicv_inhibit_reasons(struct kvm_vcpu *vcpu)
+ {
+ 	if (is_guest_mode(vcpu))
+ 		return APICV_INHIBIT_REASON_NESTED;
++
++	/*
++	 * AVIC must be disabled if x2AVIC isn't supported and the guest has
++	 * x2APIC enabled.
++	 */
++	if (avic_mode != AVIC_MODE_X2 && apic_x2apic_mode(vcpu->arch.apic))
++		return APICV_INHIBIT_REASON_X2APIC;
++
+ 	return 0;
  }
  
--void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
--{
--	if (!lapic_in_kernel(vcpu) || avic_mode == AVIC_MODE_NONE)
--		return;
--
--	if (kvm_get_apic_mode(vcpu) == LAPIC_MODE_INVALID) {
--		WARN_ONCE(true, "Invalid local APIC state (vcpu_id=%d)", vcpu->vcpu_id);
--		return;
--	}
--	avic_refresh_apicv_exec_ctrl(vcpu);
--}
--
- static int avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
- {
- 	int ret = 0;
-@@ -1094,17 +1082,18 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- 	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
- }
- 
--
--void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
-+void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	struct vmcb *vmcb = svm->vmcb01.ptr;
--	bool activated = kvm_vcpu_apicv_active(vcpu);
-+
-+	if (!lapic_in_kernel(vcpu) || avic_mode == AVIC_MODE_NONE)
-+		return;
- 
- 	if (!enable_apicv)
- 		return;
- 
--	if (activated) {
-+	if (kvm_vcpu_apicv_active(vcpu)) {
- 		/**
- 		 * During AVIC temporary deactivation, guest could update
- 		 * APIC ID, DFR and LDR registers, which would not be trapped
-@@ -1118,6 +1107,16 @@ void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
- 		avic_deactivate_vmcb(svm);
- 	}
- 	vmcb_mark_dirty(vmcb, VMCB_AVIC);
-+}
-+
-+void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
-+{
-+	bool activated = kvm_vcpu_apicv_active(vcpu);
-+
-+	if (!enable_apicv)
-+		return;
-+
-+	avic_set_virtual_apic_mode(vcpu);
- 
- 	if (activated)
- 		avic_vcpu_load(vcpu, vcpu->cpu);
+@@ -993,6 +991,7 @@ bool avic_check_apicv_inhibit_reasons(enum kvm_apicv_inhibit reason)
+ 			  BIT(APICV_INHIBIT_REASON_NESTED) |
+ 			  BIT(APICV_INHIBIT_REASON_IRQWIN) |
+ 			  BIT(APICV_INHIBIT_REASON_PIT_REINJ) |
++			  BIT(APICV_INHIBIT_REASON_X2APIC) |
+ 			  BIT(APICV_INHIBIT_REASON_BLOCKIRQ) |
+ 			  BIT(APICV_INHIBIT_REASON_SEV)      |
+ 			  BIT(APICV_INHIBIT_REASON_APIC_ID_MODIFIED) |
 -- 
 2.37.2.672.g94769d06f0-goog
 
