@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C136AECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE8FAECAAD5
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 00:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231931AbiHaAhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 20:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51808 "EHLO
+        id S232131AbiHaAhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 20:37:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231898AbiHaAgx (ORCPT
+        with ESMTP id S231906AbiHaAgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 30 Aug 2022 20:36:53 -0400
 Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21570A98DE
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:41 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id cj15-20020a056a00298f00b0053a700f1178so1525578pfb.14
-        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCEB6403
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:34 -0700 (PDT)
+Received: by mail-pf1-x449.google.com with SMTP id v65-20020a626144000000b0052f89472f54so5297323pfb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 17:35:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=08A/F7QHFvdlbnKklqADdddOKG9On7dolttTZc9ut/0=;
-        b=CkX2HuJEwn2lrV3MfDjQU7bSjgXyWBqH1zLOhoXEALnjWvgnh9NnoXVN3W8W2Yiabx
-         8Xh0QTllzSGgDxYS/zmh7UMnqFS8gOaI/RAXjl4mzy0Ejd7hST5Tmd5hnq7dK1vCmlup
-         5xGMpyQHyV+sZMw8vLXbnTFOtU1DX3moFs6DahywnQfnNozyD3jmeJ/wCV+LUVv9mCLX
-         1ipFPq78hArYCly/jtVv/Q4NDHnLwdOw4/RLyzHla5Joj2WPCz/xYhvaThEFqxbJ+SSh
-         NjKLj4SrpMc1BAGIgnbRUZedkIsMBCm3T66SZFvstg01GTohs/Y4bOTllL3WP3M6aXXJ
-         k9Yg==
+         :date:reply-to:from:to:cc:subject:date;
+        bh=mX7gyqny3Tfi3l5wYUlNtjVwLiCm3GoN1j+pJxyWtuI=;
+        b=aOIR+bnOBR/m2wjECFEj/WCR6Iex06DA6bl6u0ay9A3rH0yaiB3Gwrw0c0JdUAg4pk
+         a5Zsf8lm7I5opc/Fe3Ch4FIhUdzGmApI5POeo/awiCPP+3c1CDeYCz5cVHiCA+1XR8SN
+         6zUtraj3lDDLRZg47Qt+Mocy8EOhj1WcrJnztogOCLT2ikJjI+LBAPZTFF/K7a01zxO3
+         tTaHyifeS/YrDdYSTzsvKcek2bAM3k2OxS18qQLZbgwKiU3WVssXUyRN4WvU8mZd4JVX
+         037n3XcFQtEzkHW99gt6+1a9tYIBe2xv9fdJ3vuPvSLUxgebsTugWcJGmQajg0Xd28rh
+         zAow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=08A/F7QHFvdlbnKklqADdddOKG9On7dolttTZc9ut/0=;
-        b=HBEfAMPIfYasrUQe8NXypf/uH2uE+4gVws4aMOZasPeLKb5BpDa/W8y6z9FRucuLmc
-         K0aEiskuIqULVBzIBLb1jG0P1dw82UgOkF48bfTFdN0DtY22BQRZcTgLJ/sZnra3oIgJ
-         gbRtG/HMBbLYNxfCN9tU5SpKpckrMFoHvvcLk0AnPRliMQI0iCHbxKpSJCfDHED6gdIE
-         jn123eF4gYAUL/AF2SxC76gQcLeBSADjhRldkKV4BjlIwrY3cWem2oLdH0FTFNS7hSSy
-         yLob0ckNmf/OJvco4/Xgxka2BumTOdCzwBZtlcYSA8vK5yjyIqhFHuLHk0Mx2/gXTnp/
-         R/kQ==
-X-Gm-Message-State: ACgBeo1FsvJ4qKM6S3Uts10ElqjCYeNxprrrbQ435uX/MgErOJXJpp8P
-        t/K62grvM044OeEnLtrswd1+Vqey//M=
-X-Google-Smtp-Source: AA6agR7hbcOraGRxxAHcuZ5giMtcBel+k20eBMC4aqh6XQFuibRrMfc16BSRALwulHnNm7n29kP7LixwI8E=
+         :date:reply-to:x-gm-message-state:from:to:cc:subject:date;
+        bh=mX7gyqny3Tfi3l5wYUlNtjVwLiCm3GoN1j+pJxyWtuI=;
+        b=BsT3+6234y7OL7vmxJE2XsN44jisNzMyQrcpdJ/1hvtbJ/VcaDPYovFfElZEzva2Ne
+         2j1qi2A49981QYHCxa8HVP9s9K70cyt1v8TTvh4QiuubHXTaoQWNWRuLYb85W/o6ltDl
+         1kt7N2Gg5xDBebMoxxfK4ptuxoVAIFPBWBLSi7MwBPFJ5gKSIIj+fpI04+ZLp1Dl/uZK
+         2yn7+Ge+sLY6daQXyzIoGLD605J2qg0jz+bilS6XVsTVstGxQUPnYeU9JlX+H3Ch/0Yu
+         Tc82TpuWLUXwGqWLZaCrCoJZaSsC7ZBgm6pDA0tPeeIlzFOLcD7KYeK3D6dtITigpOAC
+         VU9g==
+X-Gm-Message-State: ACgBeo3IPT1KLj9JKi8Ndls2Si+lZVUZK1qP+bTvqwyuuWPFMa46i4Fr
+        7Zlhkp3pbD1xUMIiCNEMQf5NF/6NBD0=
+X-Google-Smtp-Source: AA6agR621EBsP9klM5mRGg0nudFLN7q4PGXuQMjyAE/iNkBpVhHcd2OyCcViTcGilbEelZDISSKI0nrGQFY=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:aa7:804c:0:b0:536:80bb:8270 with SMTP id
- y12-20020aa7804c000000b0053680bb8270mr23509612pfm.13.1661906119769; Tue, 30
- Aug 2022 17:35:19 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:f782:b0:173:1206:cee0 with SMTP id
+ q2-20020a170902f78200b001731206cee0mr23385654pln.130.1661906116336; Tue, 30
+ Aug 2022 17:35:16 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Wed, 31 Aug 2022 00:34:53 +0000
+Date:   Wed, 31 Aug 2022 00:34:51 +0000
 In-Reply-To: <20220831003506.4117148-1-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220831003506.4117148-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Message-ID: <20220831003506.4117148-7-seanjc@google.com>
-Subject: [PATCH 06/19] KVM: SVM: Get x2APIC logical dest bitmap from
- ICRH[15:0], not ICHR[31:16]
+Message-ID: <20220831003506.4117148-5-seanjc@google.com>
+Subject: [PATCH 04/19] KVM: SVM: Replace "avic_mode" enum with
+ "x2avic_enabled" boolean
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,30 +67,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When attempting a fast kick for x2AVIC, get the destination bitmap from
-ICR[15:0], not ICHR[31:16].  The upper 16 bits contain the cluster, the
-lower 16 bits hold the bitmap.
+Replace the "avic_mode" enum with a single bool to track whether or not
+x2AVIC is enabled.  KVM already has "apicv_enabled" that tracks if any
+flavor of AVIC is enabled, i.e. AVIC_MODE_NONE and AVIC_MODE_X1 are
+redundant and unnecessary noise.
 
-Fixes: 603ccef42ce9 ("KVM: x86: SVM: fix avic_kick_target_vcpus_fast")
-Cc: Maxim Levitsky <mlevitsk@redhat.com>
+No functional change intended.
+
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/avic.c | 45 +++++++++++++++++++----------------------
+ arch/x86/kvm/svm/svm.c  |  2 +-
+ arch/x86/kvm/svm/svm.h  |  9 +--------
+ 3 files changed, 23 insertions(+), 33 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 3ace0f2f52f0..3c333cd2e752 100644
+index 1d516d658f9a..b59f8ee2671f 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -368,7 +368,7 @@ static int avic_kick_target_vcpus_fast(struct kvm *kvm, struct kvm_lapic *source
+@@ -53,7 +53,7 @@ static DEFINE_HASHTABLE(svm_vm_data_hash, SVM_VM_DATA_HASH_BITS);
+ static u32 next_vm_id = 0;
+ static bool next_vm_id_wrapped = 0;
+ static DEFINE_SPINLOCK(svm_vm_data_hash_lock);
+-enum avic_modes avic_mode;
++bool x2avic_enabled;
  
- 		if (apic_x2apic_mode(source)) {
- 			/* 16 bit dest mask, 16 bit cluster id */
--			bitmap = dest & 0xFFFF0000;
-+			bitmap = dest & 0xFFFF;
- 			cluster = (dest >> 16) << 4;
- 		} else if (kvm_lapic_get_reg(source, APIC_DFR) == APIC_DFR_FLAT) {
- 			/* 8 bit dest mask*/
+ /*
+  * This is a wrapper of struct amd_iommu_ir_data.
+@@ -231,8 +231,8 @@ static u64 *avic_get_physical_id_entry(struct kvm_vcpu *vcpu,
+ 	u64 *avic_physical_id_table;
+ 	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
+ 
+-	if ((avic_mode == AVIC_MODE_X1 && index > AVIC_MAX_PHYSICAL_ID) ||
+-	    (avic_mode == AVIC_MODE_X2 && index > X2AVIC_MAX_PHYSICAL_ID))
++	if ((!x2avic_enabled && index > AVIC_MAX_PHYSICAL_ID) ||
++	    (index > X2AVIC_MAX_PHYSICAL_ID))
+ 		return NULL;
+ 
+ 	avic_physical_id_table = page_address(kvm_svm->avic_physical_id_table_page);
+@@ -279,8 +279,8 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+ 	int id = vcpu->vcpu_id;
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 
+-	if ((avic_mode == AVIC_MODE_X1 && id > AVIC_MAX_PHYSICAL_ID) ||
+-	    (avic_mode == AVIC_MODE_X2 && id > X2AVIC_MAX_PHYSICAL_ID))
++	if ((!x2avic_enabled && id > AVIC_MAX_PHYSICAL_ID) ||
++	    (id > X2AVIC_MAX_PHYSICAL_ID))
+ 		return -EINVAL;
+ 
+ 	if (!vcpu->arch.apic->regs)
+@@ -532,7 +532,7 @@ unsigned long avic_vcpu_get_apicv_inhibit_reasons(struct kvm_vcpu *vcpu)
+ 	 * AVIC must be disabled if x2AVIC isn't supported and the guest has
+ 	 * x2APIC enabled.
+ 	 */
+-	if (avic_mode != AVIC_MODE_X2 && apic_x2apic_mode(vcpu->arch.apic))
++	if (!x2avic_enabled && apic_x2apic_mode(vcpu->arch.apic))
+ 		return APICV_INHIBIT_REASON_X2APIC;
+ 
+ 	return 0;
+@@ -1086,10 +1086,7 @@ void avic_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	struct vmcb *vmcb = svm->vmcb01.ptr;
+ 
+-	if (!lapic_in_kernel(vcpu) || avic_mode == AVIC_MODE_NONE)
+-		return;
+-
+-	if (!enable_apicv)
++	if (!lapic_in_kernel(vcpu) || !enable_apicv)
+ 		return;
+ 
+ 	if (kvm_vcpu_apicv_active(vcpu)) {
+@@ -1165,32 +1162,32 @@ bool avic_hardware_setup(struct kvm_x86_ops *x86_ops)
+ 	if (!npt_enabled)
+ 		return false;
+ 
++	/* AVIC is a prerequisite for x2AVIC. */
++	if (!boot_cpu_has(X86_FEATURE_AVIC) && !force_avic) {
++		if (boot_cpu_has(X86_FEATURE_X2AVIC)) {
++			pr_warn(FW_BUG "Cannot support x2AVIC due to AVIC is disabled");
++			pr_warn(FW_BUG "Try enable AVIC using force_avic option");
++		}
++		return false;
++	}
++
+ 	if (boot_cpu_has(X86_FEATURE_AVIC)) {
+-		avic_mode = AVIC_MODE_X1;
+ 		pr_info("AVIC enabled\n");
+ 	} else if (force_avic) {
+ 		/*
+ 		 * Some older systems does not advertise AVIC support.
+ 		 * See Revision Guide for specific AMD processor for more detail.
+ 		 */
+-		avic_mode = AVIC_MODE_X1;
+ 		pr_warn("AVIC is not supported in CPUID but force enabled");
+ 		pr_warn("Your system might crash and burn");
+ 	}
+ 
+ 	/* AVIC is a prerequisite for x2AVIC. */
+-	if (boot_cpu_has(X86_FEATURE_X2AVIC)) {
+-		if (avic_mode == AVIC_MODE_X1) {
+-			avic_mode = AVIC_MODE_X2;
+-			pr_info("x2AVIC enabled\n");
+-		} else {
+-			pr_warn(FW_BUG "Cannot support x2AVIC due to AVIC is disabled");
+-			pr_warn(FW_BUG "Try enable AVIC using force_avic option");
+-		}
+-	}
++	x2avic_enabled = boot_cpu_has(X86_FEATURE_X2AVIC);
++	if (x2avic_enabled)
++		pr_info("x2AVIC enabled\n");
+ 
+-	if (avic_mode != AVIC_MODE_NONE)
+-		amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
++	amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
+ 
+-	return !!avic_mode;
++	return true;
+ }
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index f3813dbacb9f..b25c89069128 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -821,7 +821,7 @@ void svm_set_x2apic_msr_interception(struct vcpu_svm *svm, bool intercept)
+ 	if (intercept == svm->x2avic_msrs_intercepted)
+ 		return;
+ 
+-	if (avic_mode != AVIC_MODE_X2 ||
++	if (!x2avic_enabled ||
+ 	    !apic_x2apic_mode(svm->vcpu.arch.apic))
+ 		return;
+ 
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index 6a7686bf6900..cee79ade400a 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -35,14 +35,7 @@ extern u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
+ extern bool npt_enabled;
+ extern int vgif;
+ extern bool intercept_smi;
+-
+-enum avic_modes {
+-	AVIC_MODE_NONE = 0,
+-	AVIC_MODE_X1,
+-	AVIC_MODE_X2,
+-};
+-
+-extern enum avic_modes avic_mode;
++extern bool x2avic_enabled;
+ 
+ /*
+  * Clean bits in VMCB.
 -- 
 2.37.2.672.g94769d06f0-goog
 
