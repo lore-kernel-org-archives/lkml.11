@@ -2,119 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1FFECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DF8ECAAD4
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 12:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231364AbiHaMw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 08:52:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34222 "EHLO
+        id S231522AbiHaMw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 08:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231433AbiHaMw0 (ORCPT
+        with ESMTP id S231500AbiHaMwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 08:52:26 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB898B8F2E
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:52:15 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id by6so14503393ljb.11
-        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:52:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=hVxQm1TCSPVxMOrNlZWxpTg8PwWR+LHcRexmoisEYJ8=;
-        b=tkWB8OAP/4fnwzsME4LYY9tsGNNhO5MvYbnypygMcliDTi+2X2AhbCng5occi3+kS5
-         JHFOXBaDChiNh6heHKhyHjOlt6kiXn5kXY9bCEOYF8ZFXWdkBCU1bZSZC3oLQPH+A/b8
-         Fmtdu27pIsmr4NC4zpg/w5biWEQ/YPYxXz90kwBuFUO7kld299Cf1HPmKfOAsr02BLT0
-         4HImdRJfEI/Wj8O667sYLyyGw2gtbY4NrTRy1FXz9RuD/vOlTTI6Vp33TtQ4p14r8HT2
-         I0W4wxaqNypKktUf1ds76H9t/Bmy1hHYuCoZY6t6tFdOuogfgdIYnhzkWBuepOJ4kwMg
-         IUMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=hVxQm1TCSPVxMOrNlZWxpTg8PwWR+LHcRexmoisEYJ8=;
-        b=GcJnB0OG2rd1DpVF//6Bv/SqhLGvbbbMTJ5ucVGb/H/BN08jWjlr0YRxrYNJi4faND
-         gEeYP98KSj3MURwjOQAOJ32swC7eYGxUbrXxOc/6EMmAjkGQxJtX2/+YWa60Xsk/w5x4
-         H9qA3nunHhj8g3aQ++WA2AmP57NWsUTl8GC1K9OaocVbisAHcC7l7jfHoLNcdThm2xH5
-         kt/OARyjY4Zt77qFMjDg/vVJESSqWjAoKp8NameJMHG4B8YbFyifP1xwZsCEpk82mPYg
-         zSRQKo27uWMSGJaDhwUYdn04AOJpZ8pshy8p6M75vKEeoDzuua2EjLi1QuqOnafwm/5D
-         s7FQ==
-X-Gm-Message-State: ACgBeo0zaDyvpjD6NgQRUycbTKf7736TsKL/y84yvBt65+Ih4tEnv71V
-        1AN2g5p0uyHPt0RTU4HN1CloDQ==
-X-Google-Smtp-Source: AA6agR57VgH5pRDQ+GJNmeB4maQmvrKm2Y2EPG5e/Q7Xu0/XnjlEtK4UqUsYajs2YLx/efsFyn2SMA==
-X-Received: by 2002:a05:651c:198e:b0:261:d4a5:db55 with SMTP id bx14-20020a05651c198e00b00261d4a5db55mr9572265ljb.231.1661950331097;
-        Wed, 31 Aug 2022 05:52:11 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id s30-20020a05651c049e00b00263f036b405sm1400052ljc.70.2022.08.31.05.52.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Aug 2022 05:52:10 -0700 (PDT)
-Message-ID: <9e37285e-9408-7adb-1242-77f580573283@linaro.org>
-Date:   Wed, 31 Aug 2022 15:52:09 +0300
+        Wed, 31 Aug 2022 08:52:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FBE2D1D2
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 05:52:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A9AF61A27
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 12:52:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 333E1C433C1;
+        Wed, 31 Aug 2022 12:52:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661950373;
+        bh=DyeODZ+gC0WuqPypGEZqeNPo3/H5VBEkRk78HqWNBbc=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=tS37nHwKrpgZlmSwgPfLXMSXc8KLzYFsqw+PhEjNt0e2w3YH4RgR+wIgOngkK87CG
+         5JmLeXUHkBLmRBLx3JSf6F9RG5qEnRlKObLNnPRW5JH5UJAerzAGtOAfK6vCyta4BB
+         0PAJTU81Vfnud1G65ol5o/j0GNR0ta/usYz0XB7gsYrNK5r0xN/AHnaT5l3e3xWVuB
+         5Sl3opk0OtAQFZw2HxiTAd5PUbwJzEdKJf+2K0zBHGOl+jwtcMYEIet5Z1BYmg7TH6
+         KeNce0NR4tiiEL8MR7R0SoXk2Pv7m3gHcyLcjG+xCMnElGdgaO5In27yNIgDokrEyF
+         YsaGiLk5V78yQ==
+From:   Mark Brown <broonie@kernel.org>
+To:     alsa-devel@alsa-project.org,
+        Laurentiu Mihalcea <laurentiu.mihalcea@nxp.com>
+Cc:     yung-chuan.liao@linux.intel.com, lgirdwood@gmail.com,
+        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
+        peter.ujfalusi@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, linux-kernel@vger.kernel.org
+In-Reply-To: <20220822101502.17644-1-laurentiu.mihalcea@nxp.com>
+References: <20220822101502.17644-1-laurentiu.mihalcea@nxp.com>
+Subject: Re: [PATCH 0/2] ASoC: SOF: compress: Add support for timestamp on capture
+Message-Id: <166195037191.99184.7695234970678699743.b4-ty@kernel.org>
+Date:   Wed, 31 Aug 2022 13:52:51 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v3 2/2] nvmem: lan9662-otp: add support.
-Content-Language: en-US
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        srinivas.kandagatla@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, UNGLinuxDriver@microchip.com
-References: <20220831064238.102267-1-horatiu.vultur@microchip.com>
- <20220831064238.102267-3-horatiu.vultur@microchip.com>
- <1ddf261e-55fb-e30c-93b0-efb9bc0987b3@linaro.org>
- <20220831105237.ot5aaawnrwjqmjgj@soft-dev3-1.localhost>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220831105237.ot5aaawnrwjqmjgj@soft-dev3-1.localhost>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-0c1df
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 31/08/2022 13:52, Horatiu Vultur wrote:
-> The 08/31/2022 10:29, Krzysztof Kozlowski wrote:
+On Mon, 22 Aug 2022 13:15:00 +0300, Laurentiu Mihalcea wrote:
+> The purpose of this patch series is to add support for
+> timestamping on capture direction using the compress
+> API.
 > 
-> Hi Krzysztof,
+> This is simply done by splitting sof_compr_copy into 2
+> functions: sof_compr_copy_playback and sof_compr_copy_capture.
+> Each of these functions handles one of the possible directions:
+> capture or playback and is called in sof_compr_copy based on
+> the stream's direction.
 > 
->>
->> On 31/08/2022 09:42, Horatiu Vultur wrote:
->>
->>> +static const struct of_device_id lan9662_otp_match[] = {
->>> +     { .compatible = "microchip,lan9662-otp", },
->>> +     { .compatible = "microchip,lan9668-otp", },
->>
->> This is still wrong, does not match your bindings at all and still
->> duplicates entries without driver data. One entry - 9662.
-> 
-> I have look at some other drivers, where I can see they don't have any
-> driver data. For example [1] and the bindings are here [2].
-> 
-> [1] https://elixir.bootlin.com/linux/latest/source/drivers/net/ethernet/ti/cpsw_new.c#L1832
-> [2] https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml#L23
+> [...]
 
-There are plenty of poor examples in Linux kernel code and it is not a
-reason to re-use their patterns...
+Applied to
 
-> Is this also wrong, or I still can't understand how the bindings are
-> working?
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-The topic here is not that much related to the bindings, but device
-matching in Linux kernel.
+Thanks!
 
-> 
-> If I put only one entry:
-> ---
-> static const struct of_device_id lan9662_otp_match[] = {
->      { .compatible = "microchip,lan9662-otp", },
-> ---
-> 
-> Wouldn't be a problem that the binding mentions also lan9668?
+[1/2] ASoC: SOF: compress: Move sof_compr_copy functionality
+      commit: 272ff8828f35658aace17e3227624fbbd68a6bcf
+[2/2] ASoC: SOF: compress: Add copy function for capture case
+      commit: 1a01e19278022cd2f7daa7a065ed47c5022dbad9
 
-No. What could be the problem exactly, which you are afraid? Why
-implementation should be a problem for a binding (which we try to be
-mostly implementation independent)?
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-Best regards,
-Krzysztof
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
