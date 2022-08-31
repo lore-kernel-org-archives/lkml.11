@@ -2,159 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C258EECAAD5
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21511ECAAA1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 02:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbiHaCFz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 30 Aug 2022 22:05:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
+        id S231811AbiHaCHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 30 Aug 2022 22:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiHaCFw (ORCPT
+        with ESMTP id S229775AbiHaCHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 30 Aug 2022 22:05:52 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1043758DF3;
-        Tue, 30 Aug 2022 19:05:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661911551; x=1693447551;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cttn7y6UHHWNipIRdPvVFXvVg0LWj2i77s/Uz1a/IWk=;
-  b=BzvEsG0Q2segwRAdRGwTq9/cHpkCtKs1Ql4N0PU/8pjyoGxx0z119UZZ
-   38wLXwmjvAhpUyc2yvqhT0Vdm/azBJrcIhxg38XRHkttGE6LTZRrzLGGj
-   DtZsiNslE6cyLeujEoaLBru5fT4yWxMBPQcbIjeFipDS76zfIwlaSmuQT
-   kvpjjpgVYaX1khvIhWgfhep31r8cJUNva+3q4jhunlI41Efrne1ePuv1K
-   4Mbvp3bKo4FjONm43gE+Be3L3WAEyUy4XSD8HZOVXgs+kc/Dh//W/RNse
-   x10VgxlJ0a6w3jYs87Wl39sZpuhw03IFKtPSHpFVuLWgdO00Rd/vp938t
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="294092185"
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="294092185"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 19:05:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
-   d="scan'208";a="787723001"
-Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
-  by orsmga005.jf.intel.com with ESMTP; 30 Aug 2022 19:05:46 -0700
-Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oTD6w-0000rn-0O;
-        Wed, 31 Aug 2022 02:05:46 +0000
-Date:   Wed, 31 Aug 2022 10:04:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sean Anderson <sean.anderson@seco.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, linux-doc@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-phy@lists.infradead.org,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: Re: [net-next PATCH v2] net: phy: Add 1000BASE-KX interface mode
-Message-ID: <202208311035.zXZ42EG5-lkp@intel.com>
-References: <20220830214241.596985-1-sean.anderson@seco.com>
+        Tue, 30 Aug 2022 22:07:06 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A0360534
+        for <linux-kernel@vger.kernel.org>; Tue, 30 Aug 2022 19:07:03 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MHSBT0xwVzlWdH;
+        Wed, 31 Aug 2022 10:03:13 +0800 (CST)
+Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 31 Aug 2022 10:06:32 +0800
+Received: from huawei.com (10.175.124.27) by kwepemm600016.china.huawei.com
+ (7.193.23.20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 31 Aug
+ 2022 10:06:31 +0800
+From:   Shuqi Zhang <zhangshuqi3@huawei.com>
+To:     <jaegeuk@kernel.org>, <chao@kernel.org>
+CC:     <linux-f2fs-devel@lists.sourceforge.net>,
+        <linux-kernel@vger.kernel.org>, <zhangshuqi3@huawei.com>
+Subject: [PATCH v2 -next] f2fs: fix wrong dirty page count when race between mmap and fallocate.
+Date:   Wed, 31 Aug 2022 10:24:40 +0800
+Message-ID: <20220831022440.2985736-1-zhangshuqi3@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220830214241.596985-1-sean.anderson@seco.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600016.china.huawei.com (7.193.23.20)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sean,
+This is a BUG_ON issue as follows when running xfstest-generic-503:
+WARNING: CPU: 21 PID: 1385 at fs/f2fs/inode.c:762 f2fs_evict_inode+0x847/0xaa0
+Modules linked in:
+CPU: 21 PID: 1385 Comm: umount Not tainted 5.19.0-rc5+ #73
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-4.fc34 04/01/2014
 
-I love your patch! Perhaps something to improve:
+Call Trace:
+evict+0x129/0x2d0
+dispose_list+0x4f/0xb0
+evict_inodes+0x204/0x230
+generic_shutdown_super+0x5b/0x1e0
+kill_block_super+0x29/0x80
+kill_f2fs_super+0xe6/0x140
+deactivate_locked_super+0x44/0xc0
+deactivate_super+0x79/0x90
+cleanup_mnt+0x114/0x1a0
+__cleanup_mnt+0x16/0x20
+task_work_run+0x98/0x100
+exit_to_user_mode_prepare+0x3d0/0x3e0
+syscall_exit_to_user_mode+0x12/0x30
+do_syscall_64+0x42/0x80
+entry_SYSCALL_64_after_hwframe+0x46/0xb0
 
-[auto build test WARNING on net-next/master]
+Function flow analysis when BUG occurs:
+f2fs_fallocate                    mmap
+                                  do_page_fault
+                                    pte_spinlock  // ---lock_pte
+                                    do_wp_page
+                                      wp_page_shared
+                                        pte_unmap_unlock   // unlock_pte
+                                          do_page_mkwrite
+                                          f2fs_vm_page_mkwrite
+                                            down_read(invalidate_lock)
+                                            lock_page
+                                            if (PageMappedToDisk(page))
+                                              goto out;
+                                            // set_page_dirty  --NOT RUN
+                                            out: up_read(invalidate_lock);
+                                        finish_mkwrite_fault // unlock_pte
+f2fs_collapse_range
+  down_write(i_mmap_sem)
+  truncate_pagecache
+    unmap_mapping_pages
+      i_mmap_lock_write // down_write(i_mmap_rwsem)
+        ......
+        zap_pte_range
+          pte_offset_map_lock // ---lock_pte
+           set_page_dirty
+            f2fs_dirty_data_folio
+              if (!folio_test_dirty(folio)) {
+                                        fault_dirty_shared_page
+                                          set_page_dirty
+                                            f2fs_dirty_data_folio
+                                              if (!folio_test_dirty(folio)) {
+                                                filemap_dirty_folio
+                                                f2fs_update_dirty_folio // ++
+                                              }
+                                            unlock_page
+                filemap_dirty_folio
+                f2fs_update_dirty_folio // page count++
+              }
+          pte_unmap_unlock  // --unlock_pte
+      i_mmap_unlock_write  // up_write(i_mmap_rwsem)
+  truncate_inode_pages
+  up_write(i_mmap_sem)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sean-Anderson/net-phy-Add-1000BASE-KX-interface-mode/20220831-054425
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 146ecbac1d327e7ed2153cfb3ef880166dc2b312
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220831/202208311035.zXZ42EG5-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/96d58b1eb1e74558860112250f067f5ff250e31f
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Sean-Anderson/net-phy-Add-1000BASE-KX-interface-mode/20220831-054425
-        git checkout 96d58b1eb1e74558860112250f067f5ff250e31f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/net/
+When race happens between mmap-do_page_fault-wp_page_shared and
+fallocate-truncate_pagecache-zap_pte_range, the zap_pte_range calls
+function set_page_dirty without page lock. Besides, though
+truncate_pagecache has immap and pte lock, wp_page_shared calls
+fault_dirty_shared_page without any. In this case, two threads race
+in f2fs_dirty_data_folio function. Page is set to dirty only ONCE,
+but the count is added TWICE by calling filemap_dirty_folio.
+Thus the count of dirty page cannot accord with the real dirty pages.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Following is the solution to in case of race happens without any lock.
+Since folio_test_set_dirty in filemap_dirty_folio is atomic, judge return
+value will not be at risk of race.
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Shuqi Zhang <zhangshuqi3@huawei.com>
+---
+ fs/f2fs/checkpoint.c | 3 +--
+ fs/f2fs/data.c       | 3 +--
+ fs/f2fs/node.c       | 3 +--
+ 3 files changed, 3 insertions(+), 6 deletions(-)
 
-   drivers/net/phy/phy-core.c: In function 'phy_interface_num_ports':
->> drivers/net/phy/phy-core.c:86:9: warning: enumeration value 'PHY_INTERFACE_MODE_1000BASEKX' not handled in switch [-Wswitch]
-      86 |         switch (interface) {
-         |         ^~~~~~
-
-
-vim +/PHY_INTERFACE_MODE_1000BASEKX +86 drivers/net/phy/phy-core.c
-
-da4625ac2637e4 Russell King      2017-07-25   76  
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   77  /**
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   78   * phy_interface_num_ports - Return the number of links that can be carried by
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   79   *			     a given MAC-PHY physical link. Returns 0 if this is
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   80   *			     unknown, the number of links else.
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   81   *
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   82   * @interface: The interface mode we want to get the number of ports
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   83   */
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   84  int phy_interface_num_ports(phy_interface_t interface)
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   85  {
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  @86  	switch (interface) {
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   87  	case PHY_INTERFACE_MODE_NA:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   88  		return 0;
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   89  	case PHY_INTERFACE_MODE_INTERNAL:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   90  	case PHY_INTERFACE_MODE_MII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   91  	case PHY_INTERFACE_MODE_GMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   92  	case PHY_INTERFACE_MODE_TBI:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   93  	case PHY_INTERFACE_MODE_REVMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   94  	case PHY_INTERFACE_MODE_RMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   95  	case PHY_INTERFACE_MODE_REVRMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   96  	case PHY_INTERFACE_MODE_RGMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   97  	case PHY_INTERFACE_MODE_RGMII_ID:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   98  	case PHY_INTERFACE_MODE_RGMII_RXID:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17   99  	case PHY_INTERFACE_MODE_RGMII_TXID:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  100  	case PHY_INTERFACE_MODE_RTBI:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  101  	case PHY_INTERFACE_MODE_XGMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  102  	case PHY_INTERFACE_MODE_XLGMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  103  	case PHY_INTERFACE_MODE_MOCA:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  104  	case PHY_INTERFACE_MODE_TRGMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  105  	case PHY_INTERFACE_MODE_USXGMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  106  	case PHY_INTERFACE_MODE_SGMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  107  	case PHY_INTERFACE_MODE_SMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  108  	case PHY_INTERFACE_MODE_1000BASEX:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  109  	case PHY_INTERFACE_MODE_2500BASEX:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  110  	case PHY_INTERFACE_MODE_5GBASER:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  111  	case PHY_INTERFACE_MODE_10GBASER:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  112  	case PHY_INTERFACE_MODE_25GBASER:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  113  	case PHY_INTERFACE_MODE_10GKR:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  114  	case PHY_INTERFACE_MODE_100BASEX:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  115  	case PHY_INTERFACE_MODE_RXAUI:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  116  	case PHY_INTERFACE_MODE_XAUI:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  117  		return 1;
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  118  	case PHY_INTERFACE_MODE_QSGMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  119  	case PHY_INTERFACE_MODE_QUSGMII:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  120  		return 4;
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  121  	case PHY_INTERFACE_MODE_MAX:
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  122  		WARN_ONCE(1, "PHY_INTERFACE_MODE_MAX isn't a valid interface mode");
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  123  		return 0;
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  124  	}
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  125  	return 0;
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  126  }
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  127  EXPORT_SYMBOL_GPL(phy_interface_num_ports);
-c04ade27cb7b95 Maxime Chevallier 2022-08-17  128  
-
+diff --git a/fs/f2fs/checkpoint.c b/fs/f2fs/checkpoint.c
+index 8259e0fa97e1..3a3329bf1033 100644
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -448,8 +448,7 @@ static bool f2fs_dirty_meta_folio(struct address_space *mapping,
+ 
+ 	if (!folio_test_uptodate(folio))
+ 		folio_mark_uptodate(folio);
+-	if (!folio_test_dirty(folio)) {
+-		filemap_dirty_folio(mapping, folio);
++	if (filemap_dirty_folio(mapping, folio)) {
+ 		inc_page_count(F2FS_M_SB(mapping), F2FS_DIRTY_META);
+ 		set_page_private_reference(&folio->page);
+ 		return true;
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index aa3ccddfa037..16c39bd948a0 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -3697,8 +3697,7 @@ static bool f2fs_dirty_data_folio(struct address_space *mapping,
+ 		folio_mark_uptodate(folio);
+ 	BUG_ON(folio_test_swapcache(folio));
+ 
+-	if (!folio_test_dirty(folio)) {
+-		filemap_dirty_folio(mapping, folio);
++	if (filemap_dirty_folio(mapping, folio)) {
+ 		f2fs_update_dirty_folio(inode, folio);
+ 		return true;
+ 	}
+diff --git a/fs/f2fs/node.c b/fs/f2fs/node.c
+index e06a0c478b39..3506ffcb31f8 100644
+--- a/fs/f2fs/node.c
++++ b/fs/f2fs/node.c
+@@ -2147,8 +2147,7 @@ static bool f2fs_dirty_node_folio(struct address_space *mapping,
+ 	if (IS_INODE(&folio->page))
+ 		f2fs_inode_chksum_set(F2FS_M_SB(mapping), &folio->page);
+ #endif
+-	if (!folio_test_dirty(folio)) {
+-		filemap_dirty_folio(mapping, folio);
++	if (filemap_dirty_folio(mapping, folio)) {
+ 		inc_page_count(F2FS_M_SB(mapping), F2FS_DIRTY_NODES);
+ 		set_page_private_reference(&folio->page);
+ 		return true;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
