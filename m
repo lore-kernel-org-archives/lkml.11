@@ -2,78 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A1CBECAAD4
-	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 19:50:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC26ECAAD1
+	for <linux-kernel@archiver.kernel.org>; Wed, 31 Aug 2022 19:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232045AbiHaTuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 31 Aug 2022 15:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37026 "EHLO
+        id S232050AbiHaTwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 31 Aug 2022 15:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbiHaTuT (ORCPT
+        with ESMTP id S229459AbiHaTwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 31 Aug 2022 15:50:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 837BD4599C;
-        Wed, 31 Aug 2022 12:50:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A1CCB82296;
-        Wed, 31 Aug 2022 19:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 478B9C433B5;
-        Wed, 31 Aug 2022 19:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661975415;
-        bh=1Hqj9cGQMvdM0HK2rNbmJyNsJ4gxVRMh3qEmfemnL00=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=tgD9JEKdkV1FuTJxKtVGSCHNmta4SQ3HTzwtbH8PBIp4sAJttvgHjWIux3teb1AFR
-         b0DpfmDQwyaGeTXHujteZh4i86qMUFjntBQi+P3axZ9o+Q7zrrGMktXpPcX7cSipUK
-         93JjpFUTVGWfqkzzT7SFfM0uqjs/20/2ZlgDydyjzWEDCPZY8D4n0lp1RNvoSiaM3Y
-         2qDy+hCFe7NryddMEwF/92BjijtDlby1G0DBRP2AXtA8/DRqaPHRs9VDsMyFJBEa4C
-         oYdkWKT7qqz70jIsSFzotDL3nJQF3ZTtdBMhYI6CjodC/9jbCELSwPOOGkvbGSGisA
-         sU0KefdtT/r5w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2FB38E924DC;
-        Wed, 31 Aug 2022 19:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 31 Aug 2022 15:52:03 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4142E3410
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 12:52:02 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id b44so19765283edf.9
+        for <linux-kernel@vger.kernel.org>; Wed, 31 Aug 2022 12:52:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=YAe10oouJcIvJsSCvWW0rg9AtsdW0wN2bIOcL+HwZ5k=;
+        b=Xx/BUA8bRfDFHZD/fwuwPxb2xiZyT4HS6/BVH9bkm3qj9W0Szo9SaxvBNq4USdR8qS
+         c7So32dIB2SbdCwO0A1GNIYhzPW5yYBVP4Iq05PK2ApeC/IMECvLziX0Em8Le/NyigMg
+         OAgJAB8WufgMWnQM54xrwZV9zsUzuj6c/9VSSggvVMCpmKAG+x5iaMX5AyutWdYL9IrF
+         OfUxWNqJ2MPfiHML+Sah9HReEa3N6w2PQ2ssjJe+RYBR5DqMPHE+/Y6yybedDQsTgeGN
+         V+xDbHbFrA2jHVBNarNmLUA4QNYsVrF1VcYOG7AUtr640RxfK6ZINbxGdDofM5cDw6R2
+         Ofhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=YAe10oouJcIvJsSCvWW0rg9AtsdW0wN2bIOcL+HwZ5k=;
+        b=TIzThPukdUVhfjSqR8xYqbEFtDCp4FzTGluM/OPzoQqZ4QI4JToKNL5gMoGVhlHlci
+         +ov9oG6cTcvycxRwlUFHt8sSFQUh++KENJKcOUx6oy3GktCjnDvT3GMECTyMVMlOslLs
+         xqKwzqFDHSRkKAIZ94m9o0jmZSY1yb3VT1G4+wUukVcM6PJlD8ugkQeZH7gnvj7qUOMF
+         FJ8JyZolYKLFLWtVzGvRoUvXacoNOiyrqWPZrOCZbLcFt+hf7xuIHyEij8x414O1OdYf
+         QKsyCtdBBAY6CwR3eh2J6uUFMHbqQqD9plLdpn0eJ8sgNR89OQK4jJVVN15tE+cSer/y
+         M/Fw==
+X-Gm-Message-State: ACgBeo3h6Jm6uGDmwqMQ3cx6FWGN+X/Kt7WcXH9x6rCnSDm1uuzBTnRR
+        /BkjK/jpZSVygwxZP1aFUYqjVtRN9phIC0SJRLqkYQ==
+X-Google-Smtp-Source: AA6agR7Kxmmmd125uoqokPtWEeztFpiN95cjdZyPUX8C6nrUF20VKaX8M4mzvmwAo4PtYV/wUFVTrl4zJTHn9cgDCvU=
+X-Received: by 2002:aa7:d292:0:b0:447:f99d:8b9b with SMTP id
+ w18-20020aa7d292000000b00447f99d8b9bmr20874914edq.29.1661975520953; Wed, 31
+ Aug 2022 12:52:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] selftests: net: sort .gitignore file
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166197541519.20889.18175493740792064843.git-patchwork-notify@kernel.org>
-Date:   Wed, 31 Aug 2022 19:50:15 +0000
-References: <20220829184748.1535580-1-axelrasmussen@google.com>
-In-Reply-To: <20220829184748.1535580-1-axelrasmussen@google.com>
-To:     Axel Rasmussen <axelrasmussen@google.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, shuah@kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220831005739.42648-1-yuanjilin@cdjrlc.com>
+In-Reply-To: <20220831005739.42648-1-yuanjilin@cdjrlc.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Wed, 31 Aug 2022 21:51:50 +0200
+Message-ID: <CAMRc=Mch2vkggdN42MSA-QzerP-wsryoxYio1Qxj_WsS58+hcw@mail.gmail.com>
+Subject: Re: [PATCH] ARM: davinci: fix repeated words in comments
+To:     Jilin Yuan <yuanjilin@cdjrlc.com>
+Cc:     Sekhar Nori <nsekhar@ti.com>, Russell King <linux@armlinux.org.uk>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 29 Aug 2022 11:47:48 -0700 you wrote:
-> This is the result of `sort tools/testing/selftests/net/.gitignore`, but
-> preserving the comment at the top.
-> 
-> Suggested-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+On Wed, Aug 31, 2022 at 2:57 AM Jilin Yuan <yuanjilin@cdjrlc.com> wrote:
+>
+> Delete the redundant word 'the'.
+>
+> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
 > ---
->  tools/testing/selftests/net/.gitignore | 52 +++++++++++++-------------
->  1 file changed, 26 insertions(+), 26 deletions(-)
+>  arch/arm/mach-davinci/board-dm365-evm.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/arm/mach-davinci/board-dm365-evm.c b/arch/arm/mach-davinci/board-dm365-evm.c
+> index d8c6c360818b..cca709236ade 100644
+> --- a/arch/arm/mach-davinci/board-dm365-evm.c
+> +++ b/arch/arm/mach-davinci/board-dm365-evm.c
+> @@ -528,7 +528,7 @@ static struct vpbe_enc_mode_info dm365evm_enc_preset_timing[] = {
+>
+>  /*
+>   * The outputs available from VPBE + ecnoders. Keep the
+> - * the order same as that of encoders. First those from venc followed by that
+> + * order same as that of encoders. First those from venc followed by that
+>   * from encoders. Index in the output refers to index on a particular
+>   * encoder.Driver uses this index to pass it to encoder when it supports more
+>   * than one output. Application uses index of the array to set an output.
+> --
+> 2.36.1
+>
 
-Here is the summary with links:
-  - selftests: net: sort .gitignore file
-    https://git.kernel.org/netdev/net/c/5a3a59981027
+Applied, thanks!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Bart
